@@ -10,7 +10,8 @@ package DXUtil;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(atime ztime cldate
+@EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf
+             print_all_fields
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -46,4 +47,79 @@ sub cldate
   return $buf;
 }
 
+# return a cluster style date time
+sub cldatetime
+{
+  my $t = shift;
+  my $date = cldate($t);
+  my $time = ztime($t);
+  return "$date $time";
+}
 
+# turn a latitude in degrees into a string
+sub slat
+{
+  my $n = shift;
+  my ($deg, $min, $let);
+  $let = $n >= 0 ? 'N' : 'S';
+  $n = abs $n;
+  $deg = int $n;
+  $min = int (($n - $deg) * 60);
+  return "$deg $min $let";
+}
+
+# turn a longitude in degrees into a string
+sub slong
+{
+  my $n = shift;
+  my ($deg, $min, $let);
+  $let = $n >= 0 ? 'E' : 'W';
+  $n = abs $n;
+  $deg = int $n;
+  $min = int (($n - $deg) * 60);
+  return "$deg $min $let";
+}
+
+# turn a true into 'yes' and false into 'no'
+sub yesno
+{
+  my $n = shift;
+  return $n ? $main::yes : $main::no;
+}
+
+# format a prompt with its current value and return it with its privilege
+sub promptf
+{
+  my ($line, $value) = @_;
+  my ($priv, $prompt, $action) = split ',', $line;
+
+  # if there is an action treat it as a subroutine and replace $value
+  if ($action) {
+    my $q = qq{\$value = $action(\$value)};
+	eval $q;
+  }
+  $prompt = sprintf "%15s: %s", $prompt, $value;
+  return ($priv, $prompt);
+}
+
+# print all the fields for a record according to privilege
+#
+# The prompt record is of the format '<priv>,<prompt>[,<action>'
+# and is expanded by promptf above
+#
+sub print_all_fields
+{
+  my $self = shift;    # is a dxchan
+  my $ref = shift;     # is a thingy with field_prompt and fields methods defined
+  my @out = @_;
+ 
+  my @fields = $ref->fields;
+  my $field;
+  my @out;
+
+  foreach $field (sort @fields) {
+    my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
+    push @out, $ans if ($self->priv >= $priv);
+  }
+  return @out;
+}

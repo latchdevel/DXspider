@@ -33,16 +33,16 @@ use DXDebug;
 %channels = undef;
 
 %valid = (
-  call => 'Callsign',
-  conn => 'Msg Connection ref',
-  user => 'DXUser ref',
-  t => 'Time',
-  priv => 'Privilege',
-  state => 'Current State',
-  oldstate => 'Last State',
-  list => 'Dependant DXChannels list',
-  name => 'User Name',
-  connsort => 'Connection Type'
+  call => '0,Callsign',
+  conn => '9,Msg Conn ref',
+  user => '9,DXUser ref',
+  t => '0,Time,atime',
+  priv => '9,Privilege',
+  state => '0,Current State',
+  oldstate => '5,Last State',
+  list => '9,Dep Chan List',
+  name => '0,User Name',
+  consort => '9,Connection Type'
 );
 
 

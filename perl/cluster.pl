@@ -56,8 +56,9 @@ sub rec
   if (!defined $dxchan) {
      my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
      my $user = DXUser->get($call);
-	 $user = DXUser->new($call) if !defined $user;
-	 $user->sort('U') if (!$user->sort());
+	 if (!defined $user) {
+	   $user = DXUser->new($call);
+	 }
 	 my $sort = $user->sort();
 	 
 	 # is there one already connected?
@@ -79,6 +80,13 @@ sub rec
        $conn->send_now("Z$call|bye");          # this will cause 'client' to disconnect
 	   return;
      }
+
+     # set some necessary flags on the user if they are connecting
+	 $user->wwv(1) if !$user->wwv();
+	 $user->talk(1) if !$user->talk();
+	 $user->ann(1) if !$user->ann();
+	 $user->here(1) if !$user->here();
+	 $user->sort('U') if !$user->sort();
 
 	 # create the channel
      $dxchan = DXCommandmode->new($call, $conn, $user) if ($sort eq 'U');

@@ -26,7 +26,6 @@ sub start
   my $call = $self->call;
   
   # do we have him connected on the cluster somewhere else?
-  if (DXCluster->get
   $self->pc38();
   $self->pc18();
   $self->{state} = 'incoming';
@@ -60,6 +59,17 @@ sub finish
 #
 # All the various PC routines
 #
+
+sub pc18
+{
+
+}
+
+sub pc38
+{
+
+}
+
 
 1;
 __END__ 

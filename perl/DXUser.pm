@@ -20,19 +20,27 @@ $filename = undef;
 
 # hash of valid elements and a simple prompt
 %valid = (
-  call => 'Callsign',
-  alias => 'Real Callsign',
-  name => 'Name',
-  qth => 'Home QTH',
-  lat => 'Latitude',
-  long => 'Longtitude',
-  qra => 'Locator',
-  email => 'E-mail Address',
-  priv => 'Privilege Level',
-  lastin => 'Last Time in',
-  passwd => 'Password',
-  addr => 'Full Address',
-  'sort' => 'Type of User',  # A - ak1a, U - User, S - spider cluster, B - BBS 
+  call => '0,Callsign',
+  alias => '0,Real Callsign',
+  name => '0,Name',
+  qth => '0,Home QTH',
+  lat => '0,Latitude,slat',
+  long => '0,Longitude,slong',
+  qra => '0,Locator',
+  email => '0,E-mail Address',
+  priv => '9,Privilege Level',
+  lastin => '0,Last Time in,cldatetime',
+  passwd => '9,Password',
+  addr => '0,Full Address',
+  sort => '0,Type of User',  # A - ak1a, U - User, S - spider cluster, B - BBS
+  wwv => '0,Want WWV,yesno',
+  talk => '0,Want Talk,yesno',
+  ann => '0,Want Announce,yesno',
+  here => '0,Here Status,yesno',
+  xpert => '0,Expert Status,yesno',
+  bbs => '0,Home BBS',
+  node => '0,Home Node',
+  dx => '0,DX Spots,yesno',
 );
 
 sub AUTOLOAD
@@ -44,7 +52,11 @@ sub AUTOLOAD
   $name =~ s/.*:://o;
   
   die "Non-existant field '$AUTOLOAD'" if !$valid{$name};
-  @_ ? $self->{$name} = shift : $self->{$name} ;
+  if (@_) {
+    $self->{$name} = shift;
+	$self->put();
+  }
+  return $self->{$name};
 }
 
 #

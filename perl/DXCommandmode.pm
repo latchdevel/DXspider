@@ -32,10 +32,10 @@ sub start
   my ($self, $line) = @_;
   my $user = $self->{user};
   my $call = $self->{call};
-  my $name = $self->{name};
-  $name = $call if !defined $name;
+  my $name = $user->{name};
 
-  $self->msg('l2',$name);
+  $self->{name} = $name ? $name : $call;
+  $self->msg('l2',$self->{name});
   $self->send_file($main::motd) if (-e $main::motd);
   $self->msg('pr', $call);
   $self->state('prompt');                  # a bit of room for further expansion, passwords etc

@@ -118,7 +118,7 @@ $call = uc shift @ARGV;
 $call = uc $mycall if !$call; 
 $connsort = lc shift @ARGV;
 $connsort = 'local' if !$connsort;
-$mode = ($connsort =~ /^ax/) ? 1 : 2;
+$mode = ($connsort =~ /^ax/o) ? 1 : 2;
 setmode();
 
 #select STDOUT; $| = 1;
@@ -131,5 +131,16 @@ $SIG{'HUP'} = \&sig_term;
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
 $conn->send_now("A$call|$connsort");
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
-Msg->event_loop();
+
+$lasttime = time;
+for (;;) {
+  my $t;
+  Msg->event_loop(1, 0.010);
+  $t = time;
+  if (t > $lasttime+660 && $connsort =~ /^ax/o) {            # every e
+    print pack('xx');
+	STDOUT->fflush();
+	$lasttime = $t;
+  }
+}
 

@@ -53,13 +53,20 @@ sub delcluster;
 }
 
 %valid = (
-  mynode => 'Parent Node',
-  call => 'Callsign',
-  confmode => 'Conference Mode',
-  here => 'Here?',
-  dxprot => 'Channel ref',
-  version => 'Node Version',
+  mynode => '0,Parent Node',
+  call => '0,Callsign',
+  confmode => '5,Conference Mode,yesno',
+  here => '5,Here?,yesno',
+  dxprot => '5,Channel ref',
+  version => '5,Node Version',
 );
+
+# return a prompt for a field
+sub field_prompt
+{ 
+  my ($self, $ele) = @_;
+  return $valid{$ele};
+}
 
 sub AUTOLOAD
 {

@@ -59,6 +59,12 @@ $debugfn = "/tmp/debug_cluster";
 # the version of DX cluster (tm) software I am masquerading as
 $myprot = "5447";
 
+# your favorite way to say 'Yes'
+$yes = 'Yes';
+
+# your favorite way to say 'No'
+$no = 'No';
+
 # default hopcount to use - note this will override any incoming hop counts, if they are greater
 $def_hopcount = 7;
 
