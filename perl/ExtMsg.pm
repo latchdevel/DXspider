@@ -32,9 +32,9 @@ sub enqueue
 		if ($msg =~ /^E[-\w]+\|([01])/) {
 			$conn->{echo} = $1;
 			if ($1) {
-				$conn->send_raw("\xFF\xFC\x01");
+#				$conn->send_raw("\xFF\xFC\x01");
 			} else {
-				$conn->send_raw("\xFF\xFB\x01");
+#				$conn->send_raw("\xFF\xFB\x01");
 			}
 		} else {
 			$msg =~ s/^[-\w]+\|//;

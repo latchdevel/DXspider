@@ -1,3 +1,5 @@
+03Mar01=======================================================================
+1. allow incoming and outgoing IP connects direct to cluster.pl
 28Feb01=======================================================================
 1. allow sh/c gb7 (ie show the config of all gb7 nodes)(for example)
 2. get rid of spurious DXHash 'uninitialised' messages if no corresponding 
