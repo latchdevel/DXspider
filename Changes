@@ -1,3 +1,5 @@
+27Nov00=======================================================================
+1. alter sh/wcy output slightly
 26Nov00=======================================================================
 1. made it possible for sysop calls to be used on other nodes and still have
 anti loop checking on PC16/17.
