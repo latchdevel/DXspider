@@ -202,7 +202,7 @@ sub extract
 		}
 		%cache =();
 		$lasttime = $main::systime;
-		$hits = $matchtotal = 0;
+		$hits = $misses = $matchtotal = 0;
 	}
 
 LM:	foreach $call (split /,/, $calls) {
