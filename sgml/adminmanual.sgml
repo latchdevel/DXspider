@@ -19,7 +19,7 @@ A reference for SysOps of the DXSpider DXCluster program.
 <sect>Installation (Original version by Iain Phillips, G0RDI)
 
 <P>
-Last modified: 24 January 2001 by Ian Maude, G0VGS
+Last modified: 26 January 2001 by Ian Maude, G0VGS
 
 <sect1>Introduction
 
@@ -1686,6 +1686,40 @@ the interface is one-way.
 Please be careful not to flood the cluster network with unnecessary mail.
 Make sure you only send mail to the clusters that want it by using the
 Forward.pl file very carefully.
+
+<sect1>Updating kepler data
+
+<P>
+Spider has a powerful and flexible show/satellite command.  In order for
+this to be accurate, the kepler data has to be updated regularly.  In
+general, this data is available as an email or via cluster mail.
+Updating it is simple.  First you need to export the mail message as a
+file.  You do this with the <em>export</em> command from the cluster prompt
+as the sysop.  For example ...
+
+<tscreen><verb>
+export 5467 /spider/perl/keps.in
+</verb></tscreen>
+
+would export message number 5467 as a file called keps.in in the
+/spider/perl directory.
+
+Now login to a VT as sysop and cd /spider/perl.  There is a command in
+the perl directory called <em>convkeps.pl</em>.  All we need to do now is
+convert the file like so ...
+
+<tscreen><verb>
+./convkeps.pl keps.in
+</verb></tscreen>
+
+Now go back to the cluster and issue the command ...
+
+<tscreen><verb>
+load/keps
+</verb></tscreen>
+
+That is it!  the kepler data has been updated.
+
 
 <sect>CVS
 

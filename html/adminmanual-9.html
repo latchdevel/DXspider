@@ -394,6 +394,42 @@ the interface is one-way.
 Make sure you only send mail to the clusters that want it by using the
 Forward.pl file very carefully.
 <P>
+<H2><A NAME="ss9.9">9.9 Updating kepler data</A>
+</H2>
+
+<P>Spider has a powerful and flexible show/satellite command.  In order for
+this to be accurate, the kepler data has to be updated regularly.  In
+general, this data is available as an email or via cluster mail.
+Updating it is simple.  First you need to export the mail message as a
+file.  You do this with the <EM>export</EM> command from the cluster prompt
+as the sysop.  For example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+export 5467 /spider/perl/keps.in
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>would export message number 5467 as a file called keps.in in the
+/spider/perl directory.
+<P>Now login to a VT as sysop and cd /spider/perl.  There is a command in
+the perl directory called <EM>convkeps.pl</EM>.  All we need to do now is
+convert the file like so ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+./convkeps.pl keps.in
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Now go back to the cluster and issue the command ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+load/keps
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>That is it!  the kepler data has been updated.
+<P>
+<P>
 <HR>
 <A HREF="adminmanual-10.html">Next</A>
 <A HREF="adminmanual-8.html">Previous</A>
