@@ -539,7 +539,7 @@ sub normal
 						dbg('chan', "LOOP: $call is a node");
 						next;
 					}
-					my $rcall = $ref->call;
+					my $rcall = $ref->mynode->call;
 					dbg('chan', "LOOP: already have $call on $rcall");
 					next;
 				}
@@ -644,7 +644,8 @@ sub normal
 						dbg('chan', "LOOP: $call come in on wrong channel");
 						next;
 					}
-					dbg('chan', "already have $call");
+					my $rcall = $node->mynode->call;
+					dbg('chan', "already have $call on $rcall");
 					next;
 				}
 				
