@@ -31,14 +31,18 @@ while (<IMP>) {
 		}
 		$key = uc $_;
 		$value = undef;
-		++$state;
+		++$state if $key;
 	} elsif ($state == 1) {
 		if (/^\&\&/) {
 			if ($key =~ /^#/) {
+			} elsif ($key && $value) {
+				$db->putkey($key, $value);
+				$count++;
 			}
-			$db->putkey($key, $value);
 			$state = 0;
-			$count++;
+			next;
+		} elsif (/^\%\%/) {
+			$state = 0;
 			next;
 		}
 		$value .= $_ . "\n";

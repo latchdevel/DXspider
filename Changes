@@ -1,3 +1,6 @@
+08Nov99=======================================================================
+1. added spoofing (mk1 version) for sysops, useful for those little jobs like
+reseting a user's qra locator and such like "spoof g7brn set/qra jo02lq".
 07Nov99=======================================================================
 1. reduced the amount of stuff compared against for dup announces.
 2. Check the regex for DK0WCY announces produces results before storing it as

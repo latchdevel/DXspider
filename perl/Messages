@@ -135,6 +135,7 @@ package DXM;
 				sloc => 'Cluster lat $_[0] long $_[1], DON\'T FORGET TO CHANGE YOUR DXVars.pm',
 				sqra => 'Cluster QRA Locator$_[0], DON\'T FORGET TO CHANGE YOUR DXVars.pm',
 				sorry => 'Sorry',
+				spf1 => 'spoof: creating new user $_[0]',
 				suser1 => 'usage: callsign user_field_name value',
 				suser2 => 'User $_[0] not found',
 				suser3 => 'User field \'$_[0]\' was \'$_[1]\' now set to \'$_[2]\'',

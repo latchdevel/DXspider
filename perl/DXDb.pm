@@ -258,7 +258,7 @@ sub process
 			my $n = getstream($f[3]);
 			if ($n) {
 				my $mchan = DXChannel->get($n->{call});
-				$mchan->send($f[2] . ":$f[4]");
+				$mchan->send($f[2] . ":$f[4]") if $mchan;
 			}
 			last SWITCH;
 		}

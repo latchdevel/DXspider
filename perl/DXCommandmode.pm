@@ -206,7 +206,8 @@ sub run_cmd
 		$cmdline =~ s|//|/|og;
 		
 		# split the command line up into parts, the first part is the command
-		my ($cmd, $args) = $cmdline =~ /^([\S\/]+)\s*(.*)/o;
+		my ($cmd, $args) = split /\s+/, $cmdline, 2;
+		$args = "" unless $args;
 		
 		if ($cmd) {
 			
@@ -217,7 +218,8 @@ sub run_cmd
 			# alias it if possible
 			my $acmd = CmdAlias::get_cmd($cmd);
 			if ($acmd) {
-				($cmd, $args) = "$acmd $args" =~ /^([\w\/]+)\s*(.*)/o;
+				($cmd, $args) = split /\s+/, "$acmd $args", 2;
+				$args = "" unless $args;
 				dbg('command', "aliased cmd: $cmd $args");
 			}
 			
