@@ -49,6 +49,7 @@ package DXM;
 				disc4 => 'No Channel or connection but orphan $_[0] disconnected',
 				done => 'Done',
 				dup => 'Sorry, this is a duplicate',
+				dupspot => 'Sorry, this is a duplicate (wait a minute and try again)',
 				dx1 => 'Frequency $_[0] not in band (see show/band); usage: DX [BY call] freq call comments',
 				dx2 => 'Need a callsign; usage: DX [BY call] freq call comments',
 				dx3 => 'The callsign or frequency is invalid',

@@ -103,7 +103,7 @@ return (1, @out) unless $valid;
 
 # Store it here (but only if it isn't baddx)
 my $t = (int ($main::systime/60)) * 60;
-return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
+return (1, $self->msg('dupspot')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
 my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
 
 if ($DXProt::baddx->in($spotted) || $freq =~ /^69/ || $localonly) {

@@ -25,6 +25,10 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
+use vars qw($sentencelth);
+
+$sentencelth = 200;
+ 
 #
 # All the PCxx generation routines
 #
@@ -85,15 +89,18 @@ sub pc16
 	my $ncall = $node->call;
 	my @out;
 
-	while (@_) {
-		my $str = "PC16^$ncall";
-		for ( ; @_ && length $str < 200; ) {
-			my $ref = shift;
-			$str .= sprintf "^%s %s %d", $ref->call, $ref->conf ? '*' : '-', $ref->here;
+	my $s = "";
+	for (@_) {
+		next unless $_;
+		my $ref = $_;
+		my $str = sprintf "^%s %s %d", $ref->call, $ref->conf ? '*' : '-', $ref->here;
+		if (length($s) + length($str) >= $sentencelth) {
+			push @out, "PC16^$ncall" . $s . sprintf "^%s^", get_hops(16);
+			$s = "";
 		}
-		$str .= sprintf "^%s^", get_hops(16);
-		push @out, $str;
+		$s .= $str;
 	}
+	push @out, "PC16^$ncall" . $s . sprintf "^%s^", get_hops(16) if length $s;
 	return @out;
 }
 
@@ -124,20 +131,24 @@ sub pc18
 sub pc19
 {
 	my @out;
+	my @in;
 
-	while(@_) {
-		my $str = "PC19";
-		for (; @_ && length $str < 200;) {
-			my $ref = shift;
-			my $call = $ref->call;
-			my $here = $ref->here;
-			my $conf = $ref->conf;
-			my $version = $ref->version;
-			$str .= "^$here^$call^$conf^$version";
+	my $s = "";
+	for (@_) {
+		next unless $_;
+		my $ref = $_;
+		my $call = $ref->call;
+		my $here = $ref->here;
+		my $conf = $ref->conf;
+		my $version = $ref->version;
+	    my $str = "^$here^$call^$conf^$version";
+		if (length($s) + length($str) >= $sentencelth) {
+			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
+			$s = "";
 		}
-		$str .= sprintf "^%s^", get_hops(19);
-		push @out, $str;
+		$s .= $str;
 	}
+	push @out, "PC19" . $s . sprintf "^%s^", get_hops(19) if length $s;
 	return @out;
 }
 
