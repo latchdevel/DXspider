@@ -44,9 +44,9 @@ sub finish
 
 sub check
 {
-	my ($s, $t) = @_;
+	my $s = shift;
 	return 1 if find($s);
-	add($s, $t);
+	add($s, shift);
 	return 0;
 }
 
@@ -57,8 +57,8 @@ sub find
 
 sub add
 {
-	my ($s, $t) = @_;
-	$t = $main::systime + $default unless $t;
+	my $s = shift;
+	my $t = shift || $main::systime + $default;
 	$d{$s} = $t;
 }
 

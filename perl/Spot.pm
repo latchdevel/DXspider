@@ -25,16 +25,18 @@ use vars qw($VERSION $BRANCH);
 
 main::mkver($VERSION = q$Revision$);
 
-use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots );
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth );
 
 $fp = undef;
 $statp = undef;
-$maxspots = 100;					# maximum spots to return
+$maxspots = 100;				# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
-$maxdays = 100;				# normal maximum no of days to go back
+$maxdays = 100;					# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
-$dupage = 3*3600;               # the length of time to hold spot dups
+$dupage = 3600;					# the length of time to hold spot dups
+$maxcalllth = 12;				# the maximum call lth
+
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['freq', 'r', 0, 0, \&decodefreq],
@@ -360,26 +362,20 @@ sub dup
 	$d *= 60;
 
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
-	$call = substr($call, 0, 12) if length $call > 12;
+	$call = substr($call, 0, $maxcalllth) if length $call > $maxcalllth;
 
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
+	$text = unpad($text);
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	unpad($text);
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^a-zA-Z0-9]//g;
-	my $ldupkey = "X$freq|$call|\L$text";
+	my $ldupkey = "X$freq|$call|" . uc $text;
 	my $sdupkey = "X$freq|$call|$by";
 	my $t = DXDupe::find($ldupkey);
-	if ($t) {	
-		my $dt = $main::systime + $dupage - $t;
-		return 1 if $dt < 300; 
-	}
+	return 1 if $t && $t - $main::systime > 0;	
     $t = DXDupe::find($sdupkey);
-	if ($t) {	
-		my $dt = $main::systime + $dupage - $t;
-		return 1 if $dt < 300; 
-	}
+	return 1 if $t && $t - $main::systime > 0;	
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 	DXDupe::add($sdupkey, $main::systime+$dupage);
 	return 0;
