@@ -1,3 +1,5 @@
+19Nov01=======================================================================
+1. added Ducie Island to prefixes
 17Nov01=======================================================================
 1. updated the Java Web Interface from Ian, m0azm to allow passwords.  If
 a user with no password enters anything, including null, it is happily

@@ -2839,6 +2839,7 @@
   'VP2V' => '272',
   'VP5' => '273',
   'VP6' => '279',
+  'VP6/D' => '548',
   'VP8' => '275,276,277,278,274',
   'VP8/F' => '274',
   'VP8/G' => '275',
@@ -3854,5 +3855,6 @@
    545 => bless( { name => 'So-Africa-ZS', dxcc => 265, itu => 57, cq => 38, utcoff => -2.0, lat => -29.9, long => 30.9 }, 'Prefix'),
    546 => bless( { name => 'East-Timor-4W', dxcc => 340, itu => 54, cq => 28, utcoff => -8.0, lat => -9.21666666666667, long => 126.5 }, 'Prefix'),
    547 => bless( { name => 'Chesterfield-Is-TX0', dxcc => 341, itu => 56, cq => 30, utcoff => -11.0, lat => -19.5166666666667, long => 158.183333333333 }, 'Prefix'),
+   548 => bless( { name => 'Ducie-Is-VP6/D', dxcc => 342, itu => 63, cq => 32, utcoff => 8.30, lat => -24.65, long => -124.8 }, 'Prefix'),
 );
 
