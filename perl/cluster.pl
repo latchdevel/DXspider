@@ -374,6 +374,7 @@ for (;;) {
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
 		DXConnect::process();
+		DXMsg::process();
 		eval { 
 			Local::process();       # do any localised processing
 		};

@@ -1,3 +1,12 @@
+27Jun99=======================================================================
+1. added WWV filtering
+2. added timeouts to for forwarding Messages, also added a waiting time for
+failed (stalled) outgoing messages.
+3. Incoming messages will now have priority over outgoing messages to the
+same node.
+4. Added 'catchup' command which will 'catchup' messages to date for a node. 
+This means that when you start forwarding to a node, it doesn't get all the
+messages queued up that are probably old.
 21Jun99=======================================================================
 1. changed regex for cluster->client msgs so that strings like |---| are no
 longer ignored.

@@ -57,13 +57,13 @@ if ($self->state eq "prompt") {
 		$oref = DXMsg::get($f[$i]);
 		if (!$oref) {
 			delete $self->{loc};
-			return (0, "can't access message $i");
+			return (1, $self->msg('m4', $i));
 		}
 	} else {
 		if (!($oref = DXMsg::get($self->lastread))) {
 			delete $self->{loc};
-			#return (0, $self->msg('esend2'));
-			return (0, "need a message number");
+			return (1, $self->msg('m5'));
+			#return (1, "need a message number");
 		}
 	}
 	
@@ -78,9 +78,12 @@ if ($self->state eq "prompt") {
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('sendbody');
 	#push @out, $self->msg('sendsubj');
-	push @out, "Reply to: $to";
-	push @out, "Subject : $loc->{subject}";
-	push @out, "Enter Message /EX (^Z) to send or /ABORT (^Y) to exit";
+#	push @out, "Reply to: $to";
+#	push @out, "Subject : $loc->{subject}";
+#	push @out, "Enter Message /EX (^Z) to send or /ABORT (^Y) to exit";
+	push @out, $self->msg('m6', $to);
+	push @out, $self->msg('m7', $loc->{subject});
+	push @out, $self->msg('m8');
 }
 
 return (1, @out);

@@ -68,8 +68,8 @@ if ($self->state eq "prompt") {
 			push @list, $oref->read_msg_body();
 			$nref->store(\@list);
 			$nref->add_dir();
-			#push @out, $self->msg('sendcc', $oref->msgno, $f[$i]);
-			push @out, "copy of msg $oref->{msgno} sent to $to";
+			push @out, $self->msg('m2', $oref->msgno, $to);
+#			push @out, "copy of msg $oref->{msgno} sent to $to";
 		}
 		DXMsg::queue_msg();
 		return (1, @out);
@@ -108,7 +108,8 @@ if ($self->state eq "prompt") {
 	foreach  $t (@f[ $i..$#f ]) {
 		$t = uc $t;
 		if (grep $_ eq $t, @DXMsg::badmsg) {
-			push @out, "Sorry, $t is an unacceptable TO address";
+#			push @out, "Sorry, $t is an unacceptable TO address";
+			push @out, $self->msg('m3', $t);
 		} else {
 			push @to, $t;
 		}
@@ -123,8 +124,8 @@ if ($self->state eq "prompt") {
 	# keep calling me for every line until I relinquish control
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('send1');
-	#push @out, $self->msg('sendsubj');
-	push @out, "Enter Subject (30 characters) >";
+	push @out, $self->msg('m1');
+	#push @out, "Enter Subject (30 characters) >";
 }
 
 return (1, @out);

@@ -516,11 +516,11 @@ sub normal
 			$wwvdup{$dupkey} = $d;
 			$field[6] =~ s/-\d+$//o;            # remove spotter's ssid
 		
-			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..$#field]);
+			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..8]);
 
 			my $r;
 			eval {
-				$r = Local::wwv($self, $field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
+				$r = Local::wwv($self, $field[1], $field[2], $sfi, $k, $i, @field[6..8]);
 			};
 #			dbg('local', "Local::wwv2 error $@") if $@;
 			return if $r;
@@ -528,9 +528,9 @@ sub normal
 			# DON'T be silly and send on PC27s!
 			return if $pcno == 27;
 
-			# broadcast to the eager users
-			broadcast_users("WWV de $field[7] <$field[2]>:   SFI=$sfi, A=$k, K=$i, $field[6]", 'wwv', $wwv );
-			last SWITCH;
+			# broadcast to the eager world
+			send_wwv_spot($self, $line, $d, $field[2], $sfi, $k, $i, @field[6..8]);
+			return;
 		}
 		
 		if ($pcno == 24) {		# set here status
@@ -826,6 +826,45 @@ sub send_dx_spot
 			}
 		} elsif ($dxchan->is_user && $dxchan->{dx}) {
 			my $buf = Spot::formatb($_[0], $_[1], $_[2], $_[3], $_[4]);
+			$buf .= "\a\a" if $dxchan->{beep};
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+				$dxchan->send($buf) if !$hops || ($hops && $filter);
+			} else {
+				$dxchan->delay($buf) if !$hops || ($hops && $filter);
+			}
+		}					
+	}
+}
+
+sub send_wwv_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		my $routeit;
+		my ($filter, $hops) = Filter::it($dxchan->{wwvfilter}, @_, $self->{call} ) if $dxchan->{wwvfilter};
+		if ($dxchan->is_ak1a) {
+			next if $dxchan == $self;
+			if ($hops) {
+				$routeit = $line;
+				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+			} else {
+				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+				next unless $routeit;
+			}
+			if ($filter) {
+				$dxchan->send($routeit) if $routeit;
+			} else {
+				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
+				
+			}
+		} elsif ($dxchan->is_user && $dxchan->{wwv}) {
+			my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
 			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
 				$dxchan->send($buf) if !$hops || ($hops && $filter);
