@@ -232,7 +232,7 @@ void send_text(fcb_t *f, char *s, int l)
 		flush_text(f);
 		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
 	}
-	*mp->inp++ = nl;
+	*mp->inp++ = '\n';
 	if (!f->buffer_it)
 		flush_text(f);
 }
