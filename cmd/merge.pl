@@ -1,0 +1,31 @@
+#
+# merge spot and wwv databases
+#
+# Copyright (c) 1998 - Dirk Koopman G1TLH
+#
+# $Id$
+#
+
+my ($self, $line) = @_;
+my @f = split /\s+/, $line;
+
+# check for callsign
+return (1, $self->msg('e5')) if $self->priv < 5;
+return (1, $self->msg('e12')) if !$f[0];
+
+my $call = uc $f[0];
+my $dxchan = DXChannel->get($call);
+return (1, $self->msg('e10', $call)) unless $dxchan;
+return (1, $self->msg('e13', $call)) unless $dxchan->is_ak1a();
+
+
+my ($spots, $wwv) = $f[1] =~ m{(\d+/\d+)} if $f[1];
+$spots = 10 unless $spots;
+$wwv = 5 unless $wwv;
+
+# I know, I know -  but is there any point?
+$dxchan->send("PC25^$call^$main::mycall^$spots^$wwv^");
+
+return (1, $self->msg('merge1', $call, $spots, $wwv));
+
+
