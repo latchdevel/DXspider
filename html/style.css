@@ -13,4 +13,5 @@
  .code { color: blue; }
  .send { color: blue; }
  .expect { color: red; }
- .cmd { color: green; } 
+ .cmd { color: green; }
+ .connect { color: brown; } 

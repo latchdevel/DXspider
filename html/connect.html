@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Sun Sep  2 20:45:56 BST 2001
+Last modified: Sun Sep  2 21:12:19 BST 2001
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -33,43 +33,48 @@ Last modified: Sun Sep  2 20:45:56 BST 2001
 	  work if you have or make an arrangement to connect to WR3D)[oh, and substitute x1xxx for your real
 	  node callsign].</p>
 
+	<p>The colouration will be explained later on in this page, you don't have to try to emulate the colours!</p>
+
 	<pre>
-    timeout 15
+    <span class=cmd>timeout 15</span>
     # this is a comment
-    connect telnet wr3d.dxcluster.net 7000
-    'login' 'x1xxx'
-    client wr3d telnet
+    <span class=connect>connect telnet wr3d.dxcluster.net 7000</span>
+    <span class=expect>'login'</span> <span class=send>'x1xxx'</span>
+    <span class=cmd>client wr3d telnet</span>
 	</pre>
 
+	<p>If you put the above script in a file called: <tt>/spider/connect/wr3d</tt> then you can leave out 
+	  line: <span class=cmd>client wr3d telnet</span>.
 	<p>For a connect that requires a login and execution of the programs
 	  from a normal shell, do:-</p>
 
 	<pre>
-    timeout 15
-    connect telnet dirkl.tobit.co.uk
-    'login' 'gb7djk'
-    'word' 'gb7djk'
-    '\$' 'cd /spider/perl'
+    <span class=cmd>timeout 15</span>
+    <span class=connect>connect telnet dirkl.tobit.co.uk</span>
+    <span class=expect>'login'</span> <span class=send>'gb7djk'</span>
+    <span class=expect>'word'</span> <span class=send>'gb7djk'</span>
+    <span class=expect>'\$'</span> <span class=send>'cd /spider/perl'</span>
     # set the line to prevent echoing, leaving this out will
     # confuse whole networks for hours!
-    '\$' 'stty -echo raw'
+    <span class=expect>'\$'</span> <span class=send>'stty -echo raw'</span>
     # tell GB7DJK that you are GB7DJK-1
-    '\$' '/spider/src/client gb7djk-1 telnet'
+    <span class=expect>'\$'</span> <span class=send>'/spider/src/client gb7djk-1 telnet'</span>
     # tell GB7DJK-1 that it is connected to GB7DJK
     # you can leave this out if you call this script 'gb7djk'
-    client gb7djk telnet
+    <span class=cmd>client gb7djk telnet</span>
 	</pre>
 
 	<p>a ax25 example (connecting from GB7DJK, to GB7DXM via my local BPQ node and one X1J intermediate node):-
+
 	<pre>
-    timeout 60
-    abort (Busy|Sorry|Fail)
+    <span class=cmd>timeout 60</span>
+    <span class=cmd>abort (Busy|Sorry|Fail)</span>
     # don't forget to chmod 4775 netrom_call!
-    connect ax25 /usr/sbin/netrom_call bbs gb7djk-0 g1tlh-0
-    'Connected' ''
-    'Connected' 'c np7'
-    '*** Connect' 'c gb7dxm'
-    'Connect' ''
+    <span class=connect>connect ax25 /usr/sbin/netrom_call bbs gb7djk-0 g1tlh-0</span>
+    <span class=expect>'Connected'</span> <span class=send>''</span>
+    <span class=expect>'Connected'</span> <span class=send>'c np7'</span>
+    <span class=expect>'*** Connect'</span> <span class=send>'c gb7dxm'</span>
+    <span class=expect>'Connect'</span> <span class=send>''</span>
 	</pre>
 
     <p>The <tt>-0</tt> ssid is important if you want it to work reliably. Obviously if you are
@@ -79,13 +84,13 @@ Last modified: Sun Sep  2 20:45:56 BST 2001
     <p>A AGW Engine example would be very similar and look like this:-</p>
 
 	<pre>
-    timeout 60
-    abort (Busy|Sorry|Fail)
-    connect agw 2 g1tlh
-    '*** Connected' ''
-    '*** Connect' 'c np7'
-    'linked to' 'c gb7dxm'
-    'Connect' ''
+    <span class=cmd>timeout 60</span>
+    <span class=cmd>abort (Busy|Sorry|Fail)</span>
+    <span class=connect>connect agw 2 g1tlh</span>
+    <span class=expect>'*** Connected'</span> <span class=send>''</span>
+    <span class=expect>'*** Connect'</span> <span class=send>'c np7'</span>
+    <span class=expect>'Connected'</span> <span class=send>'c gb7dxm'</span>
+    <span class=expect>'Connect'</span> <span class=send>''</span>
 	</pre>
 	
 	<p>A connection is started manually by typing in <tt>connect &lt;scriptname&gt;</tt> on a sysop enabled
@@ -101,7 +106,7 @@ Last modified: Sun Sep  2 20:45:56 BST 2001
 
     <pre>
     <span class=cmd>timeout 15</span>
-    <span class=cmd>connect telnet dirkl.tobit.co.uk</span>
+    <span class=connect>connect telnet dirkl.tobit.co.uk</span>
     <span class=expect>'login'</span> <span class=send>'gb7djk'</span>
     <span class=expect>'ssword'</span> <span class=send>'gb7djk'</span>
     </pre>
@@ -115,7 +120,7 @@ Last modified: Sun Sep  2 20:45:56 BST 2001
     -> D G1TLH connection to GB7DJK-1 started
     -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
     <span class=cmd>timeout set to 15</span>
-    <span class=cmd>CONNECT sort: telnet command: dirkl.tobit.co.uk</span>
+    <span class=connect>CONNECT sort: telnet command: dirkl.tobit.co.uk</span>
     CHAT "login" -> "gb7djk"
     received "
     Red Hat Linux release 5.1 (Manhattan)
@@ -140,11 +145,17 @@ Last modified: Sun Sep  2 20:45:56 BST 2001
     etc
 	</pre>
 
-	<p>I have coloured the commands in an attempt to make it clear as to what goes on, where and why. 
-	  <span class=cmd>These coloured lines are miscellaneous commands</span>, the <span class=expect>things
-	  that are this colour are the strings I am looking for (what I am "expecting")</span> 
-	  and the <span class=send>things that are this colour
-	  are the commands I am going to send when I see the "expect" strings in the input</span>.</p>
+	<p>I have coloured the commands in an attempt to make it clear as
+	to what goes on, where and why.  Lines that are <span
+	class=cmd>coloured thus</span> are miscellaneous setup
+	commands. Lines that are <span class=connect>this colour</span>
+	are lines that make the initial <span
+	class=connect>connection</span> to the first hop. The things that
+	are <span class=expect>this colour</span> are the strings I am
+	looking for (what I am <span class=expect>"expecting"</span>) and
+	the things that are <span class=send>this colour</span> are the
+	commands I am going to <span class=send>send</span> when I see the
+	"expect" strings in the input.</p>
 
 	<p>The script starts by setting the timeout to 15 seconds, then starts
 	  the connection. It is <b>important</b> to note that, in the case of 
