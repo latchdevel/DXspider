@@ -21,24 +21,27 @@ $opentime = 5*60;				# length of time a database stays open after last access
 $dbbase = "$main::root/db";		# where all the databases are kept;
 %avail = ();					# The hash contains a list of all the databases
 %valid = (
-		  accesst => '9,Last Access Time,atime',
+		  accesst => '9,Last Accs Time,atime',
 		  createt => '9,Create Time,atime',
-		  lastt => '9,Last Update Time,atime',
+		  lastt => '9,Last Upd Time,atime',
 		  name => '0,Name',
 		  db => '9,DB Tied hash',
 		  remote => '0,Remote Database',
-		  pre => '0,Heading text',
-		  post => '0,Tail text',
+		  pre => '0,Heading txt',
+		  post => '0,Tail txt',
 		  chain => '0,Search these,parray',
 		  disable => '0,Disabled?,yesno',
-		  nf => '0,Not Found text',
-		  cal => '0,No Key text',
-		  allowread => '9,Allowed to read,parray',
-		  denyread => '9,Deny to read,parray',
-		  allowupd => '9,Allow to update,parray',
-		  denyupd => '9,Deny to update,parray',
-		  fwdupd => '9,Forward updates to,parray',
+		  nf => '0,Not Found txt',
+		  cal => '0,No Key txt',
+		  allowread => '9,Allowed read,parray',
+		  denyread => '9,Deny read,parray',
+		  allowupd => '9,Allow upd,parray',
+		  denyupd => '9,Deny upd,parray',
+		  fwdupd => '9,Forw upd to,parray',
 		  template => '9,Upd Templates,parray',
+		  te => '9,End Upd txt',
+		  tae => '9,End App txt',
+		  atemplate => '9,App Templates,parray',
 		  help => '0,Help txt,parray',
 		 );
 
@@ -97,7 +100,7 @@ sub getdesc
 
 	# search for a partial if not found direct
 	unless ($r) {
-		for (values %avail) {
+		for (sort { $a->{name} cmp $b->{name} }values %avail) {
 			if ($_->{name} =~ /^$name/) {
 				$r = $_;
 				last;

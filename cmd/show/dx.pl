@@ -65,12 +65,12 @@ while ($f = shift @list) {		# next field
 		my ($a, $b);
 #		$DB::single =1;
 		
-		if ($list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d\d\d)/oi)) {
+		if ($list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d?\d\d)/oi)) {
 			$a = uc $a;
 			$doiota = "\\b$a\[\-\ \]\?$b\\b";
 			shift @list;
 		}
-		$doiota = '\b(IOTA|(AF|AN|NA|SA|EU|AS|OC)[- ]?\d\d\d)\b' unless $doiota;
+		$doiota = '\b(IOTA|(AF|AN|NA|SA|EU|AS|OC)[- ]?\d?\d\d)\b' unless $doiota;
 		next;
 	}
 	if (lc $f eq 'qra') {
@@ -121,7 +121,7 @@ if ($spotter) {
 # qsl requests
 if ($doqsl) {
 	$expr .= " && " if $expr;
-	$expr .= "\$f3 =~ m{(QSL|VIA)}io";
+	$expr .= "\$f3 =~ m{(\@|>|QSL|VIA)}io";
 }
 
 # iota requests

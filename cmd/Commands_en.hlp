@@ -53,6 +53,110 @@ and to undo what you have just done:-
 
 which will arrange for them to be forward candidates again.
 
+=== 0^DBAVAIL^Show a list of all the Databases in the system
+Title says it all really, this command lists all the databases defined
+in the system. It is also aliased to SHOW/COMMAND.
+
+=== 9^DBCREATE <name>^Create a database entry
+=== 9^DBCREATE <name> chain <name> [<name>..]^Create a chained database entry
+=== 9^DBCREATE <name> remote <node>^Create a remote database entry
+DBCREATE allows you to define a database in the system. It doesn't actually
+create anything, just defines it.
+
+The databases that are created are simple DB_File hash databases, they are 
+therefore already 'indexed'.
+
+You can define a local database with the first form of the command eg:
+
+  DBCREATE oblast
+
+You can also chain databases with the addition of the 'chain' keyword. 
+This will search each database one after the other. A typical example 
+is:
+
+  DBCREATE sdx_qsl chain sql_ad
+
+No checking is done to see if the any of the chained databases exist, in
+fact it is usually better to do the above staement first then do each of
+the chained databases.
+
+Databases can exist offsite. To define a database that lives on another 
+node do:
+
+  DBCREATE buckmaster remote gb7dxc
+
+Remote databases cannot be chained; however, the last database in a 
+a chain can be a remote database eg:
+
+  DBCREATE qsl chain gb7dxc
+
+
+To see what databases have been defined do:
+
+  DBAVAIL (or it will have been aliased to SHOW/COMMAND)
+
+It would be normal for you to add an entry into your local Aliases file
+to allow people to use the 'SHOW/<dbname>' style syntax. So you would
+need to add a line like:-
+
+  's' => [
+    ..
+    ..
+    '^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
+    ..
+    ..
+   ],
+
+to allow 
+ 
+  SH/BUCK g1tlh
+
+to work as they may be used to.
+
+See DBIMPORT for the importing of existing AK1A format data to databases.
+See DBSHOW for generic database enquiry
+ 
+=== 9^DBIMPORT <dbname> <filename>^Import AK1A data into a database
+If you want to import or update data in bulk to a database you can use
+this command. It will either create or update entries into an existing
+database. For example:-
+
+  DBIMPORT oblast /tmp/OBLAST.FUL
+
+will import the standard OBLAST database that comes with AK1A into the
+oblast database held locally.
+
+=== 9^DBREMOVE <dbname>^Delete a database
+DBREMOVE will completely remove a database entry and also delete any data
+file that is associated with it. 
+
+There is no warning, no comeback, no safety net. 
+
+For example:
+
+  DBREMOVE oblast 
+
+will remove the oblast database from the system and it will also remove
+the associated datafile.
+
+I repeat:
+
+There is no warning, no comeback, no safety net.
+ 
+You have been warned.
+
+=== 0^DBSHOW <dbname> <key>^Display an entry, if it exists, in a database
+This is the generic user interface to the database to the database system.
+It is expected that the sysop will add an entry to the local Aliases file
+so that users can use the more familiar AK1A style of enquiry such as:
+
+  SH/BUCK G1TLH
+
+but if he hasn't and the database really does exist (use DBAVAIL or
+SHOW/COMMAND to find out) you can do the same thing with:
+
+  DBSHOW buck G1TLH
+
 === 9^DEBUG^Set the cluster program into debug mode
 Executing this command will only have an effect if you are running the cluster
 in debug mode i.e.
@@ -553,11 +657,21 @@ Display the most recent WWV information that has been received by the system
 === 5^SHUTDOWN^Shutdown the cluster
 Shutdown the cluster and disconnect all the users 
 
+=== 5^STAT/DB <dbname>^Show the status of a database
+Show the internal status of a database descriptor.
+
+Depending on your privilege level you will see more or less information. 
+This command is unlikely to be of much use to anyone other than a sysop.
+
 === 5^STAT/CHANNEL [<callsign>]^Show the status of a channel on the cluster
 Show the internal status of the channel object either for the channel that 
 you are on or else for the callsign that you asked for.
 
 Only the fields that are defined (in perl term) will be displayed.
+
+=== 5^STAT/MSG <msgno>^Show the status of a message
+This command shows the internal status of a message and includes information
+such as to whom it has been forwarded, its size, origin etc etc.
 
 === 5^STAT/USER [<callsign>]^Show the full status of a user
 Shows the full contents of a user record including all the secret flags
