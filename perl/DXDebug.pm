@@ -11,7 +11,7 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist isdbg dbgclose confess croak cluck cluck);
+@EXPORT = qw(dbginit dbgstore dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck cluck);
 
 use strict;
 use vars qw(%dbglevel $fp);
@@ -29,16 +29,16 @@ if (!defined $DB::VERSION) {
 	local $^W=0;
 	eval qq( sub confess { 
 	    \$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::_store(\$@, Carp::shortmess(\@_));
+        DXDebug::dbgstore(\$@, Carp::shortmess(\@_));
 	    exit(-1); 
 	}
 	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::_store(\$@, Carp::longmess(\@_));
+        DXDebug::dbgstore(\$@, Carp::longmess(\@_));
 		exit(-1); 
 	}
-	sub carp    { DXDebug::_store(Carp::shortmess(\@_)); }
-	sub cluck   { DXDebug::_store(Carp::longmess(\@_)); } 
+	sub carp    { DXDebug::dbgstore(Carp::shortmess(\@_)); }
+	sub cluck   { DXDebug::dbgstore(Carp::longmess(\@_)); } 
 	);
 
     CORE::die(Carp::shortmess($@)) if $@;
@@ -49,7 +49,7 @@ if (!defined $DB::VERSION) {
 } 
 
 
-sub _store
+sub dbgstore
 {
 	my $t = time; 
 	for (@_) {
@@ -58,8 +58,8 @@ sub _store
 		for (@l) {
 			my $l = $_;
 			$l =~ s/([\x00\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;			
-			print "$_\n" if defined \*STDOUT;
-			$fp->writeunix($t, "$t^$_"); 
+			print "$l\n" if defined \*STDOUT;
+			$fp->writeunix($t, "$t^$l"); 
 		}
 	}
 }
@@ -68,8 +68,8 @@ sub dbginit
 {
 	# add sig{__DIE__} handling
 	if (!defined $DB::VERSION) {
-		$SIG{__WARN__} = sub { _store($@, Carp::shortmess(@_)); };
-		$SIG{__DIE__} = sub { _store($@, Carp::longmess(@_)); };
+		$SIG{__WARN__} = sub { dbgstore($@, Carp::shortmess(@_)); };
+		$SIG{__DIE__} = sub { dbgstore($@, Carp::longmess(@_)); };
 	}
 
 	$fp = DXLog::new('debug', 'dat', 'd');
@@ -86,13 +86,25 @@ sub dbg
 {
 	my $l = shift;
 	if ($fp && ($dbglevel{$l} || $l eq 'err')) {
-	    my @in = @_;
-		my $t = time;
-		for (@in) {
-		    s/\n$//o;
-			s/\a//og;   # beeps
-			print "$_\n" if defined \*STDOUT;
-			$fp->writeunix($t, "$t^$_");
+	    dbgstore(@_);
+	}
+}
+
+sub dbgdump
+{
+	my $l = shift;
+	my $m = shift;
+	if ($fp && ($dbglevel{$l} || $l eq 'err')) {
+		foreach my $l (@_) {
+			for (my $o = 0; $o < length $l; $o += 16) {
+				my $c = substr $l, $o, 16;
+				my $h = unpack "H*", $c;
+				$c =~ s/[\x00-\x1f\x7f-\xff]/./g;
+				my $left = 16 - length $c;
+				$h .= ' ' x (2 * $left) if $left > 0;
+				dbgstore($m . sprintf("%4d:", $o) . "$h $c");
+				$m = ' ' x (length $m);
+			}
 		}
 	}
 }

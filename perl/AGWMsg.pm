@@ -157,6 +157,9 @@ sub _send
                     return 0; # fail. Message remains in queue ..
                 }
             }
+			if (isdbg('raw')) {
+				dbgdump('raw', "send $bytes_written: ", $msg);
+			}
             $offset         += $bytes_written;
             $bytes_to_write -= $bytes_written;
         }
@@ -183,8 +186,9 @@ sub _rcv {                     # Complement to _send
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
 			$inmsg .= $msg;
-#			$msg =~ s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-#			dbg('connll', $msg);
+			if (isdbg('raw')) {
+				dbgdump('raw', "read $bytes_read: ", $msg);
+			}
 		} 
 	} else {
 		if (Msg::_err_will_block($!)) {

@@ -272,7 +272,10 @@ sub _send {
 					$conn->disconnect;
                     return 0; # fail. Message remains in queue ..
                 }
-            }
+            } elsif (isdbg('raw')) {
+				my $call = $conn->{call} || 'none';
+				dbgdump('raw', "$call send $bytes_written: ", $msg);
+			}
             $offset         += $bytes_written;
             $bytes_to_write -= $bytes_written;
         }
@@ -374,6 +377,10 @@ sub _rcv {                     # Complement to _send
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
 			$conn->{msg} .= $msg;
+			if (isdbg('raw')) {
+				my $call = $conn->{call} || 'none';
+				dbgdump('raw', "$call read $bytes_read: ", $msg);
+			}
 		} 
 	} else {
 		if (_err_will_block($!)) {
