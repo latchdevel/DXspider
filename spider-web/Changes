@@ -1,0 +1,22 @@
+06Jan03==============================================================
+1. Changes made to spider.cgi to allow the NODECALL variable to be
+transfered to the java applet. The NODECALL variable will now be
+used to show "Connected to NODECALL" and not "Connected
+to HOSTNAME:PORT".
+2. Changes file created. This file will contain changes for the
+WEB client only.
+3. The version number of the WEB client changed to 1.0 and the About
+box updated to show correct info.
+4. Show WCY added to the Show menu.
+5. makefile included.  You will have to alter the path to javac!
+31Dec02==============================================================
+1. Changes made to make sure that when a pop up box appears that it will
+be empty and not contain any old data.
+2. Check added to make sure that the correct action is taken when the
+OK or Cancel button in a pop up box is clicked. Did not work
+before. When OK or Cancel was clicked the command was sent even if
+there had not been typed any info into the pop up box.
+3. Set No Beep added to Settings menu.
+4. Set Dx-Grid added to Settings menu.
+5. Set No Dx-Grid added to Settings menu.
+=====================================================================
