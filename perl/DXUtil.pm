@@ -165,7 +165,7 @@ sub phex
 sub parray
 {
 	my $ref = shift;
-	return join(', ', @{$ref});
+	return ref $ref ? join(', ', @{$ref}) : $ref;
 }
 
 # take the arg as an array reference and print as a list of pairs

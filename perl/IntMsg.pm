@@ -44,7 +44,6 @@ sub dequeue
 		for (@lines) {
 			if (defined $_) {
 				s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-				s/[\x00-\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 			} else {
 				$_ = '';
 			}

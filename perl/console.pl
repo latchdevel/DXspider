@@ -224,6 +224,9 @@ sub addtotop
 {
 	while (@_) {
 		my $inbuf = shift;
+		if ($inbuf =~ s/\x07+$//) {
+			beep();
+		}
 		push @shistory, $inbuf;
 		shift @shistory if @shistory > $maxshist;
 	}
@@ -240,6 +243,7 @@ sub rec_socket
 	if (defined $msg) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		
+		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f\xf0-\xff]/./g;         # immutable CSI sequence + control characters
 		if ($sort && $sort eq 'D') {
 			$line = " " unless length($line);
 			addtotop($line);
@@ -482,7 +486,7 @@ $SIG{__DIE__} = \&sig_term;
 
 $conn->send_later("A$call|$connsort width=$cols");
 $conn->send_later("I$call|set/page $maxshist");
-$conn->send_later("I$call|set/nobeep");
+#$conn->send_later("I$call|set/nobeep");
 
 #Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
