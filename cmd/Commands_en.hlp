@@ -1745,6 +1745,13 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 
+=== 0^SHOW/DB0SDX <callsign>^Show QSL infomation from DB0SDX database
+This command queries the DB0SDX QSL server on the internet
+and returns any information available for that callsign. This service
+is provided for users of this software by http://www.qslinfo.de.
+
+See also SHOW/QRZ, SHOW/WM7D.
+
 === 9^SHOW/DEBUG^Show what levels of debug information you are logging
 
 === 0^SHOW/DX^Interrogate the spot database
@@ -2056,6 +2063,8 @@ This command queries the QRZ callbook server on the internet
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 
+See also SHOW/WM7D for an alternative.
+
 === 9^SHOW/REGISTERED [<prefix>]^Show the registered users
 
 === 0^SHOW/ROUTE <callsign> ...^Show the route to the callsign
@@ -2180,6 +2189,13 @@ the worldwide statistics.
 === 0^SHOW/WCY^Show last 10 WCY broadcasts
 === 0^SHOW/WCY <n>^Show last <n> WCY broadcasts
 Display the most recent WCY information that has been received by the system
+ 
+=== 0^SHOW/WM7D <callsign>^Show callbook details on a US callsigns
+This command queries the WM7D callbook server on the internet
+and returns any information available for that US callsign. This service
+is provided for users of this software by http://www.wm7d.net.
+
+See also SHOW/QRZ. 
 
 === 0^SHOW/WWV^Show last 10 WWV broadcasts
 === 0^SHOW/WWV <n>^Show last <n> WWV broadcasts

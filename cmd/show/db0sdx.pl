@@ -43,7 +43,7 @@ if (!$info) {
 	
 	dbg("db0sdx out: $s") if isdbg('db0sdx');
 	
-	$t->print("POST /qslinfo/qslinfo.asmx HTTP/1.1");
+	$t->print("POST /qslinfo/qslinfo.asmx HTTP/1.0");
 	$t->print("Host: dotnet.grossmann.com");
 	$t->print("Content-Type: text/xml; charset=utf-8");
 	$t->print("Content-Length: $lth");
