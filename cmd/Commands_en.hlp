@@ -1374,6 +1374,10 @@ is set or the:
 command is executed in the startup script, then a password prompt is
 given after the normal 'login: ' prompt.  
 
+=== 9^UNSET/PASSWORD <call> ...^Delete (remove) a user's password
+This command allows the sysop to completely delete and remove a 
+password for a user. 
+
 === 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.

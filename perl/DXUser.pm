@@ -580,6 +580,12 @@ sub is_ak1a
 	my $self = shift;
 	return $self->{sort} eq 'A';
 }
+
+sub unset_passwd
+{
+	my $self = shift;
+	delete $self->{passwd};
+}
 1;
 __END__
 

@@ -1,3 +1,6 @@
+25Oct01=======================================================================
+1. added unset/password command to allow sysops (only) to completely delete
+and remove a user's password.
 24Oct01=======================================================================
 1. added (un)set/register, show/registered commands which when a 'set/var
 $main::reqreg = 1' is done in the startup script will require users to 

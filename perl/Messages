@@ -194,6 +194,7 @@ package DXM;
 				pagelth => 'Page Length is now $_[0]',
 				passerr => 'Please use: SET/PASS <password> <callsign>',
 				password => 'Password set or changed for $_[0]',
+				passwordu => 'Password removed for $_[0]',
 				pingo => 'Ping Started to $_[0]',
 				pingi => 'Ping Returned from $_[0] $_[1] (Ave $_[2]) secs',
 				pinge1 => 'Cannot ping yourself!',
