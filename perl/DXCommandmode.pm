@@ -649,7 +649,7 @@ sub talk
 {
 	my ($self, $from, $to, $via, $line) = @_;
 	$line =~ s/\\5E/\^/g;
-	$self->send_later('T', "$to de $from: $line") if $self->{talk};
+	$self->local_send('T', "$to de $from: $line") if $self->{talk};
 	Log('talk', $to, $from, $main::mycall, $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
