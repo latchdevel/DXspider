@@ -1,3 +1,5 @@
+13Jun00=======================================================================
+1. fixed looping bug in C client on ending.
 12Jun00=======================================================================
 1. Added RCMD for clx
 2. Added WCY processing
@@ -5,6 +7,8 @@
 4. Store echo settings
 5. Store pagelth settings
 6. sort out source of DXVars for callbot.pl
+7. added sh/isolate
+8. added sh/lockout 
 11Jun00=======================================================================
 1. removed extraneous DXDebug from DXUtil
 2. added help for set/echo

@@ -90,6 +90,8 @@ char *root = "/spider";         /* root of data tree, can be overridden by DXSPI
 int timeout = 60;				/* default timeout for logins and things */
 int paclen = DEFPACLEN;			/* default buffer size for outgoing packets */
 int tabsize = 8;				/* default tabsize for text messages */
+char *connsort = "local";		/* the connection variety */
+
 
 myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
 	{
@@ -289,7 +291,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 	unsigned char c;
 	
 	/* input modes */
-	if (in) {
+	if (ending == 0 && in) {
 		char *p, buf[MAXBUFL];
 		int r;
 
@@ -507,11 +509,11 @@ lend:;
  */
 void setmode(char *m)
 {
-	char *connsort = strlower(m);
-	if (eq(connsort, "telnet") || eq(connsort, "local") || eq(connsort, "nlonly") {
+	connsort = strlower(m);
+	if (eq(connsort, "telnet") || eq(connsort, "local") || eq(connsort, "nlonly")) {
 		nl = '\n';
 		echo = 1;
-		mode = eq(connsort, "nlonly") 2 : 1;
+		mode = eq(connsort, "nlonly") ? 2 : 1;
 	} else if (eq(connsort, "ax25")) {
 		nl = '\r';
 		echo = 0;
@@ -577,7 +579,7 @@ lerr:
 	}
 
 	/* this is kludgy, but hey so is the rest of this! */
-	if (!eq(connsort, "ax25") && paclen == DEFPACLEN) {
+	if (mode != 0 && paclen == DEFPACLEN) {
 		paclen = MAXPACLEN;
 	}
 }
@@ -770,8 +772,6 @@ main(int argc, char *argv[])
 	
 	/* is this a login? */
 	if (eq(call, "LOGIN") || eq(call, "login")) {
-		chgstate(LOGIN);
-	} else if (eq(
 	
 		char buf[MAXPACLEN+1];
 		char callsign[MAXCALLSIGN+1];

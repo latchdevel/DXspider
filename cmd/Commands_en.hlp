@@ -646,6 +646,10 @@ string to see a selection of files in a filearea eg:-
 
 See also TYPE - to see the contents of a file.
 
+=== 1^SHOW/ISOLATE^Show list of ISOLATED nodes
+
+=== 9^SHOW/LOCKOUT^Show the list of locked out or excluded callsigns
+
 === 0^SHOW/MOON [<prefix>|<callsign>]^Show Moon rise and set times
 Show the Moon rise and set times for a (list of) prefixes or callsigns, 
 together with the azimuth and elevation of the sun currently at those

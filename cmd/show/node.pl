@@ -34,11 +34,13 @@ foreach $call (@call) {
 	my $pcall = sprintf "%-11s", $call;
 	push @out, $self->msg('snode1') unless @out > 0;
 	if ($uref) {
-		$sort = "Spider" if $uref->sort eq 'S';
-		$sort = "AK1A  " if $uref->sort eq 'A';
-		$sort = "clx   " if $uref->sort eq 'C';
-		$sort = "Fred  " if $uref->sort eq 'U';
-		$sort = "BBS   " if $uref->sort eq 'B';
+		$sort = "Spider" if $uref->is_spider;
+		$sort = "AK1A  " if $uref->is_ak1a;
+		$sort = "Clx   " if $uref->is_clx;
+		$sort = "User  " if $uref->is_user;
+		$sort = "BBS   " if $uref->is_bbs;
+		$sort = "DXNet " if $uref->is_dxnet;
+		$sort = "ARClus" if $uref->is_arcluster;
 	} else {
 		push @out, $self->msg('snode3', $call);
 		next;
@@ -59,3 +61,7 @@ foreach $call (@call) {
 }
 
 return (1, @out);
+
+
+
+

@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The DXSpider Administration Manual : Configuration</TITLE>
+ <LINK HREF="adminmanual-3.html" REL=next>
+ <LINK HREF="adminmanual-1.html" REL=previous>
+ <LINK HREF="adminmanual.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="adminmanual-3.html">Next</A>
+<A HREF="adminmanual-1.html">Previous</A>
+<A HREF="adminmanual.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. Configuration</A></H2>
+
+<H2><A NAME="ss2.1">2.1 Allowing ax25 connects from users</A>
+</H2>
+
+<P>As stated previously, the aim of this document is not to tell you how to configure Linux or the ax25 utilities.  However, you do need to add a line in your ax25d.conf to allow connections to DXSpider for your users.  For each interface that you wish to allow connections on, use the following format ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+default  * * * * * *  - sysop /spider/perl/client.pl client.pl %u ax25
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss2.2">2.2 Allowing telnet connects from users</A>
+</H2>
+
+<P>Allowing telnet connections is quite simple.  Firstly you need to add a line in /etc/services to allow connections to a port number, like this ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+spdlogin   8000/tcp     # spider anonymous login port
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Then add a line in /etc/inetd.conf like this ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/perl/client.pl login telnet
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>This needs to be added above the standard services such as ftp, telnet etc.  Once this is done, you need to restart inetd like this ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+killall -HUP inetd
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<P>Now login as <EM>sysop</EM> and cd spider/perl. You can test that spider is accepting telnet logins by issuing the following command ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+client.pl login telnet
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>You should get a login prompt and on issuing a callsign, you will be given access to the cluster.  Note, you will not get a password login.  There seems no good reason for a password prompt to be given so it is not asked for.
+<P>
+<P>Assuming all is well, then try a telnet from your linux console ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+telnet localhost 8000
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>You should now get the login prompt and be able to login as before.
+<P>
+<H2><A NAME="ss2.3">2.3 Setting up node connects</A>
+</H2>
+
+<P>In order to allow cluster node connections, spider needs to know that the connecting callsign is a cluster node.  This is the case whether the connect is incoming or outgoing.
+In spider this is a simple task and can be done in runtime.
+<P>
+<P>Start up the cluster as you did before and login as the sysop with client.pl.
+The cluster node I am wanting to make a connection to is GB7BAA but you would obviously use whatever callsign you required.
+At the prompt type ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+set/node gb7baa
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The case does not matter as long as you have a version of DXSpider later than 1.33.  Earlier versions required the callsign to be in upper case.
+<P>
+<P>That is now set, it is as simple as that.  To prove it, login on yet another console as sysop and issue the command ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+client.pl gb7baa (using the callsign you set as a node)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>You should get an initialisation string from DXSpider like this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+client.pl gb7baa
+PC38^GB7MBC^~
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If the callsign you just set up as a cluster node is for an incoming connect, this is all that needs to be done.  If the connection is to be outgoing then a connection script needs to be written.
+<P>
+<H3>Connection scripts</H3>
+
+<P>Because DXSpider operates under Linux, connections can be made using just about any protocol;  AX25, NETRom, tcp/ip, ROSE etc are all possible examples.  Connect scripts live in the /spider/connect directory and are simple ascii files.  Writing a script for connections is therefore relatively simple.  
+<P>
+<P>The connect scripts consist of lines which start with the following keywords or symbols:-
+<P>
+<P>
+<PRE>
+        
+#               All lines starting with a # are ignored, as are wholly blank lines.
+
+timeout         timeout followed by a number is the number of seconds to wait for a 
+                command to complete. If there is no timeout specified in the script 
+                then the default is 60 seconds.
+
+abort           abort is a regular expression containing one or more strings to look 
+                for to abort a connection. This is a perl regular expression and is 
+                executed ignoring case.
+
+connect         connect followed by ax25 or telnet and some type dependent 
+                information. In the case of a telnet connection, there can be up to 
+                two parameters.
+                The first is the ip address or hostname of the computer you wish to 
+                connect to and the second is the port number you want to use (this 
+                can be left out if it is a normal telnet session).
+                In the case of an ax25 session then this would normally be a call to
+                ax25_call or netrom_call as in the example above. It is your
+                responsibility to get your node and other ax25 parameters to work 
+                before going down this route!
+
+'               ' is the delimiting character for a word or phrase of an expect/send 
+                line in a chat type script. The words/phrases normally come in pairs, 
+                either can be empty. Each line reads input from the connection until 
+                it sees the string (or perl regular expression) contained in the
+                left hand string. If the left hand string is empty then it doesn't 
+                read or wait for anything. The comparison is done ignoring case.
+                When the left hand string has found what it is looking for (if it is) 
+                then the right hand string is sent to the connection.
+                This process is repeated for every line of chat script. 
+
+client          client starts the connection, put the arguments you would want here 
+                if you were starting the client program manually. You only need this 
+                if the script has a different name to the callsign you are trying to 
+                connect to (i.e. you have a script called other which actually 
+                connects to GB7DJK-1 [instead of a script called gb7djk-1]).
+</PRE>
+<P>
+<P>There are many possible ways to configure the script but here are two examples, one for a NETRom/AX25 connect and one for tcp/ip.  
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+        timeout 60
+        abort (Busy|Sorry|Fail)
+        # don't forget to chmod 4775 netrom_call!
+        connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+        'Connect' ''
+        'Connect' 'c np7'
+        'Connect' 'c gb7dxm'
+        'Connect' ''
+        # you can leave this out if you call the script 'gb7dxm'
+        client gb7dxm ax25
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+        timeout 15
+        connect telnet dirkl.tobit.co.uk
+        'login' 'gb7djk'
+        'word' 'gb7djk'
+        # tell GB7DJK-1 that it is connected to GB7DJK
+        # you can leave this out if you call this script 'gb7djk'
+        client gb7djk telnet
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>Both these examples assume that everything is set up properly at the other end.  You will find other examples in the /spider/examples directory.
+<P>
+<H3>Starting the connection</H3>
+
+<P>You start the connection, from within a sysop enabled cluster login, by typing in the word <EM>connect</EM> followed by a script name like this ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+G0VGS de GB7MBC 13-Dec-1998 2041Z >connect gb7djk-1
+connection to GB7DJK-1 started
+G0VGS de GB7MBC 13-Dec-1998 2043Z >
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>This will start a connection using the script called <EM>gb7djk-1</EM>.  You can follow the connection by watching the term or console from where you started <EM>cluster.pl</EM>.  You should see something like this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+&lt;- D G1TLH connect gb7djk-1
+-> D G1TLH connection to GB7DJK-1 started
+-> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
+timeout set to 15
+CONNECT sort: telnet command: dirkl.tobit.co.uk
+CHAT "login" -> "gb7djk"
+received "
+Red Hat Linux release 5.1 (Manhattan)
+Kernel 2.0.35 on an i586
+"
+received "login: "
+sent "gb7djk"
+CHAT "word" -> "gb7djk"
+received "gb7djk"
+received "Password: "
+sent "gb7djk"
+Connected to GB7DJK-1, starting normal protocol
+&lt;- O GB7DJK-1 telnet
+-> B GB7DJK-1 0
+GB7DJK-1 channel func  state 0 -> init
+&lt;- D GB7DJK-1 
+&lt;- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
+&lt;- D GB7DJK-1 PC38^GB7DJK-1^~
+&lt;- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime 0 00:00^5447^~
+    etc
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss2.4">2.4 Automating things</A>
+</H2>
+
+<P>Ok, you should now have DXSpider running nicely and allowing connects by cluster nodes or users.  However, it has to be shutdown and restarted manually and if connection scripts fail they have to be started again manually too, not much use if you are not at the console!
+So, in this section we will automate both.  Firstly starting the cluster.
+<P>
+<H3>Autostarting the cluster</H3>
+
+<P>This is not only a way to start the cluster automatically, it also works as a watchdog, checking the sanity of DXSpider and respawning it should it crash for any reason.
+Before doing the following, shutdown the cluster as you did earlier.
+<P>
+<P>Login as root and bring up the /etc/inittab file in your favourite editor.  Add the following lines to the file near the end ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+##Start DXSpider on bootup and respawn it should it crash
+DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>This will automatically start DXSpider on tty7 (ALT-F7) on bootup and restart it should it crash for any reason.
+<P>
+<P>As root type the command <EM>telinit q</EM>.  DXSpider should start up immediately.  You will see the output on tty7 and if you login as <EM>sysop</EM> you should find everything running nicely.
+<P>
+<P>So far so good, now to automate script connections...
+<P>
+<H3>The crontab file</H3>
+
+<P>Login as <EM>sysop</EM> and create a file in /spider/local_cmd called crontab.  Edit it with your favourite editor and add a line like this (I have included a comment)
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# check every 10 minutes to see if gb7xxx is connected and if not
+# start a connect job going
+
+0,10,20,30,40,50 * * * * start_connect('gb7xxx') if !connected('gb7xxx')
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The callsign involved will be the callsign of the cluster node you are going to connect to.  This will now check every 10 minutes to see if gb7xxx is connected, if it is then nothing will be done.  If it is not, then a connect attempt will be started.
+<P>
+<P>There are probably lots of other things you could use this crontab file for.  If you want to know more about it, look at the 
+<A HREF="http://www.dxcluster.org/cron.html">DXSpider</A> website at the cron page where it is explained more fully.
+<P>
+<HR>
+<A HREF="adminmanual-3.html">Next</A>
+<A HREF="adminmanual-1.html">Previous</A>
+<A HREF="adminmanual.html#toc2">Contents</A>
+</BODY>
+</HTML>
