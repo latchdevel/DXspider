@@ -334,9 +334,9 @@
 
   ______________________________________________________________________
 
-  1.  Routing and Filtering
+  [1m1.  Routing and Filtering[0m
 
-  1.1.  Introduction
+  [1m1.1.  Introduction[0m
 
   From DXSpider version 1.48, major changes were introduced to the way
   node connections are treated.  This is part of an ongoing process to
@@ -353,15 +353,15 @@
 
 
   In fact DXSpider has had a simple system for some time which is called
-  isolation. This is similar to what in other systems such as clx, is
-  called passive mode. A more detailed explanation of isolation is given
+  [4misolation[24m. This is similar to what in other systems such as [1mclx[22m, is
+  called [4mpassive[24m [4mmode[24m. A more detailed explanation of [4misolation[24m is given
   further below. This system is still available and, for simple
   networks, is probably all that you need.
 
 
   The new functionality introduced in version 1.48 allows filtering the
   node and user protocol frames on a "per interface" basis. We call this
-  route filtering. This is used instead of isolation.
+  [4mroute[24m [4mfiltering[24m. This is used [1minstead of [4m[22misolation[24m.
 
 
   What this really means is that you can control more or less completely
@@ -369,10 +369,10 @@
   partner nodes. You can also limit what comes into your node from your
   partners. It is even possible to control the settings that your
   partner node has for the routing information that it sends to you
-  (using the rcmd command).
+  (using the [4mrcmd[24m command).
 
 
-  1.2.  Route Filters
+  [1m1.2.  Route Filters[0m
 
   Initially when route filters were being tested we generated a
   "default" filter.  Unfortunately it quickly became apparent that this
@@ -382,11 +382,11 @@
 
 
   The first thing that you must do is determine whether you need to use
-  route filtering at all. If you are a "normal" node with two or three
+  route filtering [1mat all[22m. If you are a "normal" node with two or three
   partners and you arranged in an "official" non-looping tree type
-  network, then you do not need to do route filtering and you will feel
+  network, then [1myou do not need to do route filtering [22mand you will feel
   a lot better for not getting involved. If you are successfully using
-  isolation then you also probably don't need to use route filtering.
+  [4misolation[24m then you also probably don't need to use route filtering.
 
 
   To put it simply, you should not mix Isolation and Route Filtering.
@@ -419,7 +419,7 @@
   explanation.
 
 
-  1.3.  The node_default filter
+  [1m1.3.  The node_default filter[0m
 
   All normal systems should have a default routing filter and it should
   usually be set to send only the normal, unlooped, view of your
@@ -456,9 +456,9 @@
 
 
 
-  Please be careful if you alter this setting, it will affect ALL your
-  links!  Remember, this is a default filter for node connections, not a
-  per link default.
+  Please be careful if you alter this setting, it will affect [4mALL[24m your
+  links!  Remember, this is a [4mdefault[24m filter for node connections, not a
+  [4mper[24m [4mlink[24m default.
 
 
   For the default routing filter then you have two real choices: either
@@ -471,15 +471,15 @@
        acc/route node_default call gb7djk
 
   GB7DJK uses the first of these. The DXCC countries can be obtained
-  from the show/prefix command.
+  from the [4mshow/prefix[24m command.
 
 
-  The example filters shown control output TO all your partner nodes
+  The example filters shown control [4moutput[24m [1mTO [22mall your partner nodes
   unless they have a specific filter applied to them (see next section).
 
 
-  It is also possible to control the incoming routing information that
-  you are prepared to accept FROM your partner nodes. The reason this is
+  It is also possible to control the [4mincoming[24m routing information that
+  you are prepared to accept [1mFROM [22myour partner nodes. The reason this is
   necessary is to make sure that stuff like mail, pings and similar
   commands a) go down the correct links and b) don't loop around
   excessively. Again using GB7DJK as an example a typical default input
@@ -516,7 +516,7 @@
 
 
 
-  1.4.  General route filtering
+  [1m1.4.  General route filtering[0m
 
   Exactly the same rules apply for general route filtering.  You would
   use either an accept filter or a reject filter like this ...
@@ -553,7 +553,7 @@
 
 
   or restricting it quite a lot, in fact making it very nearly like an
-  isolated node, like this:-
+  [4misolated[24m node, like this:-
 
 
 
@@ -567,13 +567,13 @@
   PC16s for my local users).
 
 
-  It is possible to write much more complex rules, there are up to 10
+  It is possible to write [1mmuch [22mmore complex rules, there are up to 10
   accept/reject pairs per callsign per filter. For more information see
   the next section.
 
 
 
-  1.5.  General filter rules
+  [1m1.5.  General filter rules[0m
 
   Upto v1.44 it was not possible for the user to set their own filters.
   From v1.45 though that has all changed.  It is now possible to set
@@ -584,7 +584,7 @@
 
 
   There are 3 basic commands involved in setting and manipulating
-  filters.  These are accept, reject and clear.  First we will look
+  filters.  These are [4maccept[24m, [4mreject[24m and [4mclear[24m.  First we will look
   generally at filtering. There are a number of things you can filter in
   the DXSpider system. They all use the same general mechanism.
 
@@ -629,9 +629,9 @@
   the same principles to all types of filter.
 
 
-  1.6.  Types of filter
+  [1m1.6.  Types of filter[0m
 
-  There are two main types of filter, accept or reject.  You can use
+  There are two main types of filter, [4maccept[24m or [4mreject[24m.  You can use
   either to achieve the result you want dependent on your own preference
   and which is more simple to do.  It is pointless writing 8 lines of
   reject filters when 1 accept filter would do the same thing!  Each
@@ -644,7 +644,7 @@
   the filter will be dumped but all else will be accepted.  If you use
   an accept filter, then ONLY the lines in the filter will be accepted
   and all else will be dumped.  For example if you have a single line
-  accept filter ...
+  [4maccept[24m filter ...
 
 
 
@@ -652,7 +652,7 @@
 
 
 
-  then you will ONLY get VHF spots from or to CQ zones 14, 15 and 16.
+  then you will [4mONLY[24m get VHF spots [4mfrom[24m or [4mto[24m CQ zones 14, 15 and 16.
 
   If you set a reject filter like this ...
 
@@ -662,7 +662,7 @@
 
 
 
-  Then you will get everything EXCEPT HF CW spots.  You could make this
+  Then you will get everything [4mEXCEPT[24m HF CW spots.  You could make this
   single filter even more flexible.  For example, if you are interested
   in IOTA and will work it even on CW even though normally you are not
   interested in CW, then you could say ...
@@ -712,7 +712,7 @@
   You will notice in the above example that the second line has
   brackets.  Look at the line logically.  You can see there are 2
   separate sections to it.  We are saying reject spots that are VHF or
-  above APART from those in zones 14, 15 and 16 (either spotted there or
+  above [4mAPART[24m from those in zones 14, 15 and 16 (either spotted there or
   originated there).  If you did not have the brackets to separate the 2
   sections, then Spider would read it logically from the front and see a
   different expression entirely ...
@@ -751,13 +751,13 @@
 
 
 
-  1.7.  Filter options
+  [1m1.7.  Filter options[0m
 
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
 
 
-  1.8.  Default filters
+  [1m1.8.  Default filters[0m
 
   Sometimes all that is needed is a general rule for node connects.
   This can be done with a node_default filter.  This rule will always be
@@ -782,7 +782,7 @@
   to add a rule for the hops for spots also.
 
 
-  1.9.  Advanced filtering
+  [1m1.9.  Advanced filtering[0m
 
   Once you are happy with the results you get, you may like to
   experiment.
@@ -801,9 +801,9 @@
 
   Note that the first filter has not been specified with a number.  This
   will automatically be assumed to be number 1.  In this case, we have
-  said reject all HF spots in the CW section of the bands but accept all
-  others at HF.  Also accept anything in VHF and above spotted in or by
-  operators in the zones 14, 15 and 16.  Each filter slot actually has a
+  said [4mreject[24m [4mall[24m [4mHF[24m [4mspots[24m [4min[24m [4mthe[24m [4mCW[24m [4msection[24m [4mof[24m [4mthe[24m [4mbands[24m [4mbut[24m [4maccept[24m [4mall[0m
+  [4mothers[24m [4mat[24m [4mHF.[24m  [4mAlso[24m [4maccept[24m [4manything[24m [4min[24m [4mVHF[24m [4mand[24m [4mabove[24m [4mspotted[24m [4min[24m [4mor[24m [4mby[0m
+  [4moperators[24m [4min[24m [4mthe[24m [4mzones[24m [4m14,[24m [4m15[24m [4mand[24m [4m16[24m.  Each filter slot actually has a
   'reject' slot and an 'accept' slot. The reject slot is executed BEFORE
   the accept slot.
 
@@ -816,7 +816,7 @@
   VHF/UHF spots from EU.
 
 
-  1.10.  Basic hop control
+  [1m1.10.  Basic hop control[0m
 
   In /spider/data you will find a file called hop_table.pl.  This is the
   file that controls your hop count settings.  It has a set of default
@@ -906,11 +906,11 @@
 
 
   You can alter this file at any time, including whilst the cluster is
-  running.  If you alter the file during runtime, the command load/hops
+  running.  If you alter the file during runtime, the command [4mload/hops[0m
   will bring your changes into effect.
 
 
-  1.11.  Hop Control on Specific Nodes
+  [1m1.11.  Hop Control on Specific Nodes[0m
 
   You can set a callsign specific hop count for any of the standard
   filter options so:-
@@ -926,16 +926,16 @@
   all work on their specific area of the protocol.
 
 
-  The set/hops command overrides any hops that you have set otherwise.
+  The [4mset/hops[24m command overrides any hops that you have set otherwise.
 
 
-  You can show what hops have been set using the show/hops command.
+  You can show what hops have been set using the [4mshow/hops[24m command.
 
 
-  1.12.  Isolating networks
+  [1m1.12.  Isolating networks[0m
 
   It is possible to isolate networks from each other on a "gateway" node
-  using the set/isolate <node_call> command.
+  using the [4mset/isolate[24m [4m<node_call>[24m command.
 
 
   The effect of this is to partition an isolated network completely from
@@ -957,10 +957,10 @@
   any information back to the isolated node.  There are times when you
   would like to forward only spots across a link (maybe during a contest
   for example).  To do this, isolate the node in the normal way and use
-  an acc/spot >call< all filter to override the isolate.
+  an [4macc/spot[24m [4m>call<[24m [4mall[24m filter to override the isolate.
 
 
-  1.13.  A DXSpider Filtering Tutorial
+  [1m1.13.  A DXSpider Filtering Tutorial[0m
 
   There is now an excellent primer/tutorial on filtering written by Jim
   Samuels, W3BG with an introduction by Dave Hawes N3RD that I strongly
@@ -968,9 +968,9 @@
   Primer
 
 
-  2.  Other filters
+  [1m2.  Other filters[0m
 
-  2.1.  Filtering Mail
+  [1m2.1.  Filtering Mail[0m
 
   In the /spider/msg directory you will find a file called
   badmsg.pl.issue.  Rename this to badmsg.pl and edit the file.  The
@@ -1017,20 +1017,20 @@
 
 
 
-  2.2.  Filtering words from text fields in Announce, Talk and DX spots
+  [1m2.2.  Filtering words from text fields in Announce, Talk and DX spots[0m
 
   From version 1.48 onwards the interface to this has changed. You can
-  now use the commands set/badword to add words that you are not
-  prepared to see on the cluster, unset/badword to allow that word again
-  and show/badword to list the words that you have set.
+  now use the commands [4mset/badword[24m to add words that you are not
+  prepared to see on the cluster, [4munset/badword[24m to allow that word again
+  and [4mshow/badword[24m to list the words that you have set.
 
 
-  If you have a previous /spider/data/badwords, the first time you start
+  If you have a previous [4m/spider/data/badwords[24m, the first time you start
   the node, it will read and convert this file to the new commands. The
   old style file will then be removed.
 
 
-  2.3.  Stopping (possibly bad) DX Spots from Nodes or Spotters
+  [1m2.3.  Stopping (possibly bad) DX Spots from Nodes or Spotters[0m
 
 
   There are a number of commands that control whether a spot progresses
@@ -1053,7 +1053,7 @@
 
 
 
-  These work in the same as the set/badword command, you can add any
+  These work in the same as the [4mset/badword[24m command, you can add any
   words or callsigns or whatever to the appropriate database. For
   example, to stop a spot from a particular node you do:
 
@@ -1080,11 +1080,11 @@
 
 
   You can remove a word using the appropriate unset command
-  (unset/baddx, unset/badspotter, unset/badnode) or list them using one
-  of show/baddx, show/badspotter and show/badnode.
+  ([4munset/baddx,[24m [4munset/badspotter,[24m [4munset/badnode[24m) or list them using one
+  of [4mshow/baddx,[24m [4mshow/badspotter[24m and [4mshow/badnode[24m.
 
 
-  3.  Mail
+  [1m3.  Mail[0m
 
   DXSpider deals seamlessly with standard AK1A type mail.  It supports
   both personal and bulletin mail and the sysop has additional commands
@@ -1095,30 +1095,30 @@
   will be queued until it has finished.
 
   The cluster mail is automatically deleted after 30 days unless the
-  sysop sets the "keep" flag using the msg command.
+  sysop sets the "keep" flag using the [4mmsg[24m command.
 
 
-  3.1.  Personal mail
+  [1m3.1.  Personal mail[0m
 
-  Personal mail is sent using the sp command.  This is actually the
-  default method of sending mail and so a simple s for send will do.  A
-  full list of the send commands and options is in the command set
+  Personal mail is sent using the [4msp[24m command.  This is actually the
+  default method of sending mail and so a simple [4ms[24m for send will do.  A
+  full list of the send commands and options is in the [4mcommand[24m [4mset[0m
   section, so I will not duplicate them here.
 
 
-  3.2.  Bulletin mail
+  [1m3.2.  Bulletin mail[0m
 
-  Bulletin mail is sent by using the sb command.  This is one of the
+  Bulletin mail is sent by using the [4msb[24m command.  This is one of the
   most common mistakes users make when sending mail.  They send a
-  bulletin mail with s or sp instead of sb and of course the message
+  bulletin mail with [4ms[24m or [4msp[24m instead of [4msb[24m and of course the message
   never leaves the cluster.  This can be rectified by the sysop by using
-  the msg command.
+  the [4mmsg[24m command.
 
 
   Bulletin addresses can be set using the Forward.pl file.
 
 
-  3.3.  Forward.pl
+  [1m3.3.  Forward.pl[0m
 
   DXSpider receives all and any mail sent to it without any alterations
   needed in files.  Because personal and bulletin mail are treated
@@ -1183,9 +1183,9 @@
   exist in this file, they will get an error.
 
 
-  3.4.  The msg command
+  [1m3.4.  The msg command[0m
 
-  The msg command is a very powerful and flexible tool for the sysop.
+  The [4mmsg[24m command is a very powerful and flexible tool for the sysop.
   It allows the sysop to alter to and from fields and make other changes
   to manage the cluster mail.
 
@@ -1214,10 +1214,10 @@
   user.
 
 
-  3.5.  Message status
+  [1m3.5.  Message status[0m
 
   You can check on a message from within the cluster by using the
-  command stat/msg.  This will give you additional information on the
+  command [4mstat/msg[24m.  This will give you additional information on the
   message number including which nodes have received it, which node it
   was received from and when etc.  Here is an example of the output of
   the command ...
@@ -1241,17 +1241,17 @@
 
 
 
-  3.6.  Filtering mail
+  [1m3.6.  Filtering mail[0m
 
-  This is described in the section on Other filters so I will not
+  This is described in the section on [4mOther[24m [4mfilters[24m so I will not
   duplicate it here.
 
 
-  3.7.  Distribution lists
+  [1m3.7.  Distribution lists[0m
 
   Distribution lists are simply a list of users to send certain types of
   mail to.  An example of this is mail you only wish to send to other
-  sysops.  In /spider/msg there is a directory called distro.  You put
+  sysops.  In /spider/msg there is a directory called [4mdistro[24m.  You put
   any distibution lists in here.  For example, here is a file called
   SYSOP.pl that caters for the UK sysops.
 
@@ -1266,7 +1266,7 @@
   list.
 
 
-  3.8.  BBS interface
+  [1m3.8.  BBS interface[0m
 
   Spider provides a simple BBS interface.  No input is required from the
   sysop of the cluster at all.  The BBS simply sets the cluster as a BBS
@@ -1279,7 +1279,7 @@
   using the Forward.pl file very carefully.
 
 
-  4.  Scripts
+  [1m4.  Scripts[0m
 
   From 1.48 onwards it will become increasingly possible to control
   DXSpider's operation with scripts of various kinds.
@@ -1315,7 +1315,7 @@
   As usual, any text behind a # is treated as a comment and not read.
   To use this file, simply rename it from startup.issue to startup.  In
   our example above there are three options.  The first option is the
-  amount of spots that a user can request with the sh/dx command.
+  amount of spots that a user can request with the [4msh/dx[24m command.
   Normally the default is to give 10 spots unless the user specifies
   more.  Without this line enabled, the maximum a user can request is
   100 spots.  Depending on your link quality you may wish to enable more
@@ -1358,11 +1358,11 @@
 
 
   Thirdly, there are 2 default scripts for users and nodes who do not
-  have a specifically defined script.  These are user_default and
-  node_default
+  have a specifically defined script.  These are [4muser_default[24m and
+  [4mnode_default[0m
 
 
-  5.  Databases
+  [1m5.  Databases[0m
 
   Spider allows the creation of local or remote databases.  It supports
   chained databases, allowing several different databases to be scanned
@@ -1371,12 +1371,12 @@
   database but will expand with time.
 
 
-  5.1.  Creating databases
+  [1m5.1.  Creating databases[0m
 
   Creating a database could not be more simple.  All the commands are
-  sent from the cluster prompt as the sysop user.
+  sent from the cluster prompt as the [4msysop[24m user.
 
-  To create a database you use the command dbcreate.  It can be used in
+  To create a database you use the command [4mdbcreate[24m.  It can be used in
   3 different ways like so ..
 
 
@@ -1417,7 +1417,7 @@
   chain can be a remote database.
 
 
-  5.2.  Importing databases
+  [1m5.2.  Importing databases[0m
 
   The only databases that Spider can currently import are the standard
   AK1A databases such as OBLAST or the DB0SDX qsl and address database.
@@ -1436,10 +1436,10 @@
   does not exist.
 
 
-  5.3.  Checking available databases
+  [1m5.3.  Checking available databases[0m
 
   Once a database is created, you will want to check that it has been
-  added.  To do this use the dbavail command.  This will output the
+  added.  To do this use the [4mdbavail[24m command.  This will output the
   available databases.  For example ...
 
 
@@ -1453,9 +1453,9 @@
 
 
 
-  5.4.  Looking up databases
+  [1m5.4.  Looking up databases[0m
 
-  To look for information in a defined database, simply use the dbshow
+  To look for information in a defined database, simply use the [4mdbshow[0m
   command, for example ...
 
 
@@ -1467,16 +1467,16 @@
   will show the information for the callsign G0YLM from the buckmaster
   database if it exists.  To make things more standard for the users you
   can add an entry in the Aliases file so that it looks like a standard
-  show command like this ...
+  [4mshow[24m command like this ...
 
 
 
   Now you can simply use show/buckmaster or an abreviation.
 
 
-  5.5.  Removing databases
+  [1m5.5.  Removing databases[0m
 
-  To delete an existing database you use the dbremove command.  For
+  To delete an existing database you use the [4mdbremove[24m command.  For
   example ...
 
 
@@ -1491,9 +1491,9 @@
   created from scratch if you still required it.
 
 
-  6.  Information, files and useful programs
+  [1m6.  Information, files and useful programs[0m
 
-  6.1.  MOTD
+  [1m6.1.  MOTD[0m
 
   One of the more important things a cluster sysop needs to do is to get
   information to his users.  The simplest way to do this is to have a
@@ -1502,14 +1502,14 @@
   /spider/data called motd and edit it to say whatever you want.  It is
   purely a text file and will be sent automatically to anyone logging in
   to the cluster.
-  6.2.  MOTD_NOR
+  [1m6.2.  MOTD_NOR[0m
 
   This message of the day file lives in the same directory as the
   standard motd file but is only sent to non-registered users.  Once
   registered they will receive the same message as any other user.
 
 
-  6.3.  Downtime message
+  [1m6.3.  Downtime message[0m
 
   If for any reason the cluster is down, maybe for upgrade or
   maintenance but the machine is still running, a message can be sent to
@@ -1520,13 +1520,13 @@
   actually running.
 
 
-  6.4.  Other text messages
+  [1m6.4.  Other text messages[0m
 
   You can set other text messages to be read by the user if they input
   the file name.  This could be for news items or maybe information for
   new users.  To set this up, make a directory under /spider called
-  packclus.  Under this directory you can create files called news or
-  newuser for example.  In fact you can create files with any names you
+  [4mpackclus[24m.  Under this directory you can create files called [4mnews[24m or
+  [4mnewuser[24m for example.  In fact you can create files with any names you
   like.  These can be listed by the user with the command ....
 
 
@@ -1543,17 +1543,17 @@
 
 
 
-  If the file they want to read is called news.  You could also set an
-  alias for this in the Alias file to allow them just to type news
+  If the file they want to read is called [4mnews[24m.  You could also set an
+  alias for this in the Alias file to allow them just to type [4mnews[0m
 
 
   You can also store other information in this directory, either
   directly or nested under directories.  One use for this would be to
   store DX bulletins such as the OPDX bulletins.  These can be listed
   and read by the user.  To keep things tidy, make a directory under
-  /spider/packclus called bulletin.  Now copy any OPDX or similar
+  /spider/packclus called [4mbulletin[24m.  Now copy any OPDX or similar
   bulletins into it.  These can be listed by the user in the same way as
-  above using the show/files command with an extension for the bulletin
+  above using the [4mshow/files[24m command with an extension for the bulletin
   directory you have just created, like this ....
 
 
@@ -1570,11 +1570,11 @@
 
 
   You can see that in the files area (basically the packclus directory)
-  there is a file called news and a directory called bulletin.  You can
-  also see that dates they were created.  In the case of the file news,
+  there is a file called [4mnews[24m and a directory called [4mbulletin[24m.  You can
+  also see that dates they were created.  In the case of the file [4mnews[24m,
   you can also see the time it was last modified, a good clue as to
   whether the file has been updated since you last read it.  To read the
-  file called news you would simply issue the command ....
+  file called [4mnews[24m you would simply issue the command ....
 
 
 
@@ -1628,7 +1628,7 @@
   The page length will of course depend on what you have it set to!
 
 
-  6.5.  The Aliases file
+  [1m6.5.  The Aliases file[0m
 
   You will find a file in /spider/cmd/ called Aliases.  This is the file
   that controls what a user gets when issuing a command.  It is also
@@ -1690,22 +1690,22 @@
   alias for 'news'.  This is a file I have created in the
   /spider/packclus/ directory where I can inform users of new
   developments or points of interest.  In it's initial form a user would
-  have to use the command type news.  The alias allows them to simply
-  type news to get the info.  Second is an alias for the show/qrz
-  command so that those users used to the original show/buck command in
+  have to use the command [4mtype[24m [4mnews[24m.  The alias allows them to simply
+  type [4mnews[24m to get the info.  Second is an alias for the [4mshow/qrz[0m
+  command so that those users used to the original [4mshow/buck[24m command in
   AK1A will not get an error, and the rest of the lines are for locally
-  created databases so that a user can type show/hftest instead of
-  having to use the command dbshow hftest which is not as intuitive.
+  created databases so that a user can type [4mshow/hftest[24m instead of
+  having to use the command [4mdbshow[24m [4mhftest[24m which is not as intuitive.
 
 
   This file is just an example and you should edit it to your own
-  requirements.  Once created, simply issue the command load/alias at
+  requirements.  Once created, simply issue the command [4mload/alias[24m at
   the cluster prompt as the sysop user and the aliases should be
   available.
 
 
 
-  6.6.  Console.pl
+  [1m6.6.  Console.pl[0m
 
   In later versions of Spider a simple console program is provided for
   the sysop.  This has a type ahead buffer with line editing facilities
@@ -1717,13 +1717,13 @@
   edit the file with your favourite editor.
 
 
-  6.7.  Updating kepler data
+  [1m6.7.  Updating kepler data[0m
 
   Spider has a powerful and flexible show/satellite command.  In order
   for this to be accurate, the kepler data has to be updated regularly.
   In general, this data is available as an email or via cluster mail.
   Updating it is simple.  First you need to export the mail message as a
-  file.  You do this with the export command from the cluster prompt as
+  file.  You do this with the [4mexport[24m command from the cluster prompt as
   the sysop.  For example ...
 
 
@@ -1737,7 +1737,7 @@
 
 
   Now login to a VT as sysop and cd /spider/perl.  There is a command in
-  the perl directory called convkeps.pl.  All we need to do now is
+  the perl directory called [4mconvkeps.pl[24m.  All we need to do now is
   convert the file like so ...
 
 
@@ -1757,9 +1757,9 @@
   That is it!  the kepler data has been updated.
 
 
-  6.8.  The QRZ callbook
+  [1m6.8.  The QRZ callbook[0m
 
-  The command sh/qrz will only work once you have followed a few simple
+  The command [4msh/qrz[24m will only work once you have followed a few simple
   steps.  First you need to get a user ID and password from qrz.com.
   Simply go to the site and create one.  Secondly you need to copy the
   file /spider/perl/Internet.pm to /spider/local and alter it to match
@@ -1768,14 +1768,14 @@
   proprieter of qrz.com for allowing this access.
 
 
-  6.9.  Connecting logging programs
+  [1m6.9.  Connecting logging programs[0m
 
   There appear to be very few logging programs out there that support
   telnet especially the popular ones like LogEQF, Turbolog etc.  This
   can make it difficult to connect to your own cluster!  The way to do
   it is to make the logging program think it has a TNC attached to a com
   port on the logging PC and 'push' a linux login out to it.  This is
-  achieved very simply by the use of agetty.
+  achieved very simply by the use of [4magetty[24m.
 
 
   All that is required is to add a line in /etc/inittab to have the
@@ -1790,16 +1790,16 @@
 
 
   Add this after the standard runlevel lines in /etc/inittab.  The above
-  line works on ttyS1 (com2).  Now as root, issue the command telinit q
+  line works on ttyS1 (com2).  Now as root, issue the command [4mtelinit[24m [4mq[0m
   and it should be ready for connection.  All that is required is a 3
   wire serial lead (tx, rx and signal ground).  Tell you logging program
   to use 8n1 at 9600 baud and you should see a Linux login prompt.
   Login as normal and then telnet from there to the cluster.
 
 
-  7.  Java Web applet
+  [1m7.  Java Web applet[0m
 
-  In the spider tree will be a directory spider-web.  This is a neat
+  In the spider tree will be a directory [4mspider-web[24m.  This is a neat
   little java web applet that can be run from a website.  The applet
   must run on the same machine as the cluster.  The included README file
   is shown below.
@@ -1871,7 +1871,7 @@
 
 
 
-  8.  Web based statistics
+  [1m8.  Web based statistics[0m
 
   From version 1.50, you can use the freeware software MRTG to produce
   really nice graphical statistics on your web site.  For an example try
@@ -1918,7 +1918,7 @@
 
 
   Now you are nearly there!  Login as the sysop user and change to the
-  /spider/html/mrtg/ directory.  Now run the command indexmaker as shown
+  /spider/html/mrtg/ directory.  Now run the command [4mindexmaker[24m as shown
   below...
 
 
@@ -1970,7 +1970,7 @@
   This will update the site every 5 minutes.
 
 
-  9.  Security
+  [1m9.  Security[0m
 
   From version 1.49 DXSpider has some additional security features.
   These are not by any means meant to be exhaustive, however they do
@@ -1979,13 +1979,13 @@
   security.
 
 
-  9.1.  Registration
+  [1m9.1.  Registration[0m
 
   The basic principle of registration is simple.  If a user is not
   registered by the sysop, then they have read-only access to the
   cluster.  The only thing they can actually send is a talk or a message
   to the sysop.  In order for them to be able to spot, send announces or
-  talks etc the sysop must register them with the set/register command,
+  talks etc the sysop must register them with the [4mset/register[24m command,
   like this ...
 
 
@@ -2013,16 +2013,16 @@
   section on Information, files and useful programs.
 
 
-  To unregister a user use unset/register and to show the list of
-  registered users, use the command show/register.
+  To unregister a user use [4munset/register[24m and to show the list of
+  registered users, use the command [4mshow/register[24m.
 
 
-  9.2.  Passwords
+  [1m9.2.  Passwords[0m
 
   At the moment, passwords only affect users who login to a DXSpider
   cluster node via telnet.  If a user requires a password, they can
   either set it themselves or have the sysop enter it for them by using
-  the set/password command.  Any users who already have passwords, such
+  the [4mset/password[24m command.  Any users who already have passwords, such
   as remote sysops, will be asked for their passwords automatically by
   the cluster.  Using passwords in this way means that the user has a
   choice on whether to have a password or not.  To force the use of
@@ -2055,11 +2055,11 @@
 
 
 
-  10.  CVS
+  [1m10.  CVS[0m
 
 
 
-  10.1.  CVS from a Linux platform
+  [1m10.1.  CVS from a Linux platform[0m
 
   CVS stands for "Concurrent Versions System" and the CVS for DXSpider
   is held at Sourceforge.  This means that it is possible to update your
@@ -2086,7 +2086,7 @@
   steps which are listed below ...
 
 
-  First login as the user sysop.  Next you need to connect to the CVS
+  First login as the user [4msysop[24m.  Next you need to connect to the CVS
   repository.  You do this with the command below ...
 
 
@@ -2157,7 +2157,7 @@
 
 
   Now the magic part!  From now on when you want to update, simply
-  connect to the Internet and then, as the user sysop ...
+  connect to the Internet and then, as the user [4msysop[24m ...
 
 
 
@@ -2175,7 +2175,7 @@
   You will find any changes documented in the /spider/Changes file.
 
 
-  10.2.  CVS from a Windows platform
+  [1m10.2.  CVS from a Windows platform[0m
 
   After the initial setup, an update to your DXSpider software is no
   more than a couple of clicks away.  This section is intended to
@@ -2293,18 +2293,18 @@
 
 
 
-  11.  The DXSpider Command Reference
+  [1m11.  The DXSpider Command Reference[0m
 
-  11.1.  accept (0)
+  [1m11.1.  accept (0)[0m
 
-  accept Set a filter to accept something
+  [1maccept [22mSet a filter to accept something
 
   Create a filter to accept somethingThere are 2 types of filter, accept
   and reject.  See HELP FILTERING for moreinfo.
 
-  11.2.  accept/announce <call> [input] [0-9] <pattern> (8)
+  [1m11.2.  accept/announce <call> [input] [0-9] <pattern> (8)[0m
 
-  accept/announce <call> [input] [0-9] <pattern> Announce filter sysop
+  [1maccept/announce <call> [input] [0-9] <pattern> [22mAnnounce filter sysop
   version
 
   This version allows a sysop to set a filter for a callsign as well as
@@ -2315,9 +2315,9 @@
 
 
 
-  11.3.  accept/announce [0-9] <pattern> (0)
+  [1m11.3.  accept/announce [0-9] <pattern> (0)[0m
 
-  accept/announce [0-9] <pattern> Set an 'accept' filter line for
+  [1maccept/announce [0-9] <pattern> [22mSet an 'accept' filter line for
   announce
 
   Create an 'accept this announce' line for a filter. An accept filter
@@ -2361,9 +2361,9 @@
 
   but this probably for advanced users...
 
-  11.4.  accept/route <call> [0-9] <pattern> (8)
+  [1m11.4.  accept/route <call> [0-9] <pattern> (8)[0m
 
-  accept/route <call> [0-9] <pattern> Set an 'accept' filter line for
+  [1maccept/route <call> [0-9] <pattern> [22mSet an 'accept' filter line for
   routing
 
   Create an 'accept this routing PC Protocol' line for a filter. An
@@ -2399,9 +2399,9 @@
 
 
 
-  11.5.  accept/spots <call> [input] [0-9] <pattern> (8)
+  [1m11.5.  accept/spots <call> [input] [0-9] <pattern> (8)[0m
 
-  accept/spots <call> [input] [0-9] <pattern> Spot filter sysop version
+  [1maccept/spots <call> [input] [0-9] <pattern> [22mSpot filter sysop version
 
   This version allows a sysop to set a filter for a callsign as well as
   thedefault for nodes and users eg:-
@@ -2415,9 +2415,9 @@
 
 
 
-  11.6.  accept/spots [0-9] <pattern> (0)
+  [1m11.6.  accept/spots [0-9] <pattern> (0)[0m
 
-  accept/spots [0-9] <pattern> Set an 'accept' filter line for spots
+  [1maccept/spots [0-9] <pattern> [22mSet an 'accept' filter line for spots
 
   Create an 'accept this spot' line for a filter. An accept filter line
   means that if the spot matches this filter it ispassed onto the user.
@@ -2450,9 +2450,9 @@
 
   but this probably for advanced users...
 
-  11.7.  accept/wcy <call> [input] [0-9] <pattern> (8)
+  [1m11.7.  accept/wcy <call> [input] [0-9] <pattern> (8)[0m
 
-  accept/wcy <call> [input] [0-9] <pattern> WCY filter sysop version
+  [1maccept/wcy <call> [input] [0-9] <pattern> [22mWCY filter sysop version
 
   This version allows a sysop to set a filter for a callsign as well as
   thedefault for nodes and users eg:-
@@ -2462,9 +2462,9 @@
 
 
 
-  11.8.  accept/wcy [0-9] <pattern> (0)
+  [1m11.8.  accept/wcy [0-9] <pattern> (0)[0m
 
-  accept/wcy [0-9] <pattern> set an 'accept' WCY filter
+  [1maccept/wcy [0-9] <pattern> [22mset an 'accept' WCY filter
 
   It is unlikely that you will want to do this, but if you do then you
   canfilter on the following fields:-
@@ -2479,9 +2479,9 @@
   them).This command is really provided for future use.See HELP FILTER
   for information.
 
-  11.9.  accept/wwv <call> [input] [0-9] <pattern> (8)
+  [1m11.9.  accept/wwv <call> [input] [0-9] <pattern> (8)[0m
 
-  accept/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
+  [1maccept/wwv <call> [input] [0-9] <pattern> [22mWWV filter sysop version
 
   This version allows a sysop to set a filter for a callsign as well as
   thedefault for nodes and users eg:-
@@ -2495,9 +2495,9 @@
 
 
 
-  11.10.  accept/wwv [0-9] <pattern> (0)
+  [1m11.10.  accept/wwv [0-9] <pattern> (0)[0m
 
-  accept/wwv [0-9] <pattern> set an 'accept' WWV filter
+  [1maccept/wwv [0-9] <pattern> [22mset an 'accept' WWV filter
 
   It is unlikely that you will want to do this, but if you do then you
   canfilter on the following fields:-
@@ -2517,33 +2517,33 @@
   is probably the only useful thing to do (which will only show WWV
   broadcastsby stations in the US).See HELP FILTER for information.
 
-  11.11.  announce <text> (0)
+  [1m11.11.  announce <text> (0)[0m
 
-  announce <text> Send an announcement to LOCAL users only
+  [1mannounce <text> [22mSend an announcement to LOCAL users only
 
   <text> is the text of the announcement you wish to broadcast
 
-  11.12.  announce full <text> (0)
+  [1m11.12.  announce full <text> (0)[0m
 
-  announce full <text> Send an announcement cluster wide
+  [1mannounce full <text> [22mSend an announcement cluster wide
 
   This will send your announcement cluster wide
 
-  11.13.  announce sysop <text> (5)
+  [1m11.13.  announce sysop <text> (5)[0m
 
-  announce sysop <text> Send an announcement to Sysops only
+  [1mannounce sysop <text> [22mSend an announcement to Sysops only
 
 
-  11.14.  apropos <string> (0)
+  [1m11.14.  apropos <string> (0)[0m
 
-  apropos <string> Search help database for <string>
+  [1mapropos <string> [22mSearch help database for <string>
 
   Search the help database for <string> (it isn't case sensitive), and
   printthe names of all the commands that may be relevant.
 
-  11.15.  blank [<string>] [<nn>] (0)
+  [1m11.15.  blank [<string>] [<nn>] (0)[0m
 
-  blank [<string>] [<nn>] Print nn (default 1) blank lines (or strings)
+  [1mblank [<string>] [<nn>] [22mPrint nn (default 1) blank lines (or strings)
 
   In its basic form this command prints one or more blank lines. However
   ifyou pass it a string it will replicate the string for the width of
@@ -2571,20 +2571,20 @@
   prints 'abcabcabcabcabcabc....'This is really only of any use in a
   script file and you can print a maximumof 9 lines.
 
-  11.16.  bye (0)
+  [1m11.16.  bye (0)[0m
 
-  bye Exit from the cluster
+  [1mbye [22mExit from the cluster
 
   This will disconnect you from the cluster
 
-  11.17.  catchup <node call> all|[<msgno> ...] (5)
+  [1m11.17.  catchup <node call> all|[<msgno> ...] (5)[0m
 
-  catchup <node call> all|[<msgno> ...] Mark a message as sent
+  [1mcatchup <node call> all|[<msgno> ...] [22mMark a message as sent
 
 
-  11.18.  chat <group> <text> (0)
+  [1m11.18.  chat <group> <text> (0)[0m
 
-  chat <group> <text> Chat or Conference to a group
+  [1mchat <group> <text> [22mChat or Conference to a group
 
   It is now possible to JOIN a group and have network wide conferencing
   to thatgroup. DXSpider does not (and probably will not) implement the
@@ -2636,47 +2636,47 @@
 
   See also JOIN, LEAVE, SHOW/CHAT
 
-  11.19.  clear/announce <callsign> [input] [0-9|all] (8)
+  [1m11.19.  clear/announce <callsign> [input] [0-9|all] (8)[0m
 
-  clear/announce <callsign> [input] [0-9|all] Clear a announce filter
+  [1mclear/announce <callsign> [input] [0-9|all] [22mClear a announce filter
   line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.20.  clear/announce [1|all] (0)
+  [1m11.20.  clear/announce [1|all] (0)[0m
 
-  clear/announce [1|all] Clear a announce filter line
+  [1mclear/announce [1|all] [22mClear a announce filter line
 
   This command allows you to clear (remove) a line in a annouce filter
   or to remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.21.  clear/route <callsign> [input] [0-9|all] (8)
+  [1m11.21.  clear/route <callsign> [input] [0-9|all] (8)[0m
 
-  clear/route <callsign> [input] [0-9|all] Clear a route filter line
+  [1mclear/route <callsign> [input] [0-9|all] [22mClear a route filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.22.  clear/route [1|all] (0)
+  [1m11.22.  clear/route [1|all] (0)[0m
 
-  clear/route [1|all] Clear a route filter line
+  [1mclear/route [1|all] [22mClear a route filter line
 
   This command allows you to clear (remove) a line in a route filter or
   to remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.23.  clear/spots <callsign> [input] [0-9|all] (8)
+  [1m11.23.  clear/spots <callsign> [input] [0-9|all] (8)[0m
 
-  clear/spots <callsign> [input] [0-9|all] Clear a spot filter line
+  [1mclear/spots <callsign> [input] [0-9|all] [22mClear a spot filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.24.  clear/spots [0-9|all] (0)
+  [1m11.24.  clear/spots [0-9|all] (0)[0m
 
-  clear/spots [0-9|all] Clear a spot filter line
+  [1mclear/spots [0-9|all] [22mClear a spot filter line
 
   This command allows you to clear (remove) a line in a spot filter or
   to remove the whole filter.If you have a filter:-
@@ -2709,39 +2709,39 @@
 
   the filter will be completely removed.
 
-  11.25.  clear/wcy <callsign> [input] [0-9|all] (8)
+  [1m11.25.  clear/wcy <callsign> [input] [0-9|all] (8)[0m
 
-  clear/wcy <callsign> [input] [0-9|all] Clear a WCY filter line
+  [1mclear/wcy <callsign> [input] [0-9|all] [22mClear a WCY filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.26.  clear/wcy [1|all] (0)
+  [1m11.26.  clear/wcy [1|all] (0)[0m
 
-  clear/wcy [1|all] Clear a WCY filter line
+  [1mclear/wcy [1|all] [22mClear a WCY filter line
 
   This command allows you to clear (remove) a line in a WCY filter or to
   remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.27.  clear/wwv <callsign> [input] [0-9|all] (8)
+  [1m11.27.  clear/wwv <callsign> [input] [0-9|all] (8)[0m
 
-  clear/wwv <callsign> [input] [0-9|all] Clear a WWV filter line
+  [1mclear/wwv <callsign> [input] [0-9|all] [22mClear a WWV filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.28.  clear/wwv [1|all] (0)
+  [1m11.28.  clear/wwv [1|all] (0)[0m
 
-  clear/wwv [1|all] Clear a WWV filter line
+  [1mclear/wwv [1|all] [22mClear a WWV filter line
 
   This command allows you to clear (remove) a line in a WWV filter or to
   remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.29.  connect <callsign> (5)
+  [1m11.29.  connect <callsign> (5)[0m
 
-  connect <callsign> Start a connection to another DX Cluster
+  [1mconnect <callsign> [22mStart a connection to another DX Cluster
 
   Start a connection process that will culminate in a new connection to
   theDX cluster <callsign>. This process creates a new 'client' process
@@ -2749,26 +2749,26 @@
   'chat' exchangenecessary to traverse the network(s) to logon to the
   cluster <callsign>.
 
-  11.30.  dbavail (0)
+  [1m11.30.  dbavail (0)[0m
 
-  dbavail Show a list of all the Databases in the system
+  [1mdbavail [22mShow a list of all the Databases in the system
 
   Title says it all really, this command lists all the databases
   definedin the system. It is also aliased to SHOW/COMMAND.
 
-  11.31.  dbcreate <name> (9)
+  [1m11.31.  dbcreate <name> (9)[0m
 
-  dbcreate <name> Create a database entry
+  [1mdbcreate <name> [22mCreate a database entry
 
 
-  11.32.  dbcreate <name> chain <name> [<name>..] (9)
+  [1m11.32.  dbcreate <name> chain <name> [<name>..] (9)[0m
 
-  dbcreate <name> chain <name> [<name>..] Create a chained database
+  [1mdbcreate <name> chain <name> [<name>..] [22mCreate a chained database
   entry
 
-  11.33.  dbcreate <name> cmd <dxspider command> (9)
+  [1m11.33.  dbcreate <name> cmd <dxspider command> (9)[0m
 
-  dbcreate <name> cmd <dxspider command> make a local command available
+  [1mdbcreate <name> cmd <dxspider command> [22mmake a local command available
   as a DB
 
   DBCREATE allows you to define a database in the system. It doesn't
@@ -2846,14 +2846,14 @@
   locally. See DBIMPORT for the importing of existing AK1A format data
   to databases.See DBSHOW for generic database enquiry
 
-  11.34.  dbcreate <name> remote <node> (9)
+  [1m11.34.  dbcreate <name> remote <node> (9)[0m
 
-  dbcreate <name> remote <node> Create a remote database entry
+  [1mdbcreate <name> remote <node> [22mCreate a remote database entry
 
 
-  11.35.  dbimport <dbname> <filename> (9)
+  [1m11.35.  dbimport <dbname> <filename> (9)[0m
 
-  dbimport <dbname> <filename> Import AK1A data into a database
+  [1mdbimport <dbname> <filename> [22mImport AK1A data into a database
 
   If you want to import or update data in bulk to a database you can
   usethis command. It will either create or update entries into an
@@ -2867,9 +2867,9 @@
   will import the standard OBLAST database that comes with AK1A into
   theoblast database held locally.
 
-  11.36.  dbremove <dbname> (9)
+  [1m11.36.  dbremove <dbname> (9)[0m
 
-  dbremove <dbname> Delete a database
+  [1mdbremove <dbname> [22mDelete a database
 
   DBREMOVE will completely remove a database entry and also delete any
   datafile that is associated with it. There is no warning, no comeback,
@@ -2884,9 +2884,9 @@
   removethe associated datafile.I repeat:There is no warning, no come-
   back, no safety net.You have been warned.
 
-  11.37.  dbshow <dbname> <key> (0)
+  [1m11.37.  dbshow <dbname> <key> (0)[0m
 
-  dbshow <dbname> <key> Display an entry, if it exists, in a database
+  [1mdbshow <dbname> <key> [22mDisplay an entry, if it exists, in a database
 
   This is the generic user interface to the database to the database
   system.It is expected that the sysop will add an entry to the local
@@ -2906,9 +2906,9 @@
 
 
 
-  11.38.  debug (9)
+  [1m11.38.  debug (9)[0m
 
-  debug Set the cluster program into debug mode
+  [1mdebug [22mSet the cluster program into debug mode
 
   Executing this command will only have an effect if you are running the
   clusterin debug mode i.e.
@@ -2921,26 +2921,26 @@
   It will interrupt the cluster just after the debug command has fin-
   ished.
 
-  11.39.  delete/usdb <callsign> ... (9)
+  [1m11.39.  delete/usdb <callsign> ... (9)[0m
 
-  delete/usdb <callsign> ... Delete this user from the US State Database
+  [1mdelete/usdb <callsign> ... [22mDelete this user from the US State Database
 
   This command will completely remove a one or more callsignsfrom the US
   States database.There is NO SECOND CHANCE.It goes without saying that
   you should use this command CAREFULLY!Note that these callsign may be
   re-instated by any weekly updates from the FCC.
 
-  11.40.  delete/user <callsign> ... (9)
+  [1m11.40.  delete/user <callsign> ... (9)[0m
 
-  delete/user <callsign> ... Delete this user from the User Database
+  [1mdelete/user <callsign> ... [22mDelete this user from the User Database
 
   This command will completely remove a one or more users from the
   database.There is NO SECOND CHANCE.It goes without saying that you
   should use this command CAREFULLY!
 
-  11.41.  demonstrate <call> <command> (9)
+  [1m11.41.  demonstrate <call> <command> (9)[0m
 
-  demonstrate <call> <command> Demonstrate a command to another user
+  [1mdemonstrate <call> <command> [22mDemonstrate a command to another user
 
   This command is provided so that sysops can demonstrate commands to
   other users. It runs a command as though that user had typed it in
@@ -2956,15 +2956,15 @@
   sideeffects. Commands are run at the privilege of the user which is
   beingdemonstrated to.
 
-  11.42.  directory (0)
+  [1m11.42.  directory (0)[0m
 
-  directory List messages
+  [1mdirectory [22mList messages
 
 
 
-  11.43.  directory <from>-<to> (0)
+  [1m11.43.  directory <from>-<to> (0)[0m
 
-  directory <from>-<to> List messages <from> message <to> message
+  [1mdirectory <from>-<to> [22mList messages <from> message <to> message
 
   List the messages in the messages directory.If there is a 'p' one
   space after the message number then it is a personal message. If there
@@ -2993,55 +2993,55 @@
 
 
 
-  11.44.  directory <nn> (0)
+  [1m11.44.  directory <nn> (0)[0m
 
-  directory <nn> List last <nn> messages
-
-
-  11.45.  directory all (0)
-
-  directory all List all messages
+  [1mdirectory <nn> [22mList last <nn> messages
 
 
-  11.46.  directory from <call> (0)
+  [1m11.45.  directory all (0)[0m
 
-  directory from <call> List all messages from <call>
-
-
-  11.47.  directory new (0)
-
-  directory new List all new messages
+  [1mdirectory all [22mList all messages
 
 
-  11.48.  directory own (0)
+  [1m11.46.  directory from <call> (0)[0m
 
-  directory own List your own messages
-
-
-  11.49.  directory subject <string> (0)
-
-  directory subject <string> List all messages with <string> in subject
+  [1mdirectory from <call> [22mList all messages from <call>
 
 
-  11.50.  directory to <call> (0)
+  [1m11.47.  directory new (0)[0m
 
-  directory to <call> List all messages to <call>
+  [1mdirectory new [22mList all new messages
 
-  11.51.  directory- (5)
 
-  directory-
+  [1m11.48.  directory own (0)[0m
+
+  [1mdirectory own [22mList your own messages
+
+
+  [1m11.49.  directory subject <string> (0)[0m
+
+  [1mdirectory subject <string> [22mList all messages with <string> in subject
+
+
+  [1m11.50.  directory to <call> (0)[0m
+
+  [1mdirectory to <call> [22mList all messages to <call>
+
+  [1m11.51.  directory- (5)[0m
+
+  [1mdirectory-[0m
 
   Sysops can see all users' messages.
 
-  11.52.  disconnect <call> [<call> ...] (8)
+  [1m11.52.  disconnect <call> [<call> ...] (8)[0m
 
-  disconnect <call> [<call> ...] Disconnect a user or cluster
+  [1mdisconnect <call> [<call> ...] [22mDisconnect a user or cluster
 
   Disconnect any <call> connected locally
 
-  11.53.  dx [by <call>] <freq> <call> <remarks> (0)
+  [1m11.53.  dx [by <call>] <freq> <call> <remarks> (0)[0m
 
-  dx [by <call>] <freq> <call> <remarks> Send a DX spot
+  [1mdx [by <call>] <freq> <call> <remarks> [22mSend a DX spot
 
   This is how you send a DX Spot to other users. You can, in fact,
   nowenter the <freq> and the <call> either way round.
@@ -3069,9 +3069,9 @@
   The <freq> is compared against the available bands set up in the clus-
   ter.  See SHOW/BANDS for more information.
 
-  11.54.  echo <line> (0)
+  [1m11.54.  echo <line> (0)[0m
 
-  echo <line> Echo the line to the output
+  [1mecho <line> [22mEcho the line to the output
 
   This command is useful in scripts and so forth for printing theline
   that you give to the command to the output. You can use thisin
@@ -3114,9 +3114,9 @@
 
   on the output.
 
-  11.55.  export <msgno> <filename> (9)
+  [1m11.55.  export <msgno> <filename> (9)[0m
 
-  export <msgno> <filename> Export a message to a file
+  [1mexport <msgno> <filename> [22mExport a message to a file
 
   Export a message to a file. This command can only be executed on a
   localconsole with a fully privileged user. The file produced will be
@@ -3132,9 +3132,9 @@
 
 
 
-  11.56.  export_users [<filename>] (9)
+  [1m11.56.  export_users [<filename>] (9)[0m
 
-  export_users [<filename>] Export the users database to ascii
+  [1mexport_users [<filename>] [22mExport the users database to ascii
 
   Export the users database to a file in ascii format. If no filenameis
   given then it will export the file to /spider/data/user_asc.If the
@@ -3143,9 +3143,9 @@
   thesuffix. BE WARNED: this will write to any file you have write
   access to. No check ismade on the filename (if any) that you specify.
 
-  11.57.  filtering... (0)
+  [1m11.57.  filtering... (0)[0m
 
-  filtering... Filtering things in DXSpider
+  [1mfiltering... [22mFiltering things in DXSpider
 
   There are a number of things you can filter in the DXSpider system.
   Theyall use the same general mechanism.In general terms you can create
@@ -3302,9 +3302,9 @@
   else on HF.The next filter line lets through just VHF/UHF spots from
   EU.
 
-  11.58.  forward/latlong <node_call> (8)
+  [1m11.58.  forward/latlong <node_call> (8)[0m
 
-  forward/latlong <node_call> Send latitude and longitude information to
+  [1mforward/latlong <node_call> [22mSend latitude and longitude information to
   another cluster
 
   This command sends all the latitude and longitude information that
@@ -3314,9 +3314,9 @@
   haveSET/DXGRID enabled.  This could be a LOT of information though,
   soit is not recommended on slow links.
 
-  11.59.  forward/opernam <call> (1)
+  [1m11.59.  forward/opernam <call> (1)[0m
 
-  forward/opernam <call> Send out information on this <call> to all
+  [1mforward/opernam <call> [22mSend out information on this <call> to all
   clusters
 
   This command sends out any information held in the user file which can
@@ -3324,9 +3324,9 @@
   Locationand Homenode. PC41s are only sent for the information that is
   available.
 
-  11.60.  help (0)
+  [1m11.60.  help (0)[0m
 
-  help The HELP Command
+  [1mhelp [22mThe HELP Command
 
   HELP is available for a number of commands. The syntax is:-
 
@@ -3341,9 +3341,9 @@
   which will search the help databasefor the <string> you specify and
   give you a list of likely commandsto look at with HELP.
 
-  11.61.  init <node> (5)
+  [1m11.61.  init <node> (5)[0m
 
-  init <node> Re-initialise a link to an AK1A compatible node
+  [1minit <node> [22mRe-initialise a link to an AK1A compatible node
 
   This command attempts to re-initialise a link to a (usually) AK1A
   nodethat has got confused, usually by a protocol loop of some kind. It
@@ -3351,9 +3351,9 @@
   (orbetter, if it is a real AK1A node, doing an RCMD <node> DISC/F
   <yournode>).Best of luck - you will need it.
 
-  11.62.  join <group> (0)
+  [1m11.62.  join <group> (0)[0m
 
-  join <group> Join a chat or conference group
+  [1mjoin <group> [22mJoin a chat or conference group
 
   JOIN allows you to join a network wide conference group. To join
   agroup (called FOC in this case) type:-
@@ -3365,37 +3365,37 @@
 
   See also CHAT, LEAVE, SHOW/CHAT
 
-  11.63.  kill (5)
+  [1m11.63.  kill (5)[0m
 
-  kill
+  [1mkill[0m
 
   As a sysop you can kill any message on the system.
 
-  11.64.  kill <from msgno>-<to msgno> (0)
+  [1m11.64.  kill <from msgno>-<to msgno> (0)[0m
 
-  kill <from msgno>-<to msgno> Delete a range of messages
-
-
-  11.65.  kill <from>-<to> (5)
-
-  kill <from>-<to> Remove a range of messages from the system
+  [1mkill <from msgno>-<to msgno> [22mDelete a range of messages
 
 
-  11.66.  kill <msgno> [<msgno..] (0)
+  [1m11.65.  kill <from>-<to> (5)[0m
 
-  kill <msgno> [<msgno..] Delete a message from the local system
+  [1mkill <from>-<to> [22mRemove a range of messages from the system
 
 
-  11.67.  kill <msgno> [<msgno> ...] (0)
+  [1m11.66.  kill <msgno> [<msgno..] (0)[0m
 
-  kill <msgno> [<msgno> ...] Remove or erase a message from the system
+  [1mkill <msgno> [<msgno..] [22mDelete a message from the local system
+
+
+  [1m11.67.  kill <msgno> [<msgno> ...] (0)[0m
+
+  [1mkill <msgno> [<msgno> ...] [22mRemove or erase a message from the system
 
   You can get rid of any message to or originating from your callsign
   using this command. You can remove more than one message at a time.
 
-  11.68.  kill expunge <msgno> [<msgno..] (6)
+  [1m11.68.  kill expunge <msgno> [<msgno..] (6)[0m
 
-  kill expunge <msgno> [<msgno..] Expunge a message
+  [1mkill expunge <msgno> [<msgno..] [22mExpunge a message
 
   Deleting a message using the normal KILL commands only marks that
   messagefor deletion. The actual deletion only happens later (usually
@@ -3403,14 +3403,14 @@
   truly deleted more or lessimmediately.It otherwise is used in the same
   way as the KILL command.
 
-  11.69.  kill from <call> (5)
+  [1m11.69.  kill from <call> (5)[0m
 
-  kill from <call> Remove all messages from a callsign
+  [1mkill from <call> [22mRemove all messages from a callsign
 
 
-  11.70.  kill full <msgno> [<msgno..] (5)
+  [1m11.70.  kill full <msgno> [<msgno..] (5)[0m
 
-  kill full <msgno> [<msgno..] Delete a message from the whole cluster
+  [1mkill full <msgno> [<msgno..] [22mDelete a message from the whole cluster
 
   Delete a message from the local system. You will only be able todelete
   messages that you have originated or been sent (unless you arethe
@@ -3447,31 +3447,31 @@
   system. This uses the subject field, so any messages that have exactly
   thesame subject will be deleted. Beware!
 
-  11.71.  kill full <msgno> [<msgno] (5)
+  [1m11.71.  kill full <msgno> [<msgno] (5)[0m
 
-  kill full <msgno> [<msgno] Remove a message from the entire cluster
+  [1mkill full <msgno> [<msgno] [22mRemove a message from the entire cluster
 
   Remove this message from the entire cluster system as well as your
   node.
 
-  11.72.  kill to <call> (5)
+  [1m11.72.  kill to <call> (5)[0m
 
-  kill to <call> Remove all messages to a callsign
-
-
-  11.73.  kill from <regex> (0)
-
-  kill from <regex> Delete messages FROM a callsign or pattern
+  [1mkill to <call> [22mRemove all messages to a callsign
 
 
-  11.74.  kill to <regex> (0)
+  [1m11.73.  kill from <regex> (0)[0m
 
-  kill to <regex> Delete messages TO a callsign or pattern
+  [1mkill from <regex> [22mDelete messages FROM a callsign or pattern
 
 
-  11.75.  leave <group> (0)
+  [1m11.74.  kill to <regex> (0)[0m
 
-  leave <group> Leave a chat or conference group
+  [1mkill to <regex> [22mDelete messages TO a callsign or pattern
+
+
+  [1m11.75.  leave <group> (0)[0m
+
+  [1mleave <group> [22mLeave a chat or conference group
 
   LEAVE allows you to leave a network wide conference group. To leave
   agroup (called FOC in this case) type:-
@@ -3483,24 +3483,24 @@
 
   See also CHAT, JOIN, SHOW/CHAT
 
-  11.76.  links (0)
+  [1m11.76.  links (0)[0m
 
-  links Show which nodes is physically connected
+  [1mlinks [22mShow which nodes is physically connected
 
   This is a quick listing that shows which links are connected andsome
   information about them. See WHO for a list of all connections.
 
-  11.77.  load/aliases (9)
+  [1m11.77.  load/aliases (9)[0m
 
-  load/aliases Reload the command alias table
+  [1mload/aliases [22mReload the command alias table
 
   Reload the /spider/cmd/Aliases file after you have editted it. Youwill
   need to do this if you change this file whilst the cluster isrunning
   in order for the changes to take effect.
 
-  11.78.  load/badmsg (9)
+  [1m11.78.  load/badmsg (9)[0m
 
-  load/badmsg Reload the bad msg table
+  [1mload/badmsg [22mReload the bad msg table
 
   Reload the /spider/msg/badmsg.pl file if you have changed it manually
   whilstthe cluster is running. This table contains a number of perl
@@ -3508,9 +3508,9 @@
   each message. If any of them match then that message is immediately
   deleted on receipt.
 
-  11.79.  load/badwords (9)
+  [1m11.79.  load/badwords (9)[0m
 
-  load/badwords Reload the bad words table
+  [1mload/badwords [22mReload the bad words table
 
   Reload the /spider/data/badwords file if you have changed it manually
   whilstthe cluster is running. This file contains a list of words
@@ -3520,16 +3520,16 @@
   words can be one or more on a line, lines starting with '#' are
   ignored.
 
-  11.80.  load/bands (9)
+  [1m11.80.  load/bands (9)[0m
 
-  load/bands Reload the band limits table
+  [1mload/bands [22mReload the band limits table
 
   Reload the /spider/data/bands.pl file if you have changed it manually
   whilstthe cluster is running.
 
-  11.81.  load/cmd_cache (9)
+  [1m11.81.  load/cmd_cache (9)[0m
 
-  load/cmd_cache Reload the automatic command cache
+  [1mload/cmd_cache [22mReload the automatic command cache
 
   Normally, if you change a command file in the cmd or local_cmd tree
   itwill automatially be picked up by the cluster program. Sometimes
@@ -3538,22 +3538,22 @@
   oneagain. Execute this command to reset everything back to the state
   itwas just after a cluster restart.
 
-  11.82.  load/forward (9)
+  [1m11.82.  load/forward (9)[0m
 
-  load/forward Reload the msg forwarding routing table
+  [1mload/forward [22mReload the msg forwarding routing table
 
   Reload the /spider/msg/forward.pl file if you have changed itmanually
   whilst the cluster is running.
 
-  11.83.  load/keps (5)
+  [1m11.83.  load/keps (5)[0m
 
-  load/keps Load new keps data
+  [1mload/keps [22mLoad new keps data
 
 
 
-  11.84.  load/keps [nn] (5)
+  [1m11.84.  load/keps [nn] (5)[0m
 
-  load/keps [nn] Load new keps data from message
+  [1mload/keps [nn] [22mLoad new keps data from message
 
   If there is no message number then reload the current Keps data
   fromthe Keps.pm data file. You create this file by running
@@ -3568,25 +3568,25 @@
   vkeps.pl on it and then load the data, all in one step.These messages
   are sent to ALL by GB7DJK (and others) from time to time.
 
-  11.85.  load/messages (9)
+  [1m11.85.  load/messages (9)[0m
 
-  load/messages Reload the system messages file
+  [1mload/messages [22mReload the system messages file
 
   If you change the /spider/perl/Messages file (usually
   whilstfiddling/writing new commands) you can have them take effect
   during acluster session by executing this command. You need to do this
   if getsomething like :-unknown message 'xxxx' in lang 'en'
 
-  11.86.  load/prefixes (9)
+  [1m11.86.  load/prefixes (9)[0m
 
-  load/prefixes Reload the prefix table
+  [1mload/prefixes [22mReload the prefix table
 
   Reload the /spider/data/prefix_data.pl file if you have changed
   itmanually whilst the cluster is running.
 
-  11.87.  merge <node> [<no spots>/<no wwv>] (5)
+  [1m11.87.  merge <node> [<no spots>/<no wwv>] (5)[0m
 
-  merge <node> [<no spots>/<no wwv>] Ask for the latest spots and WWV
+  [1mmerge <node> [<no spots>/<no wwv>] [22mAsk for the latest spots and WWV
 
   MERGE allows you to bring your spot and wwv database up to date. By
   defaultit will request the last 10 spots and 5 WWVs from the node you
@@ -3595,9 +3595,9 @@
   they will not duplicate any that have recently been added (the last 2
   days for spots and last month for WWV data).
 
-  11.88.  msg <cmd> <msgno> [data ... ] (9)
+  [1m11.88.  msg <cmd> <msgno> [data ... ] (9)[0m
 
-  msg <cmd> <msgno> [data ... ] Alter various message parameters
+  [1mmsg <cmd> <msgno> [data ... ] [22mAlter various message parameters
 
   Alter message parameters like To, From, Subject, whether private or
   bulletinor return receipt (RR) is required or whether to keep this
@@ -3617,9 +3617,9 @@
 
   This will display more information on the message than DIR does.
 
-  11.89.  pc <call> <text> (8)
+  [1m11.89.  pc <call> <text> (8)[0m
 
-  pc <call> <text> Send arbitrary text to a connected callsign
+  [1mpc <call> <text> [22mSend arbitrary text to a connected callsign
 
   Send some arbitrary text to a locally connected callsign. Noprocessing
   is done on the text. This command allows you to send PCProtocol to
@@ -3643,9 +3643,9 @@
   nected user butwithout any processing, added of "from <blah> to <blah"
   or whatever.
 
-  11.90.  ping <node call> (1)
+  [1m11.90.  ping <node call> (1)[0m
 
-  ping <node call> Check the link quality between nodes
+  [1mping <node call> [22mCheck the link quality between nodes
 
   This command allows you to send a frame to another cluster node onthe
   network and get a return frame.  The time it takes to do thisis a good
@@ -3653,9 +3653,9 @@
   output to the console in seconds.Any visible cluster node can be
   PINGed.
 
-  11.91.  rcmd <node call> <cmd> (1)
+  [1m11.91.  rcmd <node call> <cmd> (1)[0m
 
-  rcmd <node call> <cmd> Send a command to another DX Cluster
+  [1mrcmd <node call> <cmd> [22mSend a command to another DX Cluster
 
   This command allows you to send nearly any command to another DX
   Clusternode that is connected to the system. Whether you get any
@@ -3664,35 +3664,35 @@
   is allowing RCMDs from this node and c) whether you havepermission to
   send this command at all.
 
-  11.92.  read (0)
+  [1m11.92.  read (0)[0m
 
-  read Read the next unread personal message addressed to you
+  [1mread [22mRead the next unread personal message addressed to you
 
 
-  11.93.  read <msgno> (0)
+  [1m11.93.  read <msgno> (0)[0m
 
-  read <msgno> Read the specified message
+  [1mread <msgno> [22mRead the specified message
 
   You can read any messages that are sent as 'non-personal' and also
   anymessage either sent by or sent to your callsign.
 
-  11.94.  read- (5)
+  [1m11.94.  read- (5)[0m
 
-  read-
+  [1mread-[0m
 
   As a sysop you may read any message on the system
 
 
-  11.95.  reject (0)
+  [1m11.95.  reject (0)[0m
 
-  reject Set a filter to reject something
+  [1mreject [22mSet a filter to reject something
 
   Create a filter to reject somethingThere are 2 types of filter, accept
   and reject.  See HELP FILTERING for moreinfo.
 
-  11.96.  reject/announce <call> [input] [0-9] <pattern> (8)
+  [1m11.96.  reject/announce <call> [input] [0-9] <pattern> (8)[0m
 
-  reject/announce <call> [input] [0-9] <pattern> Announce filter sysop
+  [1mreject/announce <call> [input] [0-9] <pattern> [22mAnnounce filter sysop
   version
 
   This version allows a sysop to set a filter for a callsign as well as
@@ -3703,9 +3703,9 @@
 
 
 
-  11.97.  reject/announce [0-9] <pattern> (0)
+  [1m11.97.  reject/announce [0-9] <pattern> (0)[0m
 
-  reject/announce [0-9] <pattern> Set a 'reject' filter line for
+  [1mreject/announce [0-9] <pattern> [22mSet a 'reject' filter line for
   announce
 
   Create an 'reject this announce' line for a filter. A reject filter
@@ -3735,9 +3735,9 @@
 
   but this probably for advanced users...
 
-  11.98.  reject/route <call> [0-9] <pattern> (8)
+  [1m11.98.  reject/route <call> [0-9] <pattern> (8)[0m
 
-  reject/route <call> [0-9] <pattern> Set an 'reject' filter line for
+  [1mreject/route <call> [0-9] <pattern> [22mSet an 'reject' filter line for
   routing
 
   Create an 'reject this routing PC Protocol' line for a filter. An
@@ -3768,9 +3768,9 @@
 
   as with ACCEPT/ROUTE 'by' is now a synonym for 'call'.
 
-  11.99.  reject/spots <call> [input] [0-9] <pattern> (8)
+  [1m11.99.  reject/spots <call> [input] [0-9] <pattern> (8)[0m
 
-  reject/spots <call> [input] [0-9] <pattern> Spot filter sysop version
+  [1mreject/spots <call> [input] [0-9] <pattern> [22mSpot filter sysop version
 
   This version allows a sysop to set a filter for a callsign as well as
   thedefault for nodes and users eg:-
@@ -3784,9 +3784,9 @@
 
 
 
-  11.100.  reject/spots [0-9] <pattern> (0)
+  [1m11.100.  reject/spots [0-9] <pattern> (0)[0m
 
-  reject/spots [0-9] <pattern> Set a 'reject' filter line for spots
+  [1mreject/spots [0-9] <pattern> [22mSet a 'reject' filter line for spots
 
   Create a 'reject this spot' line for a filter. A reject filter line
   means that if the spot matches this filter it isdumped (not passed
@@ -3811,9 +3811,9 @@
 
   but this probably for advanced users...
 
-  11.101.  reject/wcy <call> [input] [0-9] <pattern> (8)
+  [1m11.101.  reject/wcy <call> [input] [0-9] <pattern> (8)[0m
 
-  reject/wcy <call> [input] [0-9] <pattern> WCY filter sysop version
+  [1mreject/wcy <call> [input] [0-9] <pattern> [22mWCY filter sysop version
 
   This version allows a sysop to set a filter for a callsign as well as
   thedefault for nodes and users eg:-
@@ -3823,9 +3823,9 @@
 
 
 
-  11.102.  reject/wcy [0-9] <pattern> (0)
+  [1m11.102.  reject/wcy [0-9] <pattern> (0)[0m
 
-  reject/wcy [0-9] <pattern> set a 'reject' WCY filter
+  [1mreject/wcy [0-9] <pattern> [22mset a 'reject' WCY filter
 
   It is unlikely that you will want to do this, but if you do then you
   canfilter on the following fields:-
@@ -3840,9 +3840,9 @@
   them).This command is really provided for future use.See HELP FILTER
   for information.
 
-  11.103.  reject/wwv <call> [input] [0-9] <pattern> (8)
+  [1m11.103.  reject/wwv <call> [input] [0-9] <pattern> (8)[0m
 
-  reject/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
+  [1mreject/wwv <call> [input] [0-9] <pattern> [22mWWV filter sysop version
 
   This version allows a sysop to set a filter for a callsign as well as
   thedefault for nodes and users eg:-
@@ -3856,9 +3856,9 @@
 
 
 
-  11.104.  reject/wwv [0-9] <pattern> (0)
+  [1m11.104.  reject/wwv [0-9] <pattern> (0)[0m
 
-  reject/wwv [0-9] <pattern> set a 'reject' WWV filter
+  [1mreject/wwv [0-9] <pattern> [22mset a 'reject' WWV filter
 
   It is unlikely that you will want to do this, but if you do then you
   canfilter on the following fields:-
@@ -3878,38 +3878,38 @@
   is probably the only useful thing to do (which will only show WWV
   broadcastsby stations in the US).See HELP FILTER for information.
 
-  11.105.  reply (0)
+  [1m11.105.  reply (0)[0m
 
-  reply Reply (privately) to the last message that you have read
-
-
-  11.106.  reply <msgno> (0)
-
-  reply <msgno> Reply (privately) to the specified message
+  [1mreply [22mReply (privately) to the last message that you have read
 
 
-  11.107.  reply b <msgno> (0)
+  [1m11.106.  reply <msgno> (0)[0m
 
-  reply b <msgno> Reply as a Bulletin to the specified message
-
-
-  11.108.  reply noprivate <msgno> (0)
-
-  reply noprivate <msgno> Reply as a Bulletin to the specified message
+  [1mreply <msgno> [22mReply (privately) to the specified message
 
 
-  11.109.  reply rr <msgno> (0)
+  [1m11.107.  reply b <msgno> (0)[0m
 
-  reply rr <msgno> Reply to the specified message with read receipt
+  [1mreply b <msgno> [22mReply as a Bulletin to the specified message
+
+
+  [1m11.108.  reply noprivate <msgno> (0)[0m
+
+  [1mreply noprivate <msgno> [22mReply as a Bulletin to the specified message
+
+
+  [1m11.109.  reply rr <msgno> (0)[0m
+
+  [1mreply rr <msgno> [22mReply to the specified message with read receipt
 
   You can reply to a message and the subject will automatically
   have"Re:" inserted in front of it, if it isn't already present.You can
   also use all the extra qualifiers such as RR, PRIVATE, NOPRIVATE, B
   that you can use with the SEND command (see SENDfor further details)
 
-  11.110.  save [-d -t -a] <filename> "<cmd>" [...] (9)
+  [1m11.110.  save [-d -t -a] <filename> "<cmd>" [...] (9)[0m
 
-  save [-d -t -a] <filename> "<cmd>" [...] Save command output to a file
+  [1msave [-d -t -a] <filename> "<cmd>" [...] [22mSave command output to a file
 
   This sysop only cammand allows you to save the output of one or
   morecommands to a file. For example:-
@@ -3960,19 +3960,19 @@
   this can be varied if you know what you are doing. See theadmin manual
   for more details.
 
-  11.111.  send <call> [<call> ...] (0)
+  [1m11.111.  send <call> [<call> ...] (0)[0m
 
-  send <call> [<call> ...] Send a message to one or more callsigns
-
-
-  11.112.  send copy <msgno> <call> (0)
-
-  send copy <msgno> <call> Send a copy of a  message to someone
+  [1msend <call> [<call> ...] [22mSend a message to one or more callsigns
 
 
-  11.113.  send noprivate <call> (0)
+  [1m11.112.  send copy <msgno> <call> (0)[0m
 
-  send noprivate <call> Send a message to all stations
+  [1msend copy <msgno> <call> [22mSend a copy of a  message to someone
+
+
+  [1m11.113.  send noprivate <call> (0)[0m
+
+  [1msend noprivate <call> [22mSend a message to all stations
 
   All the SEND commands will create a message which will be sent either
   toan individual callsign or to one of the 'bulletin' addresses. SEND
@@ -4037,121 +4037,121 @@
   themessage. You can carry on with the message until you are ready to
   send it.
 
-  11.114.  send private <call> (0)
+  [1m11.114.  send private <call> (0)[0m
 
-  send private <call> Send a personal message
+  [1msend private <call> [22mSend a personal message
 
 
-  11.115.  send rr <call> (0)
+  [1m11.115.  send rr <call> (0)[0m
 
-  send rr <call> Send a message and ask for a read receipt
+  [1msend rr <call> [22mSend a message and ask for a read receipt
 
 
-  11.116.  set/address <your address> (0)
+  [1m11.116.  set/address <your address> (0)[0m
 
-  set/address <your address> Record your postal address
+  [1mset/address <your address> [22mRecord your postal address
 
 
-  11.117.  set/announce (0)
+  [1m11.117.  set/announce (0)[0m
 
-  set/announce Allow announce messages to come out on your terminal
+  [1mset/announce [22mAllow announce messages to come out on your terminal
 
 
-  11.118.  set/anntalk (0)
+  [1m11.118.  set/anntalk (0)[0m
 
-  set/anntalk Allow talk like announce messages on your terminal
+  [1mset/anntalk [22mAllow talk like announce messages on your terminal
 
 
-  11.119.  set/arcluster <call> [<call>..] (5)
+  [1m11.119.  set/arcluster <call> [<call>..] (5)[0m
 
-  set/arcluster <call> [<call>..] Make the callsign an AR-Cluster node
+  [1mset/arcluster <call> [<call>..] [22mMake the callsign an AR-Cluster node
 
 
 
-  11.120.  set/baddx <call>.. (8)
+  [1m11.120.  set/baddx <call>.. (8)[0m
 
-  set/baddx <call>.. Stop callsigns in a dx spot being propagated
+  [1mset/baddx <call>.. [22mStop callsigns in a dx spot being propagated
 
 
-  11.121.  set/badnode <call>.. (8)
+  [1m11.121.  set/badnode <call>.. (8)[0m
 
-  set/badnode <call>.. Stop spots from this node being propagated
+  [1mset/badnode <call>.. [22mStop spots from this node being propagated
 
 
-  11.122.  set/badspotter <call>.. (8)
+  [1m11.122.  set/badspotter <call>.. (8)[0m
 
-  set/badspotter <call>.. Stop spots from this callsign being propagated
+  [1mset/badspotter <call>.. [22mStop spots from this callsign being propagated
 
 
-  11.123.  set/badword <word>.. (8)
+  [1m11.123.  set/badword <word>.. (8)[0m
 
-  set/badword <word>.. Stop things with this word being propagated
+  [1mset/badword <word>.. [22mStop things with this word being propagated
 
 
-  11.124.  set/bbs <call> [<call>..] (5)
+  [1m11.124.  set/bbs <call> [<call>..] (5)[0m
 
-  set/bbs <call> [<call>..] Make the callsign a BBS
+  [1mset/bbs <call> [<call>..] [22mMake the callsign a BBS
 
 
-  11.125.  set/beep (0)
+  [1m11.125.  set/beep (0)[0m
 
-  set/beep Add a beep to DX and other messages on your terminal
+  [1mset/beep [22mAdd a beep to DX and other messages on your terminal
 
 
-  11.126.  set/clx <call> [<call>..] (5)
+  [1m11.126.  set/clx <call> [<call>..] (5)[0m
 
-  set/clx <call> [<call>..] Make the callsign an CLX node
+  [1mset/clx <call> [<call>..] [22mMake the callsign an CLX node
 
 
-  11.127.  set/debug <name> (9)
+  [1m11.127.  set/debug <name> (9)[0m
 
-  set/debug <name> Add a debug level to the debug set
+  [1mset/debug <name> [22mAdd a debug level to the debug set
 
 
-  11.128.  set/dx (0)
+  [1m11.128.  set/dx (0)[0m
 
-  set/dx Allow DX messages to come out on your terminal
+  [1mset/dx [22mAllow DX messages to come out on your terminal
 
 
-  11.129.  set/dxcq (0)
+  [1m11.129.  set/dxcq (0)[0m
 
-  set/dxcq Show CQ Zones on the end of DX announcements
+  [1mset/dxcq [22mShow CQ Zones on the end of DX announcements
 
 
-  11.130.  set/dxgrid (0)
+  [1m11.130.  set/dxgrid (0)[0m
 
-  set/dxgrid Allow QRA Grid Squares on the end of DX announcements
+  [1mset/dxgrid [22mAllow QRA Grid Squares on the end of DX announcements
 
 
-  11.131.  set/dxitu (0)
+  [1m11.131.  set/dxitu (0)[0m
 
-  set/dxitu Show ITU Zones on the end of DX announcements
+  [1mset/dxitu [22mShow ITU Zones on the end of DX announcements
 
 
-  11.132.  set/dxnet <call> [<call>..] (5)
+  [1m11.132.  set/dxnet <call> [<call>..] (5)[0m
 
-  set/dxnet <call> [<call>..] Make the callsign an DXNet node
+  [1mset/dxnet <call> [<call>..] [22mMake the callsign an DXNet node
 
 
 
-  11.133.  set/echo (0)
+  [1m11.133.  set/echo (0)[0m
 
-  set/echo Make the cluster echo your input
+  [1mset/echo [22mMake the cluster echo your input
 
 
-  11.134.  set/email <email> ... (0)
+  [1m11.134.  set/email <email> ... (0)[0m
 
-  set/email <email> ... Set email address(es) and forward your personals
+  [1mset/email <email> ... [22mSet email address(es) and forward your personals
 
 
-  11.135.  set/here (0)
+  [1m11.135.  set/here (0)[0m
 
-  set/here Tell the system you are present at your terminal
+  [1mset/here [22mTell the system you are present at your terminal
 
 
-  11.136.  set/homenode <node>  (0)
+  [1m11.136.  set/homenode <node>  (0)[0m
 
-  set/homenode <node>  Set your normal cluster callsign
+  [1mset/homenode <node>  [22mSet your normal cluster callsign
 
   Tell the cluster system where you normally connect to. Any Messages
   sentto you will normally find their way there should you not be
@@ -4162,14 +4162,14 @@
 
 
 
-  11.137.  set/hops <call> ann|spots|route|wwv|wcy <n> (8)
+  [1m11.137.  set/hops <call> ann|spots|route|wwv|wcy <n> (8)[0m
 
-  set/hops <call> ann|spots|route|wwv|wcy <n> Set hop count
+  [1mset/hops <call> ann|spots|route|wwv|wcy <n> [22mSet hop count
 
 
-  11.138.  set/isolate (9)
+  [1m11.138.  set/isolate (9)[0m
 
-  set/isolate Isolate a node from the rest of the network
+  [1mset/isolate [22mIsolate a node from the rest of the network
 
   Connect a node to your system in such a way that you are a full
   protocolmember of its network and can see all spots on it, but nothing
@@ -4177,34 +4177,34 @@
   connected to you.You can potentially connect several nodes in this
   way.
 
-  11.139.  set/language <lang> (0)
+  [1m11.139.  set/language <lang> (0)[0m
 
-  set/language <lang> Set the language you want to use
+  [1mset/language <lang> [22mSet the language you want to use
 
   You can select the language that you want the cluster to use.
   Currentlythe languages available are en (English), de (German), es
   (Spanish),Czech (cz), French (fr), Portuguese (pt), Italian (it) and
   nl (Dutch).
 
-  11.140.  set/location <lat & long> (0)
+  [1m11.140.  set/location <lat & long> (0)[0m
 
-  set/location <lat & long> Set your latitude and longitude
-
-
-  11.141.  set/lockout <call> (9)
-
-  set/lockout <call> Stop a callsign connecting to the cluster
+  [1mset/location <lat & long> [22mSet your latitude and longitude
 
 
+  [1m11.141.  set/lockout <call> (9)[0m
 
-  11.142.  set/logininfo (0)
-
-  set/logininfo Inform when a station logs in locally
+  [1mset/lockout <call> [22mStop a callsign connecting to the cluster
 
 
-  11.143.  set/name <your name> (0)
 
-  set/name <your name> Set your name
+  [1m11.142.  set/logininfo (0)[0m
+
+  [1mset/logininfo [22mInform when a station logs in locally
+
+
+  [1m11.143.  set/name <your name> (0)[0m
+
+  [1mset/name <your name> [22mSet your name
 
   Tell the system what your name is eg:-
 
@@ -4213,16 +4213,16 @@
 
 
 
-  11.144.  set/node <call> [<call>..] (5)
+  [1m11.144.  set/node <call> [<call>..] (5)[0m
 
-  set/node <call> [<call>..] Make the callsign an AK1A cluster
+  [1mset/node <call> [<call>..] [22mMake the callsign an AK1A cluster
 
   Tell the system that the call(s) are to be treated as AK1A cluster
   andfed PC Protocol rather normal user commands.
 
-  11.145.  set/obscount <count> <call> (8)
+  [1m11.145.  set/obscount <count> <call> (8)[0m
 
-  set/obscount <count> <call> Set the 'pump-up' obscelence PING counter
+  [1mset/obscount <count> <call> [22mSet the 'pump-up' obscelence PING counter
 
   From 1.35 onwards neighbouring nodes are pinged at regular intervals
   (seeSET/PINGINTERVAL), usually 300 seconds or 5 minutes. There is a
@@ -4237,9 +4237,9 @@
   between 1 and 9.It is STRONGLY recommended that you don't change the
   default.
 
-  11.146.  set/page <lines per page> (0)
+  [1m11.146.  set/page <lines per page> (0)[0m
 
-  set/page <lines per page> Set the lines per page
+  [1mset/page <lines per page> [22mSet the lines per page
 
   Tell the system how many lines you wish on a page when the number of
   lineof output from a command is more than this. The default is 20.
@@ -4252,9 +4252,9 @@
 
   The setting is stored in your user profile.
 
-  11.147.  set/password (0)
+  [1m11.147.  set/password (0)[0m
 
-  set/password Set your own password
+  [1mset/password [22mSet your own password
 
   This command only works for a 'telnet' user (currently). It willonly
   work if you have a password already set. This initial passwordcan only
@@ -4264,9 +4264,9 @@
   the screenas you type, depending on the type of telnet client you
   have.
 
-  11.148.  set/password <callsign> <string> (9)
+  [1m11.148.  set/password <callsign> <string> (9)[0m
 
-  set/password <callsign> <string> Set a users password
+  [1mset/password <callsign> <string> [22mSet a users password
 
   The password for a user can only be set by a full sysop. The stringcan
   contain any characters. The way this field is used depends on context.
@@ -4283,9 +4283,9 @@
   command is executed in the startup script, then a password prompt
   isgiven after the normal 'login: ' prompt.
 
-  11.149.  set/pinginterval <time> <nodecall> (9)
+  [1m11.149.  set/pinginterval <time> <nodecall> (9)[0m
 
-  set/pinginterval <time> <nodecall> Set ping time to neighbouring nodes
+  [1mset/pinginterval <time> <nodecall> [22mSet ping time to neighbouring nodes
 
   As from release 1.35 all neighbouring nodes are pinged at regular
   intervalsin order to determine the rolling quality of the link and, in
@@ -4308,9 +4308,9 @@
   this value too low may annoy your neighbours beyond the point of
   endurance!You can switch this off by setting it to 0.
 
-  11.150.  set/privilege <n> <call> [<call..] (9)
+  [1m11.150.  set/privilege <n> <call> [<call..] (9)[0m
 
-  set/privilege <n> <call> [<call..] Set privilege level on a call
+  [1mset/privilege <n> <call> [<call..] [22mSet privilege level on a call
 
   Set the privilege level on a callsign. The privilege levels that
   pertainto commands are as default:-
@@ -4323,14 +4323,14 @@
   If you are a sysop and you come in as a normal user on a remote con-
   nectionyour privilege will automatically be set to 0.
 
-  11.151.  set/prompt <string> (0)
+  [1m11.151.  set/prompt <string> (0)[0m
 
-  set/prompt <string> Set your prompt to <string>
+  [1mset/prompt <string> [22mSet your prompt to <string>
 
 
-  11.152.  set/qra <locator> (0)
+  [1m11.152.  set/qra <locator> (0)[0m
 
-  set/qra <locator> Set your QRA Grid locator
+  [1mset/qra <locator> [22mSet your QRA Grid locator
 
   Tell the system what your QRA (or Maidenhead) locator is. If you have
   notdone a SET/LOCATION then your latitude and longitude will be set
@@ -4341,9 +4341,9 @@
 
 
 
-  11.153.  set/qth <your qth> (0)
+  [1m11.153.  set/qth <your qth> (0)[0m
 
-  set/qth <your qth> Set your QTH
+  [1mset/qth <your qth> [22mSet your QTH
 
   Tell the system where you are. For example:-
 
@@ -4352,21 +4352,21 @@
 
 
 
-  11.154.  set/register <call> ... (9)
+  [1m11.154.  set/register <call> ... (9)[0m
 
-  set/register <call> ... Mark a user as registered
+  [1mset/register <call> ... [22mMark a user as registered
 
 
-  11.155.  set/spider <call> [<call>..] (5)
+  [1m11.155.  set/spider <call> [<call>..] (5)[0m
 
-  set/spider <call> [<call>..] Make the callsign an DXSpider node
+  [1mset/spider <call> [<call>..] [22mMake the callsign an DXSpider node
 
   Tell the system that the call(s) are to be treated as DXSpider node
   andfed new style DX Protocol rather normal user commands.
 
-  11.156.  set/sys_location <lat & long> (9)
+  [1m11.156.  set/sys_location <lat & long> (9)[0m
 
-  set/sys_location <lat & long> Set your cluster latitude and longitude
+  [1mset/sys_location <lat & long> [22mSet your cluster latitude and longitude
 
   In order to get accurate headings and such like you must tell the
   systemwhat your latitude and longitude is. If you have not yet done a
@@ -4378,20 +4378,20 @@
 
 
 
-  11.157.  set/sys_qra <locator> (9)
+  [1m11.157.  set/sys_qra <locator> (9)[0m
 
-  set/sys_qra <locator> Set your cluster QRA Grid locator
-
-
-  11.158.  set/talk (0)
-
-  set/talk Allow TALK messages to come out on your terminal
+  [1mset/sys_qra <locator> [22mSet your cluster QRA Grid locator
 
 
+  [1m11.158.  set/talk (0)[0m
 
-  11.159.  set/usdb <call> <state> <city> (9)
+  [1mset/talk [22mAllow TALK messages to come out on your terminal
 
-  set/usdb <call> <state> <city> add/update a US DB callsign
+
+
+  [1m11.159.  set/usdb <call> <state> <city> (9)[0m
+
+  [1mset/usdb <call> <state> <city> [22madd/update a US DB callsign
 
   This command allows you to add or alter a callsign in the US
   statedatabase. Use with extreme caution. Anything you do here will
@@ -4404,68 +4404,68 @@
 
   see also DELETE/USDB
 
-  11.160.  set/usstate (0)
+  [1m11.160.  set/usstate (0)[0m
 
-  set/usstate Allow US State info on the end of DX announcements
-
-
-  11.161.  set/wcy (0)
-
-  set/wcy Allow WCY messages to come out on your terminal
+  [1mset/usstate [22mAllow US State info on the end of DX announcements
 
 
-  11.162.  set/wwv (0)
+  [1m11.161.  set/wcy (0)[0m
 
-  set/wwv Allow WWV messages to come out on your terminal
-
-
-  11.163.  set/wx (0)
-
-  set/wx Allow WX messages to come out on your terminal
+  [1mset/wcy [22mAllow WCY messages to come out on your terminal
 
 
-  11.164.  show/baddx (1)
+  [1m11.162.  set/wwv (0)[0m
 
-  show/baddx Show all the bad dx calls in the system
+  [1mset/wwv [22mAllow WWV messages to come out on your terminal
+
+
+  [1m11.163.  set/wx (0)[0m
+
+  [1mset/wx [22mAllow WX messages to come out on your terminal
+
+
+  [1m11.164.  show/baddx (1)[0m
+
+  [1mshow/baddx [22mShow all the bad dx calls in the system
 
   Display all the bad dx callsigns in the system, see SET/BADDXfor more
   information.
 
-  11.165.  show/badnode (1)
+  [1m11.165.  show/badnode (1)[0m
 
-  show/badnode Show all the bad nodes in the system
+  [1mshow/badnode [22mShow all the bad nodes in the system
 
   Display all the bad node callsigns in the system, see SET/BADNODEfor
   more information.
 
-  11.166.  show/badspotter (1)
+  [1m11.166.  show/badspotter (1)[0m
 
-  show/badspotter Show all the bad spotters in the system
+  [1mshow/badspotter [22mShow all the bad spotters in the system
 
   Display all the bad spotter's callsigns in the system, see
   SET/BADSPOTTERfor more information.
 
-  11.167.  show/badword (1)
+  [1m11.167.  show/badword (1)[0m
 
-  show/badword Show all the bad words in the system
+  [1mshow/badword [22mShow all the bad words in the system
 
   Display all the bad words in the system, see SET/BADWORDfor more
   information.
 
 
 
-  11.168.  show/chat [<group>] [<lines>] (0)
+  [1m11.168.  show/chat [<group>] [<lines>] (0)[0m
 
-  show/chat [<group>] [<lines>] Show any chat or conferencing
+  [1mshow/chat [<group>] [<lines>] [22mShow any chat or conferencing
 
   This command allows you to see any chat or conferencing that has
   occurred whilst you were away. SHOW/CHAT on its own will show data
   forall groups. If you use a group name then it will show only chat
   forthat group.
 
-  11.169.  show/configuration [<node>] (0)
+  [1m11.169.  show/configuration [<node>] (0)[0m
 
-  show/configuration [<node>] Show all the nodes and users visible
+  [1mshow/configuration [<node>] [22mShow all the nodes and users visible
 
   This command allows you to see all the users that can be seenand the
   nodes to which they are connected.This command is normally abbreviated
@@ -4491,22 +4491,22 @@
 
 
 
-  11.170.  show/configuration/node (0)
+  [1m11.170.  show/configuration/node (0)[0m
 
-  show/configuration/node Show all the nodes connected locally
+  [1mshow/configuration/node [22mShow all the nodes connected locally
 
   Show all the nodes connected to this node.
 
-  11.171.  show/connect (1)
+  [1m11.171.  show/connect (1)[0m
 
-  show/connect Show all the active connections
+  [1mshow/connect [22mShow all the active connections
 
   This command shows information on all the active connections known
   tothe node. This command gives slightly more information than WHO.
 
-  11.172.  show/contest <year and month> (0)
+  [1m11.172.  show/contest <year and month> (0)[0m
 
-  show/contest <year and month> Show all the contests for a month
+  [1mshow/contest <year and month> [22mShow all the contests for a month
 
   Show all known contests which are maintained at
   http://www.sk3bg.se/contest/for a particular month or year. The format
@@ -4517,9 +4517,9 @@
 
 
 
-  11.173.  show/date [<prefix>|<callsign>] (0)
+  [1m11.173.  show/date [<prefix>|<callsign>] (0)[0m
 
-  show/date [<prefix>|<callsign>] Show the local time
+  [1mshow/date [<prefix>|<callsign>] [22mShow the local time
 
   This is very nearly the same as SHOW/TIME, the only difference the
   formatof the date string if no arguments are given.If no prefixes or
@@ -4528,23 +4528,23 @@
   show UTC and UTC + the local offset (not including DST) atthe prefixes
   or callsigns that you specify.
 
-  11.174.  show/db0sdx <callsign> (0)
+  [1m11.174.  show/db0sdx <callsign> (0)[0m
 
-  show/db0sdx <callsign> Show QSL infomation from DB0SDX database
+  [1mshow/db0sdx <callsign> [22mShow QSL infomation from DB0SDX database
 
   This command queries the DB0SDX QSL server on the internetand returns
   any information available for that callsign. This serviceis provided
   for users of this software by http://www.qslinfo.de.See also SHOW/QRZ,
   SHOW/WM7D.
 
-  11.175.  show/debug (9)
+  [1m11.175.  show/debug (9)[0m
 
-  show/debug Show what levels of debug information you are logging
+  [1mshow/debug [22mShow what levels of debug information you are logging
 
 
-  11.176.  show/dx (0)
+  [1m11.176.  show/dx (0)[0m
 
-  show/dx Interrogate the spot database
+  [1mshow/dx [22mInterrogate the spot database
 
   If you just type SHOW/DX you will get the last so many spots(sysop
   configurable, but usually 10).In addition you can add any number of
@@ -4604,9 +4604,9 @@
 
 
 
-  11.177.  show/dxcc <prefix> (0)
+  [1m11.177.  show/dxcc <prefix> (0)[0m
 
-  show/dxcc <prefix> Interrogate the spot database by country
+  [1mshow/dxcc <prefix> [22mInterrogate the spot database by country
 
   This command takes the <prefix> (which can be a full or partial
   callsign if desired), looks up which internal country number it isand
@@ -4627,9 +4627,9 @@
 
 
 
-  11.178.  show/dxqsl <callsign> (0)
+  [1m11.178.  show/dxqsl <callsign> (0)[0m
 
-  show/dxqsl <callsign> Show any QSL info gathered from spots
+  [1mshow/dxqsl <callsign> [22mShow any QSL info gathered from spots
 
   The node collects information from the comment fields in spots
   (thingslike 'VIA EA7WA' or 'QSL-G1TLH') and stores these in a
@@ -4652,16 +4652,16 @@
 
   This gives you more background information.
 
-  11.179.  show/dxstats [days] [date] (0)
+  [1m11.179.  show/dxstats [days] [date] (0)[0m
 
-  show/dxstats [days] [date] Show the DX Statistics
+  [1mshow/dxstats [days] [date] [22mShow the DX Statistics
 
   Show the total DX spots for the last <days> no of days (default is
   31), starting from a <date> (default: today).
 
-  11.180.  show/files [<filearea> [<string>]] (0)
+  [1m11.180.  show/files [<filearea> [<string>]] (0)[0m
 
-  show/files [<filearea> [<string>]] List the contents of a filearea
+  [1mshow/files [<filearea> [<string>]] [22mList the contents of a filearea
 
   SHOW/FILES on its own will show you a list of the various
   fileareasavailable on the system. To see the contents of a particular
@@ -4683,24 +4683,24 @@
 
   See also TYPE - to see the contents of a file.
 
-  11.181.  show/filter (0)
+  [1m11.181.  show/filter (0)[0m
 
-  show/filter Show the contents of all the filters you have set
+  [1mshow/filter [22mShow the contents of all the filters you have set
 
 
   Show the contents of all the filters that are set. This command
   displaysall the filters set - for all the various categories.
 
-  11.182.  show/hfstats [days] [date] (0)
+  [1m11.182.  show/hfstats [days] [date] (0)[0m
 
-  show/hfstats [days] [date] Show the HF DX Statistics
+  [1mshow/hfstats [days] [date] [22mShow the HF DX Statistics
 
   Show the HF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a <date> (default: today).
 
-  11.183.  show/hftable [days] [date] [prefix ...] (0)
+  [1m11.183.  show/hftable [days] [date] [prefix ...] (0)[0m
 
-  show/hftable [days] [date] [prefix ...] Show the HF DX Spotter Table
+  [1mshow/hftable [days] [date] [prefix ...] [22mShow the HF DX Spotter Table
 
   Show the HF DX Spotter table for the list of prefixes for the last
   <days> no of days (default is 31), starting from a <date> (default:
@@ -4742,9 +4742,9 @@
 
 
 
-  11.184.  show/hops <call> [ann|spots|route|wcy|wwv] (8)
+  [1m11.184.  show/hops <call> [ann|spots|route|wcy|wwv] (8)[0m
 
-  show/hops <call> [ann|spots|route|wcy|wwv] Show the hop counts for a
+  [1mshow/hops <call> [ann|spots|route|wcy|wwv] [22mShow the hop counts for a
   node
 
   This command shows the hop counts set up for a node. You can
@@ -4753,28 +4753,28 @@
 
 
 
-  11.185.  show/isolate (1)
+  [1m11.185.  show/isolate (1)[0m
 
-  show/isolate Show list of ISOLATED nodes
+  [1mshow/isolate [22mShow list of ISOLATED nodes
 
 
-  11.186.  show/lockout <prefix>|all (9)
+  [1m11.186.  show/lockout <prefix>|all (9)[0m
 
-  show/lockout <prefix>|all Show the list of locked out or excluded
+  [1mshow/lockout <prefix>|all [22mShow the list of locked out or excluded
   callsigns
 
 
-  11.187.  show/log [<callsign>] (8)
+  [1m11.187.  show/log [<callsign>] (8)[0m
 
-  show/log [<callsign>] Show excerpts from the system log
+  [1mshow/log [<callsign>] [22mShow excerpts from the system log
 
   This command outputs a short section of the system log.  On its ownit
   will output a general logfile.  With the optional callsign it willshow
   output from the log associated with that callsign.
 
-  11.188.  show/moon [ndays] [<prefix>|<callsign>] (0)
+  [1m11.188.  show/moon [ndays] [<prefix>|<callsign>] (0)[0m
 
-  show/moon [ndays] [<prefix>|<callsign>] Show Moon rise and set times
+  [1mshow/moon [ndays] [<prefix>|<callsign>] [22mShow Moon rise and set times
 
   Show the Moon rise and set times for a (list of) prefixes or
   callsigns, together with the azimuth and elevation of the sun
@@ -4809,9 +4809,9 @@
   note that the rise and set times are given as the UT times of rise and
   set on the requested UT day.
 
-  11.189.  show/muf <prefix> [<hours>][long] (0)
+  [1m11.189.  show/muf <prefix> [<hours>][long] (0)[0m
 
-  show/muf <prefix> [<hours>][long] Show the likely propagation to a
+  [1mshow/muf <prefix> [<hours>][long] [22mShow the likely propagation to a
   prefix
 
   This command allow you to estimate the likelihood of you contactinga
@@ -4875,9 +4875,9 @@
   Itshould be noted that the figures will probably not be very useful,
   norterrible accurate, but it is included for completeness.
 
-  11.190.  show/newconfiguration [<node>] (0)
+  [1m11.190.  show/newconfiguration [<node>] (0)[0m
 
-  show/newconfiguration [<node>] Show all the nodes and users visible
+  [1mshow/newconfiguration [<node>] [22mShow all the nodes and users visible
 
   This command allows you to see all the users that can be seenand the
   nodes to which they are connected. This command produces essentially
@@ -4885,23 +4885,23 @@
   the duplication ofany routes that might be present It also uses a
   different formatwhich may not take up quite as much space if you don't
   have anyloops.BE WARNED: the list that is returned can be VERY long
-  11.191.  show/newconfiguration/node (0)
+  [1m11.191.  show/newconfiguration/node (0)[0m
 
-  show/newconfiguration/node Show all the nodes connected locally
+  [1mshow/newconfiguration/node [22mShow all the nodes connected locally
 
   Show all the nodes connected to this node in the new format.
 
-  11.192.  show/node [<callsign> ...] (1)
+  [1m11.192.  show/node [<callsign> ...] (1)[0m
 
-  show/node [<callsign> ...] Show the type and version number of nodes
+  [1mshow/node [<callsign> ...] [22mShow the type and version number of nodes
 
   Show the type and version (if connected) of the nodes specified on
   thecommand line. If no callsigns are specified then a sorted list of
   allthe non-user callsigns known to the system will be displayed.
 
-  11.193.  show/prefix <callsign> (0)
+  [1m11.193.  show/prefix <callsign> (0)[0m
 
-  show/prefix <callsign> Interrogate the prefix database
+  [1mshow/prefix <callsign> [22mInterrogate the prefix database
 
   This command takes the <callsign> (which can be a full or partial
   callsign or a prefix), looks up which internal country number it is
@@ -4909,17 +4909,17 @@
   with the internal country no, the CQ and ITU regions. See also
   SHOW/DXCC
 
-  11.194.  show/program (5)
+  [1m11.194.  show/program (5)[0m
 
-  show/program Show the locations of all the included program modules
+  [1mshow/program [22mShow the locations of all the included program modules
 
   Show the name and location where every program module was load from.
   Thisis useful for checking where you think you have loaded a .pm file
   from.
 
-  11.195.  show/qra <lat> <long> (0)
+  [1m11.195.  show/qra <lat> <long> (0)[0m
 
-  show/qra <lat> <long> Convert lat/long to a QRA Grid locator
+  [1mshow/qra <lat> <long> [22mConvert lat/long to a QRA Grid locator
 
   This is a multipurpose command that allows you either to calculate
   thedistance and bearing between two locators or (if only one locator
@@ -4943,29 +4943,29 @@
 
 
 
-  11.196.  show/qra <locator> [<locator>] (0)
+  [1m11.196.  show/qra <locator> [<locator>] (0)[0m
 
-  show/qra <locator> [<locator>] Show distance between QRA Grid locators
+  [1mshow/qra <locator> [<locator>] [22mShow distance between QRA Grid locators
 
 
 
-  11.197.  show/qrz <callsign> (0)
+  [1m11.197.  show/qrz <callsign> (0)[0m
 
-  show/qrz <callsign> Show any callbook details on a callsign
+  [1mshow/qrz <callsign> [22mShow any callbook details on a callsign
 
   This command queries the QRZ callbook server on the internetand
   returns any information available for that callsign. This serviceis
   provided for users of this software by http://www.qrz.com See also
   SHOW/WM7D for an alternative.
 
-  11.198.  show/registered [<prefix>] (9)
+  [1m11.198.  show/registered [<prefix>] (9)[0m
 
-  show/registered [<prefix>] Show the registered users
+  [1mshow/registered [<prefix>] [22mShow the registered users
 
 
-  11.199.  show/route <callsign> ... (0)
+  [1m11.199.  show/route <callsign> ... (0)[0m
 
-  show/route <callsign> ... Show the route to the callsign
+  [1mshow/route <callsign> ... [22mShow the route to the callsign
 
   This command allows you to see to which node the callsigns specified
   areconnected. It is a sort of inverse sh/config.
@@ -4975,9 +4975,9 @@
 
 
 
-  11.200.  show/satellite <name> [<hours> <interval>] (0)
+  [1m11.200.  show/satellite <name> [<hours> <interval>] (0)[0m
 
-  show/satellite <name> [<hours> <interval>] Show tracking data
+  [1mshow/satellite <name> [<hours> <interval>] [22mShow tracking data
 
   Show the tracking data from your location to the satellite of your
   choicefrom now on for the next few hours.If you use this command
@@ -4994,14 +4994,14 @@
 
 
 
-  11.201.  show/station all [<regex>] (6)
+  [1m11.201.  show/station all [<regex>] (6)[0m
 
-  show/station all [<regex>] Show list of users in the system
+  [1mshow/station all [<regex>] [22mShow list of users in the system
 
 
-  11.202.  show/station [<callsign> ..] (0)
+  [1m11.202.  show/station [<callsign> ..] (0)[0m
 
-  show/station [<callsign> ..] Show information about a callsign
+  [1mshow/station [<callsign> ..] [22mShow information about a callsign
 
   Show the information known about a callsign and whether (and
   where)that callsign is connected to the cluster.
@@ -5013,9 +5013,9 @@
 
   If no callsign is given then show the information for yourself.
 
-  11.203.  show/sun [ndays] [<prefix>|<callsign>] (0)
+  [1m11.203.  show/sun [ndays] [<prefix>|<callsign>] (0)[0m
 
-  show/sun [ndays] [<prefix>|<callsign>] Show sun rise and set times
+  [1mshow/sun [ndays] [<prefix>|<callsign>] [22mShow sun rise and set times
 
   Show the sun rise and set times for a (list of) prefixes or callsigns,
   together with the azimuth and elevation of the sun currently at
@@ -5049,18 +5049,18 @@
   note that the rise and set times are given as the UT times of rise and
   set on the requested UT day.
 
-  11.204.  show/time [<prefix>|<callsign>] (0)
+  [1m11.204.  show/time [<prefix>|<callsign>] (0)[0m
 
-  show/time [<prefix>|<callsign>] Show the local time
+  [1mshow/time [<prefix>|<callsign>] [22mShow the local time
 
   If no prefixes or callsigns are given then this command returns the
   localtime and UTC as the computer has it right now. If you give some
   prefixesthen it will show UTC and UTC + the local offset (not
   including DST) atthe prefixes or callsigns that you specify.
 
-  11.205.  show/usdb [call ..] (0)
+  [1m11.205.  show/usdb [call ..] (0)[0m
 
-  show/usdb [call ..] Show information held on the FCC Call database
+  [1mshow/usdb [call ..] [22mShow information held on the FCC Call database
 
   Show the City and State of a Callsign held on the FCC database ifhis
   is being run on this system, eg:-
@@ -5070,17 +5070,17 @@
 
 
 
-  11.206.  show/vhfstats [days] [date] (0)
+  [1m11.206.  show/vhfstats [days] [date] (0)[0m
 
-  show/vhfstats [days] [date] Show the VHF DX Statistics
+  [1mshow/vhfstats [days] [date] [22mShow the VHF DX Statistics
 
   Show the VHF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a date (default: today).
 
 
-  11.207.  show/vhftable [days] [date] [prefix ...] (0)
+  [1m11.207.  show/vhftable [days] [date] [prefix ...] (0)[0m
 
-  show/vhftable [days] [date] [prefix ...] Show the VHF DX Spotter Table
+  [1mshow/vhftable [days] [date] [prefix ...] [22mShow the VHF DX Spotter Table
 
   Show the VHF DX Spotter table for the list of prefixes for the last
   <days> no of days (default is 31), starting from a date (default:
@@ -5122,48 +5122,48 @@
 
 
 
-  11.208.  show/wcy (0)
+  [1m11.208.  show/wcy (0)[0m
 
-  show/wcy Show last 10 WCY broadcasts
+  [1mshow/wcy [22mShow last 10 WCY broadcasts
 
 
-  11.209.  show/wcy <n> (0)
+  [1m11.209.  show/wcy <n> (0)[0m
 
-  show/wcy <n> Show last <n> WCY broadcasts
+  [1mshow/wcy <n> [22mShow last <n> WCY broadcasts
 
   Display the most recent WCY information that has been received by the
   system
 
-  11.210.  show/wm7d <callsign> (0)
+  [1m11.210.  show/wm7d <callsign> (0)[0m
 
-  show/wm7d <callsign> Show callbook details on a US callsigns
+  [1mshow/wm7d <callsign> [22mShow callbook details on a US callsigns
 
   This command queries the WM7D callbook server on the internetand
   returns any information available for that US callsign. This serviceis
   provided for users of this software by http://www.wm7d.net.See also
   SHOW/QRZ.
 
-  11.211.  show/wwv (0)
+  [1m11.211.  show/wwv (0)[0m
 
-  show/wwv Show last 10 WWV broadcasts
+  [1mshow/wwv [22mShow last 10 WWV broadcasts
 
 
-  11.212.  show/wwv <n> (0)
+  [1m11.212.  show/wwv <n> (0)[0m
 
-  show/wwv <n> Show last <n> WWV broadcasts
+  [1mshow/wwv <n> [22mShow last <n> WWV broadcasts
 
   Display the most recent WWV information that has been received by the
   system
 
-  11.213.  shutdown (5)
+  [1m11.213.  shutdown (5)[0m
 
-  shutdown Shutdown the cluster
+  [1mshutdown [22mShutdown the cluster
 
   Shutdown the cluster and disconnect all the users
 
-  11.214.  spoof <call> <command> (9)
+  [1m11.214.  spoof <call> <command> (9)[0m
 
-  spoof <call> <command> Do a command as though you are another user
+  [1mspoof <call> <command> [22mDo a command as though you are another user
 
   This command is provided so that sysops can set a user's parameters
   withoutme having to write a special 'sysop' version for every user
@@ -5175,30 +5175,30 @@
 
 
 
-  11.215.  stat/channel [<callsign>] (5)
+  [1m11.215.  stat/channel [<callsign>] (5)[0m
 
-  stat/channel [<callsign>] Show the status of a channel on the cluster
+  [1mstat/channel [<callsign>] [22mShow the status of a channel on the cluster
 
   Show the internal status of the channel object either for the channel
   that you are on or else for the callsign that you asked for.Only the
   fields that are defined (in perl term) will be displayed.
 
-  11.216.  stat/db <dbname> (5)
+  [1m11.216.  stat/db <dbname> (5)[0m
 
-  stat/db <dbname> Show the status of a database
+  [1mstat/db <dbname> [22mShow the status of a database
 
   Show the internal status of a database descriptor.Depending on your
   privilege level you will see more or less information. This command is
   unlikely to be of much use to anyone other than a sysop.
 
-  11.217.  stat/msg (1)
+  [1m11.217.  stat/msg (1)[0m
 
-  stat/msg Show the status of the message system
+  [1mstat/msg [22mShow the status of the message system
 
 
-  11.218.  stat/msg <msgno> (1)
+  [1m11.218.  stat/msg <msgno> (1)[0m
 
-  stat/msg <msgno> Show the status of a message
+  [1mstat/msg <msgno> [22mShow the status of a message
 
   This command shows the internal status of a message and includes
   informationsuch as to whom it has been forwarded, its size, origin etc
@@ -5207,37 +5207,37 @@
 
 
 
-  11.219.  stat/route_node <callsign> (5)
+  [1m11.219.  stat/route_node <callsign> (5)[0m
 
-  stat/route_node <callsign> Show the data in a Route::Node object
-
-
-  11.220.  stat/route_node all (5)
-
-  stat/route_node all Show list of all Route::Node objects
+  [1mstat/route_node <callsign> [22mShow the data in a Route::Node object
 
 
-  11.221.  stat/route_user <callsign> (5)
+  [1m11.220.  stat/route_node all (5)[0m
 
-  stat/route_user <callsign> Show the data in a Route::User object
-
-
-  11.222.  stat/route_user all (5)
-
-  stat/route_user all Show list of all Route::User objects
+  [1mstat/route_node all [22mShow list of all Route::Node objects
 
 
-  11.223.  stat/user [<callsign>] (5)
+  [1m11.221.  stat/route_user <callsign> (5)[0m
 
-  stat/user [<callsign>] Show the full status of a user
+  [1mstat/route_user <callsign> [22mShow the data in a Route::User object
+
+
+  [1m11.222.  stat/route_user all (5)[0m
+
+  [1mstat/route_user all [22mShow list of all Route::User objects
+
+
+  [1m11.223.  stat/user [<callsign>] (5)[0m
+
+  [1mstat/user [<callsign>] [22mShow the full status of a user
 
   Shows the full contents of a user record including all the secret
   flagsand stuff.Only the fields that are defined (in perl term) will be
   displayed.
 
-  11.224.  sysop (0)
+  [1m11.224.  sysop (0)[0m
 
-  sysop Regain your privileges if you login remotely
+  [1msysop [22mRegain your privileges if you login remotely
 
   The system automatically reduces your privilege level to that of
   anormal user if you login in remotely. This command allows you
@@ -5265,9 +5265,9 @@
   offerednumbers but nothing will happen when you input a string. Any
   match iscase sensitive.
 
-  11.225.  talk <call> > <node> [<text>] (0)
+  [1m11.225.  talk <call> > <node> [<text>] (0)[0m
 
-  talk <call> > <node> [<text>] Send a text message to another station
+  [1mtalk <call> > <node> [<text>] [22mSend a text message to another station
   via a node
 
   Send a short message to any other station that is visible on the
@@ -5312,14 +5312,14 @@
   will send the hftable as you have it to all the people you are cur-
   rently talking to.
 
-  11.226.  talk <call> [<text>] (0)
+  [1m11.226.  talk <call> [<text>] (0)[0m
 
-  talk <call> [<text>] Send a text message to another station
+  [1mtalk <call> [<text>] [22mSend a text message to another station
 
 
-  11.227.  type <filearea>/<name> (0)
+  [1m11.227.  type <filearea>/<name> (0)[0m
 
-  type <filearea>/<name> Look at the contents of a file in one of the
+  [1mtype <filearea>/<name> [22mLook at the contents of a file in one of the
   fileareas
 
   Type out the contents of a file in a filearea. So, for example, in
@@ -5334,9 +5334,9 @@
   See also SHOW/FILES to see what fileareas are available and a list of
   content.
 
-  11.228.  uncatchup <node call> all|[msgno> ...] (5)
+  [1m11.228.  uncatchup <node call> all|[msgno> ...] (5)[0m
 
-  uncatchup <node call> all|[msgno> ...] Unmark a message as sent
+  [1muncatchup <node call> all|[msgno> ...] [22mUnmark a message as sent
 
 
   When you send messages the fact that you have forwarded it to another
@@ -5361,14 +5361,14 @@
   which will arrange for them to be forward candidates again.Order is
   not important.
 
-  11.229.  unset/announce (0)
+  [1m11.229.  unset/announce (0)[0m
 
-  unset/announce Stop announce messages coming out on your terminal
+  [1munset/announce [22mStop announce messages coming out on your terminal
 
 
-  11.230.  unset/anntalk (0)
+  [1m11.230.  unset/anntalk (0)[0m
 
-  unset/anntalk Stop talk like announce messages on your terminal
+  [1munset/anntalk [22mStop talk like announce messages on your terminal
 
   The announce system on legacy cluster nodes is used as a talk
   substitute because the network is so poorly connected. If you:
@@ -5389,9 +5389,9 @@
 
   allows you to see them again. This is the default.
 
-  11.231.  unset/baddx <call>.. (8)
+  [1m11.231.  unset/baddx <call>.. (8)[0m
 
-  unset/baddx <call>.. Propagate a dx spot with this callsign again
+  [1munset/baddx <call>.. [22mPropagate a dx spot with this callsign again
 
   Setting a word as 'baddx' will prevent spots with that word in
   the'spotted' field (as in: DX 14001.1 FR0G)of a DX spot from going
@@ -5411,9 +5411,9 @@
 
 
 
-  11.232.  unset/badnode <call>.. (8)
+  [1m11.232.  unset/badnode <call>.. (8)[0m
 
-  unset/badnode <call>.. Allow spots from this node again
+  [1munset/badnode <call>.. [22mAllow spots from this node again
 
   Setting a callsign as a 'badnode' will prevent spots from that node
   going any further. They will not be displayed and they will not be
@@ -5435,9 +5435,9 @@
   will allow spots from him again.Use with extreme care. This command
   may well be superceeded by FILTERing.
 
-  11.233.  unset/badspotter <call>.. (8)
+  [1m11.233.  unset/badspotter <call>.. (8)[0m
 
-  unset/badspotter <call>.. Allow spots from this callsign again
+  [1munset/badspotter <call>.. [22mAllow spots from this callsign again
 
   Setting a callsign as a 'badspotter' will prevent spots from this
   callsign going any further. They will not be displayed and they will
@@ -5461,9 +5461,9 @@
   will allow spots from him again.Use with extreme care. This command
   may well be superceded by FILTERing.
 
-  11.234.  unset/badword <word>.. (8)
+  [1m11.234.  unset/badword <word>.. (8)[0m
 
-  unset/badword <word>.. Propagate things with this word again
+  [1munset/badword <word>.. [22mPropagate things with this word again
 
   Setting a word as a 'badword' will prevent things like spots,announces
   or talks with this word in the the text part from going anyfurther.
@@ -5482,14 +5482,14 @@
 
   will allow text with this word again.
 
-  11.235.  unset/beep (0)
+  [1m11.235.  unset/beep (0)[0m
 
-  unset/beep Stop beeps for DX and other messages on your terminal
+  [1munset/beep [22mStop beeps for DX and other messages on your terminal
 
 
-  11.236.  unset/debug <name> (9)
+  [1m11.236.  unset/debug <name> (9)[0m
 
-  unset/debug <name> Remove a debug level from the debug set
+  [1munset/debug <name> [22mRemove a debug level from the debug set
 
   You can choose to log several different levels.  The levels are
 
@@ -5500,14 +5500,14 @@
 
   You can show what levels you are logging with SHOW/DEBUG
 
-  11.237.  unset/dx (0)
+  [1m11.237.  unset/dx (0)[0m
 
-  unset/dx Stop DX messages coming out on your terminal
+  [1munset/dx [22mStop DX messages coming out on your terminal
 
 
-  11.238.  unset/dxcq (0)
+  [1m11.238.  unset/dxcq (0)[0m
 
-  unset/dxcq Stop CQ Zones on the end of DX announcements
+  [1munset/dxcq [22mStop CQ Zones on the end of DX announcements
 
   Display both the Spotter's and the Spotted's CQ Zone on the endof a DX
   announcement (there is just enough room). Some user programscannot
@@ -5516,9 +5516,9 @@
   SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.239.  unset/dxgrid (0)
+  [1m11.239.  unset/dxgrid (0)[0m
 
-  unset/dxgrid Stop QRA Grid Squares on the end of DX announcements
+  [1munset/dxgrid [22mStop QRA Grid Squares on the end of DX announcements
 
   A standard feature which is enabled in version 1.43 and above is that
   if the spotter's grid square is known it is output on the endof a DX
@@ -5527,9 +5527,9 @@
   feature.Conflicts with: SET/DXCQ, SET/DXITUDo a STAT/USER to see which
   flags you have set if you are confused.
 
-  11.240.  unset/dxitu (0)
+  [1m11.240.  unset/dxitu (0)[0m
 
-  unset/dxitu Stop ITU Zones on the end of DX announcements
+  [1munset/dxitu [22mStop ITU Zones on the end of DX announcements
 
   Display both the Spotter's and the Spotted's ITU Zone on the endof a
   DX announcement (there is just enough room). Some user programscannot
@@ -5538,9 +5538,9 @@
   SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.241.  unset/echo (0)
+  [1m11.241.  unset/echo (0)[0m
 
-  unset/echo Stop the cluster echoing your input
+  [1munset/echo [22mStop the cluster echoing your input
 
   If you are connected via a telnet session, different implimentationsof
   telnet handle echo differently depending on whether you are connected
@@ -5548,9 +5548,9 @@
   setting appropriately. The setting is stored in your user profile.YOU
   DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
-  11.242.  unset/email (0)
+  [1m11.242.  unset/email (0)[0m
 
-  unset/email Stop personal msgs being forwarded by email
+  [1munset/email [22mStop personal msgs being forwarded by email
 
   If any personal messages come in for your callsign then you can
   usethese commands to control whether they are forwarded onto your
@@ -5570,14 +5570,14 @@
 
 
 
-  11.243.  unset/here (0)
+  [1m11.243.  unset/here (0)[0m
 
-  unset/here Tell the system you are absent from your terminal
+  [1munset/here [22mTell the system you are absent from your terminal
 
 
-  11.244.  unset/hops <call> ann|spots|route|wwv|wcy (8)
+  [1m11.244.  unset/hops <call> ann|spots|route|wwv|wcy (8)[0m
 
-  unset/hops <call> ann|spots|route|wwv|wcy Unset hop count
+  [1munset/hops <call> ann|spots|route|wwv|wcy [22mUnset hop count
 
   Set the hop count for a particular type of broadcast for a node.This
   command allows you to set up special hop counts for a node for
@@ -5597,41 +5597,41 @@
 
 
 
-  11.245.  unset/isolate (9)
+  [1m11.245.  unset/isolate (9)[0m
 
-  unset/isolate Stop Isolation of a node from the rest of the network
+  [1munset/isolate [22mStop Isolation of a node from the rest of the network
 
   Remove isolation from a node - SET/ISOLATE
 
-  11.246.  unset/lockout <call> (9)
+  [1m11.246.  unset/lockout <call> (9)[0m
 
-  unset/lockout <call> Allow a callsign to connect to the cluster
-
-
-  11.247.  unset/logininfo (0)
-
-  unset/logininfo Inform when a station logs out locally
+  [1munset/lockout <call> [22mAllow a callsign to connect to the cluster
 
 
-  11.248.  unset/password <call> ... (9)
+  [1m11.247.  unset/logininfo (0)[0m
 
-  unset/password <call> ... Delete (remove) a user's password
+  [1munset/logininfo [22mInform when a station logs out locally
+
+
+  [1m11.248.  unset/password <call> ... (9)[0m
+
+  [1munset/password <call> ... [22mDelete (remove) a user's password
 
   This command allows the sysop to completely delete and remove a
   password for a user.
 
-  11.249.  unset/privilege (0)
+  [1m11.249.  unset/privilege (0)[0m
 
-  unset/privilege Remove any privilege for this session
+  [1munset/privilege [22mRemove any privilege for this session
 
   You can use this command to 'protect' this session from
   unauthoriseduse. If you want to get your normal privilege back you
   will need toeither logout and login again (if you are on a console) or
   use theSYSOP command.
 
-  11.250.  unset/prompt (0)
+  [1m11.250.  unset/prompt (0)[0m
 
-  unset/prompt Set your prompt back to default
+  [1munset/prompt [22mSet your prompt back to default
 
   This command will set your user prompt to exactly the string that you
   say. The point of this command to enable a user to interface to
@@ -5646,9 +5646,9 @@
   UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back
   tonormal.
 
-  11.251.  unset/register <call> ... (9)
+  [1m11.251.  unset/register <call> ... (9)[0m
 
-  unset/register <call> ... Mark a user as not registered
+  [1munset/register <call> ... [22mMark a user as not registered
 
   Registration is a concept that you can switch on by executing the
 
@@ -5665,14 +5665,14 @@
   exception to this is that a non-registered user can TALK orSEND
   messages to the sysop.
 
-  11.252.  unset/talk (0)
+  [1m11.252.  unset/talk (0)[0m
 
-  unset/talk Stop TALK messages coming out on your terminal
+  [1munset/talk [22mStop TALK messages coming out on your terminal
 
 
-  11.253.  unset/usstate (0)
+  [1m11.253.  unset/usstate (0)[0m
 
-  unset/usstate Stop US State info on the end of DX announcements
+  [1munset/usstate [22mStop US State info on the end of DX announcements
 
   If the spotter's or spotted's US State is known it is output on the
   end of a DX announcement (there is just enough room). A spotter's
@@ -5684,41 +5684,41 @@
   SET/DXITUDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.254.  unset/wcy (0)
+  [1m11.254.  unset/wcy (0)[0m
 
-  unset/wcy Stop WCY messages coming out on your terminal
-
-
-  11.255.  unset/wwv (0)
-
-  unset/wwv Stop WWV messages coming out on your terminal
+  [1munset/wcy [22mStop WCY messages coming out on your terminal
 
 
-  11.256.  unset/wx (0)
+  [1m11.255.  unset/wwv (0)[0m
 
-  unset/wx Stop WX messages coming out on your terminal
+  [1munset/wwv [22mStop WWV messages coming out on your terminal
 
 
-  11.257.  who (0)
+  [1m11.256.  unset/wx (0)[0m
 
-  who Show who is physically connected
+  [1munset/wx [22mStop WX messages coming out on your terminal
+
+
+  [1m11.257.  who (0)[0m
+
+  [1mwho [22mShow who is physically connected
 
   This is a quick listing that shows which callsigns are connected
   andwhat sort of connection they have
 
-  11.258.  wx <text> (0)
+  [1m11.258.  wx <text> (0)[0m
 
-  wx <text> Send a weather message to local users
-
-
-  11.259.  wx full <text> (0)
-
-  wx full <text> Send a weather message to all cluster users
+  [1mwx <text> [22mSend a weather message to local users
 
 
-  11.260.  wx sysop <text> (5)
+  [1m11.259.  wx full <text> (0)[0m
 
-  wx sysop <text> Send a weather message to other clusters only
+  [1mwx full <text> [22mSend a weather message to all cluster users
+
+
+  [1m11.260.  wx sysop <text> (5)[0m
+
+  [1mwx sysop <text> [22mSend a weather message to other clusters only
 
   Weather messages can sometimes be useful if you are experiencing an
   extremethat may indicate enhanced conditions

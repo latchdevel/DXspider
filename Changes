@@ -1,3 +1,10 @@
+29Dec03=======================================================================
+1. updated dxoldtonew.pl so that it takes an AK1A DX.DAT file (argument on
+command line or a default of /spider/data/DX.DAT and outputs the standard
+DXSpider format spot files. Please be warned that if any of these files 
+already exist, the data will be appended onto the end of the file. Please
+make sure you have backups or at least be aware that this may give strange
+results which may be 'out of order'.
 24May03=======================================================================
 1. Added more french translations from Robert (HB9BZA) and we now have some
 french help as well (also from Robert). A splendid effort. Thank you.

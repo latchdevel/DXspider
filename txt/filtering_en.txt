@@ -57,7 +57,7 @@
 
   ______________________________________________________________________
 
-  1.  Introduction.
+  [1m1.  Introduction.[0m
 
   The PacketCluster software written in the mid-80s by Dick Newell,
   AK1A, has served us well.  Dick has moved on though and has not
@@ -125,7 +125,7 @@
 
 
 
-  2.  Foreword
+  [1m2.  Foreword[0m
 
   While attempting to learn how DXSpider filters work, I found that I
   had to glean bits and pieces of information from the DXSpider User
@@ -139,9 +139,9 @@
 
 
 
-  3.  Configuring Spot Filters
+  [1m3.  Configuring Spot Filters[0m
 
-  3.1.  What is a spot filter?
+  [1m3.1.  What is a spot filter?[0m
 
   A spot filter is one rule (a one line spot filter) or multiple rules
   (multiple line spot filters) that a user can setup within DXSpider to
@@ -166,7 +166,7 @@
 
 
 
-  3.2.  How can filters be used?
+  [1m3.2.  How can filters be used?[0m
 
   For example, let's say our local user has never owned a microphone in
   his life and definitely doesn't want to see any of those useless SSB
@@ -180,7 +180,7 @@
 
 
 
-  4.  Types of spot filters used in DXSpider
+  [1m4.  Types of spot filters used in DXSpider[0m
 
   Basic filter types are "accept", "reject", and "clear" where the
   following applies ...
@@ -203,7 +203,7 @@
   of reject filters are usually easier to administer and change.
 
 
-  4.1.  Numbering lines and slots
+  [1m4.1.  Numbering lines and slots[0m
 
   There are ten usable filter slots in DXSpider. Each slot holds one
   reject and one accept rule. Therefore, each type filter can have up to
@@ -217,7 +217,7 @@
   works.)
 
 
-  Important: The filter rules are applied in sequence, i.e., 0-9. If a
+  [4mImportant:[24m The filter rules are applied in sequence, i.e., 0-9. If a
   line matches, action is taken on that line. The filter sequence acts
   on rules in the order listed.  It acts on the reject filter in each
   slot before acting on the accept filter contained in that slot. If the
@@ -240,7 +240,7 @@
 
 
 
-  4.2.  Reject before accept
+  [1m4.2.  Reject before accept[0m
 
   This is not a good rule for life, but it makes sense for DXSpider
   filters. As a general rule, reject filter rules within a slot are
@@ -249,7 +249,7 @@
   passed to the next filter line in the set.  However, if a spot matches
   an accept filter, it is sent immediately to the user.
 
-  4.3.  Using Multiple Reject Filter Rules
+  [1m4.3.  Using Multiple Reject Filter Rules[0m
 
   Another important concept to know is that you can do everything you
   want to do with multiple reject filters AND NO ACCEPT FILTERS.  By
@@ -321,7 +321,7 @@
 
 
 
-  4.4.  A very useful command
+  [1m4.4.  A very useful command[0m
 
   To see all active filters in use at any time, just type the following
   command ...
@@ -332,13 +332,13 @@
 
 
 
-  4.5.  Case does not matter
+  [1m4.5.  Case does not matter[0m
 
   In entering any filter - case does not matter. Upper, lower, or mixed
   case will not effect how filters work or perform.
 
 
-  4.6.  Qualifiers
+  [1m4.6.  Qualifiers[0m
 
   Logical operands can be used in rule sets to combine multiple actions
   or qualify others. These are ...
@@ -355,7 +355,7 @@
   ().  We will see how these can be used in examples later.
 
 
-  4.7.  Comma Separation
+  [1m4.7.  Comma Separation[0m
 
   Any command can have multiple pattern variables if commas separate
   them.  For example ...
@@ -366,7 +366,7 @@
 
 
 
-  5.  Reject filters
+  [1m5.  Reject filters[0m
 
   A reject filter line means that if a spot matches, send it to the
   trash, dump it, do not send it down the line to the next rule or to
@@ -398,7 +398,7 @@
 
 
 
-  6.  Filters to reject spots based on frequency
+  [1m6.  Filters to reject spots based on frequency[0m
 
 
 
@@ -410,8 +410,8 @@
 
 
 
-  Important: both freq and on are exactly the same and can be used
-  interchangeably - most persons use on (less typing.)
+  Important: both [4mfreq[24m and [4mon[24m are exactly the same and can be used
+  interchangeably - most persons use [4mon[24m (less typing.)
 
 
   For range, you can specify a frequency like 7040, a range of
@@ -419,7 +419,7 @@
   or "region" names defined in the show/bands command.
 
 
-  6.1.  Bands Available
+  [1m6.1.  Bands Available[0m
 
 
 
@@ -461,7 +461,7 @@
 
 
 
-  6.2.  Regions Available
+  [1m6.2.  Regions Available[0m
 
 
 
@@ -482,7 +482,7 @@
 
 
 
-  6.3.  Examples
+  [1m6.3.  Examples[0m
 
   The following line will reject spots on 7,040 kHz and pass all others.
 
@@ -538,7 +538,7 @@
 
 
 
-  6.4.  Sub-bands as part of range
+  [1m6.4.  Sub-bands as part of range[0m
 
   In conjunction with range, you can use the following sub-band names,
 
@@ -569,7 +569,7 @@
 
 
 
-  6.5.  Filters to reject spots based on the "info" data in the spot
+  [1m6.5.  Filters to reject spots based on the "info" data in the spot[0m
 
 
 
@@ -614,12 +614,12 @@
 
 
 
-  Note: The following series of filters are based on call and by.  Call
+  Note: The following series of filters are based on [4mcall[24m and [4mby[24m.  Call
   always references the callsign of the spotted DX station.  By always
   references the callsign of the spotting station.
 
 
-  6.6.  Filters to reject spots based on call
+  [1m6.6.  Filters to reject spots based on call[0m
 
 
 
@@ -662,7 +662,7 @@
 
 
 
-  6.7.  Filters to reject spots based on call_dxcc
+  [1m6.7.  Filters to reject spots based on call_dxcc[0m
 
 
 
@@ -672,7 +672,7 @@
 
   This filter is based on DXCC entities and uses either the country
   prefix or the DXCC entity number, found by using the command
-  show/prefix.
+  [4mshow/prefix[24m.
 
 
   As in ...
@@ -720,7 +720,7 @@
 
 
 
-  6.8.  Filters to reject spots based on call_itu
+  [1m6.8.  Filters to reject spots based on call_itu[0m
 
   Similarly, call_itu and call_zone use ITU regions that can also be
   obtained using the show/prefix <prefix> command (see above.)
@@ -743,7 +743,7 @@
 
 
 
-  6.9.  Filters to reject spots based on call_zone
+  [1m6.9.  Filters to reject spots based on call_zone[0m
 
 
 
@@ -752,7 +752,7 @@
 
 
   This filter is based on CQ zones and uses the CQ zone number found by
-  using the command show/prefix (see above.)
+  using the command [4mshow/prefix[24m (see above.)
 
 
   Example ...
@@ -767,7 +767,7 @@
 
 
 
-  6.10.  Filters to reject spots based on call_state
+  [1m6.10.  Filters to reject spots based on call_state[0m
 
 
 
@@ -775,7 +775,7 @@
 
 
   This filter is based on the state of the call spotted, for those
-  callsigns contained in the usdb database.  Use the command show/usdb
+  callsigns contained in the usdb database.  Use the command [4mshow/usdb[0m
   to see an example of a listing in the database, like this ...
 
 
@@ -797,9 +797,9 @@
 
 
 
-  6.11.  Filters to reject spots based on by
+  [1m6.11.  Filters to reject spots based on by[0m
 
-  by filters are similar to and function exactly as call filters except
+  [4mby[24m filters are similar to and function exactly as call filters except
   that they act on the spotting station callsign and not the spotted
   callsign.
 
@@ -829,7 +829,7 @@
 
 
   This next filter is based on ITU regions and uses the ITU region
-  number found by using the command show/prefix (see above), except that
+  number found by using the command [4mshow/prefix[24m (see above), except that
   it rejects spots generated by a spotting callsign within the ITU
   region and passes all other spots.
 
@@ -840,7 +840,7 @@
 
 
   This filter is based on CQ zones and uses the CQ zone number found by
-  using the command show/prefix (see above), except that it rejects
+  using the command [4mshow/prefix[24m (see above), except that it rejects
   spots generated by a spotting callsign within the CQ zone and passes
   all other spots.
 
@@ -851,7 +851,7 @@
 
 
   This filter is based on the state of the spotting station found by
-  using the command show/usdb and passes all other spots.
+  using the command [4mshow/usdb[24m and passes all other spots.
 
 
 
@@ -859,7 +859,7 @@
 
 
 
-  7.  Accept filters
+  [1m7.  Accept filters[0m
 
   An accept filter line means that if a spot matches pass it on to the
   user, send it down the line to the next rule or to the user, and
@@ -905,7 +905,7 @@
 
 
 
-  7.1.  Filters to accept spots based on frequency
+  [1m7.1.  Filters to accept spots based on frequency[0m
 
 
 
@@ -917,7 +917,7 @@
 
 
 
-  Important: as noted before, both freq and on are exactly the same and
+  Important: as noted before, both [4mfreq[24m and [4mon[24m are exactly the same and
   can be used interchangeably.
 
 
@@ -965,7 +965,7 @@
 
 
 
-  7.2.  Sub-bands as part of range
+  [1m7.2.  Sub-bands as part of range[0m
 
   In conjunction with range, you can use the following sub-band names:
   CW, RTTY, DATA, SSB, and SSTV by using a back-slash [(band or
@@ -994,7 +994,7 @@
 
 
 
-  7.3.  Filters to accept spots based on info
+  [1m7.3.  Filters to accept spots based on info[0m
 
 
 
@@ -1037,12 +1037,12 @@
 
 
 
-  Note: The following series of filters are based on call and by.  Call
+  Note: The following series of filters are based on [4mcall[24m and [4mby[24m.  Call
   always references the callsign of the spotted DX station.  By always
   references the callsign of the spotting station.
 
 
-  7.4.  Filters to accept spots based on call
+  [1m7.4.  Filters to accept spots based on call[0m
 
 
 
@@ -1085,7 +1085,7 @@
 
 
 
-  7.5.  Filters to accept spots based on call_dxcc
+  [1m7.5.  Filters to accept spots based on call_dxcc[0m
 
 
 
@@ -1095,7 +1095,7 @@
 
   This filter is based on DXCC entities and uses either the country
   prefixes or the DXCC entity number found by using the command
-  show/prefix. See example of show/prefix above.
+  [4mshow/prefix[24m. See example of [4mshow/prefix[24m above.
 
 
   Examples ...
@@ -1124,10 +1124,10 @@
 
 
 
-  7.6.  Filters to accept spots based on call_itu
+  [1m7.6.  Filters to accept spots based on call_itu[0m
 
   Similarly, call_itu and call_zone use ITU regions that can also be
-  obtained using the show/prefix command (see above.)
+  obtained using the [4mshow/prefix[24m command (see above.)
 
 
 
@@ -1147,7 +1147,7 @@
 
 
 
-  7.7.  Filters to accept spots based on call_zone
+  [1m7.7.  Filters to accept spots based on call_zone[0m
 
 
 
@@ -1156,7 +1156,7 @@
 
 
   This filter is based on CQ zones and uses the CQ zone number found by
-  using the command show/prefix (see above.)
+  using the command [4mshow/prefix[24m (see above.)
 
 
   Example ...
@@ -1171,7 +1171,7 @@
 
 
 
-  7.8.  Filters to accept spots based on call_state
+  [1m7.8.  Filters to accept spots based on call_state[0m
 
 
 
@@ -1195,9 +1195,9 @@
        accept/spot 0  call_state pa
 
 
-  7.9.  Filters to accept spots based on by
+  [1m7.9.  Filters to accept spots based on by[0m
 
-  by filters are similar to and function exactly as call filters except
+  [4mby[24m filters are similar to and function exactly as call filters except
   that they act on the spotting station callsign and not the spotted
   callsign
 
@@ -1216,7 +1216,7 @@
 
 
   This filter is based on DXCC entities and uses the DXCC entity number
-  found by using the command show/prefix and it accepts spots generated
+  found by using the command [4mshow/prefix[24m and it accepts spots generated
   within the spotting DXCC entity and rejects other spots.
 
 
@@ -1226,7 +1226,7 @@
 
 
   This next filter is based on ITU regions and uses the ITU region
-  number found by using the command show/prefix (see above), except that
+  number found by using the command [4mshow/prefix[24m (see above), except that
   it accepts spots generated by a spotting callsign within the ITU
   region and rejects all other spots.
 
@@ -1237,7 +1237,7 @@
 
 
   This filter is based on CQ zones and uses the CQ zone number found by
-  using the command show/prefix (see above), except that it accepts
+  using the command [4mshow/prefix[24m (see above), except that it accepts
   spots generated by a spotting callsign within the CQ zone and rejects
   all other spots.
 
@@ -1248,7 +1248,7 @@
 
 
   This filters is based on the state location of the spotting station
-  found by using the command show/usdb and accepts only those spots
+  found by using the command [4mshow/usdb[24m and accepts only those spots
   generated by stations from the states(s) specified rejecting all other
   spots.
 
@@ -1257,7 +1257,7 @@
        Syntax:  accept/spot [0-9] by_state <state2-letter postal codes>
 
 
-  8.  Clear filters
+  [1m8.  Clear filters[0m
 
   A clear filter line will delete the slot number specified or all slots
   and consequently all filters that have been created by a user.
@@ -1298,7 +1298,7 @@
   slot 1 by default.
 
 
-  9.  Some Practice Examples
+  [1m9.  Some Practice Examples[0m
 
   The proceeding sections have discussed the basics of DXSpider filters.
   The following are some examples utilizing basic filters and some not
@@ -1414,7 +1414,7 @@
   were not used, slot 1 is assumed.
 
 
-  10.  Contacts
+  [1m10.  Contacts[0m
 
   This Primer is a work in progress. Additional features and filters are
   added from time to time by Dirk Koopman, G1TLH, the developer behind
