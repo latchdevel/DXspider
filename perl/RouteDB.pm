@@ -36,7 +36,7 @@ use vars qw(%list %valid $default);
 $default = 99;					# the number of hops to use if we don't know
 %valid = (
 		  call => "0,Callsign",
-		  items => "0,Interfaces,parray",
+		  item => "0,Interfaces,parray",
 		  t => '0,Last Seen,atime',
 		  hops => '0,Hops',
 		  count => '0,Times Seen',
@@ -46,7 +46,7 @@ sub new
 {
 	my $pkg = shift;
 	my $call = shift;
-	return bless {call => $call, items => {}}, (ref $pkg || $pkg);
+	return bless {call => $call, list => {}}, (ref $pkg || $pkg);
 }
 
 # get the best one
@@ -76,7 +76,7 @@ sub _sorted
 		} else {
 			$a->{hops} <=> $b->{hops};
 		} 
-	} values %{$ref->{items}};
+	} values %{$ref->{item}};
 }
 
 
@@ -90,11 +90,12 @@ sub update
 	my $interface = shift;
 	my $hops = shift || $default;
 	my $ref = $list{$call} || RouteDB->new($call);
-	my $iref = $ref->{list}->{$interface} ||= RouteDB::Item->new($call, $interface);
+	my $iref = $ref->{item}->{$interface} ||= RouteDB::Item->new($interface);
 	$iref->{count}++;
 	$iref->{hops} = $hops if $hops < $iref->{hops};
 	$iref->{t} = shift || $main::systime;
-	$ref->{list}->{$interface} ||= $iref;
+	$ref->{item}->{$interface} ||= $iref;
+	$list{$call} ||= $ref;
 }
 
 sub delete
@@ -102,7 +103,7 @@ sub delete
 	my $call = shift;
 	my $interface = shift;
 	my $ref = $list{$call};
-	delete $ref->{list}->{$interface} if $ref;
+	delete $ref->{item}->{$interface} if $ref;
 }
 
 #

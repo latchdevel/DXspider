@@ -516,7 +516,7 @@ sub handle_11
 	}
 
 	# remember a route
-	RouteDB::update($_[7], $self->{call});
+#	RouteDB::update($_[7], $self->{call});
 #	RouteDB::update($_[6], $_[7]);
 	
 	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $_[6], $_[7]);
@@ -652,7 +652,7 @@ sub handle_12
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
 		# remember a route
-		RouteDB::update($_[5], $self->{call});
+#		RouteDB::update($_[5], $self->{call});
 #		RouteDB::update($_[1], $_[5]);
 
 		# ignore something that looks like a chat line coming in with sysop
@@ -2086,12 +2086,12 @@ sub route
 	unless ($dxchan) {
 		my $rcall = RouteDB::get($call);
 		if ($rcall) {
-			if ($rcall eq $self->{call}) {
+			if ($self && $rcall eq $self->{call}) {
 				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
 				return;
 			}
-			$dxchan = DXChannel->get($call);
-			dbg("route: $call -> $dxchan->{call} using RouteDB" ) if isdbg('route') && $dxchan;
+			$dxchan = DXChannel->get($rcall);
+			dbg("route: $call -> $rcall using RouteDB" ) if isdbg('route') && $dxchan;
 		}
 	}
 

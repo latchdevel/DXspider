@@ -12,6 +12,8 @@ my @out;
 
 return (1, $self->msg('e6')) unless @list;
 
+use RouteDB;
+
 my $l;
 foreach $l (@list) {
 	my $ref = Route::get($l);
@@ -20,6 +22,13 @@ foreach $l (@list) {
 		push @out, $self->msg('route', $l, $parents,  join(',', map {$_->call} $ref->alldxchan));
 	} else {
 		push @out, $self->msg('e7', $l);
+	}
+	my @in = RouteDB::_sorted($l);
+	if (@in) {
+		push @out, "Learned Routes:";
+		for (@in) {
+			push @out, "$l via $_->{call} count: $_->{count} last heard: " . atime($_->{t});
+		}
 	}
 }
 
