@@ -34,7 +34,7 @@ foreach $l (@list) {
 	if (!$t || $@) {
 		push @out, $self->msg('e18', 'QRZ.com');
 	} else {
-		my $s = "GET $url/dxcluster.cgi?callsign=$l\&uid=$Internet::qrz_uid\&pw=$Internet::qrz_pw HTTP/1.0\n\n";
+		my $s = "GET $url/p/dxcluster.pl?callsign=$l\&username=$Internet::qrz_uid\&password=$Internet::qrz_pw HTTP/1.0\n\n";
 		dbg($s) if isdbg('qrz');
 		$t->print($s);
 		Log('call', "$call: show/qrz \U$l");
