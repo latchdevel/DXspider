@@ -27,10 +27,14 @@ use DXUtil;
 use Spot;
 use DXDb;
 
-my $end = 0;
+use vars qw($end $lastyear $lastday);
+
+$end = 0;
 $SIG{TERM} = $SIG{INT} = sub { $end++ };
 
 my $qslfn = "localqsl";
+$lastyear = 0;
+$lastday = 0;
 
 $main::systime = time;
 
@@ -41,18 +45,27 @@ unless ($db) {
 	DXDb::load();
 	$db = DXDb::getdesc($qslfn);
 }
-
 die "cannot load $qslfn $!" unless $db;
+
+# find start point (if any)
+my $statefn = "$root/data/$qslfn.state";
+my $s = readfilestr($statefn);
+eval $s if $s;
 
 my $base = "$root/data/spots";
 
 opendir YEAR, $base or die "$base $!";
 foreach my $year (sort readdir YEAR) {
 	next if $year =~ /^\./;
+	next unless $year ge $lastyear;
+	
 	my $baseyear = "$base/$year";
 	opendir DAY,  $baseyear or die "$baseyear $!";
 	foreach my $day (sort readdir DAY) {
-		next unless $day =~ /dat$/;
+		next unless $day =~ /(\d+)\.dat$/;
+		my $dayno = $1 + 0;
+		next unless $dayno >= $lastday;
+		
 		my $fn = "$baseyear/$day";
 		my $f = new IO::File $fn  or die "$fn ($!)"; 
 		print "doing: $fn\n";
@@ -66,6 +79,9 @@ foreach my $year (sort readdir YEAR) {
 				}
 			}
 		}
+		$f->close;
+		$f = new IO::File ">$statefn" or die "cannot open $statefn $!";
+		print $f "\$lastyear = $year; \$lastday = $dayno;\n";
 		$f->close;
 	}
 }
@@ -96,8 +112,8 @@ sub update
 	if (@in && $in[0]->[0] < $t) {
 		@in = grep {$_->[1] ne $by} @in;
 	}
-	unshift @in, [$t, $by, $comment];
-	pop @in, if @in > 5;
+	unshift @in, [$t, $by, $comment] if grep is_callsign($1), split(/\s+/, $comment);
+	pop @in, if @in > 10;
 	return join "\n", (map {(cldatetime($_->[0]) . " by $_->[1]: $_->[2]")} @in);
 }
 
