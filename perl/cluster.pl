@@ -89,19 +89,17 @@ sub rec
 		# is there one already connected elsewhere in the cluster (and not a cluster)
 		my $user = DXUser->get($call);
 		if ($user) {
-			if ($user->sort eq 'A' && !DXCluster->get_exact($call)) {
-				;
-			} elsif ($user->sort eq 'U' && $call eq $main::myalias && !DXCluster->get_exact($call)) {
+			if (($user->sort eq 'A' || $call == $myalias) && !DXCluster->get_exact($call)) {
 				;
 			} else {
-				if (DXChannel->get($call)) {
+				if (DXCluster->get($call) || DXChannel->get($call)) {
 					my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
 					already_conn($conn, $call, $mess);
 					return;
 				}
 			}
 		} else {
-			if (DXChannel->get($call)) {
+			if (DXCluster->get($call) || DXChannel->get($call)) {
 				my $mess = DXM::msg($lang, 'conother', $call);
 				already_conn($conn, $call, $mess);
 				return;

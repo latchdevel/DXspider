@@ -1,3 +1,9 @@
+21Dec98========================================================================
+1. Added "issue" to the client program for 'login' connections
+2. Added more docs for client program.
+3. Fixed problem introduced in 1.12 where a connect locally with a callsign of
+someone connected remotely would stop the cluster.
+4. issue release 1.13
 20Dec98========================================================================
 1. Removed all the warnings I get with perl -w (at least for just starting the
 cluster and running a few commands).
