@@ -73,6 +73,7 @@ sub listdups
 	my $regex = shift;
 
 	$regex =~ s/[\^\$\@\%]//g;
+	$regex = ".*$regex" if $regex;
 	$regex = "^$let" . $regex;
 	my @out;
 	for (sort { $d{$a} <=> $d{$b} } grep { m{$regex}i } keys %d) {

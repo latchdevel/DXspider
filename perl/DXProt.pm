@@ -422,7 +422,7 @@ sub normal
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
-				dbg('chan', "Duplicate Announce ignored\n");
+				dbg('chan', "Duplicate Announce ignored");
 				return;
 			}
 			
