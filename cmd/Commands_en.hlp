@@ -1601,8 +1601,10 @@ If no message number is given then the status of the message system is
 displayed.
 
 === 5^STAT/ROUTE_NODE <callsign>^Show the data in a Route::Node object
+=== 5^STAT/ROUTE_NODE all^Show list of all Route::Node objects
 
 === 5^STAT/ROUTE_USER <callsign>^Show the data in a Route::User object
+=== 5^STAT/ROUTE_USER all^Show list of all Route::User objects
 
 === 5^STAT/USER [<callsign>]^Show the full status of a user
 Shows the full contents of a user record including all the secret flags
