@@ -50,6 +50,45 @@ $khistpos = 0;
 $spos = $pos = $lth = 0;
 $inbuf = "";
 
+# do the screen initialisation
+sub do_initscr
+{
+	$scr = new Curses;
+	raw();
+	noecho();
+	$has_colors = has_colors();
+	
+	if ($has_colors) {
+		start_color();
+		init_pair(0, $foreground, $background);
+		init_pair(1, COLOR_RED, $background);
+		init_pair(2, COLOR_YELLOW, $background);
+		init_pair(3, COLOR_GREEN, $background);
+		init_pair(4, COLOR_CYAN, $background);
+		init_pair(5, COLOR_BLUE, $background);
+		init_pair(6, COLOR_MAGENTA, $background);
+	}
+	
+	$top = $scr->subwin(LINES()-4, COLS, 0, 0);
+	$top->intrflush(0);
+	$top->scrollok(1);
+	$scr->addstr(LINES()-4, 0, '-' x COLS);
+	$bot = $scr->subwin(3, COLS, LINES()-3, 0);
+	$bot->intrflush(0);
+	$bot->scrollok(1);
+	$bot->keypad(1);
+	$bot->move(1,0);
+	$scr->refresh();
+	
+	$pagel = LINES()-4;
+}
+
+sub do_resize
+{
+	undef $scr;
+	do_initscr();
+}
+
 # cease communications
 sub cease
 {
@@ -82,6 +121,18 @@ sub setattr
 	}
 }
 
+# measure the no of screen lines a line will take
+sub measure
+{
+	my $line = shift;
+	return 0 unless $line;
+
+	my $l = length $line;
+	my $lines = int ($l / COLS());
+	$lines++ if $l / COLS() > $lines;
+	return $lines;
+}
+
 # display the top screen
 sub show_screen
 {
@@ -98,20 +149,27 @@ sub show_screen
 	} else {
 		
 		# anywhere else
-		my $p = $spos - $pages;
-		my $i;
+		my ($i, $l);
+		my $p = $spos-1;
+		for ($i = 0; $i <= $pagel && $p >= 0; ) {
+			$l = measure($shistory[$p]);
+			$i += $l;
+			$p-- if $i < $pagel;
+		}
 		$p = 0 if $p < 0;
 		
 		$top->move(0, 0);
 		$top->attrset(COLOR_PAIR(0)) if $has_colors;
 		$top->clrtobot();
-		for ($i = 0; $i < $pages && $p < @shistory; $i++, $p++) {
+		for ($i = 0; $i <= $pagel && $p < @shistory; $p++) {
 			my $line = $shistory[$p];
-			$line = substr($line, 0, COLS()) if length $line > COLS();
+			my $lines = measure($line);
+			last if $i + $lines > $pagel;
 			$top->move($i, 0);
 			setattr($line);
 			$top->addstr($line);
 			$top->attrset(COLOR_PAIR(0)) if $has_colors;
+			$i += $lines;
 		}
 		$spos = $p;
 	}
@@ -213,7 +271,12 @@ sub rec_stdin
 			}
 		} elsif ($r eq KEY_PPAGE || $r eq "\032") {
 			if ($spos > 0) {
-				$spos -= $pages;
+				my ($i, $l);
+				for ($i = 0; $i <= $pagel && $spos >= 0; ) {
+					$l = measure($shistory[$spos]);
+					$i += $l;
+					$spos-- if $i <= $pagel;
+				}
 				$spos = 0 if $spos < 0;
 				show_screen();
 			} else {
@@ -221,7 +284,12 @@ sub rec_stdin
 			}
 		} elsif ($r eq KEY_NPAGE || $r eq "\026") {
 			if ($spos < @shistory - 1) {
-				$spos += $pages;
+				my ($i, $l);
+				for ($i = 0; $i <= $pagel && $spos <= @shistory; ) {
+					$l = measure($shistory[$spos]);
+					$i += $l;
+					$spos++ if $i <= $pagel;
+				}
 				$spos = @shistory if $spos > @shistory;
 				show_screen();
 			} else {
@@ -284,7 +352,7 @@ sub rec_stdin
 			$pos++;
 			$lth++;
 		} elsif ($r eq "\014" || $r eq "\022") {
-#			curscr()->refresh();
+			#do_resize();
 			return;
 		} elsif ($r eq "\013") {
 			$inbuf = substr($inbuf, 0, $pos);
@@ -330,38 +398,12 @@ if (! $conn) {
 
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
+#$SIG{'WINCH'} = \&do_resize;
 $SIG{'HUP'} = 'IGNORE';
 
-$scr = new Curses;
-raw();
-noecho();
-$has_colors = has_colors();
-
-if ($has_colors) {
-	start_color();
-	init_pair(0, $foreground, $background);
-	init_pair(1, COLOR_RED, $background);
-	init_pair(2, COLOR_YELLOW, $background);
-	init_pair(3, COLOR_GREEN, $background);
-	init_pair(4, COLOR_CYAN, $background);
-	init_pair(5, COLOR_BLUE, $background);
-	init_pair(6, COLOR_MAGENTA, $background);
-}
-
-$top = $scr->subwin(LINES()-4, COLS, 0, 0);
-$top->intrflush(0);
-$top->scrollok(1);
-$scr->addstr(LINES()-4, 0, '-' x COLS);
-$bot = $scr->subwin(3, COLS, LINES()-3, 0);
-$bot->intrflush(0);
-$bot->scrollok(1);
-$bot->keypad(1);
-$bot->move(1,0);
-$scr->refresh();
+do_initscr();
 
 $SIG{__DIE__} = \&sig_term;
-
-$pages = LINES()-4;
 
 $conn->send_now("A$call|$connsort");
 $conn->send_now("I$call|set/page $maxshist");
