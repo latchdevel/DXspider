@@ -1,3 +1,6 @@
+16Jul99=======================================================================
+1. drop frames with 'illegal' characters in them (but pass frames with 
+embedded %XX characters).
 15Jul99=======================================================================
 1. Changed grepdbg to accept a regexp. More useful (to me anyway).
 2. Altered init command so that it doesn't send PC21s down the initted 

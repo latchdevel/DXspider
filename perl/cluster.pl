@@ -233,13 +233,15 @@ sub process_inqueue
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
 	my ($sort, $call, $line) = $data =~ /^(\w)([A-Z0-9\-]+)\|(.*)$/;
-
+	my $error;
+	
 	# the above regexp must work
 	return unless ($sort && $call && $line);
 	
 	# translate any crappy characters into hex characters 
 	if ($line =~ /[\x00-\x06\x08\x0a-\x1f\x7f-\xff]/o) {
 		$line =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
+		++$error;
 #		dbg('chan', "<- $sort $call **CRAP**: $line");
 #		return;
 	}
@@ -253,10 +255,13 @@ sub process_inqueue
 		$dxchan->start($line, $sort);  
 	} elsif ($sort eq 'I') {
 		die "\$user not defined for $call" if !defined $user;
-		
-		# normal input
-		$dxchan->normal($line);
-		
+
+		if ($error) {
+			dbg(chan, "DROPPED with $error duff characters");
+		} else {
+			# normal input
+			$dxchan->normal($line);
+		}
 		disconnect($dxchan) if ($dxchan->{state} eq 'bye');
 	} elsif ($sort eq 'Z') {
 		disconnect($dxchan);
