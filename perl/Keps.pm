@@ -1,6 +1,8 @@
 #
 # this file is automatically produced by convkeps.pl
 #
+# Last update: Fri Mar 10 21:40:03 2000
+#
 
 package Sun;
 

@@ -8,7 +8,8 @@
 # It will write a file called /spider/local/Keps.pm, this means that
 # the latest version will be read in every time you restart the 
 # cluster.pl. You can also call Sun::load from a cron line if
-# you like to re-read it automatically.
+# you like to re-read it automatically. If you update it manually
+# load/keps will load the latest version into the cluster
 #
 # This program is designed to be called from /etc/aliases or
 # a .forward file so you can get yourself on the keps mailing
@@ -20,12 +21,19 @@
 #
 # http://www.amsat.org/amsat/ftp/keps/current/nasa.all
 #
+# Please note that this will UPDATE your keps file
+# 
+# Usage: 
+#    email | convkeps.pl        (in amsat email format)  
+#    convkeps.pl -p keps.in     (a file with just plain keps)
+# 
 # Copyright (c) 2000 Dirk Koopman G1TLH
 #
 # $Id$
 #
 
 require 5.004;
+package Sun;
 
 # search local then perl directories
 BEGIN {
@@ -38,18 +46,32 @@ BEGIN {
 }
 
 use strict;
-use Data::Dumper;
+use vars qw($root %keps);
 
-use vars qw($root);
+use Data::Dumper;
+use Keps;
 
 my $fn = "$root/local/Keps.pm";
 my $state = 0;
 my $name;
-my %keps;
 my $ref;
 my $line;
+my $f = \*STDIN;
 
-while (<STDIN>) {
+while (@ARGV) {
+	my $arg = shift @ARGV;
+	if ($arg eq '-p') {
+		$state = 1;
+	} elsif ($arg eq '-e') {
+		$state = 0;
+	} elsif ($arg =~ /^-/) {
+		die "Usage: convkeps.pl [-e|-p] [<filename>]\n\t-p - plain file just containing keps\n\t-e - amsat email format input file (default)\n";
+	} else {
+		open (IN, $arg) or die "cannot open $arg (!$)";
+		$f = \*IN;
+	}
+}
+while (<$f>) {
 	++$line;
 	chomp;
 	s/^\s+//;
@@ -113,6 +135,7 @@ $dd->Indent(1);
 $dd->Quotekeys(0);
 open(OUT, ">$fn") or die "$fn $!";
 print OUT "#\n# this file is automatically produced by convkeps.pl\n#\n";
+print OUT "# Last update: ", scalar gmtime, "\n#\n";
 print OUT "\npackage Sun;\n\n";
 print OUT $dd->Dumpxs;
 print OUT "\n";
