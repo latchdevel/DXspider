@@ -31,7 +31,7 @@ use WCY;
 use Sun;
 use Internet;
 use Script;
-
+use Net::Telnet;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount);
