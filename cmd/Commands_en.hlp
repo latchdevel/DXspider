@@ -1269,7 +1269,8 @@ Remove isolation from a node - SET/ISOLATE
 
 === 0^SET/LANGUAGE <lang>^Set the language you want to use
 You can select the language that you want the cluster to use. Currently
-the languages available are en (english) and nl (dutch).
+the languages available are en (English), de (German), es (Spanish) 
+and nl (Dutch).
 
 === 0^SET/LOCATION <lat & long>^Set your latitude and longitude
 === 9^SET/SYS_LOCATION <lat & long>^Set your cluster latitude and longitude
