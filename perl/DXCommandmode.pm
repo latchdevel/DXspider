@@ -71,7 +71,7 @@ sub new
 	my @rout = $main::routeroot->add_user($call, Route::here(1));
 
 	# ALWAYS output the user
-	my $thing = Thingy::Hello->new(user => $self->{call});
+	my $thing = Thingy::Hello->new(user => $call);
 	$thing->broadcast($self);
 	
 	my $ref = Route::User::get($call);

@@ -697,15 +697,14 @@ sub handle_16
 		return;
 	}
 
-
-	RouteDB::update($ncall, $origin);
+	RouteDB::update($ncall, $self->{call});
 
 	# do we believe this call? 
-	unless ($ncall eq $origin || $self->is_believed($ncall)) {
-		if (my $ivp = Investigate::get($ncall, $origin)) {
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
 		} else {
-			dbg("PCPROT: We don't believe $ncall on $origin") if isdbg('chanerr');
+			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
 		}
 		return;
 	}
@@ -719,17 +718,74 @@ sub handle_16
 
 	# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
 	# fix it up in the routing tables and issue it forth before the PC16
+	unless ($parent) {
+		my $nl = $pc19list{$ncall};
+
+		if ($nl && @_ > 3) { # 3 because of the hop count!
+
+			# this is a new (remembered) node, now attach it to me if it isn't in filtered
+			# and we haven't disallowed it
+			my $user = DXUser->get_current($ncall);
+			if (!$user) {
+				$user = DXUser->new($ncall);
+				$user->sort('A');
+				$user->priv(1);	# I have relented and defaulted nodes
+				$user->lockout(1);
+				$user->homenode($ncall);
+				$user->node($ncall);
+			}
+
+			my $wantpc19 = $user->wantroutepc19;
+			if ($wantpc19 || !defined $wantpc19) {
+				my $new = Route->new($ncall); # throw away
+				if ($self->in_filter_route($new)) {
+					my @nrout;
+					for (@$nl) {
+						$parent = Route::Node::get($_->[0]);
+						$dxchan = $parent->dxchan if $parent;
+						if ($dxchan && $dxchan ne $self) {
+							dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+							$parent = undef;
+						}
 	if ($parent) {
+							my $r = $parent->add($ncall, $_->[1], $_->[2]);
+							push @nrout, $r unless @nrout;
+						}
+					}
+					$user->wantroutepc19(1) unless defined $wantpc19; # for now we work on the basis that pc16 = real route 
+					$user->lastin($main::systime) unless DXChannel->get($ncall);
+					$user->put;
+						
+					# route the pc19 - this will cause 'stuttering PC19s' for a while
+					$self->route_pc19($origin, $line, @nrout) if @nrout ;
+					$parent = Route::Node::get($ncall);
+					unless ($parent) {
+						dbg("PCPROT: lost $ncall after sending PC19 for it?");
+						return;
+					}
+				} else {
+					return;
+				}
+				delete $pc19list{$ncall};
+			}
+		} else {
+			dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
+			return;
+		}
+	} else {
 
 		$dxchan = $parent->dxchan;
 		if ($dxchan && $dxchan ne $self) {
-			dbg("PCPROT: PC16 from $origin trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+			dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 			return;
 		}
 
+		# input filter if required
+		return unless $self->in_filter_route($parent);
+	}
 		
 		my $i;
-		my $rout;
+	my @rout;
 		for ($i = 2; $i < $#_; $i++) {
 			my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
 			next unless $call && $conf && defined $here && is_callsign($call);
@@ -737,22 +793,41 @@ sub handle_16
 			
 			eph_del_regex("^PC17\\^$call\\^$ncall");
 				
-			my $flags = $here ? 1 : 0;
-			$rout .= "$flags$call:";
+		$conf = $conf eq '*';
+
+		# reject this if we think it is a node already
+		my $r = Route::Node::get($call);
+		my $u = DXUser->get_current($call) unless $r;
+		if ($r || ($u && $u->is_node)) {
+			dbg("PCPROT: $call is a node") if isdbg('chanerr');
+			next;
 		}
 		
+		$r = Route::User::get($call);
+		my $flags = Route::here($here)|Route::conf($conf);
 
-		if ($rout) {
-			chop $rout;
-			my $thing = Thingy::Rt->new(origin=>$main::mycall, user=>$self->{call});
-			$thing->from_DXProt(t=>'au', $ncall eq $self->{call} ? () : ('n', "1$ncall"), u=>$rout, DXProt=>$line);
-			$thing->process($self);
-		} else {
-			dbg("PCPROT: No usable users") if isdbg('chanerr');
+		if ($r) {
+			my $au = $r->addparent($parent);					
+			if ($r->flags != $flags) {
+				$r->flags($flags);
+				$au = $r;
 		}
+			push @rout, $r if $au;
 	} else {
-		dbg("PCPROT: no PC19 seen for $ncall" ) if isdbg('chanerr');
+			push @rout, $parent->add_user($call, $flags);
+		}
+		
+				
+		# add this station to the user database, if required
+		$call =~ s/-\d+$//o;	# remove ssid for users
+		my $user = DXUser->get_current($call);
+		$user = DXUser->new($call) if !$user;
+		$user->homenode($parent->call) if !$user->homenode;
+		$user->node($parent->call);
+		$user->lastin($main::systime) unless DXChannel->get($call);
+		$user->put;
 	}
+	$self->route_pc16($origin, $line, $parent, @rout) if @rout;
 }
 		
 # remove a user
@@ -770,7 +845,7 @@ sub handle_17
 			
 	# do I want users from this channel?
 	unless ($self->user->wantpc16) {
-		dbg("PCPROT: don't send users to $origin") if isdbg('chanerr');
+		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
 		return;
 	}
 	if ($ncall eq $main::mycall) {
@@ -778,14 +853,14 @@ sub handle_17
 		return;
 	}
 
-	RouteDB::delete($ncall, $origin);
+	RouteDB::delete($ncall, $self->{call});
 
 	# do we believe this call? 
-	unless ($ncall eq $origin || $self->is_believed($ncall)) {
-		if (my $ivp = Investigate::get($ncall, $origin)) {
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
 		} else {
-			dbg("PCPROT: We don't believe $ncall on $origin") if isdbg('chanerr');
+			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
 		}
 		return;
 	}
@@ -801,8 +876,16 @@ sub handle_17
 
 	$dxchan = $parent->dxchan if $parent;
 	if ($dxchan && $dxchan ne $self) {
-		dbg("PCPROT: PC17 from $origin trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 		return;
+	}
+
+	# input filter if required and then remove user if present
+	if ($parent) {
+#		return unless $self->in_filter_route($parent);	
+		$parent->del_user($uref) if $uref;
+	} else {
+		$parent = Route->new($ncall);  # throw away
 	}
 
 	if (eph_dup($line)) {
@@ -811,9 +894,7 @@ sub handle_17
 	}
 
 	$uref = Route->new($ucall) unless $uref; # throw away
-	my $thing = Thingy::Rt->new(origin=>$main::mycall, user=>$self->{call});
-	$thing->from_DXProt(t=>'du', $ncall eq $self->{call} ? () : ('n', "1$ncall"), u=>"1$ucall", DXProt=>$line);
-	$thing->process($self);
+	$self->route_pc17($origin, $line, $parent, $uref);
 }
 		
 # link request
