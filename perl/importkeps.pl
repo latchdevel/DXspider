@@ -22,7 +22,7 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
-
+my $fromcall = shift || 'G1TLH';
 my $inp;
 {
 	local $/ = undef;
@@ -44,7 +44,7 @@ exit(0);
 sub process
 {
 	# chop off most of the beginning
-	return unless $inp =~ s/^.*SB\s+KEPS\s+\@\s+AMSAT\s+\$ORB\d{5}\.\w/SB ALL/s;
+	return unless $inp =~ s/^.*SB\s+KEPS\s+\@\s+AMSAT\s+\$ORB\d{5}\.\w/SB ALL < $fromcall/s;
 	return unless $inp =~ s/2Line\s+Orbital\s+Elements/2Line Keps/;
 	
 	# open the output file in the data area
