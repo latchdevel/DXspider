@@ -99,6 +99,8 @@ $count = 0;
 		  dxcc => '0,Country Code',
 		  itu => '0,ITU Zone',
 		  cq => '0,CQ Zone',
+		  enhanced => '5,Enhanced Client,yesno',
+		  senddbg => '8,Sending Debug,yesno',
 		 );
 
 # object destruction
@@ -297,6 +299,29 @@ sub send_now
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_now("$sort$call|$_");
+			dbg("-> $sort $call $_") if isdbg('chan');
+		}
+	}
+	$self->{t} = time;
+}
+
+#
+# send later with letter (more control)
+#
+
+sub send_later
+{
+	my $self = shift;
+	my $conn = $self->{conn};
+	return unless $conn;
+	my $sort = shift;
+	my $call = $self->{call};
+	
+	for (@_) {
+#		chomp;
+        my @lines = split /\n/;
+		for (@lines) {
+			$conn->send_later("$sort$call|$_");
 			dbg("-> $sort $call $_") if isdbg('chan');
 		}
 	}

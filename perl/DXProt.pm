@@ -1214,40 +1214,44 @@ sub send_dx_spot
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $me;
-		my $routeit;
-		my ($filter, $hops);
-
-		if ($dxchan->{spotsfilter}) {
-		    ($filter, $hops) = $dxchan->{spotsfilter}->it(@_, $self->{call} );
-			next unless $filter;
-		}
-		
-		if ($dxchan->is_node) {
-			next if $dxchan == $self;
-			if ($hops) {
-				$routeit = $line;
-				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
-			} else {
-				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-				next unless $routeit;
-			}
-			if ($filter) {
-				$dxchan->send($routeit) if $routeit;
-			} else {
-				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-			}
-		} elsif ($dxchan->is_user && $dxchan->{dx}) {
-			my $buf = Spot::formatb($dxchan->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
-			$buf .= "\a\a" if $dxchan->{beep};
-			$buf =~ s/\%5E/^/g;
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
-				$dxchan->send($buf);
-			} else {
-				$dxchan->delay($buf);
-			}
-		}					
+		next if $dxchan == $self;
+		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
 	}
 }
+
+sub dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	if ($self->{spotsfilter}) {
+		($filter, $hops) = $self->{spotsfilter}->it(@_);
+		return unless $filter;
+	}
+	send_prot_line($self, $filter, $hops, $isolate, $line)
+}
+
+sub send_prot_line
+{
+	my ($self, $filter, $hops, $isolate, $line) = @_;
+	my $routeit;
+	
+	if ($hops) {
+		$routeit = $line;
+		$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+	} else {
+		$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
+		next unless $routeit;
+	}
+	if ($filter) {
+		$self->send($routeit) if $routeit;
+	} else {
+		$self->send($routeit) unless $self->{isolate} || $isolate;
+	}
+}
+
 
 sub send_wwv_spot
 {
@@ -1277,34 +1281,23 @@ sub send_wwv_spot
 		my $routeit;
 		my ($filter, $hops);
 
-		if ($dxchan->{wwvfilter}) {
-			($filter, $hops) = $dxchan->{wwvfilter}->it(@_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
-			 next unless $filter;
-		}
-		if ($dxchan->is_node) {
-			if ($hops) {
-				$routeit = $line;
-				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
-			} else {
-				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-				next unless $routeit;
-			}
-			if ($filter) {
-				$dxchan->send($routeit) if $routeit;
-			} else {
-				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-				
-			}
-		} elsif ($dxchan->is_user && $dxchan->{wwv}) {
-			my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
-			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
-				$dxchan->send($buf);
-			} else {
-				$dxchan->delay($buf);
-			}
-		}					
+		$dxchan->wwv($line, $self->{isolate}, @_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
 	}
+	
+}
+
+sub wwv
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+	
+	if ($self->{wwvfilter}) {
+		($filter, $hops) = $self->{wwvfilter}->it(@_);
+		return unless $filter;
+	}
+	send_prot_line($self, $filter, $hops, $isolate, $line)
 }
 
 sub send_wcy_spot
@@ -1331,36 +1324,24 @@ sub send_wcy_spot
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $me;
-		my $routeit;
-		my ($filter, $hops);
+		next if $dxchan == $self;
 
-		if ($dxchan->{wcyfilter}) {
-			($filter, $hops) = $dxchan->{wcyfilter}->it(@_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
-			 next unless $filter;
-		}
-		if ($dxchan->is_clx || $dxchan->is_spider || $dxchan->is_dxnet) {
-			if ($hops) {
-				$routeit = $line;
-				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
-			} else {
-				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-				next unless $routeit;
-			}
-			if ($filter) {
-				$dxchan->send($routeit) if $routeit;
-			} else {
-				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-			}
-		} elsif ($dxchan->is_user && $dxchan->{wcy}) {
-			my $buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
-			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
-				$dxchan->send($buf);
-			} else {
-				$dxchan->delay($buf);
-			}
-		}					
+		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
 	}
+}
+
+sub wcy
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	if ($self->{wcyfilter}) {
+		($filter, $hops) = $self->{wcyfilter}->it(@_);
+		return unless $filter;
+	}
+	send_prot_line($self, $filter, $hops, $isolate, $line) if $self->is_clx || $self->is_spider || $self->is_dxnet;
 }
 
 # send an announce
@@ -1370,9 +1351,9 @@ sub send_announce
 	my $line = shift;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
-	my $text = unpad($_[2]);
 	my $target;
 	my $to = 'To ';
+	my $text = unpad($_[2]);
 				
 	if ($_[3] eq '*') {	# sysops
 		$target = "SYSOP";
@@ -1412,40 +1393,26 @@ sub send_announce
 		my $routeit;
 		my ($filter, $hops);
 
-		if ($dxchan->{annfilter}) {
-			($filter, $hops) = $dxchan->{annfilter}->it(@_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
-			next unless $filter;
-		} 
-		if ($dxchan->is_node && $_[1] ne $main::mycall) {  # i.e not specifically routed to me
-			if ($hops) {
-				$routeit = $line;
-				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
-			} else {
-				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-				next unless $routeit;
-			}
-			if ($filter) {
-				$dxchan->send($routeit) if $routeit;
-			} else {
-				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-				
-			}
-		} elsif ($dxchan->is_user) {
-			unless ($dxchan->{ann}) {
-				next if $_[0] ne $main::myalias && $_[0] ne $main::mycall;
-			}
-			next if $target eq 'SYSOP' && $dxchan->{priv} < 5;
-			my $buf = "$to$target de $_[0]: $text";
-			$buf =~ s/\%5E/^/g;
-			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
-				$dxchan->send($buf);
-			} else {
-				$dxchan->delay($buf);
-			}
-		}					
+		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq)
 	}
 }
+
+sub announce
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my $to = shift;
+	my $target = shift;
+	my ($filter, $hops);
+
+	if ($self->{annfilter}) {
+		($filter, $hops) = $self->{annfilter}->it(@_);
+		return unless $filter;
+	}
+	send_prot_line($self, $filter, $hops, $isolate, $line) unless $_[1] eq $main::mycall;
+}
+
 
 sub send_local_config
 {

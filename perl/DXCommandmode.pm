@@ -267,7 +267,11 @@ sub send_ans
 		$self->send($self->msg('page', scalar @_));
 	} else {
 		for (@_) {
-			$self->send($_) if $_;
+			if (defined $_) {
+				$self->send($_);
+			} else {
+				$self->send('');
+			}
 		}
 	} 
 }
@@ -406,6 +410,7 @@ sub disconnect
 {
 	my $self = shift;
 	my $call = $self->call;
+	delete $self->{senddbg};
 
 	my @rout = $main::routeroot->del_user($call);
 	dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
@@ -439,15 +444,10 @@ sub broadcast
 {
 	my $pkg = shift;			# ignored
 	my $s = shift;				# the line to be rebroadcast
-	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @list = DXChannel->get_all(); # just in case we are called from some funny object
-	my ($dxchan, $except);
 	
- L: foreach $dxchan (@list) {
-		next if !$dxchan->sort eq 'U'; # only interested in user channels  
-		foreach $except (@except) {
-			next L if $except == $dxchan;	# ignore channels in the 'except' list
-		}
+    foreach my $dxchan (DXChannel->get_all()) {
+		next unless $dxchan->{sort} eq 'U'; # only interested in user channels  
+		next if grep $dxchan == $_, @_;
 		$dxchan->send($s);			# send it
 	}
 }
@@ -455,13 +455,7 @@ sub broadcast
 # gimme all the users
 sub get_all
 {
-	my @list = DXChannel->get_all();
-	my $ref;
-	my @out;
-	foreach $ref (@list) {
-		push @out, $ref if $ref->sort eq 'U';
-	}
-	return @out;
+	return grep {$_->{sort} eq 'U'} DXChannel->get_all();
 }
 
 # run a script for this user
@@ -636,12 +630,26 @@ sub find_cmd_name {
 	return $package;
 }
 
+sub local_send
+{
+	my ($self, $let, $buf) = @_;
+	if ($self->{state} eq 'prompt' || $self->{state} eq 'talk') {
+		if ($self->{enhanced}) {
+			$self->send_later($let, $buf);
+		} else {
+			$self->send($buf);
+		}
+	} else {
+		$self->delay($buf);
+	}
+}
+
 # send a talk message here
 sub talk
 {
 	my ($self, $from, $to, $via, $line) = @_;
 	$line =~ s/\\5E/\^/g;
-	$self->send("$to de $from: $line") if $self->{talk};
+	$self->send_later('T', "$to de $from: $line") if $self->{talk};
 	Log('talk', $to, $from, $main::mycall, $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
@@ -661,14 +669,99 @@ sub talk
 # send an announce
 sub announce
 {
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my $to = shift;
+	my $target = shift;
+	my $text = shift;
+	my ($filter, $hops);
 
+	if ($self->{annfilter}) {
+		($filter, $hops) = $self->{annfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	unless ($self->{ann}) {
+		return if $_[0] ne $main::myalias && $_[0] ne $main::mycall;
+	}
+	return if $target eq 'SYSOP' && $self->{priv} < 5;
+	my $buf = "$to$target de $_[0]: $text";
+	$buf =~ s/\%5E/^/g;
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send($target eq 'WX' ? 'W' : 'N', $buf);
 }
 
 # send a dx spot
 sub dx_spot
 {
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{dx};
 	
+	if ($self->{spotsfilter}) {
+		($filter, $hops) = $self->{spotsfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	my $buf = Spot::formatb($self->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
+	$buf .= "\a\a" if $self->{beep};
+	$buf =~ s/\%5E/^/g;
+	$self->local_send('X', $buf);
 }
+
+sub wwv
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{wwv};
+	
+	if ($self->{wwvfilter}) {
+		($filter, $hops) = $self->{wwvfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send('V', $buf);
+}
+
+sub wcy
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{wcy};
+	
+	if ($self->{wcyfilter}) {
+		($filter, $hops) = $self->{wcyfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	my $buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send('Y', $buf);
+}
+
+# broadcast debug stuff to all interested parties
+sub broadcast_debug
+{
+	my $s = shift;				# the line to be rebroadcast
+	
+	foreach my $dxchan (DXChannel->get_all) {
+		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
+		$dxchan->send_later('L', $s);
+	}
+}
+
 
 1;
 __END__

@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
 
 use strict;
-use vars qw(%dbglevel $fp);
+use vars qw(%dbglevel $fp $callback);
 
 use DXUtil;
 use DXLog ();
@@ -22,6 +22,7 @@ use Carp ();
 
 %dbglevel = ();
 $fp = undef;
+$callback = undef;
 
 # Avoid generating "subroutine redefined" warnings with the following
 # hack (from CGI::Carp):
@@ -64,13 +65,17 @@ sub dbg($)
 		for (@l) {
 			s/([\x00-\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
 			print "$_\n" if defined \*STDOUT;
-			$fp->writeunix($t, "$t^$_"); 
+			my $str = "$t^$_";
+			&$callback($str) if $callback;
+			$fp->writeunix($t, $str); 
 		}
 	}
 }
 
 sub dbginit
 {
+	$callback = shift;
+	
 	# add sig{__DIE__} handling
 	if (!defined $DB::VERSION) {
 		$SIG{__WARN__} = sub { 

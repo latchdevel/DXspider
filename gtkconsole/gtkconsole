@@ -49,6 +49,9 @@ die "You cannot connect as your cluster callsign ($main::mycall)\n" if $call eq 
 my $sock = IO::Socket::INET->new(PeerAddr=>$main::clusteraddr, PeerPort=>$main::clusterport);
 die "Cannot connect to $main::clusteraddr/$main::clusterport ($!)\n" unless $sock;
 sendmsg('A', 'local');
+sendmsg('G', '2');
+sendmsg('I', 'set/page 500');
+sendmsg('I', 'set/nobeep');
 
 #
 # start of GTK stuff
@@ -176,6 +179,16 @@ sub handlemsg
 	my $msg = shift;
 	my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 	if ($sort eq 'D') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'X') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'Y') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'V') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'N') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'W') {
 		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
 	} elsif ($sort eq 'Z') {
 		Gtk->exit(0);

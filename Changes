@@ -1,6 +1,12 @@
+23Jul01=======================================================================
+1. made ann,dx spots,wwv,wcy,wx more 'object oriented'.
+2. allow for 'enhanced clients' and tell them what sort of thing is being 
+sent.
+3. Allow debug info to be sent via interface to an enhanced client.
 21Jul01=======================================================================
 1. started a gtkconsole program. It appears to sort of work. Requires Gtk-
 Perl-0.7007.
+2. start doing some spot statistical stuff. 
 19Jul01=======================================================================
 1. changes to Admin Manual to reflect route filtering.  Some alterations to
 the help files (g0vgs)

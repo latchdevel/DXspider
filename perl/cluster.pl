@@ -284,6 +284,8 @@ sub process_inqueue
 		$dxchan->disconnect;
 	} elsif ($sort eq 'D') {
 		;                       # ignored (an echo)
+	} elsif ($sort eq 'G') {
+		$dxchan->enhanced($line);
 	} else {
 		print STDERR atime, " Unknown command letter ($sort) received from $call\n";
 	}
@@ -315,7 +317,7 @@ $starttime = $systime = time;
 $lang = 'en' unless $lang;
 
 # open the debug file, set various FHs to be unbuffered
-dbginit();
+dbginit(\&DXCommandmode::broadcast_debug);
 foreach (@debug) {
 	dbgadd($_);
 }
