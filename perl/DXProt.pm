@@ -1328,7 +1328,7 @@ sub send_announce
 		$target = "WX"; 
 		$to = '';
 	}
-	$target = "All" if !$target;
+	$target = "ALL" if !$target;
 	
 	Log('ann', $target, $_[0], $text);
 
