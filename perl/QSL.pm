@@ -12,7 +12,6 @@ use DXVars;
 use DXUtil;
 use DB_File;
 use DXDebug;
-use Storable qw(nfreeze thaw);
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -28,7 +27,18 @@ sub init
 {
 	my $mode = shift;
 	my $ufn = "$main::root/data/$qslfn.v1";
+
+	eval {
+		require Storable;
+	};
 	
+	if ($@) {
+		dbg("Storable appears to be missing");
+		dbg("In order to use the QSL feature you must");
+		dbg("load Storable from CPAN");
+		return undef;
+	}
+	import Storable qw(nfreeze thaw);
 	my %u;
 	if ($mode) {
 		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open qsl file: $qslfn ($!)";
@@ -52,6 +62,7 @@ sub new
 # the format of each entry is [manager, times found, last time]
 sub update
 {
+	return unless $dbm;
 	my $self = shift;
 	my $line = shift;
 	my $t = shift;
@@ -88,6 +99,7 @@ sub get
 
 sub put
 {
+	return unless $dbm;
 	my $self = shift;
 	my $key = $self->[0];
 	my $value = nfreeze($self);
