@@ -16,7 +16,7 @@ use Net::Telnet;
 
 my $t = new Net::Telnet;
 
-push @out, $self->msg('call1');
+push @out, $self->msg('call1', 'AA6HF');
 foreach $l (@list) {
 	$t->open(Host     =>  "jeifer.pineknot.com",
 			 Port     =>  1235,
@@ -29,7 +29,7 @@ foreach $l (@list) {
 		}
 		$t->close;
 	} else {
-		push @out, $self->msg('e18', 'PineKnot');
+		push @out, $self->msg('e18', 'AA6HF');
 	}
 }
 
