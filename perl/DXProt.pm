@@ -559,10 +559,13 @@ sub normal
 				my $r = Route::User::get($call);
 				my $flags = Route::here($here)|Route::conf($conf);
 				
-				if ($r && $r->flags != $flags) {
-					$r->flags($flags);
-					push @rout, $r;
-				} elsif (!$r) {
+				if ($r) {
+					if ($r->flags != $flags) {
+						$r->flags($flags);
+						push @rout, $r;
+					}
+					$r->addparent($ncall);
+				} else {
 					push @rout, $parent->add_user($call, $flags);
 				}
 				
