@@ -1,3 +1,5 @@
+22Mar01=======================================================================
+1. edit the helpfile for set/debug and add help for show/debug
 19Mar01=======================================================================
 1. Add 'not allowed' messages into sh/filter with callsign and reduce priv
 2. decode %xx characters in winclient.pl

@@ -987,6 +987,15 @@ Use with extreme care. This command may well be superceded by FILTERing.
 
 === 9^SET/DEBUG <name>^Add a debug level to the debug set
 === 9^UNSET/DEBUG <name>^Remove a debug level from the debug set
+You can choose to log several different levels.  The levels are
+
+chan
+state
+msg
+cron
+connect
+
+You can show what levels your are logging with SHOW/DEBUG
 
 === 0^SET/DX^Allow DX messages to come out on your terminal
 === 0^UNSET/DX^Stop DX messages coming out on your terminal
@@ -1193,6 +1202,8 @@ If no prefixes or callsigns are given then this command returns the local
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
+
+=== 9^SHOW/DEBUG^Show what levels of debug information you are logging
 
 === 0^SHOW/DX^Interrogate the spot database
 If you just type SHOW/DX you will get the last so many spots
