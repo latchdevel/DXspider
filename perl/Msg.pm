@@ -348,8 +348,7 @@ sub new_server {
 #                                          LocalPort => $my_port,
                                           Listen    => SOMAXCONN,
                                           Proto     => 'tcp',
-                                          ReuseAddr => 1,
-										  );
+                                          Reuse => 1);
     die "Could not create socket: $! \n" unless $self->{sock};
     set_event_handler ($self->{sock}, read => sub { $self->new_client }  );
 	return $self;
