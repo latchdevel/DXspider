@@ -29,7 +29,7 @@ sub enqueue
 {
 	my ($conn, $msg) = @_;
 	unless ($msg =~ /^[ABZ]/) {
-		if ($msg =~ /^E[-\w]+\|([01])/) {
+		if ($msg =~ /^E[-\w]+\|([01])/ && $conn->{csort} eq 'telnet') {
 			$conn->{echo} = $1;
 			if ($1) {
 #				$conn->send_raw("\xFF\xFC\x01");
