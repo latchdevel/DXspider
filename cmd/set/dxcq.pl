@@ -18,6 +18,14 @@ foreach $call (@args) {
 	my $user = DXUser->get_current($call);
 	if ($user) {
 		$user->wantdxcq(1);
+		if ($user->wantdxitu) {
+			push @out, $self->msg('dxituu', $call);
+			$user->wantdxitu(0);
+		}
+		if ($user->wantusstate) {
+			push @out, $self->msg('usstateu', $call);
+			$user->wantusstate(0);
+		}
 		$user->put;
 		push @out, $self->msg('dxcqs', $call);
 	} else {
