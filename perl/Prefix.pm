@@ -179,15 +179,24 @@ sub extract
 		}
   
 		# which is the shortest part (first if equal)?
-		dbg("Parts: $call = " . join('|', @parts))	if isdbg('prefix');
+		dbg("Parts: $call = " . join(' ', @parts))	if isdbg('prefix');
 		
 		# try ALL the parts
-L1:		for (;@parts;) {
-			$sp = $parts[0];
-			foreach $p (@parts) {
-				$sp = $p if length $p < length $sp;
+        my @checked;
+		my $n;
+L1:		for ($n = 0; $n < @parts; $n++) {
+			my $sp = '';
+			my ($k, $i);
+			for ($i = $k = 0; $i < @parts; $i++) {
+				next if $checked[$i];
+				my $p = $parts[$i];
+				if (!$sp || length $p < length $sp) {
+					dbg("try part: $p") if isdbg('prefix');
+					$k = $i;
+					$sp = $p;
+				}
 			}
-			@parts = grep { $_ ne $sp } @parts;	# remove it from the list
+			$checked[$k] = 1;
 			$sp =~ s/-\d+$//;     # remove any SSID
 			
 			#		# now start to resolve it from the left hand end
@@ -202,9 +211,33 @@ L1:		for (;@parts;) {
 					dbg("Partial prefix: $sp $ssp $part" );
 				} 
 				next if @wout > 0 && $wout[0] gt $ssp;
-				#			last if @wout == 0;
-				push @out, @wout;
-				last L1 if @wout;
+
+				# try and search for it in the descriptions as
+				# a whole callsign if it has multiple parts and the output
+				# is more two long, this should catch things like
+				# FR5DX/T without having to explicitly stick it into
+				# the prefix table.
+
+				if (@wout) {
+					if (@parts > 1) {
+						$parts[$k] = $ssp;
+						my $try = join('/', @parts);
+						my @try = get($try);
+						if (isdbg('prefix')) {
+							my $part = $try[0] || "*";
+							$part .= '*' unless $part eq '*' || $part eq $try;
+							dbg("Compound prefix: $try $part" );
+						}
+						if (@try && $try eq $try[0]) {
+							push @out, @try;
+						} else {
+							push @out, @wout;
+						}
+					} else {
+						push @out, @wout;
+					}
+					last L1;
+				}
 			}
 		}
 	}
