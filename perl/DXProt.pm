@@ -688,7 +688,7 @@ sub normal
 		if ($pcno == 43) {
 			last SWITCH;
 		}
-		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47) {
+		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47 || $pcno == 48) {
 			DXDb::process($self, $line);
 			return;
 		}
