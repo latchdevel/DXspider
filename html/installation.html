@@ -16,7 +16,7 @@ Contents
 <H1>The DXSpider Installation Manual v1.49</H1>
 
 <H2>Iain Philipps, G0RDI (g0rdi@77hz.com) and
-Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</H2>December 2001 revision 1.1
+Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</H2>February 2002 revision 1.2
 <P><HR>
 <EM>A reference for SysOps of the DXSpider DXCluster program.</EM>
 <HR>
@@ -35,44 +35,59 @@ Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</H2>December 2001 revision 1.1
 <H2><A NAME="toc2">2.</A> <A HREF="installation-2.html">Linux quick installation guide</A></H2>
 
 <P>
-<H2><A NAME="toc3">3.</A> <A HREF="installation-3.html">Configuration</A></H2>
+<H2><A NAME="toc3">3.</A> <A HREF="installation-3.html">Setting up the AX25 Utilities</A></H2>
 
 <UL>
-<LI><A HREF="installation-3.html#ss3.1">3.1 Allowing ax25 connects from users</A>
-<LI><A HREF="installation-3.html#ss3.2">3.2 Allowing telnet connects from users </A>
-<LI><A HREF="installation-3.html#ss3.3">3.3 Setting up telnet connects (from 1.47 onwards)</A>
-<LI><A HREF="installation-3.html#ss3.4">3.4 Setting up for AGW Engine (1.47 onwards)</A>
-<LI><A HREF="installation-3.html#ss3.5">3.5 Setting up node connects</A>
-<LI><A HREF="installation-3.html#ss3.6">3.6 Connection scripts</A>
-<LI><A HREF="installation-3.html#ss3.7">3.7 Starting the connection</A>
-<LI><A HREF="installation-3.html#ss3.8">3.8 Telnet echo</A>
-<LI><A HREF="installation-3.html#ss3.9">3.9 Autostarting the cluster</A>
+<LI><A HREF="installation-3.html#ss3.1">3.1 Getting Started</A>
+<LI><A HREF="installation-3.html#ss3.2">3.2 The kernel</A>
+<LI><A HREF="installation-3.html#ss3.3">3.3 Installing the RPM's</A>
+<LI><A HREF="installation-3.html#ss3.4">3.4 Configuration</A>
+<LI><A HREF="installation-3.html#ss3.5">3.5 axports</A>
+<LI><A HREF="installation-3.html#ss3.6">3.6 nrports</A>
+<LI><A HREF="installation-3.html#ss3.7">3.7 nrbroadcast</A>
+<LI><A HREF="installation-3.html#ss3.8">3.8 ax25d.conf</A>
+<LI><A HREF="installation-3.html#ss3.9">3.9 node.conf</A>
+<LI><A HREF="installation-3.html#ss3.10">3.10 Getting it all running</A>
 </UL>
 <P>
-<H2><A NAME="toc4">4.</A> <A HREF="installation-4.html">Microsoft Windows Installation</A></H2>
+<H2><A NAME="toc4">4.</A> <A HREF="installation-4.html">Configuration</A></H2>
 
 <UL>
-<LI><A HREF="installation-4.html#ss4.1">4.1 Introduction</A>
-<LI><A HREF="installation-4.html#ss4.2">4.2 The requirements</A>
-<LI><A HREF="installation-4.html#ss4.3">4.3 The system</A>
-<LI><A HREF="installation-4.html#ss4.4">4.4 Perl</A>
-<LI><A HREF="installation-4.html#ss4.5">4.5 Additional packages</A>
-<LI><A HREF="installation-4.html#ss4.6">4.6 Getting Spider</A>
+<LI><A HREF="installation-4.html#ss4.1">4.1 Allowing ax25 connects from users</A>
+<LI><A HREF="installation-4.html#ss4.2">4.2 Allowing telnet connects from users </A>
+<LI><A HREF="installation-4.html#ss4.3">4.3 Setting up telnet connects (from 1.47 onwards)</A>
+<LI><A HREF="installation-4.html#ss4.4">4.4 Setting up for AGW Engine (1.47 onwards)</A>
+<LI><A HREF="installation-4.html#ss4.5">4.5 Setting up node connects</A>
+<LI><A HREF="installation-4.html#ss4.6">4.6 Connection scripts</A>
+<LI><A HREF="installation-4.html#ss4.7">4.7 Starting the connection</A>
+<LI><A HREF="installation-4.html#ss4.8">4.8 Telnet echo</A>
+<LI><A HREF="installation-4.html#ss4.9">4.9 Autostarting the cluster</A>
 </UL>
 <P>
-<H2><A NAME="toc5">5.</A> <A HREF="installation-5.html">Installing the software</A></H2>
+<H2><A NAME="toc5">5.</A> <A HREF="installation-5.html">Microsoft Windows Installation</A></H2>
 
 <UL>
-<LI><A HREF="installation-5.html#ss5.1">5.1 Incoming telnets</A>
-<LI><A HREF="installation-5.html#ss5.2">5.2 The AGW packet engine</A>
-<LI><A HREF="installation-5.html#ss5.3">5.3 Setting up the initial user files</A>
-<LI><A HREF="installation-5.html#ss5.4">5.4 Connecting to other clusters</A>
+<LI><A HREF="installation-5.html#ss5.1">5.1 Introduction</A>
+<LI><A HREF="installation-5.html#ss5.2">5.2 The requirements</A>
+<LI><A HREF="installation-5.html#ss5.3">5.3 The system</A>
+<LI><A HREF="installation-5.html#ss5.4">5.4 Perl</A>
+<LI><A HREF="installation-5.html#ss5.5">5.5 Additional packages</A>
+<LI><A HREF="installation-5.html#ss5.6">5.6 Getting Spider</A>
 </UL>
 <P>
-<H2><A NAME="toc6">6.</A> <A HREF="installation-6.html">General Information</A></H2>
+<H2><A NAME="toc6">6.</A> <A HREF="installation-6.html">Installing the software</A></H2>
 
 <UL>
-<LI><A HREF="installation-6.html#ss6.1">6.1 The crontab file</A>
+<LI><A HREF="installation-6.html#ss6.1">6.1 Incoming telnets</A>
+<LI><A HREF="installation-6.html#ss6.2">6.2 The AGW packet engine</A>
+<LI><A HREF="installation-6.html#ss6.3">6.3 Setting up the initial user files</A>
+<LI><A HREF="installation-6.html#ss6.4">6.4 Connecting to other clusters</A>
+</UL>
+<P>
+<H2><A NAME="toc7">7.</A> <A HREF="installation-7.html">General Information</A></H2>
+
+<UL>
+<LI><A HREF="installation-7.html#ss7.1">7.1 The crontab file</A>
 </UL>
 <HR>
 <A HREF="installation-1.html">Next</A>

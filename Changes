@@ -1,5 +1,7 @@
 23Feb02=======================================================================
 1. remove old satellites from keps.
+2. Add information on setting up the ax25 utils to the installation manual
+(g0vgs)
 19Feb02=======================================================================
 1. move the PC11 dup check after the input filter
 06Feb02=======================================================================

@@ -7,7 +7,7 @@
 <title>The DXSpider Installation Manual v1.49</title> 
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
 Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>December 2001 revision 1.1</date>
+<date>February 2002 revision 1.2</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -394,37 +394,486 @@ Spider should now be able to accept logins via telnet, netrom and ax25.
 <item>Enter the correct line in /etc/inittab (root)
 </itemize>
 
-<sect>Configuration
-
-<sect1>Allowing ax25 connects from users
+<sect>Setting up the AX25 Utilities
 
 <P>
-As stated previously, the aim of this document is not to tell you how to 
-configure Linux or the ax25 utilities.  However, you do need to add a line 
-in your ax25d.conf to allow connections to DXSpider for your users.  For
-each interface that you wish to allow connections on, use the following format ...
+The aim of this section is not to fully cover the installation
+and configuration of all the possible ax25 modules.  I will
+attempt to cover a simple installation and configure 2 serial
+ports as if they had TNC's on them.  I will also show what
+additional configuration the DXSpider program requires.
+
+<P>
+Please bear in mind that I am basing this section on a RedHat
+7.1 distribution, if you are using SuSe or any other distibution
+then your mileage may vary.  I will be happy to make any changes
+and additions if you email me any errors or distribution specific
+requirements.
+
+<P>
+You would probably benefit from reading the <htmlurl url="http://www.fokus.gmd.de/linux/HOWTO/html_single/AX25-HOWTO.html#AEN151" name="AX25-HOWTO"> which is much more
+comprehensive and an interesting configuration program is also available
+called <htmlurl url="http://1409.org/projects/index.html" name="ax25-config"> which
+may help you to configure things.
+
+<P>
+The following files are extracts from the working files at GB7MBC and
+are in daily use.  However, there are many ways that you can configure the
+ax25 utils, this is just the one I use, it does not mean it is necessarily
+the best or for that matter, the right way!
+
+<sect1>Getting Started
+
+<P>
+There are 2 things you need to do initially.  You need to get the
+3 files required for the ax25 installation and you need to make
+some changes to the kernel configuration.
+
+<P>
+The first thing is to get the versions of the ax25 utils that match
+your kernel.  You may also wish to get a node package of some kind.
+There are 2 main node packages in use of which I shall keep to the
+original by Tomi Manninen, OH2BNS as this is included in the ax25
+rpms as standard.  The other is <htmlurl url="ftp://ftp.funet.fi/pub/ham/packet/linux/awznode/" name="AWZNode"> by IZ5AWZ.
+
+<P>
+For 2.4 kernels you need these files...
+
+<P>
+<itemize>
+<item> <htmlurl url="ftp://ftp.rpmfind.net/linux/redhat/7.1/en/powertools/i386/RedHat/RPMS/libax25-0.0.7-7.i386.rpm" name="libax25-0.0.7-7.i386.rpm">
+<item> <htmlurl url="ftp://ftp.rpmfind.net/linux/redhat/7.1/en/powertools/i386/RedHat/RPMS/ax25-tools-0.0.6-13.i386.rpm" name="ax25-tools-0.0.6-13.i386.rpm">
+<item> <htmlurl url="ftp://ftp.rpmfind.net/linux/redhat/7.1/en/powertools/i386/RedHat/RPMS/ax25-apps-0.0.4-9.i386.rpm" name="ax25-apps-0.0.4-9.i386.rpm">
+</itemize>
+
+<sect1>The kernel
+
+<P>
+First you need to add Amateur Radio Support to your kernel.  This is
+a main menu item and should be easily found.  Within this header you
+will find lots of options.  For our purposes you need to enable
+Amateur Radio AX.25 Level 2 Protocol, NET/ROM and the Serial Port 
+KISS Driver.  For the purposes of this document I will work under the
+assumption that you include them in the kernel fully, ie not as modules.
+If you need to look at compiling your kernel for ax25 more fully, I would
+refer to the excellent 
+<htmlurl url="http://www.fokus.gmd.de/linux/HOWTO/html_single/AX25-HOWTO.html#AEN151" name="AX25-HOWTO">
+
+<P>
+I should say at this stage that NET/ROM is not mandatory.  If you do not use it
+simply ignore any instruction concerning it.
+
+<P>
+Now recompile your kernel in the normal way and reboot your system.
+
+<sect1>Installing the RPM's
+
+<P>
+Now install the RPM's you downloaded, libax25 first, then ax25-tools,
+then ax25-apps.
+
+<tscreen><verb>
+rpm -ivh libax25-0.0.7-7.i386.rpm
+rpm -ivh ax25-tool-0.0.6-13.i386.rpm
+rpm -ivh ax25-apps-0.0.4-9.i386.rpm
+</verb></tscreen>
+
+<sect1>Configuration
+
+<P>
+You will find the configuration files in /etc/ax25.  These consist of
+several files ...
+
+<itemize>
+<item>axports
+<item>nrports
+<item>nrbroadcast
+<item>ax25d.conf
+<item>node.conf
+</itemize>
+
+<P>
+These are the main files. You will find other files but they do not
+have any use unless you are wanting to use that particular protocol,
+Rose or axip for example.
+
+<P>
+NOTE:- before we start it is important to realise that every interface
+requires a different SSID.  You should be able to follow this in the
+following examples.
+
+<sect1>axports
+
+<P>
+This file sets up the ax25 ports you want to use.  An example is below
+for a standard TNC2 ...
+
+<tscreen><verb>
+#portname   callsign   baudrate   paclen   window   description
+ 2m         gb7mbc-2   19200      256      2        2m port on 144.900MHz
+ 4m         gb7mbc-4   19200      256      2        4m port on 70.325MHz
+</verb></tscreen>
+
+<P>
+Note that the portnames have to be unique.
+
+<P>
+The file headings are as follows ...
+
+<verb>
+portname	-	The name you will refer to the port by
+callsign	-	The ax25 callsign you want to assign to the port
+baudrate	-	The speed you communicate between TNC and computer
+paclen		-	The maximum packet length for ax25 connections
+window		-	The ax25 window parameter.  This is like 'maxframe'
+description	-	A textual description of the port
+</verb>
+
+<sect1>nrports
+
+<P>
+This file sets up the netrom ports you want to use.  An example is below
+and includes a port for both cluster and node.  You will see why we need
+2 ports later ...
+
+<tscreen><verb>
+#portname   callsign   alias   paclen   description
+ netrom     gb7mbc-8   BARE    236      Node Netrom Port
+ netrom2    gb7mbc-9   MBCDX   236      Cluster Netrom Port
+</verb></tscreen>
+
+<P>
+Note that the portnames have to be unique.
+
+<P>
+The file headings are as follows ...
+
+<verb>
+portname	-	The name you will refer to the port by
+callsign	-	This is the callsign that NET/ROM traffic from this
+                        port will use
+alias		-	The NET/ROM alias this port will be assigned
+paclen		-	The maximum size of NET/ROM frames transmitted
+description	-	A textual description of the port
+</verb>
+
+<sect1>nrbroadcast
+
+<P>
+This file sets up the netrom broadcast qualities.  An example is below ...
+
+<tscreen><verb>
+#axport   min_obs   def_qual   worst_qual   verbose
+ 4m       5         10         100          1
+</verb></tscreen>
+
+<P>
+The file headings are as follows ...
+
+<verb>
+axport		-	The port name in axports that you wish to broadcast
+                        NET/ROM on.
+min_obs		-	The minimum obsolescence value for the port
+def_qual	-	The default quality for the port
+worst_qual	-	The worst quality for the port.  Any routes under
+                        this quality will be ignored
+verbose		-	This flag determines whether you will only broadcast
+                        your own node (0) or all known nodes (1)
+</verb>
+
+<sect1>ax25d.conf
+
+<P>
+This file controls any incoming ax25 and NET/ROM connections and steers
+them to the relevant program.  There are lots of configuration options
+you can set here, however they are well covered in the AX25-HOWTO.  For
+our purposes I will show a typical set of parameters.  An example is 
+below ...
+
+<tscreen><verb>
+[gb7mbc-0 via 2m]
+parameters    2 1   6  900 *  15  0
+NOCALL *  *  *  *  *  *  L
+default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+[gb7mbc-1 via 2m]
+parameters    2 1   6  900 *  15  0
+NOCALL *  *  *  *  *  *  L
+default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+[gb7mbc-0 via 4m]
+parameters    2 1   6  900 *  15  0
+NOCALL *  *  *  *  *  *  L
+default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+[gb7mbc-1 via 4m]
+parameters    2 1   6  900 *  15  0
+NOCALL *  *  *  *  *  *  L
+default *  *  *  *  *  *  0  root /usr/sbin/node  node
+
+<netrom2>
+parameters 1	10 * * * 3 *
+NOCALL *  *  *  *  *  *  L
+default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+<netrom>
+parameters 1    10 * * * 3 *
+NOCALL *  *  *  *  *  *  L
+default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+</verb></tscreen>
+
+<P>
+There are a few things to take note of here.  Firstly, all ax25
+sections are wrapped in [ ] and all NET/ROM sections are wrapped in
+&lt; &gt;.  Secondly you should be able to see that anyone who forgets to
+set their callsign in a TNC and tries to connect with the standard
+NOCALL set into their TNC will not connect, the 'L' means 'lockout'.
+Lastly and importantly, notice the order of the sections.  They are
+all done in interface order.
+
+<P>
+You should be able to see that the normal line for access to the
+cluster is like this ..
 
 <tscreen><verb>
 default  * * * * * *  - sysop /spider/src/client client %u ax25
 </verb></tscreen>
 
 <P>
-or, if you wish your users to be able to use SSID's on their callsigns ..
+however, if you wish your users to be able to use SSID's on their callsigns ..
 
 <tscreen><verb>
 default  * * * * * *  - sysop /spider/src/client client %s ax25
 </verb></tscreen>
 
 <P>
-For most purposes this is not desirable. The only time you probably will 
+For most purposes this is not desirable. The only time you probably will
 need this is when you need to allow other cluster nodes that are using SSID's
-in. In this case it would probably be better to use the first example and 
+in. In this case it would probably be better to use the first example and
 then add a specific line for that node like this:
 
 <tscreen><verb>
 GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
 default  * * * * * *  - sysop /spider/src/client client %u ax25
 </verb></tscreen>
+
+<sect1>node.conf
+
+<P>
+For those of you that wish to run the node, you need to set up the
+node.conf file.  There are a couple of additional files, node.perms is
+very similar to the way ftp permissions are set up in NOS systems and 
+node.motd is the message anyone logging into the node will get.
+The node.conf file sets all the parameters of the node as you would
+expect.  An example is below ...
+
+<tscreen><verb>
+# /etc/ax25/node.conf - LinuxNode configuration file
+#
+# see node.conf(5)
+
+# Idle timeout (seconds).
+#
+IdleTimeout	1800
+
+# Timeout when gatewaying (seconds).
+#
+ConnTimeout	40000
+
+# Visible hostname. Will be shown at telnet login.
+#
+HostName	gb7mbc.ampr.org
+
+# ReConnect flag.
+# 
+ReConnect	off
+
+# "Local" network.
+#
+#LocalNet	44.139.8.48/32
+
+# Command aliases. See node.conf(5) for the meaning of the uppercase
+# letters in the name of the alias.
+#
+##Alias		CAllbook 'telnet %{2:44.17.0.53} 1235 %1 s'
+#Alias		CONVers	 'telnet %{2:oh2ti} 3600 "/n %u %{1:139}\n/w *"'
+#Alias		CLuster	 'c hkiclh'
+Alias           CONV    "telnet lurpac 3600"
+Alias           BBS     "c 70cm gb7crv"
+Alias           DXC     "telnet localhost 9000"
+Alias           MUD     "telnet homer 4000"
+##Alias           TEMP    "finger temp@mary.g6phf"
+##Alias           TNOS    "c ip1 gb7mbc-5"
+##Alias           TUtor   "telnet gb7mbc 3599"
+                                          
+# Hidden ports.
+#
+#HiddenPorts	2
+
+# External commands. See node.conf(5) for the meaning of the uppercase
+# letters in the name of the extcmd.
+#
+# Flags:	1	Run command through pipe
+#		2	Reconnected flag
+#
+#ExtCmd		TPM	3	nobody	/usr/bin/finger	finger tpm
+#ExtCmd		ECho	1	nobody	/bin/echo echo \%U \%u \%S \%s \%P \%p \%R \%r \%T \%t \%\% \%0 \%{1:foobar} \%{2} \%3 \%4 \%5
+
+# Node ID.
+#
+NodeId		"\nBARE:GB7MBC-1"
+#NodeId		\033[01;31m***\033[0m
+
+# Netrom port name. This port is used for outgoing netrom connects.
+#
+NrPort		netrom
+
+# Logging level
+#
+LogLevel	3
+
+# The escape character (CTRL-T)
+#
+EscapeChar      ^T
+
+# Resolve ip numbers to addresses?
+#
+ResolveAddrs	off
+
+# Node prompt.
+#
+#NodePrompt	"\n"
+#NodePrompt	"%s@%h \%i> "
+NodePrompt	"\nBARE:GB7MBC-1 \%i > "
+#NodePrompt	"\a\033[36m%U\033[0m de \033[01;32m#LNODE\033[0m:\033[01;33mOH2BNS-10\033[0m> "
+</verb></tscreen>
+
+<P>
+This should be fairly obvious I hope.
+
+<sect1>Getting it all running
+
+<P>
+Ok, now we have all the relevant files configured, the next step is to get
+it all running.
+
+<P>
+The first thing to do is attach the TNC's.  Your TNC's should be in KISS mode
+and connected to the serial ports involved.
+
+<P>
+You now use the 'kissattach' command to connect the TNC's to the system like this ...
+
+<tscreen><verb>
+kissattach /dev/ttyS0 2m 44.131.96.199
+kissattach /dev/ttyS1 4m 44.131.96.199
+</verb></tscreen>
+
+<P>
+Assuming that 44.131.96.199 is your IP address.  The devices ttyS0 and ttyS1 are com1 and
+com2 respectively.  Now we can set some parameters ...
+
+<tscreen><verb>
+kissparms -p 2m -t 150 -l 150 -s 50 -r 50
+kissparms -p 4m -t 150 -l 150 -s 50 -r 50
+</verb></tscreen>
+
+<P>
+The command 'man kissparms' will give you the explanation of the switches.
+
+<P>
+Now we need to attach the NET/ROM ports in the same way ...
+
+<tscreen><verb>
+nrattach netrom
+nrattach netrom2
+</verb></tscreen>
+
+<P>
+All of the above can be put in a file and called from /etc/rc.d/rc.local.  Put all
+the above commands in a file called rc.ax25 and put a line in rc.local to call it.
+
+<P>
+Now you can start the daemons that set everything in motion ...
+
+<tscreen><verb>
+ax25d
+netromd -i
+</verb></tscreen>
+
+<P>
+All should now be running.  All that remains is to get the node working for telnet
+connections.  If nothing else, this will allow you to connect to the node yourself
+to check on connection status etc.  There are 2 files that need to be edited.
+
+<P>
+First edit /etc/services and add
+
+<tscreen><verb>
+node    3000/tcp     #OH2BNS's Node Software
+</verb></tscreen>
+
+<P>
+Assuming you want it to run on port 3000
+
+<P>
+Now cd /etc/xinetd.d and edit a new file called node.  It should look like this ...
+
+<tscreen><verb>
+# default: on
+#       unencrypted username/password pairs for authentication.
+service node
+{
+        socket_type     = stream        
+        wait            = no
+        user            = root
+        server          = /usr/sbin/node
+        log_on_failure  += USERID
+        disable         = yes
+}
+</verb></tscreen>
+
+<P>
+You now need to restart the xinetd daemon.  First find out what the PID is
+like so ..
+
+<tscreen><verb>
+ps auxw |grep xinetd
+</verb></tscreen>
+
+<P>
+You will get a reply something like this ...
+
+<tscreen><verb>
+root       592  0.0  0.1  2256  620 ?        S    Feb07   0:00 xinetd -stayalive -reuse -pidfile /var/run/xinetd.pid
+</verb></tscreen>
+
+<P>
+The PID or Process ID is 592 in this case so now we can issue the command ...
+
+<tscreen><verb>
+kill -HUP 592
+</verb></tscreen>
+
+<P>
+All should now be operational and you should be able to log into the node by
+using a telnet session to the relevant port, like so ...
+
+<tscreen><verb>
+telnet localhost 3000
+</verb></tscreen>
+
+<P>
+If that works, you are just about there.  you should (assuming you have radios connected
+to the TNC's) be able to connect out to other stations and receive incoming ax25 and
+netrom connections.
+
+<sect>Configuration
+
+<sect1>Allowing ax25 connects from users
+
+<P>
+This is dealt with in the previous section
  
 <sect1>Allowing telnet connects from users 
 

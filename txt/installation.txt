@@ -1,12 +1,67 @@
   The DXSpider Installation Manual v1.49
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (g0vgs@gb7mbc.net)
-  December 2001 revision 1.1
+  February 2002 revision 1.2
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
 
   Table of Contents
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   1. Linux Installation
@@ -20,37 +75,50 @@
 
   2. Linux quick installation guide
 
-  3. Configuration
+  3. Setting up the AX25 Utilities
 
-     3.1 Allowing ax25 connects from users
-     3.2 Allowing telnet connects from users
-     3.3 Setting up telnet connects (from 1.47 onwards)
-     3.4 Setting up for AGW Engine (1.47 onwards)
-     3.5 Setting up node connects
-     3.6 Connection scripts
-     3.7 Starting the connection
-     3.8 Telnet echo
-     3.9 Autostarting the cluster
+     3.1 Getting Started
+     3.2 The kernel
+     3.3 Installing the RPM's
+     3.4 Configuration
+     3.5 axports
+     3.6 nrports
+     3.7 nrbroadcast
+     3.8 ax25d.conf
+     3.9 node.conf
+     3.10 Getting it all running
 
-  4. Microsoft Windows Installation
+  4. Configuration
 
-     4.1 Introduction
-     4.2 The requirements
-     4.3 The system
-     4.4 Perl
-     4.5 Additional packages
-     4.6 Getting Spider
+     4.1 Allowing ax25 connects from users
+     4.2 Allowing telnet connects from users
+     4.3 Setting up telnet connects (from 1.47 onwards)
+     4.4 Setting up for AGW Engine (1.47 onwards)
+     4.5 Setting up node connects
+     4.6 Connection scripts
+     4.7 Starting the connection
+     4.8 Telnet echo
+     4.9 Autostarting the cluster
 
-  5. Installing the software
+  5. Microsoft Windows Installation
 
-     5.1 Incoming telnets
-     5.2 The AGW packet engine
-     5.3 Setting up the initial user files
-     5.4 Connecting to other clusters
+     5.1 Introduction
+     5.2 The requirements
+     5.3 The system
+     5.4 Perl
+     5.5 Additional packages
+     5.6 Getting Spider
 
-  6. General Information
+  6. Installing the software
 
-     6.1 The crontab file
+     6.1 Incoming telnets
+     6.2 The AGW packet engine
+     6.3 Setting up the initial user files
+     6.4 Connecting to other clusters
+
+  7. General Information
+
+     7.1 The crontab file
 
 
   ______________________________________________________________________
@@ -108,8 +176,6 @@
 
   Log in as 'root', and make sure you're at '/root' before you continue.
   Here are exactly the commands you must issue next: -
-
-
 
 
 
@@ -533,15 +599,265 @@
   o  Enter the correct line in /etc/inittab (root)
 
 
-  3.  Configuration
+  3.  Setting up the AX25 Utilities
 
-  3.1.  Allowing ax25 connects from users
+  The aim of this section is not to fully cover the installation and
+  configuration of all the possible ax25 modules.  I will attempt to
+  cover a simple installation and configure 2 serial ports as if they
+  had TNC's on them.  I will also show what additional configuration the
+  DXSpider program requires.
 
-  As stated previously, the aim of this document is not to tell you how
-  to configure Linux or the ax25 utilities.  However, you do need to add
-  a line in your ax25d.conf to allow connections to DXSpider for your
-  users.  For each interface that you wish to allow connections on, use
-  the following format ...
+
+  Please bear in mind that I am basing this section on a RedHat 7.1
+  distribution, if you are using SuSe or any other distibution then your
+  mileage may vary.  I will be happy to make any changes and additions
+  if you email me any errors or distribution specific requirements.
+
+
+  You would probably benefit from reading the AX25-HOWTO which is much
+  more comprehensive and an interesting configuration program is also
+  available called ax25-config which may help you to configure things.
+
+
+  The following files are extracts from the working files at GB7MBC and
+  are in daily use.  However, there are many ways that you can configure
+  the ax25 utils, this is just the one I use, it does not mean it is
+  necessarily the best or for that matter, the right way!
+
+
+  3.1.  Getting Started
+
+  There are 2 things you need to do initially.  You need to get the 3
+  files required for the ax25 installation and you need to make some
+  changes to the kernel configuration.
+
+
+  The first thing is to get the versions of the ax25 utils that match
+  your kernel.  You may also wish to get a node package of some kind.
+  There are 2 main node packages in use of which I shall keep to the
+  original by Tomi Manninen, OH2BNS as this is included in the ax25 rpms
+  as standard.  The other is AWZNode by IZ5AWZ.
+
+
+  For 2.4 kernels you need these files...
+
+
+
+  o  libax25-0.0.7-7.i386.rpm
+
+  o  ax25-tools-0.0.6-13.i386.rpm
+
+  o  ax25-apps-0.0.4-9.i386.rpm
+
+
+  3.2.  The kernel
+
+  First you need to add Amateur Radio Support to your kernel.  This is a
+  main menu item and should be easily found.  Within this header you
+  will find lots of options.  For our purposes you need to enable
+  Amateur Radio AX.25 Level 2 Protocol, NET/ROM and the Serial Port KISS
+  Driver.  For the purposes of this document I will work under the
+  assumption that you include them in the kernel fully, ie not as
+  modules.  If you need to look at compiling your kernel for ax25 more
+  fully, I would refer to the excellent AX25-HOWTO
+
+
+  I should say at this stage that NET/ROM is not mandatory.  If you do
+  not use it simply ignore any instruction concerning it.
+
+
+  Now recompile your kernel in the normal way and reboot your system.
+
+
+  3.3.  Installing the RPM's
+
+  Now install the RPM's you downloaded, libax25 first, then ax25-tools,
+  then ax25-apps.
+
+
+
+       rpm -ivh libax25-0.0.7-7.i386.rpm
+       rpm -ivh ax25-tool-0.0.6-13.i386.rpm
+       rpm -ivh ax25-apps-0.0.4-9.i386.rpm
+
+
+
+
+
+  3.4.  Configuration
+
+  You will find the configuration files in /etc/ax25.  These consist of
+  several files ...
+
+
+  o  axports
+
+  o  nrports
+
+  o  nrbroadcast
+
+  o  ax25d.conf
+
+  o  node.conf
+
+
+  These are the main files. You will find other files but they do not
+  have any use unless you are wanting to use that particular protocol,
+  Rose or axip for example.
+
+
+  NOTE:- before we start it is important to realise that every interface
+  requires a different SSID.  You should be able to follow this in the
+  following examples.
+
+
+  3.5.  axports
+
+  This file sets up the ax25 ports you want to use.  An example is below
+  for a standard TNC2 ...
+
+
+
+       #portname   callsign   baudrate   paclen   window   description
+        2m         gb7mbc-2   19200      256      2        2m port on 144.900MHz
+        4m         gb7mbc-4   19200      256      2        4m port on 70.325MHz
+
+
+
+  Note that the portnames have to be unique.
+
+
+  The file headings are as follows ...
+
+
+  portname        -       The name you will refer to the port by
+  callsign        -       The ax25 callsign you want to assign to the port
+  baudrate        -       The speed you communicate between TNC and computer
+  paclen          -       The maximum packet length for ax25 connections
+  window          -       The ax25 window parameter.  This is like 'maxframe'
+  description     -       A textual description of the port
+
+
+
+
+  3.6.  nrports
+
+  This file sets up the netrom ports you want to use.  An example is
+  below and includes a port for both cluster and node.  You will see why
+  we need 2 ports later ...
+
+
+
+       #portname   callsign   alias   paclen   description
+        netrom     gb7mbc-8   BARE    236      Node Netrom Port
+        netrom2    gb7mbc-9   MBCDX   236      Cluster Netrom Port
+
+
+
+
+
+  Note that the portnames have to be unique.
+
+
+  The file headings are as follows ...
+
+
+  portname        -       The name you will refer to the port by
+  callsign        -       This is the callsign that NET/ROM traffic from this
+                          port will use
+  alias           -       The NET/ROM alias this port will be assigned
+  paclen          -       The maximum size of NET/ROM frames transmitted
+  description     -       A textual description of the port
+
+
+
+
+  3.7.  nrbroadcast
+
+  This file sets up the netrom broadcast qualities.  An example is below
+  ...
+
+
+
+       #axport   min_obs   def_qual   worst_qual   verbose
+        4m       5         10         100          1
+
+
+
+
+
+  The file headings are as follows ...
+
+
+
+  axport          -       The port name in axports that you wish to broadcast
+                          NET/ROM on.
+  min_obs         -       The minimum obsolescence value for the port
+  def_qual        -       The default quality for the port
+  worst_qual      -       The worst quality for the port.  Any routes under
+                          this quality will be ignored
+  verbose         -       This flag determines whether you will only broadcast
+                          your own node (0) or all known nodes (1)
+
+
+
+
+  3.8.  ax25d.conf
+
+  This file controls any incoming ax25 and NET/ROM connections and
+  steers them to the relevant program.  There are lots of configuration
+  options you can set here, however they are well covered in the
+  AX25-HOWTO.  For our purposes I will show a typical set of parameters.
+  An example is below ...
+
+
+
+       [gb7mbc-0 via 2m]
+       parameters    2 1   6  900 *  15  0
+       NOCALL *  *  *  *  *  *  L
+       default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+       [gb7mbc-1 via 2m]
+       parameters    2 1   6  900 *  15  0
+       NOCALL *  *  *  *  *  *  L
+       default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+       [gb7mbc-0 via 4m]
+       parameters    2 1   6  900 *  15  0
+       NOCALL *  *  *  *  *  *  L
+       default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+       [gb7mbc-1 via 4m]
+       parameters    2 1   6  900 *  15  0
+       NOCALL *  *  *  *  *  *  L
+       default *  *  *  *  *  *  0  root /usr/sbin/node  node
+
+       <netrom2>
+       parameters 1    10 * * * 3 *
+       NOCALL *  *  *  *  *  *  L
+       default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+       <netrom>
+       parameters 1    10 * * * 3 *
+       NOCALL *  *  *  *  *  *  L
+       default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+
+
+
+
+  There are a few things to take note of here.  Firstly, all ax25
+  sections are wrapped in [ ] and all NET/ROM sections are wrapped in <
+  >.  Secondly you should be able to see that anyone who forgets to set
+  their callsign in a TNC and tries to connect with the standard NOCALL
+  set into their TNC will not connect, the 'L' means 'lockout'.  Lastly
+  and importantly, notice the order of the sections.  They are all done
+  in interface order.
+
+
+
+  You should be able to see that the normal line for access to the
+  cluster is like this ..
 
 
 
@@ -551,8 +867,8 @@
 
 
 
-  or, if you wish your users to be able to use SSID's on their callsigns
-  ..
+  however, if you wish your users to be able to use SSID's on their
+  callsigns ..
 
 
 
@@ -576,7 +892,279 @@
 
 
 
-  3.2.  Allowing telnet connects from users
+  3.9.  node.conf
+
+  For those of you that wish to run the node, you need to set up the
+  node.conf file.  There are a couple of additional files, node.perms is
+  very similar to the way ftp permissions are set up in NOS systems and
+  node.motd is the message anyone logging into the node will get.  The
+  node.conf file sets all the parameters of the node as you would
+  expect.  An example is below ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # /etc/ax25/node.conf - LinuxNode configuration file
+  #
+  # see node.conf(5)
+
+  # Idle timeout (seconds).
+  #
+  IdleTimeout     1800
+
+  # Timeout when gatewaying (seconds).
+  #
+  ConnTimeout     40000
+
+  # Visible hostname. Will be shown at telnet login.
+  #
+  HostName        gb7mbc.ampr.org
+
+  # ReConnect flag.
+  #
+  ReConnect       off
+
+  # "Local" network.
+  #
+  #LocalNet       44.139.8.48/32
+
+  # Command aliases. See node.conf(5) for the meaning of the uppercase
+  # letters in the name of the alias.
+  #
+  ##Alias         CAllbook 'telnet %{2:44.17.0.53} 1235 %1 s'
+  #Alias          CONVers  'telnet %{2:oh2ti} 3600 "/n %u %{1:139}\n/w *"'
+  #Alias          CLuster  'c hkiclh'
+  Alias           CONV    "telnet lurpac 3600"
+  Alias           BBS     "c 70cm gb7crv"
+  Alias           DXC     "telnet localhost 9000"
+  Alias           MUD     "telnet homer 4000"
+  ##Alias           TEMP    "finger temp@mary.g6phf"
+  ##Alias           TNOS    "c ip1 gb7mbc-5"
+  ##Alias           TUtor   "telnet gb7mbc 3599"
+
+  # Hidden ports.
+  #
+  #HiddenPorts    2
+
+  # External commands. See node.conf(5) for the meaning of the uppercase
+  # letters in the name of the extcmd.
+  #
+  # Flags:        1       Run command through pipe
+  #               2       Reconnected flag
+  #
+  #ExtCmd         TPM     3       nobody  /usr/bin/finger finger tpm
+  #ExtCmd         ECho    1       nobody  /bin/echo echo \%U \%u \%S \%s \%P \%p \%R \%r \%T \%t \%\% \%0 \%{1:foobar} \%{2} \%3 \%4 \%5
+
+  # Node ID.
+  #
+  NodeId          "\nBARE:GB7MBC-1"
+  #NodeId         \033[01;31m***\033[0m
+
+  # Netrom port name. This port is used for outgoing netrom connects.
+  #
+  NrPort          netrom
+
+  # Logging level
+  #
+  LogLevel        3
+
+  # The escape character (CTRL-T)
+  #
+  EscapeChar      ^T
+
+  # Resolve ip numbers to addresses?
+  #
+  ResolveAddrs    off
+
+  # Node prompt.
+  #
+  #NodePrompt     "\n"
+  #NodePrompt     "%s@%h \%i> "
+  NodePrompt      "\nBARE:GB7MBC-1 \%i > "
+  #NodePrompt     "\a\033[36m%U\033[0m de \033[01;32m#LNODE\033[0m:\033[01;33mOH2BNS-10\033[0m> "
+
+
+
+
+
+  This should be fairly obvious I hope.
+
+
+  3.10.  Getting it all running
+
+  Ok, now we have all the relevant files configured, the next step is to
+  get it all running.
+
+
+  The first thing to do is attach the TNC's.  Your TNC's should be in
+  KISS mode and connected to the serial ports involved.
+
+
+  You now use the 'kissattach' command to connect the TNC's to the
+  system like this ...
+
+
+
+       kissattach /dev/ttyS0 2m 44.131.96.199
+       kissattach /dev/ttyS1 4m 44.131.96.199
+
+
+
+
+
+  Assuming that 44.131.96.199 is your IP address.  The devices ttyS0 and
+  ttyS1 are com1 and com2 respectively.  Now we can set some parameters
+  ...
+
+
+
+       kissparms -p 2m -t 150 -l 150 -s 50 -r 50
+       kissparms -p 4m -t 150 -l 150 -s 50 -r 50
+
+
+
+
+
+  The command 'man kissparms' will give you the explanation of the
+  switches.
+
+
+  Now we need to attach the NET/ROM ports in the same way ...
+
+
+
+       nrattach netrom
+       nrattach netrom2
+
+  All of the above can be put in a file and called from
+  /etc/rc.d/rc.local.  Put all the above commands in a file called
+  rc.ax25 and put a line in rc.local to call it.
+
+
+  Now you can start the daemons that set everything in motion ...
+
+
+
+       ax25d
+       netromd -i
+
+
+
+
+
+  All should now be running.  All that remains is to get the node
+  working for telnet connections.  If nothing else, this will allow you
+  to connect to the node yourself to check on connection status etc.
+  There are 2 files that need to be edited.
+
+
+  First edit /etc/services and add
+
+
+
+       node    3000/tcp     #OH2BNS's Node Software
+
+
+
+
+
+  Assuming you want it to run on port 3000
+
+
+  Now cd /etc/xinetd.d and edit a new file called node.  It should look
+  like this ...
+
+
+
+       # default: on
+       #       unencrypted username/password pairs for authentication.
+       service node
+       {
+               socket_type     = stream
+               wait            = no
+               user            = root
+               server          = /usr/sbin/node
+               log_on_failure  += USERID
+               disable         = yes
+       }
+
+
+
+
+
+  You now need to restart the xinetd daemon.  First find out what the
+  PID is like so ..
+
+
+
+       ps auxw |grep xinetd
+
+
+
+
+  You will get a reply something like this ...
+
+
+
+       root       592  0.0  0.1  2256  620 ?        S    Feb07   0:00 xinetd -stayalive -reuse -pidfile /var/run/xinetd.pid
+
+
+
+
+
+  The PID or Process ID is 592 in this case so now we can issue the
+  command ...
+
+
+
+       kill -HUP 592
+
+
+
+
+
+  All should now be operational and you should be able to log into the
+  node by using a telnet session to the relevant port, like so ...
+
+
+
+       telnet localhost 3000
+
+
+
+
+
+  If that works, you are just about there.  you should (assuming you
+  have radios connected to the TNC's) be able to connect out to other
+  stations and receive incoming ax25 and netrom connections.
+
+
+  4.  Configuration
+
+  4.1.  Allowing ax25 connects from users
+
+  This is dealt with in the previous section
+
+
+  4.2.  Allowing telnet connects from users
 
 
   From version 1.47 there is a new (more efficient) way of doing this
@@ -592,9 +1180,11 @@
 
        spdlogin   8000/tcp     # spider anonymous login port
 
+
+
+
+
   Then add a line in /etc/inetd.conf like this ....
-
-
 
        spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/src/client login telnet
 
@@ -642,7 +1232,7 @@
   You should now get the login prompt and be able to login as before.
 
 
-  3.3.  Setting up telnet connects (from 1.47 onwards)
+  4.3.  Setting up telnet connects (from 1.47 onwards)
 
   From version 1.47 you can choose to allow the perl cluster.pl program
   to allow connections directly (i.e. not via the /spider/src/client
@@ -656,6 +1246,10 @@
 
 
        killall -HUP inetd
+
+
+
+
 
 
   to make the change happen...
@@ -706,7 +1300,7 @@
   users.
 
 
-  3.4.  Setting up for AGW Engine (1.47 onwards)
+  4.4.  Setting up for AGW Engine (1.47 onwards)
 
   AGW Engine is a Windows based ax25 stack. You can connect to an AGW
   engine from Linux as well as Windows based machines.
@@ -732,7 +1326,7 @@
 
 
 
-  3.5.  Setting up node connects
+  4.5.  Setting up node connects
 
   In order to allow cluster node connections, spider needs to know that
   the connecting callsign is a cluster node.  This is the case whether
@@ -817,7 +1411,7 @@
 
 
 
-  3.6.  Connection scripts
+  4.6.  Connection scripts
 
   Because DXSpider operates under Linux, connections can be made using
   just about any protocol;  AX25, NETRom, tcp/ip, ROSE etc are all
@@ -927,7 +1521,7 @@
   directory.
 
 
-  3.7.  Starting the connection
+  4.7.  Starting the connection
 
   You start the connection, from within a sysop enabled cluster login,
   by typing in the word connect followed by a script name like this ....
@@ -1000,7 +1594,7 @@
 
 
 
-  3.8.  Telnet echo
+  4.8.  Telnet echo
 
   Cluster links in particular suffer greatly from the presence of telnet
   echo.  This is caused by the telnet negotiation itself and can create
@@ -1045,7 +1639,7 @@
 
 
 
-  3.9.  Autostarting the cluster
+  4.9.  Autostarting the cluster
 
   Ok, you should now have DXSpider running nicely and allowing connects
   by cluster nodes or users.  However, it has to be shutdown and
@@ -1104,9 +1698,9 @@
   sysop you should find everything running nicely.
 
 
-  4.  Microsoft Windows Installation
+  5.  Microsoft Windows Installation
 
-  4.1.  Introduction
+  5.1.  Introduction
 
   IMPORTANT:
 
@@ -1131,7 +1725,7 @@
   connections.
 
 
-  4.2.  The requirements
+  5.2.  The requirements
 
   The very first things you're going to need are (in order of
   importance):-
@@ -1150,7 +1744,7 @@
   o  Plenty of good, strong tea
 
 
-  4.3.  The system
+  5.3.  The system
 
   The platform I used to generate these instructions was a "vanilla"
   Microsoft Windows Me 4.90.3000 system, with a 700MHz AMD Athlon
@@ -1173,7 +1767,7 @@
   zero intention of trying to make them say otherwise.
 
 
-  4.4.  Perl
+  5.4.  Perl
 
   Install your chosen Perl environment. Unless you have a very good
   reason for not doing so, I strongly suggest that you use ActivePerl
@@ -1204,7 +1798,7 @@
   passed. Assuming it did work, you may now move on.
 
 
-  4.5.  Additional packages
+  5.5.  Additional packages
 
   Some extensions ("packages") need to be added to the base Perl
   distribution, and we'll do this next. If you're using the Perl I
@@ -1273,7 +1867,7 @@
   because it suits me.
 
 
-  4.6.  Getting Spider
+  5.6.  Getting Spider
 
   Get the current version of the DX Spider distribution. This needs to
   be v1.47 or later. You've got two ways (currently) of getting this;
@@ -1310,7 +1904,7 @@
   ZIP files) if you are not using CVS.
 
 
-  5.  Installing the software
+  6.  Installing the software
 
   Ensure that your CVS session or your WINunZIPped file have left you
   with a directory "C:\spider\local" and C:\spider\local_cmd"; if not,
@@ -1374,7 +1968,7 @@
 
 
 
-  5.1.  Incoming telnets
+  6.1.  Incoming telnets
 
   If you want to enable inbound "TELNET" connections (or you are running
   Windows NT, 2000 or XP), you've got a little more work to do. From a
@@ -1423,7 +2017,7 @@
   "127.0.0.1" ("0.0.0.0" means all IP addresses).
 
 
-  5.2.  The AGW packet engine
+  6.2.  The AGW packet engine
 
   On the assumption that you'll be using the SV2AGW Packet Engine to
   interface your radios to the cluster, you should now create your own
@@ -1458,7 +2052,7 @@
   o  $passwd - password that matches $login
 
 
-  5.3.  Setting up the initial user files
+  6.3.  Setting up the initial user files
 
   Next you need to create the initial user files, etc. A tool is
   supplied which will do this for you. To run the tool:-
@@ -1577,7 +2171,7 @@
   7300). I recommend packages like DXTelnet.
 
 
-  5.4.  Connecting to other clusters
+  6.4.  Connecting to other clusters
 
   If you want to connect this to another cluster, then you'll want to
   negotiate a link with someone. For experimental purposes, I'm happy to
@@ -1587,13 +2181,13 @@
   me by Email if you want me to set up a connection for you.
 
 
-  6.  General Information
+  7.  General Information
 
   The following relates to all versions of DXSpider and is not platform
   related.
 
 
-  6.1.  The crontab file
+  7.1.  The crontab file
 
   Login as sysop and create a file in /spider/local_cmd called crontab.
   Edit it with your favourite editor and add a line like this (I have

@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Installation Manual v1.49: Installing the software</TITLE>
+ <TITLE>The DXSpider Installation Manual v1.49: Microsoft Windows Installation</TITLE>
  <LINK HREF="installation-6.html" REL=next>
  <LINK HREF="installation-4.html" REL=previous>
  <LINK HREF="installation.html#toc5" REL=contents>
@@ -13,239 +13,189 @@
 <A HREF="installation-4.html">Previous</A>
 <A HREF="installation.html#toc5">Contents</A>
 <HR>
-<H2><A NAME="s5">5. Installing the software</A></H2>
+<H2><A NAME="s5">5. Microsoft Windows Installation</A></H2>
 
-<P>Ensure that your CVS session or your WINunZIPped file have left you with
-a directory "C:\spider\local" and C:\spider\local_cmd"; if not, go to
-"C:\spider\" and create them. If "C:\spider" is missing, go back and
-figure out why, because it shouldn't be.
-<P>Now create your own local copy of the DXVars.pm file by:-
+<H2><A NAME="ss5.1">5.1 Introduction</A>
+</H2>
+
+<P><B>IMPORTANT:</B> 
+<P>What you'll be left with once you've followed these instructions
+is (hopefully) a working DX Spider v1.47 system that is capable
+of accepting or originating "internet" connections, plus inbound
+AX.25 and TCP/IP radio connections. If the absence of outbound
+radio connections is a serious limitation for you, it would be
+better for you to wait a couple more weeks until this support has
+been added.
+<P>On the other hand, you may have an enquiring mind, or better yet,
+may be looking for a useful way of connecting your current
+(perhaps) AK1A cluster "to the internet" via some networking
+mechanism (BPQEther, etc) or other. I won't be producing
+instructions for the latter case, because I don't have an AK1A to
+play with. But someone might ...
+<P>Whatever, this document is intended to get you started with DX
+Spider in a Microsoft Windows &trade; environment. It's not
+intended to teach you anything other than how to perform a
+minimum configuration of a DX Spider installation and have it
+able to connect across "the internet" to other DX Clusters, while
+accepting inbound TELNET and radio connections.
 <P>
-<BLOCKQUOTE><CODE>
-<PRE>
-copy c:\spider\perl\DXVars.pm.issue
-c:\spider\local\DXVars.pm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Now you'll need to edit this file using a text editor. If nothing
-else, you can simply
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-cd \spider\local
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>and then
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-notepad DXVars.pm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>to bring up an editor window containing the file. As an absolute
-minimum you must adjust the following items in DXVars.pm:-
+<H2><A NAME="ss5.2">5.2 The requirements</A>
+</H2>
+
+<P>The very first things you're going to need are (in order of
+importance):-
 <P>
 <UL>
-<LI> $mycall  - Should hold the callsign of your DX Cluster</LI>
-<LI> $myname  - The SysOp's first name</LI>
-<LI> $myalias - the SysOp's callsign. Cannot be the same as $mycall!</LI>
-<LI> $myqth - The station's geographical location (QTH).</LI>
-<LI> $mylatitude - The station latitude in degrees and decimal fractions</LI>
-<LI> $mylongitude - The station longitude in degrees and decimal fractions</LI>
-<LI> $mylocator - The Maidenhead (or QRA) locator of the station </LI>
-</UL>
-<P>You really also ought to update the $myqth and $myemail variables. And
-unless you are absolutely certain you know what you're doing, you
-should change nothing else in this file. Note that if you use an "@" or 
-a "$" character in one of the above strings (typically in $myemail) you must 
-write them as "\@" or "\$". 
-<P>
-<P>
-<H2><A NAME="ss5.1">5.1 Incoming telnets</A>
-</H2>
-
-<P>If you want to enable inbound "TELNET" connections (or you are running
-Windows NT, 2000 or XP), you've got a little more work to do. From a
-handy "DOS box" that's not doing anything else, do the following:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-copy \spider\perl\Listeners.pm \spider\local
-cd \spider\local
-notepad listeners.pm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>The following lines need attention:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-["0.0.0.0", 7300],
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>On my machine, I've simply uncommented the "0.0.0.0" entry by
-removing the '#' from the front of the line. 
-<P><B>You MUST carry out this step if you are
-running on a Windows NT, 2000 or XP based system</B>
-<P>If you don't have a static hostname for your machine, and you
-intend to allow folk to connect to your machine across the
-internet, then I'd suggest you pay a visit to www.dyndns.org and
-create one for yourself. While it's free, it will take a modest
-an amount of effort on your part to read, understand and
-implement what needs to be done to set this up.
-<P>
-<P>If your machine is connected to the internet <B>and</B> you don't
-want to allow your machine to be visible to the outside world you
-should change the "0.0.0.0" to "127.0.0.1" [which is
-"localhost"]. This will then only allow connections from inside your
-machine. As was said earlier: if you aren't running Win9x (or you want
-to use DXTelnet or somesuch), then you need to have the machine
-listening at least to "127.0.0.1" ("0.0.0.0" means <B>all</B> IP
-addresses).
-<P>
-<H2><A NAME="ss5.2">5.2 The AGW packet engine</A>
-</H2>
-
-<P>On the assumption that you'll be using the SV2AGW Packet Engine
-to interface your radios to the cluster, you should now create
-your own local copy of AGWConnect.pm by:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-copy c:\spider\perl\AGWConnect.pm
-c:\spider\local\AGWConnect.pm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>and then
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-notepad AGWConnect.pm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>to bring up an editor window containing the file. You must
-consider adjusting the following items in AGWConnect.pm:-
-<P>
-<UL>
-<LI>$enable - set to '1' to enable AGWPE interface </LI>
-<LI>$login  - the login ID you chose when you set up the SV2AGW security :-)</LI>
-<LI>$passwd - password that matches $login</LI>
+<LI>A cup of good, strong tea</LI>
+<LI>A supported Windows platform with an internet connection so you can
+download the necessary software bits and bobs directly to it. There are other ways, but this is preferable.</LI>
+<LI>Another cup of good, strong tea</LI>
+<LI>If all goes according to plan, about an hour to spare</LI>
+<LI>Plenty of good, strong tea</LI>
 </UL>
 <P>
-<H2><A NAME="ss5.3">5.3 Setting up the initial user files</A>
+<H2><A NAME="ss5.3">5.3 The system</A>
 </H2>
 
-<P>Next you need to create the initial user files, etc. A tool is
-supplied which will do this for you. To run the tool:-
+<P>The platform I used to generate these instructions was a
+"vanilla" Microsoft Windows Me 4.90.3000 system, with a 700MHz
+AMD Athlon processor and 96 Mb memory. I've also personally
+verified that it runs on my laptop (Pentium 266MHz, 32 Mb memory,
+Windows 98 SE v4.10.2222 A) and a computer that I assembled from
+a random pile of junk (AMD K6-2 333MHz, 64 Mb memory, Windows 98
+v4.10.1998). As a result, I have reason to believe that what I'm
+about to describe will perform equally on any 32-bit MS Windows
+environment with 32 Mb of memory.
+<P>Because of the changes that have recently been made to the core
+"cluster.pl" module and the introduction of a very lightweight
+"winclient.pl", I have a sneaking suspicion that this will now
+run on any platform that has reasonably complete support for
+Perl. Is there someone out there with both an enquiring mind and
+(say) a Macintosh, for instance?
+<P>Please bear in mind, though, that my instructions relate solely
+to how to get this going under a Microsoft Windows environment,
+and I have zero intention of trying to make them say otherwise.
 <P>
-<BLOCKQUOTE><CODE>
-<PRE>
-cd \spider\perl
-perl create_sysop.pl
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>If all goes according to plan, you will see no output from this
-program, and after a brief wait, your DOS prompt will be
-returned.
-<P>Depending on how brave you are, you might now care to try the
-following:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-perl cluster.pl
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>If you did everything you were told, your DOS window will now
-hold a display which looks something like:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-DXSpider DX Cluster Version 1.47
-Copyright (c) 1998-2001 Dirk Koopman G1TLH
-loading prefixes ...
-loading band data ...
-loading user file system ...
-starting listeners ...
-Internal port: localhost 27754
-load badwords: Ok
-reading in duplicate spot and WWV info ...
-reading existing message headers ...
-load badmsg: Ok
-load forward: Ok
-load swop: Ok
-@msg = 0 before delete
-@msg = 0 after delete
-reading cron jobs ...v cron: reading /spider/cmd/crontab
-cron: adding 1 0 * * 0
-DXUser::export("$main::data/user_asc")
-reading database descriptors ...
-doing local initialisation ...
-orft we jolly well go ...
-queue msg (0)
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Now, if that's what you've got, you are very nearly home and dry
-(in as far as these particular experiments are concerned, anyhow)
-<P>If you are running Windows 9x you can access your new cluster (from
-the local machine) by finding yourself another "DOS box" and doing the
-following:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-cd \spider\perl
-perl winclient.pl
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>If you are running Windows NT, 2000 or XP then winclient.pl does not
-work. We don't know why other than this seems to be some kind of
-incomaptibility in perl. You can achieve the same thing by telnetting
-to the port you defined in Listeners.pm (7300 as default), thus:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-Menu->Start->Run
-telnet localhost 7300
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>On getting the <B>login:</B> prompt, enter your sysop callsign (the one you
-put in DXVars.pm as $myalias).
-<P>
-<P>I would recommend <B>strongly</B> that you obtain a better telnet
-client than that which comes with windows (I use 
-<A HREF="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</A>). 
-<P>
-<P>Anyway, if you are rewarded with a display which looks something like:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.47
-Cluster: 1 nodes, 1 local / 1 total users Max users 2 Uptime 0 00:00
-M0ADI de GB7SJP 4-Mar-2001 1511Z >
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>You've arrived. Try some commands, and see how they feel. (In
-case you were wondering, "Iain", "M0ADI" and "GB7SJP" all came
-from the version of DXVars.pm that was on the machine when I
-started the winclient.pl)
-<P>
-<P>The interface is very basic. It is a simple command line. There are
-better looking interfaces. Most of the "standard" logging and DX
-Cluster access programs that are capable of connecting via a TCP or
-telnet connection will work as a "Sysop Console" client. You connect
-to "localhost" on the port that you defined in Listeners.pm (usually
-7300). I recommend packages like 
-<A HREF="http://www.qsl.net/wd4ngb/telnet.htm">DXTelnet</A>.
-<P>
-<H2><A NAME="ss5.4">5.4 Connecting to other clusters</A>
+<H2><A NAME="ss5.4">5.4 Perl</A>
 </H2>
 
-<P>If you want to connect this to another cluster, then you'll want to
-negotiate a link with someone. For experimental purposes, I'm happy to
-allow folk to connect to GB7DXA (spud.ath.cx), on the understanding
-that the system may or may not be there and may or may not be
-connected to anything particularly useful at any given moment. Contact
-me by 
-<A HREF="mailto:g0rdi@blacksheep.org">Email</A> if you
-want me to set up a connection for you.
+<P>Install your chosen Perl environment. Unless you have a very good
+reason for not doing so, I strongly suggest that you use
+ActivePerl v5.6. For my testing &amp; development, I used build 623.
+You can get this from:- 
+<A HREF="http://www.activestate.com/Products/ActivePerl/Download.html">http://www.activestate.com/Products/ActivePerl/Download.html</A><P>You will need to choose either the MSI or the AS package. My
+recommendation is that you choose the MSI package and deal with
+the consequences if your system isn't equipped with support for
+the latest MS Installer; you'll be better off in the long run.
+The build 623 download is 7,460 KB, so now is a really good time
+to have some tea if you're on a slow dial-up connection.
+<P>During installation, please ensure that you do choose the options
+to "Add Perl to the PATH environment variable" and "Create Perl
+file extension association"; it will make your life so much
+easier. Once the installation is finished, be sure to reboot your
+PC. You probably won't be told anywhere else that this needs to
+be done now, but it does. Really.
+<P>Once you've rebooted, open a "DOS box" (Start > Run > command
+might do it, if you can't find it elsewhere) and from wherever it
+lands, type PERL -v &lt;ENTER&gt; (it's better if that's a lower-case
+'v', because an upper-case 'V' means something else. You should
+be rewarded with some interesting information about your Perl
+installation. If you're not, you must go back to the beginning
+and discover what went wrong and fix it. It's pointless to
+proceed unless this simple check is passed. Assuming it did work,
+you may now move on.
+<P>
+<H2><A NAME="ss5.5">5.5 Additional packages</A>
+</H2>
+
+<P>Some extensions ("packages") need to be added to the base Perl
+distribution, and we'll do this next. If you're using the Perl I
+recommended, and don't know any better for yourself, then just
+blindly following these instructions will work just fine. If that
+didn't describe you, then you're on your own.
+<P>Visit the following URL:
+<P>
+<A HREF="http://www.activestate.com/PPMPackages/zips/6xx-builds-only/">http://www.activestate.com/PPMPackages/zips/6xx-builds-only/</A><P>and download the following files:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Data-Dumper.zip
+Net-Telnet.zip
+TimeDate.zip
+Time-HiRes.zip
+DB_File.zip
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Make yourself a convenient directory to unpack all of these zip
+files into (I put mine in "D:\ppm>") and do the following (the
+bits you type in are blue ). Note that where these files land
+will be directly related to where you chose to install your
+ActivePerl (mine, as you can probably guess from what follows,
+went into "D:\Perl"):-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+D:\ppm>ppm install Data-Dumper.ppd
+Installing package 'Data-Dumper.ppd'
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.bs
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.dll
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.exp
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.lib
+Installing D:\Perl\html\site\lib\auto\Data\Dumper\Dumper.html
+Installing D:\Perl\site\lib\Data\Dumper\Dumper.pm
+Writing D:\Perl\site\lib\auto\Data\Dumper\Dumper.packlist
+D:\ppm>
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>I'm not going to bother you with exhaustive details of the rest
+of them, but suffice it to say you need to:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+ppm install DB_File.ppd
+ppm install Net-Telnet.ppd
+ppm install TimeDate.ppd
+ppm install Time-HiRes.ppd
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If all that seemed to work OK, time to move along. Before anyone
+who is familiar with PPM tells me that we didn't need to download
+and keep those files locally, I knew that. I also knew that PPM
+is sometimes awkward to configure via firewalls, and that
+sometimes the repositories don't always work the way we'd hope. I
+do it that way because it suits me.
+<P>
+<H2><A NAME="ss5.6">5.6 Getting Spider</A>
+</H2>
+
+<P>Get the current version of the DX Spider distribution. This needs
+to be v1.47 or later. You've got two ways (currently) of getting
+this; either get a CVS update from sourceforge (if you don't know
+what this is, then it isn't for you) or get the latest "official"
+release from:-
+<P>
+<A HREF="http://www.dxcluster.org/download/index.html">http://www.dxcluster.org/download/index.html</A><P>or if you want the lastest snapshot of CVS version (which is produced 
+every night):-
+<P>
+<A HREF="http://www.dxcluster.org/download/CVSlatest.tgz">http://www.dxcluster.org/download/CVSlatest.tgz</A><P>This is generally the best one to go for as it is completely up to
+date. However, there is always the very slight chance that it might
+unstable. Generally, there will be a note on the website if this is 
+the case. 
+<P>
+<P>The only difference between "CVSlatest.tgz" and the latest
+"official" release version is that it is more up to date. Don't confuse 
+this TGZ file with "Downloading from Sourceforge with CVS" - they are two
+quite different things.  
+<P>
+<P>If you went down the CVS route (ie installed wincvs and downloaded from
+sourceforge), then everything will be nicely
+set out on your local disk. If you got the TGZ file, unpack it to
+somewhere convenient. The following examples assume that you put
+it on drive "C:\", for convenience.
+<P>
+<P>You will need 
+<A HREF="http://www.winzip.com">winzip</A> to
+manipulate the TGZ files (they are bit like ZIP files) if you are not using CVS.
 <P>
 <HR>
 <A HREF="installation-6.html">Next</A>
