@@ -1,6 +1,7 @@
 04Nov99=======================================================================
 1. Removed ~ from the end of the PC18.
 2. Removed a hangover from duff character checking in cluster.pl
+3. Stop PC frames that are to be routed, being routed back to themselves.
 03Nov99=======================================================================
 1. Simplified command caching so it uses anonymous subroutines, you should
 also get error messages back on the console now when developing.

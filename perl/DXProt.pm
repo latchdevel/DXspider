@@ -1006,7 +1006,10 @@ sub route
 	my ($self, $call, $line) = @_;
 	my $cl = DXCluster->get_exact($call);
 	if ($cl) {       # don't route it back down itself
-		return if ref $self && $call eq $self->{call};
+		if (ref $self && $call eq $self->{call}) {
+			dbg('chan', "Trying to route back to source, dropped");
+			return;
+		}
 		my $hops;
 		my $dxchan = $cl->{dxchan};
 		if ($dxchan) {
