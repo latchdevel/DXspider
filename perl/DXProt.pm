@@ -104,9 +104,10 @@ sub normal
 				
 				# yes, it is
 				my $text = unpad($field[3]);
+				Log('talk', $call, $field[1], $field[6], $text);
+				$call = $main::myalias if $call eq $main::mycall;
 				my $ref = DXChannel->get($call);
 				$ref->send("$call de $field[1]: $text") if $ref;
-				Log('talk', $call, $field[1], $field[6], $text);
 			} else {
 				route($field[2], $line); # relay it on its way
 			}
