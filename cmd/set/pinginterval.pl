@@ -11,14 +11,24 @@ my @args = split /\s+/, $line;
 my $call;
 my @out;
 my $user;
-my $val = int shift @args if @args;
+my $val = shift @args if @args;
 
 
-return (1, $self->msg('e5')) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 8;
 return (1, $self->msg('e14')) unless defined $val;
 return (1, $self->msg('e12')) unless @args;
 
-$val *= 60 if $val < 120;
+if ($val =~ /^(\d+)[sS]$/) {
+	$val = $1;
+} elsif ($val =~ /^(\d+)[mM]$/) {
+	$val = $1 * 60;
+} elsif ($val =~ /^(\d+)[hH]$/) {
+	$val = $1 * 60 * 60;
+} elsif ($val =~ /^\d+$/) {
+	$val *= 60 if $val < 30;
+} else {
+	return (1, $self->msg('e14'));
+}
 
 foreach $call (@args) {
 	$call = uc $call;
@@ -26,7 +36,7 @@ foreach $call (@args) {
 	$user = $dxchan->user if $dxchan;
 	$user = DXUser->get($call) unless $user;
 	if ($user) {
-		unless ($user->sort eq 'A' || $user->sort eq 'S') {
+		unless ($user->is_node) {
 			push @out, $self->msg('e13', $call);
 			next;
 		}

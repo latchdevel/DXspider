@@ -11,32 +11,32 @@ my @args = split /\s+/, $line;
 my $call;
 my @out;
 my $user;
-my $val = int shift @args if @args;
+my $val = shift @args if @args;
 
 
 return (1, $self->msg('e5')) if $self->priv < 8;
-return (1, $self->msg('e14')) unless defined $val;
+return (1, $self->msg('e25', 1, 9)) unless defined $val && $val =~ /^\d+$/ && $val >= 1 && $val <= 9;
 return (1, $self->msg('e12')) unless @args;
-
-$val *= 60 if $val < 120;
 
 foreach $call (@args) {
 	$call = uc $call;
+	my $dxchan = DXChannel->get($call);
+	$user = $dxchan->user if $dxchan;
 	$user = DXUser->get_current($call);
 	if ($user) {
-		unless ($user->sort eq 'A' || $user->sort eq 'S') {
+		unless ($user->is_node) {
 			push @out, $self->msg('e13', $call);
 			next;
 		}
-		$user->pingint($val);
+		$user->nopings($val);
 		if ($dxchan) {
-			$dxchan->pingint($val);
+			$dxchan->nopings($val);
 		} else {
 			$user->close();
 		}
-		push @out, $self->msg('pingint', $call, $val);
+		push @out, $self->msg('obscount', $call, $val);
 	} else {
-		push @out, $self->msg('e3', "Set/Pinginterval", $call);
+		push @out, $self->msg('e3', "set/obscount", $call);
 	}
 }
 return (1, @out);

@@ -956,7 +956,7 @@ sub normal
 								$dxchan->send($dxchan->msg('pingi', $field[2], $s, $ave))
 							} elsif ($dxchan->is_node) {
 								if ($tochan) {
-									$tochan->{nopings} = 2; # pump up the timer
+									$tochan->{nopings} = $tochan->user->nopings || 2; # pump up the timer
 									push @{$tochan->{pingtime}}, $t;
 									shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
 									my $st;

@@ -1053,6 +1053,10 @@ If a ping is heard then the obscount is reset to the full value. Using
 default values, if a node has not responded to a ping within 15 minutes,
 it is disconnected.
 
+You can set this parameter between 1 and 9.
+
+It is STRONGLY recommended that you don't change the default.
+
 === 0^SET/PAGE <lines per page>^Set the lines per page
 Tell the system how many lines you wish on a page when the number of line
 of output from a command is more than this. The default is 20. Setting it
@@ -1069,12 +1073,28 @@ affect routing decisions. The default interval is 300 secs or 5 minutes.
 
 You can use this command to set a different interval. Please don't. 
 
-But if you do the value you enter is treated as minutes up 60 and seconds
+But if you do the value you enter is treated as minutes up 30 and seconds
 for numbers greater than that.
 
 This is used also to help determine when a link is down at the far end
 (as certain cluster software doesn't always notice), see SET/OBSCOUNT
 for more information.
+
+If you must change it (and it may be useful for internet connected nodes
+on dynamic IP addresses that go away after a set time of usage) the time
+can be specified as:-
+
+  5      which if less than 30 is converted to minutes otherwise is 
+         taken as the no of seconds between pings. 
+  120s   120 seconds
+  5m     5 minutes
+  1h     1 hour
+
+Please be aware that this causes traffic to occur on the link, setting 
+this value too low may annoy your neighbours beyond the point of 
+endurance!
+
+You can switch this off by setting it to 0.
 
 === 9^SET/PRIVILEGE <n> <call> [<call..]^Set privilege level on a call
 Set the privilege level on a callsign. The privilege levels that pertain

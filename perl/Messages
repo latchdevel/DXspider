@@ -70,6 +70,7 @@ package DXM;
 				e22 => '$_[0] not a callsign',
 				e23 => '$_[0] not a range (eg 0/30000)', 
 				e24 => 'Sorry, Internet access is not enabled',
+				e25 => 'Sorry the value must be between $_[0] and $_[1]',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',
@@ -156,6 +157,7 @@ package DXM;
 				nodexc => '$_[0] created as DXNET style Node',
 				nodeu => '$_[0] set back as a User',
 				nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
+				obscount => 'Ping obsolescence count on $_[0] set to $_[1]',
 				ok => 'Operation successful',
 				outconn => 'Outstanding connect to $_[0]',
 				page => 'Press Enter to continue, A to abort ($_[0] lines) >',
