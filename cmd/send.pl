@@ -33,7 +33,8 @@ $loc->{rrreq} = '0';
 if ($self->state eq "prompt") {
 
 	my @f = split /\b/, $line;
-
+	@f = map {s/\s+//g; length $_ ? $_ : ()} @f;
+	
 	# any thing after send?
 	return (1, $self->msg('e6')) if !@f;
 
@@ -94,14 +95,14 @@ if ($self->state eq "prompt") {
 			$loc->{rrreq} = '1';
 		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
 			$loc->{from} = uc shift @f;
-		} elsif (($f =~ /^[\@\.\#]$/ || $f eq '.#') && @f) {       # this is bbs syntax, for send it 'to node'
+		} elsif (($f =~ /^[\@\.\#\$]$/ || $f eq '.#') && @f) {       # this is bbs syntax, for send it 'to node'
 			shift @f;
 		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
 			next;
-		} elsif ($f =~ /^<\S+/) {     # this is bbs syntax  for from call
-			($loc->{from}) = $f =~ /^<(\S+)$/;
-		} elsif ($f =~ /^\@\S+/) {     # this is bbs syntax  for origin
-			($loc->{origin}) = $f =~ /^\@(\S+)$/;
+		} elsif ($f =~ /^<(\S+)/) {     # this is bbs syntax  for from call
+			$loc->{from} = $1;
+		} elsif ($f =~ /^\$\S+/) {     # this is bbs syntax  for bid
+			;
 		} else {
 
 			# callsign ?
@@ -139,6 +140,11 @@ if ($self->state eq "prompt") {
 	} else {
 		delete $self->{loc};
 		return (1, $self->msg('e6'));
+	}
+	$loc->{from} ||= $self->call;
+	unless (is_callsign($loc->{from})) {
+		delete $self->{loc};
+		return (1, $self->msg('e22', $loc->{from}));
 	}
 
 	# find me and set the state and the function on my state variable to

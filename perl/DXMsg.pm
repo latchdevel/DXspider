@@ -1208,6 +1208,8 @@ sub import_one
 	# first line;
 	my $line = shift @$ref;
 	my @f = split /\b/, $line;
+	@f = map {s/\s+//g; length $_ ? $_ : ()} @f;
+
  	unless (@f && $f[0] =~ /^(:?S|SP|SB|SEND)$/ ) {
 		my $m = "invalid first line in import '$line'";
 		dbg($m) if isdbg('msg');
@@ -1224,16 +1226,16 @@ sub import_one
 			;
 		} elsif ($notincalls && ($f eq 'RR')) {
 			$rr = '1';
-		} elsif (($f =~ /^[\@\.\#]$/ || $f eq '.#') && @f) {       # this is bbs syntax, for AT
+		} elsif (($f =~ /^[\@\.\#\$]$/ || $f eq '.#') && @f) {       # this is bbs syntax, for AT
 			shift @f;
 		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
 			$from = uc shift @f;
 		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
 			next;
-		} elsif ($f =~ /^<\S+/) {     # this is bbs syntax  for from call
-			($from) = $f =~ /^<(\S+)$/;
-		} elsif ($f =~ /^\@\S+/) {     # this is bbs syntax for origin
-			($origin) = $f =~ /^\@(\S+)$/;
+		} elsif ($f =~ /^<(\S+)/) {     # this is bbs syntax  for from call
+			$from = $1;
+		} elsif ($f =~ /^\$\S+/) {     # this is bbs syntax for bid
+			;
 		} else {
 
 			# callsign ?
