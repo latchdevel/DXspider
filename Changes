@@ -12,6 +12,7 @@ affects lots of the commands as well. I may not have got them all.
 5. Hangup clients on HUP signals. I originally ignored them, for reasons that
 are now lost in the mists of time. HUP signals now cause clients to die 
 (cleanly) and disconnect everything correctly.
+6. Added show/time command
 21Nov99=======================================================================
 1. lose extraneous rubbish after the callsign as sent by BBSes.
 2. Change end label on sh/moon to RGain dB rather than Loss dB.
