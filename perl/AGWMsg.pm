@@ -198,7 +198,7 @@ sub _decode
 	return unless $sock;
 
 	# we have at least 36 bytes of data (ugh!)
-	my ($port, $sort, $pid, $from, $to, $len) = unpack('C x3 a1 x1 C x1 a10 a10 V x4', $inmsg);
+	my ($port, $sort, $pid, $from, $to, $len) = unpack('C x3 a1 x1 C x1 Z10 Z10 V x4', $inmsg);
 	my $data;
 
 	# do a sanity check on the length
@@ -227,15 +227,16 @@ sub _decode
 
 	$data = '' unless defined $data;
 	if ($sort eq 'D') {
-		$data =~ s/[\cR\x00]//g;
-		dbg('agw', "AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$data\"");
+		my $d = unpack "Z*", $data;
+		$d =~ s/\cM$//;
+		dbg('agw', "AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
 		my $conn = Msg->conns($from eq $main::mycall ? $to : $from);
 		if ($conn) {
 			if ($conn->{state} eq 'WC') {
 				if (exists $conn->{cmd}) {
 					if (@{$conn->{cmd}}) {
-						dbg('connect', $conn->{msg});
-						$conn->_docmd($conn->{msg});
+						dbg('connect', $d);
+						$conn->_docmd($d);
 					}
 				}
 				if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
@@ -247,16 +248,20 @@ sub _decode
 		} else {
 			dbg('err', "AGW error Unsolicited Data!");
 		}
-	} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M') {
-		dbg('agw', "AGW Monitor \"$data\"");
+	} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
+		my $d = unpack "Z*", $data;
+		$d =~ s/\cM$//;
+		dbg('agw', "AGW Monitor port: $port \"$d\"");
 	} elsif ($sort eq 'C') {
-		dbg('agw', "AGW Connect port: $port pid: $pid '$from'->'$to'");
+		my $d = unpack "Z*", $data;
+		$d =~ s/\cM$//;
+		dbg('agw', "AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"");
 		my $call = $from eq $main::mycall ? $to : $from;
 		my $conn = Msg->conns($call);
 		if ($conn) {
 			if ($conn->{state} eq 'WC') {
 				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
-					$conn->_docmd($data);
+					$conn->_docmd($d);
 					if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
 						$conn->to_connected($conn->{call}, 'O', $conn->{csort});
 					}
@@ -266,7 +271,7 @@ sub _decode
 			$conn = AGWMsg->new($rproc);
 			$conn->{agwpid} = $pid;
 			$conn->{agwport} = $port;
-			$conn->{lineend} = "\cR";
+			$conn->{lineend} = "\cM";
 			$conn->{incoming} = 1;
 			$conn->{agwcall} = $call;
 			$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
@@ -306,7 +311,8 @@ sub _decode
 			_sendf('y', undef, undef, $i );
 		}
 	} else {
-		dbg('agw', "AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$data\"");
+		my $d = unpack "Z*", $data;
+		dbg('agw', "AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
 	}
 }
 
@@ -317,7 +323,7 @@ sub connect
 	my ($port, $call) = split /\s+/, $line;
 	$conn->{agwpid} = ord "\xF0";
 	$conn->{agwport} = $port - 1;
-	$conn->{lineend} = "\cR";
+	$conn->{lineend} = "\cM";
 	$conn->{incoming} = 0;
 	$conn->{csort} = 'ax25';
 	$conn->{agwcall} = uc $call;
