@@ -3,7 +3,11 @@
 2. make some mods to allow perl 5.7.2 to run
 3. create $DXProt::eph_restime to allow variable slugging of ephemeral dups
 4. create $DXProt::eph_info_restime to allow a long dupe time for these
-4. create $DXProt::eph_pc34 to allow a short anti dupe slug for rcmd loops
+5. create $DXProt::eph_pc34 to allow a short anti dupe slug for rcmd loops
+6. Add a new sysop cmd 'save' which will save the output of any command (or
+list of commands in "<cmd>") to a file.
+7. Add a new command "echo" which echos its argument to the screen (useful
+for titling in the save command above.
 02Jan02=======================================================================
 1. updated the copyright dates
 2. modernised and extended the Windows instructions a bit.

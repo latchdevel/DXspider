@@ -83,6 +83,7 @@ package DXM;
 				e27 => '$_[0] not a numeric or a callsign prefix', 
 				e28 => 'Sorry, you need to be registered (SP $main::myalias to register)',
 				e29 => 'Need a password',
+				e30 => 'Cannot Open $_[0] $!',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',

@@ -497,6 +497,39 @@ You can credit someone else by saying:-
 The <freq> is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
 
+=== 0^ECHO <line>^Echo the line to the output
+This command is useful in scripts and so forth for printing the
+line that you give to the command to the output. You can use this
+in user_default scripts and the SAVE command for titling and so forth
+
+The script will interpret certain standard "escape" sequences as follows:-
+
+  \t - becomes a TAB character (0x09 in ascii)
+  \a - becomes a BEEP character (0x07 in ascii)
+  \n - prints a new line
+
+So the following example:-
+
+  echo GB7DJK is a dxcluster
+
+produces:-
+
+  GB7DJK is a dxcluster
+
+on the output. You don't need a \n on the end of the line you want to send.
+
+A more complex example:-
+
+  echo GB7DJK\n\tg1tlh\tDirk\n\tg3xvf\tRichard
+
+produces:-
+
+  GB7DJK
+          g1tlh   Dirk
+          g3xvf   Richard
+
+on the output.
+                                      
 === 9^EXPORT <msgno> <filename>^Export a message to a file
 Export a message to a file. This command can only be executed on a local
 console with a fully privileged user. The file produced will be in a form
@@ -1068,6 +1101,37 @@ You can also use all the extra qualifiers such as RR, PRIVATE,
 NOPRIVATE, B that you can use with the SEND command (see SEND
 for further details)
 
+=== 9^SAVE [-d -t -a] <filename> "<cmd>" [...]^Save command output to a file
+This sysop only cammand allows you to save the output of one or more
+commands to a file. For example:-
+
+  save /spider/packclus/dxstats show/dxstat
+
+will save the output of the normal command "show/dxstat" to the file
+"dxstats" in the files area.
+
+You can have some extra flags to the save which will either 
+date stamp or time stamp or both the filename so:-
+
+  save -d /tmp/a <cmd> creates /tmp/a_6-Jan-2002
+  save -t /tmp/a <cmd> creates /tmp/a_2301Z
+  save -d -t /tmp/a <cmd> creates /tmp/a_6-Jan-2002_2301Z
+
+The -a flag means append to the file instead of overwriting it.
+
+You can have more than one command on the line, to do this you MUST
+enclose each command in double quotes (") eg:-
+
+  save /tmp/a "sh/hfstats" "blank +" "sh/vhfstats"
+
+or
+
+  save /tmp/a "sh/hfstats","blank +","sh/vhfstats"
+
+You can only write into places that the cluster has permission for (which
+is that of the "sysop" user [which had BETTER NOT BE "root"]), you will 
+need to create any directories you want to put stuff in beforehand as well.
+ 
 === 0^SEND <call> [<call> ...]^Send a message to one or more callsigns
 === 0^SEND RR <call>^Send a message and ask for a read receipt
 === 0^SEND COPY <msgno> <call>^Send a copy of a  message to someone
