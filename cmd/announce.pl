@@ -31,17 +31,17 @@ my $sysopflag;
 
 if ($sort eq "FULL") {
   $line =~ s/^$f[0]\s+//;    # remove it
-  $to = "ALL";
+  $to = "All";
 } elsif ($sort eq "SYSOP") {
   $line =~ s/^$f[0]\s+//;     # remove it
   @locals = map { $_->priv >= 5 ? $_ : () } @locals;
-  $to = "SYSOP";
+  $to = "Sysop";
   $sysopflag = '*';
 } elsif ($sort eq "LOCAL") {
   $line =~ s/^$f[0]\s+//;     # remove it
-  $to = "LOCAL";
+  $to = "Local";
 } else {
-  $to = "LOCAL";
+  $to = "Local";
 }
 
 # change ^ into : for transmission
@@ -55,7 +55,7 @@ if (@bad = BadWords::check($line)) {
 return (1, $self->msg('dup')) if AnnTalk::dup($from, $toflag, $line);
 Log('ann', $to, $from, $line);
 DXProt::broadcast_list("To $to de $from <$t>: $line", 'ann', undef, @locals);
-if ($to ne "LOCAL") {
+if ($to ne "Local") {
   my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 0);
   DXProt::broadcast_ak1a($pc);
 }
