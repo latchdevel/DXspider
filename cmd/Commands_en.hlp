@@ -1796,8 +1796,9 @@ This can be done with the SHOW/DX command like this:-
    SH/DX dxcc g
    SH/DX dxcc w on 20m iota
 
-=== 0^SHOW/DXSTATS^Show the DX Statistics for last 31 days
-Show the total DX spots for the last 31 days
+=== 0^SHOW/DXSTATS [days] [date]^Show the DX Statistics
+Show the total DX spots for the last <days> no of days (default is 31), 
+starting from a <date> (default: today).
 
 === 0^SHOW/FILES [<filearea> [<string>]]^List the contents of a filearea
 SHOW/FILES on its own will show you a list of the various fileareas
@@ -1817,12 +1818,15 @@ See also TYPE - to see the contents of a file.
 Show the contents of all the filters that are set. This command displays
 all the filters set - for all the various categories.
 
-=== 0^SHOW/HFSTATS^Show the HF DX Statistics for last 31 days 
-Show the HF DX spots breakdown by band for the last 31 days
+=== 0^SHOW/HFSTATS [days] [date]^Show the HF DX Statistics 
+Show the HF DX spots breakdown by band for the last <days> no of days 
+(default is 31), starting from a <date> (default: today).
 
-=== 0^SHOW/HFTABLE [prefix ...]^Show the HF DX Spotter Table
-Show the HF DX Spotter table for the list of prefixes for the last 31 days,
-if there are no prefixes then it will show the table for your country.
+=== 0^SHOW/HFTABLE [days] [date] [prefix ...]^Show the HF DX Spotter Table
+Show the HF DX Spotter table for the list of prefixes for the last 
+<days> no of days (default is 31), starting from a <date> (default: today).
+
+If there are no prefixes then it will show the table for your country.
 
 Remember that some countries have more than one "DXCC country" in them
 (eg G :-), to show them (assuming you are not in G already which is
@@ -1832,6 +1836,27 @@ specially treated in the code) you must list all the relevant prefixes
 
 Note that the prefixes are converted into country codes so you don't have
 to list all possible prefixes for each country.
+
+If you want more or less days than the default simply include the
+number you require:-
+
+  sh/hftable 20 pa
+
+If you want to start at a different day, simply add the date in some 
+recognizable form:-
+
+  sh/hftable 2 25nov02
+  sh/hftable 2 25-nov-02 
+  sh/hftable 2 021125 
+  sh/hftable 2 25/11/02
+
+This will show the stats for your DXCC for that CQWW contest weekend. 
+
+You can specify either prefixes or full callsigns (so you can see how you
+did against all your mates). You can also say 'all' which will then print
+the worldwide statistics.
+
+  sh/hftable all 
 
 === 8^SHOW/HOPS <call> [ann|spots|route|wcy|wwv]^Show the hop counts for a node
 This command shows the hop counts set up for a node. You can specify
@@ -2084,12 +2109,15 @@ his is being run on this system, eg:-
 
   sh/usdb k1xx
 
-=== 0^SHOW/VHFSTATS^Show the VHF DX Statistics for last 31 days
-Show the VHF DX spots breakdown by band for the last 31 days
+=== 0^SHOW/VHFSTATS [days] [date]^Show the VHF DX Statistics
+Show the VHF DX spots breakdown by band for the last 
+<days> no of days (default is 31), starting from a date (default: today).
 
-=== 0^SHOW/VHFTABLE [prefix ...]^Show the VHF DX Spotter Table
-Show the VHF DX Spotter table for the list of prefixes for the last 31 days,
-if there are no prefixes then it will show the table for your country.
+=== 0^SHOW/VHFTABLE [days] [date] [prefix ...]^Show the VHF DX Spotter Table
+Show the VHF DX Spotter table for the list of prefixes for the last 
+<days> no of days (default is 31), starting from a date (default: today).
+
+If there are no prefixes then it will show the table for your country.
 
 Remember that some countries have more than one "DXCC country" in them
 (eg G :-), to show them (assuming you are not in G already which is
@@ -2099,6 +2127,27 @@ specially treated in the code) you must list all the relevant prefixes
 
 Note that the prefixes are converted into country codes so you don't have
 to list all possible prefixes for each country.
+
+If you want more or less days than the default simply include the
+number you require:-
+
+  sh/vhftable 20 pa
+
+If you want to start at a different day, simply add the date in some 
+recognizable form:-
+
+  sh/vhftable 2 25nov02
+  sh/vhftable 2 25-nov-02 
+  sh/vhftable 2 021125 
+  sh/vhftable 2 25/11/02
+
+This will show the stats for your DXCC for that CQWW contest weekend. 
+
+You can specify either prefixes or full callsigns (so you can see how you
+did against all your mates). You can also say 'all' which will then print
+the worldwide statistics.
+
+  sh/vhftable all 
 
 === 0^SHOW/WCY^Show last 10 WCY broadcasts
 === 0^SHOW/WCY <n>^Show last <n> WCY broadcasts
