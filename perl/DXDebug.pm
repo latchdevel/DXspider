@@ -57,7 +57,7 @@ sub dbgstore
 		chomp $r;
 		my @l = split /\n/, $r;
 		for (@l) {
-			s/([\x00\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
+			s/([\x00-\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
 			print "$_\n" if defined \*STDOUT;
 			$fp->writeunix($t, "$t^$_"); 
 		}
