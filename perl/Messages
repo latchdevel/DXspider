@@ -109,7 +109,7 @@ package DXM;
 				msg3 => 'Msg $_[0]: $_[1] changed from $_[2] to $_[3]',
 				msgu => 'usage: msg <cmd> <msgno> data...',
 				merge1 => 'Merge request for $_[1] spots and $_[2] WWV sent to $_[0]',
-				moon => 'Location                              Rise   Set      Azim   Elev  Loss dB',
+				moon => 'Location                              Rise   Set      Azim   Elev  RGain dB',
 				namee1 => 'Please enter your name, set/name <your name>',
 				namee2 => 'Can\'t find user $_[0]!',
 				name => 'Your name is now \"$_[0]\"',
