@@ -1,7 +1,7 @@
   The DXSpider Installation Manual v1.47
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (ianmaude@btinternet.com)
-  version 1.47
+  Version 1.47, April 2001 revision 1.0
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -9,7 +9,7 @@
   Table of Contents
 
 
-  1. Linux Installation (Original version by Iain Philipps, G0RDI)
+  1. Linux Installation
 
      1.1 Introduction
      1.2 Preparation
@@ -55,7 +55,7 @@
 
   ______________________________________________________________________
 
-  1.  Linux Installation (Original version by Iain Philipps, G0RDI)
+  1.  Linux Installation
 
   1.1.  Introduction
 
