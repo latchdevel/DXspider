@@ -193,6 +193,7 @@ sub cease
 	DXUser::finish();
 	dbg('chan', "DXSpider version $version ended");
 	Log('cluster', "DXSpider V$version stopped");
+	dbgclose();
 	unlink $lockfn;
 	exit(0);
 }

@@ -177,7 +177,7 @@ sub Log
 sub DESTROY						# catch undefs and do what is required further down the tree
 {
 	my $self = shift;
-	DXDebug::dbg("dxlog", "closing $self->{fn}\n");
+#	DXDebug::dbg("dxlog", "closing $self->{fn}\n");
 	undef $self->{fh} if defined $self->{fh};
 } 
 1;

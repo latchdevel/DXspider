@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 #
 # A thing that implements dxcluster 'protocol'
 #
@@ -59,6 +59,7 @@ sub cease
 		dbg('connect', "killing $pid");
 		kill(9, $pid);
 	}
+	dbgclose();
 	sleep(1);
 	exit(0);	
 }

@@ -11,8 +11,8 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbg dbgadd dbgsub dbglist isdbg);
-@EXPORT_OK = qw(dbg dbgadd dbgsub dbglist isdbg);
+@EXPORT = qw(dbg dbgadd dbgsub dbglist isdbg dbgclose);
+@EXPORT_OK = qw(dbg dbgadd dbgsub dbglist isdbg dbgclose);
 
 use strict;
 use vars qw(%dbglevel $fp);
@@ -34,6 +34,12 @@ if (!defined $DB::VERSION) {
 #			print STDERR $_;
 		}
 	};
+}
+
+sub dbgclose
+{
+	$SIG{__DIE__} = $SIG{__WARN__} = 'DEFAULT';
+	$fp->close();
 }
 
 sub dbg
