@@ -24,6 +24,8 @@ package DXM;
 				bbs => 'Your BBS Address is now \"$_[0]\"',
 				beepoff => 'Beeps are now off',
 				beepon => 'Beeps are now on',
+				believes => 'Believe node $_[0] via $_[1]',
+				believeu => 'Don\'t believe node $_[0] via $_[1]', 
 				call1 => 'Callsign lookup via $_[0]:',
 				conother => 'Sorry $_[0] you are connected to me on another port',
 				concluster => 'Sorry $_[0] you are already connected elsewhere on the cluster (on $_[1])',

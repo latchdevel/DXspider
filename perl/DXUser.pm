@@ -92,6 +92,7 @@ $v3 = 0;
 		  prompt => '0,Required Prompt',
 		  version => '1,Version',
 		  build => '1,Build',
+		  believe => '1,Believable nodes,parray',
 		 );
 
 #no strict;
@@ -776,6 +777,24 @@ sub unset_passphrase
 {
 	my $self = shift;
 	delete $self->{passphrase};
+}
+
+sub set_believe
+{
+	my $self = shift;
+	my $call = uc shift;
+	$self->{believe} ||= [];
+	push @{$self->{believe}}, $call;
+}
+
+sub unset_believe
+{
+	my $self = shift;
+	my $call = uc shift;
+	if (exists $self->{believe}) {
+		$self->{believe} = [grep {$_ ne $call} @{$self->{believe}}];
+		delete $self->{believe} unless @{$self->{believe}};
+	}
 }
 1;
 __END__
