@@ -178,15 +178,6 @@ sub init
 	confess $@ if $@;
 	$me->{sort} = 'S';    # S for spider
 
-	# now prime the spot and wwv  duplicates file with data
-#    my @today = Julian::unixtoj(time);
-#	for (Spot::readfile(@today), Spot::readfile(Julian::sub(@today, 1))) {
-#		Spot::dup(@{$_}[0..3]);
-#	}
-#	for (Geomag::readfile(time)) {
-#		Geomag::dup(@{$_}[1..5]);
-#	}
-
 	# load the baddx file
 	do "$baddxfn" if -e "$baddxfn";
 	print "$@\n" if $@;
@@ -1362,19 +1353,22 @@ sub send_local_config
 sub route
 {
 	my ($self, $call, $line) = @_;
-	my $cl = DXCluster->get_exact($call);
-	if ($cl) {       # don't route it back down itself
-		if (ref $self && $call eq $self->{call}) {
-			dbg('chan', "Trying to route back to source, dropped");
-			return;
-		}
-		my $hops;
-		my $dxchan = $cl->{dxchan};
-		if ($dxchan) {
-			my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
-			if ($routeit) {
-				$dxchan->send($routeit) if $dxchan;
-			}
+
+	if (ref $self && $call eq $self->{call}) {
+		dbg('chan', "Trying to route back to source, dropped");
+		return;
+	}
+
+	# always send it down the local interface if available
+	my $dxchan = DXChannel->get($call);
+	unless ($dxchan) {
+		my $cl = DXCluster->get_exact($call);
+		$dxchan = $cl->dxchan if $cl;
+	}
+	if ($dxchan) {
+		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
+		if ($routeit) {
+			$dxchan->send($routeit);
 		}
 	}
 }

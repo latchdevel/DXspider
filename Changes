@@ -1,3 +1,6 @@
+17Oct00=======================================================================
+1. force frames to go down the local interface when doing a route. This is 
+particularly important for pings!
 16Oct00=======================================================================
 1. add a ':' after 'G7BRN de G1TLH' in a talk message.
 2. added /J to the list of things to ignore (as in G1TLH/J) in prefix 

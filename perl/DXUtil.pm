@@ -17,7 +17,7 @@ require Exporter;
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs shellregex readfilestr writefilestr
              print_all_fields cltounix iscallsign unpad is_callsign
-			 is_freq is_digits is_pctext is_pcflag
+			 is_freq is_digits is_pctext is_pcflag insertitem deleteitem
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -318,4 +318,26 @@ sub is_freq
 sub is_digits
 {
 	return $_[0] =~ /^[\d]+$/;
+}
+
+# insert an item into a list if it isn't already there returns 1 if there 0 if not
+sub insertitem
+{
+	my $list = shift;
+	my $item = shift;
+	
+	return 1 if grep {$_ eq $item } @$list;
+	push @$list, $item;
+	return 0;
+}
+
+# delete an item from a list if it is there returns no deleted 
+sub deleteitem
+{
+	my $list = shift;
+	my $item = shift;
+	my $n = @$list;
+	
+	@$list = grep {$_ ne $item } @$list;
+	return $n - @$list;
 }

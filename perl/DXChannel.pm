@@ -17,9 +17,9 @@
 #
 # PLEASE NOTE - I am a C programmer using this as a method of learning perl
 # firstly and OO about ninthly (if you don't like the design and you can't 
-# improve it with better OO by make it smaller and more efficient, then tough). 
+# improve it with better OO and thus make it smaller and more efficient, then tough). 
 #
-# Copyright (c) 1998 - Dirk Koopman G1TLH
+# Copyright (c) 1998-2000 - Dirk Koopman G1TLH
 #
 # $Id$
 #
@@ -87,7 +87,7 @@ use vars qw(%channels %valid);
 		  pingave => '0,Ping ave time',
 		  logininfo => '9,Login info req,yesno',
 		  talklist => '0,Talk List,parray',
-		  node => '5,Node data',
+		  cluster => '5,Cluster data',
 		 );
 
 # object destruction
