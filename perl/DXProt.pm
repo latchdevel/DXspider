@@ -46,7 +46,7 @@ $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
-$censorpc = 0;					# Do a BadWords::check on text fields and reject things
+$censorpc = 1;					# Do a BadWords::check on text fields and reject things
 								# loads of 'bad things'
 $baddx = new DXHash "baddx";
 $badspotter = new DXHash "badspotter";
@@ -357,6 +357,7 @@ sub normal
 			
 			# do some de-duping
 			$field[5] =~ s/^\s+//;      # take any leading blanks off
+			$field[2] = unpad($field[2]);	# take off leading and trailing blanks from spotted callsign
 			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
 				dbg('chan', "PCPROT: Duplicate Spot ignored\n");
 				return;
