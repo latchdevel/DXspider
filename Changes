@@ -3,6 +3,7 @@
 2. try to get the C client to handle closes on its standard input better
 3. put some validation in cluster.pl to check that people have set it up 
 handled.
+4. fix the long callsign checking
 22Jan02=======================================================================
 1. limit spot dupe checking to first 12 characters
 13Jan02=======================================================================
