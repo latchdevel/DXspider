@@ -94,8 +94,8 @@ if ($self->state eq "prompt") {
 			$loc->{rrreq} = '1';
 		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
 			$loc->{from} = uc shift @f;
-		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for origin
-			$loc->{origin} = uc shift @f;
+		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for send it 'to node'
+			;
 		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
 			next;
 		} elsif ($f =~ /^<\S+/) {     # this is bbs syntax  for from call

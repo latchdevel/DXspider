@@ -1224,8 +1224,8 @@ sub import_one
 			;
 		} elsif ($notincalls && ($f eq 'RR')) {
 			$rr = '1';
-		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for origin
-			$origin = uc shift @f;
+		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for AT
+			next;
 		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
 			$from = uc shift @f;
 		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
