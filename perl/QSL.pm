@@ -12,6 +12,7 @@ use DXVars;
 use DXUtil;
 use DB_File;
 use DXDebug;
+use Prefix;
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -28,6 +29,8 @@ sub init
 	my $mode = shift;
 	my $ufn = "$main::root/data/$qslfn.v1";
 
+	Prefix::load() unless Prefix::loaded();
+	
 	eval {
 		require Storable;
 	};
@@ -67,29 +70,38 @@ sub update
 	my $line = shift;
 	my $t = shift;
 	my $by = shift;
+	my $changed;
+			
+	foreach my $man (split /\b/, uc $line) {
+		my $tok;
 		
-	my @tok = map {/^(?:HC|BUR|QRZ|HOME)/ || is_callsign($_) ? $_ : ()} split(/\b/, uc $line);
-	foreach my $man (@tok) {
-		if ($man =~ /^BUR/) {
-			$man = 'BUREAU';
+		if (is_callsign($man)) {
+			my @pre = Prefix::extract($man);
+			$tok = $man if @pre && $pre[0] ne 'Q';
+		} elsif ($man =~ /^BUR/) {
+			$tok = 'BUREAU';
 		} elsif ($man eq 'HC' || $man =~ /^HOM/) {
-			$man = 'HOME CALL';
+			$tok = 'HOME CALL';
 		} elsif ($man =~ /^QRZ/) {
-			$man = 'QRZ.com';
+			$tok = 'QRZ.com';
 		}
-		my ($r) = grep {$_->[0] eq $man} @{$self->[1]};
-		if ($r) {
-			$r->[1]++;
-			if ($t > $r->[2]) {
-				$r->[2] = $t;
-				$r->[3] = $by;
+		if ($tok) {
+			my ($r) = grep {$_->[0] eq $tok} @{$self->[1]};
+			if ($r) {
+				$r->[1]++;
+				if ($t > $r->[2]) {
+					$r->[2] = $t;
+					$r->[3] = $by;
+				}
+				$changed++;
+			} else {
+				$r = [$tok, 1, $t, $by];
+				unshift @{$self->[1]}, $r;
+				$changed++;
 			}
-		} else {
-			$r = [$man, 1, $t, $by];
-			unshift @{$self->[1]}, $r;
 		}
 	}
-	$self->put;
+	$self->put if $changed;
 }
 
 sub get

@@ -85,6 +85,11 @@ sub load
  	return $out;
 }
 
+sub loaded
+{
+	return $db;
+}
+
 sub store
 {
 	my ($k, $l);

@@ -15,7 +15,7 @@ use constant OBJ => 2;
 
 use vars qw($docheck);
 
-$docheck = 1;
+$docheck = 0;
 			
 sub _check
 {
