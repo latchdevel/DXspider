@@ -52,28 +52,24 @@ sub new
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
-	$self->{nodes} = [ $ncall ];
+	$self->{nodes} = [ ];
 	$self->{flags} = $flags;
 	$list{$call} = $self;
+	dbg("creating Route::User $self->{call}") if isdbg('routelow');
 
 	return $self;
+}
+
+sub delete
+{
+	my $self = shift;
+	dbg("deleting Route::User $self->{call}") if isdbg('routelow');
+	delete $list{$self->{call}};
 }
 
 sub get_all
 {
 	return values %list;
-}
-
-sub del
-{
-	my $self = shift;
-	my $pref = shift;
-	$self->deldxchan($pref);
-	unless (@{$self->{dxchan}}) {
-		delete $list{$self->{call}};
-		return $self;
-	}
-	return undef;
 }
 
 sub get
@@ -83,6 +79,35 @@ sub get
 	my $ref = $list{uc $call};
 	dbg("Failed to get User $call" ) if !$ref && isdbg('routerr');
 	return $ref;
+}
+
+# add a user to this node
+# returns Route::User if it is a new user;
+sub add_node
+{
+	my ($self, $nref) = @_;
+	my $r = $self->is_empty('nodes');
+	$self->_addlist('nodes', $nref);
+	$nref->_addlist('users', $self);
+	$nref->{usercount} = scalar @{$nref->{users}};
+	return $r ? ($self) : ();
+}
+
+# delete a user from this node
+sub del_user
+{
+	my ($self, $nref) = @_;
+
+	$self->_dellist('nodes', $nref);
+	$nref->_dellist('users', $self);
+	$nref->{usercount} = scalar @{$nref->{users}};
+	return $self->is_empty('nodes') ? ($self) : ();
+}
+
+sub nodes
+{
+	my $self = shift;
+	return @{$self->{nodes}};
 }
 
 #

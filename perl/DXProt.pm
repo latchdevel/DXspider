@@ -671,10 +671,6 @@ sub handle_16
 	my $line = shift;
 	my $origin = shift;
 
-	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
-		return;
-	}
 
 	# general checks
 	my $dxchan;
@@ -686,83 +682,31 @@ sub handle_16
 		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
 		return;
 	}
+
 	# is it me?
 	if ($ncall eq $main::mycall) {
 		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 		return;
 	}
-	my $parent = Route::Node::get($ncall); 
 
-	# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
-	# fix it up in the routing tables and issue it forth before the PC16
-	unless ($parent) {
-		my $nl = $pc19list{$ncall};
+	# do we believe this call? 
+	next unless $ncall eq $self->{call} || $self->is_believed($ncall);
 
-		if ($nl && @_ > 3) { # 3 because of the hop count!
+	my $node = Route::Node::get($ncall);
+	unless ($node) {
+		dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
+		return;
+	}
 
-			# this is a new (remembered) node, now attach it to me if it isn't in filtered
-			# and we haven't disallowed it
-			my $user = DXUser->get_current($ncall);
-			if (!$user) {
-				$user = DXUser->new($ncall);
-				$user->sort('A');
-				$user->priv(1);	# I have relented and defaulted nodes
-				$user->lockout(1);
-				$user->homenode($ncall);
-				$user->node($ncall);
-			}
-
-			my $wantpc19 = $user->wantroutepc19;
-			if ($wantpc19 || !defined $wantpc19) {
-				my $new = Route->new($ncall); # throw away
-				if ($self->in_filter_route($new)) {
-					my @nrout;
-					for (@$nl) {
-						$parent = Route::Node::get($_->[0]);
-						$dxchan = $parent->dxchan if $parent;
-						if ($dxchan && $dxchan ne $self) {
-							dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
-							$parent = undef;
-						}
-						if ($parent) {
-							my $r = $parent->add($ncall, $_->[1], $_->[2]);
-							push @nrout, $r unless @nrout;
-						}
-					}
-					$user->wantroutepc19(1) unless defined $wantpc19; # for now we work on the basis that pc16 = real route 
-					$user->lastin($main::systime) unless DXChannel->get($ncall);
-					$user->put;
-						
-					# route the pc19 - this will cause 'stuttering PC19s' for a while
-					$self->route_pc19($origin, $line, @nrout) if @nrout ;
-					$parent = Route::Node::get($ncall);
-					unless ($parent) {
-						dbg("PCPROT: lost $ncall after sending PC19 for it?");
-						return;
-					}
-				} else {
-					return;
-				}
-				delete $pc19list{$ncall};
-			}
-		} else {
-			dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
-			return;
-		}
-	} else {
-				
-		$dxchan = $parent->dxchan;
-		if ($dxchan && $dxchan ne $self) {
-			dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
-			return;
-		}
-
-		# input filter if required
-		return unless $self->in_filter_route($parent);
+	# dedupe only that which we potentially process
+	if (eph_dup($line)) {
+		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
+		return;
 	}
 
 	my $i;
 	my @rout;
+	my @new;
 	for ($i = 2; $i < $#_; $i++) {
 		my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
 		next unless $call && $conf && defined $here && is_callsign($call);
@@ -780,31 +724,23 @@ sub handle_16
 			next;
 		}
 				
-		$r = Route::User::get($call);
-		my $flags = Route::here($here)|Route::conf($conf);
-				
-		if ($r) {
-			my $au = $r->addparent($parent);					
-			if ($r->flags != $flags) {
-				$r->flags($flags);
-				$au = $r;
-			}
-			push @rout, $r if $au;
-		} else {
-			push @rout, $parent->add_user($call, $flags);
-		}
-		
+		$r = Route::User::get($call) || Route::User::get($call);
+		$r->here($here);
+		$r->conf($conf);
+		$node->lastseen($main::systime);
+
+		push @new, $node->add_user($r);
 				
 		# add this station to the user database, if required
 		$call =~ s/-\d+$//o;	# remove ssid for users
 		my $user = DXUser->get_current($call);
 		$user = DXUser->new($call) if !$user;
-		$user->homenode($parent->call) if !$user->homenode;
-		$user->node($parent->call);
+		$user->homenode($node->call) if !$user->homenode;
+		$user->node($node->call);
 		$user->lastin($main::systime) unless DXChannel->get($call);
 		$user->put;
 	}
-	$self->route_pc16($origin, $line, $parent, @rout) if @rout;
+	$self->route_pc16($origin, $line, $node, @new) if @new;
 }
 		
 # remove a user
@@ -830,36 +766,35 @@ sub handle_17
 		return;
 	}
 
+	# do we believe this call? 
+	next unless $ncall eq $self->{call} || $self->is_believed($ncall);
+
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
 		dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
 	}
-	my $parent = Route::Node::get($ncall);
-	unless ($parent) {
+	my $node = Route::Node::get($ncall);
+	unless ($node) {
 		dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
 	}			
 
-	$dxchan = $parent->dxchan if $parent;
-	if ($dxchan && $dxchan ne $self) {
-		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
-		return;
+	return unless $node && $uref;
+	
+	my @rout;
+	my @new;
+	if ($self->in_filter_route($node)) {
+		
+		if (eph_dup($line)) {
+			dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
+			return;
+		}
+		push @new, $node->del_user($uref);
 	}
 
-	# input filter if required and then remove user if present
-	if ($parent) {
-#		return unless $self->in_filter_route($parent);	
-		$parent->del_user($uref) if $uref;
-	} else {
-		$parent = Route->new($ncall);  # throw away
-	}
+	$self->route_pc17($origin, $line, $node, $uref) if @new;
 
-	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
-		return;
-	}
-
-	$uref = Route->new($ucall) unless $uref; # throw away
-	$self->route_pc17($origin, $line, $parent, $uref);
+	# get rid of orphaned users;
+	$_->delete for @new;
 }
 		
 # link request
@@ -924,26 +859,8 @@ sub handle_19
 		return;
 	}
 
-	# if the origin isn't the same as the INTERFACE, then reparent, creating nodes as necessary
-	if ($origin ne $self->call) {
-		my $op = Route::Node::get($origin);
-		unless ($op) {
-			$op = $parent->add($origin, 5000, Route::here(1));
-			my $user = DXUser->get_current($origin);
-			if (!$user) {
-				$user = DXUser->new($origin);
-				$user->sort('A');
-				$user->priv(1);		# I have relented and defaulted nodes
-				$user->lockout(1);
-				$user->homenode($origin);
-				$user->node($origin);
-				$user->wantroutepc19(1);
-			}
-			$user->put;
-		}
-		$parent = $op;
-	}
-
+	my @new;
+	
 	# parse the PC19
 	for ($i = 1; $i < $#_-1; $i += 4) {
 		my $here = $_[$i];
@@ -952,21 +869,17 @@ sub handle_19
 		my $ver = $_[$i+3];
 		next unless defined $here && defined $conf && is_callsign($call);
 
-		eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
-				
 		# check for sane parameters
 		#				$ver = 5000 if $ver eq '0000';
 		next if $ver < 5000;	# only works with version 5 software
 		next if length $call < 3; # min 3 letter callsigns
 		next if $call eq $main::mycall;
 
-		# check that this PC19 isn't trying to alter the wrong dxchan
-		my $dxchan = DXChannel->get($call);
-		if ($dxchan && $dxchan != $self) {
-			dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
-			next;
-		}
+		# do we believe this call? 
+		next unless $call eq $self->{call} || $self->is_believed($call);
 
+		eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
+				
 		# add this station to the user database, if required (don't remove SSID from nodes)
 		my $user = DXUser->get_current($call);
 		if (!$user) {
@@ -977,43 +890,17 @@ sub handle_19
 			$user->homenode($call);
 			$user->node($call);
 		}
+		$user->wantroutepc19(1) unless defined $user->wantroutepc19;
 
-		my $r = Route::Node::get($call);
-		my $flags = Route::here($here)|Route::conf($conf);
+		my $r = Route::Node::get($call) || Route::Node->new($call);
+		$r->here($here);
+		$r->conf($conf);
+		$r->version($ver);
+		$r->lastseen($main::systime);
 
-		# modify the routing table if it is in it, otherwise store it in the pc19list for now
-		if ($r) {
-			my $ar;
-			if ($call ne $parent->call) {
-				if ($self->in_filter_route($r)) {
-					$ar = $parent->add($call, $ver, $flags);
-					push @rout, $ar if $ar;
-				} else {
-					next;
-				}
-			}
-			if ($r->version ne $ver || $r->flags != $flags) {
-				$r->version($ver);
-				$r->flags($flags);
-				push @rout, $r unless $ar;
-			}
-		} else {
-
-			# if he is directly connected or allowed then add him, otherwise store him up for later
-			if ($call eq $self->{call} || $user->wantroutepc19) {
-				my $new = Route->new($call); # throw away
-				if ($self->in_filter_route($new)) {
-					my $ar = $parent->add($call, $ver, $flags);
-					$user->wantroutepc19(1) unless defined $user->wantroutepc19;
-					push @rout, $ar if $ar;
-				} else {
-					next;
-				}
-			} else {
-				$pc19list{$call} = [] unless exists $pc19list{$call};
-				my $nl = $pc19list{$call};
-				push @{$pc19list{$call}}, [$self->{call}, $ver, $flags] unless grep $_->[0] eq $self->{call}, @$nl;
-			}
+		if ($self->in_filter_route($r)) {
+			push @new, $parent->link_node($r, $self);
+			push @rout, $r;
 		}
 
 		# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
@@ -1024,8 +911,9 @@ sub handle_19
 		$user->put;
 	}
 
-
-	$self->route_pc19($origin, $line, @rout) if @rout;
+	# route out new nodes to legacy nodes
+	$self->route_pc19($origin, $line, @new) if @new;
+	$self->route_pc59('A', 0, $self->{call}, @rout) if @rout;
 }
 		
 # send local configuration
@@ -1050,6 +938,8 @@ sub handle_21
 	my $origin = shift;
 	my $call = uc $_[1];
 
+	return if $call eq $main::mycall;  # don't allow malicious buggers to disconnect me (or ignore loops)!
+
 	eph_del_regex("^PC1[679].*$call");
 			
 	# if I get a PC21 from the same callsign as self then treat it
@@ -1059,43 +949,31 @@ sub handle_21
 		return;
 	}
 
-	# check to see if we are in the pc19list, if we are then don't bother with any of
-	# this routing table manipulation, just remove it from the list and dump it
 	my @rout;
-	if (my $nl = $pc19list{$call}) {
-		$pc19list{$call} = [ grep {$_->[0] ne $self->{call}} @$nl ];
-		delete $pc19list{$call} unless @{$pc19list{$call}};
-	} else {
-				
-		my $parent = Route::Node::get($self->{call});
-		unless ($parent) {
-			dbg("DXPROT: my parent $self->{call} has disappeared");
-			$self->disconnect;
-			return;
-		}
-		if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
-			my $node = Route::Node::get($call);
-			if ($node) {
-						
-				my $dxchan = DXChannel->get($call);
-				if ($dxchan && $dxchan != $self) {
-					dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
-					return;
-				}
-						
-				# input filter it
-				return unless $self->in_filter_route($node);
-						
-				# routing objects
-				push @rout, $node->del($parent);
-			}
-		} else {
-			dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
-			return;
-		}
+	my @new;
+	my $parent = Route::Node::get($self->{call});
+	unless ($parent) {
+		dbg("DXPROT: my parent $self->{call} has disappeared");
+		$self->disconnect;
+		return;
+	}
+	$parent->lastseen;
+
+	my $node = Route::Node::get($call);
+	if ($node) {
+		$node->lastseen($main::systime);
+		
+		# input filter it
+		return unless $self->in_filter_route($node);
+		push @rout, $node;
+		push @new, $node->link_node($parent, $self);
 	}
 
-	$self->route_pc21($origin, $line, @rout) if @rout;
+	$self->route_pc21($origin, $line, @new) if @new;
+	$self->route_pc59('D', 0, $self->{call}, @rout) if @rout;
+
+	# get rid of orphaned nodes;
+	$_->delete for @new;
 }
 		
 
@@ -1530,7 +1408,7 @@ sub handle_59
 	for my $ent (@_[4..-1]) {
 		my ($esort, $ehere, $ecall) = unpack "A A A*", $ent;
 		my $ref;
-		
+
 		# create user, if required
 		my $user = DXUser->get_current($ecall);
 		unless ($user) {
@@ -1538,8 +1416,8 @@ sub handle_59
 			$user->sort();
 			$user->priv(1);		# I have relented and defaulted nodes
 			$user->lockout(1);
-			$user->homenode($call);
-			$user->node($call);
+			$user->homenode($ncall);
+			$user->node($ncall);
 		}
 		if ($esort eq 'U') {
 			$ref = Route::User::get($ecall);
@@ -1575,37 +1453,80 @@ sub handle_59
 			dbg("DXPROT: unknown entity type '$esort' on $ecall for node $ncall") if isdbg('chan');
 			next;
 		}
-		$ref->here($here);		# might as well set this here
+		$ref->here($ehere);		# might as well set this here
+		$ref->lastheard($main::systime);
 		push @refs, $ref;
 	}
 
-	# if it is a delete or a configure, disconnect all the entries mentioned
+	# if it is a delete, disconnect all the entries mentioned
 	# from this node (which is a parent in this context).
-	my @del;
-	if ($sort eq 'D' || $sort eq 'C') {
+	my @delnode;
+	my @deluser;
+	if ($sort eq 'D') {
 		for my $ref (@refs) {
 			next if $ref->call eq $ncall;
 			if ($ref->isa('Route::Node')) {
-				push @del, $ref->del($node);
+				push @delnode, $node->unlink_node($ref, $self);
 			} elsif ($ref->isa('Route::User')) {
-				push @del, $node->del_user($ref);
+				push @deluser, $node->del_user($ref);
 			}
 		}
 	}
 
-	# if it is an add or a configure, connect all the entries
-	my @add;
-	if ($sort eq 'A' || $sort eq 'C') {
+	# if it is an add, connect all the entries
+	my @addnode;
+	my @adduser;
+	if ($sort eq 'A') {
 		for my $ref (@refs) {
 			next if $ref->call eq $ncall;
 			if ($ref->isa('Route::Node')) {
-				my $new = $node->add($ref->call);
-				push @add, $new if $new;
+				my $new = $node->link_node($ref, $self);
+				push @addnode, $new if $new;
 			} elsif ($ref->isa('Route::User')) {
-				push @add, $node->add_user($ref->call);
+				push @adduser, $node->del_user($ref);
 			}
 		}
 	}
+
+	# if it is a configure, unlink all the nodes and users that 
+	# are not in @refs but are in the node, then add all the
+	# nodes and users that are @refs but not in the node.
+	#
+	if ($sort eq 'C') {
+		my @dn;
+		my @du;
+		my @an;
+		my @au;
+		for my $r (map {Route::Node::get($_)} $node->nodes) {
+			next unless $r;
+			push @dn, $r unless grep $_->call eq $r->call, @refs;
+		}
+		for my $r (map {Route::User::get($_)} $node->users) {
+			next unless $r;
+			push @du, $r unless grep $_->call eq $r->call, @refs;
+		}
+		for my $r (@refs) {
+			next unless $r;
+			if ($r->isa('Route::Node')) {
+				push @an, $r unless grep $r->call eq $_, $node->nodes;
+			} elsif ($r->isa('Route::User')) {
+				push @au, $r unless grep $r->call eq $_, $node->users;
+			}
+		}
+		push @delnode, $node->unlink_node($_, $self) for @dn;
+		push @deluser, $node->del_user($_) for @du;
+		push @addnode, $node->link_node($_, $self) for @an;
+		push @adduser, $node->add_user($_) for @au;
+	}
+
+
+	$self->route_pc21($origin, $line, @delnode) if @delnode;
+	$self->route_pc19($origin, $line, @addnode) if @addnode;
+	$self->route_pc17($origin, $line, @deluser) if @deluser;
+	$self->route_pc16($origin, $line, @adduser) if @adduser;
+	
+	$self->route_pc59($sort, $hextime, $ncall, @refs) if @refs;
+	$_->delete for @delnode, @deluser;
 }
 	
 
@@ -2372,6 +2293,13 @@ sub send_route
 	
 	for (; @_ && $no; $no--) {
 		my $r = shift;
+
+		# deal with non routing parameters
+		unless (ref $r && $r->isa('Route')) {
+			push @rin, $r;
+			$no++;
+			next;
+		}
 		
 		if (!$self->{isolate} && $self->{routefilter}) {
 			$filter = undef;
@@ -2419,6 +2347,8 @@ sub broadcast_route
 			next if $dxchan == $main::me;
 			next unless $dxchan->isa('DXProt');
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
+			next if ($generate == \&pc19 || $generate==\&pc21) && !$dxchan->user->wantsendpc19;
+			next if ($generate == \&pc59) && !$dxchan->{newroute};
  
 			$dxchan->send_route($origin, $generate, @_);
 		}
@@ -2481,6 +2411,16 @@ sub route_pc50
 	my $origin = shift;
 	my $line = shift;
 	broadcast_route($self, $origin, \&pc50, $line, 1, @_);
+}
+
+sub route_pc59
+{
+	my $self = shift;
+	my $origin = shift;
+	my $line = shift;
+
+	# @_ - 2 because we start with [ACD], hexstamp
+	broadcast_route($self, $origin, \&pc59, $line, scalar @_ - 2, @_);
 }
 
 sub in_filter_route

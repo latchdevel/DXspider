@@ -796,6 +796,12 @@ sub unset_believe
 		delete $self->{believe} unless @{$self->{believe}};
 	}
 }
+
+sub believe
+{
+	my $self = shift;
+	return exists $self->{believe} ? @{$self->{believe}} : ();
+}
 1;
 __END__
 

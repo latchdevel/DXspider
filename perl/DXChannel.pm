@@ -303,6 +303,15 @@ sub sort
 	return @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
 }
 
+# find out whether we are prepared to believe this callsign on this interface
+sub is_believed
+{
+	my $self = shift;
+	my $call = shift;
+	
+	return grep $call eq $_, $self->user->believe;
+}
+
 # handle out going messages, immediately without waiting for the select to drop
 # this could, in theory, block
 sub send_now

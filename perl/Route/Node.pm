@@ -24,13 +24,11 @@ use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
-		  dxchan => '0,Visible on DXChans,parray',
+		  dxchan => '0,DXChannel List,parray',
 		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
-		  np => '0,Using New Prot,yesno',
-		  lid => '0,Last Msgid',
 );
 
 $filterdef = $Route::filterdef;
@@ -50,124 +48,60 @@ sub max
 	return $max;
 }
 
+# link a node to this node and mark the route as available thru 
+# this dxchan, any users must be linked separately
 #
-# this routine handles the possible adding of an entry in the routing
-# table. It will only add an entry if it is new. It may have all sorts of
-# other side effects which may include fixing up other links.
-#
-# It will return a node object if (and only if) it is a completely new
-# object with that callsign. The upper layers are expected to do something
-# sensible with this!
-#
-# called as $dxchan->add(call, dxchan, version, flags) 
+# call as $node->link_node($neighbour, $dxchan);
 #
 
-sub add
+sub link_node
 {
-	my $dxchan = shift;
-	my $call = uc shift;
-	confess "Route::add trying to add $call to myself" if $call eq $dxchan->{call};
-	my $self = get($call);
-	if ($self) {
-		$self->_adddxchan($dxchan);
-		$dxchan->_addnode($self);
-		return undef;
-	}
-	$self = $dxchan->new($call, @_);
-	$dxchan->_addnode($self);
-	return $self;
+	my ($self, $neighbour, $dxchan) = @_;
+
+	my $r = $self->is_empty('dxchan');
+	$self->_addlist('nodes', $neighbour);
+	$neighbour->_addlist('nodes', $self);
+	$self->_addlist('dxchan', $dxchan);
+	$neighbour->_addlist('dxchan', $dxchan);
+	return $r ? ($self) : ();
 }
 
-#
-# this routine is the opposite of 'add' above.
-#
-# It will return an object if (and only if) this 'del' will remove
-# this object completely
+# unlink a node from a neighbour and remove any
+# routes, if this node becomes orphaned (no routes
+# and no nodes) then return it 
 #
 
-sub del
+sub unlink_node
 {
-	my $self = shift;
-	my $pref = shift;
-
-	# delete dxchan from this call's dxchan list
-	$pref->_delnode($self);
-    $self->_deldxchan($pref);
-	my @nodes;
-	my $ncall = $self->{call};
-	
-	# is this the last connection, I have no dxchan anymore?
-	unless (@{$self->{dxchan}}) {
-		foreach my $rcall (@{$self->{nodes}}) {
-			next if grep $rcall eq $_, @_;
-			my $r = Route::Node::get($rcall);
-			push @nodes, $r->del($self, $ncall, @_) if $r;
-		}
-		$self->_del_users;
-		delete $list{$self->{call}};
-		push @nodes, $self;
-	}
-	return @nodes;
-}
-
-sub del_nodes
-{
-	my $dxchan = shift;
-	my @out;
-	foreach my $rcall (@{$dxchan->{nodes}}) {
-		my $r = get($rcall);
-		push @out, $r->del($dxchan, $dxchan->{call}, @_) if $r;
-	}
-	return @out;
-}
-
-sub _del_users
-{
-	my $self = shift;
-	for (@{$self->{users}}) {
-		my $ref = Route::User::get($_);
-		$ref->del($self) if $ref;
-	}
-	$self->{users} = [];
+	my ($self, $neighbour, $dxchan) = @_;
+	$self->_dellist('nodes', $neighbour);
+	$neighbour->_dellist('nodes', $self);
+	$self->_dellist('dxchan', $dxchan);
+	$neighbour->_dellist('dxchan', $dxchan);
+	return $self->is_empty('dxchan') ? ($self) : ();
 }
 
 # add a user to this node
+# returns Route::User if it is a new user;
 sub add_user
 {
-	my $self = shift;
-	my $ucall = shift;
-
-	confess "Trying to add NULL User call to routing tables" unless $ucall;
-
-	my $uref = Route::User::get($ucall);
-	my @out;
-	if ($uref) {
-		@out = $uref->adddxchan($self);
-	} else {
-		$uref = Route::User->new($ucall, $self->{call}, @_);
-		@out = $uref;
-	}
-	$self->_adduser($uref);
+	my ($self, $uref) = @_;
+	my $r = $uref->is_empty('nodes');
+	$self->_addlist('users', $uref);
+	$uref->_addlist('nodes', $self);
 	$self->{usercount} = scalar @{$self->{users}};
-
-	return @out;
+	return $r ? ($uref) : ();
 }
 
 # delete a user from this node
 sub del_user
 {
-	my $self = shift;
-	my $ref = shift;
-	my @out;
-	
-	if ($ref) {
-		@out = $self->_deluser($ref);
-		$ref->del($self);
-	} else {
-		confess "tried to delete non-existant $ref->{call} from $self->{call}";
-	}
+	my ($self, $uref) = @_;
+
+	$self->_dellist('users', $uref);
+	$uref->_dellist('nodes', $self);
 	$self->{usercount} = scalar @{$self->{users}};
-	return @out;
+	return $uref->is_empty('nodes') ? ($uref) : ();
 }
 
 sub usercount
@@ -191,19 +125,14 @@ sub nodes
 	return @{$self->{nodes}};
 }
 
-sub rnodes
+sub unlink_all_users
 {
 	my $self = shift;
-	my @out;
-	foreach my $call (@{$self->{nodes}}) {
-		next if grep $call eq $_, @_;
-		push @out, $call;
-		my $r = get($call);
-		push @out, $r->rnodes($call, @_) if $r;
+	foreach my $u (${$self->{nodes}}) {
+		my $uref = Route::User::get($u);
+		$self->unlink_user($uref) if $uref;
 	}
-	return @out;
 }
-
 
 sub new
 {
@@ -221,8 +150,16 @@ sub new
 	$self->{lid} = 0;
 	
 	$list{$call} = $self;
+	dbg("creating Route::Node $self->{call}") if isdbg('routelow');
 	
 	return $self;
+}
+
+sub delete
+{
+	my $self = shift;
+	dbg("deleting Route::Node $self->{call}") if isdbg('routelow');
+	delete $list{$self->{call}};
 }
 
 sub get
@@ -239,19 +176,6 @@ sub get_all
 	return values %list;
 }
 
-
-sub _adduser
-{
-	my $self = shift;
-    return $self->_addlist('users', @_);
-}
-
-sub _deluser
-{
-	my $self = shift;
-    return $self->_dellist('users', @_);
-}
-
 sub DESTROY
 {
 	my $self = shift;
@@ -259,6 +183,7 @@ sub DESTROY
 	my $call = $self->{call} || "Unknown";
 	
 	dbg("destroying $pkg with $call") if isdbg('routelow');
+	$self->unlink_all_users if @{$self->{users}};
 }
 
 #

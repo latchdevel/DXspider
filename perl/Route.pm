@@ -308,46 +308,11 @@ sub bestdxchan
 	my $dxchan = DXChannel->get($self->call);
 	return $dxchan if $dxchan;
 	
-	my @dxchan = $self->alldxchan;
+	my @dxchan = sort { ($a->pingave || 9999999) <=> ($b->pingave || 9999999) } $self->alldxchan;
 	return undef unless @dxchan;
 	
-	# determine the minimum ping channel
-	my $minping = 99999999;
-	foreach my $dxc (@dxchan) {
-		my $p = $dxc->pingave;
-		if (defined $p  && $p < $minping) {
-			$minping = $p;
-			$dxchan = $dxc;
-		}
-	}
-	$dxchan = shift @dxchan unless $dxchan;
-	return $dxchan;
+	return shift @dxchan;
 }
-
-sub _adddxchan
-{
-	my $self = shift;
-    return $self->_addlist('dxchan', @_);
-}
-
-sub _deldxchan
-{
-	my $self = shift;
-    return $self->_dellist('dxchan', @_);
-}
-
-sub _addnode
-{
-	my $self = shift;
-    return $self->_addlist('nodes', @_);
-}
-
-sub _delnode
-{
-	my $self = shift;
-    return $self->_dellist('nodes', @_);
-}
-
 
 #
 # track destruction

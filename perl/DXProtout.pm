@@ -392,8 +392,9 @@ sub pc59
 	my @out;
 	my $sort = shift;
 	my $hexstamp = shift || hexstamp();
+	my $node = shift;
 	
-	my $node = $_[0]->call;
+	my $s = "PC59^$sort^$hexstamp^$node";
 	for (@_) {
 		next unless $_;
 		my $ref = $_;
@@ -401,7 +402,7 @@ sub pc59
 		my $here = $ref->here;
 		$s .= $ref->isa('Route::Node') ? "^N$here$call" : "^U$here$call";
 	}
-	push @out, "PC59^$sort^$hexstamp^$node^$s" . sprintf "^%s^", get_hops(59);
+	push @out, sprintf "$s^%s^", get_hops(59);
 	return @out;
 }
 
