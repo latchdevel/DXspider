@@ -36,7 +36,7 @@ use strict;
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/,(0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -98,7 +98,7 @@ sub normal
 
 	my @par = map {/^_/ ? split(/=/,$_,2) : ()} split /,/, $rest;
 	no strict 'refs';
-	my $pkg = "Thingy::${class}";
+	my $pkg = 'Thingy::' . lcfirst $class;
 	my $t = $pkg->new(_tonode=>$tonode, _fromnode=>$fromnode,
 					  _msgid=>$msgid, _hoptime=>$newhoptime,
 					  _newdata=>$rest, _inon=>$self->{call},

@@ -17,7 +17,7 @@ use vars qw(@ISA $VERSION $BRANCH);
 @ISA = qw(QXProt);
 
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/,(0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 

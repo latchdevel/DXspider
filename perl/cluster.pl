@@ -126,7 +126,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/,(0,0));
 $main::build += 4;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
@@ -402,7 +402,9 @@ $build = "$build.$branch" if $branch;
 Log('cluster', "DXSpider V$version, build $build started");
 
 # banner
-dbg("Copyright (c) 1998-2002 Dirk Koopman G1TLH");
+my ($year) = (gmtime($main::systime))[5];
+$year += 1900;
+dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 dbg("DXSpider Version $version, build $build started");
 
 # load Prefixes
