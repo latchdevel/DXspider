@@ -19,6 +19,7 @@ use DXUtil;
 use DXDebug;
 use IO::File;
 use IO::Socket;
+use IPC::Open2;
 
 use vars qw(@ISA $deftimeout);
 
@@ -210,29 +211,19 @@ sub _doconnect
 			dbg('connect', "***Connect Failed to $host $port $!");
 		}
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
-		my $pid = fork();
-		if (defined $pid) {
-			if (!$pid) {
-				# in child, unset warnings, disable debugging and general clean up from us
-				$^W = 0;
-				eval "{ package DB; sub DB {} }";
-				DXChannel::closeall();
-				for (@main::listeners) {
-					$_->close_server;
-				}
-				unless ($^O =~ /^MS/) {
-					$SIG{HUP} = 'IGNORE';
-					$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
-					alarm(0);
-				}
-				exec "$line" or dbg('cron', "exec '$line' failed $!");
+		$conn->{sock} = new IO::File;
+		if ($conn->{sock}) {
+			my $outfd = fileno($conn->{sock});
+			my $out = new IO::File ">&$outfd";
+			if ($conn->{pid} = open2($conn->{sock}, $out, $line)) {
+				$conn->{csort} = $sort;
+				$conn->{lineend} = "\cM" if $sort eq 'ax25';
+				dbg('connect', "started $line");
+			} else {
+				dbg('connect', "can't start $line $!");
 			}
-			dbg('connect', "program $sort $line started");
-			$conn->{pid} = $pid;
-			$conn->{csort} = $sort;
-			$conn->{lineend} = "\cM" if $sort eq 'ax25';
 		} else {
-			dbg('connect', "can't $sort fork for $line $!");
+			dbg('connect', "can't start $line $!");
 		}
 	} else {
 		dbg('err', "invalid type of connection ($sort)");

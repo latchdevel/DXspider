@@ -135,7 +135,8 @@ sub connect {
 	
 	blocking($sock, 0);
 	my $ip = gethostbyname($to_host);
-	my $r = $sock->connect($to_port, $ip);
+#	my $r = $sock->connect($to_port, $ip);
+	my $r = connect($sock, pack_sockaddr_in($to_port, $ip));
 	unless ($r) {
 		return undef unless $! == EINPROGRESS;
 	}
