@@ -42,6 +42,8 @@ sub new
 {
 	my $class = shift;
 	my $thing = {@_};
+
+	$thing->{origin} ||= $main::mycall;
 	
 	bless $thing, $class;
 	return $thing;
@@ -171,5 +173,14 @@ sub ascii
     $dd->Quotekeys($] < 5.005 ? 1 : 0);
 	return $dd->Dumpxs;
 }
+
+sub add_auth
+{
+	my $thing = shift;
+	my $s = $thing->{'s'} = sprintf "%X", int(rand() * 100000000);
+	my $auth = Verify->new("DXSp,$main::mycall,$s,$main::version,$main::build");
+	$thing->{auth} = $auth->challenge($main::me->user->passphrase);
+}
+
 1;
 

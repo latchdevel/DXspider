@@ -313,6 +313,9 @@ sub start
 	$self->state('init');
 	$self->{pc50_t} = $main::systime;
 
+	my $thing = Thingy::Hello->new(origin=>$main::mycall, user=>$call);
+	$thing->broadcast($self);
+	
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
 

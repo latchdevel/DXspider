@@ -11,10 +11,8 @@ use strict;
 package Thingy::Ping;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /^\d+\.\d+(?:\.(\d+)\.(\d+))?$/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 use DXChannel;
 use DXDebug;
@@ -29,8 +27,7 @@ sub gen_Aranea
 {
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
-		my @items;
-	 	$thing->{Aranea} = Aranea::genmsg($thing, 'Rloc', @items);
+	 	$thing->{Aranea} = Aranea::genmsg($thing);
 	}
  	return $thing->{Aranea};
 }
@@ -65,7 +62,6 @@ sub from_DXProt
 		my $k = shift;
 		$thing->{$k} = shift;
 	}
-	($thing->{hops}) = $thing->{DXProt} =~ /\^H(\d+)\^?~?$/ if exists $thing->{DXProt};
 	return $thing;
 }
 
@@ -77,38 +73,4 @@ sub handle
 	$thing->broadcast($dxchan);
 }
 
-sub in_filter
-{
-	my $thing = shift;
-	my $dxchan = shift;
-	
-	# global route filtering on INPUT
-	if ($dxchan->{inroutefilter}) {
-		my ($filter, $hops) = $dxchan->{inroutefilter}->it($thing->{routedata});
-		unless ($filter) {
-			dbg("PCPROT: Rejected by input route filter") if isdbg('chanerr');
-			return;
-		}
-	}
-	return 1;
-}
-
-sub out_filter
-{
-	my $thing = shift;
-	my $dxchan = shift;
-	
-	# global route filtering on INPUT
-	if ($dxchan->{routefilter}) {
-		my ($filter, $hops) = $dxchan->{routefilter}->it($thing->{routedata});
-		unless ($filter) {
-			dbg("PCPROT: Rejected by output route filter") if isdbg('chanerr');
-			return;
-		}
-		$thing->{hops} = $hops if $hops;
-	} elsif ($dxchan->{isolate}) {
-		return;
-	}
-	return 1;
-}
 1;

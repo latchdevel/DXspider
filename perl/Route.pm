@@ -35,6 +35,7 @@ use vars qw(%list %valid $filterdef);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  aranea => '0, By Aranea,yesno',
 		 );
 
 $filterdef = bless ([
@@ -131,6 +132,13 @@ sub is_empty
 {
 	my $self = shift;
 	return @{$self->{$_[0]}} == 0;
+}
+
+sub is_aranea
+{
+	my $self = shift;
+	$self->{aranea} = shift if @_;
+	return $self->{aranea};
 }
 
 #

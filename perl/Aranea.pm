@@ -25,7 +25,12 @@ use Script;
 use Verify;
 use DXDupe;
 use Thingy;
+use Thingy::Rt;
+use Thingy::Hello;
+use Thingy::Bye;
 use RouteDB;
+use DXProt;
+use DXCommandmode;
 
 use vars qw($VERSION $BRANCH);
 
@@ -116,6 +121,12 @@ sub start
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
 
+	# broadcast our configuration to the world
+	unless ($self->{outbound}) {
+		my $thing = Thingy::Rt->new_lcf;
+		$thing->broadcast;
+	}
+	
 	# run a script send the output to the debug file
 	my $script = new Script(lc $call) || new Script('node_default');
 	$script->run($self) if $script;
@@ -154,7 +165,7 @@ sub disconnect
 	return if $self->{disconnecting}++;
 
 	my $thing = Thingy::Bye->new(origin=>$main::mycall, user=>$call);
-	$thing->process($self);
+	$thing->broadcast($self);
 
 	# get rid of any PC16/17/19
 	DXProt::eph_del_regex("^PC1[679]*$call");
@@ -179,7 +190,7 @@ sub disconnect
 	$mref->stop_msg($call) if $mref;
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
-#	$self->route_pc21($main::mycall, undef, @rout) if @rout;
+	DXProt::route_pc21($self, $main::mycall, undef, @rout) if @rout;
 
 	# remove outstanding pings
 #	delete $pings{$call};
@@ -273,16 +284,20 @@ sub tdecode
 sub genmsg
 {
 	my $thing = shift;
-	my $name = shift;
+	my $list = ref $_[0] ? shift : \@_;
+	my ($name) = uc ref $thing;
+	$name =~ /::(\w+)$/;
+	$name = $1;
 	my $head = genheader($thing->{origin}, 
 						 ($thing->{group} || $thing->{touser} || $thing->{tonode}),
 						 ($thing->{user} || $thing->{fromuser} || $thing->{fromnode})
 						);
-	my $data = "$name,";
-	while (@_) {
-		my $k = lc shift;
-		my $v = tencode(shift);
-		$data .= "$k=$v,";
+	 
+	my $data = uc $name . ',';
+	while (@$list) {
+		my $k = lc shift @$list;
+		my $v = $thing->{$k};
+		$data .= "$k=" . tencode($v) . ',' if defined $v;
 	}
 	chop $data;
 	return "$head|$data";
@@ -312,7 +327,8 @@ sub input
 	$err .= "missing cmd or data," unless $cmd && $data;
 	$err .= "invalid command ($cmd)," unless $cmd =~ /^[A-Z][A-Z0-9]*$/;
 	my ($gp, $tus) = split /:/, $group, 2 if $group;
-		
+
+	$err .= "from me," if $origin eq $main::mycall;
 	$err .= "invalid group ($gp)," if $gp && $gp !~ /^[A-Z0-9]{2,}$/;
 	$err .= "invalid tocall ($tus)," if $tus && !is_callsign($tus);
 	$err .= "invalid fromcall ($user)," if $user && !is_callsign($user);

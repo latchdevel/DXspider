@@ -11,29 +11,23 @@ use strict;
 package Thingy::Bye;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /^\d+\.\d+(?:\.(\d+)\.(\d+))?$/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 use DXChannel;
 use DXDebug;
 use Verify;
 use Thingy;
+use Thingy::RouteFilter;
 
 use vars qw(@ISA);
-@ISA = qw(Thingy);
+@ISA = qw(Thingy Thingy::RouteFilter);
 
 sub gen_Aranea
 {
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
-		my $s = sprintf "%X", int(rand() * 100000000);
-		my $auth = Verify->new("DXSp,$main::mycall,$s");
-		$thing->{Aranea} = Aranea::genmsg($thing, 'Bye',
-										  's'=>$s,
-										  auth=>$auth->challenge($main::me->user->passphrase)
-									  );
+		$thing->{Aranea} = Aranea::genmsg($thing, [qw(s auth)]);
 	}
 	return $thing->{Aranea};
 }
@@ -42,53 +36,37 @@ sub handle
 {
 	my $thing = shift;
 	my $dxchan = shift;
-	
-	# verify authenticity
-	if ($dxchan->{call} eq $thing->{origin}) {
 
-		# for directly connected calls
-#		if ($Thingy::Hello::verify_on_login) {
-#			my $pp = $dxchan->user->passphrase;
-#			unless ($pp) {
-#				dbglog('err', "Thingy::Bye::handle: verify on and $thing->{origin} has no passphrase");
-#				return;
-#			}
-#			my $auth = Verify->new("DXSp,$thing->{origin},$thing->{s}");
-#			unless ($auth->verify($thing->{auth}, $dxchan->user->passphrase)) {
-#				dbglog('err', "Thingy::Bye::handle: verify on and $thing->{origin} failed auth check");
-#				return;
-#			}
-#		}
-		
-		my $int = $thing->{user} || $thing->{origin};
-		RouteDB::delete_interface($int);
+	# fix the interface routing
+	my $intcall = $thing->{user} || $thing->{origin};
+	if ($dxchan->{call} eq $thing->{origin}) {
+		RouteDB::delete_interface($intcall);
 	} else {
-		
-		# for otherwise connected calls, that come in relayed from other nodes
-		# note that we cannot do any connections at this point
-		my $nref = Route::Node::get($thing->{origin});
-		if ($nref) {
-			if (my $user = $thing->{user}) {
-				my $ur = Route::get($user);
-				if ($ur) {
-					if ($ur->isa('Route::Node')) {
-						$nref->del($ur);
-					} elsif ($ur->isa('Route::User')) {
-						$nref->del_user($ur);
-					}
-				}
-			}
-		}
+		RouteDB::delete($intcall, $dxchan->{call});
 	}
 
+	# pc prot generation
+	my @pc21;
+	if (my $user = $thing->{user}) {
+		my $parent = Route::Node->get($thing->{origin});
+		my $uref = Route::get($user);
+		if ($parent && $uref) {
+			if ($uref->isa('Route::Node')) {
+				@pc21 = $parent->del($uref);
+			} else {
+				$parent->del_user($uref);
+				$thing->{pc17n} = $thing->{origin};
+				$thing->{pc17u} = $user;
+			}
+		}
+	} else {
+		my $parent = Route::get($thing->{origin});
+		@pc21 = $parent->del_nodes if $parent;
+	}
+
+	$thing->{pc21n} = \@pc21 if @pc21;
 		
 	$thing->broadcast($dxchan);
 }
 
-sub new
-{
-	my $pkg = shift;
-	my $thing = $pkg->SUPER::new(origin=>$main::mycall, @_);
-	return $thing;
-}
 1;

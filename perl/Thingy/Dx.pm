@@ -28,14 +28,15 @@ sub gen_Aranea
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
 		my $sd = $thing->{spotdata};
-		my @items = (
-					 f=>$sd->[0],
-					 c=>$sd->[1],
-					);
-		push @items, ('b', $sd->[4]) unless $thing->{user};
-		push @items, ('st', sprintf("%X", $sd->[2] / 60), 'o', $sd->[7]) unless $sd->[7] eq $main::mycall;
-		push @items, ('i', $sd->[3]) if $sd->[3];
-	 	$thing->{Aranea} = Aranea::genmsg($thing, 'DX', @items);
+		$thing->{f} = $sd->[0];
+		$thing->{c} = $sd->[1];
+		$thing->{b} = $sd->[4] unless $thing->{user};
+		unless ($sd->[7] eq $main::mycall) {
+			$thing->{t} = sprintf("%X", $sd->[2] / 60);
+			$thing->{o} =  $sd->[7]; 
+		}
+		$thing->{i} = $sd->[3] if $sd->[3];
+	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(f c b t o i)]);
 	}
  	return $thing->{Aranea};
 }
@@ -44,8 +45,8 @@ sub from_Aranea
 {
 	my $thing = shift;
 	return unless $thing;
-	my $t = hex($thing->{st}) if exists $thing->{st};
-	$t ||= $thing->{time} / 60;
+	my $t = hex($thing->{t}) if exists $thing->{t};
+	$t ||= $thing->{time} / 60;	# if it is an aranea generated
 	my @spot = Spot::prepare(
 							 $thing->{f},
 							 $thing->{c},
