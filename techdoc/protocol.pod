@@ -7,12 +7,12 @@ $Revision$
 
 =head1 SYNOPSIS
 
- <Origin>,<Group>,<TimeSeq>,<Hop>|<Tag>,<Data>...
+ <Origin>,<Group>,<TimeSeq>,<Hop>[,<From>]|<Tag>,<Data>...
 
 =head1 ABSTRACT
 
 For many years DX Clusters have used a protocol which was designed 
-for a non-looped tree of nodes. This environment has probably never, reliably, 
+for a non-looped tree ofL</Node>s. This environment has probably never, reliably, 
 been achieved in practice; certainly not recently.
 
 There have always been loops, sometimes bringing the network to its 
@@ -33,14 +33,14 @@ for inter-node communications.
 =head1 DESCRIPTION
 
 This protocol is
-designed to be an extensible basis for any type of one too many
+designed to be an extensible basis for any type of one -> many
 "instant" line-based communications tasks.
 
 This protocol is designed to be flood routed in a meshed network in
 as efficient a manner as possible. The reason we have chosen this
-mechanism is that most L</Messages> need to be broadcast to all nodes.
+mechanism is that most L</Messages> need to be broadcast to allL</Node>s.
 
-Experience has shown that nodes will appear and (more infrequently) 
+Experience has shown thatL</Node>s will appear and (more infrequently) 
 disappear without much (or any) notice. 
 Therefore, the constantly changing and uncoordinated
 nature of the network doesn't lend itself to fixed routing policies.
@@ -72,18 +72,19 @@ must accept are described.
 =head1 Applications
 
 In the past messaging applications such as DX Cluster software have maintained
-a fairly strict division between L</Node>s and L</User>s". This protocol attempts
-to get away from that distinction by allowing any entity to connect to any 
-other. 
+a fairly strict division between L</Node>s and L</User>s. This protocol attempts
+to get away from that by deliberately blurring (or, in some cases, removing) 
+any distinction between the two. 
 
 Applications that use this protocol are essentially all peers and therefore
 nodes the only real difference between L</Node>s and L</User>s is that a "node" has one or more 
 listeners running that will,
-potentially, allow incoming connections, from other L</Node>s, L</Endpoint>s or L</User>s  
+potentially, allow incoming connections from other L</Node>s, L</Endpoint>s or L</User>s. These 
+routable entities are called L</Terminal>s.  
 
-Any application that is a sink and/or source of data for L</Group>s, is capable of obeying
+Any application that is a sink and/or source of data for L</Group>s; is capable of obeying
 the protocol message construction rules and understands how to deduplicate incoming messages
-correctly can operate as a routeable entity in this protocol. It is called an L</Endpoint>.
+correctly can operate as a routeable entity or L</Terminal> in this protocol. It is called an L</Endpoint>.
 
 An L</Endpoint> is called a L</Node> if it accepts connections from L</Endpoint>s and is 
 prepared to route messages on their behalf to other L</Node>s or L</Endpoint>. In addition it
@@ -106,7 +107,14 @@ They should be treated
 as local clients, in fact as L</User>s, B<not> as peers in this protocol. It is likely that, in order
 to do this, some extra L</Tag>s will need to be defined at application level. 
 
-=head1 Connection Types
+=head1 Definitions
+
+In this document we use a number of terms that need to be defined.
+
+=head2 Terminal
+
+A L</Terminal> is a routable entity, in other words: a callsign or service that can be routed 
+to, that lives at one or a few L</Node>s.  
 
 =head2 User
 
@@ -121,7 +129,7 @@ An L</Endpoint> is a connection to a L<Node> that uses the protocol. From a rout
 view, it is indistiguishable from a L</Node>. The L</Endpoint> is responsible for creating and decoding
 well formed protocol messages. An L</Endpoint> does not route beyond the immediate L</Node>(s) to
 which it is connected. It may also be a L</Service> connected to a L</Node> which provides some 
-addressable service that can be queried.
+addressable service (such as a database) that can be queried.
 
 =head2 Node
 
@@ -130,13 +138,25 @@ from other L</Node>s or L</Endpoint>s, whether directly connected or not. Option
 may provide other interfaces, such as direct L</User> connections or legacy PC protocol speaking
 DX Clusters. 
 
+=head2 Channel
+
+A L</Channel> is a L</Group> address that is not a L</Terminal>. It is (unless qualified by a L</Terminal>)
+broadcast on all a L</Node>s interfaces unless preventing by some filtering or other local policy on 
+that L</Node>.
+
+=head2 Service
+
+A L</Service> is application that either plugs into or connects as an L</Endpoint> to a L</Node>. It is an
+application that, in effect, is a database. In other words: queries are sent to the L</Service> and it sends
+back a reply.
+
 =head1 Routing Section
 
 The application that implements this protocol is essentially a line
 oriented message router. One line equals one message. Each line is
 effectively a datagram. 
 
-It is assumed that nodes are connected to
+It is assumed thatL</Node>s are connected to
 each other using a "reliable" streaming protocol such as TCP/IP or
 AX25. Having said that: in context, L</Messages> in this protocol could be 
 multi/broadcast, either "as is" or wrapped in some other framing
@@ -145,12 +165,11 @@ protocol.
 Although the physical transport between L</Node>s is reliable, the actual message
 is unreliable, because this is an unreliable, best effort, "please route my packets
 through your node" protocol. There is no guarantee that a message
-will get to the other side of a mesh of nodes. There may be a
+will get to the other side of a mesh of L</Node>s. There may be a
 discontinuity either caused by outage or deliberate filtering. 
 
 However, as it is envisaged that most L</Messages> will be flood routed or,
-in the case of directed L</Messages> (those that have L</Group> and/or
-L</ToUser> fields) down some/most/all interfaces showing a route for that
+in the case of directed L</Messages> (those that have L</Group> that is a callsign down some/most/all interfaces showing a route for that
 direction, it is unlikely that L</Messages> will be lost in practice.
 
 Assuming that there is a path between all the L</Node>s in a network, then it is guaranteed
@@ -161,20 +180,13 @@ using the information in the L</Routing Section>.
 
 =head2 Field Description
 
-The first four fields in the L</Routing Section> are compulsory. However, 
-a client connection can 
-
-Adding a L</Group> and/or L</ToUser> field will restrict the destinations
-or recipients that receive this message. 
+All fields in the L</Routing Section> are compulsory except the L</From> field. If it is missing
+so is the separating comma.  
 
 The L</Hop> field is incremented on receipt of a message on a node.
 
 Fields are separated by the comma ',' character with the last field 
 required followed by the vertical bar '|' character.
-
-If trailing fields are missed out then superfluous commas can also
-be left out. If intervening fields are missing then no space needs
-to be left for the separating comma.  
 
 The characters allowed in the routing section are restricted. Any 
 invalid characters in any field will cause the whole message to be
@@ -194,29 +206,34 @@ The field must not be changed by any other node.
 
 =item B<Group>
 
-This is the Group (or Channel) to be used for this data. It is compulsory. There
-is always a L</Group> 
+This is the Group (or Channel) to be used for this data. It is compulsory.  
 
 It is a string of up to 12 characters 
-in the set [-A-Z0-9_] in any order. Optionally, for extra routing to
-a specific end point (node or user), it may have another 12 character 
-field in the same set, concatenated with the string, separated by a ':'
-character.
+in the set [-A-Z0-9_/] in any order. 
 
-This field is used either to indicate particular node destination
-or to differentiate this broadcast in some way by making this
-message as a member of a L</Group>. Any message can be sent
-down any L</Group>. The names of L</Group>s and their usage
-is entirely up to the implementor.  
+Optionally, for extra routing to
+a particular L</Terminal> connected at a specific L</Node>, or even a
+particular L</Terminal> in a L</Group>, 
+it may have another 12 character 
+string in the same set, concatenated with the first string. The two strings are separated by a ':'
+character. For example:
 
-It is assumed that node names can be differentiated from user
-names and L</Group> names.
+  DX                        # the DX group
+  GB7DJK                    # the node GB7DJK
+  G1TLH                     # the user or endpoint G1TLH
+  GB7DJK:G1TLH              # the user G1TLH at GB7DJK
+  DX:G1TLH                  # the user G1TLH in the DX group
 
-If the field is set to a particular node destination, it will
-be routed (rather than broadcast) to that node. However, any
-intervening nodes are free to duplicate the message and send
-it down more than one, likely looking, interface - depending on any
-network policies that may pertain. 
+This field can contain either a L</Terminal> or some other string which is interpreted
+as broadcastable group address. Any message that has a L</Group> that is not recognised as a L</Terminal> must
+be broadcast.
+
+This means that messages to callsigns, for whom no specific routing information is available,
+will be found by means of a broadcast. Hopefully this will cause some kind of activity o.b.o
+that callsign will allow routing tables to be gathered that narrow down the scope of any future
+message to that callsign through the network. 
+
+Remember that not all L</Node>s may pass every L</Group> field, depending on local policy.
 
 =item B<TimeSeq>
 
@@ -251,7 +268,11 @@ Implementations may have an upper limit to this field and may
 silently drop incoming L</Messages> with a L</Hop> count greater than the
 limit.
 
+=item B<From>
 
+The L</From> field is optional. When present, it represents a L</Terminal> at
+the originating L</Node>. If it is missing then either it is not relevant or it
+is assumed to be the L</Origin>. 
 
 =back 
 
@@ -311,21 +332,21 @@ duplicated!
 
  # a talk (actually 'text') message to a user (some distance away
  # from the origin node)
- GB7TLH,G8TIC,3D03450019,3|T,G1TLH,Hiya Mike what's happening?
+ GB7TLH,G8TIC,3D03450019,3,G1TLH|THiya Mike what's happening?
 
  # a talk/chat/text message to a Group
- GB7TLH,VHF,0413525F23,2|T,G1TLH,2m is opening on MS
+ GB7TLH,VHF,0413525F23,2,G1TLH|T,2m is opening on MS
 
  # a ping to find the whereabouts and distance of a user from a node
  # the hex number on the end is the ping ID
- GB7TLH,G7BRN,1512346543,0|PING,G1TLH,9F4D 
+ GB7TLH,G7BRN,1512346543,0,G1TLH|PING,9F4D 
 
  # this effectively asks whether the user is on-line on a particular node
- GB7TLH,GB7BAA:G7BRN,1512346543,0|PING,G1TLH,35DE
+ GB7TLH,GB7BAA:G7BRN,1512346543,0,G1TLH|PING,35DE
 
  # A possible reply, same ID as ping followed by the no of hops on the 
  # ping that was received thus telling you how far away it is.
- GB7BAA,G1TLH,1512450534,3|PONG,G7BRN,35DE,3 
+ GB7BAA,G1TLH,1512450534,3,G7BRN|PONG,35DE,3 
 
 
 =head1 Command Section
