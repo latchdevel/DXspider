@@ -187,10 +187,15 @@ sub it
 	my $filter;
 	my @keys = sort $self->getfilkeys;
 	my $key;
+	my $type = 'Dunno';
+	my $asc = '?';
+	
 	my $r = @keys > 0 ? 0 : 1;
 	foreach $key (@keys) {
 		$filter = $self->{$key};
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
+			$type = 'reject';
+			$asc = $filter->{reject}->{user};
 			if (&{$filter->{reject}->{code}}(\@_)) {
 				$r = 0;
 				last;
@@ -199,6 +204,8 @@ sub it
 			}		
 		}
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
+			$type = 'accept';
+			$asc = $filter->{accept}->{user};
 			if (&{$filter->{accept}->{code}}(\@_)) {
 				$r = 1;
 				last;
@@ -211,6 +218,13 @@ sub it
 	# hops are done differently (simply) 
 	my $hops = $self->{hops} if exists $self->{hops};
 
+	if (isdbg('filter')) {
+		my $args = join '\',\'', @_;
+		my $true = $r ? "OK" : "REJ";
+		my $sort = $self->{sort};
+		$hops ||= "none";
+		dbg('filter', "Filter: $type/$sort with $asc on '$args': $true hops: $hops");
+	}
 	return ($r, $hops);
 }
 

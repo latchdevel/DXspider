@@ -1368,7 +1368,9 @@ sub send_local_config
 	my @nodes;
 	my @localnodes;
 	my @remotenodes;
-		
+
+	dbg('trace', 'DXProt::send_local_config');
+	
 	# send our nodes
 	if ($self->{isolate}) {
 		@localnodes = ( $main::routeroot );

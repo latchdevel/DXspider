@@ -615,9 +615,9 @@ sub queue_msg
 			if ($clref) {
 				my $dxc = $clref->dxchan;
 				if ($dxc) {
-					if (grep {my $dxc=$clref->dxchan; $dxc && $dxc == $_ } DXCommandmode::get_all()) {
+					if (!grep $dxc == $_, DXCommandmode::get_all()) {
 						next if $clref->call eq $main::mycall;  # i.e. it lives here
-						$dxchan = $clref->dxchan;
+						$dxchan = $dxc;
 						$ref->start_msg($dxchan) if $dxchan && !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
 					}
 				} else {

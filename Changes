@@ -1,3 +1,7 @@
+09Jun01=======================================================================
+1. more fixes
+2. add set/debug filter so that you can see why your filters aren't working
+(for sysops only)
 08Jun01=======================================================================
 1. first cut with new routing code. Created NEW_ROUTE branch
 2. added acc/route and rej/route commands
