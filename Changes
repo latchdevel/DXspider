@@ -1,3 +1,6 @@
+28Mar00=======================================================================
+1. Added buffering to client 
+2. Fixed LOGIN so that you can login with an arbitrary callsign
 27Mar00=======================================================================
 1. updated wpxloc.raw and rsgb.cty for 4W and TX0.
 2. display 'start time' rather than 'last start time in' in who.
