@@ -390,6 +390,12 @@ sub finish
 	my $conn = shift;
 	my $call = $self->call;
 
+	# reset the redirection of messages back to 'normal' if we are the sysop
+	if ($call eq $main::myalias) {
+		my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
+		$node->dxchan($DXProt::me);
+	}
+
 	# I was the last node visited
     $self->user->node($main::mycall);
 		
