@@ -256,6 +256,7 @@ sub start
 	# set unbuffered and no echo
 	$self->send_now('B',"0");
 	$self->send_now('E',"0");
+	$self->conn->echo(0) if $self->conn->can('echo');
 	
 	# ping neighbour node stuff
 	my $ping = $user->pingint;

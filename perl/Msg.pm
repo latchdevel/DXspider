@@ -386,10 +386,28 @@ sub _rcv {                     # Complement to _send
 	$bytes_read = sysread ($sock, $msg, 1024, 0);
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
-			$conn->{msg} .= $msg;
 			if (isdbg('raw')) {
 				my $call = $conn->{call} || 'none';
 				dbgdump('raw', "$call read $bytes_read: ", $msg);
+			}
+			if ($conn->{echo}) {
+				my @ch = split //, $msg;
+				my $out;
+				for (@ch) {
+					if (/[\cH\x7f]/) {
+						$out .= "\cH \cH";
+						$conn->{msg} =~ s/.$//;
+					} else {
+						$out .= $_;
+						$conn->{msg} .= $_;
+					}
+				}
+				if (defined $out) {
+					set_event_handler ($sock, write => sub{$conn->_send(0)});
+					push @{$conn->{outqueue}}, $out;
+				}
+			} else {
+				$conn->{msg} .= $msg;
 			}
 		} 
 	} else {

@@ -123,9 +123,11 @@ sub start
 	}
 
 	# decide on echo
-	if (!$user->wantecho) {
+	my $echo = $user->wantecho;
+	unless ($echo) {
 		$self->send_now('E', "0");
 		$self->send($self->msg('echow'));
+		$self->conn->echo($echo) if $self->conn->can('echo');
 	}
 	
 	$self->tell_login('loginu');

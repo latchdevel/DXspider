@@ -1218,7 +1218,6 @@ sub import_msgs
 		my @out = import_one($main::me, \@msg, $splitit);
 		Log('msg', @out);
 	}
-	queue_msg(0);
 }
 
 # import one message as a list in bbs (as extended) mode

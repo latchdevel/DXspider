@@ -14,6 +14,8 @@ sort of filth as much as possible whilst not inconveniencing 'normal' users.
 deletion two days hence. To have the old behaviour, do a 'kill exp' or use
 the standard alias "expunge". This will cause the message to be deleted at
 the next queue message cycle.
+5. Put in prototype echo handling for direct connections using ExtMsg and
+Listeners.pm.
 04Oct01=======================================================================
 1. allow a residence time of (default) 2 days before actually deleting a msg.
 2. reduce the number R: lines on a bull from a bbs to 2 (the origin and the

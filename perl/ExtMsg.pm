@@ -60,6 +60,12 @@ sub send_raw
     Msg::set_event_handler ($sock, "write" => sub {$conn->_send(0)});
 }
 
+sub echo
+{
+	my $conn = shift;
+	$conn->{echo} = shift;
+}
+
 sub dequeue
 {
 	my $conn = shift;
@@ -160,6 +166,7 @@ sub new_client {
 				$conn->_send_file("$main::data/issue");
 				$conn->send_raw("login: ");
 				$conn->_dotimeout(60);
+				$conn->{echo} = 1;
 			} else { 
 				&{$conn->{eproc}}() if $conn->{eproc};
 				$conn->disconnect();
