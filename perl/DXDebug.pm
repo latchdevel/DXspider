@@ -56,6 +56,8 @@ sub _store
 		chomp;
 		my @l = split /\n/;
 		for (@l) {
+			my $l = $_;
+			$l =~ s/([\x00\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;			
 			print "$_\n" if defined \*STDOUT;
 			$fp->writeunix($t, "$t^$_"); 
 		}

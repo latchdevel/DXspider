@@ -34,7 +34,7 @@ use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
 			$last_hour %pings %rcmds
 			%nodehops @baddx $baddxfn 
-			$allowzero $decode_dk0wcy $send_opernam);
+			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -48,6 +48,121 @@ $last_hour = time;				# last time I did an hourly periodic update
 
 
 $baddxfn = "$main::data/baddx.pl";
+
+@checklist = 
+(
+ qw(c c m p bc c),				# pc10
+ qw(f c m d t c c h),			# pc11
+ qw(c bc m p c p h),			# pc12
+ qw(c h),
+ qw(c h),
+ qw(c m h),
+ undef,							# pc16 has to be validated manually
+ qw(c c h),						# pc17
+ qw(c m n),						# pc18
+ undef,							# pc19 has to be validated manually
+ undef,							# pc20 no validation
+ qw(c m h),						# pc21
+ undef,							# pc22 no validation
+ qw(d t n n n m c c h),			# pc23
+ qw(c p h),						# pc24
+ qw(c c n n),					# pc25
+ qw(f c m d t c c),				# pc26
+ qw(d t n n n m c c),			# pc27
+ qw(c c c c d t p m bp n p bp c), # pc28
+ qw(c c n m),					# pc29
+ qw(c c n),						# pc30
+ qw(c c n),						# pc31
+ qw(c c n),						# pc32
+ qw(c c n),						# pc33
+ qw(c c m),						# pc34
+ qw(c c m),						# pc35
+ qw(c c m),						# pc36
+ qw(c c n m),					# pc37
+ qw(c m),						# pc39
+ qw(c c m p n),					# pc40
+ qw(c n m h),					# pc41
+ qw(c c n),						# pc42
+ undef,							# pc43 don't handle it
+ qw(c c n m m c),				# pc44
+ qw(c c n m),					# pc45
+ qw(c c n),						# pc46
+ undef,							# pc47
+ undef,							# pc48
+ qw(c m h),						# pc49
+ qw(c n h),						# pc50
+ qw(c c n),						# pc51
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,							# pc60
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,							# pc70
+ undef,
+ undef,
+ qw(d t n n n n n n m m m c c),	# pc73
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,
+ undef,							# pc80
+ undef,
+ undef,
+ undef,
+ qw(c c c m),					# pc84
+ qw(c c c m),					# pc85
+);
+
+# use the entry in the check list to check the field list presented
+# return OK if line NOT in check list (for now)
+sub check
+{
+	my $n = shift;
+	$n -= 10;
+	return 0 if $n < 10 || $n > @checklist; 
+	my $ref = $checklist[$n];
+	return 0 unless ref $ref;
+	
+	my $i;
+	shift;    # not interested in the first field
+	for ($i = 0; $i < @_; $i++) {
+		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
+		next if $blank && $_[$i] eq ' ';
+		if ($act eq 'c') {
+			return $i+1 unless is_callsign($_[$i]);
+		} elsif ($act eq 'm') {
+			return $i+1 unless is_pctext($_[$i]);
+		} elsif ($act eq 'p') {
+			return $i+1 unless is_pcflag($_[$i]);
+		} elsif ($act eq 'f') {
+			return $i+1 unless is_freq($_[$i]);
+		} elsif ($act eq 'n') {
+			return $i+1 if $_[$i] !~ /^[^\d ]$/;
+		} elsif ($act eq 'h') {
+			return $i+1 unless $_[$i] =~ /^H\d\d?$/;
+		} elsif ($act eq 'd') {
+			return $i+1 unless $_[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
+		} elsif ($act eq 't') {
+			return $i+1 unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
+		}
+	}
+	return 0;
+}
 
 sub init
 {
@@ -158,9 +273,10 @@ sub normal
 	return unless $pcno;
 	return if $pcno < 10 || $pcno > 99;
 
-	# dump bad protocol messages
-	if ($pcno != 29 && $line =~ /\%[01][0-9A-F]/) {
-		dbg('chan', "CORRUPT protocol message - dumped");
+	# check for and dump bad protocol messages
+	my $n = check($pcno, @field);
+	if ($n) {
+		dbg('chan', "bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")");
 		return;
 	}
 
@@ -175,10 +291,6 @@ sub normal
  SWITCH: {
 		if ($pcno == 10) {		# incoming talk
 			
-			unless (is_callsign($field[1]) && is_callsign($field[2]) && is_callsign($field[6])) {
-				dbg('chan', "Corrupt talk, rejected");
-				return;
-			}
 			# is it for me or one of mine?
 			my ($to, $via, $call, $dxchan);
 			if ($field[5] gt ' ') {
@@ -200,16 +312,6 @@ sub normal
 		}
 		
 		if ($pcno == 11 || $pcno == 26) { # dx spot
-
-			# are any of the callsign fields invalid?
-            unless ($field[2] !~ m/[^A-Z0-9\-\/]/ && is_callsign($field[6]) && is_callsign($field[7])) {
-				dbg('chan', "Spot contains lower case callsigns or blanks, rejected");
-				return;
-			}
-            if ($field[1] =~ m/[^0-9\.]/) {
-				dbg('chan', "Spot frequency not numeric, rejected");
-				return;
-			}
 
 			# route 'foreign' pc26s 
 			if ($pcno == 26) {
@@ -315,11 +417,6 @@ sub normal
 		}
 		
 		if ($pcno == 12) {		# announces
-			unless (is_callsign($field[1]) && is_callsign($field[5])) {
-				dbg('chan', "Corrupt announce, rejected");
-				return;
-			}
-
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {

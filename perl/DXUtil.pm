@@ -17,6 +17,7 @@ require Exporter;
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs shellregex readfilestr writefilestr
              print_all_fields cltounix iscallsign unpad is_callsign
+			 is_freq is_digits
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -301,8 +302,20 @@ sub is_pctext
 	return $_[0] !~ /[^\x20-\xA8\xE0-\xEF]/;
 }
 
-# check that a PC prot flag is set correctly
+# check that a PC prot flag is fairly valid (doesn't check the difference between 1/0 and */-)
 sub is_pcflag
 {
-	return $_[0] !~ /^[^01\*]$/;
+	return $_[0] !~ /^[^01\*\-]$/;
+}
+
+# check that a thing is a frequency
+sub is_freq
+{
+	return $_[0] !~ /[^\d\.]/;
+}
+
+# check that a thing is just digits
+sub is_digits
+{
+	return $_[0] !~ /[^\d]/;
 }

@@ -253,11 +253,6 @@ sub process_inqueue
 	my ($sort, $call, $line) = DXChannel::decode_input($dxchan, $data);
 	return unless defined $sort;
 	
-	# translate any crappy characters into hex characters 
-	if ($line =~ /[\x00-\x06\x08\x0a-\x1f\x7f-\xff]/o) {
-		$line =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-	}
-
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 	dbg('chan', "<- $sort $call $line\n") unless $sort eq 'D';
 

@@ -1,5 +1,7 @@
 20Aug00=======================================================================
 1. Added system Alias for set/nodxgrid => unset/dxgrid
+2. Add full individual checking for all PC protocol fields in all messages
+and removed any language dependant stuff (hopefully).
 19Aug00=======================================================================
 1. Added an efficiency thing for AUTOLOADed accessors from OO Perl by Conway.
 2. Fiddled with the rtty and digital bandplan frequencies.
