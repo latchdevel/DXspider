@@ -31,7 +31,7 @@ sub gen_Aranea
 {
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
-	 	$thing->{Aranea} = Aranea::genmsg($thing, qw(id out));
+	 	$thing->{Aranea} = Aranea::genmsg($thing, qw(id out o));
 	}
  	return $thing->{Aranea};
 }
@@ -53,10 +53,12 @@ sub gen_DXProt
 		# {user} as well as a true user and also it may not
 		# have originated here.
 
-		my $from = $thing->{user} if Route::Node::get($thing->{user});
+		my $from = $thing->{o};
+	    $from ||= $thing->{user} if Route::Node::get($thing->{user});
 		$from ||= $thing->{origin};
 		my $to = $thing->{touser} if Route::Node::get($thing->{touser});
 		$to ||= $thing->{group};
+
 		
 		$thing->{DXProt} = DXProt::pc51($to, $from, $thing->{out});
 	}
@@ -132,6 +134,7 @@ sub handle
 			}
 		}
 	} else {
+		$thing->{route} = $thing->{o} if $thing->{o};
 		$thing->broadcast($dxchan);
 	}
 }

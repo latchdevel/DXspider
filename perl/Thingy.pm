@@ -113,7 +113,8 @@ sub broadcast
 	dbg("Thingy::broadcast: " . $thing->ascii) if isdbg('thing'); 
 
 	my @dxchan;
-	my $to ||= $thing->{touser};
+	my $to ||= $thing->{route}; 
+	$to	||= $thing->{touser};
 	$to ||= $thing->{group};
 	if ($to && is_callsign($to) && (my $ref = Route::get($to))) {
 		dbg("Thingy::broadcast: routing for $to") if isdbg('thing');
