@@ -28,7 +28,7 @@ a comment)
 # check every 10 minutes to see if gb7xxx is connected and if not
 # start a connect job going
 
-0,10,20,30,40,50 * * * * start_connect('gb7xxx') if unless connected('gb7xxx')
+0,10,20,30,40,50 * * * * start_connect('gb7xxx') unless connected('gb7xxx')
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
