@@ -257,7 +257,7 @@ sub process_inqueue
 		die "\$user not defined for $call" if !defined $user;
 
 		if ($error) {
-			dbg(chan, "DROPPED with $error duff characters");
+			dbg('chan', "DROPPED with $error duff characters");
 		} else {
 			# normal input
 			$dxchan->normal($line);
