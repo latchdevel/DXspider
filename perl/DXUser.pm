@@ -129,12 +129,13 @@ sub init
 	
 	if ($@) {
 		$ufn = "$fn.v2";
+		$v3 = $convert = 0;
 	} else {
 		import Storable qw(nfreeze thaw);
 
 		$ufn = "$fn.v3";
 		$v3 = 1;
-		$convert = ! -e $ufn;
+		$convert++ unless -e $ufn;
 	}
 	
 	if ($mode) {
@@ -142,14 +143,17 @@ sub init
 	} else {
 		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
 	}
+
+	$lru = LRU->newbase("DXUser", $lrusize);
 	
 	# do a conversion if required
 	if ($convert) {
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
 		
 		my %oldu;
-		dbg("Converting the User File to V3 (I suggest you go and have cup of strong tea)");
-		my $odbm = tie (%oldu, 'DB_File', "${fn}.v2", O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		dbg("Converting the User File to V3 ");
+		dbg("This will take a while, I suggest you go and have cup of strong tea");
+		my $odbm = tie (%oldu, 'DB_File', "$fn.v2", O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
         for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
 			my $ref = asc_decode($val);
 			if ($ref) {
@@ -164,7 +168,6 @@ sub init
 		dbg("Conversion completed $count records $err errors");
 	}
 	$filename = $ufn;
-	$lru = LRU->newbase("DXUser", $lrusize);
 }
 
 sub del_file

@@ -8,9 +8,18 @@ callsigns to work better.
 other hand the code may work without, in a compatible way. This bit hasn't 
 been very well tested (the 'no Storable' condition that is). 
 
+[*** NOTE ***] make sure that you do an 'export_user' BEFORE restarting
+you node. (Yes I know this is like a shrinkwrap licence, but I can't
+help it).
+
 It will take several minutes for the node to restart when it does the 
 conversion from .v2 to .v3 user file. Please go and have a good strong cup
 of tea whilst this is happening.
+
+If it fails then you will need to edit your latest user_asc file on (or about)
+line 25 it says: $ref = decode($f[1]); you will need to change that to 
+$ref = asc_decode($f[1]); and then do: perl user_asc
+ 
 21Feb03=======================================================================
 1. moved the export of the users file to Wednesday night (GMT) to avoid 
 possible crashes and/or delays during a contest weekend.
