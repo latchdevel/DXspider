@@ -13,6 +13,7 @@ my $db = DXDb::getdesc($name);
 return (1, $self->msg('db3', $name)) unless $db;
 
 if ($db->remote) {
+	push @out, $self->msg('db11', $db->remote);
 	for (@f) {
 		my $n = DXDb::newstream($self->call);
 		DXProt::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
