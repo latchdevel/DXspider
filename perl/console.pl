@@ -190,8 +190,9 @@ sub show_screen
 			my $line = $shistory[$p];
 			my $lines = measure($line);
 			last if $i + $lines > $pagel;
+			$top->addstr("\n") if $i;
 			setattr($line);
-			$top->addstr($i, 0, "$line\n");
+			$top->addstr($line);
 			$top->attrset(COLOR_PAIR(0)) if $has_colors;
 			$i += $lines;
 		}
