@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.47: Other filters</TITLE>
+ <TITLE>The DXSpider Administration Manual v1.48: Databases</TITLE>
  <LINK HREF="adminmanual-5.html" REL=next>
  <LINK HREF="adminmanual-3.html" REL=previous>
  <LINK HREF="adminmanual.html#toc4" REL=contents>
@@ -13,118 +13,129 @@
 <A HREF="adminmanual-3.html">Previous</A>
 <A HREF="adminmanual.html#toc4">Contents</A>
 <HR>
-<H2><A NAME="s4">4. Other filters</A></H2>
+<H2><A NAME="s4">4. Databases</A></H2>
 
-<H2><A NAME="ss4.1">4.1 Filtering Mail</A>
+<P>Spider allows the creation of local or remote databases.  It supports
+chained databases, allowing several different databases to be scanned
+with one simple command.  Importing of databases is limited at present
+to the standard AK1A databases such as OBLAST and the DB0SDX QSL 
+database but will expand with time.
+<P>
+<H2><A NAME="ss4.1">4.1 Creating databases</A>
 </H2>
 
-<P>In the /spider/msg directory you will find a file called badmsg.pl.issue.  Rename
-this to badmsg.pl and edit the file.  The original looks something like this ....
+<P>Creating a database could not be more simple.  All the commands are
+sent from the cluster prompt as the <EM>sysop</EM> user.
+<P>To create a database you use the command <EM>dbcreate</EM>.  It can
+be used in 3 different ways like so ..
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-
-# the list of regexes for messages that we won't store having
-# received them (bear in mind that we must receive them fully before
-# we can bin them)
-
-
-# The format of each line is as follows
-
-#     type      source             pattern 
-#     P/B/F     T/F/O/S            regex  
-
-# type: P - private, B - bulletin (msg), F - file (ak1a bull)
-# source: T - to field, F - from field,  O - origin, S - subject 
-# pattern: a perl regex on the field requested
-
-# Currently only type B and P msgs are affected by this code.
-# 
-# The list is read from the top down, the first pattern that matches
-# causes the action to be taken.
-
-# The pattern can be undef or 0 in which case it will always be selected
-# for the action specified
-
-
-
-package DXMsg;
-
-@badmsg = (
-'B',    'T',    'SALE', 
-'B',    'T',    'WANTED',
-'B',    'S',    'WANTED',
-'B',    'S',    'SALE', 
-'B',    'S',    'WTB',
-'B',    'S',    'WTS',
-'B',    'T',    'FS',
-);
+dbcreate &lt;name>
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
-<P>I think this is fairly self explanatory.  It is simply a list of subject 
-headers that we do not want to pass on to either the users of the cluster or 
-the other cluster nodes that we are linked to.  This is usually because of 
-rules and regulations pertaining to items for sale etc in a particular country.
-<P>
-<H2><A NAME="ss4.2">4.2 Filtering DX callouts (Depricated)</A>
-</H2>
-
-<P><B><I>From version 1.47, this method is replaced by the command set/baddx</I></B>
-<P>
-<P>In the same way as mail, there are some types of spot we do not wish to pass on 
-to users or linked cluster nodes.  In the /spider/data directory you will find 
-a file called baddx.pl.issue.  Rename this to baddx.pl and edit the file.  The
-original looks like this ....
+<P>To simply create a database locally, you just tell the command the
+name of the database.  This does not create the actual database, it
+simply defines it to say that it exists.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-
-# the list of dx spot addresses that we don't store and don't pass on
-
-
-package DXProt;
-
-@baddx = qw 
-
- FROG 
- SALE
- FORSALE
- WANTED
- P1RATE
- PIRATE
- TEST
- DXTEST
- NIL
- NOCALL 
-);
+dbcreate &lt;name> chain &lt;name> [&lt;name>...]
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
-<P>Again, this is simply a list of names we do not want to see in the spotted 
-field of a DX callout.
-<P>
-<P>
-<H2><A NAME="ss4.3">4.3 Filtering words from text fields in Announce, Talk and DX spots</A>
-</H2>
-
-<P>Create a file in /spider/data called <EM>badwords</EM>.  The format is quite
-simple.  Lines beginning with # are ignored so comments can be added.  An
-example file is below ...
+<P>This creates a chained database entry.  The first database will be
+scanned, then the second, the third etc...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-# Below is a list of words we do not wish to see on the cluster
-grunge grunged grunging
-splodge splodger splodging
-grince
-fluffle
+dbcreate &lt;name> remote &lt;name>
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>Multiple words can be used on the same line as shown.  Obviously these
-are just examples :-)
+<P>This creates a remote entry.  the first name field is the database
+name at the remote node, then the remote switch, then the actual
+node_call of the remote node, for example...
 <P>
-<P>You can reload the file from the cluster prompt as sysop with load/badwords.
+<BLOCKQUOTE><CODE>
+<PRE>
+dbcreate buckmaster remote gb7dxc
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Remote databases cannot be chained, however, the last database in a
+chain can be a remote database.
+<P>
+<H2><A NAME="ss4.2">4.2 Importing databases</A>
+</H2>
+
+<P>The only databases that Spider can currently import are the standard
+AK1A databases such as OBLAST or the DB0SDX qsl and address database.
+This will be added to with time.
+<P>To import such a database, first put the file somewhere useful like /tmp
+and then issue the following command ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+dbimport oblast /tmp/OBLAST.FUL
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>This will update the existing local oblast database or create it if
+it does not exist.
+<P>
+<H2><A NAME="ss4.3">4.3 Checking available databases</A>
+</H2>
+
+<P>Once a database is created, you will want to check that it has been
+added.  To do this use the <EM>dbavail</EM> command.  This will
+output the available databases.  For example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+dbavail
+DB Name          Location   Chain
+qsl              Local
+buck             GB7ADX
+hftest           GB7DXM
+G0VGS de GB7MBC  3-Feb-2001 1925Z >
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss4.4">4.4 Looking up databases</A>
+</H2>
+
+<P>To look for information in a defined database, simply use the <EM>dbshow</EM>
+command, for example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+dbshow buckmaster G0YLM
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>will show the information for the callsign G0YLM from the buckmaster
+database if it exists.  To make things more standard for the users
+you can add an entry in the Aliases file so that it looks like a standard 
+<EM>show</EM> command like this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+'^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Now you can simply use show/buckmaster or an abreviation.
+<P>
+<H2><A NAME="ss4.5">4.5 Removing databases</A>
+</H2>
+
+<P>To delete an existing database you use the <EM>dbremove</EM> command.
+For example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+dbremove oblast
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>would remove the oblast database and its associated datafile from the
+system.  There are no warnings or recovery possible from this command.
+If you remove a database it ceases to exist and would have to be created
+from scratch if you still required it.
 <P>
 <HR>
 <A HREF="adminmanual-5.html">Next</A>

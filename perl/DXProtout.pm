@@ -67,36 +67,42 @@ sub pc12
 
 #
 # add one or more users (I am expecting references that have 'call', 
-# 'confmode' & 'here' method) 
+# 'conf' & 'here' method) 
 #
 # this will create a list of PC16 with up pc16_max_users in each
 # called $self->pc16(..)
 #
 sub pc16
 {
-	my $self = shift;
+	my $node = shift;
+	my $ncall = $node->call;
 	my @out;
-	my $i;
 
-	for ($i = 0; @_; ) {
-		my $str = "PC16^$self->{call}";
-		for ( ; @_ && length $str < 200; $i++) {
+	while (@_) {
+		my $str = "PC16^$ncall";
+		for ( ; @_ && length $str < 200; ) {
 			my $ref = shift;
-			$str .= sprintf "^%s %s %d", $ref->call, $ref->confmode ? '*' : '-', $ref->here;
+			$str .= sprintf "^%s %s %d", $ref->call, $ref->conf ? '*' : '-', $ref->here;
 		}
 		$str .= sprintf "^%s^", get_hops(16);
 		push @out, $str;
-		$i = 0;
 	}
-	return (@out);
+	return @out;
 }
 
 # remove a local user
 sub pc17
 {
-	my ($self, $ref) = @_;
-	my $hops = get_hops(17);
-	return "PC17^$ref->{call}^$self->{call}^$hops^";
+	my @out;
+	while (@_) {
+		my $node = shift;
+		my $ref = shift;
+		my $hops = get_hops(17);
+		my $ncall = $node->call;
+		my $ucall = $ref->call;
+		push @out, "PC17^$ucall^$ncall^$hops^"; 
+	}
+	return @out;
 }
 
 # Request init string
@@ -110,22 +116,20 @@ sub pc18
 # 
 sub pc19
 {
-	my $self = shift;
 	my @out;
-	my $i;
-	
 
-	for ($i = 0; @_; ) {
+	while(@_) {
 		my $str = "PC19";
-		for (; @_ && length $str < 200; $i++) {
+		for (; @_ && length $str < 200;) {
 			my $ref = shift;
-			my $here = $ref->{here} ? '1' : '0';
-			my $confmode = $ref->{confmode} ? '1' : '0';
-			$str .= "^$here^$ref->{call}^$confmode^$ref->{pcversion}";
+			my $call = $ref->call;
+			my $here = $ref->here;
+			my $conf = $ref->conf;
+			my $version = $ref->version;
+			$str .= "^$here^$call^$conf^$version";
 		}
 		$str .= sprintf "^%s^", get_hops(19);
 		push @out, $str;
-		$i = 0;
 	}
 	return @out;
 }
@@ -139,10 +143,14 @@ sub pc20
 # delete a node
 sub pc21
 {
-	my ($call, $reason) = @_;
-	my $hops = get_hops(21);
-	$reason = "Gone." if !$reason;
-	return "PC21^$call^$reason^$hops^";
+	my @out;
+	while (@_) {
+		my $node = shift;
+		my $hops = get_hops(21);
+		my $call = $node->call;
+		push @out, "PC21^$call^Gone^$hops^";
+	}
+	return @out;
 }
 
 # end of init phase
@@ -157,7 +165,7 @@ sub pc24
 	my $self = shift;
 	my $call = $self->call;
 	my $flag = $self->here ? '1' : '0';
-	my $hops = get_hops(24);
+	my $hops = shift || get_hops(24);
   
 	return "PC24^$call^$flag^$hops^";
 }
@@ -187,6 +195,7 @@ sub pc28
 	my $time = ztime($t);
 	$private = $private ? '1' : '0';
 	$rr = $rr ? '1' : '0';
+	$subject ||= ' ';
 	return "PC28^$tonode^$fromnode^$to^$from^$date^$time^$private^$subject^ ^5^$rr^ ^$origin^~";
 }
 
@@ -244,8 +253,7 @@ sub pc35
 # send all the DX clusters I reckon are connected
 sub pc38
 {
-	my @nodes = map { ($_->dxchan && $_->dxchan->isolate) ? () : $_->call } DXNode->get_all();
-	return "PC38^" . join(',', @nodes) . "^~";
+	return join '^', "PC38", map {$_->call} Route::Node::get_all();
 }
 
 # tell the local node to discconnect
@@ -268,9 +276,12 @@ sub pc40
 # user info
 sub pc41
 {
-	my ($call, $sort, $info) = @_;
-	my $hops = get_hops(41);
-	$sort = $sort ? "$sort" : '0';
+	my $call = shift;
+	$call = shift if ref $call;
+	
+	my $sort = shift || '0';
+	my $info = shift || ' ';
+	my $hops = shift || get_hops(41);
 	return "PC41^$call^$sort^$info^$hops^~";
 }
 
@@ -314,9 +325,11 @@ sub pc49
 # periodic update of users, plus keep link alive device (always H99)
 sub pc50
 {
-	my $n = shift;
-	$n = 0 unless $n >= 0;
-	return "PC50^$main::mycall^$n^H99^";
+	my $self = shift;
+	my $call = $self->call;
+	my $n = shift || '0';
+	my $hops = shift || 'H99';
+	return "PC50^$call^$n^$hops^";
 }
 
 # generate pings

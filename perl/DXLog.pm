@@ -83,9 +83,19 @@ sub open
 	$self->{year} = $year;
 	$self->{thing} = $thing;
 	
-#	DXDebug::dbg("dxlog", "opening $self->{fn}\n");
+#	DXDebug::dbg("opening $self->{fn}\n") if isdbg("dxlog");
 	
 	return $self->{fh};
+}
+
+sub mtime
+{
+	my ($self, $year, $thing) = @_;
+	
+	my $fn = sprintf "$self->{prefix}/$year/%02d", $thing if $self->{'sort'} eq 'm';
+	$fn = sprintf "$self->{prefix}/$year/%03d", $thing if $self->{'sort'} eq 'd';
+	$fn .= ".$self->{suffix}" if $self->{suffix};
+	return (stat $fn)[9];
 }
 
 # open the previous log file in sequence

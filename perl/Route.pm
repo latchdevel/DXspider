@@ -15,23 +15,52 @@
 package Route;
 
 use DXDebug;
+use DXChannel;
+use Prefix;
 
 use strict;
 
-use vars qw(%list %valid);
+use vars qw(%list %valid $filterdef);
 
 %valid = (
 		  call => "0,Callsign",
 		  flags => "0,Flags,phex",
+		  dxcc => '0,Country Code',
+		  itu => '0,ITU Zone',
+		  cq => '0,CQ Zone',
 		 );
+
+$filterdef = bless ([
+			  # tag, sort, field, priv, special parser 
+			  ['channel', 'c', 0],
+			  ['channel_dxcc', 'n', 1],
+			  ['channel_itu', 'n', 2],
+			  ['channel_zone', 'n', 3],
+			  ['call', 'c', 4],
+			  ['call_dxcc', 'n', 5],
+			  ['call_itu', 'n', 6],
+			  ['call_zone', 'n', 7],
+			 ], 'Filter::Cmd');
+
 
 sub new
 {
 	my ($pkg, $call) = @_;
+	$pkg = ref $pkg if ref $pkg;
 
-	dbg('routelow', "create " . (ref($pkg) || $pkg) ." with $call");
+	my $self = bless {call => $call}, $pkg;
+	dbg("create $pkg with $call") if isdbg('routelow');
+
+	# add in all the dxcc, itu, zone info
+	my @dxcc = Prefix::extract($call);
+	if (@dxcc > 0) {
+		$self->{dxcc} = $dxcc[1]->dxcc;
+		$self->{itu} = $dxcc[1]->itu;
+		$self->{cq} = $dxcc[1]->cq;						
+	}
+	$self->{flags} = here(1);
 	
-	return bless {call => $call}, (ref $pkg || $pkg);
+	return $self; 
 }
 
 #
@@ -60,7 +89,7 @@ sub _addlist
 		my $call = _getcall($c);
 		unless (grep {$_ eq $call} @{$self->{$field}}) {
 			push @{$self->{$field}}, $call;
-			dbg('routelow', ref($self) . " adding $call to " . $self->{call} . "->\{$field\}");
+			dbg(ref($self) . " adding $call to " . $self->{call} . "->\{$field\}") if isdbg('routelow');
 		}
 	}
 	return $self->{$field};
@@ -74,7 +103,7 @@ sub _dellist
 		my $call = _getcall($c);
 		if (grep {$_ eq $call} @{$self->{$field}}) {
 			$self->{$field} = [ grep {$_ ne $call} @{$self->{$field}} ];
-			dbg('routelow', ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}");
+			dbg(ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}") if isdbg('routelow');
 		}
 	}
 	return $self->{$field};
@@ -83,15 +112,21 @@ sub _dellist
 #
 # flag field constructors/enquirers
 #
+# These can be called in various ways:-
+#
+# Route::here or $ref->here returns 1 or 0 depending on value of the here flag
+# Route::here(1) returns 2 (the bit value of the here flag)
+# $ref->here(1) or $ref->here(0) sets the here flag
+#
 
 sub here
 {
 	my $self = shift;
 	my $r = shift;
 	return $self ? 2 : 0 unless ref $self;
-	return $self->{flags} & 2 unless $r;
+	return ($self->{flags} & 2) ? 1 : 0 unless defined $r;
 	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
-	return $r;
+	return $r ? 1 : 0;
 }
 
 sub conf
@@ -99,9 +134,15 @@ sub conf
 	my $self = shift;
 	my $r = shift;
 	return $self ? 1 : 0 unless ref $self;
-	return $self->{flags} & 1 unless $r;
+	return ($self->{flags} & 1) ? 1 : 0 unless defined $r;
 	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
-	return $r;
+	return $r ? 1 : 0;
+}
+
+sub parents
+{
+	my $self = shift;
+	return @{$self->{parent}};
 }
 
 # 
@@ -120,6 +161,7 @@ sub config
 	my $self = shift;
 	my $nodes_only = shift;
 	my $level = shift;
+	my $seen = shift;
 	my @out;
 	my $line;
 	my $call = $self->user_call;
@@ -133,6 +175,16 @@ sub config
 	if ($printit) {
 		$line = ' ' x ($level*2) . "$call";
 		$call = ' ' x length $call; 
+		
+		# recursion detector
+		if ((DXChannel->get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
+			$line .= ' ...';
+			push @out, $line;
+			return @out;
+		}
+		push @$seen, $self->{call};
+
+		# print users
 		unless ($nodes_only) {
 			if (@{$self->{users}}) {
 				$line .= '->';
@@ -149,7 +201,7 @@ sub config
 					} else {
 						$line =~ s/\s+$//;
 						push @out, $line;
-						$line = ' ' x ($level*2) . "$call->";
+						$line = ' ' x ($level*2) . "$call->$c ";
 					}
 				}
 			}
@@ -159,12 +211,14 @@ sub config
 		push @out, $line if length $line;
 	}
 	
+	# deal with more nodes
 	foreach my $ncall (sort @{$self->{nodes}}) {
 		my $nref = Route::Node::get($ncall);
 
 		if ($nref) {
 			my $c = $nref->user_call;
-			push @out, $nref->config($nodes_only, $level+1, @_);
+#			dbg("recursing from $call -> $c") if isdbg('routec');
+			push @out, $nref->config($nodes_only, $level+1, $seen, @_);
 		} else {
 			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
 		}
@@ -173,10 +227,76 @@ sub config
 	return @out;
 }
 
+sub cluster
+{
+	my $nodes = Route::Node::count();
+	my $tot = Route::User::count();
+	my $users = scalar DXCommandmode::get_all();
+	my $maxusers = Route::User::max();
+	my $uptime = main::uptime();
+	
+	return " $nodes nodes, $users local / $tot total users  Max users $maxusers  Uptime $uptime";
+}
+
 #
 # routing things
 #
 
+sub get
+{
+	my $call = shift;
+	return Route::Node::get($call) || Route::User::get($call);
+}
+
+# find all the possible dxchannels which this object might be on
+sub alldxchan
+{
+	my $self = shift;
+	my @dxchan;
+#	dbg("Trying node $self->{call}") if isdbg('routech');
+	my $dxchan = DXChannel->get($self->{call});
+	push @dxchan, $dxchan if $dxchan;
+	
+	# it isn't, build up a list of dxchannels and possible ping times 
+	# for all the candidates.
+	unless (@dxchan) {
+		foreach my $p (@{$self->{parent}}) {
+#			dbg("Trying parent $p") if isdbg('routech');
+			next if $p eq $main::mycall; # the root
+			my $dxchan = DXChannel->get($p);
+			if ($dxchan) {
+				push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
+			} else {
+				next if grep $p eq $_, @_;
+				my $ref = Route::Node::get($p);
+#				dbg("Next node $p " . ($ref ? 'Found' : 'NOT Found') if isdbg('routech') );
+				push @dxchan, $ref->alldxchan($self->{call}, @_) if $ref;
+			}
+		}
+	}
+#	dbg('routech', "Got dxchan: " . join(',', (map{ $_->call } @dxchan)) );
+	return @dxchan;
+}
+
+sub dxchan
+{
+	my $self = shift;
+	my @dxchan = $self->alldxchan;
+	return undef unless @dxchan;
+	
+	# determine the minimum ping channel
+	my $minping = 99999999;
+	my $dxchan;
+	foreach my $dxc (@dxchan) {
+		my $p = $dxc->pingave;
+		if (defined $p  && $p < $minping) {
+			$minping = $p;
+			$dxchan = $dxc;
+		}
+	}
+	$dxchan = shift @dxchan unless $dxchan;
+	return $dxchan;
+}
 
 #
 # track destruction
@@ -187,7 +307,7 @@ sub DESTROY
 	my $self = shift;
 	my $pkg = ref $self;
 	
-	dbg('routelow', "$pkg $self->{call} destroyed");
+	dbg("$pkg $self->{call} destroyed") if isdbg('routelow');
 }
 
 no strict;

@@ -1,4 +1,4 @@
 #
 # show some statistics
 #
-return (1, DXCluster::cluster() );
+return (1, Route::cluster() );

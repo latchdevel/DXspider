@@ -14,17 +14,22 @@ my @out;
 @args = $self->call if (!@args || $self->priv < 9);
 
 foreach $call (@args) {
-  $call = uc $call;
-  my $dxchan = DXChannel->get($call);
-  my $ref = DXCluster->get_exact($call);
-  if ($dxchan && $ref) {
-	$dxchan->here(1);
-	$ref->here(1);
-	DXProt::broadcast_all_ak1a(DXProt::pc24($ref), $DXProt::me);
-	push @out, $self->msg('heres', $call);
-  } else {
-    push @out, $self->msg('e3', "Set Here", $call);
-  }
+	$call = uc $call;
+	my $dxchan = DXChannel->get($call);
+	if ($dxchan) {
+		$dxchan->here(1);
+		push @out, $self->msg('heres', $call);
+		my $ref = Route::User::get($call);
+		$ref = Route::Node::get($call) unless $ref;
+		if ($ref) {
+			$ref->here(1);
+			my $s = DXProt::pc24($ref);
+			DXProt::eph_dup($s);
+			DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
+		}
+	} else {
+		push @out, $self->msg('e3', "Set Here", $call);
+	}
 }
 
 return (1, @out);

@@ -63,8 +63,9 @@ $lasttime = 0;
 		  pingint => '9,Node Ping interval',
 		  nopings => '9,Ping Obs Count',
 		  wantlogininfo => '9,Login info req,yesno',
-	          wantgrid => '0,DX Grid Info,yesno',
+          wantgrid => '0,DX Grid Info,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
+		  nothere => '0,Not Here Text',
 		 );
 
 no strict;
@@ -243,8 +244,8 @@ sub decode
 	my $ref;
 	eval '$ref = ' . $s;
 	if ($@) {
-		dbg('err', $@) if $@;
-		Log('err', $@) if $@;
+		dbg($@);
+		Log('err', $@);
 		$ref = undef;
 	}
 	return $ref;

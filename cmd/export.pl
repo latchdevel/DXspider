@@ -25,7 +25,7 @@ return (1, $self->msg('read2', $msgno)) unless $ref;
 if (-e $fn) {
 	my $m = $self->msg('e16', $fn);
 	Log('msg', $self->call . " tried to export $m");
-	dbg('msg', $m);
+	dbg($m) if isdbg('msg');
 	return (1, $m);
 }
 

@@ -14,22 +14,24 @@ use Route::User;
 
 use strict;
 
-use vars qw(%list %valid @ISA $max);
+use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
 		  parent => '0,Parent Calls,parray',
 		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
+		  usercount => '0,User Count',
 		  version => '0,Version',
 );
 
+$filterdef = $Route::filterdef;
 %list = ();
 $max = 0;
 
 sub count
 {
-	my $n = scalar %list;
+	my $n = scalar (keys %list);
 	$max = $n if $n > $max;
 	return $n;
 }
@@ -55,9 +57,11 @@ sub add
 {
 	my $parent = shift;
 	my $call = uc shift;
+	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
 	my $self = get($call);
 	if ($self) {
 		$self->_addparent($parent->{call});
+		$parent->_addnode($call);
 		return undef;
 	}
 	$parent->_addnode($call);
@@ -79,19 +83,35 @@ sub del
 
 	# delete parent from this call's parent list
 	my $pcall = $pref->{call};
+	my $ncall = $self->{call};
+	$pref->_delnode($ncall);;
 	my $ref = $self->_delparent($pcall);
 	my @nodes;
 	
-	# is this the last connection?
-	$self->_del_users;
+	# is this the last connection, I have no parents anymore?
 	unless (@$ref) {
-		push @nodes, $self->del_nodes;
+		foreach my $rcall (@{$self->{nodes}}) {
+			next if grep $rcall eq $_, @_;
+			my $r = Route::Node::get($rcall);
+			push @nodes, $r->del($self, $ncall, @_) if $r;
+		}
+		$self->_del_users;
 		delete $list{$self->{call}};
+		push @nodes, $self;
 	}
-	push @nodes, $self;
 	return @nodes;
 }
 
+sub del_nodes
+{
+	my $parent = shift;
+	my @out;
+	foreach my $rcall (@{$parent->{nodes}}) {
+		my $r = get($rcall);
+		push @out, $r->del($parent, $parent->{call}, @_) if $r;
+	}
+	return @out;
+}
 
 sub _del_users
 {
@@ -103,28 +123,25 @@ sub _del_users
 	$self->{users} = [];
 }
 
-# remove all sub nodes from this parent
-sub del_nodes
-{
-	my $self = shift;
-	my @nodes;
-	
-	for (@{$self->{nodes}}) {
-		next if $self->{call} eq $_;
-		push @nodes, $self->del_node($_);
-	}
-	return @nodes;
-}
-
 # add a user to this node
 sub add_user
 {
 	my $self = shift;
 	my $ucall = shift;
+
+	confess "Trying to add NULL User call to routing tables" unless $ucall;
+
 	$self->_adduser($ucall);
-	
+
+	$self->{usercount} = scalar @{$self->{users}};
 	my $uref = Route::User::get($ucall);
-	return $uref ? () : (Route::User->new($ucall, $self->{call}, @_));
+	my @out;
+	if ($uref) {
+		$uref->addparent($self->{call});
+	} else {
+		@out = Route::User->new($ucall, $self->{call}, @_);
+	}
+	return @out;
 }
 
 # delete a user from this node
@@ -134,20 +151,44 @@ sub del_user
 	my $ucall = shift;
 	my $ref = Route::User::get($ucall);
 	$self->_deluser($ucall);
-	return ($ref->del($self)) if $ref;
-	return ();
+	my @out = $ref->del($self) if $ref;
+	return @out;
 }
 
-# delete a node from this node (ie I am a parent) 
-sub del_node
+sub usercount
 {
 	my $self = shift;
-	my $ncall = shift;
-    $self->_delnode($ncall);
-	my $ref = get($ncall);
-	return ($ref->del($self)) if $ref;
-	return ();
+	if (@_ && @{$self->{users}} == 0) {
+		$self->{usercount} = shift;
+	}
+	return $self->{usercount};
 }
+
+sub users
+{
+	my $self = shift;
+	return @{$self->{users}};
+}
+
+sub nodes
+{
+	my $self = shift;
+	return @{$self->{nodes}};
+}
+
+sub rnodes
+{
+	my $self = shift;
+	my @out;
+	foreach my $call (@{$self->{nodes}}) {
+		next if grep $call eq $_, @_;
+		push @out, $call;
+		my $r = get($call);
+		push @out, $r->rnodes($call, @_) if $r;
+	}
+	return @out;
+}
+
 
 sub new
 {
@@ -172,7 +213,14 @@ sub get
 {
 	my $call = shift;
 	$call = shift if ref $call;
-	return $list{uc $call};
+	my $ref = $list{uc $call};
+	dbg("Failed to get Node $call" ) if !$ref && isdbg('routerr');
+	return $ref;
+}
+
+sub get_all
+{
+	return values %list;
 }
 
 sub _addparent
@@ -219,7 +267,7 @@ sub DESTROY
 	my $pkg = ref $self;
 	my $call = $self->{call} || "Unknown";
 	
-	dbg('route', "destroying $pkg with $call");
+	dbg("destroying $pkg with $call") if isdbg('routelow');
 }
 
 #

@@ -18,16 +18,10 @@ foreach $call (@calls) {
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
 		if ($dxchan->is_node) {
-			
 			# first clear out any nodes on this dxchannel
-			my @gonenodes = grep { $_->dxchan == $dxchan } DXNode::get_all();
-			foreach my $node (@gonenodes) {
-				next if $node->dxchan == $DXProt::me;
-				next unless $node->dxchan == $dxchan;
-				DXProt::broadcast_ak1a(DXProt::pc21($node->call, 'Gone, re-init') , $dxchan) unless $dxchan->{isolate}; 
-				$node->del();
-			}
-#			$dxchan->send(DXProt::pc38());
+			my $parent = Route::Node::get($call);
+			my @rout = $parent->del_nodes;
+			$dxchan->route_pc21($self, @rout) if @rout;
 			$dxchan->send(DXProt::pc18());
 			$dxchan->state('init');
 			push @out, $self->msg('init1', $call);

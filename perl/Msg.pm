@@ -80,7 +80,7 @@ sub new
 
 	$noconns++;
 	
-	dbg('connll', "Connection created ($noconns)");
+	dbg("Connection created ($noconns)") if isdbg('connll');
 	return bless $conn, $class;
 }
 
@@ -122,11 +122,11 @@ sub conns
 	if (ref $pkg) {
 		$call = $pkg->{call} unless $call;
 		return undef unless $call;
-		dbg('connll', "changing $pkg->{call} to $call") if exists $pkg->{call} && $call ne $pkg->{call};
+		dbg("changing $pkg->{call} to $call") if isdbg('connll') && exists $pkg->{call} && $call ne $pkg->{call};
 		delete $conns{$pkg->{call}} if exists $pkg->{call} && exists $conns{$pkg->{call}} && $pkg->{call} ne $call; 
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
-		dbg('connll', "Connection $pkg->{cnum} $call stored");
+		dbg("Connection $pkg->{cnum} $call stored") if isdbg('connll');
 	} else {
 		$ref = $conns{$call};
 	}
@@ -199,7 +199,7 @@ sub disconnect {
 		delete $conns{$call} if $ref && $ref == $conn;
 	}
 	$call ||= 'unallocated';
-	dbg('connll', "Connection $conn->{cnum} $call disconnected");
+	dbg("Connection $conn->{cnum} $call disconnected") if isdbg('connll');
 	
 	unless ($main::is_win) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
@@ -427,7 +427,7 @@ sub new_client {
 			$conn->disconnect();
 		}
 	} else {
-		dbg('err', "Msg: error on accept ($!)");
+		dbg("Msg: error on accept ($!)") if isdbg('err');
 	}
 }
 
@@ -536,7 +536,7 @@ sub DESTROY
 	my $call = $conn->{call} || 'unallocated';
 	my $host = $conn->{peerhost} || '';
 	my $port = $conn->{peerport} || '';
-	dbg('connll', "Connection $conn->{cnum} $call [$host $port] being destroyed");
+	dbg("Connection $conn->{cnum} $call [$host $port] being destroyed") if isdbg('connll');
 	$noconns--;
 }
 

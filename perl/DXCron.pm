@@ -16,9 +16,8 @@ use IO::File;
 
 use strict;
 
-use vars qw{@crontab $mtime $lasttime $lastmin};
+use vars qw{@crontab @lcrontab @scrontab $mtime $lasttime $lastmin};
 
-@crontab = ();
 $mtime = 0;
 $lasttime = 0;
 $lastmin = 0;
@@ -33,13 +32,11 @@ sub init
 	if ((-e $localfn && -M $localfn < $mtime) || (-e $fn && -M $fn < $mtime) || $mtime == 0) {
 		my $t;
 		
-		@crontab = ();
-		
 		# first read in the standard one
 		if (-e $fn) {
 			$t = -M $fn;
 			
-			cread($fn);
+			@scrontab = cread($fn);
 			$mtime = $t if  !$mtime || $t <= $mtime;
 		}
 
@@ -47,9 +44,10 @@ sub init
 		if (-e $localfn) {
 			$t = -M $localfn;
 			
-			cread($localfn);
+			@lcrontab = cread($localfn);
 			$mtime = $t if $t <= $mtime;
 		}
+		@crontab = (@scrontab, @lcrontab);
 	}
 }
 
@@ -59,15 +57,16 @@ sub cread
 	my $fn = shift;
 	my $fh = new IO::File;
 	my $line = 0;
+	my @out;
 
-	dbg('cron', "cron: reading $fn\n");
+	dbg("cron: reading $fn\n") if isdbg('cron');
 	open($fh, $fn) or confess("cron: can't open $fn $!");
 	while (<$fh>) {
 		$line++;
 		chomp;
 		next if /^\s*#/o or /^\s*$/o;
 		my ($min, $hour, $mday, $month, $wday, $cmd) = /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/o;
-		next if !$min;
+		next unless defined $min;
 		my $ref = bless {};
 		my $err;
 		
@@ -78,13 +77,14 @@ sub cread
 		$err |= parse($ref, 'wday', $wday, 0, 6, "sun", "mon", "tue", "wed", "thu", "fri", "sat");
 		if (!$err) {
 			$ref->{cmd} = $cmd;
-			push @crontab, $ref;
-			dbg('cron', "cron: adding $_\n");
+			push @out, $ref;
+			dbg("cron: adding $_\n") if isdbg('cron');
 		} else {
-			dbg('cron', "cron: error on line $line '$_'\n");
+			dbg("cron: error on line $line '$_'\n") if isdbg('cron');
 		}
 	}
 	close($fh);
+	return @out;
 }
 
 sub parse
@@ -147,9 +147,9 @@ sub process
 				(!$cron->{wday} || grep $_ eq $wday, @{$cron->{wday}})	){
 				
 				if ($cron->{cmd}) {
-					dbg('cron', "cron: $min $hour $mday $mon $wday -> doing '$cron->{cmd}'");
+					dbg("cron: $min $hour $mday $mon $wday -> doing '$cron->{cmd}'") if isdbg('cron');
 					eval "$cron->{cmd}";
-					dbg('cron', "cron: cmd error $@") if $@;
+					dbg("cron: cmd error $@") if $@ && isdbg('cron');
 				}
 			}
 		}
@@ -175,32 +175,43 @@ sub connected
 sub present
 {
 	my $call = uc shift;
-	return DXCluster->get_exact($call);
+	return Route::get($call);
 }
 
 # is it remotely connected anywhere (ignoring SSIDS)?
 sub presentish
 {
 	my $call = uc shift;
-	return DXCluster->get($call);
+	my $c = Route::get($call);
+	unless ($c) {
+		for (1..15) {
+			$c = Route::get("$call-$_");
+			last if $c;
+		}
+	}
+	return $c;
 }
 
 # is it remotely connected anywhere (with exact callsign) and on node?
 sub present_on
 {
 	my $call = uc shift;
-	my $node = uc shift;
-	my $ref = DXCluster->get_exact($call);
-	return ($ref && $ref->mynode) ? $ref->mynode->call eq $node : undef;
+	my $ncall = uc shift;
+	my $node = Route::Node::get($ncall);
+	return ($node) ? grep $call eq $_, $node->users : undef;
 }
 
-# is it remotely connected anywhere (ignoring SSIDS) and on node?
+# is it remotely connected (ignoring SSIDS) and on node?
 sub presentish_on
 {
 	my $call = uc shift;
-	my $node = uc shift;
-	my $ref = DXCluster->get($call);
-	return ($ref && $ref->mynode) ? $ref->mynode->call eq $node : undef;
+	my $ncall = uc shift;
+	my $node = Route::Node::get($ncall);
+	my $present;
+	if ($node) {
+		$present = grep {/^$call/ } $node->users;
+	}
+	return $present;
 }
 
 # last time this thing was connected
@@ -247,11 +258,11 @@ sub spawn
 				$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 				alarm(0);
 			}
-			exec "$line" or dbg('cron', "exec '$line' failed $!");
+			exec "$line" or dbg("exec '$line' failed $!") if isdbg('cron');
 		}
-		dbg('cron', "spawn of $line started");
+		dbg("spawn of $line started") if isdbg('cron');
 	} else {
-		dbg('cron', "can't fork for $line $!");
+		dbg("can't fork for $line $!") if isdbg('cron');
 	}
 
 	# coordinate
@@ -265,8 +276,8 @@ sub rcmd
 	my $line = shift;
 
 	# can we see it? Is it a node?
-	my $noderef = DXCluster->get_exact($call);
-	return  if !$noderef || !$noderef->pcversion;
+	my $noderef = Route::Node::get($call);
+	return  unless $noderef && $noderef->version;
 
 	# send it 
 	DXProt::addrcmd($DXProt::me, $call, $line);
@@ -276,10 +287,10 @@ sub run_cmd
 {
 	my $line = shift;
 	my @in = DXCommandmode::run_cmd($DXProt::me, $line);
-	dbg('cron', "cmd run: $line");
+	dbg("cmd run: $line") if isdbg('cron');
 	for (@in) {
 		s/\s*$//og;
-		dbg('cron', "cmd out: $_");
+		dbg("cmd out: $_") if isdbg('cron');
 	}
 }
 1;

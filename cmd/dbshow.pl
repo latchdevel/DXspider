@@ -24,7 +24,7 @@ foreach  $n (@db) {
 	if ($db->remote) {
 
 		# remote databases
-		unless (DXCluster->get_exact($db->remote) || DXChannel->get($db->remote)) {
+		unless (Route::Node::get($db->remote) || DXChannel->get($db->remote)) {
 			push @out, $self->msg('db4', uc $name, $db->remote);
 			last;
 		}

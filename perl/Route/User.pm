@@ -13,19 +13,20 @@ use Route;
 
 use strict;
 
-use vars qw(%list %valid @ISA $max);
+use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
 		  parent => '0,Parent Calls,parray',
 );
 
+$filterdef = $Route::filterdef;
 %list = ();
 $max = 0;
 
 sub count
 {
-	my $n = scalar %list;
+	my $n = scalar(keys %list);
 	$max = $n if $n > $max;
 	return $n;
 }
@@ -57,15 +58,17 @@ sub del
 	my $pref = shift;
 	my $ref = $self->delparent($pref->{call});
 	return () if @$ref;
-	delete $list{$self->{call}};
-	return ($ref);
+	my @out = delete $list{$self->{call}};
+	return @out;
 }
 
 sub get
 {
 	my $call = shift;
 	$call = shift if ref $call;
-	return $list{uc $call};
+	my $ref = $list{uc $call};
+	dbg("Failed to get User $call" ) if !$ref && isdbg('routerr');
+	return $ref;
 }
 
 sub addparent

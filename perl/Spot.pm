@@ -16,11 +16,13 @@ use DXLog;
 use Julian;
 use Prefix;
 use DXDupe;
+use Data::Dumper;
 
 use strict;
-use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef);
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef);
 
 $fp = undef;
+$statp = undef;
 $maxspots = 50;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
 $maxdays = 100;				# normal maximum no of days to go back
@@ -88,6 +90,7 @@ sub init
 {
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
 	$fp = DXLog::new($dirprefix, "dat", 'd');
+	$statp = DXLog::new($dirprefix, "bys", 'd');
 }
 
 sub prefix
@@ -183,7 +186,7 @@ sub search
 	$expr =~ s/\$f(\d)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
-	dbg("search", "hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
+	dbg("hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n") if isdbg('search');
   
 	# build up eval to execute
 	$eval = qq(
@@ -312,6 +315,87 @@ sub dup
 sub listdups
 {
 	return DXDupe::listdups('X', $dupage, @_);
+}
+
+sub genstats
+{
+	my @date = @_;
+	my $in = $fp->open(@date);
+	my $out = $statp->open(@date, 'w');
+	my @freq = (
+				[0, Bands::get_freq('160m')],
+				[1, Bands::get_freq('80m')],
+				[2, Bands::get_freq('40m')],
+				[3, Bands::get_freq('30m')],
+				[4, Bands::get_freq('20m')],
+				[5, Bands::get_freq('17m')],
+				[6, Bands::get_freq('15m')],
+				[7, Bands::get_freq('12m')],
+				[8, Bands::get_freq('10m')],
+				[9, Bands::get_freq('6m')],
+				[10, Bands::get_freq('4m')],
+				[11, Bands::get_freq('2m')],
+				[12, Bands::get_freq('70cm')],
+				[13, Bands::get_freq('13cm')],
+				[14, Bands::get_freq('9cm')],
+				[15, Bands::get_freq('6cm')],
+				[16, Bands::get_freq('3cm')],
+				[17, Bands::get_freq('12mm')],
+				[18, Bands::get_freq('6cm')],
+			   );
+	my %list;
+	my @tot;
+	
+	if ($in && $out) {
+		while (<$in>) {
+			chomp;
+			my ($freq, $by, $dxcc) = (split /\^/)[0,4,6];
+			my $ref = $list{$by} || [0, $dxcc];
+			for (@freq) {
+				if ($freq >= $_->[1] && $freq <= $_->[2]) {
+					$$ref[$_->[0]+2]++;
+					$tot[$_->[0]+2]++;
+					$$ref[0]++;
+					$tot[0]++;
+					$list{$by} = $ref;
+					last;
+				}
+			}
+		}
+
+		my $i;
+		for ($i = 0; $i < @freq+2; $i++) {
+			$tot[$i] ||= 0;
+		}
+		$out->write(join('^', 'TOTALS', @tot) . "\n");
+
+		for (sort {$list{$b}->[0] <=> $list{$a}->[0]} keys %list) {
+			my $ref = $list{$_};
+			my $call = $_;
+			for ($i = 0; $i < @freq+2; ++$i) {
+				$ref->[$i] ||= 0;
+			}
+			$out->write(join('^', $call, @$ref) . "\n");
+		}
+		$out->close;
+	}
+}
+
+# return true if the stat file is newer than than the spot file
+sub checkstats
+{
+	my @date = @_;
+	my $in = $fp->mtime(@date);
+	my $out = $statp->mtime(@date);
+	return defined $out && defined $in && $out >= $in;
+}
+
+# daily processing
+sub daily
+{
+	my @date = Julian::unixtoj($main::systime);
+	@date = Julian::sub(@date, 1);
+	genstats(@date) unless checkstats(@date);
 }
 1;
 

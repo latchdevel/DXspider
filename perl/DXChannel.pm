@@ -31,6 +31,7 @@ use DXUtil;
 use DXVars;
 use DXDebug;
 use Filter;
+use Prefix;
 
 use strict;
 use vars qw(%channels %valid @ISA $count);
@@ -58,7 +59,7 @@ $count = 0;
 		  talk => '0,Want Talk,yesno',
 		  ann => '0,Want Announce,yesno',
 		  here => '0,Here?,yesno',
-		  confmode => '0,In Conference?,yesno',
+		  conf => '0,In Conference?,yesno',
 		  dx => '0,DX Spots,yesno',
 		  redirect => '0,Redirect messages to',
 		  lang => '0,Language',
@@ -77,10 +78,12 @@ $count = 0;
 		  wwvfilter => '5,WWV Filter',
 		  wcyfilter => '5,WCY Filter',
 		  spotsfilter => '5,Spot Filter',
+		  routefilter => '5,route Filter',
 		  inannfilter => '5,Input Ann Filter',
 		  inwwvfilter => '5,Input WWV Filter',
 		  inwcyfilter => '5,Input WCY Filter',
 		  inspotsfilter => '5,Input Spot Filter',
+		  inroutefilter => '5,Input Route Filter',
 		  passwd => '9,Passwd List,parray',
 		  pingint => '5,Ping Interval ',
 		  nopings => '5,Ping Obs Count',
@@ -93,6 +96,11 @@ $count = 0;
 		  isbasic => '9,Internal Connection', 
 		  errors => '9,Errors',
 		  route => '9,Route Data',
+		  dxcc => '0,Country Code',
+		  itu => '0,ITU Zone',
+		  cq => '0,CQ Zone',
+		  enhanced => '5,Enhanced Client,yesno',
+		  senddbg => '8,Sending Debug,yesno',
 		 );
 
 # object destruction
@@ -104,7 +112,7 @@ sub DESTROY
 			delete $self->{$_};
 		}
 	}
-	dbg('chan', "DXChannel $self->{call} destroyed ($count)");
+	dbg("DXChannel $self->{call} destroyed ($count)") if isdbg('chan');
 	$count--;
 }
 
@@ -131,8 +139,16 @@ sub alloc
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
 
+	# add in all the dxcc, itu, zone info
+	my @dxcc = Prefix::extract($call);
+	if (@dxcc > 0) {
+		$self->{dxcc} = $dxcc[1]->dxcc;
+		$self->{itu} = $dxcc[1]->itu;
+		$self->{cq} = $dxcc[1]->cq;						
+	}
+
 	$count++;
-	dbg('chan', "DXChannel $self->{call} created ($count)");
+	dbg("DXChannel $self->{call} created ($count)") if isdbg('chan');
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }
@@ -283,7 +299,30 @@ sub send_now
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_now("$sort$call|$_");
-			dbg('chan', "-> $sort $call $_");
+			dbg("-> $sort $call $_") if isdbg('chan');
+		}
+	}
+	$self->{t} = time;
+}
+
+#
+# send later with letter (more control)
+#
+
+sub send_later
+{
+	my $self = shift;
+	my $conn = $self->{conn};
+	return unless $conn;
+	my $sort = shift;
+	my $call = $self->{call};
+	
+	for (@_) {
+#		chomp;
+        my @lines = split /\n/;
+		for (@lines) {
+			$conn->send_later("$sort$call|$_");
+			dbg("-> $sort $call $_") if isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -304,7 +343,7 @@ sub send						# this is always later and always data
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_later("D$call|$_");
-			dbg('chan', "-> D $call $_");
+			dbg("-> D $call $_") if isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -352,7 +391,7 @@ sub state
 		$self->{oldstate} = $self->{state};
 		$self->{state} = shift;
 		$self->{func} = '' unless defined $self->{func};
-		dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
+		dbg("$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n") if isdbg('state');
 
 		# if there is any queued up broadcasts then splurge them out here
 		if ($self->{delayed} && ($self->{state} eq 'prompt' || $self->{state} eq 'talk')) {
@@ -439,12 +478,12 @@ sub decode_input
 	# the above regexp must work
 	unless (defined $sort && defined $call && defined $line) {
 #		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-		dbg('err', "DUFF Line on $chcall: $data");
+		dbg("DUFF Line on $chcall: $data") if isdbg('err');
 		return ();
 	}
 
 	if(ref($dxchan) && $call ne $chcall) {
-		dbg('err', "DUFF Line come in for $call on wrong channel $chcall" );
+		dbg("DUFF Line come in for $call on wrong channel $chcall") if isdbg('err');
 		return();
 	}
 	

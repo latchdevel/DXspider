@@ -32,7 +32,7 @@ use Sun;
 use Internet;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -48,6 +48,13 @@ $maxerrors = 20;				# the maximum number of concurrent errors allowed before dis
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
+
+	# routing, this must go out here to prevent race condx
+	my $pkg = shift;
+	my $call = shift;
+	my @rout = $main::routeroot->add_user($call, Route::here(1));
+	DXProt::route_pc16($DXProt::me, $main::routeroot, @rout) if @rout;
+
 	return $self;
 }
 
@@ -98,26 +105,10 @@ sub start
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
 
-	# add yourself to the database
-	my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
-	my $cuser = DXNodeuser->new($self, $node, $call, 0, 1);
-	$node->dxchan($self) if $call eq $main::myalias; # send all output for mycall to myalias
-
-	# routing version
-	my $pref = Route::Node::get($main::mycall)  or die "$main::mycall not allocated in Route database";
-	$pref->add_user($call, Route::here($self->{here}));
-	dbg('route', "B/C PC16 on $main::mycall for: $call");
-	
-	# issue a pc16 to everybody interested
-	my $nchan = DXChannel->get($main::mycall);
-	my @pc16 = DXProt::pc16($nchan, $cuser);
-	for (@pc16) {
-		DXProt::broadcast_all_ak1a($_);
-	}
 	Log('DXCommand', "$call connected");
 
 	# send prompts and things
-	my $info = DXCluster::cluster();
+	my $info = Route::cluster();
 	$self->send("Cluster:$info");
 	$self->send($self->msg('namee1')) if !$user->name;
 	$self->send($self->msg('qthe1')) if !$user->qth;
@@ -227,7 +218,7 @@ sub send_talks
 	my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
 	$to = $ent unless $to;
 	my $call = $via ? $via : $to;
-	my $clref = DXCluster->get_exact($call);
+	my $clref = Route::get($call);
 	my $dxchan = $clref->dxchan if $clref;
 	if ($dxchan) {
 		$dxchan->talk($self->{call}, $to, $via, $line);
@@ -276,7 +267,11 @@ sub send_ans
 		$self->send($self->msg('page', scalar @_));
 	} else {
 		for (@_) {
-			$self->send($_) if $_;
+			if (defined $_) {
+				$self->send($_);
+			} else {
+				$self->send('');
+			}
 		}
 	} 
 }
@@ -295,7 +290,7 @@ sub run_cmd
 	
 	if ($self->{func}) {
 		my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
-		dbg('eval', "stored func cmd = $c\n");
+		dbg("stored func cmd = $c\n") if isdbg('eval');
 		eval  $c;
 		if ($@) {
 			return ("Syserr: Eval err $errstr on stored func $self->{func}", $@);
@@ -315,14 +310,14 @@ sub run_cmd
 			
 			my ($path, $fcmd);
 			
-			dbg('command', "cmd: $cmd");
+			dbg("cmd: $cmd") if isdbg('command');
 			
 			# alias it if possible
 			my $acmd = CmdAlias::get_cmd($cmd);
 			if ($acmd) {
 				($cmd, $args) = split /\s+/, "$acmd $args", 2;
 				$args = "" unless defined $args;
-				dbg('command', "aliased cmd: $cmd $args");
+				dbg("aliased cmd: $cmd $args") if isdbg('command');
 			}
 			
 			# first expand out the entry to a command
@@ -330,13 +325,13 @@ sub run_cmd
 			($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
 			if ($path && $cmd) {
-				dbg('command', "path: $cmd cmd: $fcmd");
+				dbg("path: $cmd cmd: $fcmd") if isdbg('command');
 			
 				my $package = find_cmd_name($path, $fcmd);
 				@ans = (0) if !$package ;
 				
 				if ($package) {
-					dbg('command', "package: $package");
+					dbg("package: $package") if isdbg('command');
 					my $c;
 					unless (exists $Cache{$package}->{'sub'}) {
 						$c = eval $Cache{$package}->{'eval'};
@@ -356,7 +351,7 @@ sub run_cmd
 					};
 				}
 			} else {
-				dbg('command', "cmd: $cmd not found");
+				dbg("cmd: $cmd not found") if isdbg('command');
 				if (++$self->{errors} > $maxerrors) {
 					$self->send($self->msg('e26'));
 					$self->disconnect;
@@ -400,6 +395,12 @@ sub process
 			$dxchan->t($t);
 		}
 	}
+
+	while (my ($k, $v) = each %nothereslug) {
+		if ($main::systime >= $v + 300) {
+			delete $nothereslug{$k};
+		}
+	}
 }
 
 #
@@ -409,30 +410,21 @@ sub disconnect
 {
 	my $self = shift;
 	my $call = $self->call;
-
-	# reset the redirection of messages back to 'normal' if we are the sysop
-	if ($call eq $main::myalias) {
-		my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
-		$node->dxchan($DXProt::me);
-	}
+	delete $self->{senddbg};
 
 	my @rout = $main::routeroot->del_user($call);
-	dbg('route', "B/C PC17 on $main::mycall for: $call");
+	dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
+
+	# issue a pc17 to everybody interested
+	DXProt::route_pc17($DXProt::me, $main::routeroot, @rout) if @rout;
 
 	# I was the last node visited
     $self->user->node($main::mycall);
 		
-	# issue a pc17 to everybody interested
-	my $nchan = DXChannel->get($main::mycall);
-	my $pc17 = $nchan->pc17($self);
-	DXProt::broadcast_all_ak1a($pc17);
-
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
 
 	Log('DXCommand', "$call disconnected");
-	my $ref = DXCluster->get_exact($call);
-	$ref->del() if $ref;
 
 	$self->SUPER::disconnect;
 }
@@ -452,15 +444,10 @@ sub broadcast
 {
 	my $pkg = shift;			# ignored
 	my $s = shift;				# the line to be rebroadcast
-	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @list = DXChannel->get_all(); # just in case we are called from some funny object
-	my ($dxchan, $except);
 	
- L: foreach $dxchan (@list) {
-		next if !$dxchan->sort eq 'U'; # only interested in user channels  
-		foreach $except (@except) {
-			next L if $except == $dxchan;	# ignore channels in the 'except' list
-		}
+    foreach my $dxchan (DXChannel->get_all()) {
+		next unless $dxchan->{sort} eq 'U'; # only interested in user channels  
+		next if grep $dxchan == $_, @_;
 		$dxchan->send($s);			# send it
 	}
 }
@@ -468,13 +455,7 @@ sub broadcast
 # gimme all the users
 sub get_all
 {
-	my @list = DXChannel->get_all();
-	my $ref;
-	my @out;
-	foreach $ref (@list) {
-		push @out, $ref if $ref->sort eq 'U';
-	}
-	return @out;
+	return grep {$_->{sort} eq 'U'} DXChannel->get_all();
 }
 
 # run a script for this user
@@ -496,7 +477,7 @@ sub search
 	
 	# commands are lower case
 	$short_cmd = lc $short_cmd;
-	dbg('command', "command: $path $short_cmd\n");
+	dbg("command: $path $short_cmd\n") if isdbg('command');
 
 	# do some checking for funny characters
 	return () if $short_cmd =~ /\/$/;
@@ -504,7 +485,7 @@ sub search
 	# return immediately if we have it
 	($apath, $acmd) = split ',', $cmd_cache{$short_cmd} if $cmd_cache{$short_cmd};
 	if ($apath && $acmd) {
-		dbg('command', "cached $short_cmd = ($apath, $acmd)\n");
+		dbg("cached $short_cmd = ($apath, $acmd)\n") if isdbg('command');
 		return ($apath, $acmd);
 	}
 	
@@ -526,7 +507,7 @@ sub search
 			next if $l =~ /^\./;
 			if ($i < $#parts) {            	# we are dealing with directories
 				if ((-d "$curdir/$l") && $p eq substr($l, 0, length $p)) {
-					dbg('command', "got dir: $curdir/$l\n");
+					dbg("got dir: $curdir/$l\n") if isdbg('command');
 					$dirfn .= "$l/";
 					$curdir .= "/$l";
 					last;
@@ -540,7 +521,7 @@ sub search
 					#		  chop $dirfn;               # remove trailing /
 					$dirfn = "" unless $dirfn;
 					$cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn$l")); # cache it
-					dbg('command', "got path: $path cmd: $dirfn$l\n");
+					dbg("got path: $path cmd: $dirfn$l\n") if isdbg('command');
 					return ($path, "$dirfn$l"); 
 				}
 			}
@@ -639,7 +620,7 @@ sub find_cmd_name {
 			my @list = split /\n/, $eval;
 			my $line;
 			for (@list) {
-				dbg('eval', $_, "\n");
+				dbg($_ . "\n") if isdbg('eval');
 			}
 		}
 		
@@ -649,26 +630,138 @@ sub find_cmd_name {
 	return $package;
 }
 
+sub local_send
+{
+	my ($self, $let, $buf) = @_;
+	if ($self->{state} eq 'prompt' || $self->{state} eq 'talk') {
+		if ($self->{enhanced}) {
+			$self->send_later($let, $buf);
+		} else {
+			$self->send($buf);
+		}
+	} else {
+		$self->delay($buf);
+	}
+}
+
 # send a talk message here
 sub talk
 {
 	my ($self, $from, $to, $via, $line) = @_;
 	$line =~ s/\\5E/\^/g;
-	$self->send("$to de $from: $line") if $self->{talk};
+	$self->send_later('T', "$to de $from: $line") if $self->{talk};
 	Log('talk', $to, $from, $main::mycall, $line);
+	# send a 'not here' message if required
+	unless ($self->{here} && $from ne $to) {
+		my $key = "$to$from";
+		unless (exists $nothereslug{$key}) {
+			my ($ref, $dxchan);
+			if (($ref = Route::get($from)) && ($dxchan = $ref->dxchan)) {
+				my $name = $self->user->name || $to;
+				my $s = $self->user->nothere || $dxchan->msg('nothere', $name);
+				$nothereslug{$key} = $main::systime;
+				$dxchan->talk($to, $from, undef, $s);
+			}
+		}
+	}
 }
 
 # send an announce
 sub announce
 {
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my $to = shift;
+	my $target = shift;
+	my $text = shift;
+	my ($filter, $hops);
 
+	if ($self->{annfilter}) {
+		($filter, $hops) = $self->{annfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	unless ($self->{ann}) {
+		return if $_[0] ne $main::myalias && $_[0] ne $main::mycall;
+	}
+	return if $target eq 'SYSOP' && $self->{priv} < 5;
+	my $buf = "$to$target de $_[0]: $text";
+	$buf =~ s/\%5E/^/g;
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send($target eq 'WX' ? 'W' : 'N', $buf);
 }
 
 # send a dx spot
 sub dx_spot
 {
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{dx};
 	
+	if ($self->{spotsfilter}) {
+		($filter, $hops) = $self->{spotsfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	my $buf = Spot::formatb($self->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
+	$buf .= "\a\a" if $self->{beep};
+	$buf =~ s/\%5E/^/g;
+	$self->local_send('X', $buf);
 }
+
+sub wwv
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{wwv};
+	
+	if ($self->{wwvfilter}) {
+		($filter, $hops) = $self->{wwvfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send('V', $buf);
+}
+
+sub wcy
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{wcy};
+	
+	if ($self->{wcyfilter}) {
+		($filter, $hops) = $self->{wcyfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	my $buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send('Y', $buf);
+}
+
+# broadcast debug stuff to all interested parties
+sub broadcast_debug
+{
+	my $s = shift;				# the line to be rebroadcast
+	
+	foreach my $dxchan (DXChannel->get_all) {
+		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
+		$dxchan->send_later('L', $s);
+	}
+}
+
 
 1;
 __END__

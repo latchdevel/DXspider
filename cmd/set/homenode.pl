@@ -22,7 +22,9 @@ if ($user) {
 	$line = uc $line;
 	$user->homenode($line);
 	$user->put();
-	DXProt::broadcast_all_ak1a(DXProt::pc41($call, 4, $line), $DXProt::me);
+	my $s = DXProt::pc41($call, 4, $line);
+	DXProt::eph_dup($s);
+	DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
 	return (1, $self->msg('hnode', $line));
 } else {
 	return (1, $self->msg('namee2', $call));

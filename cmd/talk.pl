@@ -31,7 +31,7 @@ if ($via) {
 $to = uc $to if $to;
 $via = uc $via if $via;
 my $call = $via ? $via : $to;
-my $clref = DXCluster->get_exact($call);     # try an exact call
+my $clref = Route::get($call);     # try an exact call
 my $dxchan = $clref->dxchan if $clref;
 return (1, $self->msg('e7', $call)) unless $dxchan;
 

@@ -20,8 +20,7 @@ return (1, $self->msg('e6')) if !$call;
 return (1, $self->msg('pinge1')) if $call eq $main::mycall;
 
 # can we see it? Is it a node?
-my $noderef = DXCluster->get_exact($call);
-$noderef = DXChannel->get($call) unless $noderef;
+my $noderef = Route::Node::get($call);
 
 return (1, $self->msg('e7', $call)) unless $noderef;
 

@@ -87,7 +87,7 @@ for (@in) {
 sub doconnect
 {
 	my ($sort, $line) = @_;
-	dbg('connect', "CONNECT sort: $sort command: $line");
+	dbg("CONNECT sort: $sort command: $line") if isdbg('connect');
 	if ($sort eq 'net') {
 		# this is a straight network connect
 		my ($host) = $line =~ /host\s+(\w+)/o;
@@ -100,7 +100,7 @@ sub doconnect
 	} elsif ($sort eq 'ax25') {
 		my @args = split /\s+/, $line;
 		$pid = open2(\*R, \*W, "$line") or die "can't do $line $!";
-		dbg('connect', "got pid $pid");
+		dbg("got pid $pid") if isdbg('connect');
 		W->autoflush(1);
 	} else {
 		die "can't get here";
@@ -111,21 +111,21 @@ sub doconnect
 sub doabort
 {
 	my $string = shift;
-	dbg('connect', "abort $string");
+	dbg("abort $string") if isdbg('connect');
 	$abort = $string;
 }
 
 sub dotimeout
 {
 	my $val = shift;
-	dbg('connect', "timeout set to $val");
+	dbg("timeout set to $val") if isdbg('connect');
 	alarm($timeout = $val);
 }
 
 sub dochat
 {
 	my ($expect, $send) = @_;
-	dbg('connect', "CHAT \"$expect\" -> \"$send\"");
+	dbg("CHAT \"$expect\" -> \"$send\"") if isdbg('connect');
     my $line;
 
 	alarm($timeout);
@@ -139,9 +139,9 @@ sub dochat
 			$line = <R>;
 			$line =~ s/\r//og;
 		}
-		dbg('connect', "received \"$line\"");
+		dbg("received \"$line\"") if isdbg('connect');
 		if ($abort && $line =~ /$abort/i) {
-			dbg('connect', "aborted on /$abort/");
+			dbg("aborted on /$abort/") if isdbg('connect');
 			exit(11);
 		}
 	}
@@ -152,18 +152,18 @@ sub dochat
 			local $\ = "\r";
 			W->print("$send\r");
 		}
-		dbg('connect', "sent \"$send\"");
+		dbg("sent \"$send\"") if isdbg('connect');
 	}
 }
 
 sub doclient
 {
 	my ($cl, $args) = @_;
-	dbg('connect', "client: $cl args: $args");
+	dbg("client: $cl args: $args") if isdbg('connect');
     my @args = split /\s+/, $args;
 
 #	if (!defined ($pid = fork())) {
-#		dbg('connect', "can't fork");
+#		dbg("can't fork") if isdbg('connect');
 #		exit(13);
 #	}
 #	if ($pid) {
@@ -182,7 +182,7 @@ sub doclient
 			open STDOUT, ">&W";
 			exec $cl, @args;
 		} else {
-			dbg('connect', "client can't get here");
+			dbg("client can't get here") if isdbg('connect');
 			exit(13);
 		}
 #    }
@@ -190,13 +190,13 @@ sub doclient
 
 sub timeout
 {
-	dbg('connect', "timed out after $timeout seconds");
+	dbg("timed out after $timeout seconds") if isdbg('connect');
 	exit(10);
 }
 
 sub term
 {
-	dbg('connect', "caught INT or TERM signal");
+	dbg("caught INT or TERM signal") if isdbg('connect');
 	kill $pid if $pid;
 	sleep(2);
 	exit(12);
@@ -205,5 +205,5 @@ sub term
 sub reap
 {
     my $wpid = wait;
-	dbg('connect', "pid $wpid has died");
+	dbg("pid $wpid has died") if isdbg('connect');
 }

@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.47: Databases</TITLE>
+ <TITLE>The DXSpider Administration Manual v1.48: CVS</TITLE>
  <LINK HREF="adminmanual-7.html" REL=next>
  <LINK HREF="adminmanual-5.html" REL=previous>
  <LINK HREF="adminmanual.html#toc6" REL=contents>
@@ -13,129 +13,98 @@
 <A HREF="adminmanual-5.html">Previous</A>
 <A HREF="adminmanual.html#toc6">Contents</A>
 <HR>
-<H2><A NAME="s6">6. Databases</A></H2>
+<H2><A NAME="s6">6. CVS</A></H2>
 
-<P>Spider allows the creation of local or remote databases.  It supports
-chained databases, allowing several different databases to be scanned
-with one simple command.  Importing of databases is limited at present
-to the standard AK1A databases such as OBLAST and the DB0SDX QSL 
-database but will expand with time.
+<P>CVS stands for "Concurrent Versions System" and the CVS for DXSpider is held
+at 
+<A HREF="http://www.sourceforge.net">Sourceforge</A>.  This means
+that it is possible to update your DXSpider installation to the latest
+sources by using a few simple commands.
 <P>
-<H2><A NAME="ss6.1">6.1 Creating databases</A>
-</H2>
-
-<P>Creating a database could not be more simple.  All the commands are
-sent from the cluster prompt as the <EM>sysop</EM> user.
-<P>To create a database you use the command <EM>dbcreate</EM>.  It can
-be used in 3 different ways like so ..
+<P>THIS IS NOT FOR THE FAINT HEARTED!!!  ONLY DO THIS IF YOU HAVE A TEST
+INSTALLATION OR ARE WILLING TO HAVE YOUR CLUSTER CRASH ON YOU!!!
+THIS MUST BE CONSIDERED AT LEAST BETA TESTING AND MAYBE EVEN ALPHA!!
+YOU HAVE BEEN WARNED!!!
+<P>
+<P>DID I MENTION..... ONLY DO THIS IF YOU ARE WILLING TO ACCEPT THE
+CONSEQUENCES!!!
+<P>
+<P>I am of course assuming that you have a machine with both DXSpider and
+Internet access running.
+<P>
+<P>BEFORE YOU EVEN CONSIDER STARTING WITH THIS MAKE A BACKUP OF YOUR
+ENTIRE SPIDER TREE!!
+<P>
+<P>Assuming you are connected to the Internet, you need to login to the
+CVS repository and then update your Spider source.  There are several
+steps which are listed below ...
+<P>
+<P>First login as the user <EM>sysop</EM>.  Next you need to connect to the CVS
+repository.  You do this with the command below ...
+<P>
+<PRE>
+cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login 
+</PRE>
+<P>You will get a password prompt.  Simply hit return here and your machine should
+return to a normal linux prompt.
+<P>
+<P>What happens next depends on whether you have an existing installation that 
+you want to update with the latest and greatest or whether you just want
+to see what is there and/or run it on a new machine for testing.
+<P>If you are installing Spider from CVS then change directory to /home/sysop
+<P>If you are wanting to update Spider then cd to /tmp
+<P>
+<P>The next step will create a brand new 'spider' directory in your current
+directory.
+<P>
+<PRE>
+cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider co spider
+</PRE>
+<P>This command is all on one line.
+<P>
+<P>Hopefully your screen should show you downloading files.  The -z3 simply compresses
+the download to improve speed.
+When this has finished, you will have exactly the same as if you had untarred a full 
+tarball PLUS some extra directories and files that CVS needs to do the magic that 
+it does.
+<P>
+<P>Now if you are doing a new installation, that's it.  Carry on as if you have
+just downloaded and untarred the lastest tarball.
+<P>
+<P>If you want to upgrade your current installation then do this ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-dbcreate &lt;name>
+tar cvfz /tmp/s.tgz spider
+cd /
+tar xvfzp /tmp/s.tgz
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>To simply create a database locally, you just tell the command the
-name of the database.  This does not create the actual database, it
-simply defines it to say that it exists.
+<P>This is assuming you downloaded to the /tmp directory of course.
+<P>
+<P>NOTE:  the 'p' on the end of the 'xvfz' is IMPORTANT!   It keeps the permissions
+correct.  YOU WERE LOGGED IN AS THE USER SYSOP WEREN'T YOU?????
+<P>Remember to recompile the C client (cd /spider/src; make)
+<P>
+<P>At this point the files have been upgraded.  You can (usually) restart the cluster
+in your own time.  However, if you attempt to use any new commands or features
+expect it to be fatal!  At least your cluster will have been restarted then so it
+will be too late to worry about it!
+<P>
+<P>Now the magic part!  From now on when you want to update, simply connect to the 
+Internet and then, as the user <EM>sysop</EM> ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-dbcreate &lt;name> chain &lt;name> [&lt;name>...]
+cd /spider
+cvs -z3 update -d
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>This creates a chained database entry.  The first database will be
-scanned, then the second, the third etc...
+<P>and your files will be updated.  As above, remember to recompile the "C" client 
+if it has been updated (CVS will tell you) and restart if any of the perl scripts
+have been altered or added, again, CVS will tell you.
 <P>
-<BLOCKQUOTE><CODE>
-<PRE>
-dbcreate &lt;name> remote &lt;name>
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>This creates a remote entry.  the first name field is the database
-name at the remote node, then the remote switch, then the actual
-node_call of the remote node, for example...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-dbcreate buckmaster remote gb7dxc
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Remote databases cannot be chained, however, the last database in a
-chain can be a remote database.
-<P>
-<H2><A NAME="ss6.2">6.2 Importing databases</A>
-</H2>
-
-<P>The only databases that Spider can currently import are the standard
-AK1A databases such as OBLAST or the DB0SDX qsl and address database.
-This will be added to with time.
-<P>To import such a database, first put the file somewhere useful like /tmp
-and then issue the following command ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-dbimport oblast /tmp/OBLAST.FUL
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>This will update the existing local oblast database or create it if
-it does not exist.
-<P>
-<H2><A NAME="ss6.3">6.3 Checking available databases</A>
-</H2>
-
-<P>Once a database is created, you will want to check that it has been
-added.  To do this use the <EM>dbavail</EM> command.  This will
-output the available databases.  For example ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-dbavail
-DB Name          Location   Chain
-qsl              Local
-buck             GB7ADX
-hftest           GB7DXM
-G0VGS de GB7MBC  3-Feb-2001 1925Z >
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<H2><A NAME="ss6.4">6.4 Looking up databases</A>
-</H2>
-
-<P>To look for information in a defined database, simply use the <EM>dbshow</EM>
-command, for example ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-dbshow buckmaster G0YLM
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>will show the information for the callsign G0YLM from the buckmaster
-database if it exists.  To make things more standard for the users
-you can add an entry in the Aliases file so that it looks like a standard 
-<EM>show</EM> command like this ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-'^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Now you can simply use show/buckmaster or an abreviation.
-<P>
-<H2><A NAME="ss6.5">6.5 Removing databases</A>
-</H2>
-
-<P>To delete an existing database you use the <EM>dbremove</EM> command.
-For example ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-dbremove oblast
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>would remove the oblast database and its associated datafile from the
-system.  There are no warnings or recovery possible from this command.
-If you remove a database it ceases to exist and would have to be created
-from scratch if you still required it.
+<P>You will find any changes documented in the /spider/Changes file.
 <P>
 <HR>
 <A HREF="adminmanual-7.html">Next</A>

@@ -89,7 +89,7 @@ sub compile
 		if ($@) {
 			my $sort = $ref->{sort};
 			my $name = $ref->{name};
-			dbg('err', "Error compiling $ar $sort $name: $@");
+			dbg("Error compiling $ar $sort $name: $@");
 			Log('err', "Error compiling $ar $sort $name: $@");
 		}
 		$rr = $@;
@@ -107,7 +107,7 @@ sub read_in
 		$in = undef; 
 		my $s = readfilestr($fn);
 		my $newin = eval $s;
-		dbg('conn', "$@") if $@;
+		dbg($@) if $@;
 		if ($in) {
 			$newin = new('Filter::Old', $sort, $call, $flag);
 			$newin->{filter} = $in;
@@ -187,10 +187,15 @@ sub it
 	my $filter;
 	my @keys = sort $self->getfilkeys;
 	my $key;
+	my $type = 'Dunno';
+	my $asc = '?';
+	
 	my $r = @keys > 0 ? 0 : 1;
 	foreach $key (@keys) {
 		$filter = $self->{$key};
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
+			$type = 'reject';
+			$asc = $filter->{reject}->{user};
 			if (&{$filter->{reject}->{code}}(\@_)) {
 				$r = 0;
 				last;
@@ -199,6 +204,8 @@ sub it
 			}		
 		}
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
+			$type = 'accept';
+			$asc = $filter->{accept}->{user};
 			if (&{$filter->{accept}->{code}}(\@_)) {
 				$r = 1;
 				last;
@@ -211,6 +218,15 @@ sub it
 	# hops are done differently (simply) 
 	my $hops = $self->{hops} if exists $self->{hops};
 
+	if (isdbg('filter')) {
+		my $args = join '\',\'', @_;
+		my $true = $r ? "OK " : "REJ";
+		my $sort = $self->{sort};
+		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
+		
+		my $h = $hops || '';
+		dbg("$true $dir: $type/$sort with $asc on '$args' $h") if isdbg('filter');
+	}
 	return ($r, $hops);
 }
 
@@ -271,7 +287,8 @@ sub install
 	my $remove = shift;
 	my $name = uc $self->{name};
 	my $sort = $self->{sort};
-	my $in = "in" if $name =~ s/^IN_//;
+	my $in = "";
+	$in = "in" if $name =~ s/^IN_//;
 	$name =~ s/.PL$//;
 		
 	my $dxchan = DXChannel->get($name);

@@ -155,7 +155,7 @@ sub mynode
 		unless ($noderef) {
 			my $mynode = $self->{mynode};
 			my $call = $self->{call};
-			dbg('err', "parent node $mynode has disappeared from $call" );
+			dbg("parent node $mynode has disappeared from $call") if isdbg('err');
 		}
 	}
 	return $noderef;
@@ -173,7 +173,7 @@ sub dxchan
 		unless ($dxchan) {
 			my $dxcall = $self->{dxchancall};
 			my $call = $self->{call};
-			dbg('err', "parent dxchan $dxcall has disappeared from $call" );
+			dbg("parent dxchan $dxcall has disappeared from $call") if isdbg('err');
 		}
 	}
 	return $dxchan;
@@ -216,7 +216,7 @@ sub new
 	my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
 	$self->{mynode} = $node->call;
 	$node->add_user($call, $self);
-	dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
+	dbg("allocating user $call to $node->{call} in cluster\n") if isdbg('cluster');
 	return $self;
 }
 
@@ -227,7 +227,7 @@ sub del
 	my $node = $self->mynode;
 
 	$node->del_user($call);
-	dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
+	dbg("deleting user $call from $node->{call} in cluster\n") if isdbg('cluster');
 }
 
 sub count
@@ -264,7 +264,7 @@ sub new
 	$self->{mynode} = $self->call;	# for sh/station
 	$self->{users} = 0;
 	$nodes++;
-	dbg('cluster', "allocating node $call to cluster\n");
+	dbg("allocating node $call to cluster\n") if isdbg('cluster');
 	return $self;
 }
 
@@ -290,7 +290,7 @@ sub del
 		$ref->del();			# this also takes them out of this list
 	}
 	delete $DXCluster::cluster{$call}; # remove me from the cluster table
-	dbg('cluster', "deleting node $call from cluster\n"); 
+	dbg("deleting node $call from cluster\n") if isdbg('cluster'); 
 	$users -= $self->{users};    # it may be PC50 updated only therefore > 0
 	$users = 0 if $users < 0;
 	$nodes--;

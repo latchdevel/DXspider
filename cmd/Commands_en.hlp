@@ -55,6 +55,34 @@ default for nodes and users eg:-
   accept/ann input node_default by G,M,2
   accept/ann user_default by G,M,2
 
+=== 8^ACCEPT/ROUTE <call> [0-9] <pattern>^Set an 'accept' filter line for routing
+Create an 'accept this routing PC Protocol' line for a filter. 
+
+An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is passed thru that interface. See HELP FILTERING for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  call <prefixes>        the callsign of the thingy
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  origin <prefixes>      really the interface it came in on
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+
+some examples:-
+
+  acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
+  acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+
+You can use the tag 'all' to accept everything eg:
+
+  acc/route all
+
+
 === 0^ACCEPT/SPOTS [0-9] <pattern>^Set an 'accept' filter line for spots
 Create an 'accept this spot' line for a filter. 
 
@@ -94,6 +122,7 @@ You can use the tag 'all' to accept everything, eg:
   acc/spot 3 all
 
 but this probably for advanced users...
+
 
 === 8^ACCEPT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
@@ -815,6 +844,32 @@ You can use the tag 'all' to reject everything eg:
 
 but this probably for advanced users...
 
+=== 8^REJECT/ROUTE <call> [0-9] <pattern>^Set an 'reject' filter line for routing
+Create an 'reject this routing PC Protocol' line for a filter. 
+
+An reject filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is NOT passed thru that interface. See HELP FILTERING for more info. Please 
+read this to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  call <prefixes>        the callsign of the thingy
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  origin <prefixes>      really the interface it came in on
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+
+some examples:-
+
+  rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
+
+You can use the tag 'all' to reject everything eg:
+
+  rej/route all     (equiv to [very] restricted mode)
+
 === 8^REJECT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
@@ -1150,6 +1205,12 @@ to commands are as default:-
       LEVEL.
 If you are a sysop and you come in as a normal user on a remote connection
 your privilege will automatically be set to 0.
+
+=== 0^UNSET/PRIVILEGE^Remove any privilege for this session
+You can use this command to 'protect' this session from unauthorised
+use. If you want to get your normal privilege back you will need to
+either logout and login again (if you are on a console) or use the
+SYSOP command.
 
 === 9^SET/PASSWORD <callsign> <string>^Set a users password
 The password for a user can only be set by a full sysop. The string

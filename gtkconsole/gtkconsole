@@ -1,0 +1,246 @@
+#!/usr/bin/perl -w
+#
+# A GTK based console program
+#
+# Copyright (c) 2001 Dirk Koopman G1TLH
+#
+# $Id$
+#
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/gtkconsole";
+	unshift @INC, "$root/local";
+}
+
+use strict;
+
+use Gtk qw(-init);
+
+use vars qw(@modules $font);                    
+
+@modules = ();					# is the list of modules that need init calling
+								# on them. It is set up by each  'use'ed module
+								# that has Gtk stuff in it
+$font = Gtk::Gdk::Font->load("-misc-fixed-medium-r-normal-*-*-130-*-*-c-*-koi8-r");
+
+use DXVars;
+use DXUtil;
+use IO::Socket::INET;
+use Text;
+use DebugHandler;
+
+#
+# main initialisation
+#
+my $call = uc shift @ARGV if @ARGV;
+$call = uc $main::myalias unless $call;
+my ($scall, $ssid) = split /-/, $call;
+$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
+if ($ssid) {
+	$ssid = 15 if $ssid > 15;
+	$call = "$scall-$ssid";
+}
+
+die "You cannot connect as your cluster callsign ($main::mycall)\n" if $call eq $main::mycall;
+
+
+my $sock = IO::Socket::INET->new(PeerAddr=>$main::clusteraddr, PeerPort=>$main::clusterport);
+die "Cannot connect to $main::clusteraddr/$main::clusterport ($!)\n" unless $sock;
+sendmsg('A', 'local');
+sendmsg('G', '2');
+sendmsg('I', 'set/page 500');
+sendmsg('I', 'set/nobeep');
+
+#
+# start of GTK stuff
+#
+
+
+# main window
+my $main = new Gtk::Window('toplevel');
+$main->set_default_size(600, 600);
+$main->set_policy(0, 1, 0);
+$main->signal_connect('destroy', sub { Gtk->exit(0); });
+$main->signal_connect('delete_event', sub { Gtk->exit(0); });
+$main->set_title("gtkconsole - The DXSpider Console - $call");
+
+# the main vbox
+my $vbox = new Gtk::VBox(0, 1);
+$vbox->border_width(1);
+$main->add($vbox);
+
+# the menu bar
+my @menu = ( 
+			{path => '/_File', type => '<Branch>'},
+			{path => '/_File/Quit', callback => sub {Gtk->exit(0)}},
+			{path => '/_Help', type => '<LastBranch>'},
+			{path => '/_Help/About'},
+		   );
+my $accel = new Gtk::AccelGroup();
+my $itemf = new Gtk::ItemFactory('Gtk::MenuBar', '<main>', $accel);
+$itemf->create_items(@menu);
+$main->add_accel_group($accel);
+my $menu = $itemf->get_widget('<main>');
+$vbox->pack_start($menu, 0, 1, 0);
+$menu->show;
+
+
+my $top = new Text(1);
+my $toplist = $top->text;
+$toplist->set_editable(0);
+$toplist->sensitive(0);
+
+# add the handler for incoming messages from the node
+my $tophandler = Gtk::Gdk->input_add($sock->fileno, ['read'], \&tophandler, $sock);
+my $rbuf = "";						# used in handler
+
+#$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
+#$bot->{signalid} = $bot->signal_connect(insert_text => \&botinsert, $bot); 
+$vbox->pack_start($top, 1, 1, 0);
+$vbox->show;
+
+# the bottom handler
+my $bot = new Gtk::Entry;
+my $style = $toplist->style;
+$style->font($main::font);
+$bot->set_style($style);
+$bot->set_editable(1);
+$bot->signal_connect('activate', \&bothandler);
+$bot->can_default(1);
+$bot->grab_default;
+$bot->grab_focus;
+$bot->show;
+
+# a horizontal box
+my $hbox = new Gtk::HBox;
+$hbox->show;
+
+# callsign and current date and time
+my $calllabel = new Gtk::Label($call);
+my $date = new Gtk::Label(cldatetime(time));
+Gtk->timeout_add(1000, \&updatetime);
+$calllabel->show;
+$date->show;
+ 
+$hbox->pack_start( $calllabel, 0, 1, 0 );
+$hbox->pack_end($date, 0, 1, 0);
+
+
+$vbox->pack_start($hbox, 0, 1, 0); 
+
+# nice little separator
+my $separator = new Gtk::HSeparator();
+$vbox->pack_start( $separator, 0, 1, 0 );
+$separator->show();
+$vbox->pack_start($bot, 0, 1, 0);
+
+# the main loop
+$main->show_all;
+Gtk->main;
+
+#
+# handlers
+#
+
+sub updatetime
+{
+	$date->set_text(cldatetime(time));
+	1;
+}
+
+sub doinsert {
+	my ($self, $text) = @_;
+
+	# we temporarily block this handler to avoid recursion
+	$self->signal_handler_block($self->{signalid});
+	my $pos = $self->insert($self->{font}, $toplist->style->black, $toplist->style->white, $text);
+	$self->signal_handler_unblock($self->{signalid});
+
+	# we already inserted the text if it was valid: no need
+	# for the self to process this signal emission
+	$self->signal_emit_stop_by_name('insert-text');
+	1;
+}
+
+sub bothandler
+{
+	my ($self, $data) = @_;
+	my $msg = $self->get_text;
+	$msg =~ s/\r?\n$//;
+	$self->set_text('');
+	senddata($msg);
+}
+
+sub tophandler
+{
+	my ($socket, $fd, $flags) = @_;
+	if ($flags->{read}) {
+		my $offset = length $rbuf;
+		my $l = sysread($socket, $rbuf, 1024, $offset);
+		if (defined $l) {
+			my $freeze;
+			if ($l) {
+				while ($rbuf =~ s/^([^\015\012]*)\015?\012//) {
+					my $msg = $1;
+					$msg =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
+					$msg =~ s/[\x00-\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
+					$toplist->freeze unless $freeze++;
+					handlemsg($msg);
+				}
+				if ($freeze) {
+					$toplist->thaw;
+					$toplist->vadj->set_value($toplist->vadj->upper);
+					$toplist->vadj->value_changed;
+				}
+			} else {
+				Gtk->exit(0);
+			}
+		} else {
+			Gtk->exit(0);
+		}
+	}
+}
+
+sub handlemsg
+{
+	my $msg = shift;
+	my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+	if ($sort eq 'D') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'X') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'Y') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'V') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'N') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'W') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'Z') {
+		Gtk->exit(0);
+	}
+}
+
+#
+# subroutine
+#
+
+sub senddata
+{
+	my $msg = shift;
+	sendmsg('I', $msg);
+}
+
+sub sendmsg
+{
+	my ($let, $msg) = @_;
+	$msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+	$sock->print("$let$call|$msg\n");
+}

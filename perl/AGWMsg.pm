@@ -50,10 +50,10 @@ sub init
 	$rproc = shift;
 	
 	finish();
-	dbg('err', "AGW initialising and connecting to $addr/$port ...");
+	dbg("AGW initialising and connecting to $addr/$port ...");
 	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout=>15);
 	unless ($sock) {
-		dbg('err', "Cannot connect to AGW Engine at $addr/$port $!");
+		dbg("Cannot connect to AGW Engine at $addr/$port $!");
 		return;
 	}
 	Msg::blocking($sock, 0);
@@ -83,7 +83,7 @@ sub finish
 	return if $finishing;
 	if ($sock) {
 		$finishing = 1;
-		dbg('err', "AGW ending...");
+		dbg("AGW ending...");
 		for (values %circuit) {
 			&{$_->{eproc}}() if $_->{eproc};
 			$_->disconnect;
@@ -114,15 +114,15 @@ sub _sendf
 	
 	$len = length $data; 
 	if ($sort eq 'y' || $sort eq 'H') {
-		dbg('agwpoll', "AGW sendf: $sort '${from}'->'${to}' port: $port pid: $pid \"$data\"");
+		dbg("AGW sendf: $sort '${from}'->'${to}' port: $port pid: $pid \"$data\"") if isdbg('agwpoll');
 	} elsif ($sort eq 'D') {
 		if (isdbg('agw')) {
 			my $d = $data;
 			$d =~ s/\cM$//;
-			dbg('agw', "AGW sendf: $sort '${from}'->'${to}' port: $port pid: $pid \"$d\"");
+			dbg("AGW sendf: $sort '${from}'->'${to}' port: $port pid: $pid \"$d\"") if isdbg('agw');
 		}
 	} else {
-		dbg('agw', "AGW sendf: $sort '${from}'->'${to}' port: $port pid: $pid \"$data\"");
+		dbg("AGW sendf: $sort '${from}'->'${to}' port: $port pid: $pid \"$data\"") if isdbg('agw');
 	}
 	push @outqueue, pack('C x3 a1 x1 C x1 a10 a10 V x4 a*', $port, $sort, $pid, $from, $to, $len, $data);
 	Msg::set_event_handler($sock, write=>\&_send);
@@ -213,7 +213,7 @@ FINISH:
 
 sub _error
 {
-	dbg('err', "error on AGW connection $addr/$port $!");
+	dbg("error on AGW connection $addr/$port $!");
 	Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
 	$sock = undef;
 	for (%circuit) {
@@ -233,7 +233,7 @@ sub _decode
 	
 		# do a sanity check on the length
 		if ($len > 2000) {
-			dbg('err', "AGW: invalid length $len > 2000 received ($sort $port $pid '$from'->'$to')");
+			dbg("AGW: invalid length $len > 2000 received ($sort $port $pid '$from'->'$to')");
 			finish();
 			return;
 		}
@@ -261,13 +261,13 @@ sub _decode
 		if ($sort eq 'D') {
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM$//;
-			dbg('agw', "AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
+			dbg("AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			if ($conn) {
 				if ($conn->{state} eq 'WC') {
 					if (exists $conn->{cmd}) {
 						if (@{$conn->{cmd}}) {
-							dbg('connect', $d);
+							dbg($d) if isdbg('connect');
 							$conn->_docmd($d);
 						}
 					}
@@ -285,7 +285,7 @@ sub _decode
 					}
 				}
 			} else {
-				dbg('err', "AGW error Unsolicited Data!");
+				dbg("AGW error Unsolicited Data!");
 			}
 		} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
 			my $d = unpack "Z*", $data;
@@ -294,12 +294,12 @@ sub _decode
 			
 			for (@lines) {
 				s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				dbg('agw', "AGW Monitor port: $port \"$_\"");
+				dbg("AGW Monitor port: $port \"$_\"") if isdbg('agw');
 			}
 		} elsif ($sort eq 'C') {
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM$//;
-			dbg('agw', "AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"");
+			dbg("AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"") if isdbg('agw');
 			my $call = $from eq $main::mycall ? $to : $from;
 			my $conn = _find($call);
 			if ($conn) {
@@ -334,7 +334,7 @@ sub _decode
 		} elsif ($sort eq 'd') {
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM$//;
-			dbg('agw', "AGW '$from'->'$to' port: $port Disconnected ($d)");
+			dbg("AGW '$from'->'$to' port: $port Disconnected ($d)") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			if ($conn) {
 				&{$conn->{eproc}}() if $conn->{eproc};
@@ -342,36 +342,36 @@ sub _decode
 			}
 		} elsif ($sort eq 'y') {
 			my ($frames) = unpack "V", $data;
-			dbg('agwpollans', "AGW Frames Outstanding on port $port = $frames");
+			dbg("AGW Frames Outstanding on port $port = $frames") if isdbg('agwpollans');
 			my $conn = _find($from);
 			$conn->{oframes} = $frames if $conn;
 		} elsif ($sort eq 'Y') {
 			my ($frames) = unpack "V", $data;
-			dbg('agw', "AGW Frames Outstanding on circuit '$from'->'$to' = $frames");
+			dbg("AGW Frames Outstanding on circuit '$from'->'$to' = $frames") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			$conn->{oframes} = $frames if $conn;
 		} elsif ($sort eq 'H') {
 			unless ($from =~ /^\s+$/) {
 				my $d = unpack "Z*", $data;
 				$d =~ s/\cM$//;
-				dbg('agw', "AGW Heard port: $port \"$d\"");
+				dbg("AGW Heard port: $port \"$d\"") if isdbg('agw');
 			}
 		} elsif ($sort eq 'X') {
 			my ($r) = unpack "C", $data;
 			$r = $r ? "Successful" : "Failed";
-			dbg('err', "AGW Register $from $r");
+			dbg("AGW Register $from $r");
 			finish() unless $r;
 		} elsif ($sort eq 'R') {
 			my ($major, $minor) = unpack "v x2 v x2", $data;
-			dbg('agw', "AGW Version $major.$minor");
+			dbg("AGW Version $major.$minor") if isdbg('agw');
 		} elsif ($sort eq 'G') {
 			my @ports = split /;/, $data;
 			$noports = shift @ports || '0';
-			dbg('agw', "AGW $noports Ports available");
+			dbg("AGW $noports Ports available") if isdbg('agw');
 			pop @ports while @ports > $noports;
 			for (@ports) {
 				next unless $_;
-				dbg('agw', "AGW Port: $_");
+				dbg("AGW Port: $_") if isdbg('agw');
 			}
 			for (my $i = 0; $i < $noports; $i++) {
 				_sendf('y', undef, undef, $i);
@@ -379,7 +379,7 @@ sub _decode
 			}
 		} else {
 			my $d = unpack "Z*", $data;
-			dbg('agw', "AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
+			dbg("AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$d\"") if isdbg('agw');
 		}
 	}
 }
@@ -436,7 +436,7 @@ sub enqueue
 #		_sendf('Y', $main::mycall, $conn->{call}, $conn->{agwport}, $conn->{agwpid});
 		_sendf('D', $main::mycall, $conn->{agwcall}, $conn->{agwport}, $conn->{agwpid}, $msg . $conn->{lineend});
 		my $len = length($msg) + 1; 
-		dbg('agw', "AGW Data Out port: $conn->{agwport} pid: $conn->{agwpid} '$main::mycall'->'$conn->{agwcall}' length: $len \"$msg\"");
+		dbg("AGW Data Out port: $conn->{agwport} pid: $conn->{agwpid} '$main::mycall'->'$conn->{agwcall}' length: $len \"$msg\"") if isdbg('agw');
 	}
 }
 

@@ -9,7 +9,7 @@
 my ($self, $line) = @_;
 my @list = map { uc } split /\s+/, $line;           # list of callsigns of nodes
 my @out;
-my @nodes = sort {$a->call cmp $b->call} (DXNode::get_all());
+my @nodes = sort {$a->call cmp $b->call} (Route::Node::get_all());
 my $node;
 my @l;
 my @val;
@@ -34,8 +34,8 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 				push @l, "";
 				$i = 0;
 			}
-			my $s = $call->{call};
-			$s = sprintf "(%s)", $s if $call->{here} == 0;
+			my $s = $call->call;
+			$s = sprintf "(%s)", $s unless $call->here;
 			push @l, $s;
 			$i++;
 		}
@@ -46,15 +46,14 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 	foreach $node (@nodes) {
 		next if scalar @list && !grep $node->call =~ /^$_/, @list;
 		my $call = $node->call;
-		$call = "($call)" if $node->here == 0;
+		$call = "($call)" unless $node->here;
 		@l = ();
 		push @l, $call;
-		my $nlist = $node->list;
-		@val = sort {$a->call cmp $b->call} values %{$nlist};
+		@val = sort $node->users;
 
 		my $i = 0;
-		if (@val == 0 && $node->users) {
-			push @l, sprintf "(%d users)", $node->users;
+		if (@val == 0 && $node->usercount) {
+			push @l, sprintf "(%d users)", $node->usercount;
 		}
 		foreach $call (@val) {
 			if ($i >= 5) {
@@ -63,8 +62,13 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 				push @l, "";
 				$i = 0;
 			}
-			my $s = $call->{call};
-			$s = sprintf "(%s)", $s if $call->{here} == 0;
+			my $uref = Route::User::get($call);
+			my $s = $call;
+			if ($uref) {
+				$s = sprintf "(%s)", $call unless $uref->here;
+			} else {
+				$s = "$call?";
+			}
 			push @l, $s;
 			$i++;
 		}
