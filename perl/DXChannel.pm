@@ -493,12 +493,12 @@ sub decode_input
 	# the above regexp must work
 	unless (defined $sort && defined $call && defined $line) {
 #		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-		dbg("DUFF Line on $chcall: $data") if isdbg('err');
+		dbg("DUFF Line on $chcall: $data");
 		return ();
 	}
 
 	if(ref($dxchan) && $call ne $chcall) {
-		dbg("DUFF Line come in for $call on wrong channel $chcall") if isdbg('err');
+		dbg("DUFF Line come in for $call on wrong channel $chcall");
 		return();
 	}
 	
@@ -513,15 +513,16 @@ sub rspfcheck
 	if ($nref && $dxchan) {
 	    if ($dxchan == $self) {
 			return 1 unless $user;
+			return 1 if $user eq $node;
 			my @users = $nref->users;
 			return 1 if @users == 0 || grep $user eq $_, @users;
-			dbg("RSPF: $user not on $node") if isdbg('rspf');
+			dbg("RSPF: $user not on $node") if isdbg('chanerr');
 		} else {
-			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('rspf');
+			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('chanerr');
 		}
 	} else {
 		return 1 if $flag;
-		dbg("RSPF: required $node not found" ) if isdbg('rspf');
+		dbg("RSPF: required $node not found" ) if isdbg('chanerr');
 	}
 	return 0;
 }

@@ -1,3 +1,7 @@
+04Nov01=======================================================================
+1. Allow the user to equal the node in RSPF checks (this allows spots and 
+stuff with the origin and spotter to be the same (although it is STRONGLY 
+recommended that they are NOT!!! [hint hint]).
 02Nov01=======================================================================
 1. fixed some Aliasing problems, but this whole area will have to be addressed
 more comprehensively.
