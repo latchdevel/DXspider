@@ -89,7 +89,7 @@ sub compile
 		if ($@) {
 			my $sort = $ref->{sort};
 			my $name = $ref->{name};
-			dbg("Error compiling $ar $sort $name: $@") if isdbg('err');
+			dbg("Error compiling $ar $sort $name: $@");
 			Log('err', "Error compiling $ar $sort $name: $@");
 		}
 		$rr = $@;
@@ -222,8 +222,10 @@ sub it
 		my $args = join '\',\'', @_;
 		my $true = $r ? "OK" : "REJ";
 		my $sort = $self->{sort};
+		my $dir = $self->{name} ~= /^in_/i ? "IN " : "OUT";
+		
 		$hops ||= "none";
-		dbg("Filter: $type/$sort with $asc on '$args': $true hops: $hops") if isdbg('filter');
+		dbg("$dir: $type/$sort with $asc on '$args': $true hops: $hops") if isdbg('filter');
 	}
 	return ($r, $hops);
 }
