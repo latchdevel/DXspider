@@ -1207,7 +1207,7 @@ sub import_one
 				
 	# first line;
 	my $line = shift @$ref;
-	my @f = split /\s+/, $line;
+	my @f = split /\b/, $line;
  	unless (@f && $f[0] =~ /^(:?S|SP|SB|SEND)$/ ) {
 		my $m = "invalid first line in import '$line'";
 		dbg($m) if isdbg('msg');

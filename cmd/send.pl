@@ -32,7 +32,7 @@ $loc->{rrreq} = '0';
 
 if ($self->state eq "prompt") {
 
-	my @f = split /\s+/, $line;
+	my @f = split /\b/, $line;
 
 	# any thing after send?
 	return (1, $self->msg('e6')) if !@f;
