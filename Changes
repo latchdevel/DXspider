@@ -10,6 +10,10 @@ without warning.
 3. Sending dx spots/announces with bad words will succeed - but only back to
 the sender. These two mods are designed to annoy the perpitrators of the
 sort of filth as much as possible whilst not inconveniencing 'normal' users.
+4. Add expunge feature to kill. Deleting messages now marks a msg for 
+deletion two days hence. To have the old behaviour, do a 'kill exp' or use
+the standard alias "expunge". This will cause the message to be deleted at
+the next queue message cycle.
 04Oct01=======================================================================
 1. allow a residence time of (default) 2 days before actually deleting a msg.
 2. reduce the number R: lines on a bull from a bbs to 2 (the origin and the
