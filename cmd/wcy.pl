@@ -42,7 +42,7 @@ my %args = map {split /\s*=\s*/} split /\s*,\s*/, lc $line;
 push @out, $self->msg('wcy1', 'k') unless defined $args{k} && $args{k} >= 0 && $args{k} <= 9;
 push @out, $self->msg('wcy1', 'espk') unless defined $args{expk} && $args{expk} >= 0 && $args{expk} <= 9;
 push @out, $self->msg('wcy1', 'a') unless defined $args{a} && $args{a} >= 0 && $args{a} <= 400;
-push @out, $self->msg('wcy1', 'r') unless defined $args{r} && $args{r} >= 0 && $args{r} <= 300;
+push @out, $self->msg('wcy1', 'r') unless defined $args{r} && $args{r} >= 0 && $args{r} <= 500;
 push @out, $self->msg('wcy1', 'sf') unless defined $args{sf} && $args{sf} >= 65 && $args{sf} <= 300;
 push @out, $self->msg('wcy1', 'sa') unless defined $args{sa} && grep $args{sa} eq $_, qw(qui eru act maj pro war nil);
 push @out, $self->msg('wcy1', 'gmf') unless defined $args{gmf} && grep $args{gmf} eq $_, qw(qui act min maj sev mag war nil);
