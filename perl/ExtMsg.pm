@@ -118,7 +118,7 @@ sub to_connected
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
-	$conn->_send_file("$main::data/connected");
+	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
 }
 
 sub new_client {
@@ -169,6 +169,7 @@ sub start_connect
 	my $call = shift;
 	my $fn = shift;
 	my $conn = ExtMsg->new(\&main::new_channel); 
+	$conn->{outgoing} = 1;
 	$conn->conns($call);
 	
 	my $f = new IO::File $fn;

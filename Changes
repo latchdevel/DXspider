@@ -3,6 +3,8 @@
 2. add set/debug filter so that you can see why your filters aren't working
 (for sysops only)
 3. add ephemera deduping for all those PC41,24,50 etc etc broadcasts 
+4. Fix a problem with the connect text being sent on outgoing connections
+(this confuses db0fhf amongst other things)
 08Jun01=======================================================================
 1. first cut with new routing code. Created NEW_ROUTE branch
 2. added acc/route and rej/route commands
