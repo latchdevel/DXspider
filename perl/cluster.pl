@@ -26,7 +26,7 @@ BEGIN {
 	# do some validation of the input
 	die "The directory $root doesn't exist, please RTFM" unless -d $root;
 	die "$root/local doesn't exist, please RTFM" unless -d "$root/local";
-	die "$root/local/DXVars doesn't exist, please RTFM" unless -e "$root/local/DXVars.pm";
+	die "$root/local/DXVars.pm doesn't exist, please RTFM" unless -e "$root/local/DXVars.pm";
 	
 	mkdir "$root/local_cmd" unless -e "$root/local_cmd";
 	
