@@ -99,7 +99,7 @@ sub open
 	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
 	$self->{fh} = $fh;
 
-#	DXDebug::dbg("opening $self->{fn}\n") if isdbg("dxlog");
+#	print "opening $self->{fn}\n";
 	
 	return $self->{fh};
 }
@@ -155,7 +155,7 @@ sub write($$$)
 	if (!$self->{fh} || 
 		$self->{mode} ne ">>" || 
 		$jdate->year != $self->{jdate}->year || 
-		$jdate->thing != $self->{jdate}->year) {
+		$jdate->thing != $self->{jdate}->thing) {
 		$self->open($jdate, ">>") or confess "can't open $self->{fn} $!";
 	}
 

@@ -1,6 +1,7 @@
 28Sep02=======================================================================
 1. Put some transparent caching into Prefix.pm to see if this has a 
 performance impact.
+2. Fix doing a new log open for every log file write.
 26Sep02=======================================================================
 1. added WWV and WCY to the Mrtg stats. Don't forget to do an indexmaker!
 25Sep02=======================================================================
