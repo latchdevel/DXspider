@@ -136,6 +136,7 @@ sub next
 sub matchprefix
 {
 	my $pref = shift;
+	my @partials;
 
 	for (my $i = length $pref; $i; $i--) {
 		$matchtotal++;
@@ -144,11 +145,12 @@ sub matchprefix
 		if ($p) {
 			$hits++;
 			if (isdbg('prefix')) {
-				my $percent = $hits * 100 / $matchtotal;
+				my $percent = sprintf "%.1f", $hits * 100 / $matchtotal;
 				dbg("Partial Prefix Cache Hit: $s Hits: $hits of $matchtotal = $percent\%");
 			}
 			return @$p;
 		} else {
+			push @partials, $s;
 			my @out = get($s);
 			if (isdbg('prefix')) {
 				my $part = $out[0] || "*";
@@ -156,9 +158,9 @@ sub matchprefix
 				dbg("Partial prefix: $pref $s $part" );
 			} 
 			if (@out && $out[0] eq $s) {
-				$cache{$s} = \@out;
+				$cache{$_} = \@out for @partials;
 				return @out;
-			}
+			} 
 		}
 	}
 	return ();
@@ -183,11 +185,9 @@ sub extract
 	# clear out the cache periodically to stop it growing for ever.
 	if ($main::systime - $lasttime >= 15*60) {
 		if (isdbg('prefix')) {
-			my $percent = $hits * 100 / $matchtotal;
+			my $percent = sprintf "%.1f", $hits * 100 / $matchtotal;
 			dbg("Prefix Cache Cleared, Hits: $hits of $matchtotal = $percent\%") ;
 		}
-		my $percent = $hits * 100 / $matchtotal;
-		dbg("Prefix Cache Cleared, $percent\% hits") if isdbg('prefix');
 		%cache =();
 		$lasttime = $main::systime;
 		$hits = $matchtotal = 0;
@@ -203,7 +203,7 @@ LM:	foreach $call (split /,/, $calls) {
 		if ($p) {
 			$hits++;
 			if (isdbg('prefix')) {
-				my $percent = $hits * 100 / $matchtotal;
+				my $percent = sprintf "%.1f", $hits * 100 / $matchtotal;
 				dbg("Prefix Cache Hit: $call Hits: $hits of $matchtotal = $percent\%");
 			}
 			push @out, @$p;
@@ -351,7 +351,7 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 		push @out, @nout;
 	}
 	
-	if (isdbg('prefix')) {
+	if (isdbg('prefixdata')) {
 		my $dd = new Data::Dumper([ \@out ], [qw(@out)]);
 		dbg($dd->Dumpxs);
 	}
