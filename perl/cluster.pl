@@ -64,8 +64,6 @@ use Data::Dumper;
 
 use Fcntl ':flock'; 
 
-use Carp qw(cluck);
-
 package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -301,22 +299,22 @@ STDOUT->autoflush(1);
 Log('cluster', "DXSpider V$version started");
 
 # banner
-print "DXSpider DX Cluster Version $version\nCopyright (c) 1998-1999 Dirk Koopman G1TLH\n";
+dbg('err', "DXSpider DX Cluster Version $version\nCopyright (c) 1998-1999 Dirk Koopman G1TLH");
 
 # load Prefixes
-print "loading prefixes ...\n";
+dbg('err', "loading prefixes ...");
 Prefix::load();
 
 # load band data
-print "loading band data ...\n";
+dbg('err', "loading band data ...");
 Bands::load();
 
 # initialise User file system
-print "loading user file system ...\n"; 
+dbg('err', "loading user file system ..."); 
 DXUser->init($userfn, 1);
 
 # start listening for incoming messages/connects
-print "starting listener ...\n";
+dbg('err', "starting listener ...");
 Msg->new_server("$clusteraddr", $clusterport, \&login);
 
 # prime some signals
@@ -338,7 +336,7 @@ Geomag->init();
 Spot->init();
 
 # initialise the protocol engine
-print "reading in duplicate spot and WWV info ...\n";
+dbg('err', "reading in duplicate spot and WWV info ...");
 DXProt->init();
 
 
@@ -346,31 +344,31 @@ DXProt->init();
 DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 
 
 # read in any existing message headers and clean out old crap
-print "reading existing message headers ...\n";
+dbg('err', "reading existing message headers ...");
 DXMsg->init();
 DXMsg::clean_old();
 
 # read in any cron jobs
-print "reading cron jobs ...\n";
+dbg('err', "reading cron jobs ...");
 DXCron->init();
 
 # read in database descriptors
-print "reading database descriptors ...\n";
+dbg('err', "reading database descriptors ...");
 DXDb::load();
 
 # starting local stuff
-print "doing local initialisation ...\n";
+dbg('err', "doing local initialisation ...");
 eval {
 	Local::init();
 };
 dbg('local', "Local::init error $@") if $@;
 
 # print various flags
-#print "useful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P\n";
+#dbg('err', "seful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P");
 
 # this, such as it is, is the main loop!
-print "orft we jolly well go ...\n";
-dbg('chan', "DXSpider version $version started...");
+dbg('err', "orft we jolly well go ...");
+Log('err', "DXSpider version $version started...");
 
 #open(DB::OUT, "|tee /tmp/aa");
 

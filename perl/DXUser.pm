@@ -15,7 +15,7 @@ use DXLog;
 use DB_File;
 use Data::Dumper;
 use Fcntl;
-use Carp;
+use DXDebug;
 
 use strict;
 use vars qw(%u $dbm $filename %valid);

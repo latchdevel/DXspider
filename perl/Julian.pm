@@ -8,8 +8,6 @@
 
 package Julian;
 
-use Carp;
-
 use strict;
 
 my @days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);

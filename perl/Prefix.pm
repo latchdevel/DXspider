@@ -9,11 +9,10 @@
 package Prefix;
 
 use IO::File;
-use Carp;
 use DXVars;
 use DB_File;
 use Data::Dumper;
-use Carp;
+use DXDebug;
 
 use strict;
 use vars qw($db  %prefix_loc %pre);

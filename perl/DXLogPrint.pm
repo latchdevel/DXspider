@@ -10,11 +10,10 @@ package DXLog;
 
 use IO::File;
 use DXVars;
-use DXDebug ();
+#use DXDebug ();
 use DXUtil;
 use DXLog;
 use Julian;
-use Carp;
 
 use strict;
 

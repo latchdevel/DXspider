@@ -24,7 +24,6 @@ use DXLogPrint;
 use DXBearing;
 use CmdAlias;
 use Filter;
-use Carp;
 use Minimuf;
 use DXDb;
 use Sun;
@@ -246,7 +245,7 @@ sub run_cmd
 					unless (exists $Cache{$package}->{'sub'}) {
 						$c = eval $Cache{$package}->{'eval'};
 						if ($@) {
-							return ("Syserr: Syntax error in $package", $@);
+							return DXDebug::shortmess($@);
 						}
 						$Cache{$package}->{'sub'} = $c;
 					}
@@ -255,7 +254,10 @@ sub run_cmd
 						@ans = &{$c}($self, $args);
 				    };
 					
-					return ($@) if $@;
+					if ($@) {
+						cluck($@);
+						return (DXDebug::shortmess($@));
+					};
 				}
 			} else {
 				dbg('command', "cmd: $cmd not found");

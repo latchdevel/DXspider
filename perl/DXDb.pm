@@ -12,8 +12,7 @@ use DXVars;
 use DXLog;
 use DXUtil;
 use DB_File;
-
-use Carp;
+use DXDebug;
 
 use vars qw($opentime $dbbase %avail %valid $lastprocesstime $nextstream %stream);
 

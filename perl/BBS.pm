@@ -15,7 +15,7 @@ use strict;
 use DXUser;
 use DXChannel;
 use DB_File;
-use Carp;
+use DXDebug;
 
 @ISA = qw(DXChannel);
 

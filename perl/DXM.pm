@@ -17,7 +17,7 @@
 package DXM;
 
 use DXVars;
-use Carp;
+use DXDebug;
 
 my $localfn = "$main::root/local/Messages";
 my $fn = "$main::root/perl/Messages";

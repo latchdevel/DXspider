@@ -32,8 +32,6 @@ use DXUtil;
 use IO::File;
 use Curses;
 
-use Carp qw{cluck};
-
 use Console;
 
 #

@@ -28,7 +28,6 @@ use DXDebug;
 use DXLog;
 use IO::File;
 use Fcntl;
-use Carp;
 
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
@@ -504,9 +503,9 @@ sub read_msg_header
 	my @f;
 	my $size;
 	
-	$file = new IO::File;
-	if (!open($file, $fn)) {
-		print "Error reading $fn $!\n";
+	$file = new IO::File "$fn";
+	if (!$file) {
+	    dbg('err', "Error reading $fn $!");
 		return undef;
 	}
 	$size = -s $fn;
@@ -514,7 +513,7 @@ sub read_msg_header
 	chomp $line;
 	$size -= length $line;
 	if (! $line =~ /^===/o) {
-		print "corrupt first line in $fn ($line)\n";
+		dbg('err', "corrupt first line in $fn ($line)");
 		return undef;
 	}
 	$line =~ s/^=== //o;
@@ -525,7 +524,7 @@ sub read_msg_header
 	chomp $line;
 	$size -= length $line;
 	if (! $line =~ /^===/o) {
-		print "corrupt second line in $fn ($line)\n";
+	    dbg('err', "corrupt second line in $fn ($line)");
 		return undef;
 	}
 	$line =~ s/^=== //o;
@@ -551,7 +550,7 @@ sub read_msg_body
 	
 	$file = new IO::File;
 	if (!open($file, $fn)) {
-		print "Error reading $fn $!\n";
+		dbg('err' ,"Error reading $fn $!");
 		return undef;
 	}
 	@out = map {chomp; $_} <$file>;
@@ -740,9 +739,9 @@ sub init
 	my $ref;
 		
 	# load various control files
-	print "load badmsg: ", (load_badmsg() or "Ok"), "\n";
-	print "load forward: ", (load_forward() or "Ok"), "\n";
-	print "load swop: ", (load_swop() or "Ok"), "\n";
+	dbg('err', "load badmsg: " . (load_badmsg() or "Ok"));
+	dbg('err', "load forward: " . (load_forward() or "Ok"));
+	dbg('err', "load swop: " . (load_swop() or "Ok"));
 
 	# read in the directory
 	opendir($dir, $msgdir) or confess "can't open $msgdir $!";

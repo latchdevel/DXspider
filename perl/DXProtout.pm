@@ -15,7 +15,7 @@ package DXProt;
 
 use DXUtil;
 use DXM;
-use Carp;
+use DXDebug;
 
 use strict;
 

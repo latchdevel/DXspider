@@ -13,7 +13,6 @@ package DXConnect;
 use DXUtil;
 use DXM;
 use DXDebug;
-use Carp;
 
 use strict;
 

@@ -30,7 +30,6 @@ use DXM;
 use DXUtil;
 use DXDebug;
 use Filter;
-use Carp;
 
 use strict;
 use vars qw(%channels %valid);

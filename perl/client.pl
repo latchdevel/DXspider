@@ -46,7 +46,6 @@ use Net::Telnet qw(TELOPT_ECHO);
 use IO::File;
 use IO::Socket;
 use IPC::Open2;
-use Carp qw{cluck};
 
 # cease communications
 sub cease

@@ -11,8 +11,7 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist isdbg dbgclose);
-@EXPORT_OK = qw(dbginit dbg dbgadd dbgsub dbglist isdbg dbgclose);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist isdbg dbgclose confess croak cluck cluck);
 
 use strict;
 use vars qw(%dbglevel $fp);
@@ -24,11 +23,31 @@ use Carp;
 %dbglevel = ();
 $fp = DXLog::new('debug', 'dat', 'd');
 
+# Avoid generating "subroutine redefined" warnings with the following
+# hack (from CGI::Carp):
+if (!defined $DB::VERSION) {
+	local $^W=0;
+	eval qq( sub confess { 
+	   \$SIG{__DIE__} = 'DEFAULT'; 
+	   DXDebug::_store(Carp::longmess(\@_)); 
+	   exit(-1); 
+	}
+	sub confess { 
+		\$SIG{__DIE__} = 'DEFAULT'; 
+		DXDebug::_store(Carp::shortmess(\@_)); 
+		exit(-1); 
+	}
+	sub carp    { DXDebug::_store(Carp::shortmess(\@_)); }
+	sub cluck   { DXDebug::_store(Carp::longmess(\@_)); } 
+	);
+
+    CORE::die(Carp::shortmess($@)) if $@;
+}
+
+
 sub _store
 {
 	my $t = time; 
-	$fp->writeunix($t, "$t^$@") if $@; 
-	$fp->writeunix($t, "$t^$!") if $!; 
 	for (@_) {
 		$fp->writeunix($t, "$t^$_"); 
 		print STDERR $_;
@@ -39,7 +58,8 @@ sub dbginit
 {
 	# add sig{__DIE__} handling
 	if (!defined $DB::VERSION) {
-		$SIG{__WARN__} = $SIG{__DIE__} = \&_store;
+		$SIG{__WARN__} = sub { _store(Carp::shortmess(@_)); };
+		$SIG{__DIE__} = sub { _store(Carp::shortmess(@_)); };
 	}
 }
 
@@ -52,7 +72,7 @@ sub dbgclose
 sub dbg
 {
 	my $l = shift;
-	if ($dbglevel{$l}) {
+	if ($dbglevel{$l} || $l eq 'err') {
 	    my @in = @_;
 		my $t = time;
 		for (@in) {
@@ -92,5 +112,23 @@ sub isdbg
 	my $s = shift;
 	return $dbglevel{$s};
 }
+
+sub shortmess 
+{
+	return Carp::shortmess(@_);
+}
+
+sub longmess 
+{ 
+	return Carp::longmess(@_);
+}
+
 1;
 __END__
+
+
+
+
+
+
+

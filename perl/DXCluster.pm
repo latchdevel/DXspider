@@ -14,11 +14,8 @@
 
 package DXCluster;
 
-use Exporter;
-@ISA = qw(Exporter);
 use DXDebug;
 use DXUtil;
-use Carp;
 
 use strict;
 use vars qw(%cluster %valid);

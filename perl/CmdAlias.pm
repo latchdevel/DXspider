@@ -21,7 +21,6 @@ package CmdAlias;
 
 use DXVars;
 use DXDebug;
-use Carp;
 
 use strict;
 

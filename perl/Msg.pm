@@ -10,15 +10,12 @@
 
 package Msg;
 
-require Exporter;
-@ISA = qw(Exporter);
-
 use strict;
 use IO::Select;
 use IO::Socket;
-use Carp;
+#use DXDebug;
 
-use vars qw (%rd_callbacks %wt_callbacks $rd_handles $wt_handles);
+use vars qw(%rd_callbacks %wt_callbacks $rd_handles $wt_handles);
 
 %rd_callbacks = ();
 %wt_callbacks = ();

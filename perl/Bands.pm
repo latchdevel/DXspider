@@ -11,7 +11,6 @@ package Bands;
 use DXUtil;
 use DXDebug;
 use DXVars;
-use Carp;
 
 use strict;
 use vars qw(%bands %regions %aliases $bandsfn %valid);

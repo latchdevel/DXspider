@@ -43,7 +43,7 @@ if ($f[0] =~ /[A-Za-z]/) {
 }
 
 # make line the rest of the line
-$line = $f[2];
+$line = $f[2] || " ";
 @f = split /\s+/, $line;
 
 # bash down the list of bands until a valid one is reached

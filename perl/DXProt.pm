@@ -27,8 +27,6 @@ use Local;
 use DXDb;
 use Time::HiRes qw(gettimeofday tv_interval);
 
-use Carp;
-
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
 			%spotdup %wwvdup $last_hour %pings %rcmds $pc11duptext

@@ -15,7 +15,6 @@ use DXUtil;
 use DXLog;
 use Julian;
 use Prefix;
-use Carp;
 
 use strict;
 use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix);

@@ -31,9 +31,9 @@ require Exporter;
 
 use IO::File;
 use DXVars;
-# use DXDebug ();
 use DXUtil;
 use Julian;
+
 use Carp;
 
 use strict;

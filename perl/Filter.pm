@@ -48,7 +48,6 @@ package Filter;
 use DXVars;
 use DXUtil;
 use DXDebug;
-use Carp;
 
 use strict;
 
