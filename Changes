@@ -1,3 +1,11 @@
+18Jun99=======================================================================
+1. fixed a problem with DXLogPrint repeating log entries.
+2. altered the permissions on disconnnect so that priv 5 users can disconnect
+clusters, but still require priv 8 to disconnect users.
+3. made sure that an incoming PC18 clears out all the cluster info for
+that channel before re-initialising.
+4. add init command.
+5. disconnect users before nodess on shutdown
 15Jun99=======================================================================
 1. added grepdbg program (so you can search your debug files and get times
 and dates of incidents).

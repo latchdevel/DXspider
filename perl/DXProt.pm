@@ -371,9 +371,17 @@ sub normal
 		}
 		
 		if ($pcno == 18) {		# link request
+			$self->state('init');	
+
+			# first clear out any nodes on this dxchannel
+			my @gonenodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
+			foreach my $node (@gonenodes) {
+				next if $node->dxchan == $DXProt::me;
+				broadcast_ak1a(pc21($node->call, 'Gone, re-init') , $self) unless $self->{isolate}; 
+				$node->del();
+			}
 			$self->send_local_config();
 			$self->send(pc20());
-			$self->state('init');	
 			return;             # we don't pass these on
 		}
 		

@@ -25,15 +25,15 @@ use strict;
 #
 sub print
 {
-	my $self = $DXLog::log;
+	my $fcb = $DXLog::log;
 	my $from = shift;
 	my $to = shift;
-	my @date = $self->unixtoj(shift);
+	my @date = Julian::unixtojm(shift);
 	my $pattern = shift;
 	my $who = uc shift;
 	my $search;
 	my @in;
-	my @out;
+	my @out = ();
 	my $eval;
 	my $count;
 	    
@@ -55,25 +55,28 @@ sub print
 				}
 			  );
 	
-	$self->close;                                      # close any open files
+	$fcb->close;                                      # close any open files
 
-	my $fh = $self->open(@date); 
+	my $fh = $fcb->open(@date); 
 	for ($count = 0; $count < $to; ) {
-		my @spots = ();
+		my $ref;
 		if ($fh) {
+			@in = ();
 			while (<$fh>) {
 				chomp;
-				push @in, [ split '\^' ];
+				$ref = [ split '\^' ];
+				push @{$ref}, "" unless @{$ref} >= 4;
+				push @in, $ref;
 			}
 			eval $eval;               # do the search on this file
 			last if $count >= $to;                  # stop after n
 			return ("Log search error", $@) if $@;
 		}
-		$fh = $self->openprev();      # get the next file
+		$fh = $fcb->openprev();      # get the next file
 		last if !$fh;
 	}
 	
-	return @out if defined @out;
+	return @out;
 }
 
 #

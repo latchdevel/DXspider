@@ -7,7 +7,7 @@
 #
 my $self = shift;
 
-return (1, $self->msg('e5')) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 6;
 
 my $cmdline = shift;
 my @f = split /\s+/, $cmdline;

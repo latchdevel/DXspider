@@ -174,8 +174,22 @@ sub cease
 		Local::finish();   # end local processing
 	};
 	dbg('local', "Local::finish error $@") if $@;
-	
+
+	# disconnect users
 	foreach $dxchan (DXChannel->get_all()) {
+		next if $dxchan->is_ak1a;
+		disconnect($dxchan) unless $dxchan == $DXProt::me;
+	}
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+
+	# disconnect nodes
+	foreach $dxchan (DXChannel->get_all()) {
+		next unless $dxchan->is_ak1a;
 		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
 	Msg->event_loop(1, 0.05);
