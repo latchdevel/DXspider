@@ -1,8 +1,11 @@
 #
-# module to manage connection lists & data
+# module to manage channel lists & data
 #
-
-package DXConnect;
+# Copyright (c) 1998 - Dirk Koopman G1TLH
+#
+# $Id$
+#
+package DXChannel;
 
 require Exporter;
 @ISA = qw(Exporter);

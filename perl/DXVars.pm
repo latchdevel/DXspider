@@ -2,6 +2,10 @@
 # The system variables - those indicated will need to be changed to suit your
 # circumstances (and callsign)
 #
+# Copyright (c) 1998 - Dirk Koopman G1TLH
+#
+# $Id$
+#
 
 package main;
 

@@ -1,3 +1,12 @@
+#
+# This allows perl programs to call functions dynamically
+# 
+# This has been nicked directly from the perlembed pages
+# so has the perl copyright
+#
+# $Id$
+#
+
 package Embed::Persistent;
 #persistent.pl
 

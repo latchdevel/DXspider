@@ -9,12 +9,13 @@
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
+# $Id$
 # 
 
 use Msg;
 use DXVars;
 use DXUtil;
-use DXConnect;
+use DXChannel;
 use DXUser;
 
 package main;
@@ -55,7 +56,7 @@ sub disconnect
 sub rec
 {
   my ($conn, $msg, $err) = @_;
-  my $dxconn = DXConnect->get_by_cnum($conn);      # get the dxconnnect object for this message
+  my $dxconn = DXChannel->get_by_cnum($conn);      # get the dxconnnect object for this message
   
   if (defined $err && $err) {
     disconnect($dxconn);
@@ -78,7 +79,7 @@ sub login
 sub cease
 {
   my $dxconn;
-  foreach $dxconn (DXConnect->get_all()) {
+  foreach $dxconn (DXChannel->get_all()) {
     disconnect($dxconn);
   }
 }

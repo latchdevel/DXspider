@@ -1,6 +1,10 @@
 #
 # various utilities which are exported globally
 #
+# Copyright (c) 1998 - Dirk Koopman G1TLH
+#
+# $Id$
+#
 
 package DXUtil;
 
