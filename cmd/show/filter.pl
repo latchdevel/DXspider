@@ -8,24 +8,29 @@
 my ($self, $line) = @_;
 my @f = split /\s+/, $line;
 my @out;
-my $dxchan = $self;
-my $sort = '';
+my $call = $self->call;
 
-my $f = lc shift @f if @f;
-if ($self->priv >= 8) {
-	my $d = DXChannel->get(uc $f);
-	$dxchan = $d if $d;
-	$f = lc shift @f;
-}
-
-$sort = $f if $f;
-$sort .= 'filter';
-
-my $key;
-foreach $key (sort keys %$self) {
-	if ($key =~ /$sort$/) {
-		push @out, $self->{$key}->print if $self->{$key};
+if (@f && $self->priv >= 8) {
+	if (is_callsign(uc $f[0])) {
+		$call = uc shift @f;
+    } elsif ($f[0] eq 'node_default' || $f[0] eq 'user_default') {
+		$call = shift @f;
 	}
 }
-push @out, $self->msg('filter3', $dxchan->call) unless @out;
+
+my @in;
+if (@f) {
+	push @in, @f;
+} else {
+	push @in, qw(ann spots wcy wwv);
+}
+
+my $key;
+foreach $key (@in) {
+	my $ref = Filter::read_in($key, $call, 1);
+	push @out, $ref->print($call, $key, "input") if $ref;
+	$ref = Filter::read_in($key, $call, 0);
+	push @out, $ref->print($call, $key, "") if $ref;
+}
+push @out, $self->msg('filter3', $call) unless @out;
 return (1, @out);

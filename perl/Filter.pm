@@ -254,19 +254,21 @@ sub write
 sub print
 {
 	my $self = shift;
+	my $name = shift || $self->{name};
+	my $sort = shift || $self->{sort};
+	my $flag = shift || "";
 	my @out;
-	my $name = $self->{name};
 	$name =~ s/.pl$//;
 	
-	push @out, join(' ',  $name , ':', $self->{sort});
+	push @out, join(' ',  $name , ':', $sort, $flag);
 	my $filter;
 	my $key;
 	foreach $key (sort $self->getfilkeys) {
 		my $filter = $self->{$key};
-		if ($filter->{reject} && exists $filter->{reject}->{user}) {
+		if (exists $filter->{reject} && exists $filter->{reject}->{user}) {
 			push @out, ' ' . join(' ', $key, 'reject', $filter->{reject}->{user});
 		}
-		if ($filter->{accept} && exists $filter->{accept}->{user}) {
+		if (exists $filter->{accept} && exists $filter->{accept}->{user}) {
 			push @out, ' ' . join(' ', $key, 'accept', $filter->{accept}->{user});
 		} 
 	}
@@ -588,6 +590,14 @@ sub it
 	}
 }
 
+sub print
+{
+	my $self = shift;
+	my $call = shift;
+	my $sort = shift;
+	my $flag = shift || "";
+	return "$call: Old Style Filter $flag $sort";
+}
 
 1;
 __END__

@@ -210,15 +210,6 @@ sub shellregex
 	return '^' . $in . "\$";
 }
 
-# start an attempt at determining whether this string might be a callsign
-sub iscallsign
-{
-	my $call = uc shift;
-	return 1 if $call =~ /^[A-Z]+\d+[A-Z]+/;
-	return 1 if $call =~ /^\d+[A-Z]\d+[A-Z]+/;
-	return undef;
-}
-
 # read in a file into a string and return it. 
 # the filename can be split into a dir and file and the 
 # file can be in upper or lower case.
