@@ -241,7 +241,7 @@ sub rec_socket
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		
 		if ($sort && $sort eq 'D') {
-			$line = " " unless $line;
+			$line = " " unless length($line);
 			addtotop($line);
 		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
@@ -269,11 +269,12 @@ sub rec_stdin
 	#  print "sys: $r ($prbuf)\n";
 	if (defined $r) {
 
+		$r = '0' if !$r;
 		
 		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
 			
 			# save the lines
-			$inbuf = " " unless $inbuf;
+			$inbuf = " " unless length($inbuf);
 
 			# check for a pling and do a search back for a command
 			if ($inbuf =~ /^!/o) {
@@ -392,7 +393,7 @@ sub rec_stdin
 		} elsif ($r eq KEY_RESIZE || $r eq "\0632") {
 			do_resize();
 			return;
-		} elsif (is_pctext($r)) {
+		} elsif (defined is_pctext($r)) {
 			# move the top screen back to the bottom if you type something
 			if ($spos < @shistory) {
 				$spos = @shistory;

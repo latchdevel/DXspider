@@ -1,5 +1,6 @@
 07Nov01=======================================================================
 1. fix is_pctext so that it actually catches corrupt spots and announces.
+2. fix console.pl so that you can type in '0' again
 06Nov01=======================================================================
 1. fix read so that sysop reading doesn't increment the read counter for 
 private mail not addressed to them.
