@@ -441,7 +441,8 @@ filearea 'bulletins' you want to look at file 'arld051' you would
 enter:-
    TYPE bulletins/arld051
 
-See also SHOW/FILES to see what fileareas are available and a list of content
+See also SHOW/FILES to see what fileareas are available and a 
+list of content.
 
 === 0^WX <text>^Send a weather message to local users
 === 0^WX FULL <text>^Send a weather message to all cluster users

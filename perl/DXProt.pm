@@ -737,7 +737,7 @@ sub send_dx_spot
 			}
 		} elsif ($dxchan->is_user && $dxchan->{dx}) {
 			my $buf = Spot::formatb($_[0], $_[1], $_[2], $_[3], $_[4]);
-			$buf .= "\a\a" if $dxchan->beep;
+			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
 				$dxchan->send($buf) if !$hops || ($hops && $filter);
 			} else {

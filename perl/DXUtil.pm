@@ -72,7 +72,8 @@ sub cltounix
 	$date = "$1 $2 $3";
 	return 0 unless $time =~ /^([012]\d)([012345]\d)Z$/;
 	$time = "$1:$2 +0000";
-	return str2time("$date $time");
+	my $r = str2time("$date $time");
+	return $r == -1 ? undef : $r;
 }
 
 # turn a latitude in degrees into a string

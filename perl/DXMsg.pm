@@ -253,7 +253,7 @@ sub process
 			$f[3] =~ s/^\///o;   # remove the leading /
 			$f[3] = lc $f[3];	# to lower case;
 			dbg('msg', "incoming file $f[3]\n");
-			last SWITCH if $f[3] =~ /^(perl|cmd|local|src|lib|include|sys|msg|connect)/; # prevent access to executables
+			$f[3] = 'packclus/' . $f[3] unless $f[3] =~ /^packclus\//o;
 			
 			# create any directories
 			my @part = split /\//, $f[3];

@@ -1,6 +1,9 @@
+22May99=======================================================================
+1. added check for -1 from Date::Parse and return undef for out of range dates
+2. added show/files and type commands
 21May99=======================================================================
 1. made set/nodx work again.
-2. mode dx stuff queue nicely again.
+2. made dx stuff queue nicely again.
 18May99=======================================================================
 1. Added announce dup checking.
 2. Added system announce filtering.
