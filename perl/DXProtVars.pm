@@ -24,15 +24,15 @@ $pc50_interval = 14*60;
 $myprot_version = 5300;
 
 # default hopcount to use
-$def_hopcount = 15;
+$def_hopcount = 30;
 
 # some variable hop counts based on message type
 %hopcount = (
-  11 => 10,
-  16 => 10,
-  17 => 10,
-  19 => 10,
-  21 => 10,
+  11 => 25,
+  16 => 25,
+  17 => 25,
+  19 => 25,
+  21 => 25,
 );
 
 # list of nodes we don't accept dx from

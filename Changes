@@ -7,6 +7,7 @@
 6. SEND now displays a message if you try to do it in not prompt mode.
 7. stopped a few more things being done by rcmd (eg send, talk, ann, dx)
 8. tidied up the talking a bit more.
+9. Increase default hop counts all round.
 29Jul00=======================================================================
 1. added forward/latlong which will forward ALL the users that have a latitude
 and longitude set on them to one or more locally connected nodes - with a hop
