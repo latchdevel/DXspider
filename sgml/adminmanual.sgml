@@ -4,9 +4,9 @@
 
 <!-- Title information -->
 
-<title>The DXSpider Administration Manual v1.49</title> 
+<title>The DXSpider Administration Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>February 2002 revision 1.3</date>
+<date>July 2002 revision 0.1</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -554,7 +554,7 @@ all work on their specific area of the protocol.
 The <em>set/hops</em> command overrides any hops that you have set otherwise.
 
 <p>
-You can set what hops have been set using the <em>show/hops</em> command.
+You can show what hops have been set using the <em>show/hops</em> command.
 
 <sect1>Isolating networks
 
@@ -798,6 +798,9 @@ only be sent to the UK links and not to PA4AB-14.
 <P>
 To force the cluster to reread the file use load/forward
 
+<P>
+NB: If a user tries to send mail to a bulletin address that does not exist
+in this file, they will get an error.
 
 <sect1>The msg command
 
@@ -910,7 +913,7 @@ below and is included in the distribution as startup.issue.
 # startup script example
 #
 # set maximum no of spots allowed to 100
-# set/var $Spot::maxspots = 1
+# set/var $Spot::maxspots = 100
 #
 # Set registration on
 # set/var $main::reqreg = 1
@@ -927,8 +930,7 @@ above there are three options.  The first option is the amount of spots that
 a user can request with the <em>sh/dx</em> command.  Normally the default is
 to give 10 spots unless the user specifies more.  Without this line enabled,
 the maximum a user can request is 100 spots.  Depending on your link quality
-you may wish to enable more or less by specifying the number.  If you simply
-uncomment the line, the maximum would be 1 spot!
+you may wish to enable more or less by specifying the number.
 
 <P>
 The other 2 options are dealt with more fully in the security section.
@@ -1340,6 +1342,107 @@ Simply go to the site and create one.  Secondly you need to copy the file
 ID and password.  You also at this point need to set $allow=1 to complete
 the setup.  Many thanks to Fred Lloyd, the proprieter of
 <htmlurl url="http://www.qrz.com" name="qrz.com"> for allowing this access.
+
+<sect1>Connecting logging programs
+
+<P>
+There appear to be very few logging programs out there that support telnet
+especially the popular ones like LogEQF, Turbolog etc.  This can make it
+difficult to connect to your own cluster!
+The way to do it is to make the logging program think it has a TNC attached
+to a com port on the logging PC and 'push' a linux login out to it.
+This is achieved very simply by the use of <em>agetty</em>.
+
+<P>
+All that is required is to add a line in /etc/inittab to have the client
+ready for a connection on the com port of your choice.  Remember that in
+Linux, the com ports start at ttyS0 for com1, ttyS1 for com2 etc.
+
+<tscreen><verb>
+c4:2345:respawn:/sbin/agetty -L 9600 ttyS1
+</verb></tscreen>
+
+<P>
+Add this after the standard runlevel lines in /etc/inittab.  The above
+line works on ttyS1 (com2).  Now as root, issue the command <em>telinit q</em>
+and it should be ready for connection.  All that is required is a 3 wire
+serial lead (tx, rx and signal ground).  Tell you logging program to use
+8n1 at 9600 baud and you should see a Linux login prompt.  Login as normal
+and then telnet from there to the cluster.
+
+<sect>Java Web applet
+
+<P>
+In the spider tree will be a directory <em>spider-web</em>.  This is a
+neat little java web applet that can be run from a website.  The applet
+must run on the same machine as the cluster.  The included README file is
+shown below.
+
+<P>
+I should comment here that the applet is precompiled, that is, ready to go.
+It was compiled using JDK1.3.1.  If your version is earlier than this then it
+may not work.  Should that be the case you need to recompile or update your
+JDK.  To recompile do the following ...
+
+<tscreen><verb>
+cd /spider/spider-web
+rm *.class
+/usr/bin/javac spiderclient.java
+</verb></tscreen>
+
+<P>
+I have used /usr/bin/javac as an example, your path to javac may be different.
+
+<verb>
+Spider-WEB v0.6b
+
+Completely based on a clx web client written in Java by dl6dbh
+(ftp://clx.muc.de/pub/clx/clx-java_10130001.tgz)
+
+The webserver has to run on the same machine as your DxSpider software!
+
+It is assumed that you have Java installed.  You need JDK1.3.1 at least.
+
+Installation instructions (Performed as root):
+
+Put all the files in the spider-web directory into a newly created directory
+under the DocumentRoot of your websever for instance 'client'. In my case
+this is:  /home/httpd/html/client/ although ymmv.  For Suse the correct
+path should be /usr/local/httpd/htdocs/client/ for example.
+
+Move spider.cgi to the cgi-bin directory of your webserver, in my case that is
+/home/httpd/cgi-bin/ although ymmv.  For Suse the correct path should be
+/usr/local/httpd/cgi-bin/ for example.
+
+Change the permissions of the files to ensure they are correct, obviously you
+will need to use the correct path the the files according to your system:
+
+chmod 755 /home/httpd/html/cgi-bin/spider.cgi
+chmod -R 755 /home/httpd/html/client/
+
+By default the spider.cgi script should pick up your hostname (As long as this
+is set correctly).  If it does not or your hostname differs from the name that
+you attach to the public address that you are using, then edit spider.cgi :
+
+# Uncomment and set the hostname manually here if the above fails.
+# $HOSTNAME = "gb7mbc.spoo.org" ;
+$PORT = "8000" ;
+
+'HOSTNAME' is the hostname of your cluster.
+
+'PORT' is the portnumber that you use to connect to your DxSpider via
+telnet (see Listeners.pm)
+
+NOTE: If you can start the console but cannot connect to the cluster from it, 
+then it is possible that the machine you are on cannot resolve the hostname of 
+your cluster machine.  If this is the case, you need to set your hostname 
+manually as above.
+
+You also need to set the $NODECALL variable.  This prints the name of your
+choosing (probably your cluster callsign) on the html page.
+
+You now can connect to Spider-Web via http://yourserver/cgi-bin/spider.cgi
+</verb>
 
 <sect>Security
 
@@ -2230,6 +2333,27 @@ There is NO SECOND CHANCE.
 
 It goes without saying that you should use this command CAREFULLY!
 
+<sect1>demonstrate (9)
+
+<P>
+<tt>
+<bf>demonstrate &lt;call&gt; &lt;command&gt;</bf> Demonstrate a command to another user
+</tt>
+
+<P>
+This command is provided so that sysops can demonstrate commands to 
+other users. It runs a command as though that user had typed it in and
+then sends the output to that user, together with the command that 
+caused it.
+
+<tscreen><verb>
+  DEMO g7brn sh/dx iota oc209
+  DEMO g1tlh set/here
+</verb></tscreen>
+
+Note that this command is similar to SPOOF and will have the same side
+effects. Commands are run at the privilege of the user which is being
+demonstrated to.
 
 <sect1>directory (0)
 

@@ -14,85 +14,18 @@ Contents
 <HR>
 <H1>The DXSpider CVS Changes addendum </H1>
 
-<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 0.1 March 2001
+<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 1.50 July 2002
 <P><HR>
 <EM>A reference for CVS users of the DXSpider DXCluster program.</EM>
 <HR>
 <P>If you have any problems with a new CVS version please mail the support
-list or come and report on WW Convers channel 9000 or from a 44 host to
-sys2.pa4ab.ampr.org (44.137.44.16) port 6667 (IRC) and join #9000.
+list.
 <P>
-<P>The latest CVS is version 1.47.  There are major changes going on currently
-as the code is altered to allow DXSpider to be run under Microsoft Windows.
-<P>There is a separate file for the Windows installation in the /spider/html 
-and /spider/txt directories so I will not include that here.
-<P>For Linux users, there are several steps to complete to update from
-version 1.46.
-<P>PLEASE READ ALL THE FOLLOWING BEFORE STARTING
+<P>The latest CVS is version 1.50 build 57.002.  There are major changes going on currently
+as the code is being prepared for New Protocol.
 <P>
-<UL>
-<LI>tar up your existing perl and cmd directories and put them somewhere
-safe so you can revert to the old version if necessary.</LI>
-<LI>Do a CVS update in the normal way (cvs update -d)</LI>
-<LI>cp /spider/perl/Listeners.pm to /spider/local and edit it as below</LI>
-<LI>comment out the spdlogin line in inetd.conf and 'killall -HUP inetd'</LI>
-<LI>"make" the client in /spider/src (just in case it has changed)</LI>
-<LI>restart the cluster and pray :-)</LI>
-</UL>
-<P>The Listeners.pm file looks something like this ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-#
-# Copy this file to /spider/local and modify it to your requirements
-#
-#
-# This file specifies which local interfaces and ports you will be
-# listening on
-#
-# You can add as many as you like
-#
-
-package main;
-
-use vars qw(@listen);
-
-@listen = (
-#                  ["localhost", 7300],
-#                  ["foo.dxcluster.net", 7300],
-                  );
- 
-1;
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Alter the hostnames and ports to reflect you setup.  This file is only
-used for incoming telnet requests.  You do not have to use hostnames, it
-is quite ok to use IP addresses and it is also a matter of choice whether
-or not you add the domain.
-<P>Here is an example of a working Listeners.pm file ..
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-@listen = (
-                   ["localhost", 8000],
-                   ["sys2", 8000],
-                   ["apu", 8000],
-                  );
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Now all this is well and good if you have a static IP address.  If your IP
-address is dynamic then one line will do, like this ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-@listen = (
-                   ["0.0.0.0", 8000],
-                  );
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>From this version, the file client.pl has ceased to be needed.  In fact it
-has been removed.  If you are still using client.pl in your ax25d.conf then
-replace it with /spider/src/client.
+<P>There are currently no addenda, please look to the /spider/Changes file for any
+small alterations.
 <P>
 <HR>
 Next

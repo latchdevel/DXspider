@@ -1,3 +1,8 @@
+18Jul02=======================================================================
+1. Make additions and changes to manuals. (g0vgs)
+16Jul02=======================================================================
+1. Add changes to the spider-web java web client.  Thanks to Rene, OZ1LQH.  It
+should now be easier to install and run for all systems. (g0vgs)
 11Jul02=======================================================================
 1. NP work has now started in ernest ([ed]who he?). You will need to download
 Digest::SHA1 and any dependant packages to run this release. HOWEVER tempted

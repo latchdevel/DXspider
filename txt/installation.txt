@@ -1,7 +1,7 @@
-  The DXSpider Installation Manual v1.49
+  The DXSpider Installation Manual v1.50
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (g0vgs@gb7mbc.net)
-  February 2002 revision 1.2
+  July 2002 revision 0.1
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -127,14 +127,9 @@
 
   1.1.  Introduction
 
-  This section describes the installation of DX Spider v1.47 on a RedHat
+  This section describes the installation of DX Spider v1.50 on a RedHat
   Linux Distribution.  Wherever possible I will try to include
-  differences for other distributions.  I do not intend to try and cover
-  the installation of Linux or the setup of the AX25 utilities.  If you
-  need help on this then read Iains original installation guide that
-  comes with the Spider distribution.
-
-
+  differences for other distributions.
   I am assuming a general knowledge of Linux and its commands.  You
   should know how to use tar and how to edit files using your favourite
   editor.
@@ -167,6 +162,8 @@
 
   o  Time-HiRes-01.20.tar.gz
 
+  o  Digest-SHA1-2.01.tar.gz
+
 
   Copy the CPAN modules listed above to a convenient place on your
   computer. One good place would be /usr/local/packages, and the
@@ -176,6 +173,9 @@
 
   Log in as 'root', and make sure you're at '/root' before you continue.
   Here are exactly the commands you must issue next: -
+
+
+
 
 
 
@@ -237,6 +237,13 @@
   # make test
   # make install
   # cd ..
+  #
+  # tar xvfz /usr/local/packages/Digest-SHA1-2.01.tar.gz
+  # cd Digest-SHA1-2.01
+  # perl Makefile.pl
+  # make test
+  # make install
+  # cd ..
 
 
 
@@ -251,7 +258,7 @@
 
   I will assume that you have already downloaded the latest tarball of
   the DXSpider software and are ready to install it. I am assuming
-  version 1.47 for this section but of course you would use the latest
+  version 1.50 for this section but of course you would use the latest
   version.
 
 
@@ -260,6 +267,7 @@
   sysop.  You can call it anything you wish.  Depending on your security
   requirements you may wish to use an existing user, however this is
   your own choice.
+
 
 
        # adduser -m sysop
@@ -299,7 +307,7 @@
 
 
        # cd ~sysop
-       # tar xvfz spider-1.47.tar.gz
+       # tar xvfz spider-1.50.tar.gz
        # ln -s ~sysop/spider /spider
        # groupadd -g 251 spider       (or another number)
 
@@ -327,6 +335,8 @@
 
   The next step is to set the permissions on the Spider directory tree
   and files ....
+
+
 
        # chown -R sysop.spider spider
        # find . -type d -exec chmod 2775 {} \;
@@ -384,13 +394,14 @@
 
 
 
-
   This is the call sign of your cluster.  If you use an SSID then
   include it here also.
 
 
 
        $myalias = "G1TLH";
+
+
 
 
 
@@ -449,9 +460,6 @@
   use it though it has to be "made".  CD to /spider/src and type make.
   You should see the output on your screen and hopefully now have a
   small C program called client.  Leave it in this directory.
-
-
-
   1.6.  Starting up for the first time
 
   We can now bring spider up for the first time and see if all is well
@@ -459,17 +467,16 @@
 
 
 
-
-  $ ./cluster.pl
-  DXSpider DX Cluster Version 1.47
-  Copyright (c) 1998 Dirk Koopman G1TLH
-  loading prefixes ...
-  loading band data ...
-  loading user file system ...
-  starting listener ...
-  reading existing message headers
-  reading cron jobs
-  orft we jolly well go ...
+       $ ./cluster.pl
+       DXSpider DX Cluster Version 1.50
+       Copyright (c) 1998 Dirk Koopman G1TLH
+       loading prefixes ...
+       loading band data ...
+       loading user file system ...
+       starting listener ...
+       reading existing message headers
+       reading cron jobs
+       orft we jolly well go ...
 
 
 
@@ -513,6 +520,9 @@
 
 
   and both the cluster and the client should return to Linux prompts.
+
+
+
 
 
 
@@ -639,7 +649,12 @@
   as standard.  The other is AWZNode by IZ5AWZ.
 
 
+  NB: The AX25 stuff in 2.4 kernels appears to have been broken until
+  2.4.18.  I strongly suggest you get at least this kernel.
+
+
   For 2.4 kernels you need these files...
+
 
 
 
@@ -709,8 +724,6 @@
   NOTE:- before we start it is important to realise that every interface
   requires a different SSID.  You should be able to follow this in the
   following examples.
-
-
   3.5.  axports
 
   This file sets up the ax25 ports you want to use.  An example is below
@@ -721,6 +734,8 @@
        #portname   callsign   baudrate   paclen   window   description
         2m         gb7mbc-2   19200      256      2        2m port on 144.900MHz
         4m         gb7mbc-4   19200      256      2        4m port on 70.325MHz
+
+
 
 
 
@@ -772,6 +787,9 @@
 
 
 
+
+
+
   3.7.  nrbroadcast
 
   This file sets up the netrom broadcast qualities.  An example is below
@@ -787,7 +805,6 @@
 
 
   The file headings are as follows ...
-
 
 
   axport          -       The port name in axports that you wish to broadcast
@@ -812,35 +829,62 @@
 
 
 
-       [gb7mbc-0 via 2m]
-       parameters    2 1   6  900 *  15  0
-       NOCALL *  *  *  *  *  *  L
-       default  * * * * * *  - sysop /spider/src/client client %u ax25
 
-       [gb7mbc-1 via 2m]
-       parameters    2 1   6  900 *  15  0
-       NOCALL *  *  *  *  *  *  L
-       default *  *  *  *  *  *  0  root  /usr/sbin/node  node
 
-       [gb7mbc-0 via 4m]
-       parameters    2 1   6  900 *  15  0
-       NOCALL *  *  *  *  *  *  L
-       default  * * * * * *  - sysop /spider/src/client client %u ax25
 
-       [gb7mbc-1 via 4m]
-       parameters    2 1   6  900 *  15  0
-       NOCALL *  *  *  *  *  *  L
-       default *  *  *  *  *  *  0  root /usr/sbin/node  node
 
-       <netrom2>
-       parameters 1    10 * * * 3 *
-       NOCALL *  *  *  *  *  *  L
-       default  * * * * * *  - sysop /spider/src/client client %u ax25
 
-       <netrom>
-       parameters 1    10 * * * 3 *
-       NOCALL *  *  *  *  *  *  L
-       default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  [gb7mbc-0 via 2m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  [gb7mbc-1 via 2m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+  [gb7mbc-0 via 4m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  [gb7mbc-1 via 4m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default *  *  *  *  *  *  0  root /usr/sbin/node  node
+
+  <netrom2>
+  parameters 1    10 * * * 3 *
+  NOCALL *  *  *  *  *  *  L
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  <netrom>
+  parameters 1    10 * * * 3 *
+  NOCALL *  *  *  *  *  *  L
+  default *  *  *  *  *  *  0  root  /usr/sbin/node  node
 
 
 
@@ -853,7 +897,6 @@
   set into their TNC will not connect, the 'L' means 'lockout'.  Lastly
   and importantly, notice the order of the sections.  They are all done
   in interface order.
-
 
 
   You should be able to see that the normal line for access to the
@@ -873,6 +916,7 @@
 
 
        default  * * * * * *  - sysop /spider/src/client client %s ax25
+
 
 
 
@@ -900,6 +944,28 @@
   node.motd is the message anyone logging into the node will get.  The
   node.conf file sets all the parameters of the node as you would
   expect.  An example is below ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

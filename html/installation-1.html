@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Installation Manual v1.49: Linux Installation </TITLE>
+ <TITLE>The DXSpider Installation Manual v1.50: Linux Installation </TITLE>
  <LINK HREF="installation-2.html" REL=next>
 
  <LINK HREF="installation.html#toc1" REL=contents>
@@ -18,12 +18,9 @@ Previous
 <H2><A NAME="ss1.1">1.1 Introduction</A>
 </H2>
 
-<P>This section describes the installation of DX Spider v1.47 on a 
+<P>This section describes the installation of DX Spider v1.50 on a 
 <A HREF="http://www.redhat.com">RedHat</A> Linux Distribution.
 Wherever possible I will try to include differences for other distributions.  
-I do not intend to try and cover the installation of Linux or the setup 
-of the AX25 utilities.  If you need help on this then read Iains original 
-installation guide that comes with the Spider distribution.
 <P>
 <P>I am assuming a general knowledge of Linux and its commands.  You should 
 know how to use <EM>tar</EM> and how to edit files using your favourite editor.
@@ -55,6 +52,8 @@ perl distribution.
 <A HREF="http://www.cpan.org/modules/by-module/Curses/Curses-1.06.tar.gz">Curses-1.06.tar.gz</A></LI>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time-HiRes-01.20.tar.gz</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Digest/Digest-SHA1-2.01.tar.gz">Digest-SHA1-2.01.tar.gz</A></LI>
 </UL>
 <P>
 <P>Copy the CPAN modules listed above to a convenient place on your computer. One good 
@@ -105,6 +104,13 @@ that's where you have put them.
 # make test
 # make install
 # cd ..
+#
+# tar xvfz /usr/local/packages/Digest-SHA1-2.01.tar.gz
+# cd Digest-SHA1-2.01
+# perl Makefile.pl
+# make test
+# make install
+# cd ..
 </PRE>
 <P>
 <P>Do not fall into the trap of thinking they're all the same, just because they 
@@ -116,7 +122,7 @@ nearly are! Pay particular attention to the instructions of <EM>IO</EM>, above.
 
 <P>I will assume that you have already downloaded the latest tarball of 
 the DXSpider software and are ready to install it. I am assuming version 
-1.47 for this section but of course you would use the latest version.
+1.50 for this section but of course you would use the latest version.
 <P>
 <P>Login as root and create a user to run the cluster under.  <B><I>UNDER 
 NO CIRCUMSTANCES USE ROOT AS THIS USER!</I></B>.  I am going to use 
@@ -158,7 +164,7 @@ permissions.  Copy the tarball to /home/sysop and do the following.
 <BLOCKQUOTE><CODE>
 <PRE>
 # cd ~sysop
-# tar xvfz spider-1.47.tar.gz
+# tar xvfz spider-1.50.tar.gz
 # ln -s ~sysop/spider /spider
 # groupadd -g 251 spider       (or another number)
 </PRE>
@@ -294,7 +300,7 @@ It should look something like this ...
 <BLOCKQUOTE><CODE>
 <PRE>
 $ ./cluster.pl
-DXSpider DX Cluster Version 1.47
+DXSpider DX Cluster Version 1.50
 Copyright (c) 1998 Dirk Koopman G1TLH
 loading prefixes ...
 loading band data ...

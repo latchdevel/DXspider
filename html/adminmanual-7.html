@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.49: Security</TITLE>
+ <TITLE>The DXSpider Administration Manual v1.50: Java Web applet</TITLE>
  <LINK HREF="adminmanual-8.html" REL=next>
  <LINK HREF="adminmanual-6.html" REL=previous>
  <LINK HREF="adminmanual.html#toc7" REL=contents>
@@ -13,82 +13,78 @@
 <A HREF="adminmanual-6.html">Previous</A>
 <A HREF="adminmanual.html#toc7">Contents</A>
 <HR>
-<H2><A NAME="s7">7. Security</A></H2>
+<H2><A NAME="s7">7. Java Web applet</A></H2>
 
-<P>From version 1.49 DXSpider has some additional security features.  These
-are not by any means meant to be exhaustive, however they do afford some
-security against piracy.  These two new features can be used independently 
-of each other or in concert to tighten the security.
+<P>In the spider tree will be a directory <EM>spider-web</EM>.  This is a
+neat little java web applet that can be run from a website.  The applet
+must run on the same machine as the cluster.  The included README file is
+shown below.
 <P>
-<H2><A NAME="ss7.1">7.1 Registration</A>
-</H2>
+<P>I should comment here that the applet is precompiled, that is, ready to go.
+It was compiled using JDK1.3.1.  If your version is earlier than this then it
+may not work.  Should that be the case you need to recompile or update your
+JDK.  To recompile do the following ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+cd /spider/spider-web
+rm *.class
+/usr/bin/javac spiderclient.java
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>I have used /usr/bin/javac as an example, your path to javac may be different.
+<P>
+<PRE>
+Spider-WEB v0.6b
 
-<P>The basic principle of registration is simple.  If a user is not registered
-by the sysop, then they have read-only access to the cluster.  The only
-thing they can actually send is a talk or a message to the sysop.  In
-order for them to be able to spot, send announces or talks etc the sysop
-must register them with the <EM>set/register</EM> command, like this ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-set/register g0vgs
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>The user g0vgs can now fully use the cluster.  In order to enable 
-registration, you can issue the command ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-set/var $main::reqreg = 1
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Any users that are not registered will now see the motd_nor file rather
-than the motd file as discussed in the Information, files and useful 
-programs section.
-<P>
-<P>Entering this line at the prompt will only last for the time the cluster
-is running of course and would not be present on a restart.  To make the
-change permanent, add the above line to /spider/scripts/startup.  To
-read more on the startup file, see the section on Information, files 
-and useful programs.
-<P>
-<P>To unregister a user use <EM>unset/register</EM> and to show the list
-of registered users, use the command <EM>show/register</EM>.
-<P>
-<H2><A NAME="ss7.2">7.2 Passwords</A>
-</H2>
+Completely based on a clx web client written in Java by dl6dbh
+(ftp://clx.muc.de/pub/clx/clx-java_10130001.tgz)
 
-<P>At the moment, passwords only affect users who login to a DXSpider
-cluster node via telnet.  If a user requires a password, they can
-either set it themselves or have the sysop enter it for them by using
-the <EM>set/password</EM> command.  Any users who already have passwords, 
-such as remote sysops, will be asked for their passwords automatically 
-by the cluster.  Using passwords in this way means that the user has a
-choice on whether to have a password or not.  To force the use of
-passwords at login, issue the command ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-set/var $main::passwdreq = 1
+The webserver has to run on the same machine as your DxSpider software!
+
+It is assumed that you have Java installed.  You need JDK1.3.1 at least.
+
+Installation instructions (Performed as root):
+
+Put all the files in the spider-web directory into a newly created directory
+under the DocumentRoot of your websever for instance 'client'. In my case
+this is:  /home/httpd/html/client/ although ymmv.  For Suse the correct
+path should be /usr/local/httpd/htdocs/client/ for example.
+
+Move spider.cgi to the cgi-bin directory of your webserver, in my case that is
+/home/httpd/cgi-bin/ although ymmv.  For Suse the correct path should be
+/usr/local/httpd/cgi-bin/ for example.
+
+Change the permissions of the files to ensure they are correct, obviously you
+will need to use the correct path the the files according to your system:
+
+chmod 755 /home/httpd/html/cgi-bin/spider.cgi
+chmod -R 755 /home/httpd/html/client/
+
+By default the spider.cgi script should pick up your hostname (As long as this
+is set correctly).  If it does not or your hostname differs from the name that
+you attach to the public address that you are using, then edit spider.cgi :
+
+# Uncomment and set the hostname manually here if the above fails.
+# $HOSTNAME = "gb7mbc.spoo.org" ;
+$PORT = "8000" ;
+
+'HOSTNAME' is the hostname of your cluster.
+
+'PORT' is the portnumber that you use to connect to your DxSpider via
+telnet (see Listeners.pm)
+
+NOTE: If you can start the console but cannot connect to the cluster from it, 
+then it is possible that the machine you are on cannot resolve the hostname of 
+your cluster machine.  If this is the case, you need to set your hostname 
+manually as above.
+
+You also need to set the $NODECALL variable.  This prints the name of your
+choosing (probably your cluster callsign) on the html page.
+
+You now can connect to Spider-Web via http://yourserver/cgi-bin/spider.cgi
 </PRE>
-</CODE></BLOCKQUOTE>
-<P>at the cluster prompt.  This can also be added to the /spider/scripts/startup
-file as above to make the change permanent.
-<P>
-<P>Of course, if you do this you will have to assign a password for each of 
-your users.  If you were asking them to register, it is anticipated that
-you would ask them to send you a message both to ask to be registered and
-to give you the password they wish to use.
-<P>
-<P>Should a user forget their password, it can be reset by the sysop by
-first removing the existing password and then setting a new one like so ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-unset/password g0vgs
-set/password g0vgs new_password
-</PRE>
-</CODE></BLOCKQUOTE>
 <P>
 <HR>
 <A HREF="adminmanual-8.html">Next</A>

@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.49: Information, files and useful programs</TITLE>
+ <TITLE>The DXSpider Administration Manual v1.50: Information, files and useful programs</TITLE>
  <LINK HREF="adminmanual-7.html" REL=next>
  <LINK HREF="adminmanual-5.html" REL=previous>
  <LINK HREF="adminmanual.html#toc6" REL=contents>
@@ -272,6 +272,33 @@ Simply go to the site and create one.  Secondly you need to copy the file
 ID and password.  You also at this point need to set $allow=1 to complete
 the setup.  Many thanks to Fred Lloyd, the proprieter of
 <A HREF="http://www.qrz.com">qrz.com</A> for allowing this access.
+<P>
+<H2><A NAME="ss6.9">6.9 Connecting logging programs</A>
+</H2>
+
+<P>There appear to be very few logging programs out there that support telnet
+especially the popular ones like LogEQF, Turbolog etc.  This can make it
+difficult to connect to your own cluster!
+The way to do it is to make the logging program think it has a TNC attached
+to a com port on the logging PC and 'push' a linux login out to it.
+This is achieved very simply by the use of <EM>agetty</EM>.
+<P>
+<P>All that is required is to add a line in /etc/inittab to have the client
+ready for a connection on the com port of your choice.  Remember that in
+Linux, the com ports start at ttyS0 for com1, ttyS1 for com2 etc.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+c4:2345:respawn:/sbin/agetty -L 9600 ttyS1
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>Add this after the standard runlevel lines in /etc/inittab.  The above
+line works on ttyS1 (com2).  Now as root, issue the command <EM>telinit q</EM>
+and it should be ready for connection.  All that is required is a 3 wire
+serial lead (tx, rx and signal ground).  Tell you logging program to use
+8n1 at 9600 baud and you should see a Linux login prompt.  Login as normal
+and then telnet from there to the cluster.
 <P>
 <HR>
 <A HREF="adminmanual-7.html">Next</A>
