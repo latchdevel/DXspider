@@ -1344,6 +1344,9 @@ e.g.
    SH/DXCC G
    SH/DXCC W on 20m info iota
 
+=== 0^SHOW/DXSTATS^Show the DX Statistics for last 31 days
+Show the total DX spots for the last 31 days
+
 === 0^SHOW/FILES [<filearea> [<string>]]^List the contents of a filearea
 SHOW/FILES on its own will show you a list of the various fileareas
 available on the system. To see the contents of a particular file
@@ -1362,8 +1365,11 @@ See also TYPE - to see the contents of a file.
 Show the contents of all the filters that are set. This command displays
 all the filters set - for all the various categories.
 
-=== 0^SHOW/HFSTATS^Show the HF DX Spot statistics
-Show the HF DX Spot statistics for your country for the last 31 days
+=== 0^SHOW/HFSTATS^Show the HF DX Statistics for last 31 days 
+Show the HF DX spots breakdown by band for the last 31 days
+
+=== 0^SHOW/HFTABLE^Show the HF DX Spotter Table for your country
+Show the HF DX Spotter table for your country for the last 31 days
 
 === 8^SHOW/HOPS <call> [ann|spots|wcy|wwv]^Show the hop counts for a node
 This command shows the hop counts set up for a node. You can specify
@@ -1566,8 +1572,11 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 
-=== 0^SHOW/VHFSTATS^Show the VHF DX Spot statistics
-Show the VHF/UHF DX Spot statistics for your country for the last 31 days
+=== 0^SHOW/VHFSTATS^Show the VHF DX Statistics for last 31 days
+Show the VHF DX spots breakdown by band for the last 31 days
+
+=== 0^SHOW/VHFTABLE^Show the VHF DX Spotter Table for your country
+Show the VHF DX Spotter table for your country for the last 31 days
 
 === 0^SHOW/WCY^Show last 10 WCY broadcasts
 === 0^SHOW/WCY <n>^Show last <n> WCY broadcasts
