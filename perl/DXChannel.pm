@@ -187,10 +187,10 @@ sub rec
 	}
 }
 
-# obtain a channel object by callsign [$obj = DXChannel->get($call)]
+# obtain a channel object by callsign [$obj = DXChannel::get($call)]
 sub get
 {
-	my ($pkg, $call) = @_;
+	my $call = shift;
 	return $channels{$call};
 }
 

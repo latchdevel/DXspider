@@ -494,7 +494,7 @@ sub run_cmd
 sub process
 {
 	my $t = time;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
@@ -582,7 +582,7 @@ sub broadcast
 	my $pkg = shift;			# ignored
 	my $s = shift;				# the line to be rebroadcast
 	
-    foreach my $dxchan (DXChannel->get_all()) {
+    foreach my $dxchan (DXChannel::get_all()) {
 		next unless $dxchan->{sort} eq 'U'; # only interested in user channels  
 		next if grep $dxchan == $_, @_;
 		$dxchan->send($s);			# send it
@@ -592,7 +592,7 @@ sub broadcast
 # gimme all the users
 sub get_all
 {
-	return grep {$_->{sort} eq 'U'} DXChannel->get_all();
+	return grep {$_->{sort} eq 'U'} DXChannel::get_all();
 }
 
 # run a script for this user
@@ -947,7 +947,7 @@ sub broadcast_debug
 {
 	my $s = shift;				# the line to be rebroadcast
 	
-	foreach my $dxchan (DXChannel->get_all) {
+	foreach my $dxchan (DXChannel::get_all) {
 		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
 		$dxchan->send_later('L', $s);
 	}

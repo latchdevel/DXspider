@@ -1,3 +1,7 @@
+13Mar05=======================================================================
+1. There has been a mix up in the Aranea1 branch. I have managed to merge a
+change that I have been meaning to do for ages. I have now made that change
+here.
 27Feb05=======================================================================
 1. fix duping on bad spot suckers that copy the prefix that is put at the end
 of the comment section by AR-C nodes becoming the whole comment. 

@@ -307,7 +307,7 @@ sub install
 	} elsif ($name eq 'USER_DEFAULT') {
 		@dxchan = DXChannel::get_all_users();
 	} else {
-		$dxchan = DXChannel->get($name);
+		$dxchan = DXChannel::get($name);
 		push @dxchan, $dxchan if $dxchan;
 	}
 	foreach $dxchan (@dxchan) {

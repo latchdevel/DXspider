@@ -438,8 +438,8 @@ sub handle_10
 #	RouteDB::update($to, $_[6]);
 
 	# it is here and logged on
-	$dxchan = DXChannel->get($main::myalias) if $to eq $main::mycall;
-	$dxchan = DXChannel->get($to) unless $dxchan;
+	$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
+	$dxchan = DXChannel::get($to) unless $dxchan;
 	if ($dxchan && $dxchan->is_user) {
 		$_[3] =~ s/\%5E/^/g;
 		$dxchan->talk($from, $to, $via, $_[3]);
@@ -663,7 +663,7 @@ sub handle_12
 
 	my $dxchan;
 	
-	if ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w.]+$/){
+	if ((($dxchan = DXChannel::get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w.]+$/){
 		$self->send_chat($line, @_[1..6]);
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
@@ -779,7 +779,7 @@ sub handle_16
 						}
 					}
 					$user->wantroutepc19(1) unless defined $wantpc19; # for now we work on the basis that pc16 = real route 
-					$user->lastin($main::systime) unless DXChannel->get($ncall);
+					$user->lastin($main::systime) unless DXChannel::get($ncall);
 					$user->put;
 						
 					# route the pc19 - this will cause 'stuttering PC19s' for a while
@@ -850,7 +850,7 @@ sub handle_16
 		$user = DXUser->new($call) if !$user;
 		$user->homenode($parent->call) if !$user->homenode;
 		$user->node($parent->call);
-		$user->lastin($main::systime) unless DXChannel->get($call);
+		$user->lastin($main::systime) unless DXChannel::get($call);
 		$user->put;
 	}
 	$self->route_pc16($origin, $line, $parent, @rout) if @rout;
@@ -1016,7 +1016,7 @@ sub handle_19
 		next if $call eq $main::mycall;
 
 		# check that this PC19 isn't trying to alter the wrong dxchan
-		my $dxchan = DXChannel->get($call);
+		my $dxchan = DXChannel::get($call);
 		if ($dxchan && $dxchan != $self) {
 			dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
 			next;
@@ -1098,7 +1098,7 @@ sub handle_19
 		my $mref = DXMsg::get_busy($call);
 		$mref->stop_msg($call) if $mref;
 				
-		$user->lastin($main::systime) unless DXChannel->get($call);
+		$user->lastin($main::systime) unless DXChannel::get($call);
 		$user->put;
 	}
 
@@ -1167,7 +1167,7 @@ sub handle_21
 			my $node = Route::Node::get($call);
 			if ($node) {
 						
-				my $dxchan = DXChannel->get($call);
+				my $dxchan = DXChannel::get($call);
 				if ($dxchan && $dxchan != $self) {
 					dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
 					return;
@@ -1549,10 +1549,10 @@ sub handle_51
 			# it's a reply, look in the ping list for this one
 			my $ref = $pings{$from};
 			if ($ref) {
-				my $tochan =  DXChannel->get($from);
+				my $tochan =  DXChannel::get($from);
 				while (@$ref) {
 					my $r = shift @$ref;
-					my $dxchan = DXChannel->get($r->{call});
+					my $dxchan = DXChannel::get($r->{call});
 					next unless $dxchan;
 					my $t = tv_interval($r->{t}, [ gettimeofday ]);
 					if ($dxchan->is_user) {
@@ -1700,7 +1700,7 @@ sub handle_default
 sub process
 {
 	my $t = time;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	my $pc50s;
 	
@@ -1761,7 +1761,7 @@ sub send_dx_spot
 {
 	my $self = shift;
 	my $line = shift;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
@@ -1812,7 +1812,7 @@ sub send_wwv_spot
 {
 	my $self = shift;
 	my $line = shift;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	my @dxcc = ((Prefix::cty_data($_[6]))[0..2], (Prefix::cty_data($_[7]))[0..2]);
 
@@ -1846,7 +1846,7 @@ sub send_wcy_spot
 {
 	my $self = shift;
 	my $line = shift;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	my @dxcc = ((Prefix::cty_data($_[10]))[0..2], (Prefix::cty_data($_[11]))[0..2]);
 	
@@ -1879,7 +1879,7 @@ sub send_announce
 {
 	my $self = shift;
 	my $line = shift;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	my $target;
 	my $to = 'To ';
@@ -1944,7 +1944,7 @@ sub send_chat
 {
 	my $self = shift;
 	my $line = shift;
-	my @dxchan = DXChannel->get_all();
+	my @dxchan = DXChannel::get_all();
 	my $dxchan;
 	my $target = $_[3];
 	my $text = unpad($_[2]);
@@ -2085,7 +2085,7 @@ sub route
 	}
 
 	# always send it down the local interface if available
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		dbg("route: $call -> $dxchan->{call} direct" ) if isdbg('route');
 	} else {
@@ -2108,7 +2108,7 @@ sub route
 				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
 				return;
 			}
-			$dxchan = DXChannel->get($rcall);
+			$dxchan = DXChannel::get($rcall);
 			dbg("route: $call -> $rcall using RouteDB" ) if isdbg('route') && $dxchan;
 		}
 	}
@@ -2189,7 +2189,7 @@ sub addping
 	my $r = {};
 	$r->{call} = $from;
 	$r->{t} = [ gettimeofday ];
-	if ($via && (my $dxchan = DXChannel->get($via))) {
+	if ($via && (my $dxchan = DXChannel::get($via))) {
 		$dxchan->send(pc51($to, $main::mycall, 1));
 	} else {
 		route(undef, $to, pc51($to, $main::mycall, 1));
@@ -2241,13 +2241,13 @@ sub process_rcmd_reply
 	if ($tonode eq $main::mycall) {
 		my $s = $rcmds{$fromnode};
 		if ($s) {
-			my $dxchan = DXChannel->get($s->{call});
-			my $ref = $user eq $tonode ? $dxchan : (DXChannel->get($user) || $dxchan);
+			my $dxchan = DXChannel::get($s->{call});
+			my $ref = $user eq $tonode ? $dxchan : (DXChannel::get($user) || $dxchan);
 			$ref->send($line) if $ref;
 			delete $rcmds{$fromnode} if !$dxchan;
 		} else {
 			# send unsolicited ones to the sysop
-			my $dxchan = DXChannel->get($main::myalias);
+			my $dxchan = DXChannel::get($main::myalias);
 			$dxchan->send($line) if $dxchan;
 		}
 	} else {

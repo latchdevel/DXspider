@@ -186,7 +186,7 @@ sub new_channel
 	# set up the basic channel info
 	# is there one already connected to me - locally? 
 	my $user = DXUser->get_current($call);
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		if ($main::bumpexisting) {
 			my $ip = $conn->{peerhost} || 'unknown';

@@ -203,7 +203,7 @@ sub config
 		$call = ' ' x length $call; 
 		
 		# recursion detector
-		if ((DXChannel->get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
+		if ((DXChannel::get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
 			$line .= ' ...';
 			push @out, $line;
 			return @out;
@@ -281,7 +281,7 @@ sub alldxchan
 	my @dxchan;
 #	dbg("Trying node $self->{call}") if isdbg('routech');
 
-	my $dxchan = DXChannel->get($self->{call});
+	my $dxchan = DXChannel::get($self->{call});
 	push @dxchan, $dxchan if $dxchan;
 	
 	# it isn't, build up a list of dxchannels and possible ping times 
@@ -290,7 +290,7 @@ sub alldxchan
 		foreach my $p (@{$self->{parent}}) {
 #			dbg("Trying parent $p") if isdbg('routech');
 			next if $p eq $main::mycall; # the root
-			my $dxchan = DXChannel->get($p);
+			my $dxchan = DXChannel::get($p);
 			if ($dxchan) {
 				push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
 			} else {
@@ -310,7 +310,7 @@ sub dxchan
 	my $self = shift;
 	
 	# ALWAYS return the locally connected channel if present;
-	my $dxchan = DXChannel->get($self->call);
+	my $dxchan = DXChannel::get($self->call);
 	return $dxchan if $dxchan;
 	
 	my @dxchan = $self->alldxchan;

@@ -479,7 +479,7 @@ sub notify
 	my $ref = shift;
 	my $to = $ref->{to};
 	my $uref = DXUser->get_current($to);
-	my $dxchan = DXChannel->get($to);
+	my $dxchan = DXChannel::get($to);
 	if (((*Net::SMTP && $email_server) || $email_prog) && $uref && $uref->wantemail) {
 		my $email = $uref->email;
 		if ($email) {

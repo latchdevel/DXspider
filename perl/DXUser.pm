@@ -264,7 +264,7 @@ sub get_current
 	my $pkg = shift;
 	my $call = uc shift;
   
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	return $dxchan->user if $dxchan;
 	my $rref = Route::get($call);
 	return $rref->user if $rref && exists $rref->{user};
