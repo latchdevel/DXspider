@@ -178,8 +178,9 @@ sub rec_stdin
 		cease(1);
 	} elsif ($r > 0) {
 		if ($mode) {
-			$buf =~ s/\r/\n/og if $mode == 1;
-			$buf =~ s/\r\n/\n/og if $mode == 2;
+			$buf =~ s/\r/\n/g if $mode == 1;
+			$buf =~ s/[\r\x00]//g if $mode == 2;
+			
 			$dangle = !($buf =~ /\n$/);
 			if ($buf eq "\n") {
 				@lines = (" ");
@@ -278,7 +279,7 @@ sub dochat
 					dbg('connect', "received 0 length line, aborting...");
 					cease(11);
 				}
-				$line =~ s/\r\n/\n/og;
+				$line =~ s/\r//g;
 				chomp;
 			} elsif ($csort eq 'ax25' || $csort eq 'prog') {
 				local $/ = "\r";
@@ -287,7 +288,8 @@ sub dochat
 					dbg('connect', "received 0 length line, aborting...");
 					cease(11);
 				}
-				$line =~ s/\r//og;
+				$line =~ s/\r/\n/g;
+				chomp;
 			}
 			dbg('connect', "received \"$line\"");
 			if ($abort && $line =~ /$abort/i) {
