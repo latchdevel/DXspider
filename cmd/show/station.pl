@@ -70,7 +70,7 @@ if (@f <= 2 && uc $f[0] eq 'ALL') {
 			}
 			
 			my $cref = Route::get($call);
-			my $seek = $cref->isa('Route::Node') ? $call : join(',', $ref->parents) if $cref;
+			my $seek = $cref->isa('Route::Node') ? $call : join(',', $cref->parents) if $cref;
 
 			if ($seek) {
 				push @out, "User         : $call (at $seek)";
