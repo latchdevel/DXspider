@@ -1,9 +1,16 @@
+29Oct00=======================================================================
+1. put in echo cancelling measures into the clients. This doesn't mean you
+shouldn't take steps to prevent echoing on node links, but it may help where
+(whatever you do) it still bloody echos! This is experimental. 
 28Oct00=======================================================================
 1. updated show/sun and show/moon from stuff sent by Steve Franke K9AN
 2. added show/call which queries jeifer.pineknot.com for any call in the 
 world (as opposed to UALR which only does US calls). Inspired by a bit of 
 perl sent to me by Steve Franke (again!) and also Angel EA7WA who gave me the
 pineknot ip address.
+3. fixed clients so that they accept -0 as a valid SSID and then strip it off
+as though they had come in without (why has this taken so long to appear? How
+long have we been running this code ??????). 
 27Oct00=======================================================================
 1. alter the code in clean_old of DXMsg system to see if we get some different
 behaviour with random crashing

@@ -37,9 +37,9 @@ sub print
 	my $count;
 	    
 	$search = '1' unless $pattern || $who;
-	$search = "\$ref->[1] =~ /$pattern/" if $pattern;
+	$search = "\$ref->[1] =~ /$pattern/i" if $pattern;
 	$search .= ' && ' if $pattern && $who;
-	$search .= "(\$ref->[2] =~ /$who/ || \$ref->[3] =~ /$who/)" if $who;
+	$search .= "(\$ref->[2] =~ /$who/i || \$ref->[3] =~ /$who/i)" if $who;
 	$eval = qq(
 			   my \$c;
 			   my \$ref;

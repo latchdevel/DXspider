@@ -34,6 +34,7 @@
 
 #include "sel.h"
 #include "cmsg.h"
+#include "chain.h"
 #include "debug.h"
 
 #define TEXT 1
@@ -95,8 +96,9 @@ int tabsize = 8;				/* default tabsize for text messages */
 char *connsort = "local";		/* the connection variety */
 int state = 0;					/* the current state of the connection */
 int laststate = 0;				/* the last state we were in */
-
-
+reft echobase;					/* the anti echo queue */
+int maxecho = 5;				/* the depth of the anti echo queue */
+int echon;						/* no of entries in the anti echo queue */
 
 #define CONNECTED 100
 #define WAITLOGIN 1
@@ -221,7 +223,22 @@ fcb_t *fcb_new(int cnum, int sort)
 void flush_text(fcb_t *f)
 {
 	if (f->obuf) {
-		cmsg_send(f->outq, f->obuf, 0);
+		/* save this onto the front of the echo chain */
+		cmsg_t *imp = f->obuf;
+		int size = imp->inp - imp->data;
+		cmsg_t *emp = cmsg_new(size, imp->sort, imp->portp);
+
+		emp->size = size;
+		memcpy(emp->data, imp->data, size);
+		emp->inp = emp->data + size; /* just in case */
+		chain_add(&echobase, emp);
+		if (++echon > maxecho) {
+			emp = cmsg_prev(&echobase);
+			cmsg_free(emp);
+		}
+		
+		/* queue it for sending */
+		cmsg_send(f->outq, imp, 0);
 		f->sp->flags |= SEL_OUTPUT;
 		f->obuf = 0;
 	}
@@ -572,12 +589,20 @@ void setmode(char *m)
 
 void process_stdin()
 {
-	cmsg_t *mp = cmsg_next(in->inq);
+	cmsg_t *wmp, *mp = cmsg_next(in->inq);
 	char *p, hasa, hasn, i;
 	char callsign[MAXCALLSIGN+1];
 	
 	if (mp) {
 		dbg(DMSG, "MSG size: %d", mp->size);
+		
+		/* check for echos */
+		for (wmp = 0; wmp = chain_get_next(&echobase, wmp); ) {
+			if (!memcmp(wmp->data, mp->data, wmp->size)) {
+				cmsg_callback(mp, 0);
+				return;
+			}
+		}
 
 		switch (state) {
 		case CONNECTED:
@@ -854,6 +879,8 @@ main(int argc, char *argv[])
 #ifdef SIGPWR
 	signal(SIGPWR, terminate);
 #endif
+	/* init a few things */
+	chain_init(&echobase);
 
 	/* connect up stdin */
 	in = fcb_new(0, TEXT);

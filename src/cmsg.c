@@ -91,6 +91,7 @@ cmsg_t *cmsg_new(int size, int sort, void *pp)
 	return mp;
 }
 
+
 void cmsg_send(reft *base, cmsg_t *mp, void (*callback)())
 {
 	time(&mp->t);
@@ -177,7 +178,11 @@ void cmsg_flush(reft *base, int reply)
 /*
  * 
  * $Log$
- * Revision 1.2  2000-07-20 14:16:00  minima
+ * Revision 1.3  2000-10-29 11:00:07  minima
+ * added echo cancelling
+ * started new filter code, objectifyed old filter code
+ *
+ * Revision 1.2  2000/07/20 14:16:00  minima
  * can use Sourceforge now!
  * added user->qra cleaning
  * added 4 digit qra to user broadcast dxspots if available

@@ -466,7 +466,7 @@ sub normal
 						$org_itu = $dxcc[1]->itu;
 						$org_cq = $dxcc[1]->cq();						
 					}
-					my ($filter, $hops) = Filter::it($self->{inannfilter}, @field[1..6], $self->{call}, 
+					my ($filter, $hops) = $self->{inannfilter}->it(@field[1..6], $self->{call}, 
 													$ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 					unless ($filter) {
 						dbg('chan', "Rejected by filter");
@@ -1139,7 +1139,7 @@ sub send_dx_spot
 		my ($filter, $hops);
 
 		if ($dxchan->{spotfilter}) {
-		    ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @_, $self->{call} );
+		    ($filter, $hops) = $dxchan->{spotfilter}->it(@_, $self->{call} );
 			next unless $filter;
 		}
 		
@@ -1184,7 +1184,7 @@ sub send_wwv_spot
 		my ($filter, $hops);
 
 		if ($dxchan->{wwvfilter}) {
-			 ($filter, $hops) = Filter::it($dxchan->{wwvfilter}, @_, $self->{call} );
+			 ($filter, $hops) = $dxchan->{wwvfilter}->it(@_, $self->{call} );
 			 next unless $filter;
 		}
 		if ($dxchan->is_node) {
@@ -1228,7 +1228,7 @@ sub send_wcy_spot
 		my ($filter, $hops);
 
 		if ($dxchan->{wcyfilter}) {
-			 ($filter, $hops) = Filter::it($dxchan->{wcyfilter}, @_, $self->{call} );
+			 ($filter, $hops) = $dxchan->{wcyfilter}->it(@_, $self->{call} );
 			 next unless $filter;
 		}
 		if ($dxchan->is_clx || $dxchan->is_spider) {
@@ -1303,7 +1303,7 @@ sub send_announce
 				$org_itu = $dxcc[1]->itu;
 				$org_cq = $dxcc[1]->cq;						
 			}
-			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+			($filter, $hops) = $dxchan->{annfilter}->it(@_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 			next unless $filter;
 		} 
 		if ($dxchan->is_node && $_[1] ne $main::mycall) {  # i.e not specifically routed to me
@@ -1473,7 +1473,7 @@ sub broadcast_list
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
-			($filter) = Filter::it($dxchan->{spotfilter}, @{$fref}) if ref $fref;
+			($filter) = $dxchan->{spotfilter}->it(@{$fref}) if ref $fref;
 			next unless $filter;
 		}
 		next if $sort eq 'ann' && !$dxchan->{ann};

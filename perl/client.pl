@@ -119,6 +119,8 @@ sub rec_socket
 			if ($buffered) {
 				if (length $outqueue >= $client_buffer_lth) {
 					print $stdout $outqueue;
+					pop @echo if @echo > $maxecho;
+					push @echo, $outqueue;
 					$outqueue = "";
 				}
 				$outqueue .= "$savenl$line$snl";
@@ -144,6 +146,8 @@ sub rec_socket
 		} elsif ($sort eq 'B') {
 			if ($buffered && $outqueue) {
 				print $stdout $outqueue;
+				pop @echo if @echo > $maxecho;
+				push @echo, $outqueue;
 				$outqueue = "";
 			}
 			$buffered = $line;	# set buffered or unbuffered
@@ -199,6 +203,7 @@ sub rec_stdin
 			unshift @lines, ($lastbit . $first) if ($first);
 			foreach $first (@lines) {
 				#		  print "send_now $call $first\n";
+				next if grep {$_ eq $first } @echo;
 				$conn->send_later("I$call|$first");
 			}
 			$lastbit = $buf;
@@ -340,6 +345,7 @@ $savenl = "";                   # an NL that has been saved from last time
 $timeout = 60;                  # default timeout for connects
 $abort = "";                    # the current abort string
 $cpath = "$root/connect";		# the basic connect directory
+$maxecho = 5;                  # length of max echo queue
 
 $pid = 0;                       # the pid of the child program
 $csort = "";                    # the connection type
