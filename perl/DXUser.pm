@@ -125,7 +125,7 @@ sub get
 
 sub get_all_calls
 {
-  return keys %u;
+  return (sort keys %u);
 }
 
 #

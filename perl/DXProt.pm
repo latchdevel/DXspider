@@ -19,7 +19,6 @@ use DXCluster;
 use DXProtVars;
 use DXCommandmode;
 use Spot;
-use Date::Parse;
 use DXProtout;
 
 use strict;
@@ -104,11 +103,12 @@ sub normal
 	  last SWITCH if grep $field[7] =~ /^$_/,  @DXProt::nodx_node;
 	  
       # convert the date to a unix date
-	  my $date = $field[3];
-	  my $time = $field[4];
-	  $date =~ s/^\s*(\d+)-(\w\w\w)-(19\d\d)$/$1 $2 $3/;
-	  $time =~ s/^(\d\d)(\d\d)Z$/$1:$2 +0000/;
-	  my $d = str2time("$date $time");
+	  my $d = cltounix($field[3], $field[4]);
+#	  my $date = $field[3];
+#	  my $time = $field[4];
+#	  $date =~ s/^\s*(\d+)-(\w\w\w)-(19\d\d)$/$1 $2 $3/;
+#	  $time =~ s/^(\d\d)(\d\d)Z$/$1:$2 +0000/;
+#	  my $d = str2time("$date $time");
 	  return if !$d;               # bang out (and don't pass on) if date is invalid
 	  
 	  # strip off the leading & trailing spaces from the comment
@@ -252,24 +252,31 @@ sub normal
     if ($pcno == 25) {last SWITCH;}
     if ($pcno == 26) {last SWITCH;}
     if ($pcno == 27) {last SWITCH;}
-    if ($pcno == 28) {last SWITCH;}
-    if ($pcno == 29) {last SWITCH;}
-    if ($pcno == 30) {last SWITCH;}
-    if ($pcno == 31) {last SWITCH;}
-    if ($pcno == 32) {last SWITCH;}
-    if ($pcno == 33) {last SWITCH;}
-    if ($pcno == 34) {last SWITCH;}
-    if ($pcno == 35) {last SWITCH;}
-    if ($pcno == 36) {last SWITCH;}
+
+    if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42) {   # mail/file handling
+	  DXMsg::process($self, $line);
+	  return;
+	}
+	
+    if ($pcno == 34 || $pcno == 36) {   # remote commands (incoming)
+	  last SWITCH;
+	}
+	
+    if ($pcno == 35) {                  # remote command replies
+	  last SWITCH;
+	}
+	
     if ($pcno == 37) {last SWITCH;}
-    if ($pcno == 38) {last SWITCH;}
+    
+	if ($pcno == 38) {                  # node connected list from neighbour
+	  return;
+	}
 
     if ($pcno == 39) {              # incoming disconnect
       $self->disconnect();
 	  return;
 	}
 	
-    if ($pcno == 40) {last SWITCH;}
     if ($pcno == 41) {              # user info
       # add this station to the user database, if required
 	  my $user = DXUser->get_current($field[1]);
@@ -293,7 +300,6 @@ sub normal
 	  $user->put;
 	  last SWITCH;
 	}
-    if ($pcno == 42) {last SWITCH;}
     if ($pcno == 43) {last SWITCH;}
     if ($pcno == 44) {last SWITCH;}
     if ($pcno == 45) {last SWITCH;}
@@ -371,16 +377,17 @@ sub finish
   my $ref = DXCluster->get($self->call);
   
   # broadcast to all other nodes that all the nodes connected to via me are gone
-  my @nodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
+  my @gonenodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
   my $node;
 
-  foreach $node (@nodes) {
+  foreach $node (@gonenodes) {
     next if $node->call eq $self->call; 
-    broadcast_ak1a(DXProt::pc21($node, 'Gone'), $self);    # done like this 'cos DXNodes don't have a pc21 method
+    broadcast_ak1a(pc21($node->call, 'Gone'), $self);    # done like this 'cos DXNodes don't have a pc21 method
+	$node->del();
   }
 
   # now broadcast to all other ak1a nodes that I have gone
-  broadcast_ak1a($self->pc21('Gone.'), $self);
+  broadcast_ak1a(pc21($self->call, 'Gone.'), $self);
   $ref->del() if $ref;
 }
 

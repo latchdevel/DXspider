@@ -28,6 +28,7 @@ use DXUser;
 use DXM;
 use DXCommandmode;
 use DXProt;
+use DXMsg;
 use DXCluster;
 use DXDebug;
 use Prefix;

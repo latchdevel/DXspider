@@ -10,10 +10,10 @@ my @list = split /\s+/, $line;		      # generate a list of callsigns
 my $l;
 my @out;
 
-print "line: $line\n";
+#print "line: $line\n";
 foreach $l (@list) {
   my @ans = Prefix::extract($l);
-  print "ans:", @ans, "\n";
+  #print "ans:", @ans, "\n";
   next if !@ans;
   my $pre = shift @ans;
   my $a;

@@ -8,10 +8,12 @@
 
 package DXUtil;
 
+use Date::Parse;
+
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf parray parraypairs
-             print_all_fields 
+             print_all_fields cltounix 
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -54,6 +56,16 @@ sub cldatetime
   my $date = cldate($t);
   my $time = ztime($t);
   return "$date $time";
+}
+
+# return a unix date from a cluster date and time
+sub cltounix
+{
+  my $date = shift;
+  my $time = shift;
+  $date =~ s/^\s*(\d+)-(\w\w\w)-(19\d\d)$/$1 $2 $3/;
+  $time =~ s/^(\d\d)(\d\d)Z$/$1:$2 +0000/;
+  return str2time("$date $time");
 }
 
 # turn a latitude in degrees into a string

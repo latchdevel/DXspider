@@ -128,8 +128,7 @@ sub pc20
 # delete a node
 sub pc21
 {
-  my ($ref, $reason) = @_;
-  my $call = $ref->call;
+  my ($call, $reason) = @_;
   my $hops = get_hops(21);
   $reason = "Gone." if !$reason;
   return "PC21^$call^$reason^$hops^";
@@ -151,6 +150,53 @@ sub pc24
   
   return "PC24^$call^$flag^$hops^";
 }
+
+# message start (fromnode, tonode, to, from, t, private, subject, origin)
+sub pc28
+{
+  my ($fromnode, $tonode, $to, $from, $t, $private, $subject, $origin) = @_;
+  my $date = cldate($t);
+  my $time = ztime($t);
+  $private = $private ? '1' : '0';
+  return "PC28^$fromnode^$tonode^$to^from^$date^$time^$private^$subject^ ^5^0^ ^$origin^~";
+}
+
+# message text (from and to node same way round as pc29)
+sub pc29 
+{
+  my ($fromnode, $tonode, $stream, $text) = @_;
+  $text =~ s/\^//og;        # remove ^
+  return "PC29^$fromnode^$tonode^$stream^text^~";
+}
+
+# subject acknowledge (will have to and from node reversed to pc28)
+sub pc30
+{
+  my ($fromnode, $tonode, $stream) = @_;
+  return "PC30^$fromnode^$tonode^$stream^";
+}
+
+# acknowledge this tranche of lines (to and from nodes reversed to pc29 and pc28
+sub pc31
+{
+  my ($fromnode, $tonode, $stream) = @_;
+  return "PC31^$fromnode^$tonode^$stream^";
+}
+
+#  end of message from the sending end (pc28 node order)
+sub pc32
+{
+  my ($fromnode, $tonode, $stream) = @_;
+  return "PC32^$fromnode^$tonode^$stream^";
+}
+
+# acknowledge end of message from receiving end (opposite pc28 node order)
+sub pc33
+{
+  my ($fromnode, $tonode, $stream) = @_;
+  return "PC33^$fromnode^$tonode^$stream^";
+}
+
 
 # send all the DX clusters I reckon are connected
 sub pc38
