@@ -152,9 +152,9 @@ sub extract
 		$p = $parts[0];
 		shift @parts if $p =~ /^(WEB|NET)$/o;
 		$p = $parts[$#parts];
-		pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|SIX|WEB|NET|Q\w+)$/o;
+		pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
 		$p = $parts[$#parts];
-		pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|SIX|WEB|NET|Q\w+)$/o;
+		pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
   
 		# can we resolve them by direct lookup
 		foreach $p (@parts) {
