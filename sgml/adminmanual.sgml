@@ -515,6 +515,24 @@ series of PC frame types.  PC11 for example is a DX spot. The figures here
 are not exhaustive but should give you a good idea of how the file works.
 
 <P>
+SHould any of the nodecalls include an ssid, it is important to wrap the
+whole call in single quotes, like this ...
+
+<tscreen><verb>
+ 'DB0FHF-15' => {
+                        11 => 5,
+                        12 => 8,
+                        16 => 8,
+                        17 => 8,
+                        19 => 8,
+                        21 => 8,
+                   },
+</verb></tscreen>
+
+If you do not do this, you will get errors and the file will not work as
+expected.
+
+<P>
 You can alter this file at any time, including whilst the cluster is running.  
 If you alter the file during runtime, the command <em>load/hops</em> will 
 bring your changes into effect.

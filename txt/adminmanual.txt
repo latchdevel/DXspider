@@ -916,10 +916,31 @@
   how the file works.
 
 
+  SHould any of the nodecalls include an ssid, it is important to wrap
+  the whole call in single quotes, like this ...
+
+
+
+
+   'DB0FHF-15' => {
+                          11 => 5,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+
+
+
+
+  If you do not do this, you will get errors and the file will not work
+  as expected.
+
+
   You can alter this file at any time, including whilst the cluster is
   running.  If you alter the file during runtime, the command load/hops
   will bring your changes into effect.
-
 
 
   1.11.  Hop Control on Specific Nodes
@@ -984,38 +1005,34 @@
 
 
 
+       # the list of regexes for messages that we won't store having
+       # received them (bear in mind that we must receive them fully before
+       # we can bin them)
+
+
+       # The format of each line is as follows
+
+       #     type      source             pattern
+       #     P/B/F     T/F/O/S            regex
+
+       # type: P - private, B - bulletin (msg), F - file (ak1a bull)
+       # source: T - to field, F - from field,  O - origin, S - subject
+       # pattern: a perl regex on the field requested
+
+       # Currently only type B and P msgs are affected by this code.
+       #
+       # The list is read from the top down, the first pattern that matches
+       # causes the action to be taken.
+
+       # The pattern can be undef or 0 in which case it will always be selected
+       # for the action specified
 
 
 
+       package DXMsg;
 
-  # the list of regexes for messages that we won't store having
-  # received them (bear in mind that we must receive them fully before
-  # we can bin them)
-
-
-  # The format of each line is as follows
-
-  #     type      source             pattern
-  #     P/B/F     T/F/O/S            regex
-
-  # type: P - private, B - bulletin (msg), F - file (ak1a bull)
-  # source: T - to field, F - from field,  O - origin, S - subject
-  # pattern: a perl regex on the field requested
-
-  # Currently only type B and P msgs are affected by this code.
-  #
-  # The list is read from the top down, the first pattern that matches
-  # causes the action to be taken.
-
-  # The pattern can be undef or 0 in which case it will always be selected
-  # for the action specified
-
-
-
-  package DXMsg;
-
-  @badmsg = (
-  );
+       @badmsg = (
+       );
 
 
 
@@ -1100,6 +1117,9 @@
   of show/baddx, show/badspotter and show/badnode.
 
 
+
+
+
   3.  Mail
 
   DXSpider deals seamlessly with standard AK1A type mail.  It supports
@@ -1120,6 +1140,8 @@
   default method of sending mail and so a simple s for send will do.  A
   full list of the send commands and options is in the command set
   section, so I will not duplicate them here.
+
+
   3.2.  Bulletin mail
 
   Bulletin mail is sent by using the sb command.  This is one of the
@@ -1147,41 +1169,58 @@
 
 
 
-       #
-       # this is an example message forwarding file for the system
-       #
-       # The format of each line is as follows
-       #
-       #     type    to/from/at pattern action  destinations
-       #     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
-       #
-       # type: P - private, B - bulletin (msg), F - file (ak1a bull)
-       # to/from/at: T - to field, F - from field, A - home bbs, O - origin
-       # pattern: a perl regex on the field requested
-       # action: I - ignore, F - forward
-       # destinations: a reference to an array containing node callsigns
-       #
-       # if it is non-private and isn't in here then it won't get forwarded
-       #
-       # Currently only type B msgs are affected by this code.
-       #
-       # The list is read from the top down, the first pattern that matches
-       # causes the action to be taken.
-       #
-       # The pattern can be undef or 0 in which case it will always be selected
-       # for the action specified
-       #
-       # If the BBS list is undef or 0 and the action is 'F' (and it matches the
-       # pattern) then it will always be forwarded to every node that doesn't have
-       # it (I strongly recommend you don't use this unless you REALLY mean it, if
-       # you allow a new link with this on EVERY bull will be forwarded immediately
-       # on first connection)
-       #
 
-       package DXMsg;
 
-       @forward = (
-       );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #
+  # this is an example message forwarding file for the system
+  #
+  # The format of each line is as follows
+  #
+  #     type    to/from/at pattern action  destinations
+  #     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
+  #
+  # type: P - private, B - bulletin (msg), F - file (ak1a bull)
+  # to/from/at: T - to field, F - from field, A - home bbs, O - origin
+  # pattern: a perl regex on the field requested
+  # action: I - ignore, F - forward
+  # destinations: a reference to an array containing node callsigns
+  #
+  # if it is non-private and isn't in here then it won't get forwarded
+  #
+  # Currently only type B msgs are affected by this code.
+  #
+  # The list is read from the top down, the first pattern that matches
+  # causes the action to be taken.
+  #
+  # The pattern can be undef or 0 in which case it will always be selected
+  # for the action specified
+  #
+  # If the BBS list is undef or 0 and the action is 'F' (and it matches the
+  # pattern) then it will always be forwarded to every node that doesn't have
+  # it (I strongly recommend you don't use this unless you REALLY mean it, if
+  # you allow a new link with this on EVERY bull will be forwarded immediately
+  # on first connection)
+  #
+
+  package DXMsg;
+
+  @forward = (
+  );
 
 
 
@@ -1205,20 +1244,28 @@
 
 
 
-         MSG TO <msgno> <call>     - change TO callsign to <call>
-         MSG FRom <msgno> <call>   - change FROM callsign to <call>
-         MSG PRrivate <msgno>      - set private flag
-         MSG NOPRrivate <msgno>    - unset private flag
-         MSG RR <msgno>            - set RR flag
-         MSG NORR <msgno>          - unset RR flag
-         MSG KEep <msgno>          - set the keep flag (message won't be deleted ever)
-         MSG NOKEep <msgno>        - unset the keep flag
-         MSG SUbject <msgno> <new> - change the subject to <new>
-         MSG WAittime <msgno>      - remove any waiting time for this message
-         MSG NOREad <msgno>        - mark message as unread
-         MSG REad <msgno>          - mark message as read
-         MSG QUeue                 - queue any outstanding bulletins
-         MSG QUeue 1               - queue any outstanding private messages
+
+
+
+
+
+
+
+
+    MSG TO <msgno> <call>     - change TO callsign to <call>
+    MSG FRom <msgno> <call>   - change FROM callsign to <call>
+    MSG PRrivate <msgno>      - set private flag
+    MSG NOPRrivate <msgno>    - unset private flag
+    MSG RR <msgno>            - set RR flag
+    MSG NORR <msgno>          - unset RR flag
+    MSG KEep <msgno>          - set the keep flag (message won't be deleted ever)
+    MSG NOKEep <msgno>        - unset the keep flag
+    MSG SUbject <msgno> <new> - change the subject to <new>
+    MSG WAittime <msgno>      - remove any waiting time for this message
+    MSG NOREad <msgno>        - mark message as unread
+    MSG REad <msgno>          - mark message as read
+    MSG QUeue                 - queue any outstanding bulletins
+    MSG QUeue 1               - queue any outstanding private messages
 
 
 
@@ -1252,6 +1299,10 @@
          Times read: 0
        G0VGS de GB7MBC 28-Jan-2001 1308Z >
 
+
+
+
+
   3.6.  Filtering mail
 
   This is described in the section on Other filters so I will not
@@ -1265,7 +1316,6 @@
   sysops.  In /spider/msg there is a directory called distro.  You put
   any distibution lists in here.  For example, here is a file called
   SYSOP.pl that caters for the UK sysops.
-
 
 
        qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
@@ -1310,26 +1360,18 @@
 
 
 
-
-
-
-
-
-
-
-
-  #
-  # startup script example
-  #
-  # set maximum no of spots allowed to 100
-  # set/var $Spot::maxspots = 1
-  #
-  # Set registration on
-  # set/var $main::reqreg = 1
-  #
-  # Set passwords on
-  # set/var $main::passwdreq = 1
-  #
+       #
+       # startup script example
+       #
+       # set maximum no of spots allowed to 100
+       # set/var $Spot::maxspots = 1
+       #
+       # Set registration on
+       # set/var $main::reqreg = 1
+       #
+       # Set passwords on
+       # set/var $main::passwdreq = 1
+       #
 
 
 
@@ -1341,8 +1383,6 @@
   Currently this can only be done by the sysop but it is envisaged that
   eventually users will be able to set their own.  An example is
   included in the distibution but here is a further example.
-
-
 
        #
        # G0FYD
@@ -1450,6 +1490,7 @@
 
 
 
+
   This will update the existing local oblast database or create it if it
   does not exist.
 
@@ -1468,6 +1509,8 @@
        buck             GB7ADX
        hftest           GB7DXM
        G0VGS de GB7MBC  3-Feb-2001 1925Z >
+
+
 
 
 
@@ -1516,6 +1559,7 @@
   If you remove a database it ceases to exist and would have to be
   created from scratch if you still required it.
 
+
   6.  Information, files and useful programs
 
   6.1.  MOTD
@@ -1534,6 +1578,8 @@
   This message of the day file lives in the same directory as the
   standard motd file but is only sent to non-registered users.  Once
   registered they will receive the same message as any other user.
+
+
 
 
   6.3.  Downtime message
@@ -1602,7 +1648,6 @@
 
 
 
-
   You can see that in the files area (basically the packclus directory)
   there is a file called news and a directory called bulletin.  You can
   also see that dates they were created.  In the case of the file news,
@@ -1645,22 +1690,19 @@
 
 
 
-
-
-
-  type bulletin/opdx391
-  Ohio/Penn DX Bulletin No. 391
-  The Ohio/Penn Dx PacketCluster
-  DX Bulletin No. 391
-  BID: $OPDX.391
-  January 11, 1999
-  Editor Tedd Mirgliotta, KB8NW
-  Provided by BARF-80 BBS Cleveland, Ohio
-  Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
-  Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
-  Association, Ohio/Penn PacketCluster Network, K1XN & Golist, WB2RAJ/WB2YQH
-  & The 59(9) DXReport, W3UR & The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
-  Press Enter to continue, A to abort (508 lines) >
+       type bulletin/opdx391
+       Ohio/Penn DX Bulletin No. 391
+       The Ohio/Penn Dx PacketCluster
+       DX Bulletin No. 391
+       BID: $OPDX.391
+       January 11, 1999
+       Editor Tedd Mirgliotta, KB8NW
+       Provided by BARF-80 BBS Cleveland, Ohio
+       Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
+       Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
+       Association, Ohio/Penn PacketCluster Network, K1XN & Golist, WB2RAJ/WB2YQH
+       & The 59(9) DXReport, W3UR & The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
+       Press Enter to continue, A to abort (508 lines) >
 
 
 
@@ -1673,6 +1715,30 @@
   You will find a file in /spider/cmd/ called Aliases.  First, copy this
   file to /spider/local_cmd/Aliases and edit this file.  You will see
   something like this ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
