@@ -92,6 +92,8 @@ if ($self->state eq "prompt") {
 			;
 		} elsif ($notincalls && ($f eq 'RR')) {
 			$loc->{rrreq} = '1';
+		} elsif ($f eq '@') {     # this is bbs syntax, for now lose the rest
+			last;
 		} else {
 
 			# callsign ?
