@@ -1,7 +1,7 @@
-  The DXSpider Installation Manual v1.47
+  The DXSpider Installation Manual v1.48
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (ianmaude@btinternet.com)
-  Version 1.47, April 2001 revision 1.0
+  Version 1.48, July 2001 revision 1.0
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -83,7 +83,7 @@
 
 
 
-  o  Data-Dumper-2.101.tar.gz
+  o  Data-Dumper-2.10.tar.gz
 
   o  TimeDate-1.10.tar.gz
 
