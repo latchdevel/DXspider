@@ -53,7 +53,7 @@ $baddxfn = "$main::data/baddx.pl";
 (
  [ qw(c c m p bc c) ],			# pc10
  [ qw(f m d t m c c h) ],		# pc11
- [ qw(c bc m p bc p h) ],		# pc12
+ [ qw(c bc m bp c p h) ],		# pc12
  [ qw(c h) ],					# 
  [ qw(c h) ],					# 
  [ qw(c m h) ],					# 
