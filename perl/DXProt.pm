@@ -1765,7 +1765,7 @@ sub disconnect
 
 	# do routing stuff
 	my $pref = Route::Node::get($self->{call});
-	my @rout = $pref->del_nodes;
+	my @rout = $pref->del_nodes if $pref;
 	push @rout, $main::routeroot->del_node($call);
 	dbg('route', "B/C PC21 (from PC39) for: " . join(',', (map{ $_->call } @rout))) if @rout;
 	

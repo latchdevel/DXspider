@@ -123,43 +123,50 @@ sub config
 	my @out;
 	my $line;
 	my $call = $self->user_call;
+	my $printit = 1;
 
-	$line = ' ' x ($level*2) . "$call";
-	$call = ' ' x length $call; 
-	unless ($nodes_only) {
-		if (@{$self->{users}}) {
-			$line .= '->';
-			foreach my $ucall (sort @{$self->{users}}) {
-				my $uref = Route::User::get($ucall);
-				my $c;
-				if ($uref) {
-					$c = $uref->user_call;
-				} else {
-					$c = "$ucall?";
-				}
-				if ((length $line) + (length $c) + 1 < 79) {
-					$line .= $c . ' ';
-				} else {
-					$line =~ s/\s+$//;
-					push @out, $line;
-					$line = ' ' x ($level*2) . "$call->";
+	# allow ranges
+	if (@_) {
+		$printit = grep $call =~ m|$_|, @_;
+	}
+
+	if ($printit) {
+		$line = ' ' x ($level*2) . "$call";
+		$call = ' ' x length $call; 
+		unless ($nodes_only) {
+			if (@{$self->{users}}) {
+				$line .= '->';
+				foreach my $ucall (sort @{$self->{users}}) {
+					my $uref = Route::User::get($ucall);
+					my $c;
+					if ($uref) {
+						$c = $uref->user_call;
+					} else {
+						$c = "$ucall?";
+					}
+					if ((length $line) + (length $c) + 1 < 79) {
+						$line .= $c . ' ';
+					} else {
+						$line =~ s/\s+$//;
+						push @out, $line;
+						$line = ' ' x ($level*2) . "$call->";
+					}
 				}
 			}
 		}
+		$line =~ s/->$//g;
+		$line =~ s/\s+$//;
+		push @out, $line if length $line;
 	}
-	$line =~ s/->$//g;
-	$line =~ s/\s+$//;
-	push @out, $line if length $line;
 	
 	foreach my $ncall (sort @{$self->{nodes}}) {
 		my $nref = Route::Node::get($ncall);
-		next if @_ && !grep $ncall =~ m|$_|, @_;
-		
+
 		if ($nref) {
 			my $c = $nref->user_call;
 			push @out, $nref->config($nodes_only, $level+1, @_);
 		} else {
-			push @out, ' ' x (($level+1)*2)  . "$ncall?";
+			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
 		}
 	}
 
