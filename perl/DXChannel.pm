@@ -440,11 +440,15 @@ sub decode_input
 	my $chcall = (ref $dxchan) ? $dxchan->call : "UN.KNOWN";
 	
 	# the above regexp must work
-	if (!defined $sort || !defined $call || !defined  $line ||
-		   (ref $dxchan && $call ne $chcall)) {
+	unless (defined $sort && defined $call && defined $line) {
 		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-		dbg('chan', "DUFF Line from $chcall: $data");
+		dbg('err', "DUFF Line on $chcall: $data");
 		return ();
+	}
+
+	if(ref($dxchan) && $call ne $chcall) {
+		dbg('err', "DUFF Line come in for $call on wrong channel $chcall" );
+		return();
 	}
 	
 	return ($sort, $call, $line);
