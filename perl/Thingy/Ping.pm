@@ -140,7 +140,6 @@ sub handle
 			}
 		}
 	} else {
-		$thing->{route} = $thing->{o} if $thing->{o};
 		$thing->broadcast($dxchan);
 	}
 }
