@@ -183,6 +183,14 @@ sub parraypairs
 	return $out;
 }
 
+sub _sort_fields
+{
+	my $ref = shift;
+	my @a = split /,/, $ref->field_prompt(shift); 
+	my @b = split /,/, $ref->field_prompt(shift); 
+	return lc $a[1] cmp lc $b[1];
+}
+
 # print all the fields for a record according to privilege
 #
 # The prompt record is of the format '<priv>,<prompt>[,<action>'
@@ -198,7 +206,7 @@ sub print_all_fields
 	my $width = $self->width - 1;
 	$width ||= 80;
 
-	foreach $field (sort {$ref->field_prompt($a) cmp $ref->field_prompt($b)} @fields) {
+	foreach $field (sort {_sort_fields($ref, $a, $b)} @fields) {
 		if (defined $ref->{$field}) {
 			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
 			my @tmp;
