@@ -331,17 +331,20 @@ while (<CL>) {
 	push @fn, $1;
 }
 close CL;
+my $subbuild;
 foreach my $fn (@fn) {
 	$fn =~ s|::|/|g;
 	open(CL, "$main::root/perl/${fn}.pm") or next;
 	while (<CL>) {
-		if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)/ ) {
+		if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)\.?(\d+.\d+)?/ ) {
 			$build += $1;
+			$subbuild += $2 if $2;
 			last;
 		}
 	}
 	close CL;
 }
+$build = "$build.$subbuild" if $subbuild;
 
 Log('cluster', "DXSpider V$version, build $build started");
 
