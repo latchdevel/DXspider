@@ -152,6 +152,7 @@ sub to_connected
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
+	$conn->nolinger;
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
 }
@@ -162,6 +163,7 @@ sub new_client {
 	if ($sock) {
 		my $conn = $server_conn->new($server_conn->{rproc});
 		$conn->{sock} = $sock;
+		$conn->nolinger;
 		Msg::blocking($sock, 0);
 		$conn->{blocking} = 0;
 		eval {$conn->{peerhost} = $sock->peerhost};

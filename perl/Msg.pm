@@ -208,10 +208,6 @@ sub disconnect {
 	$call ||= 'unallocated';
 	dbg("Connection $conn->{cnum} $call disconnected") if isdbg('connll');
 	
-	unless ($main::is_win) {
-		kill 'TERM', $conn->{pid} if exists $conn->{pid};
-	}
-
 	# get rid of any references
 	for (keys %$conn) {
 		if (ref($conn->{$_})) {
@@ -219,10 +215,16 @@ sub disconnect {
 		}
 	}
 
-	return unless defined($sock);
-    set_event_handler ($sock, read => undef, write => undef, error => undef);
-    shutdown($sock, 3);
-	close($sock);
+	if (defined($sock)) {
+		set_event_handler ($sock, read => undef, write => undef, error => undef);
+		shutdown($sock, 3);
+		close($sock);
+	}
+	
+	unless ($main::is_win) {
+		kill 'TERM', $conn->{pid} if exists $conn->{pid};
+	}
+
 }
 
 sub send_now {
@@ -354,6 +356,12 @@ sub new_server {
 	return $self;
 }
 
+sub nolinger
+{
+	my $conn = shift;
+	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt: $!";
+}
+
 sub dequeue
 {
 	my $conn = shift;
@@ -436,6 +444,7 @@ sub new_client {
 		my $conn = $server_conn->new($server_conn->{rproc});
 		$conn->{sock} = $sock;
 		blocking($sock, 0);
+		$conn->nolinger;
 		$conn->{blocking} = 0;
 		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
 		$conn->{sort} = 'Incoming';
