@@ -972,6 +972,12 @@ sub handle_19
 				} else {
 					next;
 				}
+			} else {
+				if ($r->version != $ver || $r->flags != $flags) {
+					$r->version($ver);
+					$r->flags($flags);
+					push @rout, $r;
+				}
 			}
 		} else {
 
@@ -1572,13 +1578,13 @@ sub process
 		
 		# send a ping out on this channel
 		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
-			if ($dxchan->{nopings} <= 0) {
-				$dxchan->disconnect;
-			} else {
+#			if ($dxchan->{nopings} <= 0) {
+#				$dxchan->disconnect;
+#			} else {
 				addping($main::mycall, $dxchan->call);
 				$dxchan->{nopings} -= 1;
 				$dxchan->{lastping} = $t;
-			}
+#			}
 		}
 	}
 

@@ -118,7 +118,7 @@ sub handle
 
 			# it's a reply, look in the ping list for this one
 			my $ref = $ping{$thing->{id}} if exists $thing->{id};
-			$ref ||= find(($thing->{user}||$thing->{origin}), ($thing->{touser}||$thing->{group}));
+			$ref = find(($thing->{user}||$thing->{origin}), ($thing->{touser}||$thing->{group})) unless $ref;
 			if ($ref) {
 				my $t = tv_interval($ref->{t}, [ gettimeofday ]);
 				my $tochan = DXChannel::get($ref->{touser} || $ref->{group});
