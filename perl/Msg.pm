@@ -585,24 +585,35 @@ sub set_event_handler {
 }
 
 sub event_loop {
-    my ($pkg, $loop_count, $timeout) = @_; # event_loop(1) to process events once
+    my ($pkg, $loop_count, $timeout, $wronly) = @_; # event_loop(1) to process events once
     my ($conn, $r, $w, $e, $rset, $wset, $eset);
     while (1) {
  
        # Quit the loop if no handles left to process
-        last unless ($rd_handles->count() || $wt_handles->count());
+		if ($wronly) {
+			last unless $wt_handles->count();
         
-		($rset, $wset, $eset) = IO::Select->select($rd_handles, $wt_handles, $er_handles, $timeout);
-		
-        foreach $e (@$eset) {
-            &{$er_callbacks{$e}}($e) if exists $er_callbacks{$e};
-        }
-        foreach $r (@$rset) {
-            &{$rd_callbacks{$r}}($r) if exists $rd_callbacks{$r};
-        }
-        foreach $w (@$wset) {
-            &{$wt_callbacks{$w}}($w) if exists $wt_callbacks{$w};
-        }
+			($rset, $wset, $eset) = IO::Select->select(undef, $wt_handles, undef, $timeout);
+			
+			foreach $w (@$wset) {
+				&{$wt_callbacks{$w}}($w) if exists $wt_callbacks{$w};
+			}
+		} else {
+			
+			last unless ($rd_handles->count() || $wt_handles->count());
+        
+			($rset, $wset, $eset) = IO::Select->select($rd_handles, $wt_handles, $er_handles, $timeout);
+			
+			foreach $e (@$eset) {
+				&{$er_callbacks{$e}}($e) if exists $er_callbacks{$e};
+			}
+			foreach $r (@$rset) {
+				&{$rd_callbacks{$r}}($r) if exists $rd_callbacks{$r};
+			}
+			foreach $w (@$wset) {
+				&{$wt_callbacks{$w}}($w) if exists $wt_callbacks{$w};
+			}
+		}
 
 		Timer::handler;
 		

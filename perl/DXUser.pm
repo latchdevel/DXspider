@@ -400,8 +400,9 @@ print "There are $count user records and $err errors\n";
 
         for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
 			if (!is_callsign($key) || $key =~ /^0/) {
-				Log('DXCommand', "Export Error: $key\t$val");
-				$dbm->del($key);
+				Log('DXCommand', "Export Error1: $key\t$val");
+				eval {$dbm->del($key)};
+				dbg(carp("Export Error1: $key\t$val\n$@")) if $@;
 				++$err;
 				next;
 			}
@@ -410,8 +411,9 @@ print "There are $count user records and $err errors\n";
 				print $fh "$key\t" . $ref->encode . "\n";
 				++$count;
 			} else {
-				Log('DXCommand', "Export Error: $key\t$val");
-				$dbm->del($key);
+				Log('DXCommand', "Export Error2: $key\t$val");
+				eval {$dbm->del($key)};
+				dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
 				++$err;
 			}
 		} 
