@@ -686,7 +686,15 @@ sub start_msg
 	$busy{$self->{tonode}} = $self;
 	$work{$self->{tonode}} = $self;
 	$self->{lastt} = $main::systime;
-	$dxchan->send(DXProt::pc28($self->{tonode}, $self->{fromnode}, $self->{to}, $self->{from}, $self->{t}, $self->{private}, $self->{subject}, $self->{origin}, $self->{rrreq}));
+	my ($fromnode, $origin);
+	if ($dxchan->is_arcluster) {
+		$fromnode = $self->{origin};
+		$origin = $self->{fromnode};
+	} else {
+		$fromnode = $self->{fromnode};
+		$origin = $self->{origin};
+	}
+	$dxchan->send(DXProt::pc28($self->{tonode}, $fromnode, $self->{to}, $self->{from}, $self->{t}, $self->{private}, $self->{subject}, $origin, $self->{rrreq}));
 }
 
 # get the ref of a busy node
