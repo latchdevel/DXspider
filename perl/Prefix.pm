@@ -138,14 +138,28 @@ sub matchprefix
 	my $pref = shift;
 
 	for (my $i = length $pref; $i; $i--) {
+		$matchtotal++;
 		my $s = substr($pref, 0, $i);
-		my @out = get($s);
-		if (isdbg('prefix')) {
-			my $part = $out[0] || "*";
-			$part .= '*' unless $part eq '*' || $part eq $s;
-			dbg("Partial prefix: $pref $s $part" );
-		} 
-		return @out if @out && $out[0] eq $s;
+		my $p = $cache{$s};
+		if ($p) {
+			$hits++;
+			if (isdbg('prefix')) {
+				my $percent = $hits * 100 / $matchtotal;
+				dbg("Partial Prefix Cache Hit: $s Hits: $hits of $matchtotal = $percent\%");
+			}
+			return @$p;
+		} else {
+			my @out = get($s);
+			if (isdbg('prefix')) {
+				my $part = $out[0] || "*";
+				$part .= '*' unless $part eq '*' || $part eq $s;
+				dbg("Partial prefix: $pref $s $part" );
+			} 
+			if (@out && $out[0] eq $s) {
+				$cache{$s} = \@out;
+				return @out;
+			}
+		}
 	}
 	return ();
 }
@@ -170,7 +184,7 @@ sub extract
 	if ($main::systime - $lasttime >= 15*60) {
 		if (isdbg('prefix')) {
 			my $percent = $hits * 100 / $matchtotal;
-			dbg("Prefix Cache Cleared, Hits: $hits of $matchtotal = $percent\%") 
+			dbg("Prefix Cache Cleared, Hits: $hits of $matchtotal = $percent\%") ;
 		}
 		my $percent = $hits * 100 / $matchtotal;
 		dbg("Prefix Cache Cleared, $percent\% hits") if isdbg('prefix');
@@ -190,7 +204,7 @@ LM:	foreach $call (split /,/, $calls) {
 			$hits++;
 			if (isdbg('prefix')) {
 				my $percent = $hits * 100 / $matchtotal;
-				dbg("Prefix Cache Hit: $call Hits: $hits of $matchtotal = $percent\%") 
+				dbg("Prefix Cache Hit: $call Hits: $hits of $matchtotal = $percent\%");
 			}
 			push @out, @$p;
 			next;
@@ -272,7 +286,7 @@ LM:	foreach $call (split /,/, $calls) {
 		if (@parts == 1) {
 			@nout = matchprefix($parts[0]);
 			if (@nout) {
-				dbg("got prefix: $call ]") if isdbg('prefix');
+				dbg("got prefix: $call = $nout[0]") if isdbg('prefix');
 				$cache{$call} = \@nout;
 				push @out, @nout;
 				next;
