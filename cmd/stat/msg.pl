@@ -8,7 +8,7 @@ my ($self, $line) = @_;
 my @list = split /\s+/, $line;		      # generate a list of msg nos
 my @out;
 
-return (1, $self->msg('e5')) if $self->priv < 5;
+return (1, $self->msg('e5')) if $self->priv < 1;
 return (1, $self->msg('m16')) if @list == 0;
 
 foreach my $msgno (@list) {
