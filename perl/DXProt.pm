@@ -656,6 +656,10 @@ sub normal
 					my $dxchan = DXChannel->get($s->{call});
 					$dxchan->send($field[3]) if $dxchan;
 					delete $rcmds{$field[2]} if !$dxchan;
+				} else {
+					# send unsolicited ones to the sysop
+					my $dxchan = DXChannel->get($main::myalias);
+					$dxchan->send($field[3]) if $dxchan;
 				}
 			} else {
 				my $ref = DXUser->get_current($field[1]);
@@ -840,6 +844,10 @@ sub normal
 						$dxchan = DXChannel->get($s->{call});
 						$dxchan->send($field[4]) if $dxchan;
 						delete $rcmds{$field[2]} if !$dxchan;
+					} else {
+						# send unsolicited ones to the sysop
+						my $dxchan = DXChannel->get($main::myalias);
+						$dxchan->send($field[4]) if $dxchan;
 					}
 				}
 			} else {
