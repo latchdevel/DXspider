@@ -38,6 +38,6 @@ if (!$info) {
 	# Log the lookup
 	Log('call', "$call: show/wm7d \U$line");
 	$t->close;
-	push @out, $info;
+	push @out, split /[\r\n]+/, $info;
 }
 return (1, @out);
