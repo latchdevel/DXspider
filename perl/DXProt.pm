@@ -239,8 +239,10 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
-	my $thing = Thingy::Hello->new(user=>$call);
-	$thing->broadcast($self);
+	if ($self->{call} ne $main::mycall) {
+		my $thing = Thingy::Hello->new(user=>$call);
+		$thing->broadcast($self);
+	}
 	
 	return $self;
 }
