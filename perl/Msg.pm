@@ -53,13 +53,16 @@ BEGIN {
 		require Errno; Errno->import(qw(EAGAIN EINPROGRESS EWOULDBLOCK));
 	};
 
-	eval {
-		require Socket; Socket->import(qw(IPPROTO_TCP TCP_NODELAY));
-	};
-	if ($@ && !$^O =~ /^MS/) {
-		dbg("IPPROTO_TCP and TCP_NODELAY manually defined");
-		eval '*IPPROTO_TCP     = sub {     6 };';
-		eval '*TCP_NODELAY     = sub {     1 };';
+	unless ($^O eq 'MSWin32') {
+		if ($] >= 5.6) {
+			eval {
+				require Socket; Socket->import(qw(IPPROTO_TCP TCP_NODELAY));
+			};
+		} else {
+			dbg("IPPROTO_TCP and TCP_NODELAY manually defined");
+			eval 'sub IPPROTO_TCP {     6 };';
+			eval 'sub TCP_NODELAY {     1 };';
+		}
 	}
 	# http://support.microsoft.com/support/kb/articles/Q150/5/37.asp
 	# defines EINPROGRESS as 10035.  We provide it here because some
