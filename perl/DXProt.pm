@@ -559,10 +559,8 @@ sub normal
 			return;
 		}
 		
-		if ($pcno == 37) {
-			last SWITCH;
-		}
-		
+		# for pc 37 see 44 onwards
+
 		if ($pcno == 38) {		# node connected list from neighbour
 			return;
 		}
@@ -599,25 +597,21 @@ sub normal
 		if ($pcno == 43) {
 			last SWITCH;
 		}
-		if ($pcno == 44) {
-			last SWITCH;
-		}
-		if ($pcno == 45) {
-			last SWITCH;
-		}
-		if ($pcno == 46) {
-			last SWITCH;
-		}
-		if ($pcno == 47) {
-			last SWITCH;
-		}
-		if ($pcno == 48) {
-			last SWITCH;
+		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47 || $pcno == 49) {
+			if ($field[1] eq $main::mycall) {
+				;
+			} else {
+				route($field[1], $line);
+			}
+			return;
 		}
 		
 		if ($pcno == 50) {		# keep alive/user list
-			my $ref = DXCluster->get_exact($field[1]);
-			$ref->update_users($field[2]) if $ref;			
+			my $node = DXCluster->get_exact($field[1]);
+			if ($node) {
+				return unless $node->dxchan == $self;
+				$node->update_users($field[2]);
+			}
 			last SWITCH;
 		}
 		
