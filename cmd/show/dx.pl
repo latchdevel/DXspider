@@ -346,10 +346,14 @@ my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $
 my $ref;
 my @dx;
 foreach $ref (@res) {
-	if ($real) {
-		push @out, $self->format_dx_spot(@$ref);
+	if ($self->ve7cc) {
+		push @out, VE7CC::dx_spot($self, @$ref);
 	} else {
-		push @out, Spot::formatl(@$ref);
+		if ($real) {
+			push @out, $self->format_dx_spot(@$ref);
+		} else {
+			push @out, Spot::formatl(@$ref);
+		}
 	}
 }
 
