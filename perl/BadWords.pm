@@ -17,7 +17,7 @@ use DXDebug;
 
 use IO::File;
 
-use vars qw($badword @regex);
+use vars qw($badword $regexcode);
 
 my $oldfn = "$main::data/badwords";
 my $regex = "$main::data/badw_regex";
@@ -61,11 +61,10 @@ sub load
 sub create_regex
 {
 	my @out;
-	@regex = ();
-	
 	my $fh = new IO::File $regex;
 	
 	if ($fh) {
+		my $s = "sub { my \$str = shift; my \@out; \n";
 		while (<$fh>) {
 			chomp;
 			next if /^\s*\#/;
@@ -75,11 +74,17 @@ sub create_regex
 				# and repeated characters in it
 				my $w = uc $_;
 				my @l = split //, $w;
-				my $e = join '+[\s\W]+', @l;
-				my $s = eval qq{sub { return \$_[0] =~ /$e+/ ? '$w' : () } };
-				push @regex, $s unless $@;
-				dbg("create_regex: $@") if $@;
+				my $e = join '+[\s\W]*', @l;
+				$s .= "push \@out, \$1 if \$str =~ /($e)/;\n";
 			}
+		}
+		$s .= "return \@out;\n}";
+		$regexcode = eval $s;
+		dbg($s) if isdbg('badword');
+		if ($@) {
+			@out = ($@);
+			dbg($@);
+			return @out;
 		}
 		$fh->close;
 	} else {
@@ -96,10 +101,9 @@ sub check
 {
 	my $s = uc shift;
 	my @out;
-	
-	for (@regex) {
-		push @out, &$_($s);
-	}
+
+	dbg($s) if isdbg('badword');
+	push @out, &$regexcode($s) if $regexcode;
 	
 	return @out if @out;
 	

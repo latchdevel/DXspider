@@ -17,6 +17,12 @@ my @out;
 my $valid = 0;
 return (1, $self->msg('e5')) if $self->remotecmd;
 
+my @bad;
+if (@bad = BadWords::check($line)) {	
+	$self->badcount(($self->badcount||0) + @bad);
+	return (1, $self->msg('e17', @bad));
+}
+
 # do we have at least two args?
 return (1, $self->msg('dx2')) unless @f >= 2;
 
@@ -93,11 +99,6 @@ if ($spotted le ' ') {
 
 return (1, @out) unless $valid;
 
-my @bad;
-if (@bad = BadWords::check($line)) {	
-	$self->badcount(($self->badcount||0) + @bad);
-	return (1, $self->msg('e17', @bad));
-}
 
 # Store it here (but only if it isn't baddx)
 if ($DXProt::baddx->in($spotted)) {
