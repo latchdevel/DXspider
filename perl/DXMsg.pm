@@ -846,13 +846,14 @@ sub do_send_stuff
 				my $mycall = $main::mycall;
 				$ref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
 									uc $to,
-									$self->call, 
+									exists $loc->{from} ? $loc->{from} : $self->call, 
 									$systime,
 									$loc->{private}, 
 									$loc->{subject}, 
-									$mycall,
+									exists $loc->{origin} ? $loc->{origin} : $mycall,
 									'0',
 									$loc->{rrreq});
+				$ref->swop_it($self->call);
 				$ref->store($loc->{lines});
 				$ref->add_dir();
 				push @out, $self->msg('m11', $ref->{msgno}, $to);
@@ -1109,12 +1110,14 @@ sub import_one
 			$rr = '1';
 		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for origin
 			$origin = uc shift @f;
-		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
-			next;
-		} elsif ($f =~ /^</) {     # this is bbs syntax  for from call
-			($from) = $f =~ /^<(\S+)$/;
 		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
 			$from = uc shift @f;
+		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
+			next;
+		} elsif ($f =~ /^<\S+/) {     # this is bbs syntax  for from call
+			($from) = $f =~ /^<(\S+)$/;
+		} elsif ($f =~ /^\@\S+/) {     # this is bbs syntax for origin
+			($origin) = $f =~ /^\@(\S+)$/;
 		} else {
 
 			# callsign ?
@@ -1170,6 +1173,7 @@ sub import_one
 							$origin,
 							'0',
 							$rr);
+		$mref->swop_it($main::mycall);
 		$mref->store($ref);
 		$mref->add_dir();
 		push @out, $dxchan->msg('m11', $mref->{msgno}, $to);

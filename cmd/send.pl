@@ -92,8 +92,16 @@ if ($self->state eq "prompt") {
 			;
 		} elsif ($notincalls && ($f eq 'RR')) {
 			$loc->{rrreq} = '1';
-		} elsif ($f eq '@') {     # this is bbs syntax, for now lose the rest
-			last;
+		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
+			$loc->{from} = uc shift @f;
+		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for origin
+			$loc->{origin} = uc shift @f;
+		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
+			next;
+		} elsif ($f =~ /^<\S+/) {     # this is bbs syntax  for from call
+			($loc->{from}) = $f =~ /^<(\S+)$/;
+		} elsif ($f =~ /^\@\S+/) {     # this is bbs syntax  for origin
+			($loc->{origin}) = $f =~ /^\@(\S+)$/;
 		} else {
 
 			# callsign ?
