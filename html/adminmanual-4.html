@@ -38,9 +38,17 @@ DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/t
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>This line works fine for RedHat and SuSE distributions.  The line required for
-Slackware distributions is slightly different.  My thanks to Aurelio, PA3EZL for
-this information.
+<P>This line works fine for RedHat distributions. It is also fine for SuSE up to
+7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The line required for Slackware distributions is slightly different.  My thanks to 
+Aurelio, PA3EZL for this information.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>

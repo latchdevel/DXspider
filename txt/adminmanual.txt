@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.33 (Revision 1.21) February 2001
+  Version 1.33 (Revision 1.22) March 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -470,11 +470,10 @@
   PPLLEEAASSEE UUSSEE CCAAPPIITTAALL LLEETTTTEERRSS FFOORR CCAALLLLSSIIGGNNSS
 
 
-  DON'T alter the DXVars.pm (or any other file) in /spider/perl, they
-  are overwritten with every release. Any files or commands you place in
-  /spider/local or /spider/local_cmd will automagically be used in
-  preference to the ones in /spider/perl EVEN while the cluster is
-  running!
+  DON'T alter any file in /spider/perl, they are overwritten with every
+  release. Any files or commands you place in /spider/local or
+  /spider/local_cmd will automagically be used in preference to the ones
+  in /spider/perl EVEN while the cluster is running!
 
 
   Save the new file and change directory to ../perl ....
@@ -492,7 +491,7 @@
 
 
 
-       $ create_sysop.pl
+       $ ./create_sysop.pl
 
 
 
@@ -505,7 +504,7 @@
 
 
 
-       $ cluster.pl
+       $ ./cluster.pl
        DXSpider DX Cluster Version 1.46
        Copyright (c) 1998 Dirk Koopman G1TLH
        loading prefixes ...
@@ -525,12 +524,7 @@
 
 
 
-
-  $ client.pl
-
-
-
-
+       $ ./client.pl
 
   This should log you into the cluster as the sysop under the alias
   callsign we set earlier.  In this case the callsign is G0VGS.  The
@@ -592,8 +586,8 @@
   ..
 
 
-       default  * * * * * *  - sysop /spider/src/client client %s ax25
 
+       default  * * * * * *  - sysop /spider/src/client client %s ax25
 
 
 
@@ -638,7 +632,7 @@
 
 
 
-       client.pl login telnet
+       ./client.pl login telnet
 
 
 
@@ -658,7 +652,10 @@
 
 
 
+
   You should now get the login prompt and be able to login as before.
+
+
 
 
   33..33..  SSeettttiinngg uupp nnooddee ccoonnnneeccttss
@@ -710,11 +707,11 @@
 
 
   That is now set, it is as simple as that.  To prove it, login on yet
-  another console as sysop and issue the command ...
+  another console as sysop, cd to spider/perl and issue the command ...
 
 
 
-       client.pl gb7baa (using the callsign you set as a node)
+       ./client.pl gb7baa (using the callsign you set as a node)
 
 
 
@@ -724,11 +721,8 @@
 
 
 
-  client.pl gb7baa
-  PC38^GB7MBC^~
-
-
-
+       ./client.pl gb7baa
+       PC38^GB7MBC^~
 
   If the callsign you just set up as a cluster node is for an incoming
   connect, this is all that needs to be done.  If the connection is to
@@ -789,18 +783,19 @@
 
 
 
-
   There are many possible ways to configure the script but here are two
   examples, one for a NETRom/AX25 connect and one for tcp/ip.
 
 
 
-       timeout 60
-       abort (Busy|Sorry|Fail)
-       # don't forget to chmod 4775 netrom_call!
-       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-       # you can leave this out if you call the script 'gb7dxm'
-       client gb7dxm ax25
+
+
+  timeout 60
+  abort (Busy|Sorry|Fail)
+  # don't forget to chmod 4775 netrom_call!
+  connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+  # you can leave this out if you call the script 'gb7dxm'
+  client gb7dxm ax25
 
 
 
@@ -841,6 +836,11 @@
   This will start a connection using the script called _g_b_7_d_j_k_-_1.  You
   can follow the connection by watching the term or console from where
   you started _c_l_u_s_t_e_r_._p_l.  You should see something like this ...
+
+
+
+
+
 
 
 
@@ -988,9 +988,20 @@
 
 
 
-  This line works fine for RedHat and SuSE distributions.  The line
-  required for Slackware distributions is slightly different.  My thanks
-  to Aurelio, PA3EZL for this information.
+  This line works fine for RedHat distributions. It is also fine for
+  SuSE up to 7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like
+  this ...
+
+
+
+       DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
+
+
+
+
+
+  The line required for Slackware distributions is slightly different.
+  My thanks to Aurelio, PA3EZL for this information.
 
 
 
@@ -1040,6 +1051,9 @@
   website at the cron page where it is explained more fully.
 
 
+
+
+
   55..  HHoopp ccoonnttrrooll
 
   Starting with version 1.13 there is simple hop control available on a
@@ -1060,55 +1074,101 @@
 
 
 
-       #
-       # hop table construction
-       #
-
-       package DXProt;
-
-       # default hopcount to use
-       $def_hopcount = 5;
-
-       # some variable hop counts based on message type
-       %hopcount =
-       (
-        11 => 10,
-        16 => 10,
-        17 => 10,
-        19 => 10,
-        21 => 10,
-       );
 
 
-       # the per node hop control thingy
 
 
-       %nodehops =
 
-        GB7ADX => {            11 => 8,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
 
-        GB7UDX => {            11 => 8,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
-        GB7BAA => {
-                               11 => 5,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
-       };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #
+  # hop table construction
+  #
+
+  package DXProt;
+
+  # default hopcount to use
+  $def_hopcount = 5;
+
+  # some variable hop counts based on message type
+  %hopcount =
+  (
+   11 => 10,
+   16 => 10,
+   17 => 10,
+   19 => 10,
+   21 => 10,
+  );
+
+
+  # the per node hop control thingy
+
+
+  %nodehops =
+
+   GB7ADX => {            11 => 8,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+
+   GB7UDX => {            11 => 8,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+   GB7BAA => {
+                          11 => 5,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+  };
 
 
 
@@ -1123,6 +1183,7 @@
   You can alter this file at any time, including whilst the cluster is
   running.  If you alter the file during runtime, the command _l_o_a_d_/_h_o_p_s
   will bring your changes into effect.
+
 
 
   55..22..  IIssoollaattiinngg nneettwwoorrkkss
@@ -1249,6 +1310,11 @@
 
   The second element is the field_no.  There are 13 possiblities to
   choose from here ....
+
+
+
+
+
 
 
 

@@ -167,10 +167,10 @@ for the file to work so leave it in.
 <P>
 <P><B>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</B>
 <P>
-<P>DON'T alter the DXVars.pm (or any other file) in /spider/perl, they are 
-overwritten with every release. Any files or commands you place in /spider/local 
-or /spider/local_cmd will automagically be used in preference to the ones in 
-/spider/perl EVEN while the cluster is running!
+<P>DON'T alter any file in /spider/perl, they are overwritten with every
+release. Any files or commands you place in /spider/local or /spider/local_cmd 
+will automagically be used in preference to the ones in /spider/perl EVEN 
+while the cluster is running!
 <P>
 <P>Save the new file and change directory to ../perl ....
 <P>
@@ -185,7 +185,7 @@ the sysop.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-$ create_sysop.pl
+$ ./create_sysop.pl
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
@@ -197,7 +197,7 @@ It should look something like this ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-$ cluster.pl
+$ ./cluster.pl
 DXSpider DX Cluster Version 1.46
 Copyright (c) 1998 Dirk Koopman G1TLH
 loading prefixes ...
@@ -215,7 +215,7 @@ cd to /spider/perl.  Now issue the following command ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-$ client.pl
+$ ./client.pl
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>

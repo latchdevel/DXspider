@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.33 (Revision 1.21) February 2001
+<date>Version 1.33 (Revision 1.22) March 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -175,10 +175,10 @@ for the file to work so leave it in.
 <P><bf>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</bf>
 		
 <P>
-DON'T alter the DXVars.pm (or any other file) in /spider/perl, they are 
-overwritten with every release. Any files or commands you place in /spider/local 
-or /spider/local_cmd will automagically be used in preference to the ones in 
-/spider/perl EVEN while the cluster is running!
+DON'T alter any file in /spider/perl, they are overwritten with every
+release. Any files or commands you place in /spider/local or /spider/local_cmd 
+will automagically be used in preference to the ones in /spider/perl EVEN 
+while the cluster is running!
 
 <P>
 Save the new file and change directory to ../perl ....
@@ -192,7 +192,7 @@ Now type the following command which creates the basic user file with you as
 the sysop.
 
 <tscreen><verb>
-$ create_sysop.pl
+$ ./create_sysop.pl
 </verb></tscreen>
 
 <sect1>Starting up for the first time
@@ -202,7 +202,7 @@ We can now bring spider up for the first time and see if all is well or not!
 It should look something like this ...
 
 <tscreen><verb>
-$ cluster.pl
+$ ./cluster.pl
 DXSpider DX Cluster Version 1.46
 Copyright (c) 1998 Dirk Koopman G1TLH
 loading prefixes ...
@@ -219,7 +219,7 @@ If all is well then login on another term or console as <em>sysop</em> and
 cd to /spider/perl.  Now issue the following command ...
 
 <tscreen><verb>
-$ client.pl
+$ ./client.pl
 </verb></tscreen>
 
 <P>
@@ -303,7 +303,7 @@ killall -HUP inetd
 is accepting telnet logins by issuing the following command ....
 
 <tscreen><verb>
-client.pl login telnet
+./client.pl login telnet
 </verb></tscreen>
 
 You should get a login prompt and on issuing a callsign, you will be given 
@@ -361,17 +361,17 @@ The case does not matter as long as you have a version of DXSpider later than
 
 <P>
 That is now set, it is as simple as that.  To prove it, login on yet another 
-console as sysop and issue the command ...
+console as sysop, cd to spider/perl and issue the command ...
 
 <tscreen><verb>
-client.pl gb7baa (using the callsign you set as a node)
+./client.pl gb7baa (using the callsign you set as a node)
 </verb></tscreen>
 
 <P>
 You should get an initialisation string from DXSpider like this ...
 
 <tscreen><verb>
-client.pl gb7baa
+./client.pl gb7baa
 PC38^GB7MBC^~
 </verb></tscreen>
 
@@ -603,9 +603,16 @@ DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/t
 </verb></tscreen>
 
 <P>
-This line works fine for RedHat and SuSE distributions.  The line required for
-Slackware distributions is slightly different.  My thanks to Aurelio, PA3EZL for
-this information.
+This line works fine for RedHat distributions. It is also fine for SuSE up to
+7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like this ...
+
+<tscreen><verb>
+DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
+</verb></tscreen>
+
+
+The line required for Slackware distributions is slightly different.  My thanks to 
+Aurelio, PA3EZL for this information.
 
 <tscreen><verb>
 DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/dev/tty7
