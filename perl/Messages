@@ -641,14 +641,14 @@ package DXM;
 			badnode2 => '$_[0] ist nun ein good node',
 			badnode3 => 'Liste der Bad Nodes:-',
 			bbse1 => 'Bitte die BBS Adresse eingeben,, set/bbs <your bbs address>',
-			bbs => 'Deine BBS Adresse ist nun \"$_[0]\"'
+			bbs => 'Deine BBS Adresse ist nun \"$_[0]\"'.
 			beepoff => 'Beeps sind nun aus',
 			beepon => 'Beeps sind nun eingeschaltet',
 			call1 => 'Callsign lookup via $_[0]:',
 			conother => 'Sorry $_[0] Du bist zu mir auf einem anderen Port connected',
 			concluster => 'Sorry $_[0] Du bist schon anderswo in einem Cluster connected (on $_[1])',
 			conscript => 'Kein connect script mit Namen \"$_[0]\" gefunden in $main::root/connect',
-			confail => 'Verbindung zu $_[0] misslungen ($_[1])'
+			confail => 'Verbindung zu $_[0] misslungen ($_[1])',
 			constart => 'Verbindung zu $_[0] gestartet',
 			deluser => 'User $_[0] wurde geloescht',
 			db1 => 'Diese Datenbank ist untergebracht bei $_[0]',
@@ -709,7 +709,7 @@ package DXM;
 			echooff => 'Echo disabled',
 			echow => '*Echo ist im moment disabled, set/echo to enable',
 			emaile1 => 'Bitte email Addresse eingeben, set/email <Deine e-mail Adresse>',
-			emaila => 'Deine E-Mail Adresse ist nun \"$_[0]\"'
+			emaila => 'Deine E-Mail Adresse ist nun \"$_[0]\"',
 			email => 'E-mail Adresse gesetzt auf: $_[0]',
 			export1 => 'Gebrauch: export <msgno> <dateiname>',
 			export2 => '$_[3] has error exporting msg $_[0]to $_[1] ($_[2])',
