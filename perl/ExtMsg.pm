@@ -116,6 +116,7 @@ sub to_connected
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
 	$conn->_send_file("$main::data/connected");
+	Msg->sleep(1);
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 }
 
