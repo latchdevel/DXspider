@@ -18,7 +18,7 @@ use Prefix;
 use DXDupe;
 
 use strict;
-use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage);
+use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef);
 
 $fp = undef;
 $maxspots = 50;					# maximum spots to return
@@ -27,6 +27,49 @@ $maxdays = 35;					# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 3*3600;               # the length of time to hold spot dups
+$filterdef = bless ([
+			  # tag, sort, field, priv, special parser 
+			  ['freq', 'r', 0, 0, \&decodefreq],
+			  ['call', 'c', 1],
+			  ['info', 't', 3],
+			  ['by', 'c', 4],
+			  ['call_dxcc', 'n', 5],
+			  ['by_dxcc', 'n', 6],
+			  ['origin', 'c', 7, 9],
+			  ['call_itu', 'n', 8],
+			  ['call_zone', 'n', 9],
+			  ['by_itu', 'n', 10],
+			  ['by_zone', 'n', 11],
+			  ['channel', 'n', 12, 9],
+			 ], 'Filter::Cmd');
+
+
+sub decodefreq
+{
+	my $dxchan = shift;
+	my $l = shift;
+	my @f = split /,/, $l;
+	my @out;
+	my $f;
+	
+	foreach $f (@f) {
+		my ($a, $b) = $f =~ m{^(\d+)/(\d+)$};
+		if ($a && $b) {
+			push @out, $a, $b;
+		} elsif (($a, $b) = $f =~ m{^(\w+)(?:/(\w+))?$}) {
+			$b = lc $b if $b;
+			my @fr = Bands::get_freq(lc $a, $b);
+			if (@fr) {
+				push @out, @fr;    # add these to the list
+			} else {
+				return ('dfreq', $dxchan->msg('dfreq1', $f));
+			}
+		} else {
+			return ('dfreq', $dxchan->msg('e20', $f));
+		}
+	}
+	return (0, join(',', @out));			 
+}
 
 sub init
 {

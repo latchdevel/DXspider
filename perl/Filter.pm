@@ -246,6 +246,70 @@ sub print
 	return $self->{name};
 }
 
+package Filter::Cmd;
+
+use strict;
+use vars qw(@ISA);
+@ISA = qw(Filter);
+
+# the general purpose command processor
+# this is called as a subroutine not as a method
+sub process_cmd
+{
+	my ($self, $dxchan, $line) = @_;
+	my $ntoken = 0;
+	my $fno = 1;
+	my $filter;
+	my ($flag, $call);
+
+	# check the line for non legal characters
+	return ('ill', $dxchan->msg('e19')) if $line =~ /[^\s\w,_\/]/;
+	
+	while (my @f = split /\s+/, $line) {
+		if ($ntoken == 0) {
+			
+			if (@f && $dxchan->priv >= 9 && DXUser->get($f[0])) {
+				$call = shift @f;
+				if ($f[0] eq 'input') {
+					shift @f;
+					$flag++;
+				}
+			} else {
+				$call = $dxchan->call;
+			}
+
+			if (@f && $f[0] =~ /^\d+$/) {
+				$fno = shift @f;
+			}
+
+			$filter = Filter::read_in('spots', $call, $flag) or new Filter ('spots', $call, $flag);
+			
+			$ntoken++;
+			next;
+		}
+
+		# do the rest of the filter tokens
+		if (@f) {
+			my $tok = shift @f;
+			if (@f) {
+				my $val = shift @f;
+
+				my $fref;
+				foreach $fref (@$self) {
+					if ($fref->[0] eq $tok) {
+						
+					}
+				}
+			} else {
+				return ('no', $dxchan->msg('filter2', $tok));
+			}
+		}
+		
+	}
+	$flag = $flag ? "in_" : "";
+	return (0, $dxchan->msg('filter1', $fno, "$flag$call"));
+}
+
 package Filter::Old;
 
 use strict;
