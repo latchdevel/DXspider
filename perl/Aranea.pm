@@ -169,17 +169,25 @@ sub per_minute
 {
 	# send hello and cf packages periodically
 	foreach my $dxchan (DXChannel::get_all()) {
-		next if $dxchan == $main::me;
 		next if $dxchan->is_aranea;
 		if ($main::systime >= $dxchan->lasthello + $hello_interval) {
-			my $thing = Thingy::Hello->new(user => $dxchan->call, h => $dxchan->here);
+			my $thing = Thingy::Hello->new(h => $dxchan->here);
+			$thing->{user} = $dxchan->{call} unless $dxchan == $main::me;
+			if (my $v = $dxchan->{version}) {
+				if ($dxchan->is_spider) {
+					$thing->{sw} = 'DXSp';
+				}
+				$thing->{v} = $v;
+			}
+			$thing->{b} = $dxchan->{build} if $dxchan->{build};
 			$thing->broadcast($dxchan);
 			$dxchan->lasthello($main::systime);
 		}
 		if ($dxchan->is_node) {
 			if ($main::systime >= $dxchan->lastcf + $cf_interval) {
 				my $call = $dxchan->call;
-				my $thing = Thingy::Rt->new(user => $call);
+				my $thing = Thingy::Rt->new();
+				$thing->{user} = $call unless $dxchan == $main::me;
 				if (my $nref = Route::Node::get($call)) {
 					$thing->copy_pc16_data($nref);
 					$thing->broadcast($dxchan);

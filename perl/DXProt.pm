@@ -920,8 +920,8 @@ sub handle_18
 
 	# record the type and version offered
 	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+\.\d+)/) {
-		$self->version(52.51 + $1);
-		$self->user->version(52.51 + $1);
+		$self->version(0 + $1);
+		$self->user->version(0 + $1);
 		$self->build(0 + $2);
 		$self->user->build(0 + $2);
 		unless ($self->is_spider) {
