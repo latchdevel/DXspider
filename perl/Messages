@@ -116,6 +116,7 @@ package DXM;
 				lh1 => '$main::data/hop_table.pl doesn\'t exist',
 				loce1 => 'Please enter your location,, set/location <latitude longitude>',
 				loce2 => 'Don\'t recognise \"$_[0]\" as a Lat/Long (eg 52 20 N 0 16 E)',
+				loce3 => '$_[0] is a QRA locator, please use: set/qra $_[0]',
 				loc => 'Your Lat/Long is now \"$_[0]\"',
 				lockout => '$_[0] Locked out',
 				lockoutc => '$_[0] Created and Locked out',

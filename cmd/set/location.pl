@@ -15,6 +15,7 @@ $line =~ s/^\s+//;
 $line =~ s/\s+$//;
 
 return (1, $self->msg('loce1')) if !$line;
+return (1, $self->msg('loce3', uc $line)) if DXBearing::is_qra($line);
 return (1, $self->msg('loce2', $line)) unless $line =~ /\d+ \d+ [NnSs] \d+ \d+ [EeWw]/o;
 
 $user = DXUser->get_current($call);
