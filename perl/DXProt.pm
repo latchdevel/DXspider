@@ -535,7 +535,7 @@ sub handle_11
 #	RouteDB::update($_[7], $self->{call});
 #	RouteDB::update($_[6], $_[7]);
 	
-	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $_[6], $_[7]);
+	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $nossid, $_[7]);
 	# global spot filtering on INPUT
 	if ($self->{inspotsfilter}) {
 		my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
@@ -548,7 +548,7 @@ sub handle_11
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
-	if (Spot::dup($_[1], $_[2], $d, $_[5], $_[6])) {
+	if (Spot::dup(@spot[0..4])) {
 		dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
 		return;
 	}
