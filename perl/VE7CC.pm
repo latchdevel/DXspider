@@ -15,6 +15,7 @@ use DXDebug;
 use DXUtil;
 use Julian;
 use Prefix;
+use DXUser;
 
 use strict;
 
@@ -30,6 +31,13 @@ sub dx_spot
 	my $freq = shift;
 	my $spotted = shift;
 	my $t = shift;
+	my $loc_spotted = '';
+	my $loc_spotter = '';
+	my $ref = DXUser->get_current($spotted);
+	if ($ref) {
+		my $loc = $ref->qra || '';
+		$loc_spotted =substr($loc, 0, 4) if $loc;
+	}
 
 	# remove any items above the top of the max spot data
 	pop while @_ > 11;
@@ -38,10 +46,15 @@ sub dx_spot
 	$_[9] ||= '';
 	$_[10] ||= '';
 	
-	my $spotter_cc = (Prefix::cty_data($spotted))[5];
-	my $spotted_cc = (Prefix::cty_data($_[1]))[5];
+	my $spotted_cc = (Prefix::cty_data($spotted))[5];
+	my $spotter_cc = (Prefix::cty_data($_[1]))[5];
+	$ref = DXUser->get_current($_[1]);
+	if ($ref) {
+		my $loc = $ref->qra || '';
+		$loc_spotter = substr($loc, 0, 4) if $loc;
+	}
 	
-	return sprintf("CC11^%0.1f^%s^", $freq, $spotted) . join('^', cldate($t), ztime($t), @_, $spotter_cc, $spotted_cc);
+	return sprintf("CC11^%0.1f^%s^", $freq, $spotted) . join('^', cldate($t), ztime($t), @_, $spotted_cc, $spotter_cc, $loc_spotted, $loc_spotter);
 }
 
 1;

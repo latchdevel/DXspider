@@ -829,16 +829,17 @@ sub format_dx_spot
 	my $self = shift;
 
 	my $t = ztime($_[2]);
-	my $loc;
+	my $loc = '';
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
 	my $comment = substr $_[3], 0, $clth; 
 	$comment .= ' ' x ($clth - length($comment));
-	my $ref = DXUser->get_current($_[4]);
-	if ($ref) {
-		$loc = $ref->qra || '' if $self->{user}->wantgrid; 
-		$loc = ' ' . substr($loc, 0, 4) if $loc;
-	} 
-	$loc = "" unless $loc;
+	if ($self->{user}->wantgrid) { 
+		my $ref = DXUser->get_current($_[4]);
+		if ($ref) {
+			$loc = $ref->qra || '';
+			$loc = ' ' . substr($loc, 0, 4) if $loc;
+		}
+	}
 
 	if ($self->{user}->wantdxitu) {
 		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
