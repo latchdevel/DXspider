@@ -121,12 +121,12 @@ sub blocking
 	return unless $blocking_supported;
 
 	# Make the handle stop blocking, the Windows way.
-	if ($main::iswin) { 
-        # 126 is FIONBIO (some docs say 0x7F << 16)
-        ioctl( $_[0],
-               0x80000000 | (4 << 16) | (ord('f') << 8) | 126,
-               "$_[1]"
-             );
+	if ($main::is_win) { 
+	  # 126 is FIONBIO (some docs say 0x7F << 16)
+		ioctl( $_[0],
+			   0x80000000 | (4 << 16) | (ord('f') << 8) | 126,
+			   "$_[1]"
+			 );
 	} else {
 		my $flags = fcntl ($_[0], F_GETFL, 0);
 		if ($_[1]) {
@@ -375,11 +375,8 @@ sub new_server {
 	return $self;
 }
 
-my $oldw = $^W;
-$^W = 0;
 eval "use Socket qw(IPPROTO_TCP TCP_NODELAY)";
-$^W = $oldw;
-if ($@ && !$main::inwin) {
+if ($@ && !$main::is_win) {
 	sub IPPROTO_TCP {6;}
 	sub TCP_NODELAY {1;};
 }
@@ -397,7 +394,9 @@ sub nolinger
 
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt linger: $!";
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
-	setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!" unless $main::iswin;
+	unless ($main::is_win) {
+		setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!";
+	} 
 	$conn->{sock}->autoflush(0);
 	
 	if (isdbg('sock')) {
