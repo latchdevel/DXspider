@@ -15,7 +15,7 @@ my $f = lc shift @f if @f;
 if ($self->priv >= 8) {
 	my $d = DXChannel->get(uc $f);
 	$dxchan = $d if $d;
-	$f = lc shift @f if @f;
+	$f = lc shift @f;
 }
 
 $sort = $f if $f;

@@ -247,10 +247,10 @@ sub print
 	foreach $key (sort $self->getfilkeys) {
 		my $filter = $self->{$key};
 		if ($filter->{reject} && exists $filter->{reject}->{user}) {
-			push @out, '   ' . join(' ', $key, 'reject', $filter->{reject}->{user});
+			push @out, ' ' . join(' ', $key, 'reject', $filter->{reject}->{user});
 		}
 		if ($filter->{accept} && exists $filter->{accept}->{user}) {
-			push @out, '   ' . join(' ', $key, 'accept', $filter->{accept}->{user});
+			push @out, ' ' . join(' ', $key, 'accept', $filter->{accept}->{user});
 		} 
 	}
 	return @out;
@@ -293,6 +293,7 @@ sub delete
 		# get rid 
 		if ($filter->{hops} || $filter->getfilkeys) {
 			$filter->install;
+			$filter->write;
 		} else {
 			$filter->install(1);
 			unlink $fn;
@@ -303,6 +304,9 @@ sub delete
 package Filter::Cmd;
 
 use strict;
+use DXVars;
+use DXUtil;
+use DXDebug;
 use vars qw(@ISA);
 @ISA = qw(Filter);
 
@@ -331,7 +335,7 @@ sub parse
 	while (@f) {
 		if ($ntoken == 0) {
 			
-			if (@f && $dxchan->priv >= 8 && (DXUser->get($f[0]) || $f[0] =~ /(?:node|user)_default/)) {
+			if (@f && $dxchan->priv >= 8 && ((is_callsign(uc $f[0]) && DXUser->get(uc $f[0])) || $f[0] =~ /(?:node|user)_default/)) {
 				$call = shift @f;
 				if ($f[0] eq 'input') {
 					shift @f;
@@ -466,6 +470,9 @@ sub parse
 package Filter::Old;
 
 use strict;
+use DXVars;
+use DXUtil;
+use DXDebug;
 use vars qw(@ISA);
 @ISA = qw(Filter);
 

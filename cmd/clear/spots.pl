@@ -16,14 +16,16 @@ my $call = $dxchan->call;
 
 my $f = lc shift @f if @f;
 if ($self->priv >= 8) {
-	my $uref = DXUser->get(uc $f);
-	$call = $uref->call if $uref;
-	$f = undef;
-	$f = lc shift @f if @f;
-	if ($f && $f eq 'input') {
-		$flag = 'in';
-		$f = undef;
-		$f = lc shift @f if @f;
+	if (is_callsign(uc $f)) {
+		my $uref = DXUser->get(uc $f);
+		$call = $uref->call if $uref;
+	}
+	if (@f) {
+		$f = lc shift @f;
+		if ($f eq 'input') {
+			$flag = 'in';
+			$f = shift @f if @f;
+		}
 	}
 }
 
