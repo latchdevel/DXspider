@@ -271,10 +271,13 @@ sub process
 
 sub listdups
 {
+	my $regex = shift;
+	$regex = '.*' unless $regex;
+	$regex =~ s/[\$\@\%]//g;
 	my @out;
-	for (sort { $dup{$a} <=> $dup{$b} } keys %dup) {
+	for (sort { $dup{$a} <=> $dup{$b} } grep { m{$regex}i } keys %dup) {
 		my $val = $dup{$_};
-		push @out, "$_ = $val (" . cldatetime($val) . ")";
+		push @out, "$_ = " . cldatetime($val);
 	}
 	return @out;
 }

@@ -299,7 +299,7 @@ sub rcmd
 	return  if !$noderef || !$noderef->pcversion;
 
 	# send it 
-	DXProt::addrcmd($main::mycall, $call, $line);
+	DXProt::addrcmd($DXProt::me, $call, $line);
 }
 1;
 __END__
