@@ -264,7 +264,8 @@ sub finish
 		open(I, "$main::data/logout") or confess;
 		my @in = <I>;
 		close(I);
-		$self->sendnow('D', @in);
+		$self->send_now('D', @in);
+		sleep(1);
 	}
 
 	if ($call eq $main::myalias) { # unset the channel if it is us really
