@@ -1,3 +1,8 @@
+16Mar05=======================================================================
+1. make the correct correction to the DL entry in wpxloc.raw (left out the
+'N' of 'North' in the latitude).
+2. Severely reduce the dupes caused by some of the badly configured / written
+spot suckers out there. 
 13Mar05=======================================================================
 1. There has been a mix up in the Aranea1 branch. I have managed to merge a
 change that I have been meaning to do for ages. I have now made that change

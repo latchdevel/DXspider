@@ -221,9 +221,9 @@ D2 Angola-D2                           29 52 36 -1.0 8 48 0 S 13 12 0 E @
 D3 Angola-D2                           29 52 36 -1.0 8 48 0 S 13 12 0 E
 D4 Cape-Verde-D4                       30 46 35  1.0 16 0 0 N 24 0 0 W @
 D6 Comoros-D6                          31 53 39 -3.0 11 48 0 S 43 42 0 E @
-DA,DB,DC,DE,DD,DE,DF,DG,DH,DI,DJ,DK Germany-DL 32 28 14 -1.0 51 10 0 10 27 0 E
-DM,DN,DO,DP,DQ,DR Germany-DL           32 28 14 -1.0 51 10 0 10 27 0 E
-DL Germany-DL                          32 28 14 -1.0 51 10 0 10 27 0 E @
+DA,DB,DC,DE,DD,DE,DF,DG,DH,DI,DJ,DK Germany-DL 32 28 14 -1.0 51 10 0 N 10 27 0 E
+DM,DN,DO,DP,DQ,DR Germany-DL           32 28 14 -1.0 51 10 0 N 10 27 0 E
+DL Germany-DL                          32 28 14 -1.0 51 10 0 N 10 27 0 E @
 DU Phillippines-DU                     33 50 27 -8.0 14 36 0 N 121 0 0 E @
 DV,DW,DX,DY,DZ,4D,4E,4F,4G,4H,4I Phillippines-DU   33 50 27 -8.0 14 36 0 N 121 0 0 E
 AM,AN,AO,EB,EC,ED,EF,EG,EH Spain-EA    34 37 14 -1.0 40 24 0 N 3 42 0 W
