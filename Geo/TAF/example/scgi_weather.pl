@@ -58,8 +58,8 @@ my %st = (
 		  VV => 'vert. viz',
 		  SKC => "no cloud",
 		  CLR => "no cloud no sig wthr",
-		  SCT => "5-7okt",
-		  BKN => "3-4okt",
+		  BKN => "5-7okt",
+		  SCT => "3-4okt",
 		  FEW => "0-2okt",
 		  OVC => "8okt",
 		  CAVOK => "CAVOK(no cloud >10Km viz no sig wthr)",
@@ -261,35 +261,22 @@ sub error
     exit(0);
 }
 
-sub _dayend
-{
-	my $d = sprintf "%d", shift;
-	if ($d =~ /1$/) {
-		return "${d}st";
-	} elsif ($d =~ /2$/) {
-		return "${d}nd";
-	} elsif ($d =~ /3$/) {
-		return "${d}rd";
-	}
-	return "${d}th";
-}
-
 sub tafHEAD
 {
 	my @in = @{$_[0]};
-	return "FORECAST Issued $in[3] " . _dayend($in[2]);
+	return "FORECAST Issued $in[3] on " . Geo::TAF::EN::_dayend($in[2]);
 }
 
 sub metarHEAD
 {
 	my @in = @{$_[0]};
-	return "CURRENT Issued $in[3] " . _dayend($in[2]);
+	return "CURRENT Issued $in[3] on " . Geo::TAF::EN::_dayend($in[2]);
 }
 
 sub VALID
 {
 	my @in = @{$_[0]};
-	return "Valid $in[1]-\>$in[2] " . _dayend($in[0]);
+	return "Valid $in[1]-\>$in[2] on " . Geo::TAF::EN::_dayend($in[0]);
 }
 
 sub WIND

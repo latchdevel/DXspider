@@ -13,7 +13,7 @@ use 5.005;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 
 my %err = (
@@ -286,7 +286,8 @@ sub decode
 			
 		# pressure 
 		} elsif (my ($u, $p, $punit) = $t =~ /^([QA])(?:NH)?(\d\d\d\d)(INS?)?$/) {
-			
+
+			$p = 0 + $p;
 			if ($u eq 'A' || $punit && $punit =~ /^I/) {
 				$p = sprintf "%.2f", $p / 100;
 				$u = 'in';
@@ -383,11 +384,10 @@ sub _time
 sub AUTOLOAD
 {
 	no strict;
-	my $name = $AUTOLOAD;
-	return if $name =~ /::DESTROY$/;
-	$name =~ s/^.*:://o;
+	my ($package, $name) = $AUTOLOAD =~ /^(.*)::(\w+)$/;
+	return if $name eq 'DESTROY';
 
-	*$AUTOLOAD = sub { $_[0]->{$name}};
+	*$AUTOLOAD = sub {return $_[0]->{$name}};
     goto &$AUTOLOAD;
 }
 
@@ -419,6 +419,21 @@ sub as_string
 	return join ' ', ucfirst $n, map {defined $_ ? $_ : ()} @$self;
 }
 
+sub day
+{
+	my $pkg = shift;
+	my $d = sprintf "%d", ref($pkg) ? shift : $pkg;
+	if ($d =~ /1$/) {
+		return "${d}st";
+	} elsif ($d =~ /2$/) {
+		return "${d}nd";
+	} elsif ($d =~ /3$/) {
+		return "${d}rd";
+	}
+	return "${d}th";
+}
+
+
 package Geo::TAF::EN::HEAD;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
@@ -426,7 +441,7 @@ use vars qw(@ISA);
 sub as_string
 {
 	my $self = shift;
-	return "$self->[0] for $self->[1] issued day $self->[2] at $self->[3]";
+	return "$self->[0] for $self->[1] issued at $self->[3] on " . $self->day($self->[2]);
 }
 
 package Geo::TAF::EN::VALID;
@@ -436,7 +451,7 @@ use vars qw(@ISA);
 sub as_string
 {
 	my $self = shift;
-	return "valid day $self->[0] from $self->[1] till $self->[2]";
+	return "valid from $self->[1] to $self->[2] on " . $self->day($self->[0]);
 }
 
 
@@ -490,12 +505,12 @@ my %st = (
 		  VV => 'vertical visibility',
 		  SKC => "no cloud",
 		  CLR => "no cloud no significant weather",
-		  SCT => "5-7 oktas",
-		  BKN => "3-4 oktas",
+		  SCT => "3-4 oktas",
+		  BKN => "5-7 oktas",
 		  FEW => "0-2 oktas",
 		  OVC => "8 oktas overcast",
 		  CAVOK => "no cloud below 5000ft >10Km visibility no significant weather (CAVOK)",
-		  CB => 'thunderstorms',
+		  CB => 'thunder clouds',
           TCU => 'towering cumulus',
 		  NSC => 'no significant cloud',
 		  BLU => '3 oktas at 2500ft 8Km visibility',
@@ -642,7 +657,7 @@ sub as_string
 	my $self = shift;
     
 	my $out = "probability $self->[0]%";
-	$out .= " $self->[1] till $self->[2]" if defined $self->[1];
+	$out .= " $self->[1] to $self->[2]" if defined $self->[1];
 	return $out;
 }
 
@@ -654,7 +669,7 @@ sub as_string
 {
 	my $self = shift;
 	my $out = "temporarily";
-	$out .= " $self->[0] till $self->[1]" if defined $self->[0];
+	$out .= " $self->[0] to $self->[1]" if defined $self->[0];
 
 	return $out;
 }
@@ -667,7 +682,7 @@ sub as_string
 {
 	my $self = shift;
 	my $out = "becoming";
-	$out .= " $self->[0] till $self->[1]" if defined $self->[0];
+	$out .= " $self->[0] to $self->[1]" if defined $self->[0];
 
 	return $out;
 }
@@ -770,7 +785,7 @@ English that is hopefully more understandable than the reports
 themselves. 
 
 It is possible to sub-class the translation routines to enable
-translation to other langauages.
+translation to other langauages. 
 
 =head1 METHODS
 
@@ -784,7 +799,7 @@ a new constructor.
 If you sub-class the built-in English translation routines then 
 you can pick this up by called the constructor thus:-
  
-  C<my $t = Geo::TAF-E<gt>new(chunk_package =E<gt> 'Geo::TAF::ES');>
+  my $t = Geo::TAF->new(chunk_package => 'Geo::TAF::ES');
 
 or whatever takes your fancy.
 
@@ -853,7 +868,9 @@ as an array.
 
 Returns a list of (as default) C<Geo::TAF::EN> objects. You 
 can use C<$c-E<gt>as_string> or C<$c-E<gt>as_chunk> to 
-translate the internal form into something readable. 
+translate the internal form into something readable. There
+is also a routine (C<$c-E<gt>day>)to turn a day number into 
+things like "1st", "2nd" and "24th". 
 
 If you replace the English versions of these objects then you 
 will need at an L<as_string()> method.
@@ -965,7 +982,7 @@ L<Geo::METAR>
 For a example of a weather forecast from the Norwich Weather 
 Centre (EGSH) see L<http://www.tobit.co.uk>
 
-For data see <ftp://weather.noaa.gov/data/observations/metar/>
+For data see L<ftp://weather.noaa.gov/data/observations/metar/>
 L<ftp://weather.noaa.gov/data/forecasts/taf/> and also
 L<ftp://weather.noaa.gov/data/forecasts/shorttaf/>
 
