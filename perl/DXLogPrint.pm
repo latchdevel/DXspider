@@ -33,7 +33,6 @@ sub print
 	my $fcb = $DXLog::log;
 	my $from = shift || 0;
 	my $to = shift || 20;
-	my $count;
 	my $jdate = $fcb->unixtoj(shift);
 	my $pattern = shift;
 	my $who = uc shift;
@@ -50,45 +49,42 @@ sub print
 		$hint = "!m{ann|rcmd|talk}";
 	}
 	if ($who) {
-		if ($hint) {
-			$hint .= ' && ';
-		}
+		$hint .= ' && ' if $hint;
 		$hint .= 'm{\\Q$who\\E}i';
 	} 
 	$hint = "next unless $hint" if $hint;
+	$hint .= ";next unless /^\\d+\\^$pattern\\^/" if $pattern;
+	$hint ||= "";
 	
-	$eval = qq(
-			   \@in = ();
-			   while (<\$fh>) {
+	$eval = qq(while (<\$fh>) {
 				   $hint;
 				   chomp;
-				   push \@in, \$_;
-				   shift \@in, if \@in > $tot;
-			   }
-		   );
+				   push \@tmp, \$_;
+			   } );
 	
 	$fcb->close;                                      # close any open files
 
 	my $fh = $fcb->open($jdate); 
-	L1: for ($count = 0; $count < $to; ) {
+ L1: for (;@in < $to;) {
 		my $ref;
 		if ($fh) {
+			my @tmp;
 			eval $eval;               # do the search on this file
 			return ("Log search error", $@) if $@;
-			my @tmp;
-			while (@in) {
-				last L1 if $count >= $to;
-				my $ref = [ split /\^/, shift @in ];
-				next if defined $pattern && $ref->[1] ne $pattern;
-				push @tmp, print_item($ref);
-				$count++;
-			}
-			@out = (@tmp, @out);
+			@in = (@tmp, @in);
+			if (@in > $to) {
+				@in = splice @in, -$to, $to;
+				last L1;
+			} 
 		}
 		$fh = $fcb->openprev();      # get the next file
 		last if !$fh;
 	}
+	for (@in) {
+		my @line = split /\^/ ;
+		push @out, print_item(\@line);
 	
+	}
 	return @out;
 }
 
@@ -105,22 +101,26 @@ sub print
 sub print_item
 {
 	my $r = shift;
-	my @ref = @$r;
-	my $d = atime($ref[0]);
+	my $d = atime($r->[0]);
 	my $s = 'undef';
 	
-	if ($ref[1] eq 'rcmd') {
-		if ($ref[2] eq 'in') {
-			$s = "$ref[4] (priv: $ref[3]) rcmd: $ref[5]";
+	if ($r->[1] eq 'rcmd') {
+		if ($r->[2] eq 'in') {
+			$r->[5] ||= "";
+			$s = "$r->[4] (priv: $r->[3]) rcmd: $r->[5]";
 		} else {
-			$s = "$ref[3] reply: $ref[4]";
+			$r->[4] ||= "";
+			$s = "$r->[3] reply: $r->[4]";
 		}
-	} elsif ($ref[1] eq 'talk') {
-		$s = "$ref[3] -> $ref[2] ($ref[4]) $ref[5]";
-	} elsif ($ref[1] eq 'ann') {
-		$s = "$ref[3] -> $ref[2] $ref[4]";
+	} elsif ($r->[1] eq 'talk') {
+		$r->[5] ||= "";
+		$s = "$r->[3] -> $r->[2] ($r->[4]) $r->[5]";
+	} elsif ($r->[1] eq 'ann') {
+		$r->[4] ||= "";
+		$s = "$r->[3] -> $r->[2] $r->[4]";
 	} else {
-		$s = "$ref[2]";
+		$r->[2] ||= "";
+		$s = "$r->[2]";
 	}
 	return "$d $s";
 }
