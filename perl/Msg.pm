@@ -16,7 +16,7 @@ use IO::Socket;
 use DXDebug;
 use Timer;
 
-use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns);
+use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported);
 
 %rd_callbacks = ();
 %wt_callbacks = ();
@@ -26,14 +26,19 @@ $wt_handles   = IO::Select->new();
 $er_handles   = IO::Select->new();
 
 $now = time;
-my $blocking_supported = 0;
 
 BEGIN {
     # Checks if blocking is supported
     eval {
-        require POSIX; POSIX->import(qw (F_SETFL F_GETFL O_NONBLOCK));
+        require POSIX; POSIX->import(qw(O_NONBLOCK F_SETFL F_GETFL))
     };
-    $blocking_supported = 1 unless $@;
+	if ($@) {
+		print STDERR "POSIX Blocking *** NOT *** supported $@\n";
+	} else {
+		$blocking_supported = 1;
+		print STDERR "POSIX Blocking enabled\n";
+	}
+
 
 	# import as many of these errno values as are available
 	eval {
@@ -155,10 +160,8 @@ sub connect {
 	my $proto = getprotobyname('tcp');
 	$sock->socket(AF_INET, SOCK_STREAM, $proto) or return undef;
 	
-	if ($conn->{blocking}) {
-		blocking($sock, 0);
-		$conn->{blocking} = 0;
-	}
+	blocking($sock, 0);
+	$conn->{blocking} = 0;
 
 	my $ip = gethostbyname($to_host);
 #	my $r = $sock->connect($to_port, $ip);
@@ -394,6 +397,8 @@ sub new_client {
 	if ($sock) {
 		my $conn = $server_conn->new($server_conn->{rproc});
 		$conn->{sock} = $sock;
+		blocking($sock, 0);
+		$conn->{blocking} = 0;
 		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
 		$conn->{sort} = 'Incoming';
 		if ($eproc) {

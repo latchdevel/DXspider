@@ -126,6 +126,8 @@ sub new_client {
 	if ($sock) {
 		my $conn = $server_conn->new($server_conn->{rproc});
 		$conn->{sock} = $sock;
+		Msg::blocking($sock, 0);
+		$conn->{blocking} = 0;
 		
 		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
 		if ($eproc) {
