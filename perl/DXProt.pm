@@ -34,6 +34,13 @@ use Route;
 use Route::Node;
 
 use strict;
+
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 use vars qw($me $pc11_max_age $pc23_max_age
 			$last_hour $last10 %eph  %pings %rcmds
 			%nodehops $baddx $badspotter $badnode $censorpc

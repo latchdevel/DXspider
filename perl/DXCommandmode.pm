@@ -41,6 +41,12 @@ $errstr = ();					# error string from eval
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 #
 # obtain a new connection this is derived from dxchannel
 #

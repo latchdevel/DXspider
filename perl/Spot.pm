@@ -19,6 +19,13 @@ use DXDupe;
 use Data::Dumper;
 
 use strict;
+
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef);
 
 $fp = undef;

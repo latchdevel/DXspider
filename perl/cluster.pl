@@ -97,7 +97,7 @@ package main;
 use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
-			$clusterport $mycall $decease $build $is_win $routeroot 
+			$clusterport $mycall $decease $is_win $routeroot 
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -106,6 +106,13 @@ $version = "1.48";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
+
+use vars qw($VERSION $BRANCH $build $branch);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += 15;				# add an offset to make it bigger than last system
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
       
 # send a message to call on conn and disconnect
@@ -324,29 +331,8 @@ foreach (@debug) {
 STDOUT->autoflush(1);
 
 # calculate build number
-$build = $main::version;
-
-my @fn;
-open(CL, "$main::root/perl/cluster.pl") or die "Cannot open cluster.pl $!";
-while (<CL>) {
-	next unless /^use\s+([\w:_]+)/;
-	push @fn, $1;
-}
-close CL;
-my $subbuild;
-foreach my $fn (@fn) {
-	$fn =~ s|::|/|g;
-	open(CL, "$main::root/perl/${fn}.pm") or next;
-	while (<CL>) {
-		if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)\.?(\d+.\d+)?/ ) {
-			$build += $1;
-			$subbuild += $2 if $2;
-			last;
-		}
-	}
-	close CL;
-}
-$build = "$build.$subbuild" if $subbuild;
+$build += $main::version;
+$build = "$build.$branch" if $branch;
 
 Log('cluster', "DXSpider V$version, build $build started");
 

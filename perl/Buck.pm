@@ -8,6 +8,12 @@ use DXUtil;
 
 @ISA = qw( HTML::Parser );
 
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 use strict;
 
 sub new

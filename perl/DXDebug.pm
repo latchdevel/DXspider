@@ -26,6 +26,12 @@ $callback = undef;
 $keepdays = 10;
 $cleandays = 100;
 
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 # Avoid generating "subroutine redefined" warnings with the following
 # hack (from CGI::Carp):
 if (!defined $DB::VERSION) {

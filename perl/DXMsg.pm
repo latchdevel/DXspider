@@ -27,6 +27,13 @@ use IO::File;
 use Fcntl;
 
 use strict;
+
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
 		    $queueinterval $lastq $importfn $minchunk $maxchunk $bulltopriv);

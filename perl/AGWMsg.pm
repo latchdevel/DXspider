@@ -44,6 +44,12 @@ $ypolltime = 10 unless defined $ypolltime;
 $hpolltime = 300 unless defined $hpolltime;
 %circuit = ();
 
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 sub init
 {
 	return unless $enable;

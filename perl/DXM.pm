@@ -16,11 +16,21 @@
 
 package DXM;
 
+use strict;
+ 
 use DXVars;
 use DXDebug;
 
 my $localfn = "$main::root/local/Messages";
 my $fn = "$main::root/perl/Messages";
+
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
+use vars qw(%msgs);
 
 sub msg
 {
@@ -57,3 +67,5 @@ sub init
 {
 	load();
 }
+
+1;

@@ -48,6 +48,12 @@ $lastprocesstime = time;
 $nextstream = 0;
 %stream = ();
 
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+
 # allocate a new stream for this request
 sub newstream
 {
