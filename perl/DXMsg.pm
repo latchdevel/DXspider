@@ -32,7 +32,7 @@ use Carp;
 
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
-			@badmsg $badmsgfn $forwardfn @forward $timeout $waittime
+			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
 		    $queueinterval $lastq);
 
 %work = ();						# outstanding jobs
@@ -42,6 +42,8 @@ $msgdir = "$main::root/msg";	# directory contain the msgs
 $maxage = 30 * 86400;			# the maximum age that a message shall live for if not marked 
 $last_clean = 0;				# last time we did a clean
 @forward = ();                  # msg forward table
+@badmsg = ();					# bad message table
+@swop = ();						# swop table
 $timeout = 30*60;               # forwarding timeout
 $waittime = 30*60;              # time an aborted outgoing message waits before trying again
 $queueinterval = 1*60;          # run the queue every 1 minute
@@ -50,6 +52,7 @@ $lastq = 0;
 
 $badmsgfn = "$msgdir/badmsg.pl";  # list of TO address we wont store
 $forwardfn = "$msgdir/forward.pl";  # the forwarding table
+$swopfn = "$msgdir/swop.pl";  # the swopping table
 
 %valid = (
 		  fromnode => '5,From Node',
@@ -276,12 +279,16 @@ sub process
 								return;
 							}
 						}
-							
+
+						# swop addresses
+						$ref->swop_it($self->call);
+						
 						# look for 'bad' to addresses 
-						if (grep $ref->{to} eq $_, @badmsg) {
+#						if (grep $ref->{to} eq $_, @badmsg) {
+						if ($ref->dump_it($self->call)) {
 							$ref->stop_msg($self->call);
-							dbg('msg', "'Bad' TO address $ref->{to}");
-							Log('msg', "'Bad' TO address $ref->{to}");
+							dbg('msg', "'Bad' message $ref->{to}");
+							Log('msg', "'Bad' message $ref->{to}");
 							return;
 						}
 
@@ -594,6 +601,7 @@ sub queue_msg
 		# deal with routed private messages
 		my $noderef;
 		if ($ref->{private}) {
+			next if $ref->{'read'};           # if it is read, it is stuck here
 			$clref = DXCluster->get_exact($ref->{to});
 			unless ($clref) {             # otherwise look for a homenode
 				my $uref = DXUser->get($ref->{to});
@@ -722,12 +730,11 @@ sub init
 	my $dir = new IO::File;
 	my @dir;
 	my $ref;
-
+		
 	# load various control files
-	my @in = load_badmsg();
-	print "@in\n" if @in;
-	@in = load_forward();
-	print "@in\n" if @in;
+	print "load badmsg: ", (load_badmsg() or "Ok"), "\n";
+	print "load forward: ", (load_forward() or "Ok"), "\n";
+	print "load swop: ", (load_swop() or "Ok"), "\n";
 
 	# read in the directory
 	opendir($dir, $msgdir) or confess "can't open $msgdir $!";
@@ -909,6 +916,18 @@ sub load_badmsg
 	return @out;
 }
 
+# load the swop message table
+sub load_swop
+{
+	my @out;
+	my $s = readfilestr($swopfn);
+	if ($s) {
+		eval $s;
+		push @out, $@ if $@;
+	}
+	return @out;
+}
+
 #
 # forward that message or not according to the forwarding table
 # returns 1 for forward, 0 - to ignore
@@ -930,8 +949,6 @@ sub forward_it
 		
 		# select field
 		$tested = $ref->{to} if $field eq 'T';
-		my $at = $ref->{to} =~ /\@\s*(\S+)/;
-		$tested = $at if $field eq '\@';
 		$tested = $ref->{from} if $field eq 'F';
 		$tested = $ref->{origin} if $field eq 'O';
 		$tested = $ref->{subject} if $field eq 'S';
@@ -942,6 +959,80 @@ sub forward_it
 		}
 	}
 	return 0;
+}
+
+sub dump_it
+{
+	my $ref = shift;
+	my $call = shift;
+	my $i;
+	
+	for ($i = 0; $i < @badmsg; $i += 3) {
+		my ($sort, $field, $pattern) = @badmsg[$i..($i+2)]; 
+		my $tested;
+		
+		# are we interested?
+		next if $ref->{private} && $sort ne 'P';
+		next if !$ref->{private} && $sort ne 'B';
+		
+		# select field
+		$tested = $ref->{to} if $field eq 'T';
+		$tested = $ref->{from} if $field eq 'F';
+		$tested = $ref->{origin} if $field eq 'O';
+		$tested = $ref->{subject} if $field eq 'S';
+
+		if (!$pattern || $tested =~ m{$pattern}i) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+sub swop_it
+{
+	my $ref = shift;
+	my $call = shift;
+	my $i;
+	my $count = 0;
+	
+	for ($i = 0; $i < @swop; $i += 5) {
+		my ($sort, $field, $pattern, $tfield, $topattern) = @swop[$i..($i+4)]; 
+		my $tested;
+		my $swop;
+		my $old;
+		
+		# are we interested?
+		next if $ref->{private} && $sort ne 'P';
+		next if !$ref->{private} && $sort ne 'B';
+		
+		# select field
+		$tested = $ref->{to} if $field eq 'T';
+		$tested = $ref->{from} if $field eq 'F';
+		$tested = $ref->{origin} if $field eq 'O';
+		$tested = $ref->{subject} if $field eq 'S';
+
+		# select swop field
+		$old = $swop = $ref->{to} if $tfield eq 'T';
+		$old = $swop = $ref->{from} if $tfield eq 'F';
+		$old = $swop = $ref->{origin} if $tfield eq 'O';
+		$old = $swop = $ref->{subject} if $tfield eq 'S';
+
+		if ($tested =~ m{$pattern}i) {
+			if ($tested eq $swop) {
+				$swop =~ s{$pattern}{$topattern}i;
+			} else {
+				$swop = $topattern;
+			}
+			Log('msg', "Msg $ref->{msgno}: $tfield $old -> $swop");
+			Log('dbg', "Msg $ref->{msgno}: $tfield $old -> $swop");
+			$ref->{to} = $swop if $tfield eq 'T';
+			$ref->{from} = $swop if $tfield eq 'F';
+			$ref->{origin} = $swop if $tfield eq 'O';
+			$ref->{subject} = $swop if $tfield eq 'S';
+			++$count;
+		}
+	}
+	return $count;
 }
 
 no strict;
