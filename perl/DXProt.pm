@@ -695,8 +695,9 @@ sub handle_16
 	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
 		if (my $ivp = Investigate::get($ncall, $self->{call})) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		} else {
+			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
 		}
-		dbg("PCPROT: We don't believe $ncall on $self->{call}");
 		return;
 	}
 
@@ -848,8 +849,9 @@ sub handle_17
 	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
 		if (my $ivp = Investigate::get($ncall, $self->{call})) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		} else {
+			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
 		}
-		dbg("PCPROT: We don't believe $ncall on $self->{call}");
 		return;
 	}
 
@@ -1005,7 +1007,7 @@ sub handle_19
 				$ivp->here($here);
 				$ivp->store_pcxx($pcno,$genline,$origin,'PC19',$here,$call,$conf,$ver,$_[-1]);
 			} else {
-				dbg("PCPROT: We don't believe $call on $self->{call}");
+				dbg("PCPROT: We don't believe $call on $self->{call}") if isdbg('chanerr');
 			}
 			$user->put;
 			next;
@@ -1101,8 +1103,9 @@ sub handle_21
 	unless ($call eq $self->{call} || $self->is_believed($call)) {
 		if (my $ivp = Investigate::get($call, $self->{call})) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		} else {
+			dbg("PCPROT: We don't believe $call on $self->{call}") if isdbg('chanerr');
 		}
-		dbg("PCPROT: We don't believe $call on $self->{call}");
 		return;
 	}
 
@@ -2455,7 +2458,7 @@ sub eph_dup
 	$s =~ s/\^H\d\d?\^?\~?$//;
 	$r = 1 if exists $eph{$s};    # pump up the dup if it keeps circulating
 	$eph{$s} = $main::systime + $t;
-	dbg("PCPROT: emphemeral duplicate") if $r && isdbg('chan'); 
+	dbg("PCPROT: emphemeral duplicate") if $r && isdbg('chanerr'); 
 	return $r;
 }
 

@@ -47,6 +47,7 @@ my $lastping = 0;				# last ping done
 		  pcxx => '0,Stored PCProt,parray',
 		 );
 
+my %via = ();
 
 sub new
 {
@@ -87,6 +88,7 @@ sub handle_ping
 	my $self = shift;
 	dbg("Investigate: ping received for $self->{call} via $self->{via}") if isdbg('investigate');
 	if ($self->{state} eq 'waitping') {
+		$via{$self->{via}} = 0;       # cue up next ping on this interface
 		delete $list{"$self->{via},$self->{call}"};
 		my $user = DXUser->get_current($self->{via});
 		if ($user) {
@@ -120,11 +122,13 @@ sub process
 {
 	while (my ($k, $v) = each %list) {
 		if ($v->{state} eq 'start') {
-			if ($main::systime > $lastping+$pingint) {
+			my $v = $via{$v->{via}} || 0;
+			if ($main::systime > $v+$pingint) {
 				DXProt::addping($main::mycall, $v->{call}, $v->{via});
 				$v->{start} = $lastping = $main::systime;
 				dbg("Investigate: ping sent to $v->{call} via $v->{via}") if isdbg('investigate');
 				$v->chgstate('waitping');
+				$via{$v->{via}} = $main::systime;
 			}
 		} elsif ($v->{state} eq 'waitping') {
 			if ($main::systime > $v->{start} + $maxpingwait) {
