@@ -98,7 +98,7 @@ sub handle
 		} else {
 
 			# it's a reply, look in the ping list for this one
-			my $ref = $ping{$thing->{id}} if $thing->{id}
+			my $ref = $ping{$thing->{id}} if exists $thing->{id};
 			$ref ||= $thing->find;
 			if ($ref) {
 				my $t = tv_interval($thing->{t}, [ gettimeofday ]);
