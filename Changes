@@ -1,3 +1,6 @@
+23Apr01=======================================================================
+1. fix very long standing bug in storing and transmitting spots. The decimal
+point was left off :-(
 22Apr01=======================================================================
 1. Sysops can now have full privileges if there is a ExtMsg listener on 
 localhost (or everything) and they telnet to localhost and login with their

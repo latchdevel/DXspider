@@ -102,7 +102,7 @@ sub prepare
 	my @out = @_[0..4];      # just up to the spotter
 
 	# normalise frequency
-	$_[0] = sprintf "%.f", $_[0];
+	$_[0] = sprintf "%.1f", $_[0];
   
 	# remove ssids if present on spotter
 	$out[4] =~ s/-\d+$//o;
