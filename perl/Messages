@@ -109,7 +109,7 @@ package DXM;
 				isou => '$_[0] UnIsolated',
 				isoc => '$_[0] created and Isolated',
 				l1 => 'Sorry $_[0], you are already logged on on another channel',
-				l2 => 'Hello $_[0], this is $main::mycall in $main::myqth running DXSpider V$main::version',
+				l2 => 'Hello $_[0], this is $main::mycall in $main::myqth\nrunning DXSpider V$main::version build $main::build',
 				lang => 'Language is now $_[0]',
 				lange1 => 'set/language <lang> where <lang> is one of ($_[0])',
 				lange2 => 'failed to set language on $_[0]', 
