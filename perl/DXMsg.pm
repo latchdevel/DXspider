@@ -193,6 +193,7 @@ sub process
 			$ref->{stream} = $stream;
 			$ref->{count} = 0;	# no of lines between PC31s
 			dbg('msg', "new message from $f[4] to $f[3] '$f[8]' stream $stream\n");
+			Log('msg', "Incoming message $f[4] to $f[3] '$f[8]'" );
 			$work{"$f[2]$stream"} = $ref; # store in work
 			$busy{$f[2]} = $ref; # set interlock
 			$self->send(DXProt::pc30($f[2], $f[1], $stream)); # send ack
@@ -281,8 +282,8 @@ sub process
 							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from} && $ref->{to} eq $m->{to}) {
 								$ref->stop_msg($self->call);
 								my $msgno = $m->{msgno};
-								dbg('msg', "duplicate message to $msgno\n");
-								Log('msg', "duplicate message to $msgno");
+								dbg('msg', "duplicate message from $ref->{from} -> $ref->{to} to $msgno");
+								Log('msg', "duplicate message from $ref->{from} -> $ref->{to} to $msgno");
 								return;
 							}
 						}

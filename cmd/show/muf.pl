@@ -76,7 +76,7 @@ $theta=$theta+2.*$pi if( $theta <= -$pi);
 $theta=$theta-2.*$pi if( $theta >= $pi);
 
 my ($lats, $lons);				# subsolar coordinates (rad) 
-my $dB1 = 20;					# transmitter output power (dBW) 
+my $dB1 = 26;					# transmitter output power (dBW) 
 
 my $delay;						# path delay (ms) 
 my $psi;						# sun zenith angle (rad) 
@@ -90,7 +90,7 @@ my $beta1;						# elevation angle (rad)
 my $dhop;						# hop great-circle distance (rad) 
 my $height;						# height of F layer (km) 
 my $time;						# time of day (hour) 
-my $rsens = -123;				# RX sensitivity
+my $rsens = -128;				# RX sensitivity
 
 
 my @freq = qw(1.8 3.5 7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0); # working frequencies (MHz) 
