@@ -467,7 +467,7 @@ DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/t
 </CODE></BLOCKQUOTE>
 <P>
 <P>This line works fine for RedHat distributions. It is also fine for SuSE up to
-7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like this ...
+7.0.  From SuSE 7.1 you need to add runlevels 2 and 5 like this ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -486,6 +486,9 @@ DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/de
 <P>
 <P>This will automatically start DXSpider on tty7 (ALT-F7) on bootup and restart 
 it should it crash for any reason.
+<P>
+<P>NB: It should be noted that /dev/tty7 is only an example.  Some SuSE systems will
+only accept upto tty6.  It really does not matter which tty you run it on.
 <P>
 <P>As root type the command <EM>telinit q</EM>.  DXSpider should start up 
 immediately.  You will see the output on tty7 and if you login as <EM>sysop</EM> 

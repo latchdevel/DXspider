@@ -7,7 +7,7 @@
 <title>The DXSpider Installation Manual v1.50</title> 
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
 Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>July 2002 revision 0.2</date>
+<date>July 2002 revision 0.3</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -139,7 +139,7 @@ however this is your own choice.
 </verb></tscreen>
 
 <P>
-For SUSE distributions, the command would be ..
+For SuSE distributions, the command would be ..
 
 <tscreen><verb>
 # useradd -m sysop
@@ -1321,7 +1321,7 @@ DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/t
 
 <P>
 This line works fine for RedHat distributions. It is also fine for SuSE up to
-7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like this ...
+7.0.  From SuSE 7.1 you need to add runlevels 2 and 5 like this ...
 
 <tscreen><verb>
 DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
@@ -1338,6 +1338,10 @@ DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/de
 <P>
 This will automatically start DXSpider on tty7 (ALT-F7) on bootup and restart 
 it should it crash for any reason.
+
+<P>
+NB: It should be noted that /dev/tty7 is only an example.  Some SuSE systems will
+only accept upto tty6.  It really does not matter which tty you run it on.
 
 <P>
 As root type the command <em>telinit q</em>.  DXSpider should start up 
