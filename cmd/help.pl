@@ -19,30 +19,42 @@ $lang = 'en' if !$lang;
 
 # each help file contains lines that looks like:-
 #
-# === 0^EN^*^Description
+# === 0^*^Description
 # text
 # text
 #
-# === 0^EN^help^Description
+# === 0^help^Description
 # text
 # text
 # text 
 #
-# The fields are:- privilege level, Language, full command name, short description
+# The fields are:- privilege level, full command name, short description
 #
 
-my $h = new IO::File;
-
-if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
-	$lang = 'en';
-	if (!open($h, "$main::cmd/Commands_$lang.hlp")) {
+my $defh = new IO::File;
+unless ($defh->open("$main::localcmd/Commands_en.hlp")) {
+	unless($defh->open("$main::cmd/Commands_en.hlp")) {
 		return (1, $self->msg('helpe1'));
 	}
 }
+
+my $h;
+unless ($lang ne 'en') {
+	$h = new IO::File;
+	unless ($h->open("$main::localcmd/Commands_$lang.hlp")) {
+		unless($h->open("$main::cmd/Commands_$lang.hlp")) {
+			undef $h;
+		}
+	}
+}
+
 my $in;
 
-$line =~ s/[^\w\/]//g;
-$line =~ s/\//\.\*\//g;
+#$line =~ s/[^\w\/]//g;
+#$line =~ s/\//\.\*\//g;
+
+$line =~ s{[^\w/]}{}g;
+$line =~ s{/}{.*/}g;
 $line =~ s/^\s+//g;
 $line =~ s/\s+$//g;
 $line = "help" if $line =~ /^\s*$/;
@@ -51,12 +63,40 @@ $line = "help" if $line =~ /^\s*$/;
 my $alias = CmdAlias::get_hlp($line);
 $line = $alias if $alias;
 
+# non english help (if available)
+if ($h) {
+	my $state = 0;
+	foreach $in (<$h>) {
+		next if $in =~ /^\#/;
+		chomp $in;
+		if ($in =~ /^===/) {
+			last if $state == 2;           # come out on next command
+			$in =~ s/=== //;
+			my ($priv, $cmd, $desc) = split /\^/, $in;
+			next if $priv > $self->priv;             # ignore subcommands that are of no concern
+			next unless $cmd =~ /^$line/i;
+			push @out, "$cmd $desc" unless $cmd =~ /-$/o;
+			$state = 1;
+			next;
+		}
+		if ($state > 0) {
+			push @out, " $in";
+			$state = 2;
+		}
+	}
+	$h->close;
+
+	# return if some help was given, otherwise continue to english help
+	return (1, @out) if @out && $state == 2;
+}
+
+# standard 'english' help
 my $state = 0;
-foreach $in (<$h>) {
+foreach $in (<$defh>) {
 	next if $in =~ /^\#/;
 	chomp $in;
 	if ($in =~ /^===/) {
-	    last if $state == 2;           # come out on next command
+		last if $state == 2;           # come out on next command
 		$in =~ s/=== //;
 		my ($priv, $cmd, $desc) = split /\^/, $in;
 		next if $priv > $self->priv;             # ignore subcommands that are of no concern
@@ -66,14 +106,12 @@ foreach $in (<$h>) {
 		next;
 	}
 	if ($state > 0) {
-	    push @out, " $in";
+		push @out, " $in";
 		$state = 2;
 	}
 }
-
-close($h);
+$defh->close;
 
 push @out, $self->msg('helpe2', $line) if @out == 0;
-
 return (1, @out);
 

@@ -1580,6 +1580,21 @@ Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
 
+=== 0^SHOW/NEWCONFIGURATION [<node>]^Show all the nodes and users visible
+This command allows you to see all the users that can be seen
+and the nodes to which they are connected. 
+
+This command produces essentially the same information as 
+SHOW/CONFIGURATION except that it shows all the duplication of
+any routes that might be present It also uses a different format
+which may not take up quite as much space if you don't have any
+loops.
+
+BE WARNED: the list that is returned can be VERY long
+
+=== 0^SHOW/NEWCONFIGURATION/NODE^Show all the nodes connected locally
+Show all the nodes connected to this node in the new format.
+
 === 1^SHOW/NODE [<callsign> ...]^Show the type and version number of nodes
 Show the type and version (if connected) of the nodes specified on the
 command line. If no callsigns are specified then a sorted list of all

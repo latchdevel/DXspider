@@ -1,3 +1,8 @@
+17Sep01=======================================================================
+1. Fixed help and apropos commands so that they default to english if
+the language is not english and help in the 'not english' language isn't
+available.
+2. added some help text for sh/newc.
 15Sep01=======================================================================
 1. released 1.48
 2. found 1st bug, fixed unset/logininfo reseting itself after logout 
