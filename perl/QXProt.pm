@@ -220,12 +220,12 @@ sub genP
 sub handleX
 {
 	my $self = shift;
-	my ($tonode, $fromnode, $msgid, $line) = @_[0..3];
-	my ($origin, $l) = split /\^/, $line, 2;
+	my ($sort, $to, $from, $msgid, $origin, $line) = split /\^/, $_[3], 6;
 
-	my ($pcno) = $l =~ /^PC(\d\d)/;
+	my ($pcno) = $line =~ /^PC(\d\d)/;
 	if ($pcno) {
-		DXProt::normal($self, $l);
+		$line =~ s/^[\x\x]$//;
+		DXProt::normal($self, $line);
 	}
 }
 
