@@ -7,7 +7,7 @@ and remove a user's password.
 it will send any messages to your callsign as they come in. unset/email
 will disable forwarding. This probably only works for unix systems. To enable
 this feature you need to download Mail::Send from CPAN and install it.
-(http://www.cpan.org/modules/by-module/Mail/Mail-Tools-1.40.tar.gz). If you
+(http://www.cpan.org/modules/by-module/Mail/MailTools-1.40.tar.gz). If you
 don't want this then it should work without.
 24Oct01=======================================================================
 1. added (un)set/register, show/registered commands which when a 'set/var
