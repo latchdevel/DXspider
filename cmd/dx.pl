@@ -103,8 +103,9 @@ if (grep $_ eq $spotted, @DXProt::baddx) {
 	my $buf = Spot::formatb($self->user->wantgrid, $freq, $spotted, $main::systime, $line, $spotter);
 	push @out, $buf;
 } else {
-	return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, (int ($main::systime/60)) * 60, $line);
-	my @spot = Spot::prepare($freq, $spotted, $main::systime, $line, $spotter, $main::mycall);
+	my $t = (int ($main::systime/60)) * 60;
+	return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line);
+	my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
 	if (@spot) {
 		# store it 
 		Spot::add(@spot);
