@@ -57,7 +57,6 @@ sub add
 	push @out, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
 	push @out, $spot[5];
 	
-
 	my $buf = join("\^", @out);
 
 	# compare dates to see whether need to open another save file (remember, redefining $fp 

@@ -81,7 +81,7 @@ return (1, @out) if !$valid;
 $line =~ s/\^/:/og;
 
 # Store it here
-if (Spot::add($freq, $spotted, $main::systime, $line, $spotter)) {
+if (Spot::add($freq, $spotted, $main::systime, $line, $spotter, $main::mycall)) {
 	# send orf to the users
 	my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
 	DXProt::broadcast_users($buf, 'dx', $buf);
