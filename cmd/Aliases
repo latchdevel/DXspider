@@ -141,6 +141,7 @@ package CmdAlias;
 	'v' => [
 	],
 	'w' => [
+	  '^w$', 'who', 'who',
 	  '^wx/full', 'wx full', 'wx',
 	  '^wx/sysop', 'wx sysop', 'wx',
 	],
