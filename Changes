@@ -3,6 +3,7 @@
 2. added new version of FAQ from Ian G0VGS
 3. added a dummy PC75 command (WCY merge?)
 4. Don't allow mail routing for clx nodes
+5. Log isolates
 25Aug00=======================================================================
 1. moan about and then delete empty message files
 24Aug00=======================================================================

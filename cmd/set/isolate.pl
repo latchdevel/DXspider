@@ -30,6 +30,7 @@ foreach $call (@args) {
 			$user->isolate(1);
 			$user->close();
 			push @out, $self->msg($create ? 'isoc' : 'iso', $call);
+			Log('DXCommand', $self->msg($create ? 'isoc' : 'iso', $call));
 		} else {
 			push @out, $self->msg('e3', "Set/Isolate", $call);
 		}

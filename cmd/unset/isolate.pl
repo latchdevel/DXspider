@@ -28,6 +28,7 @@ foreach $call (@args) {
 		$user->isolate(0);
 		$user->close();
 		push @out, $self->msg('isou', $call);
+		Log('DXCommand', $self->msg('isou', $call));
 	}
 }
 return (1, @out);
