@@ -45,11 +45,15 @@ $qrz_pw = undef;
 #
 # leave as is unless you need one
 #
+# eg:  $http_proxy = 'wwwcache.demon.co.uk';
+#
 
 $http_proxy = undef;
 
 #
 # HTTP proxy port - again leave alone unless you need this
+#
+# eg: $http_proxy_port = 8080;
 #
 
 $http_proxy_port = undef;
