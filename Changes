@@ -1,3 +1,5 @@
+08Sep01=======================================================================
+1. Update the sgml docs on filtering a bit.
 06Sep01=======================================================================
 1. prevent nodes appearing as users from incoming PC16s
 2. Change ping averaging to be like TCP and become a smoothed RTT.

@@ -15,9 +15,9 @@ my $f;
 my @out;
 
 foreach $f (@f) {
-    print "\$f = $f\n";
+#    print "\$f = $f\n";
 	my $var = eval "$f";
-	if ($var) {
+	if (defined $var) {
         my $dd = Data::Dumper->new([ $var ], [ "$f" ]);
         $dd->Indent(1);
 		$dd->Quotekeys(0);

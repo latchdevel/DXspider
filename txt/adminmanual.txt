@@ -68,7 +68,7 @@
 
      1.1 Introduction
      1.2 Route Filters
-     1.3 The default_node filter
+     1.3 The node_default filter
      1.4 General route filtering
      1.5 General filter rules
      1.6 Types of filter
@@ -285,33 +285,49 @@
   of protection for these nodes.
 
 
-  This is achieved by using filtering on a route basis.  There is a
-  default setting to help to protect the network, especially useful for
-  new and inexperienced SysOps.  The idea is simple.  When Spider is
-  started for the first time and a connection is made to or from another
-  node, the default is to only send the nodes you already have that are
-  in your own zone.  For example, in the UK the default setting would be
-  to send only UK nodes to any connection.  This can be filtered further
-  (down to a single node if needed) or expanded as required.
+  In fact DXSpider has had a simple system for some time which is called
+  isolation. This is similar to what, in other systems such as clx, is
+  called passive mode. A more detailed explanation of isolation is given
+  further below. This system is still available and, for simple
+  networks, is probably all that you need.
 
+
+  The new functionality introduced in version 1.48 is filtering the node
+  and user protocol frames on a "per interface" basis. We call this
+  route filtering. This is used instead of isolation.
+
+
+  What this really means is that you can control more or less completely
+  which PC protocol frames, to do with user and node management, pass to
+  each of your partner nodes. You can also limit what comes into your
+  node from your partners. You can even control the settings that your
+  partner node has for the routing information that it sends to you
+  (using the rcmd command).
 
 
   1.2.  Route Filters
 
-  As mentioned in the introduction, a default setting exists.  If this
-  is all you want to use then that is fine, you have nothing else to do.
-  However, if you want to make any alterations then you need to know a
-  bit about filters.
+  Initially when route filters were being tested we generated a
+  "default" filter.  Unfortunately it quickly became apparent that this
+  might suit the UK cluster network but didn't really fit anybody else.
+  However using a default filter is an appropriate thing to do. How, is
+  explained further on.
 
 
-  It is possible to reset the default setting for node connections
-  should you wish to do so, however this can be dangerous to the network
-  unless you have some experience in how all this works.... be careful!
-  It is also possible to change settings for one connection only.  You
-  can, therefore, have many different filters set dependent on the
-  amount of node links you have.
+  The first thing that you must do is determine whether you need to do
+  route filtering at all. If you are a "normal" node with two or three
+  partners and you arranged in an "official" non-looping tree type
+  network, then you do not need to do route filtering and you will feel
+  a lot better for not getting involved. If you are successfully using
+  isolation then you also probably don't need to use route filtering.
 
 
+  You will only require this functionality if you are "well-connected".
+  What that means is that you are connected to several different parts
+  of (say) the EU cluster and, at the same time, also connected to two
+  or three places in the US which, in turn are connected back to the EU.
+  This is called a "loop" and if you are seriously looped then you need
+  filtering.
   I should at this stage give a little bit of background on filters.
   All the filters in Spider work in basically the same way.  You can
   either accept or reject various options in order to create the filter
@@ -320,20 +336,30 @@
   sysop.
 
 
-  1.3.  The default_node filter
 
-  As discussed previously, a default setting exists that only sends
-  nodes from your own zone.  This can be overridden by using the
-  default_node filter option like this ...
+  Anyway, without further discouragement, let me start the process of
+  explanation.
 
 
+  1.3.  The node_default filter
 
-  reject/route default_node <filter_option>
+  All normal systems should have a default routing filter and it should
+  usually be set to send only the normal, unlooped, view of your
+  "national" network.  Here in the UK that means nodes from the UK and
+  Eire, in EU it is more complex as the networks there grew up in a more
+  intertwined way.
 
-  or
 
-  accept/route default_node <filter_option>
 
+  The generic commands are:-
+
+
+
+       reject/route node_default <filter_option>
+
+       or
+
+       accept/route node_default <filter_option>
 
 
 
@@ -346,17 +372,76 @@
        call_dxcc <numbers>
        call_itu <numbers>
        call_zone <numbers>
-       origin <prefixes>
-       origin_dxcc <numbers>
-       origin_itu <numbers>
-       origin_zone <numbers>
-
+       channel <prefixes>
+       channel_dxcc <numbers>
+       channel_itu <numbers>
+       channel_zone <numbers>
 
 
 
 
   Please be careful if you alter this setting, it will affect ALL your
   links!
+
+
+  For the default routing filter then you have two real choices: either
+  a "national" view or the "safe" option of only your own callsign.
+  Examples of each (for my node: GB7DJK) are:-
+
+
+
+       acc/route node_default call_dxcc 61,38
+       acc/route node_default call gb7djk
+
+
+  GB7DJK uses the first of these. The DXCC countries can be obtained
+  from the show/prefix command.
+
+
+  The example filters shown control output TO all your partner nodes
+  unless they have a specific filter applied to them (see next section).
+
+
+  It is also possible to control the incoming routing information that
+  you are prepared to accept FROM your partner nodes. The reason this is
+  necessary is to make sure that stuff like mail, pings and similar
+  commands a) go down the correct links and b) don't loop around
+  excessively. Again using GB7DJK as an example a typical default input
+  filter would be something like:
+
+
+
+       rej/route node_default input call_dxcc 61,38 and not channel_dxcc 61,38
+
+
+
+
+  What this does is accept node and user information for our national
+  network from nodes that are in our national network, but rejects such
+  information from anyone else. Although it doesn't explicitly say so,
+  by implication, any other node information (not from the UK and Eire)
+  is accepted.
+
+
+  As I imagine it will take a little while to get one's head around all
+  of this you can study the effect of any rules that you try by watching
+  the debug output after having done:-
+
+
+
+       set/debug filter
+
+
+
+
+  After you have got tired of that, to put it back the way it was:-
+
+
+
+       unset/debug filter
+
+
+
 
 
   1.4.  General route filtering
@@ -375,25 +460,6 @@
 
 
 
-
-  where filter_option is one of the following ...
-
-
-
-       call <prefixes>
-       call_dxcc <numbers>
-       call_itu <numbers>
-       call_zone <numbers>
-       origin <prefixes>
-       origin_dxcc <numbers>
-       origin_itu <numbers>
-       origin_zone <numbers>
-
-
-
-
-
-
   Here are some examples of route filters ...
 
 
@@ -404,6 +470,38 @@
        acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
 
 
+
+
+  In practice you will either be opening the default filter out for a
+  partner by defining a specific filter for that callsign:-
+
+
+
+       acc/route gb7baa all
+       acc/route gb7baa input all
+
+
+
+
+  or restricting it quite a lot, in fact making it very nearly like an
+  isolated node, like this:-
+
+
+
+       acc/route pi4ehv-8 call gb7djk
+       rej/route pi4ehv-8 input call_dxcc 61,38
+
+
+
+
+  This last example takes everything except UK and Eire from PI4EHV-8
+  but only sends him my local configuration (just a PC19 for GB7DJK and
+  PC16s for my local users).
+
+
+  It is possible to do much more complex rules, there are up to 10
+  accept/reject pairs per callsign per filter. For more information see
+  the next section.
 
 
 
@@ -423,14 +521,13 @@
   the DXSpider system. They all use the same general mechanism.
 
 
-  In general terms you can create a 'reject' or an 'accept' filter which
+  In general terms you can create a "reject" or an "accept" filter which
   can have up to 10 lines in it. You do this using, for example ...
 
 
 
-
-       accept/spots .....
-       reject/spots .....
+  accept/spots .....
+  reject/spots .....
 
 
 
@@ -459,8 +556,7 @@
 
 
 
-
-  show/filter
+       show/filter
 
 
 
@@ -496,7 +592,6 @@
 
   then you will ONLY get VHF spots from or to CQ zones 14, 15 and 16.
 
-
   If you set a reject filter like this ...
 
 
@@ -523,6 +618,7 @@
 
 
        accept/spots not on hf/cw or info iota
+
 
 
 
@@ -562,9 +658,6 @@
   originated there).  If you did not have the brackets to separate the 2
   sections, then Spider would read it logically from the front and see a
   different expression entirely ...
-
-
-
        (on 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16
 
 
@@ -591,6 +684,9 @@
 
 
        clear/spots 1
+
+
+
 
   To remove all the filter lines in the spot filter ...
 
@@ -677,36 +773,6 @@
   alter the hops for.  You may be happy with the default settings of
   course, but this powerful tool can help to protect and improve the
   network.  The file will look something like this ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
