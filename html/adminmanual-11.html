@@ -32,6 +32,7 @@ passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 <P>You can use any of the following things in this line:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   info &lt;string>            eg: iota or qsl
   by &lt;prefixes>            eg: G,M,2         
@@ -46,24 +47,31 @@ to understand how filters work - it will save a lot of grief later on.
   wx 1                     filter WX announces
   dest &lt;prefixes>          eg: 6MUK,WDX      (distros)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>some examples:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/ann dest 6MUK
   acc/ann 2 by_zone 14,15,16
   (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>or
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/ann by G,M,2 
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>This filter would only allow announces that were posted buy UK stations.  
 You can use the tag 'all' to accept everything eg:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/ann all
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>but this probably for advanced users...
 <P>
 <H2><A NAME="ss11.2">11.2 accept/announce (extended for sysops) (8)</A>
@@ -74,11 +82,13 @@ You can use the tag 'all' to accept everything eg:
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   accept/ann by G,M,2
   accept/ann input node_default by G,M,2
   accept/ann user_default by G,M,2
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.3">11.3 accept/spots (0)</A>
 </H2>
@@ -92,6 +102,7 @@ passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 <P>You can use any of the following things in this line:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   freq &lt;range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
   on &lt;range>             same as 'freq'
@@ -107,6 +118,7 @@ to understand how filters work - it will save a lot of grief later on.
   origin &lt;prefixes>
   channel &lt;prefixes>
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <P>For frequencies, you can use any of the band names defined in
 SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
@@ -115,15 +127,19 @@ this is more efficient than saying simply: freq HF (but don't get
 too hung up about that)
 <P>some examples:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/spot 1 on hf/cw
   acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>You can use the tag 'all' to accept everything, eg:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/spot 3 all
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>but this probably for advanced users...
 <P>
 <H2><A NAME="ss11.4">11.4 accept/spots (extended for sysops) (8)</A>
@@ -134,6 +150,7 @@ too hung up about that)
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   accept/spot db0sue-7 1 by_zone 14,15,16
   accept/spot node_default all
@@ -141,6 +158,7 @@ default for nodes and users eg:-
 
   accept/spot user_default by G,M,2
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.5">11.5 accept/wcy (0)</A>
 </H2>
@@ -150,6 +168,7 @@ default for nodes and users eg:-
 <P>It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   by &lt;prefixes>            eg: G,M,2         
   origin &lt;prefixes>
@@ -161,6 +180,7 @@ filter on the following fields:-
   by_zone &lt;numbers>
   channel &lt;prefixes>
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <P>There are no examples because WCY Broadcasts only come from one place and
 you either want them or not (see UNSET/WCY if you don't want them).
@@ -176,10 +196,12 @@ WCY filter sysop version</CODE>
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   accept/wcy node_default all
   set/hops node_default 10
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.7">11.7 accept/wwv (0)</A>
 </H2>
@@ -189,6 +211,7 @@ default for nodes and users eg:-
 <P>It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   by &lt;prefixes>            eg: G,M,2         
   origin &lt;prefixes>
@@ -200,11 +223,14 @@ filter on the following fields:-
   by_zone &lt;numbers>
   channel &lt;prefixes>
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>for example 
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   accept/wwv by_zone 4
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>is probably the only useful thing to do (which will only show WWV broadcasts
 by stations in the US).
 <P>See HELP FILTER for information.
@@ -218,6 +244,7 @@ WWV filter sysop version</CODE>
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   accept/wwv db0sue-7 1 by_zone 4
   accept/wwv node_default all
@@ -225,6 +252,7 @@ default for nodes and users eg:-
 
   accept/wwv user_default by W,K
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.9">11.9 announce (0)</A>
 </H2>
@@ -277,16 +305,20 @@ outstanding non-private messages will be forwarded to them. This may well
 be ALL the non-private messages. You can prevent this by using these 
 commmands:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   catchup GB7DJK all
   catchup GB7DJK 300 301 302 303 500-510
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>and to undo what you have just done:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   uncatchup GB7DJK all
   uncatchup GB7DJK 300 301 302 303 500-510
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>which will arrange for them to be forward candidates again.
 <P>Order is not important.
 <P>
@@ -299,25 +331,33 @@ commmands:-
 remove the whole filter.
 <P>If you have a filter:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/spot 1 on hf/cw
   acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>and you say:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   clear/spot 1
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>you will be left with:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>If you do:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   clear/spot all
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>the filter will be completely removed.
 <P>
 <P>
@@ -426,15 +466,19 @@ the associated datafile.
 It is expected that the sysop will add an entry to the local Aliases file
 so that users can use the more familiar AK1A style of enquiry such as:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SH/BUCK G1TLH
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>but if he hasn't and the database really does exist (use DBAVAIL or
 SHOW/COMMAND to find out) you can do the same thing with:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   DBSHOW buck G1TLH
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <P>
 <H2><A NAME="ss11.22">11.22 debug (9)</A>
@@ -472,17 +516,21 @@ personal message. If there is a '-' between the message number and the
 fields.
 <P>You can combine some of the various directory commands together eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    DIR TO G1TLH 5
 or 
    DIR SUBJECT IOTA 200-250
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>You can abbreviate all the commands to one letter and use ak1a syntax:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    DIR/T G1* 10
    DIR/S QSL 10-100 5
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <P>
 <H2><A NAME="ss11.24">11.24 directory (extended for sysops) (5)</A>
@@ -505,22 +553,28 @@ or
 <P>This is how you send a DX Spot to other users. You can, in fact, now
 enter the &lt;freq&gt; and the &lt;call&gt; either way round. 
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    DX FR0G 144.600
    DX 144.600 FR0G
    DX 144600 FR0G 
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>will all give the same result. You can add some remarks to the end
 of the command and they will be added to the spot.
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    DX FR0G 144600 this is a test
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>You can credit someone else by saying:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    DX by G1TLH FR0G 144.600 he isn't on the cluster
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>The &lt;freq&gt; is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
 <P>
@@ -824,6 +878,7 @@ passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 <P>You can use any of the following things in this line:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   info &lt;string>            eg: iota or qsl
   by &lt;prefixes>            eg: G,M,2         
@@ -838,16 +893,21 @@ to understand how filters work - it will save a lot of grief later on.
   wx 1                     filter WX announces
   dest &lt;prefixes>          eg: 6MUK,WDX      (distros)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>some examples:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   rej/ann by_zone 14,15,16 and not by G,M,2
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>You can use the tag 'all' to reject everything eg:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   rej/ann all
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>but this probably for advanced users...
 <P>
 <H2><A NAME="ss11.54">11.54 reject/announce (extended for sysops) (8)</A>
@@ -858,11 +918,13 @@ to understand how filters work - it will save a lot of grief later on.
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   reject/ann by G,M,2
   reject/ann input node_default by G,M,2
   reject/ann user_default by G,M,2
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.55">11.55 reject/spots (0)</A>
 </H2>
@@ -875,6 +937,7 @@ dumped (not passed on). See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 <P>You can use any of the following things in this line:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   freq &lt;range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
   on &lt;range>             same as 'freq'
@@ -890,6 +953,7 @@ to understand how filters work - it will save a lot of grief later on.
   origin &lt;prefixes>
   channel &lt;prefixes>
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>For frequencies, you can use any of the band names defined in
 SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
 thus: hf/ssb. You can also just have a simple range like: 0/30000 -
@@ -897,15 +961,19 @@ this is more efficient than saying simply: on HF (but don't get
 too hung up about that)
 <P>some examples:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   rej/spot 1 on hf
   rej/spot 2 on vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>You can use the tag 'all' to reject everything eg:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   rej/spot 3 all
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>but this probably for advanced users...
 <P>
 <H2><A NAME="ss11.56">11.56 reject/spots (extended for sysops) (8)</A>
@@ -917,6 +985,7 @@ Reject spot filter sysop version </CODE>
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   reject/spot db0sue-7 1 by_zone 14,15,16
   reject/spot node_default all
@@ -924,6 +993,7 @@ default for nodes and users eg:-
 
   reject/spot user_default by G,M,2
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.57">11.57 reject/wcy (0)</A>
 </H2>
@@ -933,6 +1003,7 @@ default for nodes and users eg:-
 <P>It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   by &lt;prefixes>            eg: G,M,2         
   origin &lt;prefixes>
@@ -944,6 +1015,7 @@ filter on the following fields:-
   by_zone &lt;numbers>
   channel &lt;prefixes>
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>There are no examples because WCY Broadcasts only come from one place and
 you either want them or not (see UNSET/WCY if you don't want them).
 <P>This command is really provided for future use.
@@ -967,6 +1039,7 @@ default for nodes and users eg:-
 <P>It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   by &lt;prefixes>            eg: G,M,2         
   origin &lt;prefixes>
@@ -978,11 +1051,14 @@ filter on the following fields:-
   by_zone &lt;numbers>
   channel &lt;prefixes>
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>for example 
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   reject/wwv by_zone 14,15,16
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>is probably the only useful thing to do (which will only show WWV broadcasts
 by stations in the US).
 <P>See HELP FILTER for information.
@@ -996,12 +1072,14 @@ WWV reject filter sysop version</CODE>
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   reject/wwv db0sue-7 1 by_zone 4
   reject/wwv node_default all
 
   reject/wwv user_default by W
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.61">11.61 reply (0)</A>
 </H2>
@@ -1036,9 +1114,11 @@ that callsign is connected to.
 <P>You can have more than one callsign in all of the SEND commands.
 <P>You can have multiple qualifiers so that you can have for example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SEND RR COPY 123 PRIVATE G1TLH G0RDI
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>which should send a copy of message 123 to G1TLH and G0RDI and you will
 receive a read receipt when they have read the message.
 <P>SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
@@ -1077,14 +1157,18 @@ field of a DX spot from going any further. They will not be displayed and they
 will not be sent onto other nodes.
 <P>The word must be wriiten in full, no wild cards are allowed eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/baddx FORSALE VIDEO FR0G 
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>To allow a word again, use the following command ...
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   unset/baddx VIDEO
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.67">11.67 set/badnode (6)</A>
 </H2>
@@ -1097,14 +1181,18 @@ going any further. They will not be displayed and they will not be
 sent onto other nodes.
 <P>The call can be a full or partial call (or a prefix), eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/badnode K1TTT 
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>will stop anything from K1TTT (including any SSID's)
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   unset/badnode K1TTT
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>will allow spots from him again.
 <P>Use with extreme care. This command may well be superceded by FILTERing.
 <P>
@@ -1118,15 +1206,19 @@ going any further. They will not be displayed and they will not be
 sent onto other nodes.
 <P>The call must be written in full, no wild cards are allowed eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/badspotter VE2STN 
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>will stop anything from VE2STN. If you want SSIDs as well then you must
 enter them specifically.
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   unset/badspotter VE2STN
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>will allow spots from him again.
 <P>Use with extreme care. This command may well be superceded by FILTERing.
 <P>
@@ -1208,9 +1300,11 @@ around your callsign to indicate you are not available.
 to you will normally find their way there should you not be connected.
 eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SET/HOMENODE gb7djk
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.78">11.78 set/hops (8)</A>
 </H2>
@@ -1222,11 +1316,13 @@ Set hop count</CODE>
 <P>This command allows you to set up special hop counts for a node 
 for currently: announce, spots, wwv and wcy broadcasts.
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
 eg:
   set/hops gb7djk ann 10
   set/hops gb7mbc spots 20
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>Set SHOW/HOPS for information on what is already set. This command
 creates a filter and works in conjunction with the filter system. 
 <P>
@@ -1258,9 +1354,11 @@ the languages available are <EM>en</EM> (English) and <EM>nl</EM> (Dutch).
 <P>You can set your latitude and longitude manually or alternatively use the
 <EM>set/qra</EM> command which will do the conversion for you.
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/location 54 04 N 2 02 E
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <P>
 <H2><A NAME="ss11.82">11.82 set/sys_location (9)</A>
@@ -1272,9 +1370,11 @@ the languages available are <EM>en</EM> (English) and <EM>nl</EM> (Dutch).
 what your latitude and longitude is. If you have not yet done a SET/QRA
 then this command will set your QRA locator for you. For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SET/LOCATION 52 22 N 0 57 E
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.83">11.83 set/logininfo (0)</A>
 </H2>
@@ -1300,9 +1400,11 @@ To allow the user to connect again, use the <EM>unset/lockout</EM> command.
 <P>
 <P>Tell the cluster what your name is, eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/name Dirk
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.86">11.86 set/node (9)</A>
 </H2>
@@ -1313,12 +1415,14 @@ To allow the user to connect again, use the <EM>unset/lockout</EM> command.
 fed PC Protocol rather normal user commands.
 <P>From version 1.41 you can also set the following types of cluster
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/spider
   set/dxnet
   set/clx
   set/arcluster
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>To see what your nodes are set to, use the <EM>show/nodes</EM> command.
 <P>
 <H2><A NAME="ss11.87">11.87 set/obscount (9)</A>
@@ -1347,10 +1451,12 @@ it is disconnected.
 of output from a command is more than this. The default is 20. Setting it
 explicitly to 0 will disable paging. 
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SET/PAGE 30
   SET/PAGE 0
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>The setting is stored in your user profile.
 <P>
 <P>
@@ -1424,9 +1530,11 @@ the node_call a DXSpider type node</CODE>
 done a SET/LOCATION then your latitude and longitude will be set roughly
 correctly (assuming your locator is correct ;-). For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SET/QRA JO02LQ
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.95">11.95 set/qth (0)</A>
 </H2>
@@ -1435,9 +1543,11 @@ correctly (assuming your locator is correct ;-). For example:-
 <P>
 <P>Tell the system where your are.  For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   set/qth East Dereham, Norfolk
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.96">11.96 set/talk (0)</A>
 </H2>
@@ -1518,6 +1628,7 @@ the prefixes or callsigns that you specify.
 <P>In addition you can add any number of these options in very nearly
 any order to the basic SHOW/DX command, they are:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    
 on &lt;band&gt;       - eg 160m 20m 2m 23cm 6mm
@@ -1550,8 +1661,10 @@ iota [&lt;iota&gt;]   - If the iota island number is missing it will
 qra [&lt;locator&gt;] - this will look for the specific locator if 
                   you specify one or else anything that looks like a locator.
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>e.g. 
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    
    SH/DX 9m0
@@ -1562,6 +1675,7 @@ qra [&lt;locator&gt;] - this will look for the specific locator if
    SH/DX iota eu-064
    SH/DX qra jn86
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.105">11.105 show/dxcc (0)</A>
 </H2>
@@ -1574,11 +1688,13 @@ and then displays all the spots as per SH/DX for that country.
 <P>The options for SHOW/DX also apply to this command.   
 e.g. 
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    
    SH/DXCC G
    SH/DXCC W on 20m info iota
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.106">11.106 show/files (0)</A>
 </H2>
@@ -1590,17 +1706,21 @@ the contents of a filearea</CODE>
 available on the system. To see the contents of a particular file
 area type:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    SH/FILES &lt;filearea&gt;
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>where &lt;filearea&gt; is the name of the filearea you want to see the 
 contents of.
 <P>You can also use shell globbing characters like '*' and '?' in a
 string to see a selection of files in a filearea eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    SH/FILES bulletins arld*
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>See also TYPE - to see the contents of a file.
 <P>
 <H2><A NAME="ss11.107">11.107 show/filter (0)</A>
@@ -1660,10 +1780,12 @@ distance of 385,000Km due to the ellipsoidal nature of the orbit.
 that you are connected to. 
 <P>For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SH/MOON
   SH/MOON G1TLH W5UN
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.113">11.113 show/muf (0)</A>
 </H2>
@@ -1701,11 +1823,14 @@ to be noisy.
 can specify anything up to 24 hours worth of data by appending the no of
 hours required after the prefix. For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SH/MUF W
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>produces:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
   Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
@@ -1716,20 +1841,25 @@ hours required after the prefix. For example:-
   18 23 11.5 -35  mS0+ mS2   S3
   19  0 11.2 -41  mS0+ mS2   S3
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>indicating that you will have weak, fading circuits on top band and 
 80m but usable signals on 40m (about S3).
 <P>inputing:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SH/MUF W 24
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>will get you the above display, but with the next 24 hours worth of
 propagation data.
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SH/MUF W L 24
   SH/MUF W 24 Long
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
@@ -1776,10 +1906,12 @@ distance and bearing between two locators or (if only one locator is
 given on the command line) the distance and beraing from your station
 to the locator. For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
 SH/QRA IO92QL 
 SH/QRA JN06 IN73
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>The first example will show the distance and bearing to the locator from
 yourself, the second example will calculate the distance and bearing from
 the first locator to the second. You can use 4 or 6 character locators.
@@ -1787,9 +1919,11 @@ the first locator to the second. You can use 4 or 6 character locators.
 using this command with a latitude and longitude as an argument, for
 example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
 SH/QRA 52 41 N 0 58 E
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.118">11.118 show/qrz (0)</A>
 </H2>
@@ -1808,9 +1942,11 @@ is provided for users of this software by http://www.qrz.com
 <P>This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   sh/route n2tly
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.120">11.120 show/satellite (0)</A>
 </H2>
@@ -1830,10 +1966,12 @@ limits.
 <P>Each pass in a period is separated with a row of '-----' characters
 <P>So for example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
 SH/SAT AO-10 
 SH/SAT FENGYUN1 12 2
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.121">11.121 show/sun (0)</A>
 </H2>
@@ -1851,10 +1989,12 @@ together with the current azimuth and elevation.
 that you are connected to. 
 <P>For example:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   SH/SUN
   SH/SUN G1TLH K9CW ZS
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.122">11.122 show/time (0)</A>
 </H2>
@@ -1953,18 +2093,22 @@ required in the correct order. You may intersperse those characters
 with others to obscure your reply for any watchers. For example (and
 these values are for explanation :-):
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
   password = 012345678901234567890123456789
   > sysop
   22 10 15 17 3
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>you type:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
  aa2bbbb0ccc5ddd7xxx3n
  or 2 0 5 7 3
  or 20573
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>They will all match. If there is no password you will still be offered
 numbers but nothing will happen when you input a string. Any match is
 case sensitive.
@@ -1996,15 +2140,19 @@ terminal.
 <P>If you want to do something (such as send a spot) you precede the normal 
 command with a '/' character, eg:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    /DX 14001 G1TLH What's a B class licensee doing on 20m CW?
    /HELP talk
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>To leave talk mode type:
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    /EX
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>
 <H2><A NAME="ss11.133">11.133 type (0)</A>
 </H2>
@@ -2015,9 +2163,11 @@ command with a '/' character, eg:-
 filearea 'bulletins' you want to look at file 'arld051' you would 
 enter:-
 <P>
+<BLOCKQUOTE><CODE>
 <PRE>
    TYPE bulletins/arld051
 </PRE>
+</CODE></BLOCKQUOTE>
 <P>See also SHOW/FILES to see what fileareas are available and a 
 list of content.
 <P>
