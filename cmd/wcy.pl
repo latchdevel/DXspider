@@ -35,6 +35,7 @@ my $hour = (gmtime $main::systime)[2];
 my $d = int ($main::systime / 3600) * 3600 + 18 * 60; 
 
 # make a hash out of the args
+$line = unpad($line);
 my %args = map {split /\s*=\s*/} split /\s*,\s*/, lc $line;
 
 # check the ranges of each one

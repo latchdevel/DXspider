@@ -36,9 +36,10 @@ my @out;
 my $hour = (gmtime $main::systime)[2];
 my $d = int ($main::systime / 3600) * 3600 + 18 * 60; 
 
+$line = unpad($line);
+
 my @l = split /\s*,\s*/, $line;
 my $forecast = pop @l;
-$forecast = unpad($forecast);
 
 # make a hash out of the args
 my %args = map {split /\s*=\s*/, lc $_} @l; 
