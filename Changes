@@ -1,3 +1,8 @@
+20Dec04=======================================================================
+1. updated create_prefix.pl to only use (supplied) wpxloc.raw and cty.dat
+2. Added IG9, GM/S, 4U1V and some other detail changes to make it compatible
+with cty.dat.
+3. regenerated prefix_data.pl with updated wpxloc.raw and cty.dat 11Dec04.
 17Dec04=======================================================================
 1. add undocumented special command for VE7CC.
 10Dec04=======================================================================

@@ -1,5 +1,12 @@
-! highest DXCC number is now 342
+! highest DXCC number is now 345
 !
+! note the that entries marked with an '@' are the
+! 'master' entries for a 'country'. It doesn't make
+! a lot of difference but please observe the convention.
+!
+! added African Italy for IG9                 041220
+! added Bear Island for JW/B                  041220
+! added Vienna International Centre for 4U1/V 041220
 ! added VP6D for Ducie Island                 011119
 ! added VR to Hong kong made it main pfx      001024
 ! added 4W to 340                             000327
@@ -80,6 +87,7 @@ R1FJ Franz-Jo-Land-R1FJ(OLD_4K2)      180 75 40 -5.0 80 0 0 N 50 0 0 E @
 4U1U,4U43 U.N.-NY-4U/U                284  8  5  5.0 40 48 0 N 74 0 0 W
 4U1I I.T.U.-Geneva-4U/I               283 28 14 -1.0 46 12 0 N 6 12 0 E @
 4U1U U.N.-N.Y.-4U/U                   284 8   5  5.0 40 48 0 N 74 0 0 W @
+4U1V Viena-Int-Ctr-4U1V	              344 28 15 -1.0 48 12 0 N 16 18 0 E @ 
 4X Israel-4X                          286 39 20 -2.0 32 0 0 N 35 0 0 E @
 4Z Israel-4X                          286 39 20 -2.0 32 0 0 N 35 0 0 E
 5A Libya-5A                           287 38 34 -2.0 32 30 0 N 12 30 0 E @
@@ -308,6 +316,7 @@ MA3,MB3,ME3,MF3,MG3,MK3,ML3 Scotland-GM               65 27 14  0.0 55 48 0 N 4 
 MO3,MQ3,MR3,MS,MV3,MY3,MZ3 Scotland-GM                65 27 14  0.0 55 48 0 N 4 18 0 W
 2A3,2B3,2C3,2D3,2E3,2F3,2G3,2H3,2I3,2J3,2K3,2L3,2M3 Scotland-GM   65 27 14  0.0 55 48 0 N 4 18 0 W
 2N3,2O3,2P3,2Q3,2R3,2S3,2T3,2U3,2V3,2W3,2X3,2Y3,2Z3 Scotland-GM   65 27 14  0.0 55 48 0 N 4 18 0 W
+GM/S Scotland-Shetland-GM/S            65 27 14  0.0 60 24 0 N 1 30 0 W
 GU Guernsey-GU                         66 27 14  0.0 49 30 0 N 2 42 0 W @
 MA8,MB8,ME8,MF8,MG8,MK8,ML8 Guernsey-GU               66 27 14  0.0 49 30 0 N 2 42 0 W
 MO8,MQ8,MR8,MU,MV8,MY8,MZ8 Guernsey-GU                66 27 14  0.0 49 30 0 N 2 42 0 W
@@ -356,11 +365,13 @@ HZ Saudi-Arabia-Mecc-HZ                84 39 21 -3.0 22 0 0 N 40 0 0 E
 7Z,8Z Saudi-Arabia-Dhar-HZ             84 39 21 -3.0 26 18 0 N 50 0 0 E *
 7Z,8Z Saudi-Arabia-Mecc-HZ             84 39 21 -3.0 22 0 0 N 40 0 0 E
 I Italy-Rome-I                         85 28 15 -1.0 41 54 0 N 12 30 0 E * @
-I Italy-Trieste-I                      85 28 15 -1.0 45 30 0 N 14 0 0 E
+I Italy-Trieste-I                      85 28 15 -1.0 45 30 0 N 14 0 0 E 
 IA,IB,IC,ID,IE,IF,IG,IH,II,IJ,IK,IL Italy-Rome-I    85 28 15 -1.0 41 54 0 N 12 30 0 E
 IM,IN,IO,IP,IQ,IR,IU,IV,IW,IX,IY,IZ Italy-Rome-I    85 28 15 -1.0 41 54 0 N 12 30 0 E
 IS Sardinia-IS                         86 28 15 -1.0 40 0 0 N 9 0 0 E @
-IT Sicily-IT                           87 28 15 -1.0 37 30 0 N 14 0 0 E @
+IT9 Sicily-IT9                         87 28 15 -1.0 37 30 0 N 14 0 0 E @
+IB9,ID9,IE9,IF9,II9,IJ9,IO9,IQ9,IR9,IU9 Sicily-IT9  87 28 15 -1.0 37 30 0 N 14 0 0 E
+IG9 African-Italy-IG9                 343 37 33 -1.0 35 24 0 N 12 30 0 E @
 J2 Djibouti-J2                         88 48 37 -3.0 12 0 0 N 43 0 0 E @
 J3 Grenada-J3                          90 11  8  4.0 12 0 0 N 61 48 0 W @
 J5 Guinea-Bissau-J5                    91 46 35  0.0 12 0 0 N 15 0 0 W @
@@ -382,7 +393,8 @@ JD/O Ogasawara-JD/O                    97 45 27 -9.0 27 30 0 N 141 0 0 E @
 JT Mongolia-JT                         98 32 23 -8.0 48 0 0 N 107 0 0 E * @
 JT Mongolia-West-JT                    98 32 23 -8.0 49 0 0 N 90 0 0 E 
 JU,JV Mongolia-JT                      98 32 23 -8.0 48 0 0 N 107 0 0 E
-JW Svalbard-Is-JW                      99 18 40 -1.0 78 0 0 N 16 0 0 E @
+JW Svalbard-Is-JW                      99 18 40 -1.0 78 48 0 N 16 0 0 E @
+JW/B Bear-Is-JW/B		              345 18 40 -1.0 79 30 0 N 19 0 0 E @
 JX Jan-Mayen-JX                       100 18 40 -1.0 71 0 0 N 8 0 0 W @
 JY Jordan-JY                          101 39 20 -2.0 32 0 0 N 36 0 0 E @
 KC4 Antarctica-McMurdo-CE9            102 67 12 -11.0 77 30 0 S 167 0 0 E *
@@ -537,6 +549,7 @@ T5 Somali-T5                          163 48 37 -3.0 2 0 0 N 46 0 0 E @
 T7 San-Marino-T7                      164 28 15 -1.0 44 0 0 N 13 0 0 E @
 T8 Palau-Is-T8                        104 64 27 -10.0 7 30 0 N 134 30 E @
 TA Turkey-TA                          165 39 20 -2.0 39 54 0 N 32 54 0 E @
+TA1 Turkey-Europe-TA1                 165 39 20 -2.0 41 24 0 N 29 0 E 
 TB,TC Turkey-TA                       165 39 20 -2.0 39 54 0 N 32 54 0 E
 YM Turkey-TA                          165 39 20 -2.0 39 54 0 N 32 54 0 E
 TF Iceland-TF                         166 17 40  0.0 64 6 0 N 22 0 0 W @
@@ -699,22 +712,22 @@ VP2V Tortola-BVI-VP2V                 209 11  8  4.0 18 24 0 N 64 36 0 W @
 VP5 Turks-Caicos-VP5                  210 11  8  4.0 22 0 0 N 72 0 0 W @
 VP8 So-Georgia-VP8/G                  211 73 13  2.0 54 0 0 S 37 0 0 W *
 VP8 So-Orkney-VP8/O                   212 73 13  2.0 60 0 0 S 46 0 0 W *
-VP8 So-Sandwich-VP8/S                213 73 13  2.0 57 0 0 S 28 0 0 W *
-VP8 So-Shetland-VP8/H                214 73 13  2.0 62 0 0 S 58 30 0 W *
+VP8 So-Sandwich-VP8/S                 213 73 13  2.0 57 0 0 S 28 0 0 W *
+VP8 So-Shetland-VP8/H                 214 73 13  2.0 62 0 0 S 58 30 0 W *
 VP8 Falkland-Is-VP8/F                 234 16 13  3.0 51 45 0 S 59 0 0 W
 VP8/F Falkland-Is-VP8/F               234 16 13  3.0 51 45 0 S 59 0 0 W @
 VP8/G So-Georgia-VP8/G                211 73 13  2.0 54 0 0 S 37 0 0 W @
 VP8/O So-Orkney-VP8/O                 212 73 13  2.0 60 0 0 S 46 0 0 W @
-VP8/S So-Sandwich-VP8/S             213 73 13  2.0 57 0 0 S 28 0 0 W @
-VP8/H So-Shetland-VP8/H             214 73 13  2.0 62 0 0 S 58 30 0 W @
-HF0 So-Shetland-VP8/H                214 73 13  2.0 62 0 0 S 58 30 0 W
+VP8/S So-Sandwich-VP8/S               213 73 13  2.0 57 0 0 S 28 0 0 W @
+VP8/H So-Shetland-VP8/H               214 73 13  2.0 62 0 0 S 58 30 0 W @
+HF0 So-Shetland-VP8/H                 214 73 13  2.0 62 0 0 S 58 30 0 W
 VP6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W * @ 
-VP6 Ducie-Is-VP6/D             342 63 32  8.30 24 39 57 S 124 48 21 W 
+VP6 Ducie-Is-VP6/D                    342 63 32  8.30 24 39 57 S 124 48 21 W 
 VP6D,VP6/D Ducie-Is-VP6/D             342 63 32  8.30 24 39 57 S 124 48 21 W
 VR6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W 
 VP9 Bermuda-VP9                       215 11  5  4.0 32 18 0 N 64 42 0 W @
 VQ9 Chagos-VQ9                        216 41 39 -5.0 7 18 0 S 72 24 0 E @
-VR Hong-Kong-VR                      218 44 24 -8.0 22 14 0 N 114 14 0 E
+VR Hong-Kong-VR                       218 44 24 -8.0 22 14 0 N 114 14 0 E
 VS Hong-Kong-VR                       218 44 24 -8.0 22 30 0 N 114 0 0 E @
 VU India-Bombay-VU                    219 41 22 -5.30 19 0 0 N 72 48 0 E * @
 VU India-Calcutta-VU                  219 41 22 -5.30 22 36 0 N 88 24 0 E *

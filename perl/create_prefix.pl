@@ -90,33 +90,6 @@ close(IN);
 
 #print Data::Dumper->Dump([\%pre, \%locn], [qw(pre locn)]);
 
-# now open the rsgb.cty file and process that again the prefix file we have
-open(IN, "$main::data/rsgb.cty") or die "Can't open $main::data/rsgb.cty ($!)";
-$line = 0;
-while (<IN>) {
-	$line++;
-	next if /^\s*#/;
-	next if /^\s*$/;
-	my $l = $_;
-	chomp;
-	my @f = split /:\s+|;/;
-	my $p = uc $f[4];
-	my $ref = $pre{$p};
-	if ($ref) {
-		# split up the alias string
-		my @alias = split /=/, $f[5];
-		my $a;
-		foreach $a (@alias) {
-			next if $a eq $p;	# ignore if we have it already
-			my $nref = $pre{$a};
-			$pre{$a} = $ref if !$nref; # copy the original ref if new 
-		}
-	} else {
-		print "line $line: unknown prefix '$p' on $l in rsgb.cty\n";
-	}
-}
-close IN;
-
 # now open the cty.dat file if it is there
 my @f;
 my @a;
@@ -140,7 +113,7 @@ if (open(IN, "$main::data/cty.dat")) {
 				$state = 0;
 				s/[,;]$//;
 				push @a, split /\s*,/;
-				next if $f[7] =~ /^\*/;   # ignore callsigns starting '*'
+				$f[7] =~ s/^\*\s*//;   # remove any preceeding '*' before a callsign
 				ct($_, uc $f[7], @a) if @a;
 			} else {
 				s/,$//;
@@ -218,6 +191,7 @@ sub ct
 			my ($itu) = $a =~ /(\(\d+\))/; $a =~ s/(\(\d+\))//g;
 			my ($cq) = $a =~ /(\[\d+\])/; $a =~ s/(\[\d+\])//g;
 			my ($lat, $long) = $a =~ m{(<[-+\d.]+/[-+\d.]+>)}; $a =~ s{(<[-+\d.]+/[-+\d.]+>)}{}g;
+			my ($cont) = $a =~ /(\{[A-Z]{2}\})/; $a =~ s/(\{[A-Z]{2}\})//g;
 
 			unless ($a) {
 				print "line $line: blank prefix on $l in cty.dat\n";
