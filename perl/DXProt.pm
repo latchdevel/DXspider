@@ -578,6 +578,11 @@ sub normal
 		
 		if ($pcno == 16) {		# add a user
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
+				return;
+			}
+
 			# general checks
 			my $dxchan;
 			my $ncall = $field[1];
@@ -587,17 +592,17 @@ sub normal
 				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 				return;
 			}
-			$dxchan = DXChannel->get($ncall);
-			if ($dxchan && $dxchan ne $self) {
-				dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
-				return;
-			}
 			my $parent = Route::Node::get($ncall); 
 			unless ($parent) {
 				dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
 				return;
 			}
-			
+			$dxchan = $parent->dxchan;
+			if ($dxchan && $dxchan ne $self) {
+				dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+				return;
+			}
+
 			# input filter if required
 			return unless $self->in_filter_route($parent);
 			
@@ -642,11 +647,6 @@ sub normal
 				$user->lastin($main::systime) unless DXChannel->get($call);
 				$user->put;
 			}
-
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
-				return;
-			}
 			
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
@@ -660,15 +660,15 @@ sub normal
 			my $ncall = $field[2];
 			my $ucall = $field[1];
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
+				return;
+			}
+
 			eph_del_regex("^PC16.*$ncall.*$ucall");
 			
 			if ($ncall eq $main::mycall) {
 				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
-				return;
-			}
-			$dxchan = DXChannel->get($ncall);
-			if ($dxchan && $dxchan ne $self) {
-				dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 				return;
 			}
 
@@ -683,15 +683,16 @@ sub normal
 				return;
 			}			
 
+			$dxchan = $parent->dxchan;
+			if ($dxchan && $dxchan ne $self) {
+				dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+				return;
+			}
+
 			# input filter if required
 			return unless $self->in_filter_route($parent);
 			
 			my @rout = $parent->del_user($uref);
-
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
-				return;
-			}
 
 			$self->route_pc17($parent, @rout) if @rout;
 			return;
@@ -712,6 +713,11 @@ sub normal
 		if ($pcno == 19) {		# incoming cluster list
 			my $i;
 			my $newline = "PC19^";
+
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC19 detected") if isdbg('chanerr');
+				return;
+			}
 
 			# new routing list
 			my @rout;
@@ -789,10 +795,6 @@ sub normal
 				$user->put;
 			}
 
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC19 detected") if isdbg('chanerr');
-				return;
-			}
 
 			$self->route_pc19(@rout) if @rout;
 			return;
@@ -809,6 +811,11 @@ sub normal
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
+				return;
+			}
+
 			eph_del_regex("^PC1[79].*$call");
 			
 			my @rout;
@@ -820,6 +827,12 @@ sub normal
 			}
 			my $node = Route::Node::get($call);
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
+				my $dxchan = $node->dxchan;
+				if ($dxchan && $dxchan ne $self) {
+					dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
+					return;
+				}
+
 				if ($call eq $self->{call}) {
 					dbg("PCPROT: Trying to disconnect myself with PC21") if isdbg('chanerr');
 					return;
@@ -834,11 +847,6 @@ sub normal
 				}
 			} else {
 				dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
-				return;
-			}
-
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
 				return;
 			}
 

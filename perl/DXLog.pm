@@ -92,14 +92,13 @@ sub open
 	
 	$mode = 'r' if !$mode;
 	$self->{mode} = $mode;
+	$self->{jdate} = $jdate;
 	
 	my $fh = new IO::File $self->{fn}, $mode, 0666;
 	return undef if !$fh;
 	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
 	$self->{fh} = $fh;
 
-	$self->{jdate} = $jdate;
-	
 #	DXDebug::dbg("opening $self->{fn}\n") if isdbg("dxlog");
 	
 	return $self->{fh};

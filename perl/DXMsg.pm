@@ -281,8 +281,8 @@ sub process
 							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from} && $ref->{to} eq $m->{to}) {
 								$ref->stop_msg($self->call);
 								my $msgno = $m->{msgno};
-								dbg("duplicate message from $ref->{from} -> $ref->{to} to $msgno") if isdbg('msg');
-								Log('msg', "duplicate message from $ref->{from} -> $ref->{to} to $msgno");
+								dbg("duplicate message from $ref->{from} -> $ref->{to} to msg: $msgno") if isdbg('msg');
+								Log('msg', "duplicate message from $ref->{from} -> $ref->{to} to msg: $msgno");
 								return;
 							}
 						}
