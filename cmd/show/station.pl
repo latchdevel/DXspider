@@ -20,7 +20,7 @@ if (@f == 0) {
 	my $sort = $ref->sort;
 	my $qth = $ref->qth;
 	my $home = $ref->node;
-    push @out, "$call $sort $qth $node";
+    push @out, "$call $sort $qth $home";
   }
 } else {
   foreach $call (@f) {

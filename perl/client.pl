@@ -52,7 +52,7 @@ sub cease
 	if ($conn && $sendz) {
 		$conn->send_now("Z$call|bye...\n");
 	}
-	$stdout->flush;
+	$stdout->flush if $stdout;
 	kill(15, $pid) if $pid;
 	sleep(1);
 	exit(0);	
@@ -395,3 +395,4 @@ for (;;) {
 	}
 }
 
+exit(0);

@@ -97,7 +97,14 @@ sub normal
 	# remove leading and trailing spaces
 	$cmdline =~ s/^\s*(.*)\s*$/$1/;
 	
-	if ($self->{state} eq 'prompt') {
+	if ($self->{func}) {
+		my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
+		dbg('eval', "stored func cmd = $c\n");
+		eval  $c;
+		if ($@) {
+			return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
+		}
+	} elsif ($self->{state} eq 'prompt') {
 		@ans = run_cmd($self, $cmdline) if length $cmdline;
        
 		if ($self->{pagelth} && @ans > $self->{pagelth}) {
@@ -141,7 +148,7 @@ sub normal
 		} else {
 			$self->state('prompt');
 		}
-	}
+	} 
 	
 	# send a prompt only if we are in a prompt state
 	$self->prompt() if $self->{state} =~ /^prompt/o;
@@ -154,73 +161,57 @@ sub normal
 
 sub run_cmd
 {
-  my $self = shift;
-  my $user = $self->{user};
-  my $call = $self->{call};
-  my $cmdline = shift;
-  my @ans;
-
-  # are we in stored state?
-  if ($self->{func}) {
-    my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
-    dbg('eval', "stored func cmd = $c\n");
-    eval  $c;
-    if ($@) {
-      return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
-    }
-  } else {
-
-    # special case only \n input => " "
-#    if ($cmdline eq " ") {
-#	  $self->prompt();
-#	  return;
-#	}
+	my $self = shift;
+	my $user = $self->{user};
+	my $call = $self->{call};
+	my $cmdline = shift;
+	my @ans;
+	
 	
     # strip out //
     $cmdline =~ s|//|/|og;
-  
+	
     # split the command line up into parts, the first part is the command
     my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
-
+	
     if ($cmd) {
-    
-	  my ($path, $fcmd);
-	  
-	  # alias it if possible
-	  my $acmd = CmdAlias::get_cmd($cmd);
-	  if ($acmd) {
-	    ($cmd, $args) = "$acmd $args" =~ /^([\w\/]+)\s*(.*)/o;
-	  }
-   
-      # first expand out the entry to a command
-	  ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-	  ($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
-
-      my $package = find_cmd_name($path, $fcmd);
-	  @ans = (0) if !$package ;
-
-      if ($package) {
-	    my $c = qq{ \@ans = $package(\$self, \$args) };
-	    dbg('eval', "cluster cmd = $c\n");
-	    eval  $c;
-	    if ($@) {
-		  @ans = (0, "Syserr: Eval err cached $package\n$@");
-        }
-	  }
+		
+		my ($path, $fcmd);
+		
+		# alias it if possible
+		my $acmd = CmdAlias::get_cmd($cmd);
+		if ($acmd) {
+			($cmd, $args) = "$acmd $args" =~ /^([\w\/]+)\s*(.*)/o;
+		}
+		
+		# first expand out the entry to a command
+		($path, $fcmd) = search($main::localcmd, $cmd, "pl");
+		($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+		
+		my $package = find_cmd_name($path, $fcmd);
+		@ans = (0) if !$package ;
+		
+		if ($package) {
+			my $c = qq{ \@ans = $package(\$self, \$args) };
+			dbg('eval', "cluster cmd = $c\n");
+			eval  $c;
+			if ($@) {
+				@ans = (0, "Syserr: Eval err cached $package\n$@");
+			}
+		}
 	}
-  }
- 	
-  if ($ans[0]) {
-    shift @ans;
-  } else {
-    shift @ans;
-	if (@ans > 0) {
-		unshift @ans, $self->msg('e2');
+
+	if ($ans[0]) {
+		shift @ans;
 	} else {
-		@ans = $self->msg('e1');
+		shift @ans;
+		if (@ans > 0) {
+			unshift @ans, $self->msg('e2');
+		} else {
+			@ans = $self->msg('e1');
+		}
 	}
-  }
-  return (@ans);
+	return (@ans);
 }
 
 #
