@@ -156,6 +156,10 @@ sub getkey
 	my $key = uc shift;
 	my $value;
 
+	# massage the key
+	$key =~ s/[\@\$\&\%\*]+//g;
+	$key =~ s/^[\.\/]+//g;
+	
 	# make sure we are open
 	$self->open;
 	if ($self->{localcmd}) {
