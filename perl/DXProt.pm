@@ -70,7 +70,7 @@ $baddxfn = "$main::data/baddx.pl";
  [ qw(c c n n) ],				# pc25
  [ qw(f m d t m c c bc) ],		# pc26
  [ qw(d n n n n m c c bc) ],	# pc27
- [ qw(c c c m d t p m bp n p bp bc) ], # pc28
+ [ qw(c c m c d t p m bp n p bp bc) ], # pc28
  [ qw(c c n m) ],				# pc29
  [ qw(c c n) ],					# pc30
  [ qw(c c n) ],					# pc31
