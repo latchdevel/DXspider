@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Fri Jan 19 14:25:13 GMT 2001
+Last modified: Tue Apr 10 00:21:34 BST 2001
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -56,24 +56,36 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
     # confuse whole networks for hours!
     '\$' 'stty -echo raw'
     # tell GB7DJK that you are GB7DJK-1
-    '\$' 'client.pl gb7djk-1 telnet'
+    '\$' '/spider/src/client gb7djk-1 telnet'
     # tell GB7DJK-1 that it is connected to GB7DJK
     # you can leave this out if you call this script 'gb7djk'
     client gb7djk telnet
 	</pre>
 
-	<p>and finally an ax25 example:-
+	<p>a ax25 example:-
 	<pre>
     timeout 60
     abort (Busy|Sorry|Fail)
     # don't forget to chmod 4775 netrom_call!
-    connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+    connect ax25 /usr/sbin/netrom_call bbs gb7djk-0 g1tlh-0
     'Connect' ''
     'Connect' 'c np7'
     'Connect' 'c gb7dxm'
     'Connect' ''
-    # you can leave this out if you call the script 'gb7dxm'
-    client gb7dxm ax25
+	</pre>
+
+    The <tt>-0</tt> ssid is important if you want it to work reliably. Obviously if you are
+    using a different ssid then you would use that.
+
+    <p>A AGW Engine example would be very similar and look like this:-
+	<pre>
+    timeout 60
+    abort (Busy|Sorry|Fail)
+    connect agw 2 g1tlh
+    'Connect' ''
+    'Connect' 'c np7'
+    'Connect' 'c gb7dxm'
+    'Connect' ''
 	</pre>
 	
 	<p>A connection is started manually by typing in <tt>connect &lt;scriptname&gt;</tt> on a sysop enabled
@@ -84,7 +96,8 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
     G1TLH de GB7DJK 13-Dec-1998 2043Z > 
 	</pre>
 	
-    <p>You can watch the progress of the connection (if you have the standard debugging enabled) on the
+    <p>You can watch the progress of the connection (if you have <tt>connect</tt> 
+     debugging enabled [<tt>set/debug connect</tt>]) on the
 	  <tt>cluster.pl</tt> screen and you should see something like this:-
 	<pre>
     &lt;- D G1TLH connect gb7djk-1
@@ -121,20 +134,25 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 
 	<ul>
 
-		<p><li><b>#</b> All lines starting with a <b>#</b> are
+		<li><b>#</b> All lines starting with a <b>#</b> are
 		ignored, as are wholly blank lines.
+        <br><br>
 
-		<p><li><b>timeout</b> followed by a number is the number of
+		<li><b>timeout</b> followed by a number is the number of
 		seconds to wait for a command to complete. If there is no
 		<b>timeout</b> specified in the script then the default is 60
 		seconds.
+        <br><br>
 
-		<P><li><b>abort</b> is a regular expression containing one or
+		<li><b>abort</b> is a regular expression containing one or
 		more strings to look for to abort a connection. This is a perl
 		regular expression and is executed ignoring case.
+        <br><br>
 
-		<p><li><b>connect</b> followed by <b>ax25</b> or <b>telnet</b>
-		and some type dependent information. In the case of a
+		<li><b>connect</b> followed by <b>ax25</b>, <b>telnet</b> or <b>agw</b>
+		and some type dependent information. 
+
+        <p>In the case of a
 		<b>telnet</b> connection, there can be up to two parameters,
 		the first is the ip address or hostname of the computer you
 		wish to connect to and the second is the port number you want
@@ -142,12 +160,16 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 		session).
 
 		<p>In the case of an <b>ax25</b> session then this would
-		normally be a call to <tt>ax25_call</tt> or
-		<tt>netrom_call</tt> as in the example above. It is your
+		normally be a call to <tt>/usr/sbin/ax25_call</tt> or
+		<tt>/usr/sbin/netrom_call</tt> as in the example above. It is your
 		responsibility to get your node and other ax25 parameters to
 		work before going down this route!
 
-		<p><li><b>'</b> is the delimiting character for a word or
+        <p>For <b>agw</b> connections you will need a port number (starting
+        from 1) and the callsign of the first &quot;hop&quot; along the way.
+        <br><br>
+
+		<li><b>'</b> is the delimiting character for a word or
 		phrase of an expect/send line in a <tt>chat</tt> type
 		script. The words/phrases normally come in pairs, either can
 		be empty. Each line reads input from the connection until it
@@ -160,8 +182,9 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 		it is) then the right hand string is sent to the connection.
 
 		<p>This process is repeated for every line of <tt>chat</tt> script. 
+        <br><br>
 
-		<p><li><b>client</b> starts the connection, put the arguments
+		<li><b>client</b> starts the connection, put the arguments
 		you would want here if you were starting the client program
 		manually. You only need this if the script has a different
 		name to the callsign you are trying to connect to (i.e. you

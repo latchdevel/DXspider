@@ -3,6 +3,7 @@
 2. disconnect should remove dangling local users in the routing table.
 3. fixed nasty recursive timer bug
 4. added some extra info to make connect tracking a bit easier.
+5. improved docs on connect scripts a bit (to include agw connects)
 09Apr01=======================================================================
 1. changed lockfile name to cluster.lck (from .lock) for MSWin's benefit
 08Apr01=======================================================================
