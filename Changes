@@ -1,5 +1,7 @@
 19Sep01=======================================================================
 1. put in some rudimentory rsfp checking for various things
+2. tried to do some fixes on console.pl - YOU WILL REQUIRE Curses 1.06 from
+CPAN (perl -MCPAN -eshell, then at cpan> install Curses). 
 17Sep01=======================================================================
 1. Fixed help and apropos commands so that they default to english if
 the language is not english and help in the 'not english' language isn't
