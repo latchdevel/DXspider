@@ -1033,7 +1033,7 @@ sub handle_19
 	}
 
 	# we only output information that we regard as reliable
-	@rout = grep {$_ && (DXChannel::get{$_->{call}} || $_->np) } @rout;
+	@rout = grep {$_ && (DXChannel::get($_->{call}) || $_->np) } @rout;
 	$self->route_pc19($origin, $line, @rout) if @rout;
 }
 		
@@ -1122,7 +1122,7 @@ sub handle_21
 		return;
 	}
 
-	@rout = grep {$_ && (DXChannel::get{$_->{call}} || $_->np) } @rout;
+	@rout = grep {$_ && (DXChannel::get($_->{call}) || $_->np) } @rout;
 	$self->route_pc21($origin, $line, @rout) if @rout;
 }
 		
@@ -1913,7 +1913,7 @@ sub send_local_config
 		for $node (@intcalls) {
 			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
 		}
-		@remotenodes = grep {$_ && (DXChannel::get{$_->{call}} || $_->np) } @remotenodes;
+		@remotenodes = grep {$_ && (DXChannel::get($_->{call}) || $_->np) } @remotenodes;
 		$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
 	}
 	
