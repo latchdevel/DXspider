@@ -271,7 +271,7 @@ sub normal
 			
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
-				next if length $call < 3 || length $call > 8;
+				next if !$call || length $call < 3 || length $call > 8;
 				next if !$confmode;
 				$call = uc $call;
 				next if DXCluster->get_exact($call); # we already have this (loop?)
