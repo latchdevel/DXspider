@@ -1,6 +1,7 @@
-12Mar03=======================================================================
-1. Changed the name of show/qsl to show/dxqsl.
 11Mar03=======================================================================
+1. Changed the name of show/qsl to show/dxqsl.
+2. Alter Commands_en.hlp to match new name and issue manual updates (g0vgs)
+10Mar03=======================================================================
 1. added show/qsl command. This command basically takes the normal output of
 sh/dx qsl and stores it in a database. In order to enable this command you 
 will require the Storable module to be loaded (you will already have done
