@@ -61,7 +61,6 @@ use DXProtVars;
 use DXProtout;
 use DXProt;
 use DXMsg;
-use DXCluster;
 use DXCron;
 use DXConnect;
 use DXBearing;
@@ -145,24 +144,9 @@ sub new_channel
 		return;
 	}
 	
-	# is there one already connected elsewhere in the cluster?
 	if ($user) {
-		if (($user->is_node || $call eq $myalias) && !DXCluster->get_exact($call)) {
-			;
-		} else {
-			if (my $ref = DXCluster->get_exact($call)) {
-				my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->dxchancall);
-				already_conn($conn, $call, $mess);
-				return;
-			}
-		}
 		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 	} else {
-		if (my $ref = DXCluster->get_exact($call)) {
-			my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->dxchancall);
-			already_conn($conn, $call, $mess);
-			return;
-		}
 		$user = DXUser->new($call);
 	}
 	
@@ -437,8 +421,13 @@ dbg('err', "reading in duplicate spot and WWV info ...");
 DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-DXNode->new($DXProt::me, $mycall, 0, 1, $DXProt::myprot_version); 
-$routeroot = Route::Node->new($mycall, $version, Route::here($DXProt::me->here)|Route::conf($DXProt::me->confmode));
+$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($DXProt::me->here)|Route::conf($DXProt::me->conf));
+
+# make sure that there is a routing OUTPUT node default file
+unless (Filter::read_in('route', 'node_default', 0)) {
+	my $dxcc = $DXProt::me->dxcc;
+	$Route::filterdef->cmd($DXProt::me, 'route', 'accept', "node_default call_dxcc $dxcc" );
+}
 
 # read in any existing message headers and clean out old crap
 dbg('err', "reading existing message headers ...");

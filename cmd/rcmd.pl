@@ -22,11 +22,7 @@ $line =~ s/^\s*$call\s+//;
 
 # can we see it? Is it a node?
 $call = uc $call;
-my $noderef = DXCluster->get_exact($call);
-unless ($noderef) {
-	$noderef = DXChannel->get($call);
-	$noderef = undef unless $noderef && $noderef->is_node;
-}
+my $noderef = Route::Node::get($call);
 return (1, $self->msg('e7', $call)) unless $noderef;
 
 # rcmd it

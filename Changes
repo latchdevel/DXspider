@@ -1,3 +1,8 @@
+08Jun01=======================================================================
+1. first cut with new routing code. Created NEW_ROUTE branch
+2. added acc/route and rej/route commands
+3. added stat/route_node and stat/route_user commands to look at the routing
+table entities
 07Jun01=======================================================================
 1. move userconfig.pl and nodeconfig.pl to stat/
 2. fix problem with locally connected users not being removed from the 

@@ -15,23 +15,51 @@
 package Route;
 
 use DXDebug;
+use DXChannel;
+use Prefix;
 
 use strict;
 
-use vars qw(%list %valid);
+use vars qw(%list %valid $filterdef);
 
 %valid = (
 		  call => "0,Callsign",
 		  flags => "0,Flags,phex",
+		  dxcc => '0,Country Code',
+		  itu => '0,ITU Zone',
+		  cq => '0,CQ Zone',
 		 );
+
+$filterdef = bless ([
+			  # tag, sort, field, priv, special parser 
+			  ['channel', 'c', 0],
+			  ['channel_dxcc', 'n', 1],
+			  ['channel_itu', 'n', 2],
+			  ['channel_zone', 'n', 3],
+			  ['call', 'c', 4],
+			  ['call_dxcc', 'n', 5],
+			  ['call_itu', 'n', 6],
+			  ['call_zone', 'n', 7],
+			 ], 'Filter::Cmd');
+
 
 sub new
 {
 	my ($pkg, $call) = @_;
+	$pkg = ref $pkg if ref $pkg;
 
-	dbg('routelow', "create " . (ref($pkg) || $pkg) ." with $call");
+	my $self = bless {call => $call}, $pkg;
+	dbg('routelow', "create $pkg with $call");
+
+	# add in all the dxcc, itu, zone info
+	my @dxcc = Prefix::extract($call);
+	if (@dxcc > 0) {
+		$self->{dxcc} = $dxcc[1]->dxcc;
+		$self->{itu} = $dxcc[1]->itu;
+		$self->{cq} = $dxcc[1]->cq;						
+	}
 	
-	return bless {call => $call}, (ref $pkg || $pkg);
+	return $self; 
 }
 
 #
@@ -89,9 +117,9 @@ sub here
 	my $self = shift;
 	my $r = shift;
 	return $self ? 2 : 0 unless ref $self;
-	return $self->{flags} & 2 unless $r;
-	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
-	return $r;
+	return ($self->{flags} & 2) ? 1 : 0 unless $r;
+	$self->{flags} = (($self->{flags} & ~2) | ($r ? 1 : 0));
+	return $r ? 1 : 0;
 }
 
 sub conf
@@ -99,9 +127,15 @@ sub conf
 	my $self = shift;
 	my $r = shift;
 	return $self ? 1 : 0 unless ref $self;
-	return $self->{flags} & 1 unless $r;
+	return ($self->{flags} & 1) ? 1 : 0 unless $r;
 	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
-	return $r;
+	return $r ? 1 : 0;
+}
+
+sub parents
+{
+	my $self = shift;
+	return @{$self->{parent}};
 }
 
 # 
@@ -149,7 +183,7 @@ sub config
 					} else {
 						$line =~ s/\s+$//;
 						push @out, $line;
-						$line = ' ' x ($level*2) . "$call->";
+						$line = ' ' x ($level*2) . "$call->$c ";
 					}
 				}
 			}
@@ -173,10 +207,66 @@ sub config
 	return @out;
 }
 
+sub cluster
+{
+	my $nodes = Route::Node::count();
+	my $tot = Route::User::count();
+	my $users = scalar DXCommandmode::get_all();
+	my $maxusers = Route::User::max();
+	my $uptime = main::uptime();
+	
+	return " $nodes nodes, $users local / $tot total users  Max users $maxusers  Uptime $uptime";
+}
+
 #
 # routing things
 #
 
+sub get
+{
+	my $call = shift;
+	return Route::Node::get($call) || Route::User::get($call);
+}
+
+# find all the possible dxchannels which this object might be on
+sub alldxchan
+{
+	my $self = shift;
+
+	my $dxchan = DXChannel->get($self->{call});
+	if ($dxchan) {
+		return (grep $dxchan == $_, @_) ? () : ($dxchan);
+	}
+	
+	# it isn't, build up a list of dxchannels and possible ping times 
+	# for all the candidates.
+	my @dxchan = @_;
+	foreach my $p (@{$self->{parent}}) {
+		my $ref = $self->get($p);
+		push @dxchan, $ref->alldxchan(@dxchan);
+	}
+	return @dxchan;
+}
+
+sub dxchan
+{
+	my $self = shift;
+	my $dxchan;
+	my @dxchan = $self->alldxchan;
+	return undef unless @dxchan;
+	
+	# determine the minimum ping channel
+	my $minping = 99999999;
+	foreach my $dxc (@dxchan) {
+		my $p = $dxc->pingave;
+		if (defined $p  && $p < $minping) {
+			$minping = $p;
+			$dxchan = $dxc;
+		}
+	}
+	$dxchan = shift @dxchan unless $dxchan;
+	return $dxchan;
+}
 
 #
 # track destruction

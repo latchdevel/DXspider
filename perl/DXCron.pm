@@ -175,32 +175,43 @@ sub connected
 sub present
 {
 	my $call = uc shift;
-	return DXCluster->get_exact($call);
+	return Route::get($call);
 }
 
 # is it remotely connected anywhere (ignoring SSIDS)?
 sub presentish
 {
 	my $call = uc shift;
-	return DXCluster->get($call);
+	my $c = Route::get($call);
+	unless ($c) {
+		for (1..15) {
+			$c = Route::get("$call-$_");
+			last if $c;
+		}
+	}
+	return $c;
 }
 
 # is it remotely connected anywhere (with exact callsign) and on node?
 sub present_on
 {
 	my $call = uc shift;
-	my $node = uc shift;
-	my $ref = DXCluster->get_exact($call);
-	return ($ref && $ref->mynode) ? $ref->mynode->call eq $node : undef;
+	my $ncall = uc shift;
+	my $node = Route::Node::get($ncall);
+	return ($node) ? grep $call eq $_, $node->users : undef;
 }
 
-# is it remotely connected anywhere (ignoring SSIDS) and on node?
+# is it remotely connected (ignoring SSIDS) and on node?
 sub presentish_on
 {
 	my $call = uc shift;
-	my $node = uc shift;
-	my $ref = DXCluster->get($call);
-	return ($ref && $ref->mynode) ? $ref->mynode->call eq $node : undef;
+	my $ncall = uc shift;
+	my $node = Route::Node::get($ncall);
+	my $present;
+	if ($node) {
+		$present = grep {/^$call/ } $node->users;
+	}
+	return $present;
 }
 
 # last time this thing was connected
@@ -265,8 +276,8 @@ sub rcmd
 	my $line = shift;
 
 	# can we see it? Is it a node?
-	my $noderef = DXCluster->get_exact($call);
-	return  if !$noderef || !$noderef->pcversion;
+	my $noderef = Route::Node::get($call);
+	return  unless $noderef && $noderef->version;
 
 	# send it 
 	DXProt::addrcmd($DXProt::me, $call, $line);

@@ -98,26 +98,16 @@ sub start
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
 
-	# add yourself to the database
-	my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
-	my $cuser = DXNodeuser->new($self, $node, $call, 0, 1);
-	$node->dxchan($self) if $call eq $main::myalias; # send all output for mycall to myalias
+	$DXProt::me->conn($self->conn) if $call eq $main::myalias; # send all output for mycall to myalias
 
 	# routing version
-	my $pref = Route::Node::get($main::mycall)  or die "$main::mycall not allocated in Route database";
-	$pref->add_user($call, Route::here($self->{here}));
-	dbg('route', "B/C PC16 on $main::mycall for: $call");
-	
-	# issue a pc16 to everybody interested
-	my $nchan = DXChannel->get($main::mycall);
-	my @pc16 = DXProt::pc16($nchan, $cuser);
-	for (@pc16) {
-		DXProt::broadcast_all_ak1a($_);
-	}
+	my @rout = $main::routeroot->add_user($call, Route::here($self->{here}));
+	dbg('route', "B/C PC16 on $main::mycall for: $call") if @rout;
+	DXProt::route_pc16($DXProt::me, $main::routeroot, @rout) if @rout;
 	Log('DXCommand', "$call connected");
 
 	# send prompts and things
-	my $info = DXCluster::cluster();
+	my $info = Route::cluster();
 	$self->send("Cluster:$info");
 	$self->send($self->msg('namee1')) if !$user->name;
 	$self->send($self->msg('qthe1')) if !$user->qth;
@@ -227,7 +217,7 @@ sub send_talks
 	my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
 	$to = $ent unless $to;
 	my $call = $via ? $via : $to;
-	my $clref = DXCluster->get_exact($call);
+	my $clref = Route::get($call);
 	my $dxchan = $clref->dxchan if $clref;
 	if ($dxchan) {
 		$dxchan->talk($self->{call}, $to, $via, $line);
@@ -412,27 +402,22 @@ sub disconnect
 
 	# reset the redirection of messages back to 'normal' if we are the sysop
 	if ($call eq $main::myalias) {
-		my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
-		$node->dxchan($DXProt::me);
+		$DXProt::me->conn(undef);
 	}
 
 	my @rout = $main::routeroot->del_user($call);
 	dbg('route', "B/C PC17 on $main::mycall for: $call");
 
+	# issue a pc17 to everybody interested
+	DXProt::route_pc17($DXProt::me, $main::routeroot, @rout) if @rout;
+
 	# I was the last node visited
     $self->user->node($main::mycall);
 		
-	# issue a pc17 to everybody interested
-	my $nchan = DXChannel->get($main::mycall);
-	my $pc17 = $nchan->pc17($self);
-	DXProt::broadcast_all_ak1a($pc17);
-
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
 
 	Log('DXCommand', "$call disconnected");
-	my $ref = DXCluster->get_exact($call);
-	$ref->del() if $ref;
 
 	$self->SUPER::disconnect;
 }

@@ -15,7 +15,6 @@ use DXUtil;
 use DXChannel;
 use DXUser;
 use DXM;
-use DXCluster;
 use DXProtVars;
 use DXCommandmode;
 use DXLog;
@@ -218,6 +217,7 @@ sub start
 	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) || Filter::read_in('wwv', 'node_default', 0);
 	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0) || Filter::read_in('wcy', 'node_default', 0);
 	$self->{annfilter} = Filter::read_in('ann', $call, 0) || Filter::read_in('ann', 'node_default', 0) ;
+	$self->{routefilter} = Filter::read_in('route', $call, 0) || Filter::read_in('route', 'node_default', 0) ;
 
 
 	# get the INPUT filters (these only pertain to Clusters)
@@ -225,6 +225,7 @@ sub start
 	$self->{inwwvfilter} = Filter::read_in('wwv', $call, 1) || Filter::read_in('wwv', 'node_default', 1);
 	$self->{inwcyfilter} = Filter::read_in('wcy', $call, 1) || Filter::read_in('wcy', 'node_default', 1);
 	$self->{inannfilter} = Filter::read_in('ann', $call, 1) || Filter::read_in('ann', 'node_default', 1);
+	$self->{inroutefilter} = Filter::read_in('route', $call, 1) || Filter::read_in('route', 'node_default', 1);
 	
 	# set unbuffered and no echo
 	$self->send_now('B',"0");
@@ -251,7 +252,9 @@ sub start
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
 
+	# add this node to the table, the values get filled in later
 	$main::routeroot->add($call);
+
 	Log('DXProt', "$call connected");
 }
 
@@ -416,18 +419,20 @@ sub normal
 					my $node;
 					my $to = $user->homenode;
 					my $last = $user->lastoper || 0;
-					if ($send_opernam && $main::systime > $last + $DXUser::lastoperinterval && $to && ($node = DXCluster->get_exact($to)) ) {
+					if ($send_opernam && $main::systime > $last + $DXUser::lastoperinterval && $to && ($node = Route::Node::get($to)) ) {
 						my $cmd = "forward/opernam $spot[4]";
 						# send the rcmd but we aren't interested in the replies...
-						if ($node && $node->dxchan && $node->dxchan->is_clx) {
+						my $dxchan = $node->dxchan;
+						if ($dxchan && $dxchan->is_clx) {
 							route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
 						} else {
 							route(undef, $to, pc34($main::mycall, $to, $cmd));
 						}
 						if ($to ne $field[7]) {
 							$to = $field[7];
-							$node = DXCluster->get_exact($to);
-							if ($node && $node->dxchan && $node->dxchan->is_clx) {
+							$node = Route::Node::get($to);
+							$dxchan = $node->dxchan;
+							if ($node->dxchan && $dxchan->is_clx) {
 								route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
 							} else {
 								route(undef, $to, pc34($main::mycall, $to, $cmd));
@@ -519,6 +524,8 @@ sub normal
 
 			# general checks
 			my $dxchan;
+			my $newline = "PC16^";
+			
 			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
 				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
@@ -532,69 +539,37 @@ sub normal
 				return;
 			}
 
-			my $node = DXCluster->get_exact($field[1]); 
+			my $node = Route::Node::get($field[1]); 
 			unless ($node) {
 				dbg('chan', "PCPROT: Node $field[1] not in config");
 				return;
 			}
-			my $pref = Route::Node::get($field[1]);
-			unless ($pref) {
-				dbg('chan', "PCPROT: Route::Node $field[1] not in config");
-				return;
-			}
-			my $wrong;
-			unless ($node->isa('DXNode')) {
-				dbg('chan', "PCPROT: $field[1] is not a node");
-				$wrong = 1;
-			}
-			if ($node->dxchan != $self) {
-				dbg('chan', "PCPROT: $field[1] came in on wrong channel");
-				$wrong = 1;
-			}
 			my $i;
 			my @rout;
 			for ($i = 2; $i < $#field; $i++) {
-				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
-				next unless $call && $confmode && defined $here && is_callsign($call);
-				$confmode = $confmode eq '*';
+				my ($call, $conf, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
+				next unless $call && $conf && defined $here && is_callsign($call);
+				$conf = $conf eq '*';
 
-				push @rout, $pref->add_user($call, Route::here($here)|Route::conf($confmode));
+				push @rout, $node->add_user($call, Route::here($here)|Route::conf($conf));
 				
-				unless ($wrong) {
-					my $ref = DXCluster->get_exact($call); 
-					if ($ref) {
-						if ($ref->isa('DXNode')) {
-							dbg('chan', "PCPROT: $call is a node");
-							next;
-						}
-						my $rcall = $ref->mynode->call;
-						dbg('chan', "PCPROT: already have $call on $rcall");
-						next;
-					}
-					
-					DXNodeuser->new($self, $node, $call, $confmode, $here);
-					
-					# add this station to the user database, if required
-					$call =~ s/-\d+$//o;        # remove ssid for users
-					my $user = DXUser->get_current($call);
-					$user = DXUser->new($call) if !$user;
-					$user->homenode($node->call) if !$user->homenode;
-					$user->node($node->call);
-					$user->lastin($main::systime) unless DXChannel->get($call);
-					$user->put;
-				}
+				# add this station to the user database, if required
+				$call =~ s/-\d+$//o;        # remove ssid for users
+				my $user = DXUser->get_current($call);
+				$user = DXUser->new($call) if !$user;
+				$user->homenode($node->call) if !$user->homenode;
+				$user->node($node->call);
+				$user->lastin($main::systime) unless DXChannel->get($call);
+				$user->put;
 			}
 
-			dbg('route', "B/C PC16 on $field[1] for: " . join(',', map{$_->call} @rout)) if @rout;
-
-			# all these 'wrong' is just while we are swopping over to the Route stuff
-			return if $wrong;
 			
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
-#			broadcast_route($line, $self, $field[1]);
-#			return;
-			last SWITCH;
+
+			dbg('route', "B/C PC16 on $field[1] for: " . join(',', map{$_->call} @rout)) if @rout;
+			$self->route_pc16($node, @rout) if @rout;
+			return;
 		}
 		
 		if ($pcno == 17) {		# remove a user
@@ -612,53 +587,27 @@ sub normal
 				return;
 			}
 
-			my $pref = Route::Node::get($field[2]);
-			unless ($pref) {
+			my $node = Route::Node::get($field[2]);
+			unless ($node) {
 				dbg('chan', "PCPROT: Route::Node $field[2] not in config");
 				return;
 			}
-			$pref->del_user($field[1]);
+			my @rout = $node->del_user($field[1]);
 			dbg('route', "B/C PC17 on $field[2] for: $field[1]");
-			
-			my $node = DXCluster->get_exact($field[2]);
-			unless ($node) {
-				dbg('chan', "PCPROT: Node $field[2] not in config");
-				return;
-			}
-			unless ($node->isa('DXNode')) {
-				dbg('chan', "PCPROT: $field[2] is not a node");
-				return;
-			}
-			if ($node->dxchan != $self) {
-				dbg('chan', "PCPROT: $field[2] came in on wrong channel");
-				return;
-			}
-			my $ref = DXCluster->get_exact($field[1]);
-			if ($ref) {
-				if ($ref->mynode != $node) {
-					dbg('chan', "PCPROT: $field[1] came in from wrong node $field[2]");
-					return;
-				}
-				$ref->del;
-			} else {
-				dbg('chan', "PCPROT: $field[1] not known" );
-				return;
-			}
-#			broadcast_route($line, $self, $field[2]);
-#			return;
-			last SWITCH;
+			$self->route_pc17($node, @rout) if @rout;
+			return;
 		}
 		
 		if ($pcno == 18) {		# link request
 			$self->state('init');	
 
 			# first clear out any nodes on this dxchannel
-			my @gonenodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
-			foreach my $node (@gonenodes) {
-				next if $node->dxchan == $DXProt::me;
-				broadcast_ak1a(pc21($node->call, 'Gone, re-init') , $self) unless $self->{isolate}; 
-				$node->del();
+			my $node = Route::Node::get($self->{call});
+			my @rout;
+			for ($node->nodes) {
+				push @rout, $_->del_node;
 			}
+			$self->route_pc21(@rout, $node);
 			$self->send_local_config();
 			$self->send(pc20());
 			return;             # we don't pass these on
@@ -670,60 +619,30 @@ sub normal
 
 			# new routing list
 			my @rout;
-			my $pref = Route::Node::get($self->{call});
+			my $node = Route::Node::get($self->{call});
 
 			# parse the PC19
 			for ($i = 1; $i < $#field-1; $i += 4) {
 				my $here = $field[$i];
 				my $call = uc $field[$i+1];
-				my $confmode = $field[$i+2];
+				my $conf = $field[$i+2];
 				my $ver = $field[$i+3];
-				next unless defined $here && defined $confmode && is_callsign($call);
+				next unless defined $here && defined $conf && is_callsign($call);
 				# check for sane parameters
 				$ver = 5000 if $ver eq '0000';
 				next if $ver < 5000; # only works with version 5 software
 				next if length $call < 3; # min 3 letter callsigns
 
-				
-				# now check the call over
-				my $node = DXCluster->get_exact($call);
-				if ($node) {
-					my $dxchan;
-					if ((my $dxchan = DXChannel->get($call)) && $dxchan != $self) {
-						dbg('chan', "PCPROT: $call connected locally");
-					}
-				    if ($node->dxchan != $self) {
-						dbg('chan', "PCPROT: $call come in on wrong channel");
-						next;
-					}
-
-					# add a route object
-					if ($call eq $pref->call && !$pref->version) {
-						$pref->version($ver);
-						$pref->flags(Route::here($here)|Route::conf($confmode));
-					} else {
-						my $r = $pref->add($call, $ver, Route::here($here)|Route::conf($confmode));
-						push @rout, $r if $r;
-					}
-
-					my $rcall = $node->mynode->call;
-					dbg('chan', "PCPROT: already have $call on $rcall");
-					next;
-				}
-
-				# add a route object
-				if ($call eq $pref->call && !$pref->version) {
-					$pref->version($ver);
-					$pref->flags(Route::here($here)|Route::conf($confmode));
-				} else {
-					my $r = $pref->add($call, $ver, Route::here($here)|Route::conf($confmode));
+				# update it if required
+				if ($node->call eq $call && !$node->version) {
+					$node->version($ver);
+					$node->flags(Route::here($here)|Route::conf($conf));
+					push @rout, $node;
+				} elsif ($node->call ne $call) {
+					my $r = $node->add($call, $ver, Route::here($here)|Route::conf($conf));
 					push @rout, $r if $r;
 				}
 
-				# add it to the nodes table and outgoing line
-				$newline .= "$here^$call^$confmode^$ver^";
-				DXNode->new($self, $call, $confmode, $here, $ver);
-				
 				# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
 				my $mref = DXMsg::get_busy($call);
 				$mref->stop_msg($call) if $mref;
@@ -744,12 +663,8 @@ sub normal
 
 			dbg('route', "B/C PC19 for: " . join(',', map{$_->call} @rout)) if @rout;
 			
-			return if $newline eq "PC19^";
-
-			# add hop count 
-			$newline .=  get_hops(19) . "^";
-			$line = $newline;
-			last SWITCH;
+			$self->route_pc19(@rout) if @rout;
+			return;
 		}
 		
 		if ($pcno == 20) {		# send local configuration
@@ -762,39 +677,19 @@ sub normal
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
 			my @rout;
-			my $pref = Route::Node::get($call);
+			my $node = Route::Node::get($call);
 			
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 				if ($call eq $self->{call}) {
 					dbg('chan', "PCPROT: Trying to disconnect myself with PC21");
 					return;
 				}
-				if (my $dxchan = DXChannel->get($call)) {
-					dbg('chan', "PCPROT: $call connected locally");
-					return;
-				}
 
 				# routing objects
-				if ($pref) {
-					push @rout, $pref->del_node($call);
+				if ($node) {
+					push @rout, $node->del_node($call);
 				} else {
 					dbg('chan', "PCPROT: Route::Node $call not in config");
-				}
-				
-				my $node = DXCluster->get_exact($call);
-				if ($node) {
-					unless ($node->isa('DXNode')) {
-						dbg('chan', "PCPROT: $call is not a node");
-						return;
-					}
-					if ($node->dxchan != $self) {
-						dbg('chan', "PCPROT: $call come in on wrong channel");
-						return;
-					}
-					$node->del();
-				} else {
-					dbg('chan', "PCPROT: $call not in table, dropped");
-					return;
 				}
 			} else {
 				dbg('chan', "PCPROT: I WILL _NOT_ be disconnected!");
@@ -802,9 +697,8 @@ sub normal
 			}
 			dbg('route', "B/C PC21 for: " . join(',', (map{$_->call} @rout))) if @rout;
 			
-#			broadcast_route($line, $self, $call);
-#			return;
-			last SWITCH;
+			$self->route_pc21(@rout) if @rout;
+			return;
 		}
 		
 		if ($pcno == 22) {
@@ -858,7 +752,9 @@ sub normal
 		
 		if ($pcno == 24) {		# set here status
 			my $call = uc $field[1];
-			my $ref = DXCluster->get_exact($call);
+			my $ref = Route::Node::get($call);
+			$ref->here($field[2]) if $ref;
+			$ref = Route::User::get($call);
 			$ref->here($field[2]) if $ref;
 			last SWITCH;
 		}
@@ -907,9 +803,9 @@ sub normal
 		if ($pcno == 34 || $pcno == 36) { # remote commands (incoming)
 			if ($field[1] eq $main::mycall) {
 				my $ref = DXUser->get_current($field[2]);
-				my $cref = DXCluster->get($field[2]);
+				my $cref = Route::Node::get($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[3]);
-				unless (!$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
+				unless (!$cref || !$ref || $cref->call ne $ref->homenode) {    # not allowed to relay RCMDS!
 					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
 						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 						my $oldpriv = $self->{priv};
@@ -1007,11 +903,10 @@ sub normal
 		}
 		
 		if ($pcno == 50) {		# keep alive/user list
-			my $node = DXCluster->get_exact($field[1]);
+			my $node = Route::Node::get($field[1]);
 			if ($node) {
-				return unless $node->isa('DXNode');
-				return unless $node->dxchan == $self;
-				$node->update_users($field[2]);
+				return unless $node->call eq $self->{call};
+				$node->usercount($field[2]);
 			}
 			last SWITCH;
 		}
@@ -1097,9 +992,9 @@ sub normal
 		if ($pcno == 84) { # remote commands (incoming)
 			if ($field[1] eq $main::mycall) {
 				my $ref = DXUser->get_current($field[2]);
-				my $cref = DXCluster->get($field[2]);
+				my $cref = Route::Node::get($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[4]);
-				unless ($field[4] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
+				unless ($field[4] =~ /rcmd/i || !$cref || !$ref || $cref->call ne $ref->homenode) {    # not allowed to relay RCMDS!
 					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
 						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 						my $oldpriv = $self->{priv};
@@ -1222,38 +1117,6 @@ sub process
 #
 # some active measures
 #
-sub send_route
-{
-	my $self = shift;
-	my $line = shift;
-	my @dxchan = DXChannel::get_all_nodes();
-	my $dxchan;
-	
-	# send it if it isn't the except list and isn't isolated and still has a hop count
-	# taking into account filtering and so on
-	foreach $dxchan (@dxchan) {
-		my $routeit;
-		my ($filter, $hops);
-
-		if ($dxchan->{routefilter}) {
-			($filter, $hops) = $dxchan->{routefilter}->it($self->{call}, @_);
-			 next unless $filter;
-		}
-		next if $dxchan == $self;
-		if ($hops) {
-			$routeit = $line;
-			$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
-		} else {
-			$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-			next unless $routeit;
-		}
-		if ($filter) {
-			$dxchan->send($routeit) if $routeit;
-		} else {
-			$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-		}
-	}
-}
 
 sub send_dx_spot
 {
@@ -1265,6 +1128,7 @@ sub send_dx_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
+		next if $dxchan == $me;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -1323,6 +1187,8 @@ sub send_wwv_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
+		next if $dxchan == $self;
+		next if $dxchan == $me;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -1331,7 +1197,6 @@ sub send_wwv_spot
 			 next unless $filter;
 		}
 		if ($dxchan->is_node) {
-			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
 				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
@@ -1380,6 +1245,7 @@ sub send_wcy_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
+		next if $dxchan == $me;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -1388,7 +1254,6 @@ sub send_wcy_spot
 			 next unless $filter;
 		}
 		if ($dxchan->is_clx || $dxchan->is_spider || $dxchan->is_dxnet) {
-			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
 				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
@@ -1457,6 +1322,8 @@ sub send_announce
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
+		next if $dxchan == $self;
+		next if $dxchan == $me;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -1465,7 +1332,6 @@ sub send_announce
 			next unless $filter;
 		} 
 		if ($dxchan->is_node && $_[1] ne $main::mycall) {  # i.e not specifically routed to me
-			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
 				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
@@ -1501,39 +1367,28 @@ sub send_local_config
 	my $self = shift;
 	my $n;
 	my @nodes;
-	my @localnodes;
-	my @remotenodes;
+	my @localcalls;
+	my @remotecalls;
 		
 	# send our nodes
 	if ($self->{isolate}) {
-		@localnodes = (DXCluster->get_exact($main::mycall));
+		@localcalls = ( $main::mycall );
 	} else {
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
-		@nodes = DXNode::get_all();
-		@nodes = grep { $_->{call} ne $main::mycall } @nodes;
-		@nodes = grep { $_->dxchan != $self } @nodes if @nodes;
-		@nodes = grep { !$_->dxchan->{isolate} } @nodes if @nodes;
-		@localnodes = grep { $_->dxchan->{call} eq $_->{call} } @nodes if @nodes;
-		unshift @localnodes, DXCluster->get_exact($main::mycall);
-		@remotenodes = grep { $_->dxchan->{call} ne $_->{call} } @nodes if @nodes;
+		my @dxchan = grep { $_->call ne $main::mycall && $_->call ne $self->{call} && !$_->{isolate} } DXChannel::get_all_nodes();
+		@localcalls = map { $_->{call} } @dxchan if @dxchan;
+		@remotecalls = map {my $r = Route::Node::get($_); $r ? $r->rnodes(@localcalls, $main::mycall, $self->{call}) : () } @localcalls if @localcalls;
+		unshift @localcalls, $main::mycall;
 	}
-
-	my @s = $me->pc19(@localnodes, @remotenodes);
-	for (@s) {
-		my $routeit = adjust_hops($self, $_);
-		$self->send($routeit) if $routeit;
-	}
+	@nodes = map {my $r = Route::Node::get($_); $r ? $r : ()} (@localcalls, @remotecalls);
+	
+	send_route($self, \&pc19, scalar @nodes, @nodes);
 	
 	# get all the users connected on the above nodes and send them out
-	foreach $n (@localnodes, @remotenodes) {
-		my @users = values %{$n->list};
-		my @s = pc16($n, @users);
-		for (@s) {
-			my $routeit = adjust_hops($self, $_);
-			$self->send($routeit) if $routeit;
-		}
+	foreach $n (@nodes) {
+		send_route($self, \&pc16, 1, $n, map {my $r = Route::User::get($_); $r ? ($r) : ()} $n->users);
 	}
 }
 
@@ -1554,7 +1409,7 @@ sub route
 	# always send it down the local interface if available
 	my $dxchan = DXChannel->get($call);
 	unless ($dxchan) {
-		my $cl = DXCluster->get_exact($call);
+		my $cl = Route::Node::get($call);
 		$dxchan = $cl->dxchan if $cl;
 		if (ref $dxchan) {
 			if (ref $self && $dxchan eq $self) {
@@ -1745,8 +1600,9 @@ sub addrcmd
 	$r->{cmd} = $cmd;
 	$rcmds{$to} = $r;
 
-	my $ref = DXCluster->get_exact($to);
-    if ($ref && $ref->dxchan && $ref->dxchan->is_clx) {
+	my $ref = Route::Node::get($to);
+	my $dxchan = $ref->dxchan;
+    if ($dxchan && $dxchan->is_clx) {
 		route(undef, $to, pc84($main::mycall, $to, $self->{call}, $cmd));
 	} else {
 		route(undef, $to, pc34($main::mycall, $to, $cmd));
@@ -1764,38 +1620,20 @@ sub disconnect
 	}
 
 	# do routing stuff
-	my $pref = Route::Node::get($self->{call});
-	my @rout = $pref->del_nodes if $pref;
-	push @rout, $main::routeroot->del_node($call);
+#	my $node = Route::Node::get($self->{call});
+#	my @rout = $node->del_nodes if $node;
+	my @rout = $main::routeroot->del_node($call);
 	dbg('route', "B/C PC21 (from PC39) for: " . join(',', (map{ $_->call } @rout))) if @rout;
 	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;
 	
-	# create a list of all the nodes that have gone and delete them from the table
-	my @nodes;
-	foreach my $node (grep { $_->dxchancall eq $call } DXNode::get_all) {
-		next if $node->call eq $call;
-		next if $node->call eq $main::mycall;
-		push @nodes, $node->call;
-		$node->del;
-	}
-
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
-		unless ($self->{isolate}) {
-			push @nodes, $call;
-			for (@nodes) {
-				broadcast_ak1a(pc21($_, 'Gone.'), $self);
-			}
-		}
+		$self->route_pc21(@rout) if @rout;
 	}
 
-	# remove this node from the tables
-	my $node = DXCluster->get_exact($call);
-	$node->del if $node;
-	
 	# remove outstanding pings
 	delete $pings{$call};
 	
@@ -1822,5 +1660,77 @@ sub talk
 	$self->send(DXProt::pc10($from, $to, $via, $line));
 	Log('talk', $self->call, $from, $via?$via:$main::mycall, $line);
 }
+
+# send it if it isn't the except list and isn't isolated and still has a hop count
+# taking into account filtering and so on
+sub send_route
+{
+	my $self = shift;
+	my $generate = shift;
+	my $no = shift;     # the no of things to filter on 
+	my $routeit;
+	my ($filter, $hops);
+	my @rin;
+	
+	if ($self->{routefilter}) {
+		for (; @_ && $no; $no--) {
+			my $r = shift;
+			($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
+			push @rin, $r if $filter;
+		}
+	}
+	if (@rin) {
+		foreach my $line (&$generate(@rin, @_)) {
+			if ($hops) {
+				$routeit = $line;
+				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+			} else {
+				$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
+				next unless $routeit;
+			}
+			$self->send($routeit) unless $self->{isolate} || $self->{isolate};
+		}
+	}
+}
+
+sub broadcast_route
+{
+	my $self = shift;
+	my $generate = shift;
+	my @dxchan = DXChannel::get_all_nodes();
+	my $dxchan;
+	my $line;
+	
+	foreach $dxchan (@dxchan) {
+		next if $dxchan == $self;
+		next if $dxchan == $me;
+		$dxchan->send_route($generate, @_);
+	}
+}
+
+sub route_pc16
+{
+	my $self = shift;
+	broadcast_route($self, \&pc16, 1, @_);
+}
+
+sub route_pc17
+{
+	my $self = shift;
+	broadcast_route($self, \&pc17, 1, @_);
+}
+
+sub route_pc19
+{
+	my $self = shift;
+	broadcast_route($self, \&pc19, scalar @_, @_);
+}
+
+sub route_pc21
+{
+	my $self = shift;
+	broadcast_route($self, \&pc21, scalar @_, @_);
+}
+
 1;
 __END__ 

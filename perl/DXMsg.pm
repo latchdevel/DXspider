@@ -19,7 +19,6 @@ use DXUtil;
 use DXChannel;
 use DXUser;
 use DXM;
-use DXCluster;
 use DXProtVars;
 use DXProtout;
 use DXDebug;
@@ -607,12 +606,12 @@ sub queue_msg
 		my $dxchan;
 		if ($ref->{private}) {
 			next if $ref->{'read'};           # if it is read, it is stuck here
-			$clref = DXCluster->get_exact($ref->{to});
-			unless ($clref) {             # otherwise look for a homenode
-				my $uref = DXUser->get_current($ref->{to});
-				my $hnode =  $uref->homenode if $uref;
-				$clref = DXCluster->get_exact($hnode) if $hnode;
-			}
+			$clref = Route::get($ref->{to});
+#			unless ($clref) {             # otherwise look for a homenode
+#				my $uref = DXUser->get_current($ref->{to});
+#				my $hnode =  $uref->homenode if $uref;
+#				$clref = Route::Node::get($hnode) if $hnode;
+#			}
 			if ($clref && !grep { $clref->dxchan == $_ } DXCommandmode::get_all()) {
 				next if $clref->call eq $main::mycall;  # i.e. it lives here
 				$dxchan = $clref->dxchan;

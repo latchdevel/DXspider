@@ -31,6 +31,7 @@ use DXUtil;
 use DXVars;
 use DXDebug;
 use Filter;
+use Prefix;
 
 use strict;
 use vars qw(%channels %valid @ISA $count);
@@ -58,7 +59,7 @@ $count = 0;
 		  talk => '0,Want Talk,yesno',
 		  ann => '0,Want Announce,yesno',
 		  here => '0,Here?,yesno',
-		  confmode => '0,In Conference?,yesno',
+		  conf => '0,In Conference?,yesno',
 		  dx => '0,DX Spots,yesno',
 		  redirect => '0,Redirect messages to',
 		  lang => '0,Language',
@@ -77,10 +78,12 @@ $count = 0;
 		  wwvfilter => '5,WWV Filter',
 		  wcyfilter => '5,WCY Filter',
 		  spotsfilter => '5,Spot Filter',
+		  routefilter => '5,route Filter',
 		  inannfilter => '5,Input Ann Filter',
 		  inwwvfilter => '5,Input WWV Filter',
 		  inwcyfilter => '5,Input WCY Filter',
 		  inspotsfilter => '5,Input Spot Filter',
+		  inroutefilter => '5,Input Route Filter',
 		  passwd => '9,Passwd List,parray',
 		  pingint => '5,Ping Interval ',
 		  nopings => '5,Ping Obs Count',
@@ -93,6 +96,9 @@ $count = 0;
 		  isbasic => '9,Internal Connection', 
 		  errors => '9,Errors',
 		  route => '9,Route Data',
+		  dxcc => '0,Country Code',
+		  itu => '0,ITU Zone',
+		  cq => '0,CQ Zone',
 		 );
 
 # object destruction
@@ -130,6 +136,14 @@ sub alloc
 	$self->{oldstate} = 0;
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
+
+	# add in all the dxcc, itu, zone info
+	my @dxcc = Prefix::extract($call);
+	if (@dxcc > 0) {
+		$self->{dxcc} = $dxcc[1]->dxcc;
+		$self->{itu} = $dxcc[1]->itu;
+		$self->{cq} = $dxcc[1]->cq;						
+	}
 
 	$count++;
 	dbg('chan', "DXChannel $self->{call} created ($count)");

@@ -43,9 +43,10 @@ if (!defined $DB::VERSION) {
 
     CORE::die(Carp::shortmess($@)) if $@;
 } else {
-    eval qq( sub confess { Carp::confess(\@_); }; 
-			 sub croak { Carp::croak(\@_); }; 
-			 sub cluck { Carp::cluck(\@_); }; 
+    eval qq( sub confess { die Carp::longmess(\@_); }; 
+			 sub croak { die Carp::shortmess(\@_); }; 
+			 sub cluck { warn Carp::longmess(\@_); }; 
+			 sub carp { warn Carp::shortmess(\@_); }; 
    );
 } 
 

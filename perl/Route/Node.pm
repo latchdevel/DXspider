@@ -14,22 +14,24 @@ use Route::User;
 
 use strict;
 
-use vars qw(%list %valid @ISA $max);
+use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
 		  parent => '0,Parent Calls,parray',
 		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
+		  usercount => '0,User Count',
 		  version => '0,Version',
 );
 
+$filterdef = $Route::filterdef;
 %list = ();
 $max = 0;
 
 sub count
 {
-	my $n = scalar %list;
+	my $n = scalar (keys %list);
 	$max = $n if $n > $max;
 	return $n;
 }
@@ -55,9 +57,11 @@ sub add
 {
 	my $parent = shift;
 	my $call = uc shift;
+	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
 	my $self = get($call);
 	if ($self) {
 		$self->_addparent($parent->{call});
+		$parent->_addnode($call);
 		return undef;
 	}
 	$parent->_addnode($call);
@@ -87,8 +91,8 @@ sub del
 	unless (@$ref) {
 		push @nodes, $self->del_nodes;
 		delete $list{$self->{call}};
+		push @nodes, $self;
 	}
-	push @nodes, $self;
 	return @nodes;
 }
 
@@ -116,15 +120,34 @@ sub del_nodes
 	return @nodes;
 }
 
+# delete a node from this node (ie I am a parent) 
+sub del_node
+{
+	my $self = shift;
+	my $ncall = shift;
+	my @out;
+    $self->_delnode($ncall);
+	if (my $ref = get($ncall)) {
+		foreach my $rcall (@{$ref->{nodes}}) {
+			next if $rcall eq $ncall || $rcall eq $self->{call};
+			push @out, $ref->del_node($rcall);
+		}
+		push @out, $ref->del($self);
+	}
+	return @out;
+}
+
 # add a user to this node
 sub add_user
 {
 	my $self = shift;
 	my $ucall = shift;
 	$self->_adduser($ucall);
-	
+
+	$self->{usercount} = scalar @{$self->{users}};
 	my $uref = Route::User::get($ucall);
-	return $uref ? () : (Route::User->new($ucall, $self->{call}, @_));
+	my @out = (Route::User->new($ucall, $self->{call}, @_)) unless $uref;
+	return @out;
 }
 
 # delete a user from this node
@@ -134,20 +157,44 @@ sub del_user
 	my $ucall = shift;
 	my $ref = Route::User::get($ucall);
 	$self->_deluser($ucall);
-	return ($ref->del($self)) if $ref;
-	return ();
+	my @out = $ref->del($self) if $ref;
+	return @out;
 }
 
-# delete a node from this node (ie I am a parent) 
-sub del_node
+sub usercount
 {
 	my $self = shift;
-	my $ncall = shift;
-    $self->_delnode($ncall);
-	my $ref = get($ncall);
-	return ($ref->del($self)) if $ref;
-	return ();
+	if (@_ && @{$self->{users}} == 0) {
+		$self->{usercount} = shift;
+	}
+	return $self->{usercount};
 }
+
+sub users
+{
+	my $self = shift;
+	return @{$self->{users}};
+}
+
+sub nodes
+{
+	my $self = shift;
+	return @{$self->{nodes}};
+}
+
+sub rnodes
+{
+	my $self = shift;
+	my @out;
+	foreach my $call (@{$self->{nodes}}) {
+		next if grep $call eq $_, @_;
+		push @out, $call;
+		my $r = get($call);
+		push @out, $r->rnodes(@_, @out) if $r;
+	}
+	return @out;
+}
+
 
 sub new
 {
@@ -173,6 +220,11 @@ sub get
 	my $call = shift;
 	$call = shift if ref $call;
 	return $list{uc $call};
+}
+
+sub get_all
+{
+	return values %list;
 }
 
 sub _addparent

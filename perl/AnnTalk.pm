@@ -31,9 +31,9 @@ $filterdef = bless ([
 			  ['by_dxcc', 'n', 7],
 			  ['by_itu', 'n', 8],
 			  ['by_zone', 'n', 9],
-			  ['origin_dxcc', 'c', 10],
-			  ['origin_itu', 'c', 11],
-			  ['origin_itu', 'c', 12],
+			  ['origin_dxcc', 'n', 10],
+			  ['origin_itu', 'n', 11],
+			  ['origin_itu', 'n', 12],
 			 ], 'Filter::Cmd');
 
 
