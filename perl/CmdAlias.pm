@@ -1,32 +1,16 @@
 #
-# This package simply takes a string, looks it up in a
-# hash and returns the value.
+# This package impliments some of the ak1a aliases that can't
+# be done with interpolation from the file names.
 #
-# The hash is produced by reading the Alias file in both command directories
-# which contain entries for the %cmd hash. This file is in different forms in 
-# the two directories:-
+# Basically it takes the input and bashes down the list of aliases
+# for that starting letter until it either matches (in which a substitution
+# is done) or fails
 #
-# in the main cmd directory it has entries like:-
+# To roll your own Aliases, copy the /spider/cmd/Aliases file to 
+# /spider/local_cmd and alter it to your taste.
 #
-# package CmdAlias;
+# To make it active type 'load/aliases'
 #
-# %alias = (
-#   sp => 'send private',
-#   s/p => 'send private', 
-#   sb => 'send bulletin', 
-# );
-#
-# for the local cmd directory you should do it like this:-
-#
-# package CmdAlias;
-#
-# $alias{'s/p'} = 'send private';
-# $alias{'s/b'} = 'send bulletin';
-#
-# This will allow you to override as well as add to the basic set of commands 
-#
-# This system works in same way as the commands, if the modification times of
-# the two files have changed then they are re-read.
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
