@@ -1,6 +1,6 @@
   The DXSpider User Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.0 (Revision 4), March 2001
+  Version 1.0 (Revision 4.1), December 2001
 
   A complete reference for users of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -1408,7 +1408,7 @@
 
   1122..22..  aacccceepptt//ssppoottss
 
-  aacccceepptt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for spots
+  aacccceepptt//ssppoottss [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for spots
 
 
   Create an 'accept this spot' line for a filter.

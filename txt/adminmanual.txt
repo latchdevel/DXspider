@@ -1,6 +1,6 @@
   The DXSpider Administration Manual v1.49
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  November 2001 revision 1.1
+  December 2001 revision 1.2
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -2344,7 +2344,7 @@
 
   9.4.  accept/spots (0)
 
-  accept/announce [0-9] <pattern> Set an accept filter line for spots
+  accept/spots [0-9] <pattern> Set an accept filter line for spots
 
 
   Create an 'accept this spot' line for a filter.

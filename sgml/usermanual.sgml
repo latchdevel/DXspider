@@ -6,7 +6,7 @@
 
 <title>The DXSpider User Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.0 (Revision 4), March 2001
+<date>Version 1.0 (Revision 4.1), December 2001
 <abstract>
 A complete reference for users of the DXSpider DXCluster program.
 </abstract>
@@ -1074,7 +1074,7 @@ but this probably for advanced users...
 
 <P>
 <tt>
-<bf>accept/announce &lsqb;0-9&rsqb; &lt;pattern&gt;</bf> Set an accept filter 
+<bf>accept/spots &lsqb;0-9&rsqb; &lt;pattern&gt;</bf> Set an accept filter 
 line for spots
 </tt>
 
