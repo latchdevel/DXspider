@@ -6,7 +6,7 @@
 
 <title>The DXSpider User Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>March 2003 revision 0.4</date>
+<date>April 2003 revision 0.5</date>
 
 <abstract>
 A complete reference for users of the DXSpider DXCluster program.
@@ -1015,4 +1015,5 @@ user manual?
 also be included with every release of DXSpider.  As always, if unsure,
 ask your sysop what version number is the latest. 
 
+<sect>The DXSpider Command Reference
 

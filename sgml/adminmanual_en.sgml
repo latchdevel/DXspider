@@ -7,7 +7,7 @@
 <title>The DXSpider Administration Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
 Charlie Carroll, K1XX, (k1xx@ptcnh.net)</author>
-<date>March 2003 revision 0.6</date>
+<date>April 2003 revision 0.7</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -1818,6 +1818,8 @@ Click on the green down arrow
 Click OK on the Update Settings dialog box
 Restart your Spider software
 </verb></tscreen>
+
+<sect>The DXSpider Command Reference
 
 <sect1>accept (0)
 
