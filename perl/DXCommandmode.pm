@@ -525,7 +525,7 @@ sub find_cmd_name {
 			}
 		}
 		
-		$Cache{$package} = {mtime => $mtime, eval => $eval };
+		$Cache{$package} = {mtime => $mtime, 'eval' => $eval };
 	}
 
 	return $package;

@@ -192,7 +192,7 @@ sub encode
 	my $dd = new Data::Dumper([$self]);
 	$dd->Indent(0);
 	$dd->Terse(1);
-    $dd->Quotekeys(0);
+    $dd->Quotekeys($] < 5.005 ? 1 : 0);
 	return $dd->Dumpxs;
 }
 
