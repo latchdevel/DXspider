@@ -1,3 +1,5 @@
+19Oct01=======================================================================
+1. Allow DELETE (0x7f) for backspace in console.pl
 14Oct01=======================================================================
 1. Add the shortform SH/ST like display to sh/user <call> to make it more
 AK1A compatible (G0RDI+G4PDQ pace).

@@ -24,7 +24,7 @@ my $regex = "$main::data/badw_regex";
 my $bwfn = "$main::data/badword";
 
 # copy issue ones across
-filecopy("$regex.issue", $regex) unless -e $regex;
+filecopy("$regex.gb.issue", $regex) unless -e $regex;
 filecopy("$bwfn.issue", $bwfn) unless -e $bwfn;
 
 $badword = new DXHash "badword";
