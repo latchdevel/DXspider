@@ -1214,7 +1214,7 @@ sub send_dx_spot
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $me;
-		next if $dxchan == $self;
+		next if $dxchan == $self && $self->is_node;
 		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
 	}
 }
@@ -1276,8 +1276,8 @@ sub send_wwv_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $self;
 		next if $dxchan == $me;
+		next if $dxchan == $self && $self->is_node;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -1388,8 +1388,8 @@ sub send_announce
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $self;
 		next if $dxchan == $me;
+		next if $dxchan == $self && $self->is_node;
 		my $routeit;
 		my ($filter, $hops);
 
