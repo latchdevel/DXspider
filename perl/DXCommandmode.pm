@@ -642,32 +642,33 @@ sub search
 	my @parts = split '/', $short_cmd;
 	my $dirfn;
 	my $curdir = $path;
-	my $p;
-	my $i;
-	my @lparts;
 	
-	for ($i = 0; $i < @parts; $i++) {
-		my  $p = $parts[$i];
+	while (my $p = shift @parts) {
 		opendir(D, $curdir) or confess "can't open $curdir $!";
 		my @ls = readdir D;
 		closedir D;
-		my $l;
-		foreach $l (sort @ls) {
-			next if $l =~ /^\./;
-			if ($i < $#parts) {            	# we are dealing with directories
+
+		# if this isn't the last part
+		if (@parts) {
+			my $found;
+			foreach my $l (sort @ls) {
+				next if $l =~ /^\./;
 				if ((-d "$curdir/$l") && $p eq substr($l, 0, length $p)) {
 					dbg("got dir: $curdir/$l\n") if isdbg('command');
 					$dirfn .= "$l/";
 					$curdir .= "/$l";
+					$found++;
 					last;
 				}
-			} else {			# we are dealing with commands
-				@lparts = split /\./, $l;                  
-				next if $lparts[$#lparts] ne $suffix;        # only look for .$suffix files
+			}
+			# only proceed if we find the directory asked for
+			return () unless $found;
+		} else {
+			foreach my $l (sort @ls) {
+				next if $l =~ /^\./;
+				next unless $l =~ /\.$suffix$/;
 				if ($p eq substr($l, 0, length $p)) {
-					pop @lparts; #  remove the suffix
-					$l = join '.', @lparts;
-					#		  chop $dirfn;               # remove trailing /
+					$l =~ s/\.$suffix$//;
 					$dirfn = "" unless $dirfn;
 					$cmd_cache{$short_cmd} = join(',', ($path, "$dirfn$l")); # cache it
 					dbg("got path: $path cmd: $dirfn$l\n") if isdbg('command');
