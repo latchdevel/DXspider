@@ -67,7 +67,7 @@ sub sendinit
 {
 	my $self = shift;
 	
-	$self->send($self->gen1);
+	$self->send($self->genI);
 }
 
 sub normal
@@ -76,8 +76,8 @@ sub normal
 		DXProt::normal(@_);
 		return;
 	}
-	my ($id, $fromnode, $msgid, $incs);
-	return unless ($id, $fromnode, $msgid, $incs) = $_[1] =~ /^QX(\d\d)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
+	my ($sort, $tonode, $fromnode, $msgid, $incs);
+	return unless ($sort, $tonode, $fromnode, $msgid, $incs) = $_[1] =~ /^QX([A-Z])\^(\*|[-A-Z0-9]+)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
 
 	$msgid = hex $msgid;
 	my $noderef = Route::Node::get($fromnode);
@@ -92,7 +92,7 @@ sub normal
 
 	return unless $noderef->newid($msgid);
 
-	$_[0]->handle($id, $fromnode, $msgid, $_[1]);
+	$_[0]->handle($sort, $tonode, $fromnode, $msgid, $_[1]);
 	return;
 }
 
@@ -100,8 +100,8 @@ sub handle
 {
 	no strict 'subs';
 	my $self = shift;
-	my $id = 0 + shift;
-	my $sub = "handle$id";
+	my $sort = shift;
+	my $sub = "handle$sort";
 	$self->$sub(@_) if $self->can($sub);
 	return;
 }
@@ -110,9 +110,9 @@ sub gen
 {
 	no strict 'subs';
 	my $self = shift;
-	my $id = 0 + shift;
-	my $sub = "gen$id";
-	$self->$sub(@_) if $self->can($sub);
+	my $sort = shift;
+	my $sub = "gen$sort";
+ 	$self->$sub(@_) if $self->can($sub);
 	return;
 }
 
@@ -147,17 +147,18 @@ my $msgid = 1;
 
 sub frame
 {
-	my $pcno = shift;
+	my $sort = shift;
+	my $to = shift || "*";
 	my $ht;
 	
 	$ht = sprintf "%X", $msgid;
-	my $line = join '^', sprintf("QX%02d", $pcno), $main::mycall, $ht, @_;
+	my $line = join '^', "QX$sort", $to, $main::mycall, $ht, @_;
 	my $cs = sprintf "%02X", unpack("%32C*", $line) & 255;
 	$msgid = 1 if ++$msgid > 0xffff;
 	return "$line^$cs";
 }
 
-sub handle1
+sub handleI
 {
 	my $self = shift;
 	
@@ -168,7 +169,7 @@ sub handle1
 		$self->disconnect;
 	}
 	if ($self->{outbound}) {
-		$self->send($self->gen1);
+		$self->send($self->genI);
 	} 
 	if ($self->{sort} ne 'S' && $f[4] eq 'DXSpider') {
 		$self->{user}->{sort} = $self->{sort} = 'S';
@@ -176,18 +177,33 @@ sub handle1
 	}
 	$self->{version} = $f[5];
 	$self->{build} = $f[6];
-	$self->state('normal');
+	$self->state('init1');
 	$self->{lastping} = 0;
 }
 
-sub gen1
+sub genI
 {
 	my $self = shift;
 	my $inp = Verify->new;
-	return frame(1, 1, "DXSpider", ($main::version + 53) * 100, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
+	return frame('I', $self->call, 1, "DXSpider", ($main::version + 53) * 100, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
 }
 
-sub handle2
+sub handleB
+{
+
+}
+
+sub genB
+{
+
+}
+
+sub handleP
+{
+
+}
+
+sub genP
 {
 
 }

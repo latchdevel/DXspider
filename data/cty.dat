@@ -262,7 +262,7 @@ French Polynesia:         32:  63:  OC:  -17.60:   149.50:    10.0:  FO:
     FO,FO0FRA,TO8K;
 Austral Is.:              32:  63:  OC:  -22.50:   152.00:    10.0:  FO/a:
     FO0AWI/A,FO0DEH,FO0FI,FO0KOJ,FO0MAC/A,FO0MIZ/A,FO0PAP/A,FO0SUC,FO0WEG,
-    FO0XUU/A;
+    FO0XUU/A,TX5BTY;
 Clipperton I.:            07:  10:  NA:   10.30:   109.20:     7.0:  FO/c:
     FO0AAA,FO0CI;
 Marquesas Is.:            31:  63:  OC:   -9.00:   139.50:    10.0:  FO/m:
@@ -429,7 +429,7 @@ Hawaii:                   31:  61:  OC:   21.30:   157.90:    10.0:  KH6:
 Kure I.:                  31:  61:  OC:   28.40:   178.40:    11.0:  KH7K:
     AH7K,KH7K,NH7K,WH7K;
 American Samoa:           32:  62:  OC:  -14.30:   170.80:    11.0:  KH8:
-    AH8,KH8,KS6BK,KS6CQ,KS6DV,KS6EL,KS6FL,KS6FO,KS6FS,NH8,WH8;
+    AH8,KH8,KS6BK,KS6CQ,KS6DV,KS6EL,KS6FL,KS6FO,KS6FS,NH8,WH8,K8T,K8O;
 Wake I.:                  31:  65:  OC:   19.30:  -166.60:   -12.0:  KH9:
     AH9,KH9,NH9,WH9;
 Alaska:                   01:  01:  NA:   61.20:   150.00:     9.0:  KL:
