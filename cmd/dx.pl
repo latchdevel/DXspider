@@ -100,7 +100,7 @@ if (@bad = BadWords::check($line)) {
 }
 
 # Store it here (but only if it isn't baddx)
-if (grep $_ eq $spotted, @DXProt::baddx) {
+if ($DXProt::baddx->in($spotted)) {
 	my $buf = Spot::formatb($self->user->wantgrid, $freq, $spotted, $main::systime, $line, $spotter);
 	push @out, $buf;
 } else {
