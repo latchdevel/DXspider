@@ -1,3 +1,19 @@
+25Sep02=======================================================================
+1. added mrtg stuff to the system as a template. In order to use this you
+must install mrtg onto your system and copy all the mrtg files (or at least
+all the images) to new directory /spider/html/mrtg. The system generates the
+config file for you as part of its workings. To get it to update add a line
+to your spider crontab like: 
+
+00,05,10,15,20,25,30,35,40,45,50,55 * * * * run_cmd('mrtg all')
+
+You will also need to do an indexmaker in the html directory. I put the 
+index page into /spider/html/mrtg/stats.html YMMV. I do:
+
+indexmaker --output stats.html --columns=1 --title "MRTG statistics for 
+GB7DJK" ../../mrtg/mrtg.cfg
+
+But all on one line.
 22Sep02=======================================================================
 1. Add changes to the installation manual for Windows users from K1XX
 21Sep02=======================================================================

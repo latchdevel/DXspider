@@ -26,7 +26,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef);
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots);
 
 $fp = undef;
 $statp = undef;
@@ -140,6 +140,12 @@ sub add
 {
 	my $buf = join("\^", @_[0..7]);
 	$fp->writeunix($_[2], $buf);
+	$totalspots++;
+	if ($_[0] <= 30000) {
+		$hfspots++;
+	} else {
+		$vhfspots++;
+	}
 }
 
 # search the spot database for records based on the field no and an expression

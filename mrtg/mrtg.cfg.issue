@@ -1,0 +1,101 @@
+
+### Global Config Options
+
+#  for UNIX
+# WorkDir: /home/http/mrtg
+
+#  or for NT
+# WorkDir: c:\mrtgdata
+
+### Global Defaults
+
+#  to get bits instead of bytes and graphs growing to the right
+# Options[_]: growright, bits
+
+WorkDir: /spider/html/mrtg
+Options[_]: growright
+
+######################################################################
+#System: gate.tobit.co.uk
+#Description: Tobit Computer Co Ltd Router
+#Contact: djk@tobit.co.uk
+#Location: Dereham, Norfolk, UK JO02LQ
+######################################################################
+
+Target[users]: `cat /spider/mrtg/users`
+MaxBytes1[users]: 500 
+MaxBytes2[users]: 200 
+Title[users]: Users and Nodes for GB7DJK 
+Options[users]: unknaszero, withzeroes, gauge, growright, nopercent, integer
+WithPeak[users]: ymwd
+YLegend[users]: Users &amp; Nodes
+YTicsFactor[users]: 1
+ShortLegend[users]: &nbsp;
+Legend1[users]:Maximum No of Users
+Legend2[users]:Maximum No of Nodes
+LegendI[users]:Users
+LegendO[users]:Nodes
+PageTop[users]: <H1>Users and Nodes on GB7DJK</H1>
+ <TABLE>
+   <TR><TD>System:</TD>     <TD>gb7djk.dxcluster.net</TD></TR>
+   <TR><TD>Maintainer:</TD> <TD>djk@tobit.co.uk</TD></TR>
+   <TR><TD>Description:</TD><TD>Users &amp; Nodes </TD></TR>
+ </TABLE>
+
+Target[totalusers]: `cat /spider/mrtg/totalusers`
+MaxBytes1[totalusers]: 5000
+MaxBytes2[totalusers]: 5000
+Title[totalusers]: Total Users and Nodes for the Visible Cluster Network
+Options[totalusers]: unknaszero, withzeroes,  gauge, growright, nopercent, integer
+YLegend[totalusers]: Users &amp; Nodes
+WithPeak[totalusers]: ymwd
+YTicsFactor[totalusers]: 1
+ShortLegend[totalusers]: &nbsp;
+Legend1[totalusers]:Maximum No of Users
+Legend2[totalusers]:Maximum No of Nodes
+LegendI[totalusers]:Users
+LegendO[totalusers]:Nodes
+PageTop[totalusers]: <H1>Total Users and Nodes in the Visible Network</H1>
+ <TABLE>
+   <TR><TD>System:</TD>     <TD>gb7djk.dxcluster.net</TD></TR>
+   <TR><TD>Maintainer:</TD> <TD>djk@tobit.co.uk</TD></TR>
+   <TR><TD>Description:</TD><TD>Total Users &amp; Nodes for the Visible Cluster Network </TD></TR>
+ </TABLE>
+
+Target[totalspots]: `cat /spider/mrtg/totalspots`
+MaxBytes[totalspots]: 20000
+Title[totalspots]: Total Spots
+Options[totalspots]: unknaszero, gauge, withzeroes, growright, nopercent, integer, noi
+YLegend[totalspots]: Spots
+WithPeak[totalspots]: ymwd
+YTicsFactor[totalspots]: 1
+ShortLegend[totalspots]: &nbsp;
+Legend2[totalspots]:Maximum No of Spots
+LegendO[totalspots]:Spots
+PageTop[totalspots]: <H1>Total Spots</H1>
+ <TABLE>
+   <TR><TD>System:</TD>     <TD>gb7djk.dxcluster.net</TD></TR>
+   <TR><TD>Maintainer:</TD> <TD>djk@tobit.co.uk</TD></TR>
+   <TR><TD>Description:</TD><TD>Total Spots</TD></TR>
+ </TABLE>
+
+
+Target[hfspots]: `cat /spider/mrtg/hfspots`
+MaxBytes[hfspots]: 20000
+Title[hfspots]: HF and VHF+ Spots
+Options[hfspots]: unknaszero, gauge, withzeroes, growright, nopercent, integer
+YLegend[hfspots]: Spots
+WithPeak[hfspots]: ymwd
+YTicsFactor[hfspots]: 1
+ShortLegend[hfspots]: &nbsp;
+Legend1[hfspots]:Max no of HF Spots
+Legend2[hfspots]:Max no of VHF Spots
+LegendI[hfspots]:HF
+LegendO[hfspots]:VHF+
+PageTop[hfspots]: <H1>Total HF and VHF+ Spots</H1>
+ <TABLE>
+   <TR><TD>System:</TD>     <TD>gb7djk.dxcluster.net</TD></TR>
+   <TR><TD>Maintainer:</TD> <TD>djk@tobit.co.uk</TD></TR>
+   <TR><TD>Description:</TD><TD>Total HF and VHF+ Spots</TD></TR>
+ </TABLE>
+
