@@ -346,6 +346,7 @@ sub process
 			$ref->{stream} = $stream;
 			$ref->{count} = 0;	# no of lines between PC31s
 			$ref->{file} = 1;
+			$ref->{lastt} = $main::systime;
 			$work{"$f[2]$stream"} = $ref; # store in work
 			$self->send(DXProt::pc30($f[2], $f[1], $stream)); # send ack 
 			
