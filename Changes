@@ -1,3 +1,7 @@
+03Feb05=======================================================================
+1. Added latest Spanish translations courtesy of Angel EA7WA.
+2. Force all languages to use pr in en in Messages, as the prompt is
+the same for all.
 19Jan05=======================================================================
 1. More Spanish changes by Angel, EA7WA.
 2. add language dependant motd files. You can now have motd_{lang} and 
