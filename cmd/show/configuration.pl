@@ -64,7 +64,11 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 			}
 			my $uref = Route::User::get($call);
 			my $s = $call;
-			$s = sprintf "(%s)", $s unless $uref->here;
+			if ($uref) {
+				$s = sprintf "(%s)", $call unless $uref->here;
+			} else {
+				$s = "$call?";
+			}
 			push @l, $s;
 			$i++;
 		}
