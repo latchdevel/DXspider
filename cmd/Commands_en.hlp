@@ -1362,6 +1362,9 @@ See also TYPE - to see the contents of a file.
 Show the contents of all the filters that are set. This command displays
 all the filters set - for all the various categories.
 
+=== 0^SHOW/HFSTATS^Show the HF DX Spot statistics
+Show the HF DX Spot statistics for your country for the last 31 days
+
 === 8^SHOW/HOPS <call> [ann|spots|wcy|wwv]^Show the hop counts for a node
 This command shows the hop counts set up for a node. You can specify
 which category you want to see. If you leave the category out then 
@@ -1562,6 +1565,9 @@ If no prefixes or callsigns are given then this command returns the local
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
+
+=== 0^SHOW/VHFSTATS^Show the VHF DX Spot statistics
+Show the VHF/UHF DX Spot statistics for your country for the last 31 days
 
 === 0^SHOW/WCY^Show last 10 WCY broadcasts
 === 0^SHOW/WCY <n>^Show last <n> WCY broadcasts

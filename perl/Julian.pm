@@ -11,12 +11,15 @@ use strict;
 package Julian;
 
 
-use vars qw($VERSION $BRANCH);
+use vars qw($VERSION $BRANCH @days @ldays @month);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
+@days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+@ldays = (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+@month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
 
 sub alloc($$$)
 {
@@ -51,8 +54,6 @@ package Julian::Day;
 
 use vars qw(@ISA);
 @ISA = qw(Julian);
-
-my @days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 
 # is it a leap year?
 sub _isleap
@@ -99,6 +100,22 @@ sub add($$)
 	return $self;
 } 
 
+sub as_string
+{
+	my $self = shift;
+	my $days = $self->[1];
+	my $mon = 0;
+	for (_isleap($self->[0]) ? @Julian::ldays : @Julian::days) {
+		if ($_ < $days) {
+			$days -= $_;
+			$mon++;
+		} else {
+			last;
+		}
+	}
+	return "$days-$Julian::month[$mon]-$self->[0]";
+}
+
 package Julian::Month;
 
 use vars qw(@ISA);
@@ -139,6 +156,12 @@ sub add($$)
 	}
 	return $self;
 } 
+
+sub as_string
+{
+	my $self = shift;
+	return "$Julian::month[$self->[1]]-$self->[0]";
+}
 
 
 1;

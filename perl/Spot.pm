@@ -97,7 +97,8 @@ sub init
 {
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
 	$fp = DXLog::new($dirprefix, "dat", 'd');
-	$statp = DXLog::new($dirprefix, "bys", 'd');
+	$statp = DXLog::new($dirprefix, "cys", 'd');
+	system("rm -f $main::data/$dirprefix/2001/*.bys");
 }
 
 sub prefix
@@ -349,13 +350,15 @@ sub genstats($)
 				[9, Bands::get_freq('6m')],
 				[10, Bands::get_freq('4m')],
 				[11, Bands::get_freq('2m')],
-				[12, Bands::get_freq('70cm')],
-				[13, Bands::get_freq('13cm')],
-				[14, Bands::get_freq('9cm')],
-				[15, Bands::get_freq('6cm')],
-				[16, Bands::get_freq('3cm')],
-				[17, Bands::get_freq('12mm')],
-				[18, Bands::get_freq('6cm')],
+				[12, Bands::get_freq('220')],
+				[13, Bands::get_freq('70cm')],
+				[14, Bands::get_freq('23cm')],
+				[15, Bands::get_freq('13cm')],
+				[16, Bands::get_freq('9cm')],
+				[17, Bands::get_freq('6cm')],
+				[18, Bands::get_freq('3cm')],
+				[19, Bands::get_freq('12mm')],
+				[20, Bands::get_freq('6cm')],
 			   );
 	my %list;
 	my @tot;
