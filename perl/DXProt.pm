@@ -242,7 +242,7 @@ sub start
 		$self->{lastping} = $main::systime + ($self->pingint / 2);
 	}
 	$self->state('init');
-	$self->pc50_t(time);
+	$self->{pc50_t} = $main::systime;
 
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
@@ -1119,9 +1119,9 @@ sub process
 		next if $dxchan == $me;
 		
 		# send a pc50 out on this channel
-		if ($t >= $dxchan->pc50_t + $DXProt::pc50_interval) {
+		if ($t >= $dxchan->{pc50_t} + $DXProt::pc50_interval) {
 			$dxchan->send(pc50(scalar DXChannel::get_all_users));
-			$dxchan->pc50_t($t);
+			$dxchan->{pc50_t} = $t;
 		} 
 
 		# send a ping out on this channel
