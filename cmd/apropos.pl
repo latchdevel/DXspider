@@ -1,4 +1,3 @@
-# 
 # the help subsystem
 #
 # apropos - this does a grep on the command file and returns the commands
@@ -15,11 +14,13 @@ my @out;
 my $lang = $self->lang;
 $lang = 'en' if !$lang;
 
+print "$line\n";
 my $in;
 $line = 'help' unless $line;
 $line =~ s/\W//g;   # remove dubious characters
+print "$line\n";
 
-my ($priv, $cmd, $desc);
+my ($priv, $cmd, $param, $desc);
 my %cmd;
 
 my $defh = new IO::File;
@@ -40,25 +41,22 @@ if ($lang ne 'en') {
 }
 
 # do english help
-my $include;
 foreach $in (<$defh>) {
 	next if $in =~ /^\#/;
 	chomp $in;
 	$in =~ s/\r$//;
 	if ($in =~ /^===/) {
-		$cmd{$cmd} = "$cmd $desc" if $include;
-		$include = 0;
-		$in =~ s/=== //;
-		($priv, $cmd, $desc) = split /\^/, $in;
+#		print "$in\n";
+		($priv, $cmd, $param, $desc) = $in =~ m{^===\s+(\d)\^(\S+)(\s+[^\^]+)?\^(.*)};
+		$param ||= '';
+		$desc ||= '';
 		next if $priv > $self->priv;             # ignore subcommands that are of no concern
-		next unless $cmd =~ /$line/i || $desc =~ /$line/i;
+		next unless $in =~ /$line/i;
 		next if $cmd =~ /-$/o;
-		$include = 1;
+		push @{$cmd{$cmd}->{en}}, "$cmd$param $desc";
 		next;
 	}
-	$include = 1 if $cmd =~ /$line/i;
 }
-$cmd{$cmd} = "$cmd $desc" if $include;
 $defh->close;
 
 # override with any not english help
@@ -69,23 +67,28 @@ if ($h) {
 		chomp $in;
 		$in =~ s/\r$//;
 		if ($in =~ /^===/) {
-			$cmd{$cmd} = "$cmd $desc" if $include;
-			$include = 0;
-			$in =~ s/=== //;
-			($priv, $cmd, $desc) = split /\^/, $in;
+#			print "$in\n";
+			($priv, $cmd, $param, $desc) = $in =~ m{^===\s+(\d)\^(\S+)(\s+[^\^]+)?\^(.*)};
+			$param ||= '';
+		    $desc ||= '';
 			next if $priv > $self->priv;             # ignore subcommands that are of no concern
-			next unless $cmd =~ /$line/i || $desc =~ /$line/i;
+			next unless $in =~ /$line/i;
 			next if $cmd =~ /-$/o;
-			$include = 1;
+			push @{$cmd{$cmd}->{$lang}}, "$cmd$param $desc";
 			next;
 		}
-		$include = 1 if $cmd =~ /$line/i;
 	}
-	$cmd{$cmd} = "$cmd $desc" if $include;
 	$h->close;
 }
 
-push @out, map {$cmd{$_}} sort keys %cmd;
+foreach my $k (sort keys %cmd) {
+	my $v;
+	if ($v = $cmd{$k}->{$lang}) {
+		push @out, @$v; 
+	} elsif	($v = $cmd{$k}->{en}) {
+		push @out, @$v;
+	}
+}
 
 push @out, $self->msg('helpe2', $line) if @out == 0;
 

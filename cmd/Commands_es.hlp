@@ -9,6 +9,8 @@
 # if the command ends in a - then that line isn't printed, but any
 # subsequent lines are
 #
+# $Id$
+#
 # Comment lines are indented before printing
 #
 === 0^ACCEPT^Define un filtro para aceptar algo
@@ -1739,8 +1741,8 @@ en modo de SOLO-RECIBIR no pudiendo usar los comandos DX, ANN, etc.
 La única excepción que se le hace a un usuario no registrado es la
 de poder enviar un TALK o un mensaje al sysop.
  
-=== 6^SET/STARTUP <Indicativo> Crea un fichero de inicio de conexión para un usuario.
-=== 0^SET/STARTUP  Crea tu propio fichero de inicio de conexión.
+=== 6^SET/STARTUP <Indicativo>^Crea un fichero de inicio de conexión para un usuario.
+=== 0^SET/STARTUP^Crea tu propio fichero de inicio de conexión.
 Crea un fichero de conexión con los comandos del cluster que se
 ejecutarán cada vez que conectes. Sólo se puede crear el fichero
 completo, no pudiéndolo editar parcialmente. Hacer un fichero
@@ -1755,12 +1757,8 @@ más espacios en blanco y darle ENTER.
 
 Puedes borrar tu fichero de conexión con el comando UNSET/STARTUP.
 
-SHOW/STARTUP <Indicativo> Ver el fichero de inicio de conexión de un usuario.
-SHOW/STARTUP Ver tu propio fichero de inicio de conexión
- Para ver el contenido del fichero de conexión creado con SET/STARTUP.
-
-=== 6^UNSET/STARTUP <Indicativo> Borra el fichero de inicio de conexión de un usuario
-=== 0^UNSET/STARTUP Borra tu fichero de inicio de conexión.
+=== 6^UNSET/STARTUP <Indicativo>^Borra el fichero de inicio de conexión de un usuario
+=== 0^UNSET/STARTUP^Borra tu fichero de inicio de conexión.
 Puedes borrar tu fichero de conexión con el comando UNSET/STARTUP.
 
 === 0^SET/TALK^Acepta mensajes TALK
@@ -2142,8 +2140,8 @@ especifiques. podríamos decir que es el comando inverso a sh/config.
 
 sh/route n2tly
 
-=== 6^SHOW/STARTUP <Indicativo> Ver el fichero de inicio de conexión de un usuario.
-=== 0^SHOW/STARTUP Ver tu propio fichero de inicio de conexión
+=== 6^SHOW/STARTUP <Indicativo>^Ver el fichero de inicio de conexión de un usuario.
+=== 0^SHOW/STARTUP^Ver tu propio fichero de inicio de conexión
 Para ver el contenido del fichero de conexión creado con SET/STARTUP.
 
 === 0^SHOW/SATELLITE <nombre> [<horas> <intervalo>]^Muestra datos de seguimiento

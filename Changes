@@ -2,6 +2,9 @@
 1. Added the changes to Canadian Prefixes so that usdbraw.gz from Charlie
 K1XX's website (http://dxc.k1xx.com/download) dated after 1Jan05 will include
 Canadian city and province data as well the existing US data.
+2. Improve the apropos command to take better account of language and do
+a better job of only showing english stuff for commands where there really is
+no local language version.
 15Jan05=======================================================================
 1. knocked over a few possible ways of people annoying other people thru
 the use of scripts
