@@ -95,32 +95,32 @@ sub handle_cf
 	if ($thing->{n}) {
 		for (split(/:/, $thing->{n})) {
 			my ($here, $call) = unpack("A1 A*", $_);
-			unless ($call eq $main::mycall) {
-				$in{$call} = $here;
-			}
+			next if $call eq $main::mycall;
+			$in{$call} = $here;
 		}
 	}
 	if ($thing->{a}) {
 		for (split(/:/, $thing->{a})) {
 			my ($here, $call) = unpack("A1 A*", $_); 
-			unless ($call eq $main::mycall) {
-				$in{$call} = $here;
-			}
+			next if $call eq $main::mycall;
+			$in{$call} = $here;
 		} 
 	}
 	my ($del, $add) = $parent->diff_nodes(keys %in);
-	if ($add) {
+	if ($del) {
 		my @pc21;
 		foreach my $call (@$del) {
+			next if $call eq $main::mycall;
 			RouteDB::delete($call, $chan_call);
 			my $ref = Route::Node::get($call);
 			push @pc21, $ref->del($parent) if $ref;
 		}
 		$thing->{pc21n} = \@pc21 if @pc21;
 	}
-	if ($del) {
+	if ($add) {
 		my @pc19;
 		foreach my $call (@$add) {
+			next if $call eq $main::mycall;
 			RouteDB::update($call, $chan_call);
 			my $here = $in{$call};
 			push @pc19, $parent->add($call, 0, $here);
