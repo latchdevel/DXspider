@@ -29,6 +29,7 @@ use AnnTalk;
 use Geomag;
 use WCY;
 use Time::HiRes qw(gettimeofday tv_interval);
+use BadWords;
 
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
@@ -294,20 +295,25 @@ sub normal
 	
  SWITCH: {
 		if ($pcno == 10) {		# incoming talk
-			
+
+			# will we allow it at all?
+			my @bad;
+			if (@bad = BadWords::check($field[3])) {
+				dbg('chan', "Bad words: @bad, dropped" );
+				return;
+			}
+
 			# is it for me or one of mine?
 			my ($to, $via, $call, $dxchan);
 			if ($field[5] gt ' ') {
 				$call = $via = $field[2];
 				$to = $field[5];
-				unless (is_callsign($to)) {
-					dbg('chan', "Corrupt talk, rejected");
-					return;
-				}
 			} else {
 				$call = $to = $field[2];
 			}
-			if ($dxchan = DXChannel->get($call)) {
+			$dxchan = DXChannel->get($call);
+			if ($dxchan && $dxchan->is_user) {
+				$field[3] =~ s/\%5E/^/g;
 				$dxchan->talk($field[1], $to, $via, $field[3]);
 			} else {
 				$self->route($field[2], $line); # relay it on its way
@@ -349,6 +355,11 @@ sub normal
 			$field[5] =~ s/^\s+//;      # take any leading blanks off
 			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
 				dbg('chan', "Duplicate Spot ignored\n");
+				return;
+			}
+			my @bad;
+			if (@bad = BadWords::check($field[5])) {
+				dbg('chan', "Bad words: @bad, dropped" );
 				return;
 			}
 			
@@ -427,7 +438,12 @@ sub normal
 				dbg('chan', "Duplicate Announce ignored");
 				return;
 			}
-			
+
+			my @bad;
+			if (@bad = BadWords::check($field[3])) {
+				dbg('chan', "Bad words: @bad, dropped" );
+				return;
+			}
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
 				
 				# global ann filtering on INPUT
@@ -1125,6 +1141,7 @@ sub send_dx_spot
 		} elsif ($dxchan->is_user && $dxchan->{dx}) {
 			my $buf = Spot::formatb($dxchan->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
 			$buf .= "\a\a" if $dxchan->{beep};
+			$buf =~ s/\%5E/^/g;
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 				$dxchan->send($buf);
 			} else {
@@ -1278,6 +1295,7 @@ sub send_announce
 			}
 			next if $target eq 'SYSOP' && $dxchan->{priv} < 5;
 			my $buf = "$to$target de $_[0]: $text";
+			$buf =~ s/\%5E/^/g;
 			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 				$dxchan->send($buf);

@@ -37,6 +37,7 @@ sub pc10
 	}
 	$text = unpad($text);
 	$text = ' ' unless $text && length $text > 0;
+	$text =~ s/\^/%5E/g;
 	return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  
 }
 
@@ -47,6 +48,7 @@ sub pc11
 	my $hops = get_hops(11);
 	my $t = time;
 	$text = ' ' if !$text;
+	$text =~ s/\^/%5E/g;
 	return sprintf "PC11^%.1f^$dxcall^%s^%s^$text^$mycall^$main::mycall^$hops^~", $freq, cldate($t), ztime($t);
 }
 
@@ -59,6 +61,7 @@ sub pc12
 	$text = ' ' if !$text;
 	$wx = '0' if !$wx;
 	$tonode = '*' if !$tonode;
+	$text =~ s/\^/%5E/g;
 	return "PC12^$call^$tonode^$text^$sysop^$main::mycall^$wx^$hops^~";
 }
 

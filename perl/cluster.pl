@@ -62,6 +62,7 @@ use DXDb;
 use AnnTalk;
 use WCY;
 use DXDupe;
+use BadWords;
 
 use Data::Dumper;
 use Fcntl ':flock'; 
@@ -322,6 +323,9 @@ DXUser->init($userfn, 1);
 # start listening for incoming messages/connects
 dbg('err', "starting listener ...");
 Msg->new_server("$clusteraddr", $clusterport, \&login);
+
+# load bad words
+dbg('err', "load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
 $SIG{INT} = \&cease;

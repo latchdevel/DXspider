@@ -1,3 +1,14 @@
+02Sep00=======================================================================
+1. fix a long standing talk bug to do with routing to specific nodes (t xxx >
+yyy .....)
+2. Add badwords checking in various places. You put a list of words into
+/spider/data/badwords one or several per line. Lines starting with # are
+ignored. PC10, PC11, PC12 with words contained in this file will not be
+sent on. Also ann, talk and dx commands have badword checking added. Words
+are NOT case sensitive, but you will need to put all the endings in (eg 
+...k, ...ker, ...king).
+01Sep00=======================================================================
+1. allow blank on field 4 of PC10 (even though it's "illegal").
 28Aug00=======================================================================
 1. changes DXChannel::get_all_ak1a to get_all_nodes.
 2. ignore PC21s coming in on the interface with that callsign (ie nodes 

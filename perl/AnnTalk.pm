@@ -13,11 +13,13 @@ use strict;
 use DXUtil;
 use DXDebug;
 use DXDupe;
+use DXVars;
 
 use vars qw(%dup $duplth $dupage);
 
 $duplth = 60;					# the length of text to use in the deduping
 $dupage = 5*24*3600;			# the length of time to hold spot dups
+
 
 # enter the spot for dup checking and return true if it is already a dup
 sub dup

@@ -93,8 +93,10 @@ if ($spotted le ' ') {
 
 return (1, @out) unless $valid;
 
-# change ^ into : for transmission
-$line =~ s/\^/:/og;
+my @bad;
+if (@bad = BadWords::check($line)) {
+	return (1, $self->msg('e17', @bad));
+}
 
 # Store it here (but only if it isn't baddx)
 if (grep $_ eq $spotted, @DXProt::baddx) {

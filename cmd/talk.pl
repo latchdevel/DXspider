@@ -38,6 +38,10 @@ return (1, $self->msg('e7', $call)) unless $dxchan;
 # if there is a line send it, otherwise add this call to the talk list
 # and set talk mode for command mode
 if ($line) {
+	my @bad;
+	if (@bad = BadWords::check($line)) {
+		return (1, $self->msg('e17', @bad));
+	}
 	$dxchan->talk($self->call, $to, $via, $line) if $dxchan;
 } else {
 	my $s = $to;
