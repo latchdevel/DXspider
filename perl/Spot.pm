@@ -368,13 +368,15 @@ sub dup
 
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	$text = unpad($text);
-	$text = substr($text, 0, $duplth) if length $text > $duplth; 
+	$text = uc unpad($text);
+	my ($prefix) = $text =~ /\b(\w{1,4})$/;
+	$text =~ s/\b\w{1,4}$// if $prefix && is_prefix($prefix);
+	$text = substr($text, 0, $duplth) if length $text > $duplth;
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
-	$text =~ s/[^a-zA-Z0-9]//g;
-	my $ldupkey = "X$freq|$call|$by|" . uc $text;
+	$text =~ s/[^\w]//g;
+	my $ldupkey = "X$freq|$call|$by|$text";
 	my $t = DXDupe::find($ldupkey);
-	return 1 if $t && $t - $main::systime > 0;	
+	return 1 if $t && $t - $main::systime > 0;
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 #	my $sdupkey = "X$freq|$call|$by";
 #	$t = DXDupe::find($sdupkey);

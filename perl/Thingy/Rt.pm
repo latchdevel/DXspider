@@ -191,7 +191,7 @@ sub _add_user
 	my $flag = shift;
 	
 	my @out = $node->add_user($user, $flag);
-	my $ur = _upd_user_rec($user, $node);
+	my $ur = _upd_user_rec($user, $node->{call});
 	$ur->put;
 	return @out;
 }

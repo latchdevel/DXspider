@@ -36,6 +36,8 @@ my $lastmin = time;
 
 use DXChannel;
 use DXDebug;
+use DXUtil;
+
 
 # we expect all thingies to be subclassed
 sub new
@@ -95,13 +97,33 @@ sub send
 	}
 }
 
-# broadcast to all except @_
+# 
+# This is the main routing engine for the new protocol. Broadcast is a slight
+# misnomer, because if it thinks it can route it down one or interfaces, it will.
+# 
+# It handles anything it recognises as a callsign, sees if it can find it in a 
+# routing table, and if it does, then routes the message.
+#
+# If it can't then it will broadcast it.
+#
 sub broadcast
 {
 	my $thing = shift;
 	dbg("Thingy::broadcast: " . $thing->ascii) if isdbg('thing'); 
 
-	foreach my $dxchan (DXChannel::get_all()) {
+	my @dxchan;
+	my $to ||= $thing->{touser};
+	$to ||= $thing->{group};
+	if ($to && is_callsign($to) && (my $ref = Route::get($to))) {
+		dbg("Thingy::broadcast: routing for $to") if isdbg('thing');
+		@dxchan = $ref->alldxchan;
+	} else {
+		@dxchan = DXChannel::get_all();
+	}
+
+	dbg("Thingy::broadcast: offered " . join(',', map {$_->call} @dxchan)) if isdbg('thing');
+	
+	foreach my $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if grep $dxchan == $_, @_;
 		next if $dxchan->{call} eq $thing->{origin};
@@ -222,7 +244,7 @@ sub new_reply
 	} elsif (DXChannel::get($thing->{group})) {
 		$out = $thing->new(user => $thing->{group});
 		$out->{touser} = $thing->{user} if $thing->{user};
-	} elsif ($thing->{touser} && DXChannel->{$thing->{touser}}) {
+	} elsif ($thing->{touser} && DXChannel::get($thing->{touser})) {
 		$out = $thing->new(user => $thing->{touser});
 		$out->{group} = $thing->{group};
 	}

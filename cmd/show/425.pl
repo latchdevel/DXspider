@@ -34,7 +34,7 @@ foreach $l (@list) {
 		push @out, $self->msg('e18', 'Open(425.org)');
 	} else {
 		my $s = "GET $url/modules.php?name=425dxn&op=spider&query=$l HTTP/1.0\n"
-		."User-Agent:DxSpider;$main::version;$main::build;$^O;$main::mycall;$call;$l)\n\n";
+		."User-Agent:DxSpider;$main::version;$main::build;$^O;$main::mycall;$call;$l\n\n";
 		dbg($s) if isdbg('425');
 		$t->print($s);
 		Log('call', "$call: show/425 \U$l");

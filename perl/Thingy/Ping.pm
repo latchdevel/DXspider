@@ -19,8 +19,10 @@ use DXDebug;
 use DXUtil;
 use Thingy;
 use Spot;
+use Time::HiRes qw(gettimeofday tv_interval);
 
-use vars qw(@ISA @ping);
+
+use vars qw(@ISA %ping);
 @ISA = qw(Thingy);
 
 my $id;
@@ -29,7 +31,7 @@ sub gen_Aranea
 {
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
-	 	$thing->{Aranea} = Aranea::genmsg($thing);
+	 	$thing->{Aranea} = Aranea::genmsg($thing, qw(id));
 	}
  	return $thing->{Aranea};
 }
@@ -59,7 +61,7 @@ sub gen_DXCommandmode
 
 sub from_DXProt
 {
-	my $thing = ref $_[0] ? shift : $thing->SUPER::new();
+	my $thing = ref $_[0] ? shift : $_[0]->SUPER::new();
 	
 	while (@_) {
 		my $k = shift;
@@ -76,37 +78,27 @@ sub handle
 	# is it for us?
 	if ($thing->{group} eq $main::mycall) {
 		if ($thing->{out} == 1) {
-			my $repthing;
-			if ($thing->{touser}) {
-				if (my $dxchan = DXChannel::get($thing->{touser})) {
-					if ($dxchan->is_node) {
-						$thing->send($dxchan);
-					} else {
-						$repthing = Thingy::Ping->new_reply($thing);
-					}
-				}
-			} else {
-				$repthing = Thingy::Ping->new_reply($thing);
-			}
+			my $repthing = $thing->new_reply;
+			$repthing->{out} = 0;
+			$repthing->{id} = $thing->{id};
 			$repthing->send($dxchan) if $repthing;
 		} else {
 
 			# it's a reply, look in the ping list for this one
-			my $ref = $pings{$from};
+			my $ref = $ping{$thing->{id}} || $thing->find;
 			if ($ref) {
-				my $tochan =  DXChannel::get($from);
-				while (@$ref) {
-					my $r = shift @$ref;
-					my $dxchan = DXChannel::get($r->{call});
-					next unless $dxchan;
-					my $t = tv_interval($r->{t}, [ gettimeofday ]);
-					if ($dxchan->is_user) {
+				my $t = tv_interval($thing->{t}, [ gettimeofday ]);
+				if (my $dxc = DXChannel::get($thing->{user} || $thing->{origin})) {
+					
+					my $tochan = DXChannel::get($thing->{touser} || $thing->{group});
+					
+					if ($dxc->is_user) {
 						my $s = sprintf "%.2f", $t; 
 						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-						$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
-					} elsif ($dxchan->is_node) {
-						if ($tochan) {
-							my $nopings = $tochan->user->nopings || $obscount;
+						$dxc->send($dxc->msg('pingi', ($thing->{touser} || $thing->{group}), $s, $ave))
+					} elsif ($dxc->is_node) {
+						if ($tochan ) {
+							my $nopings = $tochan->user->nopings || $DXProt::obscount;
 							push @{$tochan->{pingtime}}, $t;
 							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
 							
@@ -122,13 +114,6 @@ sub handle
 								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 							}
 							$tochan->{nopings} = $nopings; # pump up the timer
-							if (my $ivp = Investigate::get($from, $origin)) {
-								$ivp->handle_ping;
-							}
-						} elsif (my $rref = Route::Node::get($r->{call})) {
-							if (my $ivp = Investigate::get($from, $origin)) {
-								$ivp->handle_ping;
-							}
 						}
 					}
 				}
@@ -156,10 +141,10 @@ sub remember
 	$thing->{id} = ++$id;
 	my $u = DXUser->get_current($thing->{to});
 	if ($u) {
-		$u->lastping(($thing->{group} || $thing->{user}), $main::systime);
+		$u->lastping(($thing->{user} || $thing->{group}), $main::systime);
 		$u->put;
 	}
-	push @ping, $thing;
+	$ping{$id} = $thing;
 }
 
 # remove any pings outstanding that we have remembered for this
@@ -169,30 +154,21 @@ sub forget
 	my $call = shift;
 	my $count = 0;
 	my @out;	
-	for (@ping) {
-		if ($thing->{user} eq $call) {
+	foreach my $thing (values %ping) {
+		if (($thing->{user} || $thing->{group}) eq $call) {
 			$count++;
-		} else {
-			push @out, $_;
+			delete $ping{$thing->{id}};
 		}
 	}
-	@ping = @out;
 	return $count;
 }
 
 sub find
 {
-	my $from = shift;
-	my $to = shift;
-	my $via = shift;
-	
-	for (@ping) {
-		if ($_->{user} eq $from && $_->{to} eq $to) {
-			if ($via) {
-				return $_ if $_->{group} eq $via;
-			} else {
-				return $_;
-			}
+	my $call = shift;
+	foreach my $thing (values %ping) {
+		if (($thing->{user} || $thing->{origin}) eq $call) {
+			return $thing;
 		}
 	}
 	return undef;
