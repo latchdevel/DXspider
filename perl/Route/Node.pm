@@ -183,7 +183,7 @@ sub unlink_all_users
 {
 	my $self = shift;
 	my @rout;
-	foreach my $u (${$self->{users}}) {
+	foreach my $u (@{$self->{users}}) {
 		my $uref = Route::User::get($u);
 		push @rout, $self->del_user($uref) if $uref;
 	}
@@ -198,7 +198,7 @@ sub new
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
-	$self->{dxchan} = ref $pkg ? [ $pkg->{call} ] : [ ];
+	$self->{dxchan} = [ ];
 	$self->{version} = shift || 5000;
 	$self->{flags} = shift || Route::here(1);
 	$self->{users} = [];

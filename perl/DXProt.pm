@@ -842,9 +842,16 @@ sub handle_18
 	$self->newroute( $_[1] =~ /NewRoute/ );
 
 	# first clear out any nodes on this dxchannel
-	my $parent = Route::Node::get($self->{call});
-	my @rout = $parent->del_nodes;
-	$self->route_pc21($origin, $line, @rout, $parent) if @rout;
+	my $node = Route::Node::get($self->{call}) ;
+	my @rout = grep {$_ != $node } $main::routeroot->remove_route($node, $self) if $node;
+	my @rusers;
+	push @rusers, $_->unlink_all_users for @rout;
+	$self->route_pc21($origin, $line, @rout) if @rout;
+	for (@rout, @rusers) {
+		$_->delete;
+	};
+	
+	# send the new config
 	$self->send_local_config();
 	$self->send(pc20());
 }
