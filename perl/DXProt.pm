@@ -1720,8 +1720,12 @@ sub send_route
 	if ($self->{routefilter}) {
 		for (; @_ && $no; $no--) {
 			my $r = shift;
-			($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
-			push @rin, $r if $filter;
+			if ($r) {
+				($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
+				push @rin, $r if $filter;
+			} else {
+				dbg('chan', "was sent a null value");
+			}
 		}
 	}
 	if (@rin) {
