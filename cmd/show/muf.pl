@@ -116,7 +116,7 @@ $phiF = atan($ftemp / sqrt(1 - $ftemp * $ftemp));
 $delay = ((2 * $hop * sin($dhop) * ($R + $hF)) / cos($beta1) / $VOFL) * 1e6;
 
 # print summary of data so far
-push @out, sprintf("RxSens: $rsens dBM SFI:%4.0lf   R:%4.0lf   Month: $month   Day: $day", $flux, $ssn);
+push @out, sprintf("RxSens: $rsens dBM SFI:%4.0f   R:%4.0f   Month: $month   Day: $day", $flux, $ssn);
 push @out, sprintf("Power :  %3.0f dBW    Distance:%6.0f km    Delay:%5.1f ms", $dB1, $d * $R, $delay);
 push @out, sprintf("Location                       Lat / Long           Azim");
 push @out, sprintf("%-30.30s %-18s    %3.0f", $main::myqth, DXBearing::lltos($lat1*$r2d, -$lon1*$r2d), $b1 * $r2d);
