@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>The Standard Client</title>
+    <title>Connecting to other Clusters</title>
+	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+	<meta name="Author" content="Dirk Koopman G1TLH">
+  </head>
+
+  <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF">
+	<FONT COLOR="#606060"> 
+	  <hr>
+	  <h2>The Standard Client</h2>
+	  <hr>
+	</font>
+	
+	
+	<address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+	<p>
+	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+	  <!-- hhmts start -->
+Last modified: Mon Dec 21 12:26:18 GMT 1998
+<!-- hhmts end -->
+
+	<h4>Introduction</h4>
+
+	The standard client program is written in perl and lives in <tt>/spider/perl/client.pl</tt>. 
+	It performs the interface function
+	between the cluster daemon (<tt>/spider/perl/cluster.pl</tt>) and 
+	AX25 or Telnet connections, both incoming and outgoing.
+
+	<h4>client.pl</h4>
+
+	The client itself is a rather rudimentary program which really only deals with 
+	things like line end conventions and noticing when a connection goes away. It is
+	envisaged that at some time in the nearish future this program will be written in
+	C and thus become considerably smaller. But, for the moment and whilst this area
+	is under some development, it will remain in perl for ease of change.
+
+	<P>The client can take up two arguments: a "callsign" and a connection type. 
+
+	<p>The "callsign" can have the following values:-
+	<ol>
+		<p><li>A real callsign (!).
+
+		<P>For incoming connections it is important to make sure that
+		the callsign passed <b>DOES NOT</b> have an SSID (use the %u
+		or %U in <tt>ax25d.conf</tt>). The DXSpider system largely
+		ignores what it regards as 'duplicate' callsigns (and that
+		includes those with SSIDs) except in certain <a
+		href="#special">special</a> cases. 
+
+		<P><li>The name of a <a href="connect.html">connect</a> script.
+
+		<p><li><b>login</b> This will cause a unix like <tt>login:</tt> and
+		<tt>password:</tt> phase to be run. With version 1.13 the password isn't
+		checked unless there is a password recorded in the user file - but you have
+		no means of recording a password! (unless you have created a local <tt>set/password</tt>
+		command - please donate a copy it you have)
+		
+		<p>Also in 1.13 only existing users can enter via this means. This will probably
+		  change, but please discuss this in the <a href="../lists/dxspider-support/index.html">support</a>
+		  mailing list.
+
+	</ol>
+
+	<p>The connection type can be:-
+	<ol>
+		<p><li><b>ax25</b> This tells the client to use ax25 line conventions.
+
+		<p><li><b>telnet</b> This tells the client to use normal unix line conventions.
+
+		<p><li><b>connect</b> Start an outgoing <a href="connect.html">connect</a> script.
+		Use the line conventions in that script.
+	</ol>
+
+	<p>The connection type can be missing in which case the default is unix line conventions.
+
+	<p>If both the callsign and the connection are missing then it is
+	assumed that the client is the sysop and uses the callsign set in
+	your local copy of <a href="install.html#dxvar">DXVars.pm</a>.
+
+	<h4>Considerations</h4>
+
+	<a name="special"></a>As mentioned earlier, SSIDs are generally stripped from
+	  callsigns except in two cases:
+	<ol>
+		<p><li>For Cluster node callsigns. Although here in the UK we are issued with
+		special callsigns to run cluster nodes and BBSs, this is not universal. Therefore
+		by marking a callsign as a node you disable SSID checking. You will have to treat
+		incoming cluster callsigns specially in <tt>ax25d.conf</tt> to use this feature (i.e
+		you will have to set up a line specially for that callsign with a %s or %S for the
+		callsign substitution [better just put the callsign you want!]).
+
+		<p><li>The sysop callsign set up in your local copy of 
+		<a href="install.html#dxvar">DXVars.pm</a>. You must call <tt>client.pl</tt> with
+		no parameters for this to work.
+	</ol>
+
+	<h4>Files</h4>
+
+	The client only uses files when in the <b>login</b> phase.  It
+	prints the <tt>/spider/data/issue</tt> file, if it is present, to
+	the user before issuing the <tt>login:</tt> prompt. After a callsign
+	and password is entered it uses
+	the standard cluster user file to check them.
+
+
+<!-- Standard Footer!! -->
+	<p>&nbsp;</p>
+	<p>
+	  <FONT COLOR="#606060"><hr></font>
+	<font color="#FF0000" size=-2>
+	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
+	</font>
+	<font color="#000000" size=-2>$Id$</font>
+  </body>
+</html>
