@@ -510,7 +510,26 @@ are not exhaustive but should give you a good idea of how the file works.
 If you alter the file during runtime, the command <EM>load/hops</EM> will 
 bring your changes into effect.
 <P>
-<H2><A NAME="ss1.11">1.11 Isolating networks</A>
+<H2><A NAME="ss1.11">1.11 Hop Control on Specific Nodes</A>
+</H2>
+
+<P>You can set a callsign specific hop count for any of the standard filter
+options so:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+set/hops gb7djk spot 4
+set/hops node_default route 10
+set/hops gb7baa wcy 5
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>all work on their specific area of the protocol.
+<P>
+<P>The <EM>set/hops</EM> command overrides any hops that you have set otherwise.
+<P>
+<P>You can set what hops have been set using the <EM>show/hops</EM> command.
+<P>
+<H2><A NAME="ss1.12">1.12 Isolating networks</A>
 </H2>
 
 <P>It is possible to isolate networks from each other on a "gateway" node using the
@@ -528,25 +547,13 @@ be sent as normal, so if a user on one network knows that you are a gateway for
 another network, he can still still send a talk/announce etc message via your 
 node and it will be routed across.
 <P>
-<P>The only limitation currently is that non-private messages cannot be passed down 
-isolated links regardless of whether they are generated locally. This will change 
-when the bulletin routing facility is added.
-<P>
-<P>If you use isolate on a node connection you will continue to receive all 
-information from the isolated partner, however you will not pass any information 
-back to the isolated node.  There are times when you would like to forward only 
-spots across a link (maybe during a contest for example).  To do this, isolate 
-the node in the normal way and put in a filter in the /spider/filter/spots 
-directory to override the isolate.  This filter can be very simple and consists 
-of just one line ....
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-$in = [
-        [ 1, 0, 'd', 0, 3]      # The last figure (3) is the hop count
-];
-</PRE>
-</CODE></BLOCKQUOTE>
+<P>If you use isolate on a node connection you will continue to receive
+all information from the isolated partner, however you will not pass
+any information back to the isolated node.  There are times when you
+would like to forward only spots across a link (maybe during a contest
+for example).  To do this, isolate the node in the normal way and use
+an <EM>acc/spot &gt;call&lt; all</EM>ilter in the
+to override the isolate. 
 <P>
 <HR>
 <A HREF="adminmanual-2.html">Next</A>

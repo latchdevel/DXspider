@@ -18,7 +18,7 @@ if (is_callsign(uc $f[0])) {
 	$call = shift @f;
 }
 
-my $sort = lc shift @f if $f[0] =~ /^ann|spots|wwv|wcy$/i;
+my $sort = lc shift @f if $f[0] =~ /^ann|spots|wwv|wcy|route$/i;
 my $hops = shift @f if $f[0] =~ /^\d+$/;
 
 return (0, $self->msg('sethop1')) unless $call && $sort && $hops;

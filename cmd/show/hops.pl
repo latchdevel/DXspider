@@ -22,7 +22,7 @@ my @in;
 if (@f) {
 	push @in, @f;
 } else {
-	push @in, qw(ann spots wcy wwv);
+	push @in, qw(ann spots route wcy wwv);
 }
 
 my $sort;

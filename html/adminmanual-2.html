@@ -67,64 +67,67 @@ headers that we do not want to pass on to either the users of the cluster or
 the other cluster nodes that we are linked to.  This is usually because of 
 rules and regulations pertaining to items for sale etc in a particular country.
 <P>
-<H2><A NAME="ss2.2">2.2 Filtering DX callouts (Depricated)</A>
+<P>
+<H2><A NAME="ss2.2">2.2 Filtering words from text fields in Announce, Talk and DX spots</A>
 </H2>
 
-<P><B><I>From version 1.47, this method is replaced by the command set/baddx</I></B>
+<P>From version 1.48 onwards the interface to this has changed. You can now
+use the commands <EM>set/badword</EM> to add words that you are not prepared
+to see on the cluster, <EM>unset/badword</EM> to allow that word again and 
+<EM>show/badword</EM> to list the words that you have set.
 <P>
-<P>In the same way as mail, there are some types of spot we do not wish to pass on 
-to users or linked cluster nodes.  In the /spider/data directory you will find 
-a file called baddx.pl.issue.  Rename this to baddx.pl and edit the file.  The
-original looks like this ....
+<P>If you have a previous <EM>/spider/data/badwords</EM>, the first time you start
+the node, it will read and convert this file to the new commands. The old style
+file will then be removed.
+<P>
+<H2><A NAME="ss2.3">2.3 Stopping (possibly bad) DX Spots from Nodes or Spotters</A>
+</H2>
+
+<P> 
+There are a number of commands that control whether a spot progresses
+any further by regarding it as "bad" in some way.
+<P>
+<P>A DX Spot has a number of fields which can checked to see whether they
+contain "bad" values, they are: the DX callsign itself, the Spotter and
+the Originating Node.
+<P>
+<P>There are a set of commands which allow the sysop to control whether a
+spot continues:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-
-# the list of dx spot addresses that we don't store and don't pass on
-
-
-package DXProt;
-
-@baddx = qw 
-
- FROG 
- SALE
- FORSALE
- WANTED
- P1RATE
- PIRATE
- TEST
- DXTEST
- NIL
- NOCALL 
-);
+set/baddx
+set/badspotter
+set/badnode
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
-<P>Again, this is simply a list of names we do not want to see in the spotted 
-field of a DX callout.
-<P>
-<P>
-<H2><A NAME="ss2.3">2.3 Filtering words from text fields in Announce, Talk and DX spots</A>
-</H2>
-
-<P>Create a file in /spider/data called <EM>badwords</EM>.  The format is quite
-simple.  Lines beginning with # are ignored so comments can be added.  An
-example file is below ...
+<P>These work in the same as the <EM>set/badword</EM> command, you can add
+any words or callsigns or whatever to the appropriate database. For
+example, to stop a spot from a particular node you do:
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-# Below is a list of words we do not wish to see on the cluster
-grunge grunged grunging
-splodge splodger splodging
-grince
-fluffle
+set/badnode gb7djk gb7dxc
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>Multiple words can be used on the same line as shown.  Obviously these
-are just examples :-)
+<P>a bad spotter:
 <P>
-<P>You can reload the file from the cluster prompt as sysop with load/badwords.
+<BLOCKQUOTE><CODE>
+<PRE>
+set/badspotter b0mb p1rat nocall
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>and some bad dx:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+set/baddx video wsjt
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>You can remove a word using the appropriate unset command
+(<EM>unset/baddx, unset/badspotter, unset/badnode</EM>) or list them
+using one of <EM>show/baddx, show/badspotter</EM> and
+<EM>show/badnode</EM>.
 <P>
 <HR>
 <A HREF="adminmanual-3.html">Next</A>

@@ -509,6 +509,25 @@ You can alter this file at any time, including whilst the cluster is running.
 If you alter the file during runtime, the command <em>load/hops</em> will 
 bring your changes into effect.
 
+<sect1>Hop Control on Specific Nodes
+
+<p>You can set a callsign specific hop count for any of the standard filter
+options so:-
+
+<tscreen><verb>
+set/hops gb7djk spot 4
+set/hops node_default route 10
+set/hops gb7baa wcy 5
+</verb></tscreen>
+ 
+all work on their specific area of the protocol.
+
+<p>
+The <em>set/hops</em> command overrides any hops that you have set otherwise.
+
+<p>
+You can set what hops have been set using the <em>show/hops</em> command.
+
 <sect1>Isolating networks
 
 <P>
@@ -529,24 +548,13 @@ another network, he can still still send a talk/announce etc message via your
 node and it will be routed across.
 
 <P>
-The only limitation currently is that non-private messages cannot be passed down 
-isolated links regardless of whether they are generated locally. This will change 
-when the bulletin routing facility is added.
-
-<P>
-If you use isolate on a node connection you will continue to receive all 
-information from the isolated partner, however you will not pass any information 
-back to the isolated node.  There are times when you would like to forward only 
-spots across a link (maybe during a contest for example).  To do this, isolate 
-the node in the normal way and put in a filter in the /spider/filter/spots 
-directory to override the isolate.  This filter can be very simple and consists 
-of just one line ....
-
-<tscreen><verb>
-$in = [
-	[ 1, 0, 'd', 0, 3]	# The last figure (3) is the hop count
-];
-</verb></tscreen>
+If you use isolate on a node connection you will continue to receive
+all information from the isolated partner, however you will not pass
+any information back to the isolated node.  There are times when you
+would like to forward only spots across a link (maybe during a contest
+for example).  To do this, isolate the node in the normal way and use
+an <em>acc/spot &gt;call&lt; all</em filter in the
+to override the isolate. 
 
 <sect>Other filters
 
@@ -601,64 +609,65 @@ headers that we do not want to pass on to either the users of the cluster or
 the other cluster nodes that we are linked to.  This is usually because of 
 rules and regulations pertaining to items for sale etc in a particular country.
 
-<sect1>Filtering DX callouts (Depricated)
-
-<P>
-<bf><it>From version 1.47, this method is replaced by the command set/baddx</it></bf>
-
-<P>
-In the same way as mail, there are some types of spot we do not wish to pass on 
-to users or linked cluster nodes.  In the /spider/data directory you will find 
-a file called baddx.pl.issue.  Rename this to baddx.pl and edit the file.  The
-original looks like this ....
-
-<tscreen><verb>
-
-# the list of dx spot addresses that we don't store and don't pass on
-
-
-package DXProt;
-
-@baddx = qw 
-
- FROG 
- SALE
- FORSALE
- WANTED
- P1RATE
- PIRATE
- TEST
- DXTEST
- NIL
- NOCALL 
-);
-</verb></tscreen>
-
-<P>
-Again, this is simply a list of names we do not want to see in the spotted 
-field of a DX callout.
-
 
 <sect1>Filtering words from text fields in Announce, Talk and DX spots
 
-<P>
-Create a file in /spider/data called <em>badwords</em>.  The format is quite
-simple.  Lines beginning with # are ignored so comments can be added.  An
-example file is below ...
+<p>
+From version 1.48 onwards the interface to this has changed. You can now
+use the commands <em>set/badword</em> to add words that you are not prepared
+to see on the cluster, <em>unset/badword</em> to allow that word again and 
+<em>show/badword</em> to list the words that you have set.
+
+<p>
+If you have a previous <em>/spider/data/badwords</em>, the first time you start
+the node, it will read and convert this file to the new commands. The old style
+file will then be removed.
+
+<sect1>Stopping (possibly bad) DX Spots from Nodes or Spotters
+
+<p> 
+There are a number of commands that control whether a spot progresses
+any further by regarding it as "bad" in some way.
+
+<p>
+A DX Spot has a number of fields which can checked to see whether they
+contain "bad" values, they are: the DX callsign itself, the Spotter and
+the Originating Node.
+
+<p>
+There are a set of commands which allow the sysop to control whether a
+spot continues:-
 
 <tscreen><verb>
-# Below is a list of words we do not wish to see on the cluster
-grunge grunged grunging
-splodge splodger splodging
-grince
-fluffle
+set/baddx
+set/badspotter
+set/badnode
 </verb></tscreen>
 
-Multiple words can be used on the same line as shown.  Obviously these
-are just examples :-)
+These work in the same as the <em>set/badword</em> command, you can add
+any words or callsigns or whatever to the appropriate database. For
+example, to stop a spot from a particular node you do:
 
-<P>
-You can reload the file from the cluster prompt as sysop with load/badwords.
+<tscreen><verb>
+set/badnode gb7djk gb7dxc
+</verb></tscreen>
+
+a bad spotter:
+
+<tscreen><verb>
+set/badspotter b0mb p1rat nocall
+</verb></tscreen>
+
+and some bad dx:
+
+<tscreen><verb>
+set/baddx video wsjt
+</verb></tscreen>
+
+You can remove a word using the appropriate unset command
+(<em>unset/baddx, unset/badspotter, unset/badnode</em>) or list them
+using one of <em>show/baddx, show/badspotter</em> and
+<em>show/badnode</em>.
 
 <sect>Mail
 
@@ -852,6 +861,47 @@ the interface is one-way.
 Please be careful not to flood the cluster network with unnecessary mail.
 Make sure you only send mail to the clusters that want it by using the
 Forward.pl file very carefully.
+
+<sect>Scripts
+
+<p>
+From 1.48 onwards it will become increasingly possible to control DXSpider's
+operation with scripts of various kinds.
+
+<p>
+In the first instance, in 1.48, the sysop can create, with their favorite 
+text editor, files in the directory <em>/spider/scripts</em> which contain
+any legal command for a callsign or class of connection which will be executed
+at logon.
+
+<p> 
+The filename are the callsign of the connection that you want the script to 
+operate on, eg: <em>/spider/scripts/g1tlh</em>. The filenames are always in 
+lower case on those architectures where this makes a difference.
+
+<p>
+In addition to the callsign specific scripts there are three others:-
+
+<tscreen><verb>
+startup
+user_default
+node_default
+</verb></tscreen>
+  
+The <em>startup</em> script is executed immediately after all
+initialisation of the node is done, but before any connections are
+possible.
+
+<p>
+The <em>user_default</em> script is executed for every user that does
+<bf>NOT</bf> already have a specific script.
+
+<p>
+The <em>node_default</em> script is executed for every node that doesn't
+have a specific script.
+
+<p>
+There are a couple of examples in the <em>/spider/scripts</em> directory.
 
 <sect>Databases
 
@@ -2263,19 +2313,6 @@ Reload the /spider/cmd/Aliases file after you have editted it. You will need to
 do this if you change this file whilst the cluster is running in order for the
 changes to take effect.
 
-
-<sect1>load/baddx (9)
-
-<P>
-<tt>
-<bf>load/baddx</bf> Reload the bad DX table
-</tt>
-
-<P>
-Reload the /spider/data/baddx.pl file if you have changed it manually whilst
-the cluster is running. This table contains the DX Calls that, if spotted, 
-will not be passed on. FR0G and TEST are classic examples.
-
 <sect1>load/badmsg (9)
 
 <P>
@@ -2288,21 +2325,6 @@ Reload the /spider/msg/badmsg.pl file if you have changed it manually whilst
 the cluster is running. This table contains a number of perl regular 
 expressions which are searched for in the fields targetted of each message. 
 If any of them match then that message is immediately deleted on receipt. 
-
-<sect1>load/badwords (9)
-
-<P>
-<tt>
-<bf>load/badwords</bf> Reload the badwords file
-</tt>
-
-<P>
-Reload the /spider/data/badwords file if you have changed it manually whilst
-the cluster is running. This file contains a list of words which, if found
-on certain text portions of PC protocol, will cause those protocol frames
-to be rejected. It will all put out a message if any of these words are
-used on the announce, dx and talk commands. The words can be one or 
-more on a line, lines starting with '#' are ignored.
 
 <sect1>load/bands (9)
 

@@ -1196,7 +1196,7 @@ to you will normally find their way there should you not be connected.
 eg:-
   SET/HOMENODE gb7djk
 
-=== 8^SET/HOPS <call> ann|spots|wwv|wcy <n>^Set hop count  
+=== 8^SET/HOPS <call> ann|spots|route|wwv|wcy <n>^Set hop count  
 Set the hop count for a particular type of broadcast for a node.
 
 This command allows you to set up special hop counts for a node 
@@ -1480,7 +1480,7 @@ Show the HF DX spots breakdown by band for the last 31 days
 === 0^SHOW/HFTABLE^Show the HF DX Spotter Table for your country
 Show the HF DX Spotter table for your country for the last 31 days
 
-=== 8^SHOW/HOPS <call> [ann|spots|wcy|wwv]^Show the hop counts for a node
+=== 8^SHOW/HOPS <call> [ann|spots|route|wcy|wwv]^Show the hop counts for a node
 This command shows the hop counts set up for a node. You can specify
 which category you want to see. If you leave the category out then 
 all the categories will be listed.
