@@ -34,11 +34,14 @@ sub init
     my $ref = spot->open(@first);
 	if ($ref) {
 	  my $fh = $ref->{fh};
+	  my @out = ();
 	  while (<$fh>) {
 	    chomp;
 	    my @ent = split /\^/;
-	    unshift @spot::table, [ @ent ];                # stick this ref to anon list on the FRONT of the table
-		++$count;
+
+        push @spot::table, \@ent;                # stick this ref to anon list on the FRONT of the table
+
+	    ++$count;
 	  }
 	}
     @first = julian->add(@first, 1);
@@ -57,7 +60,7 @@ sub new
   $spot[2] = 0 + $spot[2];
   
   # save it on the front of the list
-  unshift @spot::table, [ @spot ];
+  unshift @spot::table,  \@spot;
   
   # compare dates to see whether need to open a other save file
   my @date = julian->unixtoj($spot[2]);
@@ -91,10 +94,11 @@ sub purge
 #
 sub search
 {
-  my ($pkg, $field, $expr) = @_;
+  my ($pkg, $field, $expr, $from, $to) = @_;
   my $eval;
   my @out;
   my $ref;
+  my $i;
  
   dbg('spot', "input expr = $expr\n");
   if ($field == 0 || $field == 2) {              # numeric fields
@@ -106,7 +110,12 @@ sub search
   
   # build up eval to execute
   $eval = qq(foreach \$ref (\@spot::table) {
-    push \@out, \$ref if $expr;
+    next if \$i < \$from;
+	if ($expr) {
+       unshift(\@out, \$ref);
+	   \$i++;
+	   last if \$to && \$i >= \$to;
+	}
   });
   dbg('spot', "eval = $eval\n");
   eval $eval;                                   # execute it

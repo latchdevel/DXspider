@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 #
 # grep for expressions in various fields of the dx file
 #
@@ -8,7 +9,13 @@ use DXDebug;
 use spot;
 
 # initialise spots file
+STDOUT->autoflush(1);
+
+print "reading in spot data ..";
+$t = time;
 $count = spot->init();
+$t = time - $t;
+print "done ($t secs)\n";
 
 dbgadd('spot');
 
@@ -17,8 +24,6 @@ $expr = $ARGV[1];
 $time = time;
 
 print "$count database records read in\n";
-
-STDOUT->autoflush(1);
 
 #loada();
 for (;;) {
