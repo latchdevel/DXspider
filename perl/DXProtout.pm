@@ -143,6 +143,7 @@ sub pc19
 		my $version = $ref->version || 5401;
 		$version = 5300 + int($version*100) if $version < 2;
 		$version = 5252 + int($version*100) if $version < 3;
+		$version =~ s/\.\d+$//;	# kludge
 		my $str = "^$here^$call^$conf^$version";
 		if (length($s) + length($str) > $sentencelth) {
 			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
