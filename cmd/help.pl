@@ -34,6 +34,7 @@ $lang = 'en' if !$lang;
 my $h = new IO::File;
 
 if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
+	$lang = 'en';
 	if (!open($h, "$main::cmd/Commands_$lang.hlp")) {
 		return (1, $self->msg('helpe1'));
 	}

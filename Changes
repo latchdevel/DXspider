@@ -1,3 +1,5 @@
+04Mar01=======================================================================
+1. allow fallback to english for help
 03Mar01=======================================================================
 1. allow incoming and outgoing IP connects direct to cluster.pl
 2. fixed (long standing)a hole in PC17 handling
