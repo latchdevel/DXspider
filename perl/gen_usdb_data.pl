@@ -55,7 +55,7 @@ my $blksize = 1024 * 1024;
 
 STDOUT->autoflush(1);
 
-my $dbrawfn = "$main::data/usdbraw";
+my $dbrawfn = "$main::data/usdbraw.gz";
 
 rename "$dbrawfn.oo", "$dbrawfn.ooo";
 rename "$dbrawfn.o", "$dbrawfn.oo";
