@@ -668,11 +668,6 @@ sub normal
 			my $ncall = $field[2];
 			my $ucall = $field[1];
 
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
-				return;
-			}
-
 			eph_del_regex("^PC16\\^$ncall.*$ucall");
 			
 			if ($ncall eq $main::mycall) {
@@ -701,6 +696,12 @@ sub normal
 			return unless $self->in_filter_route($parent);
 			
 			$parent->del_user($uref);
+
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
+				return;
+			}
+
 			$self->route_pc17($parent, $uref);
 			return;
 		}
@@ -825,11 +826,8 @@ sub normal
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
 
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
-				return;
-			}
-
+			eph_del_regex("^PC1[79].*$call");
+			
 			# if I get a PC21 from the same callsign as self then treat it
 			# as a PC39: I have gone away
 			if ($call eq $self->call) {
@@ -837,8 +835,6 @@ sub normal
 				return;
 			}
 
-			eph_del_regex("^PC1[79].*$call");
-			
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
 			unless ($parent) {
@@ -866,6 +862,11 @@ sub normal
 				dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
 				return;
 			}
+
+#			if (eph_dup($line)) {
+#				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
+#				return;
+#			}
 
 			$self->route_pc21(@rout) if @rout;
 			return;
