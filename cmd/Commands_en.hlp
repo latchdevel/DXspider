@@ -389,12 +389,6 @@ You can also use all the extra qualifiers such as RR, PRIVATE,
 NOPRIVATE, B that you can use with the SEND command (see SEND
 for further details)
 
-You can also send a copy of this message to a number of other callsigns
-(if and only if the reply is private) by adding the callsigns to the
-end of the reply command you want to use e.g:-
-
-  REPLY 2345 G1TLH G7BRN
-
 === 0^SEND <call> [<call> ...]^Send a message to one or more callsigns
 === 0^SEND RR <call>^Send a message and ask for a read receipt
 === 0^SEND COPY <msgno> <call>^Send a copy of a  message to someone

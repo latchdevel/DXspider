@@ -372,16 +372,16 @@ dbg('local', "Local::init error $@") if $@;
 print "orft we jolly well go ...\n";
 dbg('chan', "DXSpider version $version started...");
 
-open(DB::OUT, "|tee /tmp/aa");
+#open(DB::OUT, "|tee /tmp/aa");
 
 for (;;) {
 	my $timenow;
-	$DB::trace = 1;
+#	$DB::trace = 1;
 	
 	Msg->event_loop(1, 0.1);
 	$timenow = time;
 	process_inqueue();			# read in lines from the input queue and despatch them
-	$DB::trace = 0;
+#	$DB::trace = 0;
 	
 	# do timed stuff, ongoing processing happens one a second
 	if ($timenow != $systime) {
