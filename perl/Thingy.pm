@@ -50,7 +50,7 @@ sub send
 	} else {
 		no strict 'refs';
 		my $sub = "gen_$class";
-		push @out, $thing->$sub if $thing->can($sub);
+		push @out, $thing->$sub() if $thing->can($sub);
 	}
 	$chan->send(@out) if @out;
 }
