@@ -434,11 +434,15 @@ sub notify
 			my $msg = new Mail::Send Subject=>"[DXSpider: $ref->{from}] $ref->{subject}";
 			$msg->to(@list);
 			my $fh = $msg->open;
-			print $fh "From: $ref->{from} To: $to On Node: $main::mycall Origin: $ref->{origin} Msgno: $ref->{msgno}\r\n\r\n";
-			print $fh map {"$_\r\n"} $ref->read_msg_body;
-			$fh->close;
-			for (@list) {
-				Log('msg', "Msgno $ref->{msgno} from $ref->{from} emailed to $_");
+			if ($fh) {
+				print $fh "From: $ref->{from} To: $to On Node: $main::mycall Origin: $ref->{origin} Msgno: $ref->{msgno}\r\n\r\n";
+				print $fh map {"$_\r\n"} $ref->read_msg_body;
+				$fh->close;
+				for (@list) {
+					Log('msg', "Msgno $ref->{msgno} from $ref->{from} emailed to $_");
+				}
+			} else {
+				dbg("email forwarding error $!") if isdbg('msg'); 
 			}
 		}
 	}
