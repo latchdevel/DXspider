@@ -44,7 +44,9 @@
 #define MAXPATHLEN 256
 #endif
 
+#define DEFPACLEN 128
 #define MAXPACLEN 236
+
 #define DBUF 1
 #define DMSG 2
 
@@ -84,7 +86,7 @@ char echo = 1;					/* echo characters on stdout from stdin */
 char int_tabs = 0;				/* interpret tabs -> spaces */
 char *root = "/spider";         /* root of data tree, can be overridden by DXSPIDER_ROOT  */
 int timeout = 60;				/* default timeout for logins and things */
-int paclen = 128;				/* default buffer size for outgoing packets */
+int paclen = DEFPACLEN;			/* default buffer size for outgoing packets */
 int tabsize = 8;				/* default tabsize for text messages */
 
 myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
@@ -487,6 +489,11 @@ lerr:
 		connsort = "local";
 		nl = '\n';
 		echo = 1;
+	}
+
+	/* this is kludgy, but hey so is the rest of this! */
+	if (!eq(connsort, "ax25") && paclen == DEFPACLEN) {
+		paclen = MAXPACLEN;
 	}
 }
 
