@@ -132,6 +132,7 @@ package CmdAlias;
 	  '^sho?w?/myd?x?/d(\d+)', 'show/dx filter from $1', 'show/mydx',
 	  '^sho?w?/myd?x?', 'show/dx filter', 'show/mydx',
 	  '^sho?w?/newc/n', 'show/newconfiguration node', 'show/newconfiguration',
+	  '^sho?w?/sta?$', 'show/station', 'show/station',
 	  '^sho?w?/tnc', 'who', 'who',
       '^sho?w?/up', 'show/cluster', 'show/cluster',
 	  '^sho?w?/ww?v?/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
