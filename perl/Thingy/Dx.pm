@@ -142,7 +142,7 @@ sub out_filter
 	my $thing = shift;
 	my $dxchan = shift;
 	
-	# global spot filtering on INPUT
+	# global spot filtering on OUTPUT
 	if ($dxchan->{spotsfilter}) {
 		my ($filter, $hops) = $dxchan->{spotsfilter}->it($thing->{spotdata});
 		unless ($filter) {

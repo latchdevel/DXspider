@@ -30,7 +30,7 @@ sub gen_Aranea
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
 		my @items;
-	 	$thing->{Aranea} = Aranea::genmsg($thing, 'Rloc', @items);
+	 	$thing->{Aranea} = Aranea::genmsg($thing, 'Rt', @items);
 	}
  	return $thing->{Aranea};
 }
@@ -49,14 +49,14 @@ sub gen_DXProt
 	return $thing->{DXProt};
 }
 
-sub gen_DXCommandmode
-{
-	my $thing = shift;
-	my $dxchan = shift;
-	my $buf;
-
-	return $buf;
-}
+#sub gen_DXCommandmode
+#{
+#	my $thing = shift;
+#	my $dxchan = shift;
+#	my $buf;
+#
+#	return $buf;
+#}
 
 sub from_DXProt
 {
@@ -84,7 +84,8 @@ sub in_filter
 	
 	# global route filtering on INPUT
 	if ($dxchan->{inroutefilter}) {
-		my ($filter, $hops) = $dxchan->{inroutefilter}->it($thing->{routedata});
+		my $ref = Route::Node::get($thing->{origin});
+		my ($filter, $hops) = $dxchan->{inroutefilter}->it($ref);
 		unless ($filter) {
 			dbg("PCPROT: Rejected by input route filter") if isdbg('chanerr');
 			return;
@@ -98,9 +99,10 @@ sub out_filter
 	my $thing = shift;
 	my $dxchan = shift;
 	
-	# global route filtering on INPUT
+	# global route filtering on OUTPUT
 	if ($dxchan->{routefilter}) {
-		my ($filter, $hops) = $dxchan->{routefilter}->it($thing->{routedata});
+		my $ref = Route::Node::get($thing->{origin});
+		my ($filter, $hops) = $dxchan->{routefilter}->it($ref);
 		unless ($filter) {
 			dbg("PCPROT: Rejected by output route filter") if isdbg('chanerr');
 			return;
