@@ -1,7 +1,7 @@
 29Oct02=======================================================================
 1. make sh/log et al a bit more efficient.
 2. fix dupe message in dx.
-3. add k8T, K8O to KH8 and TX5BTY to FO/A
+3. update cty.dat to the latest, add k8T, K8O to KH8 and TX5BTY to FO/A
 25Oct02=======================================================================
 1. remove the dupefile automatically if it becomes corrupted
 2. instrument the startup slightly more
