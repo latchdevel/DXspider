@@ -70,7 +70,7 @@ if (!$main::is_win && ($want{proc} || $want{all})) {
 			chomp;
 			my $l = $_;
 #			dbg($l);
-			next unless $l =~ m{/spider/perl/cluster\.pl$};
+			next unless $l =~ m{cluster\.pl$};
 			my @f = split /\s+/, $l;
 #			dbg("$f[9]");
 			my ($m, $s) = split /:/, $f[9];
