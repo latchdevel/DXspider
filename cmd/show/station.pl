@@ -13,9 +13,17 @@ my $call;
 my $seek;
 push @f, $self->call unless @f;
 
-if (@f == 1 && uc $f[0] eq 'ALL') {
+if (@f <= 2 && uc $f[0] eq 'ALL') {
 	return (1, $self->msg('e6')) if ($self->priv < 6); 
-	my @calls = DXUser::get_all_calls();
+	shift @f;
+	my $exp = shellregex(uc shift @f) if @f; 
+	my @calls;
+	if ($exp) {
+		@calls = grep {m{$exp}} DXUser::get_all_calls();
+    } else {
+		@calls = DXUser::get_all_calls();
+	}
+	
 	foreach $call (@calls) {
 		my $ref = DXUser->get_current($call);
 		next if !$ref;
