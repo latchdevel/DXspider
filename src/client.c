@@ -30,6 +30,7 @@
 #include <signal.h>
 #include <string.h>
 #include <termios.h>
+#include <regex.h>
 
 #include "sel.h"
 #include "cmsg.h"
@@ -63,6 +64,13 @@ typedef struct
 	char buffer_it;				/* buffer outgoing packets for paclen */
 } fcb_t;
 
+typedef struct 
+{
+	char *in;
+	regex_t *regex;
+} myregex_t;
+
+
 char *node_addr = "localhost";	/* the node tcp address, can be overridden by DXSPIDER_HOST */
 int node_port = 27754;			/* the tcp port of the node at the above address can be overidden by DXSPIDER_PORT*/
 char *call;						/* the caller's callsign */
@@ -78,6 +86,18 @@ char *root = "/spider";         /* root of data tree, can be overridden by DXSPI
 int timeout = 60;				/* default timeout for logins and things */
 int paclen = 128;				/* default buffer size for outgoing packets */
 int tabsize = 8;				/* default tabsize for text messages */
+
+myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
+	{
+		"^[A-Z]+[0-9]+[A-Z]+", 0
+	},
+	{
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+", 0
+	},
+	{
+		0, 0
+	}
+};
 
 void terminate(int);
 
@@ -133,33 +153,12 @@ int xopen(char *dir, char *name, int mode)
 
 int iscallsign(char *s)
 {
-	char *p, ch, state = 0;
-	
-	ch = *p;
-	while (ch) {
-		switch (state) {
-		case 0:					/* initial numerics */
-			if (isalpha(ch)) {
-				if (p == s) 
-					state = 10;
-				else
-					state = 1;
-			} if (isdigit(ch)) {
-				;
-			} else 
-				goto lend;
-			break;
-		case 1:					/* letter(s) */
-		case 10:				/* had an initial character */
-			if (isdigit(ch))
-				state = 11;
-			
-		}
-		ch = ++*p;
+	myregex_t *rp;
+	for (rp = iscallreg; rp->in; ++rp) {
+		if (regexec(rp->regex, s, 0, 0, 0) == 0)
+			return 1;
 	}
-
-lend:
-	return 1;
+	return 0;
 }
 
 /*
@@ -535,7 +534,7 @@ void term_timeout(int i)
 
 void terminate(int i)
 {
-	if (send_Z && call) {
+	if (node && send_Z && call) {
 		send_msg(node, 'Z', "", 0);
 	}
 	
@@ -659,6 +658,21 @@ main(int argc, char *argv[])
 	signal(SIGPWR, terminate);
 #endif
 
+	/* compile regexes for iscallsign */
+	{
+		myregex_t *rp;
+		for (rp = iscallreg; rp->in; ++rp) {
+			regex_t reg;
+			int r = regcomp(&reg, rp->in, REG_EXTENDED|REG_ICASE|REG_NOSUB);
+			if (r)
+				die("regcomp returned %d for '%s'", r, rp->in);
+			rp->regex = malloc(sizeof(regex_t));
+			if (!rp->regex)
+				die("out of room - compiling regexes");
+			*rp->regex = reg;
+		}
+	}
+	
 	/* is this a login? */
 	if (eq(call, "LOGIN")) {
 		char buf[MAXPACLEN+1];
