@@ -35,7 +35,7 @@ use Route::Node;
 
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
-			$last_hour $last10 %emph  %pings %rcmds
+			$last_hour $last10 %eph  %pings %rcmds
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -1072,7 +1072,7 @@ sub normal
 	#        REBROADCAST!!!!
 	#
 
-	if (emph_dup($line)) {
+	if (eph_dup($line)) {
 		dbg('chan', "PCPROT: Ephemeral dup, dropped");
 	} else {
 		unless ($self->{isolate}) {
@@ -1116,9 +1116,9 @@ sub process
 
 	# every ten seconds
 	if ($t - $last10 >= 10) {	
-		# clean out emphemera 
+		# clean out ephemera 
 
-		emph_clean();
+		eph_clean();
 
 		$last10 = $t;
 	}
@@ -1756,24 +1756,24 @@ sub route_pc21
 	broadcast_route($self, \&pc21, scalar @_, @_);
 }
 
-sub emph_dup
+sub eph_dup
 {
 	my $s = shift;
 
 	# chop the end off
 	$s =~ s/\^H\d\d?\^?~?@//;
-	return 1 if exists $emph{$s};
-	$emph{$s} = $main::systime;
+	return 1 if exists $eph{$s};
+	$eph{$s} = $main::systime;
 	return undef;
 }
 
-sub emph_clean
+sub eph_clean
 {
 	my ($key, $val);
 	
-	while (($key, $val) = each %emph) {
+	while (($key, $val) = each %eph) {
 		if ($main::systime - $val > 90) {
-			delete $emph{$key};
+			delete $eph{$key};
 		}
 	}
 }

@@ -26,7 +26,9 @@ if ($user) {
 		$user->lat($lat);
 		$user->long($long);
 		my $s = DXBearing::lltos($lat, $long);
-		DXProt::broadcast_all_ak1a(DXProt::pc41($call, 3, $s), $DXProt::me);
+		my $l = DXProt::pc41($call, 3, $s);
+		DXProt::eph_dup($l);
+		DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
 	}
 	
 	$user->put();

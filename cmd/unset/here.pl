@@ -21,10 +21,14 @@ foreach $call (@args) {
 		$dxchan->here(0);
 		push @out, $self->msg('hereu', $call);
 		if ($ref) {
-			DXProt::broadcast_all_ak1a(DXProt::pc24($ref), $DXProt::me) ;
+			my $s = DXProt::pc24($ref);
+			DXProt::eph_dup($s);
+			DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
 			$ref->here(0);
 		} elsif ($ref = Route::Node::get($call)) {
-			DXProt::broadcast_all_ak1a(DXProt::pc24($ref), $DXProt::me) ;
+			my $s = DXProt::pc24($ref);
+			DXProt::eph_dup($s);
+			DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
 			$ref->here(0);
 		} else {
 			$ref = Route::Node::get($call);

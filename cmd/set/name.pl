@@ -21,7 +21,9 @@ $user = DXUser->get_current($call);
 if ($user) {
 	$user->name($line);
 	$user->put();
-	DXProt::broadcast_all_ak1a(DXProt::pc41($call, 1, $line), $DXProt::me);
+	my $s = DXProt::pc41($call, 1, $line);
+	DXProt::eph_dup($s);
+	DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
 	return (1, $self->msg('name', $line));
 } else {
 	return (1, $self->msg('namee2', $call));

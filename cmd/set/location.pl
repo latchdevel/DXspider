@@ -24,7 +24,9 @@ if ($user) {
 	my ($lat, $long) = DXBearing::stoll($line);
 	$user->lat($lat);
 	$user->long($long);
-	DXProt::broadcast_all_ak1a(DXProt::pc41($call, 3, $line), $DXProt::me);
+	my $s = DXProt::pc41($call, 3, $line);
+	DXProt::eph_dup($s);
+	DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
 	unless ($user->qra && DXBearing::is_qra($user->qra) ) {
 		my $qra = DXBearing::lltoqra($lat, $long);
 		$user->qra($qra);
