@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.47: Mail</TITLE>
+ <TITLE>The DXSpider Administration Manual v1.47: Information, files and useful programs</TITLE>
  <LINK HREF="adminmanual-6.html" REL=next>
  <LINK HREF="adminmanual-4.html" REL=previous>
  <LINK HREF="adminmanual.html#toc5" REL=contents>
@@ -13,198 +13,333 @@
 <A HREF="adminmanual-4.html">Previous</A>
 <A HREF="adminmanual.html#toc5">Contents</A>
 <HR>
-<H2><A NAME="s5">5. Mail</A></H2>
+<H2><A NAME="s5">5. Information, files and useful programs</A></H2>
 
-<P>DXSpider deals seamlessly with standard AK1A type mail.  It supports both
-personal and bulletin mail and the sysop has additional commands to ensure
-that mail gets to where it is meant.  DXSpider will send mail almost
-immediately, assuming that the target is on line.  However, only one
-mail message is dealt with at any one time.  If a mail message is already
-being sent or recieved, then the new message will be queued until it has
-finished.
-<P>The cluster mail is automatically deleted after 30 days unless the sysop
-sets the "keep" flag using the <EM>msg</EM> command.
-<P>
-<H2><A NAME="ss5.1">5.1 Personal mail</A>
+<H2><A NAME="ss5.1">5.1 MOTD</A>
 </H2>
 
-<P>Personal mail is sent using the <EM>sp</EM> command.  This is actually the
-default method of sending mail and so a simple <EM>s</EM> for send will do.
-A full list of the send commands and options is in the <EM>command set</EM>
-section, so I will not duplicate them here.
+<P>One of the more important things a cluster sysop needs to do is to get 
+information to his users.  The simplest way to do this is to have a banner 
+that is sent to the user on login.  This is know as a "message of the day" 
+or "motd".  To set this up, simply create a file in /spider/data called motd 
+and edit it to say whatever you want.  It is purely a text file and will be 
+sent automatically to anyone logging in to the cluster.
 <P>
-<H2><A NAME="ss5.2">5.2 Bulletin mail</A>
+<H2><A NAME="ss5.2">5.2 Downtime message</A>
 </H2>
 
-<P>Bulletin mail is sent by using the <EM>sb</EM> command.  This is one of the
-most common mistakes users make when sending mail.  They send a bulletin
-mail with <EM>s</EM> or <EM>sp</EM> instead of <EM>sb</EM> and of course
-the message never leaves the cluster.  This can be rectified by the sysop
-by using the <EM>msg</EM> command.
+<P>If for any reason the cluster is down, maybe for upgrade or maintenance but 
+the machine is still running, a message can be sent to the user advising them 
+of the fact.  This message lives in the /spider/data directory and is called
+"offline".  Simply create the file and edit it to say whatever you wish.  
+This file will be sent to a user attempting to log into the cluster when
+DXSpider is not actually running.
 <P>
-<P>Bulletin addresses can be set using the Forward.pl file.
-<P>
-<H2><A NAME="ss5.3">5.3 Forward.pl</A>
+<H2><A NAME="ss5.3">5.3 Other text messages</A>
 </H2>
 
-<P>DXSpider receives all and any mail sent to it without any alterations needed
-in files.  Because personal and bulletin mail are treated differently, there
-is no need for a list of accepted bulletin addresses.  It is necessary, however,
-to tell the program which links accept which bulletins.  For example, it is
-pointless sending bulletins addresses to "UK" to any links other than UK
-ones.  The file that does this is called forward.pl and lives in /spider/msg.
-At default, like other spider files it is named forward.pl.issue.  Rename it
-to forward.pl and edit the file to match your requirements.
-The format is below ...
+<P>You can set other text messages to be read by the user if they input the file 
+name.  This could be for news items or maybe information for new users.  
+To set this up, make a directory under /spider called <EM>packclus</EM>.  
+Under this directory you can create files called <EM>news</EM> or <EM>newuser</EM>
+for example.  In fact you can create files with any names you like.  These can 
+be listed by the user with the command ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-#
-# this is an example message forwarding file for the system
-#
-# The format of each line is as follows
-#
-#     type    to/from/at pattern action  destinations
-#     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
-#
-# type: P - private, B - bulletin (msg), F - file (ak1a bull)
-# to/from/at: T - to field, F - from field, A - home bbs, O - origin 
-# pattern: a perl regex on the field requested
-# action: I - ignore, F - forward
-# destinations: a reference to an array containing node callsigns
-#
-# if it is non-private and isn't in here then it won't get forwarded 
-#
-# Currently only type B msgs are affected by this code.
-# 
-# The list is read from the top down, the first pattern that matches
-# causes the action to be taken.
-#
-# The pattern can be undef or 0 in which case it will always be selected
-# for the action specified
-#
-# If the BBS list is undef or 0 and the action is 'F' (and it matches the
-# pattern) then it will always be forwarded to every node that doesn't have 
-# it (I strongly recommend you don't use this unless you REALLY mean it, if
-# you allow a new link with this on EVERY bull will be forwarded immediately
-# on first connection)
-#
-
-package DXMsg;
-
-@forward = (
-'B',    'T',    'LOCAL',        'F',    [ qw(GB7MBC) ],
-'B',    'T',    'ALL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'UK',           'F',    [ qw(GB7BAA GB7ADX) ],
-'B',    'T',    'QSL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'QSLINF',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DX',           'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXINFO',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXNEWS',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXQSL',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'SYSOP',        'F',    [ qw(GB7BAA GB7ADX) ],
-'B',    'T',    '50MHZ',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-);
+show/files
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>Simply insert a bulletin address and state in the brackets where you wish
-that mail to go.  For example, you can see here that mail sent to "UK" will
-only be sent to the UK links and not to PA4AB-14.
-<P>
-<P>To force the cluster to reread the file use load/forward
-<P>
-<P>
-<H2><A NAME="ss5.4">5.4 The msg command</A>
-</H2>
-
-<P>The <EM>msg</EM> command is a very powerful and flexible tool for the
-sysop.  It allows the sysop to alter to and from fields and make other
-changes to manage the cluster mail.
-<P>Here is a full list of the various options ...
+<P>They can be read by the user by typing the command ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-  MSG TO &lt;msgno> &lt;call>     - change TO callsign to &lt;call>
-  MSG FRom &lt;msgno> &lt;call>   - change FROM callsign to &lt;call>
-  MSG PRrivate &lt;msgno>      - set private flag
-  MSG NOPRrivate &lt;msgno>    - unset private flag
-  MSG RR &lt;msgno>            - set RR flag
-  MSG NORR &lt;msgno>          - unset RR flag
-  MSG KEep &lt;msgno>          - set the keep flag (message won't be deleted ever)
-  MSG NOKEep &lt;msgno>        - unset the keep flag
-  MSG SUbject &lt;msgno> &lt;new> - change the subject to &lt;new>
-  MSG WAittime &lt;msgno>      - remove any waiting time for this message
-  MSG NOREad &lt;msgno>        - mark message as unread
-  MSG REad &lt;msgno>          - mark message as read
-  MSG QUeue                 - queue any outstanding bulletins
-  MSG QUeue 1               - queue any outstanding private messages
+type news
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>These commands are simply typed from within the cluster as the sysop user.
+<P>If the file they want to read is called <EM>news</EM>.  You could also set 
+an alias for this in the Alias file to allow them just to type <EM>news</EM>
 <P>
-<H2><A NAME="ss5.5">5.5 Message status</A>
-</H2>
-
-<P>You can check on a message from within the cluster by using the command
-<EM>stat/msg</EM>.  This will give you additional information on the
-message number including which nodes have received it, which node it
-was received from and when etc.  Here is an example of the output of
-the command ...
+<P>You can also store other information in this directory, either directly or 
+nested under directories.  One use for this would be to store DX bulletins 
+such as the OPDX bulletins.  These can be listed and read by the user.  
+To keep things tidy, make a directory under /spider/packclus called
+<EM>bulletin</EM>.  Now copy any OPDX or similar bulletins into it.  These 
+can be listed by the user in the same way as above using the <EM>show/files</EM>
+command with an extension for the bulletin directory you have just created, 
+like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-G0VGS de GB7MBC 28-Jan-2001 1308Z >
-stat/msg 6869
-        From: GB7DJK
-    Msg Time: 26-Jan-2001 1302Z
-       Msgno: 6869
-      Origin: GB7DJK
-        Size: 8012
-     Subject: AMSAT 2line KEPS 01025.AMSAT
-          To: UK
-Got it Nodes: GB7BAA, GB7ADX
-     Private: 0
-Read Confirm: 0
-  Times read: 0
-G0VGS de GB7MBC 28-Jan-2001 1308Z >
+show/files bulletin
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss5.6">5.6 Filtering mail</A>
-</H2>
-
-<P>This is described in the section on <EM>Other filters</EM> so I will not
-duplicate it here.
-<P>
-<H2><A NAME="ss5.7">5.7 Distribution lists</A>
-</H2>
-
-<P>Distribution lists are simply a list of users to send certain types of
-mail to.  An example of this is mail you only wish to send to other
-sysops.  In /spider/msg there is a directory called <EM>distro</EM>.  You
-put any distibution lists in here.  For example, here is a file called
-SYSOP.pl that caters for the UK sysops.
+<P>An example would look like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
-   GB7NDX GB7SDX GB7TDX GB7UDX GB7YDX GB7ADX GB7BAA GB7DXA GB7DXH 
-   GB7DXK GB7DXI GB7DXS)
+sh/files
+bulletin      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>Any mail sent to "sysop" would only be sent to the callsigns in this list.
+<P>You can see that in the files area (basically the packclus directory) there is a 
+file called <EM>news</EM> and a directory called <EM>bulletin</EM>.  You can 
+also see that dates they were created.  In the case of the file <EM>news</EM>, 
+you can also see the time it was last modified, a good clue as to whether the 
+file has been updated since you last read it.  To read the file called 
+<EM>news</EM> you would simply issue the command ....
 <P>
-<H2><A NAME="ss5.8">5.8 BBS interface</A>
+<BLOCKQUOTE><CODE>
+<PRE>
+type news
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>To look what is in the bulletin directory you issue the command ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/files bulletin
+opdx390      21381 29-Nov-1999 1621Z opdx390.1     1670 29-Nov-1999 1621Z
+opdx390.2     2193 29-Nov-1999 1621Z opdx391      25045 29-Nov-1999 1621Z  
+opdx392      35969 29-Nov-1999 1621Z opdx393      15023 29-Nov-1999 1621Z  
+opdx394      33429 29-Nov-1999 1621Z opdx394.1     3116 29-Nov-1999 1621Z  
+opdx395      24319 29-Nov-1999 1621Z opdx396      32647 29-Nov-1999 1621Z
+opdx396.1     5537 29-Nov-1999 1621Z opdx396.2     6242 29-Nov-1999 1621Z
+opdx397      18433 29-Nov-1999 1621Z opdx398      19961 29-Nov-1999 1621Z  
+opdx399      17719 29-Nov-1999 1621Z opdx400      19600 29-Nov-1999 1621Z
+opdx401      27738 29-Nov-1999 1621Z opdx402      18698 29-Nov-1999 1621Z
+opdx403      24994 29-Nov-1999 1621Z opdx404      15685 29-Nov-1999 1621Z
+opdx405      13984 29-Nov-1999 1621Z opdx405.1     4166 29-Nov-1999 1621Z
+opdx406      28934 29-Nov-1999 1621Z opdx407      24153 29-Nov-1999 1621Z
+opdx408      15081 29-Nov-1999 1621Z opdx409      23234 29-Nov-1999 1621Z
+Press Enter to continue, A to abort (16 lines) >
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>You can now read any file in this directory using the type command, like this ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+type bulletin/opdx391
+Ohio/Penn DX Bulletin No. 391
+The Ohio/Penn Dx PacketCluster
+DX Bulletin No. 391
+BID: $OPDX.391
+January 11, 1999
+Editor Tedd Mirgliotta, KB8NW
+Provided by BARF-80 BBS Cleveland, Ohio
+Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
+Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
+Association, Ohio/Penn PacketCluster Network, K1XN &amp; Golist, WB2RAJ/WB2YQH
+&amp; The 59(9) DXReport, W3UR &amp; The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
+Press Enter to continue, A to abort (508 lines) >
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The page length will of course depend on what you have it set to!
+<P>
+<H2><A NAME="ss5.4">5.4 The Aliases file</A>
 </H2>
 
-<P>Spider provides a simple BBS interface.  No input is required from the sysop
-of the cluster at all.  The BBS simply sets the cluster as a BBS and pushes
-any required mail to the cluster.  No mail can flow from Spider to the BBS,
-the interface is one-way.
+<P>You will find a file in /spider/cmd/ called Aliases.  First, copy this file to
+/spider/local_cmd/Aliases and edit this file.  You will see something like this ...
 <P>
-<P>Please be careful not to flood the cluster network with unnecessary mail.
-Make sure you only send mail to the clusters that want it by using the
-Forward.pl file very carefully.
+<BLOCKQUOTE><CODE>
+<PRE>
+
+#!/usr/bin/perl
+
+# provide some standard aliases for commands for terminally
+# helpless ak1a user (helpless in the sense that they never
+# read nor understand help files)
+
+# This file is automagically reloaded if its modification time is 
+# later than the one stored in CmdAlias.pm
+
+# PLEASE make this file consistant with reality! (the patterns MUST
+# match the filenames!)
+
+# Don't alter this file, copy it into the local_cmd tree and modify it.
+# This file will be replaced everytime I issue a new release.
+
+# You only need to put aliases in here for commands that don't work as
+# you desire naturally, e.g sh/dx on its own just works as you expect
+# so you need not add it as an alias.
+
+
+
+package CmdAlias;
+
+%alias = (
+    '?' => [
+          '^\?', 'apropos', 'apropos',
+        ],
+    'a' => [
+          '^ann.*/full', 'announce full', 'announce', 
+          '^ann.*/sysop', 'announce sysop', 'announce',
+          '^ann.*/(.*)$', 'announce $1', 'announce',
+        ],
+        'b' => [
+        ],
+        'c' => [
+        ],
+        'd' => [
+          '^del', 'kill', 'kill',
+          '^del\w*/fu', 'kill full', 'kill',
+          '^di\w*/a\w*', 'directory all', 'directory',
+          '^di\w*/b\w*', 'directory bulletins', 'directory',
+          '^di\w*/n\w*', 'directory new', 'directory',
+          '^di\w*/o\w*', 'directory own', 'directory',
+          '^di\w*/s\w*', 'directory subject', 'directory',
+          '^di\w*/t\w*', 'directory to', 'directory',
+          '^di\w*/f\w*', 'directory from', 'directory',
+          '^di\w*/(\d+)', 'directory $1', 'directory',
+        ],
+        'e' => [
+        ],
+        'f' => [
+        ],
+        'g' => [
+        ],
+        'h' => [
+        ],
+        'i' => [
+        ],
+        'j' => [
+        ],
+        'k' => [
+        ],
+        'l' => [
+          '^l$', 'directory', 'directory',
+          '^ll$', 'directory', 'directory',
+          '^ll/(\d+)', 'directory $1', 'directory',
+        ],
+        'm' => [
+        ],
+        'n' => [
+          '^news', 'type news', 'type',
+        ],
+        'o' => [
+        ],
+        'p' => [
+        ],
+        'q' => [
+          '^q', 'bye', 'bye',
+        ],
+        'r' => [        
+          '^r$', 'read', 'read',
+          '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
+        ],
+        's' => [
+          '^s/p$', 'send', 'send',
+          '^sb$', 'send noprivate', 'send',
+          '^set/home$', 'set/homenode', 'set/homenode',
+          '^set/nobe', 'unset/beep', 'unset/beep',
+          '^set/nohe', 'unset/here', 'unset/here',
+          '^set/noan', 'unset/announce', 'unset/announce',
+          '^set/nodx', 'unset/dx', 'unset/dx',
+          '^set/nota', 'unset/talk', 'unset/talk',
+          '^set/noww', 'unset/wwv', 'unset/wwv',
+          '^set/nowx', 'unset/wx', 'unset/wx',
+          '^sh$', 'show', 'show',
+          '^sh\w*/buck', 'dbshow buck', 'dbshow',
+          '^sh\w*/bu', 'show/files bulletins', 'show/files',
+          '^sh\w*/c/n', 'show/configuration nodes', 'show/configuration',
+          '^sh\w*/c$', 'show/configuration', 'show/configuration',
+          '^sh\w*/com', 'dbavail', 'dbavail',
+          '^sh\w*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
+          '^sh\w*/dx/(\d+)', 'show/dx $1', 'show/dx',
+          '^sh\w*/dx/d(\d+)', 'show/dx from $1', 'show/dx',
+          '^sh\w*/email', 'dbshow email', 'dbshow',
+          '^sh\w*/hftest', 'dbshow hftest', 'dbshow',
+          '^sh\w*/vhftest', 'dbshow vhftest', 'dbshow',
+          '^sh\w*/qsl', 'dbshow qsl', 'dbshow',
+          '^sh\w*/tnc', 'who', 'who',
+          '^sh\w*/up', 'show/cluster', 'show/cluster',
+          '^sh\w*/w\w*/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
+          '^sh\w*/w\w*/(\d+)', 'show/wwv $1', 'show/wwv',
+          '^sp$', 'send', 'send',
+        
+    ],
+        't' => [
+          '^ta$', 'talk', 'talk',
+          '^t$', 'talk', 'talk',
+        ],
+        'u' => [
+        ],
+        'v' => [
+        ],
+        'w' => [
+          '^wx/full', 'wx full', 'wx',
+          '^wx/sysop', 'wx sysop', 'wx',
+        ],
+        'x' => [
+        ],
+        'y' => [
+        ],
+        'z' => [
+        ],
+)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>You can create aliases for commands at will.  Beware though, these may not 
+always turn out as you think.  Care is needed and you need to test the 
+results once you have set an alias.
+<P>
+<H2><A NAME="ss5.5">5.5 Console.pl</A>
+</H2>
+
+<P>In later versions of Spider a simple console program is provided for the sysop.  
+This has a type ahead buffer with line editing facilities and colour for spots,
+announces etc.  To use this program, simply use console.pl instead of client.
+<P>
+<P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
+file with your favourite editor.
+<P>
+<H2><A NAME="ss5.6">5.6 Updating kepler data</A>
+</H2>
+
+<P>Spider has a powerful and flexible show/satellite command.  In order for
+this to be accurate, the kepler data has to be updated regularly.  In
+general, this data is available as an email or via cluster mail.
+Updating it is simple.  First you need to export the mail message as a
+file.  You do this with the <EM>export</EM> command from the cluster prompt
+as the sysop.  For example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+export 5467 /spider/perl/keps.in
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>would export message number 5467 as a file called keps.in in the
+/spider/perl directory.
+<P>Now login to a VT as sysop and cd /spider/perl.  There is a command in
+the perl directory called <EM>convkeps.pl</EM>.  All we need to do now is
+convert the file like so ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+./convkeps.pl keps.in
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Now go back to the cluster and issue the command ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+load/keps
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>That is it!  the kepler data has been updated.
+<P>
+<H2><A NAME="ss5.7">5.7 The QRZ callbook</A>
+</H2>
+
+<P>The command <EM>sh/qrz</EM> will only work once you have followed a few
+simple steps.  First you need to get a user ID and password from qrz.com.
+Simply go to the site and create one.  Secondly you need to copy the file
+/spider/perl/Internet.pm to /spider/local and alter it to match your user
+ID and password.  You also at this point need to set $allow=1 to complete
+the setup.  Many thanks to Fred Lloyd, the proprieter of
+<A HREF="http://www.qrz.com">qrz.com</A> for allowing this access.
 <P>
 <HR>
 <A HREF="adminmanual-6.html">Next</A>

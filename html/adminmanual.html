@@ -15,226 +15,222 @@ Contents
 <HR>
 <H1>The DXSpider Administration Manual v1.47</H1>
 
-<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 1.47 April 2001 revision 1.0
+<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 1.48 July 2001 revision 1.0
 <P><HR>
 <EM>A reference for SysOps of the DXSpider DXCluster program.</EM>
 <HR>
 <P>
-<H2><A NAME="toc1">1.</A> <A HREF="adminmanual-1.html">Hop control</A></H2>
+<H2><A NAME="toc1">1.</A> <A HREF="adminmanual-1.html">Routing and Filtering</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-1.html#ss1.1">1.1 Basic hop control</A>
-<LI><A HREF="adminmanual-1.html#ss1.2">1.2 Isolating networks</A>
+<LI><A HREF="adminmanual-1.html#ss1.1">1.1 Introduction</A>
+<LI><A HREF="adminmanual-1.html#ss1.2">1.2 Route Filters</A>
+<LI><A HREF="adminmanual-1.html#ss1.3">1.3 The default_node filter</A>
+<LI><A HREF="adminmanual-1.html#ss1.4">1.4 General route filtering</A>
+<LI><A HREF="adminmanual-1.html#ss1.5">1.5 General filter rules</A>
+<LI><A HREF="adminmanual-1.html#ss1.6">1.6 Types of filter</A>
+<LI><A HREF="adminmanual-1.html#ss1.7">1.7 Filter options</A>
+<LI><A HREF="adminmanual-1.html#ss1.8">1.8 Default filters</A>
+<LI><A HREF="adminmanual-1.html#ss1.9">1.9 Advanced filtering</A>
+<LI><A HREF="adminmanual-1.html#ss1.10">1.10 Basic hop control</A>
+<LI><A HREF="adminmanual-1.html#ss1.11">1.11 Isolating networks</A>
 </UL>
 <P>
-<H2><A NAME="toc2">2.</A> <A HREF="adminmanual-2.html">Filtering (Old Style upto v1.44)</A></H2>
+<H2><A NAME="toc2">2.</A> <A HREF="adminmanual-2.html">Other filters</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-2.html#ss2.1">2.1 Spots</A>
-<LI><A HREF="adminmanual-2.html#ss2.2">2.2 Announcements</A>
-<LI><A HREF="adminmanual-2.html#ss2.3">2.3 WWV</A>
+<LI><A HREF="adminmanual-2.html#ss2.1">2.1 Filtering Mail</A>
+<LI><A HREF="adminmanual-2.html#ss2.2">2.2 Filtering DX callouts (Depricated)</A>
+<LI><A HREF="adminmanual-2.html#ss2.3">2.3 Filtering words from text fields in Announce, Talk and DX spots</A>
 </UL>
 <P>
-<H2><A NAME="toc3">3.</A> <A HREF="adminmanual-3.html">Filtering (New Style v1.45 and later)</A></H2>
+<H2><A NAME="toc3">3.</A> <A HREF="adminmanual-3.html">Mail</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-3.html#ss3.1">3.1 General filter rules</A>
-<LI><A HREF="adminmanual-3.html#ss3.2">3.2 Types of filter</A>
-<LI><A HREF="adminmanual-3.html#ss3.3">3.3 Filter options</A>
-<LI><A HREF="adminmanual-3.html#ss3.4">3.4 Default filters</A>
-<LI><A HREF="adminmanual-3.html#ss3.5">3.5 Advanced filtering</A>
+<LI><A HREF="adminmanual-3.html#ss3.1">3.1 Personal mail</A>
+<LI><A HREF="adminmanual-3.html#ss3.2">3.2 Bulletin mail</A>
+<LI><A HREF="adminmanual-3.html#ss3.3">3.3 Forward.pl</A>
+<LI><A HREF="adminmanual-3.html#ss3.4">3.4 The msg command</A>
+<LI><A HREF="adminmanual-3.html#ss3.5">3.5 Message status</A>
+<LI><A HREF="adminmanual-3.html#ss3.6">3.6 Filtering mail</A>
+<LI><A HREF="adminmanual-3.html#ss3.7">3.7 Distribution lists</A>
+<LI><A HREF="adminmanual-3.html#ss3.8">3.8 BBS interface</A>
 </UL>
 <P>
-<H2><A NAME="toc4">4.</A> <A HREF="adminmanual-4.html">Other filters</A></H2>
+<H2><A NAME="toc4">4.</A> <A HREF="adminmanual-4.html">Databases</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-4.html#ss4.1">4.1 Filtering Mail</A>
-<LI><A HREF="adminmanual-4.html#ss4.2">4.2 Filtering DX callouts (Depricated)</A>
-<LI><A HREF="adminmanual-4.html#ss4.3">4.3 Filtering words from text fields in Announce, Talk and DX spots</A>
+<LI><A HREF="adminmanual-4.html#ss4.1">4.1 Creating databases</A>
+<LI><A HREF="adminmanual-4.html#ss4.2">4.2 Importing databases</A>
+<LI><A HREF="adminmanual-4.html#ss4.3">4.3 Checking available databases</A>
+<LI><A HREF="adminmanual-4.html#ss4.4">4.4 Looking up databases</A>
+<LI><A HREF="adminmanual-4.html#ss4.5">4.5 Removing databases</A>
 </UL>
 <P>
-<H2><A NAME="toc5">5.</A> <A HREF="adminmanual-5.html">Mail</A></H2>
+<H2><A NAME="toc5">5.</A> <A HREF="adminmanual-5.html">Information, files and useful programs</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-5.html#ss5.1">5.1 Personal mail</A>
-<LI><A HREF="adminmanual-5.html#ss5.2">5.2 Bulletin mail</A>
-<LI><A HREF="adminmanual-5.html#ss5.3">5.3 Forward.pl</A>
-<LI><A HREF="adminmanual-5.html#ss5.4">5.4 The msg command</A>
-<LI><A HREF="adminmanual-5.html#ss5.5">5.5 Message status</A>
-<LI><A HREF="adminmanual-5.html#ss5.6">5.6 Filtering mail</A>
-<LI><A HREF="adminmanual-5.html#ss5.7">5.7 Distribution lists</A>
-<LI><A HREF="adminmanual-5.html#ss5.8">5.8 BBS interface</A>
+<LI><A HREF="adminmanual-5.html#ss5.1">5.1 MOTD</A>
+<LI><A HREF="adminmanual-5.html#ss5.2">5.2 Downtime message</A>
+<LI><A HREF="adminmanual-5.html#ss5.3">5.3 Other text messages</A>
+<LI><A HREF="adminmanual-5.html#ss5.4">5.4 The Aliases file</A>
+<LI><A HREF="adminmanual-5.html#ss5.5">5.5 Console.pl</A>
+<LI><A HREF="adminmanual-5.html#ss5.6">5.6 Updating kepler data</A>
+<LI><A HREF="adminmanual-5.html#ss5.7">5.7 The QRZ callbook</A>
 </UL>
 <P>
-<H2><A NAME="toc6">6.</A> <A HREF="adminmanual-6.html">Databases</A></H2>
-
-<UL>
-<LI><A HREF="adminmanual-6.html#ss6.1">6.1 Creating databases</A>
-<LI><A HREF="adminmanual-6.html#ss6.2">6.2 Importing databases</A>
-<LI><A HREF="adminmanual-6.html#ss6.3">6.3 Checking available databases</A>
-<LI><A HREF="adminmanual-6.html#ss6.4">6.4 Looking up databases</A>
-<LI><A HREF="adminmanual-6.html#ss6.5">6.5 Removing databases</A>
-</UL>
-<P>
-<H2><A NAME="toc7">7.</A> <A HREF="adminmanual-7.html">Information, files and useful programs</A></H2>
-
-<UL>
-<LI><A HREF="adminmanual-7.html#ss7.1">7.1 MOTD</A>
-<LI><A HREF="adminmanual-7.html#ss7.2">7.2 Downtime message</A>
-<LI><A HREF="adminmanual-7.html#ss7.3">7.3 Other text messages</A>
-<LI><A HREF="adminmanual-7.html#ss7.4">7.4 The Aliases file</A>
-<LI><A HREF="adminmanual-7.html#ss7.5">7.5 Console.pl</A>
-<LI><A HREF="adminmanual-7.html#ss7.6">7.6 Updating kepler data</A>
-<LI><A HREF="adminmanual-7.html#ss7.7">7.7 The QRZ callbook</A>
-</UL>
-<P>
-<H2><A NAME="toc8">8.</A> <A HREF="adminmanual-8.html">CVS</A></H2>
+<H2><A NAME="toc6">6.</A> <A HREF="adminmanual-6.html">CVS</A></H2>
 
 <P>
-<H2><A NAME="toc9">9.</A> <A HREF="adminmanual-9.html">The DXSpider command set</A></H2>
+<H2><A NAME="toc7">7.</A> <A HREF="adminmanual-7.html">The DXSpider command set</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-9.html#ss9.1">9.1 accept/announce (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.2">9.2 accept/announce (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.3">9.3 accept/spots (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.4">9.4 accept/spots (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.5">9.5 accept/wcy (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.6">9.6 accept/wcy (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.7">9.7 accept/wwv (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.8">9.8 accept/wwv (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.9">9.9 announce (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.10">9.10 announce full (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.11">9.11 announce sysop (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.12">9.12 apropos (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.13">9.13 bye (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.14">9.14 catchup (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.15">9.15 clear/spots (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.16">9.16 connect (5) </A>
-<LI><A HREF="adminmanual-9.html#ss9.17">9.17 dbavail (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.18">9.18 dbcreate (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.19">9.19 dbimport (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.20">9.20 dbremove (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.21">9.21 dbshow (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.22">9.22 debug (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.23">9.23 directory (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.24">9.24 directory (extended for sysops) (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.25">9.25 disconnect (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.26">9.26 dx (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.27">9.27 export (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.28">9.28 export_users (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.29">9.29 forward/latlong (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.30">9.30 forward/opername (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.31">9.31 help (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.32">9.32 init (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.33">9.33 kill (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.34">9.34 kill (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.35">9.35 kill full (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.36">9.36 links (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.37">9.37 load/aliases (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.38">9.38 load/baddx (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.39">9.39 load/badmsg (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.40">9.40 load/badwords (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.41">9.41 load/bands (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.42">9.42 load/cmd_cache (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.43">9.43 load/forward (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.44">9.44 load/messages (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.45">9.45 load/prefixes (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.46">9.46 merge (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.47">9.47 msg (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.48">9.48 pc (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.49">9.49 ping (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.50">9.50 rcmd (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.51">9.51 read (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.52">9.52 read (extended for sysops) (5) </A>
-<LI><A HREF="adminmanual-9.html#ss9.53">9.53 reject/announce</A>
-<LI><A HREF="adminmanual-9.html#ss9.54">9.54 reject/announce (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.55">9.55 reject/spots (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.56">9.56 reject/spots (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.57">9.57 reject/wcy (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.58">9.58 reject/wcy (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.59">9.59 reject/wwv (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.60">9.60 reject/wwv (extended for sysops) (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.61">9.61 reply (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.62">9.62 send (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.63">9.63 set/address (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.64">9.64 set/announce (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.65">9.65 set/arcluster (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.66">9.66 set/baddx (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.67">9.67 set/badnode (6)</A>
-<LI><A HREF="adminmanual-9.html#ss9.68">9.68 set/badspotter (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.69">9.69 set/beep (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.70">9.70 set/clx (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.71">9.71 set/debug (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.72">9.72 set/dx (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.73">9.73 set/dxgrid (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.74">9.74 set/dxnet (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.75">9.75 set/echo (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.76">9.76 set/here (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.77">9.77 set/homenode (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.78">9.78 set/hops (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.79">9.79 set/isolate (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.80">9.80 set/language (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.81">9.81 set/location (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.82">9.82 set/sys_location (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.83">9.83 set/logininfo (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.84">9.84 set/lockout (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.85">9.85 set/name (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.86">9.86 set/node (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.87">9.87 set/obscount (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.88">9.88 set/page (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.89">9.89 set/password (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.90">9.90 set/pinginterval (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.91">9.91 set/privilege (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.92">9.92 set/spider (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.93">9.93 set/sys_qra (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.94">9.94 set/qra (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.95">9.95 set/qth (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.96">9.96 set/talk (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.97">9.97 set/wcy (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.98">9.98 set/wwv (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.99">9.99 set/wx (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.100">9.100 show/baddx (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.101">9.101 show/badnode (6)</A>
-<LI><A HREF="adminmanual-9.html#ss9.102">9.102 show/badspotter (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.103">9.103 show/configuration (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.104">9.104 show/configuration/node (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.105">9.105 show/connect (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.106">9.106 show/date (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.107">9.107 show/debug (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.108">9.108 show/dx (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.109">9.109 show/dxcc (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.110">9.110 show/files (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.111">9.111 show/filter (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.112">9.112 show/filter (extended for sysops) (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.113">9.113 show/hops (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.114">9.114 show/isolate (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.115">9.115 show/lockout (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.116">9.116 show/log (8)</A>
-<LI><A HREF="adminmanual-9.html#ss9.117">9.117 show/moon (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.118">9.118 show/muf (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.119">9.119 show/node (1)</A>
-<LI><A HREF="adminmanual-9.html#ss9.120">9.120 show/prefix (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.121">9.121 show/program (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.122">9.122 show/qra (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.123">9.123 show/qrz (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.124">9.124 show/route (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.125">9.125 show/satellite (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.126">9.126 show/sun (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.127">9.127 show/time (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.128">9.128 show/wcy (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.129">9.129 show/wwv (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.130">9.130 shutdown (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.131">9.131 spoof (9)</A>
-<LI><A HREF="adminmanual-9.html#ss9.132">9.132 stat/db (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.133">9.133 stat/channel (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.134">9.134 stat/msg (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.135">9.135 stat/user (5)</A>
-<LI><A HREF="adminmanual-9.html#ss9.136">9.136 sysop (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.137">9.137 talk (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.138">9.138 type (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.139">9.139 who (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.140">9.140 wx (0)</A>
-<LI><A HREF="adminmanual-9.html#ss9.141">9.141 wx (enhanced for sysops) (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.1">7.1 accept/announce (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.2">7.2 accept/announce (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.3">7.3 accept/route (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.4">7.4 accept/spots (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.5">7.5 accept/spots (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.6">7.6 accept/wcy (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.7">7.7 accept/wcy (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.8">7.8 accept/wwv (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.9">7.9 accept/wwv (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.10">7.10 announce (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.11">7.11 announce full (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.12">7.12 announce sysop (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.13">7.13 apropos (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.14">7.14 bye (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.15">7.15 catchup (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.16">7.16 clear/spots (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.17">7.17 connect (5) </A>
+<LI><A HREF="adminmanual-7.html#ss7.18">7.18 dbavail (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.19">7.19 dbcreate (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.20">7.20 dbimport (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.21">7.21 dbremove (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.22">7.22 dbshow (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.23">7.23 debug (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.24">7.24 directory (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.25">7.25 directory (extended for sysops) (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.26">7.26 disconnect (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.27">7.27 dx (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.28">7.28 export (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.29">7.29 export_users (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.30">7.30 forward/latlong (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.31">7.31 forward/opername (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.32">7.32 help (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.33">7.33 init (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.34">7.34 kill (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.35">7.35 kill (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.36">7.36 kill full (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.37">7.37 links (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.38">7.38 load/aliases (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.39">7.39 load/baddx (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.40">7.40 load/badmsg (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.41">7.41 load/badwords (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.42">7.42 load/bands (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.43">7.43 load/cmd_cache (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.44">7.44 load/forward (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.45">7.45 load/messages (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.46">7.46 load/prefixes (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.47">7.47 merge (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.48">7.48 msg (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.49">7.49 pc (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.50">7.50 ping (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.51">7.51 rcmd (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.52">7.52 read (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.53">7.53 read (extended for sysops) (5) </A>
+<LI><A HREF="adminmanual-7.html#ss7.54">7.54 reject/announce</A>
+<LI><A HREF="adminmanual-7.html#ss7.55">7.55 reject/announce (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.56">7.56 reject/route (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.57">7.57 reject/spots (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.58">7.58 reject/spots (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.59">7.59 reject/wcy (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.60">7.60 reject/wcy (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.61">7.61 reject/wwv (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.62">7.62 reject/wwv (extended for sysops) (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.63">7.63 reply (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.64">7.64 send (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.65">7.65 set/address (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.66">7.66 set/announce (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.67">7.67 set/arcluster (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.68">7.68 set/baddx (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.69">7.69 set/badnode (6)</A>
+<LI><A HREF="adminmanual-7.html#ss7.70">7.70 set/badspotter (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.71">7.71 set/beep (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.72">7.72 set/bbs (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.73">7.73 set/clx (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.74">7.74 set/debug (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.75">7.75 set/dx (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.76">7.76 set/dxgrid (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.77">7.77 set/dxnet (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.78">7.78 set/echo (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.79">7.79 set/here (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.80">7.80 set/homenode (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.81">7.81 set/hops (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.82">7.82 set/isolate (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.83">7.83 set/language (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.84">7.84 set/location (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.85">7.85 set/sys_location (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.86">7.86 set/logininfo (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.87">7.87 set/lockout (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.88">7.88 set/name (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.89">7.89 set/node (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.90">7.90 set/obscount (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.91">7.91 set/page (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.92">7.92 set/password (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.93">7.93 set/pinginterval (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.94">7.94 set/privilege (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.95">7.95 set/spider (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.96">7.96 set/sys_qra (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.97">7.97 set/qra (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.98">7.98 set/qth (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.99">7.99 set/talk (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.100">7.100 set/wcy (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.101">7.101 set/wwv (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.102">7.102 set/wx (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.103">7.103 show/baddx (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.104">7.104 show/badnode (6)</A>
+<LI><A HREF="adminmanual-7.html#ss7.105">7.105 show/badspotter (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.106">7.106 show/configuration (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.107">7.107 show/configuration/node (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.108">7.108 show/connect (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.109">7.109 show/date (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.110">7.110 show/debug (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.111">7.111 show/dx (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.112">7.112 show/dxcc (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.113">7.113 show/files (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.114">7.114 show/filter (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.115">7.115 show/filter (extended for sysops) (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.116">7.116 show/hops (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.117">7.117 show/isolate (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.118">7.118 show/lockout (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.119">7.119 show/log (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.120">7.120 show/moon (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.121">7.121 show/muf (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.122">7.122 show/node (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.123">7.123 show/prefix (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.124">7.124 show/program (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.125">7.125 show/qra (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.126">7.126 show/qrz (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.127">7.127 show/route (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.128">7.128 show/satellite (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.129">7.129 show/sun (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.130">7.130 show/time (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.131">7.131 show/wcy (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.132">7.132 show/wwv (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.133">7.133 shutdown (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.134">7.134 spoof (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.135">7.135 stat/db (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.136">7.136 stat/channel (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.137">7.137 stat/msg (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.138">7.138 stat/route_node (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.139">7.139 stat/route_user (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.140">7.140 stat/user (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.141">7.141 sysop (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.142">7.142 talk (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.143">7.143 type (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.144">7.144 who (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.145">7.145 wx (0)</A>
+<LI><A HREF="adminmanual-7.html#ss7.146">7.146 wx (enhanced for sysops) (5)</A>
 </UL>
 <HR>
 <A HREF="adminmanual-1.html">Next</A>

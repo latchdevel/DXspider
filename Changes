@@ -1,3 +1,6 @@
+19Jul01=======================================================================
+1. changes to Admin Manual to reflect route filtering.  Some alterations to
+the help files (g0vgs)
 06Jul01=======================================================================
 1. fix talk and routing problems to mycall
 2. add unset/privilege command to relinquish any sysop privileges you might 

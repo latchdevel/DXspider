@@ -55,6 +55,34 @@ default for nodes and users eg:-
   accept/ann input node_default by G,M,2
   accept/ann user_default by G,M,2
 
+=== 8^ACCEPT/ROUTE <call> [0-9] <pattern>^Set an 'accept' filter line for routing
+Create an 'accept this routing PC Protocol' line for a filter. 
+
+An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is passed thru that interface. See HELP FILTERING for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  call <prefixes>        the callsign of the thingy
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  origin <prefixes>      really the interface it came in on
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+
+some examples:-
+
+  acc/route gb7djk call_zone 61,38 (send only UK+EIRE nodes)
+  acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+
+You can use the tag 'all' to accept everything eg:
+
+  acc/route all
+
+
 === 0^ACCEPT/SPOTS [0-9] <pattern>^Set an 'accept' filter line for spots
 Create an 'accept this spot' line for a filter. 
 
@@ -94,33 +122,6 @@ You can use the tag 'all' to accept everything, eg:
   acc/spot 3 all
 
 but this probably for advanced users...
-
-=== 8^ACCEPT/route <call> [0-9] <pattern>^Set an 'accept' filter line for routing
-Create an 'accept this routing PC Protocol' line for a filter. 
-
-An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
-it is passed thru that interface. See HELP FILTERING for more info. Please read this
-to understand how filters work - it will save a lot of grief later on.
-
-You can use any of the following things in this line:-
-
-  call <prefixes>        the callsign of the thingy
-  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  call_itu <numbers>
-  call_zone <numbers>
-  origin <prefixes>      really the interface it came in on
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-
-some examples:-
-
-  acc/route gb7djk call_zone 61,38 (send only UK+EIRE nodes)
-  acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
-
-You can use the tag 'all' to accept everything eg:
-
-  acc/route all
 
 
 === 8^ACCEPT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
