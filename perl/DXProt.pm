@@ -30,14 +30,17 @@ use Carp;
 use strict;
 use vars qw($me $pc11_max_age $pc11_dup_age $pc23_dup_age 
 			%spotdup %wwvdup $last_hour %pings %rcmds 
-			%nodehops @baddx $baddxfn);
+			%nodehops @baddx $baddxfn $pc12_dup_age
+			%anndup);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc11_dup_age = 24*3600;		# the maximum time to keep the spot dup list for
 $pc23_dup_age = 24*3600;		# the maximum time to keep the wwv dup list for
+$pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
 %spotdup = ();				    # the pc11 and 26 dup hash 
-%wwvdup = ();				    # the pc23 and 27 dup hash 
+%wwvdup = ();				    # the pc23 and 27 dup hash
+%anndup = ();                               # the PC12 dup hash
 $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
@@ -235,6 +238,21 @@ sub normal
 		}
 		
 		if ($pcno == 12) {		# announces
+		        # announce duplicate checking
+			my $text = uc unpad($field[3]);
+			my $dupkey = $field[1].$field[2].$text.$field[4].$field[6];
+			if ($anndup{$dupkey}) {
+				dbg('chan', "Duplicate Announce ignored\n");
+				return;
+			}
+			$anndup{$dupkey} = $main::systime;
+			
+			# global ann filtering
+			my ($filter, $hops) = Filter::it($self->{annfilter}, @field[1..6], $self->{call} ) if $self->{annfilter};
+			if ($self->{annfilter} && !$filter) {
+			        dbg('chan', "Rejected by filter");
+				return;
+			}
 			
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
 				
@@ -645,6 +663,10 @@ sub process
 		$cutoff = $main::systime - $pc23_dup_age;
 		while (($key, $val) = each %wwvdup) {
 			delete $wwvdup{$key} if $val < $cutoff;
+		}
+		$cutoff = $main::systime - $pc12_dup_age;
+		while (($key, $val) = each %anndup) {
+			delete $anndup{$key} if $val < $cutoff;
 		}
 		$last_hour = $main::systime;
 	}

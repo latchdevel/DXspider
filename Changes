@@ -1,3 +1,5 @@
+18May99=======================================================================
+1. Added announce dup checking.
 08May99=======================================================================
 1. Added a bit more checking to the rcmd thing to make more sure that this
 rcmd isn't coming from an imposter. Not possible to prevent everything 

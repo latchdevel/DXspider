@@ -107,13 +107,14 @@ sub rec
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 
                 # is there one already connected to me ? 
-		if ($dxchan = DXChannel->get($call)) {
-			disconnect($dxchan);
-			sleep(1);
+		my $user = DXUser->get($call);
+		if (DXChannel->get($call)) {
+		        my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
+			already_conn($conn, $call, $mess);
+			return;
 		}
 		
 		# is there one already connected elsewhere in the cluster (and not a cluster)
-		my $user = DXUser->get($call);
 		if ($user) {
 			if (($user->sort eq 'A' || $call eq $myalias) && !DXCluster->get_exact($call)) {
 				;
