@@ -101,6 +101,10 @@ sub out
 	open OUT, ">$tmp/$fn" or die "import $tmp/$fn $!";
 	print OUT map { "$_\n" } @_;
 	close OUT;
+
+	# Note we do this this way to make the appearance of
+	# the file in /spider/chat_import atomic. Otherwise there
+	# exists the possiblity of race conditions and other nasties
 	link "$tmp/$fn", "$import/$fn";
 	unlink "$tmp/$fn";
 }
