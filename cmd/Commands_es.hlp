@@ -794,6 +794,19 @@ tenemos justo después de un encendido del cluster.
 Vuelve a leer el fichero /spider/msg/forward.pl si lo has cambiado
 manualmente mientras el cluster estaba funcionando.
 
+=== 5^LOAD/KEPS^Actualiza los datos de Satélites
+=== 5^LOAD/KEPS [nn]^Actualiza los datos de Satélites desde un mensaje
+Si no se especifica ningún numero de mensaje, se actualizara desde
+el fichero /spider/perl/keps.in . Se crea ese fichero ejecutando
+
+ /spider/perl/convkeps.pl <nombre_fichero>
+
+en un fichero que contenga los datos keplerianos para los satélites
+en formato NASA 2 lines , por ejemplo aquellos que emite AMSAT.
+
+Si se da un numero de mensaje, entonces se cogerá ese mensaje , se
+ejecuta el programa convkeps.pl sobre ese mensaje, y se actualizan
+los nuevos datos, todo con solo ejecutar este comando.
 === 9^LOAD/MESSAGES^Lee de nuevo el fichero de mensajes de sistema
 Si has cambiado el fichero /spider/perl/Messages (normalmente mientras
 probamos/escribimos nuevos comandos) puedes hacer que tenga efecto
@@ -1383,6 +1396,21 @@ sesión actual, no será recordado en una próxima conexión.
 
 Los parámetros se guardaran en la información local de usuarios
 excepto si ese valor, como se dice mas arriba, fue 0.
+
+=== 0^SET/PROMPT <cadena>^Cambia el prompt a <cadena>
+=== 0^UNSET/PROMPT^Devuelve el prompt a su estado normal ( por defecto )
+Este comando definirá el prompt a exactamente la cadena que digas.
+El objetivo de este comando es adecuar el prompt a programas externos
+que buscan una cadena especifica en el prompt ( o simplemente que
+quieras tener un prompt distinto ).
+
+Por ejemplo:
+
+  SET/PROMPT clx >
+
+El comando UNSET/PROMPT deshará lo que hemos hecho con el SET/PROMPT
+dejándolo en su estado original, tal como el sysop lo haya definido
+para todos los usuarios.
 
 === 9^SET/PINGINTERVAL <time> <nodecall>^Ajusta el intervalo ping a un nodo
 Desde la versión 1.35 todos los nodos que conectan directamente a nosotros
