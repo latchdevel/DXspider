@@ -44,7 +44,7 @@ $main::build += $VERSION;
 $main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
-			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
+			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk $pc19_version
 			$pingint $obscount %pc19list $chatdupeage $investigation_int
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
@@ -73,6 +73,8 @@ $pingint = 5*60;
 $obscount = 2;
 $chatdupeage = 20 * 60 * 60;
 $investigation_int = 7*86400;	# time between checks to see if we can see this node
+$pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
+
 
 @checklist = 
 (
@@ -231,7 +233,7 @@ sub new
 	my $uref = Route::Node::get($call) || Route::Node->new($call);
 	$uref->here(1);
 	$uref->conf(0);
-	$uref->version(5000);
+	$uref->version($pc19_version);
 	$main::routeroot->link_node($uref, $self);
 	return $self;
 }
@@ -1025,11 +1027,11 @@ sub handle_21
 		# input filter it
 		return unless $self->in_filter_route($node);
 		push @rout, $node;
-		push @new, $node->link_node($parent, $self);
+		push @new, $parent->remove_route($node, $self);
 	}
 
 	$self->route_pc21($origin, $line, @new) if @new;
-	$self->route_pc59('D', 0, $self->{call}, @rout) if @rout;
+	$self->route_pc59('D', hexstamp(), $self->{call}, @rout) if @rout;
 
 	# get rid of orphaned nodes;
 	$_->delete for @new;
@@ -1563,7 +1565,7 @@ sub handle_59
 				my $new = $node->link_node($ref, $self);
 				push @addnode, $new if $new;
 			} elsif ($ref->isa('Route::User')) {
-				push @adduser, $node->del_user($ref);
+				push @adduser, $node->add_user($ref);
 			}
 		}
 	}
@@ -1597,6 +1599,7 @@ sub handle_59
 				push @au, $r unless grep $r->call eq $_, $node->users;
 			}
 		}
+		push @addnode, $node if $self->{state} =~ /^init/;
 		push @delnode, $node->unlink_node($_, $self) for @dn;
 		push @deluser, $node->del_user($_) for @du;
 		push @addnode, $node->link_node($_, $self) for @an;
@@ -1605,8 +1608,8 @@ sub handle_59
 
 	$self->route_pc21($origin, $line, @delnode) if @delnode;
 	$self->route_pc19($origin, $line, @addnode) if @addnode;
-	$self->route_pc17($origin, $line, @deluser) if @deluser;
-	$self->route_pc16($origin, $line, @adduser) if @adduser;
+	$self->route_pc17($origin, $line, $node, @deluser) if @deluser;
+	$self->route_pc16($origin, $line, $node, @adduser) if @adduser;
 	
 	$self->route_pc59($sort, $hextime, $ncall, @refs) if @refs;
 	$_->delete for @delnode, @deluser;
