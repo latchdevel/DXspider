@@ -4,7 +4,7 @@
 # This is the base class for all channel operations, which is everything to do 
 # with input and output really.
 #
-# The instance variable in the outside world will be generally be called $dxchann
+# The instance variable in the outside world will be generally be called $dxchan
 #
 # This class is 'inherited' (if that is the goobledegook for what I am doing)
 # by various other modules. The point to understand is that the 'instance variable'
@@ -33,7 +33,7 @@ use DXDebug;
 use Filter;
 
 use strict;
-use vars qw(%channels %valid);
+use vars qw(%channels %valid @ISA);
 
 %channels = ();
 
