@@ -1,5 +1,6 @@
 08Jan02=======================================================================
 1. altered sh/qrz to point to the new server
+2. alter the character set handling a bit to make it better for spanish
 06Jan02=======================================================================
 1. fix leading space removal from messages input from the keyboard
 2. make some mods to allow perl 5.7.2 to run

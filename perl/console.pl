@@ -243,7 +243,7 @@ sub rec_socket
 	if (defined $msg) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		
-		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f\xf0-\xff]/./g;         # immutable CSI sequence + control characters
+		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 		if ($sort && $sort eq 'D') {
 			$line = " " unless length($line);
 			addtotop($line);

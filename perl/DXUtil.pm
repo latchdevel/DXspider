@@ -346,7 +346,7 @@ sub is_callsign
 # check that a PC protocol field is valid text
 sub is_pctext
 {
-	return undef if $_[0] =~ /[\x00-\x08\x0a-\x1f\xf0-\xff]/;
+	return undef if $_[0] =~ /[\x00-\x08\x0a-\x1f\x80-\x9f]/;
 	return $_[0];
 }
 

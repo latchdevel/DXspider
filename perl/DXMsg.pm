@@ -518,7 +518,7 @@ sub store
 			my $line;
 			$ref->{size} = 0;
 			foreach $line (@{$lines}) {
-				$line =~ s/[\x00-\x08\x0a-\x1f\xf0-\xff]/./g;
+				$line =~ s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;
 				$ref->{size} += (length $line) + 1;
 				print $fh "$line\n";
 			}
