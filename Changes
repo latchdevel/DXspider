@@ -1,3 +1,5 @@
+28Apr01=======================================================================
+1. fix an occasional problem with 'sorry connected to' messages
 23Apr01=======================================================================
 1. fix very long standing bug in storing and transmitting spots. The decimal
 point was left off :-(

@@ -1,0 +1,37 @@
+Spider-WEB v0.6b
+
+Completely based on a clx web client written in Java by dl6dbh
+(ftp://clx.muc.de/pub/clx/clx-java_10130001.tgz)
+
+The webserver has to run on the same machine as your DxSpider software!
+
+Installation instructions:
+
+Put all the files in the spider-web directory into a newly created directory
+under the documentroot of your websever for instance 'client'. In my case
+this is:
+/usr/local/httpd/spider/client/
+
+================================================================
+!NOTE! this directory has to be writeable by your http daemon!!!!
+=================================================================
+
+move spider.cgi to the cgi-bin directory of your webserver, in my case that is
+/usr/local/httpd/cgi-bin/ 
+make it worldreadable.
+
+edit spider.cgi and change  the following parameters:
+
+portnumber=$"1407"
+tempdir=$"/usr/local/httpd/spider/client/"
+clustercall=$"PA4AB-15"
+
+'portnumber' is the portnumber that you use to connect to your DxSpider via
+telnet (see Listeners.pm)
+
+'tempdir' is the directory that you just created and that you used to move
+the *.java and *.class files to.
+
+'clustercall' is the call of your cluster.
+
+You now can connect to Spider-Web via http://yourserver/cgi-bin/spider.cgi

@@ -27,7 +27,7 @@ sub dequeue
 {
 	my $conn = shift;
 
-	if ($conn->{msg} =~ /\n/) {
+	if ($conn && $conn->{msg} =~ /\n/) {
 		my @lines = split /\r?\n/, $conn->{msg};
 		if ($conn->{msg} =~ /\n$/) {
 			delete $conn->{msg};
@@ -41,7 +41,7 @@ sub dequeue
 			} else {
 				$_ = '';
 			}
-			&{$conn->{rproc}}($conn, $_);
+			&{$conn->{rproc}}($conn, $_) if exists $conn->{rproc};
 		}
 	}
 }

@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+#
+# find files that were last modified 'yesterday' 
+#
+
+use strict;
+my $debug = shift if $ARGV[0] eq '-x';
+my $dir = shift or die "yesterday: [-x] <directory> [<days>]";
+my $days = shift or 1;
+opendir D, $dir or die "cannot open directory '$dir' $!";
+my @fn = map {[(stat("$dir/$_"))[9], "$dir/$_"]} readdir D;
+closedir D;
+
+++$days;
+my $t = time;
+my $low = (int($t / 86400) - $days) * 86400;
+my $high = (int($t / 86400) - ($days - 1)) * 86400;
+my $clow = gmtime $low;
+my $chigh = gmtime $high;
+print "lowest: $clow highest: $chigh\n" if $debug;
+for (sort {$a->[0] <=> $b->[0]} @fn) {
+	if (-f $_->[1]) {
+		if ($debug) {
+			my $cmtime = gmtime $_->[0];
+			if ($_->[0] < $low) {
+				printf "%-30s LOW $cmtime < $clow\n", $_->[1];
+			} elsif ($_->[0] >= $high) {
+				printf "%-30s HIGH $cmtime >= $chigh\n", $_->[1];
+			} else {
+				printf "%-30s OK $cmtime\n", $_->[1];
+			}
+		} elsif ($_->[0] >= $low && $_->[0] < $high) {
+			print "$_->[1]\n";
+		} elsif ($_->[0] >= $high) {
+			last;
+		}
+	}
+}
+
+
+exit 0;
