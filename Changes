@@ -1,3 +1,6 @@
+27Feb05=======================================================================
+1. fix duping on bad spot suckers that copy the prefix that is put at the end
+of the comment section by AR-C nodes becoming the whole comment. 
 26Feb05=======================================================================
 1. Added show/grayline command from Steve K9AN. This is also aliased to
 show/greyline :-)

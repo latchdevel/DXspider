@@ -333,13 +333,32 @@ sub dup
 
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	$text = unpad($text);
+	$text = uc unpad($text);
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
-	$text =~ s/[^a-zA-Z0-9]//g;
-	my $ldupkey = "X$freq|$call|$by" . uc $text;
+	my $ldupkey = "X$freq|$call|$by|";
 	my $t = DXDupe::find($ldupkey);
-	return 1 if $t && $t - $main::systime > 0;
+	if ($t && $t - $main::systime > 0) {
+		my ($prefix) = $text = /\b(\w{1,4})$/;
+		if ($prefix) {
+			my @ans = Prefix::extract($prefix);
+			if (@ans) {
+
+				# if we find a prefix then chop it off
+				# the end of the string and then look for
+				# a spot with that text. If we find it then
+				# it has be sucked from an AR-C node and is
+				# a dupe.
+				my $txt = $text;
+				$txt =~ s/\b\w{1,4}$//;
+				$txt =~ s/[^A-Z0-9]//g;
+				$t = DXDupe::find($ldupkey . $txt);
+				return 1 if $t && $t - $main::systime > 0;
+			}
+		} 
+	}
+	$text =~ s/[^A-Z0-9]//g;
+	$ldupkey .= $text;
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 #	my $sdupkey = "X$freq|$call|$by";
 #	$t = DXDupe::find($sdupkey);
