@@ -47,7 +47,7 @@ if ($dxchan && $dxchan->is_user) {
 } else {
 	$line =~ s/\^//og;			# remove any ^ characters
 	my $prot = DXProt::pc10($from, $to, $via, $line);
-	DXProt::route($via?$via:$to, $prot);
+	DXProt::route(undef,$via?$via:$to, $prot);
 	Log('talk', $to, $from, $via?$via:$main::mycall, $line);
 }
 
