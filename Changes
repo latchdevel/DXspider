@@ -3,7 +3,8 @@
 the use of scripts
 2. Fixed problem in DXCommandmode with an indirect call that did not work
 in perl < 5.8.0.
-3. Add Spanish translations of new scripting commands in help. 
+3. Add Spanish translations of new scripting commands in help, from Angel 
+EA7WA. 
 13Jan05=======================================================================
 1. Fixed prompting in languages other than English.
 2. Fixed language problem with spoof, but that simply hides a whole can of
