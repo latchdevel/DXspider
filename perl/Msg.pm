@@ -229,7 +229,57 @@ sub connect {
     return $conn;
 }
 
-sub disconnect {
+sub start_program
+{
+	my ($conn, $line, $sort) = @_;
+	my $pid;
+	
+	local $^F = 10000;		# make sure it ain't closed on exec
+	my ($a, $b) = IO::Socket->socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC);
+	if ($a && $b) {
+		$a->autoflush(1);
+		$b->autoflush(1);
+		$pid = fork;
+		if (defined $pid) {
+			if ($pid) {
+				close $b;
+				$conn->{sock} = $a;
+				$conn->{csort} = $sort;
+				$conn->{lineend} = "\cM" if $sort eq 'ax25';
+				$conn->{pid} = $pid;
+				if ($conn->{rproc}) {
+					my $callback = sub {$conn->_rcv};
+					Msg::set_event_handler ($a, read => $callback);
+				}
+				dbg("connect $conn->{cnum}: started pid: $conn->{pid} as $line") if isdbg('connect');
+			} else {
+				$^W = 0;
+				dbgclose();
+				STDIN->close;
+				STDOUT->close;
+				STDOUT->close;
+				*STDIN = IO::File->new_from_fd($b, 'r') or die;
+				*STDOUT = IO::File->new_from_fd($b, 'w') or die;
+				*STDERR = IO::File->new_from_fd($b, 'w') or die;
+				close $a;
+				unless ($main::is_win) {
+					#						$SIG{HUP} = 'IGNORE';
+					$SIG{HUP} = $SIG{CHLD} = $SIG{TERM} = $SIG{INT} = 'DEFAULT';
+					alarm(0);
+				}
+				exec "$line" or dbg("exec '$line' failed $!");
+			} 
+		} else {
+			dbg("cannot fork for $line");
+		}
+	} else {
+		dbg("no socket pair $! for $line");
+	}
+	return $pid;
+}
+
+sub disconnect 
+{
     my $conn = shift;
 	return if exists $conn->{disconnecting};
 
@@ -263,7 +313,6 @@ sub disconnect {
 	unless ($main::is_win) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
 	}
-
 }
 
 sub send_now {
