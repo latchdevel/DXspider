@@ -52,7 +52,9 @@ if ($self->state eq "prompt") {
 							  $main::systime, 
 							  '1',  
 							  $newsubj, 
-							  $main::mycall, $rr);
+							  $main::mycall,
+							  '0',
+							  $rr);
 	  my @list;
 	  my $from = $oref->from;
 	  my $to = $oref->to;

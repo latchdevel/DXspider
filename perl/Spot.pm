@@ -184,7 +184,7 @@ sub formatb
 {
   my @dx = @_;
   my $t = ztime($dx[2]);
-  return sprintf "DX de %-9.9s: %9.1f %-12s %-30s<%s>", $dx[4], $dx[0], $dx[1], $dx[3], $t ;
+  return sprintf "DX de %-7.7s: %13.1f %-12.12s %-30s<%s>", $dx[4], $dx[0], $dx[1], $dx[3], $t ;
 }
 
 # format a spot for user output in list mode

@@ -66,6 +66,7 @@ sub alloc
   $self->{subject} = shift;
   $self->{origin} = shift;
   $self->{read} = shift;
+  $self->{rrreq} = shift;
   $self->{gotit} = [];
     
   return $self;
@@ -131,7 +132,7 @@ sub process
 	  $ref->{count} = 0;
 	  $ref->{linesreq} = 5;
 	  $work{"$f[2]$f[3]"} = $ref;        # new ref
-	  dbg('msg', "incoming subject ack stream $[3]\n");
+	  dbg('msg', "incoming subject ack stream $f[3]\n");
 	  $busy{$f[2]} = $ref;                       # interlock
 	  $ref->{lines} = [];
 	  push @{$ref->{lines}}, ($ref->read_msg_body);
@@ -591,18 +592,8 @@ sub field_prompt
   return $valid{$ele};
 }
 
-no strict;
-sub AUTOLOAD
-{
-  my $self = shift;
-  my $name = $AUTOLOAD;
-  return if $name =~ /::DESTROY$/;
-  $name =~ s/.*:://o;
-  
-  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
-  @_ ? $self->{$name} = shift : $self->{$name} ;
-}
-
+#
+# send a message state machine
 sub do_send_stuff
 {
   my $self = shift;
@@ -623,7 +614,7 @@ sub do_send_stuff
 	my $loc = $self->{loc};
 	if ($line eq "\032" || uc $line eq "/EX") {
       my $to;
-   
+
       if (@{$loc->{lines}} > 0) {
 	    foreach $to (@{$loc->{to}}) {
 	      my $ref;
@@ -635,7 +626,8 @@ sub do_send_stuff
 							$systime,
 							$loc->{private}, 
 							$loc->{subject}, 
-							$mycall, 
+							$mycall,
+							'0',
 							$loc->{rrreq});
 	      $ref->store($loc->{lines});
 		  $ref->add_dir();
@@ -664,6 +656,18 @@ sub do_send_stuff
     }
   }
   return (1, @out);
+}
+
+no strict;
+sub AUTOLOAD
+{
+  my $self = shift;
+  my $name = $AUTOLOAD;
+  return if $name =~ /::DESTROY$/;
+  $name =~ s/.*:://o;
+  
+  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+  @_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 1;

@@ -14,6 +14,7 @@ my $spotter = $self->call;
 my $spotted;
 my $freq;
 my @out;
+my $valid = 0;
 
 # first lets see if we think we have a callsign as the first argument
 if ($f[0] =~ /[A-Za-z]/) {
@@ -31,7 +32,6 @@ if ($f[0] =~ /[A-Za-z]/) {
 $freq = $freq * 1000 if $freq < 1800;
 
 # bash down the list of bands until a valid one is reached
-my $valid = 0;
 my $bandref;
 my @bb;
 my $i;
@@ -48,16 +48,24 @@ foreach $bandref (Bands::get_all()) {
 }
 
 push @out, "Frequency $freq not in band [usage: DX freq call comments]" if !$valid;
+
+# check we have a callsign :-)
+if ($spotted le ' ') {
+  push @out, "Need a callsign for the spot [usage: DX freq call comments]" ;
+  $valid = 0;
+}
+
 return (1, @out) if !$valid;
 
-# send orf to the users
-my $buf = sprintf "DX de %-7.7s %13.1f %-12.12s %-30.30s %5.5s\a\a", $spotter, $freq, $spotted, $line, ztime(time);
-DXProt::broadcast_users($buf);
-
 # Store it here
-Spot::add($freq, $spotted, time, $line, $spotter);
+if (Spot::add($freq, $spotted, $main::systime, $line, $spotter)) {
+  # send orf to the users
+  my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
+  DXProt::broadcast_users($buf);
 
-# send it orf to the cluster (hang onto your tin helmets)!
-DXProt::broadcast_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line));
+
+  # send it orf to the cluster (hang onto your tin helmets)!
+  DXProt::broadcast_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line));
+}
 
 return (1, @out);

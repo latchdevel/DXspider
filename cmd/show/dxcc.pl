@@ -90,12 +90,10 @@ if (@ans) {                               # we have a valid prefix!
   my @dx;
   foreach $ref (@res) {
     @dx = @$ref;
-	my $t = ztime($dx[2]);
-	my $d = cldate($dx[2]);
-	push @out, sprintf "%9s %-12s %s %s %-28s <%s>", $dx[0], $dx[1], $d, $t, $dx[3], $dx[4];
+	push @out, Spot::formatl(@dx);
   }
 } else {
-  @out = DXM::msg('e4');
+  @out = $self->msg('e4');
 }
 
 return (1, @out);
