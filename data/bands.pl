@@ -12,6 +12,7 @@
 # It is up to YOU to make sure that it makes sense!
 # 
 
+
 %bands = (
   '160m' => bless( { band => [ 1800, 2000 ], 
                      cw => [ 1800, 1830 ], 
@@ -130,7 +131,7 @@
                      ssb => [47087000, 47089000],
                   }, 'Bands'),
 
-   'band1' => bless ( { band => [47000, 68000],
+   'band1' => bless ( { band => [47000, 49999, 52000, 68000],
                       }, 'Bands'),
 		      
    'band2' => bless ( { band => [87500, 108000],

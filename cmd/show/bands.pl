@@ -9,15 +9,21 @@ my @f = split /\s+/, $line;
 my @bands;
 my $band;
 my @out;
+my $i;
 
 if (!$line) {
   @bands = sort { Bands::get($a)->band->[0] <=> Bands::get($b)->band->[0] } Bands::get_keys();
   push @out, "Bands Available:-";
   foreach $band (@bands) {
     my $ref = Bands::get($band)->band;
-    my $from = $ref->[0];
-    my $to = $ref->[1];
-    push @out, sprintf "%10s: %d -> %d", $band, $from, $to;
+    my $s = sprintf "%10s: ", $band;
+    for ($i = 0; $i < $#{$ref}; $i += 2) {
+      my $from = $ref->[$i];
+      my $to = $ref->[$i+1];
+      $s .= ", " if $i;
+      $s .= "$from -> $to";
+    }
+    push @out, $s;
   } 
   push @out, "Regions Available:-";
   @bands = Bands::get_region_keys();
