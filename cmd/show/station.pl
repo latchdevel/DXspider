@@ -14,7 +14,8 @@ my $seek;
 push @f, $self->call unless @f;
 
 if (@f <= 2 && uc $f[0] eq 'ALL') {
-	return (1, $self->msg('e6')) if ($self->priv < 6); 
+	return (1, $self->msg('e6')) if @f == 1 && $self->priv < 6; 
+	return (1, $self->msg('e6')) if $self->priv < 5 || $f[1] eq '*'; 
 	shift @f;
 	my $exp = shellregex(uc shift @f) if @f; 
 	my @calls;
