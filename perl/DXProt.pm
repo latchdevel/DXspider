@@ -729,13 +729,12 @@ sub normal
 				my $flags = Route::here($here)|Route::conf($conf);
 				
 				if ($r) {
-					my @add;
-					push @add, $r->addparent($parent);					
+					my $au = $r->addparent($parent);					
 					if ($r->flags != $flags) {
 						$r->flags($flags);
-						push @add, $r unless @add;
+						$au = $r;
 					}
-					push @rout, @add;
+					push @rout, $r if $au;
 				} else {
 					push @rout, $parent->add_user($call, $flags);
 				}
