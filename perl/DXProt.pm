@@ -230,35 +230,7 @@ sub normal
 			return if $pcno == 26;
 
 			# send out the filtered spots
-			my @dxchan = get_all_ak1a();
-			my $dxchan;
-	
-			# send it if it isn't the except list and isn't isolated and still has a hop count
-			# taking into account filtering and so on
-			foreach $dxchan (@dxchan) {
-				next if $dxchan == $self;
-				my $routeit;
-				my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @spot, $self->{call} ) if $dxchan->{spotfilter};
-				if ($hops) {
-					$routeit = $line;
-					$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
-				} else {
-					$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-					next unless $routeit;
-				}
-				if ($filter) {
-					$dxchan->send($routeit) if $routeit;
-				} else {
-					$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-				}					
-			}
-
-			# send orf to the users
-			if (@spot) {
-				my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
-				broadcast_users("$buf\a\a", 'dx', $spot[0]);
-			}
-
+			send_dx_spot($self, $line, @spot) if @spot;
 			return;
 		}
 		
@@ -711,6 +683,40 @@ sub finish
 #
 # some active measures
 #
+sub send_dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		my $routeit;
+		my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @_, $self->{call} ) if $dxchan->{spotfilter};
+		if ($dxchan->is_ak1a) {
+			next if $dxchan == $self;
+			if ($hops) {
+				$routeit = $line;
+				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+			} else {
+				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+				next unless $routeit;
+			}
+			if ($filter) {
+				$dxchan->send($routeit) if $routeit;
+			} else {
+				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
+				
+			}
+		} elsif ($dxchan->is_user) {
+			my $buf = Spot::formatb($_[0], $_[1], $_[2], $_[3], $_[4]);
+			$buf .= "\a\a" if $dxchan->beep;
+			$dxchan->send($buf);
+		}					
+	}
+}
 
 sub send_local_config
 {
@@ -728,9 +734,9 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
 		@nodes = DXNode::get_all();
-		@nodes = grep { $_->dxchan != $self } @nodes;
+		@nodes = grep { $_->dxchan != $self && !$_->dxchan->{isolate} } @nodes;
 		@nodes = grep { $_->{call} ne $main::mycall } @nodes;
-		@localnodes = grep { $_->dxchan->{call} eq $_->{call} && !$_->dxchan->{isolate} } @nodes if @nodes;
+		@localnodes = grep { $_->dxchan->{call} eq $_->{call} } @nodes if @nodes;
 		unshift @localnodes, DXCluster->get_exact($main::mycall);
 		@remotenodes = grep { $_->dxchan->{call} ne $_->{call} } @nodes if @nodes;
 	}

@@ -1,3 +1,7 @@
+02May99=======================================================================
+1. Added the mechanism for doing user spot filtering for spots in the cluster 
+(no user control just yet - but sysops can do it).
+2. Fixed problem with nodes sending out the node lists of isolated nodes.
 30Apr99=======================================================================
 1. Try to make it even more AK1A friendly by putting the node list out in the
 'correct' order.
