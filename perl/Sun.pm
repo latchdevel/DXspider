@@ -608,9 +608,9 @@ sub get_satellite_pos
 	my $epoch_day=$epoch-int(1000*$epoch_year);
 #printf("epoch_year = %10.2f\n",$epoch_year);
 #printf("epoch_day = %17.12f\n",$epoch_day);
-	$epoch_year=$epoch_year+2000 if ($epoch_year < 57);
-	$epoch_year=$epoch_year+1900 if ($epoch_year >= 57);
-	my $jt_epoch=Julian_Date_of_Year($epoch_year);
+	my $ep_year=$epoch_year+2000 if ($epoch_year < 57);
+	$ep_year=$epoch_year+1900 if ($epoch_year >= 57);
+	my $jt_epoch=Julian_Date_of_Year($ep_year);
 	$jt_epoch=$jt_epoch+$epoch_day;
 #printf("JT for epoch = %17.12f\n",$jt_epoch);
 	my $tsince=($jtime-$jt_epoch)*24*60;
@@ -673,16 +673,15 @@ sub get_satellite_pos
 	my $xl=mod2p($xls-$c5/$p*$axnsl);
 
 	my $u=mod2p($xl-$xnodes);
-	my $item3=0;	
+	my $item3;
 	my $eo1=$u;
 	my $tem5=1;
 	my $coseo1=0;
 	my $sineo1=0;
-	while ( abs($tem5) >= 1e-6 && $item3 < 10 )
+	for ($item3=0; abs($tem5) >= 1e-6 && $item3 < 10; $item3++ )
 	{
 		$sineo1=sin($eo1);
 		$coseo1=cos($eo1);
-		$item3 = $item3+1;
 		$tem5=1-$coseo1*$axnsl-$sineo1*$aynsl;
 		$tem5=($u-$aynsl*$coseo1+$axnsl*$sineo1-$eo1)/$tem5;
 		my $tem2=abs($tem5);
