@@ -173,20 +173,27 @@ sub extract
 		}
   
 		# which is the shortest part (first if equal)?
+		dbg("Parts: $call = " . join('|', @parts))	if isdbg('prefix');
 		$sp = $parts[0];
 		foreach $p (@parts) {
-			$sp = $p if length $sp > length $p;
+			$sp = $p if length $p < length $sp;
 		}
+		$sp =~ s/-\d+$//;     # remove any SSID
+		
 #		# now start to resolve it from the left hand end
 #		for ($i = 1; $i <= length $sp; ++$i) {
 		# now start to resolve it from the right hand end
 		for ($i = length $sp; $i >= 1; --$i) {
 			my @wout = get(substr($sp, 0, $i));
-			last if @wout > 0 && $wout[0] gt $sp;
+			next if @wout > 0 && $wout[0] gt $sp;
 #			last if @wout == 0;
 			push @out, @wout;
 			last if @wout;
 		}
+	}
+	if (isdbg('prefix')) {
+		my $dd = new Data::Dumper([ \@out ], [qw(@out)]);
+		dbg($dd->Dumpxs);
 	}
 	return @out;
 }

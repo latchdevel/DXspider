@@ -1,3 +1,5 @@
+25Jun02=======================================================================
+1. as predicted there was an error in the Prefix routine, I have improved it.
 24Jun02=======================================================================
 1. make set/badspotter non SSID sensitive. Set/badnode is left to be SSID
 sensitive. 
