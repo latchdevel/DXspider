@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual </TITLE>
+ <TITLE>The DXSpider Installation and Administration Manual </TITLE>
  <LINK HREF="adminmanual-1.html" REL=next>
 
 
@@ -12,9 +12,9 @@
 Previous
 Contents
 <HR>
-<H1>The DXSpider Administration Manual </H1>
+<H1>The DXSpider Installation and Administration Manual </H1>
 
-<H2>Ian Maude, G0VGS, (ian@lurpac.lancs.ac.uk)</H2>Version 0.1 November 1999
+<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 1.21 June 2000
 <P><HR>
 <EM>A reference for SysOps of the DXSpider DXCluster program.</EM>
 <HR>
@@ -29,20 +29,89 @@ Contents
 <LI><A HREF="adminmanual-1.html#ss1.5">1.5 Starting up for the first time</A>
 </UL>
 <P>
-<H2><A NAME="toc2">2.</A> <A HREF="adminmanual-2.html">Configuration</A></H2>
+<H2><A NAME="toc2">2.</A> <A HREF="adminmanual-2.html">The Client program</A></H2>
+
+<P>
+<H2><A NAME="toc3">3.</A> <A HREF="adminmanual-3.html">Configuration</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-2.html#ss2.1">2.1 Allowing ax25 connects from users</A>
-<LI><A HREF="adminmanual-2.html#ss2.2">2.2 Allowing telnet connects from users</A>
-<LI><A HREF="adminmanual-2.html#ss2.3">2.3 Setting up node connects</A>
-<LI><A HREF="adminmanual-2.html#ss2.4">2.4 Automating things</A>
+<LI><A HREF="adminmanual-3.html#ss3.1">3.1 Allowing ax25 connects from users</A>
+<LI><A HREF="adminmanual-3.html#ss3.2">3.2 Allowing telnet connects from users</A>
+<LI><A HREF="adminmanual-3.html#ss3.3">3.3 Setting up node connects</A>
+<LI><A HREF="adminmanual-3.html#ss3.4">3.4 Automating things</A>
 </UL>
 <P>
-<H2><A NAME="toc3">3.</A> <A HREF="adminmanual-3.html">Hop control and filtering</A></H2>
+<H2><A NAME="toc4">4.</A> <A HREF="adminmanual-4.html">Hop control</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-3.html#ss3.1">3.1 Basic hop control</A>
-<LI><A HREF="adminmanual-3.html#ss3.2">3.2 Isolating networks</A>
+<LI><A HREF="adminmanual-4.html#ss4.1">4.1 Basic hop control</A>
+<LI><A HREF="adminmanual-4.html#ss4.2">4.2 Isolating networks</A>
+</UL>
+<P>
+<H2><A NAME="toc5">5.</A> <A HREF="adminmanual-5.html">Filtering</A></H2>
+
+<UL>
+<LI><A HREF="adminmanual-5.html#ss5.1">5.1 Spots</A>
+<LI><A HREF="adminmanual-5.html#ss5.2">5.2 Announcements</A>
+<LI><A HREF="adminmanual-5.html#ss5.3">5.3 WWV</A>
+<LI><A HREF="adminmanual-5.html#ss5.4">5.4 Filtering Mail</A>
+<LI><A HREF="adminmanual-5.html#ss5.5">5.5 Filtering DX callouts</A>
+</UL>
+<P>
+<H2><A NAME="toc6">6.</A> <A HREF="adminmanual-6.html">Information, files and useful programs</A></H2>
+
+<UL>
+<LI><A HREF="adminmanual-6.html#ss6.1">6.1 MOTD</A>
+<LI><A HREF="adminmanual-6.html#ss6.2">6.2 Downtime message</A>
+<LI><A HREF="adminmanual-6.html#ss6.3">6.3 Other text messages</A>
+<LI><A HREF="adminmanual-6.html#ss6.4">6.4 The Aliases file</A>
+<LI><A HREF="adminmanual-6.html#ss6.5">6.5 Console.pl</A>
+</UL>
+<P>
+<H2><A NAME="toc7">7.</A> <A HREF="adminmanual-7.html">Sysop commands</A></H2>
+
+<UL>
+<LI><A HREF="adminmanual-7.html#ss7.1">7.1 announce sysop (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.2">7.2 connect (5) </A>
+<LI><A HREF="adminmanual-7.html#ss7.3">7.3 catch (9) </A>
+<LI><A HREF="adminmanual-7.html#ss7.4">7.4 dbcreate (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.5">7.5 dbimport (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.6">7.6 dbremove (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.7">7.7 debug (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.8">7.8 directory (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.9">7.9 disconnect (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.10">7.10 export (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.11">7.11 forward/opername (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.12">7.12 init (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.13">7.13 kill (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.14">7.14 kill full (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.15">7.15 load/aliases (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.16">7.16 load/bands (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.17">7.17 load/cmd_cache (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.18">7.18 load/messages (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.19">7.19 load/prefixes (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.20">7.20 merge (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.21">7.21 msg (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.22">7.22 pc (8)</A>
+<LI><A HREF="adminmanual-7.html#ss7.23">7.23 ping (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.24">7.24 rcmd (1)</A>
+<LI><A HREF="adminmanual-7.html#ss7.25">7.25 read (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.26">7.26 set/debug (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.27">7.27 set/isolate (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.28">7.28 set/sys_location (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.29">7.29 set/lockout (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.30">7.30 set/node (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.31">7.31 set/obscount (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.32">7.32 set/pinginterval (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.33">7.33 set/privilege (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.34">7.34 set/password (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.35">7.35 set/sys_qra (9)</A>
+<LI><A HREF="adminmanual-7.html#ss7.36">7.36 show program (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.37">7.37 shutdown (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.38">7.38 stat/db (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.39">7.39 stat/channel (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.40">7.40 stat/msg (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.41">7.41 stat/user (5)</A>
 </UL>
 <HR>
 <A HREF="adminmanual-1.html">Next</A>

@@ -1,5 +1,8 @@
 18Jun00=======================================================================
-1. fixed line ending ambiguities (I think) for telnet connections.
+1. fixed line ending ambiguities (I think) for telnet connections. Well 
+actually only really band aided it. It works but isn't how I want it. 
+Client.pl has got to go....
+2. Added 1.21 of Ian G0VGS's admin manual
 17Jun00=======================================================================
 1. I believe I have fixed all the login/logout 'broken pipe' errors
 2. Added G0RDI's 'links' command.
