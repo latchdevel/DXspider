@@ -112,4 +112,36 @@ sub bdist
 	$az = $az+2*$pi if $az < 0;
 	return (rd($az), $dx);
 }
+
+# turn a lat long string into floating point lat and long
+sub stoll
+{
+	my ($latd, $latm, $latl, $longd, $longm, $longl) = split /\s+/, shift;
+	
+	$longd += ($longm/60);
+	$longd = 0-$longd if (uc $longl) eq 'W'; 
+	$latd += ($latm/60);
+	$latd = 0-$latd if (uc $latl) eq 'S';
+	return ($latd, $longd);
+}
+
+# turn a lat and long into a string
+sub lltos
+{
+	my ($lat, $long) = @_;
+	my ($latd, $latm, $longd, $longm);
+	my $latl = $lat > 0 ? 'N' : 'S';
+	my $longl = $long > 0 ? 'E' : 'W';
+	
+	$lat = abs $lat;
+	$latd = int $lat;
+	$lat -= $latd;
+	$latm = int (60 * $lat);
+	
+	$long = abs $long;
+	$longd = int $long;
+	$long -= $longd;
+	$longm = int (60 * $long);
+	return "$latd $latm $latl $longd $longm $longl";
+}
 1;

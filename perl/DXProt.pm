@@ -388,13 +388,9 @@ sub normal
 			} elsif ($field[2] == 2) {
 				$user->qth($field[3]);
 			} elsif ($field[2] == 3) {
-				my ($latd, $latm, $latl, $longd, $longm, $longl) = split /\s+/, $field[3];
-				$longd += ($longm/60);
-				$longd = 0-$longd if (uc $longl) eq 'W'; 
-				$user->long($longd);
-				$latd += ($latm/60);
-				$latd = 0-$latd if (uc $latl) eq 'S';
-				$user->lat($latd);
+				my ($lat, $long) = DXBearing::stoll($field[3]);
+				$user->lat($lat);
+				$user->long($long);
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
 			}

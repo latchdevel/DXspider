@@ -85,7 +85,7 @@ sub get_cmd
   $n = @{$ref};
   for ($i = 0; $i < $n; $i += 3) {
     if ($s =~ /$ref->[$i]/i) {
-	  my $ri = qq{\$ro = "$ref->[$i+1]"};
+ 	  my $ri = qq{\$ro = "$ref->[$i+1]"};
 	  my $ro;
 	  eval $ri;
 	  return $ro;
@@ -105,16 +105,16 @@ sub get_hlp
 
   $let = lc $let;
   
-  checkfiles();
-  
   $ref = $alias{$let};
   return undef if !$ref;
   
   $n = @{$ref};
   for ($i = 0; $i < $n; $i += 3) {
     if ($s =~ /$ref->[$i]/i) {
-	  my $ri = qq{$ref->[$i+2]};
-	  return $ri;
+ 	  my $ri = qq{\$ro = "$ref->[$i+2]"};
+	  my $ro;
+	  eval $ri;
+	  return $ro;
 	}
   }
   return undef;

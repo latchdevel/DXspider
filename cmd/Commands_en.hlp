@@ -167,6 +167,9 @@ You can have multiple qualifiers so that you can have for example:-
 
 which should send a copy of message 123 to G1TLH and G0RDI and you will
 receive a read receipt when they have read the message.
+
+SB is an alias for SEND NOPRIVATE
+SP is an alias for SEND PRIVATE
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 

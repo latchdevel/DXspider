@@ -43,6 +43,12 @@ my $in;
 
 $line =~ s/![\w\/]//og;
 $line =~ s/\//\.\*\//og;
+$line =~ s/^\s+//og;
+$line =~ s/\s+$//og;
+
+# sort out aliases
+my $alias = CmdAlias::get_hlp($line);
+$line = $alias if $alias;
 
 my $include;
 foreach $in (<$h>) {
