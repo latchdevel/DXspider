@@ -2,6 +2,7 @@
 1. fixed reply so that reply b or reply nop generate a bulletin with the 
 correct address.
 2. implemented sh/muf command.
+3. reduced privilege of catchup and uncatchup to 5.
 20Oct99=======================================================================
 1. Translated all the subroutines of minimuf into perl as Minimuf.pm
 2. Limited the length of an ANN that is saved for de-duping to $pc12_dup_lth

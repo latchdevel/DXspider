@@ -10,7 +10,7 @@
 #
 
 my ($self, $line) = @_;
-return (1, $self->msg('e5')) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 5;
 
 my @f = split /\s+/, $line;
 return (1, "usage: catchup <node call> all|[<msgno ...]") unless @f >= 2;
