@@ -53,6 +53,7 @@ sub cease
 	my $sendz = shift;
 	if ($conn && $sendz) {
 		$conn->send_now("Z$call|bye...\n");
+		sleep(1);
 	}
 	$stdout->flush if $stdout;
 	if ($pid) {
@@ -62,6 +63,9 @@ sub cease
 	dbgclose();
 #	$SIG{__WARN__} = sub {my $a = shift; cluck($a); };
 	sleep(1);
+
+	# do we need this ?
+	$conn->disconnect if $conn;
 	exit(0);	
 }
 
