@@ -113,7 +113,7 @@ sub handle
 	if (my $user = $thing->{user}) {
 		my $ur = Route::get($user);
 		unless ($ur) {
-			my $uref = DXUser->get_current($user);
+			my $uref = DXUser->get_current($user) || Thingy::Hello::_upd_user_rec($user, $origin)->put;
 			if ($uref->is_node || $uref->is_aranea) {
 			    $ur = $nref->add($user, $thing->{v}, $thing->{h});
 				push @{$thing->{pc19n}}, $ur if $ur;

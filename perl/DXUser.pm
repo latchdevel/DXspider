@@ -297,6 +297,7 @@ sub put
 	$lru->put($call, $self);
 	my $ref = $self->encode;
 	$dbm->put($call, $ref);
+	return $self;
 }
 
 # freeze the user

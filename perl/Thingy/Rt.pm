@@ -162,7 +162,6 @@ sub _upd_user_rec
 	my $parentcall = shift;
 	
 	# add this station to the user database, if required
-	$call =~ s/-\d+$//o;	# remove ssid for users
 	my $user = DXUser->get_current($call);
 	$user = DXUser->new($call) if !$user;
 	$user->homenode($parentcall) if !$user->homenode;
