@@ -1,3 +1,5 @@
+03Oct01=======================================================================
+1. don't allow @WWW to become a 'TO' field...
 02Oct01=======================================================================
 1. fixed the 'ever lengthening msg' syndrome and probably made the whole
 thing more reliable at the same time.
