@@ -36,6 +36,9 @@ BEGIN {
 	open(CLLOCK, ">$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	print CLLOCK "$$\n";
 	close CLLOCK;
+
+	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
+
 }
 
 use Msg;
@@ -89,8 +92,6 @@ $starttime = 0;                 # the starting time of the cluster
 $lockfn = "cluster.lock";       # lock file name
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
-$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
-
 
       
 # send a message to call on conn and disconnect
