@@ -105,7 +105,7 @@ return (1, @out) unless $valid;
 # Store it here (but only if it isn't baddx)
 my $t = (int ($main::systime/60)) * 60;
 my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
-my $thing = Thingy::Dx->new(origin=>$main::mycall, group=>'DX', user=>$spotter);
+my $thing = Thingy::Dx->new(user=>$spotter);
 $thing->from_DXProt(spotdata=>\@spot);
 
 if ($DXProt::baddx->in($spotted) || $freq =~ /^69/ || $localonly) {
