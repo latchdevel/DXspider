@@ -27,6 +27,8 @@ $fp = DXLog::new('debug', 'dat', 'd');
 sub _store
 {
 	my $t = time; 
+	$fp->writeunix($t, "$t^$@") if $@; 
+	$fp->writeunix($t, "$t^$!") if $!; 
 	for (@_) {
 		$fp->writeunix($t, "$t^$_"); 
 		print STDERR $_;

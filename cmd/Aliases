@@ -83,6 +83,7 @@ package CmdAlias;
 	],
 	's' => [
 	  '^s/p$', 'send', 'send',
+	  '^sb$', 'send noprivate', 'send',
 	  '^set/nobe', 'unset/beep', 'unset/beep',
 	  '^set/nohe', 'unset/here', 'unset/here',
 	  '^set/noan', 'unset/announce', 'unset/announce',
@@ -91,6 +92,8 @@ package CmdAlias;
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
 	  '^sh$', 'show', 'show',
+      '^sh\w*/up', 'show/cluster', 'show/cluster',
+	  '^sh\w*/tnc', 'who', 'who',
 	  '^sh\w*/bu', 'show/files bulletins', 'show/files',
 	  '^sh\w*/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sh\w*/c$', 'show/configuration', 'show/configuration',
@@ -98,10 +101,10 @@ package CmdAlias;
 	  '^sh\w*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
 	  '^sh\w*/dx/(\d+)', 'show/dx $1', 'show/dx',
 	  '^sh\w*/dx/d(\d+)', 'show/dx from $1', 'show/dx',
-	  '^sp$', 'send', 'send',
-	  '^sb$', 'send noprivate', 'send',	
 	  '^sh\w*/w\w*/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
 	  '^sh\w*/w\w*/(\d+)', 'show/wwv $1', 'show/wwv',
+	  '^sp$', 'send', 'send',
+      	
     ],
 	't' => [
 	  '^ta$', 'talk', 'talk',

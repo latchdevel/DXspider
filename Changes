@@ -1,6 +1,8 @@
 19Nov99=======================================================================
 1. Added new version of sh/sun and also sh/moon from Steve K9AN
 2. Added rtt to who.
+3. added Aliase for show/tnc_sta to who.
+4. added Alias for show/uptime to sh/cl 
 18Nov99=======================================================================
 1. Added ping obs counter together with Time::HiRes timers. This will dis-
 connect nodes that fail to respond to 3 ping requests (on the 4th attempt). 

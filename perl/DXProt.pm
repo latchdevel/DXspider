@@ -816,7 +816,7 @@ sub finish
 	my $ref = DXCluster->get_exact($call);
 	
 	$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
-
+	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;

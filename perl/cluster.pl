@@ -104,7 +104,9 @@ sub rec
 	my $dxchan = DXChannel->get_by_cnum($conn); # get the dxconnnect object for this message
 	
 	if (defined $err && $err) {
-		disconnect($dxchan) if defined $dxchan;
+		if ($dxchan) {
+			disconnect($dxchan);
+		}
 		return;
 	}
 	
@@ -266,6 +268,7 @@ sub process_inqueue
 		$dxchan->normal($line);
 		disconnect($dxchan) if ($dxchan->{state} eq 'bye');
 	} elsif ($sort eq 'Z') {
+		$dxchan->conn(undef);
 		disconnect($dxchan);
 	} elsif ($sort eq 'D') {
 		;                       # ignored (an echo)
