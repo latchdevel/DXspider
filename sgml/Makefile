@@ -19,6 +19,6 @@ all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../t
 
 #	../html/spiderFAQ.html: spiderFAQ.sgml
 	sgml2html spiderFAQ.sgml
-	perl -pi.bak -e 's/<BODY>/<BODY BGCOLOR="#ffffff">/' *.html
+	perl -pi.bak -e 's|</HEAD>|<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">\n</HEAD>|' *.html
 	mv spid*.html ../html
 	rm -f *.bak
