@@ -1158,11 +1158,9 @@ sub finish
 	my @gonenodes = grep { $_->dxchan != $self && $_->dxchan != $me } DXNode::get_all();
 	my $node;
 	
-	foreach $node (DXNode::get_all) {
-		next if $node->call eq $call;
-		next if $node->call eq $main::mycall;
-		broadcast_ak1a(pc21($node->call, 'Gone') , $self) unless $self->{isolate}; 
-		$node->del();
+	foreach my $dxchan (DXChannel::get_all_nodes) {
+		next if $dxchan == $self || $dxchan == $me;
+		broadcast_ak1a(pc21($dxchan->call, 'Gone') , $self) unless $self->{isolate}; 
 	}
 
 	# remove outstanding pings
