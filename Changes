@@ -1,3 +1,6 @@
+03May01=======================================================================
+1. It appears that for ages now, not enough PC19 and PC16s are being sent
+if you have more than one of them. Sigh..
 02May01=======================================================================
 1. put an upper limit on the number of concurrent errors allowed in command
 mode (20). This should disconnect runaway spot suckers....

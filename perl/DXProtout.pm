@@ -76,17 +76,17 @@ sub pc16
 {
 	my $self = shift;
 	my @out;
+	my $i;
 
-	foreach (@_) {
+	for ($i = 0; @_; ) {
 		my $str = "PC16^$self->{call}";
-		my $i;
-    
-		for ($i = 0; @_ > 0  && $i < $DXProt::pc16_max_users; $i++) {
+		for ( ; @_ && $i < $DXProt::pc16_max_users; $i++) {
 			my $ref = shift;
 			$str .= sprintf "^%s %s %d", $ref->call, $ref->confmode ? '*' : '-', $ref->here;
 		}
 		$str .= sprintf "^%s^", get_hops(16);
 		push @out, $str;
+		$i = 0;
 	}
 	return (@out);
 }
@@ -112,12 +112,14 @@ sub pc19
 {
 	my $self = shift;
 	my @out;
+	my $i;
+	
 
-	while (@_) {
+	for ($i = 0; @_; ) {
 		my $str = "PC19";
 		my $i;
     
-		for ($i = 0; @_ && $i < $DXProt::pc19_max_nodes; $i++) {
+		for (; @_ && $i < $DXProt::pc19_max_nodes; $i++) {
 			my $ref = shift;
 			my $here = $ref->{here} ? '1' : '0';
 			my $confmode = $ref->{confmode} ? '1' : '0';
@@ -125,6 +127,7 @@ sub pc19
 		}
 		$str .= sprintf "^%s^", get_hops(19);
 		push @out, $str;
+		$i = 0;
 	}
 	return @out;
 }
