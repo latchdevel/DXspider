@@ -19,5 +19,6 @@ all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../t
 
 #	../html/spiderFAQ.html: spiderFAQ.sgml
 	sgml2html spiderFAQ.sgml
-	perl -p -e 's/<BODY>/<BODY BGCOLOR="#ffffff">/' *.html
+	perl -pi.bak -e 's/<BODY>/<BODY BGCOLOR="#ffffff">/' *.html
 	mv spid*.html ../html
+	rm -f *.bak
