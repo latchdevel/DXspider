@@ -697,9 +697,7 @@ sub normal
 				my ($lat, $long) = DXBearing::stoll($field[3]);
 				$user->lat($lat);
 				$user->long($long);
-				my $qra = $user->qra || DXBearing::lltoqra($lat, $long);
-				$qra = DXBearing::lltoqra($lat, $long) unless $qra && DXBearing::is_qra($qra);
-				$user->qra($qra) if $qra ne $user->qra;
+				$user->qra(DXBearing::lltoqra($lat, $long)) unless $user->qra && DXBearing::is_qra($user->qra);
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
 			}
