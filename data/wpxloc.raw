@@ -1,4 +1,5 @@
-! highest number now 336
+! highest number now 337
+! added E4 (Palestine) to 337
 ! made T9, 9A, S5 separate countries
 ! VR6 > VP6                                   980504
 ! H40 added                                   980318
@@ -203,6 +204,8 @@ DL Germany-DL                          32 28 14 -1.0 51 0 0 N 6 0 0 E @
 DU Phillippines-DU                     33 50 27 -8.0 14 36 0 N 121 0 0 E @
 DV,DW,DX,DY,DZ,4D,4E,4F,4G,4H,4I Phillippines-DU   33 50 27 -8.0 14 36 0 N 121 0 0 E
 AM,AN,AO,EB,EC,ED,EF,EG,EH Spain-EA    34 37 14 -1.0 40 24 0 N 3 42 0 W
+E4 Palestine-Gaza                      337 39 20 -2.0 31 29 0 N 34 25 0 E @
+E4 Palestine-W-Bank                    337 39 20 -2.0 31 32 0 N 35 6 0 E
 EA Spain-EA                            34 37 14 -1.0 40 24 0 N 3 42 0 W @
 AM6,AN6,AO6,EB6,EC6,ED6,EF6,EG6,EH6 Balearic-Is-EA6 35 37 14 -1.0 39 30 0 N 3 0 0 E
 EA6 Balearic-Is-EA6                    35 37 14 -1.0 39 30 0 N 3 0 0 E @

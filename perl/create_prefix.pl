@@ -6,6 +6,18 @@
 # $Id$
 #
 
+require 5.004;
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
 use DXVars;
 use Data::Dumper;
 
