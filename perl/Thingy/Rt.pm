@@ -76,12 +76,12 @@ sub handle_cf
 {
 	my $thing = shift;
 	my $dxchan = shift;
-	my $origin = $thing->{origin};
+	my $origin = $thing->{user} || $thing->{origin};
 	my $chan_call = $dxchan->{call};
 	
 	my $parent = Route::Node::get($origin);
 	unless ($parent) {
-		dbg("Thingy::Rt::lcf: received from $origin on $chan_call unknown") if isdbg('chanerr');
+		dbg("Thingy::Rt::cf: received from $thing->{origin}/$origin on $chan_call unknown") if isdbg('chanerr');
 		return;
 	}
 
@@ -156,6 +156,24 @@ sub handle_cf
 	}
 
 	return $thing;
+}
+
+# 
+# copy out the PC16 data for a node into the
+# pc16n and u slots if there are any users 
+#
+sub copy_node_pc16_data
+{
+	my $thing = shift;
+	my $uref = shift;
+	
+	my @u = $uref->users;
+	if (@u) {
+		$thing->{pc16n} = $uref;
+		$thing->{pc16u} = [map {Route::User::get($_)} @u];
+		return scalar @u;
+	}
+	return undef;
 }
 
 sub _add_user

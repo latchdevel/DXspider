@@ -1094,6 +1094,9 @@ sub handle_20
 	$self->send(pc22());
 	$self->state('normal');
 	$self->{lastping} = 0;
+	my $thing = Thingy::Rt->new(user=>$self->{call});
+	my $nref = Route::Node::get($self->{call});
+	$thing->broadcast if $thing->copy_pc16_data($nref);
 }
 		
 # delete a cluster from the list
@@ -1174,6 +1177,9 @@ sub handle_22
 	my $origin = shift;
 	$self->state('normal');
 	$self->{lastping} = 0;
+	my $thing = Thingy::Rt->new(user=>$self->{call});
+	my $nref = Route::Node::get($self->{call});
+	$thing->broadcast if $thing->copy_pc16_data($nref);
 }
 				
 # WWV info
