@@ -7,6 +7,7 @@ the node (which you will need to do anyway).
 which will allow local and remote users to execute commands as though they
 are Databases. You can also include these databases in chains. What you do
 with this, is ofcourse a moot question.   
+3. Update manuals (g0vgs)
 11Mar03=======================================================================
 1. Changed the name of show/qsl to show/dxqsl.
 2. Alter Commands_en.hlp to match new name and issue manual updates (g0vgs)
