@@ -346,8 +346,9 @@ sub disconnect
 	my $user = $self->{user};
 	my $conn = $self->{conn};
 	my $call = $self->{call};
+    my $nopc39 = shift || 0;
 	
-	$self->finish();
+	$self->finish($nopc39);
 	$conn->send_now("Z$call|bye") if $conn; # this will cause 'client' to disconnect
 	$user->close() if defined $user;
 	$conn->disconnect() if $conn;

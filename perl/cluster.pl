@@ -94,7 +94,7 @@ sub already_conn
 	dbg('chan', "-> Z $call bye\n");
 	$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
 	sleep(1);
-	$conn->disconnect;
+	$conn->disconnect();
 }
 
 # handle incoming messages
@@ -105,7 +105,7 @@ sub rec
 	
 	if (defined $err && $err) {
 		if ($dxchan) {
-			disconnect($dxchan);
+			$dxchan->disconnect;
 		}
 		return;
 	}
@@ -184,18 +184,6 @@ sub cease
 	};
 	dbg('local', "Local::finish error $@") if $@;
 
-	# disconnect users
-	foreach $dxchan (DXChannel->get_all()) {
-		next if $dxchan->is_ak1a;
-		disconnect($dxchan) unless $dxchan == $DXProt::me;
-	}
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-
 	# disconnect nodes
 	foreach $dxchan (DXChannel->get_all()) {
 		next unless $dxchan->is_ak1a;
@@ -207,6 +195,12 @@ sub cease
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
+
+	# disconnect users
+	foreach $dxchan (DXChannel->get_all()) {
+		next if $dxchan->is_ak1a;
+		disconnect($dxchan) unless $dxchan == $DXProt::me;
+	}
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);

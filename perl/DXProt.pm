@@ -190,7 +190,7 @@ sub normal
 			
 			# is it for me or one of mine?
 			my $call = ($field[5] gt ' ') ? $field[5] : $field[2];
-			if ($call eq $main::mycall || grep $_ eq $call, get_all_user_calls()) {
+			if ($call eq $main::mycall || grep $_ eq $call, DXChannel::get_all_user_calls()) {
 				
 				# yes, it is
 				my $text = unpad($field[3]);
@@ -818,9 +818,10 @@ sub finish
 {
 	my $self = shift;
 	my $call = $self->call;
+	my $nopc39 = shift;
 	my $ref = DXCluster->get_exact($call);
 	
-	$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
+	$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op"))) unless $nopc39;
 	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
