@@ -1,79 +1,91 @@
-#! /bin/sh
-#
-###################################################
-#
-# Edit the following lines
-#
-#
-portnumber=$"1407"
-tempdir=$"/usr/local/httpd/spider/client/"
-clustercall=$"PA4AB-15"
-#
-#
-#
-# End of configurable part
-#
-####################################################
-hostname=$"localhost"
+#!/usr/bin/perl
 
-echo "Content-type: text/html"
-echo
-echo "<HTML><HEAD>"
-echo "<TITLE>Spider DX Cluster</TITLE>"
-echo "</HEAD><BODY>"
-echo '<BODY BGCOLOR="#d8d0c8">'
-echo "<PRE>"
+# cluster-web.pl - perl login script for cluster web interface.
+# @author Ian Norton 
+# - Based on clx-web by DL6DBH (ftp://clx.muc.de/pub/clx/clx-java_10130001.tgz)
+# - Modified by PA4AB
+# @version 0.1 beta.  20010610.
 
-pattern=$(echo ${QUERY_STRING} | sed -e s,'call=',, | sed -e s/"&passwd="/" "/)
-call=$(echo $pattern | cut -d' ' -f1)
-passwd=$(echo $pattern | cut -s -d' ' -f2)
+# Work out the hostname of this server.
+use Sys::Hostname;
+my $HOSTNAME = hostname();
 
+# Set the hostname manually here if the above fails.
+# $HOSTNAME = "gb7mbc.spoo.org" ;
+$PORT = "8000" ;
 
-if [ ${call} = ""]  ; then
-  echo "<BR>"
-  echo "<CENTER>"
-  echo "<STRONG><FONT SIZE=5>Welcome to the Spider DX Cluster</FONT></STRONG>"
-  echo "<STRONG><FONT SIZE=5>"
-  echo ${clustercall}
-  echo "</FONT></STRONG>"
-  echo "<P> &nbsp; </P>"
-  echo '<FORM action="/cgi-bin/spider.cgi" method=get>'
-  echo "<STRONG>Your Call Please: </STRONG> "
-  echo '<INPUT name="call" size=10> '
-  echo '<INPUT type=submit value="Click here to Login">'
-  echo "</CENTER>"
-  echo "<BR>"
+# Send text/html header to the browser.
+print "Content-type: text/html\n\n";
 
+# Get the parameters passed to the script.
+read (STDIN, $post_data, $ENV{CONTENT_LENGTH});
+@call = split (/=/, $post_data) ;
+
+# Print the page header.
+
+print <<'EOF';
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML LANG="EN">
+    <HEAD>
+        <TITLE>Cluster Web - DX Cluster Web Interface.</TITLE>
+        <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=ISO-8859-1">
+        <META NAME="Author" CONTENT="Ian Norton.">
+        <META NAME="DESCRIPTION" CONTENT="DX Cluster web interface">
+    </HEAD>
+ 
+<BODY BGCOLOR="#FFFFFF" LINK="#008080" ALINK="#000099" VLINK="#000099">         
+
+    <H1>
+    <CENTER>
+        <FONT FACE="arial, helvicta" COLOR="#008080" SIZE=+2>
+        <B><BR>Cluster Web - DX Cluster Web Interface.</B><BR>
+EOF
+
+        print("Welcome to $HOSTNAME<BR>") ;
+
+print <<'EOF';
+        </FONT>
+    </CENTER>
+    </H1>
+
+<BR CLEAR="ALL">
+
+<HR>
+EOF
+
+if($ENV{CONTENT_LENGTH} > 0)
+    {
+    # Callsign is set - print the whole <APPLET> stuff....
+    # print("Callsign is $call[1]<BR>\n") ;
+
+    print("<CENTER>\n") ;
+    print("    <APPLET CODE=\"spiderclient.class\" CODEBASE=\"/client/\" width=800 height=130>\n") ;
+    print("        <PARAM NAME=\"CALL\" VALUE=\"$call[1]\">\n") ;
+    print("        <PARAM NAME=\"HOSTNAME\" VALUE=\"$HOSTNAME\">\n") ;
+    print("        <PARAM NAME=\"PORT\" VALUE=\"$PORT\">\n") ;
+    print("    </APPLET>\n") ;
+    print("</CENTER>\n") ;
+    }
 else
-  echo "<HTML>" > ${tempfile}${call}.html
-  echo "<HEAD>" >> ${tempfile}${call}.html
-  echo "</HEAD>" >> ${tempfile}${call}.html
-  echo "<BODY>" >> ${tempfile}${call}.html
-  echo '<APPLET code="spiderclient.class" width=800 height=130>'  >> ${tempdir}${call}.html
-  echo '<PARAM NAME="CALL" VALUE='  >> ${tempdir}${call}.html
-  echo ${call}  >> ${tempdir}${call}.html
-  echo ">" >> ${tempdir}${call}.html
-  echo ">"  >> ${tempdir}${call}.html 
-  echo '<PARAM NAME="HOSTNAME" VALUE="'  >> ${tempdir}${call}.html
-  echo ${hostname} >> ${tempdir}${call}.html
-  echo '">' >> ${tempdir}${call}.html
-  echo '<PARAM NAME="PORT" VALUE="'  >> ${tempdir}${call}.html
-  echo ${portnumber} >> ${tempdir}${call}.html
-  echo '">' >> ${tempdir}${call}.html
-  echo "</APPLET>"  >> ${tempdir}${call}.html
-  echo "</BODY>"  >> ${tempdir}${call}.html
-  echo "</HTML>"  >> ${tempdir}${call}.html
-  GOTO='<meta http-equiv="refresh"content="0;URL=http://'${hostname}'/client/'
-  GOTO=$GOTO$call.html
-  GOTO=$GOTO'">'
-  echo ${GOTO}
+    {
+    # Callsign isn't set - print the login page.
+    print <<'EOF';
+    <CENTER>
+    <FORM METHOD=POST>
+        <STRONG>Please enter your callsign: </STRONG><BR>
+        <INPUT name="call" size=10><BR>
+        <INPUT type=submit value="Click here to Login">
+    </FORM>
+    </CENTER>
+EOF
+    }
 
-fi
-  echo "</PRE>"
-  echo "</BODY></HTML>"
+print <<'EOF';
+<HR>
 
-#  all *.html tempory files remove older than 10 min 
-# 
-cd ${tempdir}
-files=$(find  *.html -mmin +10)
-rm ${files}
+<ADDRESS>
+<A HREF="http://www.dxcluster.org/">Spider Homepage</A>.
+</HTML>
+
+EOF
