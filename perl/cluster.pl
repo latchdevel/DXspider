@@ -129,7 +129,7 @@ sub rec
 		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);
 		if (DXChannel->get($call)) {
-			my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call);
+			my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
 			already_conn($conn, $call, $mess);
 			return;
 		}
@@ -139,16 +139,16 @@ sub rec
 			if (($user->is_node || $call eq $myalias) && !DXCluster->get_exact($call)) {
 				;
 			} else {
-				if (DXCluster->get_exact($call)) {
-					my $mess = DXM::msg($lang, $user->is_node ? 'concluster' : 'conother', $call);
+				if (my $ref = DXCluster->get_exact($call)) {
+					my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
 					already_conn($conn, $call, $mess);
 					return;
 				}
 			}
 			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 		} else {
-			if (DXCluster->get_exact($call)) {
-				my $mess = DXM::msg($lang, 'conother', $call);
+			if (my $ref = DXCluster->get_exact($call)) {
+				my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
 				already_conn($conn, $call, $mess);
 				return;
 			}
@@ -159,6 +159,7 @@ sub rec
 		if ($user->lockout) {
 			Log('DXCommand', "$call is locked out, disconnected");
 			$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
+			$conn->disconect;
 			return;
 		}
 
