@@ -23,7 +23,7 @@ foreach $call (@calls) {
 		} 
 		$dxchan->disconnect;
 		push @out, $self->msg('disc2', $call);
-	} elsif (my $conn = Msg->call($call)) {
+	} elsif (my $conn = Msg->conns($call)) {
 		$conn->disconnect;
 	} else {
 		push @out, $self->msg('e10', $call);

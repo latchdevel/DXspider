@@ -13,26 +13,21 @@ package Msg;
 use strict;
 use IO::Select;
 use IO::Socket;
-use Carp;
+use DXDebug;
+use Timer;
+use Errno qw(EWOULDBLOCK EAGAIN EINPROGRESS);
+use POSIX qw(F_GETFL F_SETFL O_NONBLOCK);
 
-use vars qw(%rd_callbacks %wt_callbacks $rd_handles $wt_handles $now @timerchain %conns);
+use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns);
 
 %rd_callbacks = ();
 %wt_callbacks = ();
+%er_callbacks = ();
 $rd_handles   = IO::Select->new();
 $wt_handles   = IO::Select->new();
+$er_handles   = IO::Select->new();
+
 $now = time;
-@timerchain = ();
-
-my $blocking_supported = 0;
-
-BEGIN {
-    # Checks if blocking is supported
-    eval {
-        require POSIX; POSIX->import(qw (F_SETFL O_NONBLOCK EAGAIN));
-    };
-    $blocking_supported = 1 unless $@;
-}
 
 #
 #-----------------------------------------------------------------
@@ -54,7 +49,28 @@ sub new
 		timeval => 60,
     };
 
+	$noconns++;
+	dbg('connll', "Connection created ($noconns)");
 	return bless $conn, $class;
+}
+
+sub set_error
+{
+	my $conn = shift;
+	my $callback = shift;
+	$conn->{eproc} = $callback;
+	set_event_handler($conn->{sock}, error => $callback) if exists $conn->{sock};
+}
+
+sub blocking
+{
+	my $flags = fcntl ($_[0], F_GETFL, 0);
+	if ($_[1]) {
+		$flags &= ~O_NONBLOCK;
+	} else {
+		$flags |= O_NONBLOCK;
+	}
+	fcntl ($_[0], F_SETFL, $flags);
 }
 
 # save it
@@ -70,6 +86,7 @@ sub conns
 		confess "changing $pkg->{call} to $call" if exists $pkg->{call} && $call ne $pkg->{call};
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
+		dbg('connll', "Connection $call stored");
 	} else {
 		$ref = $conns{$call};
 	}
@@ -83,11 +100,8 @@ sub pid_gone
 	
 	my @pid = grep {$_->{pid} == $pid} values %conns;
 	for (@pid) {
-		if ($_->{rproc}) {
-			&{$_->{rproc}}($_, undef, "$pid has gorn");
-		} else {
-			$_->disconnect;
-		}
+		&{$_->{eproc}}($_, "$pid has gorn") if exists $_->{eproc};
+		$_->disconnect;
 	}
 }
 
@@ -101,17 +115,24 @@ sub connect {
 	unless (ref $pkg) {
 		$conn = $pkg->new($rproc);
 	}
+	$conn->{peerhost} = $to_host;
+	$conn->{peerport} = $to_port;
+	$conn->{sort} = 'Outgoing';
 	
     # Create a new internet socket
-    my $sock = IO::Socket::INET->new (
-                                      PeerAddr => $to_host,
-                                      PeerPort => $to_port,
-                                      Proto    => 'tcp',
-                                      Reuse    => 1,
-									  Timeout  => $conn->{timeval} / 2);
-
+    my $sock = IO::Socket::INET->new();
     return undef unless $sock;
-
+	
+	my $proto = getprotobyname('tcp');
+	$sock->socket(AF_INET, SOCK_STREAM, $proto) or return undef;
+	
+	blocking($sock, 0);
+	my $ip = gethostbyname($to_host);
+	my $r = $sock->connect($to_port, $ip);
+	unless ($r) {
+		return undef unless $! == EINPROGRESS;
+	}
+	
 	$conn->{sock} = $sock;
     
     if ($conn->{rproc}) {
@@ -123,18 +144,26 @@ sub connect {
 
 sub disconnect {
     my $conn = shift;
+	return if exists $conn->{disconnecting};
+
+	$conn->{disconnecting} = 1;
     my $sock = delete $conn->{sock};
 	$conn->{state} = 'E';
 	delete $conn->{cmd};
-	$conn->{timeout}->del_timer if $conn->{timeout};
+	delete $conn->{eproc};
+	delete $conn->{rproc};
+	$conn->{timeout}->del if $conn->{timeout};
 
 	# be careful to delete the correct one
-	if (my $call = $conn->{call}) {
+	my $call;
+	if ($call = $conn->{call}) {
 		my $ref = $conns{$call};
 		delete $conns{$call} if $ref && $ref == $conn;
 	}
+	$call ||= 'unallocated';
+	dbg('connll', "Connection $call disconnected");
 	
-    set_event_handler ($sock, "read" => undef, "write" => undef);
+    set_event_handler ($sock, read => undef, write => undef, error => undef);
 	unless ($^O =~ /^MS/i) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
 	}
@@ -159,7 +188,7 @@ sub send_later {
 
 sub enqueue {
     my $conn = shift;
-    push (@{$conn->{outqueue}}, $_[0]);
+    push (@{$conn->{outqueue}}, defined $_[0] ? $_[0] : '');
 }
 
 sub _send {
@@ -174,7 +203,7 @@ sub _send {
     # return to the event loop only after every message, or if it
     # is likely to block in the middle of a message.
 
-    $flush ? $conn->set_blocking() : $conn->set_non_blocking();
+	blocking($sock, $flush);
     my $offset = (exists $conn->{send_offset}) ? $conn->{send_offset} : 0;
 
     while (@$rq) {
@@ -195,8 +224,7 @@ sub _send {
                     # be called back eventually, and will resume sending
                     return 1;
                 } else {    # Uh, oh
-					delete $conn->{send_offset};
-                    $conn->handle_send_err($!);
+					&{$conn->{eproc}}($conn, $!) if exists $conn->{eproc};
 					$conn->disconnect;
                     return 0; # fail. Message remains in queue ..
                 }
@@ -215,37 +243,22 @@ sub _send {
         set_event_handler ($sock, "write" => sub {$conn->_send(0)});
     } else {
         set_event_handler ($sock, "write" => undef);
+		if (exists $conn->{close_on_empty}) {
+			&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
+			$conn->disconnect; 
+		}
     }
     1;  # Success
 }
 
 sub _err_will_block {
-    if ($blocking_supported) {
-        return ($_[0] == EAGAIN());
-    }
-    return 0;
-}
-sub set_non_blocking {                        # $conn->set_blocking
-    if ($blocking_supported) {
-        # preserve other fcntl flags
-        my $flags = fcntl ($_[0], F_GETFL(), 0);
-        fcntl ($_[0], F_SETFL(), $flags | O_NONBLOCK());
-    }
-}
-sub set_blocking {
-    if ($blocking_supported) {
-        my $flags = fcntl ($_[0], F_GETFL(), 0);
-        $flags  &= ~O_NONBLOCK(); # Clear blocking, but preserve other flags
-        fcntl ($_[0], F_SETFL(), $flags);
-    }
+	return ($_[0] == EAGAIN || $_[0] == EWOULDBLOCK || $_[0] == EINPROGRESS);
 }
 
-sub handle_send_err {
-   # For more meaningful handling of send errors, subclass Msg and
-   # rebless $conn.  
-   my ($conn, $err_msg) = @_;
-   warn "Error while sending: $err_msg \n";
-   set_event_handler ($conn->{sock}, "write" => undef);
+sub close_on_empty
+{
+	my $conn = shift;
+	$conn->{close_on_empty} = 1;
 }
 
 #-----------------------------------------------------------------
@@ -259,7 +272,7 @@ sub new_server {
     $self->{sock} = IO::Socket::INET->new (
                                           LocalAddr => $my_host,
                                           LocalPort => $my_port,
-                                          Listen    => 5,
+                                          Listen    => SOMAXCONN,
                                           Proto     => 'tcp',
                                           Reuse     => 1);
     die "Could not create socket: $! \n" unless $self->{sock};
@@ -270,11 +283,17 @@ sub new_server {
 sub dequeue
 {
 	my $conn = shift;
-	my $msg;
-	
-	while ($msg = shift @{$conn->{inqueue}}){
-		&{$conn->{rproc}}($conn, $msg, $!);
-		$! = 0;
+
+	if ($conn->{msg} =~ /\n/) {
+		my @lines = split /\r?\n/, $conn->{msg};
+		if ($conn->{msg} =~ /\n$/) {
+			delete $conn->{msg};
+		} else {
+			$conn->{msg} = pop @lines;
+		}
+		for (@lines) {
+			&{$conn->{rproc}}($conn, defined $_ ? $_ : '');
+		}
 	}
 }
 
@@ -286,27 +305,11 @@ sub _rcv {                     # Complement to _send
     return unless defined($sock);
 
 	my @lines;
-    $conn->set_non_blocking();
+	blocking($sock, 0);
 	$bytes_read = sysread ($sock, $msg, 1024, 0);
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
-			if ($msg =~ /\n/) {
-				@lines = split /\r?\n/, $msg;
-				if (@lines) {
-					$lines[0] = $conn->{msg} . $lines[0] if exists $conn->{msg};
-				} else {
-					$lines[0] = $conn->{msg} if exists $conn->{msg};
-					push @lines, '' unless @lines;
-				}
-				if ($msg =~ /\n$/) {
-					delete $conn->{msg};
-				} else {
-					$conn->{msg} = pop @lines;
-				}
-				push @{$conn->{inqueue}}, @lines if @lines;
-			} else {
-				$conn->{msg} .= $msg;
-			}
+			$conn->{msg} .= $msg;
 		} 
 	} else {
 		if (_err_will_block($!)) {
@@ -318,11 +321,10 @@ sub _rcv {                     # Complement to _send
 
 FINISH:
     if (defined $bytes_read && $bytes_read == 0) {
-#		$conn->disconnect();
-		&{$conn->{rproc}}($conn, undef, $!);
-		delete $conn->{inqueue};
+		&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
+		$conn->disconnect();
     } else {
-		$conn->dequeue;
+		$conn->dequeue if exists $conn->{msg};
 	}
 }
 
@@ -331,12 +333,18 @@ sub new_client {
     my $sock = $server_conn->{sock}->accept();
     my $conn = $server_conn->new($server_conn->{rproc});
 	$conn->{sock} = $sock;
-    my $rproc = &{$server_conn->{rproc}} ($conn, $sock->peerhost(), $sock->peerport());
+    my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
+	$conn->{sort} = 'Incoming';
+	if ($eproc) {
+		$conn->{eproc} = $eproc;
+        set_event_handler ($sock, "error" => $eproc);
+	}
     if ($rproc) {
         $conn->{rproc} = $rproc;
         my $callback = sub {_rcv($conn)};
         set_event_handler ($sock, "read" => $callback);
     } else {  # Login failed
+		&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
         $conn->disconnect();
     }
 }
@@ -346,6 +354,14 @@ sub close_server
 	my $conn = shift;
 	set_event_handler ($conn->{sock}, "read" => undef);
 	$conn->{sock}->close;
+}
+
+# close all clients (this is for forking really)
+sub close_all_clients
+{
+	for (values %conns) {
+		$_->disconnect;
+	}
 }
 
 #----------------------------------------------------
@@ -375,59 +391,53 @@ sub set_event_handler {
             $rd_handles->remove($handle);
        }
     }
-}
-
-sub new_timer
-{
-    my ($pkg, $time, $proc, $recur) = @_;
-	my $obj = ref($pkg);
-	my $class = $obj || $pkg;
-	my $self = bless { t=>$time + time, proc=>$proc }, $class;
-	$self->{interval} = $time if $recur;
-	push @timerchain, $self;
-	return $self;
-}
-
-sub del_timer
-{
-	my $self = shift;
-	@timerchain = grep {$_ != $self} @timerchain;
+    if (exists $args{'error'}) {
+        $callback = $args{'error'};
+        if ($callback) {
+            $er_callbacks{$handle} = $callback;
+            $er_handles->add($handle);
+        } else {
+            delete $er_callbacks{$handle};
+            $er_handles->remove($handle);
+       }
+    }
 }
 
 sub event_loop {
     my ($pkg, $loop_count, $timeout) = @_; # event_loop(1) to process events once
-    my ($conn, $r, $w, $rset, $wset);
+    my ($conn, $r, $w, $e, $rset, $wset, $eset);
     while (1) {
  
        # Quit the loop if no handles left to process
         last unless ($rd_handles->count() || $wt_handles->count());
         
-		($rset, $wset) =
-            IO::Select->select ($rd_handles, $wt_handles, undef, $timeout);
+		($rset, $wset) = IO::Select->select($rd_handles, $wt_handles, $er_handles, $timeout);
 		$now = time;
 		
+        foreach $e (@$eset) {
+            &{$er_callbacks{$e}}($e) if exists $er_callbacks{$e};
+        }
         foreach $r (@$rset) {
-            &{$rd_callbacks{$r}} ($r) if exists $rd_callbacks{$r};
+            &{$rd_callbacks{$r}}($r) if exists $rd_callbacks{$r};
         }
         foreach $w (@$wset) {
             &{$wt_callbacks{$w}}($w) if exists $wt_callbacks{$w};
         }
 
-		# handle things on the timer chain
-		for (@timerchain) {
-			if ($now >= $_->{t}) {
-				&{$_->{proc}}();
-				$_->{t} = $now + $_->{interval} if exists $_->{interval};
-			}
-		}
-
-		# remove dead timers
-		@timerchain = grep { $_->{t} > $now } @timerchain;
+		Timer::handler;
 		
         if (defined($loop_count)) {
             last unless --$loop_count;
         }
     }
+}
+
+sub DESTROY
+{
+	my $conn = shift;
+	my $call = $conn->{call} || 'unallocated';
+	dbg('connll', "Connection $call being destroyed ($noconns)");
+	$noconns--;
 }
 
 1;

@@ -1,3 +1,6 @@
+13Mar01=======================================================================
+1. implemented first cut at non blocking connect
+2. removed memory leakage in connects
 10Mar01=======================================================================
 1. minor changes to the admin manual to reflect differences in distibutions
 thanks to pa3ezl (g0vgs)

@@ -1148,7 +1148,6 @@ sub finish
 {
 	my $self = shift;
 	my $call = $self->call;
-	my $conn = shift;
 	my $ref = DXCluster->get_exact($call);
 	
 	# unbusy and stop and outgoing mail

@@ -26,12 +26,23 @@ sub enqueue
 sub dequeue
 {
 	my $conn = shift;
-	my $msg;
-	
-	while ($msg = shift @{$conn->{inqueue}}){
-		$msg =~ s/\%([2-9A-F][0-9A-F])/chr(hex($1))/eg;
-		$msg =~ s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
-		&{$conn->{rproc}}($conn, $msg, $!);
-		$! = 0;
+
+	if ($conn->{msg} =~ /\n/) {
+		my @lines = split /\r?\n/, $conn->{msg};
+		if ($conn->{msg} =~ /\n$/) {
+			delete $conn->{msg};
+		} else {
+			$conn->{msg} = pop @lines;
+		}
+		for (@lines) {
+			if (defined $_) {
+				s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
+				s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
+			} else {
+				$_ = '';
+			}
+			&{$conn->{rproc}}($conn, $_);
+		}
 	}
 }
+

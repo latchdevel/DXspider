@@ -94,38 +94,27 @@ sub already_conn
 	
 	dbg('chan', "-> D $call $mess\n"); 
 	$conn->send_now("D$call|$mess");
-	sleep(1);
-	dbg('chan', "-> Z $call bye\n");
-	$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
-	sleep(1);
+	sleep(2);
 	$conn->disconnect;
+}
+
+sub error_handler
+{
+	my $dxchan = shift;
+	$dxchan->disconnect;
 }
 
 # handle incoming messages
 sub rec
 {
-	my ($conn, $msg, $err) = @_;
+	my ($conn, $msg) = @_;
 	my $dxchan = DXChannel->get_by_cnum($conn); # get the dxconnnect object for this message
+	my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
+	return unless defined $sort;
 	
-	if (!defined $msg || (defined $err && $err)) {
-		if ($dxchan) {
-			if (defined $err) {
-				$conn->disconnect;
-				undef $conn;
-				$dxchan->conn(undef);
-			}
-			$dxchan->disconnect;
-		} elsif ($conn) {
-			$conn->disconnect;
-		}
-		return;
-	}
-	
-	# set up the basic channel info - this needs a bit more thought - there is duplication here
+	# set up the basic channel info
 	if (!defined $dxchan) {
-		my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
-		return unless defined $sort;
- 
+
 		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);
 		if ($sort ne 'O' && Msg->conns($call)) {
@@ -158,13 +147,13 @@ sub rec
 		# is he locked out ?
 		if ($user->lockout) {
 			Log('DXCommand', "$call is locked out, disconnected");
-			$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
 			$conn->disconnect;
 			return;
 		}
 
 		# mark him up
 		$conn->conns($call) unless $sort eq 'O';
+		$conn->set_error(sub {error_handler($dxchan)});
 		
 		# create the channel
 		$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
@@ -335,10 +324,14 @@ DXUser->init($userfn, 1);
 use Listeners;
 
 dbg('err', "starting listeners ...");
-push @listeners, IntMsg->new_server("$clusteraddr", $clusterport, \&login);
+my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
+$conn->conns("Server $clusteraddr/$clusterport");
+push @listeners, $conn;
 dbg('err', "Internal port: $clusteraddr $clusterport");
 for (@main::listen) {
-	push @listeners, ExtMsg->new_server($_->[0], $_->[1], \&login);
+	$conn = ExtMsg->new_server($_->[0], $_->[1], \&login);
+	$conn->conns("Server $_->[0]/$_->[1]");
+	push @listeners, $conn;
 	dbg('err', "External Port: $_->[0] $_->[1]");
 }
 
@@ -422,7 +415,7 @@ dbg('err', "orft we jolly well go ...");
 for (;;) {
 #	$DB::trace = 1;
 	
-	Msg->event_loop(1, 0.1);
+	Msg->event_loop(10, 0.001);
 	my $timenow = time;
 	process_inqueue();			# read in lines from the input queue and despatch them
 #	$DB::trace = 0;

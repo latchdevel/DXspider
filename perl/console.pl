@@ -104,9 +104,7 @@ sub do_resize
 sub cease
 {
 	my $sendz = shift;
-#	if ($conn && $sendz) {
-#		$conn->send_now("Z$call|bye...");
-#	}
+	$conn->disconnect if $conn;
 	endwin();
 	dbgclose();
 	print @_ if @_;
@@ -436,6 +434,8 @@ if (! $conn) {
 	}
 	exit(0);
 }
+
+$conn->set_error(sub{cease(0)});
 
 
 unless ($DB::VERSION) {

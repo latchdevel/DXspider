@@ -57,47 +57,56 @@ sub dequeue
 {
 	my $conn = shift;
 	my $msg;
-	
-	while (@{$conn->{inqueue}}){
-		$msg = shift @{$conn->{inqueue}};
-		dbg('connect', $msg) unless $conn->{state} eq 'C';
-		
-		$msg =~ s/\xff\xfa.*\xff\xf0|\xff[\xf0-\xfe].//g; # remove telnet options
-		$msg =~ s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 
-		if ($conn->{state} eq 'C') {
-			&{$conn->{rproc}}($conn, "I$conn->{call}|$msg", $!);
-			$! = 0;
-		} elsif ($conn->{state} eq 'WL' ) {
-			$msg = uc $msg;
-			if (is_callsign($msg)) {
-				&{$conn->{rproc}}($conn, "A$msg|telnet");
-				_send_file($conn, "$main::data/connected");
-				$conn->{state} = 'C';
-			} else {
-				$conn->send_now("Sorry $msg is an invalid callsign");
-				$conn->disconnect;
-			}
-		} elsif ($conn->{state} eq 'WC') {
-			if (exists $conn->{cmd} && @{$conn->{cmd}}) {
-				$conn->_docmd($msg);
-				if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
-					$conn->{state} = 'C';
-					&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
-					delete $conn->{cmd};
-					$conn->{timeout}->del_timer if $conn->{timeout};
-				}
-			}
+	if ($conn->{state} eq 'WC') {
+		if (exists $conn->{cmd}) {
+			if (@{$conn->{cmd}}) {
+				dbg('connect', $conn->{msg});
+				$conn->_docmd($conn->{msg});
+			} 
 		}
-	}
-	if ($conn->{msg} && $conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}}) {
-		dbg('connect', $conn->{msg});
-		$conn->_docmd($conn->{msg});
 		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
 			$conn->{state} = 'C';
 			&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 			delete $conn->{cmd};
-			$conn->{timeout}->del_timer if $conn->{timeout};
+			$conn->{timeout}->del if $conn->{timeout};
+		}
+	} elsif ($conn->{msg} =~ /\n/) {
+		my @lines = split /\r?\n/, $conn->{msg};
+		if ($conn->{msg} =~ /\n$/) {
+			delete $conn->{msg};
+		} else {
+			$conn->{msg} = pop @lines;
+		}
+		while (defined ($msg = shift @lines)) {
+			dbg('connect', $msg) unless $conn->{state} eq 'C';
+		
+			$msg =~ s/\xff\xfa.*\xff\xf0|\xff[\xf0-\xfe].//g; # remove telnet options
+			$msg =~ s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
+			
+			if ($conn->{state} eq 'C') {
+				&{$conn->{rproc}}($conn, "I$conn->{call}|$msg");
+			} elsif ($conn->{state} eq 'WL' ) {
+				$msg = uc $msg;
+				if (is_callsign($msg)) {
+					&{$conn->{rproc}}($conn, "A$msg|telnet");
+					_send_file($conn, "$main::data/connected");
+					$conn->{state} = 'C';
+				} else {
+					$conn->send_now("Sorry $msg is an invalid callsign");
+					$conn->disconnect;
+				}
+			} elsif ($conn->{state} eq 'WC') {
+				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
+					$conn->_docmd($msg);
+					if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
+						$conn->{state} = 'C';
+						&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
+						delete $conn->{cmd};
+						$conn->{timeout}->del if $conn->{timeout};
+					}
+				}
+			}
 		}
 	}
 }
@@ -108,7 +117,11 @@ sub new_client {
     my $conn = $server_conn->new($server_conn->{rproc});
 	$conn->{sock} = $sock;
 
-    my $rproc = &{$server_conn->{rproc}} ($conn, $sock->peerhost(), $sock->peerport());
+    my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
+	if ($eproc) {
+		$conn->{eproc} = $eproc;
+        set_event_handler ($sock, "error" => $eproc);
+	}
     if ($rproc) {
         $conn->{rproc} = $rproc;
         my $callback = sub {$conn->_rcv};
@@ -209,8 +222,8 @@ sub _dotimeout
 	my $conn = shift;
 	my $val = shift;
 	dbg('connect', "timeout set to $val");
-	$conn->{timeout}->del_timer if $conn->{timeout};
-	$conn->{timeout} = ExtMsg->new_timer($val, sub{ _timeout($conn); });
+	my $old = $conn->{timeout}->del if $conn->{timeout};
+	$conn->{timeout} = Timer->new($val, sub{ &_timeout($conn) });
 	$conn->{timeval} = $val;
 }
 
@@ -269,7 +282,7 @@ sub _doclient
 	$conn->{state} = 'C';
 	&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 	delete $conn->{cmd};
-	$conn->{timeout}->del_timer if $conn->{timeout};
+	$conn->{timeout}->del if $conn->{timeout};
 }
 
 sub _send_file
@@ -287,5 +300,4 @@ sub _send_file
 			$f->close;
 		}
 	}
-	$! = undef;
 }

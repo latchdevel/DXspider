@@ -387,7 +387,6 @@ sub process
 sub finish
 {
 	my $self = shift;
-	my $conn = shift;
 	my $call = $self->call;
 
 	# reset the redirection of messages back to 'normal' if we are the sysop
@@ -399,20 +398,6 @@ sub finish
 	# I was the last node visited
     $self->user->node($main::mycall);
 		
-	# log out text
-	if ($conn && -e "$main::data/logout") {
-		open(I, "$main::data/logout") or confess;
-		my @in = <I>;
-		close(I);
-		$self->send_now('D', @in);
-		sleep(1);
-	}
-
-#	if ($call eq $main::myalias) { # unset the channel if it is us really
-#		my $node = DXNode->get($main::mycall);
-#		$node->{dxchan} = 0;
-#	}
-	
 	# issue a pc17 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
 	my $pc17 = $nchan->pc17($self);
