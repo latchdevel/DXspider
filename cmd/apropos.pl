@@ -30,7 +30,7 @@ unless ($defh->open("$main::localcmd/Commands_en.hlp")) {
 }
 
 my $h;
-unless ($lang ne 'en') {
+if ($lang ne 'en') {
 	$h = new IO::File;
 	unless ($h->open("$main::localcmd/Commands_$lang.hlp")) {
 		unless($h->open("$main::cmd/Commands_$lang.hlp")) {
