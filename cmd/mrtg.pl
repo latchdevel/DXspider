@@ -36,6 +36,20 @@ $want{nomrtg} = 1 if $want{cfgonly} || $want{test};
 return (1, "MRTG not installed") unless $want{nomrtg} || -e '/usr/bin/mrtg' || -e '/usr/local/bin/mrtg';
 
 my $mc = new Mrtg or return (1, "cannot initialise Mrtg $!");
+
+# do Msg totals
+$mc->cfgprint('msg', [], 64000, 
+		 "Data in and out of $main::mycall",
+		 'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
+$mc->data('msg', $Msg::total_in, $Msg::total_out, "Data in and out of $main::mycall") unless $want{cfgonly};
+
+# do AGW stats if they apply
+if ($want{agw}) {
+	$mc->cfgprint('agw', [], 64000, 
+				  "AGW Data in and out of $main::mycall",
+				  'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
+	$mc->data('agw', $AGWMsg::total_in, $AGWMsg::total_out, "AGW Data in and out of $main::mycall") unless $want{cfgonly};
+}
 			 
 # do the users and nodes
 my $users = DXChannel::get_all_users();

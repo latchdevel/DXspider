@@ -30,7 +30,7 @@ use AGWConnect;
 use DXDebug;
 
 use vars qw(@ISA $sock @outqueue $send_offset $inmsg $rproc $noports $lastytime 
-			$lasthtime $ypolltime $hpolltime %circuit);
+			$lasthtime $ypolltime $hpolltime %circuit $total_in $total_out);
 
 @ISA = qw(Msg ExtMsg);
 $sock = undef;
@@ -43,6 +43,7 @@ $lastytime = $lasthtime = time;
 $ypolltime = 10 unless defined $ypolltime;
 $hpolltime = 300 unless defined $hpolltime;
 %circuit = ();
+$total_in = $total_out = 0;
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -171,6 +172,7 @@ sub _send
 			if (isdbg('raw')) {
 				dbgdump('raw', "AGW send $bytes_written: ", $msg);
 			}
+            $total_out      += $bytes_written;
             $offset         += $bytes_written;
             $bytes_to_write -= $bytes_written;
         }
@@ -196,6 +198,7 @@ sub _rcv {                     # Complement to _send
 	$bytes_read = sysread ($sock, $msg, 1024, 0);
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
+            $total_in += $bytes_read;
 			$inmsg .= $msg;
 			if (isdbg('raw')) {
 				dbgdump('raw', "AGW read $bytes_read: ", $msg);

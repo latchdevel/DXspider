@@ -23,7 +23,7 @@ use IO::Socket;
 use DXDebug;
 use Timer;
 
-use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported $cnum);
+use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported $cnum $total_in $total_out);
 
 %rd_callbacks = ();
 %wt_callbacks = ();
@@ -31,6 +31,7 @@ use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $e
 $rd_handles   = IO::Select->new();
 $wt_handles   = IO::Select->new();
 $er_handles   = IO::Select->new();
+$total_in = $total_out = 0;
 
 $now = time;
 
@@ -378,6 +379,7 @@ sub _send {
 				my $call = $conn->{call} || 'none';
 				dbgdump('raw', "$call send $bytes_written: ", $msg);
 			}
+			$total_out      += $bytes_written;
             $offset         += $bytes_written;
             $bytes_to_write -= $bytes_written;
         }
@@ -503,6 +505,7 @@ sub _rcv {                     # Complement to _send
 	$bytes_read = sysread ($sock, $msg, 1024, 0);
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
+			$total_in += $bytes_read;
 			if (isdbg('raw')) {
 				my $call = $conn->{call} || 'none';
 				dbgdump('raw', "$call read $bytes_read: ", $msg);
