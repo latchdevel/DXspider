@@ -362,7 +362,7 @@ $build = "$build.$branch" if $branch;
 Log('cluster', "DXSpider V$version, build $build started");
 
 # banner
-dbg("Copyright (c) 1998-2001 Dirk Koopman G1TLH");
+dbg("Copyright (c) 1998-2002 Dirk Koopman G1TLH");
 dbg("DXSpider Version $version, build $build started");
 
 # load Prefixes

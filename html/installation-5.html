@@ -15,10 +15,10 @@
 <HR>
 <H2><A NAME="s5">5. Installing the software</A></H2>
 
-<P>Ensure that your CVS session or your unZIPped file have left you
-with a directory "C:\spider\local"; if not, go to "C:\spider\"
-and create one. If "C:\spider" is missing, go back and figure out
-why, because it shouldn't be.
+<P>Ensure that your CVS session or your WINunZIPped file have left you with
+a directory "C:\spider\local" and C:\spider\local_cmd"; if not, go to
+"C:\spider\" and create them. If "C:\spider" is missing, go back and
+figure out why, because it shouldn't be.
 <P>Now create your own local copy of the DXVars.pm file by:-
 <P>
 <BLOCKQUOTE><CODE>
@@ -49,13 +49,60 @@ minimum you must adjust the following items in DXVars.pm:-
 <LI> $mycall  - Should hold the callsign of your DX Cluster</LI>
 <LI> $myname  - The SysOp's first name</LI>
 <LI> $myalias - the SysOp's callsign. Cannot be the same as $mycall!</LI>
+<LI> $myqth - The station's geographical location (QTH).</LI>
+<LI> $mylatitude - The station latitude in degrees and decimal fractions</LI>
+<LI> $mylongitude - The station longitude in degrees and decimal fractions</LI>
+<LI> $mylocator - The Maidenhead (or QRA) locator of the station </LI>
 </UL>
-<P>You really also ought to update the $mylatitude, $mylongitude,
-$myqth and $myemail variables. And unless you are absolutely
-certain you know what you're doing, you should change nothing
-else in this file.
+<P>You really also ought to update the $myqth and $myemail variables. And
+unless you are absolutely certain you know what you're doing, you
+should change nothing else in this file. Note that if you use an "@" or 
+a "$" character in one of the above strings (typically in $myemail) you must 
+write them as "\@" or "\$". 
 <P>
-<H2><A NAME="ss5.1">5.1 The AGW packet engine</A>
+<P>
+<H2><A NAME="ss5.1">5.1 Incoming telnets</A>
+</H2>
+
+<P>If you want to enable inbound "TELNET" connections (or you are running
+Windows NT, 2000 or XP), you've got a little more work to do. From a
+handy "DOS box" that's not doing anything else, do the following:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+copy \spider\perl\Listeners.pm \spider\local
+cd \spider\local
+notepad listeners.pm
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The following lines need attention:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+["0.0.0.0", 7300],
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>On my machine, I've simply uncommented the "0.0.0.0" entry by
+removing the '#' from the front of the line. 
+<P><B>You MUST carry out this step if you are
+running on a Windows NT, 2000 or XP based system</B>
+<P>If you don't have a static hostname for your machine, and you
+intend to allow folk to connect to your machine across the
+internet, then I'd suggest you pay a visit to www.dyndns.org and
+create one for yourself. While it's free, it will take a modest
+an amount of effort on your part to read, understand and
+implement what needs to be done to set this up.
+<P>
+<P>If your machine is connected to the internet <B>and</B> you don't
+want to allow your machine to be visible to the outside world you
+should change the "0.0.0.0" to "127.0.0.1" [which is
+"localhost"]. This will then only allow connections from inside your
+machine. As was said earlier: if you aren't running Win9x (or you want
+to use DXTelnet or somesuch), then you need to have the machine
+listening at least to "127.0.0.1" ("0.0.0.0" means <B>all</B> IP
+addresses).
+<P>
+<H2><A NAME="ss5.2">5.2 The AGW packet engine</A>
 </H2>
 
 <P>On the assumption that you'll be using the SV2AGW Packet Engine
@@ -84,7 +131,7 @@ consider adjusting the following items in AGWConnect.pm:-
 <LI>$passwd - password that matches $login</LI>
 </UL>
 <P>
-<H2><A NAME="ss5.2">5.2 Setting up the initial user files</A>
+<H2><A NAME="ss5.3">5.3 Setting up the initial user files</A>
 </H2>
 
 <P>Next you need to create the initial user files, etc. A tool is
@@ -138,8 +185,9 @@ queue msg (0)
 </CODE></BLOCKQUOTE>
 <P>Now, if that's what you've got, you are very nearly home and dry
 (in as far as these particular experiments are concerned, anyhow)
-<P>To access your new cluster (from the local machine) find yourself another
-"DOS box" and do the following:-
+<P>If you are running Windows 9x you can access your new cluster (from
+the local machine) by finding yourself another "DOS box" and doing the
+following:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -147,7 +195,25 @@ cd \spider\perl
 perl winclient.pl
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>If you are rewarded with a display which looks something like:-
+<P>If you are running Windows NT, 2000 or XP then winclient.pl does not
+work. We don't know why other than this seems to be some kind of
+incomaptibility in perl. You can achieve the same thing by telnetting
+to the port you defined in Listeners.pm (7300 as default), thus:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Menu->Start->Run
+telnet localhost 7300
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>On getting the <B>login:</B> prompt, enter your sysop callsign (the one you
+put in DXVars.pm as $myalias).
+<P>
+<P>I would recommend <B>strongly</B> that you obtain a better telnet
+client than that which comes with windows (I use 
+<A HREF="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</A>). 
+<P>
+<P>Anyway, if you are rewarded with a display which looks something like:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -161,46 +227,25 @@ case you were wondering, "Iain", "M0ADI" and "GB7SJP" all came
 from the version of DXVars.pm that was on the machine when I
 started the winclient.pl)
 <P>
-<H2><A NAME="ss5.3">5.3 Incoming telnets</A>
-</H2>
-
-<P>If you want to enable inbound "TELNET" connections, you've got a
-little more work to do. From a handy "DOS box" that's not doing
-anything else, do the following:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-copy \spider\perl\listeners.pm \spider\local
-cd \spider\local
-notepad listeners.pm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>The following lines need attention:-
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-["0.0.0.0", 7300],
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>On my machine, I've simply uncommented the "0.0.0.0" entry by
-removing the '#' from the front of the line. 
-<P>If you don't have a static hostname for your machine, and you
-intend to allow folk to connect to your machine across the
-internet, then I'd suggest you pay a visit to www.dyndns.org and
-create one for yourself. While it's free, it will take a modest
-an amount of effort on your part to read, understand and
-implement what needs to be done to set this up.
+<P>The interface is very basic. It is a simple command line. There are
+better looking interfaces. Most of the "standard" logging and DX
+Cluster access programs that are capable of connecting via a TCP or
+telnet connection will work as a "Sysop Console" client. You connect
+to "localhost" on the port that you defined in Listeners.pm (usually
+7300). I recommend packages like 
+<A HREF="http://www.qsl.net/wd4ngb/telnet.htm">DXTelnet</A>.
 <P>
 <H2><A NAME="ss5.4">5.4 Connecting to other clusters</A>
 </H2>
 
-<P>If you want to connect this to another cluster, then you'll want
-to negotiate a link with someone. For experimental purposes, I'm
-happy to allow folk to connect to GB7DXA (spud.ath.cx), on the
-understanding that the system may or may not be there and may or
-may not be connected to anything particularly useful at any given
-moment. Contact me by Email if you want me to set up a connection
-for you.
+<P>If you want to connect this to another cluster, then you'll want to
+negotiate a link with someone. For experimental purposes, I'm happy to
+allow folk to connect to GB7DXA (spud.ath.cx), on the understanding
+that the system may or may not be there and may or may not be
+connected to anything particularly useful at any given moment. Contact
+me by 
+<A HREF="mailto:g0rdi@blacksheep.org">Email</A> if you
+want me to set up a connection for you.
 <P>
 <HR>
 <A HREF="installation-6.html">Next</A>

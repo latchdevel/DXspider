@@ -1055,31 +1055,43 @@ do it that way because it suits me.
 Get the current version of the DX Spider distribution. This needs
 to be v1.47 or later. You've got two ways (currently) of getting
 this; either get a CVS update from sourceforge (if you don't know
-what this is, then it isn't for you) or get my package from:-
+what this is, then it isn't for you) or get the latest "official"
+release from:-
 
-<htmlurl url="http://www.dcc.rsgb.org/WinSpider.zip" name="http://www.dcc.rsgb.org/WinSpider.zip">
+<htmlurl url="http://www.dxcluster.org/download/index.html" name="http://www.dxcluster.org/download/index.html">
 
-or if you want the lastest CVS version (which is produced every night)
+or if you want the lastest snapshot of CVS version (which is produced 
+every night):-
 
 <htmlurl url="http://www.dxcluster.org/download/CVSlatest.tgz" name="http://www.dxcluster.org/download/CVSlatest.tgz">
 
-If you went down the CVS route, then everything will be nicely
-set out on your local disk. If you got the ZIP file, unpack it to
+This is generally the best one to go for as it is completely up to
+date. However, there is always the very slight chance that it might
+unstable. Generally, there will be a note on the website if this is 
+the case. 
+
+<p>The only difference between "CVSlatest.tgz" and the latest
+"official" release version is that it is more up to date. Don't confuse 
+this TGZ file with "Downloading from Sourceforge with CVS" - they are two
+quite different things.  
+
+<p>
+If you went down the CVS route (ie installed wincvs and downloaded from
+sourceforge), then everything will be nicely
+set out on your local disk. If you got the TGZ file, unpack it to
 somewhere convenient. The following examples assume that you put
 it on drive "C:\", for convenience.
 
-<bf>NOTE:</bf> This distribution method will go away as soon as the first
-v1.47 tarball is released. You can use WinZip to unpack that, and
-my life will be made easier by not needing to keep this .ZIP file
-updated.
+<p>You will need <htmlurl url="http://www.winzip.com" name="winzip"> to
+manipulate the TGZ files (they are bit like ZIP files) if you are not using CVS.
 
 <sect>Installing the software
 
 <P>
-Ensure that your CVS session or your unZIPped file have left you
-with a directory "C:\spider\local"; if not, go to "C:\spider\"
-and create one. If "C:\spider" is missing, go back and figure out
-why, because it shouldn't be.
+Ensure that your CVS session or your WINunZIPped file have left you with
+a directory "C:\spider\local" and C:\spider\local_cmd"; if not, go to
+"C:\spider\" and create them. If "C:\spider" is missing, go back and
+figure out why, because it shouldn't be.
 
 Now create your own local copy of the DXVars.pm file by:-
 
@@ -1108,12 +1120,59 @@ minimum you must adjust the following items in DXVars.pm:-
 <item> $mycall  - Should hold the callsign of your DX Cluster
 <item> $myname  - The SysOp's first name
 <item> $myalias - the SysOp's callsign. Cannot be the same as $mycall!
+<item> $myqth - The station's geographical location (QTH).
+<item> $mylatitude - The station latitude in degrees and decimal fractions
+<item> $mylongitude - The station longitude in degrees and decimal fractions
+<item> $mylocator - The Maidenhead (or QRA) locator of the station 
 </itemize>
 
-You really also ought to update the $mylatitude, $mylongitude,
-$myqth and $myemail variables. And unless you are absolutely
-certain you know what you're doing, you should change nothing
-else in this file.
+You really also ought to update the $myqth and $myemail variables. And
+unless you are absolutely certain you know what you're doing, you
+should change nothing else in this file. Note that if you use an "@" or 
+a "$" character in one of the above strings (typically in $myemail) you must 
+write them as "\@" or "\$". 
+
+
+<sect1>Incoming telnets
+
+<P>
+If you want to enable inbound "TELNET" connections (or you are running
+Windows NT, 2000 or XP), you've got a little more work to do. From a
+handy "DOS box" that's not doing anything else, do the following:-
+
+<tscreen><verb>
+copy \spider\perl\Listeners.pm \spider\local
+cd \spider\local
+notepad listeners.pm
+</verb></tscreen>
+
+The following lines need attention:-
+
+<tscreen><verb>
+["0.0.0.0", 7300],
+</verb></tscreen>
+
+On my machine, I've simply uncommented the "0.0.0.0" entry by
+removing the '#' from the front of the line. 
+
+<bf>You MUST carry out this step if you are
+running on a Windows NT, 2000 or XP based system</bf>
+
+If you don't have a static hostname for your machine, and you
+intend to allow folk to connect to your machine across the
+internet, then I'd suggest you pay a visit to www.dyndns.org and
+create one for yourself. While it's free, it will take a modest
+an amount of effort on your part to read, understand and
+implement what needs to be done to set this up.
+
+<p>If your machine is connected to the internet <bf>and</bf> you don't
+want to allow your machine to be visible to the outside world you
+should change the "0.0.0.0" to "127.0.0.1" [which is
+"localhost"]. This will then only allow connections from inside your
+machine. As was said earlier: if you aren't running Win9x (or you want
+to use DXTelnet or somesuch), then you need to have the machine
+listening at least to "127.0.0.1" ("0.0.0.0" means <bf>all</bf> IP
+addresses).
 
 <sect1>The AGW packet engine
 
@@ -1195,15 +1254,34 @@ queue msg (0)
 Now, if that's what you've got, you are very nearly home and dry
 (in as far as these particular experiments are concerned, anyhow)
 
-To access your new cluster (from the local machine) find yourself another
-"DOS box" and do the following:-
+If you are running Windows 9x you can access your new cluster (from
+the local machine) by finding yourself another "DOS box" and doing the
+following:-
 
 <tscreen><verb>
 cd \spider\perl
 perl winclient.pl
 </verb></tscreen>
 
-If you are rewarded with a display which looks something like:-
+If you are running Windows NT, 2000 or XP then winclient.pl does not
+work. We don't know why other than this seems to be some kind of
+incomaptibility in perl. You can achieve the same thing by telnetting
+to the port you defined in Listeners.pm (7300 as default), thus:-
+
+<tscreen><verb>
+Menu->Start->Run
+telnet localhost 7300
+</verb></tscreen>
+
+On getting the <bf>login:</bf> prompt, enter your sysop callsign (the one you
+put in DXVars.pm as $myalias).
+
+<p>I would recommend <bf>strongly</bf> that you obtain a better telnet
+client than that which comes with windows (I use <htmlurl
+url="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html"
+name="PuTTY">). 
+
+<p>Anyway, if you are rewarded with a display which looks something like:-
 
 <tscreen><verb>
 Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.47
@@ -1216,45 +1294,24 @@ case you were wondering, "Iain", "M0ADI" and "GB7SJP" all came
 from the version of DXVars.pm that was on the machine when I
 started the winclient.pl)
 
-<sect1>Incoming telnets
-
-<P>
-If you want to enable inbound "TELNET" connections, you've got a
-little more work to do. From a handy "DOS box" that's not doing
-anything else, do the following:-
-
-<tscreen><verb>
-copy \spider\perl\listeners.pm \spider\local
-cd \spider\local
-notepad listeners.pm
-</verb></tscreen>
-
-The following lines need attention:-
-
-<tscreen><verb>
-["0.0.0.0", 7300],
-</verb></tscreen>
-
-On my machine, I've simply uncommented the "0.0.0.0" entry by
-removing the '#' from the front of the line. 
-
-If you don't have a static hostname for your machine, and you
-intend to allow folk to connect to your machine across the
-internet, then I'd suggest you pay a visit to www.dyndns.org and
-create one for yourself. While it's free, it will take a modest
-an amount of effort on your part to read, understand and
-implement what needs to be done to set this up.
+<p>The interface is very basic. It is a simple command line. There are
+better looking interfaces. Most of the "standard" logging and DX
+Cluster access programs that are capable of connecting via a TCP or
+telnet connection will work as a "Sysop Console" client. You connect
+to "localhost" on the port that you defined in Listeners.pm (usually
+7300). I recommend packages like <htmlurl
+url="http://www.qsl.net/wd4ngb/telnet.htm" name="DXTelnet">.
 
 <sect1>Connecting to other clusters
 
 <P>
-If you want to connect this to another cluster, then you'll want
-to negotiate a link with someone. For experimental purposes, I'm
-happy to allow folk to connect to GB7DXA (spud.ath.cx), on the
-understanding that the system may or may not be there and may or
-may not be connected to anything particularly useful at any given
-moment. Contact me by Email if you want me to set up a connection
-for you.
+If you want to connect this to another cluster, then you'll want to
+negotiate a link with someone. For experimental purposes, I'm happy to
+allow folk to connect to GB7DXA (spud.ath.cx), on the understanding
+that the system may or may not be there and may or may not be
+connected to anything particularly useful at any given moment. Contact
+me by <htmlurl url="mailto:g0rdi@blacksheep.org" name="Email"> if you
+want me to set up a connection for you.
 
 <sect>General Information
 
