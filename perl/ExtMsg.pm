@@ -76,7 +76,7 @@ sub dequeue
 		} elsif ($conn->{state} eq 'WC') {
 			if (exists $conn->{cmd} && @{$conn->{cmd}}) {
 				$conn->_docmd($msg);
-				unless (@{$conn->{cmd}}) {
+				unless (exists $conn->{cmd} && @{$conn->{cmd}}) {
 					$conn->{state} = 'C';
 					&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 					delete $conn->{cmd};

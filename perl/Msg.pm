@@ -244,6 +244,7 @@ sub _rcv {                     # Complement to _send
 		if ($bytes_read > 0) {
 			if ($msg =~ /\n/) {
 				@lines = split /\r?\n/, $msg;
+				$lines[0] = '' unless @lines;
 				$lines[0] = $conn->{msg} . $lines[0] if exists $conn->{msg};
 				push @lines, ' ' unless @lines;
 				if ($msg =~ /\n$/) {
