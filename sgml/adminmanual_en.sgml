@@ -2376,6 +2376,164 @@ necessary to traverse the network(s) to logon to the cluster &lt;callsign&gt;.
 <P>
 Title says it all really, this command lists all the databases defined
 in the system. It is also aliased to SHOW/COMMAND.
+<sect1>dbcreate &lt;name&gt; (9)
+
+<P>
+<tt>
+<bf>dbcreate &lt;name&gt;</bf> Create a database entry
+</tt>
+
+<P>
+<sect1>dbcreate &lt;name&gt; chain &lt;name&gt; &lsqb;&lt;name&gt;..&rsqb; (9)
+
+<P>
+<tt>
+<bf>dbcreate &lt;name&gt; chain &lt;name&gt; &lsqb;&lt;name&gt;..&rsqb;</bf> Create a chained database entry
+</tt>
+
+<P>
+<sect1>dbcreate &lt;name&gt; cmd &lt;dxspider command&gt; (9)
+
+<P>
+<tt>
+<bf>dbcreate &lt;name&gt; cmd &lt;dxspider command&gt;</bf> make a local command available as a DB
+</tt>
+
+<P>
+DBCREATE allows you to define a database in the system. It doesn't actually
+create anything, just defines it.
+
+The databases that are created are simple DB_File hash databases, they are 
+therefore already 'indexed'.
+
+You can define a local database with the first form of the command eg:
+
+<tscreen><verb>
+  DBCREATE oblast
+</verb></tscreen>
+
+You can also chain databases with the addition of the 'chain' keyword. 
+This will search each database one after the other. A typical example 
+is:
+
+<tscreen><verb>
+  DBCREATE sdx_qsl chain sql_ad
+</verb></tscreen>
+
+No checking is done to see if the any of the chained databases exist, in
+fact it is usually better to do the above staement first then do each of
+the chained databases.
+
+Databases can exist offsite. To define a database that lives on another 
+node do:
+
+<tscreen><verb>
+  DBCREATE buckmaster remote gb7dxc
+</verb></tscreen>
+
+Remote databases cannot be chained; however, the last database in a 
+a chain can be a remote database eg:
+
+<tscreen><verb>
+  DBCREATE qsl chain gb7dxc
+</verb></tscreen>
+
+To see what databases have been defined do:
+
+<tscreen><verb>
+  DBAVAIL (or it will have been aliased to SHOW/COMMAND)
+</verb></tscreen>
+
+It would be normal for you to add an entry into your local Aliases file
+to allow people to use the 'SHOW/&lt;dbname&gt;' style syntax. So you would
+need to add a line like:-
+
+<tscreen><verb>
+  's' =&gt; [
+    ..
+    ..
+    '^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
+    ..
+    ..
+   ],
+</verb></tscreen>
+
+to allow 
+ 
+<tscreen><verb>
+  SH/BUCK g1tlh
+</verb></tscreen>
+
+to work as they may be used to.
+
+You can also make local commands available as 'pseudo' databases. You
+can therefore make spider special commands available as a database. I
+imagine that this will be primarily useful for remote access from 
+legacy nodes. For example:-
+
+<tscreen><verb>
+  DBCREATE dxqsl cmd show/dxqsl
+</verb></tscreen>
+
+You also use one of these databases in a chain. This may be useful 
+locally. 
+
+See DBIMPORT for the importing of existing AK1A format data to databases.
+See DBSHOW for generic database enquiry
+ 
+<sect1>dbcreate &lt;name&gt; remote &lt;node&gt; (9)
+
+<P>
+<tt>
+<bf>dbcreate &lt;name&gt; remote &lt;node&gt;</bf> Create a remote database entry
+</tt>
+
+<P>
+<sect1>dbimport &lt;dbname&gt; &lt;filename&gt; (9)
+
+<P>
+<tt>
+<bf>dbimport &lt;dbname&gt; &lt;filename&gt;</bf> Import AK1A data into a database
+</tt>
+
+<P>
+If you want to import or update data in bulk to a database you can use
+this command. It will either create or update entries into an existing
+database. For example:-
+
+<tscreen><verb>
+  DBIMPORT oblast /tmp/OBLAST.FUL
+</verb></tscreen>
+
+will import the standard OBLAST database that comes with AK1A into the
+oblast database held locally.
+<sect1>dbremove &lt;dbname&gt; (9)
+
+<P>
+<tt>
+<bf>dbremove &lt;dbname&gt;</bf> Delete a database
+</tt>
+
+<P>
+DBREMOVE will completely remove a database entry and also delete any data
+file that is associated with it. 
+
+There is no warning, no comeback, no safety net. 
+
+For example:
+
+<tscreen><verb>
+  DBREMOVE oblast 
+</verb></tscreen>
+
+will remove the oblast database from the system and it will also remove
+the associated datafile.
+
+I repeat:
+
+There is no warning, no comeback, no safety net.
+ 
+You have been warned.
 <sect1>dbshow &lt;dbname&gt; &lt;key&gt; (0)
 
 <P>
@@ -2399,6 +2557,73 @@ SHOW/COMMAND to find out) you can do the same thing with:
   DBSHOW buck G1TLH
 </verb></tscreen>
 
+<sect1>debug (9)
+
+<P>
+<tt>
+<bf>debug</bf> Set the cluster program into debug mode
+</tt>
+
+<P>
+Executing this command will only have an effect if you are running the cluster
+in debug mode i.e.
+
+<tscreen><verb>
+	perl -d cluster.pl
+</verb></tscreen>
+
+It will interrupt the cluster just after the debug command has finished.
+<sect1>delete/usdb &lt;callsign&gt; ... (9)
+
+<P>
+<tt>
+<bf>delete/usdb &lt;callsign&gt; ...</bf> Delete this user from the US State Database
+</tt>
+
+<P>
+This command will completely remove a one or more callsigns
+from the US States database.
+
+There is NO SECOND CHANCE.
+
+It goes without saying that you should use this command CAREFULLY!
+
+Note that these callsign may be re-instated by any weekly updates from 
+the FCC.
+<sect1>delete/user &lt;callsign&gt; ... (9)
+
+<P>
+<tt>
+<bf>delete/user &lt;callsign&gt; ...</bf> Delete this user from the User Database
+</tt>
+
+<P>
+This command will completely remove a one or more users from the database.
+
+There is NO SECOND CHANCE.
+
+It goes without saying that you should use this command CAREFULLY!
+<sect1>demonstrate &lt;call&gt; &lt;command&gt; (9)
+
+<P>
+<tt>
+<bf>demonstrate &lt;call&gt; &lt;command&gt;</bf> Demonstrate a command to another user
+</tt>
+
+<P>
+This command is provided so that sysops can demonstrate commands to 
+other users. It runs a command as though that user had typed it in and
+then sends the output to that user, together with the command that 
+caused it.
+
+<tscreen><verb>
+  DEMO g7brn sh/dx iota oc209
+  DEMO g1tlh set/here
+</verb></tscreen>
+
+Note that this command is similar to SPOOF and will have the same side
+effects. Commands are run at the privilege of the user which is being
+demonstrated to. 
 <sect1>directory (0)
 
 <P>
@@ -2597,6 +2822,45 @@ produces:-
 
 on the output.
                                       
+<sect1>export &lt;msgno&gt; &lt;filename&gt; (9)
+
+<P>
+<tt>
+<bf>export &lt;msgno&gt; &lt;filename&gt;</bf> Export a message to a file
+</tt>
+
+<P>
+Export a message to a file. This command can only be executed on a local
+console with a fully privileged user. The file produced will be in a form
+ready to be imported back into the cluster by placing it in the import 
+directory (/spider/msg/import).
+
+This command cannot overwrite an existing file. This is to provide some 
+measure of security. Any files written will owned by the same user as the 
+main cluster, otherwise you can put the new files anywhere the cluster can
+access. For example:-
+
+<tscreen><verb>
+  EXPORT 2345 /tmp/a
+</verb></tscreen>
+
+<sect1>export_users &lsqb;&lt;filename&gt;&rsqb; (9)
+
+<P>
+<tt>
+<bf>export_users &lsqb;&lt;filename&gt;&rsqb;</bf> Export the users database to ascii
+</tt>
+
+<P>
+Export the users database to a file in ascii format. If no filename
+is given then it will export the file to /spider/data/user_asc.
+
+If the file already exists it will be renamed to &lt;filename&gt;.o. In fact
+up to 5 generations of the file can be kept each one with an extra 'o' on the
+suffix. 
+
+BE WARNED: this will write to any file you have write access to. No check is
+made on the filename (if any) that you specify.
 <sect1>filtering... (0)
 
 <P>
@@ -2981,6 +3245,77 @@ Remove this message from the entire cluster system as well as your node.
 <P>
 This is a quick listing that shows which links are connected and
 some information about them. See WHO for a list of all connections.
+<sect1>load/aliases (9)
+
+<P>
+<tt>
+<bf>load/aliases</bf> Reload the command alias table
+</tt>
+
+<P>
+Reload the /spider/cmd/Aliases file after you have editted it. You
+will need to do this if you change this file whilst the cluster is
+running in order for the changes to take effect.
+<sect1>load/badmsg (9)
+
+<P>
+<tt>
+<bf>load/badmsg</bf> Reload the bad msg table
+</tt>
+
+<P>
+Reload the /spider/msg/badmsg.pl file if you have changed it manually whilst
+the cluster is running. This table contains a number of perl regular 
+expressions which are searched for in the fields targetted of each message. 
+If any of them match then that message is immediately deleted on receipt. 
+<sect1>load/badwords (9)
+
+<P>
+<tt>
+<bf>load/badwords</bf> Reload the bad words table
+</tt>
+
+<P>
+Reload the /spider/data/badwords file if you have changed it manually whilst
+the cluster is running. This file contains a list of words which, if found
+on certain text portions of PC protocol, will cause those protocol frames
+to be rejected. It will all put out a message if any of these words are
+used on the announce, dx and talk commands. The words can be one or 
+more on a line, lines starting with '#' are ignored.
+<sect1>load/bands (9)
+
+<P>
+<tt>
+<bf>load/bands</bf> Reload the band limits table
+</tt>
+
+<P>
+Reload the /spider/data/bands.pl file if you have changed it manually whilst
+the cluster is running. 
+<sect1>load/cmd_cache (9)
+
+<P>
+<tt>
+<bf>load/cmd_cache</bf> Reload the automatic command cache
+</tt>
+
+<P>
+Normally, if you change a command file in the cmd or local_cmd tree it
+will automatially be picked up by the cluster program. Sometimes it
+can get confused if you are doing a lot of moving commands about or
+delete a command in the local_cmd tree and want to use the normal one
+again. Execute this command to reset everything back to the state it
+was just after a cluster restart.
+<sect1>load/forward (9)
+
+<P>
+<tt>
+<bf>load/forward</bf> Reload the msg forwarding routing table
+</tt>
+
+<P>
+Reload the /spider/msg/forward.pl file if you have changed it
+manually whilst the cluster is running.
 <sect1>load/keps (5)
 
 <P>
@@ -3010,6 +3345,30 @@ If there is a message number, then it will take the message, run
 convkeps.pl on it and then load the data, all in one step.
 
 These messages are sent to ALL by GB7DJK (and others) from time to time. 
+<sect1>load/messages (9)
+
+<P>
+<tt>
+<bf>load/messages</bf> Reload the system messages file
+</tt>
+
+<P>
+If you change the /spider/perl/Messages file (usually whilst
+fiddling/writing new commands) you can have them take effect during a
+cluster session by executing this command. You need to do this if get
+something like :-
+
+unknown message 'xxxx' in lang 'en'
+<sect1>load/prefixes (9)
+
+<P>
+<tt>
+<bf>load/prefixes</bf> Reload the prefix table
+</tt>
+
+<P>
+Reload the /spider/data/prefix_data.pl file if you have changed it
+manually whilst the cluster is running.
 <sect1>merge &lt;node&gt; &lsqb;&lt;no spots&gt;/&lt;no wwv&gt;&rsqb; (5)
 
 <P>
@@ -3025,6 +3384,43 @@ node must be connected locally.
 You can request any number of spots or wwv and although they will be appended
 to your databases they will not duplicate any that have recently been added 
 (the last 2 days for spots and last month for WWV data).
+<sect1>msg &lt;cmd&gt; &lt;msgno&gt; &lsqb;data ... &rsqb; (9)
+
+<P>
+<tt>
+<bf>msg &lt;cmd&gt; &lt;msgno&gt; &lsqb;data ... &rsqb;</bf> Alter various message parameters
+</tt>
+
+<P>
+Alter message parameters like To, From, Subject, whether private or bulletin
+or return receipt (RR) is required or whether to keep this message from timing
+out.
+
+<tscreen><verb>
+  MSG TO &lt;msgno&gt; &lt;call&gt;     - change TO callsign to &lt;call&gt;
+  MSG FRom &lt;msgno&gt; &lt;call&gt;   - change FROM callsign to &lt;call&gt;
+  MSG PRrivate &lt;msgno&gt;      - set private flag
+  MSG NOPRrivate &lt;msgno&gt;    - unset private flag
+  MSG RR &lt;msgno&gt;            - set RR flag
+  MSG NORR &lt;msgno&gt;          - unset RR flag
+  MSG KEep &lt;msgno&gt;          - set the keep flag (message won't be deleted ever)
+  MSG NOKEep &lt;msgno&gt;        - unset the keep flag
+  MSG SUbject &lt;msgno&gt; &lt;new&gt; - change the subject to &lt;new&gt;
+  MSG WAittime &lt;msgno&gt;      - remove any waitting time for this message
+  MSG NOREad &lt;msgno&gt;        - mark message as unread
+  MSG REad &lt;msgno&gt;          - mark message as read
+  MSG QUeue                 - queue any outstanding bulletins
+  MSG QUeue 1               - queue any outstanding private messages
+</verb></tscreen>
+
+You can look at the status of a message by using:-
+
+<tscreen><verb>
+  STAT/MSG &lt;msgno&gt;      
+</verb></tscreen>
+
+This will display more information on the message than DIR does.
+   
 <sect1>pc &lt;call&gt; &lt;text&gt; (8)
 
 <P>
@@ -3444,6 +3840,65 @@ You can reply to a message and the subject will automatically have
 You can also use all the extra qualifiers such as RR, PRIVATE, 
 NOPRIVATE, B that you can use with the SEND command (see SEND
 for further details)
+<sect1>save &lsqb;-d -t -a&rsqb; &lt;filename&gt; "&lt;cmd&gt;" &lsqb;...&rsqb; (9)
+
+<P>
+<tt>
+<bf>save &lsqb;-d -t -a&rsqb; &lt;filename&gt; "&lt;cmd&gt;" &lsqb;...&rsqb;</bf> Save command output to a file
+</tt>
+
+<P>
+This sysop only cammand allows you to save the output of one or more
+commands to a file. For example:-
+
+<tscreen><verb>
+  save /spider/packclus/dxstats show/dxstat
+</verb></tscreen>
+
+will save the output of the normal command "show/dxstat" to the file
+"dxstats" in the files area.
+
+You can have some extra flags to the save which will either 
+date stamp or time stamp or both the filename so:-
+
+<tscreen><verb>
+  save -d /tmp/a &lt;cmd&gt; creates /tmp/a_6-Jan-2002
+  save -t /tmp/a &lt;cmd&gt; creates /tmp/a_2301Z
+  save -d -t /tmp/a &lt;cmd&gt; creates /tmp/a_6-Jan-2002_2301Z
+</verb></tscreen>
+
+The -a flag means append to the file instead of overwriting it.
+
+You can have more than one command on the line, to do this you MUST
+enclose each command in double quotes (") eg:-
+
+<tscreen><verb>
+  save /tmp/a "sh/hfstats" "blank +" "sh/vhfstats"
+</verb></tscreen>
+
+or
+
+<tscreen><verb>
+  save /tmp/a "sh/hfstats","blank +","sh/vhfstats"
+</verb></tscreen>
+
+You can only write into places that the cluster has permission for (which
+is that of the "sysop" user [which had BETTER NOT BE "root"]), you will 
+need to create any directories you want to put stuff in beforehand as well.
+ 
+It is likely that you will want to run these commands in a crontab type 
+situation. You would do that something like:-
+
+<tscreen><verb>
+  0 0 * * * run_cmd('save /tmp/dxstats "echo DXStat Table", "sh/dxstats"')
+</verb></tscreen>
+
+Note that you still enclose each command with (") characters but you must
+enclose the entire save command in (') characters. 
+
+Now in fact, this can be varied if you know what you are doing. See the
+admin manual for more details.
+ 
 <sect1>send &lt;call&gt; &lsqb;&lt;call&gt; ...&rsqb; (0)
 
 <P>
@@ -3648,6 +4103,14 @@ You can carry on with the message until you are ready to send it.
 </tt>
 
 <P>
+<sect1>set/debug &lt;name&gt; (9)
+
+<P>
+<tt>
+<bf>set/debug &lt;name&gt;</bf> Add a debug level to the debug set
+</tt>
+
+<P>
 <sect1>set/dx (0)
 
 <P>
@@ -3735,6 +4198,20 @@ eg:-
 </tt>
 
 <P>
+<sect1>set/isolate (9)
+
+<P>
+<tt>
+<bf>set/isolate</bf> Isolate a node from the rest of the network
+</tt>
+
+<P>
+Connect a node to your system in such a way that you are a full protocol
+member of its network and can see all spots on it, but nothing either leaks
+out from it nor goes back into from the rest of the nodes connected to you.
+
+You can potentially connect several nodes in this way.
+ 
 <sect1>set/language &lt;lang&gt; (0)
 
 <P>
@@ -3751,6 +4228,14 @@ and nl (Dutch).
 <P>
 <tt>
 <bf>set/location &lt;lat & long&gt;</bf> Set your latitude and longitude
+</tt>
+
+<P>
+<sect1>set/lockout &lt;call&gt; (9)
+
+<P>
+<tt>
+<bf>set/lockout &lt;call&gt;</bf> Stop a callsign connecting to the cluster
 </tt>
 
 <P>
@@ -3843,6 +4328,90 @@ When you execute this command it will ask you for your old password,
 then ask you to type in your new password twice (to make sure you
 get it right). You may or may not see the data echoed on the screen
 as you type, depending on the type of telnet client you have.
+<sect1>set/password &lt;callsign&gt; &lt;string&gt; (9)
+
+<P>
+<tt>
+<bf>set/password &lt;callsign&gt; &lt;string&gt;</bf> Set a users password
+</tt>
+
+<P>
+The password for a user can only be set by a full sysop. The string
+can contain any characters. 
+
+The way this field is used depends on context. If it is being used in
+the SYSOP command context then you are offered 5 random numbers and you
+have to supply the corresponding letters. This is now mainly for ax25
+connections.
+
+If it is being used on incoming telnet connections then, if a password
+is set or the:
+
+<tscreen><verb>
+  set/var $main::passwdreq = 1
+</verb></tscreen>
+
+command is executed in the startup script, then a password prompt is
+given after the normal 'login: ' prompt.  
+<sect1>set/pinginterval &lt;time&gt; &lt;nodecall&gt; (9)
+
+<P>
+<tt>
+<bf>set/pinginterval &lt;time&gt; &lt;nodecall&gt;</bf> Set ping time to neighbouring nodes 
+</tt>
+
+<P>
+As from release 1.35 all neighbouring nodes are pinged at regular intervals
+in order to determine the rolling quality of the link and, in future, to
+affect routing decisions. The default interval is 300 secs or 5 minutes.
+
+You can use this command to set a different interval. Please don't. 
+
+But if you do the value you enter is treated as minutes up 30 and seconds
+for numbers greater than that.
+
+This is used also to help determine when a link is down at the far end
+(as certain cluster software doesn't always notice), see SET/OBSCOUNT
+for more information.
+
+If you must change it (and it may be useful for internet connected nodes
+on dynamic IP addresses that go away after a set time of usage) the time
+can be specified as:-
+
+<tscreen><verb>
+  5      which if less than 30 is converted to minutes otherwise is 
+         taken as the no of seconds between pings. 
+  120s   120 seconds
+  5m     5 minutes
+  1h     1 hour
+</verb></tscreen>
+
+Please be aware that this causes traffic to occur on the link, setting 
+this value too low may annoy your neighbours beyond the point of 
+endurance!
+
+You can switch this off by setting it to 0.
+<sect1>set/privilege &lt;n&gt; &lt;call&gt; &lsqb;&lt;call..&rsqb; (9)
+
+<P>
+<tt>
+<bf>set/privilege &lt;n&gt; &lt;call&gt; &lsqb;&lt;call..&rsqb;</bf> Set privilege level on a call
+</tt>
+
+<P>
+Set the privilege level on a callsign. The privilege levels that pertain
+to commands are as default:-
+<tscreen><verb>
+  0 - normal user
+  1 - allow remote nodes normal user RCMDs
+  5 - various privileged commands (including shutdown, but not disc-
+      connect), the normal level for another node.
+  8 - more privileged commands (including disconnect)
+  9 - local sysop privilege. DO NOT SET ANY REMOTE USER OR NODE TO THIS
+      LEVEL.
+</verb></tscreen>
+If you are a sysop and you come in as a normal user on a remote connection
+your privilege will automatically be set to 0.
 <sect1>set/prompt &lt;string&gt; (0)
 
 <P>
@@ -3879,6 +4448,14 @@ Tell the system where you are. For example:-
   SET/QTH East Dereham, Norfolk
 </verb></tscreen>
 
+<sect1>set/register &lt;call&gt; ... (9)
+
+<P>
+<tt>
+<bf>set/register &lt;call&gt; ...</bf> Mark a user as registered
+</tt>
+
+<P>
 <sect1>set/spider &lt;call&gt; &lsqb;&lt;call&gt;..&rsqb; (5)
 
 <P>
@@ -3889,6 +4466,29 @@ Tell the system where you are. For example:-
 <P>
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.
+<sect1>set/sys_location &lt;lat & long&gt; (9)
+
+<P>
+<tt>
+<bf>set/sys_location &lt;lat & long&gt;</bf> Set your cluster latitude and longitude
+</tt>
+
+<P>
+In order to get accurate headings and such like you must tell the system
+what your latitude and longitude is. If you have not yet done a SET/QRA
+then this command will set your QRA locator for you. For example:-
+<tscreen><verb>
+  SET/LOCATION 52 22 N 0 57 E
+</verb></tscreen>
+
+<sect1>set/sys_qra &lt;locator&gt; (9)
+
+<P>
+<tt>
+<bf>set/sys_qra &lt;locator&gt;</bf> Set your cluster QRA Grid locator
+</tt>
+
+<P>
 <sect1>set/talk (0)
 
 <P>
@@ -3897,6 +4497,23 @@ fed new style DX Protocol rather normal user commands.
 </tt>
 
 <P>
+<sect1>set/usdb &lt;call&gt; &lt;state&gt; &lt;city&gt; (9)
+
+<P>
+<tt>
+<bf>set/usdb &lt;call&gt; &lt;state&gt; &lt;city&gt;</bf> add/update a US DB callsign
+</tt>
+
+<P>
+This command allows you to add or alter a callsign in the US state
+database. Use with extreme caution. Anything you do here will be
+overwritten by any weekly updates that affect this callsign
+
+<tscreen><verb>
+  set/usdb g1tlh nh downtown rindge
+</verb></tscreen>
+
+see also DELETE/USDB
 <sect1>set/usstate (0)
 
 <P>
@@ -4069,6 +4686,14 @@ and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qslinfo.de.
 
 See also SHOW/QRZ, SHOW/WM7D.
+<sect1>show/debug (9)
+
+<P>
+<tt>
+<bf>show/debug</bf> Show what levels of debug information you are logging
+</tt>
+
+<P>
 <sect1>show/dx (0)
 
 <P>
@@ -4344,6 +4969,14 @@ all the categories will be listed.
 </tt>
 
 <P>
+<sect1>show/lockout &lt;prefix&gt;|all (9)
+
+<P>
+<tt>
+<bf>show/lockout &lt;prefix&gt;|all</bf> Show the list of locked out or excluded callsigns
+</tt>
+
+<P>
 <sect1>show/log &lsqb;&lt;callsign&gt;&rsqb; (8)
 
 <P>
@@ -4593,6 +5226,14 @@ and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 
 See also SHOW/WM7D for an alternative.
+<sect1>show/registered &lsqb;&lt;prefix&gt;&rsqb; (9)
+
+<P>
+<tt>
+<bf>show/registered &lsqb;&lt;prefix&gt;&rsqb;</bf> Show the registered users
+</tt>
+
+<P>
 <sect1>show/route &lt;callsign&gt; ... (0)
 
 <P>
@@ -4850,6 +5491,25 @@ Display the most recent WWV information that has been received by the system
 
 <P>
 Shutdown the cluster and disconnect all the users 
+<sect1>spoof &lt;call&gt; &lt;command&gt; (9)
+
+<P>
+<tt>
+<bf>spoof &lt;call&gt; &lt;command&gt;</bf> Do a command as though you are another user
+</tt>
+
+<P>
+This command is provided so that sysops can set a user's parameters without
+me having to write a special 'sysop' version for every user command. It
+allows you to pretend that you are doing the command as the user you specify.
+
+eg:-
+
+<tscreen><verb>
+   SPOOF G1TLH set/name Dirk
+   SPOOF G1TLH set/qra JO02LQ
+</verb></tscreen>
+
 <sect1>stat/channel &lsqb;&lt;callsign&gt;&rsqb; (5)
 
 <P>
@@ -5231,6 +5891,25 @@ will allow text with this word again.
 </tt>
 
 <P>
+<sect1>unset/debug &lt;name&gt; (9)
+
+<P>
+<tt>
+<bf>unset/debug &lt;name&gt;</bf> Remove a debug level from the debug set
+</tt>
+
+<P>
+You can choose to log several different levels.  The levels are
+
+<tscreen><verb>
+ chan
+ state
+ msg
+ cron
+ connect
+</verb></tscreen>
+
+You can show what levels you are logging with SHOW/DEBUG
 <sect1>unset/dx (0)
 
 <P>
@@ -5366,6 +6045,23 @@ You can unset the hops with command UNSET/HOPS. For example:-
   unset/hops gb7mbc spots
 </verb></tscreen>
 
+<sect1>unset/isolate (9)
+
+<P>
+<tt>
+<bf>unset/isolate</bf> Stop Isolation of a node from the rest of the network
+</tt>
+
+<P>
+Remove isolation from a node - SET/ISOLATE
+<sect1>unset/lockout &lt;call&gt; (9)
+
+<P>
+<tt>
+<bf>unset/lockout &lt;call&gt;</bf> Allow a callsign to connect to the cluster
+</tt>
+
+<P>
 <sect1>unset/logininfo (0)
 
 <P>
@@ -5374,6 +6070,16 @@ You can unset the hops with command UNSET/HOPS. For example:-
 </tt>
 
 <P>
+<sect1>unset/password &lt;call&gt; ... (9)
+
+<P>
+<tt>
+<bf>unset/password &lt;call&gt; ...</bf> Delete (remove) a user's password
+</tt>
+
+<P>
+This command allows the sysop to completely delete and remove a 
+password for a user. 
 <sect1>unset/privilege (0)
 
 <P>
@@ -5405,6 +6111,31 @@ fixed prompt).
 
 UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back to
 normal.
+<sect1>unset/register &lt;call&gt; ... (9)
+
+<P>
+<tt>
+<bf>unset/register &lt;call&gt; ...</bf> Mark a user as not registered
+</tt>
+
+<P>
+Registration is a concept that you can switch on by executing the
+
+<tscreen><verb>
+  set/var $main::regreq = 1 
+</verb></tscreen>
+
+command (usually in your startup file)
+
+If a user is NOT registered then, firstly, instead of the normal
+motd file (/spider/data/motd) being sent to the user at startup, the
+user is sent the motd_nor file instead. Secondly, the non registered
+user only has READ-ONLY access to the node. The non-registered user
+cannot use DX, ANN etc. 
+
+The only exception to this is that a non-registered user can TALK or
+SEND messages to the sysop.
+ 
 <sect1>unset/talk (0)
 
 <P>

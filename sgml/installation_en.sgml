@@ -8,7 +8,7 @@
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com),
 Ian Maude, G0VGS, (g0vgs@gb7mbc.net) and Charlie
 Carroll, K1XX, (k1xx@ptcnh.net)</author>
-<date>February 2003 revision 0.6</date>
+<date>March 2003 revision 0.7</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -1835,7 +1835,7 @@ then a connect attempt will be started.
 <P>
 There are probably lots of other things you could use this crontab file for.  
 If you want to know more about it, look at the
-<htmlurl url="http://www.dxcluster.org/cron.html" name="DXSpider"> website 
+<htmlurl url="http://www.dxcluster.org/main/cron.html" name="DXSpider"> website 
 at the cron page where it is explained more fully.
 
 </article>

@@ -6,7 +6,7 @@ all:	sgml ../html/adminmanual.html ../txt/adminmanual.txt ../html/installation.h
 
 sgml: ../cmd/Commands_en.hlp adminmanual.sgml usermanual.sgml
 	# Create the admin manual sgml file
-	cat ../cmd/Commands_en.hlp  | ./commands2sgml.pl 8 > ./adminmanual-cmd.sgml
+	cat ../cmd/Commands_en.hlp  | ./commands2sgml.pl 9 > ./adminmanual-cmd.sgml
 	cat adminmanual.sgml adminmanual-cmd.sgml > ./adminmanual_en.sgml
 
 	# Create the user manual sgml file
