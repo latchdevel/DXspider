@@ -61,7 +61,7 @@ sub cread
 		next if /^\s*#/o or /^\s*$/o;
 		my ($min, $hour, $mday, $month, $wday, $cmd) = /^\s*(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)$/o;
 		next if !$min;
-		my $ref = new();
+		my $ref = bless {};
 		my $err;
 		
 		$err |= parse($ref, 'min', $min, 0, 60);

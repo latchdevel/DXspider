@@ -34,9 +34,9 @@ sub dbg
 		for (@_) {
 			s/\n$//og;
 		}
-		my $str = atime . "@_" ;
-		print "$str\n";
-		$fp->writenow($str);
+		print "@_\n" if defined \*STDOUT;
+		my $t = time;
+		$fp->writeunix($t, "$t^@_");
 	}
 }
 

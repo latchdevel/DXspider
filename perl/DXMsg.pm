@@ -24,12 +24,14 @@ use FileHandle;
 use Carp;
 
 use strict;
-use vars qw(%work @msg $msgdir %valid %busy);
+use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean);
 
 %work = ();                # outstanding jobs
 @msg = ();                 # messages we have
 %busy = ();                # station interlocks
 $msgdir = "$main::root/msg";              # directory contain the msgs
+$maxage = 30 * 86400;      # the maximum age that a message shall live for if not marked 
+$last_clean = 0;           # last time we did a clean
 
 %valid = (
   fromnode => '9,From Node',
@@ -51,6 +53,7 @@ $msgdir = "$main::root/msg";              # directory contain the msgs
   read => '9,Times read',
   size => '0,Size',
   msgno => '0,Msgno',
+  keep => '0,Keep this?,yesno',
 );
 
 # allocate a new object
@@ -170,6 +173,7 @@ sub process
 		  add_dir($ref);
 		  my $dxchan = DXChannel->get($ref->{to});
 		  $dxchan->send("New mail has arrived for you") if $dxchan;
+  		  Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
 		}
 		$ref->stop_msg($self);
 		queue_msg();
@@ -184,10 +188,12 @@ sub process
 	  my $ref = $work{"$f[2]$f[3]"};
 	  if ($ref) {
 		if ($ref->{private}) {                   # remove it if it private and gone off site#
-	      $ref->del_msg;
+			Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $f[2] and deleted");
+			$ref->del_msg;
 	    } else {
-	      push @{$ref->{gotit}}, $f[2];           # mark this up as being received
-		  $ref->store($ref->{lines});             # re- store the file
+			Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $f[2]");
+			push @{$ref->{gotit}}, $f[2];           # mark this up as being received
+			$ref->store($ref->{lines});             # re- store the file
 	    }
     	$ref->stop_msg($self);
 	  } else {
@@ -242,6 +248,8 @@ sub process
 	  last SWITCH;
 	}
   }
+
+  clean_old() if $main::systime - $last_clean > 3600 ;    # clean the message queue
 }
 
 
@@ -318,6 +326,27 @@ sub del_msg
   # remove the file
   unlink filename($self->{msgno});
   dbg('msg', "deleting $self->{msgno}\n");
+}
+
+# clean out old messages from the message queue
+sub clean_old
+{
+	my $ref;
+	
+	# mark old messages for deletion
+	foreach $ref (@msg) {
+		if (!$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
+			$ref->{deleteme} = 1;
+			delete $ref->{gotit};
+			delete $ref->{list};
+			unlink filename($ref->{msgno});
+			dbg('msg', "deleting old $ref->{msgno}\n");
+		}
+	}
+
+	# remove them all from the active message list
+	@msg = map { $_->{deleteme} ? () : $_ } @msg;
+	$last_clean = $main::systime;
 }
 
 # read in a message header

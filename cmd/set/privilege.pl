@@ -13,8 +13,7 @@ my $call;
 my $priv = shift @args;
 my @out;
 my $user;
-
-$DB::single = 1;
+my $ref;
 
 return (0) if $self->priv < 9;
 
@@ -23,14 +22,20 @@ if ($priv < 0 || $priv > 9) {
 }
 
 foreach $call (@args) {
-  $call = uc $call;
-  my $user = DXUser->get_current($call);
-  if ($user) {
-    $user->priv($priv);
-	$user->put();
-    push @out, $self->msg('priv', $call);
-  } else {
-    push @out, $self->msg('e3', "Set Privilege", $call);
-  }
+	$call = uc $call;
+	if ($ref = DXChannel->get($call)) {
+		$ref->priv($priv);
+		$ref->user->priv($priv);
+		$ref->user->put();
+	}
+	if (!$ref && ($user = DXUser->get($call))) {
+		$user->priv($priv);
+		$user->put();
+	}
+	if ($ref || $user) {
+		push @out, $self->msg('priv', $call);
+	} else {
+		push @out, $self->msg('e3', "Set Privilege", $call);
+	}
 }
 return (1, @out);

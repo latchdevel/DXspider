@@ -19,9 +19,9 @@ foreach $call (@args) {
   if ($ref) {
     $ref->here(0);
 	DXProt::broadcast_ak1a(DXProt::pc24($ref));
-	push @out, DXM::msg('hereu', $call);
+	push @out, $self->msg('hereu', $call);
   } else {
-    push @out, DXM::msg('e3', "Unset Here", $call);
+    push @out, $self->msg('e3', "Unset Here", $call);
   }
 }
 return (1, @out);

@@ -20,15 +20,15 @@ foreach $call (@args) {
   $call = uc $call;
   my $chan = DXChannel->get($call);
   if ($chan) {
-	push @out, DXM::msg('nodee1', $call);
+	push @out, $self->msg('nodee1', $call);
   } else {
     $user = DXUser->get($call);
 	if ($user) {
 	  $user->sort('A');
 	  $user->close();
-      push @out, DXM::msg('node', $call);
+      push @out, $self->msg('node', $call);
 	} else {
-      push @out, DXM::msg('e3', "Set Node", $call);
+      push @out, $self->msg('e3', "Set Node", $call);
 	}
   }
 }

@@ -28,14 +28,12 @@ if ($f[0] =~ /[A-Za-z]/) {
   $line =~ s/^$f[0]\s+$f[1]\s*//;
 }
 
-# check the freq, if the number is < 1800 it is in Mhz (probably)
-$freq = $freq * 1000 if $freq < 1800;
-
 # bash down the list of bands until a valid one is reached
 my $bandref;
 my @bb;
 my $i;
 
+# first in KHz
 L1:
 foreach $bandref (Bands::get_all()) {
   @bb = @{$bandref->band};
@@ -47,11 +45,31 @@ foreach $bandref (Bands::get_all()) {
   }
 }
 
-push @out, "Frequency $freq not in band [usage: DX freq call comments]" if !$valid;
+if (!$valid) {
+
+	# try again in MHZ 
+	$freq = $freq * 1000 if $freq;
+
+L2:
+    foreach $bandref (Bands::get_all()) {
+		@bb = @{$bandref->band};
+		for ($i = 0; $i < @bb; $i += 2) {
+			if ($freq >= $bb[$i] && $freq <= $bb[$i+1]) {
+				$valid = 1;
+				last L2;
+			}
+		}
+	}
+}
+
+
+
+push @out, $self->msg('dx1', $freq) if !$valid;
 
 # check we have a callsign :-)
 if ($spotted le ' ') {
-  push @out, "Need a callsign for the spot [usage: DX freq call comments]" ;
+	push @out, $self->msg('dx2');
+	
   $valid = 0;
 }
 

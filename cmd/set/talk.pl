@@ -18,9 +18,9 @@ foreach $call (@args) {
   my $chan = DXChannel->get($call);
   if ($chan) {
     $chan->talk(1);
-	push @out, DXM::msg('talks', $call);
+	push @out, $self->msg('talks', $call);
   } else {
-    push @out, DXM::msg('e3', "Set Talk", $call);
+    push @out, $self->msg('e3', "Set Talk", $call);
   }
 }
 return (1, @out);

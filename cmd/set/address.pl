@@ -23,6 +23,6 @@ if ($self->priv >= 5) {             # allow a callsign as first arg
 }
 
 $user->addr($line);
-push @out, DXM::msg('addr', $call, $line);
+push @out, $self->msg('addr', $call, $line);
 
 return (1, @out);

@@ -12,6 +12,7 @@ my $msgno;
 my @out;
 my @body;
 my $ref;
+my $call = $self->call;
 
 # $DB::single = 1;
 
@@ -27,6 +28,7 @@ for $msgno (@f) {
     push @out, "Msg $msgno not available";
 	next;
   } 
+  Log('msg', "Message $ref->{msgno} from $ref->{from} to $ref->{to} deleted by $call");
   $ref->del_msg;
   push @out, "Message $msgno deleted";
 }

@@ -55,18 +55,26 @@ sub new
 # all the crap that comes between).
 sub start
 {
-  my ($self, $line) = shift;
-  my $call = $self->call;
-  
+  my ($self, $line, $sort) = @_;
+  my $call = $self->{call};
+  my $user = $self->{user};
+      
   # remember type of connection
   $self->{consort} = $line;
-
+  $self->{outbound} = $sort eq 'O';
+  $self->{priv} = $user->priv;
+  $self->{lang} = $user->lang;
+  $self->{consort} = $line;                # save the connection type
+  $self->{here} = 1;
+  
   # set unbuffered
   $self->send_now('B',"0");
   
   # send initialisation string
-  $self->send(pc38()) if DXNode->get_all();
-  $self->send(pc18());
+  if (!$self->{outbound}) {
+	  $self->send(pc38()) if DXNode->get_all();
+	  $self->send(pc18());
+  }
   $self->state('init');
   $self->pc50_t(time);
   Log('DXProt', "$call connected");
@@ -235,6 +243,13 @@ sub normal
         # unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
 		my $mref = DXMsg::get_busy($call);
 		$mref->stop_msg($self) if $mref;
+
+		# add this station to the user database, if required
+		my $user = DXUser->get_current($call);
+		$user = DXUser->new($call) if !$user;
+		$user->node($call) if !$user->node;
+		$user->sort('A');
+		$user->put;
 	  }
 	  
 	  # queue up any messages
@@ -279,16 +294,39 @@ sub normal
     if ($pcno == 25) {last SWITCH;}
 
     if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42) {   # mail/file handling
-	  DXMsg::process($self, $line);
-	  return;
+		DXMsg::process($self, $line);
+		return;
 	}
 	
     if ($pcno == 34 || $pcno == 36) {   # remote commands (incoming)
-	  last SWITCH;
+		if ($field[1] eq $main::mycall) {
+			if ($self->{priv}) {        # you have to have SOME privilege, the commands have further filtering
+				$self->{remotecmd} = 1; # for the benefit of any command that needs to know
+				for (DXCommandmode::run_cmd($self, $field[3])) {
+					s/\s*$//og;
+					$self->send(pc35($main::mycall, $self->{call}, "$main::mycall:$_"));
+				}
+				delete $self->{remotecmd};
+			}
+		} else {
+			route($field[1], $line);
+		}
+		return;
 	}
 	
     if ($pcno == 35) {                  # remote command replies
-	  last SWITCH;
+		if ($field[1] eq $main::mycall) {
+			my $s = DXChannel::get($main::myalias); 
+			my @ref = grep { $_->pc34to eq $field[2] } DXChannel::get_all();     # people that have rcmded someone
+			push @ref, $s if $s;
+			
+			foreach (@ref) {
+				$_->send($field[3]);
+			}
+		} else {
+			route($field[1], $line);
+		}
+		return;
 	}
 	
     if ($pcno == 37) {last SWITCH;}
@@ -446,7 +484,7 @@ sub send_local_config
   my @nodes = DXNode::get_all();
   
   # create a list of all the nodes that are not connected to this connection
-  @nodes = map { $_->dxchan != $self ? $_ : () } @nodes;
+  @nodes = grep { $_->dxchan != $self } @nodes;
   $self->send($me->pc19(@nodes));
 	  
   # get all the users connected on the above nodes and send them out

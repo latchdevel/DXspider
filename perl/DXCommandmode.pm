@@ -47,7 +47,7 @@ sub new
 
 sub start
 { 
-  my ($self, $line) = @_;
+  my ($self, $line, $sort) = @_;
   my $user = $self->{user};
   my $call = $self->{call};
   my $name = $user->{name};
@@ -81,7 +81,25 @@ sub start
 #
 # This is the normal command prompt driver
 #
+
 sub normal
+{
+	my $self = shift;
+	my $cmdline = shift;
+	
+	my @ans = run_cmd($self, $cmdline);
+	$self->send(@ans) if @ans > 0;
+	
+	# send a prompt only if we are in a prompt state
+	$self->prompt() if $self->{state} =~ /^prompt/o;
+}
+
+# 
+# this is the thing that runs the command, it is done like this for the 
+# benefit of remote command execution
+#
+
+sub run_cmd
 {
   my $self = shift;
   my $user = $self->{user};
@@ -141,18 +159,15 @@ sub normal
  	
   if ($ans[0]) {
     shift @ans;
-	$self->send(@ans) if @ans > 0;
   } else {
     shift @ans;
 	if (@ans > 0) {
-	  $self->send($self->msg('e2'), @ans);
+		unshift @ans, $self->msg('e2');
 	} else {
-      $self->send($self->msg('e1'));
+		@ans = $self->msg('e1');
 	}
   }
-  
-  # send a prompt only if we are in a prompt state
-  $self->prompt() if $self->{state} =~ /^prompt/o;
+  return @ans;
 }
 
 #

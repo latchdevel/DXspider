@@ -37,7 +37,6 @@ use Julian;
 use Carp;
 
 use strict;
-
 use vars qw($log);
 
 $log = new('log', 'dat', 'm');

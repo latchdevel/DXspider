@@ -61,6 +61,11 @@ use vars qw(%channels %valid);
   func => '9,Function',
   loc => '9,Local Vars',     # used by func to store local variables in
   lastread => '9,Last Msg Read',
+  outbound => '9,outbound?,yesno',
+  remotecmd => '9,doing rcmd,yesno',
+  pc34to => '9,last rcmd call',
+  pc34t => '9,last rcmd time,atime',
+  pings => '9,out/st pings',
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]

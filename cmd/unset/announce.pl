@@ -18,9 +18,9 @@ foreach $call (@args) {
   my $user = ($call eq $self->call) ? $self->user :  DXUser->get($call);
   if ($user) {
     $user->ann(0);
-	push @out, DXM::msg('annu', $call);
+	push @out, $self->msg('annu', $call);
   } else {
-    push @out, DXM::msg('e3', "Unset Announce", $call);
+    push @out, $self->msg('e3', "Unset Announce", $call);
   }
 }
 return (1, @out);

@@ -67,7 +67,7 @@ if ($self->state eq "prompt") {
   my $to = $oref->from;
   $loc->{to} = [ $to ];       # to is an array
   $loc->{subject} = $oref->subject;
-  $loc->{subject} = "Re: " . $loc->{subject} if !($loc->{subject} =~ /^Re/io); 
+  $loc->{subject} = "Re: " . $loc->{subject} if !($loc->{subject} =~ /^Re:.\s/io); 
 
   # find me and set the state and the function on my state variable to
   # keep calling me for every line until I relinquish control

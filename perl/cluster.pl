@@ -47,7 +47,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = 1.4;					# the version no of the software
+$version = 1.5;					# the version no of the software
 
 # handle disconnections
 sub disconnect
@@ -133,6 +133,12 @@ sub cease
 	exit(0);
 }
 
+# the reaper of children
+sub reap
+{
+	my $cpid = wait;
+}
+
 # this is where the input queue is dealt with and things are dispatched off to other parts of
 # the cluster
 sub process_inqueue
@@ -142,15 +148,15 @@ sub process_inqueue
 	
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
-	my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^(\w)(\w+)\|(.*)$/;
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 	dbg('chan', "<- $sort $call $line\n");
 	
 	# handle A records
 	my $user = $dxchan->user;
-	if ($sort eq 'A') {
-		$dxchan->start($line);  
+	if ($sort eq 'A' || $sort eq 'O') {
+		$dxchan->start($line, $sort);  
 	} elsif ($sort eq 'D') {
 		die "\$user not defined for $call" if !defined $user;
 		
@@ -170,6 +176,8 @@ sub process_inqueue
 # The start of the main line of code 
 #
 #############################################################
+
+$systime = time;
 
 # open the debug file, set various FHs to be unbuffered
 foreach (@debug) {
@@ -202,6 +210,7 @@ Msg->new_server("$clusteraddr", $clusterport, \&login);
 $SIG{'INT'} = \&cease;
 $SIG{'TERM'} = \&cease;
 $SIG{'HUP'} = 'IGNORE';
+$SIG{'CHLD'} = \&reap;
 
 # read in system messages
 DXM->init();
@@ -221,9 +230,10 @@ Spot->init();
 # put in a DXCluster node for us here so we can add users and take them away
 DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 
 
-# read in any existing message headers
+# read in any existing message headers and clean out old crap
 print "reading existing message headers\n";
 DXMsg->init();
+DXMsg::clean_old();
 
 # read in any cron jobs
 print "reading cron jobs\n";
@@ -246,6 +256,9 @@ for (;;) {
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
 		DXConnect::process();
+	}
+	if ($decease) {
+		last if --$decease <= 0;
 	}
 }
 

@@ -199,6 +199,20 @@ sub pc33
   return "PC33^$fromnode^$tonode^$stream^";
 }
 
+# remote cmd send
+sub pc34
+{
+	my($fromnode, $tonode, $msg) = @_;
+	return "PC34^$tonode^$fromnode^$msg^~";
+}
+
+# remote cmd reply
+sub pc35
+{
+	my($fromnode, $tonode, $msg) = @_;
+	return "PC35^$tonode^$fromnode^$msg^~";
+}
+
 # send all the DX clusters I reckon are connected
 sub pc38
 {
