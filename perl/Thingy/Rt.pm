@@ -86,15 +86,16 @@ sub handle_cf
 	}
 
 	# do nodes
-	my ($del, $add)
+	my ($del, $add);
+	my %in;
 	if ($thing->{n}) {
-		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{n});
+		%in = (map {my ($here, $call) = unpack("A1 A*", $_); ($call, $here)} split /:/, $thing->{n});
 		my ($tdel, $tadd) = $parent->diff_nodes(keys %in);
 		$add = $tadd;
 		$del = $tdel;
 	}
 	if ($thing->{a}) {
-		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{a});
+		%in = (map {my ($here, $call) = unpack("A1 A*", $_); ($call, $here)} split /:/, $thing->{a});
 		my ($tdel, $tadd) = $parent->diff_nodes(keys %in);
 		push @$add, @$tadd;
 		push @$del, @$tdel;
@@ -121,7 +122,7 @@ sub handle_cf
 	
 	# now users
 	if ($thing->{u}) {
-		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{u});
+		%in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{u});
 		($del, $add) = $parent->diff_users(keys %in);
 
 		my $call;
