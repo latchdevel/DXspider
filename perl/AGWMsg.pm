@@ -30,7 +30,7 @@ use AGWConnect;
 use DXDebug;
 
 use vars qw(@ISA $sock @outqueue $send_offset $inmsg $rproc $noports $lastytime 
-			$lasthtime $ypolltime $hpolltime);
+			$lasthtime $ypolltime $hpolltime %circuit);
 
 @ISA = qw(Msg ExtMsg);
 $sock = undef;
@@ -42,6 +42,7 @@ $noports = 0;
 $lastytime = $lasthtime = time;
 $ypolltime = 10 unless defined $ypolltime;
 $hpolltime = 120 unless defined $hpolltime;
+%circuit = ();
 
 sub init
 {
@@ -79,8 +80,7 @@ sub finish
 {
 	if ($sock) {
 		dbg('err', "AGW ending...");
-		for (values %Msg::conns) {
-			next unless $_->isa('AGWMsg');
+		for (values %circuit) {
 			$_->disconnect;
 		}
 		# say we are going
@@ -200,7 +200,7 @@ sub _error
 	dbg('agw', "error on AGW connection $addr/$port $!");
 	Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
 	$sock = undef;
-	for (values %Msg::conns) {
+	for (%circuit) {
 		next unless $_->isa('AGWMsg');
 		$_->disconnect;
 	}
@@ -299,6 +299,7 @@ sub _decode
 			$conn->{lineend} = "\cM";
 			$conn->{incoming} = 1;
 			$conn->{agwcall} = $call;
+			$circuit{$call} = $conn;
 			if ($call =~ /^(\w+)-(\d\d?)$/) {
 				my $c = $1;
 				my $s = $2;
@@ -318,12 +319,12 @@ sub _decode
 	} elsif ($sort eq 'y') {
 		my ($frames) = unpack "V", $data;
 		dbg('agwpollans', "AGW Frames Outstanding on port $port = $frames");
-		my $conn = Msg->conns($from);
+		my $conn = _find($from);
 		$conn->{oframes} = $frames if $conn;
 	} elsif ($sort eq 'Y') {
 		my ($frames) = unpack "V", $data;
 		dbg('agw', "AGW Frames Outstanding on circuit '$from'->'$to' = $frames");
-		my $conn = Msg->conns($from eq $main::mycall ? $to : $from);
+		my $conn = _find($from eq $main::mycall ? $to : $from);
 		$conn->{oframes} = $frames if $conn;
 	} elsif ($sort eq 'H') {
 		unless ($from =~ /^\s+$/) {
@@ -360,12 +361,7 @@ sub _decode
 sub _find
 {
 	my $call = shift;
-	for (values %Msg::conns) {
-		if ($_->isa('AGWMsg') && $call eq $_->{agwcall}) {
-			return $_;
-		}
-	}
-	return undef;
+	return $circuit{$call};
 }
 
 sub connect
@@ -379,6 +375,7 @@ sub connect
 	$conn->{incoming} = 0;
 	$conn->{csort} = 'ax25';
 	$conn->{agwcall} = uc $call;
+	$circuit{$conn->{agwcall}} = $conn; 
 	
 	_sendf('C', $main::mycall, $conn->{agwcall}, $conn->{agwport}, $conn->{agwpid});
 	$conn->{state} = 'WC';
@@ -389,6 +386,7 @@ sub connect
 sub in_disconnect
 {
 	my $conn = shift;
+	delete $circuit{$conn->{agwcall}}; 
 	_sendf('d', $conn->{agwcall}, $main::mycall, $conn->{agwport}, $conn->{agwpid});
 	$conn->SUPER::disconnect;
 }
@@ -396,6 +394,7 @@ sub in_disconnect
 sub disconnect
 {
 	my $conn = shift;
+	delete $circuit{$conn->{agwcall}}; 
 	if ($conn->{incoming}) {
 		_sendf('d', $conn->{agwcall}, $main::mycall, $conn->{agwport}, $conn->{agwpid});
 	} else {
@@ -430,5 +429,6 @@ sub process
 		$lasthtime = $main::systime;
 	}
 }
+
 1;
 
