@@ -16,23 +16,16 @@ my @out;
 foreach $call (@args) {
 	$call = uc $call;
 	my $dxchan = DXChannel->get($call);
-	my $ref = Route::User::get($call);
 	if ($dxchan) {
 		$dxchan->here(1);
 		push @out, $self->msg('heres', $call);
+		my $ref = Route::User::get($call);
+		$ref = Route::Node::get($call) unless $ref;
 		if ($ref) {
+			$ref->here(1);
 			my $s = DXProt::pc24($ref);
 			DXProt::eph_dup($s);
 			DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
-			$ref->here(1);
-		} elsif ($ref = Route::Node::get($call)) {
-			my $s = DXProt::pc24($ref);
-			DXProt::eph_dup($s);
-			DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
-			$ref->here(1);
-		} else {
-			$ref = Route::Node::get($call);
-			$ref->here(1) if $ref;
 		}
 	} else {
 		push @out, $self->msg('e3', "Set Here", $call);
