@@ -416,11 +416,8 @@ sub disconnect
 		$node->dxchan($DXProt::me);
 	}
 
-	my $pref = Route::Node::get($main::mycall);
-	if ($pref) {
-		my @rout = $pref->del_user($main::mycall);
-		dbg('route', "B/C PC17 on $main::mycall for: $call");
-	}
+	my @rout = $main::routeroot->del_user($call);
+	dbg('route', "B/C PC17 on $main::mycall for: $call");
 
 	# I was the last node visited
     $self->user->node($main::mycall);
