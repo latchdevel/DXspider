@@ -11,11 +11,16 @@
 #
 # Comment lines are indented before printing
 #
+=== 0^ACCEPT^Define un filtro para aceptar algo
+Crea un filtro con el que aceptamos algo
+
+Hay dos tipos de filtros, accept y reject. Ver HELP FILTERING para más información.
+
 === 0^ACCEPT/ANNOUNCE [0-9] <pattern>^Define un filtro 'accept' para anuncios
 Crea un filtro del tipo 'acepta este anuncio'.
 
 Un filtro "accept" significa que si el anuncio coincide con lo que estamos
-filtrando, este será mostrado al usuario. Ver HELP filterING para mas info.
+filtrando, este será mostrado al usuario. Ver HELP filterING para más info.
 Por favor lee este apartado para entender como funcionan los filtros - Esto
 nos evitara dudas.
 
@@ -27,9 +32,11 @@ Puedes usar cualquiera de las siguientes opciones en esta línea:
   origin_dxcc <prefijos o números>    ej: 61,62 (datos de: sh/pre G)
   origin_itu <prefijos o números>     o: G,GM,GW
   origin_zone <prefijos o números>
+  origin_state <states>                ej: VA,NH,RI,NH
   by_dxcc <prefijos o números>
   by_itu <prefijos o números>
   by_zone <prefijos o números>
+  by_state <states>
   channel <prefijos>
   wx 1                     filtra anuncios tipo WX
   dest <prefijos>          ej: 6MUK,WDX      (distros)
@@ -41,6 +48,11 @@ algunos ejemplos:-
   (Esto puede ir en una sola línea: acc/ann dest 6MUK or by_zone 14,15,16)
 o
   acc/ann by EA,EB  
+
+por estados americanos:
+
+acc/ann by_state va,nh,ri,nh 
+
 Puedes usar el comodín 'all' para aceptar todo ej:
 
   acc/ann all
@@ -60,7 +72,7 @@ Crea un filtro para "aceptar rutas en el protocolo PC".
 
 Un filtro de este tipo significa que si un PC/16/17/19/21/24/41/50 coincide
 con lo filtrado, este es admitido por ese canal/enlace. Ver HELP filterING 
-para mas info. Por favor lee este apartado para entender como funcionan los
+para más info. Por favor lee este apartado para entender como funcionan los
 filtros - Esto nos evitara dudas.
 
 Puedes usar cualquiera de las siguientes opciones en esta línea:
@@ -69,15 +81,24 @@ Puedes usar cualquiera de las siguientes opciones en esta línea:
   call_dxcc <prefijos o números>    ej: 61,62 (from eg: sh/pre G)
   call_itu <prefijos o números>     o: G,GM,GW
   call_zone <prefijos o números>
+  call_state <states>                ej: VA,NH,RI,NH
   origin <prefijos>      realmente el interface por el que llegó
   origin_dxcc <prefijos or números>    ej: 61,62 (datos de: sh/pre G)
   origin_itu <prefijos or números>     o: G,GM,GW
   origin_zone <prefijos or números>
+  origin_state <states>                ej: VA,NH,RI,NH
 
 algunos ejemplos:-
 
   acc/route gb7djk call_dxcc 34,35,36,37 (enviar solo nodos EA)
   acc/route gb7djk call gb7djk     (equivalente a SET/ISOLATE)
+
+Ahora se puede usar 'by' como sinonimo de 'all'
+
+ by = call
+ by_dxcc = call_dxcc
+
+y asi con todo.
 
 Puedes usar el comodín 'all' para aceptar todo ej:
 
@@ -88,7 +109,7 @@ Puedes usar el comodín 'all' para aceptar todo ej:
 Crea un filtro del tipo 'acepta este spot'.
 
 Un filtro "accept" significa que si el spot coincide con lo que estamos
-filtrando, este será mostrado al usuario. Ver HELP filterING para mas info.
+filtrando, este será mostrado al usuario. Ver HELP filterING para más info.
 Por favor lee este apartado para entender como funcionan los filtros - Esto
 nos evitara dudas.
 
@@ -102,16 +123,18 @@ Puedes usar cualquiera de las siguientes opciones en esta línea:
   call_dxcc <prefijos or números>    eg: 61,62 (datos de: sh/pre G)
   call_itu <prefijos or números>     or: G,GM,GW
   call_zone <prefijos or números>
+  call_state <states>                ej: VA,NH,RI,ME 
   by_dxcc <prefijos or números>
   by_itu <prefijos or números>
   by_zone <prefijos or números>
+  by_state <states>                ej: VA,NH,RI,ME 
   origin <prefijos>
   channel <prefijos>
 
 Para frecuencias, puedes usar cualquiera de los segmentos de banda
 definidos en SHOW/BANDS y además un modo como puede ser: cw, rtty, data, ssb -
 como podría ser: hf/ssb. también puedes definir un rango de frecuencias
-como por ejemplo: 0/30000 - Esto seria mas efectivo que simplemente
+como por ejemplo: 0/30000 - Esto seria más efectivo que simplemente
 decir: freq HF.
 
 algunos ejemplos:-
@@ -122,6 +145,13 @@ algunos ejemplos:-
 Puedes usar el comodín 'all' para aceptar todo, ej:
 
   acc/spot 3 all
+
+Para usuarios de USA 
+
+  acc/spots by_state VA,NH,RI,MA,ME
+
+solo aceptara spots de estaciones USA que se encuentren en esos estados
+y por ejemplo, rechazara un spot que ponga un usuario de Florida.
 
 Esto quizás para usuarios avanzados...
 
@@ -182,7 +212,7 @@ por ejemplo
 Es probablemente la única cosa útil que se pueda hacer ( solo mostrara
 anuncios WWV de estaciones de USA).
 
-Ver HELP filter para mas información.
+Ver HELP filter para más información.
 
 === 8^ACCEPT/WWV <call> [input] [0-9] <pattern>^Filtro WWV version sysop
 Este nivel afecta al sysop permitiéndole definir un filtro para un indicativo
@@ -207,7 +237,7 @@ Busca la ayuda disponible para <cadena> (no distingue mayúsculas), y muestra
 el nombre de todos los comandos que pueden ser de relevancia sobre el tema.
 
 === 0^BLANK [<cadena>] [<nn>]^Escribe nn (defecto 1) líneas vacías (o cadenas)
-En si, este comando inserta una o mas líneas en blanco. Aunque si se marca
+En si, este comando inserta una o más líneas en blanco. Aunque si se marca
 un simbolo/cadena, la repetirá por todo el ancho de la pantalla (defecto 80)
 
 Ejemplos:
@@ -238,7 +268,8 @@ los mensajes que hayan actualmente en nuestro cluster, y que no sean privados
 serán enviados a este nuevo enlace. Puedes evitarlo si lo deseas usando estos
 comandos:
 
-  catchup GB7DJK all   catchup GB7DJK 300 301 302 303 500-510
+  catchup GB7DJK all
+  catchup GB7DJK 300 301 302 303 500-510
 	
 Y para deshacer lo que has hecho:
   
@@ -253,7 +284,7 @@ El orden no es importante.
 Este comando te permite quitar (borrar) una línea en un filtro tipo anuncio
 o quitar todos los filtros.
 
-Ver CLEAR/SPOTS para una explicación mas detallada.
+Ver CLEAR/SPOTS para una explicación más detallada.
 
 === 8^CLEAR/ANNOUNCE [input] <callsign> [0-9|all]^Quita un filtro tipo anuncio
 El sysop puede borrar un filtro de entrada o salida para un usuario o para
@@ -264,7 +295,7 @@ de los comandos, o a todos los usuarios en el segundo.
 Este comando te permite quitar (borrar) un filtro en las rutas o borrar
 el filtro por completo.
 
-Ver CLEAR/SPOTS para una explicación mas detallada.
+Ver CLEAR/SPOTS para una explicación más detallada.
 
 === 8^CLEAR/ROUTE [input] <callsign> [0-9|all]^Quita un filtro en rutas
 El sysop puede borrar un filtro de entrada o salida para un usuario o para
@@ -303,7 +334,7 @@ de los comandos, o a todos los usuarios en el segundo.
 Este comando te permite quitar (borrar) un filtro WCY o borrar el filtro
 por completo.
 
-Ver CLEAR/SPOTS para una explicación mas detallada.
+Ver CLEAR/SPOTS para una explicación más detallada.
 
 === 8^CLEAR/WCY [input] <callsign> [0-9|all]^Quita un filtro tipo WCY
 El sysop puede borrar un filtro de entrada o salida para un usuario o para
@@ -314,7 +345,7 @@ de los comandos, o a todos los usuarios en el segundo.
 Este comando te permite quitar (borrar) un filtro WWV o borrar el filtro
 por completo.
 
-Ver CLEAR/SPOTS para una explicación mas detallada.
+Ver CLEAR/SPOTS para una explicación más detallada.
 
 === 8^CLEAR/WWV [input] <callsign> [0-9|all]^Quita un filtro tipo WWV
 El sysop puede borrar un filtro de entrada o salida para un usuario o para
@@ -327,8 +358,20 @@ DX cluster <indicativo>. Este proceso crea un nuevo proceso 'client'
 que usara el script en /spider/connect/<indicativo> para realizar
 la conversación necesaria y efectuar la conexión con el cluster.
 
+=== 9^DELETE/USDB <indicativo> ...^Borra este usuario de la base de datos USA
+Este comando borrara por completo uno o más indicativos de
+la base de datos de indicativos americanos.
+
+Cuidado, no hay vuelta atrás una vez borrado
+
+Ni que decir tiene que hay que usarlo con precaución.
+
+Ten en cuenta que ese indicativo que hemos podido borrar, puede
+ser de nuevo introducido en la base de datos en las actualizaciones
+semanales de la FCC.
+
 === 9^DELETE/USER <indicativo> ...^Borra un usuario de la base de datos.
-Este comando borrara por completo a uno o mas usuarios de la base de datos.
+Este comando borrara por completo a uno o más usuarios de la base de datos.
 
 NO hay una SEGUNDA OPORTUNIDAD.
 
@@ -368,7 +411,7 @@ Las bases de datos pueden estar en otros nodos, clusters. Para definir
 una base de datos que se encuentra en otro nodo se haría como muestra
 el siguiente ejemplo:
 
-  DBCREATE buckmaster remote gb7dxc
+  DBCREATE buckmáster remote gb7dxc
 
 Las bases de datos remotas no pueden ser encadenadas; de todos modos,
 la ultima base de datos en una cadena, puede ser una base de datos
@@ -388,12 +431,12 @@ de 'SHOW/<base_de_datos>. Por lo que deberás añadir una línea como:
   's' => [
     ..
     ..
-    '^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
+    '^sh\w*/buc', 'dbshow buckmáster', 'dbshow',
     ..
     ..
    ],
 
-para permitir
+para permitir que
  
   SH/BUCK g1tlh
 
@@ -437,7 +480,7 @@ Has sido advertido.
 Este es el comando que nos permite hacer consultas a una base de datos en
 el sistema. Es de suponer que el sysop añadirá una entrada en el fichero
 'Aliases' local (/spider/local_cmd/Aliases) para que los usuarios puedan
-ejecutar el comando mas familiar para ellos con el estilo AK1A de hacer
+ejecutar el comando más familiar para ellos con el estilo AK1A de hacer
 consultas, como:
 
   SH/BUCK G1TLH
@@ -510,7 +553,40 @@ Puedes dar el crédito del spot a otra estación con la opción 'by'
    DX by G1TLH FR0G 144.600 El no esta en el cluster
 
 La <freq> es chequeada con las bandas disponibles en el cluster.
-Ver SHOW/BANDS para mas información.
+Ver SHOW/BANDS para más información.
+
+=== 0^ECHO <línea>^Genera la salida de esta línea
+Este comando es útil en scripts y de ese modo presenta la salida
+de lo que ponemos en el terminal. Puedes usarlo en scripts como
+user_default, en el comando SAVE para titularlos, etc.
+
+El script interpretará ciertas secuencias de caracteres "escape" :-
+
+  \t - será un carácter TAB (Tabulador) (0x09 en ascii)
+  \a - Será un BEEP 0x07 en ascii)
+  \n - añade una nueva línea
+
+El siguiente ejemplo:-
+
+  echo ED7ZAB-5 es un dxcluster
+
+produce:-
+
+  ED7ZAB-5 es un dxcluster
+
+en la salida. No necesitas un \n al final de la línea que quieres enviar.
+
+Un ejemplo más complejo:-
+
+  echo ED7ZAB-5\n\tea7wa\tAngel\n\twd4ngb\tBruce
+
+produce:-
+
+  ED7ZAB-5
+          ea7wa   Angel
+          wd4ngb  Bruce
+
+en la salida.
 
 === 9^EXPORT <msgno> <fichero>^Exportar un mensaje a un fichero
 Exportar un mensaje a un fichero. Este comando puede ser solamente
@@ -539,7 +615,7 @@ AVISO: Esto escribirá a cualquier fichero al que se tenga permiso de
 escritura. No se hace ningún chequeo en el fichero ( si hay alguno ) que
 tu especifiques.
 
-=== 0^filterING...^filtrando en DXSpider
+=== 0^FILTERING...^filtrando en DXSpider
 Hay bastantes cosas a las que podemos aplicar filtros en un DXSpider.
 todos ellos usan en general el mismo mecanismo.
 
@@ -552,9 +628,9 @@ puede tener hasta 10 líneas en el. Se hace usando, ej:
 
 donde ..... son los comandos específicos para es tipo de filtro.
 Hay filtros para spots, wwv, anuncios, wcy y (para sysops) conexiones.
-Ver cada comando accept o reject por separado para mas detalles.
+Ver cada comando accept o reject por separado para más detalles.
 
-también hay un comando para borrar una o mas líneas en un filtro
+también hay un comando para borrar una o más líneas en un filtro
 y otro comando para mostrar los que tienes activados. Estos son:
 
   clear/spots 1
@@ -571,13 +647,13 @@ aplicar los ejemplos a todos los tipos de filtros.
 
 Hay dos principales tipos de filtros 'accept' o 'reject'; El que
 uses depende totalmente de como veas el mundo y cual de ellos
-sea mas corto para conseguir lo que deseas. Cada filtro puede
+sea más corto para conseguir lo que deseas. Cada filtro puede
 tener 10 líneas (de cualquier longitud) que son leídos en orden.
 Si una línea coincide con lo que recibimos, entonces la acción que
 has especificado tendrá lugar (ej: reject significa ignóralo y accept
 significa damelo).
 
-Lo mas importante a tener en cuenta es que si defines un filtro 'reject'
+Lo más importante a tener en cuenta es que si defines un filtro 'reject'
 (que todas las líneas en este filtro digan 'reject/spots' (por ejemplo)
 entonces un spot que se reciba que no coincida con una de las líneas
 que tengamos, este spot será mostrado PERO si defines un filtro 'accept'
@@ -601,11 +677,15 @@ Pero en ese caso solo estarías interesado en iota y dirías:
   accept/spots not on hf/cw or info iota
 
 lo que seria exactamente lo mismo. Deberías probar uno o el otro
-hasta ver cual de ellos te es mas cómodo en la forma en que trabaja.
+hasta ver cual de ellos te es más cómodo en la forma en que trabaja.
 Si, puedes mezclarlos (actualmente puedes tener un accept y un reject
 en la misma línea) pero no lo intentes hasta que no estés en casa y
 puedas analizar los resultados que obtienes sin llamar al sysop por
 teléfono para que te ayude.
+
+Otra nueva utilidad ahora es poder filtrar por estados USA
+
+  accept/spots by_state VA,NH,RI,ME
 
 Puedes ordenar tus filtros dentro de una lógica, bien para tu mejor
 entendimiento o simplemente tu conveniencia. Yo tengo uno que defino
@@ -635,7 +715,7 @@ chocante, pero así es como funciona esto, Si usas OR  - usa paréntesis.
 ya que estamos en este punto decir que las MAYUSCULAS no son importantes
 de modo que 'And BY_Zone' es como si escribimos 'and by_zone'.
 
-Si quieres modificar tu filtro puedes solo modificar una o mas
+Si quieres modificar tu filtro puedes solo modificar una o más
 líneas de este o bien borrar una línea. Por ejemplo:
 
   reject/spots 1 on hf/ssb
@@ -680,9 +760,9 @@ enviados desde Europa.
 
 === 8^FORWARD/LATLONG <node_call>^Envía información de latitud y longitud a otro cluster.
 Este comando envía toda la información que nuestro cluster tenga de los
-usuarios. Una ventaja de recibir esta información es que obtenemos mas
+usuarios. Una ventaja de recibir esta información es que obtenemos más
 datos de otros usuarios que quizás no tengamos actualmente. Esto se
-traduce en mas locators en la línea de DX si es que tenemos activado
+traduce en más locators en la línea de DX si es que tenemos activado
 el comando SET/DXGRID. Esto puede ser en ocasiones mucha información
 por lo que no se recomienda hacer en enlaces lentos.
 
@@ -715,6 +795,20 @@ un nodo AK1A, haciendo un RCMD <nodo> DISC/F <tu_nodo>).
 
 Mucha suerte - la necesitaras.
 
+=== 9^DEMONSTRATE <indicativo> <comando>^Demuestra el uso de un comando a un usuario
+Este comando se crea con el fin de que el sysop pueda mostrar el
+Uso de un comando a otro usuario. Esto hace que se ejecute un comando
+como si el usuario lo hubiese pedido el mismo y le envia la salida
+del mismo a ese usuario en su pantalla, junto con el cmando que ha
+generado dicha informacion.
+
+  DEMO ea7xxx sh/dx qsl k1b
+  DEMO ea7xxx set/here
+
+Este comando es similar a SPOOF y tendra los mismos efectos.
+Los comandos se ejecutaran con los mismos privilegios que el usuario
+al que se le muestre el comando tenga definidos.
+
 === 0^KILL <msgno> [<msgno..]^Borra un mensaje del cluster
 === 0^KILL <del msgno>-<al msgno>^Borra un rango de mensajes
 === 0^KILL from <regex>^Borra mensajes DE un indicativo o titulo
@@ -744,8 +838,8 @@ exactamente el mismo titulo será borrado. Cuidado !
 
 === 6^KILL EXPunge <msgno> [<msgno..]^Destruye un mensaje
 Borrar un mensaje usando el comando KILL normal solo marca el mensaje
-para ser borrado. La eliminación completa del mensaje se hace mas tarde
-(normalmente 2 días mas tarde).
+para ser borrado. La eliminación completa del mensaje se hace más tarde
+(normalmente 2 días más tarde).
 
 El comando KILL EXPUNGE hace que el mensaje sea realmente eliminado del
 sistema en el acto.
@@ -779,7 +873,7 @@ palabras las cuales, si se encuentran en alguna parte del texto del
 protocolo PC, causa que esos paquetes de protocolo sean rechazados.
 En caso de que una de esas palabras se use en un comando de dx, talk o
 anuncio, será advertido por el sistema para que no las utilice.
-Las palabras pueden ser una o mas en una línea, las líneas que empiezan
+Las palabras pueden ser una o más en una línea, las líneas que empiezan
 con '#' son ignoradas.
 
 === 9^LOAD/CMD_CACHE^Lee de nuevo el cache automático de comandos
@@ -807,6 +901,7 @@ en formato NASA 2 lines , por ejemplo aquellos que emite AMSAT.
 Si se da un numero de mensaje, entonces se cogerá ese mensaje , se
 ejecuta el programa convkeps.pl sobre ese mensaje, y se actualizan
 los nuevos datos, todo con solo ejecutar este comando.
+
 === 9^LOAD/MESSAGES^Lee de nuevo el fichero de mensajes de sistema
 Si has cambiado el fichero /spider/perl/Messages (normalmente mientras
 probamos/escribimos nuevos comandos) puedes hacer que tenga efecto
@@ -853,7 +948,7 @@ Puedes ver el estado de un mensaje usando:
 
   STAT/MSG <msgno>      
 
-Esto mostrara mas información sobre el mensaje que la que se
+Esto mostrara más información sobre el mensaje que la que se
 puede obtener con el comando DIR.
    
 === 8^PC <call> <text>^Envía texto (ej PC protocolo) a <indicativo>
@@ -870,7 +965,7 @@ o
 
 === 0^KILL <msgno> [<msgno> ...]^Borra un mensaje del sistema
 Puedes administrar cualquier mensaje para ti o originado por ti usando
-este comando. Puedes borrar mas de un mensaje al mismo tiempo.
+este comando. Puedes borrar más de un mensaje al mismo tiempo.
 
 === 5^KILL <from>-<to>^Borra un rango de mensaje en el sistema
 === 5^KILL FROM <call>^Borra todos los mensajes de un indicativo
@@ -914,11 +1009,16 @@ y también cualquier mensaje enviado por o recibido para tu indicativo.
 === 5^READ-^
 Como sysop puedes leer cualquier mensaje en el sistema
 
+=== 0^REJECT^ Define un filtro para rechazar algo
+Crea un filtro con el que rechazamos algo
+
+Hay dos tipos de filtros, accept y reject. Ver HELP FILTERING para más información.
+
 === 0^REJECT/ANNOUNCE [0-9] <pattern>^Define un filtro 'reject' para anuncios
 Crea un filtro del tipo 'rechaza este anuncio'.
 
 Un filtro "reject" significa que si el anuncio coincide con lo que estamos
-filtrando, este será mostrado al usuario. Ver HELP filterING para mas info.
+filtrando, este será mostrado al usuario. Ver HELP filterING para más info.
 Por favor lee este apartado para entender como funcionan los filtros - Esto
 nos evitara dudas.
 
@@ -930,9 +1030,11 @@ Puedes usar cualquiera de las siguientes opciones en esta línea:
   origin_dxcc <prefijos o números>    ej: 61,62 (datos de: sh/pre G)
   origin_itu <prefijos o números>     o: G,GM,GW
   origin_zone <prefijos o números>
+  origin_state <states>                ej: VA,NH,RI,ME 
   by_dxcc <prefijos o números>
   by_itu <prefijos o números>
   by_zone <prefijos o números>
+  by_state <states>                ej: VA,NH,RI,ME
   channel <prefijos>
   wx 1                     filtra anuncios WX
   dest <prefijos>          ej: 6MUK,WDX      (distros)
@@ -959,7 +1061,7 @@ así como un filtro por defecto para todos los nodos y/o usuarios.
 Crea un filtro del tipo 'rechaza este spot'.
 
 Un filtro "reject" significa que si el spot coincide con lo que estamos
-filtrando, este será mostrado al usuario. Ver HELP filterING para mas info.
+filtrando, este será mostrado al usuario. Ver HELP filterING para más info.
 Por favor lee este apartado para entender como funcionan los filtros - Esto
 nos evitara dudas.
 
@@ -973,16 +1075,18 @@ Puedes usar cualquiera de las siguientes opciones en esta línea:
   call_dxcc <prefijos o números>    ej: 61,62 (datos de: sh/pre G)
   call_itu <prefijos o números>     o: G,GM,GW
   call_zone <prefijos o números>
+  call_state <states>                ej: VA,NH,RI,ME
   by_dxcc <prefijos o números>
   by_itu <prefijos o números>
   by_zone <prefijos o números>
+  by_state <states>                ej: VA,NH,RI,ME
   origin <prefijos>
   channel <prefijos>
 
 Para frecuencias, puedes usar cualquiera de los segmentos de banda
 definidos en SHOW/BANDS y además un modo como puede ser: cw, rtty, data, ssb -
 como podría ser: hf/ssb. también puedes definir un rango de frecuencias
-como por ejemplo: 0/30000 - Esto seria mas efectivo que simplemente
+como por ejemplo: 0/30000 - Esto seria más efectivo que simplemente
 decir: freq HF.
 
 algunos ejemplos:-
@@ -1001,7 +1105,7 @@ Crea un filtro para "rechazar rutas en el protocolo PC".
 
 Un filtro de este tipo significa que si un PC/16/17/19/21/24/41/50 coincide
 con lo filtrado, este no es admitido por ese canal/enlace. Ver HELP filterING 
-para mas info. Por favor lee este apartado para entender como funcionan los
+para más info. Por favor lee este apartado para entender como funcionan los
 filtros - Esto nos evitara dudas.
 
 Puedes usar cualquiera de las siguientes opciones en esta línea:
@@ -1010,10 +1114,12 @@ Puedes usar cualquiera de las siguientes opciones en esta línea:
   call_dxcc <prefijos o números>    ej: 61,62 (datos de: sh/pre G)
   call_itu <prefijos o números>     o: G,GM,GW
   call_zone <prefijos o números>
+  call_state <states>                ej: VA,NH,RI,ME
   origin <prefijos>      realmente el interface por el que llegó
   origin_dxcc <prefijos o números>    ej: 61,62 (datos de: sh/pre G)
   origin_itu <prefijos o números>     o: G,GM,GW
   origin_zone <prefijos o números>
+  origin_state <states>                eg: VA,NH,RI,ME
 
 algunos ejemplos:-
 
@@ -1051,7 +1157,7 @@ podrás hacer según los siguientes campos:
 No hay ejemplos porque los PC tipo WCY solo vienen de un lugar y
 solo puedes quererlos o no quererlos (ver UNSET/WCY si no los quieres)
 
-Ver HELP filter para mas información.
+Ver HELP filter para más información.
 
 === 8^REJECT/WCY <call> [input] [0-9] <pattern>^Filtro WCY version sysop
 Este nivel afecta al sysop permitiéndole definir un filtro para un indicativo
@@ -1080,7 +1186,7 @@ por ejemplo
 Es probablemente la única cosa útil que se pueda hacer ( solo mostrara
 anuncios WWV de estaciones de USA).
 
-Ver HELP filter para mas información.
+Ver HELP filter para más información.
 
 === 8^REJECT/WWV <call> [input] [0-9] <pattern>^Filtro WWV version sysop
 Este nivel afecta al sysop permitiéndole definir un filtro para un indicativo
@@ -1100,9 +1206,51 @@ Puedes contestar a un mensaje y el titulo automáticamente tendrá "Re:"
 añadido al principio de este, si es que no lo tiene ya.
 
 también puedes usar todos las opciones como RR, PRIVATE, NOPRIVATE, B
-que puedas usar con el comando SEND ( Ver SEND para mas detalles)
+que puedas usar con el comando SEND ( Ver SEND para más detalles)
 
-=== 0^SEND <call> [<call> ...]^Envía un mensaje a uno o mas indicativos
+=== 9^SAVE [-d -t -a] <fichero> "<cmd>" [...]^Guarda el resultado de un comando Este es un comando exclusivo del sysop que permite grabar en un fichero
+el resultado de ejecutar uno o varios comandos. Por ejemplo:-
+
+  save /spider/packclus/dxstats show/dxstat
+
+Esto guardara el resultado de ejecutar el comando "show/dxstat" en
+Un fichero que llamaremos "dxstats" en el área de ficheros.
+
+Puedes añadir alguna opción al comando save que te permitirá también
+guardar la fecha, hora, o ambas, al fichero, ejemplo:-
+
+  save -d /tmp/a <cmd> creates /tmp/a_6-Jan-2002
+  save -t /tmp/a <cmd> creates /tmp/a_2301Z
+  save -d -t /tmp/a <cmd> creates /tmp/a_6-Jan-2002_2301Z
+
+La opción -a significa añadir al fichero en lugar de sobrescribirlo.
+
+Puedes tener más de un comando en la línea, para hacer eso NECESITAS
+poner cada comando entre comillas (") ej:-
+
+  save /tmp/a "sh/hfstats" "blank +" "sh/vhfstats"
+
+o
+
+  save /tmp/a "sh/hfstats","blank +","sh/vhfstats"
+
+Solo podrás crear esos ficheros con los resultados donde el cluster
+tiene permisos para escribir, aquellos que pertenecen al usuario "sysop",
+quizás necesites crear algún directorio antes de hacerlo para poner ahí
+esos ficheros.
+
+Lo mejor seria rodar estos comandos desde crontab, por lo que deberías
+Hacer algo como:-
+
+  0 0 * * * run_cmd('save /tmp/dxstats "echo DXStat Table", "sh/dxstats"')
+
+Fíjate que los comandos van entre comillas ("), pero debes poner el
+Comando save completo entre apostrofes (') .
+
+Por supuesto, puedes hacer tus propias combinaciones si sabes como
+hacerlo. Ver el manual de administración para más detalles.
+
+=== 0^SEND <call> [<call> ...]^Envía un mensaje a uno o más indicativos
 === 0^SEND RR <call>^Envía un mensaje y pide acuse de recibe
 === 0^SEND COPY <msgno> <call>^Envía copia de un mensaje a alguien
 === 0^SEND PRIVATE <call>^Envía un mensaje personal
@@ -1114,7 +1262,7 @@ SEND <indicativo> por si mismo es igual a si escribes SEND PRIVATE, esto
 es, se marcara el mensaje como personal y se enviara al cluster donde
 este indicativo se encuentre conectado.
 
-Puedes poner mas de un indicativo en todas las variantes del comando SEND.
+Puedes poner más de un indicativo en todas las variantes del comando SEND.
 
 Puedes poner múltiples opciones, de modo que podrías tener por ejemplo:
 
@@ -1126,7 +1274,56 @@ acuse de recibo cuando ellos hayan leído el mensaje.
 SB es un alias de SEND NOPRIVATE ( o enviar un boletín, estilo BBS )
 SP es un alias de SEND PRIVATE
 
-=== 0^SET/ADDRESS <your address>^Define tu dirección postal
+El sistema te preguntará por un título. Por regla general, este no
+debe ser mayor de 29 caracteres para que sea compatible con otros
+sistemas. La mayoría de los clusters modernos aceptaran más
+caracteres.
+
+Ahora te saldrá el mensaje invitándote a entrar el texto del mensaje.
+
+Terminas el mensaje con '/EX' en una nueva línea. Por ejemplo:-
+
+  ...
+  adiós Pepe
+  73 Ángel
+  /ex
+
+Si has comenzado un mensaje pero decides no continuar, no enviarlo,
+puedes abandonar el proceso con '/ABORT' en una nueva línea, como:-
+
+  línea 1
+  línea 2
+  oh ahora resulta que no quiero enviarlo...
+  /abort
+
+Si abandonas el mensaje, este NO será enviado.
+
+Mientras estas escribiendo el texto del mensaje, la recepción
+de anuncios de DX, y demás información será suprimida y te será
+mostrada más tarde, cuando termines el mensaje (Se guardan 20
+líneas, las ultimas 20 líneas, y las más antiguas se iran borrando).
+
+También, puedes enviar comandos (y recibir la respuesta inmediatamente)
+mientras estas escribiendo el mensaje. Para enviar un comando mientras
+estas escribiendo el mensaje deberás de anteponer una barra '/' al
+Comando en una nueva línea, por ejemplo:-
+
+  /dx g1tlh 144010 strong signal
+
+Enviara un anuncio de dx a todos los usuarios del cluster.
+
+También, puedes añadir la información resultante de ejecutar un comando
+A tu mensaje precediendo el comando de dos barras '//', así:-
+
+  //sh/vhftable
+
+Esto TE mostrara la información del comando SH/VHFTABLE y también será
+añadida como parte del mensaje que estas escribiendo.
+
+Puedes continuar editando el mensaje hasta que encuentres que esta
+Listo para ser enviado, terminando con '/EX' en una ultima línea.
+
+=== 0^SET/ADDRESS <tu dirección>^Define tu dirección postal
 
 === 0^SET/ANNOUNCE^Activa la recepción de anuncios en tu terminal
 === 0^UNSET/ANNOUNCE^Desactiva la recepción de anuncios en tu terminal
@@ -1281,7 +1478,7 @@ Para activarlo haz como en el ejemplo:
 
   SET/EMAIL mike.tubby@somewhere.com
 
-Puedes tener mas de una dirección email (separadas por un espacio) .
+Puedes tener más de una dirección email (separadas por un espacio) .
 Se enviaran email a todas las direcciones que hayas especificado.
 
 Puedes deshabilitar el reenvío de mensajes con:
@@ -1317,6 +1514,14 @@ ej:
 Con SHOW/HOPS tendrás la información de los hops definidos. Este
 comando crea un filtro y trabaja en conjunto con el sistema de
 filtrado para enlaces.
+
+Puedes quitar los hops definidos con anterioridad si hay algunos
+con el comando UNSET/HOPS, por ejemplo:-
+
+  unset/hops gb7djk ann 10
+  unset/hops gb7mbc spots 20
+
+=== 8^UNSET/HOPS <call> ann|spots|route|wwv|wcy^Quita numero de hops
 
 === 9^SET/ISOLATE^Aisla a un nodo del resto de la red
 Conecta un nodo a tu sistema de forma tal que tu podrás recibir toda
@@ -1396,22 +1601,7 @@ sesión actual, no será recordado en una próxima conexión.
   SET/PAGE 0
 
 Los parámetros se guardaran en la información local de usuarios
-excepto si ese valor, como se dice mas arriba, fue 0.
-
-=== 0^SET/PROMPT <cadena>^Cambia el prompt a <cadena>
-=== 0^UNSET/PROMPT^Devuelve el prompt a su estado normal ( por defecto )
-Este comando definirá el prompt a exactamente la cadena que digas.
-El objetivo de este comando es adecuar el prompt a programas externos
-que buscan una cadena especifica en el prompt ( o simplemente que
-quieras tener un prompt distinto ).
-
-Por ejemplo:
-
-  SET/PROMPT clx >
-
-El comando UNSET/PROMPT deshará lo que hemos hecho con el SET/PROMPT
-dejándolo en su estado original, tal como el sysop lo haya definido
-para todos los usuarios.
+excepto si ese valor, como se dice más arriba, fue 0.
 
 === 9^SET/PINGINTERVAL <time> <nodecall>^Ajusta el intervalo ping a un nodo
 Desde la versión 1.35 todos los nodos que conectan directamente a nosotros
@@ -1423,11 +1613,11 @@ Puedes usar este comando para ajustar ese intervalo, pero por favor
 no lo hagas ...
 
 Pero si lo haces el valor que entres es tratado como minutos si es
-hasta 30 y como segundos si son números mas altos.
+hasta 30 y como segundos si son números más altos.
 
 Esto también se usa para ayudar a determinar cuando un enlace no esta
 respondiendo ( ya que hay programas de cluster que no lo advierten),
-ver SET/OBSCOUNT para mas información.
+ver SET/OBSCOUNT para más información.
 
 Si tuvieses que cambiarlo (y podría ser útil en nodos conectados vía
 Internet con ip dinámicas y que se pierden después de un cierto tiempo
@@ -1440,7 +1630,7 @@ de uso de esa ip) el tiempo puede ser especificado como:
   1h     1 hora
 
 Ten en cuenta que esto genera trafico en el enlace, definiendo este
-valor demasiado bajo molesta a tus nodos vecinos mas de lo que se
+valor demasiado bajo molesta a tus nodos vecinos más de lo que se
 debiera.
 
 Puedes deshabilitarlo poniendo un valor de 0.
@@ -1448,15 +1638,11 @@ Puedes deshabilitarlo poniendo un valor de 0.
 === 9^SET/PRIVILEGE <n> <call> [<call..]^Otorga niveles de privilegio
 Otorga el nivel de privilegio para un indicativo. El nivel de privilegio
 que pertenece a comandos están por defecto:
-
-Set privilege level on a call
-Set the privilege level on a callsign. The privilege levels that pertain
-to commands are as default:-
   0 - usuario normal
   1 - permite a nodos remotos el envío de RCMDs
   5 - varios comandos privilegiados ( incluyendo apagar el cluster,
       pero no desconectar), el nivel normal para otro nodo.
-  8 - mas comandos privilegiados (incluyendo desconectar)
+  8 - más comandos privilegiados (incluyendo desconectar)
   9 - privilegios de sysop local. NO DAR ESTE PRIVILEGIO A NINGUN
       USUARIO O NODO QUE ACCEDA EN REMOTO.
 Si eres sysop y accedes al cluster como un usuario normal en una conexión
@@ -1502,6 +1688,21 @@ del cliente que uses para hacer el telnet.
 Este comando permite al sysop borrar por completo y quitar el password
 que un usuario pueda tener.
 
+=== 0^SET/PROMPT <cadena>^Cambia el prompt a <cadena>
+=== 0^UNSET/PROMPT^Devuelve el prompt a su estado normal ( por defecto )
+Este comando definirá el prompt a exactamente la cadena que digas.
+El objetivo de este comando es adecuar el prompt a programas externos
+que buscan una cadena especifica en el prompt ( o simplemente que
+quieras tener un prompt distinto ).
+
+Por ejemplo:
+
+  SET/PROMPT clx >
+
+El comando UNSET/PROMPT deshará lo que hemos hecho con el SET/PROMPT
+dejándolo en su estado original, tal como el sysop lo haya definido
+para todos los usuarios.
+
 === 5^SET/SPIDER <call> [<call>..]^Define el indicativo como nodo DXSpider
 Informa al sistema de que ese indicativo sea tratado como un nodo DXSpider
 y de ese modo se le aplique el nuevo protocolo DX.
@@ -1510,7 +1711,7 @@ y de ese modo se le aplique el nuevo protocolo DX.
 === 0^SET/QRA <locator>^Define tu QRA locator
 Informa al sistema cual es tu QRA locator. Si no has definido nada con
 el comando SET/LOCATION entonces tu latitud y longitud serán tomadas
-mas o menos correctamente ( asumiendo que tu locator sea el correcto ;-))
+más o menos correctamente ( asumiendo que tu locator sea el correcto ;-))
 
 Por ejemplo:
 
@@ -1541,6 +1742,17 @@ de poder enviar un TALK o un mensaje al sysop.
 === 0^SET/TALK^Acepta mensajes TALK
 === 0^UNSET/TALK^Deshabilita la recepción de mensajes TALK
 
+=== 9^SET/USDB <indicativo> <estado> <ciudad>^Añade/actualiza la base de datos FCC
+Este comando permite añadir o modificar un indicativo de la base
+de datos de indicativos de USA. Usar con extrema precaución.
+Cualquier cosa que hagas manualmente en un indicativo será borrado
+en sucesivas actualizaciones semanales de esta base de datos.
+
+  set/usdb g1tlh nh downtown rindge
+
+ver también DELETE/USDB
+
+
 === 0^SET/WCY^Habilita la recepción de mensajes WCY
 === 0^UNSET/WCY^Deshabilita la recepción de mensajes WCY
 
@@ -1552,19 +1764,19 @@ de poder enviar un TALK o un mensaje al sysop.
 
 === 1^SHOW/BADDX^Muestra la lista de indicativos definidos como baddx
 Muestra la lista de indicativos/palabras que el sistema rechazara,
-Ver SET/BADDX para mas información.
+Ver SET/BADDX para más información.
 
 === 1^SHOW/BADNODE^Muestra todos los nodos definidos como badnode
 Muestra la lista de nodos que el sistema rechazara, ver SET/BADNODE
-para mas información.
+para más información.
 
 === 1^SHOW/BADSPOTTER^Muestra la lista de indicativos definidos como badspotter
 Muestra la lista de indicativos de los cuales el sistema rechazara
-cualquier spot, ver SET/BADSPOTTER para mas información.
+cualquier spot, ver SET/BADSPOTTER para más información.
 
 === 1^SHOW/BADWORD^Muestra todas las palabras a rechazar en PC10,11,12...
 Muestra la lista de palabras que el sistema rechazara al encontrarse
-en cualquier PC10,11,12... , ver SET/BADWORD para mas información.
+en cualquier PC10,11,12... , ver SET/BADWORD para más información.
 
 === 0^SHOW/CONFIGURATION [<nodo>]^Muestra todos los nodos/usuarios visibles
 Este comando nos permite ver todos los usuarios y los nodos a los que
@@ -1580,7 +1792,7 @@ nuestro cluster.
 
 === 1^SHOW/CONNECT^Muestra todas las conexiones en este momento.
 Este comando muestra información de todos las conexiones que se
-están desarrollando en nuestro nodo. Este comando da algo mas de
+están desarrollando en nuestro nodo. Este comando da algo más de
 información que el comando WHO.
 
 === 0^SHOW/DATE [<prefijo>|<indicativo>]^Muestra la hora del sistema
@@ -1591,7 +1803,7 @@ Si no se da ningún prefijo o indicativo, este comando nos dará entonces
 la hora local y la hora UTC tal como este el ordenador configurado.
 Se dará el caso de que el ordenador este trabajando en hora UTC, por
 lo que no habrá diferencia entre las dos horas mostradas.
-Si se dan algunos prefijos, entonces veremos la hora UTC y la UTC mas
+Si se dan algunos prefijos, entonces veremos la hora UTC y la UTC más
 la diferencia horaria ( no incluye DST ) con respecto a esos países
 para los que hemos dado el prefijo o indicativo.
 
@@ -1602,7 +1814,7 @@ Si solo escribes SHOW/DX recibirás los últimos spots que el sysop
 haya configurado (por defecto los últimos 10 spots).
    
 Puedes además pedir el comando con cualquiera de las siguientes
-opciones que hacen mas selectivo al comando SHOW/DX.
+opciones que hacen más selectivo al comando SHOW/DX.
 Estas opciones son:
    
 on <banda>      - ej 160m 20m 2m 23cm 6mm
@@ -1639,6 +1851,14 @@ qra [<locator>] - buscara por ese locator si has indicado alguno, si no
                   se da ninguno buscara cualquier spot que contenga un dato
                   que parezca un locator.
 
+dxcc            - trata el prefijo como un 'pais' y busca los spots
+                  de ese pais sin importar el prefijo actual.
+			ej dxcc oq2
+                  
+                  también puedes usar la opción 'by'
+                  ej by W dxcc  
+
+
 Ejemplos:
    
    SH/DX 9m0
@@ -1648,6 +1868,9 @@ Ejemplos:
    SH/DX iota 
    SH/DX iota eu-064
    SH/DX qra jn86
+   SH/DX dxcc oq2
+   SH/DX dxcc oq2 by w dxcc
+
   
 === 0^SHOW/DXCC <prefijo>^Consulta la base de datos por países
 Este comando toma el <prefijo> ( que puede ser un indicativo
@@ -1689,9 +1912,23 @@ este comando nos da todos los que tengamos - de todas los tipos.
 Muestra una lista día por día de los spots recibidos en los últimos
 31 días en cada banda de HF.
 
-=== 0^SHOW/HFTABLE^Muestra la tabla de spoters en HF de tu país
-Muestra una lista de indicativos de tu país que han enviado spots de HF
-y cuantos han enviado en los últimos 31 días.
+=== 0^SHOW/HFTABLE^Muestra la tabla de spoters en HF
+Muestra una lista de indicativos que han enviado spots de HF,
+y cuantos han enviado en los últimos 31 días. Si no se especifica
+ningún país, por defecto obtendrás los spots generados por
+usuarios de tu propio país.
+
+Recuerda que algunos países tienen más de una entidad DXCC en ellos
+(ej: EA:-), para mostrarlos todos (en el caso de que no te encuentres
+en EA que en ese caso es tratado específicamente en el propio programa)
+deberás pedir todos los prefijos que corresponden a este país.
+
+  sh/hftable ea ea6 ea8 ea9
+
+Ten en cuenta que los prefijos son convertidos a códigos de país, por lo
+que no tendrás que listar todos los posibles prefijos de cada país, en
+el caso de España, 'sh/hftable ea' mostrara todos los prefijos para
+España, EA, ED, AM, etc.
 
 === 8^SHOW/HOPS <nodo> [ann|spots|route|wcy|wwv]^Indica numero de hops para <nodo>
 Este comando nos mostrara los hops definidos para un cierto nodo. Puedes
@@ -1737,25 +1974,29 @@ o tres días atrás:
 
   SH/MOON +3 W9
 
+Se pueden ver hasta 366 días tanto en el pasado como en el futuro.
+
 === 0^SHOW/MUF <prefijo> [<horas>][long]^Muestra la propagación a <prefijo>
-Este comando te permita estimar las mejores condiciones para que tu
-contactases una estación en el país del cual hayas especificado un prefijo.
+Este comando te permite ver las bandas donde las condiciones para que tu
+contactes una estación en el país del cual hayas especificado un prefijo
+se encuentran mejor.
+
 La potencia de salida asume un modesto valor de 20dBW y un receptor con
 una sensibilidad de -123dBm (unos 0.15muV/10dB SINAD)
 
 El resultado predice con aproximación las frecuencias operativas y
 la señal para altas frecuencias (onda corta) y los circuitos de 
 propagación en unos días específicos del año y unas horas
-determinadas del día. Es mas útil en circuitos entre 250 km y 6000 km
-pero se puede usar con una exactitud reducida en circuitos mas cortos
-o mas largos de esas distancias. 
+determinadas del día. Es más útil en circuitos entre 250 km y 6000 km
+pero se puede usar con una exactitud reducida en circuitos más cortos
+o más largos de esas distancias. 
 
 El comando usa una rutina MINIMUF 3.5 creada por la marina de los
 Estados Unidos de América y usado para predecir la MUF dado un flujo
 solar, día del año, hora del día y coordenadas geográficas del
 transmisor y del receptor. Esta rutina es razonablemente precisa
 para nuestro uso, con una posibilidad de error de 3.8 MHz, pero
-mucho mas pequeño y menos complejo que los programas usados por
+mucho más pequeño y menos complejo que los programas usados por
 estaciones de radiodifusión comercial como La Voz de América.
 
 
@@ -1764,9 +2005,9 @@ su significado, junto con las posiciones, latitud y longitud y
 rumbos. Luego mostrara la hora UTC (UT), hora local en el otro
 punto (LT), calcula la MUF, el ángulo del zenith solar en un punto
 medio del circuito (Zen) y un valor aproximado de la intensidad de
-las señales que se podrán recibir. Luego para cada frecuencia par
-la que el sistema crea que puede haber posibilidad de un circuito,
-este indica un valor.
+las señales que se podrán recibir. Luego para cada banda en la que el
+sistema crea que puede haber posibilidad de un circuito, este indica
+un valor.
 
 El valor es actualmente tomado en referencia a una lectura de S meter
 de 6dB / por cada unidad S. Si el valor tiene además un símbolo '+' ,
@@ -1782,7 +2023,7 @@ el numero de horas que deseas después del prefijo. Por ejemplo:
 
 produce:
 
-  RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
+  RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
   Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
   Location                       Lat / Long           Azim
   East Dereham, Norfolk          52 41 N 0 57 E         47
@@ -1941,26 +2182,48 @@ Si no se da ningún prefijo o indicativo, este comando nos dará entonces
 la hora local y la hora UTC tal como este el ordenador configurado.
 Se dará el caso de que el ordenador este trabajando en hora UTC, por
 lo que no habrá diferencia entre las dos horas mostradas.
-Si se dan algunos prefijos, entonces veremos la hora UTC y la UTC mas
+Si se dan algunos prefijos, entonces veremos la hora UTC y la UTC más
 la diferencia horaria ( no incluye DST ) con respecto a esos países
 para los que hemos dado el prefijo o indicativo.
+
+=== 0^SHOW/USDB [indicativo ..]^Muestra información de la base de datos de la FCC
+Muestra la Ciudad y el Estado de un indicativo de la base de datos
+de la FCC. Para ello se habrá tenido que implementar dicha base de datos
+en nuestro cluster, ejemplo:-
+
+  sh/usdb k1xx
+
 
 === 0^SHOW/VHFSTATS^Muestra las estadísticas de los últimos 31 días en VHF
 Muestra una lista día por día de los spots recibidos en los últimos
 31 días en cada banda de VHF y superiores.
 
-=== 0^SHOW/VHFTABLE^Muestra la tabla de spoters en VHF y superiores de tu país
-Muestra una lista de indicativos de tu país que han enviado spots de VHF
-y superiores y cuantos han enviado en los últimos 31 días.
+=== 0^SHOW/VHFTABLE^Muestra la tabla de spoters en VHF y superiores
+Muestra una lista de indicativos que han enviado spots de VHF y bandas
+superiores, y cuantos han enviado en los últimos 31 días. Si no se
+especifica ningún país, por defecto obtendrás los spots generados por
+usuarios de tu propio país.
+
+Recuerda que algunos países tienen más de una entidad DXCC en ellos
+(ej: EA:-), para mostrarlos todos (en el caso de que no te encuentres
+en EA que en ese caso es tratado específicamente en el propio programa)
+deberás pedir todos los prefijos que corresponden a este país.
+
+  sh/vhftable ea ea6 ea8 ea9
+
+Ten en cuenta que los prefijos son convertidos a códigos de país, por lo
+que no tendrás que listar todos los posibles prefijos de cada país, en
+el caso de España, 'sh/vhftable ea' mostrara todos los prefijos para
+España, EA, ED, AM, etc.
 
 === 0^SHOW/WCY^Muestra los últimos 10 mensajes tipo WCY
 === 0^SHOW/WCY <n>^Muestra los últimos <n> mensajes tipo WCY
-Nos mostrara la información WCY mas reciente que haya sido recibida
+Nos mostrara la información WCY más reciente que haya sido recibida
 por nuestro sistema.
 
 === 0^SHOW/WWV^Muestra los últimos 10 mensajes tipo WWV
 === 0^SHOW/WWV <n>^Muestra los últimos <n> mensajes tipo WWV
-Nos mostrara la información WWV mas reciente que haya sido recibida
+Nos mostrara la información WWV más reciente que haya sido recibida
 por nuestro sistema.
 
 === 5^SHUTDOWN^Apaga el cluster
@@ -1978,7 +2241,7 @@ ej:
 === 5^STAT/DB <dbname>^Muestra el estado de una base de datos
 Muestra los datos internos de una base de datos, fecha de creación, etc.
 
-Dependiendo del nivel de privilegio que tengas veras mas o menos
+Dependiendo del nivel de privilegio que tengas veras más o menos
 información. Este comando no tiene mucha utilidad para un usuario.
 
 === 5^STAT/CHANNEL [<indicativo>]^Muestra el estado de un canal en el cluster
@@ -2072,6 +2335,15 @@ Para salir del modo talk escribe:
    
    /EX
 
+Si estas en modo 'Talk' , hay posibilidad de enviar el resultado de
+ejecutar un comando a los usuarios con los que estés en este modo.
+para ello tendrás que anteponer '//'  al comando. Por ejemplo:-
+
+  //sh/hftable
+
+esto enviara la hftable a todos los usuarios con los que estés hablando
+en este momento.
+
 === 0^TYPE <filearea>/<name>^Ver el contenido de un fichero en un directorio
 Nos muestra el contenido de un fichero en un directorio. Si por ejemplo
 en el directorio para ficheros 'bulletins' quieres ver un fichero con el
@@ -2089,4 +2361,5 @@ que tipo de conexión tienen.
 === 0^WX <texto>^Envía un mensaje tipo WX a los usuarios locales
 === 0^WX FULL <texto>^Envía un mensaje tipo WX a toda la red
 === 5^WX SYSOP <texto>^Envía un mensaje WX solo a otros nodos
+
 
