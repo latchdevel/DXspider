@@ -1403,6 +1403,28 @@ You can show what levels you are logging with SHOW/DEBUG
 === 0^SET/DX^Allow DX messages to come out on your terminal
 === 0^UNSET/DX^Stop DX messages coming out on your terminal
 
+=== 0^SET/DXCQ^Show CQ Zones on the end of DX announcements
+=== 0^UNSET/DXCQ^Stop CQ Zones on the end of DX announcements
+Display both the Spotter's and the Spotted's CQ Zone on the end
+of a DX announcement (there is just enough room). Some user programs
+cannot cope with this. The Spotter's CQ is on the RHS of the 
+time, the Spotted's CQ is on the LHS.
+
+Conflicts with: SHOW/DXGRID, SHOW/DXITU, SHOW/USSTATE
+
+Do a STAT/USER to see which flags you have set if you are confused.  
+
+=== 0^SET/DXITU^Show ITU Zones on the end of DX announcements
+=== 0^UNSET/DXITU^Stop ITU Zones on the end of DX announcements
+Display both the Spotter's and the Spotted's ITU Zone on the end
+of a DX announcement (there is just enough room). Some user programs
+cannot cope with this. The Spotter's ITU is on the RHS of the 
+time, the Spotted's ITU is on the LHS.
+
+Conflicts with: SHOW/DXGRID, SHOW/DXCQ, SHOW/USSTATE
+
+Do a STAT/USER to see which flags you have set if you are confused.  
+
 === 0^SET/DXGRID^Allow QRA Grid Squares on the end of DX announcements
 === 0^UNSET/DXGRID^Stop QRA Grid Squares on the end of DX announcements
 A standard feature which is enabled in version 1.43 and above is 
@@ -1410,6 +1432,10 @@ that if the spotter's grid square is known it is output on the end
 of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. You can use this command to reset (or set)
 this feature.
+
+Conflicts with: SHOW/DXCQ, SHOW/DXITU
+
+Do a STAT/USER to see which flags you have set if you are confused.  
 
 === 5^SET/DXNET <call> [<call>..]^Make the callsign an DXNet node
 
@@ -1668,8 +1694,8 @@ overwritten by any weekly updates that affect this callsign
 
 see also DELETE/USDB
 
-=== 0^SET/DXSTATE^Allow US State info on the end of DX announcements
-=== 0^UNSET/DXSTATE^Stop US State info on the end of DX announcements
+=== 0^SET/USSTATE^Allow US State info on the end of DX announcements
+=== 0^UNSET/USSTATE^Stop US State info on the end of DX announcements
 If the spotter's or spotted's US State is known it is output on the 
 end of a DX announcement (there is just enough room). 
 
@@ -1680,6 +1706,10 @@ information from SET/DXGRID.
 
 Some user programs cannot cope with this. You can use this command 
 to reset (or set) this feature.
+
+Conflicts with: SHOW/DXCQ, SHOW/DXITU
+
+Do a STAT/USER to see which flags you have set if you are confused.  
 
 === 0^SET/WCY^Allow WCY messages to come out on your terminal
 === 0^UNSET/WCY^Stop WCY messages coming out on your terminal

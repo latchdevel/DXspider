@@ -76,14 +76,16 @@ $v3 = 0;
 		  pingint => '9,Node Ping interval',
 		  nopings => '9,Ping Obs Count',
 		  wantlogininfo => '9,Login info req,yesno',
-          wantgrid => '0,DX Grid Info,yesno',
+          wantgrid => '0,Show DX Grid,yesno',
 		  wantann_talk => '0,Talklike Anns,yesno',
 		  wantpc90 => '1,Req PC90,yesno',
-		  wantnp => '1,Req New Protocol,yesno',
+		  wantnp => '1,Req New Proto,yesno',
 		  wantpc16 => '9,Want Users from node,yesno',
 		  wantsendpc16 => '9,Send PC16,yesno',
 		  wantroutepc19 => '9,Route PC19,yesno',
-		  wantusstate => '9,Show US State,yesno',
+		  wantusstate => '0,Show US State,yesno',
+		  wantdxcq => '0,Show CQ Zone,yesno',
+		  wantdxitu => '0,Show ITU Zone,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -673,6 +675,16 @@ sub wantroutepc16
 sub wantusstate
 {
 	return _want('usstate', @_);
+}
+
+sub wantdxcq
+{
+	return _want('dxcq', @_);
+}
+
+sub wantdxitu
+{
+	return _want('dxitu', @_);
 }
 
 sub wantlogininfo

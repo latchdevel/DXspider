@@ -20,6 +20,8 @@ my $cmdprompt = '/query->.*$/';
 my($info, $t);
                                     
 $t = new Net::Telnet;
+
+dbg("db0sdx: contacting $target:$port") if isdbg('db0sdx');
 $info =  $t->open(Host    => $target,
 		  Port    => $port,
 		  Timeout => 15);
@@ -27,6 +29,8 @@ $info =  $t->open(Host    => $target,
 if (!$info) {
 	push @out, $self->msg('e18', 'DB0SDX Database server');
 } else {
+
+	dbg("db0sdx: connected to $target:$port") if isdbg('db0sdx');
 
 	my $s = qq(<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">

@@ -813,6 +813,8 @@ sub dx_spot
 	}
 
 
+	dbg('spot: "' . join('","', @_) . '"') if isdbg('dxspot');
+	
 	my $t = ztime($_[2]);
 	my $loc;
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
@@ -825,16 +827,15 @@ sub dx_spot
 	} 
 	$loc = "" unless $loc;
 
-	# USDB stuff
-	if ($USDB::present && $self->{user}->wantusstate) {
-		my ($city, $state) = USDB::get($_[4]);
-		if ($state) {
-			$loc = ' ' . $state;
-		}
-		($city, $state) = USDB::get($_[1]);
-		if ($state) {
-			$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $state; 
-		}
+	if ($self->{user}->wantdxitu) {
+		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[8]) if defined $_[8]; 
+	} elsif ($self->{user}->wantdxcq) {
+		$loc = ' ' . sprintf("%2d", $_[11]) if defined $_[11];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[9]) if defined $_[9]; 
+	} elsif ($self->{user}->wantusstate) {
+		$loc = ' ' . $_[13] if $_[13];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $_[12] if $_[12]; 
 	}
 
 	my $buf = sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
