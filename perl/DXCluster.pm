@@ -251,7 +251,10 @@ sub del
 	}
 	delete $DXCluster::cluster{$call}; # remove me from the cluster table
 	dbg('cluster', "deleting node $call from cluster\n"); 
-	$nodes-- if $nodes > 0;
+	$users -= $self->{users};    # it may be PC50 updated only therefore > 0
+	$users = 0 if $users < 0;
+	$nodes--;
+	$nodes = 0 if $nodes < 0;
 }
 
 sub add_user
