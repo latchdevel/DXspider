@@ -183,12 +183,17 @@ int sel_error(sel_t *sp, int err)
 	int r = sp->err;
 	if (err >= 0)
 		sp->err = err;
-	return err;
+	return r;
 }
 
 /*
  * $Log$
- * Revision 1.2  2000-03-26 14:22:59  djk
+ * Revision 1.3  2000-03-30 22:51:14  djk
+ * fixed connect code in client.pl so it doesn't falsely recognise /spider
+ * /src/client as a 'client' directive.
+ * Tidied up the C client a bit
+ *
+ * Revision 1.2  2000/03/26 14:22:59  djk
  * removed some irrelevant log info
  *
  * Revision 1.1  2000/03/26 00:03:30  djk

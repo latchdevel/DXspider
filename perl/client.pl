@@ -428,8 +428,8 @@ if ($connsort eq "connect") {
 		doconnect($1, $2) if /^\s*co\w*\s+(\w+)\s+(.*)$/io;
 		doabort($1) if /^\s*a\w*\s+(.*)/io;
 		dotimeout($1) if /^\s*t\w*\s+(\d+)/io;
-		dochat($1, $2) if /\s*\'(.*)\'\s+\'(.*)\'/io;
-		if (/\s*cl\w+\s+(.*)/io) {
+		dochat($1, $2) if /^\s*\'(.*)\'\s+\'(.*)\'/io;
+		if (/^\s*cl\w+\s+(.*)/io) {
 			doclient($1);
 			last;
 		}

@@ -46,6 +46,7 @@
 
 #define DEFPACLEN 128
 #define MAXPACLEN 236
+#define MAXCALLSIGN 9
 
 #define DBUF 1
 #define DMSG 2
@@ -91,22 +92,22 @@ int tabsize = 8;				/* default tabsize for text messages */
 
 myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
 	{
-		"^[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0
+		"^[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0	               /* G1TLH G1TLH1 */
 	},
 	{
-		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0          /* 2E0AAA 2E0AAA1 */
 	},
 	{
-		"^[A-Z]+[0-9]+[A-Z]+[1-9]?-[1-9]$", 0
+		"^[A-Z]+[0-9]+[A-Z]+-[1-9]$", 0                /* G1TLH-2 */
 	},
 	{
-		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?-[1-9]$", 0
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+-[1-9]$", 0          /* 2E0AAA-2 */
 	},
 	{
-		"^[A-Z]+[0-9]+[A-Z]+[1-9]?-1[0-5]$", 0
+		"^[A-Z]+[0-9]+[A-Z]+-1[0-5]$", 0               /* G1TLH-11 */
 	},
 	{
-		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?-1[0-5]$", 0
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+-1[0-5]$", 0         /* 2E0AAA-11 */
 	},
 	{
 		0, 0
@@ -168,6 +169,10 @@ int xopen(char *dir, char *name, int mode)
 int iscallsign(char *s)
 {
 	myregex_t *rp;
+
+	if (strlen(s) > MAXCALLSIGN)
+		return 0;
+	
 	for (rp = iscallreg; rp->in; ++rp) {
 		if (regexec(rp->regex, s, 0, 0, 0) == 0)
 			return 1;
@@ -212,7 +217,7 @@ void send_text(fcb_t *f, char *s, int l)
 		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
 	}
 
-	/* ignore trailing spaces  */
+	/* remove trailing spaces  */
 	while (l > 0 &&isspace(s[l-1]))
 		--l;
 

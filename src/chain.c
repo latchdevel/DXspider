@@ -1,6 +1,10 @@
 /*
  * routines to operate on double linked circular chains
  *
+ * In memoriam ICL George 3
+ *
+ * Copyright (c) 1989 Dirk Koopman
+ *
  * chain_init() - initialise a chain
  * chain_add() - add an item after the ref provided
  * chain_delete() - delete the item
@@ -12,50 +16,6 @@
  *
  * $Header$
  *
- * $Log$
- * Revision 1.2  2000-03-26 14:22:59  djk
- * removed some irrelevant log info
- *
- * Revision 1.1  2000/03/26 00:03:30  djk
- * first cut of client
- *
- * Revision 1.4  1998/01/02 19:39:58  djk
- * made various changes to cope with glibc
- * fixed problem with extended status in etsi_router
- *
- * Revision 1.3  1997/01/02 18:46:46  djk
- * Added conv.c from ETSI router
- * Changed qerror.c to use syslog rather than qerror.log
- * removed all the map27 stuff into a separate directory
- * added dump.c (a debugging tool for dumping frames of data)
- *
- * Revision 1.1  1996/08/08 11:33:44  djk
- * Initial revision
- *
- * Revision 1.2  1995/04/21  16:02:51  djk
- * remove rcs id
- *
- * Revision 1.1  1995/03/04  11:46:26  djk
- * Initial revision
- *
- * Revision 1.2  1995/01/24  15:09:39  djk
- * Changed Indent to Id in rcsid
- *
- * Revision 1.1  1995/01/24  15:06:28  djk
- * Initial revision
- *
- * Revision 1.3  91/03/08  13:21:56  dlp
- * changed the chain broken checks to dlpabort for dlperror
- * 
- * Revision 1.2  90/09/15  22:37:39  dlp
- * checked in with -k by dirk at 91.02.20.15.53.51.
- * 
- * Revision 1.2  90/09/15  22:37:39  dlp
- * *** empty log message ***
- * 
- * Revision 1.1  90/09/15  22:18:23  dlp
- * Initial revision
- * 
  */
 
 #include <stdlib.h>
@@ -223,10 +183,54 @@ reft *chain_new()
 	return p;
 }
 
-
-
-
-
-
-
-
+/*
+ * $Log$
+ * Revision 1.3  2000-03-30 22:51:14  djk
+ * fixed connect code in client.pl so it doesn't falsely recognise /spider
+ * /src/client as a 'client' directive.
+ * Tidied up the C client a bit
+ *
+ * Revision 1.2  2000/03/26 14:22:59  djk
+ * removed some irrelevant log info
+ *
+ * Revision 1.1  2000/03/26 00:03:30  djk
+ * first cut of client
+ *
+ * Revision 1.4  1998/01/02 19:39:58  djk
+ * made various changes to cope with glibc
+ * fixed problem with extended status in etsi_router
+ *
+ * Revision 1.3  1997/01/02 18:46:46  djk
+ * Added conv.c from ETSI router
+ * Changed qerror.c to use syslog rather than qerror.log
+ * removed all the map27 stuff into a separate directory
+ * added dump.c (a debugging tool for dumping frames of data)
+ *
+ * Revision 1.1  1996/08/08 11:33:44  djk
+ * Initial revision
+ *
+ * Revision 1.2  1995/04/21  16:02:51  djk
+ * remove rcs id
+ *
+ * Revision 1.1  1995/03/04  11:46:26  djk
+ * Initial revision
+ *
+ * Revision 1.2  1995/01/24  15:09:39  djk
+ * Changed Indent to Id in rcsid
+ *
+ * Revision 1.1  1995/01/24  15:06:28  djk
+ * Initial revision
+ *
+ * Revision 1.3  91/03/08  13:21:56  dlp
+ * changed the chain broken checks to dlpabort for dlperror
+ * 
+ * Revision 1.2  90/09/15  22:37:39  dlp
+ * checked in with -k by dirk at 91.02.20.15.53.51.
+ * 
+ * Revision 1.2  90/09/15  22:37:39  dlp
+ * *** empty log message ***
+ * 
+ * Revision 1.1  90/09/15  22:18:23  dlp
+ * Initial revision
+ * 
+ */

@@ -1,3 +1,6 @@
+30Mar00=======================================================================
+1. altered client.pl connect code so that it doesn't falsely recognise 
+/spider/src/client as a 'client' instruction.
 28Mar00=======================================================================
 1. Added buffering to client 
 2. Fixed LOGIN so that you can login with an arbitrary callsign
