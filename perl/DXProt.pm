@@ -360,13 +360,20 @@ sub normal
 		
 		if ($pcno == 17) {		# remove a user
 			my $node = DXCluster->get_exact($field[2]);
+			my $dxchan;
+			if (!$node && ($dxchan = DXChannel->get($field[2]))) {
+				# add it to the node table if it isn't present and it's
+				# connected locally
+				$node = DXNode->new($dxchan, $field[2], 0, 1, 5400);
+				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
+				return;
+			}
 			return unless $node;
 			return unless $node->isa('DXNode');
 			if ($node->dxchan != $self) {
 				dbg('chan', "LOOP: $field[2] came in on wrong channel");
 				return;
 			}
-			my $dxchan;
 			if (($dxchan = DXChannel->get($field[2])) && $dxchan != $self) {
 				dbg('chan', "LOOP: $field[2] connected locally");
 				return;
