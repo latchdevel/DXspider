@@ -41,7 +41,7 @@ $rproc = undef;
 $noports = 0;
 $lastytime = $lasthtime = time;
 $ypolltime = 10 unless defined $ypolltime;
-$hpolltime = 120 unless defined $hpolltime;
+$hpolltime = 300 unless defined $hpolltime;
 %circuit = ();
 
 sub init

@@ -1,3 +1,6 @@
+29Mar01=======================================================================
+1. add better tracking of AGW circuits (possibly)
+2. add set and unset/agwmonitor (ing) [for all the notice it seems to take]
 28Mar01=======================================================================
 1. AGW engine stuff now accepts incoming calls and at least attempts to do
 outgoing ones. YMMV.

@@ -37,6 +37,6 @@ $monitor = 0;
 $ypolltime = 10;
 
 # time between polls of Mheard
-$hpolltime = 120;
+$hpolltime = 300;
  
 1;

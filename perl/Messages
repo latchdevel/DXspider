@@ -148,6 +148,8 @@ package DXM;
 				msgu => 'usage: msg <cmd> <msgno> data...',
 				merge1 => 'Merge request for $_[1] spots and $_[2] WWV sent to $_[0]',
 				moon => 'Location                              Rise   Set      Azim   Elev RGain dB',
+				mond => 'Monitoring Disabled',
+				mone => 'Monitoring Enabled',
 				namee1 => 'Please enter your name, set/name <your name>',
 				namee2 => 'Can\'t find user $_[0]!',
 				name => 'Your name is now \"$_[0]\"',
