@@ -49,6 +49,7 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 	return (1, $self->msg('dx3'));
 }
 
+
 # make line the rest of the line
 $line = $f[2] || " ";
 @f = split /\s+/, $line;
@@ -101,7 +102,13 @@ return (1, @out) unless $valid;
 
 
 # Store it here (but only if it isn't baddx)
-if ($DXProt::baddx->in($spotted)) {
+if ($DXProt::baddx->in($spotted) || $freq =~ /^69/) {
+
+	# heaven forfend that we get a 69Mhz band :-)
+	if ($freq =~ /^69/) {
+		$self->badcount(($self->badcount||0) + 1);
+	}
+
 	my $buf = Spot::formatb($self->user->wantgrid, $freq, $spotted, $main::systime, $line, $spotter);
 	push @out, $buf;
 } else {
