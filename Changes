@@ -2,6 +2,7 @@
 1. ignore \n in ax25 mode for C client.
 2. remove extra space at the end of a DX spot announce when no grid square
 is output.
+3. added new admin manual from Ian G0VGS
 20Jul00=======================================================================
 1. Finally managed to update my source with the sourceforge one
 2. added user->qra cleaning in various places

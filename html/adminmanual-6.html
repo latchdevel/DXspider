@@ -253,7 +253,94 @@ package CmdAlias;
 </CODE></BLOCKQUOTE>
 <P>You can create aliases for commands at will.  Beware though, these may not always turn out as you think.  Care is needed and you need to test the results once you have set an alias.
 <P>
-<H2><A NAME="ss6.5">6.5 Console.pl</A>
+<H2><A NAME="ss6.5">6.5 Forward.pl</A>
+</H2>
+
+<P>DXSpider receives all and any mail sent to it without any alterations needed
+in files.  Because personal and bulletin mail are treated differently, there
+is no need for a list of accepted bulletin addresses.  It is necessary, however,
+to tell the program which links accept which bulletins.  For example, it is
+pointless sending bulletins addresses to "UK" to any links other than UK
+ones.  The file that does this is called forward.pl and lives in /spider/msg.
+At default, like other spider files it is named forward.pl.issue.  Rename it
+to forward.pl and edit the file to match your requirements.
+The format is below ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+#
+# this is an example message forwarding file for the system
+#
+# The format of each line is as follows
+#
+#     type    to/from/at pattern action  destinations
+#     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
+#
+# type: P - private, B - bulletin (msg), F - file (ak1a bull)
+# to/from/at: T - to field, F - from field, A - home bbs, O - origin 
+# pattern: a perl regex on the field requested
+# action: I - ignore, F - forward
+# destinations: a reference to an array containing node callsigns
+#
+# if it is non-private and isn't in here then it won't get forwarded 
+#
+# Currently only type B msgs are affected by this code.
+# 
+# The list is read from the top down, the first pattern that matches
+# causes the action to be taken.
+#
+# The pattern can be undef or 0 in which case it will always be selected
+# for the action specified
+#
+# If the BBS list is undef or 0 and the action is 'F' (and it matches the
+# pattern) then it will always be forwarded to every node that doesn't have 
+# it (I strongly recommend you don't use this unless you REALLY mean it, if
+# you allow a new link with this on EVERY bull will be forwarded immediately
+# on first connection)
+#
+
+package DXMsg;
+
+@forward = (
+'B',    'T',    'LOCAL',        'F',    [ qw(GB7MBC) ],
+'B',    'T',    'ALL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'UK',           'F',    [ qw(GB7BAA GB7ADX) ],
+'B',    'T',    'QSL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'QSLINF',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DX',           'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DXINFO',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DXNEWS',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DXQSL',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'SYSOP',        'F',    [ qw(GB7BAA GB7ADX) ],
+'B',    'T',    '50MHZ',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+);
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Simply insert a bulletin address and state in the brackets where you wish
+that mail to go.  For example, you can see here that mail sent to "UK" will
+only be sent to the UK links and not to PA4AB-14.
+<P>
+<P>To force the cluster to reread the file use load/forward
+<P>
+<H2><A NAME="ss6.6">6.6 Distribution lists</A>
+</H2>
+
+<P>Distribution lists are simply a list of users to send certain types of
+mail to.  An example of this is mail you only wish to send to other
+sysops.  In /spider/msg there is a directory called <EM>distro</EM>.  You
+put any distibution lists in here.  For example, here is a file called
+SYSOP.pl that caters for the UK sysops.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
+   GB7NDX GB7SDX GB7TDX GB7UDX GB7YDX GB7ADX GB7BAA GB7DXA GB7DXH 
+   GB7DXK GB7DXI GB7DXS)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Any mail sent to "sysop" would only be sent to the callsigns in this list.
+<P>
+<H2><A NAME="ss6.7">6.7 Console.pl</A>
 </H2>
 
 <P>In later versions of Spider a simple console program is provided for the sysop.  This has a type ahead buffer with line editing facilities and colour for spots, announces etc.

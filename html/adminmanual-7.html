@@ -182,7 +182,7 @@ and Homenode. PC41s are only sent for the information that is available.
 <H2><A NAME="ss7.12">7.12 init (5)</A>
 </H2>
 
-<P><CODE><B>init &lt;node call&gt;</B>  Re-initialise a link to an AK1A compatible node</CODE>
+<P><CODE><B>init &lt;node call&gt;</B> Re-initialise a link to an AK1A compatible node</CODE>
 <P>
 <P>This command attempts to re-initialise a link to a (usually) AK1A node
 that has got confused, usually by a protocol loop of some kind. It may
@@ -343,7 +343,7 @@ permission to send this command at all.
 <H2><A NAME="ss7.26">7.26 set/debug (9)</A>
 </H2>
 
-<P><CODE><B>set/debug &lt;name&gt;</B>Add a debug level to the debug set</CODE>
+<P><CODE><B>set/debug &lt;name&gt;</B> Add a debug level to the debug set</CODE>
 <P>
 <P>You can remove this level with unset/debug &lt;name&gt;
 <P>
@@ -362,7 +362,7 @@ out from it nor goes back into from the rest of the nodes connected to you.
 <H2><A NAME="ss7.28">7.28 set/sys_location (9)</A>
 </H2>
 
-<P><CODE><B>set/sys_location &lt;lat &amp; long&gt;</B>Set your cluster latitude and longitude</CODE>
+<P><CODE><B>set/sys_location &lt;lat &amp; long&gt;</B> Set your cluster latitude and longitude</CODE>
 <P>
 <P>In order to get accurate headings and such like you must tell the system
 what your latitude and longitude is. If you have not yet done a SET/QRA
@@ -372,7 +372,7 @@ then this command will set your QRA locator for you. For example:-
 <H2><A NAME="ss7.29">7.29 set/lockout (9)</A>
 </H2>
 
-<P><CODE><B>set/lockout &lt;call&gt;</B>Stop a callsign connecting to the cluster</CODE>
+<P><CODE><B>set/lockout &lt;call&gt;</B> Stop a callsign connecting to the cluster</CODE>
 <P>
 <P>You can show who is locked out with the show/lockout (9) command.
 <P>To allow the user to connect again, use the command unset/lockout
@@ -380,7 +380,7 @@ then this command will set your QRA locator for you. For example:-
 <H2><A NAME="ss7.30">7.30 set/node (9)</A>
 </H2>
 
-<P><CODE><B>set/node &lt;call&gt; [&lt;call&gt; ...]</B>Make the callsign an AK1A cluster</CODE>
+<P><CODE><B>set/node &lt;call&gt; [&lt;call&gt; ...]</B> Make the callsign an AK1A cluster</CODE>
 <P>
 <P>Tell the system that the call(s) are to be treated as AK1A cluster and
 fed PC Protocol rather normal user commands.
@@ -475,12 +475,22 @@ is useful for checking where you think you have loaded a .pm file from.
 <H2><A NAME="ss7.37">7.37 shutdown (5)</A>
 </H2>
 
-<P><CODE><B>shutdown</B>Shutdown the cluster</CODE>
+<P><CODE><B>shutdown</B> Shutdown the cluster</CODE>
 <P>
 <P>Shutdown the cluster and disconnect all the users.  If you have Spider
 set to respawn in /etc/inittab it will of course restart.
 <P>
-<H2><A NAME="ss7.38">7.38 stat/db (5)</A>
+<H2><A NAME="ss7.38">7.38 spoof (9)</A>
+</H2>
+
+<P><CODE><B>spoof &lt;callsign&gt; &lt;command&gt;</B> Run commands as another user</CODE>
+<P>
+<P>This is a very simple yet powerful command for the sysop.  It allows you to
+issue commands as if you were a different user.  This is very useful for the
+kind of things that users seem to always get wrong.. like home_node for
+example.
+<P>
+<H2><A NAME="ss7.39">7.39 stat/db (5)</A>
 </H2>
 
 <P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE>
@@ -489,7 +499,7 @@ set to respawn in /etc/inittab it will of course restart.
 <P>Depending on your privilege level you will see more or less information. 
 This command is unlikely to be of much use to anyone other than a sysop.
 <P>
-<H2><A NAME="ss7.39">7.39 stat/channel (5)</A>
+<H2><A NAME="ss7.40">7.40 stat/channel (5)</A>
 </H2>
 
 <P><CODE><B>stat/channel &lt;callsign&gt;</B> Show the status of a channel on the cluster</CODE>
@@ -498,7 +508,7 @@ This command is unlikely to be of much use to anyone other than a sysop.
 you are on or else for the callsign that you asked for.
 <P>Only the fields that are defined (in perl term) will be displayed.
 <P>
-<H2><A NAME="ss7.40">7.40 stat/msg (5)</A>
+<H2><A NAME="ss7.41">7.41 stat/msg (5)</A>
 </H2>
 
 <P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE>
@@ -506,7 +516,7 @@ you are on or else for the callsign that you asked for.
 <P>This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
 <P>
-<H2><A NAME="ss7.41">7.41 stat/user (5)</A>
+<H2><A NAME="ss7.42">7.42 stat/user (5)</A>
 </H2>
 
 <P><CODE><B>stat/user &lt;callsign&gt;</B> Show the full status of a user</CODE>

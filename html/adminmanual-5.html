@@ -14,13 +14,50 @@
 <HR>
 <H2><A NAME="s5">5. Filtering</A></H2>
 
-<P>Filters can be set for spots, announcements and WWV.  You will find the directories for these under /spider/filter.  You will find some example in the directories with the suffix <EM>.issue</EM>.  There are two types of filter, one for incoming information and one for outgoing information. Outgoing filters are in the form <EM>CALLSIGN.pl</EM> and incoming filters are in the form <EM>in_CALLSIGN.pl</EM>.  Filters can be set for both nodes and users.
+<P>Filters can be set for spots, announcements and WWV.  You will find the directories for these under /spider/filter.  You will find some examples in the directories with the suffix <EM>.issue</EM>.  There are two types of filter, one for incoming information and one for outgoing information. Outgoing filters are in the form <EM>CALLSIGN.pl</EM> and incoming filters are in the form <EM>in_CALLSIGN.pl</EM>.  Filters can be set for both nodes and users.
+<P>
+<P>All filters work in basically the same way.  There are several elements delimited by commas.
+There can be many lines in the filter and they are read from the top by the program.
+When writing a filter you need to think carefully about just what you want to achieve.  You
+are either going to write a filter to <EM>accept</EM> or to <EM>reject</EM>.
+Think of a filter as having 2 main elements.  For a reject filter, you would have a line
+or multiple lines rejecting the things you do not wish to receive and then a default
+line accepting everything else that is not included in the filter.  Likewise, for an
+accept filter, you would have a line or multiple lines accepting the things you wish
+to receive and a default line rejecting everthing else.
+<P>
+<P>In the example below, a user requires a filter that would only return SSB spots
+posted in Europe on the HF bands.  This is achieved by first rejecting the CW section 
+of each HF band and rejecting all of VHF, UHF etc based on frequency.
+Secondly, a filter rule is set based on CQ zones to only accept spots posted in
+Europe.  Lastly, a default filter rule is set to reject anything outside the filter.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$in = [
+        [ 0, 0, 'r', # reject all CW spots
+                [
+                1800.0, 1850.0,
+                3500.0, 3600.0,
+                7000.0, 7040.0,
+                14000.0, 14100.0,
+                18068.0, 18110.0,
+                21000.0, 21150.0,
+                24890.0, 24930.0,
+                28000.0, 28180.0,
+                30000.0, 49000000000.0,
+                ] ,1 ],
+        [ 1, 11, 'n', [ 14, 15, 16, 20, 33, ], 15 ], #accept EU
+        [ 0, 0, 'd', 0, 1 ], # 1 = want, 'd' = everything else
+];
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The actual elements of each filter are described more fully in the following sections.
 <P>
 <H2><A NAME="ss5.1">5.1 Spots</A>
 </H2>
 
-<P>All filters work in basically the same way.  There are several elements delimited by commas.  I will use the spot filter as an example ....
-<P>
 <P>The elements of the Spot filter are ....
 <P>
 <BLOCKQUOTE><CODE>
@@ -98,6 +135,7 @@ Lets look carefully at the first line.  The first element is 0 (drop).  Therefor
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
+  [ 0, 0, 'r',
     [  
       1800.0, 2000.0,         # top band 
       10100.0, 10150.0,       # WARC  

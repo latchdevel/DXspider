@@ -14,7 +14,7 @@ Previous
 <HR>
 <H2><A NAME="s1">1. Installation (Original version by Iain Phillips, G0RDI)</A></H2>
 
-<P>Last modified: 18 June 2000 by Ian Maude, G0VGS
+<P>Last modified: 25 July 2000 by Ian Maude, G0VGS
 <P>
 <H2><A NAME="ss1.1">1.1 Introduction</A>
 </H2>
@@ -38,10 +38,10 @@ Previous
 <LI>            MD5-1.7.tar.gz</LI>
 <LI>            Data-Dumper-2.10.tar.gz</LI>
 <LI>            FreezeThaw-0.3.tar.gz</LI>
-<LI>            MLDBM-2.00.ar.gz</LI>
+<LI>            MLDBM-2.00.tar.gz</LI>
 <LI>            TimeDate-1.8.tar.gz</LI>
-<LI>            IO-1.20.tar.tgz</LI>
-<LI>            Net-Telnet-3.01.tar.gz</LI>
+<LI>            IO-1.20.tar.gz</LI>
+<LI>            Net-Telnet-3.02.tar.gz</LI>
 <LI>            Curses-1.02.tar.gz
 </LI>
 </UL>
@@ -128,7 +128,7 @@ passwd: all authentication tokens updated successfully
 $ cd /spider
 $ mkdir local
 $ mkdir local_cmd
-$ cp perl/DXVars.pm local
+$ cp perl/DXVars.pm.issue local/DXVars.pm
 $ cd local
 $ vi DXVars.pm (or your favourite editor)
 </PRE>
@@ -141,7 +141,7 @@ $ vi DXVars.pm (or your favourite editor)
 <P>
 <P><B>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</B>
 <P>
-<P>DON'T alter the DXVars.pm (or any other file) in /spider/perl, they are overwritten with every release. Any files or commands you place in /spider/local or /spider/local_cmd will automagically be used in preference to the ones in /spider/perl EVEN whilst the cluster is running!
+<P>DON'T alter the DXVars.pm (or any other file) in /spider/perl, they are overwritten with every release. Any files or commands you place in /spider/local or /spider/local_cmd will automagically be used in preference to the ones in /spider/perl EVEN while the cluster is running!
 <P>
 <P>Save the new file and change directory to ../perl ....
 <P>
