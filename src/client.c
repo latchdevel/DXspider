@@ -826,7 +826,8 @@ void connect_to_node()
 	struct sockaddr_in server;
 	int nodef;
 	sel_t *sp;
-				
+	struct linger lg;
+					
 	if ((hp = gethostbyname(node_addr)) == 0) 
 		die("Unknown host tcp host %s for printer", node_addr);
 
@@ -842,6 +843,12 @@ void connect_to_node()
 	if (connect(nodef, (struct sockaddr *) &server, sizeof server) < 0) {
 		die("Error on connect to %s port %d (%d)", node_addr, node_port, errno);
 	}
+
+	memset(&lg, 0, sizeof lg);
+	if (setsockopt(nodef, SOL_SOCKET, SO_LINGER, &lg, sizeof lg) < 0) {
+		die("Error on SO_LINGER to %s port %d (%d)", node_addr, node_port, errno);
+	}
+	
 	node = fcb_new(nodef, MSG);
 	node->sp = sel_open(nodef, node, "Msg System", fcb_handler, MSG, SEL_INPUT);
 	
