@@ -15,20 +15,24 @@ if (@list == 0) {
 	push @out, "Work Queue Keys";
 	push @out, map { " $_" } sort DXMsg::get_all_fwq();
 	push @out, "Busy Queue Data";
-	foreach $ref (sort {$a->to cmp $b->to} DXMsg::get_all_busy) {
-		my $msgno = $ref->msgno;
-		my $stream = $ref->stream;
-		my $lref = $ref->lines;
-		my $lines = 0;
-		$lines = @$lref if $lref;
-		my $count = $ref->count;
-		my $to = $ref->to;
-		my $from = $ref->from;
-		my $tonode = $ref->tonode;
-		my $lastt = $ref->lastt ? " Last Processed: " . cldatetime($ref->lastt) : "";
-		my $waitt = $ref->waitt ? " Waiting since: " . cldatetime($ref->waitt) : "";
-		
-		push @out, " $tonode: $from -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
+	foreach my $key (sort DXMsg::get_all_busy()) {
+		$ref = DXMsg::get_busy($key);
+		if ($ref) {
+			my $msgno = $ref->msgno;
+			my $stream = $ref->stream;
+			my $lref = $ref->lines;
+			my $lines = 0;
+			$lines = @$lref if $lref;
+			my $count = $ref->count;
+			my $to = $ref->to;
+			my $from = $ref->from;
+			my $tonode = $ref->tonode;
+			my $lastt = $ref->lastt ? " Last Processed: " . cldatetime($ref->lastt) : "";
+			my $waitt = $ref->waitt ? " Waiting since: " . cldatetime($ref->waitt) : "";
+			push @out, " $key/$tonode: $from -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt"
+		} else {
+			push @out, " dangling ref for $key";
+		}
 	}
 } else {
 	foreach my $msgno (@list) {
