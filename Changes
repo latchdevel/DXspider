@@ -1,3 +1,5 @@
+16Oct00=======================================================================
+1. add a ':' after 'G7BRN de G1TLH' in a talk message.
 04Sep00=======================================================================
 1. made PC10,11,12 badword checking dependant on a flag variable ($censorpc)
 default = 0 (off).
