@@ -83,6 +83,8 @@ sub AUTOLOAD
 	return $self->{$name};
 }
 
+use strict;
+
 #
 # initialise the system
 #
@@ -109,8 +111,6 @@ sub del_file
 	$fn .= ".v2";
 	unlink $fn;
 }
-
-use strict;
 
 #
 # periodic processing
@@ -319,20 +319,20 @@ sub export
 # Input file: $filename
 #       Time: $t
 #
-
+			
 package main;
-
+			
 # search local then perl directories
 BEGIN {
 	umask 002;
-	
+				
 	# root of directory tree for this system
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 	
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
-
+	
 	# try to detect a lockfile (this isn't atomic but 
 	# should do for now
 	$lockfn = "$root/perl/cluster.lock";       # lock file name
@@ -351,25 +351,25 @@ use DXVars;
 use DXUser;
 
 if (@ARGV) {
-        $main::userfn = shift @ARGV;
-        print "user filename now $userfn\n";
+	$main::userfn = shift @ARGV;
+	print "user filename now $userfn\n";
 }
 
 DXUser->del_file($main::userfn);
 DXUser->init($main::userfn, 1);
 
 %u = (
-   };
-	  
-for ($action = R_FIRST; !$dbm->seq($key, $ref, $action); $action = R_NEXT) {
-	print $fh "'$key' => q{$ref},\n";
-	++$count;
-} 
-print $fh ");\n#\nprint \"there were $count records\\n\";\n#\n";
-print $fh "DXUser->sync; DXUser->finish;\n#\n";
-$fh->close;
-} 
-		return $count;
+  };
+
+        for ($action = R_FIRST; !$dbm->seq($key, $ref, $action); $action = R_NEXT) {
+			print $fh "'$key' => q{$ref},\n";
+			++$count;
+		} 
+        print $fh ");\n#\nprint \"there were $count records\\n\";\n#\n";
+        print $fh "DXUser->sync; DXUser->finish;\n#\n";
+        $fh->close;
+    } 
+	return $count;
 }
 
 #
