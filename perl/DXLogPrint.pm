@@ -46,13 +46,15 @@ sub print
 	    
 	if ($pattern) {
 		$hint = "m{\\Q$pattern\\E}i";
+	} else {
+		$hint = "!m{ann|rcmd|talk}";
 	}
 	if ($who) {
 		if ($hint) {
 			$hint .= ' && ';
 		}
 		$hint .= 'm{\\Q$who\\E}i';
-	}
+	} 
 	$hint = "next unless $hint" if $hint;
 	
 	$eval = qq(
