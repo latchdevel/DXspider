@@ -31,6 +31,9 @@ $lang = 'en' if !$lang;
 # The fields are:- privilege level, full command name, short description
 #
 
+$DB::single = 1;
+
+
 my $defh = new IO::File;
 unless ($defh->open("$main::localcmd/Commands_en.hlp")) {
 	unless($defh->open("$main::cmd/Commands_en.hlp")) {
@@ -39,7 +42,7 @@ unless ($defh->open("$main::localcmd/Commands_en.hlp")) {
 }
 
 my $h;
-unless ($lang ne 'en') {
+if ($lang ne 'en') {
 	$h = new IO::File;
 	unless ($h->open("$main::localcmd/Commands_$lang.hlp")) {
 		unless($h->open("$main::cmd/Commands_$lang.hlp")) {
