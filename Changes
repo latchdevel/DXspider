@@ -1,3 +1,8 @@
+03Jan00=======================================================================
+1. changed the copyright statement in sh/version!
+2. added sh/date with special "be compatible with ak1a" syntax for the output
+of sh/date with no arguments, otherwise the same as sh/time. A special favour
+to G4PDQ...
 01Jan00=======================================================================
 1. Fixed Julian routines to get rid of the millenium bug! (do as I say, not
 as I do!).
