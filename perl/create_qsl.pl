@@ -56,6 +56,7 @@ foreach my $year (sort readdir YEAR) {
 		my $f = new IO::File $fn  or die "$fn ($!)"; 
 		print "doing: $fn\n";
 		while (<$f>) {
+			last if $end;
 			if (/(QSL|VIA)/i) {
 				my ($freq, $call, $t, $comment, $by, @rest) = split /\^/;
 				my $q = QSL::get($call) || new QSL $call;
@@ -64,7 +65,9 @@ foreach my $year (sort readdir YEAR) {
 			}
 		}
 		$f->close;
+		last if $end;
 	}
+	last if $end;
 }
 
 QSL::finish();

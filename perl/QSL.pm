@@ -91,7 +91,6 @@ sub put
 	my $self = shift;
 	my $key = $self->[0];
 	my $value = nfreeze($self);
-	$dbm->del($key);
 	$dbm->put($key, $value);
 }
 
