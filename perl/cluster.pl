@@ -147,7 +147,7 @@ sub new_channel
 			;
 		} else {
 			if (my $ref = DXCluster->get_exact($call)) {
-				my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
+				my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->dxchancall);
 				already_conn($conn, $call, $mess);
 				return;
 			}
@@ -155,7 +155,7 @@ sub new_channel
 		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 	} else {
 		if (my $ref = DXCluster->get_exact($call)) {
-			my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
+			my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->dxchancall);
 			already_conn($conn, $call, $mess);
 			return;
 		}
