@@ -92,8 +92,9 @@ sub store
 sub update
 {
 	my ($mydate, $mytime, $mysfi, $mya, $myk, $myforecast, $myfrom, $mynode, $myr) = @_;
-	if ((@allowed && grep {$_ eq $from} @allowed) || 
-		(@denied && !grep {$_ eq $from} @denied) ||
+	$myfrom =~ s/-\d+$//;
+	if ((@allowed && grep {$_ eq $myfrom} @allowed) || 
+		(@denied && !grep {$_ eq $myfrom} @denied) ||
 		(@allowed == 0 && @denied == 0)) {
 		
 		#	my $trydate = cltounix($mydate, sprintf("%02d18Z", $mytime));

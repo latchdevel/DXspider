@@ -90,8 +90,9 @@ sub store
 sub update
 {
 	my ($mydate, $mytime, $mysfi, $mya, $myk, $myexpk, $myr, $mysa, $mygmf, $myau, $myfrom, $mynode) = @_;
-	if ((@allowed && grep {$_ eq $from} @allowed) || 
-		(@denied && !grep {$_ eq $from} @denied) ||
+	$myfrom =~ s/-\d+$//;
+	if ((@allowed && grep {$_ eq $myfrom} @allowed) || 
+		(@denied && !grep {$_ eq $myfrom} @denied) ||
 		(@allowed == 0 && @denied == 0)) {
 		
 		#	my $trydate = cltounix($mydate, sprintf("%02d18Z", $mytime));
@@ -242,12 +243,12 @@ sub readfile
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($d, $sfi, $a, $k, $r) = @_; 
+	my ($d) = @_; 
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
  
-	my $dupkey = "C$d|$sfi|$k|$a|$r";
+	my $dupkey = "C$d";
 	return DXDupe::check($dupkey, $main::systime+$dupage);
 }
 

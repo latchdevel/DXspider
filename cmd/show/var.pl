@@ -19,8 +19,8 @@ foreach $f (@f) {
 #    print "\$f = $f\n";
 	my @in;
 	push @in, (eval $f);
-	if (defined @in) {
-        my $dd = Data::Dumper->new([ @in ], [ "$f" ]);
+	if (@in) {
+        my $dd = Data::Dumper->new([ \@in ], [ "$f" ]);
         $dd->Indent(1);
 		$dd->Quotekeys(0);
 		my $s = $dd->Dumpxs;

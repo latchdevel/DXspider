@@ -1155,7 +1155,7 @@ sub normal
 				return;
 			}
 			@field = map { unpad($_) } @field;
-			if (WCY::dup($d,@field[3..7])) {
+			if (WCY::dup($d)) {
 				dbg("PCPROT: Dup WCY Spot ignored\n") if isdbg('chanerr');
 				return;
 			}
@@ -1164,7 +1164,7 @@ sub normal
 
 			my $rep;
 			eval {
-				$rep = Local::wwv($self, @field[1..12]);
+				$rep = Local::wcy($self, @field[1..12]);
 			};
 			# dbg("Local::wcy error $@") if isdbg('local') if $@;
 			return if $rep;
