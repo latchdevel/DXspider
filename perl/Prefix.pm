@@ -473,6 +473,16 @@ sub to_ciz
 	return @out;
 }
 
+# get the full country data (dxcc, itu, cq, state) as a list
+# from a callsign. 
+sub cty_data
+{
+	my $call = shift;
+	
+	my @dxcc = extract($call);
+	return @dxcc ? ($dxcc[1]->dxcc, $dxcc[1]->itu, $dxcc[1]->cq, $dxcc[1]->state) : ();
+}
+
 my %valid = (
 			 lat => '0,Latitude,slat',
 			 long => '0,Longitude,slong',

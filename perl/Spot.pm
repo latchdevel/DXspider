@@ -153,7 +153,7 @@ sub prepare
 
 sub add
 {
-	my $buf = join("\^", @_[0..7]);
+	my $buf = join("\^", @_);
 	$fp->writeunix($_[2], $buf);
 	$totalspots++;
 	if ($_[0] <= 30000) {
@@ -194,7 +194,7 @@ sub add
 
 sub search
 {
-	my ($expr, $dayfrom, $dayto, $from, $to, $hint) = @_;
+	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dofilter) = @_;
 	my $eval;
 	my @out;
 	my $ref;
@@ -233,6 +233,22 @@ sub search
 			   for (\$c = \$#spots; \$c >= 0; \$c--) {
 					\$ref = \$spots[\$c];
 					if ($expr) {
+	                    if (\$dofilter && \$self->{inspotsfilter}) {
+                            if (\@\$spot < 9) {
+                                my i\@dxcc = Prefix::cty_data(\$spot->[1]);
+                                if (\@dxcc) {
+                                    pop \@dxcc;
+                                    push \@\$spot, \@dxcc;
+                                }
+                                \@dxcc = Prefix::cty_data(\$spot->[4]);
+                                if (\@dxcc) {
+                                    pop \@dxcc;
+                                    push \@\$spot, \@dxcc;
+                                }
+                            }
+		                    my (\$filter, \$hops) = \$self->{inspotsfilter}->it(\@\$spot);
+		                    next unless (\$filter);
+                        }
 						\$count++;
 						next if \$count < \$from; # wait until from 
 						push(\@out, \$ref);
@@ -240,6 +256,9 @@ sub search
 					}
 				}
 			  );
+    
+	dbg("Spot eval: $eval") if isdbg('searcheval');
+	
 
 	$fp->close;					# close any open files
 

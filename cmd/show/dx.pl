@@ -22,7 +22,7 @@ my $hint;
 my $dxcc;
 my $real;
 my $fromdxcc;
-my ($doqsl, $doiota, $doqra);
+my ($doqsl, $doiota, $doqra, $dofilter);
 
 while ($f = shift @list) {		# next field
 	#  print "f: $f list: ", join(',', @list), "\n";
@@ -77,6 +77,10 @@ while ($f = shift @list) {		# next field
 			$fromdxcc = 1;
 			shift @list;
 		}
+		next;
+	}
+	if (lc $f =~ /^filt/) {
+		$dofilter = 1;
 		next;
 	}
 	if (lc $f eq 'qsl') {
@@ -242,7 +246,7 @@ if ($doqra) {
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
   
 # now do the search
-my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint);
+my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter);
 my $ref;
 my @dx;
 foreach $ref (@res) {

@@ -1914,6 +1914,9 @@ any order to the basic SHOW/DX command, they are:-
                    logging programs that can't cope with normal sh/dx 
                    output. An alias of SHOW/FDX is available.
        
+ filter            Filter the spots, before output, with the user's 
+                   spot filter. An alias of SHOW/MYDX is available.
+
  e.g. 
    
    SH/DX 9m0
@@ -2128,6 +2131,19 @@ propagation data.
 Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
+
+=== 0^SHOW/MYDX^Show the DX data filtered with your spot filter.
+SHOW/DX potentially shows all the spots available in the system. Using
+SHOW/MYDX will, instead, filter the availble spots using any spot filter 
+that you have set, first. 
+
+This command, together with ACCEPT/SPOT or REJECT/SPOT, will allow
+you to customise the spots that you receive.
+
+So if you have said: ACC/SPOT freq on hf
+
+Doing a SHOW/MYDX will now only, ever, show HF spots. All the other 
+options on SH/DX can still be used.
 
 === 0^SHOW/NEWCONFIGURATION [<node>]^Show all the nodes and users visible
 This command allows you to see all the users that can be seen
