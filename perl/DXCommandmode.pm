@@ -824,24 +824,10 @@ sub chat
 	$self->local_send('C', $buf);
 }
 
-# send a dx spot
-sub dx_spot
+sub format_dx_spot
 {
 	my $self = shift;
-	my $line = shift;
-	my $isolate = shift;
-	my ($filter, $hops);
 
-	return unless $self->{dx};
-	
-	if ($self->{spotsfilter}) {
-		($filter, $hops) = $self->{spotsfilter}->it(@_ );
-		return unless $filter;
-	}
-
-
-	dbg('spot: "' . join('","', @_) . '"') if isdbg('dxspot');
-	
 	my $t = ztime($_[2]);
 	my $loc;
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
@@ -865,8 +851,27 @@ sub dx_spot
 		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $_[12] if $_[12]; 
 	}
 
-	my $buf = sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+}
+
+# send a dx spot
+sub dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	return unless $self->{dx};
 	
+	if ($self->{spotsfilter}) {
+		($filter, $hops) = $self->{spotsfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	dbg('spot: "' . join('","', @_) . '"') if isdbg('dxspot');
+	
+	my $buf = $self->format_dx_spot(@_);
 	$buf .= "\a\a" if $self->{beep};
 	$buf =~ s/\%5E/^/g;
 	$self->local_send('X', $buf);

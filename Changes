@@ -1,3 +1,8 @@
+09Jan04=======================================================================
+1. removed PC90 which was breaking various filtering things.
+2. added realtime spot formats to sh/dx (at least in basic form), this is
+activated by using either of the keywords 'real' of 'rt' on the command
+line. Also added sh/fdx as an alias.
 01Jan04=======================================================================
 1. move position of USDB init to get rid of an obscure bug pointed out by
 Charlie K1XX.

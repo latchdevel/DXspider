@@ -1907,7 +1907,13 @@ any order to the basic SHOW/DX command, they are:-
                   
                    You can also use this with the 'by' keyword so 
                    eg by W dxcc  
-   
+ 
+ real or rt        Format the output the same as for real time spots. The
+                   formats are deliberately different (so you can tell
+                   one sort from the other). This is useful for some 
+                   logging programs that can't cope with normal sh/dx 
+                   output. An alias of SHOW/FDX is available.
+       
  e.g. 
    
    SH/DX 9m0
@@ -1937,6 +1943,16 @@ This can be done with the SHOW/DX command like this:-
 
    SH/DX dxcc g
    SH/DX dxcc w on 20m iota
+
+This is an alias for: SH/DX dxcc
+
+=== 0^SHOW/FDX^Show the DX data in realtime format.
+Normally SHOW/DX outputs spot data in a different format to the
+realtime data. This is a deliberate policy (so you can tell the 
+difference between the two). Some logging programs cannot handle
+this so SHOW/FDX outputs historical data in real time format.
+
+This is an alias for: SHOW/DX real
 
 === 0^SHOW/DXSTATS [days] [date]^Show the DX Statistics
 Show the total DX spots for the last <days> no of days (default is 31), 

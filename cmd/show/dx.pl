@@ -20,6 +20,7 @@ my $info;
 my $expr;
 my $hint;
 my $dxcc;
+my $real;
 my $fromdxcc;
 my ($doqsl, $doiota, $doqra);
 
@@ -35,6 +36,10 @@ while ($f = shift @list) {		# next field
 	}
 	if (lc $f eq 'dxcc') {
 		$dxcc = 1;
+		next;
+	}
+	if (lc $f eq 'rt' || $f =~ /^real/i) {
+		$real = 1;
 		next;
 	}
 	if (lc $f eq 'on' && $list[0]) { # is it freq range?
@@ -239,7 +244,11 @@ my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint);
 my $ref;
 my @dx;
 foreach $ref (@res) {
-	push @out, Spot::formatl(@$ref);
+	if ($real) {
+		push @out, $self->format_dx_spot(@$ref);
+	} else {
+		push @out, Spot::formatl(@$ref);
+	}
 }
 
 return (1, @out);
