@@ -126,7 +126,6 @@ sub new_client {
 			$conn->{outbound} = 0;
 			$conn->{state} = 'WH';		# wait for return authorize
 			my $thing = $conn->{lastthing} = Thingy::Hello->new();
-
 			$thing->send($conn, 'Aranea');
 			dbg("-> D $conn->{peerhost} $thing->{Aranea}") if isdbg('chan');
 		}

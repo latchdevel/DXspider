@@ -74,7 +74,9 @@ sub send
 	# before send (and line generation) things
 	# function must return true to make the send happen
 	$sub = "before_send_$class";
-	return unless $thing->can($sub) && $thing->$sub($dxchan);
+	if ($thing->can($sub)) {
+		return $thing->$sub($dxchan);
+	}
 	
 	# generate the protocol line which may (or not) be cached
 	my $ref;
