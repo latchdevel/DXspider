@@ -102,7 +102,7 @@ sub alloc
 	$self->{'read'} = shift;
 	$self->{rrreq} = shift;
 	$self->{gotit} = [];
-	$self->{lastt} = $main::systime;
+#	$self->{lastt} = $main::systime;
 	$self->{lines} = [];
 	$self->{private} = 1 if $bulltopriv && DXUser->get_current($self->{to});
     
