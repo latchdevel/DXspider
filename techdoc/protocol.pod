@@ -244,11 +244,11 @@ duplicated!
 =head2 Examples
 
  # on link startup from GB7BAA (both sides hello)
- GB7TLH,3D02350001,0,GB7BAA|HELLO,Aranea,bld=24.123
- GB7BAA,3D02355421,1,GB7TLH|HELLO,Aranea,bld=23.245
+ GB7TLH,3D02350001,0,GB7BAA|HELLO,Aranea,1.2,24.123
+ GB7BAA,3D02355421,1,GB7TLH|HELLO,Aranea,1.1,23.245
 
  # on user startup to GB7TLH
- GB7TLH,3D042506F2,0,G1TLH|HELLO,PClient,ver=1.03
+ GB7TLH,3D042506F2,0,G1TLH|HELLO,PClient,1.3
 
  # on user disconnection
  GB7TLH,3D9534F32D,0,G1TLH|BYE
@@ -349,23 +349,36 @@ all implementations.
 
 =over
 
-=item B<HELLO>
+=item B<HELLO>,<software name>,<version>,<build>,<comments>
 
-Command sent on connection to another node.
+Command sent on connection to another node. Both sides send their information
+to the other. All the possible arguments are optional, although some of the
+arguments should be sent in order to help diagnose problems. This command is
+broadcast.
 
-=item B<BYE>
+=item B<BYE>,<comments>
 
-Command sent to voluntarily disconnect a connection.
+Command sent to all connections when the software is shutting down. This is sent
+by the node just before shutdown occurs. This is really only used to help the
+network prune its routing tables. It isn't a requirement. The <comment> field
+is optional. 
 
-=item B<DISC>
+=item B<DISC>,<node name>,<comments>
 
-Command sent when a node has disconnected from this node.
+Command sent when a node has disconnected from this node. This message is sent when
+an interface shuts down. It need not be sent if a L<BYE> from an interface for
+that node has just been received. This command should be broadcast.
 
-=item B<PING>
+The <node name> is mandatory and is the name of the interface that has just 
+disconnected.
 
-Command to send a ping to a node or user.
+=item B<PING>,<ping id>
 
-=item B<PONG>
+Command to send a ping to a node or user. This command is used both by the software
+and users to determine a) whether a node or user exists and b) how good the path is
+between them.
+
+=item B<PONG>,<ping id>,<no of hops on ping>
 
 Command to reply to a successful ping
 
