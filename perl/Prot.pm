@@ -53,8 +53,6 @@ sub new
 
 sub AUTOLOAD
 {
-#	no strict "refs";
-	my $self = shift;
 	no strict;
 	my $name = $AUTOLOAD;
 	return if $name =~ /::DESTROY$/;
@@ -62,9 +60,7 @@ sub AUTOLOAD
   
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
-	&$AUTOLOAD($self, @_);
-#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
-#    @_ ? $self->{$name} = shift : $self->{$name} ;
+       goto &$AUTOLOAD;
 }
 
 1;

@@ -1607,9 +1607,8 @@ sub send_local_config
 	# get all the users connected on the above nodes and send them out
 	foreach $node (@localnodes, @remotenodes) {
 		if ($node) {
-			$self->send_route(\&pc16, 1, $node, 
-							  map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users)
-				if $self->user->wantsendpc16;
+			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+			$self->send_route(\&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
 		}

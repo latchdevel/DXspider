@@ -104,18 +104,17 @@ sub delparent
 sub AUTOLOAD
 {
 	no strict;
-
-	my $self = shift;
-	$name = $AUTOLOAD;
-	return if $name =~ /::DESTROY$/;
-	$name =~ s/.*:://o;
+	my ($pkg,$name) = $AUTOLOAD =~ /^(.*)::(\w+)$/;
+	return if $name eq 'DESTROY';
   
 	confess "Non-existant field '$AUTOLOAD'" unless $valid{$name} || $Route::valid{$name};
 
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
-    @_ ? $self->{$name} = shift : $self->{$name} ;
+	*$AUTOLOAD = sub {$_[0]->{$name} = $_[1] if @_ > 1; return $_[0]->{$name}};
+	goto &$AUTOLOAD;	
+#	*{"${pkg}::$name"} = sub {$_[0]->{$name} = $_[1] if @_ > 1; return $_[0]->{$name}};
+#	goto &{"${pkg}::$name"};	
 }
 
 1;

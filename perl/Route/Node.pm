@@ -315,19 +315,16 @@ sub DESTROY
 sub AUTOLOAD
 {
 	no strict;
-
-	my $self = shift;
-	$name = $AUTOLOAD;
+	my $name = $AUTOLOAD;
 	return if $name =~ /::DESTROY$/;
-	$name =~ s/.*:://o;
+	$name =~ s/^.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" unless $valid{$name} || $Route::valid{$name};
 
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-#	print "AUTOLOAD: $AUTOLOAD\n";
-#	*{$AUTOLOAD} = sub {my $self = shift; @_ ? $self->{$name} = shift : $self->{$name}} ;
-    @_ ? $self->{$name} = shift : $self->{$name} ;
+        *$AUTOLOAD = sub {$_[0]->{$name} = $_[1] if @_ > 1; return $_[0]->{$name}};
+        goto &$AUTOLOAD;
 }
 
 1;
