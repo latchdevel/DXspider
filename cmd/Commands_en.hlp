@@ -155,6 +155,39 @@ unknown message 'xxxx' in lang 'en'
 Reload the /spider/data/prefix_data.pl file if you have changed it manually whilst
 the cluster is running. 
 
+=== 5^MERGE <node> [<no spots>/<no wwv>]^Ask for the latest spots and WWV 
+MERGE allows you to bring your spot and wwv database up to date. By default
+it will request the last 10 spots and 5 WWVs from the node you select. The 
+node must be connected locally.
+
+You can request any number of spots or wwv and although they will be appended
+to your databases they will not duplicate any that have recently been added 
+(the last 2 days for spots and last month for WWV data).
+
+=== 9^MSG <cmd> <msgno> [data ... ]^Alter various message parameters
+Alter message parameters like To, From, Subject, whether private or bulletin
+or return receipt (RR) is required or whether to keep this message from timing
+out.
+
+  MSG TO <msgno> <call>     - change TO callsign to <call>
+  MSG FRom <msgno> <call>   - change FROM callsign to <call>
+  MSG PRrivate <msgno>      - set private flag
+  MSG NOPRrivate <msgno>    - unset private flag
+  MSG RR <msgno>            - set RR flag
+  MSG NORR <msgno>          - unset RR flag
+  MSG KEep <msgno>          - set the keep flag (message won't be deleted ever)
+  MSG NOKEep <msgno>        - unset the keep flag
+  MSG SUbject <msgno> <new> - change the subject to <new>
+  MSG WAittime <msgno>      - remove any waitting time for this message
+  MSG QUeue                 - queue any outstanding bulletins
+  MSG QUeue 1               - queue any outstanding private messages
+
+You can look at the status of a message by using:-
+
+  STAT/MSG <msgno>      
+
+This will display more information on the message than DIR does.
+   
 === 8^PC <call> <text>^Send text (eg PC Protocol) to <call>
 Send some arbitrary text to a locally connected callsign. No processing is done on
 the text. This command allows you to send PC Protocol to unstick things if problems
@@ -180,15 +213,6 @@ Remove this message from the entire cluster system as well as your node.
 
 === 5^KILL^
 As a sysop you can kill any message on the system.
-
-=== 5^MERGE <node> [<no spots>/<no wwv>]^Ask for the latest spots and WWV 
-MERGE allows you to bring your spot and wwv database up to date. By default
-it will request the last 10 spots and 5 WWVs from the node you select. The 
-node must be connected locally.
-
-You can request any number of spots or wwv and although they will be appended
-to your databases they will not duplicate any that have recently been added 
-(the last 2 days for spots and last month for WWV data).
 
 === 8^PC <call> <text>^Send arbitrary text to a connected callsign
 Send any text you like to the callsign requested. This is used mainly to send
