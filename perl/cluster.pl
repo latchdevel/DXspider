@@ -99,6 +99,7 @@ use Mrtg;
 use USDB;
 use UDPMsg;
 use QSL;
+use Thingy;
 
 use Data::Dumper;
 use IO::File;
@@ -126,7 +127,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += 5;				# add an offset to make it bigger than last system
+$main::build += 4;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -558,7 +559,10 @@ for (;;) {
 		DXUser::process();
 		DXDupe::process();
 		AGWMsg::process();
-				
+
+		# this where things really start to happen (in DXSpider 2)
+		Thingy::process();
+		
 		eval { 
 			Local::process();       # do any localised processing
 		};
