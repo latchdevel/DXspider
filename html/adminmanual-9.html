@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.47: The DXSpider command set</TITLE>
+ <TITLE>The DXSpider Administration Manual v1.48: The DXSpider command set</TITLE>
  <LINK HREF="adminmanual-8.html" REL=previous>
  <LINK HREF="adminmanual.html#toc9" REL=contents>
 <link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
@@ -90,7 +90,50 @@ default for nodes and users eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.3">9.3 accept/spots (0)</A>
+<H2><A NAME="ss9.3">9.3 accept/route (8)</A>
+</H2>
+
+<P><CODE><B>accept/route &lt;call&gt; [0-9] &lt;pattern&gt;</B> Set an 'accept' filter line for routing</CODE>
+<P>
+<P>Create an 'accept this routing PC Protocol' line for a filter. 
+<P>
+<P>An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is passed thru that interface. See HELP FILTERING for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+<P>
+<P>You can use any of the following things in this line:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  call &lt;prefixes>        the callsign of the thingy
+  call_dxcc &lt;numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu &lt;numbers>
+  call_zone &lt;numbers>
+  origin &lt;prefixes>      really the interface it came in on
+  origin_dxcc &lt;numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu &lt;numbers>
+  origin_zone &lt;numbers>
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>some examples:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
+  acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>You can use the tag 'all' to accept everything eg:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/route all
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss9.4">9.4 accept/spots (0)</A>
 </H2>
 
 <P><CODE><B>accept/announce [0-9] &lt;pattern&gt;</B> Set an accept filter line for spots</CODE>
@@ -142,7 +185,7 @@ too hung up about that)
 </CODE></BLOCKQUOTE>
 <P>but this probably for advanced users...
 <P>
-<H2><A NAME="ss9.4">9.4 accept/spots (extended for sysops) (8)</A>
+<H2><A NAME="ss9.5">9.5 accept/spots (extended for sysops) (8)</A>
 </H2>
 
 <P><CODE><B>accept/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> Spot filter sysop version</CODE>
@@ -160,7 +203,7 @@ default for nodes and users eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.5">9.5 accept/wcy (0)</A>
+<H2><A NAME="ss9.6">9.6 accept/wcy (0)</A>
 </H2>
 
 <P><CODE><B>accept/wcy [0-9] &lt;pattern&gt;</B> set an accept WCY filter</CODE>
@@ -187,7 +230,7 @@ you either want them or not (see UNSET/WCY if you don't want them).
 <P>This command is really provided for future use.
 <P>See HELP FILTER for information.
 <P>
-<H2><A NAME="ss9.6">9.6 accept/wcy (extended for sysops) (8)</A>
+<H2><A NAME="ss9.7">9.7 accept/wcy (extended for sysops) (8)</A>
 </H2>
 
 <P><CODE><B>accept/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B>
@@ -203,7 +246,7 @@ default for nodes and users eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.7">9.7 accept/wwv (0)</A>
+<H2><A NAME="ss9.8">9.8 accept/wwv (0)</A>
 </H2>
 
 <P><CODE><B>accept/wwv [0-9] &lt;pattern&gt;</B> Set an accept WWV filter</CODE>
@@ -235,7 +278,7 @@ filter on the following fields:-
 by stations in the US).
 <P>See HELP FILTER for information.
 <P>
-<H2><A NAME="ss9.8">9.8 accept/wwv (extended for sysops) (8)</A>
+<H2><A NAME="ss9.9">9.9 accept/wwv (extended for sysops) (8)</A>
 </H2>
 
 <P><CODE><B>accept/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B>
@@ -254,15 +297,17 @@ default for nodes and users eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.9">9.9 announce (0)</A>
+<H2><A NAME="ss9.10">9.10 announce (0)</A>
 </H2>
 
 <P><CODE><B>announce &lt;text&gt;</B> Send an announcement to local users</CODE>
 <P>
 <P>Send an announcement to LOCAL users only, where &lt;text&gt; is the text 
-of the announcement you wish to broadcast
+of the announcement you wish to broadcast.  If you do not wish to receive
+announces, use the <EM>set/noannounce</EM> command.  Any announces made by
+a sysop will override set/noannounce.
 <P>
-<H2><A NAME="ss9.10">9.10 announce full (0)</A>
+<H2><A NAME="ss9.11">9.11 announce full (0)</A>
 </H2>
 
 <P><CODE><B>announce full &lt;text&gt;</B> Send an announcement cluster wide</CODE>
@@ -271,14 +316,14 @@ of the announcement you wish to broadcast
 network.
 <P>
 <P>
-<H2><A NAME="ss9.11">9.11 announce sysop (5)</A>
+<H2><A NAME="ss9.12">9.12 announce sysop (5)</A>
 </H2>
 
 <P><CODE><B>announce sysop &lt;text&gt;</B></CODE>
 <P>
 <P>Send an announcement to Sysops only
 <P>
-<H2><A NAME="ss9.12">9.12 apropos (0)</A>
+<H2><A NAME="ss9.13">9.13 apropos (0)</A>
 </H2>
 
 <P><CODE><B>apropos &lt;string&gt;</B> Search the help database</CODE>
@@ -286,14 +331,14 @@ network.
 <P>Search the help database for &lt;string&gt; (it isn't case sensitive), 
 and print the names of all the commands that may be relevant.
 <P>
-<H2><A NAME="ss9.13">9.13 bye (0)</A>
+<H2><A NAME="ss9.14">9.14 bye (0)</A>
 </H2>
 
 <P><CODE><B>bye</B> Exit from the cluster</CODE>
 <P>
 <P>This will disconnect you from the cluster
 <P>
-<H2><A NAME="ss9.14">9.14 catchup (5)</A>
+<H2><A NAME="ss9.15">9.15 catchup (5)</A>
 </H2>
 
 <P><CODE><B>catchup &lt;node_call&gt; All|[&lt;msgno&gt; ...]</B> Mark a message as sent</CODE>
@@ -322,7 +367,7 @@ commmands:-
 <P>which will arrange for them to be forward candidates again.
 <P>Order is not important.
 <P>
-<H2><A NAME="ss9.15">9.15 clear/spots (0)</A>
+<H2><A NAME="ss9.16">9.16 clear/spots (0)</A>
 </H2>
 
 <P><CODE><B>clear/spots [1|all]</B> Clear a spot filter line</CODE>
@@ -361,7 +406,7 @@ remove the whole filter.
 <P>the filter will be completely removed.
 <P>
 <P>
-<H2><A NAME="ss9.16">9.16 connect (5) </A>
+<H2><A NAME="ss9.17">9.17 connect (5) </A>
 </H2>
 
 <P><CODE><B>connect &lt;callsign&gt;</B> Start a connection to another DX Cluster</CODE>
@@ -371,7 +416,7 @@ DX cluster &lt;callsign&gt;. This process creates a new 'client' process which w
 use the script in /spider/connect/&lt;callsign&gt; to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster &lt;callsign&gt;.
 <P>
-<H2><A NAME="ss9.17">9.17 dbavail (0)</A>
+<H2><A NAME="ss9.18">9.18 dbavail (0)</A>
 </H2>
 
 <P><CODE><B>dbavail</B> Show a list of all the databases in the system</CODE>
@@ -379,7 +424,7 @@ necessary to traverse the network(s) to logon to the cluster &lt;callsign&gt;.
 <P>The title says it all really, this command lists all the databases defined
 in the system. It is also aliased to SHOW/COMMAND.
 <P>
-<H2><A NAME="ss9.18">9.18 dbcreate (9)</A>
+<H2><A NAME="ss9.19">9.19 dbcreate (9)</A>
 </H2>
 
 <P><CODE><B>dbcreate &lt;name&gt;</B> Create a database entry<BR>
@@ -429,7 +474,7 @@ need to add a line like:-
 <P>See DBIMPORT for the importing of existing AK1A format data to databases.
 See DBSHOW for generic database enquiry
 <P>
-<H2><A NAME="ss9.19">9.19 dbimport (9)</A>
+<H2><A NAME="ss9.20">9.20 dbimport (9)</A>
 </H2>
 
 <P><CODE><B>dbimport &lt;dbname&gt;</B> Import AK1A data into a database</CODE>
@@ -441,7 +486,7 @@ database. For example:-
 <P>will import the standard OBLAST database that comes with AK1A into the
 oblast database held locally.
 <P>
-<H2><A NAME="ss9.20">9.20 dbremove (9)</A>
+<H2><A NAME="ss9.21">9.21 dbremove (9)</A>
 </H2>
 
 <P><CODE><B>dbremove &lt;dbname&gt;</B> Delete a database</CODE>
@@ -457,7 +502,7 @@ the associated datafile.
 <P>There is no warning, no comeback, no safety net.
 <P>You have been warned.
 <P>
-<H2><A NAME="ss9.21">9.21 dbshow (0)</A>
+<H2><A NAME="ss9.22">9.22 dbshow (0)</A>
 </H2>
 
 <P><CODE><B>dbshow &lt;dbname&gt; &lt;key&gt;</B> Display an entry, if it exists, in a database</CODE>
@@ -481,7 +526,7 @@ SHOW/COMMAND to find out) you can do the same thing with:
 </CODE></BLOCKQUOTE>
 <P>
 <P>
-<H2><A NAME="ss9.22">9.22 debug (9)</A>
+<H2><A NAME="ss9.23">9.23 debug (9)</A>
 </H2>
 
 <P><CODE><B>debug</B> Set the cluster program into debug mode</CODE>
@@ -496,7 +541,7 @@ in debug mode i.e.
 </CODE></BLOCKQUOTE>
 <P>It will interrupt the cluster just after the debug command has finished.
 <P>
-<H2><A NAME="ss9.23">9.23 directory (0)</A>
+<H2><A NAME="ss9.24">9.24 directory (0)</A>
 </H2>
 
 <P><CODE><B>directory</B> List messages<BR> <B>directory all</B> List all messages<BR>
@@ -533,19 +578,19 @@ or
 </CODE></BLOCKQUOTE>
 <P>
 <P>
-<H2><A NAME="ss9.24">9.24 directory (extended for sysops) (5)</A>
+<H2><A NAME="ss9.25">9.25 directory (extended for sysops) (5)</A>
 </H2>
 
 <P>Works just like the user command except that sysops can see ALL messages.
 <P>
-<H2><A NAME="ss9.25">9.25 disconnect (8)</A>
+<H2><A NAME="ss9.26">9.26 disconnect (8)</A>
 </H2>
 
 <P><CODE><B>disconnect &lt;call&gt; [&lt;call&gt; ...]</B> Disconnect a user or node</CODE>
 <P>
 <P>Disconnect any &lt;call&gt; connected locally
 <P>
-<H2><A NAME="ss9.26">9.26 dx (0)</A>
+<H2><A NAME="ss9.27">9.27 dx (0)</A>
 </H2>
 
 <P><CODE><B>dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt;</B> Send a DX spot</CODE>
@@ -578,7 +623,7 @@ of the command and they will be added to the spot.
 <P>The &lt;freq&gt; is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
 <P>
-<H2><A NAME="ss9.27">9.27 export (9)</A>
+<H2><A NAME="ss9.28">9.28 export (9)</A>
 </H2>
 
 <P><CODE><B>export &lt;msgno&gt; &lt;filename&gt;</B> Export a message to a file</CODE>
@@ -593,7 +638,7 @@ main cluster, otherwise you can put the new files anywhere the cluster can
 access. For example:-
 <P>EXPORT 2345 /tmp/a
 <P>
-<H2><A NAME="ss9.28">9.28 export_users (9)</A>
+<H2><A NAME="ss9.29">9.29 export_users (9)</A>
 </H2>
 
 <P><CODE><B>export_users [&lt;filename&gt;]</B> Export the users database to ascii</CODE>
@@ -606,7 +651,7 @@ suffix.
 <P>BE WARNED: this will write to any file you have write access to. No check is
 made on the filename (if any) that you specify.
 <P>
-<H2><A NAME="ss9.29">9.29 forward/latlong (8)</A>
+<H2><A NAME="ss9.30">9.30 forward/latlong (8)</A>
 </H2>
 
 <P><CODE><B>forward/latlong &lt;node_call&gt;</B> Send latitude and longitude information to another cluster</CODE>
@@ -618,7 +663,7 @@ means that more locators are given on the DX line assuming you have
 <EM>set/dxgrid</EM> enabled.  This could be a LOT of information though, so
 it is not recommended on slow links.
 <P>
-<H2><A NAME="ss9.30">9.30 forward/opername (1)</A>
+<H2><A NAME="ss9.31">9.31 forward/opername (1)</A>
 </H2>
 
 <P><CODE><B>forward/opername &lt;call&gt;</B> Send out information on this &lt;call&gt; to all clusters</CODE>
@@ -627,7 +672,7 @@ it is not recommended on slow links.
 be broadcast in PC41 protocol packets. This information is Name, QTH, Location
 and Homenode. PC41s are only sent for the information that is available.
 <P>
-<H2><A NAME="ss9.31">9.31 help (0)</A>
+<H2><A NAME="ss9.32">9.32 help (0)</A>
 </H2>
 
 <P><CODE><B>help &lt;cmd&gt;</B> Get help on a command</CODE>
@@ -638,7 +683,7 @@ to SH/DX, ANNOUNCE can be shortened to AN and so on.
 for the &lt;string&gt; you specify and give you a list of likely commands
 to look at with HELP.
 <P>
-<H2><A NAME="ss9.32">9.32 init (5)</A>
+<H2><A NAME="ss9.33">9.33 init (5)</A>
 </H2>
 
 <P><CODE><B>init &lt;node call&gt;</B> Re-initialise a link to an AK1A compatible node</CODE>
@@ -650,7 +695,7 @@ better, if it is a real AK1A node, doing an RCMD &lt;node&gt; DISC/F &lt;your
 node&gt;).
 <P>Best of luck - you will need it.
 <P>
-<H2><A NAME="ss9.33">9.33 kill (0)</A>
+<H2><A NAME="ss9.34">9.34 kill (0)</A>
 </H2>
 
 <P><CODE><B>kill &lt;msgno&gt; [&lt;msgno&gt; ..]</B> Delete a message from the local system</CODE>
@@ -659,7 +704,7 @@ node&gt;).
 delete messages that you have originated or been sent (unless you are
 the sysop).
 <P>
-<H2><A NAME="ss9.34">9.34 kill (5)</A>
+<H2><A NAME="ss9.35">9.35 kill (5)</A>
 </H2>
 
 <P><CODE><B>kill &lt;msgno&gt; [&lt;msgno&gt; ...]</B> Remove or erase a message from the system<BR>
@@ -670,7 +715,7 @@ the sysop).
 this command. You can remove more than one message at a time.
 <P>As a sysop you can kill any message on the system.
 <P>
-<H2><A NAME="ss9.35">9.35 kill full (5)</A>
+<H2><A NAME="ss9.36">9.36 kill full (5)</A>
 </H2>
 
 <P><CODE><B>kill full &lt;msgno&gt; [&lt;msgno&gt;]</B> Delete a message from the whole cluster</CODE>
@@ -679,7 +724,7 @@ this command. You can remove more than one message at a time.
 <P>This uses the subject field, so any messages that have exactly the same subject
 will be deleted. Beware!
 <P>
-<H2><A NAME="ss9.36">9.36 links (0)</A>
+<H2><A NAME="ss9.37">9.37 links (0)</A>
 </H2>
 
 <P><CODE><B>links</B> Show which nodes are physically connected</CODE>
@@ -688,7 +733,7 @@ will be deleted. Beware!
 some information about them. See WHO for a list of all connections.
 <P>
 <P>
-<H2><A NAME="ss9.37">9.37 load/aliases (9)</A>
+<H2><A NAME="ss9.38">9.38 load/aliases (9)</A>
 </H2>
 
 <P><CODE><B>load/aliases</B> Reload the command alias table</CODE>
@@ -696,16 +741,6 @@ some information about them. See WHO for a list of all connections.
 <P>Reload the /spider/cmd/Aliases file after you have editted it. You will need to
 do this if you change this file whilst the cluster is running in order for the
 changes to take effect.
-<P>
-<P>
-<H2><A NAME="ss9.38">9.38 load/baddx (9)</A>
-</H2>
-
-<P><CODE><B>load/baddx</B> Reload the bad DX table</CODE>
-<P>
-<P>Reload the /spider/data/baddx.pl file if you have changed it manually whilst
-the cluster is running. This table contains the DX Calls that, if spotted, 
-will not be passed on. FR0G and TEST are classic examples.
 <P>
 <H2><A NAME="ss9.39">9.39 load/badmsg (9)</A>
 </H2>
@@ -717,19 +752,7 @@ the cluster is running. This table contains a number of perl regular
 expressions which are searched for in the fields targetted of each message. 
 If any of them match then that message is immediately deleted on receipt. 
 <P>
-<H2><A NAME="ss9.40">9.40 load/badwords (9)</A>
-</H2>
-
-<P><CODE><B>load/badwords</B> Reload the badwords file</CODE>
-<P>
-<P>Reload the /spider/data/badwords file if you have changed it manually whilst
-the cluster is running. This file contains a list of words which, if found
-on certain text portions of PC protocol, will cause those protocol frames
-to be rejected. It will all put out a message if any of these words are
-used on the announce, dx and talk commands. The words can be one or 
-more on a line, lines starting with '#' are ignored.
-<P>
-<H2><A NAME="ss9.41">9.41 load/bands (9)</A>
+<H2><A NAME="ss9.40">9.40 load/bands (9)</A>
 </H2>
 
 <P><CODE><B>load/bands</B> Reload the band limits table</CODE>
@@ -737,7 +760,7 @@ more on a line, lines starting with '#' are ignored.
 <P>Reload the /spider/data/bands.pl file if you have changed it manually whilst
 the cluster is running. 
 <P>
-<H2><A NAME="ss9.42">9.42 load/cmd_cache (9)</A>
+<H2><A NAME="ss9.41">9.41 load/cmd_cache (9)</A>
 </H2>
 
 <P><CODE><B>load/cmd_cache</B> Reload the automatic command cache</CODE>
@@ -748,14 +771,14 @@ if you are doing a lot of moving commands about or delete a command in the
 local_cmd tree and want to use the normal one again. Execute this command to
 reset everything back to the state it was just after a cluster restart.
 <P>
-<H2><A NAME="ss9.43">9.43 load/forward (9)</A>
+<H2><A NAME="ss9.42">9.42 load/forward (9)</A>
 </H2>
 
 <P><CODE><B>load/forward</B> Reload the msg forwarding routing table</CODE>
 <P>Reload the /spider/msg/forward.pl file if you have changed it
 manually whilst the cluster is running.
 <P>
-<H2><A NAME="ss9.44">9.44 load/messages (9)</A>
+<H2><A NAME="ss9.43">9.43 load/messages (9)</A>
 </H2>
 
 <P><CODE><B>load/messages</B> Reload the system messages file</CODE>
@@ -765,7 +788,7 @@ commands) you can have them take effect during a cluster session by executing th
 command. You need to do this if get something like :-
 <P>unknown message 'xxxx' in lang 'en'
 <P>
-<H2><A NAME="ss9.45">9.45 load/prefixes (9)</A>
+<H2><A NAME="ss9.44">9.44 load/prefixes (9)</A>
 </H2>
 
 <P><CODE><B>load/prefixes</B> Reload the prefix table</CODE>
@@ -773,7 +796,7 @@ command. You need to do this if get something like :-
 <P>Reload the /spider/data/prefix_data.pl file if you have changed it manually 
 whilst the cluster is running. 
 <P>
-<H2><A NAME="ss9.46">9.46 merge (5)</A>
+<H2><A NAME="ss9.45">9.45 merge (5)</A>
 </H2>
 
 <P><CODE><B>merge &lt;node&gt; [&lt;no spots&gt;/&lt;no wwv&gt;]</B> Ask for the latest spots and WWV</CODE>
@@ -785,7 +808,7 @@ node must be connected locally.
 to your databases they will not duplicate any that have recently been added 
 (the last 2 days for spots and last month for WWV data).
 <P>
-<H2><A NAME="ss9.47">9.47 msg (9)</A>
+<H2><A NAME="ss9.46">9.46 msg (9)</A>
 </H2>
 
 <P><CODE><B>msg &lt;cmd&gt; &lt;msgno&gt; [data ...]</B> Alter various message parameters</CODE>
@@ -816,7 +839,7 @@ out.
 <P>STAT/MSG &lt;msgno&gt;      
 <P>This will display more information on the message than DIR does.
 <P>
-<H2><A NAME="ss9.48">9.48 pc (8)</A>
+<H2><A NAME="ss9.47">9.47 pc (8)</A>
 </H2>
 
 <P><CODE><B>pc &lt;call&gt; &lt;text&gt;</B> Send text (eg PC Protocol) to &lt;call&gt;</CODE>
@@ -829,7 +852,7 @@ arise (messages get stuck etc). eg:-
 without any processing, added of "from &lt;blah&gt; to &lt;blah&gt;" or whatever.
 <P>pc G1TLH Try doing that properly!!!
 <P>
-<H2><A NAME="ss9.49">9.49 ping (1)</A>
+<H2><A NAME="ss9.48">9.48 ping (1)</A>
 </H2>
 
 <P><CODE><B>ping &lt;node&gt;</B> Check the link quality between nodes</CODE>
@@ -841,7 +864,7 @@ it takes is output to the console in seconds.
 Any visible cluster node can be PINGed.
 <P>
 <P>
-<H2><A NAME="ss9.50">9.50 rcmd (1)</A>
+<H2><A NAME="ss9.49">9.49 rcmd (1)</A>
 </H2>
 
 <P><CODE><B>rcmd &lt;node call&gt; &lt;cmd&gt;</B> Send a command to another DX cluster</CODE>
@@ -853,7 +876,7 @@ that the node callsign of this cluster is in fact a node b) whether the
 other system is allowing RCMDs from this node and c) whether you have
 permission to send this command at all.
 <P>
-<H2><A NAME="ss9.51">9.51 read (0)</A>
+<H2><A NAME="ss9.50">9.50 read (0)</A>
 </H2>
 
 <P><CODE><B>read</B> Read the next unread personal message addressed to you<BR>
@@ -863,14 +886,14 @@ permission to send this command at all.
 message either sent by or sent to your callsign.
 <P>
 <P>
-<H2><A NAME="ss9.52">9.52 read (extended for sysops) (5) </A>
+<H2><A NAME="ss9.51">9.51 read (extended for sysops) (5) </A>
 </H2>
 
 <P><CODE><B>read &lt;msgno&gt;</B> Read a message on the system</CODE>
 <P>
 <P>As a sysop you may read any message on the system
 <P>
-<H2><A NAME="ss9.53">9.53 reject/announce</A>
+<H2><A NAME="ss9.52">9.52 reject/announce</A>
 </H2>
 
 <P><CODE><B>reject/announce [0-9] &lt;pattern&gt;</B> Set a reject filter
@@ -914,7 +937,7 @@ to understand how filters work - it will save a lot of grief later on.
 </CODE></BLOCKQUOTE>
 <P>but this probably for advanced users...
 <P>
-<H2><A NAME="ss9.54">9.54 reject/announce (extended for sysops) (8)</A>
+<H2><A NAME="ss9.53">9.53 reject/announce (extended for sysops) (8)</A>
 </H2>
 
 <P><CODE><B>reject/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> Announce filter sysop version</CODE>
@@ -927,6 +950,47 @@ default for nodes and users eg:-
   reject/ann by G,M,2
   reject/ann input node_default by G,M,2
   reject/ann user_default by G,M,2
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss9.54">9.54 reject/route (8)</A>
+</H2>
+
+<P><CODE><B>reject/route &lt;call&gt; [0-9] &lt;pattern&gt;</B> Set an 'reject' filter line for routing</CODE>
+<P>
+<P>Create an 'reject this routing PC Protocol' line for a filter. 
+<P>
+<P>An reject filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is NOT passed thru that interface. See HELP FILTERING for more info. Please 
+read this to understand how filters work - it will save a lot of grief later on.
+You can use any of the following things in this line:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  call &lt;prefixes>        the callsign of the thingy
+  call_dxcc &lt;numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu &lt;numbers>
+  call_zone &lt;numbers>
+  origin &lt;prefixes>      really the interface it came in on
+  origin_dxcc &lt;numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu &lt;numbers>
+  origin_zone &lt;numbers>
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>some examples:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>You can use the tag 'all' to reject everything eg:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/route all     (equiv to [very] restricted mode)
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
@@ -1233,7 +1297,12 @@ enter them specifically.
 <P>
 <P>Add a beep to DX and other terminal messages.
 <P>
-<H2><A NAME="ss9.70">9.70 set/clx (5)</A>
+<H2><A NAME="ss9.70">9.70 set/bbs (5)</A>
+</H2>
+
+<P><CODE><B>set/bbs &lt;call&gt; [&lt;call&gt;..]</B>Make &lt;call&gt; a BBS</CODE>
+<P>
+<H2><A NAME="ss9.71">9.71 set/clx (5)</A>
 </H2>
 
 <P><CODE><B>set/clx &lt;node_call&gt; [&lt;node_call&gt; ...]</B> Make
@@ -1241,7 +1310,7 @@ the node_call a CLX type node</CODE>
 <P>
 <P>Set the node_call as a CLX type node
 <P>
-<H2><A NAME="ss9.71">9.71 set/debug (9)</A>
+<H2><A NAME="ss9.72">9.72 set/debug (9)</A>
 </H2>
 
 <P><CODE><B>set/debug &lt;name&gt;</B> Add a debug level to the debug set</CODE>
@@ -1256,14 +1325,14 @@ connect
 command.
 <P>You can remove a debug level with unset/debug &lt;name&gt;
 <P>
-<H2><A NAME="ss9.72">9.72 set/dx (0)</A>
+<H2><A NAME="ss9.73">9.73 set/dx (0)</A>
 </H2>
 
 <P><CODE><B>set/dx</B>Allow DX messages to arrive at your terminal</CODE>
 <P>
 <P>You can stop DX messages with the <EM>unset/dx</EM> command
 <P>
-<H2><A NAME="ss9.73">9.73 set/dxgrid (0)</A>
+<H2><A NAME="ss9.74">9.74 set/dxgrid (0)</A>
 </H2>
 
 <P><CODE><B>set/dxgrid</B>Allow grid squares on the end of DX messages</CODE>
@@ -1272,7 +1341,7 @@ command.
 the end of a DX spot.  If this is the case, use the <EM>unset/dxgrid</EM>
 command to remove the grid squares.
 <P>
-<H2><A NAME="ss9.74">9.74 set/dxnet (5)</A>
+<H2><A NAME="ss9.75">9.75 set/dxnet (5)</A>
 </H2>
 
 <P><CODE><B>set/dxnet &lt;node_call&gt; [&lt;node_call&gt; ...]</B> Make
@@ -1280,7 +1349,7 @@ the node_call a DXNet type node</CODE>
 <P>
 <P>Set the node_call as a DXNet type node
 <P>
-<H2><A NAME="ss9.75">9.75 set/echo (0)</A>
+<H2><A NAME="ss9.76">9.76 set/echo (0)</A>
 </H2>
 
 <P><CODE><B>set/echo</B> Make the cluster echo your input</CODE>
@@ -1293,7 +1362,7 @@ to change the setting appropriately.
 <P>The setting is stored in your user profile.
 <P>YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 <P>
-<H2><A NAME="ss9.76">9.76 set/here (0)</A>
+<H2><A NAME="ss9.77">9.77 set/here (0)</A>
 </H2>
 
 <P><CODE><B>set/here</B> Set the here flag</CODE>
@@ -1303,7 +1372,7 @@ callsign.  If you are away from your terminal you can use the <EM>unset/here</EM
 command to let people know you are away.  This simply puts brackets
 around your callsign to indicate you are not available.
 <P>
-<H2><A NAME="ss9.77">9.77 set/homenode (0)</A>
+<H2><A NAME="ss9.78">9.78 set/homenode (0)</A>
 </H2>
 
 <P><CODE><B>set/homenode &lt;node_call&gt;</B> Set your home cluster</CODE>
@@ -1318,7 +1387,7 @@ eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.78">9.78 set/hops (8)</A>
+<H2><A NAME="ss9.79">9.79 set/hops (8)</A>
 </H2>
 
 <P><CODE><B>set/hops &lt;node_call&gt; ann|spots|wwv|wcy &lt;n&gt;</B>
@@ -1338,7 +1407,7 @@ eg:
 <P>Set SHOW/HOPS for information on what is already set. This command
 creates a filter and works in conjunction with the filter system. 
 <P>
-<H2><A NAME="ss9.79">9.79 set/isolate (9)</A>
+<H2><A NAME="ss9.80">9.80 set/isolate (9)</A>
 </H2>
 
 <P><CODE><B>set/isolate &lt;node call&gt;</B> Isolate a node from the rest of the network</CODE>
@@ -1350,7 +1419,7 @@ out from it nor goes back into from the rest of the nodes connected to you.
 <P>You can see which nodes are isolated with the show/isolate (1) command.
 <P>You can remove the isolation with the command unset/isolate.
 <P>
-<H2><A NAME="ss9.80">9.80 set/language (0)</A>
+<H2><A NAME="ss9.81">9.81 set/language (0)</A>
 </H2>
 
 <P><CODE><B>set/language &lt;language&gt;</B> Set the language you wish to use</CODE>
@@ -1358,7 +1427,7 @@ out from it nor goes back into from the rest of the nodes connected to you.
 <P>You can select the language that you want the cluster to use. Currently
 the languages available are <EM>en</EM> (English) and <EM>nl</EM> (Dutch).
 <P>
-<H2><A NAME="ss9.81">9.81 set/location (0)</A>
+<H2><A NAME="ss9.82">9.82 set/location (0)</A>
 </H2>
 
 <P><CODE><B>set/location &lt;lat and long&gt;</B> Set your latitude and longitude</CODE>
@@ -1373,7 +1442,7 @@ the languages available are <EM>en</EM> (English) and <EM>nl</EM> (Dutch).
 </CODE></BLOCKQUOTE>
 <P>
 <P>
-<H2><A NAME="ss9.82">9.82 set/sys_location (9)</A>
+<H2><A NAME="ss9.83">9.83 set/sys_location (9)</A>
 </H2>
 
 <P><CODE><B>set/sys_location &lt;lat &amp; long&gt;</B> Set your cluster latitude and longitude</CODE>
@@ -1388,7 +1457,7 @@ then this command will set your QRA locator for you. For example:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.83">9.83 set/logininfo (0)</A>
+<H2><A NAME="ss9.84">9.84 set/logininfo (0)</A>
 </H2>
 
 <P><CODE><B>set/logininfo</B> Show logins and logouts of nodes and users</CODE>
@@ -1397,7 +1466,7 @@ then this command will set your QRA locator for you. For example:-
 can stop these messages by using the <EM>unset/logininfo</EM> command.
 <P>
 <P>
-<H2><A NAME="ss9.84">9.84 set/lockout (9)</A>
+<H2><A NAME="ss9.85">9.85 set/lockout (9)</A>
 </H2>
 
 <P><CODE><B>set/lockout &lt;call&gt;</B> Stop a callsign connecting to the cluster</CODE>
@@ -1405,7 +1474,7 @@ can stop these messages by using the <EM>unset/logininfo</EM> command.
 <P>You can show who is locked out with the <EM>show/lockout</EM> command.
 To allow the user to connect again, use the <EM>unset/lockout</EM> command.
 <P>
-<H2><A NAME="ss9.85">9.85 set/name (0)</A>
+<H2><A NAME="ss9.86">9.86 set/name (0)</A>
 </H2>
 
 <P><CODE><B>set/name &lt;your_name&gt;</B> Set your name</CODE>
@@ -1418,7 +1487,7 @@ To allow the user to connect again, use the <EM>unset/lockout</EM> command.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.86">9.86 set/node (9)</A>
+<H2><A NAME="ss9.87">9.87 set/node (9)</A>
 </H2>
 
 <P><CODE><B>set/node &lt;call&gt; [&lt;call&gt; ...]</B> Make the callsign an AK1A cluster</CODE>
@@ -1437,7 +1506,7 @@ fed PC Protocol rather normal user commands.
 </CODE></BLOCKQUOTE>
 <P>To see what your nodes are set to, use the <EM>show/nodes</EM> command.
 <P>
-<H2><A NAME="ss9.87">9.87 set/obscount (9)</A>
+<H2><A NAME="ss9.88">9.88 set/obscount (9)</A>
 </H2>
 
 <P><CODE><B>set/obscount &lt;count&gt; &lt;node call&gt;</B> Set the 'pump-up' obsolescence counter</CODE>
@@ -1454,7 +1523,7 @@ what would be the third attempt, that node is disconnected.
 default values, if a node has not responded to a ping within 15 minutes,
 it is disconnected.
 <P>
-<H2><A NAME="ss9.88">9.88 set/page (0)</A>
+<H2><A NAME="ss9.89">9.89 set/page (0)</A>
 </H2>
 
 <P><CODE><B>set/page &lt;n&gt;</B> Set the number of lines per page</CODE>
@@ -1472,7 +1541,7 @@ explicitly to 0 will disable paging.
 <P>The setting is stored in your user profile.
 <P>
 <P>
-<H2><A NAME="ss9.89">9.89 set/password (9)</A>
+<H2><A NAME="ss9.90">9.90 set/password (9)</A>
 </H2>
 
 <P><CODE><B>set/password &lt;callsign&gt; &lt;string&gt;</B> Set a users password</CODE>
@@ -1483,7 +1552,7 @@ spaces - but they won't appear in the password). You can see the
 result with STAT/USER.  The password is the usual 30 character baycom
 type password.
 <P>
-<H2><A NAME="ss9.90">9.90 set/pinginterval (9)</A>
+<H2><A NAME="ss9.91">9.91 set/pinginterval (9)</A>
 </H2>
 
 <P><CODE><B>set/pinginterval &lt;time&gt; &lt;node call&gt;</B> Set the ping time to neighbouring nodes</CODE>
@@ -1498,7 +1567,7 @@ for numbers greater than that.
 (as certain cluster software doesn't always notice), see SET/OBSCOUNT
 for more information.
 <P>
-<H2><A NAME="ss9.91">9.91 set/privilege (9)</A>
+<H2><A NAME="ss9.92">9.92 set/privilege (9)</A>
 </H2>
 
 <P><CODE><B>set/privilege &lt;n&gt; &lt;call&gt; [&lt;call&gt; ...]</B> Set the privilege level on a call</CODE>
@@ -1520,7 +1589,7 @@ to commands are as default:-
 <P>If you are a sysop and you come in as a normal user on a remote connection
 your privilege will automatically be set to 0.
 <P>
-<H2><A NAME="ss9.92">9.92 set/spider (5)</A>
+<H2><A NAME="ss9.93">9.93 set/spider (5)</A>
 </H2>
 
 <P><CODE><B>set/spider &lt;node_call&gt; [&lt;node_call&gt; ...]</B> Make
@@ -1528,12 +1597,12 @@ the node_call a DXSpider type node</CODE>
 <P>
 <P>Set the node_call as a DXSpider type node
 <P>
-<H2><A NAME="ss9.93">9.93 set/sys_qra (9)</A>
+<H2><A NAME="ss9.94">9.94 set/sys_qra (9)</A>
 </H2>
 
 <P><CODE><B>set/sys_qra &lt;locator&gt;</B> Set your cluster QRA locator</CODE>
 <P>
-<H2><A NAME="ss9.94">9.94 set/qra (0)</A>
+<H2><A NAME="ss9.95">9.95 set/qra (0)</A>
 </H2>
 
 <P><CODE><B>set/qra &lt;locator&gt;</B> Set your QRA locator</CODE>
@@ -1548,7 +1617,7 @@ correctly (assuming your locator is correct ;-). For example:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.95">9.95 set/qth (0)</A>
+<H2><A NAME="ss9.96">9.96 set/qth (0)</A>
 </H2>
 
 <P><CODE><B>set/qth &lt;your QTH&gt;</B> Set your QTH</CODE>
@@ -1561,7 +1630,7 @@ correctly (assuming your locator is correct ;-). For example:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.96">9.96 set/talk (0)</A>
+<H2><A NAME="ss9.97">9.97 set/talk (0)</A>
 </H2>
 
 <P><CODE><B>set/talk</B> Allow talk messages to be seen at your console</CODE>
@@ -1569,7 +1638,7 @@ correctly (assuming your locator is correct ;-). For example:-
 <P>Allow talk messages to arrive at your console.  You can switch off
 talks with the <EM>unset/talk</EM> command.
 <P>
-<H2><A NAME="ss9.97">9.97 set/wcy (0)</A>
+<H2><A NAME="ss9.98">9.98 set/wcy (0)</A>
 </H2>
 
 <P><CODE><B>set/wcy</B> Allow WCY messages to be seen at your console</CODE>
@@ -1577,7 +1646,7 @@ talks with the <EM>unset/talk</EM> command.
 <P>Allow WCY information to be seen at your console.  You can switch off
 WCY messages with the <EM>unset/wcy</EM> command.
 <P>
-<H2><A NAME="ss9.98">9.98 set/wwv (0)</A>
+<H2><A NAME="ss9.99">9.99 set/wwv (0)</A>
 </H2>
 
 <P><CODE><B>set/wwv</B> Allow WWV messages to be seen at your console</CODE>
@@ -1585,7 +1654,7 @@ WCY messages with the <EM>unset/wcy</EM> command.
 <P>Allow WWV information to be seen at your console.  You can switch off
 WWV messages with the <EM>unset/wwv</EM> command.
 <P>
-<H2><A NAME="ss9.99">9.99 set/wx (0)</A>
+<H2><A NAME="ss9.100">9.100 set/wx (0)</A>
 </H2>
 
 <P><CODE><B>set/wx</B> Allow WX messages to be seen at your console</CODE>
@@ -1593,7 +1662,7 @@ WWV messages with the <EM>unset/wwv</EM> command.
 <P>Allow WX information to be seen at your console.  You can switch off
 WX messages with the <EM>unset/wx</EM> command.
 <P>
-<H2><A NAME="ss9.100">9.100 show/baddx (1)</A>
+<H2><A NAME="ss9.101">9.101 show/baddx (1)</A>
 </H2>
 
 <P><CODE><B>show/baddx</B>Show all the bad dx calls in the system</CODE>
@@ -1601,7 +1670,7 @@ WX messages with the <EM>unset/wx</EM> command.
 <P>Display all the bad dx callsigns in the system, see SET/BADDX
 for more information.
 <P>
-<H2><A NAME="ss9.101">9.101 show/badnode (6)</A>
+<H2><A NAME="ss9.102">9.102 show/badnode (6)</A>
 </H2>
 
 <P><CODE><B>show/badnode</B> Show all the bad nodes in the system</CODE>
@@ -1609,7 +1678,7 @@ for more information.
 <P>Display all the bad node callsigns in the system, see SET/BADNODE
 for more information.
 <P>
-<H2><A NAME="ss9.102">9.102 show/badspotter (1)</A>
+<H2><A NAME="ss9.103">9.103 show/badspotter (1)</A>
 </H2>
 
 <P><CODE><B>show/badspotter</B> Show all the bad spotters in the system</CODE>
@@ -1617,7 +1686,7 @@ for more information.
 <P>Display all the bad spotter's callsigns in the system, see SET/BADSPOTTER
 for more information.
 <P>
-<H2><A NAME="ss9.103">9.103 show/configuration (0)</A>
+<H2><A NAME="ss9.104">9.104 show/configuration (0)</A>
 </H2>
 
 <P><CODE><B>show/configuration [&lt;node&gt;]</B> Show all visible nodes and their users</CODE>
@@ -1628,14 +1697,14 @@ you can specify a particular node to look at.
 <P>This command is normally abbreviated to: sh/c
 <P>BE WARNED: the list that is returned can be VERY long
 <P>
-<H2><A NAME="ss9.104">9.104 show/configuration/node (0)</A>
+<H2><A NAME="ss9.105">9.105 show/configuration/node (0)</A>
 </H2>
 
 <P><CODE><B>show/configuration/node</B> Show all the nodes connected</CODE>
 <P>
 <P>Show all the nodes connected locally and the nodes they have connected.
 <P>
-<H2><A NAME="ss9.105">9.105 show/connect (1)</A>
+<H2><A NAME="ss9.106">9.106 show/connect (1)</A>
 </H2>
 
 <P><CODE><B>show/connect</B> Show all the active connections</CODE>
@@ -1643,7 +1712,7 @@ you can specify a particular node to look at.
 <P>This command shows information on all the active connections known to
 the node. This command gives slightly more information than WHO.
 <P>
-<H2><A NAME="ss9.106">9.106 show/date (0)</A>
+<H2><A NAME="ss9.107">9.107 show/date (0)</A>
 </H2>
 
 <P><CODE><B>show/date [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -1656,14 +1725,14 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 <P>
-<H2><A NAME="ss9.107">9.107 show/debug (9)</A>
+<H2><A NAME="ss9.108">9.108 show/debug (9)</A>
 </H2>
 
 <P><CODE><B>show/debug</B> Show what levels of debug you are logging</CODE>
 <P>
 <P>The levels can be set with <EM>set/debug</EM>
 <P>
-<H2><A NAME="ss9.108">9.108 show/dx (0)</A>
+<H2><A NAME="ss9.109">9.109 show/dx (0)</A>
 </H2>
 
 <P><CODE><B>show/dx [options]</B> interrogate the spot database</CODE>
@@ -1722,7 +1791,7 @@ qra [&lt;locator&gt;] - this will look for the specific locator if
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.109">9.109 show/dxcc (0)</A>
+<H2><A NAME="ss9.110">9.110 show/dxcc (0)</A>
 </H2>
 
 <P><CODE><B>show/dxcc &lt;prefix&gt;</B> Interrogate the spot database by country</CODE>
@@ -1741,7 +1810,7 @@ e.g.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.110">9.110 show/files (0)</A>
+<H2><A NAME="ss9.111">9.111 show/files (0)</A>
 </H2>
 
 <P><CODE><B>show/files [&lt;filearea&gt; [&lt;string&gt;]]</B> List
@@ -1768,7 +1837,7 @@ string to see a selection of files in a filearea eg:-
 </CODE></BLOCKQUOTE>
 <P>See also TYPE - to see the contents of a file.
 <P>
-<H2><A NAME="ss9.111">9.111 show/filter (0)</A>
+<H2><A NAME="ss9.112">9.112 show/filter (0)</A>
 </H2>
 
 <P><CODE><B>show/filter</B> Show the filters you have set</CODE>
@@ -1776,14 +1845,14 @@ string to see a selection of files in a filearea eg:-
 <P>Show the contents of all the filters that are set by you. This command 
 displays all the filters set - for all the various categories.
 <P>
-<H2><A NAME="ss9.112">9.112 show/filter (extended for sysops) (5)</A>
+<H2><A NAME="ss9.113">9.113 show/filter (extended for sysops) (5)</A>
 </H2>
 
 <P><CODE><B>show/filter &lt;callsign&gt;</B> Show the filters set by &lt;callsign&gt;</CODE>
 <P>
 <P>A sysop can look at any filters that have been set.
 <P>
-<H2><A NAME="ss9.113">9.113 show/hops (8)</A>
+<H2><A NAME="ss9.114">9.114 show/hops (8)</A>
 </H2>
 
 <P><CODE><B>show/hops &lt;node_call&gt; [ann|spots|wcy|wwv|]</B> Show the hop counts for a node</CODE>
@@ -1792,14 +1861,14 @@ displays all the filters set - for all the various categories.
 which category you want to see. If you leave the category out then 
 all the categories will be listed.
 <P>
-<H2><A NAME="ss9.114">9.114 show/isolate (1)</A>
+<H2><A NAME="ss9.115">9.115 show/isolate (1)</A>
 </H2>
 
 <P><CODE><B>show/isolate</B> Show a list of isolated nodes</CODE>
 <P>
 <P>Show which nodes are currently set to be isolated.
 <P>
-<H2><A NAME="ss9.115">9.115 show/lockout (9)</A>
+<H2><A NAME="ss9.116">9.116 show/lockout (9)</A>
 </H2>
 
 <P><CODE><B>show/lockout</B> Show a list of excluded callsigns</CODE>
@@ -1807,7 +1876,7 @@ all the categories will be listed.
 <P>Show a list of callsigns that have been excluded (locked out) of the
 cluster locally with the <EM>set/lockout</EM> command
 <P>
-<H2><A NAME="ss9.116">9.116 show/log (8)</A>
+<H2><A NAME="ss9.117">9.117 show/log (8)</A>
 </H2>
 
 <P><CODE><B>show/log [&lt;callsign&gt;]</B> Show excerpts from the system log</CODE>
@@ -1816,7 +1885,7 @@ cluster locally with the <EM>set/lockout</EM> command
 it will output a general logfile.  With the optional callsign it will
 show output from the log associated with that callsign.
 <P>
-<H2><A NAME="ss9.117">9.117 show/moon (0)</A>
+<H2><A NAME="ss9.118">9.118 show/moon (0)</A>
 </H2>
 
 <P><CODE><B>show/moon [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show moon
@@ -1841,7 +1910,7 @@ that you are connected to.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.118">9.118 show/muf (0)</A>
+<H2><A NAME="ss9.119">9.119 show/muf (0)</A>
 </H2>
 
 <P><CODE><B>show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</B> Show
@@ -1918,7 +1987,7 @@ propagation data.
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
 <P>
-<H2><A NAME="ss9.119">9.119 show/node (1)</A>
+<H2><A NAME="ss9.120">9.120 show/node (1)</A>
 </H2>
 
 <P><CODE><B>show/node [&lt;node_call&gt; ...]</B> Show the type and version
@@ -1928,7 +1997,7 @@ number of nodes</CODE>
 command line. If no callsigns are specified then a sorted list of all
 the non-user callsigns known to the system will be displayed.
 <P>
-<H2><A NAME="ss9.120">9.120 show/prefix (0)</A>
+<H2><A NAME="ss9.121">9.121 show/prefix (0)</A>
 </H2>
 
 <P><CODE><B>show/prefix &lt;callsign&gt;</B> Interrogate the prefix database</CODE>
@@ -1940,7 +2009,7 @@ together with the internal country no, the CQ and ITU regions.
 <P>See also SHOW/DXCC
 <P>
 <P>
-<H2><A NAME="ss9.121">9.121 show/program (5)</A>
+<H2><A NAME="ss9.122">9.122 show/program (5)</A>
 </H2>
 
 <P><CODE><B>show/program</B> Show the locations of all the included program modules</CODE>
@@ -1948,7 +2017,7 @@ together with the internal country no, the CQ and ITU regions.
 <P>Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from.
 <P>
-<H2><A NAME="ss9.122">9.122 show/qra (0)</A>
+<H2><A NAME="ss9.123">9.123 show/qra (0)</A>
 </H2>
 
 <P><CODE><B>show/qra &lt;locator&gt; [&lt;locator&gt;]</B> Show the distance
@@ -1979,7 +2048,7 @@ SH/QRA 52 41 N 0 58 E
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.123">9.123 show/qrz (0)</A>
+<H2><A NAME="ss9.124">9.124 show/qrz (0)</A>
 </H2>
 
 <P><CODE><B>show/qrz &lt;callsign&gt;</B> Show any callbook details on a callsign</CODE>
@@ -1988,7 +2057,7 @@ SH/QRA 52 41 N 0 58 E
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 <P>
-<H2><A NAME="ss9.124">9.124 show/route (0)</A>
+<H2><A NAME="ss9.125">9.125 show/route (0)</A>
 </H2>
 
 <P><CODE><B>show/route &lt;callsign&gt;</B> Show the route to &lt;callsign&gt;</CODE>
@@ -2002,7 +2071,7 @@ connected. It is a sort of inverse sh/config.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.125">9.125 show/satellite (0)</A>
+<H2><A NAME="ss9.126">9.126 show/satellite (0)</A>
 </H2>
 
 <P><CODE><B>show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</B>
@@ -2027,7 +2096,7 @@ SH/SAT FENGYUN1 12 2
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.126">9.126 show/sun (0)</A>
+<H2><A NAME="ss9.127">9.127 show/sun (0)</A>
 </H2>
 
 <P><CODE><B>show/sun [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -2050,7 +2119,7 @@ that you are connected to.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.127">9.127 show/time (0)</A>
+<H2><A NAME="ss9.128">9.128 show/time (0)</A>
 </H2>
 
 <P><CODE><B>show/time [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -2061,7 +2130,7 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 <P>
-<H2><A NAME="ss9.128">9.128 show/wcy (0)</A>
+<H2><A NAME="ss9.129">9.129 show/wcy (0)</A>
 </H2>
 
 <P><CODE><B>show/wcy</B> Show the last 10 WCY broadcasts<BR>
@@ -2069,7 +2138,7 @@ the prefixes or callsigns that you specify.
 <P>
 <P>Display the most recent WCY information that has been received by the system
 <P>
-<H2><A NAME="ss9.129">9.129 show/wwv (0)</A>
+<H2><A NAME="ss9.130">9.130 show/wwv (0)</A>
 </H2>
 
 <P><CODE><B>show/wwv</B> Show the last 10 WWV broadcasts<BR>
@@ -2078,7 +2147,7 @@ the prefixes or callsigns that you specify.
 <P>Display the most recent WWV information that has been received by the system
 <P>
 <P>
-<H2><A NAME="ss9.130">9.130 shutdown (5)</A>
+<H2><A NAME="ss9.131">9.131 shutdown (5)</A>
 </H2>
 
 <P><CODE><B>shutdown</B> Shutdown the cluster</CODE>
@@ -2086,7 +2155,7 @@ the prefixes or callsigns that you specify.
 <P>Shutdown the cluster and disconnect all the users.  If you have Spider
 set to respawn in /etc/inittab it will of course restart.
 <P>
-<H2><A NAME="ss9.131">9.131 spoof (9)</A>
+<H2><A NAME="ss9.132">9.132 spoof (9)</A>
 </H2>
 
 <P><CODE><B>spoof &lt;callsign&gt; &lt;command&gt;</B> Run commands as another user</CODE>
@@ -2096,7 +2165,7 @@ issue commands as if you were a different user.  This is very useful for the
 kind of things that users seem to always get wrong.. like home_node for
 example.
 <P>
-<H2><A NAME="ss9.132">9.132 stat/db (5)</A>
+<H2><A NAME="ss9.133">9.133 stat/db (5)</A>
 </H2>
 
 <P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE>
@@ -2105,7 +2174,7 @@ example.
 <P>Depending on your privilege level you will see more or less information. 
 This command is unlikely to be of much use to anyone other than a sysop.
 <P>
-<H2><A NAME="ss9.133">9.133 stat/channel (5)</A>
+<H2><A NAME="ss9.134">9.134 stat/channel (5)</A>
 </H2>
 
 <P><CODE><B>stat/channel &lt;callsign&gt;</B> Show the status of a channel on the cluster</CODE>
@@ -2114,7 +2183,7 @@ This command is unlikely to be of much use to anyone other than a sysop.
 you are on or else for the callsign that you asked for.
 <P>Only the fields that are defined (in perl term) will be displayed.
 <P>
-<H2><A NAME="ss9.134">9.134 stat/msg (5)</A>
+<H2><A NAME="ss9.135">9.135 stat/msg (5)</A>
 </H2>
 
 <P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE>
@@ -2122,7 +2191,20 @@ you are on or else for the callsign that you asked for.
 <P>This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
 <P>
-<H2><A NAME="ss9.135">9.135 stat/user (5)</A>
+<P>If no message number is given then the status of the message system is 
+displayed.
+<P>
+<H2><A NAME="ss9.136">9.136 stat/route_node (5)</A>
+</H2>
+
+<P><CODE><B>stat/route_node &lt;callsign&gt;</B> Show the data in a Route::Node object</CODE>
+<P>
+<H2><A NAME="ss9.137">9.137 stat/route_user (5)</A>
+</H2>
+
+<P><CODE><B>stat/route_user &lt;callsign&gt;</B> Show the data in a Route::User object</CODE>
+<P>
+<H2><A NAME="ss9.138">9.138 stat/user (5)</A>
 </H2>
 
 <P><CODE><B>stat/user &lt;callsign&gt;</B> Show the full status of a user</CODE>
@@ -2131,7 +2213,7 @@ such as to whom it has been forwarded, its size, origin etc etc.
 and stuff.
 <P>Only the fields that are defined (in perl term) will be displayed.
 <P>
-<H2><A NAME="ss9.136">9.136 sysop (0)</A>
+<H2><A NAME="ss9.139">9.139 sysop (0)</A>
 </H2>
 
 <P><CODE><B>sysop</B> Regain your privileges if you login remotely</CODE>
@@ -2167,7 +2249,7 @@ these values are for explanation :-):
 numbers but nothing will happen when you input a string. Any match is
 case sensitive.
 <P>
-<H2><A NAME="ss9.137">9.137 talk (0)</A>
+<H2><A NAME="ss9.140">9.140 talk (0)</A>
 </H2>
 
 <P><CODE><B>talk &lt;callsign&gt;</B> Enter talk mode with &lt;callsign&gt;<BR>
@@ -2208,7 +2290,7 @@ command with a '/' character, eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss9.138">9.138 type (0)</A>
+<H2><A NAME="ss9.141">9.141 type (0)</A>
 </H2>
 
 <P><CODE><B>type &lt;filearea&gt;/&lt;name&gt;</B> Look at a file in one of the fileareas</CODE>
@@ -2225,7 +2307,7 @@ enter:-
 <P>See also SHOW/FILES to see what fileareas are available and a 
 list of content.
 <P>
-<H2><A NAME="ss9.139">9.139 who (0)</A>
+<H2><A NAME="ss9.142">9.142 who (0)</A>
 </H2>
 
 <P><CODE><B>who</B> Show who is physically connected locally</CODE>
@@ -2233,7 +2315,7 @@ list of content.
 <P>This is a quick listing that shows which callsigns are connected and
 what sort of connection they have
 <P>
-<H2><A NAME="ss9.140">9.140 wx (0)</A>
+<H2><A NAME="ss9.143">9.143 wx (0)</A>
 </H2>
 
 <P><CODE><B>wx &lt;text&gt;</B> Send a weather message to local users<BR>
@@ -2242,7 +2324,7 @@ what sort of connection they have
 <P>Weather messages can sometimes be useful if you are experiencing an extreme
 that may indicate enhanced conditions
 <P>
-<H2><A NAME="ss9.141">9.141 wx (enhanced for sysops) (5)</A>
+<H2><A NAME="ss9.144">9.144 wx (enhanced for sysops) (5)</A>
 </H2>
 
 <P><CODE><B>wx sysop &lt;text&gt;</B> Send a weather message to other clusters only</CODE>

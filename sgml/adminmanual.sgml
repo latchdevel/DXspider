@@ -6,7 +6,7 @@
 
 <title>The DXSpider Administration Manual v1.48</title> 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.48 September 2001 revision 1.2</date>
+<date>Version 1.49 November 2001 revision 1.0</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -1041,6 +1041,13 @@ or "motd".  To set this up, simply create a file in /spider/data called motd
 and edit it to say whatever you want.  It is purely a text file and will be 
 sent automatically to anyone logging in to the cluster.
 
+<sect1>MOTD_NOR
+
+<P>
+This message of the day file lives in the same directory as the standard
+motd file but is only sent to non-registered users.  Once registered they
+will receive the same message as any other user.
+
 <sect1>Downtime message
 
 <P>
@@ -1348,6 +1355,130 @@ Simply go to the site and create one.  Secondly you need to copy the file
 ID and password.  You also at this point need to set $allow=1 to complete
 the setup.  Many thanks to Fred Lloyd, the proprieter of
 <htmlurl url="http://www.qrz.com" name="qrz.com"> for allowing this access.
+
+<sect1>Scripts
+
+<P>
+The directory /spider/scripts is used for several things.  Firstly it
+contains a file called startup that can be used to call in any changes
+to the cluster from the default settings on startup.  Examples of this
+include how many spots it is possible to get with the sh/dx command, 
+whether you want registration/passwords to be permanently on etc.  An
+example file is shown below and is included in the distribution as
+startup.issue.
+
+<tscreen><verb>
+#
+# startup script example
+#
+# set maximum no of spots allowed to 100
+# set/var $Spot::maxspots = 1
+#
+# Set registration on
+# set/var $main::reqreg = 1
+#
+# Set passwords on
+# set/var $main::passwdreq = 1
+#
+</verb></tscreen>
+
+Secondly, it is used to store the login scripts for users.  Currently
+this can only be done by the sysop but it is envisaged that eventually
+users will be able to set their own.  An example is included in the
+distibution but here is a further example.
+
+<tscreen><verb>
+#
+# G0FYD
+#
+blank +
+sh/wwv 3
+blank +
+sh/dx 
+blank +
+t g0jhc You abt?
+blank +
+</verb></tscreen>
+
+The lines in between commands can simply insert a blank line or a character
+such as a + sign to make the output easier to read.
+
+<sect>Security
+
+<P>
+From version 1.49 DXSpider has some additional security features.  These
+are not by any means meant to be exhaustive, however they do afford some
+security against piracy.  These two new features can be used independently 
+of each other or in concert to tighten the security.
+
+<sect1>Registration
+
+<P>
+The basic principle of registration is simple.  If a user is not registered
+by the sysop, then they have read-only access to the cluster.  The only
+thing they can actually send is a talk or a message to the sysop.  In
+order for them to be able to spot, send announces or talks etc the sysop
+must register them with the <em>set/register</em> command, like this ...
+
+<tscreen><verb>
+set/register g0vgs
+</verb></tscreen>
+
+The user g0vgs can now fully use the cluster.  In order to enable 
+registration, you can issue the command ...
+
+<tscreen><verb>
+set/var $main::reqreg = 1
+</verb></tscreen>
+
+Any users that are not registered will now see the motd_nor file rather
+than the motd file as discussed in the Information, files and useful 
+programs section.
+
+<P>
+Entering this line at the prompt will only last for the time the cluster
+is running of course and would not be present on a restart.  To make the
+change permanent, add the above line to /spider/scripts/startup.  To
+read more on the startup file, see the section on Information, files 
+and useful programs.
+
+<P>
+To unregister a user use <em>unset/register</em> and to show the list
+of registered users, use the command <em>show/register</em>.
+
+<sect1>Passwords
+
+<P>
+At the moment, passwords only affect users who login to a DXSpider
+cluster node via telnet.  If a user requires a password, they can
+either set it themselves or have the sysop enter it for them by using
+the <em>set/password</em> command.  Any users who already have passwords, 
+such as remote sysops, will be asked for their passwords automatically 
+by the cluster.  Using passwords in this way means that the user has a
+choice on whether to have a password or not.  To force the use of
+passwords at login, issue the command ...
+
+<tscreen><verb>
+set/var $main::passwdreq = 1
+</verb></tscreen>
+
+at the cluster prompt.  This can also be added to the /spider/scripts/startup
+file as above to make the change permanent.
+
+<P>
+Of course, if you do this you will have to assign a password for each of 
+your users.  If you were asking them to register, it is anticipated that
+you would ask them to send you a message both to ask to be registered and
+to give you the password they wish to use.
+
+<P>
+Should a user forget their password, it can be reset by the sysop by
+first removing the existing password and then setting a new one like so ...
+
+<tscreen><verb>
+unset/password g0vgs
+set/password g0vgs new_password
+</verb></tscreen>
 
 <sect>CVS
 

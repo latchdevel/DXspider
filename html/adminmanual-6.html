@@ -25,7 +25,14 @@ or "motd".  To set this up, simply create a file in /spider/data called motd
 and edit it to say whatever you want.  It is purely a text file and will be 
 sent automatically to anyone logging in to the cluster.
 <P>
-<H2><A NAME="ss6.2">6.2 Downtime message</A>
+<H2><A NAME="ss6.2">6.2 MOTD_NOR</A>
+</H2>
+
+<P>This message of the day file lives in the same directory as the standard
+motd file but is only sent to non-registered users.  Once registered they
+will receive the same message as any other user.
+<P>
+<H2><A NAME="ss6.3">6.3 Downtime message</A>
 </H2>
 
 <P>If for any reason the cluster is down, maybe for upgrade or maintenance but 
@@ -35,7 +42,7 @@ of the fact.  This message lives in the /spider/data directory and is called
 This file will be sent to a user attempting to log into the cluster when
 DXSpider is not actually running.
 <P>
-<H2><A NAME="ss6.3">6.3 Other text messages</A>
+<H2><A NAME="ss6.4">6.4 Other text messages</A>
 </H2>
 
 <P>You can set other text messages to be read by the user if they input the file 
@@ -137,7 +144,7 @@ Press Enter to continue, A to abort (508 lines) >
 </CODE></BLOCKQUOTE>
 <P>The page length will of course depend on what you have it set to!
 <P>
-<H2><A NAME="ss6.4">6.4 The Aliases file</A>
+<H2><A NAME="ss6.5">6.5 The Aliases file</A>
 </H2>
 
 <P>You will find a file in /spider/cmd/ called Aliases.  First, copy this file to
@@ -285,7 +292,7 @@ package CmdAlias;
 always turn out as you think.  Care is needed and you need to test the 
 results once you have set an alias.
 <P>
-<H2><A NAME="ss6.5">6.5 Console.pl</A>
+<H2><A NAME="ss6.6">6.6 Console.pl</A>
 </H2>
 
 <P>In later versions of Spider a simple console program is provided for the sysop.  
@@ -295,7 +302,7 @@ announces etc.  To use this program, simply use console.pl instead of client.
 <P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
 file with your favourite editor.
 <P>
-<H2><A NAME="ss6.6">6.6 Updating kepler data</A>
+<H2><A NAME="ss6.7">6.7 Updating kepler data</A>
 </H2>
 
 <P>Spider has a powerful and flexible show/satellite command.  In order for
@@ -330,7 +337,7 @@ load/keps
 </CODE></BLOCKQUOTE>
 <P>That is it!  the kepler data has been updated.
 <P>
-<H2><A NAME="ss6.7">6.7 The QRZ callbook</A>
+<H2><A NAME="ss6.8">6.8 The QRZ callbook</A>
 </H2>
 
 <P>The command <EM>sh/qrz</EM> will only work once you have followed a few
@@ -340,6 +347,55 @@ Simply go to the site and create one.  Secondly you need to copy the file
 ID and password.  You also at this point need to set $allow=1 to complete
 the setup.  Many thanks to Fred Lloyd, the proprieter of
 <A HREF="http://www.qrz.com">qrz.com</A> for allowing this access.
+<P>
+<H2><A NAME="ss6.9">6.9 Scripts</A>
+</H2>
+
+<P>The directory /spider/scripts is used for several things.  Firstly it
+contains a file called startup that can be used to call in any changes
+to the cluster from the default settings on startup.  Examples of this
+include how many spots it is possible to get with the sh/dx command, 
+whether you want registration/passwords to be permanently on etc.  An
+example file is shown below and is included in the distribution as
+startup.issue.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+#
+# startup script example
+#
+# set maximum no of spots allowed to 100
+# set/var $Spot::maxspots = 1
+#
+# Set registration on
+# set/var $main::reqreg = 1
+#
+# Set passwords on
+# set/var $main::passwdreq = 1
+#
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Secondly, it is used to store the login scripts for users.  Currently
+this can only be done by the sysop but it is envisaged that eventually
+users will be able to set their own.  An example is included in the
+distibution but here is a further example.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+#
+# G0FYD
+#
+blank +
+sh/wwv 3
+blank +
+sh/dx 
+blank +
+t g0jhc You abt?
+blank +
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The lines in between commands can simply insert a blank line or a character
+such as a + sign to make the output easier to read.
 <P>
 <HR>
 <A HREF="adminmanual-7.html">Next</A>
