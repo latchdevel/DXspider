@@ -13,7 +13,7 @@ my @out;
 $line = uc $line;
 return (1, $self->msg('e24')) unless $Internet::allow;
 return (1, "SHOW/DB0SDX <callsign>, e.g. SH/DB0SDX ea7wa") unless $line && is_callsign($line);
-my $target = 'dotnet.grossmann.com';
+my $target = $Internet::db0sdx_url || 'dotnet.grossmann.com';
 my $port = 80;
 my $cmdprompt = '/query->.*$/';
 

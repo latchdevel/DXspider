@@ -1,3 +1,7 @@
+26Jul04=======================================================================
+1. added extra variables to Internet.pm to allow the various internet query
+commands to alter the url that they use. 
+2. Added show/425 command from Leo, IZ5FSA.
 05Jul04=======================================================================
 1. fix rspfcheck on pc27
 23Jun04=======================================================================

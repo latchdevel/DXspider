@@ -16,7 +16,7 @@ my @out;
 # send 'e24' if allow in Internet.pm is not set to 1
 return (1, $self->msg('e24')) unless $Internet::allow;
 return (1, "SHOW/WM7D <callsign>, e.g. SH/WM7D k1xx") unless $line;
-my $target = 'www.wm7d.net';
+my $target = $Internet::wm7d_url || 'www.wm7d.net';
 my $port = 5000;
 my $cmdprompt = '/query->.*$/';
 

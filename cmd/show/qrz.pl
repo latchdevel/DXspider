@@ -15,10 +15,15 @@ my @out;
 
 return (1, $self->msg('e24')) unless $Internet::allow;
 return (1, "SHOW/QRZ <callsign>, e.g. SH/QRZ g1tlh") unless @list;
-my $target = $Internet::http_proxy || 'www.qrz.com';
+#my $target = $Internet::http_proxy || 'www.qrz.com';
+#my $port = $Internet::http_proxy_port || 80;
+#my $url = '';
+#$url = 'http://www.qrz.com' if $Internet::http_proxy; 
+my $target = $Internet::http_proxy || $Internet::qrz_url || 'www.qrz.com';
 my $port = $Internet::http_proxy_port || 80;
 my $url = '';
-$url = 'http://www.qrz.com' if $Internet::http_proxy; 
+$url = 'http://' . ($Internet::qrz_url || '$www.qrz.com') if $Internet::http_proxy;
+
 
 use Net::Telnet;
 

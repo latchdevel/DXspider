@@ -29,6 +29,7 @@ $allow = 0;
 # $qrz_uid = 'gb7xxx';
 #
 
+
 $qrz_uid = undef;
 
 #
@@ -58,6 +59,15 @@ $http_proxy = undef;
 
 $http_proxy_port = undef;
 
+#
+# list of urls that are used in commands, here so that they
+# can be changed if necessary.
+#
+
+$qrz_url = 'www.qrz.com';     # used by show/qrz
+$wm7d_url = 'www.wm7d.net';   # used by show/wm7d
+$db0sdx_url = 'dotnet.grossmann.com';   # used by show/db0sdx
+$dx425_url = 'www.ariscandicci.it';		# used by show/425
 
 #
 # end
