@@ -119,7 +119,8 @@ sub handle
 				push @{$thing->{pc19n}}, $ur if $ur;
 			} else {
 				$thing->{pc16n} = $nref;
-				$thing->{pc16u} = [$ur = $nref->add_user($user, $thing->{h})];
+				$ur = $nref->add_user($user, $thing->{h});
+				$thing->{pc16u} = [$ur];
 			}
 		}
 		$ur->np(1);
