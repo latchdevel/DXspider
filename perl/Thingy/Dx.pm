@@ -31,8 +31,8 @@ sub gen_Aranea
 		$thing->{f} = $sd->[0];
 		$thing->{c} = $sd->[1];
 		$thing->{b} = $sd->[4] unless $thing->{user};
-		my $t = $sd->[2] / 60;
-		$thing->{t} = sprintf("%X", $t) unless $t eq $main::systime / 60;
+		my $t = int($sd->[2] / 60);
+		$thing->{t} = sprintf("%X", $t) unless $t eq int($main::systime / 60);
 		$thing->{o} =  $sd->[7] unless $sd->[7] eq $main::mycall; 
 		$thing->{i} = $sd->[3] if $sd->[3];
 	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(f c b t o i)]);
