@@ -64,7 +64,7 @@ for my $entry (@list) {
 			if ($line =~ m{$string}io) {
 				for (@prev) {
 					s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
-					my ($t, $l) =  split /\^/, $line, 2;
+					my ($t, $l) =  split /\^/, $_, 2;
 					print atime($t), ' ', $l, "\n"; 
 				}
 				@prev = ();
