@@ -23,8 +23,15 @@ package main;
 
 $maxkhist = 100;
 $maxshist = 500;
-$foreground = COLOR_BLACK();
-$background = A_BOLD|COLOR_WHITE();
+if ($ENV{'TERM'} =~ /xterm/) {
+	$ENV{'TERM'} = 'color_xterm';
+	$foreground = COLOR_BLACK();
+	$background = A_BOLD|COLOR_WHITE();
+}
+if ($ENV{'TERM'} =~ /(console|linux)/) {
+	$foreground = COLOR_WHITE();
+	$background = COLOR_BLACK();
+}
 
 @colors = (
 		   [ '^DX de [\-\w]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
