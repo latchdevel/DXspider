@@ -194,20 +194,15 @@ sub new_channel
 
 	# create the channel
 	if ($user->wantnp) {
-		if ($user->passphrase && $main::me->user->passphrase) {
-			$dxchan = QXProt->new($call, $conn, $user);
-		} else {
-			unless ($user->passphrase) {
-				Log('DXCommand', "$call using NP but has no passphrase");
-				dbg("$call using NP but has no passphrase");
-			}
-			unless ($main::me->user->passphrase) {
-				Log('DXCommand', "$main::mycall using NP but has no passphrase");
-				dbg("$main::mycall using NP but has no passphrase");
-			}
-#			already_conn($conn, $call, "Need to exchange passphrases");
-			return;
+		unless ($user->passphrase) {
+			Log('DXCommand', "$call using NP but has no passphrase");
+			dbg("$call using NP but has no passphrase");
 		}
+		unless ($main::me->user->passphrase) {
+			Log('DXCommand', "$main::mycall using NP but has no passphrase");
+			dbg("$main::mycall using NP but has no passphrase");
+		}
+		$dxchan = QXProt->new($call, $conn, $user);
 	} elsif ($user->is_node) {
 		$dxchan = DXProt->new($call, $conn, $user);
 	} elsif ($user->is_user) {
