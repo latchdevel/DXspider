@@ -49,13 +49,29 @@ perl distribution.
 <P>
 <itemize>
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.101.tar.gz" name="Data-Dumper-2.101.tar.gz">  <em> this is included in perl 5.6.1 and above </em>
-<item> <htmlurl url="http://www.cpan.org/modules/by-module/Date/TimeDate-1.10.tar.gz" name="TimeDate-1.10.tar.gz">
+<item> <htmlurl url="http://www.cpan.org/modules/by-module/Date/TimeDate-2.27.tar.gz" name="TimeDate-2.27.tar.gz">
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz" name="IO-1.20.tar.gz">  (<em>for perl 5.00403 and lower</em>)
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Net/Net-Telnet-3.03.tar.gz" name="Net-Telnet-3.03.tar.gz">
-<item> <htmlurl url="http://www.cpan.org/modules/by-module/Curses/Curses-1.06.tar.gz" name="Curses-1.06.tar.gz">
-<item> <htmlurl url="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz" name="Time-HiRes-01.20.tar.gz">
+<item> <htmlurl url="http://www.cpan.org/modules/by-module/Curses/Curses-1.08a.tar.gz" name="Curses-1.08a.tar.gz">
+<item> <htmlurl url="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz" name="Time-HiRes-01.20.tar.gz"> (<em>for perl versions lower than 5.8 </em>)
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Digest/Digest-SHA1-2.01.tar.gz" name="Digest-SHA1-2.01.tar.gz">
 </itemize>
+
+<P> 
+On most modern distributions most (if not all) the modules you will need are either included or
+can be loaded automatically. Please consult your distro's instructions for loading new programs
+and look for modules that usually start with the string "perl-". For instance:-
+
+<itemize>
+<item>Mandrake: urpmi perl-TimeDate perl-Digest-SHA1 perl-Curses perl-Net-Telnet
+<item>Redhat/Fedora: up2date perl-TimeDate perl-Digest-SHA1 perl-Curses perl-Net-Telnet
+<item>SuSE: use yast
+<item>Debian: use apt-get
+</itemize>
+
+<p>
+Some distros are now packaging perl-DB_File separately as well, so you may have to add that to the list 
+above.
 
 <P>
 Copy the CPAN modules listed above to a convenient place on your computer. One good 
@@ -66,8 +82,8 @@ that's where you have put them.
 Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -
 
 <verb>
-# tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
-# cd TimeDate-1.10
+# tar xvfz /usr/local/packages/TimeDate-2.27.tar.gz
+# cd TimeDate-2.27
 # perl Makefile.PL
 # make test
 # make install
@@ -80,8 +96,8 @@ Log in as 'root', and make sure you're at '/root' before you continue. Here are 
 # make install
 # cd ..
 #
-# tar xvfz /usr/local/packages/Curses-1.06.tar.gz
-# cd Curses-1.06
+# tar xvfz /usr/local/packages/Curses-1.08a.tar.gz
+# cd Curses-1.08a
 # perl Makefile.PL
 # make test
 # make install
@@ -103,7 +119,7 @@ Log in as 'root', and make sure you're at '/root' before you continue. Here are 
 </verb>
 
 <p>
-Only if you need to do these (because your perl is old):-
+Only if you need to do these because your perl is old:-
 
 <verb>
 #
@@ -893,11 +909,74 @@ netrom connections.
 <P>
 This is dealt with in the previous section
  
-<sect1>Allowing telnet connects from users 
+<sect1>Setting up telnet connects (from 1.47 onwards)
+
+<P>
+>From version 1.47 you can choose to allow the perl cluster.pl program to 
+allow connections directly (i.e. not via the <tt>/spider/src/client</tt>
+interface program). If you are using Windows then this is the only method
+available of allowing incoming telnet connections.
+
+<P>
+to make the change happen...
+
+<P>
+Having done that, you need to copy the file 
+<em>/spider/perl/Listeners.pm</em> to <em>/spider/local</em> and 
+then edit it. You will need to uncomment the line containing &dquot;0.0.0.0&dquot; 
+and select the correct port to listen on.
+
+It comes out of the box looking something like:-
+
+<tscreen><verb>
+@listen = (
+#    ["0.0.0.0", 7300],
+);
+</verb></tscreen>
+
+Change it so that it looks like this:-
+
+<tscreen><verb>
+@listen = (
+    ["0.0.0.0", 7300],
+);
+</verb></tscreen>
+
+<p>
+Later versions have more comments in the Listeners.pm file that
+are designed to help you remove the correct '#' character.
+
+<P>
+As standard, the listener will listen on all interfaces simultaneously. 
+If you require more control than this, you can specify each interface 
+individually:-
+
+<tscreen><verb>
+@listen = (
+    ["gb7baa.dxcluster.net", 7300],
+    ["44.131.16.2", 6300],
+);
+</verb></tscreen>
+
+<P>
+This will only be successful if the IP addresses on each interface are static. 
+If you are using some kind of dynamic IP addressing then the 'default' method 
+is the only one that will work.
+
+<P>
+Restart the cluster.pl program to enable the listener.
+
+<P>
+One important difference with the internal listener is that no echoing 
+is done by the cluster program. Users will need to set 'local-echo' on in 
+their telnet clients if it isn't set automatically (as per the standards). 
+Needless to say this will probably only apply to Windows users. 
+
+<sect1>Allowing telnet connects from users (before version 1.47 or for special purposes)
 
 <P> 
 >From version 1.47 there is a new (more efficient) way of doing this
-(see next section) but, if you prefer, the method of doing it described 
+(see previous section) but, if you prefer, the method of doing it described 
 here will continue to work just fine.
  
 <P>
@@ -945,62 +1024,6 @@ telnet localhost 8000
 <P>
 You should now get the login prompt and be able to login as before.
 
-<sect1>Setting up telnet connects (from 1.47 onwards)
-
-<P>
->From version 1.47 you can choose to allow the perl cluster.pl program to 
-allow connections directly (i.e. not via the <tt>/spider/src/client</tt>
-interface program). If you are using Windows then this is the only method
-available of allowing incoming telnet connections.
-
-<P>
-To do this you need first to remove any line that you may previously have set
-up in /etc/inetd.conf. Remember to:-
-
-<tscreen><verb>
-killall -HUP inetd
-</verb></tscreen>
-
-<P>
-to make the change happen...
-
-<P>
-Having done that, you need to copy the file 
-<em>/spider/perl/Listeners.pm</em> to <em>/spider/local</em> and 
-then edit it. You will need to uncomment the line containing &dquot;0.0.0.0&dquot; 
-and select the correct port to listen on. So that it looks like this:-
-
-<tscreen><verb>
-@listen = (
-    ["0.0.0.0", 8000],
-);
-</verb></tscreen>
-
-<P>
-As standard, the listener will listen on all interfaces simultaneously. 
-If you require more control than this, you can specify each interface 
-individually:-
-
-<tscreen><verb>
-@listen = (
-    ["gb7baa.dxcluster.net", 8000],
-    ["44.131.16.2", 6300],
-);
-</verb></tscreen>
-
-<P>
-This will only be successful if the IP addresses on each interface are static. 
-If you are using some kind of dynamic IP addressing then the 'default' method 
-is the only one that will work.
-
-<P>
-Restart the cluster.pl program to enable the listener.
-
-<P>
-One important difference with the internal listener is that no echoing 
-is done by the cluster program. Users will need to set 'local-echo' on in 
-their telnet clients if it isn't set automatically (as per the standards). 
-Needless to say this will probably only apply to Windows users. 
 
 <sect1>Setting up for AGW Engine (1.47 onwards)
 

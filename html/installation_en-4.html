@@ -20,12 +20,75 @@
 
 <P>This is dealt with in the previous section</P>
 
-<H2><A NAME="ss4.2">4.2</A> <A HREF="installation_en.html#toc4.2">Allowing telnet connects from users </A>
+<H2><A NAME="ss4.2">4.2</A> <A HREF="installation_en.html#toc4.2">Setting up telnet connects (from 1.47 onwards)</A>
+</H2>
+
+<P>>From version 1.47 you can choose to allow the perl cluster.pl program to 
+allow connections directly (i.e. not via the <CODE>/spider/src/client</CODE>
+interface program). If you are using Windows then this is the only method
+available of allowing incoming telnet connections.</P>
+
+<P>to make the change happen...</P>
+
+<P>Having done that, you need to copy the file 
+<EM>/spider/perl/Listeners.pm</EM> to <EM>/spider/local</EM> and 
+then edit it. You will need to uncomment the line containing &quot;0.0.0.0&quot; 
+and select the correct port to listen on.</P>
+<P>It comes out of the box looking something like:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+@listen = (
+#    ["0.0.0.0", 7300],
+);
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Change it so that it looks like this:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+@listen = (
+    ["0.0.0.0", 7300],
+);
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Later versions have more comments in the Listeners.pm file that
+are designed to help you remove the correct '#' character.</P>
+
+<P>As standard, the listener will listen on all interfaces simultaneously. 
+If you require more control than this, you can specify each interface 
+individually:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+@listen = (
+    ["gb7baa.dxcluster.net", 7300],
+    ["44.131.16.2", 6300],
+);
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>This will only be successful if the IP addresses on each interface are static. 
+If you are using some kind of dynamic IP addressing then the 'default' method 
+is the only one that will work.</P>
+
+<P>Restart the cluster.pl program to enable the listener.</P>
+
+<P>One important difference with the internal listener is that no echoing 
+is done by the cluster program. Users will need to set 'local-echo' on in 
+their telnet clients if it isn't set automatically (as per the standards). 
+Needless to say this will probably only apply to Windows users. </P>
+
+<H2><A NAME="ss4.3">4.3</A> <A HREF="installation_en.html#toc4.3">Allowing telnet connects from users (before version 1.47 or for special purposes)</A>
 </H2>
 
 <P> 
 >From version 1.47 there is a new (more efficient) way of doing this
-(see next section) but, if you prefer, the method of doing it described 
+(see previous section) but, if you prefer, the method of doing it described 
 here will continue to work just fine.</P>
 
 <P>Allowing telnet connections is quite simple.  Firstly you need to add a line 
@@ -81,64 +144,6 @@ telnet localhost 8000
 
 <P>You should now get the login prompt and be able to login as before.</P>
 
-<H2><A NAME="ss4.3">4.3</A> <A HREF="installation_en.html#toc4.3">Setting up telnet connects (from 1.47 onwards)</A>
-</H2>
-
-<P>>From version 1.47 you can choose to allow the perl cluster.pl program to 
-allow connections directly (i.e. not via the <CODE>/spider/src/client</CODE>
-interface program). If you are using Windows then this is the only method
-available of allowing incoming telnet connections.</P>
-
-<P>To do this you need first to remove any line that you may previously have set
-up in /etc/inetd.conf. Remember to:-</P>
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-killall -HUP inetd
-</PRE>
-</CODE></BLOCKQUOTE>
-</P>
-
-<P>to make the change happen...</P>
-
-<P>Having done that, you need to copy the file 
-<EM>/spider/perl/Listeners.pm</EM> to <EM>/spider/local</EM> and 
-then edit it. You will need to uncomment the line containing &quot;0.0.0.0&quot; 
-and select the correct port to listen on. So that it looks like this:-</P>
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-@listen = (
-    ["0.0.0.0", 8000],
-);
-</PRE>
-</CODE></BLOCKQUOTE>
-</P>
-
-<P>As standard, the listener will listen on all interfaces simultaneously. 
-If you require more control than this, you can specify each interface 
-individually:-</P>
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-@listen = (
-    ["gb7baa.dxcluster.net", 8000],
-    ["44.131.16.2", 6300],
-);
-</PRE>
-</CODE></BLOCKQUOTE>
-</P>
-
-<P>This will only be successful if the IP addresses on each interface are static. 
-If you are using some kind of dynamic IP addressing then the 'default' method 
-is the only one that will work.</P>
-
-<P>Restart the cluster.pl program to enable the listener.</P>
-
-<P>One important difference with the internal listener is that no echoing 
-is done by the cluster program. Users will need to set 'local-echo' on in 
-their telnet clients if it isn't set automatically (as per the standards). 
-Needless to say this will probably only apply to Windows users. </P>
 
 <H2><A NAME="ss4.4">4.4</A> <A HREF="installation_en.html#toc4.4">Setting up for AGW Engine (1.47 onwards)</A>
 </H2>

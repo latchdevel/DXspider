@@ -43,19 +43,35 @@ perl distribution.</P>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.101.tar.gz">Data-Dumper-2.101.tar.gz</A>  <EM> this is included in perl 5.6.1 and above </EM></LI>
 <LI> 
-<A HREF="http://www.cpan.org/modules/by-module/Date/TimeDate-1.10.tar.gz">TimeDate-1.10.tar.gz</A></LI>
+<A HREF="http://www.cpan.org/modules/by-module/Date/TimeDate-2.27.tar.gz">TimeDate-2.27.tar.gz</A></LI>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz">IO-1.20.tar.gz</A>  (<EM>for perl 5.00403 and lower</EM>)</LI>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/Net/Net-Telnet-3.03.tar.gz">Net-Telnet-3.03.tar.gz</A></LI>
 <LI> 
-<A HREF="http://www.cpan.org/modules/by-module/Curses/Curses-1.06.tar.gz">Curses-1.06.tar.gz</A></LI>
+<A HREF="http://www.cpan.org/modules/by-module/Curses/Curses-1.08a.tar.gz">Curses-1.08a.tar.gz</A></LI>
 <LI> 
-<A HREF="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time-HiRes-01.20.tar.gz</A></LI>
+<A HREF="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time-HiRes-01.20.tar.gz</A> (<EM>for perl versions lower than 5.8 </EM>)</LI>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/Digest/Digest-SHA1-2.01.tar.gz">Digest-SHA1-2.01.tar.gz</A></LI>
 </UL>
 </P>
+
+<P> 
+On most modern distributions most (if not all) the modules you will need are either included or
+can be loaded automatically. Please consult your distro's instructions for loading new programs
+and look for modules that usually start with the string "perl-". For instance:-</P>
+<P>
+<UL>
+<LI>Mandrake: urpmi perl-TimeDate perl-Digest-SHA1 perl-Curses perl-Net-Telnet</LI>
+<LI>Redhat/Fedora: up2date perl-TimeDate perl-Digest-SHA1 perl-Curses perl-Net-Telnet</LI>
+<LI>SuSE: use yast</LI>
+<LI>Debian: use apt-get</LI>
+</UL>
+</P>
+
+<P>Some distros are now packaging perl-DB_File separately as well, so you may have to add that to the list 
+above.</P>
 
 <P>Copy the CPAN modules listed above to a convenient place on your computer. One good 
 place would be /usr/local/packages, and the instructions which follow will assume that 
@@ -64,8 +80,8 @@ that's where you have put them.</P>
 <P>Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -</P>
 <P>
 <PRE>
-# tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
-# cd TimeDate-1.10
+# tar xvfz /usr/local/packages/TimeDate-2.27.tar.gz
+# cd TimeDate-2.27
 # perl Makefile.PL
 # make test
 # make install
@@ -78,8 +94,8 @@ that's where you have put them.</P>
 # make install
 # cd ..
 #
-# tar xvfz /usr/local/packages/Curses-1.06.tar.gz
-# cd Curses-1.06
+# tar xvfz /usr/local/packages/Curses-1.08a.tar.gz
+# cd Curses-1.08a
 # perl Makefile.PL
 # make test
 # make install
@@ -101,7 +117,7 @@ that's where you have put them.</P>
 </PRE>
 </P>
 
-<P>Only if you need to do these (because your perl is old):-</P>
+<P>Only if you need to do these because your perl is old:-</P>
 <P>
 <PRE>
 #

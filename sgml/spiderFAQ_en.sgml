@@ -48,7 +48,7 @@ to apply patch-1.39 and then patch-1.40.
 <P>
 The tarballs are designed to not overwrite your existing configuration
 and can be used at any time to update your Spider software.  All the key
-files have the suffix .issue (eg. DXVars.pm.issue) at default.
+files have the suffix .issue (eg. DXVars.pm.issue) at default. 
 
 <sect1>I am running RedHat 5.2 and I am getting strange errors, what is wrong?
 
@@ -96,8 +96,9 @@ Please check the time on your PC.
 
 <P>
 All spots are checked that they are no more
-than 15 minutes in the future and 60 minutes in the past. If your clock is not set
-to GMT (UTC) and is more than one hour out (say on your local (summer) time) then
+than 15 minutes in the future and 60 minutes in the past. If your clock on your client
+prompt (or console.pl display) is not set to the correct time
+in GMT (UTC) and is more than one hour out (say on your local (summer) time) then
 the test will fail and no spots will come out. Neither will they be stored.
 
 <P>
@@ -141,7 +142,9 @@ Use the tmpwatch command.  Create a file in /etc/cron.daily/ containing the line
 
 Remember to make it executable!
 
-This will limit your debug data down to the last 10 days
+This will limit your debug data down to the last 10 days. 
+
+However, modern versions of DXSpider will do this for you, so this is now probably unnecessary.
 
 <sect1>I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?
 
@@ -152,7 +155,7 @@ few steps to correct the problem.
 <itemize>
 <item>stop the cluster (disable any autostart in inittab)
 <item>cd /spider/data
-<item>issue the command perl user_asc
+<item>issue the command: perl user_asc
 <item>restart the cluster
 </itemize>
 
@@ -175,10 +178,10 @@ message is marked for deletion and will be deleted in 2 days if nothing
 further is done.  Optionally you can use the command <em>delete/expunge</em>
 to delete it immediately.
 
-<sect1>I am updating from CVS and I get all sorts of errors when I restart
+<sect1>I have updated from CVS and I get all sorts of errors when I restart
 
 <P>
-Firstly, whenever you update from CVS, a log is displayed. Next to each
+Whenever you update from CVS, a log is displayed. Next to each
 file that is downloaded there is a letter, e.g.:
 
 <tscreen><verb>
@@ -198,9 +201,10 @@ U DXProt.pm
 </verb></tscreen>
 
 <P>
-For normal CVS use you should only ever see the letter 'P'. This means that the file has
-changed in CVS and is more recent than the one that is currenly on your system. You may also
-possibly see the letter '?', which means that
+For normal CVS use you should only ever see the letters 'P', 'U' or '?'. The 
+letter 'P' means that the file has
+changed in CVS and is more recent than the one that is currently on your system. You will also
+see the letter '?', which means that
 there is a file that you (or the system) has created that CVS doesn't know about and isn't 
 under its control. These are all normal and good.
 
@@ -215,7 +219,7 @@ modifications which CVS wants to download to your system. For the 'M', CVS think
 is OK to make the change (you may also see some messages about "merging revision 1.xx with 1.yy").
 Neither of these things are good. Files that are under the control of CVS
 must not be changed by sysops. It is the files that have the 'C' next to them that will show
-the errors and they will be things like:-
+the errors that you are complaining about and they will be things like:-
 
 <tscreen><verb>
 Syntax error near '<<<<' at line 23
@@ -224,7 +228,7 @@ Syntax error near '>>>' at line 51
 </verb></tscreen>
 
 <P>
-You will now necessarily see all of the errors shown but you will get one or more sets of some
+You will not necessarily see all of the errors shown but you will get one or more sets of some
 of them. The cure is simple: 
 
 <itemize>
@@ -254,7 +258,7 @@ cvs -z3 update -d
 </verb></tscreen>
 
 <P>
-The '-d' is crucial. It makes sure that any new directories that may contain new code
+The '-d' is crucial. It makes sure that any new directories, that may contain new code,
 are created and that new code downloaded. I have absolutely no idea why this is not the
 default, seeing as CVS (in other circumstances) happily recurses its merry way down a 
 directory tree, but there you are.

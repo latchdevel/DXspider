@@ -24,7 +24,7 @@
      2.7 I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?
      2.8 Since I last updated I seem to be getting duplicate spots appearing.
      2.9 I have deleted a message but it is still there, why?
-     2.10 I am updating from CVS and I get all sorts of errors when I restart
+     2.10 I have updated from CVS and I get all sorts of errors when I restart
      2.11 I have done a CVS update, restarted and it says that "fileX" is missing
 
 
@@ -121,10 +121,11 @@
 
 
   All spots are checked that they are no more than 15 minutes in the
-  future and 60 minutes in the past. If your clock is not set to GMT
-  (UTC) and is more than one hour out (say on your local (summer) time)
-  then the test will fail and no spots will come out. Neither will they
-  be stored.
+  future and 60 minutes in the past. If your clock on your client prompt
+  (or console.pl display) is not set to the correct time in GMT (UTC)
+  and is more than one hour out (say on your local (summer) time) then
+  the test will fail and no spots will come out. Neither will they be
+  stored.
 
 
   If you are connected to the internet, most linux distributions have an
@@ -174,7 +175,10 @@
 
   Remember to make it executable!
 
-  This will limit your debug data down to the last 10 days
+  This will limit your debug data down to the last 10 days.
+
+  However, modern versions of DXSpider will do this for you, so this is
+  now probably unnecessary.
 
 
   [1m2.7.  I updated my Linux distribution and now Spider cannot read the[0m
@@ -183,13 +187,11 @@
   Almost certainly this is a change in the db format of perl.  Follow
   these few steps to correct the problem.
 
-
   o  stop the cluster (disable any autostart in inittab)
-
 
   o  cd /spider/data
 
-  o  issue the command perl user_asc
+  o  issue the command: perl user_asc
 
   o  restart the cluster
 
@@ -214,11 +216,11 @@
   [4mdelete/expunge[24m to delete it immediately.
 
 
-  [1m2.10.  I am updating from CVS and I get all sorts of errors when I[0m
+  [1m2.10.  I have updated from CVS and I get all sorts of errors when I[0m
   [1mrestart[0m
 
-  Firstly, whenever you update from CVS, a log is displayed. Next to
-  each file that is downloaded there is a letter, e.g.:
+  Whenever you update from CVS, a log is displayed. Next to each file
+  that is downloaded there is a letter, e.g.:
 
 
 
@@ -238,18 +240,16 @@
 
 
 
-  For normal CVS use you should only ever see the letter 'P'. This means
-  that the file has changed in CVS and is more recent than the one that
-  is currenly on your system. You may also possibly see the letter '?',
-  which means that there is a file that you (or the system) has created
-  that CVS doesn't know about and isn't under its control. These are all
-  normal and good.
+  For normal CVS use you should only ever see the letters 'P', 'U' or
+  '?'. The letter 'P' means that the file has changed in CVS and is more
+  recent than the one that is currently on your system. You will also
+  see the letter '?', which means that there is a file that you (or the
+  system) has created that CVS doesn't know about and isn't under its
+  control. These are all normal and good.
 
 
   Sometimes you will see the letter 'U' next to a file. This means that
   it is a new file that you don't currently have. This is also OK.
-
-
 
   However, if you see the letter 'C' or 'M', that means that CVS thinks
   that the file has changed locally. For the letter 'C', it has changed
@@ -258,8 +258,8 @@
   the change (you may also see some messages about "merging revision
   1.xx with 1.yy").  Neither of these things are good. Files that are
   under the control of CVS must not be changed by sysops. It is the
-  files that have the 'C' next to them that will show the errors and
-  they will be things like:-
+  files that have the 'C' next to them that will show the errors that
+  you are complaining about and they will be things like:-
 
 
 
@@ -269,7 +269,7 @@
 
 
 
-  You will now necessarily see all of the errors shown but you will get
+  You will not necessarily see all of the errors shown but you will get
   one or more sets of some of them. The cure is simple:
 
 
@@ -303,8 +303,8 @@
 
 
 
-  The '-d' is crucial. It makes sure that any new directories that may
-  contain new code are created and that new code downloaded. I have
+  The '-d' is crucial. It makes sure that any new directories, that may
+  contain new code, are created and that new code downloaded. I have
   absolutely no idea why this is not the default, seeing as CVS (in
   other circumstances) happily recurses its merry way down a directory
   tree, but there you are.

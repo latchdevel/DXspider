@@ -55,8 +55,9 @@ watchdbg G0VGS
 <P>Please check the time on your PC. </P>
 
 <P>All spots are checked that they are no more
-than 15 minutes in the future and 60 minutes in the past. If your clock is not set
-to GMT (UTC) and is more than one hour out (say on your local (summer) time) then
+than 15 minutes in the future and 60 minutes in the past. If your clock on your client
+prompt (or console.pl display) is not set to the correct time
+in GMT (UTC) and is more than one hour out (say on your local (summer) time) then
 the test will fail and no spots will come out. Neither will they be stored.</P>
 
 <P>If you are connected to the internet, most linux distributions have an implementation of
@@ -102,7 +103,8 @@ take effect.</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>Remember to make it executable!</P>
-<P>This will limit your debug data down to the last 10 days</P>
+<P>This will limit your debug data down to the last 10 days. </P>
+<P>However, modern versions of DXSpider will do this for you, so this is now probably unnecessary.</P>
 
 <H2><A NAME="ss2.7">2.7</A> <A HREF="spiderFAQ_en.html#toc2.7">I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?</A>
 </H2>
@@ -113,7 +115,7 @@ few steps to correct the problem.</P>
 <UL>
 <LI>stop the cluster (disable any autostart in inittab)</LI>
 <LI>cd /spider/data</LI>
-<LI>issue the command perl user_asc</LI>
+<LI>issue the command: perl user_asc</LI>
 <LI>restart the cluster</LI>
 </UL>
 </P>
@@ -136,10 +138,10 @@ message is marked for deletion and will be deleted in 2 days if nothing
 further is done.  Optionally you can use the command <EM>delete/expunge</EM>
 to delete it immediately.</P>
 
-<H2><A NAME="ss2.10">2.10</A> <A HREF="spiderFAQ_en.html#toc2.10">I am updating from CVS and I get all sorts of errors when I restart</A>
+<H2><A NAME="ss2.10">2.10</A> <A HREF="spiderFAQ_en.html#toc2.10">I have updated from CVS and I get all sorts of errors when I restart</A>
 </H2>
 
-<P>Firstly, whenever you update from CVS, a log is displayed. Next to each
+<P>Whenever you update from CVS, a log is displayed. Next to each
 file that is downloaded there is a letter, e.g.:</P>
 <P>
 <BLOCKQUOTE><CODE>
@@ -161,9 +163,10 @@ U DXProt.pm
 </CODE></BLOCKQUOTE>
 </P>
 
-<P>For normal CVS use you should only ever see the letter 'P'. This means that the file has
-changed in CVS and is more recent than the one that is currenly on your system. You may also
-possibly see the letter '?', which means that
+<P>For normal CVS use you should only ever see the letters 'P', 'U' or '?'. The 
+letter 'P' means that the file has
+changed in CVS and is more recent than the one that is currently on your system. You will also
+see the letter '?', which means that
 there is a file that you (or the system) has created that CVS doesn't know about and isn't 
 under its control. These are all normal and good.</P>
 
@@ -176,7 +179,7 @@ modifications which CVS wants to download to your system. For the 'M', CVS think
 is OK to make the change (you may also see some messages about "merging revision 1.xx with 1.yy").
 Neither of these things are good. Files that are under the control of CVS
 must not be changed by sysops. It is the files that have the 'C' next to them that will show
-the errors and they will be things like:-</P>
+the errors that you are complaining about and they will be things like:-</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -187,7 +190,7 @@ Syntax error near '>>>' at line 51
 </CODE></BLOCKQUOTE>
 </P>
 
-<P>You will now necessarily see all of the errors shown but you will get one or more sets of some
+<P>You will not necessarily see all of the errors shown but you will get one or more sets of some
 of them. The cure is simple: </P>
 <P>
 <UL>
@@ -218,7 +221,7 @@ cvs -z3 update -d
 </CODE></BLOCKQUOTE>
 </P>
 
-<P>The '-d' is crucial. It makes sure that any new directories that may contain new code
+<P>The '-d' is crucial. It makes sure that any new directories, that may contain new code,
 are created and that new code downloaded. I have absolutely no idea why this is not the
 default, seeing as CVS (in other circumstances) happily recurses its merry way down a 
 directory tree, but there you are.</P>
