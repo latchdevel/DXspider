@@ -1,3 +1,5 @@
+29Jun99=======================================================================
+1. fixed merge command that I broke.
 28Jun99=======================================================================
 1. console.pl now works with history and editting.
 2. added scrolling to stuff sent by the cluster.

@@ -252,8 +252,11 @@ sub rec_stdin
 			$pos++;
 			$lth++;
 		} elsif ($r eq "\014" || $r eq "\022") {
+			$top->touchwin();
+			$bot->touchwin();
 			$scr->touchwin();
 			$scr->refresh();
+			$top->refresh();
 		} elsif ($r eq "\013") {
 			$inbuf = substr($inbuf, 0, $pos);
 			$lth = length $inbuf;
