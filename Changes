@@ -1,3 +1,5 @@
+14Jun04=======================================================================
+1. fix previous fix of sh/dx
 09Jan04=======================================================================
 1. removed PC90 which was breaking various filtering things.
 2. added realtime spot formats to sh/dx (at least in basic form), this is
