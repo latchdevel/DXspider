@@ -393,9 +393,9 @@ sub store
 	my $lines = shift;
 	
 	# we only proceed if there are actually any lines in the file
-	if (!$lines || @{$lines} == 0) {
-		return;
-	}
+#	if (!$lines || @{$lines} == 0) {
+#		return;
+#	}
 	
 	if ($ref->{file}) {			# a file
 		dbg('msg', "To be stored in $ref->{to}\n");
