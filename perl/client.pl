@@ -117,6 +117,16 @@ sub rec_socket
 		} elsif ($sort eq 'M') {
 			$mode = $line;		# set new mode from cluster
 			setmode();
+		} elsif ($sort eq 'E') {
+			if ($sort eq 'telnet') {
+				$mode = $line;		# set echo mode from cluster
+				my $term = POSIX::Termios->new;
+				$term->getattr(fileno($sock));
+				$term->setflag( &POSIX::ISIG );
+				$term->setattr(fileno($sock), &POSIX::TCSANOW );
+			}
+		} elsif ($sort eq 'I') {
+			;                       # ignore echoed I frames
 		} elsif ($sort eq 'B') {
 			if ($buffered && $outqueue) {
 				print $stdout $outqueue;
@@ -163,12 +173,12 @@ sub rec_stdin
 			unshift @lines, ($lastbit . $first) if ($first);
 			foreach $first (@lines) {
 				#		  print "send_now $call $first\n";
-				$conn->send_now("D$call|$first");
+				$conn->send_now("I$call|$first");
 			}
 			$lastbit = $buf;
 			$savenl = "";		# reset savenl 'cos we will have done a newline on input
 		} else {
-			$conn->send_now("D$call|$buf");
+			$conn->send_now("I$call|$buf");
 		}
 	} elsif ($r == 0) {
 		cease(1);
@@ -188,7 +198,7 @@ sub doconnect
 		if ($port == 23) {
 			$sock = new Net::Telnet (Timeout => $timeout, BinMode => 1);
 			$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
-			#$sock->option_log('option_log');
+			$sock->option_log('option_log');
 			$sock->dump_log('dump');
 			$sock->open($host) or die "Can't connect to $host port $port $!";
 		} else {

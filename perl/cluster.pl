@@ -164,13 +164,13 @@ sub process_inqueue
 	my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-	dbg('chan', "<- $sort $call $line\n");
+	dbg('chan', "<- $sort $call $line\n") unless $sort eq 'D';
 	
 	# handle A records
 	my $user = $dxchan->user;
 	if ($sort eq 'A' || $sort eq 'O') {
 		$dxchan->start($line, $sort);  
-	} elsif ($sort eq 'D') {
+	} elsif ($sort eq 'I') {
 		die "\$user not defined for $call" if !defined $user;
 		
 		# normal input
@@ -179,6 +179,8 @@ sub process_inqueue
 		disconnect($dxchan) if ($dxchan->{state} eq 'bye');
 	} elsif ($sort eq 'Z') {
 		disconnect($dxchan);
+	} elsif ($sort eq 'D') {
+		;                       # ignored (an echo)
 	} else {
 		print STDERR atime, " Unknown command letter ($sort) received from $call\n";
 	}
