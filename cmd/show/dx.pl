@@ -89,7 +89,7 @@ if ($pre) {
 	$pre .= '*' unless $pre =~ /[\*\?\[]/o;
 	$pre = shellregex($pre);
 	$expr = "\$f1 =~ m{$pre}";
-	$pre =~ s/\^//;
+	$pre =~ s/[\^\$]//g;
 	$hint = "m{\U$pre}";
 }
   
@@ -122,9 +122,10 @@ if ($info) {
 if ($spotter) {
 	$expr .= " && " if $expr;
 	$spotter = shellregex($spotter);
-	$expr .= "\$f4 =~ m{$spotter}";
+	$expr .= "\$f4 =~ m{\U$spotter}";
 	$hint .= " && " if $hint;
-	$hint .= "m{$spotter}";
+	$spotter =~ s/[\^\$]//g;
+	$hint .= "m{\U$spotter}";
 }
 
 # qsl requests
