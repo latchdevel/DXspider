@@ -729,11 +729,13 @@ sub normal
 				my $flags = Route::here($here)|Route::conf($conf);
 				
 				if ($r) {
+					my @add;
+					push @add, $r->addparent($parent);					
 					if ($r->flags != $flags) {
 						$r->flags($flags);
-						push @rout, $r;
+						push @add, $r unless @add;
 					}
-					$r->addparent($parent);
+					push @rout, @add;
 				} else {
 					push @rout, $parent->add_user($call, $flags);
 				}
@@ -1893,8 +1895,8 @@ sub disconnect
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
 
-	# get rid of any PC16/17/19/21s
-	eph_del_regex("^PC(?:1[679]|21).*$call");
+	# get rid of any PC16/17/19
+	eph_del_regex("^PC1[679]*$call");
 
 	# do routing stuff, remove me from routing table
 	my $node = Route::Node::get($call);
@@ -1905,7 +1907,7 @@ sub disconnect
 		# and all my ephemera as well
 		for (@rout) {
 			my $c = $_->call;
-			eph_del_regex("^PC(?:1[679]|21).*$c");
+			eph_del_regex("^PC1[679].*$c");
 		}
 	}
 	
@@ -1919,7 +1921,7 @@ sub disconnect
 		}
 		
 		# and the ephemera
-		eph_del_regex("^PC(?:1[679]|21).*$k");
+		eph_del_regex("^PC1[679].*$k");
 	}
 
 	# unbusy and stop and outgoing mail

@@ -15,6 +15,7 @@ for each 'new' PC16 that the node sees. This is normal and will go away the
 second time the system needs to issue a PC19.
 2. Alter the export_user command to remove users that have no useful info
 and have not been seen for more than (default) 1 year.
+3. fix the problem of users on more than one node not being propagated
 17Jan03=======================================================================
 1. Fix problem with lines being left in the main input queue for a 
 disconnected/ing node.
