@@ -53,6 +53,9 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 		@val = values %{$nlist};
 
 		my $i = 0;
+		if (@val == 0 && $node->users) {
+			push @l, sprintf "(%d users)", $node->users;
+		}
 		foreach $call (@val) {
 			if ($i >= 5) {
 				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
