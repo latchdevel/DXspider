@@ -227,7 +227,7 @@ sub cease
 	# disconnect users
 	foreach $dxchan (DXChannel->get_all()) {
 		next if $dxchan->is_node;
-		$dxchan->disconnect unless $dxchan == $DXProt::me;
+		$dxchan->disconnect(2) unless $dxchan == $DXProt::me;
 	}
 
 	# disconnect AGW
@@ -246,8 +246,8 @@ sub cease
 	DXDb::closeall;
 
 	# close all listeners
-	for (@listeners) {
-		$_->close_server;
+	foreach my $l (@listeners) {
+		$l->close_server;
 	}
 
 	dbg('chan', "DXSpider version $version, build $build ended");
@@ -381,11 +381,11 @@ my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
 $conn->conns("Server $clusteraddr/$clusterport");
 push @listeners, $conn;
 dbg('err', "Internal port: $clusteraddr $clusterport");
-for (@main::listen) {
-	$conn = ExtMsg->new_server($_->[0], $_->[1], \&login);
-	$conn->conns("Server $_->[0]/$_->[1]");
+foreach my $l (@main::listen) {
+	$conn = ExtMsg->new_server($l->[0], $l->[1], \&login);
+	$conn->conns("Server $l->[0]/$l->[1]");
 	push @listeners, $conn;
-	dbg('err', "External Port: $_->[0] $_->[1]");
+	dbg('err', "External Port: $l->[0] $l->[1]");
 }
 AGWrestart();
 

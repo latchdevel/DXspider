@@ -1688,10 +1688,10 @@ sub addrcmd
 sub disconnect
 {
 	my $self = shift;
-	my $nopc39 = shift;
+	my $pc39flag = shift;
 	my $call = $self->call;
 
-	unless ($nopc39) {
+	unless ($pc39flag && $pc39flag == 1) {
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
 
@@ -1709,10 +1709,12 @@ sub disconnect
 	}
 
 	# broadcast to all other nodes that all the nodes connected to via me are gone
-	unless ($self->{isolate}) {
-		push @nodes, $call;
-		for (@nodes) {
-			broadcast_ak1a(pc21($_, 'Gone.'), $self);
+	unless ($pc39flag && $pc39flag == 2) {
+		unless ($self->{isolate}) {
+			push @nodes, $call;
+			for (@nodes) {
+				broadcast_ak1a(pc21($_, 'Gone.'), $self);
+			}
 		}
 	}
 
