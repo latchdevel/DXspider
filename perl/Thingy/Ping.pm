@@ -99,37 +99,34 @@ sub handle
 
 			# it's a reply, look in the ping list for this one
 			my $ref = $ping{$thing->{id}} if exists $thing->{id};
-			$ref ||= find($thing->{origin}, $thing->{group});
+			$ref ||= find(($thing->{user}||$thing->{origin}), ($thing->{touser}||$thing->{group}));
 			if ($ref) {
 				my $t = tv_interval($ref->{t}, [ gettimeofday ]);
+				my $tochan = DXChannel::get($ref->{touser} || $ref->{group});
+				if ($tochan) {
+					my $nopings = $tochan->user->nopings || $DXProt::obscount;
+					push @{$tochan->{pingtime}}, $t;
+					shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
+					
+					# cope with a missed ping, this means you must set the pingint large enough
+					if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
+						$t -= $tochan->{pingint};
+					}
+					
+					# calc smoothed RTT a la TCP
+					if (@{$tochan->{pingtime}} == 1) {
+						$tochan->{pingave} = $t;
+					} else {
+						$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
+					}
+					$tochan->{nopings} = $nopings; # pump up the timer
+				}
 				if (my $dxc = DXChannel::get($ref->{user} || $ref->{origin})) {
-					
-					my $tochan = DXChannel::get($ref->{touser} || $ref->{group});
-					
 					if ($dxc->is_user) {
 						my $s = sprintf "%.2f", $t; 
 						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-						$dxc->send($dxc->msg('pingi', $ref->{user}, $s, $ave))
-					} elsif ($dxc->is_node) {
-						if ($tochan ) {
-							my $nopings = $tochan->user->nopings || $DXProt::obscount;
-							push @{$tochan->{pingtime}}, $t;
-							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-							
-							# cope with a missed ping, this means you must set the pingint large enough
-							if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
-								$t -= $tochan->{pingint};
-							}
-							
-							# calc smoothed RTT a la TCP
-							if (@{$tochan->{pingtime}} == 1) {
-								$tochan->{pingave} = $t;
-							} else {
-								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
-							}
-							$tochan->{nopings} = $nopings; # pump up the timer
-						}
-					}
+						$dxc->send($dxc->msg('pingi', ($ref->{touser} || $ref->{group}), $s, $ave))
+					} 
 				}
 				delete $ping{$ref->{id}};
 			}
