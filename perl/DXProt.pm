@@ -252,8 +252,10 @@ sub normal
 	
     if ($pcno == 21) {             # delete a cluster from the list
 	  my $call = uc $field[1];
-	  my $ref = DXCluster->get($call);
-	  $ref->del() if $ref;
+	  if ($call ne $main::mycall) {              # don't allow malicious buggers to disconnect me!
+	    my $ref = DXCluster->get($call);
+	    $ref->del() if $ref;
+	  }
 	  last SWITCH;
 	}
 	
