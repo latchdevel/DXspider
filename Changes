@@ -1,8 +1,16 @@
+09Jun00=======================================================================
+1. change some print commands in DXMsg to dbg('err'...
+2. overloaded confess, croak et al into DXDebug and removed Carp from 
+everywhere and checked that the necessary debugging really does go into
+the debug files now.
+3. changed print statements in cluster.pl to dbg('err',... so they go into
+the debug files as well.
 08Jun00=======================================================================
 1. fixed problem with binary characters from cluster->client
 2. added set/echo and unset/echo commands
 3. echo login characters on login: prompt for C client
 4. Send \r\n on telnet connections for C Client
+5. Make echoing the default option (for M$ telnet clients :-()
 11May00=======================================================================
 1. fixed looping in Msg.pm (at last)
 10May00=======================================================================
