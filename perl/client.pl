@@ -229,7 +229,7 @@ sub doconnect
 		$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
 		$sock->open($host) or die "Can't connect to $host port $port $!";
 		$sock->binmode(1);
-		$mode = ($port == 23) ? 2 : 3;
+		$mode = 3;
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		my @args = split /\s+/, $line;
 		$rfh = new IO::File;
