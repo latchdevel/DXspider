@@ -249,46 +249,58 @@ Look at the APROPOS <string> command which will search the help database
 for the <string> you specify and give you a list of likely commands
 to look at with HELP.
 
+=== 5^INIT <node>^Re-initialise a link to an AK1A compatible node
+This command attempts to re-initialise a link to a (usually) AK1A node
+that has got confused, usually by a protocol loop of some kind. It may
+work - but you usually will be better off simply disconnecting it (or
+better, if it is a real AK1A node, doing an RCMD <node> DISC/F <your
+node>).
+
+Best of luck - you will need it.
+  
 === 0^KILL <msgno> [<msgno..]^Delete a message from the local system
-Delete a message from the local system. You will only be able to delete messages
-that you have originated or been sent (unless you are the sysop).
+Delete a message from the local system. You will only be able to
+delete messages that you have originated or been sent (unless you are
+the sysop).
 
 === 5^KILL FULL <msgno> [<msgno..]^Delete a message from the whole cluster
 Delete a message (usually a 'bulletin') from the whole cluster system. 
 
-This uses the subject field, so any messages that have exactly the same subject
-will be deleted. Beware!
+This uses the subject field, so any messages that have exactly the
+same subject will be deleted. Beware!
 
 === 0^LINKS^Show which nodes is physically connected
 This is a quick listing that shows which links are connected and
 some information about them. See WHO for a list of all connections.
 
 === 9^LOAD/ALIASES^Reload the command alias table
-Reload the /spider/cmd/Aliases file after you have editted it. You will need to
-do this if you change this file whilst the cluster is running in order for the
-changes to take effect.
+Reload the /spider/cmd/Aliases file after you have editted it. You
+will need to do this if you change this file whilst the cluster is
+running in order for the changes to take effect.
 
 === 9^LOAD/BANDS^Reload the band limits table
 Reload the /spider/data/bands.pl file if you have changed it manually whilst
 the cluster is running. 
 
 === 9^LOAD/CMD_CACHE^Reload the automatic command cache
-Normally, if you change a command file in the cmd or local_cmd tree it will
-automatially be picked up by the cluster program. Sometimes it can get confused
-if you are doing a lot of moving commands about or delete a command in the 
-local_cmd tree and want to use the normal one again. Execute this command to
-reset everything back to the state it was just after a cluster restart.
+Normally, if you change a command file in the cmd or local_cmd tree it
+will automatially be picked up by the cluster program. Sometimes it
+can get confused if you are doing a lot of moving commands about or
+delete a command in the local_cmd tree and want to use the normal one
+again. Execute this command to reset everything back to the state it
+was just after a cluster restart.
 
 === 9^LOAD/MESSAGES^Reload the system messages file
-If you change the /spider/perl/Messages file (usually whilst fiddling/writing new
-commands) you can have them take effect during a cluster session by executing this
-command. You need to do this if get something like :-
+If you change the /spider/perl/Messages file (usually whilst
+fiddling/writing new commands) you can have them take effect during a
+cluster session by executing this command. You need to do this if get
+something like :-
 
 unknown message 'xxxx' in lang 'en'
 
 === 9^LOAD/PREFIXES^Reload the prefix table
-Reload the /spider/data/prefix_data.pl file if you have changed it manually whilst
-the cluster is running. 
+Reload the /spider/data/prefix_data.pl file if you have changed it
+manually whilst the cluster is running.
 
 === 5^MERGE <node> [<no spots>/<no wwv>]^Ask for the latest spots and WWV 
 MERGE allows you to bring your spot and wwv database up to date. By default
@@ -326,9 +338,11 @@ You can look at the status of a message by using:-
 This will display more information on the message than DIR does.
    
 === 8^PC <call> <text>^Send text (eg PC Protocol) to <call>
-Send some arbitrary text to a locally connected callsign. No processing is done on
-the text. This command allows you to send PC Protocol to unstick things if problems
-arise (messages get stuck etc). eg:-
+Send some arbitrary text to a locally connected callsign. No
+processing is done on the text. This command allows you to send PC
+Protocol to unstick things if problems arise (messages get stuck
+etc). eg:-
+
    pc gb7djk PC33^GB7TLH^GB7DJK^400^
 or 
    pc G1TLH Try doing that properly!!!
