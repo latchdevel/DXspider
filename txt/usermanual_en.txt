@@ -109,75 +109,79 @@
      12.57 set/beep
      12.58 set/dx
      12.59 set/dxgrid
-     12.60 set/echo
-     12.61 set/email <email> ...
-     12.62 set/here
-     12.63 set/homenode <node>
-     12.64 set/language <lang>
-     12.65 set/location <lat & long>
-     12.66 set/logininfo
-     12.67 set/name <your name>
-     12.68 set/page <lines per page>
-     12.69 set/password
-     12.70 set/prompt <string>
-     12.71 set/qra <locator>
-     12.72 set/qth <your qth>
-     12.73 set/talk
-     12.74 set/wcy
-     12.75 set/wwv
-     12.76 set/wx
-     12.77 show/configuration [<node>]
-     12.78 show/configuration/node
-     12.79 show/date [<prefix>|<callsign>]
-     12.80 show/dx
-     12.81 show/dxcc <prefix>
-     12.82 show/dxstats [days] [date]
-     12.83 show/files [<filearea> [<string>]]
-     12.84 show/filter
-     12.85 show/hfstats [days] [date]
-     12.86 show/hftable [days] [date] [prefix ...]
-     12.87 show/moon [ndays] [<prefix>|<callsign>]
-     12.88 show/muf <prefix> [<hours>][long]
-     12.89 show/newconfiguration [<node>]
-     12.90 show/newconfiguration/node
-     12.91 show/prefix <callsign>
-     12.92 show/qra <lat> <long>
-     12.93 show/qra <locator> [<locator>]
-     12.94 show/qrz <callsign>
-     12.95 show/route <callsign> ...
-     12.96 show/satellite <name> [<hours> <interval>]
-     12.97 show/station [<callsign> ..]
-     12.98 show/sun [ndays] [<prefix>|<callsign>]
-     12.99 show/time [<prefix>|<callsign>]
-     12.100 show/usdb [call ..]
-     12.101 show/vhfstats [days] [date]
-     12.102 show/vhftable [days] [date] [prefix ...]
-     12.103 show/wcy
-     12.104 show/wcy <n>
-     12.105 show/wwv
-     12.106 show/wwv <n>
-     12.107 sysop
-     12.108 talk <call> > <node> [<text>]
-     12.109 talk <call> [<text>]
-     12.110 type <filearea>/<name>
-     12.111 unset/announce
-     12.112 unset/anntalk
-     12.113 unset/beep
-     12.114 unset/dx
-     12.115 unset/dxgrid
-     12.116 unset/echo
-     12.117 unset/email
-     12.118 unset/here
-     12.119 unset/logininfo
-     12.120 unset/privilege
-     12.121 unset/prompt
-     12.122 unset/talk
-     12.123 unset/wcy
-     12.124 unset/wwv
-     12.125 unset/wx
-     12.126 who
-     12.127 wx <text>
-     12.128 wx full <text>
+     12.60 set/dxstate
+     12.61 set/echo
+     12.62 set/email <email> ...
+     12.63 set/here
+     12.64 set/homenode <node>
+     12.65 set/language <lang>
+     12.66 set/location <lat & long>
+     12.67 set/logininfo
+     12.68 set/name <your name>
+     12.69 set/page <lines per page>
+     12.70 set/password
+     12.71 set/prompt <string>
+     12.72 set/qra <locator>
+     12.73 set/qth <your qth>
+     12.74 set/talk
+     12.75 set/wcy
+     12.76 set/wwv
+     12.77 set/wx
+     12.78 show/configuration [<node>]
+     12.79 show/configuration/node
+     12.80 show/date [<prefix>|<callsign>]
+     12.81 show/db0sdx <callsign>
+     12.82 show/dx
+     12.83 show/dxcc <prefix>
+     12.84 show/dxstats [days] [date]
+     12.85 show/files [<filearea> [<string>]]
+     12.86 show/filter
+     12.87 show/hfstats [days] [date]
+     12.88 show/hftable [days] [date] [prefix ...]
+     12.89 show/moon [ndays] [<prefix>|<callsign>]
+     12.90 show/muf <prefix> [<hours>][long]
+     12.91 show/newconfiguration [<node>]
+     12.92 show/newconfiguration/node
+     12.93 show/prefix <callsign>
+     12.94 show/qra <lat> <long>
+     12.95 show/qra <locator> [<locator>]
+     12.96 show/qrz <callsign>
+     12.97 show/route <callsign> ...
+     12.98 show/satellite <name> [<hours> <interval>]
+     12.99 show/station [<callsign> ..]
+     12.100 show/sun [ndays] [<prefix>|<callsign>]
+     12.101 show/time [<prefix>|<callsign>]
+     12.102 show/usdb [call ..]
+     12.103 show/vhfstats [days] [date]
+     12.104 show/vhftable [days] [date] [prefix ...]
+     12.105 show/wcy
+     12.106 show/wcy <n>
+     12.107 show/wm7d <callsign>
+     12.108 show/wwv
+     12.109 show/wwv <n>
+     12.110 sysop
+     12.111 talk <call> > <node> [<text>]
+     12.112 talk <call> [<text>]
+     12.113 type <filearea>/<name>
+     12.114 unset/announce
+     12.115 unset/anntalk
+     12.116 unset/beep
+     12.117 unset/dx
+     12.118 unset/dxgrid
+     12.119 unset/dxstate
+     12.120 unset/echo
+     12.121 unset/email
+     12.122 unset/here
+     12.123 unset/logininfo
+     12.124 unset/privilege
+     12.125 unset/prompt
+     12.126 unset/talk
+     12.127 unset/wcy
+     12.128 unset/wwv
+     12.129 unset/wx
+     12.130 who
+     12.131 wx <text>
+     12.132 wx full <text>
 
 
   ______________________________________________________________________
@@ -200,6 +204,7 @@
   Of course, the DX is still posted to you all the while!
 
 
+
   11..22..  SSoo wwhhaatt iiss DDXXSSppiiddeerr??
 
   PacketCluster nodes have been around since roughly 1985. The original
@@ -207,6 +212,7 @@
   about 1992 Dick stopped the development of the PacketCluster software
   for amateur radio. Many systems are still using this relatively old
   DOS software today.
+
   There are several new compatible cluster programs around now,
   including DXSpider.  DXSpider is a clone of PacketCluster software
   that runs under several operating systems including Linux and Windows.
@@ -388,9 +394,9 @@
 
 
 
-       show/dx on 20m
-       show/dx 10 on 20m
-       show/dx 20 on 20m
+  show/dx on 20m
+  show/dx 10 on 20m
+  show/dx 20 on 20m
 
 
 
@@ -457,7 +463,6 @@
   information can be found in the Command Set section.
 
 
-
   44..22..  PPoossttiinngg DDXX..
 
   To post DX you use the DDXX command.  The syntax is shown below.
@@ -510,6 +515,7 @@
   return the correct information.
 
 
+
   55..11..  SSuunn
 
   The SSHHOOWW//SSUUNN command can be used in three different ways.  It can be
@@ -520,7 +526,7 @@
 
 
 
-  show/sun
+       show/sun
 
 
 
@@ -567,7 +573,6 @@
        ZS     So-Africa-ZS1-ZS               04:31Z 17:28Z  289.9   41.3
        ZS     So-Africa-ZS5-ZS               03:44Z 16:34Z  278.5   32.0
        ZS     So-Africa-ZS6-ZS               03:59Z 16:42Z  277.6   35.0
-
 
 
   55..22..  MMoooonn
@@ -638,6 +643,7 @@
   EExxaammppllee::
 
 
+
        announce 10 FM is open in IO84NB to europe.
 
 
@@ -688,10 +694,10 @@
 
 
 
-       show/configuration
-       show/configuration/nodes
-       show/configuration (node_call)
-       show/configuration (prefix)
+  show/configuration
+  show/configuration/nodes
+  show/configuration (node_call)
+  show/configuration (prefix)
 
 
 
@@ -699,26 +705,26 @@
 
 
 
-  sh/c
-  Node         Callsigns
-  EI5TCR       (7 users)
-  GB7ADX
-  GB7BAA       G4FPV        G8TIC
-  GB7BIG       (GD0TEP)     GD3UMW
-  GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
-  (GB7CDX)     G3JNB        G4ALR
-  GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
-               G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
-               ON7WP
-  GB7DXA       G0RDI        G8SJP
-  GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
-               G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
-  GB7DXE       G1NNB
-  (GB7DXG)     GU6EFB       GU7DHI
-  GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
-               G4XQY        G7GAN
-  GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
-               M0BCT        M1EMF
+       sh/c
+       Node         Callsigns
+       EI5TCR       (7 users)
+       GB7ADX
+       GB7BAA       G4FPV        G8TIC
+       GB7BIG       (GD0TEP)     GD3UMW
+       GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
+       (GB7CDX)     G3JNB        G4ALR
+       GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
+                    G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
+                    ON7WP
+       GB7DXA       G0RDI        G8SJP
+       GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
+                    G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
+       GB7DXE       G1NNB
+       (GB7DXG)     GU6EFB       GU7DHI
+       GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
+                    G4XQY        G7GAN
+       GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
+                    M0BCT        M1EMF
 
 
 
@@ -751,12 +757,12 @@
 
 
 
-       Node         Callsigns
-       PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
-                    F5NOD-2      F5PAC        IZ0CSR       N6CR         OH2BLD
-                    ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
-                    PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
-                    YT1XX
+  Node         Callsigns
+  PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
+               F5NOD-2      F5PAC        IZ0CSR       N6CR         OH2BLD
+               ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
+               PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
+               YT1XX
 
 
 
@@ -812,7 +818,6 @@
        talk g0rdi Having a good day Iain?
 
 
-
   This example would send the line "Having a good day Iain?" to the user
   g0rdi but would leave you in normal mode.
 
@@ -821,6 +826,7 @@
        talk g0rdi
        Entering Talkmode, /EX to end, /<cmd> to run a command
        Talk (G0RDI)>
+
 
 
   As you can see, you can still run commands whilst in talk mode.
@@ -937,7 +943,6 @@
   it's entirety unless you specify a page length. You can set your page
   length to any number you like and when the message reaches that number
   of lines you will get a prompt giving you options.
-
   EExxaammppllee::
 
 
@@ -998,8 +1003,6 @@
   To delete a message, you use the _d_e_l_e_t_e command.  You can only delete
   messages sent to or received by yourself.  Bulletins are dealt with
   automatically or by the sysop.
-
-
   1100..  FFiilltteerriinngg ((FFrroomm vveerrssiioonn 11..4455))
 
   1100..11..  GGeenneerraall ffiilltteerr rruulleess
@@ -1056,6 +1059,7 @@
 
   For now we are going to use spots for the examples, but you can apply
   the same principles to all types of filter.
+
 
 
   1100..22..  TTyyppeess ooff ffiilltteerr
@@ -1120,9 +1124,6 @@
 
   You can arrange your filter lines into logical units, either for your
   own understanding or simply convenience. Here is an example ...
-
-
-
        reject/spots 1 on hf/cw
        reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)
 
@@ -1130,6 +1131,8 @@
 
   What this does is to ignore all HF CW spots and also rejects any spots
   on VHF which don't either originate or spot someone in Europe.
+
+
   This is an example where you would use a line number (1 and 2 in this
   case), if you leave the digit out, the system assumes '1'. Digits
   '0'-'9' are available.  This make it easier to see just what filters
@@ -1186,7 +1189,6 @@
 
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
-
 
 
   1100..44..  AAddvvaanncceedd ffiilltteerriinngg
@@ -1253,7 +1255,6 @@
   AA..Use the SSEETT//BBEEEEPP command.  You can find information on this in the
   "DXSpider Command Reference" section.
 
-
   QQ..I got disconnected from the cluster and now I can't log back in
   again.  What is wrong?
 
@@ -1319,9 +1320,9 @@
 
 
 
-    acc/ann dest 6MUK
-    acc/ann 2 by_zone 14,15,16
-    (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
+         acc/ann dest 6MUK
+         acc/ann 2 by_zone 14,15,16
+         (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
 
 
 
@@ -2490,25 +2491,31 @@
 
 
 
-  1122..6600..  sseett//eecchhoo
+  1122..6600..  sseett//ddxxssttaattee
+
+  sseett//ddxxssttaattee Allow US State info on the end of DX announcements
+
+
+
+  1122..6611..  sseett//eecchhoo
 
   sseett//eecchhoo Make the cluster echo your input
 
 
 
-  1122..6611..  sseett//eemmaaiill <<eemmaaiill>> ......
+  1122..6622..  sseett//eemmaaiill <<eemmaaiill>> ......
 
   sseett//eemmaaiill <<eemmaaiill>> ...... Set email address(es) and forward your personals
 
 
 
-  1122..6622..  sseett//hheerree
+  1122..6633..  sseett//hheerree
 
   sseett//hheerree Tell the system you are present at your terminal
 
 
 
-  1122..6633..  sseett//hhoommeennooddee <<nnooddee>>
+  1122..6644..  sseett//hhoommeennooddee <<nnooddee>>
 
   sseett//hhoommeennooddee <<nnooddee>>  Set your normal cluster callsign
 
@@ -2522,7 +2529,7 @@
 
 
 
-  1122..6644..  sseett//llaanngguuaaggee <<llaanngg>>
+  1122..6655..  sseett//llaanngguuaaggee <<llaanngg>>
 
   sseett//llaanngguuaaggee <<llaanngg>> Set the language you want to use
 
@@ -2531,19 +2538,19 @@
   Currently the languages available are en (English), de (German), es
   (Spanish) and nl (Dutch).
 
-  1122..6655..  sseett//llooccaattiioonn <<llaatt && lloonngg>>
+  1122..6666..  sseett//llooccaattiioonn <<llaatt && lloonngg>>
 
   sseett//llooccaattiioonn <<llaatt && lloonngg>> Set your latitude and longitude
 
 
 
-  1122..6666..  sseett//llooggiinniinnffoo
+  1122..6677..  sseett//llooggiinniinnffoo
 
   sseett//llooggiinniinnffoo Inform when a station logs in locally
 
 
 
-  1122..6677..  sseett//nnaammee <<yyoouurr nnaammee>>
+  1122..6688..  sseett//nnaammee <<yyoouurr nnaammee>>
 
   sseett//nnaammee <<yyoouurr nnaammee>> Set your name
 
@@ -2554,7 +2561,8 @@
          SET/NAME Dirk
 
 
-  1122..6688..  sseett//ppaaggee <<lliinneess ppeerr ppaaggee>>
+
+  1122..6699..  sseett//ppaaggee <<lliinneess ppeerr ppaaggee>>
 
   sseett//ppaaggee <<lliinneess ppeerr ppaaggee>> Set the lines per page
 
@@ -2571,7 +2579,7 @@
 
   The setting is stored in your user profile.
 
-  1122..6699..  sseett//ppaasssswwoorrdd
+  1122..7700..  sseett//ppaasssswwoorrdd
 
   sseett//ppaasssswwoorrdd Set your own password
 
@@ -2585,13 +2593,13 @@
   it right). You may or may not see the data echoed on the screen as you
   type, depending on the type of telnet client you have.
 
-  1122..7700..  sseett//pprroommpptt <<ssttrriinngg>>
+  1122..7711..  sseett//pprroommpptt <<ssttrriinngg>>
 
   sseett//pprroommpptt <<ssttrriinngg>> Set your prompt to <string>
 
 
 
-  1122..7711..  sseett//qqrraa <<llooccaattoorr>>
+  1122..7722..  sseett//qqrraa <<llooccaattoorr>>
 
   sseett//qqrraa <<llooccaattoorr>> Set your QRA Grid locator
 
@@ -2605,7 +2613,7 @@
 
 
 
-  1122..7722..  sseett//qqtthh <<yyoouurr qqtthh>>
+  1122..7733..  sseett//qqtthh <<yyoouurr qqtthh>>
 
   sseett//qqtthh <<yyoouurr qqtthh>> Set your QTH
 
@@ -2617,31 +2625,31 @@
 
 
 
-  1122..7733..  sseett//ttaallkk
+  1122..7744..  sseett//ttaallkk
 
   sseett//ttaallkk Allow TALK messages to come out on your terminal
 
 
 
-  1122..7744..  sseett//wwccyy
+  1122..7755..  sseett//wwccyy
 
   sseett//wwccyy Allow WCY messages to come out on your terminal
 
 
 
-  1122..7755..  sseett//wwwwvv
+  1122..7766..  sseett//wwwwvv
 
   sseett//wwwwvv Allow WWV messages to come out on your terminal
 
 
 
-  1122..7766..  sseett//wwxx
+  1122..7777..  sseett//wwxx
 
   sseett//wwxx Allow WX messages to come out on your terminal
 
 
 
-  1122..7777..  sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]]
+  1122..7788..  sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]]
 
   sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]] Show all the nodes and users visible
 
@@ -2668,8 +2676,6 @@
   list of the users for that node or list of nodes starting with that
   prefix.
 
-
-
          SH/C GB7DJK
 
 
@@ -2678,14 +2684,14 @@
 
 
 
-  1122..7788..  sshhooww//ccoonnffiigguurraattiioonn//nnooddee
+  1122..7799..  sshhooww//ccoonnffiigguurraattiioonn//nnooddee
 
   sshhooww//ccoonnffiigguurraattiioonn//nnooddee Show all the nodes connected locally
 
 
   Show all the nodes connected to this node.
 
-  1122..7799..  sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
+  1122..8800..  sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
 
   sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -2698,7 +2704,18 @@
   prefixes then it will show UTC and UTC + the local offset (not
   including DST) at the prefixes or callsigns that you specify.
 
-  1122..8800..  sshhooww//ddxx
+  1122..8811..  sshhooww//ddbb00ssddxx <<ccaallllssiiggnn>>
+
+  sshhooww//ddbb00ssddxx <<ccaallllssiiggnn>> Show QSL infomation from DB0SDX database
+
+
+  This command queries the DB0SDX QSL server on the internet and returns
+  any information available for that callsign. This service is provided
+  for users of this software by http://www.qslinfo.de.
+
+  See also SHOW/QRZ, SHOW/WM7D.
+
+  1122..8822..  sshhooww//ddxx
 
   sshhooww//ddxx Interrogate the spot database
 
@@ -2733,6 +2750,7 @@
         day <number>    - starting <number> days ago
         day <from>-<to> - <from> days <to> days ago
             <from>/<to>
+
 
 
         info <text>     - any spots containing <text> in the info or remarks
@@ -2776,19 +2794,19 @@
 
 
 
-     SH/DX 9m0
-     SH/DX on 20m info iota
-     SH/DX 9a on vhf day 30
-     SH/DX rf1p qsl
-     SH/DX iota
-     SH/DX iota eu-064
-     SH/DX qra jn86
-     SH/DX dxcc oq2
-     SH/DX dxcc oq2 by w dxcc
+          SH/DX 9m0
+          SH/DX on 20m info iota
+          SH/DX 9a on vhf day 30
+          SH/DX rf1p qsl
+          SH/DX iota
+          SH/DX iota eu-064
+          SH/DX qra jn86
+          SH/DX dxcc oq2
+          SH/DX dxcc oq2 by w dxcc
 
 
 
-  1122..8811..  sshhooww//ddxxcccc <<pprreeffiixx>>
+  1122..8833..  sshhooww//ddxxcccc <<pprreeffiixx>>
 
   sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
 
@@ -2815,9 +2833,7 @@
           SH/DX dxcc g
           SH/DX dxcc w on 20m iota
 
-
-
-  1122..8822..  sshhooww//ddxxssttaattss [[ddaayyss]] [[ddaattee]]
+  1122..8844..  sshhooww//ddxxssttaattss [[ddaayyss]] [[ddaattee]]
 
   sshhooww//ddxxssttaattss [[ddaayyss]] [[ddaattee]] Show the DX Statistics
 
@@ -2825,7 +2841,7 @@
   Show the total DX spots for the last <days> no of days (default is
   31), starting from a <date> (default: today).
 
-  1122..8833..  sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]]
+  1122..8855..  sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]]
 
   sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]] List the contents of a filearea
 
@@ -2836,6 +2852,8 @@
 
 
           SH/FILES <filearea>
+
+
 
   where <filearea> is the name of the filearea you want to see the con-
   tents of.
@@ -2850,7 +2868,7 @@
 
   See also TYPE - to see the contents of a file.
 
-  1122..8844..  sshhooww//ffiilltteerr
+  1122..8866..  sshhooww//ffiilltteerr
 
   sshhooww//ffiilltteerr Show the contents of all the filters you have set
 
@@ -2858,7 +2876,7 @@
   Show the contents of all the filters that are set. This command
   displays all the filters set - for all the various categories.
 
-  1122..8855..  sshhooww//hhffssttaattss [[ddaayyss]] [[ddaattee]]
+  1122..8877..  sshhooww//hhffssttaattss [[ddaayyss]] [[ddaattee]]
 
   sshhooww//hhffssttaattss [[ddaayyss]] [[ddaattee]] Show the HF DX Statistics
 
@@ -2866,7 +2884,7 @@
   Show the HF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a <date> (default: today).
 
-  1122..8866..  sshhooww//hhffttaabbllee [[ddaayyss]] [[ddaattee]] [[pprreeffiixx ......]]
+  1122..8888..  sshhooww//hhffttaabbllee [[ddaayyss]] [[ddaattee]] [[pprreeffiixx ......]]
 
   sshhooww//hhffttaabbllee [[ddaayyss]] [[ddaattee]] [[pprreeffiixx ......]] Show the HF DX Spotter Table
 
@@ -2923,7 +2941,7 @@
 
 
 
-  1122..8877..  sshhooww//mmoooonn [[nnddaayyss]] [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
+  1122..8899..  sshhooww//mmoooonn [[nnddaayyss]] [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
 
   sshhooww//mmoooonn [[nnddaayyss]] [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show Moon rise and set times
 
@@ -2940,7 +2958,6 @@
 
   If all else fails it will show the Moonrise and set times for the node
   that you are connected to.
-
   For example:-
 
 
@@ -2972,7 +2989,7 @@
   Please note that the rise and set times are given as the UT times of
   rise and set on the requested UT day.
 
-  1122..8888..  sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]]
+  1122..9900..  sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]]
 
   sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]] Show the likely propagation to a
   prefix
@@ -3004,7 +3021,6 @@
   (Zen) and the likely signal strengths. Then for each frequency for
   which the system thinks there is a likelihood of a circuit it prints a
   value.
-
   The value is currently a likely S meter reading based on the
   conventional 6dB / S point scale. If the value has a '+' appended it
   means that it is 1/2 an S point stronger. If the value is preceeded by
@@ -3022,6 +3038,8 @@
 
 
   produces:
+
+
 
          RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
          Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
@@ -3059,9 +3077,10 @@
   should be noted that the figures will probably not be very useful, nor
   terrible accurate, but it is included for completeness.
 
-  1122..8899..  sshhooww//nneewwccoonnffiigguurraattiioonn [[<<nnooddee>>]]
+  1122..9911..  sshhooww//nneewwccoonnffiigguurraattiioonn [[<<nnooddee>>]]
 
   sshhooww//nneewwccoonnffiigguurraattiioonn [[<<nnooddee>>]] Show all the nodes and users visible
+
 
 
   This command allows you to see all the users that can be seen and the
@@ -3074,14 +3093,14 @@
 
   BE WARNED: the list that is returned can be VERY long
 
-  1122..9900..  sshhooww//nneewwccoonnffiigguurraattiioonn//nnooddee
+  1122..9922..  sshhooww//nneewwccoonnffiigguurraattiioonn//nnooddee
 
   sshhooww//nneewwccoonnffiigguurraattiioonn//nnooddee Show all the nodes connected locally
 
 
   Show all the nodes connected to this node in the new format.
 
-  1122..9911..  sshhooww//pprreeffiixx <<ccaallllssiiggnn>>
+  1122..9933..  sshhooww//pprreeffiixx <<ccaallllssiiggnn>>
 
   sshhooww//pprreeffiixx <<ccaallllssiiggnn>> Interrogate the prefix database
 
@@ -3093,7 +3112,7 @@
 
   See also SHOW/DXCC
 
-  1122..9922..  sshhooww//qqrraa <<llaatt>> <<lloonngg>>
+  1122..9944..  sshhooww//qqrraa <<llaatt>> <<lloonngg>>
 
   sshhooww//qqrraa <<llaatt>> <<lloonngg>> Convert lat/long to a QRA Grid locator
 
@@ -3125,13 +3144,13 @@
 
 
 
-  1122..9933..  sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]]
+  1122..9955..  sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]]
 
   sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]] Show distance between QRA Grid locators
 
 
 
-  1122..9944..  sshhooww//qqrrzz <<ccaallllssiiggnn>>
+  1122..9966..  sshhooww//qqrrzz <<ccaallllssiiggnn>>
 
   sshhooww//qqrrzz <<ccaallllssiiggnn>> Show any callbook details on a callsign
 
@@ -3140,7 +3159,9 @@
   returns any information available for that callsign. This service is
   provided for users of this software by http://www.qrz.com
 
-  1122..9955..  sshhooww//rroouuttee <<ccaallllssiiggnn>> ......
+  See also SHOW/WM7D for an alternative.
+
+  1122..9977..  sshhooww//rroouuttee <<ccaallllssiiggnn>> ......
 
   sshhooww//rroouuttee <<ccaallllssiiggnn>> ...... Show the route to the callsign
 
@@ -3149,11 +3170,12 @@
   are connected. It is a sort of inverse sh/config.
 
 
+
         sh/route n2tly
 
 
 
-  1122..9966..  sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]]
+  1122..9988..  sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]]
 
   sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]] Show tracking data
 
@@ -3183,7 +3205,7 @@
 
 
 
-  1122..9977..  sshhooww//ssttaattiioonn [[<<ccaallllssiiggnn>> ....]]
+  1122..9999..  sshhooww//ssttaattiioonn [[<<ccaallllssiiggnn>> ....]]
 
   sshhooww//ssttaattiioonn [[<<ccaallllssiiggnn>> ....]] Show information about a callsign
 
@@ -3199,7 +3221,7 @@
 
   If no callsign is given then show the information for yourself.
 
-  1122..9988..  sshhooww//ssuunn [[nnddaayyss]] [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
+  1122..110000..  sshhooww//ssuunn [[nnddaayyss]] [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
 
   sshhooww//ssuunn [[nnddaayyss]] [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
 
@@ -3245,8 +3267,7 @@
 
   Please note that the rise and set times are given as the UT times of
   rise and set on the requested UT day.
-
-  1122..9999..  sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
+  1122..110011..  sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]]
 
   sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -3256,7 +3277,7 @@
   prefixes then it will show UTC and UTC + the local offset (not
   including DST) at the prefixes or callsigns that you specify.
 
-  1122..110000..  sshhooww//uussddbb [[ccaallll ....]]
+  1122..110022..  sshhooww//uussddbb [[ccaallll ....]]
 
   sshhooww//uussddbb [[ccaallll ....]] Show information held on the FCC Call database
 
@@ -3270,7 +3291,7 @@
 
 
 
-  1122..110011..  sshhooww//vvhhffssttaattss [[ddaayyss]] [[ddaattee]]
+  1122..110033..  sshhooww//vvhhffssttaattss [[ddaayyss]] [[ddaattee]]
 
   sshhooww//vvhhffssttaattss [[ddaayyss]] [[ddaattee]] Show the VHF DX Statistics
 
@@ -3278,7 +3299,7 @@
   Show the VHF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a date (default: today).
 
-  1122..110022..  sshhooww//vvhhffttaabbllee [[ddaayyss]] [[ddaattee]] [[pprreeffiixx ......]]
+  1122..110044..  sshhooww//vvhhffttaabbllee [[ddaayyss]] [[ddaattee]] [[pprreeffiixx ......]]
 
   sshhooww//vvhhffttaabbllee [[ddaayyss]] [[ddaattee]] [[pprreeffiixx ......]] Show the VHF DX Spotter Table
 
@@ -3309,8 +3330,6 @@
 
          sh/vhftable 20 pa
 
-
-
   If you want to start at a different day, simply add the date in some
   recognizable form:-
 
@@ -3333,13 +3352,15 @@
 
          sh/vhftable all
 
-  1122..110033..  sshhooww//wwccyy
+
+
+  1122..110055..  sshhooww//wwccyy
 
   sshhooww//wwccyy Show last 10 WCY broadcasts
 
 
 
-  1122..110044..  sshhooww//wwccyy <<nn>>
+  1122..110066..  sshhooww//wwccyy <<nn>>
 
   sshhooww//wwccyy <<nn>> Show last <n> WCY broadcasts
 
@@ -3347,21 +3368,32 @@
   Display the most recent WCY information that has been received by the
   system
 
-  1122..110055..  sshhooww//wwwwvv
+
+  1122..110077..  sshhooww//wwmm77dd <<ccaallllssiiggnn>>
+
+  sshhooww//wwmm77dd <<ccaallllssiiggnn>> Show callbook details on a US callsigns
+
+
+  This command queries the WM7D callbook server on the internet and
+  returns any information available for that US callsign. This service
+  is provided for users of this software by http://www.wm7d.net.
+
+  See also SHOW/QRZ.
+
+  1122..110088..  sshhooww//wwwwvv
 
   sshhooww//wwwwvv Show last 10 WWV broadcasts
 
 
 
-  1122..110066..  sshhooww//wwwwvv <<nn>>
+  1122..110099..  sshhooww//wwwwvv <<nn>>
 
   sshhooww//wwwwvv <<nn>> Show last <n> WWV broadcasts
 
 
   Display the most recent WWV information that has been received by the
   system
-
-  1122..110077..  ssyyssoopp
+  1122..111100..  ssyyssoopp
 
   ssyyssoopp Regain your privileges if you login remotely
 
@@ -3399,7 +3431,7 @@
   numbers but nothing will happen when you input a string. Any match is
   case sensitive.
 
-  1122..110088..  ttaallkk <<ccaallll>> >> <<nnooddee>> [[<<tteexxtt>>]]
+  1122..111111..  ttaallkk <<ccaallll>> >> <<nnooddee>> [[<<tteexxtt>>]]
 
   ttaallkk <<ccaallll>> >> <<nnooddee>> [[<<tteexxtt>>]] Send a text message to another station
   via a node
@@ -3425,7 +3457,6 @@
 
   All the usual announcements, spots and so on will still come out on
   your terminal.
-
   If you want to do something (such as send a spot) you preceed the
   normal command with a '/' character, eg:-
 
@@ -3457,15 +3488,13 @@
   will send the hftable as you have it to all the people you are
   currently talking to.
 
-
-
-  1122..110099..  ttaallkk <<ccaallll>> [[<<tteexxtt>>]]
+  1122..111122..  ttaallkk <<ccaallll>> [[<<tteexxtt>>]]
 
   ttaallkk <<ccaallll>> [[<<tteexxtt>>]] Send a text message to another station
 
 
 
-  1122..111100..  ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>>
+  1122..111133..  ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>>
 
   ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>> Look at the contents of a file in one of the
   fileareas
@@ -3483,13 +3512,13 @@
   See also SHOW/FILES to see what fileareas are available and a list of
   content.
 
-  1122..111111..  uunnsseett//aannnnoouunnccee
+  1122..111144..  uunnsseett//aannnnoouunnccee
 
   uunnsseett//aannnnoouunnccee Stop announce messages coming out on your terminal
 
 
 
-  1122..111122..  uunnsseett//aannnnttaallkk
+  1122..111155..  uunnsseett//aannnnttaallkk
 
   uunnsseett//aannnnttaallkk Stop talk like announce messages on your terminal
 
@@ -3515,19 +3544,19 @@
 
   allows you to see them again. This is the default.
 
-  1122..111133..  uunnsseett//bbeeeepp
+  1122..111166..  uunnsseett//bbeeeepp
 
   uunnsseett//bbeeeepp Stop beeps for DX and other messages on your terminal
 
 
 
-  1122..111144..  uunnsseett//ddxx
+  1122..111177..  uunnsseett//ddxx
 
   uunnsseett//ddxx Stop DX messages coming out on your terminal
 
 
 
-  1122..111155..  uunnsseett//ddxxggrriidd
+  1122..111188..  uunnsseett//ddxxggrriidd
 
   uunnsseett//ddxxggrriidd Stop QRA Grid Squares on the end of DX announcements
 
@@ -3538,7 +3567,22 @@
   cope with this. You can use this command to reset (or set) this
   feature.
 
-  1122..111166..  uunnsseett//eecchhoo
+  1122..111199..  uunnsseett//ddxxssttaattee
+
+  uunnsseett//ddxxssttaattee Stop US State info on the end of DX announcements
+
+
+  If the spotter's or spotted's US State is known it is output on the
+  end of a DX announcement (there is just enough room).
+
+  A spotter's state will appear on the RHS of the time (like SET/DXGRID)
+  and the spotted's State will appear on the LHS of the time field. Any
+  information found will override any locator information from
+  SET/DXGRID.
+
+  Some user programs cannot cope with this. You can use this command to
+  reset (or set) this feature.
+  1122..112200..  uunnsseett//eecchhoo
 
   uunnsseett//eecchhoo Stop the cluster echoing your input
 
@@ -3552,7 +3596,7 @@
 
   YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
-  1122..111177..  uunnsseett//eemmaaiill
+  1122..112211..  uunnsseett//eemmaaiill
 
   uunnsseett//eemmaaiill Stop personal msgs being forwarded by email
 
@@ -3578,19 +3622,19 @@
 
 
 
-  1122..111188..  uunnsseett//hheerree
+  1122..112222..  uunnsseett//hheerree
 
   uunnsseett//hheerree Tell the system you are absent from your terminal
 
 
 
-  1122..111199..  uunnsseett//llooggiinniinnffoo
+  1122..112233..  uunnsseett//llooggiinniinnffoo
 
   uunnsseett//llooggiinniinnffoo Inform when a station logs out locally
 
 
 
-  1122..112200..  uunnsseett//pprriivviilleeggee
+  1122..112244..  uunnsseett//pprriivviilleeggee
 
   uunnsseett//pprriivviilleeggee Remove any privilege for this session
 
@@ -3600,7 +3644,8 @@
   either logout and login again (if you are on a console) or use the
   SYSOP command.
 
-  1122..112211..  uunnsseett//pprroommpptt
+
+  1122..112255..  uunnsseett//pprroommpptt
 
   uunnsseett//pprroommpptt Set your prompt back to default
 
@@ -3619,46 +3664,45 @@
   UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back
   to normal.
 
-  1122..112222..  uunnsseett//ttaallkk
+  1122..112266..  uunnsseett//ttaallkk
 
   uunnsseett//ttaallkk Stop TALK messages coming out on your terminal
 
 
 
-  1122..112233..  uunnsseett//wwccyy
+  1122..112277..  uunnsseett//wwccyy
 
   uunnsseett//wwccyy Stop WCY messages coming out on your terminal
 
 
 
-  1122..112244..  uunnsseett//wwwwvv
+  1122..112288..  uunnsseett//wwwwvv
 
   uunnsseett//wwwwvv Stop WWV messages coming out on your terminal
 
 
 
-  1122..112255..  uunnsseett//wwxx
+  1122..112299..  uunnsseett//wwxx
 
   uunnsseett//wwxx Stop WX messages coming out on your terminal
 
 
 
-  1122..112266..  wwhhoo
+  1122..113300..  wwhhoo
 
   wwhhoo Show who is physically connected
-
 
 
   This is a quick listing that shows which callsigns are connected and
   what sort of connection they have
 
-  1122..112277..  wwxx <<tteexxtt>>
+  1122..113311..  wwxx <<tteexxtt>>
 
   wwxx <<tteexxtt>> Send a weather message to local users
 
 
 
-  1122..112288..  wwxx ffuullll <<tteexxtt>>
+  1122..113322..  wwxx ffuullll <<tteexxtt>>
 
   wwxx ffuullll <<tteexxtt>> Send a weather message to all cluster users
 

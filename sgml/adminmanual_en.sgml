@@ -3672,6 +3672,14 @@ You can carry on with the message until you are ready to send it.
 </tt>
 
 <P>
+<sect1>set/dxstate (0)
+
+<P>
+<tt>
+<bf>set/dxstate</bf> Allow US State info on the end of DX announcements
+</tt>
+
+<P>
 <sect1>set/echo (0)
 
 <P>
@@ -4015,6 +4023,19 @@ If no prefixes or callsigns are given then this command returns the local
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
+<sect1>show/db0sdx &lt;callsign&gt; (0)
+
+<P>
+<tt>
+<bf>show/db0sdx &lt;callsign&gt;</bf> Show QSL infomation from DB0SDX database
+</tt>
+
+<P>
+This command queries the DB0SDX QSL server on the internet
+and returns any information available for that callsign. This service
+is provided for users of this software by http://www.qslinfo.de.
+
+See also SHOW/QRZ, SHOW/WM7D.
 <sect1>show/dx (0)
 
 <P>
@@ -4508,6 +4529,8 @@ example:-
 This command queries the QRZ callbook server on the internet
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
+
+See also SHOW/WM7D for an alternative.
 <sect1>show/route &lt;callsign&gt; ... (0)
 
 <P>
@@ -4725,6 +4748,20 @@ the worldwide statistics.
 
 <P>
 Display the most recent WCY information that has been received by the system
+ 
+<sect1>show/wm7d &lt;callsign&gt; (0)
+
+<P>
+<tt>
+<bf>show/wm7d &lt;callsign&gt;</bf> Show callbook details on a US callsigns
+</tt>
+
+<P>
+This command queries the WM7D callbook server on the internet
+and returns any information available for that US callsign. This service
+is provided for users of this software by http://www.wm7d.net.
+
+See also SHOW/QRZ. 
 <sect1>show/wwv (0)
 
 <P>
@@ -5153,6 +5190,24 @@ that if the spotter's grid square is known it is output on the end
 of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. You can use this command to reset (or set)
 this feature.
+<sect1>unset/dxstate (0)
+
+<P>
+<tt>
+<bf>unset/dxstate</bf> Stop US State info on the end of DX announcements
+</tt>
+
+<P>
+If the spotter's or spotted's US State is known it is output on the 
+end of a DX announcement (there is just enough room). 
+
+A spotter's state will appear on the RHS of the time (like 
+SET/DXGRID) and the spotted's State will appear on the LHS of the
+time field. Any information found will override any locator 
+information from SET/DXGRID.
+
+Some user programs cannot cope with this. You can use this command 
+to reset (or set) this feature.
 <sect1>unset/echo (0)
 
 <P>
