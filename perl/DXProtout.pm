@@ -94,7 +94,7 @@ sub pc17
 sub pc18
 {
 	my $info = DXCluster::cluster;
-	return "PC18^$info^$DXProt::myprot_version^~";
+	return "PC18^$info^$DXProt::myprot_version^";
 }
 
 #
