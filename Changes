@@ -1,5 +1,7 @@
 06Jul01=======================================================================
 1. fix talk and routing problems to mycall
+2. add unset/privilege command to relinquish any sysop privileges you might 
+have for the current session.
 05Jul01=======================================================================
 1. disconnect channels whose route node has disappeared
 29Jun01=======================================================================
