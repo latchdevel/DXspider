@@ -33,14 +33,14 @@ if ($f[0] =~ /^by$/i) {
 }
 
 # get the freq and callsign either way round
-if (is_freq($f[1])) {
+if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 	$spotted = uc $f[0];
 	$freq = $f[1];
-} elsif (is_freq($f[0])) {
+} elsif (is_freq($f[0]) && $f[1] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
     $freq = $f[0];
 	$spotted = uc $f[1];
 } else {
-	return (1, $self->msg('dx2'));
+	return (1, $self->msg('dx3'));
 }
 
 # make line the rest of the line

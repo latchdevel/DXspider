@@ -48,6 +48,7 @@ package DXM;
 				dup => 'Sorry, this is a duplicate',
 				dx1 => 'Frequency $_[0] not in band (see show/band); usage: DX [BY call] freq call comments',
 				dx2 => 'Need a callsign; usage: DX [BY call] freq call comments',
+				dx3 => 'The callsign or frequency is invalid',
 				dxs => 'DX Spots flag set on $_[0]',
 				dxu => 'DX Spots flag unset on $_[0]',
 				e1 => 'Invalid command',
