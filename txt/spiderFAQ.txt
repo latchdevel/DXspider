@@ -1,6 +1,6 @@
   The DXSpider FAQ
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 0.3 January 2001
+  Version 0.4 March 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -21,6 +21,7 @@
      2.2 How can I monitor traffic to and from a node or user?
      2.3 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.
      2.4 I do not seem to be sending any bulletin mail to my link partners, what is wrong?
+     2.5 How can I automatically limit the amount of debug logfiles that are stored?
 
 
   ______________________________________________________________________
@@ -63,7 +64,6 @@
   The tarballs are designed to not overwrite your existing configuration
   and can be used at any time to update your Spider software.  All the
   key files have the suffix .issue (eg. DXVars.pm.issue) at default.
-
   11..44..  II aamm rruunnnniinngg RReeddHHaatt 55..22 aanndd II aamm ggeettttiinngg ssttrraannggee eerrrroorrss,, wwhhaatt iiss
   wwrroonngg??
 
@@ -139,19 +139,19 @@
   take effect.
 
 
+  22..55..  HHooww ccaann II aauuttoommaattiiccaallllyy lliimmiitt tthhee aammoouunntt ooff ddeebbuugg llooggffiilleess tthhaatt
+  aarree ssttoorreedd??
+
+  Use the tmpwatch command.  Add a line in /etc/cron.daily like this ...
+
+
+
+       /usr/sbin/tmpwatch -f 240 /spider/data/debug
 
 
 
 
-
-
-
-
-
-
-
-
-
+  This will limit your debug data down to the last 10 days
 
 
 

@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.33 (Revision 3) February 2001
+<date>Version 1.33 (Revision 1.20) February 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -3993,7 +3993,7 @@ for more information.
 
 <P>
 <tt>
-<bf>show/badspotter</bf>Show all the bad spotters in the system
+<bf>show/badspotter</bf> Show all the bad spotters in the system
 </tt>
 
 <P>
