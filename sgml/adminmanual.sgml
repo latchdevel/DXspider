@@ -4016,7 +4016,7 @@ is provided for users of this software by http://www.qrz.com
 </tt>
 
 <P>
-This command allows you to see which node the callsigns specified are
+This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 
 <verb>

@@ -4445,8 +4445,8 @@
   sshhooww//rroouuttee <<ccaallllssiiggnn>> Show the route to <callsign>
 
 
-  This command allows you to see which node the callsigns specified are
-  connected. It is a sort of inverse sh/config.
+  This command allows you to see to which node the callsigns specified
+  are connected. It is a sort of inverse sh/config.
 
 
     sh/route n2tly

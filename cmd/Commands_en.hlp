@@ -1348,7 +1348,7 @@ and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 
 === 0^SHOW/ROUTE <callsign> ...^Show the route to the callsign
-This command allows you to see which node the callsigns specified are
+This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 
 sh/route n2tly
