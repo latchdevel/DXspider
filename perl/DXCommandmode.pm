@@ -630,7 +630,7 @@ sub talk
 {
 	my ($self, $from, $to, $via, $line) = @_;
 	$line =~ s/\\5E/\^/g;
-	$self->send("$to de $from $line") if $self->{talk};
+	$self->send("$to de $from: $line") if $self->{talk};
 	Log('talk', $to, $from, $main::mycall, $line);
 }
 
