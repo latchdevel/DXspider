@@ -499,8 +499,10 @@ void process_node()
 			case 'D':
 				if (p) {
 					int l = mp->inp - (unsigned char *) p;
+					if (nl == '\n' && l >= 1 && p[l-1] == '\r')       /* kludge for GB7DXM */
+						l--;
 					send_text(in, p, l);
-			}
+				}
 				break;
 			default:
 				break;
