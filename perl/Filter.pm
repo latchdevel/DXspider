@@ -51,9 +51,10 @@ use Carp;
 
 use strict;
 
-use vars qw ($filterbasefn);
+use vars qw ($filterbasefn $in);
 
 $filterbasefn = "$main::root/filter";
+$in = undef;
 
 # initial filter system
 sub init
@@ -103,10 +104,10 @@ sub read_in
 {
 	my ($sort, $call) = @_;
 	my $fn = "$filterbasefn/$sort/$call.pl";
-	my $in;
 	
 	if (-e $fn) {
-		do $fn;
+		do "$fn";
+		dbg('conn', "$@") if $@;
 		return $in;
 	}
 	return undef;
