@@ -199,6 +199,19 @@ sub init
 {
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
+
+	my $user = DXUser->get($main::mycall);
+	$DXProt::myprot_version += $main::version*100;
+	$main::me = DXProt->SUPER::alloc($main::mycall, 0, $user); 
+	$main::me->{here} = 1;
+	$main::me->{state} = "indifferent";
+	$main::me->{sort} = 'S';    # S for spider
+	$main::me->{priv} = 9;
+	$main::me->{metric} = 0;
+	$main::me->{pingave} = 0;
+	$main::me->{registered} = 1;
+	$main::me->{version} = $main::version;
+	$main::me->{build} = $main::build;
 }
 
 #
@@ -212,8 +225,12 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
 
+	my $uref = Route::Node::get($call) || Route::Node->new($call);
+	$uref->here(1);
+	$uref->conf(0);
+	$uref->version(5000);
+	$main::routeroot->link_node($uref, $self);
 	return $self;
 }
 
@@ -1402,6 +1419,7 @@ sub handle_59
 
 	# now do it properly for actions
 	my $node = Route::Node::get($ncall) || Route::Node::new($ncall);
+	$node->newroute(1);
 
 	# find each of the entries (or create new ones)
 	my @refs;
@@ -1454,7 +1472,7 @@ sub handle_59
 			next;
 		}
 		$ref->here($ehere);		# might as well set this here
-		$ref->lastheard($main::systime);
+		$ref->lastseen($main::systime);
 		push @refs, $ref;
 	}
 
@@ -1518,7 +1536,6 @@ sub handle_59
 		push @addnode, $node->link_node($_, $self) for @an;
 		push @adduser, $node->add_user($_) for @au;
 	}
-
 
 	$self->route_pc21($origin, $line, @delnode) if @delnode;
 	$self->route_pc19($origin, $line, @addnode) if @addnode;
@@ -1957,7 +1974,7 @@ sub send_local_config
 	if ($self->{newroute}) {
 		my @nodes = $self->{isolate} ? ($main::routeroot) : grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
 		my @users = DXChannel::get_all_users();
-		$self->send_route($main::mycall, \&pc59c, @nodes+@users+1, (grep { Route::get($_) } $main::routeroot, @nodes, @users));
+		$self->send_route($main::mycall, \&pc59, @nodes+@users+4, 'C', 0, $main::mycall, (grep { Route::get($_) } $main::routeroot, @nodes, @users));
 	} else {
 		# send our nodes
 		if ($self->{isolate}) {
@@ -2219,29 +2236,23 @@ sub disconnect
 	# do routing stuff, remove me from routing table
 	my $node = Route::Node::get($call);
 	my @rout;
+	my @rusers;
 	if ($node) {
-		@rout = $node->del($main::routeroot);
+
+		# remove the route from this node and return a list
+		# of nodes that have become orphanned as a result. 
+		push @rout, $main::routeroot->remove_route($node, $self);
+
+		# remove all consequently orphanned users from these nodes
+		push @rusers, $_->unlink_all_users for @rout;
 		
-		# and all my ephemera as well
+		# remove all my ephemera as well
 		for (@rout) {
 			my $c = $_->call;
 			eph_del_regex("^PC1[679].*$c");
 		}
 	}
 	
-	# remove them from the pc19list as well
-	while (my ($k,$v) = each %pc19list) {
-		my @l = grep {$_->[0] ne $call} @{$pc19list{$k}};
-		if (@l) {
-			$pc19list{$k} = \@l;
-		} else {
-			delete $pc19list{$k};
-		}
-		
-		# and the ephemera
-		eph_del_regex("^PC1[679].*$k");
-	}
-
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;
@@ -2249,8 +2260,12 @@ sub disconnect
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
+		$self->route_pc59('D', 0, $main::mycall, $node);
 	}
 
+	# delete all the unwanted nodes
+	$_->delete for @rout, @rusers;
+	
 	# remove outstanding pings
 	delete $pings{$call};
 	
@@ -2297,7 +2312,6 @@ sub send_route
 		# deal with non routing parameters
 		unless (ref $r && $r->isa('Route')) {
 			push @rin, $r;
-			$no++;
 			next;
 		}
 		
@@ -2419,8 +2433,7 @@ sub route_pc59
 	my $origin = shift;
 	my $line = shift;
 
-	# @_ - 2 because we start with [ACD], hexstamp
-	broadcast_route($self, $origin, \&pc59, $line, scalar @_ - 2, @_);
+	broadcast_route($self, $origin, \&pc59, $line, scalar @_, @_);
 }
 
 sub in_filter_route

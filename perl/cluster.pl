@@ -68,7 +68,6 @@ use DXCommandmode;
 use DXProtVars;
 use DXProtout;
 use DXProt;
-use QXProt;
 use DXMsg;
 use DXCron;
 use DXConnect;
@@ -195,22 +194,7 @@ sub new_channel
 	
 
 	# create the channel
-	if ($user->wantnp) {
-		if ($user->passphrase && $main::me->user->passphrase) {
-			$dxchan = QXProt->new($call, $conn, $user);
-		} else {
-			unless ($user->passphrase) {
-				Log('DXCommand', "$call using NP but has no passphrase");
-				dbg("$call using NP but has no passphrase");
-			}
-			unless ($main::me->user->passphrase) {
-				Log('DXCommand', "$main::mycall using NP but has no passphrase");
-				dbg("$main::mycall using NP but has no passphrase");
-			}
-			already_conn($conn, $call, "Need to exchange passphrases");
-			return;
-		}
-	} elsif ($user->is_node) {
+	if ($user->is_node) {
 		$dxchan = DXProt->new($call, $conn, $user);
 	} elsif ($user->is_user) {
 		$dxchan = DXCommandmode->new($call, $conn, $user);
@@ -498,10 +482,14 @@ Spot->init();
 # initialise the protocol engine
 dbg("Start Protocol Engines ...");
 DXProt->init();
-QXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
+$routeroot = Route::Node->new($mycall);
+$routeroot->version($version*100+5300);
+$routeroot->here($main::me->here || 1);
+$routeroot->conf($main::me->conf || 0);
+$routeroot->add_dxchan($me);
+$routeroot->lastseen(time);
 
 # make sure that there is a routing OUTPUT node default file
 #unless (Filter::read_in('route', 'node_default', 0)) {
@@ -552,7 +540,6 @@ for (;;) {
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
-		QXProt::process();
 		DXConnect::process();
 		DXMsg::process();
 		DXDb::process();

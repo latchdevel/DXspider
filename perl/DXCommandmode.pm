@@ -64,11 +64,13 @@ sub new
 	# routing, this must go out here to prevent race condx
 	my $pkg = shift;
 	my $call = shift;
-	my @rout = $main::routeroot->add_user($call, Route::here(1));
+	my $uref = Route::User::get($call) || Route::User->new($call);
+	$uref->here(1);
+	$uref->conf(0);
+	$main::routeroot->add_user($uref);
 
 	# ALWAYS output the user
-	my $ref = Route::User::get($call);
-	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
+	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $uref);
 
 	return $self;
 }

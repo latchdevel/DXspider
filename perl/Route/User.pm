@@ -48,7 +48,7 @@ sub new
 	my $pkg = shift;
 	my $call = uc shift;
 	my $ncall = uc shift;
-	my $flags = shift;
+	my $flags = shift || Route::here(1);
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);

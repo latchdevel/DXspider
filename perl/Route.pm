@@ -152,7 +152,8 @@ sub here
 	my $r = shift;
 	return $self ? 2 : 0 unless ref $self;
 	return ($self->{flags} & 2) ? 1 : 0 unless defined $r;
-	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
+	$self->{flags} &= ~2;
+	$self->{flags} |= $r ? 2 : 0;
 	return $r ? 1 : 0;
 }
 
@@ -162,7 +163,8 @@ sub conf
 	my $r = shift;
 	return $self ? 1 : 0 unless ref $self;
 	return ($self->{flags} & 1) ? 1 : 0 unless defined $r;
-	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
+	$self->{flags} &= ~1;
+	$self->{flags} |= $r ? 1 : 0;
 	return $r ? 1 : 0;
 }
 

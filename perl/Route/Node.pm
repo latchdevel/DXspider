@@ -29,6 +29,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
+		  newroute => '0,New Routing?,yesno',
 );
 
 $filterdef = $Route::filterdef;
@@ -58,12 +59,11 @@ sub link_node
 {
 	my ($self, $neighbour, $dxchan) = @_;
 
-	my $r = $self->is_empty('dxchan');
+	my $r = $neighbour->is_empty('dxchan');
 	$self->_addlist('nodes', $neighbour);
 	$neighbour->_addlist('nodes', $self);
-	$self->_addlist('dxchan', $dxchan);
 	$neighbour->_addlist('dxchan', $dxchan);
-	return $r ? ($self) : ();
+	return $r ? ($neighbour) : ();
 }
 
 # unlink a node from a neighbour and remove any
@@ -76,9 +76,49 @@ sub unlink_node
 	my ($self, $neighbour, $dxchan) = @_;
 	$self->_dellist('nodes', $neighbour);
 	$neighbour->_dellist('nodes', $self);
-	$self->_dellist('dxchan', $dxchan);
-	$neighbour->_dellist('dxchan', $dxchan);
-	return $self->is_empty('dxchan') ? ($self) : ();
+	$neighbour->_dellist('dxchan', $dxchan) if $dxchan;
+	return $neighbour->is_empty('dxchan') ? ($neighbour) : ();
+}
+
+sub remove_route
+{
+	my ($self, $neighbour, $dxchan) = @_;
+
+	# cut the dxchan link
+	# cut the node link
+	my @rout;
+	push @rout, $self->unlink_node($neighbour, $dxchan);
+	dbg("Orphanning $neighbour->{call}") if isdbg('routelow');
+	
+	# then run down the tree removing this dxchan link from
+	# all the referenced nodes that use this interface
+	my %visited;
+	my @in = map { Route::Node::get($_) } $neighbour->nodes;
+	foreach my $r (@in) {
+		next unless $r;
+		next if $visited{$r->call};
+		my ($o) = $r->del_dxchan($self);
+		if ($o) {
+			dbg("Orphanning $_->{call}") if isdbg('routelow');
+			push @rout, $o;
+		}
+		push @in, map{ Route::Node::get($_) } $r->nodes;
+		$visited{$r->call} = $r;
+	}
+	
+	# in @rout there should be a list of orphaned (in dxchan terms)
+	# nodes. Now go thru and make sure that all their links are
+	# broken (they should be, but this is to check).
+	
+	foreach my $r (@rout) {
+		my @nodes = map { Route::Node::get($_)} $r->nodes;
+		for (@nodes) {
+			next unless $_;
+			dbg("Orphaned node $_->{call}: breaking link to $_->{call}") if isdbg('routelow');
+			$r->unlink_node($_);
+		}
+	}
+	return @rout;
 }
 
 # add a user to this node
@@ -102,6 +142,20 @@ sub del_user
 	$uref->_dellist('nodes', $self);
 	$self->{usercount} = scalar @{$self->{users}};
 	return $uref->is_empty('nodes') ? ($uref) : ();
+}
+
+# add a single dxchan link
+sub add_dxchan
+{
+	my ($self, $dxchan) = @_;
+	return $self->_addlist('dxchan', $dxchan);
+}
+
+# remove a single dxchan link
+sub del_dxchan
+{
+	my ($self, $dxchan) = @_;
+	return $self->_dellist('dxchan', $dxchan);
 }
 
 sub usercount
@@ -128,10 +182,12 @@ sub nodes
 sub unlink_all_users
 {
 	my $self = shift;
-	foreach my $u (${$self->{nodes}}) {
+	my @rout;
+	foreach my $u (${$self->{users}}) {
 		my $uref = Route::User::get($u);
-		$self->unlink_user($uref) if $uref;
+		push @rout, $self->del_user($uref) if $uref;
 	}
+	return @rout;
 }
 
 sub new
@@ -143,11 +199,10 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{dxchan} = ref $pkg ? [ $pkg->{call} ] : [ ];
-	$self->{version} = shift;
-	$self->{flags} = shift;
+	$self->{version} = shift || 5000;
+	$self->{flags} = shift || Route::here(1);
 	$self->{users} = [];
 	$self->{nodes} = [];
-	$self->{lid} = 0;
 	
 	$list{$call} = $self;
 	dbg("creating Route::Node $self->{call}") if isdbg('routelow');
