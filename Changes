@@ -3,6 +3,7 @@
 2. display 'start time' rather than 'user last time in' in who.
 3. Allow local users to see their own sh/talk or sh/log stuff.
 4. A more robust version of the C client.
+5. Added a message exporting command 'export'.
 26Mar00=======================================================================
 1. first cut of C client
 18Mar00=======================================================================

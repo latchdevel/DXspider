@@ -216,6 +216,20 @@ You can credit someone else by saying:-
 The <freq> is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
 
+=== 9^EXPORT <msgno> <filename>^Export a message to a file
+Export a message to a file. This command can only be executed on a local
+console with a fully privileged user. The file produced will be in a form
+ready to be imported back into the cluster by placing it in the import 
+directory (/spider/msg/import).
+
+This command cannot overwrite an existing file. This is to provide some 
+measure of security. Any files written will owned by the same user as the 
+main cluster, otherwise you can put the new files anywhere the cluster can
+access. For example:-
+
+  EXPORT 2345 /tmp/a
+
+
 === 1^FORWARD/OPERNAME <call>^Send out information on this <call> to all clusters
 This command sends out any information held in the user file which can 
 be broadcast in PC41 protocol packets. This information is Name, QTH, Location
