@@ -27,7 +27,7 @@ $main::branch += $BRANCH;
 
 use vars qw($sentencelth);
 
-$sentencelth = 200;
+$sentencelth = 180;
  
 #
 # All the PCxx generation routines
@@ -141,7 +141,7 @@ sub pc19
 		my $here = $ref->here;
 		my $conf = $ref->conf;
 		my $version = $ref->version;
-	    my $str = "^$here^$call^$conf^$version";
+		my $str = "^$here^$call^$conf^$version";
 		if (length($s) + length($str) >= $sentencelth) {
 			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
 			$s = "";
