@@ -1,3 +1,6 @@
+04Dec02=======================================================================
+1. updated sh/log to allow searching for more arbitrary strings such as IP
+addresses
 08Nov02=======================================================================
 1. update Keps.pm to reflect which satellites now come round in the weekly
 updates. I suggest that you copy this file to /spider/local and do a load/kep
