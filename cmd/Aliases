@@ -100,7 +100,8 @@ package CmdAlias;
 	  '^sh\w*/w\w*/(\d+)', 'show/wwv $1', 'show/wwv',
     ],
 	't' => [
-	  '^t', 'talk', 'talk',
+	  '^ta$', 'talk', 'talk',
+	  '^t$', 'talk', 'talk',
 	],
 	'u' => [
 	],

@@ -355,6 +355,16 @@ e.g.
    SH/DXCC G
    SH/DXCC W on 20m info iota
 
+=== 0^SHOW/FILES [<filearea>]^List the contents of a filearea
+SHOW/FILES on its own will show you a list of the various fileareas
+available on the system. To see the contents of a particular file
+area type:-
+   SH/FILES <filearea>
+where <filearea> is the name of the filearea you want to see the 
+contents of.
+
+See also TYPE - to see the contents of a file.
+
 === 0^SHOW/PREFIX <callsign>^Interrogate the prefix database 
 This command takes the <callsign> (which can be a full or partial 
 callsign or a prefix), looks up which internal country number 
@@ -424,6 +434,14 @@ the user information usually associated with logging on and off the cluster.
 If you know that G3JNB is likely to be present on GB7TLH, but you can only
 see GB7TLH in the SH/C list but with no users, then you would use the
 second form of the talk message.
+
+=== 0^TYPE <filearea>/<name>^Look at the contents of a file in one of the fileareas
+Type out the contents of a file in a filearea. So, for example, in 
+filearea 'bulletins' you want to look at file 'arld051' you would 
+enter:-
+   TYPE bulletins/arld051
+
+See also SHOW/FILES to see what fileareas are available and a list of content
 
 === 0^WX <text>^Send a weather message to local users
 === 0^WX FULL <text>^Send a weather message to all cluster users
