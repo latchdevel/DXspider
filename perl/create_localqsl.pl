@@ -97,15 +97,11 @@ sub update
 	
 	# decode the lines
 	foreach my $l (@lines) {
-		my ($date, $time, $oby, $ocom) = $l =~ /^(\s?\S+)\s+(\s?\S+)\s+by\s+(\S+):\s+(.*)$/;
+		my ($date, $time, $oby, $ocom) = $l =~ /^(\s?\S+)\s+(\s?\S+)\s+de\s+(\S+):\s+(.*)$/;
 		if ($date) {
 			my $ot = cltounix($date, $time);
 			push @in, [$ot, $oby, $ocom];
-		} else {
-			print "Cannot decode $call: $l\n";
-			$DB::single = 1;
 		}
-		
 	}
 	
 	# is this newer than the earliest one?
@@ -113,8 +109,8 @@ sub update
 		@in = grep {$_->[1] ne $by} @in;
 	}
 	$comment =~ s/://g;
-	unshift @in, [$t, $by, $comment] if grep is_callsign($_), split(/\s+/, $comment);
+	unshift @in, [$t, $by, $comment] if grep /^bur/i || is_callsign(uc $_), split(/\b/, $comment);
 	pop @in, if @in > 10;
-	return join "\n", (map {(cldatetime($_->[0]) . " by $_->[1]: $_->[2]")} @in);
+	return join "\n", (map {(cldatetime($_->[0]) . " de $_->[1]: $_->[2]")} @in);
 }
 

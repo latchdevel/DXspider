@@ -47,16 +47,17 @@ $main::branch += $BRANCH;
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($call, $to, $text) = @_; 
+	my ($call, $to, $text, $t) = @_; 
 
+	$t ||= $main::systime + $dupage;
 	chomp $text;
 	unpad($text);
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
-	$text =~ s/[^a-zA-Z0-9]//g;
+	$text =~ s/[^\#a-zA-Z0-9]//g;
 	my $dupkey = "A$to|\L$text";
-	return DXDupe::check($dupkey, $main::systime + $dupage);
+	return DXDupe::check($dupkey, $t);
 }
 
 sub listdups

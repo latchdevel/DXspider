@@ -26,7 +26,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots);
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots );
 
 $fp = undef;
 $statp = undef;

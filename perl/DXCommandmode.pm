@@ -802,6 +802,26 @@ sub announce
 	$self->local_send($target eq 'WX' ? 'W' : 'N', $buf);
 }
 
+# send a chat
+sub chat
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my $to = shift;
+	my $target = shift;
+	my $text = shift;
+	my ($filter, $hops);
+
+	return unless grep uc $_ eq $target, @{$self->{user}->{group}};
+	
+	$text =~ s/^\#\d+ //;
+	my $buf = "$target de $_[0]: $text";
+	$buf =~ s/\%5E/^/g;
+	$buf .= "\a\a" if $self->{beep};
+	$self->local_send('C', $buf);
+}
+
 # send a dx spot
 sub dx_spot
 {

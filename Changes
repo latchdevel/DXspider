@@ -1,3 +1,7 @@
+08Mar03=======================================================================
+1. Added chat, join, leave commands to allow general purpose conferencing
+on arbitrary subjects. [Translators: added e34,e35,join,leave]. There is
+currently no help. There is also sh/chat.
 28Feb03=======================================================================
 1. Charlie K1XX fixed the sh/iso, sh/reg and sh/node commands
 25Feb03=======================================================================

@@ -46,7 +46,7 @@ sub print
 	if ($pattern) {
 		$hint = "m{\\Q$pattern\\E}i";
 	} else {
-		$hint = "!m{ann|rcmd|talk}";
+		$hint = "!m{ann|rcmd|talk|chat}";
 	}
 	if ($who) {
 		$hint .= ' && ' if $hint;
@@ -115,8 +115,9 @@ sub print_item
 	} elsif ($r->[1] eq 'talk') {
 		$r->[5] ||= "";
 		$s = "$r->[3] -> $r->[2] ($r->[4]) $r->[5]";
-	} elsif ($r->[1] eq 'ann') {
+	} elsif ($r->[1] eq 'ann' || $r->[1] eq 'chat') {
 		$r->[4] ||= "";
+		$r->[4] =~ s/^\#\d+ //;
 		$s = "$r->[3] -> $r->[2] $r->[4]";
 	} else {
 		$r->[2] ||= "";

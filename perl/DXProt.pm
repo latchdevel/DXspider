@@ -44,7 +44,7 @@ $main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
-			$pingint $obscount %pc19list
+			$pingint $obscount %pc19list $chatdupeage
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -70,12 +70,13 @@ $eph_info_restime = 60*60;
 $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
+$chatdupeage = 20 * 60 * 60;
 
 @checklist = 
 (
  [ qw(c c m bp bc c) ],			# pc10
  [ qw(f m d t m c c h) ],		# pc11
- [ qw(c bc m bp bm p h) ],		# pc12
+ [ qw(c m m bp bm p h) ],		# pc12
  [ qw(c h) ],					# 
  [ qw(c h) ],					# 
  [ qw(c m h) ],					# 
@@ -604,6 +605,8 @@ sub handle_12
 		return;
 	}
 
+	my $dxchan;
+	
 	if ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
 
@@ -614,7 +617,7 @@ sub handle_12
 			if ($call) {
 				my $ref = Route::get($call);
 				if ($ref) {
-					my $dxchan = $ref->dxchan;
+					$dxchan = $ref->dxchan;
 					$dxchan->talk($_[1], $call, undef, $_[3], $_[5]) if $dxchan != $self;
 					return;
 				}
@@ -623,6 +626,8 @@ sub handle_12
 	
 		# send it
 		$self->send_announce($line, @_[1..6]);
+	} elsif ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || !is_callsign($_[0])){
+		$self->send_chat($line, @_[1..6]);
 	} else {
 		$self->route($_[2], $line);
 	}
@@ -1769,6 +1774,72 @@ sub send_announce
 	}
 }
 
+my $msgid = 0;
+
+sub nextchatmsgid
+{
+	$msgid++;
+	$msgid = 1 if $msgid > 999;
+	return $msgid;
+}
+
+# send a chat line
+sub send_chat
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
+	my $target = $_[1];
+	my $text = unpad($_[2]);
+				
+	# obtain country codes etc 
+	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+	my ($ann_state, $org_state) = ("", "");
+	my @dxcc = Prefix::extract($_[0]);
+	if (@dxcc > 0) {
+		$ann_dxcc = $dxcc[1]->dxcc;
+		$ann_itu = $dxcc[1]->itu;
+		$ann_cq = $dxcc[1]->cq;						
+		$ann_state = $dxcc[1]->state;
+	}
+	@dxcc = Prefix::extract($_[4]);
+	if (@dxcc > 0) {
+		$org_dxcc = $dxcc[1]->dxcc;
+		$org_itu = $dxcc[1]->itu;
+		$org_cq = $dxcc[1]->cq;						
+		$org_state = $dxcc[1]->state;
+	}
+
+	if ($self->{inannfilter}) {
+		my ($filter, $hops) = 
+			$self->{inannfilter}->it(@_, $self->{call}, 
+									 $ann_dxcc, $ann_itu, $ann_cq,
+									 $org_dxcc, $org_itu, $org_cq, $ann_state, $org_state);
+		unless ($filter) {
+			dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
+			return;
+		}
+	}
+
+	if (AnnTalk::dup($_[0], $_[1], $_[2], $chatdupeage)) {
+		dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
+		return;
+	}
+
+
+	Log('chat', $target, $_[0], $text);
+
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		next if $dxchan == $main::me;
+		next if $dxchan == $self && $self->is_node;
+		next if $target eq 'LOCAL' && $dxchan->is_node;
+		$dxchan->chat($line, $self->{isolate}, ' ', $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+	}
+}
+
 sub announce
 {
 	my $self = shift;
@@ -1784,6 +1855,11 @@ sub announce
 		return unless $filter;
 	}
 	send_prot_line($self, $filter, $hops, $isolate, $line) unless $_[1] eq $main::mycall;
+}
+
+sub chat
+{
+	goto &announce;
 }
 
 
