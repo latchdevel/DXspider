@@ -120,7 +120,7 @@ sub new_client {
 #		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
 		$conn->send_raw("\xFF\xFC\x01");
 		_send_file($conn, "$main::data/issue");
-		$conn->send_raw("Login: ");
+		$conn->send_raw("login: ");
     } else { 
         $conn->disconnect();
     }
