@@ -1,3 +1,5 @@
+27Dec04=======================================================================
+1. add improved VE data from Charlie K1XX. You should update usdb as well.
 22Dec04=======================================================================
 1. Changed all the names of US prefixes to be prepended with their State code.
 thus "Alaska-KL7" becomes "AK-Alaska-KL7". 

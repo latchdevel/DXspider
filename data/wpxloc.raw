@@ -654,22 +654,25 @@ VE Quebec-VE                          197  4  5  5.0 45 30 0 N 73 36 0 W *
 VE Ontario-VE                         197 4 4 5.0 43 42 0 N 79 24 0 W *
 VE Manitoba-VE                        197  3  4  6.0 49 54 0 N 97 6 0 W *
 VE Saskatchewan-VE                    197  3  4  7.0 50 30 0 N 104 36 0 W *
-VE Alberta-VE                         197  2  3  7.0 51 0 0 N 114 6 0 W *
+VE Alberta-VE                         197  2  4  7.0 51 0 0 N 114 6 0 W *
 VE British-Columbia-VE                197  2  3  8.0 49 18 0 N 123 6 0 W *
-VE Yukon-VE                           197 75  1  8.0 60 42 0 N 135 6 0 W *
-VE1,VE9 New-Brunsick-VE                   197  9  5  4.0 45 18 0 N 66 6 0 W
-VE1 Nova-Scotia-VE                    197  9  5  4.0 44 36 0 N 63 36 0 W
-VO1 Newfoundland-VE                   197 9 5 3.0 48 30 0 N 56 0 0 W
-VO2 Labrador-VE                       197 9 2 3.0 48 30 0 N 56 0 0 W
-VE2 Quebec-VE                         197  4  5  5.0 45 30 0 N 73 36 0 W
-VE3 Ontario-VE                        197 4 4 5.0 43 42 0 N 79 24 0 W
-VE4 Manitoba-VE                       197  3  4  6.0 49 54 0 N 97 6 0 W
-VE5 Saskatchewan-VE                   197  3  4  7.0 50 30 0 N 104 36 0 W
-VE6 Alberta-VE                        197  2  3  7.0 51 0 0 N 114 6 0 W
-VE7 British-Columbia-VE               197  2  3  8.0 49 18 0 N 123 6 0 W
-VE8,VY1 Yukon-VE                          197 75  1  8.0 60 42 0 N 135 6 0 W
+VE Yukon-VE                           197  2  1  8.0 60 42 0 N 135 6 0 W *
+VE1,VA1 NS-Nova-Scotia-VE                197  9  5  4.0 44 39 0 N 63 34 0 W
+VO1 NL-Newfoundland-VE                   197  9  5  3.0 47 37 0 N 52 45 0 W
+VO2 NL-Labrador-VE                       197  9  2  3.0 48 30 0 N 56 0 0 W
+VE2,VA2 QC-Quebec-VE                     197  4  5  5.0 46 48 0 N 71 23 0 W
+VE3,VA3,VY9 ON-Ontario-VE                197  4  4  5.0 43 41 0 N 79 38 0 W
+VE4,VA4 MB-Manitoba-VE                   197  3  4  6.0 49 54 0 N 97 14 0 W
+VE5,VA5 SK-Saskatchewan-VE               197  3  4  7.0 50 26 0 N 104 40 0 W
+VE6,VA6 AB-Alberta-VE                    197  2  4  7.0 53 34 0 N 113 31 0 W
+VE7,VA7 BC-British-Columbia-VE           197  2  3  8.0 49 25 0 N 123 19 0 W
+VE8 NT-Northwest-Territory-VE            197  2  3  8.0 62 28 0 N 114 27 0 W
+VE9 NB-New-Brunsick-VE                   197  9  5  4.0 45 52 0 N 66 32 0 W
+VY0 NU-Nunavut-VE                        197  4  2  4.0 63 45 0 N 68 30 0 W
+VY1 YT-Yukon-VE                          197  2  1  8.0 60 43 0 N 135 4 0 W
+VY2 PE-PEI-VE                            197  9  5  4.0 46 17 0 N 63 8 0 W
 CF,CG,CH,CI,CJ,CK,CY,CZ Canada-VE 197  4  5  5.0 43 42 0 N 79 24 0 W
-VA,VB,VC,VD,VF,VG,VO,VX,VY Canada-VE           197 4 5 5.0 43 42 0 N 79 24 0 W
+VB,VC,VD,VF,VG,VO,VX,VY Canada-VE           197 4 5 5.0 43 42 0 N 79 24 0 W
 XI,XJ,XK,XL,XM,XN,XO Canada-VE       197  4  5  5.0 43 42 0 N 79 24 0 W
 VK Australia-VK1-VK                   198 59 30 -10.0 35 30 0 S 149 0 0 E * @
 VK Australia-VK2-VK                   198 59 30 -10.0 34 0 0 S 151 0 0 E *
