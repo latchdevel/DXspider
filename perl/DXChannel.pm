@@ -286,7 +286,7 @@ sub send_now
 	my $call = $self->{call};
 	
 	for (@_) {
-		chomp;
+#		chomp;
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_now("$sort$call|$_");
@@ -307,7 +307,7 @@ sub send						# this is always later and always data
 	my $call = $self->{call};
 
 	for (@_) {
-		chomp;
+#		chomp;
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_later("D$call|$_");

@@ -473,7 +473,7 @@ sub ds
 	$s = 0 if $s < 0;
     my $plus = (($l / 6) >= $s + 0.5) ? '+' : ' ';
 	
-    return "$c2\S$s$plus";
+    return "$c2". "S$s$plus";
 }		
 
 1;
