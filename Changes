@@ -1,3 +1,12 @@
+10Sep01=======================================================================
+1. clear/* node_default and user_default now work.
+2. in acc or rej/* you can now use (comma separated) prefixes as well as lists
+of numbers for things like *_dxcc, *_itu and *_cq (eg: by_dxcc ve,w); just
+remember that countries like ve and w have lots of zones and itus!
+3. Added all the clear/* commands to help and added some comments about 2.
+4. All filters (including *_default ones) are now reinstalled on channels in
+realtime, so changing a filter does NOT require a disconnect and reconnect
+cycle anymore. 
 09Sep01=======================================================================
 1. Add show/dxstats command
 2. Add show/hfstats command

@@ -40,13 +40,13 @@ use vars qw(%list %valid $filterdef);
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['channel', 'c', 0],
-			  ['channel_dxcc', 'n', 1],
-			  ['channel_itu', 'n', 2],
-			  ['channel_zone', 'n', 3],
+			  ['channel_dxcc', 'nc', 1],
+			  ['channel_itu', 'ni', 2],
+			  ['channel_zone', 'nz', 3],
 			  ['call', 'c', 4],
-			  ['call_dxcc', 'n', 5],
-			  ['call_itu', 'n', 6],
-			  ['call_zone', 'n', 7],
+			  ['call_dxcc', 'nc', 5],
+			  ['call_itu', 'ni', 6],
+			  ['call_zone', 'nz', 7],
 			 ], 'Filter::Cmd');
 
 

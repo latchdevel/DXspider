@@ -27,13 +27,13 @@ $filterdef = bless ([
 			  ['group', 't', 3],
 			  ['origin', 'c', 4],
 			  ['wx', 't', 5],
-			  ['channel', 'n', 6],
-			  ['by_dxcc', 'n', 7],
-			  ['by_itu', 'n', 8],
-			  ['by_zone', 'n', 9],
-			  ['origin_dxcc', 'n', 10],
-			  ['origin_itu', 'n', 11],
-			  ['origin_itu', 'n', 12],
+			  ['channel', 'c', 6],
+			  ['by_dxcc', 'nc', 7],
+			  ['by_itu', 'ni', 8],
+			  ['by_zone', 'nz', 9],
+			  ['origin_dxcc', 'nc', 10],
+			  ['origin_itu', 'ni', 11],
+			  ['origin_zone', 'nz', 12],
 			 ], 'Filter::Cmd');
 
 use vars qw($VERSION $BRANCH);

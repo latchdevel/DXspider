@@ -23,12 +23,12 @@ You can use any of the following things in this line:-
   info <string>            eg: iota or qsl
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   channel <prefixes>
   wx 1                     filter WX announces
   dest <prefixes>          eg: 6MUK,WDX      (distros)
@@ -65,13 +65,13 @@ to understand how filters work - it will save a lot of grief later on.
 You can use any of the following things in this line:-
 
   call <prefixes>        the callsign of the thingy
-  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  call_itu <numbers>
-  call_zone <numbers>
+  call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <prefixes or numbers>     or: G,GM,GW
+  call_zone <prefixes or numbers>
   origin <prefixes>      really the interface it came in on
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
 
 some examples:-
 
@@ -97,12 +97,12 @@ You can use any of the following things in this line:-
   call <prefixes>        eg: G,PA,HB9
   info <string>          eg: iota or qsl
   by <prefixes>            
-  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  call_itu <numbers>
-  call_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <prefixes or numbers>     or: G,GM,GW
+  call_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   origin <prefixes>
   channel <prefixes>
 
@@ -140,12 +140,12 @@ filter on the following fields:-
 
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   channel <prefixes>
 
 There are no examples because WCY Broadcasts only come from one place and
@@ -168,12 +168,12 @@ filter on the following fields:-
 
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   channel <prefixes>
 
 for example 
@@ -231,7 +231,27 @@ which will arrange for them to be forward candidates again.
 
 Order is not important.
 
-=== 0^CLEAR/SPOTS [1|all]^Clear a spot filter line
+=== 0^CLEAR/ANNOUNCE [1|all]^Clear a announce filter line
+This command allows you to clear (remove) a line in a annouce filter or to 
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+=== 8^CLEAR/ANNOUNCE [input] <callsign> [0-9|all]^Clear a announce filter line
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+=== 0^CLEAR/ROUTE [1|all]^Clear a route filter line
+This command allows you to clear (remove) a line in a route filter or to 
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+=== 8^CLEAR/ROUTE [input] <callsign> [0-9|all]^Clear a route filter line
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+=== 0^CLEAR/SPOTS [0-9|all]^Clear a spot filter line
 This command allows you to clear (remove) a line in a spot filter or to 
 remove the whole filter.
 
@@ -254,14 +274,41 @@ If you do:
 
 the filter will be completely removed.
 
+=== 8^CLEAR/SPOTS [input] <callsign> [0-9|all]^Clear a spot filter line
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+=== 0^CLEAR/WCY [1|all]^Clear a WCY filter line
+This command allows you to clear (remove) a line in a WCY filter or to 
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+=== 8^CLEAR/WCY [input] <callsign> [0-9|all]^Clear a WCY filter line
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+=== 0^CLEAR/WWV [1|all]^Clear a WWV filter line
+This command allows you to clear (remove) a line in a WWV filter or to 
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+=== 8^CLEAR/WWV [input] <callsign> [0-9|all]^Clear a WWV filter line
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
 === 5^CONNECT <callsign>^Start a connection to another DX Cluster
 Start a connection process that will culminate in a new connection to the
 DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
-=== 9^DELELE/USER <callsign> ...^Delete this user from the User Database
+=== 9^DELETE/USER <callsign> ...^Delete this user from the User Database
 This command will completely remove a one or more users from the database.
+
+There is NO SECOND CHANCE.
+
 It goes without saying that you should use this command CAREFULLY!
 
 === 0^DBAVAIL^Show a list of all the Databases in the system
@@ -559,6 +606,12 @@ To remove the filter in its entirty:-
 
   clear/spots all
 
+There are similar CLEAR commands for the other filters:-
+
+  clear/announce
+  clear/wcy
+  clear/wwv
+
 ADVANCED USERS:-
 
 Once you are happy with the results you get, you may like to experiment. 
@@ -780,12 +833,12 @@ You can use any of the following things in this line:-
   info <string>            eg: iota or qsl
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   channel <prefixes>
   wx 1                     filter WX announces
   dest <prefixes>          eg: 6MUK,WDX      (distros)
@@ -822,12 +875,12 @@ You can use any of the following things in this line:-
   call <prefixes>        eg: G,PA,HB9
   info <string>          eg: iota or qsl
   by <prefixes>            
-  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  call_itu <numbers>
-  call_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <prefixes or numbers>     or: G,GM,GW
+  call_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   origin <prefixes>
   channel <prefixes>
 
@@ -858,13 +911,13 @@ read this to understand how filters work - it will save a lot of grief later on.
 You can use any of the following things in this line:-
 
   call <prefixes>        the callsign of the thingy
-  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  call_itu <numbers>
-  call_zone <numbers>
+  call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <prefixes or numbers>     or: G,GM,GW
+  call_zone <prefixes or numbers>
   origin <prefixes>      really the interface it came in on
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
 
 some examples:-
 
@@ -890,12 +943,12 @@ filter on the following fields:-
 
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   channel <prefixes>
 
 There are no examples because WCY Broadcasts only come from one place and
@@ -917,12 +970,12 @@ filter on the following fields:-
 
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
-  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-  origin_itu <numbers>
-  origin_zone <numbers>
-  by_dxcc <numbers>
-  by_itu <numbers>
-  by_zone <numbers>
+  origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <prefixes or numbers>     or: G,GM,GW
+  origin_zone <prefixes or numbers>
+  by_dxcc <prefixes or numbers>
+  by_itu <prefixes or numbers>
+  by_zone <prefixes or numbers>
   channel <prefixes>
 
 for example 

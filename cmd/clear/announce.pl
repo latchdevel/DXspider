@@ -13,23 +13,24 @@ my $sort = 'ann';
 my $flag;
 my $fno = 1;
 my $call = $dxchan->call;
+my $f;
 
-my $f = lc shift @f if @f;
 if ($self->priv >= 8) {
-	if (is_callsign(uc $f)) {
-		my $uref = DXUser->get(uc $f);
+	if (@f && is_callsign(uc $f[0])) {
+		$f = uc shift @f;
+		my $uref = DXUser->get($f);
 		$call = $uref->call if $uref;
+	} elsif (@f && lc $f[0] eq 'node_default' || lc $f[0] eq 'user_default') {
+		$call = lc shift @f;
 	}
-	if (@f) {
-		$f = lc shift @f;
-		if ($f eq 'input') {
-			$flag = 'in';
-			$f = shift @f if @f;
-		}
+	if (@f && $f[0] eq 'input') {
+		shift @f;
+		$flag = 'in';
 	}
 }
 
-$fno = $f if $f;
+$fno = shift @f if @f && $f[0] =~ /^\d|all$/;
+
 my $filter = Filter::read_in($sort, $call, $flag);
 Filter::delete($sort, $call, $flag, $fno);
 $flag = $flag ? "input " : "";

@@ -51,13 +51,13 @@ $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['by', 'c', 7],
 			  ['origin', 'c', 8],
-			  ['channel', 'n', 9],
-			  ['by_dxcc', 'n', 10],
-			  ['by_itu', 'n', 11],
-			  ['by_zone', 'n', 12],
-			  ['origin_dxcc', 'c', 13],
-			  ['origin_itu', 'c', 14],
-			  ['origin_itu', 'c', 15],
+			  ['channel', 'c', 9],
+			  ['by_dxcc', 'nc', 10],
+			  ['by_itu', 'ni', 11],
+			  ['by_zone', 'nz', 12],
+			  ['origin_dxcc', 'nc', 13],
+			  ['origin_itu', 'ni', 14],
+			  ['origin_zone', 'nz', 15],
 			 ], 'Filter::Cmd');
 
 sub init

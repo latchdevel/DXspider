@@ -30,6 +30,7 @@ use DXVars;
 use DXUtil;
 use DXDebug;
 use Data::Dumper;
+use Prefix;
 
 use strict;
 
@@ -297,10 +298,22 @@ sub install
 	$in = "in" if $name =~ s/^IN_//;
 	$name =~ s/.PL$//;
 		
-	my $dxchan = DXChannel->get($name);
-	if ($dxchan) {
+	my $dxchan;
+	my @dxchan;
+	if ($name eq 'NODE_DEFAULT') {
+		@dxchan = DXChannel::get_all_nodes();
+	} elsif ($name eq 'USER_DEFAULT') {
+		@dxchan = DXChannel::get_all_users();
+	} else {
+		$dxchan = DXChannel->get($name);
+		push @dxchan, $dxchan if $dxchan;
+	}
+	foreach $dxchan (@dxchan) {
 		my $n = "$in$sort" . "filter";
-		$dxchan->$n($remove ? undef : $self);
+		my $ref = $dxchan->$n;
+		if (!$ref || ($ref && uc $ref->{name} eq "$name.PL")) {
+			$dxchan->$n($remove ? undef : $self);
+		}
 	}
 }
 
@@ -471,6 +484,25 @@ sub parse
 								push @t, "\$r->[$fref->[2]]==$_";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
+						} elsif ($fref->[1] =~ /^n[ciz]$/ ) {    # for DXCC, ITU, CQ Zone    
+							my @n;
+							my $cmd = $fref->[1];
+							foreach my $v (@val) {
+								if ($v =~ /^\d+$/) {	
+									push @n, $v unless grep $_ eq $v, @n;
+								} else {
+									my @pre = Prefix::extract($v);
+									return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
+									shift @pre;
+									foreach my $p (@pre) {
+										my $n = $p->dxcc if $cmd eq 'nc' ;
+										$n = $p->itu if $cmd eq 'ni' ;
+										$n = $p->cq if $cmd eq 'nz' ;
+										push @n, $n unless grep $_ eq $n, @n;
+									}
+								}
+							}
+							$s .= "(" . join(' || ', map {"\$r->[$fref->[2]]==$_"} @n) . ")";
 						} elsif ($fref->[1] eq 'r') {
 							my @t;
 							for (@val) {

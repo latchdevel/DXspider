@@ -43,14 +43,14 @@ $filterdef = bless ([
 			  ['call', 'c', 1],
 			  ['info', 't', 3],
 			  ['by', 'c', 4],
-			  ['call_dxcc', 'n', 5],
-			  ['by_dxcc', 'n', 6],
+			  ['call_dxcc', 'nc', 5],
+			  ['by_dxcc', 'nc', 6],
 			  ['origin', 'c', 7, 9],
-			  ['call_itu', 'n', 8],
-			  ['call_zone', 'n', 9],
-			  ['by_itu', 'n', 10],
-			  ['by_zone', 'n', 11],
-			  ['channel', 'n', 12, 9],
+			  ['call_itu', 'ni', 8],
+			  ['call_zone', 'nz', 9],
+			  ['by_itu', 'ni', 10],
+			  ['by_zone', 'nz', 11],
+			  ['channel', 'c', 12],
 			 ], 'Filter::Cmd');
 
 
