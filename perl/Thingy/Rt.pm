@@ -235,8 +235,7 @@ sub copy_pc16_data
 
 	my @u = $uref->users;
 	if (@u) {
-		$thing->{pc16n} = $uref;
-		$thing->{pc16u} = [map {Route::User::get($_)} @u];
+		$thing->{ausers} = [map {Route::User::get($_)} @u];
 		return scalar @u;
 	}
 	return undef;
