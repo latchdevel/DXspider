@@ -129,6 +129,7 @@ sub new_client {
 		$conn->{blocking} = 0;
 		
 		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
+		dbg('connll', "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}");
 		if ($eproc) {
 			$conn->{eproc} = $eproc;
 			Msg::set_event_handler ($sock, "error" => $eproc);
@@ -363,8 +364,9 @@ sub _send_file
 		if ($f) {
 			while (<$f>) {
 				chomp;
-				dbg('connll', $_);
-				$conn->send_raw($_ . $conn->{lineend});
+				my $l = $_;
+				dbg('connll', "connect $conn->{cnum}: $l");
+				$conn->send_raw($l . $conn->{lineend});
 			}
 			$f->close;
 		}

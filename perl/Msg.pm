@@ -73,9 +73,9 @@ sub new
 		csort => 'telnet',
 		timeval => 60,
 		blocking => 0,
+		cnum => ++$noconns,
     };
 
-	$noconns++;
 	dbg('connll', "Connection created ($noconns)");
 	return bless $conn, $class;
 }
@@ -121,7 +121,7 @@ sub conns
 		confess "changing $pkg->{call} to $call" if exists $pkg->{call} && $call ne $pkg->{call};
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
-		dbg('connll', "Connection $call stored");
+		dbg('connll', "Connection $pkg->{cnum} $call stored");
 	} else {
 		$ref = $conns{$call};
 	}
@@ -194,7 +194,7 @@ sub disconnect {
 		delete $conns{$call} if $ref && $ref == $conn;
 	}
 	$call ||= 'unallocated';
-	dbg('connll', "Connection $call disconnected");
+	dbg('connll', "Connection $conn->{cnum} $call disconnected");
 	
 	unless ($main::is_win) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
@@ -522,7 +522,9 @@ sub DESTROY
 {
 	my $conn = shift;
 	my $call = $conn->{call} || 'unallocated';
-	dbg('connll', "Connection $call being destroyed ($noconns)");
+	my $host = $conn->{peerhost} || '';
+	my $port = $conn->{peerport} || '';
+	dbg('connll', "Connection $conn->{cnum} $call [$host $port] being destroyed");
 	$noconns--;
 }
 
