@@ -307,6 +307,10 @@ sub normal
 			my $node = DXCluster->get_exact($field[1]); 
 			last SWITCH if !$node; # ignore if havn't seen a PC19 for this one yet
 			last SWITCH unless $node->isa('DXNode');
+			if ($node->dxchan != $self) {
+				dbg('chan', "LOOP: come in on wrong channel");
+				return;
+			}
 			my $i;
 			
 			
@@ -336,7 +340,12 @@ sub normal
 		}
 		
 		if ($pcno == 17) {		# remove a user
-			
+			my $node = DXCluster->get_exact($field[2]);
+			last SWITCH unless $node->isa('DXNode');
+			if ($node->dxchan != $self) {
+				dbg('chan', "LOOP: come in on wrong channel");
+				return;
+			}
 			my $ref = DXCluster->get_exact($field[1]);
 			$ref->del() if $ref;
 			last SWITCH;
@@ -358,7 +367,12 @@ sub normal
 				my $ver = $field[$i+3];
 				
 				# now check the call over
-				next if DXCluster->get_exact($call); # we already have this
+				my $node = DXCluster->get_exact($call); # we already have this
+				if ($node && $node->dxchan != $self) {
+					dbg('chan', "LOOP: come in on wrong channel");
+					return;
+				}
+				next if $node;
 				
 				# check for sane parameters
 				next if $ver < 5000; # only works with version 5 software
@@ -402,8 +416,17 @@ sub normal
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
-				my $ref = DXCluster->get_exact($call);
-				$ref->del() if $ref;
+				my $node = DXCluster->get_exact($call);
+				if ($node) {
+					if ($node->dxchan != $self) {
+						dbg('chan', "LOOP: come in on wrong channel");
+						return;
+					}
+					$node->del();
+				} else {
+					dbg('chan', "$call not in table, dropped");
+					return;
+				}
 			}
 			last SWITCH;
 		}
@@ -459,8 +482,8 @@ sub normal
 		}
 		
 		if ($pcno == 25) {      # merge request
-			unless ($field[1] eq $main::mycall) {
-				dbg('chan', "merge request to $field[1] from $field[2] ignored");
+			if ($field[1] ne $main::mycall) {
+				route($field[1], $line);
 				return;
 			}
 
@@ -499,7 +522,10 @@ sub normal
 				unless ($field[3] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
 					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
 						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
+						my $oldpriv = $self->{priv};
+						$self->{priv} = $ref->{priv};     # assume the user's privilege level
 						my @in = (DXCommandmode::run_cmd($self, $field[3]));
+						$self->{priv} = $oldpriv;
 						for (@in) {
 							s/\s*$//og;
 							$self->send(pc35($main::mycall, $field[2], "$main::mycall:$_"));
