@@ -30,24 +30,24 @@ if (@list) {
 			my $a;
 			foreach $a (@ans) {
 				$lat = $a->{lat};
-				$lon = $a->{long};
-				$lat *= $d2r;
-				$lon *= -$d2r;
+				$lon = -$a->{long};
 				push @in, [ $a->name, $lat, $lon, $pre ];
 			}
 		}
 	}
 } else {
 	if ($self->user->lat && $self->user->long) {
-		push @in, [$self->user->qth, $self->user->lat * $d2r, $self->user->long * -$d2r, $self->call ];
+		push @in, [$self->user->qth, $self->user->lat, -$self->user->long, $self->call ];
 	} else {
-		push @in, [$main::myqth, $main::mylatitude * $d2r, $main::mylogitude * -$d2r, $main::mycall ];
+		push @in, [$main::myqth, $main::mylatitude, -$main::mylongitude, $main::mycall ];
 	}
 }
 
+push @out, "                                      Rise   Set      Azim   Elev";
 foreach $l (@in) {
-	my $string=Sun::riseset($yr,$month,$day,$l->[1],$l->[2]);
-	push @out,sprintf("%-2s   %s   %s",$l->[3],$l->[0],$string);
+	my ($rise, $set, $az, $dec )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],0);
+	$l->[3] =~ s{(-\d+|/\w+)$}{};
+	push @out,sprintf("%-6.6s %-30.30s %s %s %6.1f %6.1f ", $l->[3], $l->[0], $rise, $set, $az, $dec);
 }
 
 			
