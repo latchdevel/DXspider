@@ -187,7 +187,8 @@ sub fields
 {
 	my $pkg = shift;
 	$pkg = ref $pkg if ref $pkg;
-	my @out, keys %$pkg::valid;
+    my $val = "${pkg}::valid";
+	my @out = keys %$val;
 	push @out, keys %valid;
 	return @out;
 }
@@ -200,7 +201,8 @@ sub field_prompt
 { 
 	my ($self, $ele) = @_;
 	my $pkg = ref $self;
-	return $pkg::valid{$ele} || $valid{$ele};
+    my $val = "${pkg}::valid";
+	return $val->{$ele} || $valid{$ele};
 }
 
 #
