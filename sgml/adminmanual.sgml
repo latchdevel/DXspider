@@ -6,7 +6,7 @@
 
 <title>The DXSpider Administration Manual v1.48</title> 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.48 July 2001 revision 1.0</date>
+<date>Version 1.48 August 2001 revision 1.1</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -134,9 +134,9 @@ origin_zone &lt;numbers&gt;
 Here are some examples of route filters ...
 
 <tscreen><verb>
-rej/route gb7djk call_zone 61,38 (everything except  UK+EIRE nodes)
+rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
 rej/route all     (equiv to [very] restricted mode)
-acc/route gb7djk call_zone 61,38 (send only UK+EIRE nodes)
+acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
 acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
 </verb></tscreen>
 
@@ -1428,7 +1428,7 @@ You can use any of the following things in this line:-
 some examples:-
 
 <tscreen><verb>
-  acc/route gb7djk call_zone 61,38 (send only UK+EIRE nodes)
+  acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
   acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
 </verb></tscreen>
 
@@ -2497,7 +2497,7 @@ You can use any of the following things in this line:-
 some examples:-
 
 <tscreen><verb>
-  rej/route gb7djk call_zone 61,38 (everything except  UK+EIRE nodes)
+  rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
 </verb></tscreen>
 
 <P>
