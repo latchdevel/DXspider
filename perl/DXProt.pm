@@ -240,7 +240,7 @@ sub normal
 			
 			# do some de-duping
 			my $freq = $field[1] - 0;
-			my $dupkey = "$freq$field[2]$d$text$spotter";
+			my $dupkey = "$freq$field[2]$d$duptext$spotter";
 			if ($spotdup{$dupkey}) {
 				dbg('chan', "Duplicate Spot ignored\n");
 				return;
