@@ -95,7 +95,7 @@ sub dequeue
 				&{$conn->{rproc}}($conn, "I$conn->{call}|$msg");
 			} elsif ($conn->{state} eq 'WL' ) {
 				$msg = uc $msg;
-				if (is_callsign($msg)) {
+				if (is_callsign($msg) && $msg !~ m|/| ) {
 					my $sort = $conn->{csort};
 					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
 					$conn->to_connected($msg, 'A', $sort);
