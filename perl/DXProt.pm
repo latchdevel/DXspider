@@ -1039,19 +1039,28 @@ sub normal
 								$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
 							} elsif ($dxchan->is_node) {
 								if ($tochan) {
-									$tochan->{nopings} = $tochan->user->nopings || 2; # pump up the timer
+									my $nopings = $tochan->user->nopings || 2;
 									push @{$tochan->{pingtime}}, $t;
 									shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-									my $st;
-									for (@{$tochan->{pingtime}}) {
-										$st += $_;
+
+									# cope with a missed ping, this means you must set the pingint large enough
+									my $miss = ($nopings-$tochan->{nopings}) * $tochan->{pingint}; 
+									if ($tochan->is_arcluster && $t > $miss  && $t < $miss + $tochan->{nopings} ) {
+										$t -= $miss;
 									}
+
+									# calc smoothed RTT a la TCP
 									if (@{$tochan->{pingtime}} == 1) {
 										$tochan->{pingave} = $t;
 									} else {
 										$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 8);
 									}
+#									my $st;
+#									for (@{$tochan->{pingtime}}) {
+#										$st += $_;
+#									}
 #									$tochan->{pingave} = $st / @{$tochan->{pingtime}};
+									$tochan->{nopings} = $nopings; # pump up the timer
 								}
 							} 
 						}
