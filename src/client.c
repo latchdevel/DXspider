@@ -789,7 +789,7 @@ main(int argc, char *argv[])
 				if (i < MAXCALLSIGN) {
 					if (*p == '\r' || *p == '\n')
 						goto lgotcall;
-					else if (isalnum(*p))
+					else if (isalnum(*p) || *p == '-')
 						callsign[i++] = *p;
 					else
 						die("%c is not a valid callsign character", *p);
