@@ -128,8 +128,13 @@ sub handle_edu
 			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
 			if ($type eq 'U') {
 				unless ($nref) {
-					dbg("Thingy::Rt::ed need a node before $call");
+					dbg("Thingy::Rt::edu need a node before $call");
 					return;
+				}
+				my $uref = Route::User::get($call);
+				unless ($uref) {
+					dbg("Thingy::Rt::edu $call not a user") if isdbg('chanerr');
+					next;
 				}
 				$nref->del_user($call);
 				RouteDB::delete($call, $dxchan->{call});
