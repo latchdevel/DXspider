@@ -192,7 +192,10 @@ sub extract
 		for ($i = length $sp; $i >= 1; --$i) {
 			my $ssp = substr($sp, 0, $i);
 			my @wout = get($ssp);
-			dbg("Partial prefix: $sp $ssp $wout[0]" ) if isdbg('prefix') && $wout[0];
+			if (isdbg('prefix')) {
+				my $part = $wout[0] || "*";
+				dbg("Partial prefix: $sp $ssp $part" );
+			} 
 			next if @wout > 0 && $wout[0] gt $ssp;
 #			last if @wout == 0;
 			push @out, @wout;
