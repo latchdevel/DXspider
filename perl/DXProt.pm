@@ -31,7 +31,7 @@ use strict;
 use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
 			%spotdup %wwvdup $last_hour %pings %rcmds
 			%nodehops @baddx $baddxfn $pc12_dup_age
-			%anndup $allowzero, $pc12_dup_lth);
+			%anndup $allowzero $pc12_dup_lth);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
