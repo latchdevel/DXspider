@@ -30,7 +30,7 @@ use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupa
 
 $fp = undef;
 $statp = undef;
-$maxspots = 50;					# maximum spots to return
+$maxspots = 100;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
 $maxdays = 100;				# normal maximum no of days to go back
 $dirprefix = "spots";

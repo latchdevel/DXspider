@@ -1,5 +1,6 @@
 20Dec01=======================================================================
 1. Fix 'not' in filtering
+2. alter default max spots to 100 and the no of WWV to 5
 17Dec01=======================================================================
 1. added new satellite stuff from Steve K9AN. Fixed upper/lower problem
 in convkeps.pl.

@@ -27,7 +27,7 @@ while ($f = shift @f) {                 # next field
 }
 
 $from = 1 unless $from;
-$to = 10 unless $to;
+$to = 5 unless $to;
 
 push @out, "Date        Hour   SFI   A   K Forecast                               Logger";
 my @in = Geomag::search($from, $to, $main::systime);
