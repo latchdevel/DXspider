@@ -443,7 +443,7 @@ sub decode_input
 	
 	# the above regexp must work
 	unless (defined $sort && defined $call && defined $line) {
-		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
+#		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
 		dbg('err', "DUFF Line on $chcall: $data");
 		return ();
 	}
