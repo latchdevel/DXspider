@@ -188,6 +188,8 @@ sub cease
 	$SIG{'TERM'} = 'IGNORE';
 	$SIG{'INT'} = 'IGNORE';
 	
+	DXUser::sync;
+
 	eval {
 		Local::finish();   # end local processing
 	};
@@ -404,6 +406,7 @@ for (;;) {
 		DXConnect::process();
 		DXMsg::process();
 		DXDb::process();
+		DXUser::process();
 		eval { 
 			Local::process();       # do any localised processing
 		};

@@ -271,6 +271,15 @@ sub normal
 						} else {
 							route(undef, $to, pc34($main::mycall, $to, $cmd));
 						}
+						if ($to ne $field[7]) {
+							$to = $field[7];
+							$node = DXCluster->get_exact($to);
+							if ($node && $node->dxchan && $node->dxchan->is_clx) {
+								route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
+							} else {
+								route(undef, $to, pc34($main::mycall, $to, $cmd));
+							}
+						}
 						$user->lastoper($main::systime);
 						$user->put;
 					}

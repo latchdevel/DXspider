@@ -21,6 +21,8 @@ a month). This isn't the default - set $send_opernam in
 /spider/local/DXProtVars.pm (copied from /spider/perl). Good for gateways.
 13. Despace spot texts properly again for deduping purposes.
 14. Corrected Pc84/85 handling a bit.
+15. Sync the user database every 15 secs to see whether we can reduce the 
+corruptions and duplicates.
 25Jul00=======================================================================
 1. ignore \n in ax25 mode for C client.
 2. remove extra space at the end of a DX spot announce when no grid square

@@ -19,12 +19,13 @@ use IO::File;
 use DXDebug;
 
 use strict;
-use vars qw(%u $dbm $filename %valid $lastoperinterval);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime);
 
 %u = ();
 $dbm = undef;
 $filename = undef;
 $lastoperinterval = 30*24*60*60;
+$lasttime = 0;
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -104,6 +105,17 @@ sub init
 }
 
 use strict;
+
+#
+# periodic processing
+#
+sub process
+{
+	if ($main::systime > $lasttime + 15) {
+		$dbm->sync;
+		$lasttime = $main::systime;
+	}
+}
 
 #
 # close the system
@@ -192,7 +204,6 @@ sub put
 	delete $self->{annok} if $self->{annok};
 	delete $self->{dxok} if $self->{dxok};
 	$u{$call} = $self->encode();
-	$dbm->sync;
 }
 
 # 
@@ -234,7 +245,6 @@ sub del
 	for ($dbm->get_dup($call)) {
 		$dbm->del_dup($call, $_);
 	}
-	$dbm->sync;
 }
 
 #
@@ -246,6 +256,15 @@ sub close
 	my $self = shift;
 	$self->{lastin} = time;
 	$self->put();
+}
+
+#
+# sync the database
+#
+
+sub sync
+{
+	$dbm->sync;
 }
 
 #
