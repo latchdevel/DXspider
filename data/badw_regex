@@ -1,0 +1,17 @@
+# this is the bad regex issue file
+# BE VERY CAREFUL ADDING WORDS TO THIS
+# as it will find them in all sorts of combinations
+# eg 'fuck' 'ffuck' 'fffuuucckk' 'f    u...c  kkkk' 'youf u c.. ker'
+fuck
+cunt
+wank
+shit
+piss
+bollock
+tosser
+tosspot
+arse
+plonker
+asshole
+arsehole
+bugger
