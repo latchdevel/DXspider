@@ -35,14 +35,34 @@ sub print
 	my @out = ();
 	my $eval;
 	my $count;
+	my $hint = "";
 	    
 	$search = '1' unless $pattern || $who;
-	$search = "\$ref->[1] =~ /$pattern/i" if $pattern;
-	$search .= ' && ' if $pattern && $who;
-	$search .= "(\$ref->[2] =~ /$who/i || \$ref->[3] =~ /$who/i)" if $who;
+	if ($pattern) {
+		$search = "\$ref->[1] =~ m{$pattern}i";
+		$hint = "m{$pattern}i";
+	}
+
+	if ($who) {
+		if ($search) {
+			$search .= ' && ';
+			$hint .= ' && ';
+		}
+		$search .= "(\$ref->[2] =~ m{$who}i || \$ref->[3] =~ m{$who}i)";
+		$hint .= 'm{$who}i';
+	}
+	$hint = "next unless $hint" if $hint;
+	
 	$eval = qq(
+			   \@in = ();
+			   while (<\$fh>) {
+				   $hint;
+				   chomp;
+				   \$ref = [ split '\\^' ];
+				   push \@\$ref, "" unless \@\$ref >= 4;
+				   push \@in, \$ref;
+			   }
 			   my \$c;
-			   my \$ref;
 			   for (\$c = \$#in; \$c >= 0; \$c--) {
 					\$ref = \$in[\$c];
 					if ($search) {
@@ -60,13 +80,6 @@ sub print
 	for ($count = 0; $count < $to; ) {
 		my $ref;
 		if ($fh) {
-			@in = ();
-			while (<$fh>) {
-				chomp;
-				$ref = [ split '\^' ];
-				push @{$ref}, "" unless @{$ref} >= 4;
-				push @in, $ref;
-			}
 			eval $eval;               # do the search on this file
 			last if $count >= $to;                  # stop after n
 			return ("Log search error", $@) if $@;

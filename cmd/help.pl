@@ -14,7 +14,6 @@ my ($self, $line) = @_;
 my @out;
 
 # this is naff but it will work for now
-$line = "help" unless $line;
 my $lang = $self->lang;
 $lang = 'en' if !$lang;
 
@@ -41,10 +40,11 @@ if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
 }
 my $in;
 
-$line =~ s/![\w\/]//og;
-$line =~ s/\//\.\*\//og;
-$line =~ s/^\s+//og;
-$line =~ s/\s+$//og;
+$line =~ s/[^\w\/]//g;
+$line =~ s/\//\.\*\//g;
+$line =~ s/^\s+//g;
+$line =~ s/\s+$//g;
+$line = "help" if $line =~ /^\s*$/;
 
 # sort out aliases
 my $alias = CmdAlias::get_hlp($line);
