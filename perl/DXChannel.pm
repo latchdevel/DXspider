@@ -33,9 +33,10 @@ use DXDebug;
 use Filter;
 
 use strict;
-use vars qw(%channels %valid @ISA);
+use vars qw(%channels %valid @ISA $count);
 
 %channels = ();
+$count = 0;
 
 %valid = (
 		  call => '0,Callsign',
@@ -96,20 +97,13 @@ use vars qw(%channels %valid @ISA);
 sub DESTROY
 {
 	my $self = shift;
-	undef $self->{user};
-	undef $self->{conn};
-	undef $self->{loc};
-	undef $self->{pagedata};
-	undef $self->{group};
-	undef $self->{delayed};
-	undef $self->{annfilter};
-	undef $self->{wwvfilter};
-	undef $self->{spotsfilter};
-	undef $self->{inannfilter};
-	undef $self->{inwwvfilter};
-	undef $self->{inspotsfilter};
-	undef $self->{passwd};
-	undef $self->{node};
+	for (keys %$self) {
+		if (ref($self->{$_})) {
+			delete $self->{$_};
+		}
+	}
+	dbg('chan', "DXChannel $self->{call} destroyed ($count)");
+	$count--;
 }
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
@@ -135,6 +129,8 @@ sub alloc
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
 
+	$count++;
+	dbg('chan', "DXChannel $self->{call} created ($count)");
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }

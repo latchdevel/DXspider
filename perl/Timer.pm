@@ -10,9 +10,11 @@
 
 package Timer;
 
-use vars qw(@timerchain);
+use vars qw(@timerchain $notimers);
+use DXDebug;
 
 @timerchain = ();
+$notimers = 0;
 
 sub new
 {
@@ -22,15 +24,16 @@ sub new
 	my $self = bless { t=>$time + time, proc=>$proc }, $class;
 	$self->{interval} = $time if $recur;
 	push @timerchain, $self;
+	$notimers++;
+	dbg('connll', "Timer created ($notimers)");
 	return $self;
 }
 
 sub del
 {
 	my $self = shift;
-	my $old = delete $self->{proc};
+	delete $self->{proc};
 	@timerchain = grep {$_ != $self} @timerchain;
-	return $old;
 }
 
 sub handler
@@ -46,4 +49,9 @@ sub handler
 	}
 }
 
+sub DESTROY
+{
+	dbg('connll', "Timer destroyed ($notimers)");
+	$notimers--;
+}
 1;

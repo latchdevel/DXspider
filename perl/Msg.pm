@@ -62,6 +62,13 @@ sub set_error
 	set_event_handler($conn->{sock}, error => $callback) if exists $conn->{sock};
 }
 
+sub set_rproc
+{
+	my $conn = shift;
+	my $callback = shift;
+	$conn->{rproc} = $callback;
+}
+
 sub blocking
 {
 	my $flags = fcntl ($_[0], F_GETFL, 0);
@@ -136,8 +143,8 @@ sub connect {
 	$conn->{sock} = $sock;
     
     if ($conn->{rproc}) {
-        my $callback = sub {_rcv($conn)};
-        set_event_handler ($sock, "read" => $callback);
+        my $callback = sub {$conn->_rcv};
+        set_event_handler ($sock, read => $callback);
     }
     return $conn;
 }
@@ -149,9 +156,6 @@ sub disconnect {
 	$conn->{disconnecting} = 1;
     my $sock = delete $conn->{sock};
 	$conn->{state} = 'E';
-	delete $conn->{cmd};
-	delete $conn->{eproc};
-	delete $conn->{rproc};
 	$conn->{timeout}->del if $conn->{timeout};
 
 	# be careful to delete the correct one
@@ -164,9 +168,18 @@ sub disconnect {
 	dbg('connll', "Connection $call disconnected");
 	
     set_event_handler ($sock, read => undef, write => undef, error => undef);
+
 	unless ($^O =~ /^MS/i) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
 	}
+
+	# get rid of any references
+	for (keys %$conn) {
+		if (ref($conn->{$_})) {
+			delete $conn->{$_};
+		}
+	}
+
 	return unless defined($sock);
     shutdown($sock, 3);
 	close($sock);
@@ -183,7 +196,7 @@ sub send_later {
     $conn->enqueue($msg);
     my $sock = $conn->{sock};
     return unless defined($sock);
-    set_event_handler ($sock, "write" => sub {$conn->_send(0)});
+    set_event_handler ($sock, write => sub {$conn->_send(0)});
 }
 
 sub enqueue {
@@ -240,9 +253,9 @@ sub _send {
     }
     # Call me back if queue has not been drained.
     if (@$rq) {
-        set_event_handler ($sock, "write" => sub {$conn->_send(0)});
+        set_event_handler ($sock, write => sub {$conn->_send(0)});
     } else {
-        set_event_handler ($sock, "write" => undef);
+        set_event_handler ($sock, write => undef);
 		if (exists $conn->{close_on_empty}) {
 			&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
 			$conn->disconnect; 
@@ -276,7 +289,7 @@ sub new_server {
                                           Proto     => 'tcp',
                                           Reuse     => 1);
     die "Could not create socket: $! \n" unless $self->{sock};
-    set_event_handler ($self->{sock}, "read" => sub { $self->new_client }  );
+    set_event_handler ($self->{sock}, read => sub { $self->new_client }  );
 	return $self;
 }
 
@@ -321,8 +334,8 @@ sub _rcv {                     # Complement to _send
 
 FINISH:
     if (defined $bytes_read && $bytes_read == 0) {
-		&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
-		$conn->disconnect();
+		&{$conn->{eproc}}($conn, $!) if exists $conn->{eproc};
+		$conn->disconnect;
     } else {
 		$conn->dequeue if exists $conn->{msg};
 	}
@@ -337,12 +350,12 @@ sub new_client {
 	$conn->{sort} = 'Incoming';
 	if ($eproc) {
 		$conn->{eproc} = $eproc;
-        set_event_handler ($sock, "error" => $eproc);
+        set_event_handler ($sock, error => $eproc);
 	}
     if ($rproc) {
         $conn->{rproc} = $rproc;
-        my $callback = sub {_rcv($conn)};
-        set_event_handler ($sock, "read" => $callback);
+        my $callback = sub {$conn->_rcv};
+        set_event_handler ($sock, read => $callback);
     } else {  # Login failed
 		&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
         $conn->disconnect();
@@ -352,7 +365,7 @@ sub new_client {
 sub close_server
 {
 	my $conn = shift;
-	set_event_handler ($conn->{sock}, "read" => undef);
+	set_event_handler ($conn->{sock}, read => undef, write => undef, error => undef );
 	$conn->{sock}->close;
 }
 

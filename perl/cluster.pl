@@ -74,9 +74,9 @@ use Local;
 
 package main;
 
-#use strict;
-#use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects $zombies $root
-#		   $lang $myalias @debug $userfn $clusteraddr $clusterport $mycall $decease );
+use strict;
+use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects $zombies $root
+		   @listeners $lang $myalias @debug $userfn $clusteraddr $clusterport $mycall $decease );
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
@@ -101,66 +101,73 @@ sub already_conn
 sub error_handler
 {
 	my $dxchan = shift;
+	$dxchan->{conn}->set_error(undef) if exists $dxchan->{conn};
 	$dxchan->disconnect;
 }
 
 # handle incoming messages
-sub rec
+sub new_channel
 {
 	my ($conn, $msg) = @_;
-	my $dxchan = DXChannel->get_by_cnum($conn); # get the dxconnnect object for this message
 	my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
 	return unless defined $sort;
 	
 	# set up the basic channel info
-	if (!defined $dxchan) {
-
-		# is there one already connected to me - locally? 
-		my $user = DXUser->get($call);
-		if ($sort ne 'O' && Msg->conns($call)) {
-			my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
-			already_conn($conn, $call, $mess);
-			return;
-		}
-		
-		# is there one already connected elsewhere in the cluster?
-		if ($user) {
-			if (($user->is_node || $call eq $myalias) && !DXCluster->get_exact($call)) {
-				;
-			} else {
-				if (my $ref = DXCluster->get_exact($call)) {
-					my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
-					already_conn($conn, $call, $mess);
-					return;
-				}
-			}
-			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
+	# is there one already connected to me - locally? 
+	my $user = DXUser->get($call);
+	if ($sort ne 'O' && Msg->conns($call)) {
+		my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
+		already_conn($conn, $call, $mess);
+		return;
+	}
+	
+	# is there one already connected elsewhere in the cluster?
+	if ($user) {
+		if (($user->is_node || $call eq $myalias) && !DXCluster->get_exact($call)) {
+			;
 		} else {
 			if (my $ref = DXCluster->get_exact($call)) {
 				my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
 				already_conn($conn, $call, $mess);
 				return;
 			}
-			$user = DXUser->new($call);
 		}
-
-		# is he locked out ?
-		if ($user->lockout) {
-			Log('DXCommand', "$call is locked out, disconnected");
-			$conn->disconnect;
+		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
+	} else {
+		if (my $ref = DXCluster->get_exact($call)) {
+			my $mess = DXM::msg($lang, 'concluster', $call, $ref->mynode->call);
+			already_conn($conn, $call, $mess);
 			return;
 		}
-
-		# mark him up
-		$conn->conns($call) unless $sort eq 'O';
-		$conn->set_error(sub {error_handler($dxchan)});
-		
-		# create the channel
-		$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
-		$dxchan = DXProt->new($call, $conn, $user) if $user->is_node;
-		$dxchan = BBS->new($call, $conn, $user) if $user->is_bbs;
-		die "Invalid sort of user on $call = $sort" if !$dxchan;
+		$user = DXUser->new($call);
 	}
+	
+	# is he locked out ?
+	if ($user->lockout) {
+		Log('DXCommand', "$call is locked out, disconnected");
+		$conn->disconnect;
+		return;
+	}
+
+	# create the channel
+	my $dxchan;
+	$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
+	$dxchan = DXProt->new($call, $conn, $user) if $user->is_node;
+	$dxchan = BBS->new($call, $conn, $user) if $user->is_bbs;
+	die "Invalid sort of user on $call = $sort" if !$dxchan;
+
+	# check that the conn has a callsign
+	$conn->conns($call) if $conn->isa('IntMsg');
+
+	# set callbacks
+	$conn->set_error(sub {error_handler($dxchan)});
+	$conn->set_rproc(sub {my ($conn,$msg) = @_; rec($dxchan, $conn, $msg);});
+	rec($dxchan, $conn, $msg);
+}
+
+sub rec	
+{
+	my ($dxchan, $conn, $msg) = @_;
 	
 	# queue the message and the channel object for later processing
 	if (defined $msg) {
@@ -173,7 +180,7 @@ sub rec
 
 sub login
 {
-	return \&rec;
+	return \&new_channel;
 }
 
 # cease running this program, close down all the connections nicely
@@ -268,7 +275,6 @@ sub process_inqueue
 		$dxchan->normal($line);
 		$dxchan->disconnect if ($dxchan->{state} eq 'bye');
 	} elsif ($sort eq 'Z') {
-		$dxchan->conn(undef);
 		$dxchan->disconnect;
 	} elsif ($sort eq 'D') {
 		;                       # ignored (an echo)

@@ -66,10 +66,7 @@ sub dequeue
 			} 
 		}
 		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
-			$conn->{state} = 'C';
-			&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
-			delete $conn->{cmd};
-			$conn->{timeout}->del if $conn->{timeout};
+			$conn->to_connected($conn->{call}, 'O', 'telnet');
 		}
 	} elsif ($conn->{msg} =~ /\n/) {
 		my @lines = split /\r?\n/, $conn->{msg};
@@ -89,9 +86,7 @@ sub dequeue
 			} elsif ($conn->{state} eq 'WL' ) {
 				$msg = uc $msg;
 				if (is_callsign($msg)) {
-					&{$conn->{rproc}}($conn, "A$msg|telnet");
-					_send_file($conn, "$main::data/connected");
-					$conn->{state} = 'C';
+					$conn->to_connected($msg, 'A', 'telnet');
 				} else {
 					$conn->send_now("Sorry $msg is an invalid callsign");
 					$conn->disconnect;
@@ -100,15 +95,24 @@ sub dequeue
 				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
 					$conn->_docmd($msg);
 					if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
-						$conn->{state} = 'C';
-						&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
-						delete $conn->{cmd};
-						$conn->{timeout}->del if $conn->{timeout};
+						$conn->to_connected($conn->{call}, 'O', 'telnet');
 					}
 				}
 			}
 		}
 	}
+}
+
+sub to_connected
+{
+	my ($conn, $call, $dir, $sort) = @_;
+	$conn->{state} = 'C';
+	$conn->conns($call);
+	delete $conn->{cmd};
+	$conn->{timeout}->del if $conn->{timeout};
+	delete $conn->{timeout};
+	$conn->_send_file("$main::data/connected");
+	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 }
 
 sub new_client {
@@ -120,7 +124,7 @@ sub new_client {
     my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
 	if ($eproc) {
 		$conn->{eproc} = $eproc;
-        set_event_handler ($sock, "error" => $eproc);
+        Msg::set_event_handler ($sock, "error" => $eproc);
 	}
     if ($rproc) {
         $conn->{rproc} = $rproc;
@@ -131,8 +135,9 @@ sub new_client {
 #		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
 #		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
 #		$conn->send_raw("\xFF\xFC\x01");
-		_send_file($conn, "$main::data/issue");
+		$conn->_send_file("$main::data/issue");
 		$conn->send_raw("login: ");
+		$conn->_dotimeout(60);
     } else { 
         $conn->disconnect();
     }
@@ -142,7 +147,7 @@ sub start_connect
 {
 	my $call = shift;
 	my $fn = shift;
-	my $conn = ExtMsg->new(\&main::rec); 
+	my $conn = ExtMsg->new(\&main::new_channel); 
 	$conn->conns($call);
 	
 	my $f = new IO::File $fn;
@@ -222,9 +227,9 @@ sub _dotimeout
 	my $conn = shift;
 	my $val = shift;
 	dbg('connect', "timeout set to $val");
-	my $old = $conn->{timeout}->del if $conn->{timeout};
-	$conn->{timeout} = Timer->new($val, sub{ &_timeout($conn) });
+	$conn->{timeout}->del if $conn->{timeout};
 	$conn->{timeval} = $val;
+	$conn->{timeout} = Timer->new($val, sub{ &_timedout($conn) });
 }
 
 sub _dolineend
@@ -264,10 +269,12 @@ sub _dochat
 	unshift @{$conn->{cmd}}, $cmd;
 }
 
-sub _timeout
+sub _timedout
 {
 	my $conn = shift;
 	dbg('connect', "timed out after $conn->{timeval} seconds");
+	$conn->{timeout}->del;
+	delete $conn->{timeout};
 	$conn->disconnect;
 }
 
@@ -277,10 +284,11 @@ sub _doclient
 	my $conn = shift;
 	my $line = shift;
 	my @f = split /\s+/, $line;
-	$conn->{call} = uc $f[0] if $f[0];
+	my $call = uc $f[0] if $f[0];
+	$conn->conns($call);
 	$conn->{csort} = $f[1] if $f[1];
 	$conn->{state} = 'C';
-	&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
+	&{$conn->{rproc}}($conn, "O$call|telnet");
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 }
