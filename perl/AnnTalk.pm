@@ -12,48 +12,28 @@ use strict;
 
 use DXUtil;
 use DXDebug;
+use DXDupe;
 
 use vars qw(%dup $duplth $dupage);
 
-%dup = ();						# the duplicates hash
 $duplth = 60;					# the length of text to use in the deduping
-$dupage = 24*3600;               # the length of time to hold spot dups
+$dupage = 5*24*3600;			# the length of time to hold spot dups
 
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
 	my ($call, $to, $text) = @_; 
-	my $d = $main::systime;
 
 	chomp $text;
 	unpad($text);
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $dupkey = "$to|$text";
-	return 1 if exists $dup{$dupkey};
-	$dup{$dupkey} = $d;         # in seconds (to the nearest minute)
-	return 0; 
-}
-
-# called every hour and cleans out the dup cache
-sub process
-{
-	my $cutoff = $main::systime - $dupage;
-	while (my ($key, $val) = each %dup) {
-		delete $dup{$key} if $val < $cutoff;
-	}
+	my $dupkey = "A$to|$text";
+	return DXDupe::check($dupkey, $main::systime + $dupage);
 }
 
 sub listdups
 {
-	my $regex = shift;
-	$regex = '.*' unless $regex;
-	$regex =~ s/[\$\@\%]//g;
-	my @out;
-	for (sort { $dup{$a} <=> $dup{$b} } grep { m{$regex}i } keys %dup) {
-		my $val = $dup{$_};
-		push @out, "$_ = " . cldatetime($val);
-	}
-	return @out;
+	return DXDupe::listdups('A', $dupage, @_);
 }
 
 

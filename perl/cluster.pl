@@ -61,6 +61,7 @@ use Filter;
 use DXDb;
 use AnnTalk;
 use WCY;
+use DXDupe;
 
 use Data::Dumper;
 use Fcntl ':flock'; 
@@ -219,6 +220,7 @@ sub cease
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	DXUser::finish();
+	DXDupe::finish();
 
 	# close all databases
 	DXDb::closeall;
@@ -340,6 +342,9 @@ for (keys %SIG) {
 	}
 }
 
+# start dupe system
+DXDupe::init();
+
 # read in system messages
 DXM->init();
 
@@ -410,6 +415,8 @@ for (;;) {
 		DXMsg::process();
 		DXDb::process();
 		DXUser::process();
+		DXDupe::process();
+		
 		eval { 
 			Local::process();       # do any localised processing
 		};

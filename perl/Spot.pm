@@ -15,16 +15,16 @@ use DXUtil;
 use DXLog;
 use Julian;
 use Prefix;
+use DXDupe;
 
 use strict;
-use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix %dup $duplth $dupage);
+use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage);
 
 $fp = undef;
 $maxspots = 50;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
 $maxdays = 35;					# normal maximum no of days to go back
 $dirprefix = "spots";
-%dup = ();						# the spot duplicates hash
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 3*3600;               # the length of time to hold spot dups
 
@@ -215,32 +215,13 @@ sub dup
 	chomp $text;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	unpad($text);
-	my $dupkey = "$freq|$call|$d|$text";
-	return 1 if exists $dup{$dupkey};
-	$dup{$dupkey} = $d;         # in seconds (to the nearest minute)
-	return 0; 
-}
-
-# called every hour and cleans out the dup cache
-sub process
-{
-	my $cutoff = $main::systime - $dupage;
-	while (my ($key, $val) = each %dup) {
-		delete $dup{$key} if $val < $cutoff;
-	}
+	my $dupkey = "X$freq|$call|$d|$text";
+	return DXDupe::check($dupkey, $main::systime+$dupage);
 }
 
 sub listdups
 {
-	my $regex = shift;
-	$regex = '.*' unless $regex;
-	$regex =~ s/[\$\@\%]//g;
-	my @out;
-	for (sort { $dup{$a} <=> $dup{$b} } grep { m{$regex}i } keys %dup) {
-		my $val = $dup{$_};
-		push @out, "$_ = " . cldatetime($val);
-	}
-	return @out;
+	return DXDupe::listdups('X', $dupage, @_);
 }
 1;
 

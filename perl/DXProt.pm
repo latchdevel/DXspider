@@ -175,16 +175,16 @@ sub init
 	$me->{state} = "indifferent";
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
-	#  $me->{sort} = 'M';    # M for me
+	$me->{sort} = 'S';    # S for spider
 
 	# now prime the spot and wwv  duplicates file with data
-    my @today = Julian::unixtoj(time);
-	for (Spot::readfile(@today), Spot::readfile(Julian::sub(@today, 1))) {
-		Spot::dup(@{$_}[0..3]);
-	}
-	for (Geomag::readfile(time)) {
-		Geomag::dup(@{$_}[1..5]);
-	}
+#    my @today = Julian::unixtoj(time);
+#	for (Spot::readfile(@today), Spot::readfile(Julian::sub(@today, 1))) {
+#		Spot::dup(@{$_}[0..3]);
+#	}
+#	for (Geomag::readfile(time)) {
+#		Geomag::dup(@{$_}[1..5]);
+#	}
 
 	# load the baddx file
 	do "$baddxfn" if -e "$baddxfn";
@@ -1027,9 +1027,9 @@ sub process
 	my $val;
 	my $cutoff;
 	if ($main::systime - 3600 > $last_hour) {
-		Spot::process;
-		Geomag::process;
-		AnnTalk::process;
+#		Spot::process;
+#		Geomag::process;
+#		AnnTalk::process;
 		$last_hour = $main::systime;
 	}
 }

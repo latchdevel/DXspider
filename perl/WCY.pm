@@ -20,7 +20,7 @@ use Data::Dumper;
 use strict;
 use vars qw($date $sfi $k $expk $a $r $sa $gmf $au  @allowed @denied $fp $node $from 
             $dirprefix $param
-            %dup $duplth $dupage);
+            $duplth $dupage);
 
 $fp = 0;						# the DXLog fcb
 $date = 0;						# the unix time of the WWV (notional)
@@ -35,7 +35,6 @@ $node = "";						# originating node
 $from = "";						# who this came from
 @allowed = ();					# if present only these callsigns are regarded as valid WWV updators
 @denied = ();					# if present ignore any wwv from these callsigns
-%dup = ();						# the spot duplicates hash
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 12*3600;				# the length of time to hold spot dups
 
@@ -227,34 +226,13 @@ sub dup
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
  
-#	chomp $text;
-#	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $dupkey = "$d|$sfi|$k|$a|$r";
-	return 1 if exists $dup{$dupkey};
-	$dup{$dupkey} = $d;         # in seconds (to the nearest minute)
-	return 0; 
-}
-
-# called every hour and cleans out the dup cache
-sub process
-{
-	my $cutoff = $main::systime - $dupage;
-	while (my ($key, $val) = each %dup) {
-		delete $dup{$key} if $val < $cutoff;
-	}
+	my $dupkey = "C$d|$sfi|$k|$a|$r";
+	return DXDupe::check($dupkey, $main::systime+$dupage);
 }
 
 sub listdups
 {
-	my $regex = shift;
-	$regex = '.*' unless $regex;
-	$regex =~ s/[\$\@\%]//g;
-	my @out;
-	for (sort { $dup{$a} <=> $dup{$b} } grep { m{$regex}i } keys %dup) {
-		my $val = $dup{$_};
-		push @out, "$_ = " . cldatetime($val);
-	}
-	return @out;
+	return DXDupe::listdups('C', $dupage, @_);
 }
 1;
 __END__;
