@@ -286,7 +286,7 @@ sub genheader
 sub decode_dts
 {
 	my $dts = shift;
-	my ($dt, $seqno) = map {hex} unpack "H6H4", $dts;
+	my ($dt, $seqno) = map {hex} unpack "A6 A4", $dts;
 	my $secs = $dt & 0x3FFFF;
 	$dt >>= 18;
 	my $day = $dt >> 1;
@@ -374,6 +374,7 @@ sub input
 	my $class = 'Thingy::' . ucfirst(lc $cmd);
 	my $thing;
 	my ($t, $seqno, $ntp) = decode_dts($dts) unless $err;
+	dbg("dts: $dts = $ntp $t($main::systime) $seqno") if isdbg('dts');
 	$err .= "invalid date/seq," unless $t;
 	
 	if ($err) {

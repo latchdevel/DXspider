@@ -31,7 +31,7 @@ sub gen_Aranea
 		$thing->{f} = $sd->[0];
 		$thing->{c} = $sd->[1];
 		$thing->{b} = $sd->[4] unless $thing->{user};
-		my $t = int($sd->[2] / 60);
+		my $t = $sd->[2];
 		$thing->{t} = sprintf("%X", $t) unless $t eq int($main::systime / 60);
 		$thing->{o} =  $sd->[7] unless $sd->[7] eq $main::mycall; 
 		$thing->{i} = $sd->[3] if $sd->[3];
@@ -45,7 +45,7 @@ sub from_Aranea
 	my $thing = shift;
 	return unless $thing;
 	my $t = hex($thing->{t}) if exists $thing->{t};
-	$t ||= $thing->{time} / 60;	# if it is an aranea generated
+	$t ||= int($thing->{time} / 60);	# if it is an aranea generated
 	my @spot = Spot::prepare(
 							 $thing->{f},
 							 $thing->{c},
