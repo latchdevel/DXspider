@@ -55,14 +55,20 @@ sub gen_DXProt
 		# {user} as well as a true user and also it may not
 		# have originated here.
 
-		my $from = $thing->{o} if $thing->{out};
-	    $from ||= $thing->{user} if Route::Node::get($thing->{user});
-		$from ||= $thing->{origin};
-		my $to = $thing->{o} unless $thing->{out};
-		$to ||= $thing->{touser} unless Route::User::get($thing->{touser});
-		$to ||= $thing->{group};
-
-		
+		my ($from, $to);
+		if ($thing->{out}) {
+			$from = $thing->{o};
+			$from ||= $thing->{user} unless Route::User::get($thing->{user});
+			$from ||= $thing->{origin};
+			$to = $thing->{touser} unless Route::User::get($thing->{touser});
+			$to ||= $thing->{group};
+		} else {
+			$from ||= $thing->{user} unless Route::User::get($thing->{user});
+			$from ||= $thing->{origin};
+			$to = $thing->{o};
+			$to ||= $thing->{touser} unless Route::User::get($thing->{touser});
+			$to ||= $thing->{group};
+		}
 		$thing->{DXProt} = DXProt::pc51($to, $from, $thing->{out});
 	}
 	return $thing->{DXProt};
