@@ -76,7 +76,7 @@ sub load
 {
 	my $s = readfilestr($dbbase, "dbs", "pl");
 	if ($s) {
-		my $a = { eval $s } ;
+		my $a = eval $s;
 		confess $@ if $@;
 		%avail = %{$a} if $a
 	}

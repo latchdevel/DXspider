@@ -1520,7 +1520,7 @@ you are on or else for the callsign that you asked for.
 
 Only the fields that are defined (in perl term) will be displayed.
 
-=== 5^STAT/MSG <msgno>^Show the status of a message
+=== 1^STAT/MSG <msgno>^Show the status of a message
 This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
 
