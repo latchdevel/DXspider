@@ -310,7 +310,7 @@ sub install
 	}
 	foreach $dxchan (@dxchan) {
 		my $n = "$in$sort" . "filter";
-		my $ref = $dxchan->$n;
+		my $ref = $dxchan->$n();
 		if (!$ref || ($ref && uc $ref->{name} eq "$name.PL")) {
 			$dxchan->$n($remove ? undef : $self);
 		}
