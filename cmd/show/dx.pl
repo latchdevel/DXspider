@@ -139,6 +139,8 @@ while ($f = shift @list) {		# next field
 	}
 }
 
+#$DB::single = 1;
+
 # first deal with the prefix
 if ($pre) {
 	my @ans;
@@ -181,8 +183,9 @@ if ($pre) {
   
 # now deal with any frequencies specified
 if (@freq) {
-	$expr .= ($expr) ? " && (" : "(";
-#	$hint .= ($hint) ? " && (" : "(";
+	$expr .= ($expr) ? ' && (' : "(";
+#	$hint .= ($hint) ? ' && ' : "(";
+#	$hint .= ' && ' if $hint;
 	my $i;
 	for ($i = 0; $i < @freq; $i += 2) {
 		$expr .= "(\$f0 >= $freq[$i] && \$f0 <= $freq[$i+1]) ||";
@@ -199,10 +202,10 @@ if (@freq) {
 
 # any info
 if ($info) {
-	$expr .= " && " if $expr;
+	$expr .= ' && ' if $expr;
 	$info =~ s{(.)}{"\Q$1"}ge;
 	$expr .= "\$f3 =~ m{$info}i";
-	$hint .= " && " if $hint;
+	$hint .= ' && ' if $hint;
 	$hint .= "m{$info}i";
 }
 
@@ -239,11 +242,11 @@ if ($spotter) {
 		}
 	} 
 	unless (@ans) {
-		$expr .= " && " if $expr;
+		$expr .= ' && ' if $expr;
 		$spotter .= '*' unless $spotter =~ /[\*\?\[]/o;
 		$spotter = shellregex($spotter);
 		$expr .= "\$f4 =~ m{\U$spotter}";
-		$hint .= " && " if $hint;
+		$hint .= ' && ' if $hint;
 		$spotter =~ s/[\^\$]//g;
 		$hint .= "m{\U$spotter}";
 	}
@@ -253,6 +256,8 @@ if ($spotter) {
 if ($zone) {
 	my @expr;
 	my @hint;
+	$expr .= ' && ' if $expr;
+	$hint .= ' && ' if $hint;
 	for (split /[:,]/, $zone) {
 		push @expr, "\$f9==$_";
 		push @hint, "m{$_}";
@@ -263,6 +268,8 @@ if ($zone) {
 if ($byzone) {
 	my @expr;
 	my @hint;
+	$expr .= ' && ' if $expr;
+	$hint .= ' && ' if $hint;
 	for (split /[:,]/, $byzone) {
 		push @expr, "\$f11==$_";
 		push @hint, "m{$_}";
@@ -275,6 +282,8 @@ if ($byzone) {
 if ($itu) {
 	my @expr;
 	my @hint;
+	$expr .= ' && ' if $expr;
+	$hint .= ' && ' if $hint;
 	for (split /[:,]/, $itu) {
 		push @expr, "\$f8==$_";
 		push @hint, "m{$_}";
@@ -285,6 +294,8 @@ if ($itu) {
 if ($byitu) {
 	my @expr;
 	my @hint;
+	$expr .= ' && ' if $expr;
+	$hint .= ' && ' if $hint;
 	for (split /[:,]/, $byitu) {
 		push @expr, "\$f10==$_";
 		push @hint, "m{$_}";
@@ -297,6 +308,8 @@ if ($byitu) {
 if ($state) {
 	my @expr;
 	my @hint;
+	$expr .= ' && ' if $expr;
+	$hint .= ' && ' if $hint;
 	for (split /[:,]/, $state) {
 		push @expr, "\$f12 eq '$_'";
 		push @hint, "m{$_}";
@@ -307,6 +320,8 @@ if ($state) {
 if ($bystate) {
 	my @expr;
 	my @hint;
+	$expr .= ' && ' if $expr;
+	$hint .= ' && ' if $hint;
 	for (split /[:,]/, $bystate) {
 		push @expr, "\$f13 eq '$_'";
 		push @hint, "m{$_}";
@@ -317,25 +332,25 @@ if ($bystate) {
 
 # qsl requests
 if ($doqsl) {
-	$expr .= " && " if $expr;
+	$expr .= ' && ' if $expr;
 	$expr .= "\$f3 =~ m{QSL|VIA}i";
-	$hint .= " && " if $hint;
+	$hint .= ' && ' if $hint;
 	$hint .= "m{QSL|VIA}i";
 }
 
 # iota requests
 if ($doiota) {
-	$expr .= " && " if $expr;
+	$expr .= ' && ' if $expr;
 	$expr .= "\$f3 =~ m{$doiota}i";
-	$hint .= " && " if $hint;
+	$hint .= ' && ' if $hint;
 	$hint .= "m{$doiota}i";
 }
 
 # iota requests
 if ($doqra) {
-	$expr .= " && " if $expr;
+	$expr .= ' && ' if $expr;
 	$expr .= "\$f3 =~ m{$doqra}i";
-	$hint .= " && " if $hint;
+	$hint .= ' && ' if $hint;
 	$hint .= "m{$doqra}io";
 }
 
