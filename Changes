@@ -1,5 +1,6 @@
 08Feb05=======================================================================
 1. possibly fixed the multiple condition problems on sh/dx
+2. added some FAQs.
 05Feb05=======================================================================
 1. Fix a long standing (ie since the first bulletin was sent) bug with old
 mail not being deleted until a restart was done.

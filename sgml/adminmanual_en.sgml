@@ -4336,7 +4336,7 @@ Czech (cz), French (fr), Portuguese (pt), Italian (it) and nl (Dutch).
 
 <P>
 <tt>
-<bf>set/logininfo</bf> Inform when a station logs in locally
+<bf>set/logininfo</bf> Inform when a station logs in/out locally
 </tt>
 
 <P>
@@ -4559,6 +4559,33 @@ Tell the system where you are. For example:-
 <P>
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.
+<sect1>set/startup (0)
+
+<P>
+<tt>
+<bf>set/startup</bf> Create your own startup script
+</tt>
+
+<P>
+Create a startup script of DXSpider commands which will be executed
+everytime that you login into this node. You can only input the whole
+script afresh, it is not possible to 'edit' it. Inputting a new script is
+just like typing in a message using SEND. To finish inputting type: /EX
+on a newline, to abandon the script type: /ABORT.
+
+You may find the (curiously named) command BLANK useful to break 
+up the output. If you simply want a blank line, it is easier to 
+input one or more spaces and press the &lt;return&gt; key.
+
+See UNSET/STARTUP to remove a script.
+<sect1>set/startup &lt;call&gt; (6)
+
+<P>
+<tt>
+<bf>set/startup &lt;call&gt;</bf> Create a user startup script
+</tt>
+
+<P>
 <sect1>set/sys_location &lt;lat & long&gt; (9)
 
 <P>
@@ -5465,6 +5492,23 @@ So for example:-
  SH/SAT FENGYUN1 12 2
 </verb></tscreen>
 
+<sect1>show/startup (0)
+
+<P>
+<tt>
+<bf>show/startup</bf> View your own startup script
+</tt>
+
+<P>
+View the contents of a startup script created with SET/STARTUP.
+<sect1>show/startup &lt;call&gt; (6)
+
+<P>
+<tt>
+<bf>show/startup &lt;call&gt;</bf> View a user startup script
+</tt>
+
+<P>
 <sect1>show/station all &lsqb;&lt;regex&gt;&rsqb; (6)
 
 <P>
@@ -6252,7 +6296,7 @@ Remove isolation from a node - SET/ISOLATE
 
 <P>
 <tt>
-<bf>unset/logininfo</bf> Inform when a station logs out locally
+<bf>unset/logininfo</bf> No longer inform when a station logs in/out locally
 </tt>
 
 <P>
@@ -6286,16 +6330,31 @@ SYSOP command.
 </tt>
 
 <P>
-This command will set your user prompt to exactly the string that you 
+This command will set your user prompt to the string that you 
 say. The point of this command to enable a user to interface to programs
 that are looking for a specific prompt (or else you just want a different
-fixed prompt).
+prompt).
 
 <tscreen><verb>
   SET/PROMPT clx &gt;
 </verb></tscreen>
 
-UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back to
+There are some substitutions that can be added to the prompt:
+
+<tscreen><verb>
+  %C - callsign [which will have ( and ) around it if not here]
+  %D - date
+  %T - time
+  %M - cluster 'mycall'
+</verb></tscreen>
+
+The standard prompt is defined as:
+
+<tscreen><verb>
+  SET/PROMPT %C de %M %D %T dxspider &gt;
+</verb></tscreen>
+
+UNSET/PROMPT will undo the SET/PROMPT command and set your prompt back to
 normal.
 <sect1>unset/register &lt;call&gt; ... (9)
 
@@ -6321,7 +6380,23 @@ cannot use DX, ANN etc.
 
 The only exception to this is that a non-registered user can TALK or
 SEND messages to the sysop.
- 
+<sect1>unset/startup (0)
+
+<P>
+<tt>
+<bf>unset/startup</bf> Remove your own startup script
+</tt>
+
+<P>
+You can remove your startup script with UNSET/STARTUP.  
+<sect1>unset/startup &lt;call&gt; (6)
+
+<P>
+<tt>
+<bf>unset/startup &lt;call&gt;</bf> Remove a user startup script
+</tt>
+
+<P>
 <sect1>unset/talk (0)
 
 <P>

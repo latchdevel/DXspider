@@ -6,7 +6,7 @@
 
 <title>The DXSpider FAQ</title>
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>December 2001 Revision: 1.8</date>
+<date>February 2005 Revision: 1.8</date>
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -89,6 +89,25 @@ case you simply type ..
 watchdbg G0VGS
 </verb></tscreen>
 
+<sect1>I see spots coming in my debug log, but none go out to the users
+
+<P>
+Please check the time on your PC. 
+
+<P>
+All spots are checked that they are no more
+than 15 minutes in the future and 60 minutes in the past. If your clock is not set
+to GMT (UTC) and is more than one hour out (say on your local (summer) time) then
+the test will fail and no spots will come out. Neither will they be stored.
+
+<P>
+If you are connected to the internet, most linux distributions have an implementation of
+<htmlurl url="http://www.ntp.org" name="ntpd">. The Microsoft Windows 2003, XP, 
+2000 and NT machine clock can also be set to be syncronised
+to an NTP source.  This can be done in the standard time configuration screen. There is also
+the simple <htmlurl url="http://nettime.sourceforge.net" name="nettime"> program for Windows 95/98/ME.
+
+
 <sect1>My neighbouring node cannot use the RCMD command to me, he just keeps 
 getting the "tut tut" message.
 
@@ -155,5 +174,96 @@ look closely you will see a 'D' following the message number.  This
 message is marked for deletion and will be deleted in 2 days if nothing
 further is done.  Optionally you can use the command <em>delete/expunge</em>
 to delete it immediately.
+
+<sect1>I am updating from CVS and I get all sorts of errors when I restart
+
+<P>
+Firstly, whenever you update from CVS, a log is displayed. Next to each
+file that is downloaded there is a letter, e.g.:
+
+<tscreen><verb>
+? fred.pl
+? jim
+..
+.
+..
+cvs server: Updating perl
+P cluster.pl
+C Messages
+M Internet.pm
+U DXProt.pm
+..
+.
+..
+</verb></tscreen>
+
+<P>
+For normal CVS use you should only ever see the letter 'P'. This means that the file has
+changed in CVS and is more recent than the one that is currenly on your system. You may also
+possibly see the letter '?', which means that
+there is a file that you (or the system) has created that CVS doesn't know about and isn't 
+under its control. These are all normal and good.
+
+<P>
+Sometimes you will see the letter 'U' next to a file. This means that it is a new file that you don't currently
+have. This is also OK.
+
+<P>
+However, if you see the letter 'C' or 'M', that means that CVS thinks that the file has 
+changed locally. For the letter 'C', it has changed sufficiently near to one or more
+modifications which CVS wants to download to your system. For the 'M', CVS thinks that it
+is OK to make the change (you may also see some messages about "merging revision 1.xx with 1.yy").
+Neither of these things are good. Files that are under the control of CVS
+must not be changed by sysops. It is the files that have the 'C' next to them that will show
+the errors and they will be things like:-
+
+<tscreen><verb>
+Syntax error near '<<<<' at line 23
+Syntax error near '===' at line 40
+Syntax error near '>>>' at line 51
+</verb></tscreen>
+
+<P>
+You will now necessarily see all of the errors shown but you will get one or more sets of some
+of them. The cure is simple: 
+
+<itemize>
+<item> identify the file that is causing the problem.  
+<item> remove the file.
+<item> run the cvs update again.
+</itemize>
+
+<P>
+You will see that file come back (with a letter 'U' next to it). That will be the correct 
+file as CVS thinks it should be. If you <em>still</em> have a problem, then get onto the
+dxspider-support mailing list.
+
+<P>
+If all else fails (or you have several conflicts) you can safely remove the entire <tt>/spider/perl</tt> and 
+<tt>/spider/cmd</tt> directories and then run the cvs update. They will all be recreated in their pristine
+condition.
+
+<sect1>I have done a CVS update, restarted and it says that "fileX" is missing
+
+<P>
+The correct way to run cvs is:-
+
+<tscreen><verb>
+cd /spider
+cvs -z3 update -d
+</verb></tscreen>
+
+<P>
+The '-d' is crucial. It makes sure that any new directories that may contain new code
+are created and that new code downloaded. I have absolutely no idea why this is not the
+default, seeing as CVS (in other circumstances) happily recurses its merry way down a 
+directory tree, but there you are.
+
+<P>
+WinCVS and other graphical CVS frontends have a checkbox for the update screen called something
+like "create sub-directories" (it may be hidden in some sub-screen - go look for it if it isn't
+obvious). Make sure that this box is checked. If you can make this the
+default setting in the program's setup screen then please do that. It will save you a lot
+of pulled hair. 
 
 </article>

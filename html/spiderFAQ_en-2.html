@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.20">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.21">
  <TITLE>The DXSpider FAQ: Administration</TITLE>
  <LINK HREF="spiderFAQ_en-1.html" REL=previous>
  <LINK HREF="spiderFAQ_en.html#toc2" REL=contents>
@@ -49,7 +49,25 @@ watchdbg G0VGS
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss2.3">2.3</A> <A HREF="spiderFAQ_en.html#toc2.3">My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.</A>
+<H2><A NAME="ss2.3">2.3</A> <A HREF="spiderFAQ_en.html#toc2.3">I see spots coming in my debug log, but none go out to the users</A>
+</H2>
+
+<P>Please check the time on your PC. </P>
+
+<P>All spots are checked that they are no more
+than 15 minutes in the future and 60 minutes in the past. If your clock is not set
+to GMT (UTC) and is more than one hour out (say on your local (summer) time) then
+the test will fail and no spots will come out. Neither will they be stored.</P>
+
+<P>If you are connected to the internet, most linux distributions have an implementation of
+<A HREF="http://www.ntp.org">ntpd</A>. The Microsoft Windows 2003, XP, 
+2000 and NT machine clock can also be set to be syncronised
+to an NTP source.  This can be done in the standard time configuration screen. There is also
+the simple 
+<A HREF="http://nettime.sourceforge.net">nettime</A> program for Windows 95/98/ME.</P>
+
+
+<H2><A NAME="ss2.4">2.4</A> <A HREF="spiderFAQ_en.html#toc2.4">My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.</A>
 </H2>
 
 <P>Assuming that the permissions are set correctly (perm level 5 required), it could be
@@ -64,7 +82,7 @@ spoof gb7adx set/home gb7adx
 </P>
 <P>Assuming that the node_call you are changing is gb7adx.</P>
 
-<H2><A NAME="ss2.4">2.4</A> <A HREF="spiderFAQ_en.html#toc2.4">I do not seem to be sending any bulletin mail to my link partners, what is wrong?</A>
+<H2><A NAME="ss2.5">2.5</A> <A HREF="spiderFAQ_en.html#toc2.5">I do not seem to be sending any bulletin mail to my link partners, what is wrong?</A>
 </H2>
 
 <P>There is a file in /spider/msg called forward.pl.issue.  Rename this to
@@ -72,7 +90,7 @@ forward.pl and edit it to meet your requirements.  You will need to issue
 the command <EM>load/forward</EM> or restart Spider for the changes to 
 take effect.</P>
 
-<H2><A NAME="ss2.5">2.5</A> <A HREF="spiderFAQ_en.html#toc2.5">How can I automatically limit the amount of debug logfiles that are stored?</A>
+<H2><A NAME="ss2.6">2.6</A> <A HREF="spiderFAQ_en.html#toc2.6">How can I automatically limit the amount of debug logfiles that are stored?</A>
 </H2>
 
 <P>Use the tmpwatch command.  Create a file in /etc/cron.daily/ containing the line ...</P>
@@ -86,7 +104,7 @@ take effect.</P>
 <P>Remember to make it executable!</P>
 <P>This will limit your debug data down to the last 10 days</P>
 
-<H2><A NAME="ss2.6">2.6</A> <A HREF="spiderFAQ_en.html#toc2.6">I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?</A>
+<H2><A NAME="ss2.7">2.7</A> <A HREF="spiderFAQ_en.html#toc2.7">I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?</A>
 </H2>
 
 <P>Almost certainly this is a change in the db format of perl.  Follow these
@@ -101,7 +119,7 @@ few steps to correct the problem.</P>
 </P>
 <P>That should solve the problem.</P>
 
-<H2><A NAME="ss2.7">2.7</A> <A HREF="spiderFAQ_en.html#toc2.7">Since I last updated I seem to be getting duplicate spots appearing.</A>
+<H2><A NAME="ss2.8">2.8</A> <A HREF="spiderFAQ_en.html#toc2.8">Since I last updated I seem to be getting duplicate spots appearing.</A>
 </H2>
 
 <P>What has probably happened is that the dupefile has got corrupted in
@@ -109,7 +127,7 @@ some way.  Simply delete the /spider/data/dupefile and restart the
 cluster.  It may take a little time to become fully functional but
 should solve your problem.</P>
 
-<H2><A NAME="ss2.8">2.8</A> <A HREF="spiderFAQ_en.html#toc2.8">I have deleted a message but it is still there, why?</A>
+<H2><A NAME="ss2.9">2.9</A> <A HREF="spiderFAQ_en.html#toc2.9">I have deleted a message but it is still there, why?</A>
 </H2>
 
 <P>This is now the way messages are handled for deletion in Spider.  If you
@@ -117,6 +135,99 @@ look closely you will see a 'D' following the message number.  This
 message is marked for deletion and will be deleted in 2 days if nothing
 further is done.  Optionally you can use the command <EM>delete/expunge</EM>
 to delete it immediately.</P>
+
+<H2><A NAME="ss2.10">2.10</A> <A HREF="spiderFAQ_en.html#toc2.10">I am updating from CVS and I get all sorts of errors when I restart</A>
+</H2>
+
+<P>Firstly, whenever you update from CVS, a log is displayed. Next to each
+file that is downloaded there is a letter, e.g.:</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+? fred.pl
+? jim
+..
+.
+..
+cvs server: Updating perl
+P cluster.pl
+C Messages
+M Internet.pm
+U DXProt.pm
+..
+.
+..
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>For normal CVS use you should only ever see the letter 'P'. This means that the file has
+changed in CVS and is more recent than the one that is currenly on your system. You may also
+possibly see the letter '?', which means that
+there is a file that you (or the system) has created that CVS doesn't know about and isn't 
+under its control. These are all normal and good.</P>
+
+<P>Sometimes you will see the letter 'U' next to a file. This means that it is a new file that you don't currently
+have. This is also OK.</P>
+
+<P>However, if you see the letter 'C' or 'M', that means that CVS thinks that the file has 
+changed locally. For the letter 'C', it has changed sufficiently near to one or more
+modifications which CVS wants to download to your system. For the 'M', CVS thinks that it
+is OK to make the change (you may also see some messages about "merging revision 1.xx with 1.yy").
+Neither of these things are good. Files that are under the control of CVS
+must not be changed by sysops. It is the files that have the 'C' next to them that will show
+the errors and they will be things like:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax error near '&lt;&lt;&lt;&lt;' at line 23
+Syntax error near '===' at line 40
+Syntax error near '>>>' at line 51
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>You will now necessarily see all of the errors shown but you will get one or more sets of some
+of them. The cure is simple: </P>
+<P>
+<UL>
+<LI> identify the file that is causing the problem.  </LI>
+<LI> remove the file.</LI>
+<LI> run the cvs update again.</LI>
+</UL>
+</P>
+
+<P>You will see that file come back (with a letter 'U' next to it). That will be the correct 
+file as CVS thinks it should be. If you <EM>still</EM> have a problem, then get onto the
+dxspider-support mailing list.</P>
+
+<P>If all else fails (or you have several conflicts) you can safely remove the entire <CODE>/spider/perl</CODE> and 
+<CODE>/spider/cmd</CODE> directories and then run the cvs update. They will all be recreated in their pristine
+condition.</P>
+
+<H2><A NAME="ss2.11">2.11</A> <A HREF="spiderFAQ_en.html#toc2.11">I have done a CVS update, restarted and it says that "fileX" is missing</A>
+</H2>
+
+<P>The correct way to run cvs is:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+cd /spider
+cvs -z3 update -d
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>The '-d' is crucial. It makes sure that any new directories that may contain new code
+are created and that new code downloaded. I have absolutely no idea why this is not the
+default, seeing as CVS (in other circumstances) happily recurses its merry way down a 
+directory tree, but there you are.</P>
+
+<P>WinCVS and other graphical CVS frontends have a checkbox for the update screen called something
+like "create sub-directories" (it may be hidden in some sub-screen - go look for it if it isn't
+obvious). Make sure that this box is checked. If you can make this the
+default setting in the program's setup screen then please do that. It will save you a lot
+of pulled hair. </P>
 
 <HR>
 Next

@@ -1,6 +1,6 @@
   The DXSpider FAQ
   Ian Maude, G0VGS, (g0vgs@gb7mbc.net)
-  December 2001 Revision: 1.8
+  February 2005 Revision: 1.8
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -17,12 +17,15 @@
   2. Administration
      2.1 How can I get Spider to restart automatically if it crashes?
      2.2 How can I monitor traffic to and from a node or user?
-     2.3 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.
-     2.4 I do not seem to be sending any bulletin mail to my link partners, what is wrong?
-     2.5 How can I automatically limit the amount of debug logfiles that are stored?
-     2.6 I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?
-     2.7 Since I last updated I seem to be getting duplicate spots appearing.
-     2.8 I have deleted a message but it is still there, why?
+     2.3 I see spots coming in my debug log, but none go out to the users
+     2.4 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.
+     2.5 I do not seem to be sending any bulletin mail to my link partners, what is wrong?
+     2.6 How can I automatically limit the amount of debug logfiles that are stored?
+     2.7 I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?
+     2.8 Since I last updated I seem to be getting duplicate spots appearing.
+     2.9 I have deleted a message but it is still there, why?
+     2.10 I am updating from CVS and I get all sorts of errors when I restart
+     2.11 I have done a CVS update, restarted and it says that "fileX" is missing
 
 
   ______________________________________________________________________
@@ -55,6 +58,7 @@
   Be aware that each patch assumes the previous patch has been applied.
   That is to say if you are patching from version 1.38 to 1.40 you would
   first need to apply patch-1.39 and then patch-1.40.
+
 
 
   [1m1.3.  If I use a tarball to overwrite my installation, what happens to[0m
@@ -111,7 +115,27 @@
 
 
 
-  [1m2.3.  My neighbouring node cannot use the RCMD command to me, he just[0m
+  [1m2.3.  I see spots coming in my debug log, but none go out to the users[0m
+
+  Please check the time on your PC.
+
+
+  All spots are checked that they are no more than 15 minutes in the
+  future and 60 minutes in the past. If your clock is not set to GMT
+  (UTC) and is more than one hour out (say on your local (summer) time)
+  then the test will fail and no spots will come out. Neither will they
+  be stored.
+
+
+  If you are connected to the internet, most linux distributions have an
+  implementation of ntpd. The Microsoft Windows 2003, XP, 2000 and NT
+  machine clock can also be set to be syncronised to an NTP source.
+  This can be done in the standard time configuration screen. There is
+  also the simple nettime program for Windows 95/98/ME.
+
+
+
+  [1m2.4.  My neighbouring node cannot use the RCMD command to me, he just[0m
   [1mkeeps getting the "tut tut" message.[0m
 
   Assuming that the permissions are set correctly (perm level 5
@@ -127,7 +151,7 @@
   Assuming that the node_call you are changing is gb7adx.
 
 
-  [1m2.4.  I do not seem to be sending any bulletin mail to my link part-[0m
+  [1m2.5.  I do not seem to be sending any bulletin mail to my link part-[0m
   [1mners, what is wrong?[0m
 
   There is a file in /spider/msg called forward.pl.issue.  Rename this
@@ -136,7 +160,7 @@
   take effect.
 
 
-  [1m2.5.  How can I automatically limit the amount of debug logfiles that[0m
+  [1m2.6.  How can I automatically limit the amount of debug logfiles that[0m
   [1mare stored?[0m
 
   Use the tmpwatch command.  Create a file in /etc/cron.daily/
@@ -153,7 +177,7 @@
   This will limit your debug data down to the last 10 days
 
 
-  [1m2.6.  I updated my Linux distribution and now Spider cannot read the[0m
+  [1m2.7.  I updated my Linux distribution and now Spider cannot read the[0m
   [1musers file or the dupefile, what is the problem?[0m
 
   Almost certainly this is a change in the db format of perl.  Follow
@@ -161,6 +185,7 @@
 
 
   o  stop the cluster (disable any autostart in inittab)
+
 
   o  cd /spider/data
 
@@ -171,7 +196,7 @@
   That should solve the problem.
 
 
-  [1m2.7.  Since I last updated I seem to be getting duplicate spots[0m
+  [1m2.8.  Since I last updated I seem to be getting duplicate spots[0m
   [1mappearing.[0m
 
   What has probably happened is that the dupefile has got corrupted in
@@ -180,13 +205,117 @@
   should solve your problem.
 
 
-  [1m2.8.  I have deleted a message but it is still there, why?[0m
+  [1m2.9.  I have deleted a message but it is still there, why?[0m
 
   This is now the way messages are handled for deletion in Spider.  If
   you look closely you will see a 'D' following the message number.
   This message is marked for deletion and will be deleted in 2 days if
   nothing further is done.  Optionally you can use the command
   [4mdelete/expunge[24m to delete it immediately.
+
+
+  [1m2.10.  I am updating from CVS and I get all sorts of errors when I[0m
+  [1mrestart[0m
+
+  Firstly, whenever you update from CVS, a log is displayed. Next to
+  each file that is downloaded there is a letter, e.g.:
+
+
+
+       ? fred.pl
+       ? jim
+       ..
+       .
+       ..
+       cvs server: Updating perl
+       P cluster.pl
+       C Messages
+       M Internet.pm
+       U DXProt.pm
+       ..
+       .
+       ..
+
+
+
+  For normal CVS use you should only ever see the letter 'P'. This means
+  that the file has changed in CVS and is more recent than the one that
+  is currenly on your system. You may also possibly see the letter '?',
+  which means that there is a file that you (or the system) has created
+  that CVS doesn't know about and isn't under its control. These are all
+  normal and good.
+
+
+  Sometimes you will see the letter 'U' next to a file. This means that
+  it is a new file that you don't currently have. This is also OK.
+
+
+
+  However, if you see the letter 'C' or 'M', that means that CVS thinks
+  that the file has changed locally. For the letter 'C', it has changed
+  sufficiently near to one or more modifications which CVS wants to
+  download to your system. For the 'M', CVS thinks that it is OK to make
+  the change (you may also see some messages about "merging revision
+  1.xx with 1.yy").  Neither of these things are good. Files that are
+  under the control of CVS must not be changed by sysops. It is the
+  files that have the 'C' next to them that will show the errors and
+  they will be things like:-
+
+
+
+       Syntax error near '<<<<' at line 23
+       Syntax error near '===' at line 40
+       Syntax error near '>>>' at line 51
+
+
+
+  You will now necessarily see all of the errors shown but you will get
+  one or more sets of some of them. The cure is simple:
+
+
+  o  identify the file that is causing the problem.
+
+  o  remove the file.
+
+  o  run the cvs update again.
+
+
+  You will see that file come back (with a letter 'U' next to it). That
+  will be the correct file as CVS thinks it should be. If you [4mstill[24m have
+  a problem, then get onto the dxspider-support mailing list.
+
+
+  If all else fails (or you have several conflicts) you can safely
+  remove the entire /spider/perl and /spider/cmd directories and then
+  run the cvs update. They will all be recreated in their pristine
+  condition.
+
+
+  [1m2.11.  I have done a CVS update, restarted and it says that "fileX" is[0m
+  [1mmissing[0m
+
+  The correct way to run cvs is:-
+
+
+
+       cd /spider
+       cvs -z3 update -d
+
+
+
+  The '-d' is crucial. It makes sure that any new directories that may
+  contain new code are created and that new code downloaded. I have
+  absolutely no idea why this is not the default, seeing as CVS (in
+  other circumstances) happily recurses its merry way down a directory
+  tree, but there you are.
+
+
+  WinCVS and other graphical CVS frontends have a checkbox for the
+  update screen called something like "create sub-directories" (it may
+  be hidden in some sub-screen - go look for it if it isn't obvious).
+  Make sure that this box is checked. If you can make this the default
+  setting in the program's setup screen then please do that. It will
+  save you a lot of pulled hair.
 
 
 
