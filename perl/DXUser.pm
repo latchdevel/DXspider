@@ -77,6 +77,8 @@ $lasttime = 0;
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
 		  prompt => '0,Required Prompt',
+		  version => '1,Version',
+		  build => '1,Build',
 		 );
 
 no strict;

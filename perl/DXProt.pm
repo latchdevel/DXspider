@@ -196,7 +196,9 @@ sub init
 	$main::me->{priv} = 9;
 	$main::me->{metric} = 0;
 	$main::me->{pingave} = 0;
-	
+	$main::me->{version} = $main::version;
+	$main::me->{build} = $main::build;
+		
 #	$Route::Node::me->adddxchan($main::me);
 }
 
@@ -739,6 +741,23 @@ sub normal
 		if ($pcno == 18) {		# link request
 			$self->state('init');	
 
+			# record the type and version offered
+			if ($field[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+\.\d+)/) {
+				$self->version(53 + $1);
+				$self->user->version(53 + $1);
+				$self->build(0 + $2);
+				$self->user->build(0 + $2);
+				unless ($self->is_spider) {
+					$self->user->sort('S');
+					$self->user->put;
+					$self->sort('S');
+				}
+			} else {
+				$self->version(50.0);
+				$self->version($field[2] / 100) if $field[2] && $field[2] =~ /^\d+$/;
+				$self->user->version($self->version);
+			}
+
 			# first clear out any nodes on this dxchannel
 			my $parent = Route::Node::get($self->{call});
 			my @rout = $parent->del_nodes;
@@ -1168,11 +1187,6 @@ sub normal
 									} else {
 										$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 									}
-#									my $st;
-#									for (@{$tochan->{pingtime}}) {
-#										$st += $_;
-#									}
-#									$tochan->{pingave} = $st / @{$tochan->{pingtime}};
 									$tochan->{nopings} = $nopings; # pump up the timer
 								}
 							} 
@@ -1585,7 +1599,7 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
 		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
-		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan && !$self->user->wantpc90;
+		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
 		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
 		my $ref = Route::Node::get($self->{call});
 		my @rnodes = $ref->nodes;

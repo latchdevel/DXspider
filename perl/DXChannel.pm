@@ -110,6 +110,8 @@ $count = 0;
 		  edit => '7,Edit Function',
 		  registered => '9,Registered?,yesno',
 		  prompt => '0,Required Prompt',
+		  version => '1,Node Version',
+		  build => '1,Node Build',
 		 );
 
 use vars qw($VERSION $BRANCH);
