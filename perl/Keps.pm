@@ -1,7 +1,7 @@
 #
 # this file is automatically produced by convkeps.pl
 #
-# Last update: Fri Mar 10 21:40:03 2000
+# Last update: Fri Mar 10 21:50:41 2000
 #
 
 package Sun;
@@ -792,4 +792,4 @@ package Sun;
     epoch => '55.24225022'
   }
 );
-
+1;

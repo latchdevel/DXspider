@@ -27,6 +27,9 @@
 #    email | convkeps.pl        (in amsat email format)  
 #    convkeps.pl -p keps.in     (a file with just plain keps)
 # 
+# if you add the -c flag then the %keps hash will be cleared down
+# before adding the new ones.
+#
 # Copyright (c) 2000 Dirk Koopman G1TLH
 #
 # $Id$
@@ -49,7 +52,7 @@ use strict;
 use vars qw($root %keps);
 
 use Data::Dumper;
-use Keps;
+require Keps;
 
 my $fn = "$root/local/Keps.pm";
 my $state = 0;
@@ -64,13 +67,16 @@ while (@ARGV) {
 		$state = 1;
 	} elsif ($arg eq '-e') {
 		$state = 0;
+	} elsif ($arg eq '-c') {
+		%keps = ();
 	} elsif ($arg =~ /^-/) {
-		die "Usage: convkeps.pl [-e|-p] [<filename>]\n\t-p - plain file just containing keps\n\t-e - amsat email format input file (default)\n";
+		die "Usage: convkeps.pl [-c] [-e|-p] [<filename>]\n\t-p - plain file just containing keps\n\t-e - amsat email format input file (default)\n\t-c - clear Keps data before adding this lot\n";
 	} else {
 		open (IN, $arg) or die "cannot open $arg (!$)";
 		$f = \*IN;
 	}
 }
+
 while (<$f>) {
 	++$line;
 	chomp;
@@ -138,7 +144,7 @@ print OUT "#\n# this file is automatically produced by convkeps.pl\n#\n";
 print OUT "# Last update: ", scalar gmtime, "\n#\n";
 print OUT "\npackage Sun;\n\n";
 print OUT $dd->Dumpxs;
-print OUT "\n";
+print OUT "1;\n";
 close(OUT);
 
 
