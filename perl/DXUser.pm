@@ -243,8 +243,8 @@ sub decode
 	my $ref;
 	eval '$ref = ' . $s;
 	if ($@) {
-		dbg('err', $@) if $@;
-		Log('err', $@) if $@;
+		dbg($@);
+		Log('err', $@);
 		$ref = undef;
 	}
 	return $ref;

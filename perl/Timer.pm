@@ -25,7 +25,7 @@ sub new
 	$self->{interval} = $time if $recur;
 	push @timerchain, $self;
 	$notimers++;
-	dbg('connll', "Timer created ($notimers)");
+	dbg("Timer created ($notimers)") if isdbg('connll');
 	return $self;
 }
 
@@ -52,7 +52,7 @@ sub handler
 
 sub DESTROY
 {
-	dbg('connll', "timer destroyed ($Timer::notimers)");
+	dbg("timer destroyed ($Timer::notimers)") if isdbg('connll');
 	$Timer::notimers--;
 }
 1;

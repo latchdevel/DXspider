@@ -67,7 +67,7 @@ sub get
 	my $call = shift;
 	$call = shift if ref $call;
 	my $ref = $list{uc $call};
-	dbg('routerr', "Failed to get User $call" ) unless $ref;
+	dbg("Failed to get User $call" ) if !$ref && isdbg('routerr');
 	return $ref;
 }
 

@@ -49,7 +49,7 @@ sub new
 	$pkg = ref $pkg if ref $pkg;
 
 	my $self = bless {call => $call}, $pkg;
-	dbg('routelow', "create $pkg with $call");
+	dbg("create $pkg with $call") if isdbg('routelow');
 
 	# add in all the dxcc, itu, zone info
 	my @dxcc = Prefix::extract($call);
@@ -89,7 +89,7 @@ sub _addlist
 		my $call = _getcall($c);
 		unless (grep {$_ eq $call} @{$self->{$field}}) {
 			push @{$self->{$field}}, $call;
-			dbg('routelow', ref($self) . " adding $call to " . $self->{call} . "->\{$field\}");
+			dbg(ref($self) . " adding $call to " . $self->{call} . "->\{$field\}") if isdbg('routelow');
 		}
 	}
 	return $self->{$field};
@@ -103,7 +103,7 @@ sub _dellist
 		my $call = _getcall($c);
 		if (grep {$_ eq $call} @{$self->{$field}}) {
 			$self->{$field} = [ grep {$_ ne $call} @{$self->{$field}} ];
-			dbg('routelow', ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}");
+			dbg(ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}") if isdbg('routelow');
 		}
 	}
 	return $self->{$field};
@@ -217,7 +217,7 @@ sub config
 
 		if ($nref) {
 			my $c = $nref->user_call;
-#			dbg('routec', "recursing from $call -> $c");
+#			dbg("recursing from $call -> $c") if isdbg('routec');
 			push @out, $nref->config($nodes_only, $level+1, $seen, @_);
 		} else {
 			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
@@ -253,7 +253,7 @@ sub alldxchan
 {
 	my $self = shift;
 	my @dxchan;
-#	dbg('routech', "Trying node $self->{call}");
+#	dbg("Trying node $self->{call}") if isdbg('routech');
 	my $dxchan = DXChannel->get($self->{call});
 	push @dxchan, $dxchan if $dxchan;
 	
@@ -261,7 +261,7 @@ sub alldxchan
 	# for all the candidates.
 	unless (@dxchan) {
 		foreach my $p (@{$self->{parent}}) {
-#			dbg('routech', "Trying parent $p");
+#			dbg("Trying parent $p") if isdbg('routech');
 			next if $p eq $main::mycall; # the root
 			my $dxchan = DXChannel->get($p);
 			if ($dxchan) {
@@ -269,7 +269,7 @@ sub alldxchan
 			} else {
 				next if grep $p eq $_, @_;
 				my $ref = Route::Node::get($p);
-#				dbg('routech', "Next node $p " . ($ref ? 'Found' : 'NOT Found') );
+#				dbg("Next node $p " . ($ref ? 'Found' : 'NOT Found') if isdbg('routech') );
 				push @dxchan, $ref->alldxchan($self->{call}, @_) if $ref;
 			}
 		}
@@ -307,7 +307,7 @@ sub DESTROY
 	my $self = shift;
 	my $pkg = ref $self;
 	
-	dbg('routelow', "$pkg $self->{call} destroyed");
+	dbg("$pkg $self->{call} destroyed") if isdbg('routelow');
 }
 
 no strict;

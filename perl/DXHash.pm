@@ -30,7 +30,7 @@ sub new
 	my ($pkg, $name) = @_;
 	my $s = readfilestr($main::data, $name);
 	my $self = eval $s if $s;
-	dbg('err', "error in reading $name in DXHash $@") if $@;
+	dbg("error in reading $name in DXHash $@") if $@;
 	$self = bless {name => $name}, $pkg unless $self;
 	return $self;
 }

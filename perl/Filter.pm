@@ -89,7 +89,7 @@ sub compile
 		if ($@) {
 			my $sort = $ref->{sort};
 			my $name = $ref->{name};
-			dbg('err', "Error compiling $ar $sort $name: $@");
+			dbg("Error compiling $ar $sort $name: $@") if isdbg('err');
 			Log('err', "Error compiling $ar $sort $name: $@");
 		}
 		$rr = $@;
@@ -107,7 +107,7 @@ sub read_in
 		$in = undef; 
 		my $s = readfilestr($fn);
 		my $newin = eval $s;
-		dbg('conn', "$@") if $@;
+		dbg($@) if $@;
 		if ($in) {
 			$newin = new('Filter::Old', $sort, $call, $flag);
 			$newin->{filter} = $in;
@@ -223,7 +223,7 @@ sub it
 		my $true = $r ? "OK" : "REJ";
 		my $sort = $self->{sort};
 		$hops ||= "none";
-		dbg('filter', "Filter: $type/$sort with $asc on '$args': $true hops: $hops");
+		dbg("Filter: $type/$sort with $asc on '$args': $true hops: $hops") if isdbg('filter');
 	}
 	return ($r, $hops);
 }

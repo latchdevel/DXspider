@@ -206,7 +206,7 @@ sub get
 	my $call = shift;
 	$call = shift if ref $call;
 	my $ref = $list{uc $call};
-	dbg('routerr', "Failed to get Node $call" ) unless $ref;
+	dbg("Failed to get Node $call" ) if !$ref && isdbg('routerr');
 	return $ref;
 }
 
@@ -259,7 +259,7 @@ sub DESTROY
 	my $pkg = ref $self;
 	my $call = $self->{call} || "Unknown";
 	
-	dbg('route', "destroying $pkg with $call");
+	dbg("destroying $pkg with $call") if isdbg('routelow');
 }
 
 #

@@ -83,7 +83,7 @@ sub open
 	$self->{year} = $year;
 	$self->{thing} = $thing;
 	
-#	DXDebug::dbg("dxlog", "opening $self->{fn}\n");
+#	DXDebug::dbg("opening $self->{fn}\n") if isdbg("dxlog");
 	
 	return $self->{fh};
 }

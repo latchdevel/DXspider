@@ -114,7 +114,7 @@ sub already_conn
 	my ($conn, $call, $mess) = @_;
 
 	$conn->disable_read(1);
-	dbg('chan', "-> D $call $mess\n"); 
+	dbg("-> D $call $mess\n") if isdbg('chan'); 
 	$conn->send_now("D$call|$mess");
 	sleep(2);
 	$conn->disconnect;
@@ -205,7 +205,7 @@ sub cease
 	eval {
 		Local::finish();   # end local processing
 	};
-	dbg('local', "Local::finish error $@") if $@;
+	dbg("Local::finish error $@") if $@;
 
 	# disconnect nodes
 	foreach $dxchan (DXChannel->get_all_nodes) {
@@ -234,7 +234,7 @@ sub cease
 		$l->close_server;
 	}
 
-	dbg('chan', "DXSpider version $version, build $build ended");
+	dbg("DXSpider version $version, build $build ended") if isdbg('chan');
 	Log('cluster', "DXSpider V$version, build $build ended");
 	dbgclose();
 	Logclose();
@@ -248,11 +248,11 @@ sub reap
 {
 	my $cpid;
 	while (($cpid = waitpid(-1, WNOHANG)) > 0) {
-		dbg('reap', "cpid: $cpid");
+		dbg("cpid: $cpid") if isdbg('reap');
 #		Msg->pid_gone($cpid);
 		$zombies-- if $zombies > 0;
 	}
-	dbg('reap', "cpid: $cpid");
+	dbg("cpid: $cpid") if isdbg('reap');
 }
 
 # this is where the input queue is dealt with and things are dispatched off to other parts of
@@ -269,7 +269,7 @@ sub process_inqueue
 	return unless defined $sort;
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-	dbg('chan', "<- $sort $call $line\n") unless $sort eq 'D';
+	dbg("<- $sort $call $line\n") if $sort ne 'D' && isdbg('chan');
 
 	# handle A records
 	my $user = $dxchan->user;
@@ -349,36 +349,37 @@ $build = "$build.$subbuild" if $subbuild;
 Log('cluster', "DXSpider V$version, build $build started");
 
 # banner
-dbg('err', "DXSpider Version $version, build $build started", "Copyright (c) 1998-2001 Dirk Koopman G1TLH");
+dbg("Copyright (c) 1998-2001 Dirk Koopman G1TLH");
+dbg("DXSpider Version $version, build $build started");
 
 # load Prefixes
-dbg('err', "loading prefixes ...");
+dbg("loading prefixes ...");
 Prefix::load();
 
 # load band data
-dbg('err', "loading band data ...");
+dbg("loading band data ...");
 Bands::load();
 
 # initialise User file system
-dbg('err', "loading user file system ..."); 
+dbg("loading user file system ..."); 
 DXUser->init($userfn, 1);
 
 # start listening for incoming messages/connects
-dbg('err', "starting listeners ...");
+dbg("starting listeners ...");
 my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
 $conn->conns("Server $clusteraddr/$clusterport");
 push @listeners, $conn;
-dbg('err', "Internal port: $clusteraddr $clusterport");
+dbg("Internal port: $clusteraddr $clusterport");
 foreach my $l (@main::listen) {
 	$conn = ExtMsg->new_server($l->[0], $l->[1], \&login);
 	$conn->conns("Server $l->[0]/$l->[1]");
 	push @listeners, $conn;
-	dbg('err', "External Port: $l->[0] $l->[1]");
+	dbg("External Port: $l->[0] $l->[1]");
 }
 AGWrestart();
 
 # load bad words
-dbg('err', "load badwords: " . (BadWords::load or "Ok"));
+dbg("load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
 unless ($DB::VERSION) {
@@ -389,15 +390,15 @@ unless ($is_win) {
 	$SIG{HUP} = 'IGNORE';
 	$SIG{CHLD} = sub { $zombies++ };
 	
-	$SIG{PIPE} = sub { 	dbg('err', "Broken PIPE signal received"); };
-	$SIG{IO} = sub { 	dbg('err', "SIGIO received"); };
+	$SIG{PIPE} = sub { 	dbg("Broken PIPE signal received"); };
+	$SIG{IO} = sub { 	dbg("SIGIO received"); };
 	$SIG{WINCH} = $SIG{STOP} = $SIG{CONT} = 'IGNORE';
 	$SIG{KILL} = 'DEFAULT';     # as if it matters....
 
 	# catch the rest with a hopeful message
 	for (keys %SIG) {
 		if (!$SIG{$_}) {
-			#		dbg('chan', "Catching SIG $_");
+			#		dbg("Catching SIG $_") if isdbg('chan');
 			$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  }; 
 		}
 	}
@@ -420,7 +421,7 @@ WCY->init();
 Spot->init();
 
 # initialise the protocol engine
-dbg('err', "reading in duplicate spot and WWV info ...");
+dbg("reading in duplicate spot and WWV info ...");
 DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
@@ -433,30 +434,30 @@ unless (Filter::read_in('route', 'node_default', 0)) {
 }
 
 # read in any existing message headers and clean out old crap
-dbg('err', "reading existing message headers ...");
+dbg("reading existing message headers ...");
 DXMsg->init();
 DXMsg::clean_old();
 
 # read in any cron jobs
-dbg('err', "reading cron jobs ...");
+dbg("reading cron jobs ...");
 DXCron->init();
 
 # read in database descriptors
-dbg('err', "reading database descriptors ...");
+dbg("reading database descriptors ...");
 DXDb::load();
 
 # starting local stuff
-dbg('err', "doing local initialisation ...");
+dbg("doing local initialisation ...");
 eval {
 	Local::init();
 };
-dbg('local', "Local::init error $@") if $@;
+dbg("Local::init error $@") if $@;
 
 # print various flags
-#dbg('err', "seful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P");
+#dbg("seful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P");
 
 # this, such as it is, is the main loop!
-dbg('err', "orft we jolly well go ...");
+dbg("orft we jolly well go ...");
 
 #open(DB::OUT, "|tee /tmp/aa");
 
@@ -485,7 +486,7 @@ for (;;) {
 		eval { 
 			Local::process();       # do any localised processing
 		};
-		dbg('local', "Local::process error $@") if $@;
+		dbg("Local::process error $@") if $@;
 	}
 	if ($decease) {
 		last if --$decease <= 0;

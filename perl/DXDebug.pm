@@ -11,7 +11,7 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbgstore dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
 
 use strict;
 use vars qw(%dbglevel $fp);
@@ -29,16 +29,18 @@ if (!defined $DB::VERSION) {
 	local $^W=0;
 	eval qq( sub confess { 
 	    \$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::dbgstore(\$@, Carp::shortmess(\@_));
+        DXDebug::dbg(\$@);
+		DXDebug::dbg(Carp::shortmess(\@_));
 	    exit(-1); 
 	}
 	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::dbgstore(\$@, Carp::longmess(\@_));
+        DXDebug::dbg(\$@);
+		DXDebug::dbg(Carp::longmess(\@_));
 		exit(-1); 
 	}
-	sub carp    { DXDebug::dbgstore(Carp::shortmess(\@_)); }
-	sub cluck   { DXDebug::dbgstore(Carp::longmess(\@_)); } 
+	sub carp    { DXDebug::dbg(Carp::shortmess(\@_)); }
+	sub cluck   { DXDebug::dbg(Carp::longmess(\@_)); } 
 	);
 
     CORE::die(Carp::shortmess($@)) if $@;
@@ -51,8 +53,9 @@ if (!defined $DB::VERSION) {
 } 
 
 
-sub dbgstore
+sub dbg($)
 {
+	return unless $fp;
 	my $t = time; 
 	for (@_) {
 		my $r = $_;
@@ -72,14 +75,16 @@ sub dbginit
 	if (!defined $DB::VERSION) {
 		$SIG{__WARN__} = sub { 
 			if ($_[0] =~ /Deep\s+recursion/i) {
-				dbgstore($@, Carp::longmess(@_)); 
+				dbg($@);
+				dbg(Carp::longmess(@_)); 
 				CORE::die;
 			} else { 
-				dbgstore($@, Carp::shortmess(@_));
+				dbg($@);
+				dbg(Carp::shortmess(@_));
 			}
 		};
 		
-		$SIG{__DIE__} = sub { dbgstore($@, Carp::longmess(@_)); };
+		$SIG{__DIE__} = sub { dbg($@); dbg(Carp::longmess(@_)); };
 	}
 
 	$fp = DXLog::new('debug', 'dat', 'd');
@@ -90,14 +95,6 @@ sub dbgclose
 	$SIG{__DIE__} = $SIG{__WARN__} = 'DEFAULT';
 	$fp->close() if $fp;
 	undef $fp;
-}
-
-sub dbg
-{
-	my $l = shift;
-	if ($fp && ($dbglevel{$l} || $l eq 'err')) {
-	    dbgstore(@_);
-	}
 }
 
 sub dbgdump
@@ -112,7 +109,7 @@ sub dbgdump
 				$c =~ s/[\x00-\x1f\x7f-\xff]/./g;
 				my $left = 16 - length $c;
 				$h .= ' ' x (2 * $left) if $left > 0;
-				dbgstore($m . sprintf("%4d:", $o) . "$h $c");
+				dbg($m . sprintf("%4d:", $o) . "$h $c");
 				$m = ' ' x (length $m);
 			}
 		}
@@ -142,10 +139,10 @@ sub dbglist
 	return keys (%dbglevel);
 }
 
-sub isdbg
+sub isdbg($)
 {
-	my $s = shift;
-	return $dbglevel{$s};
+	return unless $fp;
+	return $dbglevel{$_[0]};
 }
 
 sub shortmess 

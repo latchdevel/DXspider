@@ -60,7 +60,7 @@ sub cread
 	my $fh = new IO::File;
 	my $line = 0;
 
-	dbg('cron', "cron: reading $fn\n");
+	dbg("cron: reading $fn\n") if isdbg('cron');
 	open($fh, $fn) or confess("cron: can't open $fn $!");
 	while (<$fh>) {
 		$line++;
@@ -79,9 +79,9 @@ sub cread
 		if (!$err) {
 			$ref->{cmd} = $cmd;
 			push @crontab, $ref;
-			dbg('cron', "cron: adding $_\n");
+			dbg("cron: adding $_\n") if isdbg('cron');
 		} else {
-			dbg('cron', "cron: error on line $line '$_'\n");
+			dbg("cron: error on line $line '$_'\n") if isdbg('cron');
 		}
 	}
 	close($fh);
@@ -147,9 +147,9 @@ sub process
 				(!$cron->{wday} || grep $_ eq $wday, @{$cron->{wday}})	){
 				
 				if ($cron->{cmd}) {
-					dbg('cron', "cron: $min $hour $mday $mon $wday -> doing '$cron->{cmd}'");
+					dbg("cron: $min $hour $mday $mon $wday -> doing '$cron->{cmd}'") if isdbg('cron');
 					eval "$cron->{cmd}";
-					dbg('cron', "cron: cmd error $@") if $@;
+					dbg("cron: cmd error $@") if $@ && isdbg('cron');
 				}
 			}
 		}
@@ -258,11 +258,11 @@ sub spawn
 				$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 				alarm(0);
 			}
-			exec "$line" or dbg('cron', "exec '$line' failed $!");
+			exec "$line" or dbg("exec '$line' failed $!") if isdbg('cron');
 		}
-		dbg('cron', "spawn of $line started");
+		dbg("spawn of $line started") if isdbg('cron');
 	} else {
-		dbg('cron', "can't fork for $line $!");
+		dbg("can't fork for $line $!") if isdbg('cron');
 	}
 
 	# coordinate
@@ -287,10 +287,10 @@ sub run_cmd
 {
 	my $line = shift;
 	my @in = DXCommandmode::run_cmd($DXProt::me, $line);
-	dbg('cron', "cmd run: $line");
+	dbg("cmd run: $line") if isdbg('cron');
 	for (@in) {
 		s/\s*$//og;
-		dbg('cron', "cmd out: $_");
+		dbg("cmd out: $_") if isdbg('cron');
 	}
 }
 1;

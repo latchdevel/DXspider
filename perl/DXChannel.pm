@@ -110,7 +110,7 @@ sub DESTROY
 			delete $self->{$_};
 		}
 	}
-	dbg('chan', "DXChannel $self->{call} destroyed ($count)");
+	dbg("DXChannel $self->{call} destroyed ($count)") if isdbg('chan');
 	$count--;
 }
 
@@ -146,7 +146,7 @@ sub alloc
 	}
 
 	$count++;
-	dbg('chan', "DXChannel $self->{call} created ($count)");
+	dbg("DXChannel $self->{call} created ($count)") if isdbg('chan');
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }
@@ -297,7 +297,7 @@ sub send_now
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_now("$sort$call|$_");
-			dbg('chan', "-> $sort $call $_");
+			dbg("-> $sort $call $_") if isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -318,7 +318,7 @@ sub send						# this is always later and always data
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_later("D$call|$_");
-			dbg('chan', "-> D $call $_");
+			dbg("-> D $call $_") if isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -366,7 +366,7 @@ sub state
 		$self->{oldstate} = $self->{state};
 		$self->{state} = shift;
 		$self->{func} = '' unless defined $self->{func};
-		dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
+		dbg("$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n") if isdbg('state');
 
 		# if there is any queued up broadcasts then splurge them out here
 		if ($self->{delayed} && ($self->{state} eq 'prompt' || $self->{state} eq 'talk')) {
@@ -453,12 +453,12 @@ sub decode_input
 	# the above regexp must work
 	unless (defined $sort && defined $call && defined $line) {
 #		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-		dbg('err', "DUFF Line on $chcall: $data");
+		dbg("DUFF Line on $chcall: $data") if isdbg('err');
 		return ();
 	}
 
 	if(ref($dxchan) && $call ne $chcall) {
-		dbg('err', "DUFF Line come in for $call on wrong channel $chcall" );
+		dbg("DUFF Line come in for $call on wrong channel $chcall") if isdbg('err');
 		return();
 	}
 	

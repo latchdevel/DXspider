@@ -288,7 +288,7 @@ sub run_cmd
 	
 	if ($self->{func}) {
 		my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
-		dbg('eval', "stored func cmd = $c\n");
+		dbg("stored func cmd = $c\n") if isdbg('eval');
 		eval  $c;
 		if ($@) {
 			return ("Syserr: Eval err $errstr on stored func $self->{func}", $@);
@@ -308,14 +308,14 @@ sub run_cmd
 			
 			my ($path, $fcmd);
 			
-			dbg('command', "cmd: $cmd");
+			dbg("cmd: $cmd") if isdbg('command');
 			
 			# alias it if possible
 			my $acmd = CmdAlias::get_cmd($cmd);
 			if ($acmd) {
 				($cmd, $args) = split /\s+/, "$acmd $args", 2;
 				$args = "" unless defined $args;
-				dbg('command', "aliased cmd: $cmd $args");
+				dbg("aliased cmd: $cmd $args") if isdbg('command');
 			}
 			
 			# first expand out the entry to a command
@@ -323,13 +323,13 @@ sub run_cmd
 			($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
 			if ($path && $cmd) {
-				dbg('command', "path: $cmd cmd: $fcmd");
+				dbg("path: $cmd cmd: $fcmd") if isdbg('command');
 			
 				my $package = find_cmd_name($path, $fcmd);
 				@ans = (0) if !$package ;
 				
 				if ($package) {
-					dbg('command', "package: $package");
+					dbg("package: $package") if isdbg('command');
 					my $c;
 					unless (exists $Cache{$package}->{'sub'}) {
 						$c = eval $Cache{$package}->{'eval'};
@@ -349,7 +349,7 @@ sub run_cmd
 					};
 				}
 			} else {
-				dbg('command', "cmd: $cmd not found");
+				dbg("cmd: $cmd not found") if isdbg('command');
 				if (++$self->{errors} > $maxerrors) {
 					$self->send($self->msg('e26'));
 					$self->disconnect;
@@ -409,7 +409,7 @@ sub disconnect
 	}
 
 	my @rout = $main::routeroot->del_user($call);
-	dbg('route', "B/C PC17 on $main::mycall for: $call");
+	dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
 
 	# issue a pc17 to everybody interested
 	DXProt::route_pc17($DXProt::me, $main::routeroot, @rout) if @rout;
@@ -484,7 +484,7 @@ sub search
 	
 	# commands are lower case
 	$short_cmd = lc $short_cmd;
-	dbg('command', "command: $path $short_cmd\n");
+	dbg("command: $path $short_cmd\n") if isdbg('command');
 
 	# do some checking for funny characters
 	return () if $short_cmd =~ /\/$/;
@@ -492,7 +492,7 @@ sub search
 	# return immediately if we have it
 	($apath, $acmd) = split ',', $cmd_cache{$short_cmd} if $cmd_cache{$short_cmd};
 	if ($apath && $acmd) {
-		dbg('command', "cached $short_cmd = ($apath, $acmd)\n");
+		dbg("cached $short_cmd = ($apath, $acmd)\n") if isdbg('command');
 		return ($apath, $acmd);
 	}
 	
@@ -514,7 +514,7 @@ sub search
 			next if $l =~ /^\./;
 			if ($i < $#parts) {            	# we are dealing with directories
 				if ((-d "$curdir/$l") && $p eq substr($l, 0, length $p)) {
-					dbg('command', "got dir: $curdir/$l\n");
+					dbg("got dir: $curdir/$l\n") if isdbg('command');
 					$dirfn .= "$l/";
 					$curdir .= "/$l";
 					last;
@@ -528,7 +528,7 @@ sub search
 					#		  chop $dirfn;               # remove trailing /
 					$dirfn = "" unless $dirfn;
 					$cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn$l")); # cache it
-					dbg('command', "got path: $path cmd: $dirfn$l\n");
+					dbg("got path: $path cmd: $dirfn$l\n") if isdbg('command');
 					return ($path, "$dirfn$l"); 
 				}
 			}
@@ -627,7 +627,7 @@ sub find_cmd_name {
 			my @list = split /\n/, $eval;
 			my $line;
 			for (@list) {
-				dbg('eval', $_, "\n");
+				dbg($_ . "\n") if isdbg('eval');
 			}
 		}
 		

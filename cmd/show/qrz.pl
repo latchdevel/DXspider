@@ -29,7 +29,7 @@ foreach $l (@list) {
 		Log('call', "$call: show/qrz \U$l");
 		my $state = "blank";
 		while (my $result = $t->getline) {
-			dbg('qrz', $result);
+			dbg($result) if isdbg('qrz');
 			if ($state eq 'blank' && $result =~ /^\s*Callsign\s*:/i) {
 				$state = 'go';
 			} elsif ($state eq 'go') {

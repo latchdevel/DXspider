@@ -183,7 +183,7 @@ sub search
 	$expr =~ s/\$f(\d)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
-	dbg("search", "hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
+	dbg("hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n") if isdbg('search');
   
 	# build up eval to execute
 	$eval = qq(

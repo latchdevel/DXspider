@@ -50,7 +50,7 @@ sub send_raw
     my $sock = $conn->{sock};
     return unless defined($sock);
 	push (@{$conn->{outqueue}}, $msg);
-	dbg('connect', "connect $conn->{cnum}: $msg") unless $conn->{state} eq 'C';
+	dbg("connect $conn->{cnum}: $msg") if $conn->{state} ne 'C' && isdbg('connect');
     Msg::set_event_handler ($sock, "write" => sub {$conn->_send(0)});
 }
 
@@ -65,7 +65,7 @@ sub dequeue
 	if ($conn->{state} eq 'WC') {
 		if (exists $conn->{cmd}) {
 			if (@{$conn->{cmd}}) {
-				dbg('connect', "connect $conn->{cnum}: $conn->{msg}");
+				dbg("connect $conn->{cnum}: $conn->{msg}") if isdbg('connect');
 				$conn->_docmd($conn->{msg});
 			} 
 		}
@@ -80,7 +80,7 @@ sub dequeue
 			$conn->{msg} = pop @lines;
 		}
 		while (defined ($msg = shift @lines)) {
-			dbg('connect', "connect $conn->{cnum}: $msg") unless $conn->{state} eq 'C';
+			dbg("connect $conn->{cnum}: $msg") if $conn->{state} ne 'C' && isdbg('connect');
 		
 			$msg =~ s/\xff\xfa.*\xff\xf0|\xff[\xf0-\xfe].//g; # remove telnet options
 			$msg =~ s/[\x00-\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
@@ -131,13 +131,13 @@ sub new_client {
 		$conn->{blocking} = 0;
 		eval {$conn->{peerhost} = $sock->peerhost};
 		if ($@) {
-			dbg('conn', $@);
+			dbg($@) if isdbg('connll');
 			$conn->disconnect;
 		} else {
 			eval {$conn->{peerport} = $sock->peerport};
 			$conn->{peerport} = 0 if $@;
 			my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost}, $conn->{peerport});
-			dbg('connll', "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}");
+			dbg("accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}") if isdbg('connll');
 			if ($eproc) {
 				$conn->{eproc} = $eproc;
 				Msg::set_event_handler ($sock, "error" => $eproc);
@@ -160,7 +160,7 @@ sub new_client {
 			}
 		}
 	} else {
-		dbg('err', "ExtMsg: error on accept ($!)");
+		dbg("ExtMsg: error on accept ($!)") if isdbg('err');
 	}
 }
 
@@ -218,16 +218,16 @@ sub _doconnect
 	my $r;
 
 	$sort = lc $sort;
-	dbg('connect', "CONNECT $conn->{cnum} sort: $sort command: $line");
+	dbg("CONNECT $conn->{cnum} sort: $sort command: $line") if isdbg('connect');
 	if ($sort eq 'telnet') {
 		# this is a straight network connect
 		my ($host, $port) = split /\s+/, $line;
 		$port = 23 if !$port;
 		$r = $conn->connect($host, $port);
 		if ($r) {
-			dbg('connect', "Connected $conn->{cnum} to $host $port");
+			dbg("Connected $conn->{cnum} to $host $port") if isdbg('connect');
 		} else {
-			dbg('connect', "***Connect $conn->{cnum} Failed to $host $port $!");
+			dbg("***Connect $conn->{cnum} Failed to $host $port $!") if isdbg('connect');
 		}
 	} elsif ($sort eq 'agw') {
 		# turn it into an AGW object
@@ -252,7 +252,7 @@ sub _doconnect
 						my $callback = sub {$conn->_rcv};
 						Msg::set_event_handler ($a, read => $callback);
 					}
-					dbg('connect', "connect $conn->{cnum}: started pid: $conn->{pid} as $line");
+					dbg("connect $conn->{cnum}: started pid: $conn->{pid} as $line") if isdbg('connect');
 				} else {
 					$^W = 0;
 					dbgclose();
@@ -268,17 +268,17 @@ sub _doconnect
 						$SIG{HUP} = $SIG{CHLD} = $SIG{TERM} = $SIG{INT} = 'DEFAULT';
 						alarm(0);
 					}
-					exec "$line" or dbg('err', "exec '$line' failed $!");
+					exec "$line" or dbg("exec '$line' failed $!");
 				} 
 			} else {
-				dbg('err', "cannot fork");	
+				dbg("cannot fork");
 				$r = undef;
 			}
 		} else {
-			dbg('err', "no socket pair $!");
+			dbg("no socket pair $!");
 		}
 	} else {
-		dbg('err', "invalid type of connection ($sort)");
+		dbg("invalid type of connection ($sort)");
 	}
 	$conn->disconnect unless $r;
 	return $r;
@@ -288,7 +288,7 @@ sub _doabort
 {
 	my $conn = shift;
 	my $string = shift;
-	dbg('connect', "connect $conn->{cnum}: abort $string");
+	dbg("connect $conn->{cnum}: abort $string") if isdbg('connect');
 	$conn->{abort} = $string;
 }
 
@@ -296,7 +296,7 @@ sub _dotimeout
 {
 	my $conn = shift;
 	my $val = shift;
-	dbg('connect', "connect $conn->{cnum}: timeout set to $val");
+	dbg("connect $conn->{cnum}: timeout set to $val") if isdbg('connect');
 	$conn->{timeout}->del if $conn->{timeout};
 	$conn->{timeval} = $val;
 	$conn->{timeout} = Timer->new($val, sub{ &_timedout($conn) });
@@ -306,7 +306,7 @@ sub _dolineend
 {
 	my $conn = shift;
 	my $val = shift;
-	dbg('connect', "connect $conn->{cnum}: lineend set to $val ");
+	dbg("connect $conn->{cnum}: lineend set to $val ") if isdbg('connect');
 	$val =~ s/\\r/\r/g;
 	$val =~ s/\\n/\n/g;
 	$conn->{lineend} = $val;
@@ -321,16 +321,16 @@ sub _dochat
 	if ($line) {
 		my ($expect, $send) = $cmd =~ /^\s*\'(.*)\'\s+\'(.*)\'/;
 		if ($expect) {
-			dbg('connect', "connect $conn->{cnum}: expecting: \"$expect\" received: \"$line\"");
+			dbg("connect $conn->{cnum}: expecting: \"$expect\" received: \"$line\"") if isdbg('connect');
 			if ($conn->{abort} && $line =~ /\Q$conn->{abort}/i) {
-				dbg('connect', "connect $conn->{cnum}: aborted on /$conn->{abort}/");
+				dbg("connect $conn->{cnum}: aborted on /$conn->{abort}/") if isdbg('connect');
 				$conn->disconnect;
 				delete $conn->{cmd};
 				return;
 			}
 			if ($line =~ /\Q$expect/i) {
 				if (length $send) {
-					dbg('connect', "connect $conn->{cnum}: got: \"$expect\" sending: \"$send\"");
+					dbg("connect $conn->{cnum}: got: \"$expect\" sending: \"$send\"") if isdbg('connect');
 					$conn->send_later("D$conn->{call}|$send");
 				}
 				delete $conn->{msg}; # get rid any input if a match
@@ -345,7 +345,7 @@ sub _dochat
 sub _timedout
 {
 	my $conn = shift;
-	dbg('connect', "connect $conn->{cnum}: timed out after $conn->{timeval} seconds");
+	dbg("connect $conn->{cnum}: timed out after $conn->{timeval} seconds") if isdbg('connect');
 	$conn->disconnect;
 }
 
@@ -375,7 +375,7 @@ sub _send_file
 			while (<$f>) {
 				chomp;
 				my $l = $_;
-				dbg('connll', "connect $conn->{cnum}: $l");
+				dbg("connect $conn->{cnum}: $l") if isdbg('connll');
 				$conn->send_raw($l . $conn->{lineend});
 			}
 			$f->close;
