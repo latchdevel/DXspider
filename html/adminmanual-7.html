@@ -17,8 +17,8 @@
 <H2><A NAME="ss7.1">7.1 Filtering Mail</A>
 </H2>
 
-<P>In the /spider/msg directory you will find a file called badmsg.pl.issue.  Rename this to badmsg.pl and edit the file.  
-The original looks something like this ....
+<P>In the /spider/msg directory you will find a file called badmsg.pl.issue.  Rename
+this to badmsg.pl and edit the file.  The original looks something like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -61,16 +61,18 @@ package DXMsg;
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>I think this is fairly self explanatory.  It is simply a list of subject headers that we do not want to pass on to either 
-the users of the cluster or the other cluster nodes that we are linked to.  This is usually because of rules and regulations 
-pertaining to items for sale etc in a particular country.
+<P>I think this is fairly self explanatory.  It is simply a list of subject 
+headers that we do not want to pass on to either the users of the cluster or 
+the other cluster nodes that we are linked to.  This is usually because of 
+rules and regulations pertaining to items for sale etc in a particular country.
 <P>
 <H2><A NAME="ss7.2">7.2 Filtering DX callouts</A>
 </H2>
 
-<P>In the same way as mail, there are some types of spot we do not wish to pass on to users or linked cluster nodes.  In the 
-/spider/data directory you will find a file called baddx.pl.issue.  Rename this to baddx.pl and edit the file.  The original 
-looks like this ....
+<P>In the same way as mail, there are some types of spot we do not wish to pass on 
+to users or linked cluster nodes.  In the /spider/data directory you will find 
+a file called baddx.pl.issue.  Rename this to baddx.pl and edit the file.  The
+original looks like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -96,7 +98,8 @@ package DXProt;
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>Again, this is simply a list of names we do not want to see in the spotted field of a DX callout.
+<P>Again, this is simply a list of names we do not want to see in the spotted 
+field of a DX callout.
 <P>
 <P>
 <H2><A NAME="ss7.3">7.3 Filtering words from text fields in Announce, Talk and DX spots</A>

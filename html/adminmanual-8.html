@@ -17,26 +17,32 @@
 <H2><A NAME="ss8.1">8.1 MOTD</A>
 </H2>
 
-<P>One of the more important things a cluster sysop needs to do is to get information to his users.  The simplest way to do 
-this is to have a banner that is sent to the user on login.  This is know as a "message of the day" or "motd".  To set this 
-up, simply create a file in /spider/data called motd and edit it to say whatever you want.  It is purely a text file and 
-will be sent automatically to anyone logging in to the cluster.
+<P>One of the more important things a cluster sysop needs to do is to get 
+information to his users.  The simplest way to do this is to have a banner 
+that is sent to the user on login.  This is know as a "message of the day" 
+or "motd".  To set this up, simply create a file in /spider/data called motd 
+and edit it to say whatever you want.  It is purely a text file and will be 
+sent automatically to anyone logging in to the cluster.
 <P>
 <H2><A NAME="ss8.2">8.2 Downtime message</A>
 </H2>
 
-<P>If for any reason the cluster is down, maybe for upgrade or maintenance but the machine is still running, a message can be 
-sent to the user advising them of the fact.  This message lives in the /spider/data directory and is called "offline".  Simply 
-create the file and edit it to say whatever you wish.  This file will be sent to a user attempting to log into the cluster 
-when DXSpider is not actually running.
+<P>If for any reason the cluster is down, maybe for upgrade or maintenance but 
+the machine is still running, a message can be sent to the user advising them 
+of the fact.  This message lives in the /spider/data directory and is called
+"offline".  Simply create the file and edit it to say whatever you wish.  
+This file will be sent to a user attempting to log into the cluster when
+DXSpider is not actually running.
 <P>
 <H2><A NAME="ss8.3">8.3 Other text messages</A>
 </H2>
 
-<P>You can set other text messages to be read by the user if they input the file name.  This could be for news items or maybe 
-information for new users.  To set this up, make a directory under /spider called <EM>packclus</EM>.  Under this directory you 
-can create files called <EM>news</EM> or <EM>newuser</EM> for example.  In fact you can create files with any names you like.  
-These can be listed by the user with the command ....
+<P>You can set other text messages to be read by the user if they input the file 
+name.  This could be for news items or maybe information for new users.  
+To set this up, make a directory under /spider called <EM>packclus</EM>.  
+Under this directory you can create files called <EM>news</EM> or <EM>newuser</EM>
+for example.  In fact you can create files with any names you like.  These can 
+be listed by the user with the command ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -50,14 +56,17 @@ show/files
 type news
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>If the file they want to read is called <EM>news</EM>.  You could also set an alias for this in the Alias file to allow them 
-just to type <EM>news</EM>
+<P>If the file they want to read is called <EM>news</EM>.  You could also set 
+an alias for this in the Alias file to allow them just to type <EM>news</EM>
 <P>
-<P>You can also store other information in this directory, either directly or nested under directories.  One use for this would 
-be to store DX bulletins such as the OPDX bulletins.  These can be listed and read by the user.  To keep things tidy, make a 
-directory under /spider/packclus called <EM>bulletins</EM>.  Now copy any OPDX or similar bulletins into it.  These can be 
-listed by the user in the same way as above using the <EM>show/files</EM> command with an extension for the bulletins 
-directory you have just created, like this ....
+<P>You can also store other information in this directory, either directly or 
+nested under directories.  One use for this would be to store DX bulletins 
+such as the OPDX bulletins.  These can be listed and read by the user.  
+To keep things tidy, make a directory under /spider/packclus called
+<EM>bulletins</EM>.  Now copy any OPDX or similar bulletins into it.  These 
+can be listed by the user in the same way as above using the <EM>show/files</EM>
+command with an extension for the bulletins directory you have just created, 
+like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -73,10 +82,12 @@ sh/files
 bulletins      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>You can see that in the files area (basically the packclus directory) there is a file called <EM>news</EM> and a directory 
-called <EM>bulletins</EM>.  You can also see that dates they were created.  In the case of the file <EM>news</EM>, you can 
-also see the time it was last modified, a good clue as to whether the file has been updated since you last read it.  To read 
-the file called <EM>news</EM> you would simply issue the command ....
+<P>You can see that in the files area (basically the packclus directory) there is a 
+file called <EM>news</EM> and a directory called <EM>bulletins</EM>.  You can 
+also see that dates they were created.  In the case of the file <EM>news</EM>, 
+you can also see the time it was last modified, a good clue as to whether the 
+file has been updated since you last read it.  To read the file called 
+<EM>news</EM> you would simply issue the command ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -128,8 +139,8 @@ Press Enter to continue, A to abort (508 lines) >
 <H2><A NAME="ss8.4">8.4 The Aliases file</A>
 </H2>
 
-<P>You will find a file in /spider/cmd/ called Aliases.  First, copy this file to /spider/local_cmd/Aliases and edit this file.  
-You will see something like this ...
+<P>You will find a file in /spider/cmd/ called Aliases.  First, copy this file to
+/spider/local_cmd/Aliases and edit this file.  You will see something like this ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -269,8 +280,9 @@ package CmdAlias;
 )
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>You can create aliases for commands at will.  Beware though, these may not always turn out as you think.  Care is needed 
-and you need to test the results once you have set an alias.
+<P>You can create aliases for commands at will.  Beware though, these may not 
+always turn out as you think.  Care is needed and you need to test the 
+results once you have set an alias.
 <P>
 <H2><A NAME="ss8.5">8.5 Forward.pl</A>
 </H2>
@@ -362,11 +374,12 @@ qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
 <H2><A NAME="ss8.7">8.7 Console.pl</A>
 </H2>
 
-<P>In later versions of Spider a simple console program is provided for the sysop.  This has a type ahead buffer with line 
-editing facilities and colour for spots, announces etc.
-To use this program, simply use console.pl instead of client.pl.
+<P>In later versions of Spider a simple console program is provided for the sysop.  
+This has a type ahead buffer with line editing facilities and colour for spots,
+announces etc.  To use this program, simply use console.pl instead of client.pl.
 <P>
-<P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the file with your favourite editor.
+<P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
+file with your favourite editor.
 <P>
 <HR>
 <A HREF="adminmanual-9.html">Next</A>

@@ -91,7 +91,7 @@ some examples:-
 
 You can use the tag 'all' to accept everything, eg:
 
-  ann/spot 3 all
+  acc/spot 3 all
 
 but this probably for advanced users...
 

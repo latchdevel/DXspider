@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Programming New Commands</title>
-  </head>
+
 	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
 	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
 	<meta name="Author" content="Dirk Koopman G1TLH">
@@ -132,7 +132,7 @@ Last modified: Mon Dec 28 23:13:21 GMT 1998
 		and are subroutines derived from the DXChannel class. They effectively
 		the following declaration :-
 		<p><pre>
-  sub Emb_<cmdname>($self, $args)
+  sub Emb_&lt;cmdname>($self, $args)
   {
      ...
      your code here
@@ -155,7 +155,7 @@ Last modified: Mon Dec 28 23:13:21 GMT 1998
   my @out;
 
   # check privileges
-  return (1, $self->msg('e5')) if $self->priv < 5;
+  return (1, $self->msg('e5')) if $self->priv &lt; 5;
 
   ....
   ....
@@ -226,7 +226,7 @@ my @out;
 my $user;
 my $ref;
   
-return (1, $self->msg('e5')) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv &lt; 9;
   
 foreach $call (@args) {
     $call = uc $call;
@@ -331,7 +331,7 @@ return (1, @out)
 		mean that this is a prompt and will not have a \r or \n appended to
 		it in the client for telnet sessions (only).
 
-		<p><li>help is kept in <tt>/spider/cmd/Command_<lang>.hlp</tt> files.
+		<p><li>help is kept in <tt>/spider/cmd/Command_&lt;lang>.hlp</tt> files.
 		The format of the help files should be self explanatory, but they are
 		explained further in the files themselves.
 
