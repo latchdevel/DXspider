@@ -148,10 +148,10 @@ sub matchprefix
 	my $pref = shift;
 	my @partials;
 
-	$pref =~ s/-\d+$//;
 	for (my $i = length $pref; $i; $i--) {
 		$matchtotal++;
 		my $s = substr($pref, 0, $i);
+		push @partials, $s;
 		my $p = $cache{$s};
 		if ($p) {
 			$hits++;
@@ -159,10 +159,10 @@ sub matchprefix
 				my $percent = sprintf "%.1f", $hits * 100 / $misses;
 				dbg("Partial Prefix Cache Hit: $s Hits: $hits/$misses of $matchtotal = $percent\%");
 			}
+			$cache{$_} = $p for @partials;
 			return @$p;
 		} else {
 			$misses++;
-			push @partials, $s;
 			my @out = get($s);
 			if (isdbg('prefix')) {
 				my $part = $out[0] || "*";
