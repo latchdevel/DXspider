@@ -1699,20 +1699,30 @@ sub disconnect
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;
 	
-	# broadcast to all other nodes that all the nodes connected to via me are gone
+	# create a list of all the nodes that have gone and delete them from the table
+	my @nodes;
 	foreach my $node (grep { $_->dxchan == $self } DXNode::get_all) {
-#		next if $node->call eq $call;
+		next if $node->dxchancall eq $call;
 		next if $node->call eq $main::mycall;
-		broadcast_ak1a(pc21($node->call, 'Gone.'), $self) unless $self->{isolate};
+		push @nodes, $node->call;
 		$node->del;
 	}
 
+	# broadcast to all other nodes that all the nodes connected to via me are gone
+	unless ($self->{isolate}) {
+		push @nodes, $call;
+		for (@nodes) {
+			broadcast_ak1a(pc21($_, 'Gone.'), $self);
+		}
+	}
+
+	# remove this node from the tables
+	my $node = DXCluster->get_exact($call);
+	$node->del if $node;
+	
 	# remove outstanding pings
 	delete $pings{$call};
 	
-	# now broadcast to all other ak1a nodes that I have gone
-	broadcast_ak1a(pc21($call, 'Gone.'), $self) unless $self->{isolate};
-
 	# I was the last node visited
     $self->user->node($main::mycall);
 
