@@ -225,6 +225,13 @@ sub disconnect
 		} 
 		$dxchan->disconnect;
 	}
+	my $out = grep {$_->{call} eq $call} @main::outstanding_connects;
+	if ($out) {
+		unless ($^O =~ /^MS/i) {
+			kill 'TERM', $out->{pid};
+		}
+		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
+	}
 }
 
 # start a connect process off
@@ -237,29 +244,11 @@ sub start_connect
 		dbg('cron', "Connect not started, outstanding connect to $call");
 		return;
 	}
-	
-	my $prog = "$main::root/local/client.pl";
-	$prog = "$main::root/perl/client.pl" if ! -e $prog;
-	
-	my $pid = fork();
-	if (defined $pid) {
-		if (!$pid) {
-			# in child, unset warnings, disable debugging and general clean up from us
-			$^W = 0;
-			eval "{ package DB; sub DB {} }";
-			$SIG{HUP} = 'IGNORE';
-			alarm(0);
-			DXChannel::closeall();
-			$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
-			exec $prog, $call, 'connect' or dbg('cron', "exec '$prog' failed $!");
-		}
-		dbg('cron', "connect to $call started");
+	if (-e "$main::root/connect/$lccall") {
+		ExtMsg::start_connect($call, "$main::root/connect/$lccall");	
 	} else {
-		dbg('cron', "can't fork for $prog $!");
+		dbg('err', "Cannot find connect script for $lccall");
 	}
-
-	# coordinate
-	sleep(1);
 }
 
 # spawn any old job off
@@ -273,10 +262,15 @@ sub spawn
 			# in child, unset warnings, disable debugging and general clean up from us
 			$^W = 0;
 			eval "{ package DB; sub DB {} }";
-			$SIG{HUP} = 'IGNORE';
 			alarm(0);
 			DXChannel::closeall();
-			$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
+			for (@main::listeners) {
+				$_->close_server;
+			}
+			unless ($^O =~ /^MS/) {
+				$SIG{HUP} = 'IGNORE';
+				$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
+			}
 			exec "$line" or dbg('cron', "exec '$line' failed $!");
 		}
 		dbg('cron', "spawn of $line started");
