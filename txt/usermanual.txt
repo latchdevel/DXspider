@@ -9,97 +9,33 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   1. Introduction
-
      1.1 What is a DX Cluster?
      1.2 So what is DXSpider?
 
   2. Logins and logouts.
-
      2.1 AX25 logins.
      2.2 Netrom logins.
      2.3 Telnet logins.
      2.4 Logouts.
 
   3. Setting your personal details.
-
   4. Getting and posting DX.
-
      4.1 Receiving DX.
      4.2 Posting DX.
 
   5. Headings and propagation
-
      5.1 Sun
      5.2 Moon
      5.3 Heading
 
   6. Announcements.
-
      6.1 Making announcements.
      6.2 Listing announcements.
 
   7. Nodes and users.
-
   8. Talk mode.
-
   9. Mail.
-
      9.1 The "directory" command.
      9.2 Reading mail.
      9.3 Sending mail.
@@ -107,16 +43,13 @@
      9.5 Deleting mail
 
   10. Filtering (From version 1.45)
-
      10.1 General filter rules
      10.2 Types of filter
      10.3 Filter options
      10.4 Advanced filtering
 
   11. Hints, tips and common questions.
-
   12. The DXSpider command reference
-
      12.1 accept/announce
      12.2 accept/spots
      12.3 accept/wcy
@@ -262,10 +195,8 @@
 
 
 
-  connect GB7MBC
-  connect GB7MBC-1
-
-
+       connect GB7MBC
+       connect GB7MBC-1
 
 
 
@@ -287,8 +218,6 @@
 
 
 
-
-
   22..33..  TTeellnneett llooggiinnss..
 
   With telnet connections, the source callsign is not seen by DXSpider,
@@ -302,7 +231,6 @@
 
 
        telnet gb7mbc 8000
-
 
 
 
@@ -326,6 +254,7 @@
   reconnect by adding a number to the end of your call, for example
   G0YLM-2.  This can be done by either altering your MYCALL setting in
   the TNC or by altering your program configuration.
+
 
 
   33..  SSeettttiinngg yyoouurr ppeerrssoonnaall ddeettaaiillss..
@@ -352,8 +281,6 @@
        set/location 48 34 n 12 12 e
        set/qra IO84NB
        set/home gb7mbc
-
-
 
 
 
@@ -392,8 +319,6 @@
 
 
 
-
-
   will show the last 10, 5 and 20 spots received by the cluster
   respectively.
 
@@ -404,8 +329,6 @@
        show/dx on 20m
        show/dx 10 on 20m
        show/dx 20 on 20m
-
-
 
 
   will show the last 5, 10 or 20 spots on 20 metres only.
@@ -419,7 +342,6 @@
 
        show/dx g0vgs
        show/dx 10 g0vgs
-
 
 
 
@@ -439,7 +361,6 @@
 
 
 
-
   would show the spots that arrived between 30 and 40 spots ago and any
   spots with the word _i_o_t_a in the comment field.  The case of the
   comment is not important.
@@ -455,13 +376,13 @@
 
 
 
-
   It is of course possible to specify multiple arguments.
 
   EExxaammppllee::
 
-       show/dx 20 prefix 9a on vhf day 30
 
+
+       show/dx 20 prefix 9a on vhf day 30
 
 
 
@@ -472,7 +393,6 @@
   sure whether something will work or not, try it and see!  More
   information can be found in the Command Set section.
 
-
   44..22..  PPoossttiinngg DDXX..
 
   To post DX you use the DDXX command.  The syntax is shown below.
@@ -482,7 +402,6 @@
 
 
        dx (frequency) (callsign) (remarks)
-
 
 
 
@@ -500,7 +419,6 @@
 
 
 
-
   In fact, all the following will give the same result...
 
 
@@ -508,7 +426,6 @@
        dx 14004 pa3ezl OP Aurelio 599
        dx pa3ezl 14004 OP Aurelio 599
        dx pa3ezl 14.004 OP Aurelio 599
-
 
 
 
@@ -526,6 +443,8 @@
   details.  They use your entered location as a reference, so if you
   have not entered it or have entered it incorrectly they will not
   return the correct information.
+
+
   55..11..  SSuunn
 
   The SSHHOOWW//SSUUNN command can be used in three different ways.  It can be
@@ -536,8 +455,7 @@
 
 
 
-       show/sun
-
+  show/sun
 
 
 
@@ -551,11 +469,7 @@
 
 
 
-
-
-
        sh/sun 5b4
-
 
 
 
@@ -569,13 +483,11 @@
 
 
 
-
   You can also specify multiple arguments like this ...
 
 
 
        sh/sun gw4veq 5b4ab zs
-
 
 
 
@@ -590,6 +502,7 @@
        ZS     So-Africa-ZS1-ZS               04:31Z 17:28Z  289.9   41.3
        ZS     So-Africa-ZS5-ZS               03:44Z 16:34Z  278.5   32.0
        ZS     So-Africa-ZS6-ZS               03:59Z 16:42Z  277.6   35.0
+
 
 
   55..22..  MMoooonn
@@ -607,7 +520,6 @@
 
 
 
-
   The output from this command would look like this ..
 
 
@@ -615,7 +527,6 @@
        sh/moon ea
        Location                              Rise   Set      Azim   Elev  RGain dB
        EA     Spain-EA                       08:15Z 20:09Z  257.2    9.5      -0.6
-
 
 
 
@@ -637,7 +548,6 @@
 
 
 
-
   The output from this command would look like this ..
 
 
@@ -647,8 +557,6 @@
        ZL New-Zealand-ZL2-ZL: 9 degs - dist: 11540 mi, 18574 km Reciprocal heading: 353 degs
        ZL New-Zealand-ZL3-ZL: 19 degs - dist: 11634 mi, 18724 km Reciprocal heading: 345 degs
        ZL New-Zealand-ZL4-ZL: 34 degs - dist: 11783 mi, 18963 km Reciprocal heading: 332 degs
-
-
 
 
 
@@ -665,9 +573,7 @@
   EExxaammppllee::
 
 
-
        announce 10 FM is open in IO84NB to europe.
-
 
 
 
@@ -681,7 +587,6 @@
 
 
        announce full Anyone seen EA7WA today?
-
 
 
 
@@ -706,8 +611,6 @@
 
 
 
-
-
   77..  NNooddeess aanndd uusseerrss..
 
   You can check which nodes are connected in the network, who is logged
@@ -720,15 +623,10 @@
 
 
 
-
-
-
-
-  show/configuration
-  show/configuration/nodes
-  show/configuration (node_call)
-  show/configuration (prefix)
-
+       show/configuration
+       show/configuration/nodes
+       show/configuration (node_call)
+       show/configuration (prefix)
 
 
 
@@ -736,27 +634,26 @@
 
 
 
-       sh/c
-       Node         Callsigns
-       EI5TCR       (7 users)
-       GB7ADX
-       GB7BAA       G4FPV        G8TIC
-       GB7BIG       (GD0TEP)     GD3UMW
-       GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
-       (GB7CDX)     G3JNB        G4ALR
-       GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
-                    G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
-                    ON7WP
-       GB7DXA       G0RDI        G8SJP
-       GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
-                    G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
-       GB7DXE       G1NNB
-       (GB7DXG)     GU6EFB       GU7DHI
-       GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
-                    G4XQY        G7GAN
-       GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
-                    M0BCT        M1EMF
-
+  sh/c
+  Node         Callsigns
+  EI5TCR       (7 users)
+  GB7ADX
+  GB7BAA       G4FPV        G8TIC
+  GB7BIG       (GD0TEP)     GD3UMW
+  GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
+  (GB7CDX)     G3JNB        G4ALR
+  GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
+               G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
+               ON7WP
+  GB7DXA       G0RDI        G8SJP
+  GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
+               G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
+  GB7DXE       G1NNB
+  (GB7DXG)     GU6EFB       GU7DHI
+  GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
+               G4XQY        G7GAN
+  GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
+               M0BCT        M1EMF
 
 
 
@@ -784,19 +681,17 @@
 
 
 
-
   If we insert the node_call pi4tue-8 into the third example, then this
   would be the output,
 
 
 
-  Node         Callsigns
-  PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
-               F5NOD-2      F5PAC        IZ0CSR       N6CR         OH2BLD
-               ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
-               PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
-               YT1XX
-
+       Node         Callsigns
+       PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
+                    F5NOD-2      F5PAC        IZ0CSR       N6CR         OH2BLD
+                    ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
+                    PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
+                    YT1XX
 
 
 
@@ -821,7 +716,6 @@
 
 
 
-
   The output of this command would look like this,
 
 
@@ -829,8 +723,6 @@
        Callsigns connected to GB7MBC
        G0JHC        G0NEI        G0VGS        G0VGS-2      G0YLM
        G3JAG        G3OWO        G3UEU
-
-
 
 
 
@@ -852,8 +744,8 @@
 
 
 
-
        talk g0rdi Having a good day Iain?
+
 
 
   This example would send the line "Having a good day Iain?" to the user
@@ -866,8 +758,6 @@
        Talk (G0RDI)>
 
 
-
-
   As you can see, you can still run commands whilst in talk mode.
   Simply prefix the command with a / like /sh/dx and you will get the
   expected output.  If the user is connected to another node, you may
@@ -876,7 +766,6 @@
 
 
        talk g0rdi > gb7djk
-
 
 
 
@@ -912,7 +801,6 @@
 
 
 
-
   Of course most of the time you will only want to list new mail sent to
   you personally since your last login.  However you might also like to
   check for general mail received by the node.  In fact if there is new
@@ -931,8 +819,6 @@
        directory/own/10
        directory/all
        directory/from <call>
-
-
 
 
 
@@ -963,7 +849,6 @@
 
 
 
-
   The first column is the actual message number.  If the message is a
   personal one to you, you will see a letter 'p' after this number.  If
   the message has been read, there will be a '-' between the message
@@ -983,19 +868,16 @@
 
 
 
-
   will read message number 25.  However the mail will be displayed in
   it's entirety unless you specify a page length. You can set your page
   length to any number you like and when the message reaches that number
   of lines you will get a prompt giving you options.
+
   EExxaammppllee::
 
 
 
        set/page 20
-
-
-
 
 
 
@@ -1024,7 +906,6 @@
 
 
 
-
   At this point you can either hit return and enter /ex to send the
   message or use /abort at any time to abort it.  You can now display
   the message in the normal way.  There are several send options and
@@ -1047,13 +928,13 @@
 
 
 
-
-
   99..55..  DDeelleettiinngg mmaaiill
 
   To delete a message, you use the _d_e_l_e_t_e command.  You can only delete
   messages sent to or received by yourself.  Bulletins are dealt with
   automatically or by the sysop.
+
+
   1100..  FFiilltteerriinngg ((FFrroomm vveerrssiioonn 11..4455))
 
   1100..11..  GGeenneerraall ffiilltteerr rruulleess
@@ -1077,10 +958,8 @@
 
 
 
-
        accept/spots .....
        reject/spots .....
-
 
 
 
@@ -1099,7 +978,6 @@
 
 
 
-
   There is clear/xxxx command for each type of filter.
 
 
@@ -1107,17 +985,12 @@
 
 
 
-
        show/filter
-
-
 
 
 
   For now we are going to use spots for the examples, but you can apply
   the same principles to all types of filter.
-
-
 
 
   1100..22..  TTyyppeess ooff ffiilltteerr
@@ -1143,7 +1016,6 @@
 
 
 
-
   then you will _O_N_L_Y get VHF spots _f_r_o_m or _t_o CQ zones 14, 15 and 16.
 
 
@@ -1152,7 +1024,6 @@
 
 
        reject/spots on hf/cw
-
 
 
 
@@ -1167,13 +1038,11 @@
 
 
 
-
   But in that case you might only be interested in iota and say:-
 
 
 
        accept/spots not on hf/cw or info iota
-
 
 
 
@@ -1186,16 +1055,16 @@
 
   You can arrange your filter lines into logical units, either for your
   own understanding or simply convenience. Here is an example ...
+
+
+
        reject/spots 1 on hf/cw
        reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)
 
 
 
-
   What this does is to ignore all HF CW spots and also rejects any spots
   on VHF which don't either originate or spot someone in Europe.
-
-
   This is an example where you would use a line number (1 and 2 in this
   case), if you leave the digit out, the system assumes '1'. Digits
   '0'-'9' are available.  This make it easier to see just what filters
@@ -1217,7 +1086,6 @@
 
 
 
-
   The simple way to remember this is, if you use OR - use brackets.
   Whilst we are here CASE is not important. 'And BY_Zone' is just the
   same as 'and by_zone'.
@@ -1233,13 +1101,11 @@
 
 
 
-
   would redefine our earlier example, or
 
 
 
        clear/spots 1
-
 
 
 
@@ -1251,11 +1117,11 @@
 
 
 
-
   1100..33..  FFiilltteerr ooppttiioonnss
 
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
+
 
 
   1100..44..  AAddvvaanncceedd ffiilltteerriinngg
@@ -1272,7 +1138,6 @@
        rej/spot on hf/cw
        acc/spot on 0/30000
        acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
-
 
 
 
@@ -1322,6 +1187,7 @@
 
   AA..Use the SSEETT//BBEEEEPP command.  You can find information on this in the
   "DXSpider Command Reference" section.
+
 
   QQ..I got disconnected from the cluster and now I can't log back in
   again.  What is wrong?
@@ -1375,7 +1241,6 @@
 
 
 
-
   some examples:-
 
 
@@ -1384,12 +1249,11 @@
          acc/ann 2 by_zone 14,15,16
          (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
 
+
+
   or
 
-
-
          acc/ann by G,M,2
-
 
 
 
@@ -1399,7 +1263,6 @@
 
 
          acc/ann all
-
 
 
 
@@ -1438,8 +1301,6 @@
 
 
 
-
-
   For frequencies, you can use any of the band names defined in
   SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
   thus: hf/ssb. You can also just have a simple range like: 0/30000 -
@@ -1450,10 +1311,8 @@
 
 
 
-    acc/spot 1 on hf/cw
-    acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
-
+         acc/spot 1 on hf/cw
+         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
   You can use the tag 'all' to accept everything, eg:
@@ -1461,7 +1320,6 @@
 
 
          acc/spot 3 all
-
 
 
 
@@ -1490,8 +1348,6 @@
 
 
 
-
-
   There are no examples because WCY Broadcasts only come from one place
   and you either want them or not (see UNSET/WCY if you don't want
   them).
@@ -1511,22 +1367,15 @@
 
 
 
-
-
-
-
-
-    by <prefixes>            eg: G,M,2
-    origin <prefixes>
-    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-    origin_itu <numbers>
-    origin_zone <numbers>
-    by_dxcc <numbers>
-    by_itu <numbers>
-    by_zone <numbers>
-    channel <prefixes>
-
-
+         by <prefixes>            eg: G,M,2
+         origin <prefixes>
+         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+         origin_itu <numbers>
+         origin_zone <numbers>
+         by_dxcc <numbers>
+         by_itu <numbers>
+         by_zone <numbers>
+         channel <prefixes>
 
 
   for example
@@ -1534,7 +1383,6 @@
 
 
          accept/wwv by_zone 4
-
 
 
 
@@ -1579,9 +1427,6 @@
   This will disconnect you from the cluster
 
 
-
-
-
   1122..99..  cclleeaarr//ssppoottss
 
   cclleeaarr//ssppoottss [[11||aallll]] Clear a spot filter line
@@ -1598,14 +1443,11 @@
          acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
-
-
   and you say:-
 
 
 
          clear/spot 1
-
 
 
 
@@ -1617,13 +1459,11 @@
 
 
 
-
   If you do:
 
 
 
          clear/spot all
-
 
 
 
@@ -1648,8 +1488,10 @@
   system.  It is expected that the sysop will add an entry to the local
   Aliases file so that users can use the more familiar AK1A style of
   enquiry such as:
-         SH/BUCK G1TLH
 
+
+
+         SH/BUCK G1TLH
 
 
 
@@ -1659,8 +1501,6 @@
 
 
          DBSHOW buck G1TLH
-
-
 
 
 
@@ -1694,7 +1534,6 @@
 
 
 
-
   You can abbreviate all the commands to one letter and use ak1a
   syntax:-
 
@@ -1705,8 +1544,6 @@
 
 
 
-
-
   1122..1133..  ddxx
 
   ddxx [[bbyy <<ccaallll>>]] <<ffrreeqq>> <<ccaallll>> <<rreemmaarrkkss>> Send a DX spot
@@ -1714,10 +1551,12 @@
 
   This is how you send a DX Spot to other users. You can, in fact, now
   enter the <freq> and the <call> either way round.
+
+
+
           DX FR0G 144.600
           DX 144.600 FR0G
           DX 144600 FR0G
-
 
 
 
@@ -1726,8 +1565,7 @@
 
 
 
-          DX FR0G 144600 this is a test
-
+     DX FR0G 144600 this is a test
 
 
 
@@ -1736,7 +1574,6 @@
 
 
           DX by G1TLH FR0G 144.600 he isn't on the cluster
-
 
 
 
@@ -1780,6 +1617,8 @@
 
   rreeaadd Read the next unread personal message addressed to you
   rreeaadd <<mmssggnnoo>> Read the specified message
+
+
   You can read any messages that are sent as 'non-personal' and also any
   message either sent by or sent to your callsign.
 
@@ -1787,6 +1626,7 @@
   1122..1188..  rreejjeecctt//aannnnoouunnccee
 
   rreejjeecctt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set a reject filter for announce
+
 
 
   Create an 'reject this announce' line for a filter.
@@ -1815,7 +1655,6 @@
 
 
 
-
   some examples:-
 
 
@@ -1824,13 +1663,11 @@
 
 
 
-
   You can use the tag 'all' to reject everything eg:
 
 
 
          rej/ann all
-
 
 
 
@@ -1853,20 +1690,19 @@
 
 
 
-         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-         on <range>             same as 'freq'
-         call <prefixes>        eg: G,PA,HB9
-         info <string>          eg: iota or qsl
-         by <prefixes>
-         call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         call_itu <numbers>
-         call_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         origin <prefixes>
-         channel <prefixes>
-
+    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+    on <range>             same as 'freq'
+    call <prefixes>        eg: G,PA,HB9
+    info <string>          eg: iota or qsl
+    by <prefixes>
+    call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    call_itu <numbers>
+    call_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    origin <prefixes>
+    channel <prefixes>
 
 
 
@@ -1885,13 +1721,11 @@
 
 
 
-
   You can use the tag 'all' to reject everything eg:
 
 
 
          rej/spot 3 all
-
 
 
 
@@ -1908,21 +1742,15 @@
 
 
 
-
-
-
-
-    by <prefixes>            eg: G,M,2
-    origin <prefixes>
-    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-    origin_itu <numbers>
-    origin_zone <numbers>
-    by_dxcc <numbers>
-    by_itu <numbers>
-    by_zone <numbers>
-    channel <prefixes>
-
-
+         by <prefixes>            eg: G,M,2
+         origin <prefixes>
+         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+         origin_itu <numbers>
+         origin_zone <numbers>
+         by_dxcc <numbers>
+         by_itu <numbers>
+         by_zone <numbers>
+         channel <prefixes>
 
 
   There are no examples because WCY Broadcasts only come from one place
@@ -1956,13 +1784,11 @@
 
 
 
-
   for example
 
 
 
          reject/wwv by_zone 14,15,16
-
 
 
 
@@ -1989,6 +1815,7 @@
   further details)
 
 
+
   1122..2233..  sseenndd
 
   sseenndd <<ccaallll>> [[<<ccaallll>> ......]] Send a message to one or more callsigns
@@ -2012,7 +1839,6 @@
 
 
          SEND RR COPY 123 PRIVATE G1TLH G0RDI
-
 
 
 
@@ -2108,8 +1934,6 @@
 
 
 
-
-
   1122..3322..  sseett//llaanngguuaaggee
 
   sseett//llaanngguuaaggee <<llaanngguuaaggee>> Set the language you wish to use
@@ -2118,6 +1942,7 @@
   You can select the language that you want the cluster to use.
   Currently the languages available are _e_n (English) _s_p (Spanish) and _n_l
   (Dutch).
+
 
 
   1122..3333..  sseett//llooccaattiioonn
@@ -2131,8 +1956,6 @@
 
 
          set/location 54 04 N 2 02 E
-
-
 
 
 
@@ -2155,8 +1978,6 @@
 
 
          set/name Dirk
-
-
 
 
 
@@ -2184,6 +2005,7 @@
   sseett//qqrraa <<llooccaattoorr>> Set your QRA locator
 
 
+
   Tell the system what your QRA (or Maidenhead) locator is. If you have
   not done a SET/LOCATION then your latitude and longitude will be set
   roughly correctly (assuming your locator is correct ;-). For example:-
@@ -2191,8 +2013,6 @@
 
 
          SET/QRA JO02LQ
-
-
 
 
 
@@ -2206,8 +2026,6 @@
 
 
          set/qth East Dereham, Norfolk
-
-
 
 
 
@@ -2242,8 +2060,10 @@
 
   sseett//wwxx Allow WX messages to be seen at your console
 
+
   Allow WX information to be seen at your console.  You can switch off
   WX messages with the _u_n_s_e_t_/_w_x command.
+
 
 
   1122..4433..  sshhooww//ccoonnffiigguurraattiioonn
@@ -2297,17 +2117,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
   on <band>       - eg 160m 20m 2m 23cm 6mm
   on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
 
@@ -2340,9 +2149,7 @@
 
 
 
-
   e.g.
-
 
 
 
@@ -2353,8 +2160,6 @@
           SH/DX iota
           SH/DX iota eu-064
           SH/DX qra jn86
-
-
 
 
 
@@ -2371,13 +2176,8 @@
 
 
 
-
-
-
      SH/DXCC G
      SH/DXCC W on 20m info iota
-
-
 
 
 
@@ -2396,7 +2196,6 @@
 
 
 
-
   where <filearea> is the name of the filearea you want to see the
   contents of.
 
@@ -2406,7 +2205,6 @@
 
 
           SH/FILES bulletins arld*
-
 
 
 
@@ -2446,8 +2244,6 @@
 
          SH/MOON
          SH/MOON G1TLH W5UN
-
-
 
 
 
@@ -2500,9 +2296,7 @@
 
 
 
-
   produces:
-
 
 
 
@@ -2517,7 +2311,6 @@
 
 
 
-
   indicating that you will have weak, fading circuits on top band and
   80m but usable signals on 40m (about S3).
 
@@ -2529,7 +2322,6 @@
 
 
 
-
   will get you the above display, but with the next 24 hours worth of
   propagation data.
 
@@ -2537,7 +2329,6 @@
 
          SH/MUF W L 24
          SH/MUF W 24 Long
-
 
 
 
@@ -2577,7 +2368,6 @@
 
 
 
-
   The first example will show the distance and bearing to the locator
   from yourself, the second example will calculate the distance and
   bearing from the first locator to the second. You can use 4 or 6
@@ -2590,8 +2380,6 @@
 
 
        SH/QRA 52 41 N 0 58 E
-
-
 
 
 
@@ -2616,8 +2404,6 @@
 
 
          sh/route n2tly
-
-
 
 
 
@@ -2652,8 +2438,6 @@
 
 
 
-
-
   1122..5577..  sshhooww//ssuunn
 
   sshhooww//ssuunn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
@@ -2679,8 +2463,6 @@
 
 
 
-
-
   1122..5588..  sshhooww//ttiimmee
 
   sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
@@ -2700,7 +2482,6 @@
 
   Display the most recent WCY information that has been received by the
   system
-
 
 
 
@@ -2739,7 +2520,6 @@
 
 
 
-
   you type:-
 
 
@@ -2747,7 +2527,6 @@
         aa2bbbb0ccc5ddd7xxx3n
         or 2 0 5 7 3
         or 20573
-
 
 
 
@@ -2796,14 +2575,11 @@
 
 
 
-
   To leave talk mode type:
 
 
 
           /EX
-
-
 
 
 
@@ -2819,7 +2595,6 @@
 
 
           TYPE bulletins/arld051
-
 
 
 
@@ -2844,61 +2619,6 @@
 
   Weather messages can sometimes be useful if you are experiencing an
   extreme that may indicate enhanced conditions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>The DXSpider Installation Manual v1.50: General Information</TITLE>
  <LINK HREF="installation-6.html" REL=previous>
  <LINK HREF="installation.html#toc7" REL=contents>
@@ -12,16 +12,16 @@ Next
 <A HREF="installation-6.html">Previous</A>
 <A HREF="installation.html#toc7">Contents</A>
 <HR>
-<H2><A NAME="s7">7. General Information</A></H2>
+<H2><A NAME="s7">7.</A> <A HREF="installation.html#toc7">General Information</A></H2>
 
-<P>The following relates to all versions of DXSpider and is not platform related.
-<P>
-<H2><A NAME="ss7.1">7.1 The crontab file</A>
+<P>The following relates to all versions of DXSpider and is not platform related.</P>
+
+<H2><A NAME="ss7.1">7.1</A> <A HREF="installation.html#toc7.1">The crontab file</A>
 </H2>
 
 <P>Login as <EM>sysop</EM> and create a file in /spider/local_cmd called crontab.  
 Edit it with your favourite editor and add a line like this (I have included 
-a comment)
+a comment)</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -31,17 +31,18 @@ a comment)
 0,10,20,30,40,50 * * * * start_connect('gb7xxx') unless connected('gb7xxx')
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
+</P>
+
 <P>The callsign involved will be the callsign of the cluster node you are 
 going to connect to.  This will now check every 10 minutes to see if 
 gb7xxx is connected, if it is then nothing will be done.  If it is not, 
-then a connect attempt will be started.
-<P>
+then a connect attempt will be started.</P>
+
 <P>There are probably lots of other things you could use this crontab file for.  
 If you want to know more about it, look at the
 <A HREF="http://www.dxcluster.org/cron.html">DXSpider</A> website 
-at the cron page where it is explained more fully.
-<P>
+at the cron page where it is explained more fully.</P>
+
 <HR>
 Next
 <A HREF="installation-6.html">Previous</A>

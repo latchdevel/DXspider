@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>The DXSpider User Manual v1.50: Nodes and users.</TITLE>
  <LINK HREF="usermanual-8.html" REL=next>
  <LINK HREF="usermanual-6.html" REL=previous>
@@ -13,14 +13,14 @@
 <A HREF="usermanual-6.html">Previous</A>
 <A HREF="usermanual.html#toc7">Contents</A>
 <HR>
-<H2><A NAME="s7">7. Nodes and users.</A></H2>
+<H2><A NAME="s7">7.</A> <A HREF="usermanual.html#toc7">Nodes and users.</A></H2>
 
 <P>You can check which nodes are connected in the network, who is 
 logged on locally, who is logged on at all the nodes or even 
 just one node in particular. This is handy if you wish to see whether
 a friend is connected at the node they use.  To see who is connected 
-to the nodes, the <B>SHOW/CONFIGURATION</B> command is used.
-<P><B>Example:</B>
+to the nodes, the <B>SHOW/CONFIGURATION</B> command is used.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -30,7 +30,8 @@ show/configuration (node_call)
 show/configuration (prefix)
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>The first of our three examples would output something like this,
+</P>
+<P>The first of our three examples would output something like this,</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -56,13 +57,14 @@ GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
              M0BCT        M1EMF
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>You will notice that EI5TCR is showing only that it has 7 users and not
 giving the actual callsigns.  This means that this node is on a limited
 protocol of some kind, probably because of a contest situation where
 slow radio links can block up and fail if too much information is sent
-between nodes.
+between nodes.</P>
 <P>The second example would just show the nodes connected in the
-network, like this,
+network, like this,</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -78,8 +80,9 @@ PA4AB-14     PA4AB-14
 PI4TUE-8     PI4TUE-8    
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>If we insert the node_call pi4tue-8 into the third example, then
-this would be the output,
+this would be the output,</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -91,24 +94,27 @@ PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
              YT1XX        
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>As you can see, only the users of the requested node are shown.
+</P>
+<P>As you can see, only the users of the requested node are shown.</P>
 <P>You can also use a prefix to show only a group of nodes.  For example
 you may only wish to see who is connected to the nodes in the UK.  To
-do this simply use a prefix like this ...
+do this simply use a prefix like this ...</P>
 <P>
 <PRE>
 show/configuration gb7
 </PRE>
+</P>
 <P>To show the locally connected users, the <B>SHOW/USERS</B> command is
-used
-<P><B>Example:</B>
+used</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 show/users
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>The output of this command would look like this,
+</P>
+<P>The output of this command would look like this,</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -117,7 +123,8 @@ G0JHC        G0NEI        G0VGS        G0VGS-2      G0YLM
 G3JAG        G3OWO        G3UEU
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
+</P>
+
 <HR>
 <A HREF="usermanual-8.html">Next</A>
 <A HREF="usermanual-6.html">Previous</A>

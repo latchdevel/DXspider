@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>The DXSpider User Manual v1.50: Mail.</TITLE>
  <LINK HREF="usermanual-10.html" REL=next>
  <LINK HREF="usermanual-8.html" REL=previous>
@@ -13,12 +13,12 @@
 <A HREF="usermanual-8.html">Previous</A>
 <A HREF="usermanual.html#toc9">Contents</A>
 <HR>
-<H2><A NAME="s9">9. Mail.</A></H2>
+<H2><A NAME="s9">9.</A> <A HREF="usermanual.html#toc9">Mail.</A></H2>
 
 <P>You can send and receive both personal mail and bulletins with DXSpider 
-quite easily.
-<P>
-<H2><A NAME="ss9.1">9.1 The "directory" command.</A>
+quite easily.</P>
+
+<H2><A NAME="ss9.1">9.1</A> <A HREF="usermanual.html#toc9.1">The "directory" command.</A>
 </H2>
 
 <P>To list mail you would use the <B>DIRECTORY</B> command.  On its 
@@ -27,8 +27,8 @@ node, either to or from yourself or bulletins such as "DX" and "ALL".
 As with other commands you can display more by specifying a number 
 with the command.  You should be aware that Spider will accept
 these commands by separating with either a slash or a space, so
-<EM>dir new</EM> and <EM>dir/new</EM> work in the same way.
-<P><B>Example:</B>
+<EM>dir new</EM> and <EM>dir/new</EM> work in the same way.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -37,6 +37,7 @@ directory/20
 directory 20
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>Of course most of the time you will only want to list new mail sent 
 to you personally since your last login.  However you might also like 
 to check for general mail received by the node.  In fact if there is 
@@ -46,8 +47,8 @@ logged in.
 Mail is not only sent to callsigns though.  Mail can also be sent to 
 subjects like "all" or "local" or "dx" etc.  You can treat these 
 bulletins in the same way as personal mail with the directory 
-command.
-<P><B>Examples:</B>
+command.</P>
+<P><B>Examples:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -58,16 +59,16 @@ directory/all
 directory/from &lt;call>
 </PRE>
 </CODE></BLOCKQUOTE>
-  
+  </P>
 <P>The last option will only show mail from a callsign if it was sent to
 you personally or was sent as a bulletin.  There are some additional
-commands and these can be found in the DXSpider Command Reference section.
-<P>
-<H2><A NAME="ss9.2">9.2 Reading mail.</A>
+commands and these can be found in the DXSpider Command Reference section.</P>
+
+<H2><A NAME="ss9.2">9.2</A> <A HREF="usermanual.html#toc9.2">Reading mail.</A>
 </H2>
 
 <P>The output of the <B>DIRECTORY</B> command could be something like 
-this.
+this.</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -85,36 +86,39 @@ dir
  21184-p  599   GW4HAT    G0VGS  4-Mar 1518Z Re: Time 
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>The first column is the actual message number.  If the message is a
 personal one to you, you will see a letter 'p' after this number.  If
 the message has been read, there will be a '-' between the message
 number and the 'p'.  This only works for personal messages.  The next
 column shows the file size of the message.  The third column shows the
 address the message was sent to and the next column shows who sent it.
-The rest is fairly self-explanatory.
+The rest is fairly self-explanatory.</P>
 <P>Reading a message is as simple as typing read, followed by the 
-message number that you wish to read.
-<P><B>Example:</B>
+message number that you wish to read.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 read 25
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>will read message number 25.  However the mail will be displayed in it's
 entirety unless you specify a page length. You can set your page length
 to any number you like and when the message reaches that number of lines
-you will get a prompt giving you options.
-<P><B>Example:</B>
+you will get a prompt giving you options.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 set/page 20
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
-<P>
-<H2><A NAME="ss9.3">9.3 Sending mail.</A>
+</P>
+
+
+<H2><A NAME="ss9.3">9.3</A> <A HREF="usermanual.html#toc9.3">Sending mail.</A>
 </H2>
 
 <P>Sending mail is done in the time honoured way.  First you specify
@@ -122,8 +126,8 @@ a recipient for the message, then you will be prompted for a subject.
 Once you have done this you will be asked to type your message.
 Please remember that there is no automatic word wrap, so unless you
 are using a client that wraps lines automatically, remember to hit
-return at the end of each line.
-<P><B>Example:</B>
+return at the end of each line.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -138,35 +142,37 @@ Cheers
 Ian
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>At this point you can either hit return and enter /ex to send the
 message or use /abort at any time to abort it.  You can now display
 the message in the normal way.  There are several send options and 
 these are listed in the Command Set section.  These include sending
-mail to several recipients and asking for a return receipt.
-<P>
-<P>
-<H2><A NAME="ss9.4">9.4 Replying to mail.</A>
+mail to several recipients and asking for a return receipt.</P>
+
+
+<H2><A NAME="ss9.4">9.4</A> <A HREF="usermanual.html#toc9.4">Replying to mail.</A>
 </H2>
 
 <P>If mail is addressed to you or to a bulletin address, you can use the
 <B>REPLY</B> command to reply to it.  Using this command, the 
 subject will be automatically set for you as "Re: subject", whatever 
-the subject was. 
-<P><B>Example:</B>
+the subject was. </P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 reply 2500
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
-<H2><A NAME="ss9.5">9.5 Deleting mail</A>
+</P>
+
+<H2><A NAME="ss9.5">9.5</A> <A HREF="usermanual.html#toc9.5">Deleting mail</A>
 </H2>
 
 <P>To delete a message, you use the <EM>delete</EM> command.
 You can only delete messages sent to or received by yourself.  
-Bulletins are dealt with automatically or by the sysop.
-<P>
+Bulletins are dealt with automatically or by the sysop.</P>
+
 <HR>
 <A HREF="usermanual-10.html">Next</A>
 <A HREF="usermanual-8.html">Previous</A>

@@ -7,7 +7,7 @@
 <title>The DXSpider Administration Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
 Charlie Carroll, K1XX, (k1xx@ptcnh.net)</author>
-<date>July 2002 revision 0.1</date>
+<date>January 2003 revision 0.2</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -1444,6 +1444,89 @@ choosing (probably your cluster callsign) on the html page.
 
 You now can connect to Spider-Web via http://yourserver/cgi-bin/spider.cgi
 </verb>
+
+<sect>Web based statistics
+
+<P>
+From version 1.50, you can use the freeware software MRTG to produce
+really nice graphical statistics on your web site.  For an example
+try <htmlurl url="http://www.gb7mbc.net/mrtg/stats.html" name="http://www.gb7mbc.net/mrtg/stats.html">.
+
+<P>
+The following should help you get it all working.
+
+<P>
+First you need to download the latest version of MRTG from <htmlurl url="http://people.ee.ethz.ch/~oetiker/webtools/mrtg/" name="http://people.ee.ethz.ch/~oetiker/webtools/mrtg/">.
+You will also need the following files..
+
+<tscreen><verb>
+libpng-1.0.14.tar.gz
+zlib-1.1.4.tar.gz
+gd-1.8.3.tar.gz
+</verb></tscreen>
+
+Login to your machine as the root user, put all the downloaded files 
+in /usr/local/src/ (or wherever you prefer) and untar and compile them.  
+All the information to compile and install these sources come with them.
+After compilation and installation,  you will find MRTG in /usr/local/mrtg-2.
+
+<P>
+Now copy all the files in /usr/local/src/mrtg-2.9.22/images/ to 
+/spider/html/mrtg/
+
+<P>
+You now need to make 2 symbolic links like below...
+
+<tscreen><verb>
+ln -s /usr/local/mrtg-2/bin/mrtg /usr/bin/mrtg
+ln -s /usr/local/mrtg-2/lib/mrtg2 /usr/lib/mrtg2
+</verb></tscreen>
+
+<P>
+Now login to the cluster as your sysop user and run the command 
+"mrtg all".
+
+<P>Now you are nearly there!  Login as the sysop user and change to the
+/spider/html/mrtg/ directory.  Now run the command <em>indexmaker</em> as
+shown below...
+
+<tscreen><verb>
+indexmaker --output stats.html --columns=1 --title "MRTG statistics for GB7DJK" ../../mrtg/mrtg.cfg
+</verb></tscreen>
+
+Changing the callsign for your own cluster callsign of course!
+
+<P>
+And finally you need to login as the root user and create one last
+symbolic link.  Where this points will depend on where your html
+documents are kept.  For RedHat systems you use...
+
+<tscreen><verb>
+ln -s /home/sysop/spider/html/mrtg /home/httpd/html/mrtg
+</verb></tscreen>
+
+and for SuSE systems...
+
+<tscreen><verb>
+ln -s /home/sysop/spider/html/mrtg /usr/local/httpd/htdocs/mrtg
+</verb></tscreen>
+
+If you now point your browser to your website as below it should all
+be happening!
+
+<tscreen><verb>
+http://www.xxx.xxx/mrtg/stats.html
+</verb></tscreen>
+
+Of course, to get the stats to update, you need to add some information
+in the spider crontab file as below...
+
+<tscreen><verb>
+# Update stats for mrtg on website
+00,05,10,15,20,25,30,35,40,45,50,55 * * * * run_cmd('mrtg all')
+</verb></tscreen>
+
+This will update the site every 5 minutes.
 
 <sect>Security
 

@@ -9,14 +9,12 @@
 
 
   1. Installation
-
      1.1 Where do I get DXSpider?
      1.2 How do I use the patches?
      1.3 If I use a tarball to overwrite my installation, what happens to my configuration?
      1.4 I am running RedHat 5.2 and I am getting strange errors, what is wrong?
 
   2. Administration
-
      2.1 How can I get Spider to restart automatically if it crashes?
      2.2 How can I monitor traffic to and from a node or user?
      2.3 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.
@@ -51,17 +49,12 @@
 
 
 
-
-
   assuming the patch version you are using is 1.40 and resides in /tmp!
 
 
   Be aware that each patch assumes the previous patch has been applied.
   That is to say if you are patching from version 1.38 to 1.40 you would
   first need to apply patch-1.39 and then patch-1.40.
-
-
-
 
 
   11..33..  IIff II uussee aa ttaarrbbaallll ttoo oovveerrwwrriittee mmyy iinnssttaallllaattiioonn,, wwhhaatt hhaappppeennss ttoo
@@ -93,7 +86,6 @@
 
 
 
-
   Run _t_e_l_i_n_i_t _q as root.  Spider will restart so be aware.  However, any
   time you reboot, cluster.pl will start in tty7 and if it crashes, it
   should restart ok.
@@ -110,15 +102,12 @@
 
 
 
-
   or in later versions of Spider, there is a command called _w_a_t_c_h_d_b_g in
   which case you simply type ..
 
 
 
        watchdbg G0VGS
-
-
 
 
 
@@ -130,8 +119,8 @@
   reset the home_node using the _s_p_o_o_f command like this ..
 
 
-       spoof gb7adx set/home gb7adx
 
+       spoof gb7adx set/home gb7adx
 
 
 
@@ -156,7 +145,6 @@
 
 
        /usr/sbin/tmpwatch -f 240 /spider/data/debug
-
 
 
 
@@ -199,66 +187,6 @@
   This message is marked for deletion and will be deleted in 2 days if
   nothing further is done.  Optionally you can use the command
   _d_e_l_e_t_e_/_e_x_p_u_n_g_e to delete it immediately.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

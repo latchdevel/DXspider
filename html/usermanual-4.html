@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>The DXSpider User Manual v1.50: Getting and posting DX.</TITLE>
  <LINK HREF="usermanual-5.html" REL=next>
  <LINK HREF="usermanual-3.html" REL=previous>
@@ -13,7 +13,7 @@
 <A HREF="usermanual-3.html">Previous</A>
 <A HREF="usermanual.html#toc4">Contents</A>
 <HR>
-<H2><A NAME="s4">4. Getting and posting DX.</A></H2>
+<H2><A NAME="s4">4.</A> <A HREF="usermanual.html#toc4">Getting and posting DX.</A></H2>
 
 <P>When all is said and done, this is the main function of a DX cluster.
 In its simplest form you can just connect to the node and you will 
@@ -22,9 +22,9 @@ recent postings in either a general manner or on a particular band or
 mode.  You can even check DX by callsign or a fragment of a callsign.
 Of course, once you get the hang of things, it is expected that you 
 start posting some yourself!  After all, there would be no clusters 
-if people did not post DX and you get the added thrill of the hunt!
-<P>
-<H2><A NAME="ss4.1">4.1 Receiving DX.</A>
+if people did not post DX and you get the added thrill of the hunt!</P>
+
+<H2><A NAME="ss4.1">4.1</A> <A HREF="usermanual.html#toc4.1">Receiving DX.</A>
 </H2>
 
 <P>As we have already said, it is possible just to connect to the 
@@ -36,8 +36,8 @@ other arguments, this command will output the last 10 spots
 posted.  It is possible to look at more than this, for example the 
 last 20 or 50 spots, by adding the number to the command.  You can 
 make it even more specific by adding a band in either wavelength or 
-frequency, and/or any additional information such as QSL details.
-<P><B>Examples:</B>
+frequency, and/or any additional information such as QSL details.</P>
+<P><B>Examples:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -46,9 +46,10 @@ show/dx 5
 show/dx 20
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>will show the last 10, 5 and 20 spots received by the cluster 
-respectively.
-<P><B>Examples</B>
+respectively.</P>
+<P><B>Examples</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -57,10 +58,11 @@ show/dx 10 on 20m
 show/dx 20 on 20m
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>will show the last 5, 10 or 20 spots on 20 metres only.
+</P>
+<P>will show the last 5, 10 or 20 spots on 20 metres only.</P>
 <P>It is also possible to check for certain callsigns, or fragments of 
-callsigns in the same way.
-<P><B>Examples:</B>
+callsigns in the same way.</P>
+<P><B>Examples:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -68,11 +70,12 @@ show/dx g0vgs
 show/dx 10 g0vgs
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>would show the last 5 or 10 dx spots containing the callsign g0vgs.
-<P>
+</P>
+<P>would show the last 5 or 10 dx spots containing the callsign g0vgs.</P>
+
 <P>You can check for DX by offset and also by specifying a comment to 
-search for.
-<P><B>Examples:</B>
+search for.</P>
+<P><B>Examples:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -81,56 +84,61 @@ show/dx 14000-14033
 show/dx iota
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>would show the spots that arrived between 30 and 40 spots ago and any 
 spots with the word <EM>iota</EM> in the comment field.  The case of 
-the comment is not important.
+the comment is not important.</P>
 <P>Checking DX posted on a certain day is possible too.  All you have
-to do here is to specify how many days ago it was like this ...
-<P><B>Example:</B>
+to do here is to specify how many days ago it was like this ...</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 show/dx day 30 
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>It is of course possible to specify multiple arguments.
-<P><B>Example:</B>
+</P>
+<P>It is of course possible to specify multiple arguments.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 show/dx 20 prefix 9a on vhf day 30
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>This would show the last 20 spots posted by or about calls with the prefix
-9a on vhf 30 days ago.
+9a on vhf 30 days ago.</P>
 <P>As you can see the <B>SHOW/DX</B> command is very flexible, so if you are
 not sure whether something will work or not, try it and see!  More
-information can be found in the Command Set section.
-<P>
-<H2><A NAME="ss4.2">4.2 Posting DX.</A>
+information can be found in the Command Set section.</P>
+
+<H2><A NAME="ss4.2">4.2</A> <A HREF="usermanual.html#toc4.2">Posting DX.</A>
 </H2>
 
-<P>To post DX you use the <B>DX</B> command.  The syntax is shown below. 
-<P><B>Example:</B>
+<P>To post DX you use the <B>DX</B> command.  The syntax is shown below. </P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 dx (frequency) (callsign) (remarks)
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>Where frequency is in kilohertz and the callsign is the callsign of
 the station you have worked or heard, (ie not your own callsign!).  
 The remarks section allows you to add information like the operators 
 name or perhaps a location.  Actually DXSpider will allow the frequency
-and callsign fields to be entered in any order.
-<P><B>Example:</B>
+and callsign fields to be entered in any order.</P>
+<P><B>Example:</B></P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 dx 14004 pa3ezl OP Aurelio 599
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>In fact, all the following will give the same result...
+</P>
+<P>In fact, all the following will give the same result...</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -139,11 +147,12 @@ dx pa3ezl 14004 OP Aurelio 599
 dx pa3ezl 14.004 OP Aurelio 599
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>This posting, or callout as it is known, will be forwarded to all 
 other connected stations both at the cluster you are connected to and
 other active clusters in the network.  The callout will also be sent 
-to you as proof of receipt. 
-<P>
+to you as proof of receipt. </P>
+
 <HR>
 <A HREF="usermanual-5.html">Next</A>
 <A HREF="usermanual-3.html">Previous</A>

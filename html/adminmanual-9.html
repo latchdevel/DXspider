@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Administration Manual v1.50: CVS</TITLE>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider Administration Manual v1.50: Security</TITLE>
  <LINK HREF="adminmanual-10.html" REL=next>
  <LINK HREF="adminmanual-8.html" REL=previous>
  <LINK HREF="adminmanual.html#toc9" REL=contents>
@@ -13,178 +13,87 @@
 <A HREF="adminmanual-8.html">Previous</A>
 <A HREF="adminmanual.html#toc9">Contents</A>
 <HR>
-<H2><A NAME="s9">9. CVS</A></H2>
+<H2><A NAME="s9">9.</A> <A HREF="adminmanual.html#toc9">Security</A></H2>
 
-<H2><A NAME="ss9.1">9.1 CVS from a Linux platform</A>
+<P>From version 1.49 DXSpider has some additional security features.  These
+are not by any means meant to be exhaustive, however they do afford some
+security against piracy.  These two new features can be used independently 
+of each other or in concert to tighten the security.</P>
+
+<H2><A NAME="ss9.1">9.1</A> <A HREF="adminmanual.html#toc9.1">Registration</A>
 </H2>
 
-<P>CVS stands for "Concurrent Versions System" and the CVS for DXSpider is held
-at 
-<A HREF="http://www.sourceforge.net">Sourceforge</A>.  This means
-that it is possible to update your DXSpider installation to the latest
-sources by using a few simple commands.  A graphical interface to CVS for
-Windows is explained in the next section.
-<P>
-<P>Please be aware that if you update your system using CVS, it is possible that
-you could be running code that is very beta and not fully tested.  There is
-a possibility that it could be unstable.
-<P>
-<P>I am of course assuming that you have a machine with both DXSpider and
-Internet access running.
-<P>
-<P>BEFORE YOU EVEN CONSIDER STARTING WITH THIS MAKE A BACKUP OF YOUR
-ENTIRE SPIDER TREE!!
-<P>
-<P>Assuming you are connected to the Internet, you need to login to the
-CVS repository and then update your Spider source.  There are several
-steps which are listed below ...
-<P>
-<P>First login as the user <EM>sysop</EM>.  Next you need to connect to the CVS
-repository.  You do this with the command below ...
-<P>
-<PRE>
-cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
-</PRE>
-<P>You will get a password prompt.  Simply hit return here and your machine should
-return to a normal linux prompt.
-<P>
-<P>What happens next depends on whether you have an existing installation that
-you want to update with the latest and greatest or whether you just want
-to see what is there and/or run it on a new machine for testing.
-<P>If you are installing Spider from CVS then change directory to /home/sysop
-<P>If you are wanting to update Spider then cd to /tmp
-<P>
-<P>The next step will create a brand new 'spider' directory in your current
-directory.
-<P>
-<PRE>
-cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider co spider
-</PRE>
-<P>This command is all on one line.
-<P>
-<P>Hopefully your screen should show you downloading files.  The -z3 simply compresses
-the download to improve speed.
-When this has finished, you will have exactly the same as if you had untarred a full
-tarball PLUS some extra directories and files that CVS needs to do the magic that
-it does.
-<P>
-<P>Now if you are doing a new installation, that's it.  Carry on as if you have
-just downloaded and untarred the lastest tarball.
-<P>
-<P>If you want to upgrade your current installation then do this ...
+<P>The basic principle of registration is simple.  If a user is not registered
+by the sysop, then they have read-only access to the cluster.  The only
+thing they can actually send is a talk or a message to the sysop.  In
+order for them to be able to spot, send announces or talks etc the sysop
+must register them with the <EM>set/register</EM> command, like this ...</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-tar cvfz /tmp/s.tgz spider
-cd /
-tar xvfzp /tmp/s.tgz
+set/register g0vgs
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>This is assuming you downloaded to the /tmp directory of course.
-<P>
-<P>NOTE:  the 'p' on the end of the 'xvfz' is IMPORTANT!   It keeps the permissions
-correct.  YOU WERE LOGGED IN AS THE USER SYSOP WEREN'T YOU?????
-<P>Remember to recompile the C client (cd /spider/src; make)
-<P>
-<P>At this point the files have been upgraded.  You can (usually) restart the cluster
-in your own time.  However, if you attempt to use any new commands or features
-expect it to be fatal!  At least your cluster will have been restarted then so it
-will be too late to worry about it!
-<P>
-<P>Now the magic part!  From now on when you want to update, simply connect to the
-Internet and then, as the user <EM>sysop</EM> ...
+</P>
+<P>The user g0vgs can now fully use the cluster.  In order to enable 
+registration, you can issue the command ...</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-cd /spider
-cvs -z3 update -d
+set/var $main::reqreg = 1
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>and your files will be updated.  As above, remember to recompile the "C" client
-if it has been updated (CVS will tell you) and restart if any of the perl scripts
-have been altered or added, again, CVS will tell you.
-<P>
-<P>You will find any changes documented in the /spider/Changes file.
-<P>
-<H2><A NAME="ss9.2">9.2 CVS from a Windows platform</A>
+</P>
+<P>Any users that are not registered will now see the motd_nor file rather
+than the motd file as discussed in the Information, files and useful 
+programs section.</P>
+
+<P>Entering this line at the prompt will only last for the time the cluster
+is running of course and would not be present on a restart.  To make the
+change permanent, add the above line to /spider/scripts/startup.  To
+read more on the startup file, see the section on Information, files 
+and useful programs.</P>
+
+<P>To unregister a user use <EM>unset/register</EM> and to show the list
+of registered users, use the command <EM>show/register</EM>.</P>
+
+<H2><A NAME="ss9.2">9.2</A> <A HREF="adminmanual.html#toc9.2">Passwords</A>
 </H2>
 
-<P>After the initial setup, an update to your DXSpider software is no more than a couple
-of clicks away.  This section is intended to explain and illustrate the use of the
-WinCVS application to update your DXSpider software.  The current stable version of
-WinCVS is Ver. 1.2.  You can get this software at:
+<P>At the moment, passwords only affect users who login to a DXSpider
+cluster node via telnet.  If a user requires a password, they can
+either set it themselves or have the sysop enter it for them by using
+the <EM>set/password</EM> command.  Any users who already have passwords, 
+such as remote sysops, will be asked for their passwords automatically 
+by the cluster.  Using passwords in this way means that the user has a
+choice on whether to have a password or not.  To force the use of
+passwords at login, issue the command ...</P>
 <P>
-<A HREF="http://prdownloads.sourceforge.net/cvsgui/WinCvs120.zip">http://prdownloads.sourceforge.net/cvsgui/WinCvs120.zip</A><P>Pick your download mirror and then install WinCVS after the download is complete.
-<P>In this next section I have included a series of links to .jpg files to take advantage of the
-picture and 1000 words equivalency.  The .jpg files are in the C:\spider\html directory.  If
-someone using a Linux system is reading this section from boredom, the files are in
-/home/sysop/spider/html.  One aside, a Linux user can also get a copy of gcvs and do your updates
-graphically as opposed to from the command line.  The following descriptions are almost identical
-between WinCvs and gcvs.  The following screen shots have duplicate links, depending upon whether
-you are viewing this information under the Windows or Linux operating system.
-<P>When WinCVS is installed, running, and you are connected to the internet, the initial screen looks like:
-<P>
-<A HREF="initial.jpg">initial.jpg</A><P>If you want, you can also look at these .jpg files with another viewer that might provide some
-better clarity to the image.  On the left is the directory tree for your hard disk.  Notice that
-the spider directory has a gray highlight.
-<P>To start configuring WinCVS, click on Admin at the top of the screen and then Preferences.  This 
-should get you:
-<P>
-<A HREF="pref-gen.jpg">pref-gen.jpg</A><P>In the top line for CVSROOT, enter:
 <BLOCKQUOTE><CODE>
 <PRE>
-anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+set/var $main::passwdreq = 1
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>and select
-<BLOCKQUOTE><CODE>
-<PRE>
-"passwd" file on the cvs server
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>for Authentication on the General tab.
-<P>Next, move to the right to the Ports tab.
-<P>
-<A HREF="pref-ports.jpg">pref-ports.jpg</A><P>In here, check the box on the second line down for the "pserver" port.  Enter a port number of 2401.
-<P>Finally, go to the WinCvs tab all the way to the right.
-<P>
-<A HREF="pref-wincvs.jpg">pref-wincvs.jpg</A><P>Enter Notepad as the viewer to open files.  For the HOME folder, put "C:\spider" and click OK
-because the configuration is now complete.
-<P>You are now ready to upgrade your copy of DXSpider.  Click on the greyed Spider folder
-shown in the directory tree on the left of the WinCVS display.  Two things should happen.  The Spider
-folder will be selected and the greyed-out arrow located just below the word Query in the top line will
-turn to solid green.
-<P>For anyone using gcvs under Linux, the green arrow is located on the extreme left of the display,
-under the word File.  A gcvs screen looks like:
-<P>
-<A HREF="gcvs.jpg">gcvs.jpg</A><P>Click on the now green arrow to start the download process.  An Update Settings box will be displayed
-to which you can simply say OK.
-<P>
-<A HREF="update-OK.jpg">update-OK.jpg</A><P>For future reference, the Update Settings box is the place where you can enter information to revert
-to a prior version of DXSpider.  Information on reverting to a Before Date is contained in the WinCVS
-manual.
-<P>After a short period of time, a series of file names will scroll by in the lower pane of the WinCVS
-window.  Eventually you should see
-<BLOCKQUOTE><CODE>
-<PRE>
-*****CVS exited normally with code 0*****
-</PRE>
-</CODE></BLOCKQUOTE>
+</P>
+<P>at the cluster prompt.  This can also be added to the /spider/scripts/startup
+file as above to make the change permanent.</P>
 
-appear in the lower pane.  You're done.  The updated files are in place ready for you to stop and then
-restart your DXSpider.  After the restart, you're running with the latest version of DXSpider.
+<P>Of course, if you do this you will have to assign a password for each of 
+your users.  If you were asking them to register, it is anticipated that
+you would ask them to send you a message both to ask to be registered and
+to give you the password they wish to use.</P>
+
+<P>Should a user forget their password, it can be reset by the sysop by
+first removing the existing password and then setting a new one like so ...</P>
 <P>
-<A HREF="completed.jpg">completed.jpg</A><P>To paraphrase from the CVS section... Now the magic part!  From now on when you want to update, simply
-connect to the Internet and start WinCVS.
 <BLOCKQUOTE><CODE>
 <PRE>
-Click on the greyed-out Spider directory in the left screen
-Click on the green down arrow
-Click OK on the Update Settings dialog box
-Restart your Spider software
+unset/password g0vgs
+set/password g0vgs new_password
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
+</P>
+
 <HR>
 <A HREF="adminmanual-10.html">Next</A>
 <A HREF="adminmanual-8.html">Previous</A>

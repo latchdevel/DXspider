@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
  <TITLE>The DXSpider Administration Manual v1.50: Other filters</TITLE>
  <LINK HREF="adminmanual-3.html" REL=next>
  <LINK HREF="adminmanual-1.html" REL=previous>
@@ -13,13 +13,13 @@
 <A HREF="adminmanual-1.html">Previous</A>
 <A HREF="adminmanual.html#toc2">Contents</A>
 <HR>
-<H2><A NAME="s2">2. Other filters</A></H2>
+<H2><A NAME="s2">2.</A> <A HREF="adminmanual.html#toc2">Other filters</A></H2>
 
-<H2><A NAME="ss2.1">2.1 Filtering Mail</A>
+<H2><A NAME="ss2.1">2.1</A> <A HREF="adminmanual.html#toc2.1">Filtering Mail</A>
 </H2>
 
 <P>In the /spider/msg directory you will find a file called badmsg.pl.issue.  Rename
-this to badmsg.pl and edit the file.  The original looks something like this ....
+this to badmsg.pl and edit the file.  The original looks something like this ....</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -61,38 +61,39 @@ package DXMsg;
 );
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>
+</P>
+
 <P>I think this is fairly self explanatory.  It is simply a list of subject 
 headers that we do not want to pass on to either the users of the cluster or 
 the other cluster nodes that we are linked to.  This is usually because of 
-rules and regulations pertaining to items for sale etc in a particular country.
-<P>
-<P>
-<H2><A NAME="ss2.2">2.2 Filtering words from text fields in Announce, Talk and DX spots</A>
+rules and regulations pertaining to items for sale etc in a particular country.</P>
+
+
+<H2><A NAME="ss2.2">2.2</A> <A HREF="adminmanual.html#toc2.2">Filtering words from text fields in Announce, Talk and DX spots</A>
 </H2>
 
 <P>From version 1.48 onwards the interface to this has changed. You can now
 use the commands <EM>set/badword</EM> to add words that you are not prepared
 to see on the cluster, <EM>unset/badword</EM> to allow that word again and 
-<EM>show/badword</EM> to list the words that you have set.
-<P>
+<EM>show/badword</EM> to list the words that you have set.</P>
+
 <P>If you have a previous <EM>/spider/data/badwords</EM>, the first time you start
 the node, it will read and convert this file to the new commands. The old style
-file will then be removed.
-<P>
-<H2><A NAME="ss2.3">2.3 Stopping (possibly bad) DX Spots from Nodes or Spotters</A>
+file will then be removed.</P>
+
+<H2><A NAME="ss2.3">2.3</A> <A HREF="adminmanual.html#toc2.3">Stopping (possibly bad) DX Spots from Nodes or Spotters</A>
 </H2>
 
 <P> 
 There are a number of commands that control whether a spot progresses
-any further by regarding it as "bad" in some way.
-<P>
+any further by regarding it as "bad" in some way.</P>
+
 <P>A DX Spot has a number of fields which can be checked to see whether they
 contain "bad" values, they are: the DX callsign itself, the Spotter and
-the Originating Node.
-<P>
+the Originating Node.</P>
+
 <P>There are a set of commands which allow the sysop to control whether a
-spot continues:-
+spot continues:-</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -101,34 +102,38 @@ set/badspotter
 set/badnode
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>These work in the same as the <EM>set/badword</EM> command, you can add
 any words or callsigns or whatever to the appropriate database. For
-example, to stop a spot from a particular node you do:
+example, to stop a spot from a particular node you do:</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 set/badnode gb7djk gb7dxc
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>a bad spotter:
+</P>
+<P>a bad spotter:</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 set/badspotter b0mb p1rat nocall
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>and some bad dx:
+</P>
+<P>and some bad dx:</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 set/baddx video wsjt
 </PRE>
 </CODE></BLOCKQUOTE>
+</P>
 <P>You can remove a word using the appropriate unset command
 (<EM>unset/baddx, unset/badspotter, unset/badnode</EM>) or list them
 using one of <EM>show/baddx, show/badspotter</EM> and
-<EM>show/badnode</EM>.
-<P>
+<EM>show/badnode</EM>.</P>
+
 <HR>
 <A HREF="adminmanual-3.html">Next</A>
 <A HREF="adminmanual-1.html">Previous</A>
