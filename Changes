@@ -1,3 +1,5 @@
+29Jan02=======================================================================
+1. add VP8GEO to South Georgia
 27Jan02=======================================================================
 1. make save work in cron context
 2. try to get the C client to handle closes on its standard input better

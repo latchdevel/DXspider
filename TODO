@@ -16,6 +16,7 @@ Maintenance and Enhancements
 * check set/homenode et al input for proper callsigns
 * filter names and stuff so that it doesn't cause bad syntax in user_asc
 * sh/cba and sh/contest
+* load/keps on a file
 
 New Protocol Stuff
 ------------------
