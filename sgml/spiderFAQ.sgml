@@ -1,0 +1,113 @@
+<!doctype linuxdoc system>
+
+<article>
+
+<!-- Title information -->
+
+<title>The DXSpider FAQ 
+<author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
+<date>Version 0.2 July 2000
+<abstract>
+A reference for SysOps of the DXSpider DXCluster program.
+</abstract>
+
+<!-- Table of contents -->
+<toc>
+
+<!-- Begin the document -->
+
+<P>Please mail any FAQs to the maintainer at the address above.
+
+<P>
+<sect>Installation 
+
+<sect1>Where do I get DXSpider?
+
+<P>
+All things Spider can be found at <htmlurl url="http://www.dxcluster.org" name="www.dxcluster.org"> and the actual program and patches can be found in the <htmlurl url="http://www.dxcluster.org/download/index.html" name="download"> area.
+
+<sect1>How do I use the patches?
+
+<P>
+Patching is done in the standard linux way ...
+
+<tscreen><verb>
+zcat /tmp/patch-1.40 | patch -p0
+</verb></tscreen>
+
+<P>
+assuming the patch version you are using is 1.40 and resides in /tmp!
+
+<P>
+Be aware that each patch assumes the previous patch has been applied.  That
+is to say if you are patching from version 1.38 to 1.40 you would first need
+to apply patch-1.39 and then patch-1.40.
+
+<sect1>If I use a tarball to overwrite my installation, what happens to my configuration?
+
+<P>
+The tarballs are designed to not overwrite your existing configuration
+and can be used at any time to update your Spider software.  All the key
+files have the suffix .issue (eg. DXVars.pm.issue) at default.
+
+<sect1>I am running RedHat 5.2 and I am getting strange errors, what is wrong?
+
+<P>
+The version of Perl that comes with 5.2 seems to be some kind of pre-release
+and is broken.  You can get a new version of perl from 
+<htmlurl url="http://www.dxcluster.org/download/index.html" name="www.dxcluster.org"> 
+or <htmlurl url="ftp://updates.redhat.com" name="ftp://updates.redhat.com">.  
+Don't forget to patch it with the CPAN modules.
+
+<sect>Administration
+
+<sect1>How can I get Spider to restart automatically if it crashes?
+
+<P>
+Put this line into /etc/inittab ..
+
+<tscreen><verb>
+DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop > /dev/tty7
+</verb></tscreen>
+
+Run <em>telinit q</em> as root.  Spider will restart so be aware.  However, any
+time you reboot, cluster.pl will start in tty7 and if it crashes, it should restart ok.
+
+<sect1>How can I monitor traffic to and from a node or user?
+
+<P>
+There are 2 ways to achieve this.  You can use the <em>tail</em> command like this ..
+
+<tscreen><verb>
+tail -f /spider/data/debug/167.dat |grep G0VGS
+</verb></tscreen>
+
+or in later versions of Spider, there is a command called <em>watchdbg</em> in which
+case you simply type ..
+
+<tscreen><verb>
+watchdbg G0VGS
+</verb></tscreen>
+
+<sect1>My neighbouring node cannot use the RCMD command to me, he just keeps 
+getting the "tut tut" message.
+
+<P>
+Assuming that the permissions are set correctly (perm level 5 required), it could be
+that the home_node is set incorrectly.  You can reset the home_node using the <em>spoof</em>
+command like this ..
+
+<tscreen><verb>
+spoof gb7adx set/home gb7adx
+</verb></tscreen>
+
+Assuming that the node_call you are changing is gb7adx.
+
+<sect1>I do not seem to be sending any bulletin mail to my link partners, what is wrong?
+
+<P>
+There is a file in /spider/msg called forward.pl.issue.  Rename this to
+forward.pl and edit it to meet your requirements.  You will need to restart
+Spider for the changes to take effect.
+
+</article>
