@@ -66,7 +66,7 @@ that's where you have put them.
 Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -
 
 <verb>
-# tar xvfz /usr/local/packages/Data-Dumper-2.10.tar.gz
+# tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
 # cd Data-Dumper-2.101
 # perl Makefile.PL
 # make test
