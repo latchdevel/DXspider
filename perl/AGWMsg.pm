@@ -29,7 +29,7 @@ use Msg;
 use AGWConnect;
 use DXDebug;
 
-use vars qw(@ISA $sock @outqueue $send_offset $inmsg $rproc);
+use vars qw(@ISA $sock @outqueue $send_offset $inmsg $rproc $noports $lasttime);
 
 @ISA = qw(Msg ExtMsg);
 $sock = undef;
@@ -37,6 +37,8 @@ $sock = undef;
 $send_offset = 0;
 $inmsg = '';
 $rproc = undef;
+$noports = 0;
+$lasttime = time;
 
 sub init
 {
@@ -67,9 +69,7 @@ sub init
 	_sendf('R');
 	_sendf('G');
 	_sendf('X', $main::mycall);
-	if ($monitor) {
-		_sendf('m')
-	}
+	_sendf('m') if $monitor;
 }
 
 sub finish
@@ -227,7 +227,7 @@ sub _decode
 
 	$data = '' unless defined $data;
 	if ($sort eq 'D') {
-		$data =~ s/\cR//g;
+		$data =~ s/[\cR\x00]//g;
 		dbg('agw', "AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$data\"");
 		my $conn = Msg->conns($from eq $main::mycall ? $to : $from);
 		if ($conn) {
@@ -267,10 +267,12 @@ sub _decode
 			$conn->{agwpid} = $pid;
 			$conn->{agwport} = $port;
 			$conn->{lineend} = "\cR";
+			$conn->{incoming} = 1;
+			$conn->{agwcall} = $call;
 			$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
 		}
 	} elsif ($sort eq 'd') {
-		dbg('agw', "AGW '$from'->'$to' Disconnected");
+		dbg('agw', "AGW '$from'->'$to' port: $port Disconnected");
 		my $conn = Msg->conns($from eq $main::mycall ? $to : $from);
 		$conn->in_disconnect if $conn;
 	} elsif ($sort eq 'y') {
@@ -293,29 +295,47 @@ sub _decode
 		dbg('agw', "AGW Version $major.$minor");
 	} elsif ($sort eq 'G') {
 		my @ports = split /;/, $data;
-		dbg('agw', "AGW $ports[0] Ports available");
-		my $n = shift @ports;
-		pop @ports while @ports > $n;
+	    $noports = shift @ports || '0';
+		dbg('agw', "AGW $noports Ports available");
+		pop @ports while @ports > $noports;
 		for (@ports) {
 			next unless $_;
 			dbg('agw', "AGW Port: $_");
+		}
+		for (my $i = 0; $i < $noports; $i++) {
+			_sendf('y', undef, undef, $i );
 		}
 	} else {
 		dbg('agw', "AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$data\"");
 	}
 }
 
+sub connect
+{
+	my ($conn, $line) = @_;
+
+	my ($port, $call) = split /\s+/, $line;
+	$conn->{agwpid} = ord "\xF0";
+	$conn->{agwport} = $port - 1;
+	$conn->{lineend} = "\cR";
+	$conn->{incoming} = 0;
+	$conn->{csort} = 'ax25';
+	$conn->{agwcall} = uc $call;
+	
+	_sendf('C', $main::mycall, $conn->{agwcall}, $conn->{agwport}, $conn->{agwpid});
+}
+
 sub in_disconnect
 {
 	my $conn = shift;
-	$conn->SUPER->disconnect;
+	$conn->SUPER::disconnect;
 }
 
 sub disconnect
 {
 	my $conn = shift;
-	_sendf('d', $main::mycall, $conn->{call}, $conn->{agwport});
-	$conn->SUPER->disconnect;
+	_sendf('d', $main::mycall, $conn->{agwcall}, $conn->{agwport}, $conn->{agwpid});
+	$conn->SUPER::disconnect;
 }
 
 sub enqueue
@@ -323,7 +343,20 @@ sub enqueue
 	my ($conn, $msg) = @_;
 	if ($msg =~ /^[D]/) {
 		$msg =~ s/^[-\w]+\|//;
+		_sendf('Y', $main::mycall, $conn->{call}, $conn->{agwport}, $conn->{agwpid});
 		_sendf('D', $main::mycall, $conn->{call}, $conn->{agwport}, $conn->{agwpid}, $msg . $conn->{lineend});
+	}
+}
+
+sub process
+{
+	return unless $sock;
+	if ($main::systime - $lasttime >= 60) {
+		for (my $i = 0; $i < $noports; $i++) {
+			_sendf('y', undef, undef, $i );
+#			_sendf('H', undef, undef, $i );
+		}
+		$lasttime = $main::systime;
 	}
 }
 1;

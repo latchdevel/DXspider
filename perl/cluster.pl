@@ -467,7 +467,8 @@ for (;;) {
 		DXDb::process();
 		DXUser::process();
 		DXDupe::process();
-		
+		AGWMsg::process();
+				
 		eval { 
 			Local::process();       # do any localised processing
 		};

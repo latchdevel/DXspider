@@ -211,6 +211,10 @@ sub _doconnect
 		} else {
 			dbg('connect', "***Connect Failed to $host $port $!");
 		}
+	} elsif ($sort eq 'agw') {
+		# turn it into an AGW object
+		bless $conn, 'AGWMsg';
+		$r = $conn->connect($line);
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		local $^F = 10000;		# make sure it ain't closed on exec
 		my ($a, $b) = IO::Socket->socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC);
