@@ -285,6 +285,27 @@ package DXProt;
 <P>Again, this is simply a list of names we do not want to see in the spotted field of a DX callout.
 <P>
 <P>
+<H2><A NAME="ss5.6">5.6 Filtering words from text fields in Announce, Talk and DX spots</A>
+</H2>
+
+<P>Create a file in /spider/data called <EM>badwords</EM>.  The format is quite
+simple.  Lines beginning with # are ignored so comments can be added.  An
+example file is below ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# Below is a list of words we do not wish to see on the cluster
+grunge grunged grunging
+splodge splodger splodging
+grince
+fluffle
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Multiple words can be used on the same line as shown.  Obviously these
+are just examples :-)
+<P>
+<P>You can reload the file from the cluster prompt as sysop with load/badwords.
+<P>
 <HR>
 <A HREF="adminmanual-6.html">Next</A>
 <A HREF="adminmanual-4.html">Previous</A>

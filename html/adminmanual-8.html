@@ -218,7 +218,36 @@ will be deleted. Beware!
 do this if you change this file whilst the cluster is running in order for the
 changes to take effect.
 <P>
-<H2><A NAME="ss8.16">8.16 load/bands (9)</A>
+<H2><A NAME="ss8.16">8.16 load/baddx (9)</A>
+<CODE><B>load/baddx</B> Reload the bad DX table</CODE></H2>
+
+<P>Reload the /spider/data/baddx.pl file if you have changed it manually whilst
+the cluster is running. This table contains the DX Calls that, if spotted, 
+will not be passed on. FR0G and TEST are classic examples.
+<P>
+<H2><A NAME="ss8.17">8.17 load/badmsg (9)</A>
+</H2>
+
+<P><CODE><B>load/badmsg</B> Reload the bad message table</CODE>
+<P>
+<P>Reload the /spider/msg/badmsg.pl file if you have changed it manually whilst
+the cluster is running. This table contains a number of perl regular 
+expressions which are searched for in the fields targetted of each message. 
+If any of them match then that message is immediately deleted on receipt. 
+<P>
+<H2><A NAME="ss8.18">8.18 load/badwords (9)</A>
+</H2>
+
+<P><CODE><B>load/badwords</B> Reload the badwords file</CODE>
+<P>
+<P>Reload the /spider/data/badwords file if you have changed it manually whilst
+the cluster is running. This file contains a list of words which, if found
+on certain text portions of PC protocol, will cause those protocol frames
+to be rejected. It will all put out a message if any of these words are
+used on the announce, dx and talk commands. The words can be one or 
+more on a line, lines starting with '#' are ignored.
+<P>
+<H2><A NAME="ss8.19">8.19 load/bands (9)</A>
 </H2>
 
 <P><CODE><B>load/bands</B> Reload the band limits table</CODE>
@@ -226,7 +255,7 @@ changes to take effect.
 <P>Reload the /spider/data/bands.pl file if you have changed it manually whilst
 the cluster is running. 
 <P>
-<H2><A NAME="ss8.17">8.17 load/cmd_cache (9)</A>
+<H2><A NAME="ss8.20">8.20 load/cmd_cache (9)</A>
 </H2>
 
 <P><CODE><B>load/cmd_cache</B> Reload the automatic command cache</CODE>
@@ -237,14 +266,14 @@ if you are doing a lot of moving commands about or delete a command in the
 local_cmd tree and want to use the normal one again. Execute this command to
 reset everything back to the state it was just after a cluster restart.
 <P>
-<H2><A NAME="ss8.18">8.18 load/forward (9)</A>
+<H2><A NAME="ss8.21">8.21 load/forward (9)</A>
 </H2>
 
 <P><CODE><B>load/forward</B> Reload the msg forwarding routing table</CODE>
 <P>Reload the /spider/msg/forward.pl file if you have changed it
 manually whilst the cluster is running.
 <P>
-<H2><A NAME="ss8.19">8.19 load/messages (9)</A>
+<H2><A NAME="ss8.22">8.22 load/messages (9)</A>
 </H2>
 
 <P><CODE><B>load/messages</B> Reload the system messages file</CODE>
@@ -254,7 +283,7 @@ commands) you can have them take effect during a cluster session by executing th
 command. You need to do this if get something like :-
 <P>unknown message 'xxxx' in lang 'en'
 <P>
-<H2><A NAME="ss8.20">8.20 load/prefixes (9)</A>
+<H2><A NAME="ss8.23">8.23 load/prefixes (9)</A>
 </H2>
 
 <P><CODE><B>load/prefixes</B> Reload the prefix table</CODE>
@@ -262,7 +291,7 @@ command. You need to do this if get something like :-
 <P>Reload the /spider/data/prefix_data.pl file if you have changed it manually whilst
 the cluster is running. 
 <P>
-<H2><A NAME="ss8.21">8.21 merge (5)</A>
+<H2><A NAME="ss8.24">8.24 merge (5)</A>
 </H2>
 
 <P><CODE><B>merge &lt;node&gt; [&lt;no spots&gt;/&lt;no wwv&gt;]</B> Ask for the latest spots and WWV</CODE>
@@ -274,7 +303,7 @@ node must be connected locally.
 to your databases they will not duplicate any that have recently been added 
 (the last 2 days for spots and last month for WWV data).
 <P>
-<H2><A NAME="ss8.22">8.22 msg (9)</A>
+<H2><A NAME="ss8.25">8.25 msg (9)</A>
 </H2>
 
 <P><CODE><B>msg &lt;cmd&gt; &lt;msgno&gt; [data ...]</B> Alter various message parameters</CODE>
@@ -305,7 +334,7 @@ out.
 <P>STAT/MSG &lt;msgno&gt;      
 <P>This will display more information on the message than DIR does.
 <P>
-<H2><A NAME="ss8.23">8.23 pc (8)</A>
+<H2><A NAME="ss8.26">8.26 pc (8)</A>
 </H2>
 
 <P><CODE><B>pc &lt;call&gt; &lt;text&gt;</B> Send text (eg PC Protocol) to &lt;call&gt;</CODE>
@@ -318,7 +347,7 @@ arise (messages get stuck etc). eg:-
 without any processing, added of "from &lt;blah&gt; to &lt;blah&gt;" or whatever.
 <P>pc G1TLH Try doing that properly!!!
 <P>
-<H2><A NAME="ss8.24">8.24 ping (1)</A>
+<H2><A NAME="ss8.27">8.27 ping (1)</A>
 </H2>
 
 <P><CODE><B>ping &lt;node&gt;</B> Send a ping command to another cluster node</CODE>
@@ -328,7 +357,7 @@ The time returned is the length of time taken for a PC51 to go to another
 cluster and be returned.
 <P>Any visible cluster node can be PINGed.
 <P>
-<H2><A NAME="ss8.25">8.25 rcmd (1)</A>
+<H2><A NAME="ss8.28">8.28 rcmd (1)</A>
 </H2>
 
 <P><CODE><B>rcmd &lt;node call&gt; &lt;cmd&gt;</B> Send a command to another DX cluster</CODE>
@@ -340,21 +369,21 @@ that the node callsign of this cluster is in fact a node b) whether the
 other system is allowing RCMDs from this node and c) whether you have
 permission to send this command at all.
 <P>
-<H2><A NAME="ss8.26">8.26 read (5)</A>
+<H2><A NAME="ss8.29">8.29 read (5)</A>
 </H2>
 
 <P><CODE><B>read &lt;msgno&gt;</B> Read a message on the system</CODE>
 <P>
 <P>As a sysop you may read any message on the system
 <P>
-<H2><A NAME="ss8.27">8.27 set/debug (9)</A>
+<H2><A NAME="ss8.30">8.30 set/debug (9)</A>
 </H2>
 
 <P><CODE><B>set/debug &lt;name&gt;</B> Add a debug level to the debug set</CODE>
 <P>
 <P>You can remove this level with unset/debug &lt;name&gt;
 <P>
-<H2><A NAME="ss8.28">8.28 set/isolate (9)</A>
+<H2><A NAME="ss8.31">8.31 set/isolate (9)</A>
 </H2>
 
 <P><CODE><B>set/isolate &lt;node call&gt;</B> Isolate a node from the rest of the network</CODE>
@@ -366,7 +395,7 @@ out from it nor goes back into from the rest of the nodes connected to you.
 <P>You can see which nodes are isolated with the show/isolate (1) command.
 <P>You can remove the isolation with the command unset/isolate.
 <P>
-<H2><A NAME="ss8.29">8.29 set/sys_location (9)</A>
+<H2><A NAME="ss8.32">8.32 set/sys_location (9)</A>
 </H2>
 
 <P><CODE><B>set/sys_location &lt;lat &amp; long&gt;</B> Set your cluster latitude and longitude</CODE>
@@ -376,7 +405,7 @@ what your latitude and longitude is. If you have not yet done a SET/QRA
 then this command will set your QRA locator for you. For example:-
 <P>SET/LOCATION 52 22 N 0 57 E
 <P>
-<H2><A NAME="ss8.30">8.30 set/lockout (9)</A>
+<H2><A NAME="ss8.33">8.33 set/lockout (9)</A>
 </H2>
 
 <P><CODE><B>set/lockout &lt;call&gt;</B> Stop a callsign connecting to the cluster</CODE>
@@ -384,7 +413,7 @@ then this command will set your QRA locator for you. For example:-
 <P>You can show who is locked out with the show/lockout (9) command.
 <P>To allow the user to connect again, use the command unset/lockout
 <P>
-<H2><A NAME="ss8.31">8.31 set/node (9)</A>
+<H2><A NAME="ss8.34">8.34 set/node (9)</A>
 </H2>
 
 <P><CODE><B>set/node &lt;call&gt; [&lt;call&gt; ...]</B> Make the callsign an AK1A cluster</CODE>
@@ -401,7 +430,7 @@ set/arcluster
 </PRE>
 <P>To see what your nodes are set to, use the show/nodes command.
 <P>
-<H2><A NAME="ss8.32">8.32 set/obscount (9)</A>
+<H2><A NAME="ss8.35">8.35 set/obscount (9)</A>
 </H2>
 
 <P><CODE><B>set/obscount &lt;count&gt; &lt;node call&gt;</B> Set the 'pump-up' obscelence counter</CODE>
@@ -418,7 +447,7 @@ what would be the third attempt, that node is disconnected.
 default values, if a node has not responded to a ping within 15 minutes,
 it is disconnected.
 <P>
-<H2><A NAME="ss8.33">8.33 set/pinginterval (9)</A>
+<H2><A NAME="ss8.36">8.36 set/pinginterval (9)</A>
 </H2>
 
 <P><CODE><B>set/pinginterval &lt;time&gt; &lt;node call&gt;</B> Set the ping time to neighbouring nodes</CODE>
@@ -433,7 +462,7 @@ for numbers greater than that.
 (as certain cluster software doesn't always notice), see SET/OBSCOUNT
 for more information.
 <P>
-<H2><A NAME="ss8.34">8.34 set/privilege (9)</A>
+<H2><A NAME="ss8.37">8.37 set/privilege (9)</A>
 </H2>
 
 <P><CODE><B>set/privilege &lt;n&gt; &lt;call&gt; [&lt;call&gt; ...]</B> Set the privilege level on a call</CODE>
@@ -455,7 +484,7 @@ to commands are as default:-
 <P>If you are a sysop and you come in as a normal user on a remote connection
 your privilege will automatically be set to 0.
 <P>
-<H2><A NAME="ss8.35">8.35 set/password (9)</A>
+<H2><A NAME="ss8.38">8.38 set/password (9)</A>
 </H2>
 
 <P><CODE><B>set/password &lt;callsign&gt; &lt;string&gt;</B> Set a users password</CODE>
@@ -466,12 +495,12 @@ spaces - but they won't appear in the password). You can see the
 result with STAT/USER.  The password is the usual 30 character baycom
 type password.
 <P>
-<H2><A NAME="ss8.36">8.36 set/sys_qra (9)</A>
+<H2><A NAME="ss8.39">8.39 set/sys_qra (9)</A>
 </H2>
 
 <P><CODE><B>set/sys_qra &lt;locator&gt;</B> Set your cluster QRA locator</CODE>
 <P>
-<H2><A NAME="ss8.37">8.37 show program (5)</A>
+<H2><A NAME="ss8.40">8.40 show program (5)</A>
 </H2>
 
 <P><CODE><B>show/program</B> Show the locations of all the included program modules</CODE>
@@ -479,7 +508,7 @@ type password.
 <P>Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from.
 <P>
-<H2><A NAME="ss8.38">8.38 shutdown (5)</A>
+<H2><A NAME="ss8.41">8.41 shutdown (5)</A>
 </H2>
 
 <P><CODE><B>shutdown</B> Shutdown the cluster</CODE>
@@ -487,7 +516,7 @@ is useful for checking where you think you have loaded a .pm file from.
 <P>Shutdown the cluster and disconnect all the users.  If you have Spider
 set to respawn in /etc/inittab it will of course restart.
 <P>
-<H2><A NAME="ss8.39">8.39 spoof (9)</A>
+<H2><A NAME="ss8.42">8.42 spoof (9)</A>
 </H2>
 
 <P><CODE><B>spoof &lt;callsign&gt; &lt;command&gt;</B> Run commands as another user</CODE>
@@ -497,7 +526,7 @@ issue commands as if you were a different user.  This is very useful for the
 kind of things that users seem to always get wrong.. like home_node for
 example.
 <P>
-<H2><A NAME="ss8.40">8.40 stat/db (5)</A>
+<H2><A NAME="ss8.43">8.43 stat/db (5)</A>
 </H2>
 
 <P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE>
@@ -506,7 +535,7 @@ example.
 <P>Depending on your privilege level you will see more or less information. 
 This command is unlikely to be of much use to anyone other than a sysop.
 <P>
-<H2><A NAME="ss8.41">8.41 stat/channel (5)</A>
+<H2><A NAME="ss8.44">8.44 stat/channel (5)</A>
 </H2>
 
 <P><CODE><B>stat/channel &lt;callsign&gt;</B> Show the status of a channel on the cluster</CODE>
@@ -515,7 +544,7 @@ This command is unlikely to be of much use to anyone other than a sysop.
 you are on or else for the callsign that you asked for.
 <P>Only the fields that are defined (in perl term) will be displayed.
 <P>
-<H2><A NAME="ss8.42">8.42 stat/msg (5)</A>
+<H2><A NAME="ss8.45">8.45 stat/msg (5)</A>
 </H2>
 
 <P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE>
@@ -523,7 +552,7 @@ you are on or else for the callsign that you asked for.
 <P>This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
 <P>
-<H2><A NAME="ss8.43">8.43 stat/user (5)</A>
+<H2><A NAME="ss8.46">8.46 stat/user (5)</A>
 </H2>
 
 <P><CODE><B>stat/user &lt;callsign&gt;</B> Show the full status of a user</CODE>

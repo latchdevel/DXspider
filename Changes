@@ -7,6 +7,7 @@ ignored. PC10, PC11, PC12 with words contained in this file will not be
 sent on. Also ann, talk and dx commands have badword checking added. Words
 are NOT case sensitive, but you will need to put all the endings in (eg 
 ...k, ...ker, ...king).
+3. Added new version of admin manual from G0VGS.
 01Sep00=======================================================================
 1. allow blank on field 4 of PC10 (even though it's "illegal").
 28Aug00=======================================================================
