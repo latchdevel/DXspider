@@ -98,6 +98,7 @@ package DXM;
 				filter6 => '$_[0]$_[1] Filter for $[2] not found',
 				grids => 'DX Grid flag set on $_[0]',
 				gridu => 'DX Grid flag unset on $_[0]',
+				illcall => 'Sorry, $_[0] is an invalid callsign',
 				hasha => '$_[0] already exists in $_[1]',
 				hashb => '$_[0] added to $_[1]',
 				hashc => '$_[0] removed from $_[1]',

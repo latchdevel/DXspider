@@ -141,7 +141,12 @@ sub new_channel
 	my ($conn, $msg) = @_;
 	my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
 	return unless defined $sort;
-	
+
+	unless (is_callsign($call)) {
+		already_conn($conn, $call, DXM::msg($lang, "illcall", $call));
+		return;
+	}
+
 	# set up the basic channel info
 	# is there one already connected to me - locally? 
 	my $user = DXUser->get($call);
