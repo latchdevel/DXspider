@@ -88,7 +88,7 @@ sub dr
 sub is_qra
 {
 	my $qra = shift;
-	return $qra =~ /\a\a\d\d\a\a/o;
+	return $qra =~ /^[A-Za-z][A-Za-z]\d\d[A-Za-z][A-Za-z]$/o;
 }
 
 # calc bearing and distance, with arguments in DEGREES

@@ -1,3 +1,10 @@
+06Dec98========================================================================
+1. Fixed DXBearing::is_qra so that it correctly detects full QRA locators
+2. Added a QRA locator thing to sh/heading so that if the 'prefix' looks like
+a locator it will print the bearing and distance to it (as well as doing the 
+normal sh/heading on a prefix thing).
+05Dec98========================================================================
+1. Added sh/heading and QRA locator calculation stuff
 04Dec98========================================================================
 1. Started Changes file
 2. Added load/cmd_cache.pl to clear cmd cache shortcuts (use this if cluster.pl
