@@ -358,7 +358,7 @@ $stdout->autoflush(1);
 
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
-$SIG{'HUP'} = 'IGNORE';
+$SIG{'HUP'} = \&sig_term;
 $SIG{'CHLD'} = \&sig_chld;
 $SIG{'ALRM'} = \&timeout;
 

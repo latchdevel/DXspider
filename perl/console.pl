@@ -426,7 +426,7 @@ if (! $conn) {
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
 #$SIG{'WINCH'} = \&do_resize;
-$SIG{'HUP'} = 'IGNORE';
+$SIG{'HUP'} = \&sig_term;
 
 do_initscr();
 
