@@ -1145,7 +1145,7 @@ sub dx_spot
 		($filter, $hops) = $self->{spotsfilter}->it(@_);
 		return unless $filter;
 	}
-	send_prot_line($self, $filter, $hops, $isolate, $line)
+	send_prot_line($self, $filter, $hops, $isolate, $line);
 }
 
 sub send_prot_line
@@ -1161,7 +1161,7 @@ sub send_prot_line
 		return unless $routeit;
 	}
 	if ($filter) {
-		$self->send($routeit) if $routeit;
+		$self->send($routeit);
 	} else {
 		$self->send($routeit) unless $self->{isolate} || $isolate;
 	}
@@ -1770,10 +1770,10 @@ sub broadcast_route
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan == $me;
-		if ($dxchan->{routefilter} || (!$self->{isolate} && !$dxchan->{isolate})) {
-			$dxchan->send_route($generate, @_) 
+		if ($dxchan->{routefilter}) {
+			$dxchan->send_route($generate, @_);
 		} else {
-			dbg('DXPROT: isolated') if isdbg('chanerr');
+			$dxchan->send_route($generate, @_) unless $self->{isolate} || $dxchan->{isolate};
 		}
 	}
 }
