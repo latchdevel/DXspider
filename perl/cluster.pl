@@ -327,17 +327,23 @@ dbg('err', "starting listener ...");
 Msg->new_server("$clusteraddr", $clusterport, \&login);
 
 # prime some signals
-$SIG{'INT'} = \&cease;
-$SIG{'TERM'} = \&cease;
-$SIG{'HUP'} = 'IGNORE';
-$SIG{'CHLD'} = \&reap;
+$SIG{INT} = \&cease;
+$SIG{TERM} = \&cease;
+$SIG{HUP} = 'IGNORE';
+$SIG{CHLD} = \&reap;
 
 $SIG{PIPE} = sub { 	dbg('err', "Broken PIPE signal received"); };
 $SIG{IO} = sub { 	dbg('err', "SIGIO received"); };
-$SIG{ILL} = $SIG{FPE} = 
-	$SIG{SEGV} = $SIG{USR1} = $SIG{USR2} =
-	$SIG{BUS} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  };
+$SIG{WINCH} = $SIG{STOP} = $SIG{CONT} = 'IGNORE';
+$SIG{KILL} = 'DEFAULT';     # as if it matters....
 
+# catch the rest with a hopeful message
+for (keys %SIG) {
+	if (!$SIG{$_}) {
+		dbg('chan', "Catching SIG $_");
+		$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  }; 
+	}
+}
 
 # read in system messages
 DXM->init();
