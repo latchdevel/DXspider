@@ -422,7 +422,7 @@ sub normal
 					my $node;
 					my $to = $user->homenode;
 					my $last = $user->lastoper || 0;
-					if ($to ne $main::mycall && $send_opernam && $main::systime > $last + $DXUser::lastoperinterval && $to && ($node = Route::Node::get($to)) ) {
+					if ($send_opernam && $to && $to ne $main::mycall && $main::systime > $last + $DXUser::lastoperinterval && ($node = Route::Node::get($to)) ) {
 						my $cmd = "forward/opernam $spot[4]";
 						# send the rcmd but we aren't interested in the replies...
 						my $dxchan = $node->dxchan;
