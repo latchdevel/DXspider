@@ -28,7 +28,7 @@ BEGIN {
 	die "$root/local doesn't exist, please RTFM" unless -d "$root/local";
 	die "$root/local/DXVars.pm doesn't exist, please RTFM" unless -e "$root/local/DXVars.pm";
 	
-	mkdir "$root/local_cmd" unless -e "$root/local_cmd";
+	mkdir "$root/local_cmd", 0777 unless -d "$root/local_cmd";
 	
 
 	# try to create and lock a lockfile (this isn't atomic but 
