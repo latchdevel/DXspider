@@ -240,67 +240,58 @@ sub normal
 #
 sub process
 {
-	my ($dxchan, $line) = @_;
-
-	# this is periodic processing
-	if (!$dxchan || !$line) {
-		if ($main::systime - $lastprocesstime >= 60) {
-			if (%avail) {
-				for (values %avail) {
-					if ($main::systime - $_->{accesst} > $opentime) {
-						$_->close;
-					}
+	if ($main::systime - $lastprocesstime >= 60) {
+		if (%avail) {
+			for (values %avail) {
+				if ($main::systime - $_->{accesst} > $opentime) {
+					$_->close;
 				}
 			}
-			$lastprocesstime = $main::systime;
 		}
-		return;
+		$lastprocesstime = $main::systime;
 	}
+}
 
-	my @f = split /\^/, $line;
-	my ($pcno) = $f[0] =~ /^PC(\d\d)/; # just get the number
+sub handle_37
+{		
 
-	# route out ones that are not for us
-	if ($f[1] eq $main::mycall) {
-		;
-	} else {
-		$dxchan->route($f[1], $line);
-		return;
+}
+
+sub handle_44
+{	
+	my $self = shift;
+
+	# incoming DB Request
+	my @in = DXCommandmode::run_cmd($self, "dbshow $_[4] $_[5]");
+	sendremote($self, $_[2], $_[3], @in);
+}
+
+sub handle_45
+{		
+	my $self = shift;
+
+	# incoming DB Information
+	my $n = getstream($_[3]);
+	if ($n) {
+		my $mchan = DXChannel->get($n->{call});
+		$mchan->send($_[2] . ":$_[4]") if $mchan;
 	}
+}
 
- SWITCH: {
-		if ($pcno == 37) {		# probably obsolete
-			last SWITCH;
-		}
+sub handle_46
+{		
+	my $self = shift;
 
-		if ($pcno == 44) {		# incoming DB Request
-			my @in = DXCommandmode::run_cmd($dxchan, "dbshow $f[4] $f[5]");
-			sendremote($dxchan, $f[2], $f[3], @in);
-			last SWITCH;
-		}
+	# incoming DB Complete
+	delstream($_[3]);
+}
 
-		if ($pcno == 45) {		# incoming DB Information
-			my $n = getstream($f[3]);
-			if ($n) {
-				my $mchan = DXChannel->get($n->{call});
-				$mchan->send($f[2] . ":$f[4]") if $mchan;
-			}
-			last SWITCH;
-		}
+sub handle_47
+{
+}
 
-		if ($pcno == 46) {		# incoming DB Complete
-			delstream($f[3]);
-			last SWITCH;
-		}
-
-		if ($pcno == 47) {		# incoming DB Update request
-			last SWITCH;
-		}
-
-		if ($pcno == 48) {		# incoming DB Update request 
-			last SWITCH;
-		}
-	}	
+sub handle_48
+{
 }
 
 # send back a trache of data to the remote

@@ -40,12 +40,13 @@ foreach  $n (@db) {
 
 		# local databases can chain to remote ones
 		my $count;
-		push @out, $db->print('pre');
+		my $pre = $db->print('pre');
+		push @out, $pre if defined $pre;
 #		push @out, "@f";
 		for (@f) {
-#			push @out, $db->name . " $_";
+			push @out, $db->name . " $_";
 			my $value = $db->getkey($_) || "";
-			push @out, $db->name . ": $_ :";
+#			push @out, $db->name . ": $_ :";
 			if ($value) {
 				push @out, split /\n/, $value;
 				$count++;
@@ -54,7 +55,8 @@ foreach  $n (@db) {
 			}
 		}
 		if ($count) {
-			push @out, $db->print('post');
+			my $post = $db->print('post');
+			push @out, $post if $post;
 #			last;
 		}
 	}

@@ -1372,7 +1372,13 @@ sub handle_37
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	DXDb::process($self, $line);
+	if ($_[1] eq $main::mycall) {
+		no strict 'refs';
+		my $sub = "DXDb::handle_$pcno";
+		&$sub($self, @_);
+	} else {
+		$self->route($_[1], $line) unless $self->is_clx;
+	}
 }
 
 # node connected list from neighbour
