@@ -76,7 +76,7 @@ $chatdupeage = 20 * 60 * 60;
 (
  [ qw(c c m bp bc c) ],			# pc10
  [ qw(f m d t m c c h) ],		# pc11
- [ qw(c m m bp bm p h) ],		# pc12
+ [ qw(c bm m bp bm p h) ],		# pc12
  [ qw(c h) ],					# 
  [ qw(c h) ],					# 
  [ qw(c m h) ],					# 
@@ -626,7 +626,7 @@ sub handle_12
 	
 		# send it
 		$self->send_announce($line, @_[1..6]);
-	} elsif ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || !is_callsign($_[0])){
+	} elsif ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w]+$/){
 		$self->send_chat($line, @_[1..6]);
 	} else {
 		$self->route($_[2], $line);
@@ -1790,7 +1790,7 @@ sub send_chat
 	my $line = shift;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
-	my $target = $_[1];
+	my $target = $_[3];
 	my $text = unpad($_[2]);
 				
 	# obtain country codes etc 
@@ -1836,7 +1836,7 @@ sub send_chat
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
 		next if $target eq 'LOCAL' && $dxchan->is_node;
-		$dxchan->chat($line, $self->{isolate}, ' ', $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->chat($line, $self->{isolate}, $target, $_[1], $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 	}
 }
 

@@ -813,10 +813,10 @@ sub chat
 	my $text = shift;
 	my ($filter, $hops);
 
-	return unless grep uc $_ eq $target, @{$self->{user}->{group}};
+	return unless grep uc $_ eq $to, @{$self->{user}->{group}};
 	
 	$text =~ s/^\#\d+ //;
-	my $buf = "$target de $_[0]: $text";
+	my $buf = "$to de $_[0]: $text";
 	$buf =~ s/\%5E/^/g;
 	$buf .= "\a\a" if $self->{beep};
 	$self->local_send('C', $buf);
