@@ -1,3 +1,5 @@
+15Dec01=======================================================================
+1. added superfluous spaces back into PC73 for the benefit of clx
 14Dec01=======================================================================
 1. make Spanish in set/lang & Messages 'es' instead of 'sp'
 2. added prototype WCY and WWV commands (for qualified users only)
