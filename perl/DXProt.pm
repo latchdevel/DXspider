@@ -648,22 +648,21 @@ sub normal
 				# update it if required
 				my $r = Route::Node::get($call);
 				my $flags = Route::here($here)|Route::conf($conf);
-				if ($parent->call eq $call && ($parent->version ne $ver || $parent->flags != $flags)) {
-					$parent->version($ver);
-					$parent->flags($flags);
-					push @rout, $parent;
-				} elsif ($r) {
-					my $ar = $parent->add($r);
-					push @rout, $ar if $ar;
+				if ($r) {
+					my $ar;
+					if ($call ne $parent->call) {
+						$ar = $parent->add($r);
+						push @rout, $ar if $ar;
+					}
 					if ($r->version ne $ver || $r->flags != $flags) {
 						$r->version($ver);
 						$r->flags(Route::here($here)|Route::conf($conf));
 						push @rout, $r unless $ar;
 					}
-				} elsif ($parent->call ne $call) {
+				} else {
 					next if $call eq $main::mycall || $call eq $self->{call};
 					
-					my $new = Route::Node->new($call, $ver, Route::here($here)|Route::conf($conf));
+					my $new = $parent->new($call, $ver, Route::here($here)|Route::conf($conf));
 				    if ($self->in_filter_route($new)) {
 						$parent->add($new);
 						push @rout, $new;
