@@ -222,154 +222,158 @@ sub _decode
 	return unless $sock;
 
 	# we have at least 36 bytes of data (ugh!)
-	my ($port, $sort, $pid, $from, $to, $len) = unpack('C x3 a1 x1 C x1 Z10 Z10 V x4', $inmsg);
-	my $data;
-
-	# do a sanity check on the length
-	if ($len > 2000) {
-		dbg('err', "AGW: invalid length $len > 2000 received ($sort $port $pid '$from'->'$to')");
-		finish();
-		return;
-	}
-	if ($len == 0){
-		if (length $inmsg > 36) {
-			$inmsg = substr($inmsg, 36);
-		} else {
-			$inmsg = '';
+	while (length $inmsg >= 36) {
+		my ($port, $sort, $pid, $from, $to, $len) = unpack('C x3 a1 x1 C x1 Z10 Z10 V x4', $inmsg);
+		my $data;
+	
+		# do a sanity check on the length
+		if ($len > 2000) {
+			dbg('err', "AGW: invalid length $len > 2000 received ($sort $port $pid '$from'->'$to')");
+			finish();
+			return;
 		}
-	} elsif (length $inmsg > $len + 36) {
-		$data = substr($inmsg, 36, $len);
-		$inmsg = substr($inmsg, $len + 36);
-	} elsif (length $inmsg == $len + 36) {
-		$data = substr($inmsg, 36);
-		$inmsg = '';
-	} else {
-		# we don't have enough data or something
-		# or we have screwed up
-		return;
-	}
-
-	$data = '' unless defined $data;
-	if ($sort eq 'D') {
-		my $d = unpack "Z*", $data;
-		$d =~ s/\cM$//;
-		dbg('agw', "AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
-		my $conn = _find($from eq $main::mycall ? $to : $from);
-		if ($conn) {
-			if ($conn->{state} eq 'WC') {
-				if (exists $conn->{cmd}) {
-					if (@{$conn->{cmd}}) {
-						dbg('connect', $d);
-						$conn->_docmd($d);
-					}
-				}
-				if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
-					$conn->to_connected($conn->{call}, 'O', $conn->{csort});
-				}
+		if ($len == 0){
+			if (length $inmsg > 36) {
+				$inmsg = substr($inmsg, 36);
 			} else {
-				my @lines = split /\cM/, $data;
-				if (@lines) {
-					for (@lines) {
-						&{$conn->{rproc}}($conn, "I$conn->{call}|$_");
-					}
-				} else {
-					&{$conn->{rproc}}($conn, "I$conn->{call}|");
-				}
+				$inmsg = '';
 			}
+		} elsif (length $inmsg > $len + 36) {
+			$data = substr($inmsg, 36, $len);
+			$inmsg = substr($inmsg, $len + 36);
+		} elsif (length $inmsg == $len + 36) {
+			$data = substr($inmsg, 36);
+			$inmsg = '';
 		} else {
-			dbg('err', "AGW error Unsolicited Data!");
+			#
+			# we don't have enough data or something
+			# or we have screwed up
+			#
+			return;
 		}
-	} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
-		my $d = unpack "Z*", $data;
-		$d =~ s/\cM$//;
-		my @lines = split /\cM/, $d;
-
-		for (@lines) {
-			s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-			dbg('agw', "AGW Monitor port: $port \"$_\"");
-		}
-	} elsif ($sort eq 'C') {
-		my $d = unpack "Z*", $data;
-		$d =~ s/\cM$//;
-		dbg('agw', "AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"");
-		my $call = $from eq $main::mycall ? $to : $from;
-		my $conn = _find($call);
-		if ($conn) {
-			if ($conn->{state} eq 'WC') {
-				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
-					$conn->_docmd($d);
-					if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
-						$conn->to_connected($conn->{call}, 'O', $conn->{csort});
-					}
-				}
-			}
-		} else {
-			$conn = AGWMsg->new($rproc);
-			$conn->{agwpid} = $pid;
-			$conn->{agwport} = $port;
-			$conn->{lineend} = "\cM";
-			$conn->{incoming} = 1;
-			$conn->{agwcall} = $call;
-			$circuit{$call} = $conn;
-			if ($call =~ /^(\w+)-(\d\d?)$/) {
-				my $c = $1;
-				my $s = $2;
-				$s = 15 - $s;
-				if ($s <= 8 && $s > 0) {
-					$call = "${c}-${s}";
-				} else {
-					$call = $c;
-				}
-			}
-			$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
-		}
-	} elsif ($sort eq 'd') {
-		dbg('agw', "AGW '$from'->'$to' port: $port Disconnected");
-		my $conn = _find($from eq $main::mycall ? $to : $from);
-		if ($conn) {
-			&{$conn->{eproc}}() if $conn->{eproc};
-			$conn->in_disconnect;
-		}
-	} elsif ($sort eq 'y') {
-		my ($frames) = unpack "V", $data;
-		dbg('agwpollans', "AGW Frames Outstanding on port $port = $frames");
-		my $conn = _find($from);
-		$conn->{oframes} = $frames if $conn;
-	} elsif ($sort eq 'Y') {
-		my ($frames) = unpack "V", $data;
-		dbg('agw', "AGW Frames Outstanding on circuit '$from'->'$to' = $frames");
-		my $conn = _find($from eq $main::mycall ? $to : $from);
-		$conn->{oframes} = $frames if $conn;
-	} elsif ($sort eq 'H') {
-		unless ($from =~ /^\s+$/) {
+		
+		$data = '' unless defined $data;
+		if ($sort eq 'D') {
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM$//;
-			dbg('agw', "AGW Heard port: $port \"$d\"");
+			dbg('agw', "AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
+			my $conn = _find($from eq $main::mycall ? $to : $from);
+			if ($conn) {
+				if ($conn->{state} eq 'WC') {
+					if (exists $conn->{cmd}) {
+						if (@{$conn->{cmd}}) {
+							dbg('connect', $d);
+							$conn->_docmd($d);
+						}
+					}
+					if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
+						$conn->to_connected($conn->{call}, 'O', $conn->{csort});
+					}
+				} else {
+					my @lines = split /\cM/, $data;
+					if (@lines) {
+						for (@lines) {
+							&{$conn->{rproc}}($conn, "I$conn->{call}|$_");
+						}
+					} else {
+						&{$conn->{rproc}}($conn, "I$conn->{call}|");
+					}
+				}
+			} else {
+				dbg('err', "AGW error Unsolicited Data!");
+			}
+		} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
+			my $d = unpack "Z*", $data;
+			$d =~ s/\cM$//;
+			my @lines = split /\cM/, $d;
+			
+			for (@lines) {
+				s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				dbg('agw', "AGW Monitor port: $port \"$_\"");
+			}
+		} elsif ($sort eq 'C') {
+			my $d = unpack "Z*", $data;
+			$d =~ s/\cM$//;
+			dbg('agw', "AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"");
+			my $call = $from eq $main::mycall ? $to : $from;
+			my $conn = _find($call);
+			if ($conn) {
+				if ($conn->{state} eq 'WC') {
+					if (exists $conn->{cmd} && @{$conn->{cmd}}) {
+						$conn->_docmd($d);
+						if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
+							$conn->to_connected($conn->{call}, 'O', $conn->{csort});
+						}
+					}
+				}
+			} else {
+				$conn = AGWMsg->new($rproc);
+				$conn->{agwpid} = $pid;
+				$conn->{agwport} = $port;
+				$conn->{lineend} = "\cM";
+				$conn->{incoming} = 1;
+				$conn->{agwcall} = $call;
+				$circuit{$call} = $conn;
+				if ($call =~ /^(\w+)-(\d\d?)$/) {
+					my $c = $1;
+					my $s = $2;
+					$s = 15 - $s;
+					if ($s <= 8 && $s > 0) {
+						$call = "${c}-${s}";
+					} else {
+						$call = $c;
+					}
+				}
+				$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
+			}
+		} elsif ($sort eq 'd') {
+			dbg('agw', "AGW '$from'->'$to' port: $port Disconnected");
+			my $conn = _find($from eq $main::mycall ? $to : $from);
+			if ($conn) {
+				&{$conn->{eproc}}() if $conn->{eproc};
+				$conn->in_disconnect;
+			}
+		} elsif ($sort eq 'y') {
+			my ($frames) = unpack "V", $data;
+			dbg('agwpollans', "AGW Frames Outstanding on port $port = $frames");
+			my $conn = _find($from);
+			$conn->{oframes} = $frames if $conn;
+		} elsif ($sort eq 'Y') {
+			my ($frames) = unpack "V", $data;
+			dbg('agw', "AGW Frames Outstanding on circuit '$from'->'$to' = $frames");
+			my $conn = _find($from eq $main::mycall ? $to : $from);
+			$conn->{oframes} = $frames if $conn;
+		} elsif ($sort eq 'H') {
+			unless ($from =~ /^\s+$/) {
+				my $d = unpack "Z*", $data;
+				$d =~ s/\cM$//;
+				dbg('agw', "AGW Heard port: $port \"$d\"");
+			}
+		} elsif ($sort eq 'X') {
+			my ($r) = unpack "C", $data;
+			$r = $r ? "Successful" : "Failed";
+			dbg('err', "AGW Register $from $r");
+			finish() unless $r;
+		} elsif ($sort eq 'R') {
+			my ($major, $minor) = unpack "v x2 v x2", $data;
+			dbg('agw', "AGW Version $major.$minor");
+		} elsif ($sort eq 'G') {
+			my @ports = split /;/, $data;
+			$noports = shift @ports || '0';
+			dbg('agw', "AGW $noports Ports available");
+			pop @ports while @ports > $noports;
+			for (@ports) {
+				next unless $_;
+				dbg('agw', "AGW Port: $_");
+			}
+			for (my $i = 0; $i < $noports; $i++) {
+				_sendf('y', undef, undef, $i);
+				_sendf('g', undef, undef, $i);
+			}
+		} else {
+			my $d = unpack "Z*", $data;
+			dbg('agw', "AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
 		}
-	} elsif ($sort eq 'X') {
-		my ($r) = unpack "C", $data;
-		$r = $r ? "Successful" : "Failed";
-		dbg('err', "AGW Register $from $r");
-		finish() unless $r;
-	} elsif ($sort eq 'R') {
-		my ($major, $minor) = unpack "v x2 v x2", $data;
-		dbg('agw', "AGW Version $major.$minor");
-	} elsif ($sort eq 'G') {
-		my @ports = split /;/, $data;
-	    $noports = shift @ports || '0';
-		dbg('agw', "AGW $noports Ports available");
-		pop @ports while @ports > $noports;
-		for (@ports) {
-			next unless $_;
-			dbg('agw', "AGW Port: $_");
-		}
-		for (my $i = 0; $i < $noports; $i++) {
-			_sendf('y', undef, undef, $i);
-			_sendf('g', undef, undef, $i);
-		}
-	} else {
-		my $d = unpack "Z*", $data;
-		dbg('agw', "AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$d\"");
 	}
 }
 
@@ -382,7 +386,7 @@ sub _find
 sub connect
 {
 	my ($conn, $line) = @_;
-
+	
 	my ($port, $call) = split /\s+/, $line;
 	$conn->{agwpid} = ord "\xF0";
 	$conn->{agwport} = $port - 1;
