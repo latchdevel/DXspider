@@ -641,7 +641,7 @@ package DXM;
 			badnode2 => '$_[0] ist nun ein good node',
 			badnode3 => 'Liste der Bad Nodes:-',
 			bbse1 => 'Bitte die BBS Adresse eingeben,, set/bbs <your bbs address>',
-			bbs => 'Deine BBS Adresse ist nun \"$_[0]\"'.
+			bbs => 'Deine BBS Adresse ist nun \"$_[0]\"',
 			beepoff => 'Beeps sind nun aus',
 			beepon => 'Beeps sind nun eingeschaltet',
 			call1 => 'Callsign lookup via $_[0]:',
