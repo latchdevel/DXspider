@@ -425,6 +425,11 @@ sub is_arcluster
 	return $self->{sort} eq 'R';
 }
 
+sub is_ak1a
+{
+	my $self = shift;
+	return $self->{sort} eq 'A';
+}
 1;
 __END__
 
