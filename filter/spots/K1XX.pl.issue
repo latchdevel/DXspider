@@ -19,9 +19,12 @@
 #   10 = spotter's itu
 #   11 = spotter's cq
 #
+# The spot data (in this case '15') is the used as the hop count
+# if this is missing then the normal default applies
+#
 
 $in = [
-	   [ 1, 5, 'n', [ 226 ] ],         # dxcc country 226 is the US
-	   [ 1, 6, 'a', [ 226 ] ],
+	   [ 1, 5, 'n', [ 226 ], 15 ],         # dxcc country 226 is the US
+	   [ 1, 6, 'a', [ 226 ], 15 ],
        [ 0, 0, 'd' ],                  # default action (don't forward)
 ];

@@ -23,7 +23,7 @@
 #
 # <some comment>
 # @in = (
-#      [ action, fieldno, fieldsort, comparison ],
+#      [ action, fieldno, fieldsort, comparison, action data ],
 #      ...
 # );
 #
@@ -37,7 +37,8 @@
 # numeric, 'r' is ranges of pairs of numeric values and 'd' is default.
 #
 # Filter::it basically goes thru the list of comparisons from top to
-# bottom and when one matches it will return the action. The fields
+# bottom and when one matches it will return the action and the action data as a list. 
+# The fields
 # are the element nos of the list that is presented to Filter::it. Element
 # 0 is the first field of the list.
 #
@@ -69,27 +70,30 @@ sub init
 sub it
 {
 	my $filter = shift;
+	my ($action, $field, $fieldsort, $comp, $actiondata);
 	my $ref;
 
 	# default action is 1
-	return 1 if !$filter;
-	
+	$action = 1;
+	$actiondata = "";
+	return ($action, $actiondata) if !$filter;
+
 	for $ref (@{$filter}) {
-		my ($action, $field, $fieldsort, $comp) = @{$ref};
+		($action, $field, $fieldsort, $comp, $actiondata) = @{$ref};
 		if ($fieldsort eq 'n') {
 			my $val = $_[$field];
-			return $action  if grep $_ == $val, @{$comp};
+			return ($action, $actiondata)  if grep $_ == $val, @{$comp};
 		} elsif ($fieldsort eq 'r') {
 			my $val = $_[$field];
 			my $i;
 			my @range = @{$comp};
 			for ($i = 0; $i < @range; $i += 2) {
-				return $action if $val >= $range[$i] && $val <= $range[$i+1];
+				return ($action, $actiondata)  if $val >= $range[$i] && $val <= $range[$i+1];
 			}
 		} elsif ($fieldsort eq 'a') {
-			return $action  if $_[$field] =~ m{$comp};
+			return ($action, $actiondata)  if $_[$field] =~ m{$comp};
 		} else {
-			return $action;      # the default action
+			return ($action, $actiondata);      # the default action
 		}
 	}
 }
@@ -133,7 +137,8 @@ sub write_out
 	}
 
 	my $today = localtime;
-	print FILTER "#
+	print FILTER "#!/usr/bin/perl
+#
 # Filter for $call stored $today
 #
 \$in = [
@@ -141,7 +146,7 @@ sub write_out
 
 	my $ref;
 	for $ref (@_) {
-		my ($action, $field, $fieldsort, $comp) = @{$ref};
+		my ($action, $field, $fieldsort, $comp, $actiondata) = @{$ref};
 		print FILTER "\t[ $action, $field, $fieldsort,";
 		if ($fieldsort eq 'n' || $fieldsort eq 'r') {
 			print FILTER "[ ", join (',', $comp), " ],";

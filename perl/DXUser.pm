@@ -76,7 +76,7 @@ sub init
 	my ($pkg, $fn, $mode) = @_;
   
 	confess "need a filename in User" if !$fn;
-	$fn .= ".new";
+	$fn .= ".v2";
 	if ($mode) {
 		$dbm = tie (%u, 'DB_File', $fn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!)";
 	} else {

@@ -73,6 +73,7 @@ use vars qw(%channels %valid);
 		  annfilter => '9,Announce Filter',
 		  wwvfilter => '9,WWV Filter',
 		  spotfilter => '9,Spot Filter',
+		  passwd => '9,Passwd List,parray',
 		 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]

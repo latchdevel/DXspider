@@ -234,11 +234,17 @@ sub normal
 			my $dxchan;
 	
 			# send it if it isn't the except list and isn't isolated and still has a hop count
+			# taking into account filtering and so on
 			foreach $dxchan (@dxchan) {
 				next if $dxchan == $self;
-				my $filter = Filter::it($dxchan->{spotfilter}, @spot) if $dxchan->{spotfilter};
-				my $routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
-				next unless $routeit;
+				my $routeit;
+				my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @spot) if $dxchan->{spotfilter};
+				if ($hops) {
+					$line =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+				} else {
+					$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+					next unless $routeit;
+				}
 				if ($filter) {
 					$dxchan->send($routeit) if $routeit;
 				} else {
@@ -808,7 +814,7 @@ sub broadcast_list
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
-			$filter = Filter::it($dxchan->{spotfilter}, @{$fref}) if ref $fref;
+			($filter) = Filter::it($dxchan->{spotfilter}, @{$fref}) if ref $fref;
 			next unless $filter;
 		}
 		next if $sort eq 'ann' && !$dxchan->{ann};

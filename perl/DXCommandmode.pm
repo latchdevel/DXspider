@@ -133,6 +133,20 @@ sub normal
 		} else {
 			$self->state('prompt');
 		}
+	} elsif ($self->{state} eq 'sysop') {
+		my $passwd = $self->{user}->passwd;
+		my @pw = split / */, $passwd;
+		if ($passwd) {
+			my @l = @{$self->{passwd}};
+			my $str = "$pw[$l[0]].*$pw[$l[1]].*$pw[$l[2]].*$pw[$l[3]].*$pw[$l[4]]";
+			if ($cmdline =~ /$str/) {
+				$self->{priv} = $self->{user}->priv;
+			} else {
+				$self->send($self->msg('sorry'));
+			}
+		}
+		delete $self->{passwd};
+		$self->state('prompt');
 	} else {
 		@ans = run_cmd($self, $cmdline);           # if length $cmdline;
 		

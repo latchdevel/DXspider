@@ -23,9 +23,8 @@ use DXUser;
 use Carp;
 
 $userfn = $ARGV[0] if @ARGV;
-unless ($userfn) {
-	croak "need a filename";
-}
+croak "need a filename" unless $userfn;
+croak "$userfn.asc doesn't exist" unless -e "$userfn.asc";
 
 DXUser->init($userfn, 1);
 

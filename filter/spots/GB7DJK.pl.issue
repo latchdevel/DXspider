@@ -19,9 +19,12 @@
 #   10 = spotter's itu
 #   11 = spotter's cq
 #
+# The spot data (in this case '15') is the used as the hop count
+# if this is missing then the normal default applies
+#
 
 $in = [
-	   [ 1, 9, 'n', [ 14,15 ] ],   # 14 and 15 is CQ region for europe   
-	   [ 1, 11, 'n', [ 14,15 ] ],  
+	   [ 1, 9, 'n', [ 14,15 ], 15 ],   # 14 and 15 is CQ region for europe   
+	   [ 1, 11, 'n', [ 14,15 ], 15 ],  
        [ 0, 0, 'd' ],
 ];

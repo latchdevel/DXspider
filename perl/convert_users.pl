@@ -51,7 +51,7 @@ package DXUser;
 
 for $a (@all) {
 	my $ref = DXUser->get($a);
-	my $s = $ref->encode();
+	my $s = $ref->encode() if $ref;
 	print OUT "'$a' => q{$s},\n" if $a;
 	$count++;
 }

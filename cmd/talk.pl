@@ -29,7 +29,7 @@ my $ref = DXCluster->get($call);
 # if we haven't got an explicit via and we can't see them, try their node
 unless ($ref || $via) {
 	my $user = DXUser->get($call);
-	$ref = DXCluster->get_exact($user->node);
+	$ref = DXCluster->get_exact($user->node) if $user;
 	if ($ref) {
 		$via = $user->node;
 		push @out, "trying via $via..";

@@ -1,3 +1,7 @@
+15Mar99=======================================================================
+1. added $actiondata to filter line to allow per action data such as no of hops
+2. fixed a silly problem in talk for non-existant callsigns
+3. Added sysop command
 02Mar99========================================================================
 1. Changed DXUser so that it uses a homemade import/export hash routine 
 2. DXUser now uses a DB_BTREE file
