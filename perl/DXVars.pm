@@ -82,3 +82,6 @@ $userfn = "$data/users";
 
 # the "message of the day" file
 $motd = "$data/motd";
+
+# are we debugging ?
+$debug = 1;

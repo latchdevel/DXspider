@@ -98,8 +98,8 @@ sub process_inqueue
   my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
   
   # do the really sexy console interface bit! (Who is going to do the TK interface then?)
-  print DEBUG atime, " < $sort $call $line\n" if defined DEBUG;
-  print "< $sort $call $line\n";
+  print DEBUG atime, " <- $sort $call $line\n" if defined DEBUG;
+  print "<- $sort $call $line\n";
   
   # handle A records
   my $user = $dxchan->{user};
@@ -117,6 +117,7 @@ sub process_inqueue
 	} else {
 	  $dxchan->user_normal($line);
 	}
+    disconnect($dxchan) if ($dxchan->{state} eq 'bye');
   } elsif ($sort eq 'Z') {
     disconnect($dxchan);
   } else {

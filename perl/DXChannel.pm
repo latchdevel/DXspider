@@ -46,6 +46,7 @@ sub new
   $self->{user} = $user if defined $user; 
   $self->{t} = time;
   $self->{state} = 0;
+  $self->{oldstate} = 0;
   bless $self, $pkg; 
   return $channels{$call} = $self;
 }
@@ -106,8 +107,8 @@ sub send_now
     foreach $line (@_) {
       my $t = atime;
 	  chomp $line;
-      print main::DEBUG "$t > $sort $call $line\n" if defined DEBUG;
-	  print "> $sort $call $line\n";
+      print main::DEBUG "$t -> $sort $call $line\n" if defined DEBUG;
+	  print "-> $sort $call $line\n";
       $conn->send_now("$sort$call|$line");
 	}
   }
@@ -135,8 +136,8 @@ sub send              # this is always later and always data
     foreach $line (@_) {
       my $t = atime;
 	  chomp $line;
-	  print main::DEBUG "$t > D $call $line\n" if defined DEBUG;
-	  print "> D $call $line\n";
+	  print main::DEBUG "$t -> D $call $line\n" if defined DEBUG;
+	  print "-> D $call $line\n";
 	  $conn->send_later("D$call|$line");
 	}
   }
@@ -161,6 +162,15 @@ sub msg
 {
   my $self = shift;
   $self->send(DXM::msg(@_));
+}
+
+# change the state of the channel - lots of scope for debugging here :-)
+sub state
+{
+  my $self = shift;
+  $self->{oldstate} = $self->{state};
+  $self->{state} = shift;
+  print "Db   $self->{call} channel state $self->{oldstate} -> $self->{state}\n" if $main::debug;
 }
 
 1;

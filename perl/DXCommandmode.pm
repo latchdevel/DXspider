@@ -34,7 +34,7 @@ sub user_start
   $self->msg('l2',$name);
   $self->send_file($main::motd) if (-e $main::motd);
   $self->msg('pr', $call);
-  $self->{state} = 10;                # a bit of room for further expansion, passwords etc
+  $self->state('prompt');                  # a bit of room for further expansion, passwords etc
   $self->{priv} = 0;                  # set the connection priv to 0 - can be upgraded later
 }
 
@@ -52,12 +52,19 @@ sub user_normal
   scan_cmd_dirs if (!defined %cmd);
   
   # strip out any nasty characters like $@%&|. and double // etc.
-  $cmd =~ s/[\%\@\$\&\|\.\`\~]//og;
+  $cmd =~ s/[%\@\$&\\.`~]//og;
   $cmd =~ s|//|/|og;
   
   # split the command up into parts
-  my @parts = split |[/\b]+|, $cmd;
-  
+  my @part = split /[\/\b]+/, $cmd;
+
+  # the bye command - temporary probably
+  if ($part[0] =~ /^b/io) {
+    $self->user_finish();
+	$self->state('bye');
+	return;
+  }
+
   # first expand out the entry to a command, note that I will accept 
   # anything in any case with any (reasonable) seperator
   $self->prompt();
@@ -150,7 +157,7 @@ sub eval_file {
   my($self, $path, $cmdname) = @_;
   my $package = valid_package_name($cmdname);
   my $filename = "$path/$cmdname";
-  my $mtime = -m $filename;
+  my $mtime = -M $filename;
   my @r;
   
   if(defined $Cache{$package}{mtime} && $Cache{$package}{mtime } <= $mtime) {
@@ -179,7 +186,7 @@ sub eval_file {
 	}
 		
 	#cache it unless we're cleaning out each time
-	$Cache{$package}{mtime} = $mtime unless $delete;
+	$Cache{$package}{mtime} = $mtime;
   }
 
   @r = eval {$package->handler;};
