@@ -225,6 +225,7 @@ sub init
 	$main::me->{registered} = 1;
 	$main::me->{version} = 5252 + $main::version;
 	$main::me->{build} = $main::build;
+	$main::me->{lastcf} = $main::me->{lasthello} = time;
 }
 
 #
