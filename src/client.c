@@ -91,10 +91,22 @@ int tabsize = 8;				/* default tabsize for text messages */
 
 myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
 	{
-		"^[A-Z]+[0-9]+[A-Z]+", 0
+		"^[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0
 	},
 	{
-		"^[0-9]+[A-Z]+[0-9]+[A-Z]+", 0
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0
+	},
+	{
+		"^[A-Z]+[0-9]+[A-Z]+[1-9]?-[1-9]$", 0
+	},
+	{
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?-[1-9]$", 0
+	},
+	{
+		"^[A-Z]+[0-9]+[A-Z]+[1-9]?-1[0-5]$", 0
+	},
+	{
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?-1[0-5]$", 0
 	},
 	{
 		0, 0
@@ -714,9 +726,11 @@ main(int argc, char *argv[])
 		}
 		buf[r] = 0;
 		call = strupper(buf);
-		if (!iscallsign(call)) {
-			die("Sorry, %s isn't a valid callsign", buf);
-		}
+	}
+
+	/* check the callsign */
+	if (!iscallsign(call)) {
+		die("Sorry, %s isn't a valid callsign", call);
 	}
 	
 	/* connect up stdin */
