@@ -10,7 +10,7 @@
 
 package Timer;
 
-use vars qw(@timerchain $notimers);
+use vars qw(@timerchain $notimers $lasttime);
 use DXDebug;
 
 @timerchain = ();
@@ -22,7 +22,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-my $lasttime = 0;
+$lasttime = 0;
 
 sub new
 {
