@@ -1,5 +1,7 @@
 16Oct00=======================================================================
 1. add a ':' after 'G7BRN de G1TLH' in a talk message.
+2. added /J to the list of things to ignore (as in G1TLH/J) in prefix 
+processing (ie /J mean Jota not /JA [Japan]).
 04Sep00=======================================================================
 1. made PC10,11,12 badword checking dependant on a flag variable ($censorpc)
 default = 0 (off).
