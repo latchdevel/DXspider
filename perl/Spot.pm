@@ -18,12 +18,13 @@ use Carp;
 @ISA = qw(Julian);
 
 use strict;
+use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix);
 
-my $fp;
-my $maxspots = 50;      # maximum spots to return
-my $defaultspots = 10;    # normal number of spots to return
-my $maxdays = 35;        # normal maximum no of days to go back
-my $dirprefix = "$main::data/spots";
+$fp = undef;
+$maxspots = 50;      # maximum spots to return
+$defaultspots = 10;    # normal number of spots to return
+$maxdays = 35;        # normal maximum no of days to go back
+$dirprefix = "$main::data/spots";
 
 sub prefix
 {

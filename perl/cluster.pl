@@ -185,6 +185,9 @@ $SIG{'HUP'} = 'IGNORE';
 # initialise the protocol engine
 DXProt->init();
 
+# put in a DXCluster node for us here so we can add users and take them away
+DXNode->new(0, $mycall, 0, 1, $DXProtvars::myprot_version); 
+
 # this, such as it is, is the main loop!
 print "orft we jolly well go ...\n";
 for (;;) {

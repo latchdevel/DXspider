@@ -23,14 +23,15 @@ use Date::Parse;
 use DXProtout;
 
 use strict;
+use vars qw($me);
 
-my $me;            # the channel id for this cluster
+$me = undef;            # the channel id for this cluster
 
 sub init
 {
   my $user = DXUser->get($main::mycall);
-  $me = DXChannel::alloc('DXProt', $main::mycall, undef, $user); 
-  $me->{sort} = 'M';    # M for me
+  $me = DXProt->new($main::mycall, undef, $user); 
+#  $me->{sort} = 'M';    # M for me
 }
 
 #
@@ -157,7 +158,7 @@ sub normal
 	  last SWITCH if !$node;        # ignore if havn't seen a PC19 for this one yet
 	  my $i;
 	  
-	  for ($i = 2; $i < $#field-1; $i++) {
+	  for ($i = 2; $i < $#field; $i++) {
 	    my ($call, $confmode, $here) = $field[$i] =~ /^(\w+) (-) (\d)/o;
 		next if length $call < 3;
 		next if !$confmode;
@@ -324,44 +325,6 @@ sub finish
 {
   my $self = shift;
   broadcast_ak1a($self->pc21('Gone.'));
-  $self->delnode();
-}
- 
-# 
-# add a (local) user to the cluster
-#
-
-sub adduser
-{
-  DXNodeuser->add(@_);
-}
-
-#
-# delete a (local) user to the cluster
-#
-
-sub deluser
-{
-  my $self = shift;
-  my $ref = DXCluster->get($self->call);
-  $ref->del() if $ref;
-}
-
-#
-# add a (locally connected) node to the cluster
-#
-
-sub addnode
-{
-  DXNode->new(@_);
-}
-
-#
-# delete a (locally connected) node to the cluster
-#
-sub delnode
-{
-  my $self = shift;
   my $ref = DXCluster->get($self->call);
   $ref->del() if $ref;
 }

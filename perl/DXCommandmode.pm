@@ -59,7 +59,16 @@ sub start
   # set some necessary flags on the user if they are connecting
   $self->{wwv} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
   $self->prompt() if $self->{state} =~ /^prompt/o;
-
+  
+  # add yourself to the database
+  my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
+  my $cuser = DXNodeuser->new($self, $node, $call, 0, 1);
+  $node->dxchan($self) if $call eq $main::myalias;       # send all output for mycall to myalias
+  
+  # issue a pc16 to everybody interested
+  my $nchan = DXChannel->get($main::mycall);
+  my $pc16 = $nchan->pc16($cuser);
+  DXProt::broadcast_ak1a($pc16);
 }
 
 #
@@ -133,7 +142,21 @@ sub process
 #
 sub finish
 {
+  my $self = shift;
+  my $call = $self->call;
 
+  if ($call eq $main::myalias) {   # unset the channel if it is us really
+    my $node = DXNode->get($main::mycall);
+	$node->{dxchan} = 0;
+  }
+  my $ref = DXNodeuser->get($call);
+
+  # issue a pc17 to everybody interested
+  my $nchan = DXChannel->get($main::mycall);
+  my $pc17 = $nchan->pc17($ref);
+  DXProt::broadcast_ak1a($pc17);
+  
+  $ref->del() if $ref;
 }
 
 #

@@ -32,10 +32,11 @@ use DXDebug;
 use Carp;
 
 use strict;
+use vars qw(%channels %valid);
 
-my %channels = undef;
+%channels = undef;
 
-my %valid = (
+%valid = (
   call => '0,Callsign',
   conn => '9,Msg Conn ref',
   user => '9,DXUser ref',
@@ -55,6 +56,7 @@ my %valid = (
   here => '0,Here?,yesno',
   confmode => '0,In Conference?,yesno',
   dx => '0,DX Spots,yesno',
+  redirect => '0,Redirect messages to',
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]

@@ -20,10 +20,11 @@ use Carp;
 use DXDebug;
 
 use strict;
+use vars qw(%cluster %valid);
 
-my %cluster = ();            # this is where we store the dxcluster database
+%cluster = ();            # this is where we store the dxcluster database
 
-my %valid = (
+%valid = (
   mynode => '0,Parent Node,showcall',
   call => '0,Callsign',
   confmode => '0,Conference Mode,yesno',
@@ -60,13 +61,6 @@ sub get_all
 {
   return values(%cluster);
 }
-
-sub delcluster;
-{
-  my $self = shift;
-  delete $cluster{$self->{call}};
-}
-
 
 # return a prompt for a field
 sub field_prompt
@@ -138,9 +132,9 @@ sub new
   
   my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
   $self->{mynode} = $node;
-  $self->{list}->{$call} = $self;     # add this user to the list on this node
+  $node->{list}->{$call} = $self;     # add this user to the list on this node
   $users++;
-  dbg('cluster', "allocating user $self->{call}\n");
+  dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
   return $self;
 }
 
@@ -151,7 +145,8 @@ sub del
   my $node = $self->{mynode};
  
   delete $node->{list}->{$call};
-  delete $cluster{$call};     # remove me from the cluster table
+  delete $DXCluster::cluster{$call};     # remove me from the cluster table
+  dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
   $users-- if $users > 0;
 }
 
@@ -182,7 +177,7 @@ sub new
   $self->{version} = $pcversion;
   $self->{list} = { } ;
   $nodes++;
-  dbg('cluster', "allocating node $self->{call}\n");
+  dbg('cluster', "allocating node $call to cluster\n");
   return $self;
 }
 
@@ -191,7 +186,7 @@ sub get_all
 {
   my $list;
   my @out;
-  foreach $list (values(%cluster)) {
+  foreach $list (values(%DXCluster::cluster)) {
     push @out, $list if $list->{pcversion};
   }
   return @out;
@@ -207,6 +202,7 @@ sub del
   foreach $ref (values %{$self->{list}}) {
     $ref->del();      # this also takes them out of this list
   }
+  dbg('cluster', "deleting node $call from cluster\n"); 
   $nodes-- if $nodes > 0;
 }
 
