@@ -697,7 +697,7 @@ Best of luck - you will need it.
 === 5^KILL FULL <msgno> [<msgno..]^Delete a message from the whole cluster
 Delete a message from the local system. You will only be able to
 delete messages that you have originated or been sent (unless you are
-the sysop).
+the sysop). 
 
   KILL 1234-1255
 
@@ -717,6 +717,15 @@ will delete a message (usually a 'bulletin') from the whole cluster system.
 
 This uses the subject field, so any messages that have exactly the
 same subject will be deleted. Beware!
+
+=== 6^KILL EXPunge <msgno> [<msgno..]^Expunge a message
+Deleting a message using the normal KILL commands only marks that message
+for deletion. The actual deletion only happens later (usually two days later).
+
+The KILL EXPUNGE command causes the message to be truly deleted more or less
+immediately.
+
+It otherwise is used in the same way as the KILL command.
 
 === 0^LINKS^Show which nodes is physically connected
 This is a quick listing that shows which links are connected and

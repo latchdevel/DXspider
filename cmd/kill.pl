@@ -1,7 +1,7 @@
 #
 # kill or delete a message
 #
-# Copyright (c) Dirk Koopman G1TLH
+# Copyright (c) 1998 Dirk Koopman G1TLH
 #
 # $Id$
 #
@@ -17,6 +17,7 @@ my $ref;
 my @refs;
 my $call = $self->call;
 my $full;
+my $expunge;
 
 # $DB::single = 1;
 
@@ -25,6 +26,9 @@ while (@f) {
 	if ($f =~ /^fu/io) {
 		return (1, $self->msg('e5')) if $self->priv < 5;
 		$full = 1;
+	} elsif ($f =~ /^ex/io) {
+		return (1, $self->msg('e5')) if $self->priv < 6;
+		$expunge = 1;
 	} elsif ($f =~ /^\d+$/o) {
 		$ref = DXMsg::get($f);
 		if (!$ref) {
@@ -68,7 +72,7 @@ foreach $ref ( @refs) {
 	}
 	my $tonode = $ref->tonode;
 	$ref->stop_msg($tonode) if $tonode;
-	$ref->mark_delete;
+	$ref->mark_delete($expunge ? 0 : undef);
 	push @out, $self->msg('m12', $ref->msgno);
 }
 
