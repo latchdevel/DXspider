@@ -228,6 +228,15 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 							$part .= '*' unless $part eq '*' || $part eq $try;
 							dbg("Compound prefix: $try $part" );
 						}
+						if (@try == 0) {
+							$try = join('/', reverse @parts);
+							@try = get($try);
+							if (isdbg('prefix')) {
+								my $part = $try[0] || "*";
+								$part .= '*' unless $part eq '*' || $part eq $try;
+								dbg("Compound prefix: $try $part" );
+							}
+						}
 						if (@try && $try eq $try[0]) {
 							push @out, @try;
 						} else {
