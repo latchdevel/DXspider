@@ -3,6 +3,7 @@
 2. fixed (long standing)a hole in PC17 handling
 3. added winclient.pl (actually just a very basic client) from Iain G0RDI
 4. Added Spanish as a language (thanks ea1dav) (g0vgs) 
+5. ignore BUST(ED) spots
 28Feb01=======================================================================
 1. allow sh/c gb7 (ie show the config of all gb7 nodes)(for example)
 2. get rid of spurious DXHash 'uninitialised' messages if no corresponding 

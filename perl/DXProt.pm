@@ -358,7 +358,7 @@ sub normal
 			# do some de-duping
 			$field[5] =~ s/^\s+//;      # take any leading blanks off
 			$field[2] = unpad($field[2]);	# take off leading and trailing blanks from spotted callsign
-			if ($field[2] =~ /BUST|BUSTED$/) {
+			if ($field[2] =~ /BUST\w*$/) {
 				dbg('chan', "PCPROT: useless 'BUSTED' spot");
 				return;
 			}
