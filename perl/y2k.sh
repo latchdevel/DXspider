@@ -14,7 +14,7 @@
 # this shell script is running
 #
 cd /spider/data
-mv wwv/100 wwv/200
+mv wwv/100 wwv/2000
 mv spots/100 spots/2000
 mv debug/100 debug/2000
 mv log/100 log/2000
