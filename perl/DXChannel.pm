@@ -447,6 +447,7 @@ sub tell_login
 	my $dxchan;
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
+		next if $dxchan->{call} eq $main::mycall;
 		$dxchan->send($dxchan->msg($m, $self->{call})) if $dxchan->{logininfo};
 	}
 }

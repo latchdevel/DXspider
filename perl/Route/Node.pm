@@ -44,6 +44,7 @@ sub count
 
 sub max
 {
+	count();
 	return $max;
 }
 
@@ -66,12 +67,12 @@ sub add
 	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
 	my $self = get($call);
 	if ($self) {
-		$self->_addparent($parent->{call});
-		$parent->_addnode($call);
+		$self->_addparent($parent);
+		$parent->_addnode($self);
 		return undef;
 	}
-	$parent->_addnode($call);
 	$self = $parent->new($call, @_);
+	$parent->_addnode($self);
 	return $self;
 }
 
@@ -88,14 +89,13 @@ sub del
 	my $pref = shift;
 
 	# delete parent from this call's parent list
-	my $pcall = $pref->{call};
-	my $ncall = $self->{call};
-	$pref->_delnode($ncall);;
-	my $ref = $self->_delparent($pcall);
+	$pref->_delnode($self);
+	my @ref = $self->_delparent($pref);
 	my @nodes;
+	my $ncall = $self->{call};
 	
 	# is this the last connection, I have no parents anymore?
-	unless (@$ref) {
+	unless (@ref) {
 		foreach my $rcall (@{$self->{nodes}}) {
 			next if grep $rcall eq $_, @_;
 			my $r = Route::Node::get($rcall);
@@ -137,16 +137,17 @@ sub add_user
 
 	confess "Trying to add NULL User call to routing tables" unless $ucall;
 
-	$self->_adduser($ucall);
-
-	$self->{usercount} = scalar @{$self->{users}};
 	my $uref = Route::User::get($ucall);
 	my @out;
 	if ($uref) {
-		$uref->addparent($self->{call});
+		@out = $uref->addparent($self);
 	} else {
-		@out = Route::User->new($ucall, $self->{call}, @_);
+		$uref = Route::User->new($ucall, $self->{call}, @_);
+		@out = $uref;
 	}
+	$self->_adduser($uref);
+	$self->{usercount} = scalar @{$self->{users}};
+
 	return @out;
 }
 
@@ -154,10 +155,16 @@ sub add_user
 sub del_user
 {
 	my $self = shift;
-	my $ucall = shift;
-	my $ref = Route::User::get($ucall);
-	$self->_deluser($ucall);
-	my @out = $ref->del($self) if $ref;
+	my $ref = shift;
+	my @out;
+	
+	if ($ref) {
+		@out = $self->_deluser($ref);
+		$ref->del($self);
+	} else {
+		confess "tried to delete non-existant $ref->{call} from $self->{call}";
+	}
+	$self->{usercount} = scalar @{$self->{users}};
 	return @out;
 }
 

@@ -41,7 +41,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($me $pc11_max_age $pc23_max_age
+use vars qw($me $pc11_max_age $pc23_max_age $last_pc50
 			$last_hour $last10 %eph  %pings %rcmds
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
@@ -59,7 +59,7 @@ $censorpc = 1;					# Do a BadWords::check on text fields and reject things
 $baddx = new DXHash "baddx";
 $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
-$last10 = time;
+$last10 = $last_pc50 = time;
 
 @checklist = 
 (
@@ -578,7 +578,7 @@ sub normal
 						$r->flags($flags);
 						push @rout, $r;
 					}
-					$r->addparent($ncall);
+					$r->addparent($parent);
 				} else {
 					push @rout, $parent->add_user($call, $flags);
 				}
@@ -626,11 +626,17 @@ sub normal
 				dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
 				return;
 			}
+			my $uref = Route::User::get($ucall);
+			unless ($uref) {
+				dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
+				return;
+			}
+			
 
 			# input filter if required
 			return unless $self->in_filter_route($parent);
-
-			my @rout = $parent->del_user($ucall);
+			
+			my @rout = $parent->del_user($uref);
 
 			if (eph_dup($line)) {
 				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
@@ -1122,20 +1128,22 @@ sub process
 	my $t = time;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
+	my $pc50s;
 	
+	# send out a pc50 on EVERY channel all at once
+	if ($t >= $last_pc50 + $DXProt::pc50_interval) {
+		$pc50s = pc50($me, scalar DXChannel::get_all_users);
+		eph_dup($pc50s);
+		$last_pc50 = $t;
+	}
+
 	foreach $dxchan (@dxchan) {
 		next unless $dxchan->is_node();
 		next if $dxchan == $me;
-		
-		# send a pc50 out on this channel
-		$dxchan->{pc50_t} = $main::systime unless exists $dxchan->{pc50_t};
-		if ($t >= $dxchan->{pc50_t} + $DXProt::pc50_interval) {
-			my $s = pc50($me, scalar DXChannel::get_all_users);
-			eph_dup($s);
-			$dxchan->send($s);
-			$dxchan->{pc50_t} = $t;
-		} 
 
+		# send the pc50
+		$dxchan->send($pc50s) if $pc50s;
+		
 		# send a ping out on this channel
 		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
 			if ($dxchan->{nopings} <= 0) {
@@ -1727,7 +1735,6 @@ sub disconnect
 	my $node = Route::Node::get($call);
 	my @rout;
 	if ($node) {
-#		@rout = $node->del_nodes;    # at the next level
 		@rout = $node->del($main::routeroot);
 	}
 	

@@ -92,28 +92,41 @@ sub _addlist
 {
 	my $self = shift;
 	my $field = shift;
+	my @out;
 	foreach my $c (@_) {
-		my $call = _getcall($c);
-		unless (grep {$_ eq $call} @{$self->{$field}}) {
+		confess "Need a ref here" unless ref($c);
+		
+		my $call = $c->{call};
+		unless (grep $_ eq $call, @{$self->{$field}}) {
 			push @{$self->{$field}}, $call;
 			dbg(ref($self) . " adding $call to " . $self->{call} . "->\{$field\}") if isdbg('routelow');
+			push @out, $c;
 		}
 	}
-	return $self->{$field};
+	return @out;
 }
 
 sub _dellist
 {
 	my $self = shift;
 	my $field = shift;
+	my @out;
 	foreach my $c (@_) {
-		my $call = _getcall($c);
-		if (grep {$_ eq $call} @{$self->{$field}}) {
+		confess "Need a ref here" unless ref($c);
+		my $call = $c->{call};
+		if (grep $_ eq $call, @{$self->{$field}}) {
 			$self->{$field} = [ grep {$_ ne $call} @{$self->{$field}} ];
 			dbg(ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}") if isdbg('routelow');
+			push @out, $c;
 		}
 	}
-	return $self->{$field};
+	return @out;
+}
+
+sub is_empty
+{
+	my $self = shift;
+	return @{$self->{$_[0]}} == 0;
 }
 
 #

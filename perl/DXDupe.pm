@@ -40,10 +40,21 @@ sub finish
 sub check
 {
 	my ($s, $t) = @_;
-	return 1 if exists $d{$s};
+	return 1 if find($s);
+	add($s, $t);
+	return 0;
+}
+
+sub find
+{
+	return 1 if exists $d{$_[0]};
+}
+
+sub add
+{
+	my ($s, $t) = @_;
 	$t = $main::systime + $default unless $t;
 	$d{$s} = $t;
-	return 0;
 }
 
 sub del

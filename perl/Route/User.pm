@@ -39,6 +39,7 @@ sub count
 
 sub max
 {
+	count();
 	return $max;
 }
 
@@ -62,9 +63,7 @@ sub del
 {
 	my $self = shift;
 	my $pref = shift;
-	my $ref = $self->delparent($pref->{call});
-	return () if @$ref;
-	my @out = delete $list{$self->{call}};
+	my @out = $self->delparent($pref);
 	return @out;
 }
 

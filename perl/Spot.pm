@@ -314,9 +314,16 @@ sub dup
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	unpad($text);
 	$text =~ s/[\\\%]\d+//g;
+	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^a-zA-Z0-9]//g;
+	for (0,60,120,180,240,300) {
+		my $dt = $d - $_;
+		my $dupkey = "X$freq|$call|$dt|\L$text";
+		return 1 if DXDupe::find($dupkey);
+	}
 	my $dupkey = "X$freq|$call|$d|\L$text";
-	return DXDupe::check($dupkey, $main::systime+$dupage);
+	DXDupe::add($dupkey, $main::systime+$dupage);
+	return 0;
 }
 
 sub listdups

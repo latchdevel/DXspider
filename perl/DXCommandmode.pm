@@ -425,8 +425,14 @@ sub disconnect
 	my $call = $self->call;
 	delete $self->{senddbg};
 
-	my @rout = $main::routeroot->del_user($call);
-	dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
+	my $uref = Route::User::get($call);
+	my @rout;
+	if ($uref) {
+		@rout = $main::routeroot->del_user($uref);
+		dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
+	} else {
+		confess "trying to disconnect a non existant user $call";
+	}
 
 	# issue a pc17 to everybody interested
 	DXProt::route_pc17($DXProt::me, $main::routeroot, @rout) if @rout;

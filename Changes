@@ -1,3 +1,11 @@
+03Sep01=======================================================================
+1. make spot dups look back 5 mins.
+2. strip the top off each character in any text field of a Spot for duping.
+3. Try to make the routing tables more accurate for users that login to
+more than one node.
+4. Make PC50s come out in one heap on all channels every 14 mins, instead of
+on the 14th minute in the connection time for each channel. This should 
+reduce (slightly) the dups that are dumped.
 01Sep01=======================================================================
 1. Change build number calc (hopefully for the last time)
 27Aug01=======================================================================
@@ -9,7 +17,8 @@ privilege is 1 or less and which isn't mentioned as an argument to the
 command on the command line.
 3. make set/node, set/spider and their friends unlock a node as well as make
 them one. 
-4. Make sh/log et al more efficient / less memory hungry
+4. Make sh/log et al more efficient / less memory hungry (and the display
+the correct way round!)
 24Aug01=======================================================================
 1. Allow badmsg to reject on interface callsign ('I')
 20Aug01=======================================================================
