@@ -7,6 +7,7 @@
 #
 
 use DXVars;
+use Data::Dumper;
 
 %loc = ();        # the location unique hash
 $nextloc = 1;     # the next location number
@@ -19,7 +20,7 @@ $ifn = $ARGV[0] if $ARGV[0];
 $ifn = "$data/wpxloc.raw" if !$fn;
 open (IN, $ifn) or die "can't open $ifn ($!)";
 
-# first pass, find all the 'master' records
+# first pass, find all the 'master' location records
 while (<IN>) {
   next if /^\!/;    # ignore comment lines
   chomp;
@@ -41,11 +42,13 @@ while (<IN>) {
 seek(IN, 0, 0);
 
 while (<IN>) {
+  $line++;
   next if /^\!/;    # ignore comment lines
   chomp;
   @f  = split;       # get each 'word'
   next if @f == 0;   # ignore blank lines
   
+  # location record
   $locstr = join ' ', @f[1..13];
   $loc = $loc{$locstr};
   $loc = addloc($locstr) if !$loc;
@@ -59,21 +62,17 @@ while (<IN>) {
 	  for ($i = 0; $i < 9; ++$i) {
 	    my $t = $p;
 		$t =~ s/#/$i/;
-        $ref = $pre{$t};
-	    $ref = addpre($t) if !$ref;
-		next if grep $loc, @{$ref};    # no dups!
-        push @{$ref}, $loc;
+		addpre($t, $loc);
 	  }
 	} else {
-      $ref = $pre{$p};
-	  $ref = addpre($p) if !$ref;
-	  next if grep $loc, @{$ref};    # no dups!
-      push @{$ref}, $loc;
+	  addpre($p, $loc);
     }	
   }
 }
 
 close(IN);
+
+#print Data::Dumper->Dump([\%pre, \%locn], [qw(pre locn)]);
 
 # now open the rsgb.cty file and process that again the prefix file we have
 open(IN, "$data/rsgb.cty") or die "Can't open $data/rsgb.cty ($!)";
@@ -98,9 +97,16 @@ while (<IN>) {
 
 open(OUT, ">$data/prefix_data.pl") or die "Can't open $data/prefix_data.pl ($!)";
 
-print OUT "%prefix_loc = (\n";
+print OUT "\%pre = (\n";
+foreach $k (sort keys %pre) {
+  my $ans = printpre($k);
+  print OUT "  '$k' => '$ans',\n";
+}
+print OUT ");\n\n";
+
+print OUT "\n\%prefix_loc = (\n";
 foreach $l (sort {$a <=> $b} keys %locn) {
-  print OUT "   $l => {";
+  print OUT "   $l => bless( {";
   my ($name, $dxcc, $itu, $cq, $utcoff, $latd, $latm, $lats, $latl, $longd, $longm, $longs, $longl) = split /\s+/, $locn{$l};
   
   $longd += ($longm/60);
@@ -110,34 +116,36 @@ foreach $l (sort {$a <=> $b} keys %locn) {
   print OUT " name => '$name',";
   print OUT " dxcc => $dxcc,";
   print OUT " itu => $itu,";
+  print OUT " cq => $cq,";
   print OUT " utcoff => $utcoff,";
   print OUT " lat => $latd,";
   print OUT " long => $longd";
-  print OUT " },\n";
+  print OUT " }, 'Prefix'),\n";
 }
 print OUT ");\n\n";
-
-print OUT "%prefix = (\n";
-foreach $k (sort keys %pre) {
-  print OUT "   '$k' => [";
-  my @list = @{$pre{$k}};
-  my $l;
-  my $str;
-  foreach $l (@list) {
-    $str .= " $l,";
-  }
-  chop $str;  
-  print OUT "$str ],\n";
-}
-print OUT ");\n";
 
 close(OUT);
 
 sub addpre
 {
+  my ($p, $ent) = @_;
+  my $ref = $pre{$p};
+  $ref = $pre{$p} = [] if !$ref;
+  push @{$ref}, $ent;;
+}
+
+sub printpre
+{
   my $p = shift;
-  my $ref = [];
-  $pre{$p} = $ref;
+  my $ref = $pre{$p};
+  my $out;
+  my $r;
+  
+  foreach $r (@{$ref}) {
+    $out .= "$r,";
+  }
+  chop $out;
+  return $out;
 }
 
 sub addloc

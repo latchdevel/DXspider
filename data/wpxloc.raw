@@ -1,3 +1,5 @@
+! highest number now 336
+! made T9, 9A, S5 separate countries
 ! VR6 > VP6                                   980504
 ! H40 added                                   980318
 ! JD Time ??, KH9 Corr                        980228
@@ -22,6 +24,8 @@
 !Added VK9N,VK9ZN,VK9KN,VK9NN to Norfolk Island, VK9/N
 !Added VK9W,VK9ZW,VK9KW,VK9NW to Willis Island, VK9/W
 !VK9 changes from QRZ DX, Issue 92-01
+! changed dxcc cty paraguay from 164 to 333 (T7 = 164)
+! changed pirate to 666
 !TO INSTALL THIS FILE:
 !Assuming this file is in the A: Drive, from PacketCluster, type:
 !    DOS/NOWAIT COPY A:WPXLOC.RAW C:\PACKCLUS\WPXLOC.RAW <ENTER>
@@ -813,12 +817,12 @@ YS El-Salvador-YS               244 11  7  7.0 14 0 0 N 89 0 0 W @
 HU El-Salvador-YS               244 11  7  7.0 14 0 0 N 89 0 0 W
 YU Rest-Yugoslavia-YU           245 28 15 -1.0 44 50 0 N 20 31 0 E @
 YT,YZ,4N,4O Yugoslavia-YU       245 28 15 -1.0 44 54 0 N 20 30 0 E
-T9 Bosnia-hercegovina-T9        245 28 15 -1.0 44 54 0 N 20 30 0 E @
-4N4 Bosnia-hercegovina-T9       245 28 15 -1.0 44 54 0 N 20 30 0 E
+T9 Bosnia-hercegovina-T9        336 28 15 -1.0 44 54 0 N 20 30 0 E @
+4N4 Bosnia-hercegovina-T9       336 28 15 -1.0 44 54 0 N 20 30 0 E
 Z3 Macedonia-Z3                 245 28 15 -1.0 44 54 0 N 20 30 0 E @
 YU5 Macedonia-Z3                245 28 15 -1.0 44 54 0 N 20 30 0 E
-9A Croatia-9A                   245 28 15 -1.0 44 54 0 N 20 30 0 E @
-S5 Slovenia-S5                  245 28 15 -1.0 44 54 0 N 20 30 0 E @
+9A Croatia-9A                   334 28 15 -1.0 44 54 0 N 20 30 0 E @
+S5 Slovenia-S5                  335 28 15 -1.0 44 54 0 N 20 30 0 E @
 YV Venezuela-YV                 246 12  9  4.0 10 30 0 N 67 0 0 W @
 4M,YW,YX,YY Venezuela-YV        246 12  9  4.0 10 30 0 N 67 0 0 W
 YV0 Aves-Is-YV0                 247 11  8  4.0 15 42 0 N 63 38 0 W @
@@ -855,7 +859,7 @@ ZM8 Kermadec-Is-ZL8             262 60 32 -12.0 30 0 0 S 178 0 0 W
 ZL9 Auckland-Campbell-ZL9       263 60 32 -12.0 52 30 0 S 169 0 0 E @
 ZM9 Auckland-Campbell-ZL9       263 60 32 -12.0 52 30 0 S 169 0 0 E
 ZL0 Antarctica-Scott-CE9        102 67 12 -11.0 78 0 0 S 165 0 0 E
-ZP Paraguay-ZP                  164 14 11  4.0 25 18 0 S 57 42 0 W @
+ZP Paraguay-ZP                  333 14 11  4.0 25 18 0 S 57 42 0 W @
 ZS So-Africa-ZS1-ZS             265 57 38 -2.0 33 54 0 S 18 24 0 E * @
 ZS So-Africa-ZS5-ZS             265 57 38 -2.0 29 54 0 S 30 54 0 E *
 ZS So-Africa-ZS6-ZS             265 57 38 -2.0 26 12 0 S 28 6 0 E
@@ -867,4 +871,4 @@ ZS6 So-Africa-ZS                265 57 38 -2.0 26 12 0 S 28 6 0 E
 ZS2 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E
 ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
-T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirat_Country 333 17 14 -0.0 0 0 0 S 0 0 0 E @
+T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirat_Country 666 17 14 -0.0 0 0 0 S 0 0 0 E @

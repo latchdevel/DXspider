@@ -12,6 +12,8 @@ use FileHandle;
 use DXVars;
 use DXDebug;
 use Julian;
+use Prefix;
+use Carp;
 
 @ISA = qw(Julian);
 
@@ -21,7 +23,12 @@ my $fp;
 my $maxspots = 50;      # maximum spots to return
 my $defaultspots = 10;    # normal number of spots to return
 my $maxdays = 35;        # normal maximum no of days to go back
-my $prefix = "$main::data/spots";
+my $dirprefix = "$main::data/spots";
+
+sub prefix
+{
+  return $dirprefix;
+}
 
 # add a spot to the data file (call as Spot::add)
 sub add
@@ -32,6 +39,9 @@ sub add
   $spot[0] = 0 + $spot[0];
   $spot[2] = 0 + $spot[2];
   
+  # remove ssid if present on spotter
+  $spot[4] =~ s/-\d+$//o;
+
   # compare dates to see whether need to open another save file (remember, redefining $fp 
   # automagically closes the output file (if any))
   my @date = Julian::unixtoj($spot[2]);
@@ -39,6 +49,11 @@ sub add
 
   # save it
   my $fh = $fp->{fh};
+
+  # add the 'dxcc' country on the end
+  my @dxcc = Prefix::extract($spot[1]);
+  push @spot, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+
   $fh->print(join("\^", @spot), "\n");
 }
 
@@ -53,6 +68,7 @@ sub add
 #   $f2 = date in unix format
 #   $f3 = comment
 #   $f4 = spotter
+#   $f5 = dxcc country
 #
 # In addition you can specify a range of days, this means that it will start searching
 # from <n> days less than today to <m> days less than today
@@ -141,7 +157,7 @@ LOOP:
 sub open
 {
   my $pkg = shift;
-  return Julian::open("spot", $prefix, @_);
+  return Julian::open("spot", $dirprefix, @_);
 }
 
 # close a spot file
