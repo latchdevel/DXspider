@@ -237,7 +237,7 @@ FINISH:
 
 	while (@lines){
 		$msg = shift @lines;
-		$msg =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
+		$msg =~ s/%([2-9A-F][0-9A-F])/chr(hex($1))/eg;
 		&{$conn->{rcvd_notification_proc}}($conn, $msg, $!);
 		$! = 0;
 	}

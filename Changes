@@ -8,6 +8,8 @@
 7. stopped a few more things being done by rcmd (eg send, talk, ann, dx)
 8. tidied up the talking a bit more.
 9. Increase default hop counts all round.
+10. Adjust hex encoding so that 8 bit characters should now go thru
+11. check more of the essential protocol fields for 8 bit characters.
 29Jul00=======================================================================
 1. added forward/latlong which will forward ALL the users that have a latitude
 and longitude set on them to one or more locally connected nodes - with a hop

@@ -448,12 +448,10 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 
 				case 1:
 					mp->state = 2;
-					if (ch >= '0' && ch <= '9') 
+					if (ch >= '2' && ch <= '9') 
 						c = (ch - '0') << 4;
 					else if (ch >= 'A' && ch <= 'F')
 						c = (ch - 'A' + 10) << 4;
-					else if (ch >= 'a' && ch <= 'a')
-						c = (ch - 'a' + 10) << 4;
 					else {
 						dbg(DMSG, "Illegal hex char (%c) received in state %d", ch, mp->state);
 						mp->inp = mp->data;
@@ -466,8 +464,6 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 						*mp->inp++ = c | (ch - '0');
 					else if (ch >= 'A' && ch <= 'F')
 						*mp->inp++ = c | (ch - 'A' + 10);
-					else if (ch >= 'a' && ch <= 'a')
-						*mp->inp++ = c | (ch - 'a' + 10);
 					else {
 						dbg(DMSG, "Illegal hex char (%c) received in state %d", ch, mp->state);
 						mp->inp = mp->data;

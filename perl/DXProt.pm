@@ -158,8 +158,8 @@ sub normal
 	return unless $pcno;
 	return if $pcno < 10 || $pcno > 99;
 
-	# dump bad protocol messages unless it is a PC29
-	if ($line =~ /\%[0-9A-F][0-9A-F]/o && $pcno != 29) {
+	# dump bad protocol messages
+	if ($line =~ /\%[01][0-9A-F]/) {
 		dbg('chan', "CORRUPT protocol message - dumped");
 		return;
 	}
@@ -175,16 +175,24 @@ sub normal
  SWITCH: {
 		if ($pcno == 10) {		# incoming talk
 			
+			unless (is_callsign($field[1]) && is_callsign($field[2]) && is_callsign($field[6])) {
+				dbg('chan', "Corrupt talk, rejected");
+				return;
+			}
 			# is it for me or one of mine?
-			my $call = ($field[5] gt ' ') ? $field[5] : $field[2];
-			if ($call eq $main::mycall || grep $_ eq $call, DXChannel::get_all_user_calls()) {
-				
-				# yes, it is
-				my $text = unpad($field[3]);
-				Log('talk', $call, $field[1], $field[6], $text);
-				$call = $main::myalias if $call eq $main::mycall;
-				my $ref = DXChannel->get($call);
-				$ref->send("$call de $field[1]: $text") if $ref && $ref->{talk};
+			my ($to, $via, $call, $dxchan);
+			if ($field[5] gt ' ') {
+				$call = $via = $field[2];
+				$to = $field[5];
+				unless (is_callsign($to)) {
+					dbg('chan', "Corrupt talk, rejected");
+					return;
+				}
+			} else {
+				$call = $to = $field[2];
+			}
+			if ($dxchan = DXChannel->get($call)) {
+				$dxchan->talk($field[1], $to, $via, $field[3]);
 			} else {
 				$self->route($field[2], $line); # relay it on its way
 			}
@@ -192,6 +200,16 @@ sub normal
 		}
 		
 		if ($pcno == 11 || $pcno == 26) { # dx spot
+
+			# are any of the callsign fields invalid?
+            unless ($field[2] !~ m/[^A-Z0-9\-\/]/ && is_callsign($field[6]) && is_callsign($field[7])) {
+				dbg('chan', "Spot contains lower case callsigns or blanks, rejected");
+				return;
+			}
+            if ($field[1] =~ m/[^0-9\.]/) {
+				dbg('chan', "Spot frequency not numeric, rejected");
+				return;
+			}
 
 			# route 'foreign' pc26s 
 			if ($pcno == 26) {
@@ -218,16 +236,6 @@ sub normal
 			# is it 'baddx'
 			if (grep $field[2] eq $_, @baddx) {
 				dbg('chan', "Bad DX spot, ignored");
-				return;
-			}
-
-			# are any of the callsign fields invalid?
-            if ($field[2] =~ m/[^A-Z0-9\-\/]/ || $field[6] =~ m/[^A-Z0-9\-]/ || $field[7] =~ m/[^A-Z0-9\-]/) {
-				dbg('chan', "Spot contains lower case callsigns or blanks, rejected");
-				return;
-			}
-            if ($field[1] =~ m/[^0-9\.]/) {
-				dbg('chan', "Spot frequency not numeric, rejected");
 				return;
 			}
 			
@@ -307,6 +315,11 @@ sub normal
 		}
 		
 		if ($pcno == 12) {		# announces
+			unless (is_callsign($field[1]) && is_callsign($field[2]) && is_callsign($field[5])) {
+				dbg('chan', "Corrupt announce, rejected");
+				return;
+			}
+
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
@@ -1411,6 +1424,12 @@ sub disconnect
 	}
 
 	$self->SUPER::disconnect;
+}
+
+# check that a field only has callsign characters in it
+sub is_callsign
+{
+	return $_[0] !~ /[^A-Z0-9\-]/
 }
 
 # 
