@@ -14,6 +14,9 @@ registration you will also issue passwords to those registered users.
 change them.   
 4. A non-registered user will get the /spider/data/motd_nor file instead of
 the motd on login.
+5. made the BadWord regexes slightly less aggressive WARNING this may let
+some constructions thru, but hopefully will also allow more legitimate 
+foreign (mainly) things thru as well. 
 19Oct01=======================================================================
 1. Allow DELETE (0x7f) for backspace in console.pl
 2. redo prefix table using latest cty.dat

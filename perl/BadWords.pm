@@ -75,7 +75,7 @@ sub create_regex
 				my $w = uc $_;
 				my @l = split //, $w;
 				my $e = join '+[\s\W]*', @l;
-				$s .= "push \@out, \$1 if \$str =~ /($e)/;\n";
+				$s .= "push \@out, \$1 if \$str =~ /\\b($e)/;\n";
 			}
 		}
 		$s .= "return \@out;\n}";
