@@ -189,12 +189,20 @@ sub config
 {
 	my $self = shift;
 	my $nodes_only = shift;
-	my $level = shift;
+	my $level = shift || 0;
 	my $seen = shift;
 	my @out;
 	my $line;
-	my $call = $self->user_call;
+	my $ucall = $self->user_call;
+	my $call = $self->{call};
 	my $printit = 1;
+	
+	return if $level > 1 && DXChannel->get($call);
+
+#	my @seen = @$seen || ();
+#	return if $level > 1 && grep $call eq $_, @seen;
+#	push @seen, @{$self->{links}};
+	
 
 	# allow ranges
 	if (@_) {
@@ -202,55 +210,32 @@ sub config
 	}
 
 	if ($printit) {
-		$line = ' ' x ($level*2) . "$call";
-		$call = ' ' x length $call; 
+		$line = ' ' x ($level*3) . "$ucall";
+		push @out, $line;
+#		push @$seen, $call;
 		
-		# recursion detector
-		if ((DXChannel->get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
-			$line .= ' ...';
-			push @out, $line;
-			return @out;
-		}
-		push @$seen, $self->{call};
-
-		# print users
-		unless ($nodes_only) {
-			if (@{$self->{users}}) {
-				$line .= '->';
-				foreach my $ucall (sort @{$self->{users}}) {
-					my $uref = Route::User::get($ucall);
-					my $c;
-					if ($uref) {
-						$c = $uref->user_call;
-					} else {
-						$c = "$ucall?";
-					}
-					if ((length $line) + (length $c) + 1 < 79) {
-						$line .= $c . ' ';
-					} else {
-						$line =~ s/\s+$//;
-						push @out, $line;
-						$line = ' ' x ($level*2) . "$call->$c ";
-					}
+		foreach my $ncall (sort @{$self->{links}}) {
+			my $nref = Route::Node::get($ncall);
+			
+			if ($nref) {
+				my $c = $nref->user_call;
+				dbg("recursing from $call -> $c (" . (join ',', @$seen) . ")") if isdbg('routec');
+				
+				unless (grep $ncall eq $_, @$seen) {
+#					push @seen, $call;
+					push @$seen, $ncall;
+					push @out, $nref->config($nodes_only, $level+1, $seen, @_);
+#					pop @$seen;
+#					pop @seen;
+				} else {
+#					$line .= "->$ncall" if $line !~ $ncall;
+#					push @out, $line;
 				}
+			} else {
+				push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
 			}
 		}
-		$line =~ s/->$//g;
-		$line =~ s/\s+$//;
-		push @out, $line if length $line;
-	}
-	
-	# deal with more nodes
-	foreach my $ncall (sort @{$self->{links}}) {
-		my $nref = Route::Node::get($ncall);
-
-		if ($nref) {
-			my $c = $nref->user_call;
-#			dbg("recursing from $call -> $c") if isdbg('routec');
-			push @out, $nref->config($nodes_only, $level+1, $seen, @_);
-		} else {
-			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
-		}
+#		pop @$seen;
 	}
 
 	return @out;
@@ -371,6 +356,13 @@ sub _dellink
 	my $self = shift;
 	delete $self->{dxchan};
     return $self->_dellist('links', @_);
+}
+
+sub haslink
+{
+	my $self = shift;
+	my $other = shift->{call};
+	return grep $other eq $_, @{$self->{links}};
 }
 
 #

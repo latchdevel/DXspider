@@ -16,6 +16,13 @@ if (@list && $list[0] =~ /^NOD/) {
 	shift @list;
 }
 
-push @out, $main::routeroot->config($nodes_only, 0, [], @list);
+# root node
+push @out, $main::mycall;
+
+# now show the config in terms of each of the root nodes view
+foreach my $n ($main::routeroot->links) {
+	my $r = Route::Node::get($n);
+	push @out, $r->config($nodes_only, 1, [], @list) if $r;
+}
 return (1, @out);
 

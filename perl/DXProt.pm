@@ -317,7 +317,14 @@ sub send
 	while (@_) {
 		my $line = shift;
 		if ($self->user->wantpc90) {
-			$line = mungepc90($line);
+			my ($pcno) = $line =~ /^PC(\d\d)/;
+			if ($pcno < 90) {
+				if ($pcno == 16 || $pcno == 17 || $pcno == 19 || $pcno == 21) {
+					$line = mungepc91($main::mycall, $line);
+				} else {
+					$line = mungepc90($line);
+				}
+			}
 		} else {
 			removepc91($line);
 			removepc90($line);
@@ -433,12 +440,6 @@ sub normal
 				dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
 				return;
 			}
-		}
-	} else {
-		if ($pcno == 16 || $pcno == 17 || $pcno == 19 || $pcno == 21) {
-			$line = mungepc91($origin, $line);
-		} else {
-			$line = mungepc90($line);
 		}
 	}
 
@@ -1017,7 +1018,9 @@ sub handle_19
 	# if the origin isn't the same as the INTERFACE, then reparent, creating nodes as necessary
 	if ($origin ne $self->call) {
 		my $op = Route::Node::get($origin);
-		unless ($op) {
+		if ($op) {
+			$parent->add($op) unless $parent->haslink($op);
+		} else {
 			$op = $parent->add($origin, 5000, Route::here(1));
 			my $user = DXUser->get_current($origin);
 			if (!$user) {
@@ -1160,10 +1163,13 @@ sub handle_21
 				
 		my $parent = Route::Node::get($self->{call});
 		unless ($parent) {
-			dbg("DXPROT: my parent $self->{call} has disappeared");
+			dbg("DXPROT: my parent $origin has disappeared");
 			$self->disconnect;
 			return;
 		}
+		my $or = Route::Node::get($origin) if $origin ne $self->{call};
+		$parent = $or if $or;
+		
 		if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 			my $node = Route::Node::get($call);
 			if ($node) {

@@ -552,7 +552,10 @@ sub prompt
 	if ($self->{prompt}) {
 		$self->send($self->{prompt});
 	} else {
-		$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call, cldate($main::systime), ztime($main::systime)));
+		my $prkey = $self->here ? 'pr' : 'pr2';
+		my $mail = DXMsg::for_me($self->call) ? $self->msg('newmail') : "";
+		
+		$self->send($self->msg($prkey, $self->call, cldate($main::systime), ztime($main::systime), $mail));
 	}
 }
 
