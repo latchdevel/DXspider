@@ -37,7 +37,6 @@ use vars qw($me $pc11_max_age $pc23_max_age
 			$allowzero $decode_dk0wcy);
 
 $me = undef;					# the channel id for this cluster
-$decode_dk0wcy = undef;			# if set use this callsign to decode announces from the EU WWV data beacon
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 
@@ -279,13 +278,6 @@ sub normal
 
 				# send it
 				$self->send_announce($line, @field[1..6]);
-				
-				if ($decode_dk0wcy && $field[1] eq $decode_dk0wcy) {
-					my ($hour, $k, $next, $a, $r, $sfi, $alarm) = $field[3] =~ /^Aurora Beacon\s+(\d+)UTC,\s+Kiel\s+K=(\d+),.*ed\s+K=(\d+),\s+A=(\d+),\s+R=(\d+),\s+SFI=(\d+),.*larm:\s+(\w+)/;
-					$alarm = ($alarm =~ /^Y/i) ? ', Aurora in DE' : ''; 
-					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next$alarm", $decode_dk0wcy, $field[5], $r) if $sfi && $r;
-				}
-				
 			} else {
 				$self->route($field[2], $line);
 			}
