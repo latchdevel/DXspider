@@ -70,6 +70,8 @@ die "can't fork: $!" unless defined($childpid = fork());
 
 # the communication .....
 if ($childpid) {
+	my ($lastend, $end);
+	
 	STDOUT->autoflush(1);
     while (defined (my $msg = <$handle>)) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
@@ -79,11 +81,13 @@ if ($childpid) {
 			;
 		} else {
 			# newline ends all lines except a prompt
-			my $end = "\n";
+			$lastend = $end;
+			$end = "\n";
 			if ($line =~ /^$call de $mycall\s+\d+-\w\w\w-\d+\s+\d+Z >$/) {
 				$end = ' ';
 			}
-			print $line . $end;
+			my $begin = ($lastend eq "\n") ? '' : "\n";
+			print $begin . $line . $end;
 		}
     }
     kill 'TERM', $childpid;
