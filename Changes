@@ -12,6 +12,8 @@ in the node's startup script. It is anticipated that if you are using
 registration you will also issue passwords to those registered users.
 3. set/password has been changed so that users already with passwords can 
 change them.   
+4. A non-registered user will get the /spider/data/motd_nor file instead of
+the motd on login.
 19Oct01=======================================================================
 1. Allow DELETE (0x7f) for backspace in console.pl
 2. redo prefix table using latest cty.dat
