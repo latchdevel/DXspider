@@ -29,6 +29,7 @@ BEGIN {
 use IO::Socket;
 use DXVars;
 use IO::File;
+use Config;
 
 #
 # deal with args
@@ -64,22 +65,43 @@ unless ($handle) {
 	exit(0);
 }
 
-# Fork one in / one out .....
-my $childpid;
-die "can't fork: $!" unless defined($childpid = fork());
+STDOUT->autoflush(1);
+$handle->autoflush(1);
+print $handle "A$call|local\n";
 
-# the communication .....
-if ($childpid) {
+# Fork or thread one in / one out .....
+my $childpid;
+my $t;
+if ($Config{usethreads}) {
+	require Thread;
+#	print "Using Thread Method\n";
+	$t = Thread->new(\&dostdin);
+	donetwork();
+	$t->join;
+	kill(-1, $$);
+} else {
+#	print "Using Fork Method\n";
+	die "can't fork: $!" unless defined($childpid = fork());	
+	if ($childpid) {
+		donetwork();
+		kill 'TERM', $childpid;
+	} else {
+		dostdin();
+	}
+}
+exit 0;
+
+
+sub donetwork
+{
 	my ($lastend, $end) = ("\n", "\n");
 	
-	STDOUT->autoflush(1);
     while (defined (my $msg = <$handle>)) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		next unless defined $sort;
 		$line =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 		if ($sort eq 'Z') {
-			kill 'TERM', $childpid;
-			exit(0);
+			return;
 		} elsif ($sort eq 'E' || $sort eq 'B') {
 			;
 		} else {
@@ -93,14 +115,17 @@ if ($childpid) {
 			print $begin . $line . $end;
 		}
     }
-    kill 'TERM', $childpid;
-} else {
-	$handle->autoflush(1);
-	print $handle "A$call|local\n";
+}
+
+sub dostdin
+{
     while (defined (my $line = <STDIN>)) {
         print $handle "I$call|$line\n";
+		if ($t && ($line =~ /^b/i || $line =~ /^q/i)) {
+			return;
+		}
     }
 }
 
-exit 0;
+
 

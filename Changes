@@ -1,6 +1,7 @@
 01Apr01=======================================================================
 1. changed agwrestart semantics. You need to use main::agwrestart() in your
 crontabs rather than AGWMsg::init();
+2. try to thread winclient.pl for MSWin32.
 31Mar01=======================================================================
 1. added agwrestart command
 2. add Iains Windoze installation manual (g0vgs)
