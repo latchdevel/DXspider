@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Filtering Primer v1.0</TITLE>
+ <LINK HREF="filtering_en-1.html" REL=next>
+
+
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="filtering_en-1.html">Next</A>
+Previous
+Contents
+<HR>
+<H1>The DXSpider User Filtering Primer v1.0</H1>
+
+<H2>Compiled By W3BG - Jim Samuels (jimsam@comcast.net) With Introduction by N3RD - Dave Hawes (dave.n3rd@comcast.net)</H2>March 2003 revision 0.1
+<HR>
+<EM>A primer and tutorial for Users and SysOps of the DXSpider DXCluster program.</EM>
+<HR>
+<P>
+<H2><A NAME="toc1">1.</A> <A HREF="filtering_en-1.html">Introduction.</A></H2>
+
+<P>
+<H2><A NAME="toc2">2.</A> <A HREF="filtering_en-2.html">Foreword</A></H2>
+
+<P>
+<H2><A NAME="toc3">3.</A> <A HREF="filtering_en-3.html">Configuring Spot Filters</A></H2>
+
+<UL>
+<LI><A NAME="toc3.1">3.1</A> <A HREF="filtering_en-3.html#ss3.1">What is a spot filter?</A>
+<LI><A NAME="toc3.2">3.2</A> <A HREF="filtering_en-3.html#ss3.2">How can filters be used? </A>
+</UL>
+<P>
+<H2><A NAME="toc4">4.</A> <A HREF="filtering_en-4.html">Types of spot filters used in DXSpider </A></H2>
+
+<UL>
+<LI><A NAME="toc4.1">4.1</A> <A HREF="filtering_en-4.html#ss4.1">Numbering lines and slots </A>
+<LI><A NAME="toc4.2">4.2</A> <A HREF="filtering_en-4.html#ss4.2">Reject before accept</A>
+<LI><A NAME="toc4.3">4.3</A> <A HREF="filtering_en-4.html#ss4.3">Using Multiple Reject Filter Rules</A>
+<LI><A NAME="toc4.4">4.4</A> <A HREF="filtering_en-4.html#ss4.4">A very useful command </A>
+<LI><A NAME="toc4.5">4.5</A> <A HREF="filtering_en-4.html#ss4.5">Case does not matter</A>
+<LI><A NAME="toc4.6">4.6</A> <A HREF="filtering_en-4.html#ss4.6">Qualifiers</A>
+<LI><A NAME="toc4.7">4.7</A> <A HREF="filtering_en-4.html#ss4.7">Comma Separation</A>
+</UL>
+<P>
+<H2><A NAME="toc5">5.</A> <A HREF="filtering_en-5.html">Reject filters </A></H2>
+
+<P>
+<H2><A NAME="toc6">6.</A> <A HREF="filtering_en-6.html">Filters to reject spots based on frequency</A></H2>
+
+<UL>
+<LI><A NAME="toc6.1">6.1</A> <A HREF="filtering_en-6.html#ss6.1">Bands Available</A>
+<LI><A NAME="toc6.2">6.2</A> <A HREF="filtering_en-6.html#ss6.2">Regions Available</A>
+<LI><A NAME="toc6.3">6.3</A> <A HREF="filtering_en-6.html#ss6.3">Examples</A>
+<LI><A NAME="toc6.4">6.4</A> <A HREF="filtering_en-6.html#ss6.4">Sub-bands as part of range</A>
+<LI><A NAME="toc6.5">6.5</A> <A HREF="filtering_en-6.html#ss6.5">Filters to reject spots based on the "info" data in the spot</A>
+<LI><A NAME="toc6.6">6.6</A> <A HREF="filtering_en-6.html#ss6.6">Filters to reject spots based on call</A>
+<LI><A NAME="toc6.7">6.7</A> <A HREF="filtering_en-6.html#ss6.7">Filters to reject spots based on call_dxcc</A>
+<LI><A NAME="toc6.8">6.8</A> <A HREF="filtering_en-6.html#ss6.8">Filters to reject spots based on call_itu</A>
+<LI><A NAME="toc6.9">6.9</A> <A HREF="filtering_en-6.html#ss6.9">Filters to reject spots based on call_zone</A>
+<LI><A NAME="toc6.10">6.10</A> <A HREF="filtering_en-6.html#ss6.10">Filters to reject spots based on call_state</A>
+<LI><A NAME="toc6.11">6.11</A> <A HREF="filtering_en-6.html#ss6.11">Filters to reject spots based on by</A>
+</UL>
+<P>
+<H2><A NAME="toc7">7.</A> <A HREF="filtering_en-7.html">Accept filters </A></H2>
+
+<UL>
+<LI><A NAME="toc7.1">7.1</A> <A HREF="filtering_en-7.html#ss7.1">Filters to accept spots based on frequency</A>
+<LI><A NAME="toc7.2">7.2</A> <A HREF="filtering_en-7.html#ss7.2">Sub-bands as part of range</A>
+<LI><A NAME="toc7.3">7.3</A> <A HREF="filtering_en-7.html#ss7.3">Filters to accept spots based on info</A>
+<LI><A NAME="toc7.4">7.4</A> <A HREF="filtering_en-7.html#ss7.4">Filters to accept spots based on call</A>
+<LI><A NAME="toc7.5">7.5</A> <A HREF="filtering_en-7.html#ss7.5">Filters to accept spots based on call_dxcc</A>
+<LI><A NAME="toc7.6">7.6</A> <A HREF="filtering_en-7.html#ss7.6">Filters to accept spots based on call_itu</A>
+<LI><A NAME="toc7.7">7.7</A> <A HREF="filtering_en-7.html#ss7.7">Filters to accept spots based on call_zone</A>
+<LI><A NAME="toc7.8">7.8</A> <A HREF="filtering_en-7.html#ss7.8">Filters to accept spots based on call_state</A>
+<LI><A NAME="toc7.9">7.9</A> <A HREF="filtering_en-7.html#ss7.9">Filters to accept spots based on by</A>
+</UL>
+<P>
+<H2><A NAME="toc8">8.</A> <A HREF="filtering_en-8.html">Clear filters </A></H2>
+
+<P>
+<H2><A NAME="toc9">9.</A> <A HREF="filtering_en-9.html">Some Practice Examples </A></H2>
+
+<P>
+<H2><A NAME="toc10">10.</A> <A HREF="filtering_en-10.html">Contacts</A></H2>
+
+<HR>
+<A HREF="filtering_en-1.html">Next</A>
+Previous
+Contents
+</BODY>
+</HTML>

@@ -2,7 +2,7 @@
 # Makefile for Ian, 2.1.2001
 #
 
-all:	sgml ../html/adminmanual.html ../txt/adminmanual.txt ../html/installation.html ../txt/installation.txt ../html/spiderFAQ.html ../txt/spiderFAQ.txt ../html/usermanual.html ../txt/usermanual.txt ../html/spiderCVS.html ../txt/spiderCVS.txt
+all:	sgml ../html/adminmanual_en.html ../txt/adminmanual_en.txt ../html/installation_en.html ../txt/installation_en.txt ../html/spiderFAQ_en.html ../txt/spiderFAQ_en.txt ../html/usermanual_en.html ../txt/usermanual_en.txt ../html/spiderCVS_en.html ../txt/spiderCVS_en.txt ../html/filtering_en.html ../txt/filtering_en.txt
 
 sgml: ../cmd/Commands_en.hlp adminmanual.sgml usermanual.sgml
 	# Create the admin manual sgml file
@@ -26,7 +26,7 @@ sgml: ../cmd/Commands_en.hlp adminmanual.sgml usermanual.sgml
 	sgml2html installation_en.sgml
 
 #	../html/spiderFAQ_en.html: spiderFAQ_en.sgml 
-	sgml2txt spiderFAQ_en.sgml
+	sgml2txt -f spiderFAQ_en.sgml
 
 #	../html/spiderFAQ_en.html: spiderFAQ_en.sgml
 	sgml2html spiderFAQ_en.sgml
@@ -35,13 +35,19 @@ sgml: ../cmd/Commands_en.hlp adminmanual.sgml usermanual.sgml
 	sgml2html usermanual_en.sgml
 
 #	../txt/usermanual_en.txt: usermanual_en.sgml
-	sgml2txt usermanual_en.sgml
+	sgml2txt -f usermanual_en.sgml
 
 #	../html/spiderCVS_en.html: spiderCVS_en.sgml
 	sgml2html spiderCVS_en.sgml
 
 #	../txt/spiderCVS_en.txt: spiderCVS_en.sgml
-	sgml2txt spiderCVS_en.sgml
+	sgml2txt -f spiderCVS_en.sgml
+
+#	../html/filtering_en.html: filtering_en.sgml
+	sgml2html filtering_en.sgml
+
+#	../txt/filtering_en.txt: filtering_en.sgml
+	sgml2txt -f filtering_en.sgml
 
 	perl -pi.bak -e 's|</HEAD>|<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">\n</HEAD>|' *.html
 	mv *.html ../html

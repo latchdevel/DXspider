@@ -17,18 +17,18 @@
 
 
 
-  +o  Storable-2.06.tar.gz
+  o  Storable-2.06.tar.gz
 
-  +o  Log-Agent-0.303.tar.gz
+  o  Log-Agent-0.303.tar.gz
 
 
   For Windows versions, use the files below...
 
 
 
-  +o  Storable.zip
+  o  Storable.zip
 
-  +o  Log-Agent.zip
+  o  Log-Agent.zip
 
 
 

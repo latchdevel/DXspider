@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Filtering Primer v1.0: Clear filters </TITLE>
+ <LINK HREF="filtering_en-9.html" REL=next>
+ <LINK HREF="filtering_en-7.html" REL=previous>
+ <LINK HREF="filtering_en.html#toc8" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="filtering_en-9.html">Next</A>
+<A HREF="filtering_en-7.html">Previous</A>
+<A HREF="filtering_en.html#toc8">Contents</A>
+<HR>
+<H2><A NAME="s8">8.</A> <A HREF="filtering_en.html#toc8">Clear filters </A></H2>
+
+<P>A clear filter line will delete the slot number specified or all slots and 
+consequently all filters that have been created by a user.</P>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax: clear/spots [0-9]        
+
+or
+
+clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Example ...</P>
+
+<P>This will clear any or both accept and reject spot filters in slot 2.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots 2
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This will clear each and every user spot filter  - it will clear out all
+filters in all slots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Note - if you just want to replace a spot filter, enter the rule again (with a 
+line number) and it will overwrite the previous filter in that slot. If you 
+forget the line number, it will overwrite the filter in slot 1 by default.</P>
+
+<HR>
+<A HREF="filtering_en-9.html">Next</A>
+<A HREF="filtering_en-7.html">Previous</A>
+<A HREF="filtering_en.html#toc8">Contents</A>
+</BODY>
+</HTML>

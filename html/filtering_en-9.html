@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Filtering Primer v1.0: Some Practice Examples </TITLE>
+ <LINK HREF="filtering_en-10.html" REL=next>
+ <LINK HREF="filtering_en-8.html" REL=previous>
+ <LINK HREF="filtering_en.html#toc9" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="filtering_en-10.html">Next</A>
+<A HREF="filtering_en-8.html">Previous</A>
+<A HREF="filtering_en.html#toc9">Contents</A>
+<HR>
+<H2><A NAME="s9">9.</A> <A HREF="filtering_en.html#toc9">Some Practice Examples </A></H2>
+
+<P>The proceeding sections have discussed the basics of DXSpider filters. The 
+following are some examples utilizing basic filters and some not so basic 
+combination filters.</P>
+
+<P>Lets say you only want to see any of those 6m, 2m, or 220 spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spot 0 on uhf
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>As a good stand alone contest filter ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot on contesthf/&lt;mode> where mode is either CW, SSB, or RTTY
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Note: since a slot number is not included slot 1 is assumed.</P>
+
+<P>It's a CW contest weekend so you don't want to see any WARC band or SSB spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots 0 on contesthf/cw
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>It's the same weekend, but you also don't want to see any US or Canadian spots, 
+or any rtty and data spots that are included in the CW portion of the bands. 
+Any of the following will accomplish the same result:</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spot 0  not on contesthf/cw
+reject/spot 1 on contesthf/data
+reject/spot 2 call_dxcc w,ve
+
+or
+
+accept/spot 0 on contesthf/cw and not (call_dxcc 226,197 or on contesthf/data)
+
+or
+
+accept/spot 0 on contesthf/cw and not (call_dxcc w,ve or on contesthf/data)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>The following two discussions are from the Administrator Manual and are good 
+"textbook" examples: </P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+rej/spot on hf/cw
+acc/spot on 0/30000
+acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Note that accept and reject can be abbreviated. Also, the first filter has not 
+been specified with a number. This will automatically be assumed to be number 1.
+In this case, we have said to reject all HF spots in the CW section of the bands
+but accept all others at HF. Also accept anything in VHF and above that is 
+spotted in or by operators in the zones 14, 15 and 16. Each filter slot actually
+has a 'reject' rule slot and an 'accept' rule slot. The reject rule slot is 
+executed BEFORE the accept rule slot. </P>
+
+<P>It was mentioned earlier that after a reject test that doesn't match, the 
+default for following tests is 'accept', the reverse is true for 'accept'. In 
+the example what happens is that the reject is executed first, any non hf/cw 
+spot is passed to the accept line, which lets through everything else on HF. 
+The next filter line lets through just VHF/UHF spots from EU. </P>
+
+<P>If you set a reject filter like this ... </P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots on hf/cw
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Then you will get everything except HF CW spots. You could make this single 
+filter even more flexible. For example, if you are interested in IOTA and will 
+work it on CW even though normally you are not interested in CW, then you could 
+say ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots on hf/cw and not info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>But in that case you might only be interested in iota and say,</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots not on hf/cw or info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>which achieves exactly the same thing.  Note that since slot numbers were 
+not used, slot 1 is assumed.</P>
+
+<HR>
+<A HREF="filtering_en-10.html">Next</A>
+<A HREF="filtering_en-8.html">Previous</A>
+<A HREF="filtering_en.html#toc9">Contents</A>
+</BODY>
+</HTML>

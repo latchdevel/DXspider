@@ -1,0 +1,1209 @@
+<!doctype linuxdoc system>
+
+<article>
+
+<!-- Title information -->
+
+<title>The DXSpider User Filtering Primer v1.0</title> 
+<author>Compiled By W3BG - Jim Samuels (jimsam@comcast.net) With Introduction by N3RD - Dave Hawes (dave.n3rd@comcast.net)</author>
+<date>March 2003 revision 0.1</date>
+
+<abstract>
+A primer and tutorial for Users and SysOps of the DXSpider DXCluster program.
+</abstract>
+
+<!-- Table of contents -->
+<toc>
+
+<!-- Begin the document -->
+
+<sect>Introduction.
+
+<P>
+The PacketCluster software written in the mid-80s by Dick Newell, AK1A, has 
+served us well.  Dick has moved on though and has not supported the software 
+with updates etc for the last 10 years.  Numerous PacketCluster "clones" have 
+come and gone over the years, however there is one, called DX Spider, which 
+provides a very similar user interface to that of AK1A, allows internet 
+connections of users and node-to-node links, is actively supported by the 
+author, and best of all is freeware.  FRC has started to convert several nodes 
+to Spider.
+
+<P>
+One of the strengths of DX Spider is its very powerful and flexible DX spot 
+filtering routines.  These filters are totally different from anything we 
+learned how to do with PacketCluster, and along with their power and 
+flexibility comes somewhat of a learning curve.  Hence the need for this 
+primer.
+
+<P>
+In the following sections, you will learn that you can filter DX spots by:
+
+<tscreen><verb>
+Frequency of the spot
+Mode of the spot
+Callsign of the spot (by state, country, zone, or specific callsign)
+Callsign of the spotter (by state, country, zone, or specific callsign)
+Callsign of the source node of the spot (by state, country, zone, or specific callsign)
+</verb></tscreen>
+
+<P>
+With a few keystrokes, you can set up a filter for the CQ WW SSB contest, for 
+example, that says that you only want to see SSB spots on the contesting bands.
+In the ARRL contest, it is simple to exclude spots for Ws and VEs.  For example,
+the best all around one-line filter for users in the CQ WW SSB contest would be:
+
+<tscreen><verb>
+accept/spots on contesthf/ssb
+</verb></tscreen>
+
+This simply reads, "I want to get spots on the hf contesting bands on SSB only."
+
+<P>
+Jim Samuels, W3BG, has put together this primer which not only provides complete
+details on the format for all the available filter commands, but also provides 
+useful examples that can be simply typed in, without the need to learn the 
+specifics.
+
+<P>
+I would be remiss in not thanking Charlie Carroll, K1XX, who gave a lot of 
+encouragement and mentoring, and provided some of the material in this primer.
+
+<P>
+As always, your local sysop is available to help you out, if need be.  Don't 
+hesitate to contact him for assistance.
+
+<P>
+73 - Dave N3RD
+
+<sect>Foreword
+
+<P>
+While attempting to learn how DXSpider filters work, I found that I had to glean
+bits and pieces of information from the DXSpider User Manual and Administrators 
+Guide as well as various posted messages, help files and the program and 
+data-base files themselves. Therefore, this is by no means an original work. I 
+have used and in some cases copied from some of these sources. What I have tried
+to accomplish is to gather this scattered information, put it in one spot 
+(please pardon the pun) so others might benefit. I would advise those with 
+interest to go back and read these other sources at their leisure.
+
+
+<sect>Configuring Spot Filters
+
+<sect1>What is a spot filter?
+
+<P>
+A spot filter is one rule (a one line spot filter) or multiple rules (multiple 
+line spot filters) that a user can setup with-in DXSpider to control which 
+specific spot(s) are received at the shack console.  These configurable 
+filters/rules reside on the DXSpider node and are stored along with the user's 
+other information. Filters can be likened to a car wash . . . . . like cars; 
+information goes in one end dirty, gets washed and comes out the other end 
+cleaned.
+
+<P>
+All spots received from other users on the cluster, or those received from other
+nodes, start out life destined for each and every connected user's console. If 
+spot filtering has been configured, all spots headed for that user first go into
+the filter input, are processed and sent out the other end of these filters 
+before being sent to the user's console. Like a car wash, each spot goes through
+one or many stages depending on whether the user wanted a simple or a 
+super-duper filtering job.  Along the way, the spot gets scrubbed, unwanted 
+information removed or wanted information passed on and finally the wanted spots
+only are spit out the other end - nice and clean with all unwanted "stuff" sent 
+down the drain to the infamous "bit-bucket."  
+
+
+<sect1>How can filters be used?  
+
+<P>
+For example, let's say our local user has never owned a microphone in this life 
+and definitely doesn't want to see any of those useless SSB spots. Our user 
+simply sets up a basic filter to reject any SSB spots before they reach the 
+user's console.  Similarly, it's now the ARRL CW DX contest weekend, so not only
+does our user not want to see SSB spots, but now doesn't want to see any UHF, 
+VHF, DATA or any US/Canadian "DX" spots. Our user now only accepts HF CW 
+CONTEST spots and in the same rule rejects spots for W and VE stations. In these
+and many more situations, "filters are our friends."
+
+
+<sect>Types of spot filters used in DXSpider 
+
+<P>
+Basic filter types are "accept", "reject", and "clear" where the following
+applies ...
+
+<tscreen><verb>
+Reject filters - any spots that match will be dumped, all others passed on.
+Accept filters - any spots that match are passed on, all others are dumped.
+Clear filters  - the filter slot(s) referenced will be cleared from the filter 
+                 repository
+</verb></tscreen>
+
+For the most part we will use only reject and accept filters. These are the main
+filter types. Basically, reject means dump it and accept means take it and pass 
+it on to the user. By nature, accept filters are more powerful than reject 
+filters. A user can generally do with a one line accept rule what it could take 
+many lines of reject rules to accomplish. However, the flip-side of this 
+statement is that a series of reject filters are usually easier to administer 
+and change.
+
+<sect1> Numbering lines and slots 
+
+<P>
+There are ten usable filter slots in DXSpider. Each slot holds one reject and 
+one accept rule. Therefore, each type filter can have up to ten lines of rules 
+contained in these ten slots. The filter rules must be numbered sequentially, 
+that is, 0-9 lines of reject filter rules and 0-9 lines of accept filter rules 
+to correspond to their respective slot position. If no number is used, every 
+line is assumed to be in slot 1 and the addition of a second filter line of the 
+same type without a number will just over-write the first that was previously 
+written to slot 1. (Why not slot 0? I don't know. This is the way it works.)
+
+<P>
+<em>Important:</em> The filter rules are applied in sequence, i.e., 0-9. If a 
+line matches, action is taken on that line. The filter sequence acts on rules 
+in the order listed.  It acts on the reject filter in each slot before acting 
+on the accept filter contained in that slot. If the slot is completely blank or 
+if a reject or accept filter line is missing in that slot it skips right over 
+to the next filter rule in the sequence. A picture of a filter set might look 
+like this ...
+
+<tscreen><verb>
+Execution Sequence	Slot Number	Filter Rule	
+	1		  Slot0		reject/spot 0 <pattern>	
+	2				accept/spot 0 <pattern>	
+	3		  Slot1		reject/spot 1 <pattern>	
+	4				accept/spot 1 <pattern>	
+	5		  Slot2		reject/spot 2 <pattern>	
+	6				accept/spot 2 <pattern>	
+	.      		  .	
+	19		  Slot9		reject/spot 9 <pattern>	
+	20		 		accept/spot 9 <pattern>
+</verb></tscreen>
+
+
+<sect1>Reject before accept
+
+<P>
+This is not a good rule for life, but it makes sense for DXSpider filters. As 
+a general rule, reject filter rules within a slot are always executed before 
+accept filter rules.  There is a very good reason for this.  If a spot doesn't 
+match a reject filter, the spot is passed to the next filter line in the set.  
+However, if a spot matches an accept filter, it is sent immediately to the user.
+
+<sect1>Using Multiple Reject Filter Rules
+
+<P>
+Another important concept to know is that you can do everything you want to do 
+with multiple reject filters AND NO ACCEPT FILTERS.  By default, if a spot 
+doesn't match any of the reject filter definitions, then the system considers 
+you want the spots and sends it to you.  For example, the following two filters 
+perform exactly the same thing ...
+
+<tscreen><verb>
+accept/spots on contesthf
+reject/spots not on contesthf
+</verb></tscreen>
+
+So, why would we choose one rather than the other?  Using reject syntax allows 
+you to add another filter line easily, without disturbing the first line.  A 
+real example will show us how this works.  Let's say that there is a RTTY 
+contest coming up and you don't wish to see the RTTY spots.  Simply add another 
+reject filter like this ...
+
+<tscreen><verb>
+reject/spots 2 on hf/rtty
+</verb></tscreen>
+
+Note that we need to specify that this is the second line of reject filter 
+definitions.  Also, the "RTTY" sub-band specification has to be associated with 
+a range of bands; it can't be specified all by itself.  So, we just add it 
+behind the range of bands defined by "HF".  So in our example, if the user does 
+a show/filter, he will be told by the Spider that his current filters are ...
+
+<tscreen><verb>
+filter 1 reject not on contesthf
+filter 2 reject on hf/rtty
+</verb></tscreen>
+
+With these filters set up, if a spot comes through on 14085 kHz, the filter 
+works like this ...
+
+<tscreen><verb>
+filter1:    Is spot NOT on the HF contest bands?  No.  
+            The spot doesn't match the filter definition, so pass it to 
+            next filter.
+
+filter2:    Is spot within the freq. Range defined for RTTY?  Yes.  
+            Since the spot matches the filter definition, the spot is rejected 
+            and the users never see it.
+</verb></tscreen>
+
+Had the frequency of the spot been 14025, then the spot would have not matched 
+the filter2 definition either, would have passed through all the filters, and 
+would have been sent to the user at the end of the filter set.  Also, had the 
+spot been on 10 MHz, it would have met the definition of filter1, been rejected 
+immediately, and the filtering process would have stopped before processing 
+filter2.
+
+<P>
+In addition, the filtering system has a rough time handling accept filters 
+followed by reject filters and adds inefficiency to the processing. 
+(Note: a reject as a "qualifier" to an accept rule in an accept filter line is 
+okay as we will see below)
+
+
+<sect1>A very useful command 
+ 
+<P>
+To see all active filters in use at any time, just type the following command
+...
+
+<tscreen><verb>
+show/filter
+</verb></tscreen>
+
+<sect1>Case does not matter
+
+<P>
+In entering any filter - case does not matter. Upper, lower, or mixed case 
+will not effect how filters work or perform.
+
+<sect1>Qualifiers
+
+<P>
+Logical operands can be used in rule sets to combine multiple actions or 
+qualify others. These are ...
+
+<tscreen><verb>
+and	a and b= action
+not	a not b= action
+or	a and not (c or b)= action
+</verb></tscreen>
+
+Note: as a general rule when or is used you must also use parentheses (). 
+We will see how these can be used in examples later.
+
+<sect1>Comma Separation
+
+<P>
+Any command can have multiple pattern variables if commas separate them. 
+For example ...
+
+<tscreen><verb>
+reject/spot call_state nj,ny,pa,de,md
+</verb></tscreen>
+
+<sect>Reject filters 
+
+<P>
+A reject filter line means that if a spot matches, send it to the trash, dump 
+it, do not send it down the line to the next rule or to the user, but pass-on 
+all other spots that do not match. 
+
+<tscreen><verb>
+Syntax:	reject/spots [0-9]  <pattern>	
+</verb></tscreen>
+
+Any of the following patterns may be used in this line ...
+
+<tscreen><verb>
+freq <range>
+on <range>       
+info <string>
+call <prefixes>
+call_dxcc <numbers>
+call_itu <numbers>
+call_zone <numbers>
+call_state <state 2-letter abbreviations>
+by <prefixes>
+by_dxcc <numbers>
+by_itu <numbers>
+by_zone <numbers>
+by_state <state 2-letter abbreviations>
+origin <prefixes> Used primarily be SYSOPS,  not by users and not discussed.
+channel <prefixes> Used primarily be SYSOPS,  not by users and not discussed.
+</verb></tscreen>
+
+<sect>Filters to reject spots based on frequency
+
+<P>
+<tscreen><verb>
+Syntax:	reject/spot [0-9] freq <range> 	
+
+or
+
+reject/spot [0-9] on <range>
+</verb></tscreen>
+
+Important: both <em>freq</em> and <em>on</em> are exactly the same and can be 
+used interchangeably - most persons use <em>on</em> (less typing.)
+
+<P>
+For range, you can specify a frequency like 7040, a range of frequencies like 
+0/30000 ( the whole HF band) or use any of the "band" or "region" names defined 
+in the show/bands command.
+
+<sect1>Bands Available
+
+<P>
+<tscreen><verb>
+73kHz: 		71 -> 75
+136kHz:		135 -> 138
+160m: 		1800 -> 2000
+80m: 		3500 -> 4000
+60m: 		5258 -> 5407
+40m: 		7000 -> 7400
+30m: 		10100 -> 10150
+20m: 		14000 -> 14350
+17m: 		18068 -> 18168
+15m: 		21000 -> 21450
+12m: 		24890 -> 24990
+10m: 		28000 -> 29700
+military:	29700 -> 50000, 230000 -> 420000
+band1: 		47000 -> 49999, 52000 -> 68000
+6m: 		50000 -> 52000
+pmrlow: 	68000 -> 87500
+4m: 		70000 -> 70500
+band2: 		87500 -> 108000
+aircraft: 	108000 -> 137500
+pmrmid: 	138000 -> 165000
+2m: 		144000 -> 148000
+pmrhigh: 	165000 => 174000
+band3: 		176000 => 230000
+220: 		220000 => 222000
+pmruhf: 	425000 => 430000, 440000 => 471000
+70cm: 		430000 => 450000
+band4: 		471000 => 550000
+band5: 		550000 => 868000
+23cm: 		1240000 => 1325000
+13cm: 		2310000 => 2450000
+9cm: 		3400000 => 3475000
+6cm: 		5650000 => 5850000
+3cm: 		10000000 => 10500000
+12mm:		24000000 => 24250000
+6mm: 		47000000 => 47200000
+</verb></tscreen>
+
+<sect1>Regions Available
+
+<P>
+<tscreen><verb>
+all: 	        73khz 136khz 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m 6m 4m 
+                2m 220 70cm 23cm 9cm 6cm 3cm 12mm 6mm
+vhfradio: 	band1 band2
+vhf: 	        6m 4m 2m 220
+contesthf: 	160m 80m 40m 20m 15m 10m
+warc: 	        60m 30m 17m 12m
+pmr: 	        pmrlow pmrmid pmrhigh pmruhf
+spe: 	        10m 6m 4m 2m
+shf: 	        23cm 13cm 9cm 6cm 3cm
+vlf: 	        73khz 136khz
+uhftv:	        band4 band5
+hf: 	        160m 80m 60m 40m 30m 20m 17m 15m 12m 10m
+vhftv:	        band1 band3
+uhf: 	        70cm 23cm
+</verb></tscreen>
+
+<sect1>Examples
+
+<P>
+The following line will reject spots on 7,040 kHz and pass all others.
+
+<tscreen><verb>
+reject/spot 0 freq 7040
+</verb></tscreen>
+
+The next line will reject spots from 0 to 30,000 kHz and pass on all others.
+	
+<tscreen><verb>
+reject/spot 1 on 0/30000
+</verb></tscreen>
+
+This next will trash all spots in the frequency range 144000 -> 148000 kHz and 
+pass on all others.
+
+<tscreen><verb>
+reject/spot 2 freq 2m
+</verb></tscreen>
+
+This rule will reject all spots on 6m, 4m, 2m, and 220  and pass on all
+others.
+
+<tscreen><verb>
+reject/spot 3 on vhf
+</verb></tscreen>
+
+This rule will dump all spots on the 160m, 80m, 60m, 40m, 30m, 20m, 17m, 15m,
+12m, 10m bands and all spots on 70cm and  23cm bands passing all other spots.
+
+<tscreen><verb>
+reject/spot 4 freq hf and freq uhf
+</verb></tscreen>
+
+This is a special spot to be used only by members of the Yankee Clipper
+Contest Club during contest weekends. Hi!
+
+<tscreen><verb>
+reject/spot on all
+</verb></tscreen>
+
+<sect1>Sub-bands as part of range
+
+<P>
+In conjunction with range, you can use the following sub-band names,
+
+<tscreen><verb>
+cw, rtty, data, ssb, and sstv
+</verb></tscreen>
+
+by using a forward-slash [(band or region)/sub-band] as part of the range 
+definition.  For example ...
+
+<P>
+This rule will reject all HF phone spots passing on all others
+
+<tscreen><verb>
+reject/spot 0 freq hf/ssb
+</verb></tscreen>
+
+This filter rule will reject all HF CW spots but will not reject DATA and RTTY
+spots in the CW range and will pass on all other spots.
+
+<tscreen><verb>
+reject/spot 1 on hf/cw and not (on hf/data or on hf/rtty)
+</verb></tscreen>
+
+<sect1>Filters to reject spots based on the "info" data in the spot
+
+<P>
+
+<tscreen><verb>
+Syntax:	reject/spot [0-9] info <string>
+</verb></tscreen>
+
+This filter is used to key on information contained in the information section 
+of the spot. One could use this to reject any spots containing IOTA, QSL OP or 
+any other "key-word" used in the information string of the spot. 
+
+<P>
+Examples ...
+
+<P>
+This filter will reject spots containing IOTA information and pass on all
+others
+
+<tscreen><verb>
+reject/spot 0 info IOTA
+</verb></tscreen>
+
+This filter will reject all general CW spots on HF, but will still permit any
+HF CW spots that contain iota information in addition to passing all others.
+
+<tscreen><verb>
+reject/spot 1 on hf/cw and not info iota
+</verb></tscreen>
+
+This next filter will reject spots asking or containing QSL information and 
+pass on all others
+
+<tscreen><verb>
+reject/spot 2 info QSL
+</verb></tscreen>
+
+Note: The following series of filters are based on <em>call</em> and
+<em>by</em>.  Call always references the call sign of the spotted DX station.  
+By always references the call sign of the spotting station.
+
+<sect1>Filters to reject spots based on call
+
+<P>
+<tscreen><verb>
+Syntax:	reject/spot [0-9] call <prefixes>  
+</verb></tscreen>
+
+This filter is misleading in a way. It is strictly based on the spotted call 
+sign letters or numbers entered and not based on countries or DXCC entities. 
+One could filter on JIMSAM62 if desired.
+
+<P>
+Examples ...
+
+<P>
+This filter will reject spots for G1AAA, GJ2BBB, and GW3CCC and will pass on
+spots for M0AAA.
+
+<tscreen><verb>
+reject/spot 0 call G
+</verb></tscreen>
+
+This next filter will reject spots for PA3AAA and pass on spots for PB4BBB
+
+<tscreen><verb>
+reject/spot 1 call PA
+</verb></tscreen>
+
+This filter will reject spots for K1AA, KC4AAA,  and KH6DDD and pass on spots
+for W3BG and N3RD
+
+<tscreen><verb>
+reject/spot 2 call K
+</verb></tscreen>
+
+<sect1>Filters to reject spots based on call_dxcc
+
+<P>
+<tscreen><verb>
+Syntax:  reject/spot [0-9] call_dxcc <numbers or prefixes>   
+</verb></tscreen>
+
+This filter is based on DXCC entities and uses either the country prefix or 
+the DXCC entity number, found by using the command <em>show/prefix</em>.
+
+<P>
+As in ...
+
+<tscreen><verb>
+show/prefix w
+W DXCC: 226 ITU: 7 CQ: 4 LL: 43 0 N 87 54 W (W, United-States-W)
+</verb></tscreen>
+
+<tscreen><verb>
+show/prefix VE
+VE DXCC: 197 ITU: 9 CQ: 5 LL: 45 18 N 66 6 W (VE, New-Brunswick-VE)
+DXCC: 197 ITU: 9 CQ: 5 LL: 48 30 N 56 0 W (VE, Newfoundland-VE)
+DXCC: 197 ITU: 9 CQ: 5 LL: 44 36 N 63 36 W (VE, Nova-Scotia-VE)
+DXCC: 197 ITU: 4 CQ: 5 LL: 45 30 N 73 36 W (VE, Quebec-VE)
+DXCC: 197 ITU: 4 CQ: 4 LL: 43 42 N 79 24 W (VE, Ontario-VE)
+DXCC: 197 ITU: 3 CQ: 4 LL: 49 54 N 97 6 W (VE, Manitoba-VE)
+DXCC: 197 ITU: 3 CQ: 4 LL: 50 30 N 104 36 W (VE, Saskatchewan-VE)
+DXCC: 197 ITU: 2 CQ: 3 LL: 51 0 N 114 6 W (VE, Alberta-VE)
+DXCC: 197 ITU: 2 CQ: 3 LL: 49 18 N 123 6 W (VE, British-Columbia-VE)
+DXCC: 197 ITU: 75 CQ: 1 LL: 60 42 N 135 6 W (VE, Yukon-VE)
+</verb></tscreen>
+
+Example ...
+
+<P>
+This spot filter will  reject all spots for US and Canada stations and pass on
+all others.
+
+<tscreen><verb>
+reject/spot 0 call_dxcc 226,197
+</verb></tscreen>
+
+This spot filter will  reject all spots for US and Canada stations and pass on
+all others including the special event station, W2WTC, who I want to work the
+next time he is on the air.
+
+<tscreen><verb>
+reject/spot 1 call_dxcc w,ve not call w2wtc
+</verb></tscreen>
+
+<sect1>Filters to reject spots based on call_itu
+
+<P>
+Similarly, call_itu and call_zone use ITU regions that can also be obtained 
+using the show/prefix &lt;prefix&gt; command (see above.)
+
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_itu <numbers>  
+</verb></tscreen>
+
+Example ...
+
+<P>
+This spot filter will reject all spots for ITU region 7 and pass on all
+others.
+
+<tscreen><verb>
+reject/spot 0  call_itu 7
+</verb></tscreen>
+
+<sect1>Filters to reject spots based on call_zone
+
+<P>
+<tscreen><verb>
+Syntax:  reject/spot [0-9] call_zone <numbers>  
+</verb></tscreen>
+
+This filter is based on CQ zones and uses the CQ zone number found by using the 
+command <em>show/prefix</em> (see above.)
+
+<P>
+Example ...
+
+<P>
+This spot filter will  reject all spots for CQ zone 5 and pass on all others.
+
+<tscreen><verb>
+reject/spot 0 call_zone 5
+</verb></tscreen>
+
+<sect1>Filters to reject spots based on call_state
+
+<P>
+<tscreen><verb>
+Syntax:  reject/spot [0-9] call_state <state2-letter abbreviations>
+</verb></tscreen>
+
+This filter is based on the state of the call spotted, for those call signs 
+contained in the usdb database.  Use the command <em>show/usdb</em> to see an 
+example of a listing in the database, like this ...
+
+<tscreen><verb>
+show/usdb k3ww
+K3WW    -> Perkasie, PA
+</verb></tscreen>
+
+Example ...
+
+<P>
+This spot filter will  reject all spots for stations in the Mid-Atlantic
+states and pass on all others.
+
+<tscreen><verb>
+reject/spot call_state nj,ny,pa,de,md
+</verb></tscreen>
+
+<sect1>Filters to reject spots based on by
+
+<P>
+<em>by</em> filters are similar to and function exactly as call filters except 
+that they act on the spotting station call sign and not the spotted call sign.
+
+<P>
+So ...
+
+<P>
+This filter is similar to and functions like the call &lt;prefixes&gt;      
+(See above) except that it rejects spots generated by the spotting call sign 
+and passes all other spots.
+
+<tscreen><verb>
+Syntax:  reject/spot [0-9] by <prefixes>  
+</verb></tscreen>
+
+This next filter is based on DXCC entities and uses the DXCC entity number 
+found by using the command  show/prefix &lt;prefix&gt; and it rejects spots 
+generated within the spotting DXCC entity and passes all other spots.
+
+<tscreen><verb>
+Syntax:  reject/spot [0-9] by_dxcc <numbers>
+</verb></tscreen>
+
+This next filter is based on ITU regions and uses the ITU region number found by
+using the command <em>show/prefix</em> (see above), except that it rejects
+spots generated by a spotting call sign within the ITU region and passes all
+other spots.
+
+<tscreen><verb>
+Syntax:  reject/spot [0-9] by_itu <numbers>
+</verb></tscreen>
+
+This filter is based on CQ zones and uses the CQ zone number found by using
+the command <em>show/prefix</em> (see above), except that it rejects spots
+generated by a spotting call sign within the CQ zone and passes all other
+spots.
+
+<tscreen><verb>
+Syntax:  reject/spot [0-9] by_zone <numbers>
+</verb></tscreen>
+
+This filter is based on the state of the spotting station found by using the
+command <em>show/usdb</em> and passes all other spots.
+
+<tscreen><verb>
+Syntax:  reject/spot [0-9] by_state <state2-letter postal codes 
+</verb></tscreen>
+
+<sect>Accept filters 
+
+<P>
+An accept filter line means that if a spot matches pass it on to the user, send 
+it down the line to the next rule or to the user, and trash, dump, all other 
+spots that do not match to the next filter line. 
+
+<tscreen><verb>
+Syntax:	accept/spots [0-9]  <pattern>	
+</verb></tscreen>
+
+Any of the following patterns may be used in this line ...
+
+<tscreen><verb>
+freq <range>
+on <range>       
+info <string>
+call <prefixes>
+call_dxcc <numbers>
+call_itu <numbers>
+call_zone <numbers>
+call_state <state2-letter abbreviations>
+by <prefixes>
+by_dxcc <numbers>
+by_itu <numbers>
+by_zone <numbers>
+by_state <state2-letter abbreviations>
+origin <prefixes>   Used primarily be SYSOPS,  not by users and not discussed.
+channel <prefixes> Used primarily be SYSOPS,  not by users and not discussed.
+</verb></tscreen>
+
+Using these patterns, we can accept spots based upon ...
+
+<tscreen><verb>
+Frequency of the spot
+Call sign of the spot (country or zone)
+Call sign of the spotter (country or zone)
+Contents of the "information field" which comes with the spot
+</verb></tscreen>
+
+<sect1>Filters to accept spots based on frequency
+
+<P>
+<tscreen><verb>
+Syntax:	accept/spot [0-9] freq <range> 	
+
+or
+
+accept/spot [0-9] on <range>
+</verb></tscreen>
+
+Important: as noted before, both <em>freq</em> and <em>on</em> are exactly 
+the same and can be used interchangeably.
+
+<P>
+For range, you can specify a frequency like 7040, a range of frequencies 
+like 0/30000 ( the whole HF spectrum) or use any of the band/region names 
+defined in the SHOW/BANDS command (see above).
+
+<P>
+Examples...
+
+<P>
+This will pass on a HF spots only from 0 to 30,000 kHz and dump all others.
+
+<tscreen><verb>
+accept/spot 1 on 0/30000 
+</verb></tscreen>
+
+This passes on all spots in the frequency range 144000 -> 148000 kHz and trash
+all others.
+
+<tscreen><verb>
+accept/spot 2 freq 2m
+</verb></tscreen>
+
+This rule will only pass on spots on 6m, 4m, 2m, and 220 and reject all
+others.
+
+<tscreen><verb>
+accept/spot 3 on vhf
+</verb></tscreen>
+
+This rule will pass on all spots on the 160m, 80m, 60m, 40m, 30m, 20m, 17m,
+15m, 12m, 10m bands and all spots on 70cm and 23cm bands only. All other
+spots are trashed.
+
+<tscreen><verb>
+accept/spot 4 freq hf and freq uhf
+</verb></tscreen>
+
+<sect1>Sub-bands as part of range
+
+<P>
+In conjunction with range, you can use the following sub-band names: CW, RTTY, 
+DATA, SSB, and SSTV by using a back-slash [(band or region)/sub-band] as part 
+of the range definition. 
+
+<P>
+Examples ...
+
+<P>
+This rule will only accept and pass on HF phone spots rejecting all others
+
+<tscreen><verb>
+accept/spot 0 freq hf/ssb
+</verb></tscreen>
+
+This filter rule will accept all HF CW spots but will not include DATA and
+RTTY spots in the CW range. In addition all other spots will be dumped.
+
+<tscreen><verb>
+accept/spot 1 on hf/cw and not (on hf/data or on hf/rtty)
+</verb></tscreen> 
+
+<sect1>Filters to accept spots based on info
+
+<P>
+<tscreen><verb>
+Syntax:	accept/spot [0-9] info <string>
+</verb></tscreen>
+
+This filter is used to key on information contained in the information section 
+of the spot. One could use this to accept any spots containing IOTA, QSL OP or 
+any other "key-word" used in the information string of the spot. 
+
+<P>
+Examples ...
+
+<P>
+This filter will accept spots containing IOTA information only and reject all
+others
+
+<tscreen><verb>
+accept/spot 0 info IOTA
+</verb></tscreen>
+
+This filter will accept only 10m SSB spots, but will still permit any spots
+that contain iota information in addition - rejecting all other spots.
+
+<tscreen><verb>
+accept/spot 1 on 10m/ssb and info iota
+</verb></tscreen>
+
+This next filter will accept spots asking or containing QSL information and dump
+all other spots
+
+<tscreen><verb>
+accept/spot 2 info QSL
+</verb></tscreen>
+
+Note: The following series of filters are based on <em>call</em> and 
+<em>by</em>.  Call always references the call sign of the spotted DX station.  
+By always references the call sign of the spotting station.
+
+<sect1>Filters to accept spots based on call
+
+<P>
+<tscreen><verb>
+Syntax:	accept/spot [0-9] call <prefixes> 
+</verb></tscreen>
+
+This filter is misleading in a way. It is strictly based on the spotted call 
+sign letters or numbers entered and not based on countries or DXCC entities. 
+
+<P>
+Examples ...
+
+<P>
+This filter will accept spots for G1AAA, GJ2BBB, and GW3CCC and reject all
+others, including M0AAA.
+
+<tscreen><verb>
+accept/spot 0 call G
+</verb></tscreen>
+
+This next filter will accept spots for PA3AAA and reject spots for PB4BBB as 
+well as all others.
+
+<tscreen><verb>
+accept/spot 1 call PA
+</verb></tscreen>
+
+This filter will accept spots for call signs beginning with "K", i.e., K1AA,
+KC4AAA,  KH6DDD and reject spots for W3BG and N3RD as well as all other
+spots.
+
+<tscreen><verb>
+accept/spot 2 call K
+</verb></tscreen>
+
+<sect1>Filters to accept spots based on call_dxcc
+
+<P>
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_dxcc <numbers or prefixes>
+</verb></tscreen>
+
+This filter is based on DXCC entities and uses either the country prefixes or 
+the DXCC entity number found by using the command <em>show/prefix</em>. See 
+example of <em>show/prefix</em> above.
+
+<P>
+Examples ...
+
+<tscreen><verb>
+accept/spot 0 call_dxcc 226,197  
+
+or
+
+accept/spot 0 call_dxcc ve,w 
+</verb></tscreen>
+
+(Both will work) These spot filters will accept all spots for US and Canada 
+stations and trash all others.
+
+<P>
+The folowing spot filter will accept all spots for US stations and yet reject 
+any spots for W3FM who is always being spotted by Europeans and filling up my
+screen.
+
+<tscreen><verb>
+accept/spot 1 call_dxcc w not call w3fm
+</verb></tscreen>
+
+<sect1>Filters to accept spots based on call_itu
+
+<P>
+Similarly, call_itu and call_zone use ITU regions that can also be obtained 
+using the <em>show/prefix</em> command (see above.)
+
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_itu <numbers>  
+</verb></tscreen>
+
+Example ...
+
+<P>
+This spot filter will  accept all spots for  ITU region 7 and reject all
+others.
+
+<tscreen><verb>
+accept/spot 0  call_itu 7
+</verb></tscreen>
+
+<sect1>Filters to accept spots based on call_zone
+
+<P>
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_zone <numbers>
+</verb></tscreen>
+
+This filter is based on CQ zones and uses the CQ zone number found by using 
+the command <em>show/prefix</em> (see above.)
+
+<P>
+Example ...
+
+<P>
+This spot filter will  accept all spots for CQ zone 5 and reject all others.
+
+<tscreen><verb>
+accept/spot 0 call_zone 5
+</verb></tscreen>
+
+<sect1>Filters to accept spots based on call_state
+
+<P>
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_state <state2-letter postal codes>  
+</verb></tscreen>
+
+This filter is based on state of the call spotted for those call signs contained
+in the usdb database.  
+
+<P>
+Example ...
+
+<P>
+This spot filter will  accept all spots of stations located in the
+Commonwealth of Pennsylvania and reject all others. It's the PA QSO Party
+Weekend.
+
+<tscreen><verb>
+accept/spot 0  call_state pa
+</verb></tscreen>
+
+<sect1>Filters to accept spots based on by
+
+<P>
+<em>by</em> filters are similar to and function exactly as call filters except 
+that they act on the spotting station call sign and not the spotted call sign
+
+<P>
+So ...
+
+<P>
+This filter is similar to and functions like the  call &lt;prefixes&gt; (See above)
+except that it accepts spots generated by the spotting call sign and dumps all
+other spots.
+
+<tscreen><verb>
+Syntax:	accept/spot [0-9] by <prefixes>
+</verb></tscreen>
+
+This filter is based on DXCC entities and uses the DXCC entity number found
+by using the command <em>show/prefix</em> and it accepts spots generated
+within the spotting DXCC entity and rejects other spots.
+
+<tscreen><verb>
+Syntax:  accept/spot [0-9] by_dxcc <numbers>
+</verb></tscreen>
+
+This next filter is based on ITU regions and uses the ITU region number found by
+using the command <em>show/prefix</em> (see above), except that it accepts
+spots generated by a spotting call sign within the ITU region and rejects all
+other spots.
+
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_itu <numbers>
+</verb></tscreen>
+
+This filter is based on CQ zones and uses the CQ zone number found by using
+the command <em>show/prefix</em> (see above), except that it accepts spots
+generated by a spotting call sign within the CQ zone and rejects all other
+spots.
+
+<tscreen><verb>
+Syntax:  accept/spot [0-9] call_zone <numbers>
+</verb></tscreen>
+
+This filters is based on the state location of the spotting station found
+by using the command <em>show/usdb</em> and accepts only those spots
+generated by stations from the states(s) specified rejecting all other spots.
+
+<tscreen><verb>
+Syntax:  accept/spot [0-9] by_state <state2-letter postal codes>
+</verb></tscreen>
+
+<sect>Clear filters 
+
+<P>
+A clear filter line will delete the slot number specified or all slots and 
+consequently all filters that have been created by a user.
+
+<P>
+<tscreen><verb>
+Syntax:	clear/spots [0-9] 	 
+
+or
+
+clear/spots all
+</verb></tscreen>
+
+Example ...
+
+<P>
+This will clear any or both accept and reject spot filters in slot 2.
+
+<tscreen><verb>
+clear/spots 2
+</verb></tscreen>
+
+This will clear each and every user spot filter  - it will clear out all
+filters in all slots.
+
+<tscreen><verb>
+clear/spots all
+</verb></tscreen>
+
+Note - if you just want to replace a spot filter, enter the rule again (with a 
+line number) and it will overwrite the previous filter in that slot. If you 
+forget the line number, it will overwrite the filter in slot 1 by default.
+
+<sect>Some Practice Examples 
+
+<P>
+The proceeding sections have discussed the basics of DXSpider filters. The 
+following are some examples utilizing basic filters and some not so basic 
+combination filters.
+
+<P>
+Lets say you only want to see any of those 6m, 2m, or 220 spots.
+
+<tscreen><verb>
+reject/spot 0 on uhf
+</verb></tscreen>
+
+As a good stand alone contest filter ...
+
+<tscreen><verb>
+accept/spot on contesthf/<mode> where mode is either CW, SSB, or RTTY
+</verb></tscreen>
+
+Note: since a slot number is not included slot 1 is assumed.
+
+<P>
+It's a CW contest weekend so you don't want to see any WARC band or SSB spots.
+
+<tscreen><verb>
+accept/spots 0 on contesthf/cw
+</verb></tscreen>
+
+It's the same weekend, but you also don't want to see any US or Canadian spots, 
+or any rtty and data spots that are included in the CW portion of the bands. 
+Any of the following will accomplish the same result:
+
+<tscreen><verb>
+reject/spot 0  not on contesthf/cw
+reject/spot 1 on contesthf/data
+reject/spot 2 call_dxcc w,ve
+
+or
+
+accept/spot 0 on contesthf/cw and not (call_dxcc 226,197 or on contesthf/data)
+
+or
+
+accept/spot 0 on contesthf/cw and not (call_dxcc w,ve or on contesthf/data)
+</verb></tscreen>
+
+The following two discussions are from the Administrator Manual and are good 
+"textbook" examples: 
+
+<tscreen><verb>
+rej/spot on hf/cw
+acc/spot on 0/30000
+acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+</verb></tscreen>
+
+Note that accept and reject can be abbreviated. Also, the first filter has not 
+been specified with a number. This will automatically be assumed to be number 1.
+In this case, we have said to reject all HF spots in the CW section of the bands
+but accept all others at HF. Also accept anything in VHF and above that is 
+spotted in or by operators in the zones 14, 15 and 16. Each filter slot actually
+has a 'reject' rule slot and an 'accept' rule slot. The reject rule slot is 
+executed BEFORE the accept rule slot. 
+
+<P>
+It was mentioned earlier that after a reject test that doesn't match, the 
+default for following tests is 'accept', the reverse is true for 'accept'. In 
+the example what happens is that the reject is executed first, any non hf/cw 
+spot is passed to the accept line, which lets through everything else on HF. 
+The next filter line lets through just VHF/UHF spots from EU. 
+
+<P>
+If you set a reject filter like this ... 
+
+<tscreen><verb>
+reject/spots on hf/cw
+</verb></tscreen>
+
+Then you will get everything except HF CW spots. You could make this single 
+filter even more flexible. For example, if you are interested in IOTA and will 
+work it on CW even though normally you are not interested in CW, then you could 
+say ...
+
+<tscreen><verb>
+reject/spots on hf/cw and not info iota
+</verb></tscreen>
+
+But in that case you might only be interested in iota and say,
+
+<tscreen><verb>
+accept/spots not on hf/cw or info iota
+</verb></tscreen>
+
+which achieves exactly the same thing.  Note that since slot numbers were 
+not used, slot 1 is assumed.
+
+<sect>Contacts
+
+<P>
+This Primer is a work in progress. Additional features and filters are added 
+from time to time by Dirk Koopman, G1TLH, the developer behind DXSpider. So 
+periodic revisions will be made to this document. If you have any questions, 
+comments, or suggestions relative to this primer on spot filtering, please 
+contact, 
+
+<tscreen><verb>
+Jim Samuels, W3BG jimsam@comcast.net 
+
+or 
+
+Dave Hawes, N3RD (W3FRC Cluster SYSOP) dave.n3rd@comcast.net
+</verb></tscreen>
+
+</article>

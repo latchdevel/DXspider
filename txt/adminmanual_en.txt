@@ -67,268 +67,266 @@
   10. CVS
      10.1 CVS from a Linux platform
      10.2 CVS from a Windows platform
-
-  11. The DXSpider command set
-     11.1 accept (0)
-     11.2 accept/announce <call> [input] [0-9] <pattern> (8)
-     11.3 accept/announce [0-9] <pattern> (0)
-     11.4 accept/route <call> [0-9] <pattern> (8)
-     11.5 accept/spots <call> [input] [0-9] <pattern> (8)
-     11.6 accept/spots [0-9] <pattern> (0)
-     11.7 accept/wcy <call> [input] [0-9] <pattern> (8)
-     11.8 accept/wcy [0-9] <pattern> (0)
-     11.9 accept/wwv <call> [input] [0-9] <pattern> (8)
-     11.10 accept/wwv [0-9] <pattern> (0)
-     11.11 announce <text> (0)
-     11.12 announce full <text> (0)
-     11.13 announce sysop <text> (5)
-     11.14 apropos <string> (0)
-     11.15 blank [<string>] [<nn>] (0)
-     11.16 bye (0)
-     11.17 catchup <node call> all|[<msgno> ...] (5)
-     11.18 chat <group> <text> (0)
-     11.19 clear/announce <callsign> [input] [0-9|all] (8)
-     11.20 clear/announce [1|all] (0)
-     11.21 clear/route <callsign> [input] [0-9|all] (8)
-     11.22 clear/route [1|all] (0)
-     11.23 clear/spots <callsign> [input] [0-9|all] (8)
-     11.24 clear/spots [0-9|all] (0)
-     11.25 clear/wcy <callsign> [input] [0-9|all] (8)
-     11.26 clear/wcy [1|all] (0)
-     11.27 clear/wwv <callsign> [input] [0-9|all] (8)
-     11.28 clear/wwv [1|all] (0)
-     11.29 connect <callsign> (5)
-     11.30 dbavail (0)
-     11.31 dbcreate <name> (9)
-     11.32 dbcreate <name> chain <name> [<name>..] (9)
-     11.33 dbcreate <name> cmd <dxspider command> (9)
-     11.34 dbcreate <name> remote <node> (9)
-     11.35 dbimport <dbname> <filename> (9)
-     11.36 dbremove <dbname> (9)
-     11.37 dbshow <dbname> <key> (0)
-     11.38 debug (9)
-     11.39 delete/usdb <callsign> ... (9)
-     11.40 delete/user <callsign> ... (9)
-     11.41 demonstrate <call> <command> (9)
-     11.42 directory (0)
-     11.43 directory <from>-<to> (0)
-     11.44 directory <nn> (0)
-     11.45 directory all (0)
-     11.46 directory from <call> (0)
-     11.47 directory new (0)
-     11.48 directory own (0)
-     11.49 directory subject <string> (0)
-     11.50 directory to <call> (0)
-     11.51 directory- (5)
-     11.52 disconnect <call> [<call> ...] (8)
-     11.53 dx [by <call>] <freq> <call> <remarks> (0)
-     11.54 echo <line> (0)
-     11.55 export <msgno> <filename> (9)
-     11.56 export_users [<filename>] (9)
-     11.57 filtering... (0)
-     11.58 forward/latlong <node_call> (8)
-     11.59 forward/opernam <call> (1)
-     11.60 help (0)
-     11.61 init <node> (5)
-     11.62 join <group> (0)
-     11.63 kill (5)
-     11.64 kill <from msgno>-<to msgno> (0)
-     11.65 kill <from>-<to> (5)
-     11.66 kill <msgno> [<msgno..] (0)
-     11.67 kill <msgno> [<msgno> ...] (0)
-     11.68 kill expunge <msgno> [<msgno..] (6)
-     11.69 kill from <call> (5)
-     11.70 kill full <msgno> [<msgno..] (5)
-     11.71 kill full <msgno> [<msgno] (5)
-     11.72 kill to <call> (5)
-     11.73 kill from <regex> (0)
-     11.74 kill to <regex> (0)
-     11.75 leave <group> (0)
-     11.76 links (0)
-     11.77 load/aliases (9)
-     11.78 load/badmsg (9)
-     11.79 load/badwords (9)
-     11.80 load/bands (9)
-     11.81 load/cmd_cache (9)
-     11.82 load/forward (9)
-     11.83 load/keps (5)
-     11.84 load/keps [nn] (5)
-     11.85 load/messages (9)
-     11.86 load/prefixes (9)
-     11.87 merge <node> [<no spots>/<no wwv>] (5)
-     11.88 msg <cmd> <msgno> [data ... ] (9)
-     11.89 pc <call> <text> (8)
-     11.90 ping <node call> (1)
-     11.91 rcmd <node call> <cmd> (1)
-     11.92 read (0)
-     11.93 read <msgno> (0)
-     11.94 read- (5)
-     11.95 reject (0)
-     11.96 reject/announce <call> [input] [0-9] <pattern> (8)
-     11.97 reject/announce [0-9] <pattern> (0)
-     11.98 reject/route <call> [0-9] <pattern> (8)
-     11.99 reject/spots <call> [input] [0-9] <pattern> (8)
-     11.100 reject/spots [0-9] <pattern> (0)
-     11.101 reject/wcy <call> [input] [0-9] <pattern> (8)
-     11.102 reject/wcy [0-9] <pattern> (0)
-     11.103 reject/wwv <call> [input] [0-9] <pattern> (8)
-     11.104 reject/wwv [0-9] <pattern> (0)
-     11.105 reply (0)
-     11.106 reply <msgno> (0)
-     11.107 reply b <msgno> (0)
-     11.108 reply noprivate <msgno> (0)
-     11.109 reply rr <msgno> (0)
-     11.110 save [-d -t -a] <filename> "<cmd>" [...] (9)
-     11.111 send <call> [<call> ...] (0)
-     11.112 send copy <msgno> <call> (0)
-     11.113 send noprivate <call> (0)
-     11.114 send private <call> (0)
-     11.115 send rr <call> (0)
-     11.116 set/address <your address> (0)
-     11.117 set/announce (0)
-     11.118 set/anntalk (0)
-     11.119 set/arcluster <call> [<call>..] (5)
-     11.120 set/baddx <call>.. (8)
-     11.121 set/badnode <call>.. (8)
-     11.122 set/badspotter <call>.. (8)
-     11.123 set/badword <word>.. (8)
-     11.124 set/bbs <call> [<call>..] (5)
-     11.125 set/beep (0)
-     11.126 set/clx <call> [<call>..] (5)
-     11.127 set/debug <name> (9)
-     11.128 set/dx (0)
-     11.129 set/dxcq (0)
-     11.130 set/dxgrid (0)
-     11.131 set/dxitu (0)
-     11.132 set/dxnet <call> [<call>..] (5)
-     11.133 set/echo (0)
-     11.134 set/email <email> ... (0)
-     11.135 set/here (0)
-     11.136 set/homenode <node>  (0)
-     11.137 set/hops <call> ann|spots|route|wwv|wcy <n> (8)
-     11.138 set/isolate (9)
-     11.139 set/language <lang> (0)
-     11.140 set/location <lat & long> (0)
-     11.141 set/lockout <call> (9)
-     11.142 set/logininfo (0)
-     11.143 set/name <your name> (0)
-     11.144 set/node <call> [<call>..] (5)
-     11.145 set/obscount <count> <call> (8)
-     11.146 set/page <lines per page> (0)
-     11.147 set/password (0)
-     11.148 set/password <callsign> <string> (9)
-     11.149 set/pinginterval <time> <nodecall> (9)
-     11.150 set/privilege <n> <call> [<call..] (9)
-     11.151 set/prompt <string> (0)
-     11.152 set/qra <locator> (0)
-     11.153 set/qth <your qth> (0)
-     11.154 set/register <call> ... (9)
-     11.155 set/spider <call> [<call>..] (5)
-     11.156 set/sys_location <lat & long> (9)
-     11.157 set/sys_qra <locator> (9)
-     11.158 set/talk (0)
-     11.159 set/usdb <call> <state> <city> (9)
-     11.160 set/usstate (0)
-     11.161 set/wcy (0)
-     11.162 set/wwv (0)
-     11.163 set/wx (0)
-     11.164 show/baddx (1)
-     11.165 show/badnode (1)
-     11.166 show/badspotter (1)
-     11.167 show/badword (1)
-     11.168 show/chat [<group>] [<lines>] (0)
-     11.169 show/configuration [<node>] (0)
-     11.170 show/configuration/node (0)
-     11.171 show/connect (1)
-     11.172 show/contest <year and month> (0)
-     11.173 show/date [<prefix>|<callsign>] (0)
-     11.174 show/db0sdx <callsign> (0)
-     11.175 show/debug (9)
-     11.176 show/dx (0)
-     11.177 show/dxcc <prefix> (0)
-     11.178 show/dxqsl <callsign> (0)
-     11.179 show/dxstats [days] [date] (0)
-     11.180 show/files [<filearea> [<string>]] (0)
-     11.181 show/filter (0)
-     11.182 show/hfstats [days] [date] (0)
-     11.183 show/hftable [days] [date] [prefix ...] (0)
-     11.184 show/hops <call> [ann|spots|route|wcy|wwv] (8)
-     11.185 show/isolate (1)
-     11.186 show/lockout <prefix>|all (9)
-     11.187 show/log [<callsign>] (8)
-     11.188 show/moon [ndays] [<prefix>|<callsign>] (0)
-     11.189 show/muf <prefix> [<hours>][long] (0)
-     11.190 show/newconfiguration [<node>] (0)
-     11.191 show/newconfiguration/node (0)
-     11.192 show/node [<callsign> ...] (1)
-     11.193 show/prefix <callsign> (0)
-     11.194 show/program (5)
-     11.195 show/qra <lat> <long> (0)
-     11.196 show/qra <locator> [<locator>] (0)
-     11.197 show/qrz <callsign> (0)
-     11.198 show/registered [<prefix>] (9)
-     11.199 show/route <callsign> ... (0)
-     11.200 show/satellite <name> [<hours> <interval>] (0)
-     11.201 show/station all [<regex>] (6)
-     11.202 show/station [<callsign> ..] (0)
-     11.203 show/sun [ndays] [<prefix>|<callsign>] (0)
-     11.204 show/time [<prefix>|<callsign>] (0)
-     11.205 show/usdb [call ..] (0)
-     11.206 show/vhfstats [days] [date] (0)
-     11.207 show/vhftable [days] [date] [prefix ...] (0)
-     11.208 show/wcy (0)
-     11.209 show/wcy <n> (0)
-     11.210 show/wm7d <callsign> (0)
-     11.211 show/wwv (0)
-     11.212 show/wwv <n> (0)
-     11.213 shutdown (5)
-     11.214 spoof <call> <command> (9)
-     11.215 stat/channel [<callsign>] (5)
-     11.216 stat/db <dbname> (5)
-     11.217 stat/msg (1)
-     11.218 stat/msg <msgno> (1)
-     11.219 stat/route_node <callsign> (5)
-     11.220 stat/route_node all (5)
-     11.221 stat/route_user <callsign> (5)
-     11.222 stat/route_user all (5)
-     11.223 stat/user [<callsign>] (5)
-     11.224 sysop (0)
-     11.225 talk <call> > <node> [<text>] (0)
-     11.226 talk <call> [<text>] (0)
-     11.227 type <filearea>/<name> (0)
-     11.228 uncatchup <node call> all|[msgno> ...] (5)
-     11.229 unset/announce (0)
-     11.230 unset/anntalk (0)
-     11.231 unset/baddx <call>.. (8)
-     11.232 unset/badnode <call>.. (8)
-     11.233 unset/badspotter <call>.. (8)
-     11.234 unset/badword <word>.. (8)
-     11.235 unset/beep (0)
-     11.236 unset/debug <name> (9)
-     11.237 unset/dx (0)
-     11.238 unset/dxcq (0)
-     11.239 unset/dxgrid (0)
-     11.240 unset/dxitu (0)
-     11.241 unset/echo (0)
-     11.242 unset/email (0)
-     11.243 unset/here (0)
-     11.244 unset/hops <call> ann|spots|route|wwv|wcy (8)
-     11.245 unset/isolate (9)
-     11.246 unset/lockout <call> (9)
-     11.247 unset/logininfo (0)
-     11.248 unset/password <call> ... (9)
-     11.249 unset/privilege (0)
-     11.250 unset/prompt (0)
-     11.251 unset/register <call> ... (9)
-     11.252 unset/talk (0)
-     11.253 unset/usstate (0)
-     11.254 unset/wcy (0)
-     11.255 unset/wwv (0)
-     11.256 unset/wx (0)
-     11.257 who (0)
-     11.258 wx <text> (0)
-     11.259 wx full <text> (0)
-     11.260 wx sysop <text> (5)
+     10.3 accept (0)
+     10.4 accept/announce <call> [input] [0-9] <pattern> (8)
+     10.5 accept/announce [0-9] <pattern> (0)
+     10.6 accept/route <call> [0-9] <pattern> (8)
+     10.7 accept/spots <call> [input] [0-9] <pattern> (8)
+     10.8 accept/spots [0-9] <pattern> (0)
+     10.9 accept/wcy <call> [input] [0-9] <pattern> (8)
+     10.10 accept/wcy [0-9] <pattern> (0)
+     10.11 accept/wwv <call> [input] [0-9] <pattern> (8)
+     10.12 accept/wwv [0-9] <pattern> (0)
+     10.13 announce <text> (0)
+     10.14 announce full <text> (0)
+     10.15 announce sysop <text> (5)
+     10.16 apropos <string> (0)
+     10.17 blank [<string>] [<nn>] (0)
+     10.18 bye (0)
+     10.19 catchup <node call> all|[<msgno> ...] (5)
+     10.20 chat <group> <text> (0)
+     10.21 clear/announce <callsign> [input] [0-9|all] (8)
+     10.22 clear/announce [1|all] (0)
+     10.23 clear/route <callsign> [input] [0-9|all] (8)
+     10.24 clear/route [1|all] (0)
+     10.25 clear/spots <callsign> [input] [0-9|all] (8)
+     10.26 clear/spots [0-9|all] (0)
+     10.27 clear/wcy <callsign> [input] [0-9|all] (8)
+     10.28 clear/wcy [1|all] (0)
+     10.29 clear/wwv <callsign> [input] [0-9|all] (8)
+     10.30 clear/wwv [1|all] (0)
+     10.31 connect <callsign> (5)
+     10.32 dbavail (0)
+     10.33 dbcreate <name> (9)
+     10.34 dbcreate <name> chain <name> [<name>..] (9)
+     10.35 dbcreate <name> cmd <dxspider command> (9)
+     10.36 dbcreate <name> remote <node> (9)
+     10.37 dbimport <dbname> <filename> (9)
+     10.38 dbremove <dbname> (9)
+     10.39 dbshow <dbname> <key> (0)
+     10.40 debug (9)
+     10.41 delete/usdb <callsign> ... (9)
+     10.42 delete/user <callsign> ... (9)
+     10.43 demonstrate <call> <command> (9)
+     10.44 directory (0)
+     10.45 directory <from>-<to> (0)
+     10.46 directory <nn> (0)
+     10.47 directory all (0)
+     10.48 directory from <call> (0)
+     10.49 directory new (0)
+     10.50 directory own (0)
+     10.51 directory subject <string> (0)
+     10.52 directory to <call> (0)
+     10.53 directory- (5)
+     10.54 disconnect <call> [<call> ...] (8)
+     10.55 dx [by <call>] <freq> <call> <remarks> (0)
+     10.56 echo <line> (0)
+     10.57 export <msgno> <filename> (9)
+     10.58 export_users [<filename>] (9)
+     10.59 filtering... (0)
+     10.60 forward/latlong <node_call> (8)
+     10.61 forward/opernam <call> (1)
+     10.62 help (0)
+     10.63 init <node> (5)
+     10.64 join <group> (0)
+     10.65 kill (5)
+     10.66 kill <from msgno>-<to msgno> (0)
+     10.67 kill <from>-<to> (5)
+     10.68 kill <msgno> [<msgno..] (0)
+     10.69 kill <msgno> [<msgno> ...] (0)
+     10.70 kill expunge <msgno> [<msgno..] (6)
+     10.71 kill from <call> (5)
+     10.72 kill full <msgno> [<msgno..] (5)
+     10.73 kill full <msgno> [<msgno] (5)
+     10.74 kill to <call> (5)
+     10.75 kill from <regex> (0)
+     10.76 kill to <regex> (0)
+     10.77 leave <group> (0)
+     10.78 links (0)
+     10.79 load/aliases (9)
+     10.80 load/badmsg (9)
+     10.81 load/badwords (9)
+     10.82 load/bands (9)
+     10.83 load/cmd_cache (9)
+     10.84 load/forward (9)
+     10.85 load/keps (5)
+     10.86 load/keps [nn] (5)
+     10.87 load/messages (9)
+     10.88 load/prefixes (9)
+     10.89 merge <node> [<no spots>/<no wwv>] (5)
+     10.90 msg <cmd> <msgno> [data ... ] (9)
+     10.91 pc <call> <text> (8)
+     10.92 ping <node call> (1)
+     10.93 rcmd <node call> <cmd> (1)
+     10.94 read (0)
+     10.95 read <msgno> (0)
+     10.96 read- (5)
+     10.97 reject (0)
+     10.98 reject/announce <call> [input] [0-9] <pattern> (8)
+     10.99 reject/announce [0-9] <pattern> (0)
+     10.100 reject/route <call> [0-9] <pattern> (8)
+     10.101 reject/spots <call> [input] [0-9] <pattern> (8)
+     10.102 reject/spots [0-9] <pattern> (0)
+     10.103 reject/wcy <call> [input] [0-9] <pattern> (8)
+     10.104 reject/wcy [0-9] <pattern> (0)
+     10.105 reject/wwv <call> [input] [0-9] <pattern> (8)
+     10.106 reject/wwv [0-9] <pattern> (0)
+     10.107 reply (0)
+     10.108 reply <msgno> (0)
+     10.109 reply b <msgno> (0)
+     10.110 reply noprivate <msgno> (0)
+     10.111 reply rr <msgno> (0)
+     10.112 save [-d -t -a] <filename> "<cmd>" [...] (9)
+     10.113 send <call> [<call> ...] (0)
+     10.114 send copy <msgno> <call> (0)
+     10.115 send noprivate <call> (0)
+     10.116 send private <call> (0)
+     10.117 send rr <call> (0)
+     10.118 set/address <your address> (0)
+     10.119 set/announce (0)
+     10.120 set/anntalk (0)
+     10.121 set/arcluster <call> [<call>..] (5)
+     10.122 set/baddx <call>.. (8)
+     10.123 set/badnode <call>.. (8)
+     10.124 set/badspotter <call>.. (8)
+     10.125 set/badword <word>.. (8)
+     10.126 set/bbs <call> [<call>..] (5)
+     10.127 set/beep (0)
+     10.128 set/clx <call> [<call>..] (5)
+     10.129 set/debug <name> (9)
+     10.130 set/dx (0)
+     10.131 set/dxcq (0)
+     10.132 set/dxgrid (0)
+     10.133 set/dxitu (0)
+     10.134 set/dxnet <call> [<call>..] (5)
+     10.135 set/echo (0)
+     10.136 set/email <email> ... (0)
+     10.137 set/here (0)
+     10.138 set/homenode <node>  (0)
+     10.139 set/hops <call> ann|spots|route|wwv|wcy <n> (8)
+     10.140 set/isolate (9)
+     10.141 set/language <lang> (0)
+     10.142 set/location <lat & long> (0)
+     10.143 set/lockout <call> (9)
+     10.144 set/logininfo (0)
+     10.145 set/name <your name> (0)
+     10.146 set/node <call> [<call>..] (5)
+     10.147 set/obscount <count> <call> (8)
+     10.148 set/page <lines per page> (0)
+     10.149 set/password (0)
+     10.150 set/password <callsign> <string> (9)
+     10.151 set/pinginterval <time> <nodecall> (9)
+     10.152 set/privilege <n> <call> [<call..] (9)
+     10.153 set/prompt <string> (0)
+     10.154 set/qra <locator> (0)
+     10.155 set/qth <your qth> (0)
+     10.156 set/register <call> ... (9)
+     10.157 set/spider <call> [<call>..] (5)
+     10.158 set/sys_location <lat & long> (9)
+     10.159 set/sys_qra <locator> (9)
+     10.160 set/talk (0)
+     10.161 set/usdb <call> <state> <city> (9)
+     10.162 set/usstate (0)
+     10.163 set/wcy (0)
+     10.164 set/wwv (0)
+     10.165 set/wx (0)
+     10.166 show/baddx (1)
+     10.167 show/badnode (1)
+     10.168 show/badspotter (1)
+     10.169 show/badword (1)
+     10.170 show/chat [<group>] [<lines>] (0)
+     10.171 show/configuration [<node>] (0)
+     10.172 show/configuration/node (0)
+     10.173 show/connect (1)
+     10.174 show/contest <year and month> (0)
+     10.175 show/date [<prefix>|<callsign>] (0)
+     10.176 show/db0sdx <callsign> (0)
+     10.177 show/debug (9)
+     10.178 show/dx (0)
+     10.179 show/dxcc <prefix> (0)
+     10.180 show/dxqsl <callsign> (0)
+     10.181 show/dxstats [days] [date] (0)
+     10.182 show/files [<filearea> [<string>]] (0)
+     10.183 show/filter (0)
+     10.184 show/hfstats [days] [date] (0)
+     10.185 show/hftable [days] [date] [prefix ...] (0)
+     10.186 show/hops <call> [ann|spots|route|wcy|wwv] (8)
+     10.187 show/isolate (1)
+     10.188 show/lockout <prefix>|all (9)
+     10.189 show/log [<callsign>] (8)
+     10.190 show/moon [ndays] [<prefix>|<callsign>] (0)
+     10.191 show/muf <prefix> [<hours>][long] (0)
+     10.192 show/newconfiguration [<node>] (0)
+     10.193 show/newconfiguration/node (0)
+     10.194 show/node [<callsign> ...] (1)
+     10.195 show/prefix <callsign> (0)
+     10.196 show/program (5)
+     10.197 show/qra <lat> <long> (0)
+     10.198 show/qra <locator> [<locator>] (0)
+     10.199 show/qrz <callsign> (0)
+     10.200 show/registered [<prefix>] (9)
+     10.201 show/route <callsign> ... (0)
+     10.202 show/satellite <name> [<hours> <interval>] (0)
+     10.203 show/station all [<regex>] (6)
+     10.204 show/station [<callsign> ..] (0)
+     10.205 show/sun [ndays] [<prefix>|<callsign>] (0)
+     10.206 show/time [<prefix>|<callsign>] (0)
+     10.207 show/usdb [call ..] (0)
+     10.208 show/vhfstats [days] [date] (0)
+     10.209 show/vhftable [days] [date] [prefix ...] (0)
+     10.210 show/wcy (0)
+     10.211 show/wcy <n> (0)
+     10.212 show/wm7d <callsign> (0)
+     10.213 show/wwv (0)
+     10.214 show/wwv <n> (0)
+     10.215 shutdown (5)
+     10.216 spoof <call> <command> (9)
+     10.217 stat/channel [<callsign>] (5)
+     10.218 stat/db <dbname> (5)
+     10.219 stat/msg (1)
+     10.220 stat/msg <msgno> (1)
+     10.221 stat/route_node <callsign> (5)
+     10.222 stat/route_node all (5)
+     10.223 stat/route_user <callsign> (5)
+     10.224 stat/route_user all (5)
+     10.225 stat/user [<callsign>] (5)
+     10.226 sysop (0)
+     10.227 talk <call> > <node> [<text>] (0)
+     10.228 talk <call> [<text>] (0)
+     10.229 type <filearea>/<name> (0)
+     10.230 uncatchup <node call> all|[msgno> ...] (5)
+     10.231 unset/announce (0)
+     10.232 unset/anntalk (0)
+     10.233 unset/baddx <call>.. (8)
+     10.234 unset/badnode <call>.. (8)
+     10.235 unset/badspotter <call>.. (8)
+     10.236 unset/badword <word>.. (8)
+     10.237 unset/beep (0)
+     10.238 unset/debug <name> (9)
+     10.239 unset/dx (0)
+     10.240 unset/dxcq (0)
+     10.241 unset/dxgrid (0)
+     10.242 unset/dxitu (0)
+     10.243 unset/echo (0)
+     10.244 unset/email (0)
+     10.245 unset/here (0)
+     10.246 unset/hops <call> ann|spots|route|wwv|wcy (8)
+     10.247 unset/isolate (9)
+     10.248 unset/lockout <call> (9)
+     10.249 unset/logininfo (0)
+     10.250 unset/password <call> ... (9)
+     10.251 unset/privilege (0)
+     10.252 unset/prompt (0)
+     10.253 unset/register <call> ... (9)
+     10.254 unset/talk (0)
+     10.255 unset/usstate (0)
+     10.256 unset/wcy (0)
+     10.257 unset/wwv (0)
+     10.258 unset/wx (0)
+     10.259 who (0)
+     10.260 wx <text> (0)
+     10.261 wx full <text> (0)
+     10.262 wx sysop <text> (5)
 
 
   ______________________________________________________________________
@@ -2286,16 +2284,14 @@
 
 
 
-  11.  The DXSpider command set
-
-  11.1.  accept (0)
+  10.3.  accept (0)
 
   accept Set a filter to accept something
 
   Create a filter to accept somethingThere are 2 types of filter, accept
   and reject.  See HELP FILTERING for moreinfo.
 
-  11.2.  accept/announce <call> [input] [0-9] <pattern> (8)
+  10.4.  accept/announce <call> [input] [0-9] <pattern> (8)
 
   accept/announce <call> [input] [0-9] <pattern> Announce filter sysop
   version
@@ -2308,7 +2304,7 @@
 
 
 
-  11.3.  accept/announce [0-9] <pattern> (0)
+  10.5.  accept/announce [0-9] <pattern> (0)
 
   accept/announce [0-9] <pattern> Set an 'accept' filter line for
   announce
@@ -2354,7 +2350,7 @@
 
   but this probably for advanced users...
 
-  11.4.  accept/route <call> [0-9] <pattern> (8)
+  10.6.  accept/route <call> [0-9] <pattern> (8)
 
   accept/route <call> [0-9] <pattern> Set an 'accept' filter line for
   routing
@@ -2392,7 +2388,7 @@
 
 
 
-  11.5.  accept/spots <call> [input] [0-9] <pattern> (8)
+  10.7.  accept/spots <call> [input] [0-9] <pattern> (8)
 
   accept/spots <call> [input] [0-9] <pattern> Spot filter sysop version
 
@@ -2408,7 +2404,7 @@
 
 
 
-  11.6.  accept/spots [0-9] <pattern> (0)
+  10.8.  accept/spots [0-9] <pattern> (0)
 
   accept/spots [0-9] <pattern> Set an 'accept' filter line for spots
 
@@ -2443,7 +2439,7 @@
 
   but this probably for advanced users...
 
-  11.7.  accept/wcy <call> [input] [0-9] <pattern> (8)
+  10.9.  accept/wcy <call> [input] [0-9] <pattern> (8)
 
   accept/wcy <call> [input] [0-9] <pattern> WCY filter sysop version
 
@@ -2455,7 +2451,7 @@
 
 
 
-  11.8.  accept/wcy [0-9] <pattern> (0)
+  10.10.  accept/wcy [0-9] <pattern> (0)
 
   accept/wcy [0-9] <pattern> set an 'accept' WCY filter
 
@@ -2472,7 +2468,7 @@
   them).This command is really provided for future use.See HELP FILTER
   for information.
 
-  11.9.  accept/wwv <call> [input] [0-9] <pattern> (8)
+  10.11.  accept/wwv <call> [input] [0-9] <pattern> (8)
 
   accept/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
 
@@ -2488,7 +2484,7 @@
 
 
 
-  11.10.  accept/wwv [0-9] <pattern> (0)
+  10.12.  accept/wwv [0-9] <pattern> (0)
 
   accept/wwv [0-9] <pattern> set an 'accept' WWV filter
 
@@ -2510,31 +2506,31 @@
   is probably the only useful thing to do (which will only show WWV
   broadcastsby stations in the US).See HELP FILTER for information.
 
-  11.11.  announce <text> (0)
+  10.13.  announce <text> (0)
 
   announce <text> Send an announcement to LOCAL users only
 
   <text> is the text of the announcement you wish to broadcast
 
-  11.12.  announce full <text> (0)
+  10.14.  announce full <text> (0)
 
   announce full <text> Send an announcement cluster wide
 
   This will send your announcement cluster wide
 
-  11.13.  announce sysop <text> (5)
+  10.15.  announce sysop <text> (5)
 
   announce sysop <text> Send an announcement to Sysops only
 
 
-  11.14.  apropos <string> (0)
+  10.16.  apropos <string> (0)
 
   apropos <string> Search help database for <string>
 
   Search the help database for <string> (it isn't case sensitive), and
   printthe names of all the commands that may be relevant.
 
-  11.15.  blank [<string>] [<nn>] (0)
+  10.17.  blank [<string>] [<nn>] (0)
 
   blank [<string>] [<nn>] Print nn (default 1) blank lines (or strings)
 
@@ -2564,18 +2560,18 @@
   prints 'abcabcabcabcabcabc....'This is really only of any use in a
   script file and you can print a maximumof 9 lines.
 
-  11.16.  bye (0)
+  10.18.  bye (0)
 
   bye Exit from the cluster
 
   This will disconnect you from the cluster
 
-  11.17.  catchup <node call> all|[<msgno> ...] (5)
+  10.19.  catchup <node call> all|[<msgno> ...] (5)
 
   catchup <node call> all|[<msgno> ...] Mark a message as sent
 
 
-  11.18.  chat <group> <text> (0)
+  10.20.  chat <group> <text> (0)
 
   chat <group> <text> Chat or Conference to a group
 
@@ -2629,7 +2625,7 @@
 
   See also JOIN, LEAVE, SHOW/CHAT
 
-  11.19.  clear/announce <callsign> [input] [0-9|all] (8)
+  10.21.  clear/announce <callsign> [input] [0-9|all] (8)
 
   clear/announce <callsign> [input] [0-9|all] Clear a announce filter
   line
@@ -2637,7 +2633,7 @@
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.20.  clear/announce [1|all] (0)
+  10.22.  clear/announce [1|all] (0)
 
   clear/announce [1|all] Clear a announce filter line
 
@@ -2645,14 +2641,14 @@
   or to remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.21.  clear/route <callsign> [input] [0-9|all] (8)
+  10.23.  clear/route <callsign> [input] [0-9|all] (8)
 
   clear/route <callsign> [input] [0-9|all] Clear a route filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.22.  clear/route [1|all] (0)
+  10.24.  clear/route [1|all] (0)
 
   clear/route [1|all] Clear a route filter line
 
@@ -2660,14 +2656,14 @@
   to remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.23.  clear/spots <callsign> [input] [0-9|all] (8)
+  10.25.  clear/spots <callsign> [input] [0-9|all] (8)
 
   clear/spots <callsign> [input] [0-9|all] Clear a spot filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.24.  clear/spots [0-9|all] (0)
+  10.26.  clear/spots [0-9|all] (0)
 
   clear/spots [0-9|all] Clear a spot filter line
 
@@ -2702,14 +2698,14 @@
 
   the filter will be completely removed.
 
-  11.25.  clear/wcy <callsign> [input] [0-9|all] (8)
+  10.27.  clear/wcy <callsign> [input] [0-9|all] (8)
 
   clear/wcy <callsign> [input] [0-9|all] Clear a WCY filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.26.  clear/wcy [1|all] (0)
+  10.28.  clear/wcy [1|all] (0)
 
   clear/wcy [1|all] Clear a WCY filter line
 
@@ -2717,14 +2713,14 @@
   remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.27.  clear/wwv <callsign> [input] [0-9|all] (8)
+  10.29.  clear/wwv <callsign> [input] [0-9|all] (8)
 
   clear/wwv <callsign> [input] [0-9|all] Clear a WWV filter line
 
   A sysop can clear an input or normal output filter for a user or
   thenode_default or user_default.
 
-  11.28.  clear/wwv [1|all] (0)
+  10.30.  clear/wwv [1|all] (0)
 
   clear/wwv [1|all] Clear a WWV filter line
 
@@ -2732,7 +2728,7 @@
   remove the whole filter.see CLEAR/SPOTS for a more detailed
   explanation.
 
-  11.29.  connect <callsign> (5)
+  10.31.  connect <callsign> (5)
 
   connect <callsign> Start a connection to another DX Cluster
 
@@ -2742,24 +2738,24 @@
   'chat' exchangenecessary to traverse the network(s) to logon to the
   cluster <callsign>.
 
-  11.30.  dbavail (0)
+  10.32.  dbavail (0)
 
   dbavail Show a list of all the Databases in the system
 
   Title says it all really, this command lists all the databases
   definedin the system. It is also aliased to SHOW/COMMAND.
 
-  11.31.  dbcreate <name> (9)
+  10.33.  dbcreate <name> (9)
 
   dbcreate <name> Create a database entry
 
 
-  11.32.  dbcreate <name> chain <name> [<name>..] (9)
+  10.34.  dbcreate <name> chain <name> [<name>..] (9)
 
   dbcreate <name> chain <name> [<name>..] Create a chained database
   entry
 
-  11.33.  dbcreate <name> cmd <dxspider command> (9)
+  10.35.  dbcreate <name> cmd <dxspider command> (9)
 
   dbcreate <name> cmd <dxspider command> make a local command available
   as a DB
@@ -2839,12 +2835,12 @@
   locally. See DBIMPORT for the importing of existing AK1A format data
   to databases.See DBSHOW for generic database enquiry
 
-  11.34.  dbcreate <name> remote <node> (9)
+  10.36.  dbcreate <name> remote <node> (9)
 
   dbcreate <name> remote <node> Create a remote database entry
 
 
-  11.35.  dbimport <dbname> <filename> (9)
+  10.37.  dbimport <dbname> <filename> (9)
 
   dbimport <dbname> <filename> Import AK1A data into a database
 
@@ -2860,7 +2856,7 @@
   will import the standard OBLAST database that comes with AK1A into
   theoblast database held locally.
 
-  11.36.  dbremove <dbname> (9)
+  10.38.  dbremove <dbname> (9)
 
   dbremove <dbname> Delete a database
 
@@ -2877,7 +2873,7 @@
   removethe associated datafile.I repeat:There is no warning, no come-
   back, no safety net.You have been warned.
 
-  11.37.  dbshow <dbname> <key> (0)
+  10.39.  dbshow <dbname> <key> (0)
 
   dbshow <dbname> <key> Display an entry, if it exists, in a database
 
@@ -2899,7 +2895,7 @@
 
 
 
-  11.38.  debug (9)
+  10.40.  debug (9)
 
   debug Set the cluster program into debug mode
 
@@ -2914,7 +2910,7 @@
   It will interrupt the cluster just after the debug command has fin-
   ished.
 
-  11.39.  delete/usdb <callsign> ... (9)
+  10.41.  delete/usdb <callsign> ... (9)
 
   delete/usdb <callsign> ... Delete this user from the US State Database
 
@@ -2923,7 +2919,7 @@
   you should use this command CAREFULLY!Note that these callsign may be
   re-instated by any weekly updates from the FCC.
 
-  11.40.  delete/user <callsign> ... (9)
+  10.42.  delete/user <callsign> ... (9)
 
   delete/user <callsign> ... Delete this user from the User Database
 
@@ -2931,7 +2927,7 @@
   database.There is NO SECOND CHANCE.It goes without saying that you
   should use this command CAREFULLY!
 
-  11.41.  demonstrate <call> <command> (9)
+  10.43.  demonstrate <call> <command> (9)
 
   demonstrate <call> <command> Demonstrate a command to another user
 
@@ -2949,13 +2945,13 @@
   sideeffects. Commands are run at the privilege of the user which is
   beingdemonstrated to.
 
-  11.42.  directory (0)
+  10.44.  directory (0)
 
   directory List messages
 
 
 
-  11.43.  directory <from>-<to> (0)
+  10.45.  directory <from>-<to> (0)
 
   directory <from>-<to> List messages <from> message <to> message
 
@@ -2986,53 +2982,53 @@
 
 
 
-  11.44.  directory <nn> (0)
+  10.46.  directory <nn> (0)
 
   directory <nn> List last <nn> messages
 
 
-  11.45.  directory all (0)
+  10.47.  directory all (0)
 
   directory all List all messages
 
 
-  11.46.  directory from <call> (0)
+  10.48.  directory from <call> (0)
 
   directory from <call> List all messages from <call>
 
 
-  11.47.  directory new (0)
+  10.49.  directory new (0)
 
   directory new List all new messages
 
 
-  11.48.  directory own (0)
+  10.50.  directory own (0)
 
   directory own List your own messages
 
 
-  11.49.  directory subject <string> (0)
+  10.51.  directory subject <string> (0)
 
   directory subject <string> List all messages with <string> in subject
 
 
-  11.50.  directory to <call> (0)
+  10.52.  directory to <call> (0)
 
   directory to <call> List all messages to <call>
 
-  11.51.  directory- (5)
+  10.53.  directory- (5)
 
   directory-
 
   Sysops can see all users' messages.
 
-  11.52.  disconnect <call> [<call> ...] (8)
+  10.54.  disconnect <call> [<call> ...] (8)
 
   disconnect <call> [<call> ...] Disconnect a user or cluster
 
   Disconnect any <call> connected locally
 
-  11.53.  dx [by <call>] <freq> <call> <remarks> (0)
+  10.55.  dx [by <call>] <freq> <call> <remarks> (0)
 
   dx [by <call>] <freq> <call> <remarks> Send a DX spot
 
@@ -3062,7 +3058,7 @@
   The <freq> is compared against the available bands set up in the clus-
   ter.  See SHOW/BANDS for more information.
 
-  11.54.  echo <line> (0)
+  10.56.  echo <line> (0)
 
   echo <line> Echo the line to the output
 
@@ -3107,7 +3103,7 @@
 
   on the output.
 
-  11.55.  export <msgno> <filename> (9)
+  10.57.  export <msgno> <filename> (9)
 
   export <msgno> <filename> Export a message to a file
 
@@ -3125,7 +3121,7 @@
 
 
 
-  11.56.  export_users [<filename>] (9)
+  10.58.  export_users [<filename>] (9)
 
   export_users [<filename>] Export the users database to ascii
 
@@ -3136,7 +3132,7 @@
   thesuffix. BE WARNED: this will write to any file you have write
   access to. No check ismade on the filename (if any) that you specify.
 
-  11.57.  filtering... (0)
+  10.59.  filtering... (0)
 
   filtering... Filtering things in DXSpider
 
@@ -3295,7 +3291,7 @@
   else on HF.The next filter line lets through just VHF/UHF spots from
   EU.
 
-  11.58.  forward/latlong <node_call> (8)
+  10.60.  forward/latlong <node_call> (8)
 
   forward/latlong <node_call> Send latitude and longitude information to
   another cluster
@@ -3307,7 +3303,7 @@
   haveSET/DXGRID enabled.  This could be a LOT of information though,
   soit is not recommended on slow links.
 
-  11.59.  forward/opernam <call> (1)
+  10.61.  forward/opernam <call> (1)
 
   forward/opernam <call> Send out information on this <call> to all
   clusters
@@ -3317,7 +3313,7 @@
   Locationand Homenode. PC41s are only sent for the information that is
   available.
 
-  11.60.  help (0)
+  10.62.  help (0)
 
   help The HELP Command
 
@@ -3334,7 +3330,7 @@
   which will search the help databasefor the <string> you specify and
   give you a list of likely commandsto look at with HELP.
 
-  11.61.  init <node> (5)
+  10.63.  init <node> (5)
 
   init <node> Re-initialise a link to an AK1A compatible node
 
@@ -3344,7 +3340,7 @@
   (orbetter, if it is a real AK1A node, doing an RCMD <node> DISC/F
   <yournode>).Best of luck - you will need it.
 
-  11.62.  join <group> (0)
+  10.64.  join <group> (0)
 
   join <group> Join a chat or conference group
 
@@ -3358,35 +3354,35 @@
 
   See also CHAT, LEAVE, SHOW/CHAT
 
-  11.63.  kill (5)
+  10.65.  kill (5)
 
   kill
 
   As a sysop you can kill any message on the system.
 
-  11.64.  kill <from msgno>-<to msgno> (0)
+  10.66.  kill <from msgno>-<to msgno> (0)
 
   kill <from msgno>-<to msgno> Delete a range of messages
 
 
-  11.65.  kill <from>-<to> (5)
+  10.67.  kill <from>-<to> (5)
 
   kill <from>-<to> Remove a range of messages from the system
 
 
-  11.66.  kill <msgno> [<msgno..] (0)
+  10.68.  kill <msgno> [<msgno..] (0)
 
   kill <msgno> [<msgno..] Delete a message from the local system
 
 
-  11.67.  kill <msgno> [<msgno> ...] (0)
+  10.69.  kill <msgno> [<msgno> ...] (0)
 
   kill <msgno> [<msgno> ...] Remove or erase a message from the system
 
   You can get rid of any message to or originating from your callsign
   using this command. You can remove more than one message at a time.
 
-  11.68.  kill expunge <msgno> [<msgno..] (6)
+  10.70.  kill expunge <msgno> [<msgno..] (6)
 
   kill expunge <msgno> [<msgno..] Expunge a message
 
@@ -3396,12 +3392,12 @@
   truly deleted more or lessimmediately.It otherwise is used in the same
   way as the KILL command.
 
-  11.69.  kill from <call> (5)
+  10.71.  kill from <call> (5)
 
   kill from <call> Remove all messages from a callsign
 
 
-  11.70.  kill full <msgno> [<msgno..] (5)
+  10.72.  kill full <msgno> [<msgno..] (5)
 
   kill full <msgno> [<msgno..] Delete a message from the whole cluster
 
@@ -3440,29 +3436,29 @@
   system. This uses the subject field, so any messages that have exactly
   thesame subject will be deleted. Beware!
 
-  11.71.  kill full <msgno> [<msgno] (5)
+  10.73.  kill full <msgno> [<msgno] (5)
 
   kill full <msgno> [<msgno] Remove a message from the entire cluster
 
   Remove this message from the entire cluster system as well as your
   node.
 
-  11.72.  kill to <call> (5)
+  10.74.  kill to <call> (5)
 
   kill to <call> Remove all messages to a callsign
 
 
-  11.73.  kill from <regex> (0)
+  10.75.  kill from <regex> (0)
 
   kill from <regex> Delete messages FROM a callsign or pattern
 
 
-  11.74.  kill to <regex> (0)
+  10.76.  kill to <regex> (0)
 
   kill to <regex> Delete messages TO a callsign or pattern
 
 
-  11.75.  leave <group> (0)
+  10.77.  leave <group> (0)
 
   leave <group> Leave a chat or conference group
 
@@ -3476,14 +3472,14 @@
 
   See also CHAT, JOIN, SHOW/CHAT
 
-  11.76.  links (0)
+  10.78.  links (0)
 
   links Show which nodes is physically connected
 
   This is a quick listing that shows which links are connected andsome
   information about them. See WHO for a list of all connections.
 
-  11.77.  load/aliases (9)
+  10.79.  load/aliases (9)
 
   load/aliases Reload the command alias table
 
@@ -3491,7 +3487,7 @@
   need to do this if you change this file whilst the cluster isrunning
   in order for the changes to take effect.
 
-  11.78.  load/badmsg (9)
+  10.80.  load/badmsg (9)
 
   load/badmsg Reload the bad msg table
 
@@ -3501,7 +3497,7 @@
   each message. If any of them match then that message is immediately
   deleted on receipt.
 
-  11.79.  load/badwords (9)
+  10.81.  load/badwords (9)
 
   load/badwords Reload the bad words table
 
@@ -3513,14 +3509,14 @@
   words can be one or more on a line, lines starting with '#' are
   ignored.
 
-  11.80.  load/bands (9)
+  10.82.  load/bands (9)
 
   load/bands Reload the band limits table
 
   Reload the /spider/data/bands.pl file if you have changed it manually
   whilstthe cluster is running.
 
-  11.81.  load/cmd_cache (9)
+  10.83.  load/cmd_cache (9)
 
   load/cmd_cache Reload the automatic command cache
 
@@ -3531,20 +3527,20 @@
   oneagain. Execute this command to reset everything back to the state
   itwas just after a cluster restart.
 
-  11.82.  load/forward (9)
+  10.84.  load/forward (9)
 
   load/forward Reload the msg forwarding routing table
 
   Reload the /spider/msg/forward.pl file if you have changed itmanually
   whilst the cluster is running.
 
-  11.83.  load/keps (5)
+  10.85.  load/keps (5)
 
   load/keps Load new keps data
 
 
 
-  11.84.  load/keps [nn] (5)
+  10.86.  load/keps [nn] (5)
 
   load/keps [nn] Load new keps data from message
 
@@ -3561,7 +3557,7 @@
   vkeps.pl on it and then load the data, all in one step.These messages
   are sent to ALL by GB7DJK (and others) from time to time.
 
-  11.85.  load/messages (9)
+  10.87.  load/messages (9)
 
   load/messages Reload the system messages file
 
@@ -3570,14 +3566,14 @@
   during acluster session by executing this command. You need to do this
   if getsomething like :-unknown message 'xxxx' in lang 'en'
 
-  11.86.  load/prefixes (9)
+  10.88.  load/prefixes (9)
 
   load/prefixes Reload the prefix table
 
   Reload the /spider/data/prefix_data.pl file if you have changed
   itmanually whilst the cluster is running.
 
-  11.87.  merge <node> [<no spots>/<no wwv>] (5)
+  10.89.  merge <node> [<no spots>/<no wwv>] (5)
 
   merge <node> [<no spots>/<no wwv>] Ask for the latest spots and WWV
 
@@ -3588,7 +3584,7 @@
   they will not duplicate any that have recently been added (the last 2
   days for spots and last month for WWV data).
 
-  11.88.  msg <cmd> <msgno> [data ... ] (9)
+  10.90.  msg <cmd> <msgno> [data ... ] (9)
 
   msg <cmd> <msgno> [data ... ] Alter various message parameters
 
@@ -3610,7 +3606,7 @@
 
   This will display more information on the message than DIR does.
 
-  11.89.  pc <call> <text> (8)
+  10.91.  pc <call> <text> (8)
 
   pc <call> <text> Send arbitrary text to a connected callsign
 
@@ -3636,7 +3632,7 @@
   nected user butwithout any processing, added of "from <blah> to <blah"
   or whatever.
 
-  11.90.  ping <node call> (1)
+  10.92.  ping <node call> (1)
 
   ping <node call> Check the link quality between nodes
 
@@ -3646,7 +3642,7 @@
   output to the console in seconds.Any visible cluster node can be
   PINGed.
 
-  11.91.  rcmd <node call> <cmd> (1)
+  10.93.  rcmd <node call> <cmd> (1)
 
   rcmd <node call> <cmd> Send a command to another DX Cluster
 
@@ -3657,33 +3653,33 @@
   is allowing RCMDs from this node and c) whether you havepermission to
   send this command at all.
 
-  11.92.  read (0)
+  10.94.  read (0)
 
   read Read the next unread personal message addressed to you
 
 
-  11.93.  read <msgno> (0)
+  10.95.  read <msgno> (0)
 
   read <msgno> Read the specified message
 
   You can read any messages that are sent as 'non-personal' and also
   anymessage either sent by or sent to your callsign.
 
-  11.94.  read- (5)
+  10.96.  read- (5)
 
   read-
 
   As a sysop you may read any message on the system
 
 
-  11.95.  reject (0)
+  10.97.  reject (0)
 
   reject Set a filter to reject something
 
   Create a filter to reject somethingThere are 2 types of filter, accept
   and reject.  See HELP FILTERING for moreinfo.
 
-  11.96.  reject/announce <call> [input] [0-9] <pattern> (8)
+  10.98.  reject/announce <call> [input] [0-9] <pattern> (8)
 
   reject/announce <call> [input] [0-9] <pattern> Announce filter sysop
   version
@@ -3696,7 +3692,7 @@
 
 
 
-  11.97.  reject/announce [0-9] <pattern> (0)
+  10.99.  reject/announce [0-9] <pattern> (0)
 
   reject/announce [0-9] <pattern> Set a 'reject' filter line for
   announce
@@ -3728,7 +3724,7 @@
 
   but this probably for advanced users...
 
-  11.98.  reject/route <call> [0-9] <pattern> (8)
+  10.100.  reject/route <call> [0-9] <pattern> (8)
 
   reject/route <call> [0-9] <pattern> Set an 'reject' filter line for
   routing
@@ -3761,7 +3757,7 @@
 
   as with ACCEPT/ROUTE 'by' is now a synonym for 'call'.
 
-  11.99.  reject/spots <call> [input] [0-9] <pattern> (8)
+  10.101.  reject/spots <call> [input] [0-9] <pattern> (8)
 
   reject/spots <call> [input] [0-9] <pattern> Spot filter sysop version
 
@@ -3777,7 +3773,7 @@
 
 
 
-  11.100.  reject/spots [0-9] <pattern> (0)
+  10.102.  reject/spots [0-9] <pattern> (0)
 
   reject/spots [0-9] <pattern> Set a 'reject' filter line for spots
 
@@ -3804,7 +3800,7 @@
 
   but this probably for advanced users...
 
-  11.101.  reject/wcy <call> [input] [0-9] <pattern> (8)
+  10.103.  reject/wcy <call> [input] [0-9] <pattern> (8)
 
   reject/wcy <call> [input] [0-9] <pattern> WCY filter sysop version
 
@@ -3816,7 +3812,7 @@
 
 
 
-  11.102.  reject/wcy [0-9] <pattern> (0)
+  10.104.  reject/wcy [0-9] <pattern> (0)
 
   reject/wcy [0-9] <pattern> set a 'reject' WCY filter
 
@@ -3833,7 +3829,7 @@
   them).This command is really provided for future use.See HELP FILTER
   for information.
 
-  11.103.  reject/wwv <call> [input] [0-9] <pattern> (8)
+  10.105.  reject/wwv <call> [input] [0-9] <pattern> (8)
 
   reject/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
 
@@ -3849,7 +3845,7 @@
 
 
 
-  11.104.  reject/wwv [0-9] <pattern> (0)
+  10.106.  reject/wwv [0-9] <pattern> (0)
 
   reject/wwv [0-9] <pattern> set a 'reject' WWV filter
 
@@ -3871,27 +3867,27 @@
   is probably the only useful thing to do (which will only show WWV
   broadcastsby stations in the US).See HELP FILTER for information.
 
-  11.105.  reply (0)
+  10.107.  reply (0)
 
   reply Reply (privately) to the last message that you have read
 
 
-  11.106.  reply <msgno> (0)
+  10.108.  reply <msgno> (0)
 
   reply <msgno> Reply (privately) to the specified message
 
 
-  11.107.  reply b <msgno> (0)
+  10.109.  reply b <msgno> (0)
 
   reply b <msgno> Reply as a Bulletin to the specified message
 
 
-  11.108.  reply noprivate <msgno> (0)
+  10.110.  reply noprivate <msgno> (0)
 
   reply noprivate <msgno> Reply as a Bulletin to the specified message
 
 
-  11.109.  reply rr <msgno> (0)
+  10.111.  reply rr <msgno> (0)
 
   reply rr <msgno> Reply to the specified message with read receipt
 
@@ -3900,7 +3896,7 @@
   also use all the extra qualifiers such as RR, PRIVATE, NOPRIVATE, B
   that you can use with the SEND command (see SENDfor further details)
 
-  11.110.  save [-d -t -a] <filename> "<cmd>" [...] (9)
+  10.112.  save [-d -t -a] <filename> "<cmd>" [...] (9)
 
   save [-d -t -a] <filename> "<cmd>" [...] Save command output to a file
 
@@ -3953,17 +3949,17 @@
   this can be varied if you know what you are doing. See theadmin manual
   for more details.
 
-  11.111.  send <call> [<call> ...] (0)
+  10.113.  send <call> [<call> ...] (0)
 
   send <call> [<call> ...] Send a message to one or more callsigns
 
 
-  11.112.  send copy <msgno> <call> (0)
+  10.114.  send copy <msgno> <call> (0)
 
   send copy <msgno> <call> Send a copy of a  message to someone
 
 
-  11.113.  send noprivate <call> (0)
+  10.115.  send noprivate <call> (0)
 
   send noprivate <call> Send a message to all stations
 
@@ -4030,119 +4026,119 @@
   themessage. You can carry on with the message until you are ready to
   send it.
 
-  11.114.  send private <call> (0)
+  10.116.  send private <call> (0)
 
   send private <call> Send a personal message
 
 
-  11.115.  send rr <call> (0)
+  10.117.  send rr <call> (0)
 
   send rr <call> Send a message and ask for a read receipt
 
 
-  11.116.  set/address <your address> (0)
+  10.118.  set/address <your address> (0)
 
   set/address <your address> Record your postal address
 
 
-  11.117.  set/announce (0)
+  10.119.  set/announce (0)
 
   set/announce Allow announce messages to come out on your terminal
 
 
-  11.118.  set/anntalk (0)
+  10.120.  set/anntalk (0)
 
   set/anntalk Allow talk like announce messages on your terminal
 
 
-  11.119.  set/arcluster <call> [<call>..] (5)
+  10.121.  set/arcluster <call> [<call>..] (5)
 
   set/arcluster <call> [<call>..] Make the callsign an AR-Cluster node
 
 
 
-  11.120.  set/baddx <call>.. (8)
+  10.122.  set/baddx <call>.. (8)
 
   set/baddx <call>.. Stop callsigns in a dx spot being propagated
 
 
-  11.121.  set/badnode <call>.. (8)
+  10.123.  set/badnode <call>.. (8)
 
   set/badnode <call>.. Stop spots from this node being propagated
 
 
-  11.122.  set/badspotter <call>.. (8)
+  10.124.  set/badspotter <call>.. (8)
 
   set/badspotter <call>.. Stop spots from this callsign being propagated
 
 
-  11.123.  set/badword <word>.. (8)
+  10.125.  set/badword <word>.. (8)
 
   set/badword <word>.. Stop things with this word being propagated
 
 
-  11.124.  set/bbs <call> [<call>..] (5)
+  10.126.  set/bbs <call> [<call>..] (5)
 
   set/bbs <call> [<call>..] Make the callsign a BBS
 
 
-  11.125.  set/beep (0)
+  10.127.  set/beep (0)
 
   set/beep Add a beep to DX and other messages on your terminal
 
 
-  11.126.  set/clx <call> [<call>..] (5)
+  10.128.  set/clx <call> [<call>..] (5)
 
   set/clx <call> [<call>..] Make the callsign an CLX node
 
 
-  11.127.  set/debug <name> (9)
+  10.129.  set/debug <name> (9)
 
   set/debug <name> Add a debug level to the debug set
 
 
-  11.128.  set/dx (0)
+  10.130.  set/dx (0)
 
   set/dx Allow DX messages to come out on your terminal
 
 
-  11.129.  set/dxcq (0)
+  10.131.  set/dxcq (0)
 
   set/dxcq Show CQ Zones on the end of DX announcements
 
 
-  11.130.  set/dxgrid (0)
+  10.132.  set/dxgrid (0)
 
   set/dxgrid Allow QRA Grid Squares on the end of DX announcements
 
 
-  11.131.  set/dxitu (0)
+  10.133.  set/dxitu (0)
 
   set/dxitu Show ITU Zones on the end of DX announcements
 
 
-  11.132.  set/dxnet <call> [<call>..] (5)
+  10.134.  set/dxnet <call> [<call>..] (5)
 
   set/dxnet <call> [<call>..] Make the callsign an DXNet node
 
 
 
-  11.133.  set/echo (0)
+  10.135.  set/echo (0)
 
   set/echo Make the cluster echo your input
 
 
-  11.134.  set/email <email> ... (0)
+  10.136.  set/email <email> ... (0)
 
   set/email <email> ... Set email address(es) and forward your personals
 
 
-  11.135.  set/here (0)
+  10.137.  set/here (0)
 
   set/here Tell the system you are present at your terminal
 
 
-  11.136.  set/homenode <node>  (0)
+  10.138.  set/homenode <node>  (0)
 
   set/homenode <node>  Set your normal cluster callsign
 
@@ -4155,12 +4151,12 @@
 
 
 
-  11.137.  set/hops <call> ann|spots|route|wwv|wcy <n> (8)
+  10.139.  set/hops <call> ann|spots|route|wwv|wcy <n> (8)
 
   set/hops <call> ann|spots|route|wwv|wcy <n> Set hop count
 
 
-  11.138.  set/isolate (9)
+  10.140.  set/isolate (9)
 
   set/isolate Isolate a node from the rest of the network
 
@@ -4170,7 +4166,7 @@
   connected to you.You can potentially connect several nodes in this
   way.
 
-  11.139.  set/language <lang> (0)
+  10.141.  set/language <lang> (0)
 
   set/language <lang> Set the language you want to use
 
@@ -4178,21 +4174,21 @@
   Currentlythe languages available are en (English), de (German), es
   (Spanish) and nl (Dutch).
 
-  11.140.  set/location <lat & long> (0)
+  10.142.  set/location <lat & long> (0)
 
   set/location <lat & long> Set your latitude and longitude
 
 
-  11.141.  set/lockout <call> (9)
+  10.143.  set/lockout <call> (9)
 
   set/lockout <call> Stop a callsign connecting to the cluster
 
 
-  11.142.  set/logininfo (0)
+  10.144.  set/logininfo (0)
 
   set/logininfo Inform when a station logs in locally
 
-  11.143.  set/name <your name> (0)
+  10.145.  set/name <your name> (0)
 
   set/name <your name> Set your name
 
@@ -4203,14 +4199,14 @@
 
 
 
-  11.144.  set/node <call> [<call>..] (5)
+  10.146.  set/node <call> [<call>..] (5)
 
   set/node <call> [<call>..] Make the callsign an AK1A cluster
 
   Tell the system that the call(s) are to be treated as AK1A cluster
   andfed PC Protocol rather normal user commands.
 
-  11.145.  set/obscount <count> <call> (8)
+  10.147.  set/obscount <count> <call> (8)
 
   set/obscount <count> <call> Set the 'pump-up' obscelence PING counter
 
@@ -4227,7 +4223,7 @@
   between 1 and 9.It is STRONGLY recommended that you don't change the
   default.
 
-  11.146.  set/page <lines per page> (0)
+  10.148.  set/page <lines per page> (0)
 
   set/page <lines per page> Set the lines per page
 
@@ -4242,7 +4238,7 @@
 
   The setting is stored in your user profile.
 
-  11.147.  set/password (0)
+  10.149.  set/password (0)
 
   set/password Set your own password
 
@@ -4256,7 +4252,7 @@
 
 
 
-  11.148.  set/password <callsign> <string> (9)
+  10.150.  set/password <callsign> <string> (9)
 
   set/password <callsign> <string> Set a users password
 
@@ -4275,7 +4271,7 @@
   command is executed in the startup script, then a password prompt
   isgiven after the normal 'login: ' prompt.
 
-  11.149.  set/pinginterval <time> <nodecall> (9)
+  10.151.  set/pinginterval <time> <nodecall> (9)
 
   set/pinginterval <time> <nodecall> Set ping time to neighbouring nodes
 
@@ -4300,7 +4296,7 @@
   this value too low may annoy your neighbours beyond the point of
   endurance!You can switch this off by setting it to 0.
 
-  11.150.  set/privilege <n> <call> [<call..] (9)
+  10.152.  set/privilege <n> <call> [<call..] (9)
 
   set/privilege <n> <call> [<call..] Set privilege level on a call
 
@@ -4315,13 +4311,13 @@
   If you are a sysop and you come in as a normal user on a remote con-
   nectionyour privilege will automatically be set to 0.
 
-  11.151.  set/prompt <string> (0)
+  10.153.  set/prompt <string> (0)
 
   set/prompt <string> Set your prompt to <string>
 
 
 
-  11.152.  set/qra <locator> (0)
+  10.154.  set/qra <locator> (0)
 
   set/qra <locator> Set your QRA Grid locator
 
@@ -4334,7 +4330,7 @@
 
 
 
-  11.153.  set/qth <your qth> (0)
+  10.155.  set/qth <your qth> (0)
 
   set/qth <your qth> Set your QTH
 
@@ -4345,19 +4341,19 @@
 
 
 
-  11.154.  set/register <call> ... (9)
+  10.156.  set/register <call> ... (9)
 
   set/register <call> ... Mark a user as registered
 
 
-  11.155.  set/spider <call> [<call>..] (5)
+  10.157.  set/spider <call> [<call>..] (5)
 
   set/spider <call> [<call>..] Make the callsign an DXSpider node
 
   Tell the system that the call(s) are to be treated as DXSpider node
   andfed new style DX Protocol rather normal user commands.
 
-  11.156.  set/sys_location <lat & long> (9)
+  10.158.  set/sys_location <lat & long> (9)
 
   set/sys_location <lat & long> Set your cluster latitude and longitude
 
@@ -4371,18 +4367,18 @@
 
 
 
-  11.157.  set/sys_qra <locator> (9)
+  10.159.  set/sys_qra <locator> (9)
 
   set/sys_qra <locator> Set your cluster QRA Grid locator
 
 
-  11.158.  set/talk (0)
+  10.160.  set/talk (0)
 
   set/talk Allow TALK messages to come out on your terminal
 
 
 
-  11.159.  set/usdb <call> <state> <city> (9)
+  10.161.  set/usdb <call> <state> <city> (9)
 
   set/usdb <call> <state> <city> add/update a US DB callsign
 
@@ -4397,48 +4393,48 @@
 
   see also DELETE/USDB
 
-  11.160.  set/usstate (0)
+  10.162.  set/usstate (0)
 
   set/usstate Allow US State info on the end of DX announcements
 
 
-  11.161.  set/wcy (0)
+  10.163.  set/wcy (0)
 
   set/wcy Allow WCY messages to come out on your terminal
 
 
-  11.162.  set/wwv (0)
+  10.164.  set/wwv (0)
 
   set/wwv Allow WWV messages to come out on your terminal
 
 
-  11.163.  set/wx (0)
+  10.165.  set/wx (0)
 
   set/wx Allow WX messages to come out on your terminal
 
 
-  11.164.  show/baddx (1)
+  10.166.  show/baddx (1)
 
   show/baddx Show all the bad dx calls in the system
 
   Display all the bad dx callsigns in the system, see SET/BADDXfor more
   information.
 
-  11.165.  show/badnode (1)
+  10.167.  show/badnode (1)
 
   show/badnode Show all the bad nodes in the system
 
   Display all the bad node callsigns in the system, see SET/BADNODEfor
   more information.
 
-  11.166.  show/badspotter (1)
+  10.168.  show/badspotter (1)
 
   show/badspotter Show all the bad spotters in the system
 
   Display all the bad spotter's callsigns in the system, see
   SET/BADSPOTTERfor more information.
 
-  11.167.  show/badword (1)
+  10.169.  show/badword (1)
 
   show/badword Show all the bad words in the system
 
@@ -4447,7 +4443,7 @@
 
 
 
-  11.168.  show/chat [<group>] [<lines>] (0)
+  10.170.  show/chat [<group>] [<lines>] (0)
 
   show/chat [<group>] [<lines>] Show any chat or conferencing
 
@@ -4456,7 +4452,7 @@
   forall groups. If you use a group name then it will show only chat
   forthat group.
 
-  11.169.  show/configuration [<node>] (0)
+  10.171.  show/configuration [<node>] (0)
 
   show/configuration [<node>] Show all the nodes and users visible
 
@@ -4484,20 +4480,20 @@
 
 
 
-  11.170.  show/configuration/node (0)
+  10.172.  show/configuration/node (0)
 
   show/configuration/node Show all the nodes connected locally
 
   Show all the nodes connected to this node.
 
-  11.171.  show/connect (1)
+  10.173.  show/connect (1)
 
   show/connect Show all the active connections
 
   This command shows information on all the active connections known
   tothe node. This command gives slightly more information than WHO.
 
-  11.172.  show/contest <year and month> (0)
+  10.174.  show/contest <year and month> (0)
 
   show/contest <year and month> Show all the contests for a month
 
@@ -4510,7 +4506,7 @@
 
 
 
-  11.173.  show/date [<prefix>|<callsign>] (0)
+  10.175.  show/date [<prefix>|<callsign>] (0)
 
   show/date [<prefix>|<callsign>] Show the local time
 
@@ -4521,7 +4517,7 @@
   show UTC and UTC + the local offset (not including DST) atthe prefixes
   or callsigns that you specify.
 
-  11.174.  show/db0sdx <callsign> (0)
+  10.176.  show/db0sdx <callsign> (0)
 
   show/db0sdx <callsign> Show QSL infomation from DB0SDX database
 
@@ -4530,12 +4526,12 @@
   for users of this software by http://www.qslinfo.de.See also SHOW/QRZ,
   SHOW/WM7D.
 
-  11.175.  show/debug (9)
+  10.177.  show/debug (9)
 
   show/debug Show what levels of debug information you are logging
 
 
-  11.176.  show/dx (0)
+  10.178.  show/dx (0)
 
   show/dx Interrogate the spot database
 
@@ -4597,7 +4593,7 @@
 
 
 
-  11.177.  show/dxcc <prefix> (0)
+  10.179.  show/dxcc <prefix> (0)
 
   show/dxcc <prefix> Interrogate the spot database by country
 
@@ -4620,7 +4616,7 @@
 
 
 
-  11.178.  show/dxqsl <callsign> (0)
+  10.180.  show/dxqsl <callsign> (0)
 
   show/dxqsl <callsign> Show any QSL info gathered from spots
 
@@ -4645,14 +4641,14 @@
 
   This gives you more background information.
 
-  11.179.  show/dxstats [days] [date] (0)
+  10.181.  show/dxstats [days] [date] (0)
 
   show/dxstats [days] [date] Show the DX Statistics
 
   Show the total DX spots for the last <days> no of days (default is
   31), starting from a <date> (default: today).
 
-  11.180.  show/files [<filearea> [<string>]] (0)
+  10.182.  show/files [<filearea> [<string>]] (0)
 
   show/files [<filearea> [<string>]] List the contents of a filearea
 
@@ -4676,7 +4672,7 @@
 
   See also TYPE - to see the contents of a file.
 
-  11.181.  show/filter (0)
+  10.183.  show/filter (0)
 
   show/filter Show the contents of all the filters you have set
 
@@ -4684,14 +4680,14 @@
   Show the contents of all the filters that are set. This command
   displaysall the filters set - for all the various categories.
 
-  11.182.  show/hfstats [days] [date] (0)
+  10.184.  show/hfstats [days] [date] (0)
 
   show/hfstats [days] [date] Show the HF DX Statistics
 
   Show the HF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a <date> (default: today).
 
-  11.183.  show/hftable [days] [date] [prefix ...] (0)
+  10.185.  show/hftable [days] [date] [prefix ...] (0)
 
   show/hftable [days] [date] [prefix ...] Show the HF DX Spotter Table
 
@@ -4735,7 +4731,7 @@
 
 
 
-  11.184.  show/hops <call> [ann|spots|route|wcy|wwv] (8)
+  10.186.  show/hops <call> [ann|spots|route|wcy|wwv] (8)
 
   show/hops <call> [ann|spots|route|wcy|wwv] Show the hop counts for a
   node
@@ -4746,18 +4742,18 @@
 
 
 
-  11.185.  show/isolate (1)
+  10.187.  show/isolate (1)
 
   show/isolate Show list of ISOLATED nodes
 
 
-  11.186.  show/lockout <prefix>|all (9)
+  10.188.  show/lockout <prefix>|all (9)
 
   show/lockout <prefix>|all Show the list of locked out or excluded
   callsigns
 
 
-  11.187.  show/log [<callsign>] (8)
+  10.189.  show/log [<callsign>] (8)
 
   show/log [<callsign>] Show excerpts from the system log
 
@@ -4765,7 +4761,7 @@
   will output a general logfile.  With the optional callsign it willshow
   output from the log associated with that callsign.
 
-  11.188.  show/moon [ndays] [<prefix>|<callsign>] (0)
+  10.190.  show/moon [ndays] [<prefix>|<callsign>] (0)
 
   show/moon [ndays] [<prefix>|<callsign>] Show Moon rise and set times
 
@@ -4802,7 +4798,7 @@
   note that the rise and set times are given as the UT times of rise and
   set on the requested UT day.
 
-  11.189.  show/muf <prefix> [<hours>][long] (0)
+  10.191.  show/muf <prefix> [<hours>][long] (0)
 
   show/muf <prefix> [<hours>][long] Show the likely propagation to a
   prefix
@@ -4868,7 +4864,7 @@
   Itshould be noted that the figures will probably not be very useful,
   norterrible accurate, but it is included for completeness.
 
-  11.190.  show/newconfiguration [<node>] (0)
+  10.192.  show/newconfiguration [<node>] (0)
 
   show/newconfiguration [<node>] Show all the nodes and users visible
 
@@ -4878,13 +4874,13 @@
   the duplication ofany routes that might be present It also uses a
   different formatwhich may not take up quite as much space if you don't
   have anyloops.BE WARNED: the list that is returned can be VERY long
-  11.191.  show/newconfiguration/node (0)
+  10.193.  show/newconfiguration/node (0)
 
   show/newconfiguration/node Show all the nodes connected locally
 
   Show all the nodes connected to this node in the new format.
 
-  11.192.  show/node [<callsign> ...] (1)
+  10.194.  show/node [<callsign> ...] (1)
 
   show/node [<callsign> ...] Show the type and version number of nodes
 
@@ -4892,7 +4888,7 @@
   thecommand line. If no callsigns are specified then a sorted list of
   allthe non-user callsigns known to the system will be displayed.
 
-  11.193.  show/prefix <callsign> (0)
+  10.195.  show/prefix <callsign> (0)
 
   show/prefix <callsign> Interrogate the prefix database
 
@@ -4902,7 +4898,7 @@
   with the internal country no, the CQ and ITU regions. See also
   SHOW/DXCC
 
-  11.194.  show/program (5)
+  10.196.  show/program (5)
 
   show/program Show the locations of all the included program modules
 
@@ -4910,7 +4906,7 @@
   Thisis useful for checking where you think you have loaded a .pm file
   from.
 
-  11.195.  show/qra <lat> <long> (0)
+  10.197.  show/qra <lat> <long> (0)
 
   show/qra <lat> <long> Convert lat/long to a QRA Grid locator
 
@@ -4936,13 +4932,13 @@
 
 
 
-  11.196.  show/qra <locator> [<locator>] (0)
+  10.198.  show/qra <locator> [<locator>] (0)
 
   show/qra <locator> [<locator>] Show distance between QRA Grid locators
 
 
 
-  11.197.  show/qrz <callsign> (0)
+  10.199.  show/qrz <callsign> (0)
 
   show/qrz <callsign> Show any callbook details on a callsign
 
@@ -4951,12 +4947,12 @@
   provided for users of this software by http://www.qrz.com See also
   SHOW/WM7D for an alternative.
 
-  11.198.  show/registered [<prefix>] (9)
+  10.200.  show/registered [<prefix>] (9)
 
   show/registered [<prefix>] Show the registered users
 
 
-  11.199.  show/route <callsign> ... (0)
+  10.201.  show/route <callsign> ... (0)
 
   show/route <callsign> ... Show the route to the callsign
 
@@ -4968,7 +4964,7 @@
 
 
 
-  11.200.  show/satellite <name> [<hours> <interval>] (0)
+  10.202.  show/satellite <name> [<hours> <interval>] (0)
 
   show/satellite <name> [<hours> <interval>] Show tracking data
 
@@ -4987,12 +4983,12 @@
 
 
 
-  11.201.  show/station all [<regex>] (6)
+  10.203.  show/station all [<regex>] (6)
 
   show/station all [<regex>] Show list of users in the system
 
 
-  11.202.  show/station [<callsign> ..] (0)
+  10.204.  show/station [<callsign> ..] (0)
 
   show/station [<callsign> ..] Show information about a callsign
 
@@ -5006,7 +5002,7 @@
 
   If no callsign is given then show the information for yourself.
 
-  11.203.  show/sun [ndays] [<prefix>|<callsign>] (0)
+  10.205.  show/sun [ndays] [<prefix>|<callsign>] (0)
 
   show/sun [ndays] [<prefix>|<callsign>] Show sun rise and set times
 
@@ -5042,7 +5038,7 @@
   note that the rise and set times are given as the UT times of rise and
   set on the requested UT day.
 
-  11.204.  show/time [<prefix>|<callsign>] (0)
+  10.206.  show/time [<prefix>|<callsign>] (0)
 
   show/time [<prefix>|<callsign>] Show the local time
 
@@ -5051,7 +5047,7 @@
   prefixesthen it will show UTC and UTC + the local offset (not
   including DST) atthe prefixes or callsigns that you specify.
 
-  11.205.  show/usdb [call ..] (0)
+  10.207.  show/usdb [call ..] (0)
 
   show/usdb [call ..] Show information held on the FCC Call database
 
@@ -5063,7 +5059,7 @@
 
 
 
-  11.206.  show/vhfstats [days] [date] (0)
+  10.208.  show/vhfstats [days] [date] (0)
 
   show/vhfstats [days] [date] Show the VHF DX Statistics
 
@@ -5071,7 +5067,7 @@
   (default is 31), starting from a date (default: today).
 
 
-  11.207.  show/vhftable [days] [date] [prefix ...] (0)
+  10.209.  show/vhftable [days] [date] [prefix ...] (0)
 
   show/vhftable [days] [date] [prefix ...] Show the VHF DX Spotter Table
 
@@ -5115,19 +5111,19 @@
 
 
 
-  11.208.  show/wcy (0)
+  10.210.  show/wcy (0)
 
   show/wcy Show last 10 WCY broadcasts
 
 
-  11.209.  show/wcy <n> (0)
+  10.211.  show/wcy <n> (0)
 
   show/wcy <n> Show last <n> WCY broadcasts
 
   Display the most recent WCY information that has been received by the
   system
 
-  11.210.  show/wm7d <callsign> (0)
+  10.212.  show/wm7d <callsign> (0)
 
   show/wm7d <callsign> Show callbook details on a US callsigns
 
@@ -5136,25 +5132,25 @@
   provided for users of this software by http://www.wm7d.net.See also
   SHOW/QRZ.
 
-  11.211.  show/wwv (0)
+  10.213.  show/wwv (0)
 
   show/wwv Show last 10 WWV broadcasts
 
 
-  11.212.  show/wwv <n> (0)
+  10.214.  show/wwv <n> (0)
 
   show/wwv <n> Show last <n> WWV broadcasts
 
   Display the most recent WWV information that has been received by the
   system
 
-  11.213.  shutdown (5)
+  10.215.  shutdown (5)
 
   shutdown Shutdown the cluster
 
   Shutdown the cluster and disconnect all the users
 
-  11.214.  spoof <call> <command> (9)
+  10.216.  spoof <call> <command> (9)
 
   spoof <call> <command> Do a command as though you are another user
 
@@ -5168,7 +5164,7 @@
 
 
 
-  11.215.  stat/channel [<callsign>] (5)
+  10.217.  stat/channel [<callsign>] (5)
 
   stat/channel [<callsign>] Show the status of a channel on the cluster
 
@@ -5176,7 +5172,7 @@
   that you are on or else for the callsign that you asked for.Only the
   fields that are defined (in perl term) will be displayed.
 
-  11.216.  stat/db <dbname> (5)
+  10.218.  stat/db <dbname> (5)
 
   stat/db <dbname> Show the status of a database
 
@@ -5184,12 +5180,12 @@
   privilege level you will see more or less information. This command is
   unlikely to be of much use to anyone other than a sysop.
 
-  11.217.  stat/msg (1)
+  10.219.  stat/msg (1)
 
   stat/msg Show the status of the message system
 
 
-  11.218.  stat/msg <msgno> (1)
+  10.220.  stat/msg <msgno> (1)
 
   stat/msg <msgno> Show the status of a message
 
@@ -5200,27 +5196,27 @@
 
 
 
-  11.219.  stat/route_node <callsign> (5)
+  10.221.  stat/route_node <callsign> (5)
 
   stat/route_node <callsign> Show the data in a Route::Node object
 
 
-  11.220.  stat/route_node all (5)
+  10.222.  stat/route_node all (5)
 
   stat/route_node all Show list of all Route::Node objects
 
 
-  11.221.  stat/route_user <callsign> (5)
+  10.223.  stat/route_user <callsign> (5)
 
   stat/route_user <callsign> Show the data in a Route::User object
 
 
-  11.222.  stat/route_user all (5)
+  10.224.  stat/route_user all (5)
 
   stat/route_user all Show list of all Route::User objects
 
 
-  11.223.  stat/user [<callsign>] (5)
+  10.225.  stat/user [<callsign>] (5)
 
   stat/user [<callsign>] Show the full status of a user
 
@@ -5228,7 +5224,7 @@
   flagsand stuff.Only the fields that are defined (in perl term) will be
   displayed.
 
-  11.224.  sysop (0)
+  10.226.  sysop (0)
 
   sysop Regain your privileges if you login remotely
 
@@ -5258,7 +5254,7 @@
   offerednumbers but nothing will happen when you input a string. Any
   match iscase sensitive.
 
-  11.225.  talk <call> > <node> [<text>] (0)
+  10.227.  talk <call> > <node> [<text>] (0)
 
   talk <call> > <node> [<text>] Send a text message to another station
   via a node
@@ -5305,12 +5301,12 @@
   will send the hftable as you have it to all the people you are cur-
   rently talking to.
 
-  11.226.  talk <call> [<text>] (0)
+  10.228.  talk <call> [<text>] (0)
 
   talk <call> [<text>] Send a text message to another station
 
 
-  11.227.  type <filearea>/<name> (0)
+  10.229.  type <filearea>/<name> (0)
 
   type <filearea>/<name> Look at the contents of a file in one of the
   fileareas
@@ -5327,7 +5323,7 @@
   See also SHOW/FILES to see what fileareas are available and a list of
   content.
 
-  11.228.  uncatchup <node call> all|[msgno> ...] (5)
+  10.230.  uncatchup <node call> all|[msgno> ...] (5)
 
   uncatchup <node call> all|[msgno> ...] Unmark a message as sent
 
@@ -5354,12 +5350,12 @@
   which will arrange for them to be forward candidates again.Order is
   not important.
 
-  11.229.  unset/announce (0)
+  10.231.  unset/announce (0)
 
   unset/announce Stop announce messages coming out on your terminal
 
 
-  11.230.  unset/anntalk (0)
+  10.232.  unset/anntalk (0)
 
   unset/anntalk Stop talk like announce messages on your terminal
 
@@ -5382,7 +5378,7 @@
 
   allows you to see them again. This is the default.
 
-  11.231.  unset/baddx <call>.. (8)
+  10.233.  unset/baddx <call>.. (8)
 
   unset/baddx <call>.. Propagate a dx spot with this callsign again
 
@@ -5404,7 +5400,7 @@
 
 
 
-  11.232.  unset/badnode <call>.. (8)
+  10.234.  unset/badnode <call>.. (8)
 
   unset/badnode <call>.. Allow spots from this node again
 
@@ -5428,7 +5424,7 @@
   will allow spots from him again.Use with extreme care. This command
   may well be superceeded by FILTERing.
 
-  11.233.  unset/badspotter <call>.. (8)
+  10.235.  unset/badspotter <call>.. (8)
 
   unset/badspotter <call>.. Allow spots from this callsign again
 
@@ -5454,7 +5450,7 @@
   will allow spots from him again.Use with extreme care. This command
   may well be superceded by FILTERing.
 
-  11.234.  unset/badword <word>.. (8)
+  10.236.  unset/badword <word>.. (8)
 
   unset/badword <word>.. Propagate things with this word again
 
@@ -5475,12 +5471,12 @@
 
   will allow text with this word again.
 
-  11.235.  unset/beep (0)
+  10.237.  unset/beep (0)
 
   unset/beep Stop beeps for DX and other messages on your terminal
 
 
-  11.236.  unset/debug <name> (9)
+  10.238.  unset/debug <name> (9)
 
   unset/debug <name> Remove a debug level from the debug set
 
@@ -5493,12 +5489,12 @@
 
   You can show what levels you are logging with SHOW/DEBUG
 
-  11.237.  unset/dx (0)
+  10.239.  unset/dx (0)
 
   unset/dx Stop DX messages coming out on your terminal
 
 
-  11.238.  unset/dxcq (0)
+  10.240.  unset/dxcq (0)
 
   unset/dxcq Stop CQ Zones on the end of DX announcements
 
@@ -5509,7 +5505,7 @@
   SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.239.  unset/dxgrid (0)
+  10.241.  unset/dxgrid (0)
 
   unset/dxgrid Stop QRA Grid Squares on the end of DX announcements
 
@@ -5520,7 +5516,7 @@
   feature.Conflicts with: SET/DXCQ, SET/DXITUDo a STAT/USER to see which
   flags you have set if you are confused.
 
-  11.240.  unset/dxitu (0)
+  10.242.  unset/dxitu (0)
 
   unset/dxitu Stop ITU Zones on the end of DX announcements
 
@@ -5531,7 +5527,7 @@
   SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.241.  unset/echo (0)
+  10.243.  unset/echo (0)
 
   unset/echo Stop the cluster echoing your input
 
@@ -5541,7 +5537,7 @@
   setting appropriately. The setting is stored in your user profile.YOU
   DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
-  11.242.  unset/email (0)
+  10.244.  unset/email (0)
 
   unset/email Stop personal msgs being forwarded by email
 
@@ -5563,12 +5559,12 @@
 
 
 
-  11.243.  unset/here (0)
+  10.245.  unset/here (0)
 
   unset/here Tell the system you are absent from your terminal
 
 
-  11.244.  unset/hops <call> ann|spots|route|wwv|wcy (8)
+  10.246.  unset/hops <call> ann|spots|route|wwv|wcy (8)
 
   unset/hops <call> ann|spots|route|wwv|wcy Unset hop count
 
@@ -5590,30 +5586,30 @@
 
 
 
-  11.245.  unset/isolate (9)
+  10.247.  unset/isolate (9)
 
   unset/isolate Stop Isolation of a node from the rest of the network
 
   Remove isolation from a node - SET/ISOLATE
 
-  11.246.  unset/lockout <call> (9)
+  10.248.  unset/lockout <call> (9)
 
   unset/lockout <call> Allow a callsign to connect to the cluster
 
 
-  11.247.  unset/logininfo (0)
+  10.249.  unset/logininfo (0)
 
   unset/logininfo Inform when a station logs out locally
 
 
-  11.248.  unset/password <call> ... (9)
+  10.250.  unset/password <call> ... (9)
 
   unset/password <call> ... Delete (remove) a user's password
 
   This command allows the sysop to completely delete and remove a
   password for a user.
 
-  11.249.  unset/privilege (0)
+  10.251.  unset/privilege (0)
 
   unset/privilege Remove any privilege for this session
 
@@ -5622,7 +5618,7 @@
   will need toeither logout and login again (if you are on a console) or
   use theSYSOP command.
 
-  11.250.  unset/prompt (0)
+  10.252.  unset/prompt (0)
 
   unset/prompt Set your prompt back to default
 
@@ -5639,7 +5635,7 @@
   UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back
   tonormal.
 
-  11.251.  unset/register <call> ... (9)
+  10.253.  unset/register <call> ... (9)
 
   unset/register <call> ... Mark a user as not registered
 
@@ -5658,12 +5654,12 @@
   exception to this is that a non-registered user can TALK orSEND
   messages to the sysop.
 
-  11.252.  unset/talk (0)
+  10.254.  unset/talk (0)
 
   unset/talk Stop TALK messages coming out on your terminal
 
 
-  11.253.  unset/usstate (0)
+  10.255.  unset/usstate (0)
 
   unset/usstate Stop US State info on the end of DX announcements
 
@@ -5677,39 +5673,39 @@
   SET/DXITUDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.254.  unset/wcy (0)
+  10.256.  unset/wcy (0)
 
   unset/wcy Stop WCY messages coming out on your terminal
 
 
-  11.255.  unset/wwv (0)
+  10.257.  unset/wwv (0)
 
   unset/wwv Stop WWV messages coming out on your terminal
 
 
-  11.256.  unset/wx (0)
+  10.258.  unset/wx (0)
 
   unset/wx Stop WX messages coming out on your terminal
 
 
-  11.257.  who (0)
+  10.259.  who (0)
 
   who Show who is physically connected
 
   This is a quick listing that shows which callsigns are connected
   andwhat sort of connection they have
 
-  11.258.  wx <text> (0)
+  10.260.  wx <text> (0)
 
   wx <text> Send a weather message to local users
 
 
-  11.259.  wx full <text> (0)
+  10.261.  wx full <text> (0)
 
   wx full <text> Send a weather message to all cluster users
 
 
-  11.260.  wx sysop <text> (5)
+  10.262.  wx sysop <text> (5)
 
   wx sysop <text> Send a weather message to other clusters only
 

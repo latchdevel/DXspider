@@ -1,0 +1,420 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Filtering Primer v1.0: Accept filters </TITLE>
+ <LINK HREF="filtering_en-8.html" REL=next>
+ <LINK HREF="filtering_en-6.html" REL=previous>
+ <LINK HREF="filtering_en.html#toc7" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="filtering_en-8.html">Next</A>
+<A HREF="filtering_en-6.html">Previous</A>
+<A HREF="filtering_en.html#toc7">Contents</A>
+<HR>
+<H2><A NAME="s7">7.</A> <A HREF="filtering_en.html#toc7">Accept filters </A></H2>
+
+<P>An accept filter line means that if a spot matches pass it on to the user, send 
+it down the line to the next rule or to the user, and trash, dump, all other 
+spots that do not match to the next filter line. </P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax: accept/spots [0-9]  &lt;pattern>        
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Any of the following patterns may be used in this line ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+freq &lt;range>
+on &lt;range>       
+info &lt;string>
+call &lt;prefixes>
+call_dxcc &lt;numbers>
+call_itu &lt;numbers>
+call_zone &lt;numbers>
+call_state &lt;state2-letter abbreviations>
+by &lt;prefixes>
+by_dxcc &lt;numbers>
+by_itu &lt;numbers>
+by_zone &lt;numbers>
+by_state &lt;state2-letter abbreviations>
+origin &lt;prefixes>   Used primarily be SYSOPS,  not by users and not discussed.
+channel &lt;prefixes> Used primarily be SYSOPS,  not by users and not discussed.
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Using these patterns, we can accept spots based upon ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Frequency of the spot
+Call sign of the spot (country or zone)
+Call sign of the spotter (country or zone)
+Contents of the "information field" which comes with the spot
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.1">7.1</A> <A HREF="filtering_en.html#toc7.1">Filters to accept spots based on frequency</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax: accept/spot [0-9] freq &lt;range>       
+
+or
+
+accept/spot [0-9] on &lt;range>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Important: as noted before, both <EM>freq</EM> and <EM>on</EM> are exactly 
+the same and can be used interchangeably.</P>
+
+<P>For range, you can specify a frequency like 7040, a range of frequencies 
+like 0/30000 ( the whole HF spectrum) or use any of the band/region names 
+defined in the SHOW/BANDS command (see above).</P>
+
+<P>Examples...</P>
+
+<P>This will pass on a HF spots only from 0 to 30,000 kHz and dump all others.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 1 on 0/30000 
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This passes on all spots in the frequency range 144000 -> 148000 kHz and trash
+all others.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 2 freq 2m
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This rule will only pass on spots on 6m, 4m, 2m, and 220 and reject all
+others.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 3 on vhf
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This rule will pass on all spots on the 160m, 80m, 60m, 40m, 30m, 20m, 17m,
+15m, 12m, 10m bands and all spots on 70cm and 23cm bands only. All other
+spots are trashed.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 4 freq hf and freq uhf
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.2">7.2</A> <A HREF="filtering_en.html#toc7.2">Sub-bands as part of range</A>
+</H2>
+
+<P>In conjunction with range, you can use the following sub-band names: CW, RTTY, 
+DATA, SSB, and SSTV by using a back-slash [(band or region)/sub-band] as part 
+of the range definition. </P>
+
+<P>Examples ...</P>
+
+<P>This rule will only accept and pass on HF phone spots rejecting all others</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0 freq hf/ssb
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter rule will accept all HF CW spots but will not include DATA and
+RTTY spots in the CW range. In addition all other spots will be dumped.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 1 on hf/cw and not (on hf/data or on hf/rtty)
+</PRE>
+</CODE></BLOCKQUOTE>
+ </P>
+
+<H2><A NAME="ss7.3">7.3</A> <A HREF="filtering_en.html#toc7.3">Filters to accept spots based on info</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax: accept/spot [0-9] info &lt;string>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is used to key on information contained in the information section 
+of the spot. One could use this to accept any spots containing IOTA, QSL OP or 
+any other "key-word" used in the information string of the spot. </P>
+
+<P>Examples ...</P>
+
+<P>This filter will accept spots containing IOTA information only and reject all
+others</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0 info IOTA
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter will accept only 10m SSB spots, but will still permit any spots
+that contain iota information in addition - rejecting all other spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 1 on 10m/ssb and info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This next filter will accept spots asking or containing QSL information and dump
+all other spots</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 2 info QSL
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Note: The following series of filters are based on <EM>call</EM> and 
+<EM>by</EM>.  Call always references the call sign of the spotted DX station.  
+By always references the call sign of the spotting station.</P>
+
+<H2><A NAME="ss7.4">7.4</A> <A HREF="filtering_en.html#toc7.4">Filters to accept spots based on call</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax: accept/spot [0-9] call &lt;prefixes> 
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is misleading in a way. It is strictly based on the spotted call 
+sign letters or numbers entered and not based on countries or DXCC entities. </P>
+
+<P>Examples ...</P>
+
+<P>This filter will accept spots for G1AAA, GJ2BBB, and GW3CCC and reject all
+others, including M0AAA.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0 call G
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This next filter will accept spots for PA3AAA and reject spots for PB4BBB as 
+well as all others.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 1 call PA
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter will accept spots for call signs beginning with "K", i.e., K1AA,
+KC4AAA,  KH6DDD and reject spots for W3BG and N3RD as well as all other
+spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 2 call K
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.5">7.5</A> <A HREF="filtering_en.html#toc7.5">Filters to accept spots based on call_dxcc</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] call_dxcc &lt;numbers or prefixes>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is based on DXCC entities and uses either the country prefixes or 
+the DXCC entity number found by using the command <EM>show/prefix</EM>. See 
+example of <EM>show/prefix</EM> above.</P>
+
+<P>Examples ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0 call_dxcc 226,197  
+
+or
+
+accept/spot 0 call_dxcc ve,w 
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>(Both will work) These spot filters will accept all spots for US and Canada 
+stations and trash all others.</P>
+
+<P>The folowing spot filter will accept all spots for US stations and yet reject 
+any spots for W3FM who is always being spotted by Europeans and filling up my
+screen.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 1 call_dxcc w not call w3fm
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.6">7.6</A> <A HREF="filtering_en.html#toc7.6">Filters to accept spots based on call_itu</A>
+</H2>
+
+<P>Similarly, call_itu and call_zone use ITU regions that can also be obtained 
+using the <EM>show/prefix</EM> command (see above.)</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] call_itu &lt;numbers>  
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Example ...</P>
+
+<P>This spot filter will  accept all spots for  ITU region 7 and reject all
+others.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0  call_itu 7
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.7">7.7</A> <A HREF="filtering_en.html#toc7.7">Filters to accept spots based on call_zone</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] call_zone &lt;numbers>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is based on CQ zones and uses the CQ zone number found by using 
+the command <EM>show/prefix</EM> (see above.)</P>
+
+<P>Example ...</P>
+
+<P>This spot filter will  accept all spots for CQ zone 5 and reject all others.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0 call_zone 5
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.8">7.8</A> <A HREF="filtering_en.html#toc7.8">Filters to accept spots based on call_state</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] call_state &lt;state2-letter postal codes>  
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is based on state of the call spotted for those call signs contained
+in the usdb database.  </P>
+
+<P>Example ...</P>
+
+<P>This spot filter will  accept all spots of stations located in the
+Commonwealth of Pennsylvania and reject all others. It's the PA QSO Party
+Weekend.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot 0  call_state pa
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss7.9">7.9</A> <A HREF="filtering_en.html#toc7.9">Filters to accept spots based on by</A>
+</H2>
+
+<P><EM>by</EM> filters are similar to and function exactly as call filters except 
+that they act on the spotting station call sign and not the spotted call sign</P>
+
+<P>So ...</P>
+
+<P>This filter is similar to and functions like the  call &lt;prefixes&gt; (See above)
+except that it accepts spots generated by the spotting call sign and dumps all
+other spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax: accept/spot [0-9] by &lt;prefixes>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is based on DXCC entities and uses the DXCC entity number found
+by using the command <EM>show/prefix</EM> and it accepts spots generated
+within the spotting DXCC entity and rejects other spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] by_dxcc &lt;numbers>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This next filter is based on ITU regions and uses the ITU region number found by
+using the command <EM>show/prefix</EM> (see above), except that it accepts
+spots generated by a spotting call sign within the ITU region and rejects all
+other spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] call_itu &lt;numbers>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filter is based on CQ zones and uses the CQ zone number found by using
+the command <EM>show/prefix</EM> (see above), except that it accepts spots
+generated by a spotting call sign within the CQ zone and rejects all other
+spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] call_zone &lt;numbers>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This filters is based on the state location of the spotting station found
+by using the command <EM>show/usdb</EM> and accepts only those spots
+generated by stations from the states(s) specified rejecting all other spots.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Syntax:  accept/spot [0-9] by_state &lt;state2-letter postal codes>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<HR>
+<A HREF="filtering_en-8.html">Next</A>
+<A HREF="filtering_en-6.html">Previous</A>
+<A HREF="filtering_en.html#toc7">Contents</A>
+</BODY>
+</HTML>

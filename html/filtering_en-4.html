@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Filtering Primer v1.0: Types of spot filters used in DXSpider </TITLE>
+ <LINK HREF="filtering_en-5.html" REL=next>
+ <LINK HREF="filtering_en-3.html" REL=previous>
+ <LINK HREF="filtering_en.html#toc4" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="filtering_en-5.html">Next</A>
+<A HREF="filtering_en-3.html">Previous</A>
+<A HREF="filtering_en.html#toc4">Contents</A>
+<HR>
+<H2><A NAME="s4">4.</A> <A HREF="filtering_en.html#toc4">Types of spot filters used in DXSpider </A></H2>
+
+<P>Basic filter types are "accept", "reject", and "clear" where the following
+applies ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Reject filters - any spots that match will be dumped, all others passed on.
+Accept filters - any spots that match are passed on, all others are dumped.
+Clear filters  - the filter slot(s) referenced will be cleared from the filter 
+                 repository
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>For the most part we will use only reject and accept filters. These are the main
+filter types. Basically, reject means dump it and accept means take it and pass 
+it on to the user. By nature, accept filters are more powerful than reject 
+filters. A user can generally do with a one line accept rule what it could take 
+many lines of reject rules to accomplish. However, the flip-side of this 
+statement is that a series of reject filters are usually easier to administer 
+and change.</P>
+
+<H2><A NAME="ss4.1">4.1</A> <A HREF="filtering_en.html#toc4.1">Numbering lines and slots </A>
+</H2>
+
+<P>There are ten usable filter slots in DXSpider. Each slot holds one reject and 
+one accept rule. Therefore, each type filter can have up to ten lines of rules 
+contained in these ten slots. The filter rules must be numbered sequentially, 
+that is, 0-9 lines of reject filter rules and 0-9 lines of accept filter rules 
+to correspond to their respective slot position. If no number is used, every 
+line is assumed to be in slot 1 and the addition of a second filter line of the 
+same type without a number will just over-write the first that was previously 
+written to slot 1. (Why not slot 0? I don't know. This is the way it works.)</P>
+
+<P><EM>Important:</EM> The filter rules are applied in sequence, i.e., 0-9. If a 
+line matches, action is taken on that line. The filter sequence acts on rules 
+in the order listed.  It acts on the reject filter in each slot before acting 
+on the accept filter contained in that slot. If the slot is completely blank or 
+if a reject or accept filter line is missing in that slot it skips right over 
+to the next filter rule in the sequence. A picture of a filter set might look 
+like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Execution Sequence      Slot Number     Filter Rule     
+        1                 Slot0         reject/spot 0 &lt;pattern>      
+        2                               accept/spot 0 &lt;pattern>      
+        3                 Slot1         reject/spot 1 &lt;pattern>      
+        4                               accept/spot 1 &lt;pattern>      
+        5                 Slot2         reject/spot 2 &lt;pattern>      
+        6                               accept/spot 2 &lt;pattern>      
+        .                 .     
+        19                Slot9         reject/spot 9 &lt;pattern>      
+        20                              accept/spot 9 &lt;pattern>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+
+<H2><A NAME="ss4.2">4.2</A> <A HREF="filtering_en.html#toc4.2">Reject before accept</A>
+</H2>
+
+<P>This is not a good rule for life, but it makes sense for DXSpider filters. As 
+a general rule, reject filter rules within a slot are always executed before 
+accept filter rules.  There is a very good reason for this.  If a spot doesn't 
+match a reject filter, the spot is passed to the next filter line in the set.  
+However, if a spot matches an accept filter, it is sent immediately to the user.</P>
+
+<H2><A NAME="ss4.3">4.3</A> <A HREF="filtering_en.html#toc4.3">Using Multiple Reject Filter Rules</A>
+</H2>
+
+<P>Another important concept to know is that you can do everything you want to do 
+with multiple reject filters AND NO ACCEPT FILTERS.  By default, if a spot 
+doesn't match any of the reject filter definitions, then the system considers 
+you want the spots and sends it to you.  For example, the following two filters 
+perform exactly the same thing ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots on contesthf
+reject/spots not on contesthf
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>So, why would we choose one rather than the other?  Using reject syntax allows 
+you to add another filter line easily, without disturbing the first line.  A 
+real example will show us how this works.  Let's say that there is a RTTY 
+contest coming up and you don't wish to see the RTTY spots.  Simply add another 
+reject filter like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots 2 on hf/rtty
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Note that we need to specify that this is the second line of reject filter 
+definitions.  Also, the "RTTY" sub-band specification has to be associated with 
+a range of bands; it can't be specified all by itself.  So, we just add it 
+behind the range of bands defined by "HF".  So in our example, if the user does 
+a show/filter, he will be told by the Spider that his current filters are ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+filter 1 reject not on contesthf
+filter 2 reject on hf/rtty
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>With these filters set up, if a spot comes through on 14085 kHz, the filter 
+works like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+filter1:    Is spot NOT on the HF contest bands?  No.  
+            The spot doesn't match the filter definition, so pass it to 
+            next filter.
+
+filter2:    Is spot within the freq. Range defined for RTTY?  Yes.  
+            Since the spot matches the filter definition, the spot is rejected 
+            and the users never see it.
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Had the frequency of the spot been 14025, then the spot would have not matched 
+the filter2 definition either, would have passed through all the filters, and 
+would have been sent to the user at the end of the filter set.  Also, had the 
+spot been on 10 MHz, it would have met the definition of filter1, been rejected 
+immediately, and the filtering process would have stopped before processing 
+filter2.</P>
+
+<P>In addition, the filtering system has a rough time handling accept filters 
+followed by reject filters and adds inefficiency to the processing. 
+(Note: a reject as a "qualifier" to an accept rule in an accept filter line is 
+okay as we will see below)</P>
+
+
+<H2><A NAME="ss4.4">4.4</A> <A HREF="filtering_en.html#toc4.4">A very useful command </A>
+</H2>
+
+<P>To see all active filters in use at any time, just type the following command
+...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/filter
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss4.5">4.5</A> <A HREF="filtering_en.html#toc4.5">Case does not matter</A>
+</H2>
+
+<P>In entering any filter - case does not matter. Upper, lower, or mixed case 
+will not effect how filters work or perform.</P>
+
+<H2><A NAME="ss4.6">4.6</A> <A HREF="filtering_en.html#toc4.6">Qualifiers</A>
+</H2>
+
+<P>Logical operands can be used in rule sets to combine multiple actions or 
+qualify others. These are ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+and     a and b= action
+not     a not b= action
+or      a and not (c or b)= action
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Note: as a general rule when or is used you must also use parentheses (). 
+We will see how these can be used in examples later.</P>
+
+<H2><A NAME="ss4.7">4.7</A> <A HREF="filtering_en.html#toc4.7">Comma Separation</A>
+</H2>
+
+<P>Any command can have multiple pattern variables if commas separate them. 
+For example ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spot call_state nj,ny,pa,de,md
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<HR>
+<A HREF="filtering_en-5.html">Next</A>
+<A HREF="filtering_en-3.html">Previous</A>
+<A HREF="filtering_en.html#toc4">Contents</A>
+</BODY>
+</HTML>
