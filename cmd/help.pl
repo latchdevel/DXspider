@@ -31,7 +31,7 @@ $lang = 'en' if !$lang;
 # The fields are:- privilege level, full command name, short description
 #
 
-$DB::single = 1;
+#$DB::single = 1;
 
 
 my $defh = new IO::File;
