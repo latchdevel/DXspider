@@ -1,3 +1,14 @@
+07Oct04=======================================================================
+1. added the ability for people to import chat from external programs.
+create a directory called /spider/chat_import, make sure it is writable
+by any applications that might dump stuff in there (chmod 1777 
+/spider/chat_import on *nux). Put a file with a sensible name in there;
+the first part of the name will be the chat group to whom the message will
+be sent. So solar.txt.12325 = SOLAR. Announces can also be sent to local, all
+and sysop (ie files whose name begins with those names). Each line in the
+file becomes a chat line or an announce. See importwwv.pl for an example.
+DO NOT USE importwwv.pl, I am already using it and if you do as well, people
+will get duplicates which will ANNOY THEM!!! It is just an example.
 23Aug04=======================================================================
 1. add the start of an alternative routing engine (RouteDB)
 20Aug04=======================================================================
