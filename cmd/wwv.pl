@@ -48,6 +48,7 @@ push @out, $self->msg('wwv1', 'k') unless $args{k} && $args{k} >= 0 && $args{k} 
 push @out, $self->msg('wwv1', 'a') unless $args{a} && $args{a} >= 0 && $args{a} <= 400;
 push @out, $self->msg('wwv1', 'sf') unless $args{sf} && $args{sf} >= 65 && $args{sf} <= 300;
 push @out, $self->msg('wwv1', 'forecast') unless $forecast;
+push @out, $self->msg('wwv2') if Geomag::dup($d, $args{sf}, $args{k}, $args{a}, $forecast);
 
 return (1, @out) if @out;
 

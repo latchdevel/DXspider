@@ -269,6 +269,8 @@ package DXM;
 				usernf => '*** User record for $_[0] not found ***',
 				wcy1 => '$_[0] is missing or out of range',
 				wcy2 => 'Duplicate WCY',
+				wwv1 => '$_[0] is missing or out of range',
+				wwv2 => 'Duplicate WWV',
 				wwvs => 'WWV flag set on $_[0]',
 				wwvu => 'WWV flag unset on $_[0]',
 				wxs => 'WX flag set on $_[0]',
