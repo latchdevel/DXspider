@@ -116,8 +116,9 @@ sub start
 	$self->{wwvfilter} = Filter::read_in('wwv', $call);
 	$self->{annfilter} = Filter::read_in('ann', $call);
 	
-	# set unbuffered
+	# set unbuffered and no echo
 	$self->send_now('B',"0");
+	$self->send_now('E',"0");
 	
 	# send initialisation string
 	if (!$self->{outbound}) {

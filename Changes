@@ -1,3 +1,5 @@
+23May99=======================================================================
+1. tried to change connection to raw mode for cluster connections
 22May99=======================================================================
 1. added check for -1 from Date::Parse and return undef for out of range dates
 2. added show/files and type commands

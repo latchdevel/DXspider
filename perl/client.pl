@@ -127,7 +127,8 @@ sub rec_socket
 				$mode = $line;		# set echo mode from cluster
 				my $term = POSIX::Termios->new;
 				$term->getattr(fileno($sock));
-				$term->setflag( &POSIX::ISIG );
+				$term->setiflag( 0 );
+				$term->setoflag( 0 );
 				$term->setattr(fileno($sock), &POSIX::TCSANOW );
 			}
 		} elsif ($sort eq 'I') {
