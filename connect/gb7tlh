@@ -1,5 +1,6 @@
 timeout 15
- don't forget to chmod 4775 netrom_call!
+abort (Busy|Sorry|Fail)
+# don't forget to chmod 4775 netrom_call!
 connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh-0
 'Connect' ''
 'Connect' 'ak1a'
