@@ -39,7 +39,7 @@ if (!$info) {
 	my $s = qq(<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <qslinfo xmlns="http://$target$path">
+    <qslinfo xmlns="http://$target">
       <callsign>$line</callsign>
       <ClientInformation>DXSpider V$main::version B$main::build ($call\@$main::mycall)</ClientInformation>
     </qslinfo>
