@@ -1,0 +1,17 @@
+#
+# This is an example announce or filter allowing only West EU announces
+# 
+# The element list is:-
+# 0 - callsign of announcer
+# 1 - destination * = all, <callsign> = routed to the node
+# 2 - text
+# 3 - * - sysop, <some text> - special list eg 6MUK, ' ', normal announce
+# 4 - origin
+# 5 - 0 - announce, 1 - wx
+# 6 - channel callsign (the interface from which this spot came)
+
+$in = [
+        [ 1, 0, 'a', '^(G|M|2|DK0WCY)' ],
+        [ 0, 0, 'd', 0 ]
+];
+
