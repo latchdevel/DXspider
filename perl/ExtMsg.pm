@@ -129,28 +129,35 @@ sub new_client {
 		$conn->{sock} = $sock;
 		Msg::blocking($sock, 0);
 		$conn->{blocking} = 0;
-		
-		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
-		dbg('connll', "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}");
-		if ($eproc) {
-			$conn->{eproc} = $eproc;
-			Msg::set_event_handler ($sock, "error" => $eproc);
-		}
-		if ($rproc) {
-			$conn->{rproc} = $rproc;
-			my $callback = sub {$conn->_rcv};
-			Msg::set_event_handler ($sock, "read" => $callback);
-			# send login prompt
-			$conn->{state} = 'WL';
-			#		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
-			#		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
-			#		$conn->send_raw("\xFF\xFC\x01");
-			$conn->_send_file("$main::data/issue");
-			$conn->send_raw("login: ");
-			$conn->_dotimeout(60);
-		} else { 
-			&{$conn->{eproc}}() if $conn->{eproc};
-			$conn->disconnect();
+		my $host;
+		eval {$host = $conn->{peerhost}};
+		my $port;
+		eval {$port = $conn->{peerport}} unless $@;
+		if ($@) {
+			$conn->disconnect;
+		} else {
+			my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $host, $conn->{peerport} = $port);
+			dbg('connll', "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}");
+			if ($eproc) {
+				$conn->{eproc} = $eproc;
+				Msg::set_event_handler ($sock, "error" => $eproc);
+			}
+			if ($rproc) {
+				$conn->{rproc} = $rproc;
+				my $callback = sub {$conn->_rcv};
+				Msg::set_event_handler ($sock, "read" => $callback);
+				# send login prompt
+				$conn->{state} = 'WL';
+				#		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
+				#		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
+				#		$conn->send_raw("\xFF\xFC\x01");
+				$conn->_send_file("$main::data/issue");
+				$conn->send_raw("login: ");
+				$conn->_dotimeout(60);
+			} else { 
+				&{$conn->{eproc}}() if $conn->{eproc};
+				$conn->disconnect();
+			}
 		}
 	} else {
 		dbg('err', "ExtMsg: error on accept ($!)");
