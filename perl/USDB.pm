@@ -103,9 +103,17 @@ sub load
 	# now write away all the files
 	for (@_) {
 		my $fn = shift;
-		my $f = gzopen($fn, "r") or return "Cannot open $fn $!";
-		my $l;
-		while ($f->gzreadline($l)) {
+		my $if = gzopen($fn, "r") or return "Cannot open $fn $!";
+		my $ofn = "$fn.upk";
+		my $of = new IO::File "+>$ofn" or return "Cannot open $ofn $!";
+		my ($l, $buf);
+		while ($l = $if->gzread($buf)) {
+			$of->write($buf, $l);
+		}
+		$if->gzclose;
+		$of->seek(0, 0);
+
+		while ($of->getline()) {
 			chomp $l;
 			my ($call, $city, $state) = split /\|/, $l;
 			
@@ -122,7 +130,8 @@ sub load
 			}
 			$dbn{$call} = $ctyn; 
 		}
-		$f->gzclose;
+		$of->close;
+		unlink $ofn;
 	}
 	
 	untie %dbn;

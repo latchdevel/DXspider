@@ -60,7 +60,7 @@ my $dbrawfn = "$main::data/usdbraw";
 rename "$dbrawfn.oo", "$dbrawfn.ooo";
 rename "$dbrawfn.o", "$dbrawfn.oo";
 rename "$dbrawfn", "$dbrawfn.o";
-my $gzfh = gzopen($dbrawfn, "wb9") or die "Cannot open $dbrawfn $!";
+my $gzfh = gzopen($dbrawfn, "wb") or die "Cannot open $dbrawfn $!";
 
 my $ctycount;
   
