@@ -78,8 +78,8 @@ $lrusize = 2000;
 		  wantann_talk => '0,Talklike Anns,yesno',
 		  wantpc90 => '1,Req PC90,yesno',
 		  wantnp => '1,Req New Protocol,yesno',
-		  wantusers => '9,Want Users from node,yesno',
-		  wantsendusers => '9,Send users to node,yesno',
+		  wantpc16 => '9,Want Users from node,yesno',
+		  wantsendpc16 => '9,Send users to node,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -585,14 +585,14 @@ sub wantann_talk
 	return _want('ann_talk', @_);
 }
 
-sub wantusers
+sub wantpc16
 {
-	return _want('users', @_);
+	return _want('pc16', @_);
 }
 
-sub wantsendusers
+sub wantsendpc16
 {
-	return _want('annsendusers', @_);
+	return _want('sendpc16', @_);
 }
 
 sub wantlogininfo

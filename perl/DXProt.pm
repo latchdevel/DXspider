@@ -625,6 +625,12 @@ sub normal
 			my $ncall = $field[1];
 			my $newline = "PC16^";
 			
+			# do I want users from this channel?
+			unless ($self->user->wantpc16) {
+				dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
+				return;
+			}
+			# is it me?
 			if ($ncall eq $main::mycall) {
 				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 				return;
@@ -699,6 +705,11 @@ sub normal
 
 			eph_del_regex("^PC16\\^$ncall.*$ucall");
 			
+			# do I want users from this channel?
+			unless ($self->user->wantpc16) {
+				dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
+				return;
+			}
 			if ($ncall eq $main::mycall) {
 				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 				return;
@@ -1562,7 +1573,7 @@ sub announce
 sub send_local_config
 {
 	my $self = shift;
-	my $n;
+	my $node;
 	my @nodes;
 	my @localnodes;
 	my @remotenodes;
@@ -1581,19 +1592,21 @@ sub send_local_config
 		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
 		my $ref = Route::Node::get($self->{call});
 		my @rnodes = $ref->nodes;
-		for my $n (@intcalls) {
-			push @remotenodes, Route::Node::get($n) unless grep $n eq $_, @rnodes;
+		for my $node (@intcalls) {
+			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes;
 		}
 		unshift @localnodes, $main::routeroot;
 	}
 	
 
-	send_route($self, \&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
+	$self->send_route(\&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
 	
 	# get all the users connected on the above nodes and send them out
-	foreach $n (@localnodes, @remotenodes) {
-		if ($n) {
-			send_route($self, \&pc16, 1, $n, map {my $r = Route::User::get($_); $r ? ($r) : ()} $n->users);
+	foreach $node (@localnodes, @remotenodes) {
+		if ($node) {
+			$self->send_route(\&pc16, 1, $node, 
+							  map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users)
+				if $self->user->wantsendpc16;
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
 		}
@@ -1918,7 +1931,8 @@ sub broadcast_route
 			next if $dxchan == $self;
 			next if $dxchan == $main::me;
 			next if $dxchan->user->wantnp;
-			
+			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
+ 
 			$dxchan->send_route($generate, @_);
 		}
 	}
@@ -1927,12 +1941,14 @@ sub broadcast_route
 sub route_pc16
 {
 	my $self = shift;
+	return unless $self->user->wantpc16;
 	broadcast_route($self, \&pc16, 1, @_);
 }
 
 sub route_pc17
 {
 	my $self = shift;
+	return unless $self->user->wantpc16;
 	broadcast_route($self, \&pc17, 1, @_);
 }
 
