@@ -278,9 +278,8 @@ sub pc41
 	my $call = shift;
 	$call = shift if ref $call;
 	
-	my ($sort, $info) = @_;
-	$sort ||= '0';
-	$info ||= ' ';
+	my $sort = shift || '0';
+	my $info = shift || ' ';
 	my $hops = shift || get_hops(41);
 	return "PC41^$call^$sort^$info^$hops^~";
 }

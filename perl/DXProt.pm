@@ -1431,7 +1431,11 @@ sub send_local_config
 	
 	# get all the users connected on the above nodes and send them out
 	foreach $n (@localnodes, @remotenodes) {
-		send_route($self, \&pc16, 1, $n, map {my $r = Route::User::get($_); $r ? ($r) : ()} $n->users);
+		if ($r) {
+			send_route($self, \&pc16, 1, $n, map {my $r = Route::User::get($_); $r ? ($r) : ()} $n->users);
+		} else {
+			dbg('chan', "sent a null value");
+		}
 	}
 }
 
