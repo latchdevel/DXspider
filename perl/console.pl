@@ -188,9 +188,11 @@ sub show_screen
 # add a line to the end of the top screen
 sub addtotop
 {
-	my $inbuf = shift;
-	push @shistory, $inbuf;
-	shift @shistory if @shistory > $maxshist;
+	while (@_) {
+		my $inbuf = shift;
+		push @shistory, $inbuf;
+		shift @shistory if @shistory > $maxshist;
+	}
 	show_screen();
 }
 

@@ -1,3 +1,14 @@
+18Nov99=======================================================================
+1. Added ping obs counter together with Time::HiRes timers. This will dis-
+connect nodes that fail to respond to 3 ping requests (on the 4th attempt). 
+The default time is a ping every 3 mins, therefore a link will be struck out
+after 12 minutes of nil response.
+17Nov99=======================================================================
+1. Started using Data::Dumper for things again
+2. 'Fixed' DXUser file corruption?
+3. Allow multiline (ie lines with \n in them) output in $DXChannel::send 
+4. Added Andrew K9CW's updated wpxloc.raw, regenerated prefix_data.pl
+5. Put in callsign matching and stuff into sh/sun.
 14Nov99=======================================================================
 1. added BBS.pm to start BBS input of mail
 2. fixed eval in DXUser to log errors rather than banging out

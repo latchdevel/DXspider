@@ -1,0 +1,1149 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>User Command Reference</title>
+	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+	<meta name="Author" content="Dirk Koopman G1TLH">
+  </head>
+  <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF">
+	<FONT COLOR="#606060"> 
+	  <hr>
+	  <h2>User Command Reference</h2>
+	  <hr>
+	</font>
+	
+	
+	<address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+	<p>
+	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+	  <!-- hhmts start -->
+Last modified: Wed Nov 17 21:03:25 GMT 1999
+<!-- hhmts end -->
+	<h4>Introduction</h4>
+
+	<p>This is the list of user commands currently available within the DX Spider DX Cluster system.</p>
+	<p>It is automatically generated from the system help files.</p>
+
+    <h4>The Commands</h4>
+
+	<ul>
+<li><a name="L1"><b>ANNOUNCE &lt;text&gt;</b></a> Send an announcement to LOCAL users only
+<br><br>
+&lt;text&gt; is the text of the announcement you wish to broadcast 
+ 
+ <br><br>
+<li><a name="L2"><b>ANNOUNCE FULL &lt;text&gt;</b></a> Send an announcement cluster wide
+<br><br>
+This will send your announcement cluster wide
+ 
+ <br><br>
+<li><a name="L3"><b>APROPOS &lt;string&gt;</b></a> Search help database for &lt;string&gt;
+<br><br>
+Search the help database for &lt;string&gt; (it isn't case sensitive), and print
+ the names of all the commands that may be relevant.
+ 
+ <br><br>
+<li><a name="L4"><b>BYE</b></a> Exit from the cluster
+<br><br>
+This will disconnect you from the cluster
+ 
+ <br><br>
+<li><a name="L5"><b>DBAVAIL</b></a> Show a list of all the Databases in the system
+<br><br>
+Title says it all really, this command lists all the databases defined
+ in the system. It is also aliased to SHOW/COMMAND.
+ 
+ <br><br>
+<li><a name="L6"><b>DBSHOW &lt;dbname&gt; &lt;key&gt;</b></a> Display an entry, if it exists, in a database
+<br><br>
+This is the generic user interface to the database to the database system.
+ It is expected that the sysop will add an entry to the local Aliases file
+ so that users can use the more familiar AK1A style of enquiry such as:
+ 
+ <br><br>
+<pre>
+  SH/BUCK G1TLH
+ </pre>
+
+ <br><br>
+but if he hasn't and the database really does exist (use DBAVAIL or
+ SHOW/COMMAND to find out) you can do the same thing with:
+ 
+ <br><br>
+<pre>
+  DBSHOW buck G1TLH
+ </pre>
+
+ <br><br>
+<li><a name="L7"><b>DIRECTORY</b></a> List messages 
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L8"><b>DIRECTORY &lt;from&gt;-&lt;to&gt;</b></a> List messages &lt;from&gt; message &lt;to&gt; message 
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L9"><b>DIRECTORY &lt;nn&gt;</b></a> List last &lt;nn&gt; messages
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L10"><b>DIRECTORY ALL</b></a> List all messages
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L11"><b>DIRECTORY FROM &lt;call&gt;</b></a> List all messages from &lt;call&gt;
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L12"><b>DIRECTORY NEW</b></a> List all new messages
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L13"><b>DIRECTORY OWN</b></a> List your own messages
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L14"><b>DIRECTORY SUBJECT &lt;string&gt;</b></a> List all messages with &lt;string&gt; in subject
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L15"><b>DIRECTORY TO &lt;call&gt;</b></a> List all messages to &lt;call&gt;
+<br><br>
+List the messages in the messages directory.
+ 
+ <br><br>
+If there is a 'p' one space after the message number then it is a 
+ personal message. If there is a '-' between the message number and the
+ 'p' then this indicates that the message has been read.
+ 
+ <br><br>
+You can use shell escape characters such as '*' and '?' in the &lt;call&gt;
+ fields.
+ 
+ <br><br>
+You can combine some of the various directory commands together eg:-
+ 
+ <br><br>
+<pre>
+   DIR TO G1TLH 5
+ </pre>
+or 
+ <pre>
+   DIR SUBJECT IOTA 200-250
+ </pre>
+
+ <br><br>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+ 
+ <br><br>
+<pre>
+   DIR/T G1* 10
+    DIR/S QSL 10-100 5
+ </pre>
+
+ <br><br>
+<li><a name="L16"><b>DX [BY &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt;</b></a> Send a DX spot
+<br><br>
+This is how you send a DX Spot to other users. You can, in fact, now
+ enter the &lt;freq&gt; and the &lt;call&gt; either way round. 
+ 
+ <br><br>
+<pre>
+   DX FR0G 144.600
+    DX 144.600 FR0G
+    DX 144600 FR0G 
+ </pre>
+
+ <br><br>
+will all give the same result. You can add some remarks to the end
+ of the command and they will be added to the spot.
+ 
+ <br><br>
+<pre>
+   DX FR0G 144600 this is a test
+ </pre>
+
+ <br><br>
+You can credit someone else by saying:-
+ 
+ <br><br>
+<pre>
+   DX by G1TLH FR0G 144.600 he isn't on the cluster
+ </pre>
+
+ <br><br>
+The &lt;freq&gt; is compared against the available bands set up in the 
+ cluster.  See SHOW/BANDS for more information.
+ 
+ <br><br>
+<li><a name="L17"><b>HELP</b></a> The HELP Command
+<br><br>
+HELP is available for a number of commands. The syntax is:-
+ 
+ <br><br>
+<pre>
+  HELP &lt;cmd&gt;
+ </pre>
+  
+ <br><br>
+Where &lt;cmd&gt; is the name of the command you want help on.
+ 
+ <br><br>
+All commands can be abbreviated, so SHOW/DX can be abbreviated
+ to SH/DX, ANNOUNCE can be shortened to AN and so on.
+ 
+ <br><br>
+Look at the APROPOS &lt;string&gt; command which will search the help database
+ for the &lt;string&gt; you specify and give you a list of likely commands
+ to look at with HELP.
+ 
+ <br><br>
+<li><a name="L18"><b>KILL &lt;msgno&gt; [&lt;msgno&gt; ...]</b></a> Remove or erase a message from the system
+<br><br>
+You can get rid of any message to or originating from your callsign using 
+ this command. You can remove more than one message at a time.
+ 
+ <br><br>
+<li><a name="L19"><b>KILL &lt;msgno&gt; [&lt;msgno..]</b></a> Delete a message from the local system
+<br><br>
+Delete a message from the local system. You will only be able to delete messages
+ that you have originated or been sent (unless you are the sysop).
+ 
+ <br><br>
+<li><a name="L20"><b>READ</b></a> Read the next unread personal message addressed to you
+<br><br>
+You can read any messages that are sent as 'non-personal' and also any
+ message either sent by or sent to your callsign.
+ 
+ <br><br>
+<li><a name="L21"><b>READ &lt;msgno&gt;</b></a> Read the specified message
+<br><br>
+You can read any messages that are sent as 'non-personal' and also any
+ message either sent by or sent to your callsign.
+ 
+ <br><br>
+<li><a name="L22"><b>REPLY</b></a> Reply (privately) to the last message that you have read
+<br><br>
+You can reply to a message and the subject will automatically have
+ "Re:" inserted in front of it, if it isn't already present.
+ 
+ <br><br>
+You can also use all the extra qualifiers such as RR, PRIVATE, 
+ NOPRIVATE, B that you can use with the SEND command (see SEND
+ for further details)
+ 
+ <br><br>
+<li><a name="L23"><b>REPLY &lt;msgno&gt;</b></a> Reply (privately) to the specified message
+<br><br>
+You can reply to a message and the subject will automatically have
+ "Re:" inserted in front of it, if it isn't already present.
+ 
+ <br><br>
+You can also use all the extra qualifiers such as RR, PRIVATE, 
+ NOPRIVATE, B that you can use with the SEND command (see SEND
+ for further details)
+ 
+ <br><br>
+<li><a name="L24"><b>REPLY B &lt;msgno&gt;</b></a> Reply as a Bulletin to the specified message
+<br><br>
+You can reply to a message and the subject will automatically have
+ "Re:" inserted in front of it, if it isn't already present.
+ 
+ <br><br>
+You can also use all the extra qualifiers such as RR, PRIVATE, 
+ NOPRIVATE, B that you can use with the SEND command (see SEND
+ for further details)
+ 
+ <br><br>
+<li><a name="L25"><b>REPLY NOPrivate &lt;msgno&gt;</b></a> Reply as a Bulletin to the specified message
+<br><br>
+You can reply to a message and the subject will automatically have
+ "Re:" inserted in front of it, if it isn't already present.
+ 
+ <br><br>
+You can also use all the extra qualifiers such as RR, PRIVATE, 
+ NOPRIVATE, B that you can use with the SEND command (see SEND
+ for further details)
+ 
+ <br><br>
+<li><a name="L26"><b>REPLY RR &lt;msgno&gt;</b></a> Reply to the specified message with read receipt
+<br><br>
+You can reply to a message and the subject will automatically have
+ "Re:" inserted in front of it, if it isn't already present.
+ 
+ <br><br>
+You can also use all the extra qualifiers such as RR, PRIVATE, 
+ NOPRIVATE, B that you can use with the SEND command (see SEND
+ for further details)
+ 
+ <br><br>
+<li><a name="L27"><b>SEND &lt;call&gt; [&lt;call&gt; ...]</b></a> Send a message to one or more callsigns
+<br><br>
+All the SEND commands will create a message which will be sent either to
+ an individual callsign or to one of the 'bulletin' addresses. 
+ 
+ <br><br>
+SEND &lt;call&gt; on its own acts as though you had typed SEND PRIVATE, that is
+ it will mark the message as personal and send it to the cluster node that
+ that callsign is connected to.
+ 
+ <br><br>
+You can have more than one callsign in all of the SEND commands.
+ 
+ <br><br>
+You can have multiple qualifiers so that you can have for example:-
+ 
+ <br><br>
+<pre>
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+ </pre>
+
+ <br><br>
+which should send a copy of message 123 to G1TLH and G0RDI and you will
+ receive a read receipt when they have read the message.
+ 
+ <br><br>
+SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
+ SP is an alias for SEND PRIVATE
+ 
+ <br><br>
+<li><a name="L28"><b>SEND COPY &lt;msgno&gt; &lt;call&gt;</b></a> Send a copy of a  message to someone
+<br><br>
+All the SEND commands will create a message which will be sent either to
+ an individual callsign or to one of the 'bulletin' addresses. 
+ 
+ <br><br>
+SEND &lt;call&gt; on its own acts as though you had typed SEND PRIVATE, that is
+ it will mark the message as personal and send it to the cluster node that
+ that callsign is connected to.
+ 
+ <br><br>
+You can have more than one callsign in all of the SEND commands.
+ 
+ <br><br>
+You can have multiple qualifiers so that you can have for example:-
+ 
+ <br><br>
+<pre>
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+ </pre>
+
+ <br><br>
+which should send a copy of message 123 to G1TLH and G0RDI and you will
+ receive a read receipt when they have read the message.
+ 
+ <br><br>
+SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
+ SP is an alias for SEND PRIVATE
+ 
+ <br><br>
+<li><a name="L29"><b>SEND NOPRIVATE &lt;call&gt;</b></a> Send a message to all stations
+<br><br>
+All the SEND commands will create a message which will be sent either to
+ an individual callsign or to one of the 'bulletin' addresses. 
+ 
+ <br><br>
+SEND &lt;call&gt; on its own acts as though you had typed SEND PRIVATE, that is
+ it will mark the message as personal and send it to the cluster node that
+ that callsign is connected to.
+ 
+ <br><br>
+You can have more than one callsign in all of the SEND commands.
+ 
+ <br><br>
+You can have multiple qualifiers so that you can have for example:-
+ 
+ <br><br>
+<pre>
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+ </pre>
+
+ <br><br>
+which should send a copy of message 123 to G1TLH and G0RDI and you will
+ receive a read receipt when they have read the message.
+ 
+ <br><br>
+SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
+ SP is an alias for SEND PRIVATE
+ 
+ <br><br>
+<li><a name="L30"><b>SEND PRIVATE &lt;call&gt;</b></a> Send a personal message
+<br><br>
+All the SEND commands will create a message which will be sent either to
+ an individual callsign or to one of the 'bulletin' addresses. 
+ 
+ <br><br>
+SEND &lt;call&gt; on its own acts as though you had typed SEND PRIVATE, that is
+ it will mark the message as personal and send it to the cluster node that
+ that callsign is connected to.
+ 
+ <br><br>
+You can have more than one callsign in all of the SEND commands.
+ 
+ <br><br>
+You can have multiple qualifiers so that you can have for example:-
+ 
+ <br><br>
+<pre>
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+ </pre>
+
+ <br><br>
+which should send a copy of message 123 to G1TLH and G0RDI and you will
+ receive a read receipt when they have read the message.
+ 
+ <br><br>
+SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
+ SP is an alias for SEND PRIVATE
+ 
+ <br><br>
+<li><a name="L31"><b>SEND RR &lt;call&gt;</b></a> Send a message and ask for a read receipt
+<br><br>
+All the SEND commands will create a message which will be sent either to
+ an individual callsign or to one of the 'bulletin' addresses. 
+ 
+ <br><br>
+SEND &lt;call&gt; on its own acts as though you had typed SEND PRIVATE, that is
+ it will mark the message as personal and send it to the cluster node that
+ that callsign is connected to.
+ 
+ <br><br>
+You can have more than one callsign in all of the SEND commands.
+ 
+ <br><br>
+You can have multiple qualifiers so that you can have for example:-
+ 
+ <br><br>
+<pre>
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+ </pre>
+
+ <br><br>
+which should send a copy of message 123 to G1TLH and G0RDI and you will
+ receive a read receipt when they have read the message.
+ 
+ <br><br>
+SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
+ SP is an alias for SEND PRIVATE
+ 
+ <br><br>
+<li><a name="L32"><b>SET/ADDRESS &lt;your address&gt;</b></a> Record your postal address
+<br><br>
+
+ <br>
+<li><a name="L33"><b>SET/ANNOUNCE</b></a> Allow announce messages to come out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L34"><b>SET/BEEP</b></a> Add a beep to DX and other messages on your terminal
+<br><br>
+
+ <br>
+<li><a name="L35"><b>SET/DX</b></a> Allow DX messages to come out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L36"><b>SET/HERE</b></a> Tell the system you are present at your terminal
+<br><br>
+
+ <br>
+<li><a name="L37"><b>SET/HOMENODE &lt;node&gt; </b></a> Set your normal cluster callsign
+<br><br>
+Tell the cluster system where you normally connect to. Any Messages sent
+ to you will normally find their way there should you not be connected.
+ eg:-
+ <pre>
+  SET/HOMENODE gb7djk
+ </pre>
+
+ <br><br>
+<li><a name="L38"><b>SET/LANGUAGE &lt;lang&gt;</b></a> Set the language you want to use
+<br><br>
+You can select the language that you want the cluster to use. Currently
+ the languages available are en (english) and nl (dutch).
+ 
+ <br><br>
+<li><a name="L39"><b>SET/LOCATION &lt;lat & long&gt;</b></a> Set your latitude and longitude
+<br><br>
+In order to get accurate headings and such like you must tell the system
+ what your latitude and longitude is. If you have not yet done a SET/QRA
+ then this command will set your QRA locator for you. For example:-
+ <pre>
+  SET/LOCATION 52 22 N 0 57 E
+ </pre>
+
+ <br><br>
+<li><a name="L40"><b>SET/NAME &lt;your name&gt;</b></a> Set your name
+<br><br>
+Tell the system what your name is eg:-
+ <pre>
+  SET/NAME Dirk
+ </pre>
+
+ <br><br>
+<li><a name="L41"><b>SET/PAGE &lt;lines per page&gt;</b></a> Set the lines per page
+<br><br>
+Tell the system how many lines you wish on a page when the number of line
+ of output from a command is more than this. The default is 20. Setting it
+ explicitly to 0 will disable paging. 
+ <pre>
+  SET/PAGE 30
+   SET/PAGE 0
+ </pre>
+ 
+ <br><br>
+<li><a name="L42"><b>SET/QRA &lt;locator&gt;</b></a> Set your QRA locator
+<br><br>
+Tell the system what your QRA (or Maidenhead) locator is. If you have not
+ done a SET/LOCATION then your latitude and longitude will be set roughly
+ correctly (assuming your locator is correct ;-). For example:-
+ <pre>
+  SET/QRA JO02LQ
+ </pre>
+
+ <br><br>
+<li><a name="L43"><b>SET/QTH &lt;your qth&gt;</b></a> Set your QTH
+<br><br>
+Tell the system where you are. For example:-
+ <pre>
+  SET/QTH East Dereham, Norfolk
+ </pre>
+
+ <br><br>
+<li><a name="L44"><b>SET/TALK</b></a> Allow TALK messages to come out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L45"><b>SET/WWV</b></a> Allow WWV messages to come out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L46"><b>SET/WX</b></a> Allow WX messages to come out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L47"><b>SHOW/DX</b></a> Interrogate the spot database
+<br><br>
+If you just type SHOW/DX you will get the last so many spots
+ (sysop configurable, but usually 10).
+    
+ <br><br>
+In addition you can add any number of these commands in very nearly
+ any order to the basic SHOW/DX command, they are:-
+    
+ <br><br>
+on &lt;band&gt;       - eg 160m 20m 2m 23cm 6mm
+ on &lt;region&gt;     - eg hf vhf uhf shf      (see SHOW/BANDS)
+    
+ <br><br>
+&lt;number&gt;        - the number of spots you want
+ &lt;from&gt;-&lt;to&gt;     - &lt;from&gt; spot no &lt;to&gt; spot no in the selected list
+    
+ <br><br>
+&lt;prefix&gt;        - for a spotted callsign beginning with &lt;prefix&gt;
+ *&lt;suffix&gt;       - for a spotted callsign ending in &lt;suffix&gt;
+ *&lt;string&gt;*      - for a spotted callsign containing &lt;string&gt;
+    
+ <br><br>
+day &lt;number&gt;    - starting &lt;number&gt; days ago
+ day &lt;from&gt;-&lt;to&gt; - &lt;from&gt; days &lt;to&gt; days ago
+    
+ <br><br>
+info &lt;text&gt;     - any spots containing &lt;text&gt; in the info or remarks
+    
+ <br><br>
+by &lt;call&gt;       - any spots spotted by &lt;call&gt; (spotter &lt;call&gt; is the 
+ <pre>
+                  same).
+ </pre>
+
+ <br><br>
+qsl             - this automatically looks for any qsl info on the call
+ <pre>
+                  held in the spot database.
+ </pre>
+
+ <br><br>
+iota [&lt;iota&gt;]   - If the iota island number is missing it will look for
+ <pre>
+                  the string iota and anything which looks like an iota
+                   island number. If you specify then it will look for  
+                   that island.
+ </pre>
+
+ <br><br>
+qra [&lt;locator&gt;] - this will look for the specific locator if you specify
+ <pre>
+                  one or else anything that looks like a locator.
+ </pre>
+   
+ <br><br>
+e.g. 
+    
+ <br><br>
+<pre>
+   SH/DX 9m0
+    SH/DX on 20m info iota
+    SH/DX 9a on vhf day 30
+    SH/DX rf1p qsl
+    SH/DX iota 
+    SH/DX iota eu-064
+    SH/DX qra jn86
+ </pre>
+  
+ <br><br>
+<li><a name="L48"><b>SHOW/DXCC &lt;prefix&gt;</b></a> Interrogate the spot database by country
+<br><br>
+This command takes the &lt;prefix&gt; (which can be a full or partial 
+ callsign if desired), looks up which internal country number it is
+ and then displays all the spots as per SH/DX for that country.
+    
+ <br><br>
+The options for SHOW/DX also apply to this command.   
+ e.g. 
+    
+ <br><br>
+<pre>
+   SH/DXCC G
+    SH/DXCC W on 20m info iota
+ </pre>
+
+ <br><br>
+<li><a name="L49"><b>SHOW/FILES [&lt;filearea&gt; [&lt;string&gt;]]</b></a> List the contents of a filearea
+<br><br>
+SHOW/FILES on its own will show you a list of the various fileareas
+ available on the system. To see the contents of a particular file
+ area type:-
+ <pre>
+   SH/FILES &lt;filearea&gt;
+ </pre>
+where &lt;filearea&gt; is the name of the filearea you want to see the 
+ contents of.
+ 
+ <br><br>
+You can also use shell globbing characters like '*' and '?' in a
+ string to see a selection of files in a filearea eg:-
+ <pre>
+   SH/FILES bulletins arld*
+ </pre>
+
+ <br><br>
+See also TYPE - to see the contents of a file.
+ 
+ <br><br>
+<li><a name="L50"><b>SHOW/MUF &lt;prefix&gt; [&lt;hours&gt;][long]</b></a> Show the likely propagation to a prefix
+<br><br>
+This command allow you to estimate the likelihood of you contacting
+ a station with the prefix you have specified. The output assumes a modest
+ power of 20dBW and receiver sensitivity of -123dBm (about 0.15muV/10dB SINAD)
+ 
+ <br><br>
+The result predicts the most likely operating frequencies and signal
+ levels for high frequency (shortwave) radio propagation paths on
+ specified days of the year and hours of the day. It is most useful for
+ paths between 250 km and 6000 km, but can be used with reduced accuracy
+ for paths shorter or longer than this.
+ 
+ <br><br>
+The command uses a routine MINIMUF 3.5 developed by the U.S. Navy and
+ used to predict the MUF given the predicted flux, day of the year,
+ hour of the day and geographic coordinates of the transmitter and
+ receiver. This routine is reasonably accurate for the purposes here,
+ with a claimed RMS error of 3.8 MHz, but much smaller and less complex
+ than the programs used by major shortwave broadcasting organizations,
+ such as the Voice of America.
+ 
+ <br><br>
+The command will display some header information detailing its
+ assumptions, together with the locations, latitude and longitudes and
+ bearings. It will then show UTC (UT), local time at the other end
+ (LT), calculate the MUFs, Sun zenith angle at the midpoint of the path
+ (Zen) and the likely signal strengths. Then for each frequency for which
+ the system thinks there is a likelihood of a circuit it prints a value.
+ 
+ <br><br>
+The value is currently a likely S meter reading based on the conventional
+ 6dB / S point scale. If the value has a '+' appended it means that it is
+ 1/2 an S point stronger. If the value is preceeded by an 'm' it means that
+ there is likely to be much fading and by an 's' that the signal is likely
+ to be noisy.  
+ 
+ <br><br>
+By default SHOW/MUF will show the next two hours worth of data. You
+ can specify anything up to 24 hours worth of data by appending the no of
+ hours required after the prefix. For example:-
+ 
+ <br><br>
+<pre>
+  SH/MUF W
+ </pre>
+
+ <br><br>
+produces:
+ 
+ <br><br>
+<pre>
+  RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
+   Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
+   Location                       Lat / Long           Azim
+   East Dereham, Norfolk          52 41 N 0 57 E         47
+   United-States-W                43 0 N 87 54 W        299
+   UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
+   18 23 11.5 -35  mS0+ mS2   S3
+   19  0 11.2 -41  mS0+ mS2   S3
+ </pre>
+
+ <br><br>
+indicating that you will have weak, fading circuits on top band and 
+ 80m but usable signals on 40m (about S3).
+ 
+ <br><br>
+inputing:-
+ 
+ <br><br>
+<pre>
+  SH/MUF W 24
+ </pre>
+
+ <br><br>
+will get you the above display, but with the next 24 hours worth of
+ propagation data.
+ 
+ <br><br>
+<pre>
+  SH/MUF W L 24
+   SH/MUF W 24 Long
+ </pre>
+
+ <br><br>
+Gives you an estimate of the long path propagation characterics. It
+ should be noted that the figures will probably not be very useful, nor
+ terrible accurate, but it is included for completeness.
+ 
+ <br><br>
+<li><a name="L51"><b>SHOW/PREFIX &lt;callsign&gt;</b></a> Interrogate the prefix database 
+<br><br>
+This command takes the &lt;callsign&gt; (which can be a full or partial 
+ callsign or a prefix), looks up which internal country number 
+ it is and then displays all the relevant prefixes for that country
+ together with the internal country no, the CQ and ITU regions. 
+ 
+ <br><br>
+See also SHOW/DXCC
+ 
+ <br><br>
+<li><a name="L52"><b>SHOW/SUN [&lt;callsign&gt;|&lt;prefix&gt;]</b></a> Display sunrise and sunset times
+<br><br>
+Show the sunrise and sunset times for a callsign (if it is known to the
+ cluster), a prefix or, if nothing is specified, at your QTH (if you have
+ remembered to set your location using SET/LOCATION or SET/QRA). If all else
+ fails it will show the sunrise and set times for the node that you are 
+ connected to.
+ 
+ <br><br>
+You can enter more than one prefix or callsign:-
+ 
+ <br><br>
+<pre>
+  SH/SUN G1TLH G8TIC W9
+ </pre>
+
+ <br><br>
+<li><a name="L53"><b>SHOW/WWV</b></a> Show last 10 WWV broadcasts
+<br><br>
+Display the most recent WWV information that has been received by the system
+ 
+ <br><br>
+<li><a name="L54"><b>SHOW/WWV &lt;n&gt;</b></a> Show last &lt;n&gt; WWV broadcasts
+<br><br>
+Display the most recent WWV information that has been received by the system
+ 
+ <br><br>
+<li><a name="L55"><b>SYSOP</b></a> Regain your privileges if you login remotely
+<br><br>
+The system automatically reduces your privilege level to that of a
+ normal user if you login in remotely. This command allows you to
+ regain your normal privilege level. It uses the normal system: five
+ numbers are returned that are indexes into the character array that is
+ your assigned password (see SET/PASSWORD). The indexes start from
+ zero.
+ 
+ <br><br>
+You are expected to return a string which contains the characters
+ required in the correct order. You may intersperse those characters
+ with others to obscure your reply for any watchers. For example (and
+ these values are for explanation :-):
+ 
+ <br><br>
+<pre>
+  password = 012345678901234567890123456789
+   &gt; sysop
+   22 10 15 17 3
+ </pre>
+you type:-
+ <pre>
+ aa2bbbb0ccc5ddd7xxx3n
+  or 2 0 5 7 3
+  or 20573
+ </pre>
+
+ <br><br>
+They will all match. If there is no password you will still be offered
+ numbers but nothing will happen when you input a string. Any match is
+ case sensitive.
+ 
+ <br><br>
+<li><a name="L56"><b>TALK &lt;call&gt; &gt; &lt;node&gt; &lt;text&gt;</b></a> Send a text message to another station via a node
+<br><br>
+Send a short message to any other station that is visible on the cluster
+ system. You can send it to anyone you can see with a SHOW/CONFIGURATION 
+ command, they don't have to be connected locally.
+ 
+ <br><br>
+The second form of TALK is used when other cluster nodes are connected
+ with restricted information. This usually means that they don't send 
+ the user information usually associated with logging on and off the cluster.
+ 
+ <br><br>
+If you know that G3JNB is likely to be present on GB7TLH, but you can only
+ see GB7TLH in the SH/C list but with no users, then you would use the
+ second form of the talk message.
+ 
+ <br><br>
+<li><a name="L57"><b>TALK &lt;call&gt; &lt;text&gt;</b></a> Send a text message to another station
+<br><br>
+Send a short message to any other station that is visible on the cluster
+ system. You can send it to anyone you can see with a SHOW/CONFIGURATION 
+ command, they don't have to be connected locally.
+ 
+ <br><br>
+The second form of TALK is used when other cluster nodes are connected
+ with restricted information. This usually means that they don't send 
+ the user information usually associated with logging on and off the cluster.
+ 
+ <br><br>
+If you know that G3JNB is likely to be present on GB7TLH, but you can only
+ see GB7TLH in the SH/C list but with no users, then you would use the
+ second form of the talk message.
+ 
+ <br><br>
+<li><a name="L58"><b>TYPE &lt;filearea&gt;/&lt;name&gt;</b></a> Look at the contents of a file in one of the fileareas
+<br><br>
+Type out the contents of a file in a filearea. So, for example, in 
+ filearea 'bulletins' you want to look at file 'arld051' you would 
+ enter:-
+ <pre>
+   TYPE bulletins/arld051
+ </pre>
+
+ <br><br>
+See also SHOW/FILES to see what fileareas are available and a 
+ list of content.
+ 
+ <br><br>
+<li><a name="L59"><b>UNSET/ANNOUNCE</b></a> Stop announce messages coming out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L60"><b>UNSET/BEEP</b></a> Stop beeps for DX and other messages on your terminal
+<br><br>
+
+ <br>
+<li><a name="L61"><b>UNSET/DX</b></a> Stop DX messages coming out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L62"><b>UNSET/HERE</b></a> Tell the system you are absent from your terminal
+<br><br>
+
+ <br>
+<li><a name="L63"><b>UNSET/TALK</b></a> Stop TALK messages coming out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L64"><b>UNSET/WWV</b></a> Stop WWV messages coming out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L65"><b>UNSET/WX</b></a> Stop WX messages coming out on your terminal
+<br><br>
+
+ <br>
+<li><a name="L66"><b>WHO</b></a> Show who is physically connected
+<br><br>
+This is a quick listing that shows which callsigns are connected and
+ what sort of connection they have
+ 
+ <br><br>
+<li><a name="L67"><b>WX &lt;text&gt;</b></a> Send a weather message to local users
+<br><br>
+Weather messages can sometimes be useful if you are experiencing an extreme
+ that may indicate enhanced conditions
+ 
+ <br><br>
+<li><a name="L68"><b>WX FULL &lt;text&gt;</b></a> Send a weather message to all cluster users
+<br><br>
+Weather messages can sometimes be useful if you are experiencing an extreme
+ that may indicate enhanced conditions
+ 
+ <br><br>
+    </ul>
+<!-- Standard Footer!! -->
+	<p>&nbsp;</p>
+	<p>
+	  <FONT COLOR="#606060"><hr></font>
+	<font color="#FF0000" size=-2>
+	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
+	</font>
+	<font color="#000000" size=-2>$Id$</font>
+  </body>
+</html>

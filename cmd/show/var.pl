@@ -18,9 +18,12 @@ foreach $f (@f) {
     print "\$f = $f\n";
 	my $var = eval "$f";
 	if ($var) {
-        my $s = Data::Dumper->Dump([ $var ], [ "$f" ]);
+        my $dd = Data::Dumper->new([ $var ], [ "$f" ]);
+        $dd->Indent(1);
+		$dd->Quotekeys(0);
+		my $s = $dd->Dumpxs;
 		push @out, $s;
-		Log('DXCommand', $self->call . " show/var $s");
+		Log('DXCommand', $self->call . " show/var $f");
 	} else {
 		push @out, $@ ? $@ : $self->msg('e3', 'show/var', $f);
 		Log('DXCommand', $self->call . " show/var $f not found" );

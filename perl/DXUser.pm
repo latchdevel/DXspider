@@ -13,6 +13,7 @@ require Exporter;
 
 use DXLog;
 use DB_File;
+use Data::Dumper;
 use Fcntl;
 use Carp;
 
@@ -56,6 +57,7 @@ $filename = undef;
 		  wanttalk => '0,Rec Talk,yesno',
 		  wantwx => '0,Rec WX,yesno',
 		  wantdx => '0,Rec DX Spots,yesno',
+		  pingint => '9,Node Ping interval',
 		 );
 
 no strict;
@@ -122,7 +124,7 @@ sub new
 	$self->{dxok} = 1;
 	$self->{annok} = 1;
 	$self->{lang} = $main::lang;
-	$u{call} = $self->encode();
+	$self->put;
 	return $self;
 }
 
@@ -176,6 +178,7 @@ sub get_current
 sub put
 {
 	my $self = shift;
+	confess "Trying to put nothing!" unless $self && ref $self;
 	my $call = $self->{call};
 	$u{$call} = $self->encode();
 }
@@ -186,27 +189,11 @@ sub put
 sub encode
 {
 	my $self = shift;
-	my $out;
-	my $f;
-
-	$out = "bless( { ";
-	for $f (sort keys %$self) {
-		my $val = $$self{$f};
-	    if (ref $val) {          # it's an array (we think)
-			$out .= "'$f'=>[ ";
-			foreach (@$val) {
-				my $s = $_;
-				$out .= "'$s',";
-			}
-			$out .= " ],";
-	    } else {
-			$val =~ s/'/\\'/og;
-			$val =~ s/\@/\\@/og;
-			$out .= "'$f'=>q{$val},";
-		}
-	}
-	$out .= " }, 'DXUser')";
-	return $out;
+	my $dd = new Data::Dumper([$self]);
+	$dd->Indent(0);
+	$dd->Terse(1);
+    $dd->Quotekeys(0);
+	return $dd->Dumpxs;
 }
 
 #

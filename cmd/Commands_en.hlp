@@ -12,14 +12,12 @@
 # Comment lines are indented before printing
 #
 === 0^ANNOUNCE <text>^Send an announcement to LOCAL users only
+<text> is the text of the announcement you wish to broadcast 
 
 === 0^ANNOUNCE FULL <text>^Send an announcement cluster wide
 This will send your announcement cluster wide
 
 === 5^ANNOUNCE SYSOP <text>^Send an announcement to Sysops only
-
-=== 0^ANNOUNCE-
-<text> is the text of the announcement you wish to broadcast 
 
 === 0^APROPOS <string>^Search help database for <string>
 Search the help database for <string> (it isn't case sensitive), and print
@@ -43,13 +41,13 @@ outstanding non-private messages will be forwarded to them. This may well
 be ALL the non-private messages. You can prevent this by using these 
 commmands:-
 
-    catch GB7DJK all
-    catch GB7DJK 300 301 302 303
+  catch GB7DJK all
+  catch GB7DJK 300 301 302 303
 	
 and to undo what you have just done:-
-
-	uncatch GB7DJK all
-	uncatch GB7DJK 300 301 302 303
+  
+  uncatch GB7DJK all
+  uncatch GB7DJK 300 301 302 303
 
 which will arrange for them to be forward candidates again.
 
@@ -89,7 +87,6 @@ Remote databases cannot be chained; however, the last database in a
 a chain can be a remote database eg:
 
   DBCREATE qsl chain gb7dxc
-
 
 To see what databases have been defined do:
 
@@ -646,7 +643,18 @@ together with the internal country no, the CQ and ITU regions.
 
 See also SHOW/DXCC
 
-=== 0^SHOW/PROGRAM^Show the locations of all the included program modules
+=== 0^SHOW/SUN [<callsign>|<prefix>]^Display sunrise and sunset times
+Show the sunrise and sunset times for a callsign (if it is known to the
+cluster), a prefix or, if nothing is specified, at your QTH (if you have
+remembered to set your location using SET/LOCATION or SET/QRA). If all else
+fails it will show the sunrise and set times for the node that you are 
+connected to.
+
+You can enter more than one prefix or callsign:-
+
+  SH/SUN G1TLH G8TIC W9
+
+=== 5^SHOW/PROGRAM^Show the locations of all the included program modules
 Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from. 
 
@@ -692,13 +700,13 @@ required in the correct order. You may intersperse those characters
 with others to obscure your reply for any watchers. For example (and
 these values are for explanation :-):
 
-password = 012345678901234567890123456789
- > sysop
-22 10 15 17 3
+  password = 012345678901234567890123456789
+  > sysop
+  22 10 15 17 3
 you type:-
-aa2bbbb0ccc5ddd7xxx3n
-or 2 0 5 7 3
-or 20573
+ aa2bbbb0ccc5ddd7xxx3n
+ or 2 0 5 7 3
+ or 20573
 
 They will all match. If there is no password you will still be offered
 numbers but nothing will happen when you input a string. Any match is
@@ -736,3 +744,4 @@ what sort of connection they have
 === 5^WX SYSOP <text>^Send a weather message to other clusters only
 Weather messages can sometimes be useful if you are experiencing an extreme
 that may indicate enhanced conditions
+

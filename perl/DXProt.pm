@@ -25,6 +25,7 @@ use DXDebug;
 use Filter;
 use Local;
 use DXDb;
+use Time::HiRes qw(gettimeofday tv_interval);
 
 use Carp;
 
@@ -38,9 +39,9 @@ $me = undef;					# the channel id for this cluster
 $decode_dk0wcy = undef;			# if set use this callsign to decode announces from the EU WWV data beacon
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
-$pc11_dup_age = 24*3600;		# the maximum time to keep the spot dup list for
-$pc23_dup_age = 24*3600;		# the maximum time to keep the wwv dup list for
-$pc12_dup_age = 12*3600;		# the maximum time to keep the ann dup list for
+$pc11_dup_age = 3*3600;			# the maximum time to keep the spot dup list for
+$pc23_dup_age = 3*3600;			# the maximum time to keep the wwv dup list for
+$pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
 $pc12_dup_lth = 60;				# the length of ANN text to save for deduping 
 %spotdup = ();				    # the pc11 and 26 dup hash 
 %wwvdup = ();				    # the pc23 and 27 dup hash
@@ -50,6 +51,7 @@ $last_hour = time;				# last time I did an hourly periodic update
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
 @baddx = ();                    # list of illegal spotted callsigns
+
 
 $baddxfn = "$main::data/baddx.pl";
 
@@ -131,6 +133,11 @@ sub start
 	}
 	$self->state('init');
 	$self->pc50_t(time);
+	$self->pingint($user->pingint || 3*60);
+	$self->nopings(3);
+	$self->lastping($main::systime);
+	$self->pingtime(0);
+	$self->pingrec(0);
 
 	Log('DXProt', "$call connected");
 }
@@ -699,11 +706,23 @@ sub normal
 						while (@$ref) {
 							my $r = shift @$ref;
 							my $dxchan = DXChannel->get($r->{call});
-							$dxchan->send($dxchan->msg('pingi', $field[2], atime($main::systime), $main::systime - $r->{t})) if $dxchan;
+							next unless $dxchan;
+							my $t = tv_interval($r->{t}, [ gettimeofday ]);
+							if ($dxchan->is_user) {
+								my $s = sprintf "%.2f", $t; 
+								$dxchan->send($dxchan->msg('pingi', $field[2], $s))
+							} elsif ($dxchan->is_ak1a) {
+								my $tochan =  DXChannel->get($field[2]);
+								if ($tochan) {
+									$tochan->nopings(3); # pump up the timer
+									$tochan->{pingtime} += $t;
+									$tochan->{pingrec} += 1;
+									$tochan->{pingave} = $tochan->{pingtime} / $tochan->{pingrec};
+								}
+							} 
 						}
 					}
 				}
-				
 			} else {
 				# route down an appropriate thingy
 				$self->route($field[1], $line);
@@ -744,6 +763,17 @@ sub process
 			$dxchan->send(pc50());
 			$dxchan->pc50_t($t);
 		} 
+
+		# send a ping out on this channel
+		if ($t >= $dxchan->pingint + $dxchan->lastping) {
+			if ($dxchan->nopings <= 0) {
+				$dxchan->disconnect;
+			} else {
+				addping($main::mycall, $dxchan->call);
+				$dxchan->nopings($dxchan->nopings - 1);
+				$dxchan->lastping($t);
+			}
+		}
 	}
 	
 	my $key;
@@ -1210,13 +1240,13 @@ sub unpad
 sub addping
 {
 	my ($from, $to) = @_;
-	my $ref = $pings{$to};
-	$ref = $pings{$to} = [] if !$ref;
+	my $ref = $pings{$to} || [];
 	my $r = {};
 	$r->{call} = $from;
-	$r->{t} = $main::systime;
+	$r->{t} = [ gettimeofday ];
 	route(undef, $to, pc51($to, $main::mycall, 1));
 	push @$ref, $r;
+	$pings{$to} = $ref;
 }
 
 # add a rcmd request to the rcmd queues

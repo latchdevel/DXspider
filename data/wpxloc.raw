@@ -1,4 +1,18 @@
-! highest number now 337
+! highest DXCC number is now 339
+!
+! changed FO/M (Marquesas) to 339             991111
+! changed FO/A (Austral) to 338               991111
+! changed 3C0 to S latitude                   991111
+! changed R1MV to zone 29/16                  991111
+! changed BS7 to zone 50/27                   991111
+! changed BY's to zone 33/24                  991111
+! corrected Austria prefix to OE              991111
+! changed VE3 Ontario to zone 4/4             991111
+! corrected VO1 Newfoundland                  991111
+! changed VO2 Labrador to zone 9/2            991111
+! changed VQ9 zone to 41/39                   991111
+! corrected Tristan-Da-Cunha prefix to ZD9    991111
+!
 ! added E4 (Palestine) to 337
 ! made T9, 9A, S5 separate countries
 ! VR6 > VP6                                   980504
@@ -27,12 +41,6 @@
 !VK9 changes from QRZ DX, Issue 92-01
 ! changed dxcc cty paraguay from 164 to 333 (T7 = 164)
 ! changed pirate to 666
-!TO INSTALL THIS FILE:
-!Assuming this file is in the A: Drive, from PacketCluster, type:
-!    DOS/NOWAIT COPY A:WPXLOC.RAW C:\PACKCLUS\WPXLOC.RAW <ENTER>
-!When complete, the PacketCluster screen will return. At that point, type:
-!    DOS/NOWAIT POPULATE <ENTER>
-!When finished the PacketCluster screen will return.That's it!
 !
 1A S.M.O.M.-1A                        268 28 15 -1.0 41 54 0 N 12 24 0 E @
 1S Spratly-Is-1S                      269 50 26 -8.0 8 48 0 N 111 54 0 E @
@@ -43,7 +51,7 @@
 3B8 Mauritius-3B8                     273 53 39 -4.0 20 18 0 S 57 30 0 E @
 3B9 Rodriguez-Is-3B9                  274 53 39 -4.0 19 42 0 S 63 24 0 E @
 3C Equatorial-Guinea-3C               275 47 36 -1.0 1 48 0 N 10 0 0 E @
-3C0 Annobon-3C0                       276 52 36  0.0 1 30 0 N 5 36 0 E @
+3C0 Annobon-3C0                       276 52 36 0.0 1 30 0 S 5 36 0 E @
 3D2 Conway-Reef-3D2/C                 321 56 32 -13.0 21 44 0 S 174 38 0 E *
 3D2 Fiji-Is-3D2/F                     277 56 32 -12.0 17 0 0 S 178 0 0 E *
 3D2 Rotuma-3D2/R                      324 56 32 -12.0 12 30 0 S 177 0 0 E
@@ -54,13 +62,13 @@
 3D6 Swaziland-3DA                     278 57 38 -2.0 27 0 0 S 31 30 0 E
 3V Tunisia-3V                         279 37 33 -1.0 36 48 0 N 10 12 0 E @
 TS Tunisia-3V                         279 37 33 -1.0 36 48 0 N 10 12 0 E
-3W Vietnam-3W                         231 49 26 -8.0 21 03 0 N 105 50 0 E @
+3W Vietnam-3W                         231 49 26 -8.0 21 3 0 N 105 50 0 E @
 3X Guinea-3X                          280 46 35  0.0 10 0 0 N 13 0 0 W @
 3Y Bouvet-Is-3Y/B                     281 67 38  0.0 54 30 0 S 3 0 0 E
 3Y Peter-Is-3Y/P                      320 72 12  6.0 68 49 0 S 90 44 0 W
 3Y/B Bouvet-Is-3Y/B                   281 67 38  0.0 54 30 0 S 3 0 0 E @
 3Y/P Peter-Is-3Y/P                    320 72 12  6.0 68 49 0 S 90 44 0 W @
-R1MV Malyj-Vystoskij-R1MV(OLD_4J1)    322 18 15 -3.0 60 0 0 N 28 0 0 E @
+R1MV Malyj-Vystoskij-R1MV(OLD_4J1)    322 29 16 -3.0 60 0 0 N 28 0 0 E @
 R1AN Russia-Antarcti-CE9(OLD_4K1)     102 67 12 -4.0 65 0 0 S 64 0 0 W
 R1FJ Franz-Jo-Land-R1FJ(OLD_4K2)      180 75 40 -5.0 80 0 0 N 50 0 0 E @
 4S Sri-Lanka-4S                       282 41 22 -5.30 7 0 0 N 79 54 0 E @
@@ -132,19 +140,19 @@ A7 Qatar-A7                             6 39 21 -3.0 25 18 0 N 51 30 0 E @
 A9 Bahrein-A9                           7 39 21 -3.0 26 0 0 N 48 30 0 E @
 AP Pakistan-AP                          8 41 21 -5.0 25 0 0 N 67 0 0 E @
 AQ,AR,AS,6P,6Q,6R,6S Pakistan-AP        8 41 21 -5.0 25 0 0 N 67 0 0 E
-BS7 Scarborough-Reef-BS7              329 44 24 -8.0 15 7 0 N 117 51 0 E @
+BS7 Scarborough-Reef-BS7              329 50 27 -8.0 15 7 0 N 117 51 0 E @
 BV9P Pratas-Island-BV9P                 330 44 24 -8.0 21 0 0 N 117 0 0 E @
 BV Taiwan-BV                            9 44 24 -8.0 25 0 0 N 122 0 0 E @
 BO Taiwan-BV                            9 44 24 -8.0 25 0 0 N 122 0 0 E
-BY China-Bejing-BY                     10 33 23 -8.0 29 48 0 N 106 30 0 E * @
-BY China-Peking-BY                     10 33 23 -8.0 40 0 0 N 116 25 0 E *
-BY China-Shanghai-BY                   10 33 23 -8.0 21 12 0 N 121 30 0 E 
-BT China-Bejing-BY                     10 33 23 -8.0 29 48 0 N 106 30 0 E 
-BT China-Peking-BY                     10 33 23 -8.0 40 0 0 N 116 25 0 E 
-BT China-Shanghai-BY                   10 33 23 -8.0 21 12 0 N 121 30 0 E
-BA,BB,BC,BD,BE,BF,BG,BH,BI,BJ,BK,BL China-BY       10 33 23 -8.0 29 48 0 N 106 30 0 E
-BM,BN,BP,BQ,BR,BS,BU,BV,BW,BX,BZ,XS China-BY       10 33 23 -8.0 29 48 0 N 106 30 0 E
-3H,3I,3J,3K,3L,3M,3N,3O,3P,3Q,3R,3S,3T,3U China-BY 10 33 23 -8.0 29 48 0 N 106 30 0 E
+BY China-Bejing-BY                    10 33 24 -8.0 29 48 0 N 106 30 0 E * @
+BY China-Peking-BY                    10 33 24 -8.0 40 0 0 N 116 25 0 E *
+BY China-Shanghai-BY                  10 33 24 -8.0 21 12 0 N 121 30 0 E 
+BT China-Bejing-BY                    10 33 24 -8.0 29 48 0 N 106 30 0 E 
+BT China-Peking-BY                    10 33 24 -8.0 40 0 0 N 116 25 0 E 
+BT China-Shanghai-BY                  10 33 24 -8.0 21 12 0 N 121 30 0 E
+BA,BB,BC,BD,BE,BF,BG,BH,BI,BJ,BK,BL China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
+BM,BN,BP,BQ,BR,BS,BU,BV,BW,BX,BZ,XS China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
+3H,3I,3J,3K,3L,3M,3N,3O,3P,3Q,3R,3S,3T,3U China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
 C2 Nauru-C2                            11 65 31 -11.30 0 30 0 S 166 54 0 E @
 C3 Andorra-C3                          12 27 14 -1.0 42 30 0 N 1 30 0 E @
 C5 Gambia-C5                           13 46 35  0.0 13 0 0 N 17 0 0 W @
@@ -236,12 +244,14 @@ FH Mayotte-FH                          44 53 39 -3.0 13 0 0 S 45 18 0 E @
 FK New-Caledonia-FK                    45 56 32 -11.0 22 0 0 S 167 0 0 E @
 FM Martinique-FM                       46 11  8  4.0 15 0 0 N 61 0 0 W @
 FO Fr.-Polynesia-FO                    47 63 32 10.0 17 53 0 S 149 56 0 W * @
-FO Fr.-Pol.-Marquesas.-FO              47 63 31 10.0 8 53 0 S 140 7 0 W *
 FO Fr.-Pol.-Mururoa-FO                 47 63 32 10.0 21 0 0 S 140 0 0 W *
 FO Fr.-Pol.-Bora-FO                    47 63 32 10.0 16 0 0 S 152 0 0 W *
-FO Fr.-Pol.-Austral-FO                 47 63 32 10.0 22 27 0 S 151 21 0 W
-FO Clipperton-FO/C                     48 10  7  7.0 11 0 0 N 110 0 0 W
+FO Austral-FO/A                       338 63 32 10.0 22 27 0 S 151 21 0 W *
+FO Clipperton-FO/C                    48 10 7 7.0 11 0 0 N 110 0 0 W *
+FO Marquesas-FO/M                     339 63 31 10.0 8 53 0 S 140 7 0 W
+FO/A Austral-FO/A                     338 63 32 10.0 22 27 0 S 151 21 0 W @
 FO/C Clipperton-FO/C                   48 10  7  7.0 11 0 0 N 110 0 0 W @
+FO/M Marquesas-FO/M                   339 63 31 10.0 8 53 0 S 140 7 0 W @
 FP S-Pierre-Miquelon-FP                49  9  5  5.0 47 0 0 N 56 30 0 W @
 FR Reunion-FR                          50 53 39 -4.0 21 0 0 S 55 30 0 E @
 FR Glorioso-FR/G                       51 53 39 -4.0 10 36 0 S 47 18 0 E
@@ -373,8 +383,8 @@ JU,JV Mongolia-JT                      98 32 23 -8.0 48 0 0 N 107 0 0 E
 JW Svalbard-Is-JW                      99 18 40 -1.0 78 0 0 N 16 0 0 E @
 JX Jan-Mayen-JX                       100 18 40 -1.0 71 0 0 N 8 0 0 W @
 JY Jordan-JY                          101 39 20 -2.0 32 0 0 N 36 0 0 E @
-KC4 Antarctica-Bryd-CE9               102 67 12  8.0 80 0 0 S 120 0 0 W *
 KC4 Antarctica-McMurdo-CE9            102 67 12 -11.0 77 30 0 S 167 0 0 E *
+KC4 Antarctica-Bryd-CE9               102 67 12 8.0 80 0 0 S 120 0 0 W *
 KC4 Antarctica-Palmer-CE9             102 67 12  4.0 65 0 0 S 64 0 0 W 
 Y90 Antarctica-CE9                    102 67 12  4.0 65 0 0 S 64 0 0 W
 T88 West-Carolines-T88                104 64 27 -9.0 9 30 0 N 138 6 0 E @
@@ -431,8 +441,8 @@ LY Lithuania-LY                       194 29 16 -3.0 54 30 0 N 25 30 0 E @
 OA Peru-OA                            127 12 10  5.0 12 0 0 S 77 0 0 W @
 4T,OB,OC Peru-OA                      127 12 10  5.0 12 0 0 S 77 0 0 W
 OD Lebanon-OD                         128 39 20 -2.0 33 54 0 N 35 30 0 E @
-OE Austria-OD                         129 28 15 -1.0 48 12 0 N 16 18 0 E @
-OEM Austria-OD                        129 28 15 -1.0 48 12 0 N 16 18 0 E
+OE Austria-OE                         129 28 15 -1.0 48 12 0 N 16 18 0 E @
+OEM Austria-OE                        129 28 15 -1.0 48 12 0 N 16 18 0 E
 OH Finland-OH                         130 18 15 -2.0 60 12 0 N 25 0 0 E * @
 OH Oulu-OH                            130 18 15 -2.0 65 0 0 N 25 25 0 E
 OF,OG,OI,OJ Finland-OH                130 18 15 -2.0 60 12 0 N 25 0 0 E
@@ -440,11 +450,11 @@ OH0 Aland-Is-OH0                      131 18 15 -2.0 60 12 0 N 20 0 0 E @
 OF0 Aland-Is-OH0                      131 18 15 -2.0 60 12 0 N 20 0 0 E
 OJ0 Market-Reef-OJ0                   132 18 15 -2.0 60 18 0 N 19 0 0 E @
 OH0M Market-Reef-OH0                  132 18 15 -2.0 60 18 0 N 19 0 0 E
-OK Czech-Rep-OK                       133 28 15 -1.0 50 08 0 N 14 43 0 E @
+OK Czech-Rep-OK                       133 28 15 -1.0 50 8 0 N 14 43 0 E @
 OK1 Czech-Rep-Bohemia-OK              133 28 15 -1.0 49 50 0 N 14 30 0 E
 OK2 Czech-Rep-Moravia-OK              133 28 15 -1.0 49 20 0 N 17 10 0 E
 OL Czech-Rep-OK                       133 28 15 -1.0 49 40 0 N 15 40 0 E
-OL Czech-Rep-OK                       133 28 15 -1.0 50 08 0 N 14 43 0 E
+OL Czech-Rep-OK                       133 28 15 -1.0 50 8 0 N 14 43 0 E
 OM Slovakia-OM                        331 28 15 -1.0 48 40 0 N 19 20 0 E @
 ON Belgium-ON                         134 27 14 -1.0 50 54 0 N 4 24 0 E @
 OO,OP,OQ,OR,OS,OT Belgium-ON          134 27 14 -1.0 50 54 0 N 4 24 0 E
@@ -622,19 +632,18 @@ VE New-Brunsick-VE                    197  9  5  4.0 45 18 0 N 66 6 0 W * @
 VE Newfoundland-VE                    197  9  5  3.0 48 30 0 N 56 0 0 W *
 VE Nova-Scotia-VE                     197  9  5  4.0 44 36 0 N 63 36 0 W *
 VE Quebec-VE                          197  4  5  5.0 45 30 0 N 73 36 0 W *
-VE Ontario-VE                         197  4  5  5.0 43 42 0 N 79 24 0 W *
+VE Ontario-VE                         197 4 4 5.0 43 42 0 N 79 24 0 W *
 VE Manitoba-VE                        197  3  4  6.0 49 54 0 N 97 6 0 W *
 VE Saskatchewan-VE                    197  3  4  7.0 50 30 0 N 104 36 0 W *
 VE Alberta-VE                         197  2  3  7.0 51 0 0 N 114 6 0 W *
 VE British-Columbia-VE                197  2  3  8.0 49 18 0 N 123 6 0 W *
 VE Yukon-VE                           197 75  1  8.0 60 42 0 N 135 6 0 W *
 VE1,VE9 New-Brunsick-VE                   197  9  5  4.0 45 18 0 N 66 6 0 W
-VE1 Newfoundland-VE                   197  9  5  3.0 48 30 0 N 56 0 0 W *
 VE1 Nova-Scotia-VE                    197  9  5  4.0 44 36 0 N 63 36 0 W
-VO1 New-Brunsick-VE                   197  9  5  4.0 45 18 0 N 66 6 0 W
-VO2 Newfoundland-VE                    197  9  5  3.0 48 30 0 N 56 0 0 W
+VO1 Newfoundland-VE                   197 9 5 3.0 48 30 0 N 56 0 0 W
+VO2 Labrador-VE                       197 9 2 3.0 48 30 0 N 56 0 0 W
 VE2 Quebec-VE                         197  4  5  5.0 45 30 0 N 73 36 0 W
-VE3 Ontario-VE                        197  4  5  5.0 43 42 0 N 79 24 0 W
+VE3 Ontario-VE                        197 4 4 5.0 43 42 0 N 79 24 0 W
 VE4 Manitoba-VE                       197  3  4  6.0 49 54 0 N 97 6 0 W
 VE5 Saskatchewan-VE                   197  3  4  7.0 50 30 0 N 104 36 0 W
 VE6 Alberta-VE                        197  2  3  7.0 51 0 0 N 114 6 0 W
@@ -700,7 +709,7 @@ HF0 So-Shetland-VP8/H                214 73 13  2.0 62 0 0 S 58 30 0 W
 VP6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W @
 VR6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W 
 VP9 Bermuda-VP9                       215 11  5  4.0 32 18 0 N 64 42 0 W @
-VQ9 Chagos-VQ9                        216 41 31 -5.0 7 18 0 S 72 24 0 E @
+VQ9 Chagos-VQ9                        216 41 39 -5.0 7 18 0 S 72 24 0 E @
 VS Hong-Kong-VS                       218 44 24 -8.0 22 30 0 N 114 0 0 E @
 VR2,VS6 Hong-Kong-VS                      218 44 24 -8.0 22 14 0 N 114 14 0 E
 VU India-Bombay-VU                    219 41 22 -5.30 19 0 0 N 72 48 0 E * @
@@ -758,7 +767,7 @@ W5 Oklahoma-W                   226  7  4  6.0 35 30 0 N 97 30 0 W *
 W5 Texas-W                      226  7  4  6.0 32 48 0 N 96 48 0 W
 W6 California-LA-W              226  6  3  8.0 34 6 0 N 118 12 0 W *
 W6 California-SF-W              226  6  3  8.0 37 35 0 N 122 30 0 W *
-W6 California-MV-W              226  6  3  8.0 37 25 0 N 122 04 0 W *
+W6 California-MV-W                    226 6 3 8.0 37 25 0 N 122 4 0 W *
 W6 California-SACTO-W           226  6  3  8.0 38 42 0 N 121 28 0 W
 W7 Arizona-W                    226  6  3  7.0 33 30 0 N 112 6 0 W *
 W7 Idaho-W                      226  6  3  7.0 43 36 0 N 116 12 0 W *
@@ -793,7 +802,7 @@ XE3 Mexico-XE                   227 10  6  6.0 21 0 0 N 89 42 0 W
 XF4 Revilla-Gigedo-XF4          228 10  6  7.0 18 0 0 N 112 0 0 W @
 XT Bukina-Faso-XT               229 46 35  0.0 12 18 0 N 1 42 0 W @
 XU Kampuchea-XU                 230 49 26 -7.0 11 30 0 N 105 0 0 E @
-XV Vietnam-3W                   231 49 26 -8.0 21 03 0 N 105 50 0 E
+XV Vietnam-3W                         231 49 26 -8.0 21 3 0 N 105 50 0 E
 XW Laos-XW                      232 49 26 -7.0 18 0 0 N 102 30 0 E @
 XX Macao-XX                     233 44 24 -8.0 22 0 0 N 114 0 0 E @
 XX9 Macao-XX                     233 44 24 -8.0 22 0 0 N 114 0 0 E 
@@ -835,7 +844,7 @@ ZG2 Gibraltar-ZB                249 37 14 -1.0 36 0 0 N 5 30 0 W
 ZC4 UK-Soverign-Base-ZC4        250 39 20 -2.0 35 0 0 N 33 0 0 E @
 ZD7 St-Helena-ZD7               251 66 36  0.0 16 0 0 S 6 0 0 W @
 ZD8 Ascension-Is-ZD8            252 66 36  0.0 8 0 0 S 14 0 0 W @
-ZD9 Tristan-Da-Cunha-ZD8        253 66 38  0.0 37 6 0 S 12 18 0 W @
+ZD9 Tristan-Da-Cunha-ZD9              253 66 38 0.0 37 6 0 S 12 18 0 W @
 Z2 Zimbabwe-Z2                  254 53 38 -2.0 18 0 0 S 31 0 0 E @
 ZE Zimbabwe-Z2                  254 53 38 -2.0 18 0 0 S 31 0 0 E
 ZF Cayman-Is-ZF                 255 11  8  5.0 19 30 0 N 81 12 0 W @
@@ -875,3 +884,4 @@ ZS2 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E
 ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
 T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirat_Country 666 17 14 -0.0 0 0 0 S 0 0 0 E @
+

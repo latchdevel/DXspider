@@ -78,6 +78,12 @@ use vars qw(%channels %valid);
 		  inwwvfilter => '5,Input WWV Filter',
 		  inspotfilter => '5,Input Spot Filter',
 		  passwd => '9,Passwd List,parray',
+		  pingint => '9,Ping Interval ',
+		  nopings => '9,Ping Obs Count',
+		  lastping => '9,Ping last sent,atime',
+          pingrec => '9,Pings no rec',
+		  pingtime => '9,Ping totaltime',
+		  pingave => '0,Ping ave time',
 		 );
 
 # object destruction
@@ -199,13 +205,17 @@ sub send_now
 {
 	my $self = shift;
 	my $conn = $self->{conn};
+	return unless $conn;
 	my $sort = shift;
 	my $call = $self->{call};
 	
 	for (@_) {
 		chomp;
-		$conn->send_now("$sort$call|$_") if $conn;
-		dbg('chan', "-> $sort $call $_") if $conn;
+        my @lines = split /\n/;
+		for (@lines) {
+			$conn->send_now("$sort$call|$_");
+			dbg('chan', "-> $sort $call $_");
+		}
 	}
 	$self->{t} = time;
 }
@@ -217,12 +227,16 @@ sub send						# this is always later and always data
 {
 	my $self = shift;
 	my $conn = $self->{conn};
+	return unless $conn;
 	my $call = $self->{call};
 
 	for (@_) {
 		chomp;
-		$conn->send_later("D$call|$_") if $conn;
-		dbg('chan', "-> D $call $_") if $conn;
+        my @lines = split /\n/;
+		for (@lines) {
+			$conn->send_later("D$call|$_");
+			dbg('chan', "-> D $call $_");
+		}
 	}
 	$self->{t} = time;
 }
