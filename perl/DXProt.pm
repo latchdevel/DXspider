@@ -127,8 +127,10 @@ sub start
 	$self->send_now('E',"0");
 	
 	# ping neighbour node stuff
-	$self->pingint($user->pingint || 3*60);
-	$self->nopings(3);
+	my $ping = $user->pingint;
+	$ping = 5*60 unless defined $ping;
+	$self->pingint($ping);
+	$self->nopings($user->nopings || 2);
 	$self->pingtime([ ]);
 
 	# send initialisation string
@@ -143,6 +145,9 @@ sub start
 	}
 	$self->state('init');
 	$self->pc50_t(time);
+
+	# send info to all logged in thingies
+	$self->tell_login('loginn');
 
 	Log('DXProt', "$call connected");
 }
@@ -775,7 +780,7 @@ sub process
 		} 
 
 		# send a ping out on this channel
-		if ($t >= $dxchan->pingint + $dxchan->lastping) {
+		if ($dxchan->pingint && $t >= $dxchan->pingint + $dxchan->lastping) {
 			if ($dxchan->nopings <= 0) {
 				$dxchan->disconnect;
 			} else {
@@ -836,7 +841,10 @@ sub finish
 	
 	# now broadcast to all other ak1a nodes that I have gone
 	broadcast_ak1a(pc21($call, 'Gone.'), $self) unless $self->{isolate};
-	
+
+	# send info to all logged in thingies
+	$self->tell_login('logoutn');
+
 	Log('DXProt', $call . " Disconnected");
 	$ref->del() if $ref;
 }
@@ -1068,7 +1076,7 @@ sub broadcast_ak1a
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = get_all_ak1a();
+	my @dxchan = DXChannel::get_all_ak1a();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
@@ -1085,7 +1093,7 @@ sub broadcast_all_ak1a
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = get_all_ak1a();
+	my @dxchan = DXChannel::get_all_ak1a();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
@@ -1104,7 +1112,7 @@ sub broadcast_users
 	my $sort = shift;           # the type of transmission
 	my $fref = shift;           # a reference to an object to filter on
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = get_all_users();
+	my @dxchan = DXChannel::get_all_users();
 	my $dxchan;
 	my @out;
 	
@@ -1145,43 +1153,6 @@ sub broadcast_list
 	}
 }
 
-#
-# gimme all the ak1a nodes
-#
-sub get_all_ak1a
-{
-	my @list = DXChannel->get_all();
-	my $ref;
-	my @out;
-	foreach $ref (@list) {
-		push @out, $ref if $ref->is_ak1a;
-	}
-	return @out;
-}
-
-# return a list of all users
-sub get_all_users
-{
-	my @list = DXChannel->get_all();
-	my $ref;
-	my @out;
-	foreach $ref (@list) {
-		push @out, $ref if $ref->is_user;
-	}
-	return @out;
-}
-
-# return a list of all user callsigns
-sub get_all_user_calls
-{
-	my @list = DXChannel->get_all();
-	my $ref;
-	my @out;
-	foreach $ref (@list) {
-		push @out, $ref->call if $ref->is_user;
-	}
-	return @out;
-}
 
 #
 # obtain the hops from the list for this callsign and pc no 

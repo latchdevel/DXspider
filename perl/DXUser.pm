@@ -58,6 +58,8 @@ $filename = undef;
 		  wantwx => '0,Rec WX,yesno',
 		  wantdx => '0,Rec DX Spots,yesno',
 		  pingint => '9,Node Ping interval',
+		  nopings => '9,Ping Obs Count',
+		  wantlogininfo => '9,Login info req,yesno',
 		 );
 
 no strict;
@@ -357,6 +359,11 @@ sub wantdx
 sub wanttalk
 {
 	return _want('talk', @_);
+}
+
+sub wantlogininfo
+{
+	return _want('logininfo', @_);
 }
 
 1;

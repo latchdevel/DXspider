@@ -575,7 +575,7 @@ sub queue_msg
 	my $call = shift;
 	my $ref;
 	my $clref;
-	my @nodelist = DXProt::get_all_ak1a();
+	my @nodelist = DXChannel::get_all_ak1a();
 	
 	# bat down the message list looking for one that needs to go off site and whose
 	# nearest node is not busy.

@@ -78,11 +78,12 @@ use vars qw(%channels %valid);
 		  inwwvfilter => '5,Input WWV Filter',
 		  inspotfilter => '5,Input Spot Filter',
 		  passwd => '9,Passwd List,parray',
-		  pingint => '9,Ping Interval ',
-		  nopings => '9,Ping Obs Count',
-		  lastping => '9,Ping last sent,atime',
-		  pingtime => '9,Ping totaltime,parray',
+		  pingint => '5,Ping Interval ',
+		  nopings => '5,Ping Obs Count',
+		  lastping => '5,Ping last sent,atime',
+		  pingtime => '5,Ping totaltime,parray',
 		  pingave => '0,Ping ave time',
+		  logininfo => '9,Login info req,yesno',
 		 );
 
 # object destruction
@@ -147,6 +148,44 @@ sub get_all
 {
 	my ($pkg) = @_;
 	return values(%channels);
+}
+
+#
+# gimme all the ak1a nodes
+#
+sub get_all_ak1a
+{
+	my @list = DXChannel->get_all();
+	my $ref;
+	my @out;
+	foreach $ref (@list) {
+		push @out, $ref if $ref->is_ak1a;
+	}
+	return @out;
+}
+
+# return a list of all users
+sub get_all_users
+{
+	my @list = DXChannel->get_all();
+	my $ref;
+	my @out;
+	foreach $ref (@list) {
+		push @out, $ref if $ref->is_user;
+	}
+	return @out;
+}
+
+# return a list of all user callsigns
+sub get_all_user_calls
+{
+	my @list = DXChannel->get_all();
+	my $ref;
+	my @out;
+	foreach $ref (@list) {
+		push @out, $ref->call if $ref->is_user;
+	}
+	return @out;
 }
 
 # obtain a channel object by searching for its connection reference
@@ -328,6 +367,22 @@ sub closeall
 	my $ref;
 	foreach $ref (values %channels) {
 		$ref->{conn}->disconnect() if $ref->{conn};
+	}
+}
+
+#
+# Tell all the users that we have come in or out (if they want to know)
+#
+sub tell_login
+{
+	my ($self, $m) = @_;
+	
+	# send info to all logged in thingies
+	my @dxchan = get_all_users();
+	my $dxchan;
+	foreach $dxchan (@dxchan) {
+		next if $dxchan == $self;
+		$dxchan->send($dxchan->msg($m, $self->{call})) if $dxchan->{logininfo};
 	}
 }
 

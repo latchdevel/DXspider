@@ -305,7 +305,7 @@ STDOUT->autoflush(1);
 Log('cluster', "DXSpider V$version started");
 
 # banner
-print "DXSpider DX Cluster Version $version\nCopyright (c) 1998 Dirk Koopman G1TLH\n";
+print "DXSpider DX Cluster Version $version\nCopyright (c) 1998-1999 Dirk Koopman G1TLH\n";
 
 # load Prefixes
 print "loading prefixes ...\n";

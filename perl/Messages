@@ -53,6 +53,8 @@ package DXM;
 				e11 => 'Can\'t use $main:mycall as target',
 				e12 => 'Need a node callsign',
 				e13 => '$_[0] is not a node',
+				e14 => 'First argument must be numeric and > 0',
+				
 				emaile1 => 'Please enter your email address, set/email <your e-mail address>',
 				emaila => 'Your E-Mail Address is now \"$_[0]\"',
 				email => 'E-mail address set to: $_[0]',
@@ -82,6 +84,10 @@ package DXM;
 				lockout => '$_[0] Locked out',
 				lockoutc => '$_[0] Created and Locked out',
 				lockoutun => '$_[0] Unlocked',
+				loginu => 'User $_[0] has logged in',
+				logoutu => 'User $_[0] has logged out',
+				loginn => 'Node $_[0] has logged in',
+				logoutn => 'Node $_[0] has logged out',
 				m1 => 'Enter Subject (30 characters):',
 				m2 => 'Copy of msg $_[0] sent to $_[1]',
 				m3 => 'Sorry, $_[0] is an unacceptable TO address',
@@ -120,6 +126,8 @@ package DXM;
 				pingo => 'Ping Started to $_[0]',
 				pingi => 'Ping Returned from $_[0] $_[1] (Ave $_[2]) secs',
 				pinge1 => 'Cannot ping yourself!',
+				pingint => 'Ping interval on $_[0] set to $_[1] secs',
+
 				pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
 				pr2 => '($_[0]) de $main::mycall $main::cldate $main::ztime >',
 				priv => 'Privilege level changed on $_[0]',

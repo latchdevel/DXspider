@@ -28,6 +28,7 @@ BEGIN {
 use Msg;
 use DXVars;
 use DXDebug;
+use DXUtil;
 use IO::File;
 use Curses;
 
@@ -176,7 +177,10 @@ sub show_screen
 	}
     my $shl = @shistory;
 	my $add = "-$spos-$shl";
-    $scr->addstr(LINES()-4, 0, '-' x (COLS() - (length($call) + length($add))));
+    my $time = ztime(time);
+	my $str =  "-" . $time . '-' x (COLS() - (length($call) + length($add) + length($time) + 1));
+	$scr->addstr(LINES()-4, 0, $str);
+	
 	$scr->attrset($mycallcolor) if $has_colors;
 	$scr->addstr("$call");
 	$scr->attrset(COLOR_PAIR(0)) if $has_colors;
@@ -429,12 +433,13 @@ Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 for (;;) {
 	my $t;
 	Msg->event_loop(1, 1);
-	$top->refresh() if $top->is_wintouched;
-	$bot->refresh();
 	$t = time;
 	if ($t > $lasttime) {
+		show_screen();
 		$lasttime = $t;
 	}
+	$top->refresh() if $top->is_wintouched;
+	$bot->refresh();
 }
 
 exit(0);

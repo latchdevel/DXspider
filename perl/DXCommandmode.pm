@@ -77,6 +77,7 @@ sub start
 	$self->{talk} = $user->wanttalk;
 	$self->{wx} = $user->wantwx;
 	$self->{dx} = $user->wantdx;
+	$self->{logininfo} = $user->wantlogininfo;
 	$self->{here} = 1;
 	
 	# add yourself to the database
@@ -91,7 +92,7 @@ sub start
 		DXProt::broadcast_all_ak1a($_);
 	}
 	Log('DXCommand', "$call connected");
-	
+
 	# send prompts and things
 	my $info = DXCluster::cluster();
 	$self->send("Cluster:$info");
@@ -100,9 +101,10 @@ sub start
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
-
-	
 	$self->send($self->msg('pr', $call));
+	
+	$self->tell_login('loginu');
+	
 }
 
 #
@@ -308,14 +310,17 @@ sub finish
 		my $node = DXNode->get($main::mycall);
 		$node->{dxchan} = 0;
 	}
-	my $ref = DXCluster->get_exact($call);
 	
 	# issue a pc17 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
 	my $pc17 = $nchan->pc17($self);
 	DXProt::broadcast_all_ak1a($pc17);
-	
+
+	# send info to all logged in thingies
+	$self->tell_login('logoutu');
+
 	Log('DXCommand', "$call disconnected");
+	my $ref = DXCluster->get_exact($call);
 	$ref->del() if $ref;
 }
 
