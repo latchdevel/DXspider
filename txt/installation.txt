@@ -91,7 +91,7 @@
 
   o  Net-Telnet-3.02.tar.gz
 
-  o  Curses-1.05.tar.gz
+  o  Curses-1.06.tar.gz
 
   o  Time-HiRes-01.20.tar.gz
 
