@@ -12,6 +12,7 @@
 10. Allow forwarding of unknown private mail. This means that you can set up
 forwarding of 'foreign' mail across to and by gateways using the same 
 mechanism as bulletins (/spider/msg/forward.pl).
+11. Allow line wrapping on the console (G0RDI, G0VGS et al).
 18Oct99=======================================================================
 1. changed help command so that it works correctly with multiple title lines.
 2. added to address to the list of things a message checks to see whether it
