@@ -13,7 +13,7 @@ use DXVars;
 use DB_File;
 use File::Copy;
 use DXDebug;
-use Compress::Zlib;
+#use Compress::Zlib;
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
