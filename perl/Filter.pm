@@ -490,24 +490,10 @@ sub parse
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} elsif ($fref->[1] =~ /^n[ciz]$/ ) {    # for DXCC, ITU, CQ Zone    
-							my @n;
 							my $cmd = $fref->[1];
-							foreach my $v (@val) {
-								if ($v =~ /^\d+$/) {	
-									push @n, $v unless grep $_ eq $v, @n;
-								} else {
-									my @pre = Prefix::extract($v);
-									return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
-									shift @pre;
-									foreach my $p (@pre) {
-										my $n = $p->dxcc if $cmd eq 'nc' ;
-										$n = $p->itu if $cmd eq 'ni' ;
-										$n = $p->cq if $cmd eq 'nz' ;
-										push @n, $n unless grep $_ eq $n, @n;
-									}
-								}
-							}
-							$s .= "(" . join(' || ', map {"\$r->[$fref->[2]]==$_"} @n) . ")";
+							my @pre = Prefix::to_ciz($cmd, @val);
+							return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
+							$s .= "(" . join(' || ', map {"\$r->[$fref->[2]]==$_"} @pre) . ")";
 						} elsif ($fref->[1] eq 'r') {
 							my @t;
 							for (@val) {

@@ -1763,8 +1763,18 @@ all the filters set - for all the various categories.
 === 0^SHOW/HFSTATS^Show the HF DX Statistics for last 31 days 
 Show the HF DX spots breakdown by band for the last 31 days
 
-=== 0^SHOW/HFTABLE^Show the HF DX Spotter Table for your country
-Show the HF DX Spotter table for your country for the last 31 days
+=== 0^SHOW/HFTABLE [prefix ...]^Show the HF DX Spotter Table
+Show the HF DX Spotter table for the list of prefixes for the last 31 days,
+if there are no prefixes then it will show the table for your country.
+
+Remember that some countries have more than one "DXCC country" in them
+(eg G :-), to show them (assuming you are not in G already which is
+specially treated in the code) you must list all the relevant prefixes
+
+  sh/hftable g gm gd gi gj gw gu 
+
+Note that the prefixes are converted into country codes so you don't have
+to list all possible prefixes for each country.
 
 === 8^SHOW/HOPS <call> [ann|spots|route|wcy|wwv]^Show the hop counts for a node
 This command shows the hop counts set up for a node. You can specify
@@ -2014,8 +2024,18 @@ the prefixes or callsigns that you specify.
 === 0^SHOW/VHFSTATS^Show the VHF DX Statistics for last 31 days
 Show the VHF DX spots breakdown by band for the last 31 days
 
-=== 0^SHOW/VHFTABLE^Show the VHF DX Spotter Table for your country
-Show the VHF DX Spotter table for your country for the last 31 days
+=== 0^SHOW/VHFTABLE [prefix ...]^Show the VHF DX Spotter Table
+Show the VHF DX Spotter table for the list of prefixes for the last 31 days,
+if there are no prefixes then it will show the table for your country.
+
+Remember that some countries have more than one "DXCC country" in them
+(eg G :-), to show them (assuming you are not in G already which is
+specially treated in the code) you must list all the relevant prefixes
+
+  sh/vhftable g gm gd gi gj gw gu 
+
+Note that the prefixes are converted into country codes so you don't have
+to list all possible prefixes for each country.
 
 === 0^SHOW/WCY^Show last 10 WCY broadcasts
 === 0^SHOW/WCY <n>^Show last <n> WCY broadcasts

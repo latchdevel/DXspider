@@ -35,17 +35,19 @@ for ($i = 0; $i < $days; $i++) {
 my @out;
 my @tot;
 
-push @out, $self->msg('stathf');
-push @out, sprintf "%11s|%6s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|", qw(Date Total 160m 80m 40m 30m 20m 17m 15m 12m 10m);
+push @out, $self->msg('stathf', cldate(time));
+push @out, sprintf "%6s|%6s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|", qw(Date Total 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m);
 foreach my $ref (@in) {
 	my $linetot = 0;
-	foreach my $j (3..11) {
+	foreach my $j (4..13) {
 		$tot[$j] += $ref->[$j];
 		$tot[0] += $ref->[$j];
 		$linetot += $ref->[$j];
 	}
-	push @out, join '|', sprintf("%11s|%6d", $ref->[0]->as_string, $linetot), map {$_ ? sprintf("%5d", $_) : '     '} @$ref[3..11], "";
+	my $date = $ref->[0]->as_string;
+	$date =~ s/-\d+$//;
+	push @out, join '|', sprintf("%6s|%6d", $date, $linetot), map {$_ ? sprintf("%5d", $_) : '     '} @$ref[4..13], "";
 }
-push @out, join '|', sprintf("%11s|%6d", 'Total', $tot[0]), map {$_ ? sprintf("%5d", $_) : '     '} @tot[3..11], "";
+push @out, join '|', sprintf("%6s|%6d", 'Total', $tot[0]), map {$_ ? sprintf("%5d", $_) : '     '} @tot[4..13], "";
 
 return (1, @out);

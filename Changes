@@ -1,3 +1,10 @@
+12Oct02=======================================================================
+1. attempt to improve the "check back for 5 minutes to see if this spot is 
+the same as a previous one but for the time spotted" dupe check.
+2. improve the sh/vhftable and sh/hftable commands to allow you to enquire
+by dxcc country (using the relevant prefixes or dxcc country numbers).
+[note to translators, I have changed the help text and Messages tags for
+stat*].
 07Oct02=======================================================================
 1. fix problem with (invalid) callsigns starting with '0' (zero) eg 0f6ira.
 03Oct02=======================================================================

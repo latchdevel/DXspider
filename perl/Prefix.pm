@@ -363,6 +363,37 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 	return @out;
 }
 
+#
+# turn a list of prefixes / dxcc numbers into a list of dxcc/itu/zone numbers
+#
+# nc = dxcc
+# ni = itu
+# nz = zone
+#
+
+sub to_ciz
+{
+	my $cmd = shift;
+	my @out;
+	
+	foreach my $v (@_) {
+		if ($v =~ /^\d+$/) {	
+			push @out, $v unless grep $_ eq $v, @out;
+		} else {
+			my @pre = Prefix::extract($v);
+			return () unless @pre;
+			shift @pre;
+			foreach my $p (@pre) {
+				my $n = $p->dxcc if $cmd eq 'nc' ;
+				$n = $p->itu if $cmd eq 'ni' ;
+				$n = $p->cq if $cmd eq 'nz' ;
+				push @out, $n unless grep $_ eq $n, @out;
+			}
+		}
+	}
+	return @out;
+}
+
 my %valid = (
 			 lat => '0,Latitude,slat',
 			 long => '0,Longitude,slong',

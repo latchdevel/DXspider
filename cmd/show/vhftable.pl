@@ -13,8 +13,14 @@ my $days = 31;
 my @dxcc;
 my $limit = 100;
 
-push @dxcc, (61..67) if $self->dxcc >= 61 && $self->dxcc < 67;
-push @dxcc, $self->dxcc unless @dxcc;
+if ($line) {
+	my @pref = split /[\s,]+/, $line;
+	push @dxcc, Prefix::to_ciz('nc', @pref);
+	return (1, $self->msg('e27', $line)) unless @dxcc;
+} else {
+	push @dxcc, (61..67) if $self->dxcc >= 61 && $self->dxcc < 67;
+	push @dxcc, $self->dxcc unless @dxcc;
+}
 
 my $now = Julian::Day->new(time())->sub(1);
 my %list;
@@ -34,7 +40,7 @@ for ($i = 0; $i < $days; $i++) {
 		next unless grep $l[2] eq $_, @dxcc;
 		my $ref = $list{$l[0]} || [0,0,0,0,0,0,0,0,0,0];
 		my $j = 1;
-		foreach my $item (@l[12..14, 16..22]) {
+		foreach my $item (@l[14..16, 18..23]) {
 			$ref->[$j] += $item;
 			$ref->[0] += $item;
 			$j++;
@@ -48,7 +54,7 @@ my @out;
 my @tot;
 my $nocalls;
 
-push @out, $self->msg('statvhft', join ',', @dxcc);
+push @out, $self->msg('statvhft', join(',', @dxcc), cldate(time));
 push @out, sprintf "%10s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|", qw(Callsign Tot 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
 
 for (sort {$list{$b}->[0] <=> $list{$a}->[0] || $a cmp $b} keys %list) {

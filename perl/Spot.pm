@@ -97,8 +97,9 @@ sub init
 {
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
 	$fp = DXLog::new($dirprefix, "dat", 'd');
-	$statp = DXLog::new($dirprefix, "cys", 'd');
-	system("rm -f $main::data/$dirprefix/2001/*.bys");
+	$statp = DXLog::new($dirprefix, "dys", 'd');
+	system("rm -f $main::data/$dirprefix/200?/*.bys");
+	system("rm -f $main::data/$dirprefix/200?/*.cys");
 }
 
 sub prefix
@@ -303,7 +304,11 @@ sub dup
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
- 
+	
+	# turn the time into minutes (should be already but...)
+	$d = int ($d / 60);
+	$d *= 60;
+
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
 	$call = substr($call, 0, 12) if length $call > 12;
 	chomp $text;
@@ -332,33 +337,13 @@ sub genstats($)
 	my $date = shift;
 	my $in = $fp->open($date);
 	my $out = $statp->open($date, 'w');
-	my @freq = (
-				[0, Bands::get_freq('160m')],
-				[1, Bands::get_freq('80m')],
-				[2, Bands::get_freq('40m')],
-				[3, Bands::get_freq('30m')],
-				[4, Bands::get_freq('20m')],
-				[5, Bands::get_freq('17m')],
-				[6, Bands::get_freq('15m')],
-				[7, Bands::get_freq('12m')],
-				[8, Bands::get_freq('10m')],
-				[9, Bands::get_freq('6m')],
-				[10, Bands::get_freq('4m')],
-				[11, Bands::get_freq('2m')],
-				[12, Bands::get_freq('220')],
-				[13, Bands::get_freq('70cm')],
-				[14, Bands::get_freq('23cm')],
-				[15, Bands::get_freq('13cm')],
-				[16, Bands::get_freq('9cm')],
-				[17, Bands::get_freq('6cm')],
-				[18, Bands::get_freq('3cm')],
-				[19, Bands::get_freq('12mm')],
-				[20, Bands::get_freq('6cm')],
-			   );
+	my @freq;
 	my %list;
 	my @tot;
 	
 	if ($in && $out) {
+		my $i = 0;
+		@freq = map {[$i++, Bands::get_freq($_)]} qw(136khz 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m 6m 4m 2m 220 70cm 23cm 13cm 9cm 6cm 3cm 12mm 6mm);
 		while (<$in>) {
 			chomp;
 			my ($freq, $by, $dxcc) = (split /\^/)[0,4,6];
@@ -375,7 +360,6 @@ sub genstats($)
 			}
 		}
 
-		my $i;
 		for ($i = 0; $i < @freq+2; $i++) {
 			$tot[$i] ||= 0;
 		}
