@@ -10,7 +10,7 @@ the debug files now.
 the debug files as well.
 4. Altered the logic around duplicate spots, reduced the length of comment
 checked to 20 characters (this should solve some problems including those
-people sucking ar-cluster spots with prefixes in the extreme lh end). 
+people sucking ar-cluster spots with prefixes in the extreme rh end). 
 08Jun00=======================================================================
 1. fixed problem with binary characters from cluster->client
 2. added set/echo and unset/echo commands
