@@ -73,7 +73,7 @@ $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
 $chatdupeage = 20 * 60 * 60;
-$investigation_int = 7*86400;	# time between checks to see if we can see this node
+$investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
 
 @checklist = 
