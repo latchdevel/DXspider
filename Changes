@@ -15,6 +15,9 @@ as before.
 comment to be recorded.
 6. Fix bug counting backwards over a leap year in Julian.pm which meant that
 sh/dxstats doesn't start at 'yesterday' anymore.
+7. Added set/startup and show/startup commands to allow users and sysops
+to create and display startup scripts. There is also an unset/startup to
+remove a script.
 27Dec04=======================================================================
 1. add improved VE data from Charlie K1XX. You should update usdb as well.
 22Dec04=======================================================================

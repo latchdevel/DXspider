@@ -25,10 +25,17 @@ $main::branch += $BRANCH;
 
 my $base = "$main::root/scripts";
 
+sub clean
+{
+	my $s = shift;
+	$s =~ s/[^-\w\.]//g;
+	return $s;
+}
+
 sub new
 {
 	my $pkg = shift;
-	my $script = shift;
+	my $script = clean(lc shift);
 	my $fn = "$base/$script";
 
 	my $fh = new IO::File $fn;
@@ -41,7 +48,7 @@ sub new
 	}
 	$fh->close;
 	$self->{lines} = \@lines;
-	return $self;
+	return bless $self, $pkg;
 }
 
 sub run
@@ -59,4 +66,36 @@ sub run
 			last if @out && $l =~ /^pri?v?/i;
 		}
 	}
+}
+
+sub store
+{
+	my $call = clean(lc shift);
+	my @out;
+	my $ref = ref $_[0] ? shift : \@_;
+	my $count;
+	my $fn = "$base/$call";
+
+    rename $fn, "$fn.o" if -e $fn;
+	my $f = IO::File->new(">$fn") || return undef;
+	for (@$ref) {
+		$f->print("$_\n");
+		$count++;
+	}
+	$f->close;
+	unlink $fn unless $count;
+	return $count;
+}
+
+sub lines
+{
+	my $self = shift;
+	return @{$self->{lines}};
+}
+
+sub erase
+{
+	my $call = clean(lc shift);
+	my $fn = "$base/$call";
+	unlink $fn;
 }

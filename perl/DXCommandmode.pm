@@ -948,6 +948,54 @@ sub broadcast_debug
 	}
 }
 
+sub do_entry_stuff
+{
+	my $self = shift;
+	my $line = shift;
+	my @out;
+	
+	if ($self->state eq 'enterbody') {
+		my $loc = $self->{loc} || confess "local var gone missing" ;
+		if ($line eq "\032" || $line eq '%1A' || uc $line eq "/EX") {
+			no strict 'refs';
+			push @out, $loc->{endaction}($self);
+			$self->func(undef);
+			$self->state('prompt');
+		} elsif ($line eq "\031" || uc $line eq "/ABORT" || uc $line eq "/QUIT") {
+			push @out, $self->msg('m10');
+			delete $loc->{lines};
+			delete $self->{loc};
+			$self->func(undef);
+			$self->state('prompt');
+		} else {
+			push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
+			# i.e. it ain't and end or abort, therefore store the line
+		}
+	} else {
+		confess "Invalid state $self->{state}";
+	}
+	return @out;
+}
+
+sub store_startup_script
+{
+	my $self = shift;
+	my $loc = $self->{loc} || confess "local var gone missing" ;
+	my @out;
+	my $call = $loc->{call} || confess "callsign gone missing";
+	confess "lines array gone missing" unless ref $loc->{lines};
+	my $r = Script::store($call, $loc->{lines});
+	if (defined $r) {
+		if ($r) {
+			push @out, $self->msg('m19', $call, $r);
+		} else {
+			push @out, $self->msg('m20', $call);
+		}
+	} else {
+		push @out, "error opening startup script $call $!";
+	} 
+	return @out;
+}
 
 1;
 __END__

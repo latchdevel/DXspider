@@ -1724,10 +1724,6 @@ The standard prompt is defined as:
 UNSET/PROMPT will undo the SET/PROMPT command and set your prompt back to
 normal.
 
-=== 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
-Tell the system that the call(s) are to be treated as DXSpider node and
-fed new style DX Protocol rather normal user commands.
-
 === 9^SET/SYS_QRA <locator>^Set your cluster QRA Grid locator
 === 0^SET/QRA <locator>^Set your QRA Grid locator
 Tell the system what your QRA (or Maidenhead) locator is. If you have not
@@ -1755,7 +1751,27 @@ cannot use DX, ANN etc.
 
 The only exception to this is that a non-registered user can TALK or
 SEND messages to the sysop.
- 
+
+=== 6^SET/STARTUP <call>^Create a user startup script
+=== 0^SET/STARTUP^Create your own startup script
+=== 6^UNSET/STARTUP <call>^Remove a user startup script
+=== 0^UNSET/STARTUP^Remove your own startup script
+Create a startup script of DXSpider commands which will be executed
+everytime that you login into this node. You can only input the whole
+script afresh, it is not possible to 'edit' it. Inputting a new script is
+just like typing in a message using SEND. To finish inputting type: /EX
+on a newline, to abandon the script type: /ABORT.
+
+You may find the (curiously named) command BLANK useful to break 
+up the output. If you simply want a blank line, it is easier to 
+input one or more spaces and press the <return> key.
+
+You can remove your startup script with UNSET/STARTUP.  
+
+=== 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
+Tell the system that the call(s) are to be treated as DXSpider node and
+fed new style DX Protocol rather normal user commands.
+
 === 0^SET/TALK^Allow TALK messages to come out on your terminal
 === 0^UNSET/TALK^Stop TALK messages coming out on your terminal
 
@@ -2284,6 +2300,10 @@ So for example:-
 
  SH/SAT AO-10 
  SH/SAT FENGYUN1 12 2
+
+=== 6^SHOW/STARTUP <call>^View a user startup script
+=== 0^SHOW/STARTUP^View your own startup script
+View the contents of a startup script created with SET/STARTUP.
 
 === 6^SHOW/STATION ALL [<regex>]^Show list of users in the system
 === 0^SHOW/STATION [<callsign> ..]^Show information about a callsign

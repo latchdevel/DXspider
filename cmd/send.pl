@@ -18,6 +18,7 @@
 #
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) if $self->remotecmd;
+return (1, $self->msg('e36')) unless $self->state =~ /^prompt/;
 
 my @out;
 my $loc = $self->{loc} = {};
