@@ -273,7 +273,7 @@ sub formatb
 	my $loc = $ref->qra if $ref && $ref->qra && $wantgrid;
 	$loc = ' ' . substr($ref->qra, 0, 4) if $loc;
 	$loc = "" unless $loc;
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s$loc", "$_[4]:", $_[0], $_[1], $_[3], $t ;
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-29s %s$loc", "$_[4]:", $_[0], $_[1], $_[3], $t ;
 }
 
 # format a spot for user output in list mode

@@ -85,11 +85,13 @@ sub do_initscr
 	$top = $scr->subwin($lines-4, $cols, 0, 0);
 	$top->intrflush(0);
 	$top->scrollok(1);
+	$top->idlok(1);
 	$top->meta(1);
 #	$scr->addstr($lines-4, 0, '-' x $cols);
 	$bot = $scr->subwin(3, $cols, $lines-3, 0);
 	$bot->intrflush(0);
 	$bot->scrollok(1);
+	$top->idlok(1);
 	$bot->keypad(1);
 	$bot->move(1,0);
 	$bot->meta(1);
@@ -106,7 +108,8 @@ sub do_resize
 	initscr();
 	raw();
 	noecho();
-	$lines = LINES;
+	nonl();
+ 	$lines = LINES;
 	$cols = COLS;
 	$has_colors = has_colors();
 	do_initscr();
@@ -168,6 +171,7 @@ sub show_screen
 		$top->addstr("\n") if $spos > 0;
 		setattr($line);
 		$top->addstr($line);
+#		$top->addstr("\n");
 		$top->attrset(COLOR_PAIR(0)) if $has_colors;
 		$spos = @shistory;
 		
