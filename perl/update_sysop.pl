@@ -82,7 +82,7 @@ sub create_it
 
 }
 
-$lockfn = "$root/perl/cluster.lck";       # lock file name
+$lockfn = "$root/local/cluster.lck";       # lock file name
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	my $pid = <CLLOCK>;
