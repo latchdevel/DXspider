@@ -1,3 +1,5 @@
+12Jan02=======================================================================
+1. put setsockopts into eval block to allow some of them to fail
 11Jan02=======================================================================
 1. Make M$ TCP connx blocking again, sigh...
 2. backed out ALL the M$ speedup and make nicer changes :-(
