@@ -33,11 +33,11 @@ BEGIN {
         require POSIX; POSIX->import(qw(O_NONBLOCK F_SETFL F_GETFL))
     };
 	if ($@ || $main::is_win) {
-		print STDERR "POSIX Blocking *** NOT *** supported $@\n";
+#		print STDERR "POSIX Blocking *** NOT *** supported $@\n";
 		$blocking_supported = 0;
 	} else {
 		$blocking_supported = 1;
-		print STDERR "POSIX Blocking enabled\n";
+#		print STDERR "POSIX Blocking enabled\n";
 	}
 
 
