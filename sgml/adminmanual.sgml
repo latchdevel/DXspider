@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.34 (Revision 1.0) April 2001
+<date>Version 1.34 (Revision 1.01) April 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -275,7 +275,7 @@ is the user that should be doing that process.
 <item>Fix permissions on ax25_call and netrom_call (root)
 <item>Login as the sysop user
 <item>cd to /spider (sysop)
-<item>mkdir local (sysop
+<item>mkdir local (sysop)
 <item>mkdir local_cmd (sysop)
 <item>cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
 <item>cd to /spider/local and edit DXVars to set your details (sysop)

@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.34 (Revision 1.0) April 2001
+  Version 1.34 (Revision 1.01) April 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -602,7 +602,7 @@
 
   +o  cd to /spider (sysop)
 
-  +o  mkdir local (sysop
+  +o  mkdir local (sysop)
 
   +o  mkdir local_cmd (sysop)
 
