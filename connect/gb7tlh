@@ -1,6 +1,6 @@
 timeout 15
 # don't forget to chmod 4775 netrom_call!
-connect ax25 /usr/sbin/netrom_call bbs gb7djk-1 g1tlh
+connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
 'Connect' ''
 'Connect' 'cluster'
 'Connect'
