@@ -1578,13 +1578,13 @@ sub process
 		
 		# send a ping out on this channel
 		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
-#			if ($dxchan->{nopings} <= 0) {
-#				$dxchan->disconnect;
-#			} else {
+			if ($dxchan->{nopings} <= 0) {
+				$dxchan->disconnect;
+			} else {
 				addping($main::mycall, $dxchan->call);
 				$dxchan->{nopings} -= 1;
 				$dxchan->{lastping} = $t;
-#			}
+			}
 		}
 	}
 

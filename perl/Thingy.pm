@@ -218,7 +218,7 @@ sub ascii
 	my $dd = new Data::Dumper([$thing]);
 	$dd->Indent(0);
 	$dd->Terse(1);
-	$dd->Sortkeys(1);
+	#$dd->Sortkeys(1);
     $dd->Quotekeys($] < 5.005 ? 1 : 0);
 	return $dd->Dumpxs;
 }
