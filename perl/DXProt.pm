@@ -195,7 +195,7 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call) if $call ne $main::mycall;
+	$main::routeroot->add($call, '0000', Route::here(1)) if $call ne $main::mycall;
 
 	return $self;
 }
@@ -634,6 +634,7 @@ sub normal
 				next if length $call < 3; # min 3 letter callsigns
 
 				# update it if required
+				my $r;
 				if ($parent->call eq $call && !$parent->version) {
 					$parent->version($ver);
 					$parent->flags(Route::here($here)|Route::conf($conf));
@@ -643,6 +644,13 @@ sub normal
 
 					my $r = $parent->add($call, $ver, Route::here($here)|Route::conf($conf));
 					push @rout, $r if $r;
+				} else {
+					$r = Route::Node::get($call);
+					if ($r && (!$r->version || $r->version eq '0000')) {
+						$r->version($ver);
+						$r->flags(Route::here($here)|Route::conf($conf));
+						push @rout, $r;
+					}
 				}
 
 				# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
