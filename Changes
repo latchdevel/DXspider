@@ -1,3 +1,9 @@
+06Jan02=======================================================================
+1. fix leading space removal from messages input from the keyboard
+2. make some mods to allow perl 5.7.2 to run
+3. create $DXProt::eph_restime to allow variable slugging of ephemeral dups
+4. create $DXProt::eph_info_restime to allow a long dupe time for these
+4. create $DXProt::eph_pc34 to allow a short anti dupe slug for rcmd loops
 02Jan02=======================================================================
 1. updated the copyright dates
 2. modernised and extended the Windows instructions a bit.

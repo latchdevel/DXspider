@@ -42,7 +42,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($pc11_max_age $pc23_max_age $last_pc50
+use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
@@ -62,6 +62,9 @@ $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
 $ann_to_talk = 1;
 $rspfcheck = 1;
+$eph_restime = 180;
+$eph_info_restime = 10*60;
+$eph_pc34_restime = 30;
 
 @checklist = 
 (
@@ -977,11 +980,16 @@ sub normal
 		}
 		
 		if ($pcno == 34 || $pcno == 36) { # remote commands (incoming)
-			$self->process_rcmd($field[1], $field[2], $field[2], $field[3]);
+			if (eph_dup($line, $eph_pc34_restime)) {
+				dbg("PCPROT: dupe") if isdbg('chanerr');
+			} else {
+				$self->process_rcmd($field[1], $field[2], $field[2], $field[3]);
+			}
 			return;
 		}
 		
 		if ($pcno == 35) {		# remote command replies
+			eph_del_regex("^PC35\^$field[2]\^$field[1]\^");
 			$self->process_rcmd_reply($field[1], $field[2], $field[1], $field[3]);
 			return;
 		}
@@ -1005,6 +1013,11 @@ sub normal
 		if ($pcno == 41) {		# user info
 			my $call = $field[1];
 
+			if (eph_dup($line, $eph_info_restime)) {
+				dbg("PCPROT: dupe") if isdbg('chanerr');
+				return;
+			}
+			
 			# input filter if required
 #			my $ref = Route::get($call) || Route->new($call);
 #			return unless $self->in_filter_route($ref);
@@ -1035,11 +1048,11 @@ sub normal
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
 			} elsif ($field[2] == 5) {
-				if (is_qra($field[3])) {
-					my ($lat, $long) = DXBearing::qratoll($field[3]);
+				if (is_qra(uc $field[3])) {
+					my ($lat, $long) = DXBearing::qratoll(uc $field[3]);
 					$user->lat($lat);
 					$user->long($long);
-					$user->qra($field[3]);
+					$user->qra(uc $field[3]);
 				} else {
 					dbg('PCPROT: not a valid QRA locator') if isdbg('chanerr');
 					return;
@@ -1048,9 +1061,13 @@ sub normal
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
 
+			unless ($self->{isolate}) {
+				DXChannel::broadcast_nodes($line, $self); # send it to everyone but me
+			}
+
 #  perhaps this IS what we want after all
 #			$self->route_pc41($ref, $call, $field[2], $field[3], $field[4]);
-#			return;
+			return;
 		}
 
 		if ($pcno == 43) {
@@ -1907,12 +1924,13 @@ sub in_filter_route
 sub eph_dup
 {
 	my $s = shift;
+	my $t = shift || $eph_restime;
 	my $r;
 
 	# chop the end off
 	$s =~ s/\^H\d\d?\^?\~?$//;
 	$r = 1 if exists $eph{$s};    # pump up the dup if it keeps circulating
-	$eph{$s} = $main::systime;
+	$eph{$s} = $main::systime + $t;
 	return $r;
 }
 
@@ -1932,11 +1950,21 @@ sub eph_clean
 	my ($key, $val);
 	
 	while (($key, $val) = each %eph) {
-		if ($main::systime - $val > 180) {
+		if ($main::systime >= $val) {
 			delete $eph{$key};
 		}
 	}
 }
 
+sub eph_list
+{
+	my ($key, $val);
+	my @out;
+
+	while (($key, $val) = each %eph) {
+		push @out, $key, $val;
+	}
+	return @out;
+}
 1;
 __END__ 

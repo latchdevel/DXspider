@@ -186,6 +186,9 @@ sub normal
 	my $self = shift;
 	my $cmdline = shift;
 	my @ans;
+
+	# save this for them's that need it
+	my $rawline = $cmdline;
 	
 	# remove leading and trailing spaces
 	$cmdline =~ s/^\s*(.*)\s*$/$1/;
@@ -274,7 +277,7 @@ sub normal
 				Log('DXCommand', "$self->{call} swore: $cmdline");
 			} else {
 				for (@{$self->{talklist}}) {
-					$self->send_talks($_, $cmdline);
+					$self->send_talks($_, $rawline);
 				}
 			}
 			$self->send($self->talk_prompt) if $self->{state} eq 'talk';
@@ -286,9 +289,9 @@ sub normal
 		no strict 'refs';
 		my @ans;
 		if (ref $self->{edit}) {
-			eval { @ans = $self->{edit}->$func($self, $cmdline)};
+			eval { @ans = $self->{edit}->$func($self, $rawline)};
 		} else {
-			eval {	@ans = &{$self->{func}}($self, $cmdline) };
+			eval {	@ans = &{$self->{func}}($self, $rawline) };
 		}
 		if ($@) {
 			$self->send_ans("Syserr: on stored func $self->{func}", $@);

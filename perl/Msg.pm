@@ -344,11 +344,12 @@ sub new_server {
 	my $self = $pkg->new($login_proc);
 	
     $self->{sock} = IO::Socket::INET->new (
-                                          LocalAddr => $my_host,
-                                          LocalPort => $my_port,
+                                          LocalAddr => "$my_host:$my_port",
+#                                          LocalPort => $my_port,
                                           Listen    => SOMAXCONN,
                                           Proto     => 'tcp',
-                                          Reuse     => 1);
+                                          ReuseAddr => 1,
+										  );
     die "Could not create socket: $! \n" unless $self->{sock};
     set_event_handler ($self->{sock}, read => sub { $self->new_client }  );
 	return $self;

@@ -6,6 +6,10 @@ Maintenance and Enhancements
 ----------------------------
 
 * add a retry count for messages
+* set/notify
+* sh/maxusers (max users in node since last restart)
+* review badwords
+* fix non-english apropos to only show english when there REALLY is nothing else
 
 New Protocol Stuff
 ------------------
