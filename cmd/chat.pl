@@ -34,10 +34,10 @@ if (@bad = BadWords::check($line)) {
 	return (1, "$target de $from <$t>: $line");
 }
 
-#PC12^IZ4DYU^GROUP^PSE QSL INFO TO A71AW TNX IN ADV 73's^ ^IK5PWJ-6^0^H21^~
+#PC12^IZ4DYU^*^PSE QSL INFO TO A71AW TNX IN ADV 73's^<group>^IK5PWJ-6^0^H21^~
 my $msgid = DXProt::nextchatmsgid();
 $text = "#$msgid $text";
 
-DXProt::send_chat($self, DXProt::pc12($from, $text, '*', $target), $from, $target, $text, ' ', $main::mycall, '0');
+DXProt::send_chat($self, DXProt::pc12($from, $text, '*', $target), $from, '*', $text, $target, $main::mycall, '0');
 
 return (1, ());

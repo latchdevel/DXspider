@@ -810,15 +810,15 @@ sub chat
 	my $self = shift;
 	my $line = shift;
 	my $isolate = shift;
-	my $to = shift;
 	my $target = shift;
+	my $to = shift;
 	my $text = shift;
 	my ($filter, $hops);
 
-	return unless grep uc $_ eq $to, @{$self->{user}->{group}};
+	return unless grep uc $_ eq $target, @{$self->{user}->{group}};
 	
 	$text =~ s/^\#\d+ //;
-	my $buf = "$to de $_[0]: $text";
+	my $buf = "$target de $_[0]: $text";
 	$buf =~ s/\%5E/^/g;
 	$buf .= "\a\a" if $self->{beep};
 	$self->local_send('C', $buf);

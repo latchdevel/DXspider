@@ -1839,10 +1839,12 @@ sub send_chat
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $main::me;
-		next if $dxchan == $self && $self->is_node;
-		next unless $dxchan->is_spider || $dxchan->is_ak1a;
-		next if $target eq 'LOCAL' && $dxchan->is_node;
+		if ($dxchan->is_node) {
+			next if $dxchan == $main::me;
+			next if $dxchan == $self;
+			next unless $dxchan->is_spider || $dxchan->is_ak1a;
+			next if $target eq 'LOCAL';
+		}
 		
 		$dxchan->chat($line, $self->{isolate}, $target, $_[1], $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 	}

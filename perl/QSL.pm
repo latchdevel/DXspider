@@ -80,7 +80,7 @@ sub update
 			$tok = $man if @pre && $pre[0] ne 'Q';
 		} elsif ($man =~ /^BUR/) {
 			$tok = 'BUREAU';
-		} elsif ($man eq 'HC' || $man =~ /^HOM/) {
+		} elsif ($man eq 'HC' || $man =~ /^HOM/ || $man =~ /^DIR/) {
 			$tok = 'HOME CALL';
 		} elsif ($man =~ /^QRZ/) {
 			$tok = 'QRZ.com';

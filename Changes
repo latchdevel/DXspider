@@ -1,5 +1,11 @@
 18Mar03=======================================================================
 1. minor corrections to manuals (g0vgs)
+17Mar03=======================================================================
+1. changed the regex determining what is a callsign to be more comprehensive.
+I would suggest re-running create_qsl.pl and then restarting.
+2. Fix chat so that output appears to users again and PC sentence conforms
+to standard. Add kludge to remove rewritten chats if I see them.
+3. Only send chat PCs to spider or AK1A boxes
 12Mar03=======================================================================
 1. added HC and QRZ.com to possible QSL locations, if you want to pick up
 historical info (ie start again), run create_qsl.pl after update and restart
