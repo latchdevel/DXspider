@@ -67,7 +67,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.27";				# the version no of the software
+$version = "1.28";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
       
@@ -105,6 +105,12 @@ sub rec
 	# set up the basic channel info - this needs a bit more thought - there is duplication here
 	if (!defined $dxchan) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
+
+                # is there one already connected to me ? 
+		if ($dxchan = DXChannel->get($call)) {
+			disconnect($dxchan);
+			sleep(1);
+	        }
 		
 		# is there one already connected elsewhere in the cluster (and not a cluster)
 		my $user = DXUser->get($call);
@@ -175,7 +181,16 @@ sub cease
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
 	DXUser::finish();
+	dbg('chan', "DXSpider version $version ended");
 	Log('cluster', "DXSpider V$version stopped");
 	unlink $lockfn;
 	exit(0);
@@ -314,6 +329,7 @@ dbg('local', "Local::init error $@") if $@;
 
 # this, such as it is, is the main loop!
 print "orft we jolly well go ...\n";
+dbg('chan', "DXSpider version $version started...");
 for (;;) {
 	my $timenow;
 	Msg->event_loop(1, 0.001);
