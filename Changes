@@ -1,5 +1,9 @@
+21May99=======================================================================
+1. made set/nodx work again.
+2. mode dx stuff queue nicely again.
 18May99=======================================================================
 1. Added announce dup checking.
+2. Added system announce filtering.
 08May99=======================================================================
 1. Added a bit more checking to the rcmd thing to make more sure that this
 rcmd isn't coming from an imposter. Not possible to prevent everything 
