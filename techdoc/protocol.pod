@@ -1,6 +1,6 @@
 =head1 NAME
 
-DXSpiderWeb Orthogonal Communications Protocol 
+Aranea Orthogonal Communications Protocol 
 
 $Revision$
 
@@ -67,6 +67,40 @@ L</Command Section> and L</Fields>.
 Most of this document is concerned with the L</Routing Section>, however
 some L</Standard Commands> which all implementation should issue and
 must accept are described.
+
+=head1 Applications
+
+In the past messaging applications such as DX Cluster software have maintained
+a fairly strict division between "nodes" and "users". This protocol attempts
+to get away from that distinction by allowing any entity to connect to any 
+other. 
+
+Applications that use this protocol are essentially all peers and therefore
+nodes the only real difference between a "node" and a "user" (using this 
+protocol) is that a "node" has one or more listeners running that will,
+potentially, allow incoming connections. A "user" simply becomes an end
+point that never uses the L</FrmUser> or L</ToUser> slots in the 
+L</Routing Section>.
+
+The reason for this is that modern clients are more intelligent than simple
+character based connections such as telnet or ax25. They wish to be able to
+distinguish between the various classes of message, such as: DX spots, 
+announces, talk, logging info etc. It is a pain to have to do it, as now,
+by trying to make sense of the (slightly different for each piece of node 
+software) human readable "user" version of the output. Far better to pass on
+regular, specified, easily computer decodable versions of the message,
+i.e. in the this protocol, and leave
+the human presentation to the client software.
+
+Having said that, the protocol allows for traditional, character based,
+connections, as in the past. But it is up to applications
+to service and control that type of connection and to provide human readable
+"user" output. 
+
+One of the legacy, character based connections that will probably have to be
+serviced is that of existing PC protocol based nodes. They should be treated
+as local clients, B<not> as peers in this protocol. It is likely that, in order
+to do this, some extra L</Tag>s will need to be defined at application level. 
 
 =head1 Routing Section
 
@@ -273,8 +307,8 @@ duplicated!
 =head2 Examples
 
  # on link startup from GB7BAA (both sides hello)
- GB7TLH,3D02350001,0,GB7BAA|HELLO,Aranea,1.2,24.123
- GB7BAA,3D02355421,1,GB7TLH|HELLO,Aranea,1.1,23.245
+ GB7TLH,3D02350001,0|HELLO,Aranea,1.2,24.123
+ GB7BAA,3D02355421,1|HELLO,Aranea,1.1,23.245
 
  # on user startup to GB7TLH
  GB7TLH,3D042506F2,0,G1TLH|HELLO,PClient,1.3
