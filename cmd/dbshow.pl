@@ -41,11 +41,11 @@ foreach  $n (@db) {
 		# local databases can chain to remote ones
 		my $count;
 		push @out, $db->print('pre');
-		push @out, "@f";
+#		push @out, "@f";
 		for (@f) {
-			push @out, $db->name . " $_";
+#			push @out, $db->name . " $_";
 			my $value = $db->getkey($_) || "";
-			push @out, $db->name . ": $_ : $value";
+			push @out, $db->name . ": $_ :";
 			if ($value) {
 				push @out, split /\n/, $value;
 				$count++;
