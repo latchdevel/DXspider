@@ -65,7 +65,7 @@ while ($f = shift @list) {		# next field
 		my ($a, $b);
 #		$DB::single =1;
 		
-		if (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d\d\d)/oi) {
+		if ($list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d\d\d)/oi)) {
 			$a = uc $a;
 			$doiota = "\\b$a\[\-\ \]\?$b\\b";
 			shift @list;
