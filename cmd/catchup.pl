@@ -25,16 +25,22 @@ my @ref;
 
 # get a more or less valid set of messages
 foreach my $msgno (@f) {
-	if ($msgno =~ /^al/oi) {
+	if ($msgno =~ /^al/i) {
 		@ref = DXMsg::get_all();
 		last;
+	} elsif (my ($f, $t) = $msgno =~ /(\d+)-(\d+)/) {
+		while ($f < $t) {
+			$ref = DXMsg::get($f++);
+			push @ref, $ref if $ref;
+		}
+	} else {
+		$ref = DXMsg::get($msgno);
+		unless ($ref) {
+			push @out, $self->msg('m13', $msgno);
+			next;
+		}
+		push @ref, $ref;
 	}
-	$ref = DXMsg::get($msgno);
-	unless ($ref) {
-		push @out, $self->msg('m13', $msgno);
-		next;
-	}
-	push @ref, $ref;
 }
 
 foreach $ref (@ref) {

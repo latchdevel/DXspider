@@ -32,8 +32,8 @@ DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
-=== 9^CATCH <node call> All|[<msgno> ...]^Mark a message as sent
-=== 9^UNCATCH <node call> All|[msgno> ...]^Unmark a message as sent
+=== 9^CATCHUP <node call> All|[<msgno> ...]^Mark a message as sent
+=== 9^UNCATCHUP <node call> All|[msgno> ...]^Unmark a message as sent
 When you send messages the fact that you have forwarded it to another node 
 is remembered so that it isn't sent again. When you have a new partner
 node and you add their callsign to your /spider/msg/forward.pl file, all
@@ -41,15 +41,17 @@ outstanding non-private messages will be forwarded to them. This may well
 be ALL the non-private messages. You can prevent this by using these 
 commmands:-
 
-  catch GB7DJK all
-  catch GB7DJK 300 301 302 303
+  catchup GB7DJK all
+  catchup GB7DJK 300 301 302 303 500-510
 	
 and to undo what you have just done:-
   
-  uncatch GB7DJK all
-  uncatch GB7DJK 300 301 302 303
+  uncatchup GB7DJK all
+  uncatchup GB7DJK 300 301 302 303 500-510
 
 which will arrange for them to be forward candidates again.
+
+Order is not important.
 
 === 0^DBAVAIL^Show a list of all the Databases in the system
 Title says it all really, this command lists all the databases defined

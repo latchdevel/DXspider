@@ -1,3 +1,5 @@
+25Oct00=======================================================================
+1. fix catchup and uncatchup commands so that they accept ranges
 24Oct00=======================================================================
 1. added cty.dat from http://www.k1ea.com/cty/index.htm to the prefix_data.pl
 data file and modified create_prefix.pl accordingly.
