@@ -33,3 +33,115 @@ use Julian;
 use Carp;
 
 use strict;
+
+# create a log object that contains all the useful info needed
+# prefix is the main directory off of the data directory
+# sort is 'm' for monthly, 'd' for daily 
+sub new
+{
+	my ($prefix, $suffix, $sort) = @_;
+	my $ref = {};
+	$ref->{prefix} = "$main::data/$prefix";
+	$ref->{suffix} = $suffix if $suffix;
+	$ref->{sort} = $sort;
+		
+	# make sure the directory exists
+	mkdir($ref->{prefix}, 0777) if ! -e $ref->{prefix};
+	return bless $ref;
+}
+
+# open the appropriate data file
+sub open
+{
+	my ($self, $year, $thing, $mode) = @_;
+	
+	# if we are writing, check that the directory exists
+	if (defined $mode) {
+		my $dir = "$self->{prefix}/$year";
+		mkdir($dir, 0777) if ! -e $dir;
+		$self->{mode} = $mode;
+	} else {
+		delete $self->{mode};
+	}
+	
+	$self->{fn} = sprintf "$self->{prefix}/$year/%03d", $thing;
+	$self->{fn} .= ".$self->{suffix}" if $self->{suffix};
+	
+	$mode = 'r' if !$mode;
+	my $fh = new FileHandle $self->{fn}, $mode;
+	return undef if !$fh;
+	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
+	$self->{fh} = $fh;
+
+	$self->{year} = $year;
+	$self->{thing} = $thing;
+	
+	dbg("dxlog", "opening $self->{fn}\n");
+	
+	return $self->{fh};
+}
+
+# open the previous log file in sequence
+sub openprev
+{
+	my $self = shift;
+	if ($self->{sort} eq 'm') {
+		($self->{year}, $self->{thing}) = Julian::subm($self->{year}, $self->{thing}, 1);
+	} elsif ($self->{sort} eq 'd') {
+		($self->{year}, $self->{thing}) = Julian::sub($self->{year}, $self->{thing}, 1);
+	}
+	return $self->open($self->{year}, $self->{thing}, @_);
+}
+
+# open the next log file in sequence
+sub opennext
+{
+	my $self = shift;
+	if ($self->{sort} eq 'm') {
+		($self->{year}, $self->{thing}) = Julian::addm($self->{year}, $self->{thing}, 1);
+	} elsif ($self->{sort} eq 'd') {
+		($self->{year}, $self->{thing}) = Julian::add($self->{year}, $self->{thing}, 1);
+	}
+	return $self->open($self->{year}, $self->{thing}, @_);
+}
+
+# write (actually append) to a file, opening new files as required
+sub write
+{
+	my ($self, $year, $thing, $line) = @_;
+	$self->open($year, $thing, ">>") if (!$self->{fh} || 
+										 $self->{mode} ne ">>" || 
+										 $year != $self->{year} || 
+										 $thing != $self->{thing})
+		or confess "can't open $self->{fn} $!";
+
+	$self->{fh}->print("$line\n");
+	return $self;
+}
+
+# write (actually append) using the current date to a file, opening new files as required
+sub writenow
+{
+	my ($self, $line) = @_;
+	my @date = unixtoj(time) if $self->{sort} = 'd';
+	@date = unixtojm(time) if $self->{sort} = 'm';
+	
+	return $self->write(@date, $line);
+}
+
+# close the log file handle
+sub close
+{
+	my $self = shift;
+	undef $self->{fh};			# close the filehandle
+	delete $self->{fh};
+	delete $self->{mode};
+}
+
+sub DESTROY						# catch undefs and do what is required further do the tree
+{
+	my $self = shift;
+	dbg("dxlog", "closing $self->{fn}\n");
+	undef $self->{fh} if defined $self->{fh};
+} 
+1;

@@ -12,11 +12,10 @@ use FileHandle;
 use DXVars;
 use DXDebug;
 use DXUtil;
+use DXLog;
 use Julian;
 use Prefix;
 use Carp;
-
-@ISA = qw(Julian);
 
 use strict;
 use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix);
@@ -25,16 +24,17 @@ $fp = undef;
 $maxspots = 50;      # maximum spots to return
 $defaultspots = 10;    # normal number of spots to return
 $maxdays = 35;        # normal maximum no of days to go back
-$dirprefix = "$main::data/spots";
+$dirprefix = "spots";
 
 sub init
 {
-  mkdir "$dirprefix", 0777 if !-e "$dirprefix";
+	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
+	$fp = DXLog::new($dirprefix, "dat", 'd')
 }
 
 sub prefix
 {
-  return $dirprefix;
+  return $fp->{prefix};
 }
 
 # add a spot to the data file (call as Spot::add)
@@ -49,20 +49,16 @@ sub add
   # remove ssid if present on spotter
   $spot[4] =~ s/-\d+$//o;
 
-  # compare dates to see whether need to open another save file (remember, redefining $fp 
-  # automagically closes the output file (if any))
-  my @date = Julian::unixtoj($spot[2]);
-  $fp = Spot->open(@date, ">>") if (!$fp || Julian::cmp(@date, $fp->{year}, $fp->{day}));
-
-  # save it
-  my $fh = $fp->{fh};
-
   # add the 'dxcc' country on the end
   my @dxcc = Prefix::extract($spot[1]);
   push @spot, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
 
   my $buf = join("\^", @spot);
-  $fh->print($buf, "\n");
+
+  # compare dates to see whether need to open another save file (remember, redefining $fp 
+  # automagically closes the output file (if any)). 
+  my @date = Julian::unixtoj($spot[2]);
+  $fp->write(@date, $buf);
   
   return $buf;
 }
@@ -126,16 +122,6 @@ sub search
   
   # build up eval to execute
   $eval = qq(
-#    while (<\$fh>) {
-#	  chomp;
-#	  my \@spots = split /\\^/o;
-#	  if ($expr) {                # note NO \$expr
-#	    \$count++;
-#		next if \$count < \$from;                  # wait until from 
-#		push(\@out, \\\@spots);
-#		last LOOP if \$count >= \$to;                  # stop after to
-#	  }
-#	}
     my \$c;
 	my \$ref;
     for (\$c = \$#spots; \$c >= 0; \$c--) {
@@ -149,19 +135,20 @@ sub search
     }
   );
 
+  $fp->close;                                      # close any open files
+
 LOOP:
   for ($i = 0; $i < $maxdays; ++$i) {             # look thru $maxdays worth of files only
     my @now = Julian::sub(@fromdate, $i);         # but you can pick which $maxdays worth
 	last if Julian::cmp(@now, @todate) <= 0;         
 	
 	my @spots = ();
-	my $fp = Spot->open(@now);  # get the next file
-	if ($fp) {
-	  my $fh = $fp->{fh};
+	my $fh = $fp->open(@now);  # get the next file
+	if ($fh) {
 	  my $in;
-	  foreach $in (<$fh>) {
-	    chomp $in;
-       push @spots, [ split('\^', $in) ];
+	  while (<$fh>) {
+		  chomp;
+		  push @spots, [ split '\^' ];
 	  }
 	  eval $eval;               # do the search on this file
 	  return ("Spot search error", $@) if $@;
@@ -169,19 +156,6 @@ LOOP:
   }
 
   return @out;
-}
-
-# open a spot file of the Julian day
-sub open
-{
-  my $pkg = shift;
-  return Julian::open("spot", $dirprefix, @_);
-}
-
-# close a spot file
-sub close
-{
-  # do nothing, unreferencing or overwriting the $self will close it  
 }
 
 # format a spot for user output in 'broadcast' mode

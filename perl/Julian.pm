@@ -19,20 +19,21 @@ my @days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 # take a unix date and transform it into a julian day (ie (1998, 13) = 13th day of 1998)
 sub unixtoj
 {
-  my ($t) = @_;
-  my ($day, $mon, $year) = (gmtime($t))[3..5];
-  my $jday;
+  my $t = shift;
+  my ($year, $day) = (gmtime($t))[5,7];
   
-  # set the correct no of days for february
   if ($year < 100) {
     $year += ($year < 50) ? 2000 : 1900;
   }
-  $days[1] = isleap($year) ? 29 : 28;
-  for (my $i = 0, $jday = 0; $i < $mon; $i++) {
-    $jday += $days[$i];
-  }
-  $jday += $day;
-  return ($year, $jday);
+  return ($year, $day+1);
+}
+
+# take a unix and return a julian month from it
+sub unixtojm
+{
+	my $t = shift;
+	my ($mon, $year) = (gmtime($t))[4..5];
+	return ($year, $mon);
 }
 
 # take a julian date and subtract a number of days from it, returning the julian date
@@ -62,6 +63,29 @@ sub add
   return ($year, $day);
 } 
 
+# take a julian month and subtract a number of months from it, returning the julian month
+sub subm
+{
+  my ($year, $mon, $amount) = @_;
+  $mon -= $amount;
+  while ($mon <= 0) {
+    $mon += 12;
+	$year -= 1;
+  }
+  return ($year, $mon);
+}
+
+sub addm
+{
+  my ($year, $mon, $amount) = @_;
+  $mon += $amount;
+  while ($mon > 12) {
+    $mon -= 12;
+	$year += 1;
+  }
+  return ($year, $mon);
+} 
+
 sub cmp
 {
   my ($y1, $d1, $y2, $d2) = @_;
@@ -76,45 +100,5 @@ sub isleap
   return ($year % 4 == 0 && ($year % 100 != 0 || $year % 400 == 0)) ? 1 : 0; 
 }
 
-# this section deals with files that are julian date based
-
-# open a data file with prefix $fn/$year/$day.dat and return an object to it
-sub open
-{
-  my ($pkg, $fn, $year, $day, $mode) = @_;
-
-  # if we are writing, check that the directory exists
-  if (defined $mode) {
-    my $dir = "$fn/$year";
-	mkdir($dir, 0777) if ! -e $dir;
-  }
-  my $self = {};
-  $self->{fn} = sprintf "$fn/$year/%03d.dat", $day;
-  $mode = 'r' if !$mode;
-  my $fh = new FileHandle $self->{fn}, $mode;
-  return undef if !$fh;
-  $fh->autoflush(1) if $mode ne 'r';         # make it autoflushing if writable
-  $self->{fh} = $fh;
-  $self->{year} = $year;
-  $self->{day} = $day;
-  dbg("julian", "opening $self->{fn}\n");
-  
-  return bless $self, $pkg;
-}
-
-# close the data file
-sub close
-{
-  my $self = shift;
-  undef $self->{fh};      # close the filehandle
-  delete $self->{fh};
-}
-
-sub DESTROY               # catch undefs and do what is required further do the tree
-{
-  my $self = shift;
-  dbg("julian", "closing $self->{fn}\n");
-  undef $self->{fh} if defined $self->{fh};
-} 
 
 1;
