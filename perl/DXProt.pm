@@ -607,7 +607,7 @@ sub handle_12
 
 	my $dxchan;
 	
-	if ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w]+$/){
+	if ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w.]+$/){
 		$self->send_chat($line, @_[1..6]);
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
@@ -1798,7 +1798,13 @@ sub send_chat
 	my $dxchan;
 	my $target = $_[3];
 	my $text = unpad($_[2]);
+	my $ak1a_line;
 				
+	# munge the group and recast the line if required
+	if ($target =~ s/\.LST$//) {
+		$ak1a_line = $line;
+	}
+	
 	# obtain country codes etc 
 	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
 	my ($ann_state, $org_state) = ("", "");
@@ -1839,14 +1845,19 @@ sub send_chat
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
+		my $is_ak1a = $dxchan->is_ak1a;
+		
 		if ($dxchan->is_node) {
 			next if $dxchan == $main::me;
 			next if $dxchan == $self;
-			next unless $dxchan->is_spider || $dxchan->is_ak1a;
+			next unless $dxchan->is_spider || $is_ak1a;
 			next if $target eq 'LOCAL';
+			if (!$ak1a_line && $is_ak1a) {
+				$ak1a_line = DXProt::pc12($_[0], $text, $_[1], "$target.LST");
+			}
 		}
 		
-		$dxchan->chat($line, $self->{isolate}, $target, $_[1], $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->chat($is_ak1a ? $ak1a_line : $line, $self->{isolate}, $target, $_[1], $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 	}
 }
 
