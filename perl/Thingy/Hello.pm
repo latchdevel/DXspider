@@ -67,6 +67,7 @@ sub handle
 	if ($v) {
 		$v = $DXProt::myprot_version + int ($v*100) if $v > 2 && $v < 3;
 		$v = $DXProt::myprot_version + 150 unless $v >= 5400;
+		$v =~ s/\.\d+$//;
 		$thing->{pcv} = $v;
 	}
 	
