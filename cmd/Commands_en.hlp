@@ -633,6 +633,10 @@ Tell the system where you are. For example:-
 === 0^SET/WX^Allow WX messages to come out on your terminal
 === 0^UNSET/WX^Stop WX messages coming out on your terminal
 
+=== 0^SHOW/CALL <callsign>^Show any callbook details on a callsign
+This command queries an international callbook server on the internet
+and returns any information available for that callsign. 
+
 === 0^SHOW/DATE [<prefix>|<callsign>]^Show the local time 
 This is very nearly the same as SHOW/TIME, the only difference the format
 of the date string if no arguments are given.

@@ -10,6 +10,8 @@ my @list = split /\s+/, $line;		      # generate a list of callsigns
 my $l;
 my @out;
 
+return (1, "SHOW/CALL <callsign>, e.g. SH/CALL g1tlh") unless @list;
+
 use Net::Telnet;
 
 my $t = new Net::Telnet;
