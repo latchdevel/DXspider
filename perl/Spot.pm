@@ -23,7 +23,7 @@ use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $fil
 $fp = undef;
 $maxspots = 50;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
-$maxdays = 35;					# normal maximum no of days to go back
+$maxdays = 365;					# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 3*3600;               # the length of time to hold spot dups
@@ -158,7 +158,7 @@ sub add
 
 sub search
 {
-	my ($expr, $dayfrom, $dayto, $from, $to) = @_;
+	my ($expr, $dayfrom, $dayto, $from, $to, $hint) = @_;
 	my $eval;
 	my @out;
 	my $ref;
@@ -174,6 +174,8 @@ sub search
 	@todate = Julian::sub(@fromdate, $dayto);
 	$from = 0 unless $from;
 	$to = $defaultspots unless $to;
+	$hint = $hint ? "next unless $hint" : "";
+	$expr = "1" unless $expr;
 	
 	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
 
@@ -184,6 +186,11 @@ sub search
   
 	# build up eval to execute
 	$eval = qq(
+			   while (<\$fh>) {
+				   $hint;
+				   chomp;
+				   push \@spots, [ split '\\^' ];
+			   }
 			   my \$c;
 			   my \$ref;
 			   for (\$c = \$#spots; \$c >= 0; \$c--) {
@@ -207,10 +214,6 @@ sub search
 		my $fh = $fp->open(@now); # get the next file
 		if ($fh) {
 			my $in;
-			while (<$fh>) {
-				chomp;
-				push @spots, [ split '\^' ];
-			}
 			eval $eval;			# do the search on this file
 			last if $count >= $to; # stop after to
 			return ("Spot search error", $@) if $@;
@@ -218,6 +221,32 @@ sub search
 	}
 
 	return @out;
+}
+
+# change a freq range->regular expression
+sub ftor
+{
+	my ($a, $b) = @_;
+	return undef unless $a < $b;
+	$b--;
+	my @a = split //, $a;
+	my @b = split //, $b;
+	my $out;
+	while (@b > @a) {
+		$out .= shift @b;
+	}
+	while (@b) {
+		my $aa = shift @a;
+		my $bb = shift @b;
+		if ($aa eq $bb) {
+			$out .= $aa;
+		} elsif ($aa < $bb) {
+			$out .= "[$aa-$bb]";
+		} else {
+			$out .= "[$bb-$aa]";
+		}
+	}
+	return $out;
 }
 
 # format a spot for user output in 'broadcast' mode

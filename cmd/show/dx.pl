@@ -18,6 +18,7 @@ my $pre;
 my $spotter;
 my $info;
 my $expr;
+my $hint;
 my ($doqsl, $doiota, $doqra);
 
 while ($f = shift @list) {		# next field
@@ -87,64 +88,77 @@ while ($f = shift @list) {		# next field
 if ($pre) {
 	$pre .= '*' unless $pre =~ /[\*\?\[]/o;
 	$pre = shellregex($pre);
-	$expr = "\$f1 =~ m{$pre}o";
-} else {
-	$expr = "1";				# match anything
+	$expr = "\$f1 =~ m{$pre}";
+	$pre =~ s/\^//;
+	$hint = "m{\U$pre}";
 }
   
 # now deal with any frequencies specified
 if (@freq) {
 	$expr .= ($expr) ? " && (" : "(";
+	$hint .= ($hint) ? " && (" : "(";
 	my $i;
 	for ($i = 0; $i < @freq; $i += 2) {
 		$expr .= "(\$f0 >= $freq[$i] && \$f0 <= $freq[$i+1]) ||";
+		my $r = Spot::ftor($freq[$i], $freq[$i+1]);
+		$hint .= "m{$r} ||" if $r;
 	}
-	chop $expr;
-	chop $expr;
+	chop $expr;	chop $expr;
+	chop $hint;	chop $hint;
 	$expr .= ")";
+	$hint .= ")";
 }
 
 # any info
 if ($info) {
 	$expr .= " && " if $expr;
 	$info =~ s{(.)}{"\Q$1"}ge;
-	$expr .= "\$f3 =~ m{$info}io";
+	$expr .= "\$f3 =~ m{$info}i";
+	$hint .= " && " if $hint;
+	$hint .= "m{$info}i";
 }
 
 # any spotter
 if ($spotter) {
 	$expr .= " && " if $expr;
 	$spotter = shellregex($spotter);
-	$expr .= "\$f4 =~ m{$spotter}o";
+	$expr .= "\$f4 =~ m{$spotter}";
+	$hint .= " && " if $hint;
+	$hint .= "m{$spotter}";
 }
 
 # qsl requests
 if ($doqsl) {
 	$expr .= " && " if $expr;
-	$expr .= "\$f3 =~ m{(\@|>|QSL|VIA)}io";
+	$expr .= "\$f3 =~ m{QSL|VIA}i";
+	$hint .= " && " if $hint;
+	$hint .= "m{QSL|VIA}i";
 }
 
 # iota requests
 if ($doiota) {
 	$expr .= " && " if $expr;
-	$expr .= "\$f3 =~ m{$doiota}io";
+	$expr .= "\$f3 =~ m{$doiota}i";
+	$hint .= " && " if $hint;
+	$hint .= "m{$doiota}i";
 }
 
 # iota requests
 if ($doqra) {
 	$expr .= " && " if $expr;
-	$expr .= "\$f3 =~ m{$doqra}io";
+	$expr .= "\$f3 =~ m{$doqra}i";
+	$hint .= " && " if $hint;
+	$hint .= "m{$doqra}io";
 }
 
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
   
 # now do the search
-my @res = Spot::search($expr, $fromday, $today, $from, $to);
+my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint);
 my $ref;
 my @dx;
 foreach $ref (@res) {
-	@dx = @$ref;
-	push @out, Spot::formatl(@dx);
+	push @out, Spot::formatl(@$ref);
 }
 
 return (1, @out);

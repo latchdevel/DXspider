@@ -1,3 +1,5 @@
+05Nov00=======================================================================
+1. 75% speed up on sh/dx !, lower memory usage as well! 
 04Nov00=======================================================================
 1. fix sh/filter so ity now works for any callsign (and not just connected
 ones).
