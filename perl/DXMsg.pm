@@ -125,7 +125,7 @@ sub alloc
 	$self->{'read'} = shift;
 	$self->{rrreq} = shift;
 	$self->{delete} = shift;
-	$self->{deletetime} = shift;
+	$self->{deletetime} = shift || $self->{delete} ? 0 : ($self->{t} + $maxage);
 	$self->{gotit} = [];
 #	$self->{lastt} = $main::systime;
 	$self->{lines} = [];
@@ -155,6 +155,15 @@ sub process
 
 		# clean the message queue
 		clean_old() if $main::systime - $last_clean > 3600 ;
+
+		# actual remove all the 'deleted' messages in one hit.
+		# this has to be delayed until here otherwise it only does one at 
+		# a time because @msg is rewritten everytime del_msg is called.
+		my @del = grep {!$_->{tonode} && $_->{delete} && $_->{deletetime} < $main::systime} @msg;
+		for (@del) {
+			$_->del_msg;
+		}
+
 		$last_clean = $main::systime;
 		return;
 	}
@@ -512,7 +521,7 @@ sub store
 			my $rr = $ref->{rrreq} ? '1' : '0';
 			my $priv = $ref->{private} ? '1': '0';
 			my $del = $ref->{delete} ? '1' : '0';
-			my $delt = $ref->{deletetime} || '0';
+			my $delt = $ref->{deletetime} || $ref->{t} + $maxage;
 			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr^$del^$delt\n";
 			print $fh "=== ", join('^', @{$ref->{gotit}}), "\n";
 			my $line;
@@ -530,13 +539,6 @@ sub store
 		}
 	}
 
-	# actual remove all the 'deleted' messages in one hit.
-	# this has to be delayed until here otherwise it only does one at 
-	# a time because @msg is rewritten everytime del_msg is called.
-	my @del = grep {!$_->{tonode} && $_->{delete} && $_->{deletetime} < $main::systime} @msg;
-	for (@del) {
-		$_->del_msg;
-	}
 }
 
 # delete a message
@@ -589,7 +591,7 @@ sub clean_old
 	
 	# mark old messages for deletion
 	foreach $ref (@msg) {
-		if (ref($ref) && !$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
+		if (ref($ref) && !$ref->{keep} && $ref->{deletetime} < $main::systime) {
 
 			# this is for IMMEDIATE destruction
 			$ref->{delete}++;

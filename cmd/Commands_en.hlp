@@ -1504,7 +1504,7 @@ Tell the system what your name is eg:-
 Tell the system that the call(s) are to be treated as AK1A cluster and
 fed PC Protocol rather normal user commands.
 
-=== 8^SET/OBSCOUNT <count> <nodecall>^Set the 'pump-up' obscelence counter 
+=== 8^SET/OBSCOUNT <count> <call>^Set the 'pump-up' obscelence PING counter 
 From 1.35 onwards neighbouring nodes are pinged at regular intervals (see
 SET/PINGINTERVAL), usually 300 seconds or 5 minutes. There is a 'pump-up'
 counter which is decremented on every outgoing ping and then reset to

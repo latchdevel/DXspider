@@ -1,3 +1,7 @@
+21Oct02=======================================================================
+1. Fix msg aging.
+2. make the default pinginterval and obscount variable (set/var 
+$DXProt::pingint and $DXProt::obscount) 
 20Oct02=======================================================================
 1. remove dupe check on local sysop announces
 2. fix format errors on sh/muf for 5.8.0

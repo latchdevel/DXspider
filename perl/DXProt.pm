@@ -44,6 +44,7 @@ $main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
+			$pingint $obscount
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -65,6 +66,8 @@ $rspfcheck = 1;
 $eph_restime = 180;
 $eph_info_restime = 60*60;
 $eph_pc34_restime = 30;
+$pingint = 5*60;
+$obscount = 2;
 
 @checklist = 
 (
@@ -255,9 +258,9 @@ sub start
 	
 	# ping neighbour node stuff
 	my $ping = $user->pingint;
-	$ping = 5*60 unless defined $ping;
+	$ping = $pingint unless defined $ping;
 	$self->{pingint} = $ping;
-	$self->{nopings} = $user->nopings || 2;
+	$self->{nopings} = $user->nopings || $obscount;
 	$self->{pingtime} = [ ];
 	$self->{pingave} = 999;
 	$self->{metric} ||= 100;

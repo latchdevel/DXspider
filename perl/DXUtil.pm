@@ -149,6 +149,7 @@ sub promptf
 		$dd->Terse(1);
 		$dd->Quotekeys(0);
 		$value = $dd->Dumpxs;
+		$value =~ s/([\r\n\t])/sprintf("%%%02X", ord($1))/eg;
 	}
 	$prompt = sprintf "%15s: %s", $prompt, $value;
 	return ($priv, $prompt);
