@@ -57,7 +57,7 @@ sub get_exact
   # belt and braces
   $call = uc $call;
   
-  # search for 'as is'
+  # search for 'as is' only
   return $cluster{$call}; 
 }
 

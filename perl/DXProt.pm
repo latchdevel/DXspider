@@ -295,7 +295,11 @@ sub normal
 		}
 		
 		if ($pcno == 22) {
-			last SWITCH;
+			$self->state('normal');
+			
+			# queue mail
+			DXMsg::queue_msg();
+			return;
 		}
 		
 		if ($pcno == 23 || $pcno == 27) { # WWV info

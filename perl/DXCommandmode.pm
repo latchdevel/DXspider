@@ -97,33 +97,7 @@ sub normal
 	# remove leading and trailing spaces
 	$cmdline =~ s/^\s*(.*)\s*$/$1/;
 	
-	if ($self->{func}) {
-		my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
-		dbg('eval', "stored func cmd = $c\n");
-		eval  $c;
-		if ($@) {
-			return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
-		}
-	} elsif ($self->{state} eq 'prompt') {
-		@ans = run_cmd($self, $cmdline) if length $cmdline;
-       
-		if ($self->{pagelth} && @ans > $self->{pagelth}) {
-			my $i;
-			for ($i = $self->{pagelth}; $i-- > 0; ) {
-				my $line = shift @ans;
-				$line =~ s/\s+$//o;            # why am having to do this? 
-				$self->send($line);
-			}
-			$self->{pagedata} =  \@ans;
-			$self->state('page');
-			$self->send($self->msg('page', scalar @ans));
-		} else {
-			for (@ans) {
-				s/\s+$//o;                     # why ?????????
-				$self->send($_);
-			}
-		} 
-	} elsif ($self->{state} eq 'page') {
+	if ($self->{state} eq 'page') {
 		my $i = $self->{pagelth};
 		my $ref = $self->{pagedata};
 		my $tot = @$ref;
@@ -148,6 +122,25 @@ sub normal
 		} else {
 			$self->state('prompt');
 		}
+	} else {
+		@ans = run_cmd($self, $cmdline) if length $cmdline;
+       
+		if ($self->{pagelth} && @ans > $self->{pagelth}) {
+			my $i;
+			for ($i = $self->{pagelth}; $i-- > 0; ) {
+				my $line = shift @ans;
+				$line =~ s/\s+$//o;            # why am having to do this? 
+				$self->send($line);
+			}
+			$self->{pagedata} =  \@ans;
+			$self->state('page');
+			$self->send($self->msg('page', scalar @ans));
+		} else {
+			for (@ans) {
+				s/\s+$//o;                     # why ?????????
+				$self->send($_);
+			}
+		} 
 	} 
 	
 	# send a prompt only if we are in a prompt state
@@ -167,36 +160,45 @@ sub run_cmd
 	my $cmdline = shift;
 	my @ans;
 	
-	
-    # strip out //
-    $cmdline =~ s|//|/|og;
-	
-    # split the command line up into parts, the first part is the command
-    my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
-	
-    if ($cmd) {
-		
-		my ($path, $fcmd);
-		
-		# alias it if possible
-		my $acmd = CmdAlias::get_cmd($cmd);
-		if ($acmd) {
-			($cmd, $args) = "$acmd $args" =~ /^([\w\/]+)\s*(.*)/o;
+	if ($self->{func}) {
+		my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
+		dbg('eval', "stored func cmd = $c\n");
+		eval  $c;
+		if ($@) {
+			return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
 		}
+	} else {
 		
-		# first expand out the entry to a command
-		($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-		($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+		# strip out //
+		$cmdline =~ s|//|/|og;
 		
-		my $package = find_cmd_name($path, $fcmd);
-		@ans = (0) if !$package ;
+		# split the command line up into parts, the first part is the command
+		my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
 		
-		if ($package) {
-			my $c = qq{ \@ans = $package(\$self, \$args) };
-			dbg('eval', "cluster cmd = $c\n");
-			eval  $c;
-			if ($@) {
-				@ans = (0, "Syserr: Eval err cached $package\n$@");
+		if ($cmd) {
+			
+			my ($path, $fcmd);
+			
+			# alias it if possible
+			my $acmd = CmdAlias::get_cmd($cmd);
+			if ($acmd) {
+				($cmd, $args) = "$acmd $args" =~ /^([\w\/]+)\s*(.*)/o;
+			}
+			
+			# first expand out the entry to a command
+			($path, $fcmd) = search($main::localcmd, $cmd, "pl");
+			($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+			
+			my $package = find_cmd_name($path, $fcmd);
+			@ans = (0) if !$package ;
+			
+			if ($package) {
+				my $c = qq{ \@ans = $package(\$self, \$args) };
+				dbg('eval', "cluster cmd = $c\n");
+				eval  $c;
+				if ($@) {
+					@ans = (0, "Syserr: Eval err cached $package\n$@");
+				}
 			}
 		}
 	}
