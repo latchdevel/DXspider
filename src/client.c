@@ -621,6 +621,7 @@ void process_stdin()
 			send_msg(node, 'A', connsort, strlen(connsort));
 			
 			chgstate(CONNECTED);
+			send_file("connected");
 		}
 
 		cmsg_callback(mp, 0);
@@ -888,7 +889,6 @@ main(int argc, char *argv[])
 		send_msg(node, 'A', connsort, strlen(connsort));
 	
 		chgstate(CONNECTED);
-
 		send_file("connected");
 	}
 	
