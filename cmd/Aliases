@@ -78,6 +78,8 @@ package CmdAlias;
 	  '^ll$', 'directory', 'directory',
 	  '^ll/(\d+)', 'directory $1', 'directory',
 	  '^lm$', 'directory own', 'directory',
+      '^l>$', 'directory to', 'directory',
+      '^l<$', 'directory from', 'directory',
 	],
 	'm' => [
 	],
