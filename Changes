@@ -1,3 +1,6 @@
+06Nov01=======================================================================
+1. fix read so that sysop reading doesn't increment the read counter for 
+private mail not addressed to them.
 04Nov01=======================================================================
 1. Allow the user to equal the node in RSPF checks (this allows spots and 
 stuff with the origin and spotter to be the same (although it is STRONGLY 
