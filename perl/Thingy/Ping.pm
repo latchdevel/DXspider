@@ -96,6 +96,7 @@ sub handle
 			my $repthing = $thing->new_reply;
 			$repthing->{out} = 0;
 			$repthing->{id} = $thing->{id};
+			$repthing->{o} = $thing->{o} if $thing->{o};
 			$repthing->send($dxchan) if $repthing;
 		} else {
 
