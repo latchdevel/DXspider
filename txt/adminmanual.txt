@@ -3203,8 +3203,10 @@
   As a sysop you can kill any message on the system.
 
 
-  1111..3355..  kkiillll ffuullll <<mmssggnnoo>> [[<<mmssggnnoo>>]]  DDeelleettee aa mmeessssaaggee ffrroomm tthhee wwhhoollee
-  cclluusstteerr kkiillll ffuullll ((55))
+  1111..3355..  kkiillll ffuullll ((55))
+
+  kkiillll ffuullll <<mmssggnnoo>> [[<<mmssggnnoo>>]] Delete a message from the whole cluster
+
 
   Delete a message (usually a 'bulletin') from the whole cluster system.
 
@@ -3230,9 +3232,10 @@
   Reload the /spider/cmd/Aliases file after you have editted it. You
   will need to do this if you change this file whilst the cluster is
   running in order for the changes to take effect.
+  1111..3388..  llooaadd//bbaaddddxx ((99))
 
+  llooaadd//bbaaddddxx Reload the bad DX table
 
-  1111..3388..  llooaadd//bbaaddddxx  RReellooaadd tthhee bbaadd DDXX ttaabbllee llooaadd//bbaaddddxx ((99))
 
   Reload the /spider/data/baddx.pl file if you have changed it manually
   whilst the cluster is running. This table contains the DX Calls that,
@@ -3293,9 +3296,6 @@
 
   Reload the /spider/msg/forward.pl file if you have changed it manually
   whilst the cluster is running.
-
-
-
 
 
   1111..4444..  llooaadd//mmeessssaaggeess ((99))

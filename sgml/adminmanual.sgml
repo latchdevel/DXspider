@@ -2564,6 +2564,7 @@ As a sysop you can kill any message on the system.
 
 <sect1>kill full (5)
 
+<P>
 <tt>
 <bf>kill full &lt;msgno&gt; &lsqb;&lt;msgno&gt;&rsqb;</bf> Delete a message from the 
 whole cluster
@@ -2601,6 +2602,8 @@ changes to take effect.
 
 
 <sect1>load/baddx (9)
+
+<P>
 <tt>
 <bf>load/baddx</bf> Reload the bad DX table
 </tt>
