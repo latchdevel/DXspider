@@ -1726,6 +1726,8 @@ sub disconnect
 	my $pc39flag = shift;
 	my $call = $self->call;
 
+	return if $self->{disconnecting}++;
+	
 	unless ($pc39flag && $pc39flag == 1) {
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}

@@ -12,6 +12,7 @@ error messages) and fix set/iso on PC18 input.
 7. Improve stat/route_node and stat/route_user for diagnostics.
 8. strip top bit of comments in ann/spots.
 9. fix the announce filtering problem.
+10. Fix the double announcement of node disconnections?
 01Sep01=======================================================================
 1. Change build number calc (hopefully for the last time)
 27Aug01=======================================================================
