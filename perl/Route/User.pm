@@ -66,7 +66,9 @@ sub get
 {
 	my $call = shift;
 	$call = shift if ref $call;
-	return $list{uc $call};
+	my $ref = $list{uc $call};
+	dbg('routerr', "Failed to get User $call" ) unless $ref;
+	return $ref;
 }
 
 sub addparent

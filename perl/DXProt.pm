@@ -1366,27 +1366,31 @@ sub send_local_config
 	my $self = shift;
 	my $n;
 	my @nodes;
-	my @localcalls;
-	my @remotecalls;
+	my @localnodes;
+	my @remotenodes;
 		
 	# send our nodes
 	if ($self->{isolate}) {
-		@localcalls = ( $main::mycall );
+		@localnodes = ( $main::routeroot );
 	} else {
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
-		my @dxchan = grep { $_->call ne $main::mycall && $_->call ne $self->{call} && !$_->{isolate} } DXChannel::get_all_nodes();
-		@localcalls = map { $_->{call} } @dxchan if @dxchan;
-		@remotecalls = map {my $r = Route::Node::get($_); $r ? $r->rnodes(@localcalls, $main::mycall, $self->{call}) : () } @localcalls if @localcalls;
-		unshift @localcalls, $main::mycall;
+		my @dxchan = grep { $_->call ne $main::mycall && $_->call ne $self->{call} } DXChannel::get_all_nodes();
+		@localnodes = map { Route::Node::get($_->{call}) } @dxchan if @dxchan;
+		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
+		my $ref = Route::Node::get($self->{call});
+		my @rnodes = $ref->nodes;
+		for my $n (@intcalls) {
+			push @remotenodes, Route::Node::get($n) if grep $n ne $_, @rnodes;
+		}
+		unshift @localnodes, $main::routeroot;
 	}
-	@nodes = map {my $r = Route::Node::get($_); $r ? $r : ()} (@localcalls, @remotecalls);
 	
-	send_route($self, \&pc19, scalar @nodes, @nodes);
+	send_route($self, \&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
 	
 	# get all the users connected on the above nodes and send them out
-	foreach $n (@nodes) {
+	foreach $n (@localnodes, @remotenodes) {
 		send_route($self, \&pc16, 1, $n, map {my $r = Route::User::get($_); $r ? ($r) : ()} $n->users);
 	}
 }

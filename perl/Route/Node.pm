@@ -219,7 +219,9 @@ sub get
 {
 	my $call = shift;
 	$call = shift if ref $call;
-	return $list{uc $call};
+	my $ref = $list{uc $call};
+	dbg('routerr', "Failed to get Node $call" ) unless $ref;
+	return $ref;
 }
 
 sub get_all
