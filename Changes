@@ -10,6 +10,7 @@ inserts the helpfiles automagically from Commands_en.hlp into the relevant
 manuals. (g0vgs)
 3. Commands_en.hlp adjusted slightly to ensure at least one space before
 examples for the purposes of the above script. (g0vgs)
+4. Amend index.html to the right document names. (g0vgs)
 09Feb03=======================================================================
 1. Correct some typos in the manuals and update perl modules etc.  Also
 amend some help files to show correct syntax, around the 'clear' commands
