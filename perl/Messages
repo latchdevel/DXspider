@@ -18,6 +18,7 @@ package DXM;
 				bbs => 'Your BBS Address is now \"$_[0]\"',
 				beepoff => 'Beeps are now off',
 				beepon => 'Beeps are now on',
+				call1 => 'Callsign lookup via Pineknot:',
 				conother => 'Sorry $_[0] you are connected on another port',
 				concluster => 'Sorry $_[0] you are already connected elsewhere on the cluster',
 				conscript => 'no connect script called \"$_[0]\" found in $main::root/connect',
@@ -58,6 +59,7 @@ package DXM;
 				e15 => 'invalid qualifier \"$_[0]\"',
 				e16 => 'File \"$_[0]\" exists',
 				e17 => 'Please don\'t use the words: @_ on here', 
+				e18 => 'Cannot connect to $_[0] ($!)',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',

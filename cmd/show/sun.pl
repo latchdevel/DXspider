@@ -3,7 +3,7 @@
 # show sunrise and sunset times for each callsign or prefix entered
 #
 # 1999/11/9 Steve Franke K9AN
-#
+# 2000/10/27 fixed bug involving degree to radian conversion.
 
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;
@@ -21,7 +21,7 @@ if (@list) {
 	foreach $l (@list) {
 		my $user = DXUser->get_current(uc $l);
 		if ($user && $user->lat && $user->long) {
-			push @in, [$user->qth, $user->lat * $d2r, $user->long * -$d2r, uc $l ];
+			push @in, [$user->qth, $user->lat, -$user->long, uc $l ];
 		} else {
 			# prefixes --->
 			my @ans = Prefix::extract($l);
