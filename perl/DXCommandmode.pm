@@ -559,6 +559,9 @@ sub disconnect
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
 
+	# remove any outstanding pings I have sent
+	Thingy::Ping::forget($call);
+	
 	Log('DXCommand', "$call disconnected");
 
 	$self->SUPER::disconnect;

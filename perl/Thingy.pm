@@ -132,10 +132,12 @@ sub queue
 sub process
 {
 	my $thing;
+
 	if (@_ == 2) {
 		$thing = shift;
 		$thing->queue(shift);
 	}
+
 	while (@queue) {
 		$thing = shift @queue;
 		my $dxchan = DXChannel::get($thing->{dxchan});
@@ -205,5 +207,26 @@ sub add_auth
 	$thing->{auth} = $auth->challenge($main::me->user->passphrase);
 }
 
+#
+# create a generalised reply to a passed thing, if it isn't replyable 
+# to then undef is returned
+#  
+sub new_reply
+{
+	my $thing = shift;
+	my $out;
+	
+	if ($thing->{group} eq $main::mycall) {
+		$out = $thing->new;
+		$out->{touser} = $thing->{user} if $thing->{user};
+	} elsif (DXChannel::get($thing->{group})) {
+		$out = $thing->new(user => $thing->{group});
+		$out->{touser} = $thing->{user} if $thing->{user};
+	} elsif ($thing->{touser} && DXChannel->{$thing->{touser}}) {
+		$out = $thing->new(user => $thing->{touser});
+		$out->{group} = $thing->{group};
+	}
+	return $out;
+}
 1;
 

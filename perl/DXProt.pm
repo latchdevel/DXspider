@@ -1540,70 +1540,16 @@ sub handle_51
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $to = $_[1];
-	my $from = $_[2];
-	my $flag = $_[3];
 
-			
-	# is it for us?
-	if ($to eq $main::mycall) {
-		if ($flag == 1) {
-			$self->send(pc51($from, $to, '0'));
-		} else {
-			# it's a reply, look in the ping list for this one
-			my $ref = $pings{$from};
-			if ($ref) {
-				my $tochan =  DXChannel::get($from);
-				while (@$ref) {
-					my $r = shift @$ref;
-					my $dxchan = DXChannel::get($r->{call});
-					next unless $dxchan;
-					my $t = tv_interval($r->{t}, [ gettimeofday ]);
-					if ($dxchan->is_user) {
-						my $s = sprintf "%.2f", $t; 
-						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-						$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
-					} elsif ($dxchan->is_node) {
-						if ($tochan) {
-							my $nopings = $tochan->user->nopings || $obscount;
-							push @{$tochan->{pingtime}}, $t;
-							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-							
-							# cope with a missed ping, this means you must set the pingint large enough
-							if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
-								$t -= $tochan->{pingint};
-							}
-							
-							# calc smoothed RTT a la TCP
-							if (@{$tochan->{pingtime}} == 1) {
-								$tochan->{pingave} = $t;
-							} else {
-								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
-							}
-							$tochan->{nopings} = $nopings; # pump up the timer
-							if (my $ivp = Investigate::get($from, $origin)) {
-								$ivp->handle_ping;
-							}
-						} elsif (my $rref = Route::Node::get($r->{call})) {
-							if (my $ivp = Investigate::get($from, $origin)) {
-								$ivp->handle_ping;
-							}
-						}
-					}
-				}
-			}
-		}
-	} else {
-
-		RouteDB::update($from, $origin);
-
-		if (eph_dup($line)) {
-			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
-			return;
-		}
-		# route down an appropriate thingy
-		$self->route($to, $line);
+	if (eph_dup($line)) {
+		dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
+		return;
 	}
+
+	my $thing = Thingy::Ping->new(origin=>$main::mycall);
+	$thing->from_DXProt(user=>$_[2], group=>$_[1], out=>$_[3], DXProt=>$line);
+	$thing->process($self);
+	
 }
 
 # dunno but route it
@@ -2159,22 +2105,9 @@ sub load_hops
 sub addping
 {
 	my ($from, $to, $via) = @_;
-	my $ref = $pings{$to} || [];
-	my $r = {};
-	$r->{call} = $from;
-	$r->{t} = [ gettimeofday ];
-	if ($via && (my $dxchan = DXChannel::get($via))) {
-		$dxchan->send(pc51($to, $main::mycall, 1));
-	} else {
-		route(undef, $to, pc51($to, $main::mycall, 1));
-	}
-	push @$ref, $r;
-	$pings{$to} = $ref;
-	my $u = DXUser->get_current($to);
-	if ($u) {
-		$u->lastping(($via || $from), $main::systime);
-		$u->put;
-	}
+	my $thing = Thingy::Ping->new_ping($from eq $main::mycall ? () : (user=>$from), $via ? (touser=> $to, group => $via) : (group => $to));
+	$thing->remember;
+	$thing->broadcast;
 }
 
 sub process_rcmd
@@ -2328,7 +2261,7 @@ sub disconnect
 	}
 
 	# remove outstanding pings
-	delete $pings{$call};
+	Thingy::Ping::forget($call);
 	
 	# I was the last node visited
     $self->user->node($main::mycall);

@@ -247,7 +247,7 @@ sub disconnect
 	DXProt::route_pc21($self, $main::mycall, undef, @rout) if @rout;
 
 	# remove outstanding pings
-#	delete $pings{$call};
+	Thingy::Ping::forget($call);
 	
 	# I was the last node visited
     $self->user->node($main::mycall);
