@@ -292,6 +292,25 @@ running in order for the changes to take effect.
 Reload the /spider/data/bands.pl file if you have changed it manually whilst
 the cluster is running. 
 
+=== 9^LOAD/BADDX^Reload the bad DX table
+Reload the /spider/data/baddx.pl file if you have changed it manually whilst
+the cluster is running. This table contains the DX Calls that, if spotted, 
+will not be passed on. FR0G and TEST are classic examples.
+
+=== 9^LOAD/BADMSG^Reload the bad msg table
+Reload the /spider/msg/badmsg.pl file if you have changed it manually whilst
+the cluster is running. This table contains a number of perl regular 
+expressions which are searched for in the fields targetted of each message. 
+If any of them match then that message is immediately deleted on receipt. 
+
+=== 9^LOAD/BADWORDS^Reload the bad words table
+Reload the /spider/data/badwords file if you have changed it manually whilst
+the cluster is running. This file contains a list of words which, if found
+on certain text portions of PC protocol, will cause those protocol frames
+to be rejected. It will all put out a message if any of these words are
+used on the announce, dx and talk commands. The words can be one or 
+more on a line, lines starting with '#' are ignored.
+
 === 9^LOAD/CMD_CACHE^Reload the automatic command cache
 Normally, if you change a command file in the cmd or local_cmd tree it
 will automatially be picked up by the cluster program. Sometimes it
