@@ -65,7 +65,7 @@ sub start
 	$self->send_file($main::motd) if (-e $main::motd);
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv;
-	$self->{lang} = $user->lang;
+	$self->{lang} = $user->lang || 'en';
 	$self->{pagelth} = $user->pagelth || 20;
 	$self->{priv} = 0 if $line =~ /^(ax|te)/; # set the connection priv to 0 - can be upgraded later
 	$self->{consort} = $line;	# save the connection type

@@ -1,3 +1,5 @@
+27Jul00=======================================================================
+1. made sure that 'en' is the default language on new users.
 26Jul00=======================================================================
 1. added wantgrid (to control display of grid square info on DX Broadcasts)
 2. added lastoper for controlling periodic demands for user info from other

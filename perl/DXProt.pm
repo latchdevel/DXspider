@@ -97,7 +97,7 @@ sub start
 	$self->{consort} = $line;
 	$self->{outbound} = $sort eq 'O';
 	$self->{priv} = $user->priv;
-	$self->{lang} = $user->lang;
+	$self->{lang} = $user->lang || 'en';
 	$self->{isolate} = $user->{isolate};
 	$self->{consort} = $line;	# save the connection type
 	$self->{here} = 1;
