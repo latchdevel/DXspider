@@ -134,10 +134,10 @@ C4,P30,P36,H2,P3 Cyprus-5B            288 39 20 -2.0 35 0 0 N 33 0 0 E
 9M8 East-Malaysia-9M6                 313 54 28 -7.30 5 0 0 N 117 0 0 E *
 9M8 East-Malaysia-9M6                 313 54 28 -7.30 2 0 0 N 113 0 0 E 
 9N Nepal-9N                           314 42 22 -5.30 27 30 0 N 85 0 0 E @
-9Q Zaire-Kinshasa-9Q                  315 52 36 -1.0 4 18 0 S 15 18 0 E * @
-9Q Zaire-Kisangani-9Q                 315 52 36 -1.0 1 0 0 N 25 0 0 E *
-9Q Zaire-Lubumbashi-9Q                315 52 36 -1.0 12 0 0 S 27 30 0 E
-9O,9P,9R,9S,9T Zaire-9Q               315 52 36 -1.0 4 18 0 S 15 18 0 E 
+9Q Rep-of-Congo-Kinshasa-9Q                  315 52 36 -1.0 4 18 0 S 15 18 0 E * @
+9Q Rep-of-Congo-Kisangani-9Q                 315 52 36 -1.0 1 0 0 N 25 0 0 E *
+9Q Rep-of-Congo-Lubumbashi-9Q                315 52 36 -1.0 12 0 0 S 27 30 0 E
+9O,9P,9R,9S,9T Rep-of-Congo-9Q               315 52 36 -1.0 4 18 0 S 15 18 0 E 
 9U Burundi-9U                         316 52 36 -2.0 3 0 0 S 29 0 0 E @
 9V Singapore-9V                       317 54 28 -7.30 1 18 0 N 103 38 0 E @
 S6 Singapore-9V                       317 54 28 -7.30 1 18 0 N 103 38 0 E
@@ -197,7 +197,7 @@ CE9 Antarctica_Dumonti-CE9            102 67 30 -9.0 66 40 0 S 140 0 0 E *
 CE9 Antarctica_Gen.Belgradoi-CE9      102 67 13  2.0 77 30 0 S 36 0 0 W *
 CE9 Antarctica_Showai-CE9             102 67 13  2.0 69 0 0 S 39 35 0 W 
 7S8,8J,AT0,CX0,DP0 Antarctica-CE9     102 67 12  8.0 80 0 0 S 120 0 0 W
-CE0A Easter-Island-CE0A                17 63 12  5.0 28 0 0 S 109 0 0 W @
+CE0Y Easter-Island-CE0Y                17 63 12  5.0 28 0 0 S 109 0 0 W @
 CE0X San-Felix-CE0X                    18 14 12  4.0 26 0 0 S 80 0 0 W @
 CE0Z Juan-Fernandez-CE0Z               19 14 12  4.0 33 36 0 S 78 48 0 W @
 CE0I Juan-Fernandez-CE0Z               19 14 12  4.0 33 36 0 S 78 48 0 W
@@ -256,6 +256,7 @@ HW,HX,HY,TH,TM,TO,TQ,TV,TW,TX France-F 42 27 14 -1.0 48 48 0 N 2 18 0 E
 FG Guadeloupe-FG                       43 11  8  4.0 17 0 0 N 62 0 0 W @
 FH Mayotte-FH                          44 53 39 -3.0 13 0 0 S 45 18 0 E @
 FK New-Caledonia-FK                    45 56 32 -11.0 22 0 0 S 167 0 0 E @
+FK/C Chesterfield-Is-FK/C         341 56 30 -11.0 19 31 0 S 158 11 0 E
 FM Martinique-FM                       46 11  8  4.0 15 0 0 N 61 0 0 W @
 FO Fr.-Polynesia-FO                    47 63 32 10.0 17 53 0 S 149 56 0 W * @
 FO Fr.-Pol.-Mururoa-FO                 47 63 32 10.0 21 0 0 S 140 0 0 W *
@@ -1575,10 +1576,10 @@ YO Romania-YO                   243 28 20 -2.0 44 24 0 N 26 6 0 E @
 YP,YQ,YR Romania-YO             243 28 20 -2.0 44 24 0 N 26 6 0 E
 YS El-Salvador-YS               244 11  7  7.0 14 0 0 N 89 0 0 W @
 HU El-Salvador-YS               244 11  7  7.0 14 0 0 N 89 0 0 W
-YU Rest-Yugoslavia-YU           245 28 15 -1.0 44 50 0 N 20 31 0 E @
-YT,YZ,4N,4O Yugoslavia-YU       245 28 15 -1.0 44 54 0 N 20 30 0 E
-T9 Bosnia-hercegovina-T9        336 28 15 -1.0 44 54 0 N 20 30 0 E @
-4N4 Bosnia-hercegovina-T9       336 28 15 -1.0 44 54 0 N 20 30 0 E
+YU Serbia-Montenegro-YU           245 28 15 -1.0 44 50 0 N 20 31 0 E @
+YT,YZ,4N,4O Serbia-Montenegro-YU       245 28 15 -1.0 44 54 0 N 20 30 0 E
+T9 Bosnia-Hercegovina-T9        336 28 15 -1.0 44 54 0 N 20 30 0 E @
+4N4 Bosnia-Hercegovina-T9       336 28 15 -1.0 44 54 0 N 20 30 0 E
 Z3 Macedonia-Z3                 245 28 15 -1.0 44 54 0 N 20 30 0 E @
 YU5 Macedonia-Z3                245 28 15 -1.0 44 54 0 N 20 30 0 E
 9A Croatia-9A                   334 28 15 -1.0 44 54 0 N 20 30 0 E @
@@ -1631,8 +1632,7 @@ ZS6 So-Africa-ZS                265 57 38 -2.0 26 12 0 S 28 6 0 E
 ZS2 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E
 ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
-4W East-Timor-4W				340 54 28 -8.0 8 73 0 S 126 30 0 E  
-TX0 Chesterfield-Is-TX0         341 56 30 -11.0 19 31 0 S 158 11 0 E
+4W Timor-Leste-4W				340 54 28 -8.0 8 73 0 S 126 30 0 E  
 T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirate-Ctry-QQ 666 0 0 -0.0 0 0 0 S 0 0 0 E @
 
 
