@@ -183,7 +183,7 @@ sub process
 
 			my $t = cltounix($f[5], $f[6]);
 			my $stream = next_transno($f[2]);
-			$f[13] = $self->call unless $f[13] && $f[13] gt ' '
+			$f[13] = $self->call unless $f[13] && $f[13] gt ' ';
 			my $ref = DXMsg->alloc($stream, uc $f[3], $f[4], $t, $f[7], $f[8], $f[13], '0', $f[11]);
 			
 			# fill in various forwarding state variables
