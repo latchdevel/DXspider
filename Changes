@@ -1,3 +1,7 @@
+23Dec01=======================================================================
+1. allow sh/dx on 1000/4000 (or 1000-4000).
+2. merge sh/dx and sh/dxcc commands (Alias sh/dxcc to sh/dx dxcc). You can
+now do things like 'sh/dxcc oq2 by w dxcc'. 
 20Dec01=======================================================================
 1. Fix 'not' in filtering
 2. alter default max spots to 100 and the no of WWV to 5

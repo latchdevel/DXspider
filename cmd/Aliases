@@ -117,6 +117,7 @@ package CmdAlias;
 	  '^sho?w?/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sho?w?/c$', 'show/configuration', 'show/configuration',
 	  '^sho?w?/com', 'dbavail', 'dbavail',
+	  '^sho?w?/dxcc', 'show/dx dxcc', 'show/dx',
 	  '^sho?w?/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
 	  '^sho?w?/dx/(\d+)', 'show/dx $1', 'show/dx',
 	  '^sho?w?/dx/d(\d+)', 'show/dx from $1', 'show/dx',

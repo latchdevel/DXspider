@@ -19,33 +19,45 @@ my $spotter;
 my $info;
 my $expr;
 my $hint;
+my $dxcc;
+my $fromdxcc;
 my ($doqsl, $doiota, $doqra);
 
 while ($f = shift @list) {		# next field
 	#  print "f: $f list: ", join(',', @list), "\n";
 	if (!$from && !$to) {
-		($from, $to) = $f =~ /^(\d+)-(\d+)$/o; # is it a from -> to count?
+		($from, $to) = $f =~ m|^(\d+)[-/](\d+)$|; # is it a from -> to count?
 		next if $from && $to > $from;
 	}
 	if (!$to) {
 		($to) = $f =~ /^(\d+)$/o if !$to; # is it a to count?
 		next if $to;
 	}
+	if (lc $f eq 'dxcc') {
+		$dxcc = 1;
+		next;
+	}
 	if (lc $f eq 'on' && $list[0]) { # is it freq range?
 		#    print "yup freq\n";
-		my @r = split '/', lc $list[0];
-			# print "r0: $r[0] r1: $r[1]\n";
-		my @fr = Bands::get_freq($r[0], $r[1]);
-		if (@fr) {			# yup, get rid of extranous param
-			#	  print "freq: ", join(',', @fr), "\n";
+		if ($list[0] =~ m|^(\d+)(?:\.\d+)?[-/](\d+)(?:\.\d+)?$|) {
+			push @freq, $1, $2;
 			shift @list;
-			push @freq, @fr;    # add these to the list
 			next;
+		} else {
+			my @r = split '/', lc $list[0];
+			# print "r0: $r[0] r1: $r[1]\n";
+			my @fr = Bands::get_freq($r[0], $r[1]);
+			if (@fr) {			# yup, get rid of extranous param
+				#	  print "freq: ", join(',', @fr), "\n";
+				push @freq, @fr;    # add these to the list
+				shift @list;
+				next;
+			}
 		}
 	}
 	if (lc $f eq 'day' && $list[0]) {
 		#   print "got day\n";
-		($fromday, $today) = split '-', shift(@list);
+		($fromday, $today) = split m|[-/]|, shift(@list);
 		next;
 	}
 	if (lc $f eq 'info' && $list[0]) {
@@ -56,6 +68,10 @@ while ($f = shift @list) {		# next field
 	if ((lc $f eq 'spotter' || lc $f eq 'by') && $list[0]) {
 		#    print "got spotter\n";
 		$spotter = uc shift @list;
+		if ($list[0] && lc $list[0] eq 'dxcc') {
+			$fromdxcc = 1;
+			shift @list;
+		}
 		next;
 	}
 	if (lc $f eq 'qsl') {
@@ -86,11 +102,42 @@ while ($f = shift @list) {		# next field
 
 # first deal with the prefix
 if ($pre) {
-	$pre .= '*' unless $pre =~ /[\*\?\[]/o;
-	$pre = shellregex($pre);
-	$expr = "\$f1 =~ m{$pre}";
-	$pre =~ s/[\^\$]//g;
-	$hint = "m{\U$pre}";
+	my @ans;
+	
+	if ($dxcc) {
+		@ans = Prefix::extract($pre);	# is it a callsign/prefix?
+		
+		if (@ans) {
+
+			# first deal with the prefix
+			my $pre = shift @ans;
+			my $a;
+			my $str = "Prefix: $pre";
+			my $l = length $str;
+			my @expr;
+			my @hint;
+			
+			# build up a search string for this dxcc country/countries
+			foreach $a (@ans) {
+				my $n = $a->dxcc();
+			    push @expr, "\$f5 == $n";
+				push @hint, "m{$n}";
+				my $name = $a->name();
+				$str .= " Dxcc: $n ($name)";
+				push @out, $str;
+				$str = ' ' x $l;
+			}
+			$expr = @expr > 1 ? '(' . join(' || ', @expr) . ')' : $expr[0];
+			$hint = @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+		}
+	} 
+	unless (@ans) {
+		$pre .= '*' unless $pre =~ /[\*\?\[]/o;
+		$pre = shellregex($pre);
+		$expr = "\$f1 =~ m{$pre}";
+		$pre =~ s/[\^\$]//g;
+		$hint = "m{\U$pre}";
+	}
 }
   
 # now deal with any frequencies specified
@@ -120,13 +167,45 @@ if ($info) {
 
 # any spotter
 if ($spotter) {
-	$expr .= " && " if $expr;
-	$spotter .= '*' unless $spotter =~ /[\*\?\[]/o;
-	$spotter = shellregex($spotter);
-	$expr .= "\$f4 =~ m{\U$spotter}";
-	$hint .= " && " if $hint;
-	$spotter =~ s/[\^\$]//g;
-	$hint .= "m{\U$spotter}";
+	
+	if ($fromdxcc) {
+		@ans = Prefix::extract($spotter);	# is it a callsign/prefix?
+		
+		if (@ans) {
+
+			# first deal with the prefix
+			my $pre = shift @ans;
+			my $a;
+			$expr .= ' && ' if $expr;
+			$hint .= ' && ' if $hint;
+			my $str = "Spotter: $pre";
+			my $l = length $str;
+			my @expr;
+			my @hint;
+			
+			# build up a search string for this dxcc country/countries
+			foreach $a (@ans) {
+				my $n = $a->dxcc();
+			    push @expr, "\$f6 == $n";
+				push @hint, "m{$n}";
+				my $name = $a->name();
+				$str .= " Dxcc: $n ($name)";
+				push @out, $str;
+				$str = ' ' x $l;
+			}
+			$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : $expr[0];
+			$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+		}
+	} 
+	unless (@ans) {
+		$expr .= " && " if $expr;
+		$spotter .= '*' unless $spotter =~ /[\*\?\[]/o;
+		$spotter = shellregex($spotter);
+		$expr .= "\$f4 =~ m{\U$spotter}";
+		$hint .= " && " if $hint;
+		$spotter =~ s/[\^\$]//g;
+		$hint .= "m{\U$spotter}";
+	}
 }
 
 # qsl requests

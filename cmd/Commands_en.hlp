@@ -1522,9 +1522,12 @@ any order to the basic SHOW/DX command, they are:-
    
 on <band>       - eg 160m 20m 2m 23cm 6mm
 on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+on <from>/<to>  - eg 1000/4000 14000-30000  (in Khz)
+   <from>-<to>
    
 <number>        - the number of spots you want
 <from>-<to>     - <from> spot no <to> spot no in the selected list
+<from>/<to>
    
 <prefix>        - for a spotted callsign beginning with <prefix>
 *<suffix>       - for a spotted callsign ending in <suffix>
@@ -1532,7 +1535,8 @@ on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
    
 day <number>    - starting <number> days ago
 day <from>-<to> - <from> days <to> days ago
-   
+    <from>/<to>   
+
 info <text>     - any spots containing <text> in the info or remarks
    
 by <call>       - any spots spotted by <call> (spotter <call> is the 
@@ -1548,6 +1552,13 @@ iota [<iota>]   - If the iota island number is missing it will look for
 
 qra [<locator>] - this will look for the specific locator if you specify
                   one or else anything that looks like a locator.
+
+dxcc            - treat the prefix as a 'country' and look for spots
+                  from that country regardless of actual prefix.
+                  eg dxcc oq2 
+                  
+                  You can also use this with the 'by' keyword so 
+                  eg by W dxcc  
    
 e.g. 
    
@@ -1558,17 +1569,26 @@ e.g.
    SH/DX iota 
    SH/DX iota eu-064
    SH/DX qra jn86
+   SH/DX dxcc oq2
+   SH/DX dxcc oq2 by w dxcc
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 
 callsign if desired), looks up which internal country number it is
 and then displays all the spots as per SH/DX for that country.
+
+This is now an alias for 'SHOW/DX DXCC' 
    
 The options for SHOW/DX also apply to this command.   
 e.g. 
    
    SH/DXCC G
-   SH/DXCC W on 20m info iota
+   SH/DXCC W on 20m iota
+
+This can be done with the SHOW/DX command like this:-
+
+   SH/DX dxcc g
+   SH/DX dxcc w on 20m iota
 
 === 0^SHOW/DXSTATS^Show the DX Statistics for last 31 days
 Show the total DX spots for the last 31 days
