@@ -31,7 +31,7 @@ use Carp;
 
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
-			%spotdup %wwvdup $last_hour %pings %rcmds
+			%spotdup %wwvdup $last_hour %pings %rcmds $pc11duptext
 			%nodehops @baddx $baddxfn $pc12_dup_age
 			%anndup $allowzero $pc12_dup_lth $decode_dk0wcy);
 
@@ -43,6 +43,8 @@ $pc11_dup_age = 3*3600;			# the maximum time to keep the spot dup list for
 $pc23_dup_age = 3*3600;			# the maximum time to keep the wwv dup list for
 $pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
 $pc12_dup_lth = 60;				# the length of ANN text to save for deduping 
+$pc11duptext = 27;				# maximum lth of the text field in PC11 to use for duduping
+
 %spotdup = ();				    # the pc11 and 26 dup hash 
 %wwvdup = ();				    # the pc23 and 27 dup hash
 %anndup = ();                               # the PC12 dup hash
@@ -79,7 +81,8 @@ sub init
 	# now prime the wwv duplicates file with just this month's data
 	my @wwv = Geomag::readfile(time);
 	for (@wwv) {
-		my $dupkey = "$_->[1].$_->[2]$_->[3]$_->[4]";
+		my $duptext = substr $_->[3], 0, $pc11duptext;
+		my $dupkey = "$_->[1].$_->[2]$duptext$_->[4]";
 		$wwvdup{$dupkey} = $_->[1];
 	}
 
@@ -238,7 +241,8 @@ sub normal
 			
 			# do some de-duping
 			my $freq = $field[1] - 0;
-			my $dupkey = "$freq$field[2]$d$text$spotter";
+			my $duptext = substr $text, 0, $pc11duptext;
+			my $dupkey = "$freq$field[2]$d$duptext$spotter";
 			if ($spotdup{$dupkey}) {
 				dbg('chan', "Duplicate Spot ignored\n");
 				return;

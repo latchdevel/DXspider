@@ -33,7 +33,7 @@ use Carp;
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
-		    $queueinterval $lastq $importfn);
+		    $queueinterval $lastq $importfn $minchunk $maxchunk);
 
 %work = ();						# outstanding jobs
 @msg = ();						# messages we have
@@ -49,6 +49,8 @@ $waittime = 30*60;              # time an aborted outgoing message waits before 
 $queueinterval = 1*60;          # run the queue every 1 minute
 $lastq = 0;
 
+$minchunk = 4800;               # minimum chunk size for a split message
+$maxchunk = 6000;               # maximum chunk size
 
 $badmsgfn = "$msgdir/badmsg.pl";    # list of TO address we wont store
 $forwardfn = "$msgdir/forward.pl";  # the forwarding table
@@ -552,7 +554,7 @@ sub read_msg_body
 		print "Error reading $fn $!\n";
 		return undef;
 	}
-	chomp (@out = <$file>);
+	@out = map {chomp; $_} <$file>;
 	close($file);
 	
 	shift @out if $out[0] =~ /^=== /;
@@ -614,7 +616,7 @@ sub queue_msg
 				my $hnode =  $uref->homenode if $uref;
 				$clref = DXCluster->get_exact($hnode) if $hnode;
 			}
-			if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
+			if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all()) {
 				next if $clref->call eq $main::mycall;  # i.e. it lives here
 				$noderef = $clref->{dxchan};
 				$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
@@ -1049,8 +1051,8 @@ sub import_msgs
 	# are there any to do in this directory?
 	return unless -d $importfn;
 	unless (opendir(DIR, $importfn)) {
-		dbg('msg', "can't open $importfn $!");
-		Log('msg', "can't open $importfn $!");
+		dbg('msg', "can\'t open $importfn $!");
+		Log('msg', "can\'t open $importfn $!");
 		return;
 	} 
 
@@ -1059,18 +1061,19 @@ sub import_msgs
 	my $name;
 	foreach $name (@names) {
 		next if $name =~ /^\./;
+		my $splitit = $name =~ /^split/;
 		my $fn = "$importfn/$name";
 		next unless -f $fn;
 		unless (open(MSG, $fn)) {
-			dbg('msg', "can't open import file $fn $!");
-			Log('msg', "can't open import file $fn $!");
+	 		dbg('msg', "can\'t open import file $fn $!");
+			Log('msg', "can\'t open import file $fn $!");
 			unlink($fn);
 			next;
 		}
 		my @msg = map { chomp; $_ } <MSG>;
 		close(MSG);
 		unlink($fn);
-		my @out = import_one($DXProt::me, \@msg);
+		my @out = import_one($DXProt::me, \@msg, $splitit);
 		Log('msg', @out);
 	}
 }
@@ -1081,6 +1084,7 @@ sub import_one
 {
 	my $dxchan = shift;
 	my $ref = shift;
+	my $splitit = shift;
 	my $private = '1';
 	my $rr = '0';
 	my $notincalls = 1;
@@ -1092,7 +1096,7 @@ sub import_one
 	# first line;
 	my $line = shift @$ref;
 	my @f = split /\s+/, $line;
-	unless ($f[0] =~ /^(:?S|SP|SB|SEND)$/ ) {
+ 	unless (@f && $f[0] =~ /^(:?S|SP|SB|SEND)$/ ) {
 		my $m = "invalid first line in import '$line'";
 		dbg('MSG', $m );
 		return (1, $m);
@@ -1140,52 +1144,81 @@ sub import_one
 					}
 				}
 			}
-
+			
 			if (grep $_ eq $f, @DXMsg::badmsg) {
 				push @out, $dxchan->msg('m3', $f);
 			} else {
-				push @to, $f;
+	 			push @to, $f;
 			}
 		}
 	}
-
+	
 	# subject is the next line
 	my $subject = shift @$ref;
 	
 	# strip off trailing lines 
-	pop @$ref while (@$ref && ($$ref[-1] eq '' || $$ref[-1] =~ /^\s+$/));
-
+	pop @$ref while (@$ref && $$ref[-1] =~ /^\s*$/);
+	
 	# strip off /EX or /ABORT
-	return ("aborted") if (@$ref && $$ref[-1] =~ m{^/ABORT$}i); 
+	return ("aborted") if @$ref && $$ref[-1] =~ m{^/ABORT$}i; 
 	pop @$ref if (@$ref && $$ref[-1] =~ m{^/EX$}i);									 
 
+	# sort out any splitting that needs to be done
+	my @chunk;
+	if ($splitit) {
+		my $lth = 0;
+		my $lines = [];
+		for (@$ref) {
+			if ($lth >= $maxchunk || ($lth > $minchunk && /^\s*$/)) {
+				push @chunk, $lines;
+				$lines = [];
+				$lth = 0;
+			} 
+			push @$lines, $_;
+			$lth += length; 
+		}
+		push @chunk, $lines if @$lines;
+	} else {
+		push @chunk, $ref;
+	}
+				  
     # write all the messages away
-	my $to;
-	foreach $to (@to) {
-		my $systime = $main::systime;
-		my $mycall = $main::mycall;
-		my $mref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
-							$to,
-							$from, 
-							$systime,
-							$private, 
-							$subject, 
-							$origin,
-							'0',
-							$rr);
-		$mref->swop_it($main::mycall);
-		$mref->store($ref);
-		$mref->add_dir();
-		push @out, $dxchan->msg('m11', $mref->{msgno}, $to);
-		#push @out, "msgno $ref->{msgno} sent to $to";
-		my $todxchan = DXChannel->get(uc $to);
-		if ($todxchan) {
-			if ($todxchan->is_user()) {
-				$todxchan->send($todxchan->msg('m9'));
+	my $i;
+	for ( $i = 0;  $i < @chunk; $i++) {
+		my $chunk = $chunk[$i];
+		my $ch_subject;
+		if (@chunk > 1) {
+			my $num = " [" . ($i+1) . "/" . scalar @chunk . "]";
+			$ch_subject = substr($subject, 0, 27 - length $num) .  $num;
+		} else {
+			$ch_subject = $subject;
+		}
+		my $to;
+		foreach $to (@to) {
+			my $systime = $main::systime;
+			my $mycall = $main::mycall;
+			my $mref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
+									$to,
+									$from, 
+									$systime,
+									$private, 
+									$ch_subject, 
+									$origin,
+									'0',
+									$rr);
+			$mref->swop_it($main::mycall);
+			$mref->store($chunk);
+			$mref->add_dir();
+			push @out, $dxchan->msg('m11', $mref->{msgno}, $to);
+			#push @out, "msgno $ref->{msgno} sent to $to";
+			my $todxchan = DXChannel->get(uc $to);
+			if ($todxchan) {
+				if ($todxchan->is_user()) {
+					$todxchan->send($todxchan->msg('m9'));
+				}
 			}
 		}
 	}
-
 	return @out;
 }
 

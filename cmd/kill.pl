@@ -40,7 +40,7 @@ while (@f) {
 		my $from = $1;
 		my $to = $2;
 		@refs = grep { !($self->priv < 5 && $_->to ne $call && $_->from ne $call) } DXMsg::get_all() unless @refs;
-		@refs = grep { $_->msgno >= $from && $_->msgno < $to } @refs;
+		@refs = grep { $_->msgno >= $from && $_->msgno <= $to } @refs;
 	} elsif ($f =~ /^fr/io) {
 		$f = shift @f;
 		if ($f) {
