@@ -68,7 +68,12 @@ if ($lp) {
 my ($hr1, $day, $month) = (gmtime($main::systime))[2,3,4];
 $month++;
 my $flux = Geomag::sfi;
-my $ssn = Minimuf::spots($flux);
+my $ssn;
+if ($main::systime - $WCY::date < 86400) {
+	$ssn = $WCY::r
+} else {
+	$ssn = Minimuf::spots($flux);
+}
 
 my $theta;						# path angle (rad) 
 $theta=$lon1-$lon2;
