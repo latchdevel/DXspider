@@ -1092,7 +1092,7 @@ sub do_send_stuff
 				$loc->{reject}++;
 			}
 
-			if (@{$loc->{lines}}) {
+			if ($loc->{lines} && @{$loc->{lines}}) {
 				push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
 			} else {
 				# temporarily store any R: lines so that we end up with 
