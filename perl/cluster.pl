@@ -38,7 +38,7 @@ BEGIN {
 	close CLLOCK;
 
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
-
+	$systime = time;
 }
 
 use Msg;
