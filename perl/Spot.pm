@@ -384,7 +384,7 @@ sub genstats($)
 		for ($i = 0; $i < @freq+2; $i++) {
 			$tot[$i] ||= 0;
 		}
-		$out->write(join('^', 'TOTALS', @tot) . "\n");
+		$statp->write($date, join('^', 'TOTALS', @tot));
 
 		for (sort {$list{$b}->[0] <=> $list{$a}->[0]} keys %list) {
 			my $ref = $list{$_};
@@ -392,9 +392,9 @@ sub genstats($)
 			for ($i = 0; $i < @freq+2; ++$i) {
 				$ref->[$i] ||= 0;
 			}
-			$out->write(join('^', $call, @$ref) . "\n");
+			$statp->write($date, join('^', $call, @$ref));
 		}
-		$out->close;
+		$statp->close;
 	}
 }
 
