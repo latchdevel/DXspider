@@ -40,7 +40,7 @@ safe so you can revert to the old version if necessary.
 <item>restart the cluster and pray :-)
 </itemize>
 
-The Listeners file looks something like this ...
+The Listeners.pm file looks something like this ...
 
 <tscreen><verb>
 #

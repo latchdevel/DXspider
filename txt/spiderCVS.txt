@@ -38,7 +38,7 @@
 
   +o  restart the cluster and pray :-)
 
-  The Listeners file looks something like this ...
+  The Listeners.pm file looks something like this ...
 
 
 
