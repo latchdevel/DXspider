@@ -101,7 +101,7 @@ if (@freq) {
 	for ($i = 0; $i < @freq; $i += 2) {
 		$expr .= "(\$f0 >= $freq[$i] && \$f0 <= $freq[$i+1]) ||";
 		my $r = Spot::ftor($freq[$i], $freq[$i+1]);
-		$hint .= "m{$r} ||" if $r;
+		$hint .= "m{$r\\.} ||" if $r;
 	}
 	chop $expr;	chop $expr;
 	chop $hint;	chop $hint;

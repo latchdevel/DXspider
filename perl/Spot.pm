@@ -230,6 +230,7 @@ sub ftor
 	my ($a, $b) = @_;
 	return undef unless $a < $b;
 	$b--;
+	my $d = $b - $a;
 	my @a = split //, $a;
 	my @b = split //, $b;
 	my $out;
@@ -239,7 +240,9 @@ sub ftor
 	while (@b) {
 		my $aa = shift @a;
 		my $bb = shift @b;
-		if ($aa eq $bb) {
+		if (@b < (length $d) - 1) {
+			$out .= '\\d';
+		} elsif ($aa eq $bb) {
 			$out .= $aa;
 		} elsif ($aa < $bb) {
 			$out .= "[$aa-$bb]";
