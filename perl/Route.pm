@@ -243,7 +243,7 @@ sub alldxchan
 	my @dxchan = @_;
 	foreach my $p (@{$self->{parent}}) {
 		my $ref = $self->get($p);
-		push @dxchan, $ref->alldxchan(@dxchan);
+		push @dxchan, $ref->alldxchan(@dxchan) if $ref;
 	}
 	return @dxchan;
 }
