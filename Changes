@@ -1,6 +1,7 @@
 06Jun01=======================================================================
 1. add stat/route_node and stat/route_user commands
 2. add sh/userconfig command (to show backward links to nodes)
+3. add sh/nodeconfig command
 05Jun01=======================================================================
 1. add set/bbs command
 2. more work on Routing code.
