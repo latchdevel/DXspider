@@ -1243,7 +1243,7 @@ sub send_prot_line
 		$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
 	} else {
 		$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
-		next unless $routeit;
+		return unless $routeit;
 	}
 	if ($filter) {
 		$self->send($routeit) if $routeit;
