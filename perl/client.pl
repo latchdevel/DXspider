@@ -108,7 +108,7 @@ sub rec_socket
 			my $snl = $mynl;
 			my $newsavenl = "";
 			$snl = "" if $mode == 0;
-			$snl = "\r\n" if $mode == 2;
+			$snl = "\n" if $mode == 2;
 			if ($mode == 2 && $line =~ />$/) {
 				$newsavenl = $snl;
 				$snl = ' ';

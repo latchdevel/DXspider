@@ -1,3 +1,5 @@
+18Jun00=======================================================================
+1. fixed line ending ambiguities (I think) for telnet connections.
 17Jun00=======================================================================
 1. I believe I have fixed all the login/logout 'broken pipe' errors
 2. Added G0RDI's 'links' command.

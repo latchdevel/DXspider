@@ -838,6 +838,7 @@ lgotcall:
 	} else {
 		struct termios t = in->t;
 		t.c_lflag &= ~(ECHO|ECHONL|ICANON);
+		t.c_oflag = 0;
 		if (tcsetattr(0, TCSANOW, &t) < 0) 
 			die("tcsetattr (%d)", errno);
 		in->echo = echo;
