@@ -51,7 +51,8 @@ for (;;) {
 		my @now = Julian::unixtoj(time()); 
 		if ($today[1] != $now[1]) {
 			$fp->close;
-			for (my $i = 0; $i < 20; $i++) {
+			my $i;
+			for ($i = 0; $i < 20; $i++) {
 				last if $fh = $fp->open(@now);
 				sleep 5;
 			}
