@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Programming New Commands</title>
+  </head>
+	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+	<meta name="Author" content="Dirk Koopman G1TLH">
+  </head>
+
+  <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF">
+	<FONT COLOR="#606060"> 
+	  <hr>
+	  <h2>Programming New Commands</h2>
+	  <hr>
+	</font>
+	
+	
+	<address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+	<p>
+	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+	  <!-- hhmts start -->
+Last modified: Wed Dec 23 18:27:06 GMT 1998
+<!-- hhmts end -->
+	<h4>Introduction</h4>
+	
+	All the commands in the DXSpider system are 'soft', that is they are bits of
+	perl code that are put into specific places in the <tt>/spider</tt> directory tree. 
+	
+	<p>By putting them in a specific place and calling them &lt;command>.pl, they become
+	  commands - in real time. Such is the magic of 
+	  <a href="http://www.perl.com">perl</a>.
+
+	<h4>Directory Structure</h4>
+
+	The directory structure is very simple:-
+	<table border=2>
+	  <tr><td>/spider</td><td>the main directory</td></tr>
+	  <tr><td>/spider/data</td><td>where generated and/or reference data goes</td></tr>
+	  <tr><td>/spider/data/spots/&lt;year>/&lt;day>.dat</td><td>one day's worth of spots</td></tr>
+	  <tr><td>/spider/data/debug/&lt;year>/&lt;day>.dat</td><td>one day's worth of console debugging</td></tr>
+	  <tr><td>/spider/data/log/&lt;year>/&lt;month>.dat</td><td>one month's worth of Logging info including things like rcmd, announces, talks etc</td></tr>
+	  <tr><td>/spider/data/wwv/&lt;year>/&lt;month>.dat</td><td>one month's worth of WWV</td></tr>
+	  <tr><td>/spider/msg</td><td>the messages directory</td></tr>
+	  <tr><td>/spider/packclus/files</td><td>the files directory</td></tr>
+	  <tr><td>/spider/packclus/bulletin</td><td>the bulletins directory</td></tr>
+	  <tr><td>/spider/perl</td><td>where the issued program code lives</td></tr>
+	  <tr><td>/spider/local</td><td>where your experimental/site specific programs go</td></tr>
+	  <tr><td>/spider/cmd</td><td>where the issued command code lives</td></tr>
+	  <tr><td>/spider/local_cmd</td><td>where your experimental command code goes</td></tr>
+	</table>
+
+	<p>A command is put in full as a file under the 'cmd' directory tree, for example, 
+	  <tt>announce</tt> lives in <tt>/spider/cmd/announce.pl</tt> and <tt>show/dx</tt> lives
+	  in <tt>/spider/cmd/show/dx.pl</tt>. 
+
+	<p>In general terms I don't like the habit of the standard packet cluster software has
+	  of taking the DEC VMS command paradigm to the extreme that it has. So I have adopted
+	  the convention of separating commands from arguments. So <tt>sh/dx/10 20</tt> is input
+	  on the DXSpider system as <tt>sh/dx 10 on 20m</tt>. This is rather contentious.
+
+	<P>In order to maintain a larger level of compatibility, there is an <tt>Aliases</tt> which
+	  lives in <tt>/spider/cmd</tt> (or can be overidden by one in <tt>local_cmd</tt>). This file
+	  takes standard expressions, parses command lines and produces DXSpider compatible versions
+	  of the old Packet Cluster commands. Currently, however, it doesn't do a 100% job because
+	  the functionality of the new commands is different (and hopefully better).
+
+	<P>In addition, in the <tt>/spider/perl</tt> directory (overidden by ...) there is 
+	  the <tt>Messages</tt> file. This is the file where all the system messages will be stored
+	  (because of laziness on my part this isn't currently the case). You will see instances
+	  of its use like <tt>$self->msg(&lt;string>&nbsp;[,$arg..])</tt>. This call uses
+	  <tt>$self</tt> to determine what language you are in, to return you the correct message.
+	  The way arguments are passed to the routine, mean that you can reorder the arguments
+	  in your message to suit your language without changing the actual code.
+
+	  <p>When you roll your own commands, put
+	  your messages in your own copy of the <tt>Messages</tt> file and don't forget
+	  to send me the patches for that as well the command itself.
+                            
+	<p>When I issue a new version or patches for an existing version then only files in
+	  the <tt>/spider/cmd</tt> and <tt>/spider/perl</tt> directories will normally be altered.
+	  Occasionally, one or two of the reference files in <tt>/spider/data</tt> may be altered.
+	  The only files likely to be affected are <tt>bands.pl</tt> and <tt>prefix_data.pl</tt>.
+
+	<p>As it says in the next section, <b>PLEASE</b> experiment in the local directories! It will
+	  save a lot of pain when patching code. Having said that, if you have been playing, then 
+	  remember to remove or rename any files with new releases that claim to have incorporated 
+	  your modifications, otherwise <EM>it will continue to use the old ones in your local 
+		directories!</em>
+
+	<h4>Hints, Tips and Exhortations</h4>
+
+	<ol>
+
+		<p><li>Every command that can used on the command line lives in either
+		this directory ('cmd') or in a local version ('local_cmd'). You are
+		cajoled or ordered not to and generally discouraged from altering the
+		commands in the 'cmd' directory. You can put local copies in the
+		'local_cmd' directory and they will override the standard ones.
+
+		<p><li>If you want to play, do it in the 'local_cmd' directory. It's
+		very easy and reasonably safe. You can override a command whilst the
+		cluster is running.  Compilation errors will simply give you error
+		messages, it won't stop the cluster running - this only happens if you
+		mess with the internals to the extent that it gets confused...
+		
+		<p><li>A command is a piece of perl, it is simply a small snippet of
+		program that is dynamically loaded into the cluster on invocation from
+		the command line. The last modification time is used to determine
+		whether to reload it.
+		
+		<p><li>New (or altered) commands are available for test the moment you
+		save them.
+		
+		<p><li>A command is placed into the appropriate directory with a '.pl'
+		appended to the end. So the 'show/qra' command lives in
+		'cmd/show/qra.pl' (or a local version would be in
+		'local_cmd/show/qra.pl'.
+		
+		<p><li>For the security conscious, potentially dubious
+		characters command line args (i.e. not [A-Za-z0-9_/]) are
+		converted to their hex equivalents. This will almost certainly
+		mean that the user will get an error message (unless you have
+		your secret squirrel hat on and have deliberately put such
+		commands up [in 'local_cmd' of course]).
+
+		<p><li>The snippets of program you put here are wrapped in an eval { }
+		and are subroutines derived from the DXChannel class. They effectively
+		the following declaration :-
+		<p><pre>
+  sub Emb_<cmdname>($self, $args)
+  {
+     ...
+     your code here
+     ...
+  }
+		</pre>
+
+		<p><li>slash characters are replaced by '_' so the equivalent name for
+		'show/qth' is 'Emb_show_qth'.
+
+		<p><li>you would normally do a 'my ($self, $line) = @_;' as the first
+		thing. There are a complete set of accessors for DXUser, DXCommandmode,
+		DXChannel and most other classes and these are the recommended way of getting at
+		the contents of these classes.  A fairly standard start might be:-
+		<p><pre>
+  my ($self, $line) = @_;
+  my @args = split /\s+/, $line;
+  my $call = $self->call;
+  my $user = $self->user;
+  my @out;
+
+  # check privileges
+  return (1, $self->msg('e5')) if $self->priv < 5;
+
+  ....
+  ....
+  some perl code here
+  ....
+  ....
+  return (1, @out);
+		</pre>
+
+		<li>$line (in this example) is the rest of the line after the command (as a string).
+
+		<p><li>You are responsible for maintaining user security. If you have
+		a command that does something a normal system shouldn't be allowed to
+		do or see, there is $self->priv (using the above example) which gives
+		you the running privilege level of the channel. USE IT!
+
+		<p><li>The privilege levels used in the standard code are:-
+
+		<p>0 - is the normal user privilege.
+		<p>1 - is the remote user privilage (you need to be at least 1 to get
+		  any output from an <tt>rcmd</tt>).
+		<p>5 - is the normal external sysop privilege, give this to commands that
+		  you are prepared to let non-local sysops use.
+		<p>8 - a <em>very</em> trusted, probably internet rather than radio connected
+		  remote sysop.
+		<p>9 - the do anything console privilege. 
+		
+		<p>The sysop privilege is for things that you are prepared for remote
+		sysops and clusters to do or see.
+		
+		<p>A console privilege can only be executed locally (at least if you have
+		correctly installed the client program in inetd or ax25d).
+		
+		<p>The set/priv command can only be executed by a console privileged 
+		session.
+
+		<p><li>You must return a list with a 0 or 1 as the first element. 1
+		means success and 0 means fail. Each element of the list which follows
+		is assumed to be one line for output. Don't put \n characters at the
+		end of an element (the client will put the correct one in if required
+		[but see below]).
+		
+		<p><li><b>DO NOT</b>send output direct to the user unless you <em>really</em>
+		mean it (i.e. it is never appropriate for this command to be used remotely
+		as an <tt>rcmd</tt> or from some kind of batch or cron file.
+
+		<p>What you do instead is create a list using
+		<pre>
+my @out;
+        </pre> 
+		and then <tt>push</tt> stuff onto it. Each element on the list will
+		become a line of output. For exmaple:-
+		<pre>
+#
+# set a user's password
+#
+# Copyright (c) 1998 Iain Phillips G0RDI
+# 21-Dec-1998
+#
+# Syntax:	set/pass &lt;password> &lt;callsign>
+#
+  
+my ($self, $line) = @_;
+my @args = split /\s+/, $line;
+my $call;
+my $pass = shift @args;
+my @out;
+my $user;
+my $ref;
+  
+return (1, $self->msg('e5')) if $self->priv < 9;
+  
+foreach $call (@args) {
+    $call = uc $call;
+    if ($ref = DXUser->get_current($call)) {
+        $ref->passwd($pass);
+  	    $ref->put();
+  		push @out, $self->msg("password", $call);
+  	} else {
+  		push @out, $self->msg('e3', 'User record for', $call);
+  	}
+}
+return (1, @out);
+	    </pre>
+		a more complicated example:-
+		<pre>
+#
+# display the band data
+#
+# Copyright (c) 1998 - Dirk Koopman G1TLH
+#
+# $Id$
+#
+
+#$DB::single = 1;
+
+my ($self, $line) = @_;
+my @f = split /\s+/, $line;
+my @bands;
+my $band;
+my @out;
+my $i;
+
+if (!$line) {
+	@bands = sort { Bands::get($a)->band->[0] &lt;=> Bands::get($b)->band->[0] } Bands::get_keys();
+	push @out, "Bands Available:-";
+	foreach $band (@bands) {
+		my $ref = Bands::get($band)->band;
+		my $s = sprintf "%10s: ", $band;
+		for ($i = 0; $i &lt; $#{$ref}; $i += 2) {
+			my $from = $ref->[$i];
+			my $to = $ref->[$i+1];
+			$s .= ", " if $i;
+			$s .= "$from -> $to";
+		}
+		push @out, $s;
+	} 
+	push @out, "Regions Available:-";
+	@bands = Bands::get_region_keys();
+	foreach $band (@bands) {
+		my $ref = Bands::get_region($band);
+		my $s = sprintf("%10s: ", $band ) . join(' ', @{$ref}); 
+		push @out, $s;
+	}
+}
+
+return (1, @out)
+        </pre>
+		<p><li>As this is perl and it is very easy to alter stuff to get it
+		correct, I would like to see some intelligent argument processing,
+		e.g. if you can have one callsign, you can have several. Interpret
+		your arguments; so for example:-
+
+		<pre>
+  set/qra jo02lq       - sets your own locator to JO02LQ
+  set/qra g1tlh jo02lq - sets G1TLH's locator (if you are allowed)
+  or
+  show/qra in92jo      - displays the bearing and distance to 
+                         IN92JO using your lat/long or locator
+  show/qra jn56in in92jo  - bearing and distance between two
+                            locators
+        </pre>
+
+		<p><li>It is important that you remember when you have tie
+		hashes using MLDBM et al. If you do a
+		<tt>DXUser->get($call)</tt> you will get a different (older)
+		thing than the one in <tt>$self->user</tt>. This is almost
+		certainly NOT what you want if want to modify a user that is
+		currently connected. Either use <tt>$self->user</tt> or, if
+		you want another user, use <tt>DXUser->get_current($call)</tt>
+
+		<p><li>If you want to debug something, start the cluster.pl up thus:-
+		<pre>
+  perl -d cluster.pl
+  dbg> r
+		</pre>
+		Then you can go into debug mode at anytime by using the command :-
+		<pre> 
+  debug
+        </pre>
+  or you can put the line:-
+		<pre>
+  $DB::single = 1;
+		</pre>
+		in an appropriate place in a command. This will only have an effect
+		if you are running in perl debug mode.
+		
+		<p>If all else fails (actually it is very simple), just stick print
+		  commands in everywhere and the output will appear on the cluster.pl
+		  screen.
+
+		<p><li>Anything you output with a > as the last character is taken to
+		mean that this is a prompt and will not have a \r or \n appended to
+		it in the client for telnet sessions (only).
+
+		<p><li>help is kept in <tt>/spider/cmd/Command_<lang>.hlp</tt> files.
+		The format of the help files should be self explanatory, but they are
+		explained further in the files themselves.
+
+		<p><li>PLEASE add your new commands to the Commands_*.hlp file so that
+		people know about and how to use them!
+
+	</ol>
+
+<!-- Standard Footer!! -->
+	<p>&nbsp;</p>
+	<p>
+	  <FONT COLOR="#606060"><hr></font>
+	<font color="#FF0000" size=-2>
+	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
+	</font>
+	<font color="#000000" size=-2>$Id$</font>
+  </body>
+</html>
