@@ -4,10 +4,10 @@
 
 <!-- Title information -->
 
-<title>The DXSpider Administration Manual v1.50</title> 
+<title>The DXSpider Administration Manual v1.51</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
 Charlie Carroll, K1XX, (k1xx@ptcnh.net)</author>
-<date>April 2003 revision 0.7</date>
+<date>June 2004 revision 1</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -1667,7 +1667,7 @@ The next step will create a brand new 'spider' directory in your current
 directory.
 
 <verb>
-cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider co spider
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/dxspider co spider
 </verb>
 
 This command is all on one line.
