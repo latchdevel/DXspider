@@ -1,4 +1,4 @@
-  The DXSpider CVS Changes erratum
+  The DXSpider CVS Changes addendum
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
   Version 0.1 March 2001
 
