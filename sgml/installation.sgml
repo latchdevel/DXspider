@@ -7,7 +7,7 @@
 <title>The DXSpider Installation Manual v1.48</title> 
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
 Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.48, July 2001 revision 1.1</date>
+<date>Version 1.48, September 2001 revision 1.0</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -89,8 +89,8 @@ Log in as 'root', and make sure you're at '/root' before you continue. Here are 
 # make install
 # cd ..
 #
-# tar xvfz /usr/local/packages/Curses-1.05.tar.gz
-# cd Curses-1.05
+# tar xvfz /usr/local/packages/Curses-1.06.tar.gz
+# cd Curses-1.06
 # perl Makefile.PL
 # make test
 # make install

@@ -1,7 +1,7 @@
   The DXSpider Installation Manual v1.48
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (ianmaude@btinternet.com)
-  Version 1.48, July 2001 revision 1.1
+  Version 1.48, September 2001 revision 1.0
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -158,8 +158,8 @@
   # make install
   # cd ..
   #
-  # tar xvfz /usr/local/packages/Curses-1.05.tar.gz
-  # cd Curses-1.05
+  # tar xvfz /usr/local/packages/Curses-1.06.tar.gz
+  # cd Curses-1.06
   # perl Makefile.PL
   # make test
   # make install
