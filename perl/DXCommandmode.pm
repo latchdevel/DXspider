@@ -75,6 +75,10 @@ sub start
 	my $call = $self->{call};
 	my $name = $user->{name};
 	
+	# log it
+	my $host = $self->{conn}->{peerhost} || "unknown";
+	Log('DXCommand', "$call connected from $host");
+
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
 	$self->send_file($main::motd) if (-e $main::motd);
@@ -112,8 +116,6 @@ sub start
 		my $long = $user->long;
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
-
-	Log('DXCommand', "$call connected");
 
 	# send prompts and things
 	my $info = Route::cluster();

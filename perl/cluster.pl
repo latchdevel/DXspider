@@ -159,7 +159,8 @@ sub new_channel
 	
 	# is he locked out ?
 	if ($user->lockout) {
-		Log('DXCommand', "$call is locked out, disconnected");
+		my $host = $conn->{peerhost} || "unknown";
+		Log('DXCommand', "$call on $host is locked out, disconnected");
 		$conn->disconnect;
 		return;
 	}

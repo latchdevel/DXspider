@@ -216,6 +216,10 @@ sub start
 	my ($self, $line, $sort) = @_;
 	my $call = $self->{call};
 	my $user = $self->{user};
+
+	# log it
+	my $host = $self->{conn}->{peerhost} || "unknown";
+	Log('DXProt', "$call connected from $host");
 	
 	# remember type of connection
 	$self->{consort} = $line;
@@ -267,8 +271,6 @@ sub start
 
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
-
-	Log('DXProt', "$call connected");
 }
 
 #

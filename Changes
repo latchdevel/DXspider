@@ -1,3 +1,5 @@
+11Sep01=======================================================================
+1. added IP address logging of connections
 10Sep01=======================================================================
 1. clear/* node_default and user_default now work.
 2. in acc or rej/* you can now use (comma separated) prefixes as well as lists
