@@ -1,0 +1,9 @@
+=== 0^EN^ANNOUNCE^Send an announcement to the local cluster users
+   ANNOUNCE <text>
+   
+   <text> is the text of the announcement you wish to broadcast
+   
+=== 0^EN^ANNOUNCE FULL^Send an announcement to all cluster users
+   ANNOUNCE FULL <text>
+=== 5^EN^ANNOUNCE SYSOP^Send an announcement to sysops 
+   ANNOUNCE SYSOP <text>

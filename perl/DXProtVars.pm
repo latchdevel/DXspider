@@ -28,7 +28,7 @@ $def_hopcount = 15;
 
 # some variable hop counts based on message type
 %hopcount = (
-  11 => 1,
+  11 => 10,
   16 => 10,
   17 => 10,
   19 => 10,

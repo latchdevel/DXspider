@@ -53,6 +53,7 @@ sub start
   $self->msg('pr', $call);
   $self->state('prompt');                  # a bit of room for further expansion, passwords etc
   $self->{priv} = $user->priv;
+  $self->{lang} = $user->lang;
   $self->{priv} = 0 if $line =~ /^(ax|te)/;     # set the connection priv to 0 - can be upgraded later
   $self->{consort} = $line;                # save the connection type
 
@@ -217,7 +218,7 @@ sub search
   my ($apath, $acmd) = split ',', $cmd_cache{$short_cmd};
   if ($apath && $acmd) {
     dbg('command', "cached $short_cmd = ($apath, $acmd)\n");
-    return ($apath, $acmd) if $apath;
+    return ($apath, $acmd);
   }
   
   # if not guess
@@ -226,6 +227,7 @@ sub search
   my $curdir = $path;
   my $p;
   my $i;
+  my @lparts;
   
   for ($i = 0; $i < @parts; $i++) {
     my  $p = $parts[$i];
@@ -242,14 +244,16 @@ sub search
 		  $curdir .= "/$l";
 		  last;
 		}
-      } else {                       # we are dealing with commands
-		next if !$l =~ /\.$suffix$/;       # only look for .$suffix files
+      } else {                # we are dealing with commands
+	    @lparts = split /\./, $l;                  
+		next if $lparts[$#lparts] ne $suffix;       # only look for .$suffix files
 		if ($p eq substr($l, 0, length $p)) {
-		  $l =~ s/\.$suffix$//;      # remove the suffix
-		  chop $dirfn;               # remove trailing /
-		  $cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn/$l"));   # cache it
-          dbg('command', "got path: $path cmd: $dirfn/$l\n");
-		  return ($path, "$dirfn/$l"); 
+		  pop @lparts;        #  remove the suffix
+		  $l = join '.', @lparts;
+#		  chop $dirfn;               # remove trailing /
+		  $cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn$l"));   # cache it
+          dbg('command', "got path: $path cmd: $dirfn$l\n");
+		  return ($path, "$dirfn$l"); 
 		}
 	  }
 	}

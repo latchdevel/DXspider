@@ -38,7 +38,7 @@ if ($sort eq "FULL") {
 DXProt::broadcast_list("To $to de $from <$t>: $line", @locals);
 if ($to ne "LOCAL") {
   $line =~ s/\^//og;    # remove ^ characters!
-  my $pc = DXProt::pc12($self, $line, $tonode, $sysopflag, 0);
+  my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 0);
   DXProt::broadcast_ak1a($pc);
 }
 

@@ -24,7 +24,7 @@ if ($dxchan && $dxchan->is_user) {
   $dxchan->send("$to de $from $line");
 } else {
   $line =~ s/\^//og;            # remove any ^ characters
-  my $prot = DXProt::pc10($self, $to, $via, $line);
+  my $prot = DXProt::pc10($from, $to, $via, $line);
   DXProt::route($via?$via:$to, $prot);
 }
 

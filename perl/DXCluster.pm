@@ -216,10 +216,11 @@ sub del
 sub update_users
 {
   my $self = shift;
-  if (%{$self->{list}}) {
-    $self->{users} = scalar %{$self->{list}};
+  my $count = shift;
+  if ((keys %{$self->{list}})) {
+    $self->{users} = (keys %{$self->{list}});
   } else {
-    $self->{users} = shift;
+    $self->{users} = $count;
   }
 }
 

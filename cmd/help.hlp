@@ -1,0 +1,23 @@
+=== 0^EN^HELP^The HELP Command
+HELP is available for a number of commands. The syntax is:-
+
+  HELP <cmd>
+  
+Where <cmd> is the name of the command you want help on.
+
+Commands for which help is available:-
+
+=== 0^EN^ANNOUNCE^make an announcement to the cluster
+=== 0^EN^BYE^exit from the cluster
+=== 9^EN^CREATE^Create various things
+=== 9^EN^DELETE^Delete various things
+=== 9^EN^DISCONNECT^Disconnect a user or node from the cluster
+=== 0^EN^DX^send a DX spot to the cluster
+=== 0^EN^SET^set various parameters
+=== 0^EN^SHOW^show various parameters
+=== 5^EN^SHUTDOWN^shutdown this node completely
+=== 5^EN^STAT^show the status of various system related things
+=== 0^EN^TALK^talk to another user of the cluster
+=== 0^EN^UNSET^unset or reset various parameters
+=== 0^EN^WWV^send a WWV spot
+=== 0^EN^WX^send a weather announcement to the cluster

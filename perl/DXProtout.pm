@@ -22,13 +22,12 @@ use strict;
 # All the PCxx generation routines
 #
 
-# create a talk string (called $self->pc10(...)
+# create a talk string ($from, $to, $via, $text)
 sub pc10
 {
-  my ($self, $to, $via, $text) = @_;
+  my ($from, $to, $via, $text) = @_;
   my $user2 = $via ? $to : ' ';
   my $user1 = $via ? $via : $to;
-  my $from = $self->call();
   $text = unpad($text);
   $text = ' ' if !$text;
   return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  
@@ -47,13 +46,13 @@ sub pc11
 # create an announce message
 sub pc12
 {
-  my ($self, $text, $tonode, $sysop, $wx) = @_;
+  my ($call, $text, $tonode, $sysop, $wx) = @_;
   my $hops = get_hops(12);
   $sysop = ' ' if !$sysop;
   $text = ' ' if !$text;
   $wx = '0' if !$wx;
   $tonode = '*' if !$tonode;
-  return "PC12^$self->{call}^$tonode^$text^$sysop^$main::mycall^$wx^$hops^~";
+  return "PC12^$call^$tonode^$text^$sysop^$main::mycall^$wx^$hops^~";
 }
 
 #

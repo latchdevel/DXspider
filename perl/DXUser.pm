@@ -43,7 +43,8 @@ $filename = undef;
   lockout => '9,Locked out?,yesno',        # won't let them in at all
   dxok => '9,DX Spots?,yesno',            # accept his dx spots?
   annok => '9,Announces?,yesno',            # accept his announces?
-  reg => '0,Registered?,yesno',            # is this user registered? 
+  reg => '0,Registered?,yesno',            # is this user registered?
+  lang => '0,Language',
 );
 
 no strict;

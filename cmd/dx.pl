@@ -19,11 +19,11 @@ my @out;
 if ($f[0] =~ /[A-Za-z]/) {
   $spotter = uc $f[0];
   $freq = $f[1];
-  $spotted = $f[2];
-  $line =~ s/^$f[0]\s+$freq\s+$spotted\s*//;
+  $spotted = uc $f[2];
+  $line =~ s/^$f[0]\s+$f[1]\s+$f[2]\s*//;
 } else {
   $freq = $f[0];
-  $spotted = $f[1]; 
+  $spotted = uc $f[1]; 
   $line =~ s/^$f[0]\s+$f[1]\s*//;
 }
 

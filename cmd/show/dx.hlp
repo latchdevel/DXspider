@@ -1,0 +1,32 @@
+=== 0^EN^SHOW/DX^Interrogate the spot database
+   SHOW/DX 
+   
+   If you just type SHOW/DX you will get the last so many spots
+   (sysop configurable, but usually 10).
+   
+   In addition you can add any number of these commands in very nearly
+   any order to the basic SHOW/DX command, they are:-
+   
+   on <band>       - eg 160m 20m 2m 23cm 6mm
+   on <region>     - eg hf vhf uhf shf
+   
+   <number>        - the number of spots you want
+   <from>-<to>     - <from> spot no <to> spot no in the selected list
+   
+   <prefix>        - for a spotted callsign beginning with <prefix>
+   *<suffix>       - for a spotted callsign ending in <suffix>
+   *<string>*      - for a spotted callsign containing <string>
+   
+   day <number>    - starting <number> days ago
+   day <from>-<to> - <from> days <to> days ago
+   
+   info <text>     - any spots containing <text> in the info or remarks
+   
+   spotter <call>  - any spots spotted by <call>
+   
+   e.g. 
+   
+   SH/DX 9m0
+   SH/DX on 20m info iota
+   SH/DX 9a on vhf day 30
+   See also SHOW/DXCC

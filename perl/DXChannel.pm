@@ -57,6 +57,7 @@ use vars qw(%channels %valid);
   confmode => '0,In Conference?,yesno',
   dx => '0,DX Spots,yesno',
   redirect => '0,Redirect messages to',
+  lang => '0,Language',
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]

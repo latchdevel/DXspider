@@ -20,7 +20,7 @@ my $info;
 my $expr;
 
 while ($f = shift @list) {                 # next field
-  print "f: $f list: ", join(',', @list), "\n";
+#  print "f: $f list: ", join(',', @list), "\n";
   if (!$from && !$to) {
     ($from, $to) = $f =~ /^(\d+)-(\d+)$/o;         # is it a from -> to count?
     next if $from && $to > $from;
@@ -30,28 +30,28 @@ while ($f = shift @list) {                 # next field
     next if $to;
   }
   if (lc $f eq 'on' && $list[0]) {                  # is it freq range?
-    print "yup freq\n";
+#    print "yup freq\n";
     my @r = split '/', $list[0];
-	print "r0: $r[0] r1: $r[1]\n";
+#	print "r0: $r[0] r1: $r[1]\n";
 	@freq = Bands::get_freq($r[0], $r[1]);
 	if (@freq) {                 # yup, get rid of extranous param
-	  print "freq: ", join(',', @freq), "\n";
+#	  print "freq: ", join(',', @freq), "\n";
 	  shift @list;
 	  next;
 	}
   }
   if (lc $f eq 'day' && $list[0]) {
-    print "got day\n";
+#   print "got day\n";
     ($fromday, $today) = split '-', shift(@list);
 	next;
   }
   if (lc $f eq 'info' && $list[0]) {
-    print "got info\n";
+#   print "got info\n";
 	$info = shift @list;
 	next;
   }
   if (lc $f eq 'spotter' && $list[0]) {
-    print "got spotter\n";
+#    print "got spotter\n";
 	$spotter = uc shift @list;
 	next;
   }
@@ -100,7 +100,7 @@ if ($spotter) {
   $expr .= "\$f4 =~ /$spotter/o";
 }
 
-print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
+#print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
   
 # now do the search
 my @res = Spot::search($expr, $fromday, $today, $from, $to);
