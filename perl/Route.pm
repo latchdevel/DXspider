@@ -202,7 +202,7 @@ sub config
 		# recursion detector
 		if ((DXChannel::get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
 			$line .= ' ...';
-			push @out, $line;
+#			push @out, $line;
 			return @out;
 		}
 		push @$seen, $self->{call};
