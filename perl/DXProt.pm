@@ -789,9 +789,10 @@ sub normal
 			$ref->here($field[2]) if $ref;
 			$ref = Route::User::get($call);
 			$ref->here($field[2]) if $ref;
+			$ref ||= Route->new($call);
 			
 			# input filter if required
-			return unless $self->in_filter_route($ref || Route::new($call));
+			return unless $self->in_filter_route($ref);
 
 			$self->route_pc24($ref, $field[3]) if $ref && !eph_dup($line);
 			return;
