@@ -15,6 +15,4 @@
 my ($self, $line) = @_;
 my @out;
 return (1, $self->msg('e5')) if $self->priv < 9;
-my $r = USDB::load($line) if $line;
-USDB::init() if undef $r || $r =~ /^\d+ rec/;
-return (1, @out); 
+return (1, USDB::init()); 

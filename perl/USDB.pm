@@ -30,10 +30,9 @@ sub init
 	end();
 	if (tie %db, 'DB_File', $dbfn, O_RDONLY, 0664, $DB_BTREE) {
 		$present = 1;
-		dbg("US Database loaded");
-	} else {
-		dbg("US Database not loaded");
+		return "US Database loaded";
 	}
+	return "US Database not loaded";
 }
 
 sub end
