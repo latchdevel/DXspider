@@ -114,10 +114,10 @@ sub start
 	$self->{consort} = $line;	# save the connection type
 	$self->{here} = 1;
 
-	# get the filters
-	$self->{spotfilter} = Filter::read_in('spots', $call);
-	$self->{wwvfilter} = Filter::read_in('wwv', $call);
-	$self->{annfilter} = Filter::read_in('ann', $call);
+	# get the INPUT filters (these only pertain to Clusters)
+	$self->{inspotfilter} = Filter::read_in('spots', $call, 1);
+	$self->{inwwvfilter} = Filter::read_in('wwv', $call, 1);
+	$self->{inannfilter} = Filter::read_in('ann', $call, 1);
 	
 	# set unbuffered and no echo
 	$self->send_now('B',"0");
@@ -271,41 +271,19 @@ sub normal
 			}
 			$anndup{$dupkey} = $main::systime;
 			
-			# global ann filtering on INPUT
-			my ($filter, $hops) = Filter::it($self->{annfilter}, @field[1..6], $self->{call} ) if $self->{annfilter};
-			if ($self->{annfilter} && !$filter) {
-			        dbg('chan', "Rejected by filter");
-				return;
-			}
-			
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
 				
-				# strip leading and trailing stuff
-				my $text = unpad($field[3]);
-				my $target;
-				my $to = 'To ';
-				my @list;
-				
-				if ($field[4] eq '*') {	# sysops
-					$target = "SYSOP";
-					@list = map { $_->priv >= 5 ? $_ : () } get_all_users();
-				} elsif ($field[4] gt ' ') { # speciality list handling
-					my ($name) = split /\./, $field[4]; 
-					$target = "$name"; # put the rest in later (if bothered) 
-				} 
-				
-				if ($field[6] eq '1') {
-					$target = "WX"; 
-					$to = '';
+				# global ann filtering on INPUT
+				if ($self->{inannfilter}) {
+					my ($filter, $hops) = Filter::it($self->{inannfilter}, @field[1..6], $self->{call} );
+					unless ($filter) {
+						dbg('chan', "Rejected by filter");
+						return;
+					}
 				}
-				$target = "All" if !$target;
-				
-				if (@list > 0) {
-					broadcast_list("$to$target de $field[1]: $text", 'ann', undef, @list);
-				} else {
-					broadcast_users("$target de $field[1]: $text", 'ann', undef);
-				}
-				Log('ann', $target, $field[1], $text);
+
+				# send it
+				$self->send_announce($line, @field[1..6]);
 				
 				if ($decode_dk0wcy && $field[1] eq $decode_dk0wcy) {
 					my ($hour, $k, $next, $a, $r, $sfi, $alarm) = $field[3] =~ /^Aurora Beacon\s+(\d+)UTC,\s+Kiel\s+K=(\d+),.*ed\s+K=(\d+),\s+A=(\d+),\s+R=(\d+),\s+SFI=(\d+),.*larm:\s+(\w+)/;
@@ -842,15 +820,14 @@ sub send_dx_spot
 				$dxchan->send($routeit) if $routeit;
 			} else {
 				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
-				
 			}
 		} elsif ($dxchan->is_user && $dxchan->{dx}) {
 			my $buf = Spot::formatb($_[0], $_[1], $_[2], $_[3], $_[4]);
 			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
-				$dxchan->send($buf) if !$hops || ($hops && $filter);
+				$dxchan->send($buf);
 			} else {
-				$dxchan->delay($buf) if !$hops || ($hops && $filter);
+				$dxchan->delay($buf);
 			}
 		}					
 	}
@@ -867,7 +844,12 @@ sub send_wwv_spot
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		my $routeit;
-		my ($filter, $hops) = Filter::it($dxchan->{wwvfilter}, @_, $self->{call} ) if $dxchan->{wwvfilter};
+		my ($filter, $hops);
+
+		if ($dxchan->{spotfilter}) {
+			 ($filter, $hops) = Filter::it($dxchan->{wwvfilter}, @_, $self->{call} );
+			 next unless $filter;
+		}
 		if ($dxchan->is_ak1a) {
 			next if $dxchan == $self;
 			if ($hops) {
@@ -887,9 +869,73 @@ sub send_wwv_spot
 			my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
 			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
-				$dxchan->send($buf) if !$hops || ($hops && $filter);
+				$dxchan->send($buf);
 			} else {
-				$dxchan->delay($buf) if !$hops || ($hops && $filter);
+				$dxchan->delay($buf);
+			}
+		}					
+	}
+}
+
+# send an announce
+sub send_announce
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
+	my $text = unpad($_[2]);
+	my $target;
+	my $to = 'To ';
+				
+	if ($_[3] eq '*') {	# sysops
+		$target = "SYSOP";
+	} elsif ($_[3] gt ' ') { # speciality list handling
+		my ($name) = split /\./, $_[3]; 
+		$target = "$name"; # put the rest in later (if bothered) 
+	} 
+	
+	if ($_[5] eq '1') {
+		$target = "WX"; 
+		$to = '';
+	}
+	$target = "All" if !$target;
+	
+	Log('ann', $target, $_[0], $text);
+
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		my $routeit;
+		my ($filter, $hops);
+
+		if ($dxchan->{annfilter}) {
+			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call} );
+			return unless $filter;
+		} 
+		if ($dxchan->is_ak1a) {
+			next if $dxchan == $self;
+			if ($hops) {
+				$routeit = $line;
+				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+			} else {
+				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+				next unless $routeit;
+			}
+			if ($filter) {
+				$dxchan->send($routeit) if $routeit;
+			} else {
+				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
+				
+			}
+		} elsif ($dxchan->is_user && $dxchan->{ann}) {
+			next if $target eq 'SYSOP' && $dxchan->{priv} < 5;
+			my $buf = "$to$target de $_[0]: $text";
+			$buf .= "\a\a" if $dxchan->{beep};
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+				$dxchan->send($buf);
+			} else {
+				$dxchan->delay($buf);
 			}
 		}					
 	}

@@ -29,6 +29,7 @@ use Msg;
 use DXM;
 use DXUtil;
 use DXDebug;
+use Filter;
 use Carp;
 
 use strict;
@@ -73,6 +74,9 @@ use vars qw(%channels %valid);
 		  annfilter => '5,Announce Filter',
 		  wwvfilter => '5,WWV Filter',
 		  spotfilter => '5,Spot Filter',
+		  inannfilter => '5,Input Ann Filter',
+		  inwwvfilter => '5,Input WWV Filter',
+		  inspotfilter => '5,Input Spot Filter',
 		  passwd => '9,Passwd List,parray',
 		 );
 
@@ -89,6 +93,9 @@ sub DESTROY
 	undef $self->{annfilter};
 	undef $self->{wwvfilter};
 	undef $self->{spotfilter};
+	undef $self->{inannfilter};
+	undef $self->{inwwvfilter};
+	undef $self->{inspotfilter};
 	undef $self->{passwd};
 }
 
@@ -113,6 +120,12 @@ sub alloc
 	$self->{oldstate} = 0;
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
+
+	# get the filters
+	$self->{spotfilter} = Filter::read_in('spots', $call, 0);
+	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0);
+	$self->{annfilter} = Filter::read_in('ann', $call, 0);
+
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }

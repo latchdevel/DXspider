@@ -1,3 +1,13 @@
+22Oct99=======================================================================
+1. allow filter names to be in upper or lower case.
+2. create the concept of input and output filters, input filters are of the 
+form "in_$call.pl" eg: "in_g1tlh.pl", output filters are "g1tlh.pl".
+3. all users can now filter on spots, ann and wwv (assuming the sysop has set
+the filters up - still no user creatable filters. Nodes can filter on both
+input and output for all of these.
+4. added callsign and length of history/position of screen stats to console.
+DO REMEMBER to copy /spider/perl/Console.pm to /spider/local (doing any changes
+on the way as it has extra data items in it now).
 21Oct99=======================================================================
 1. fixed reply so that reply b or reply nop generate a bulletin with the 
 correct address.

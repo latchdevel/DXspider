@@ -101,12 +101,6 @@ if (grep $_ eq $spotted, @DXProt::baddx) {
 	if (@spot) {
 		# send orf to the users
 		DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
-		
-#		my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
-#		DXProt::broadcast_users("$buf\a\a", 'dx', $spot[0]);
-
-		# send it orf to the cluster (hang onto your tin helmets) 
-#		DXProt::broadcast_all_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line), $DXProt::me);
 	}
 }
 

@@ -29,6 +29,7 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 	$ENV{'TERM'} = 'color_xterm';
 	$foreground = COLOR_BLACK();
 	$background = COLOR_WHITE();
+	$mycallcolor = COLOR_PAIR(1);
 	@colors = (
 		   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
 		   [ '^DX', COLOR_PAIR(5) ],
@@ -43,6 +44,7 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 if ($ENV{'TERM'} =~ /(console|linux)/) {
 	$foreground = COLOR_WHITE();
 	$background = COLOR_BLACK();
+	$mycallcolor = COLOR_PAIR(1);
 	@colors = (
 		   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
 		   [ '^DX', COLOR_PAIR(4) ],

@@ -81,6 +81,7 @@ sub do_initscr
 	$scr->refresh();
 	
 	$pagel = LINES()-4;
+	$mycallcolor = COLOR_PAIR(1) unless $mycallcolor;
 }
 
 sub do_resize
@@ -174,8 +175,11 @@ sub show_screen
 		$spos = @shistory if $spos > @shistory;
 	}
     my $shl = @shistory;
-	my $add = "$call-$spos-$shl";
-    $scr->addstr(LINES()-4, 0, '-' x (COLS() - length $add));
+	my $add = "-$spos-$shl";
+    $scr->addstr(LINES()-4, 0, '-' x (COLS() - (length($call) + length($add))));
+	$scr->attrset($mycallcolor) if $has_colors;
+	$scr->addstr("$call");
+	$scr->attrset(COLOR_PAIR(0)) if $has_colors;
     $scr->addstr($add);
 	$scr->refresh();
 #	$top->refresh();

@@ -167,7 +167,7 @@ sub print_all_fields
 	my @fields = $ref->fields;
 	my $field;
 
-	foreach $field (sort @fields) {
+	foreach $field (sort {$ref->field_prompt($a) cmp $ref->field_prompt($b)} @fields) {
 		if (defined $ref->{$field}) {
 			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
 			push @out, $ans if ($self->priv >= $priv);

@@ -106,9 +106,20 @@ sub it
 #
 sub read_in
 {
-	my ($sort, $call) = @_;
-	my $fn = "$filterbasefn/$sort/$call.pl";
+	my ($sort, $call, $flag) = @_;
+
+    # first uppercase
+	$flag = ($flag) ? "in_" : "";
+	$call = uc $call;
+	my $fn = "$filterbasefn/$sort/$flag$call.pl";
+
+	# otherwise lowercase
+	unless (-e $fn) {
+		$call = lc $call;
+		$fn = "$filterbasefn/$sort/$flag$call.pl";
+	}
 	
+	# load it
 	if (-e $fn) {
 		do "$fn";
 		dbg('conn', "$@") if $@;

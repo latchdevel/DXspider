@@ -94,8 +94,6 @@ sub start
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
 
-	# get the filters
-	$self->{spotfilter} = Filter::read_in('spots', $call);
 	
 	$self->send($self->msg('pr', $call));
 }
