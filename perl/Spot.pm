@@ -121,34 +121,21 @@ sub prepare
 	# normalise frequency
 	$_[0] = sprintf "%.1f", $_[0];
   
-	# remove ssids if present on spotter
+	# remove ssids and /xxx if present on spotter
 	$out[4] =~ s/-\d+$//o;
+	$out[4] =~ s|/\w+$||o;
 
 	# remove leading and trailing spaces
 	$_[3] = unpad($_[3]);
 	
-	my ($spotted_dxcc, $spotted_itu, $spotted_cq, $spotted_state) = (666, 0, 0, "");
-	my ($spotter_dxcc, $spotter_itu, $spotter_cq, $spotter_state) = (666, 0, 0, "");
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
-	my @dxcc = Prefix::extract($out[1]);
-	if (@dxcc) {
-		$spotted_dxcc = $dxcc[1]->dxcc();
-		$spotted_itu = $dxcc[1]->itu();
-		$spotted_cq = $dxcc[1]->cq();
-		$spotted_state = $dxcc[1]->state();
-	}
-	push @out, $spotted_dxcc;
-	@dxcc = Prefix::extract($out[4]);
-	if (@dxcc) {
-		$spotter_dxcc = $dxcc[1]->dxcc();
-		$spotter_itu = $dxcc[1]->itu();
-		$spotter_cq = $dxcc[1]->cq();
-		$spotter_state = $dxcc[1]->state();
-	}
-	push @out, $spotter_dxcc;
+	my @spd = Prefix::cty_data($out[1]);
+	push @out, $spd[0];
+	my @spt = Prefix::cty_data($out[4]);
+	push @out, $spt[0];
 	push @out, $_[5];
-	return (@out, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq, $spotted_state, $spotter_state);
+	return (@out, @spd[1,2], @spt[1,2], $spd[3], $spt[3]);
 }
 
 sub add
@@ -216,9 +203,21 @@ sub search
 	
 	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
 
-	$expr =~ s/\$f(\d)/\$ref->[$1]/g; # swap the letter n for the correct field name
+	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
+	my $checkfilter;
+	$checkfilter = qq (
+                      if (\@s < 9) {
+                          my \@a = (Prefix::cty_data(\$s[1]))[1..3];
+                          my \@b = (Prefix::cty_data(\$s[4]))[1..3];
+                          push \@s, \@a[0,1], \@b[0,1], \$a[2], \$a[2];  
+                      }
+	                  my (\$filter, \$hops) = \$dxchan->{spotsfilter}->it(\@s);
+	                  next unless (\$filter);
+                      ) if $dxchan;
+	$checkfilter ||= ' ';
+	
 	dbg("hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n") if isdbg('search');
   
 	# build up eval to execute
@@ -226,29 +225,15 @@ sub search
 			   while (<\$fh>) {
 				   $hint;
 				   chomp;
-				   push \@spots, [ split '\\^' ];
+				   my \@s = split /\\^/;
+                   $checkfilter;
+                   push \@spots, \\\@s;
 			   }
 			   my \$c;
 			   my \$ref;
 			   for (\$c = \$#spots; \$c >= 0; \$c--) {
 					\$ref = \$spots[\$c];
 					if ($expr) {
-	                    if (\$dxchan && \$dxchan->{spotsfilter}) {
-                            if (\@\$ref < 9) {
-                                my \@dxcc = Prefix::cty_data(\$ref->[1]);
-                                if (\@dxcc) {
-                                    pop \@dxcc;
-                                    push \@\$ref, \@dxcc;
-                                }
-                                \@dxcc = Prefix::cty_data(\$ref->[4]);
-                                if (\@dxcc) {
-                                    pop \@dxcc;
-                                    push \@\$ref, \@dxcc;
-                                }
-                            }
-		                    my (\$filter, \$hops) = \$dxchan->{spotsfilter}->it(\@\$ref);
-		                    next unless (\$filter);
-                        }
 						\$count++;
 						next if \$count < \$from; # wait until from 
 						push(\@out, \$ref);

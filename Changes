@@ -1,3 +1,5 @@
+23Jun04=======================================================================
+1. Add zone, by_zone, itu, by_itu, state and by_state searches to sh/dx
 22Jun04=======================================================================
 1. Add the show/mydx command which *may* filter your spots using your
 spot filter.

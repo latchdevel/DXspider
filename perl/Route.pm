@@ -68,14 +68,9 @@ sub new
 	dbg("create $pkg with $call") if isdbg('routelow');
 
 	# add in all the dxcc, itu, zone info
-	my @dxcc = Prefix::extract($call);
-	if (@dxcc > 0) {
-		$self->{dxcc} = $dxcc[1]->dxcc;
-		$self->{itu} = $dxcc[1]->itu;
-		$self->{cq} = $dxcc[1]->cq;
-		$self->{state} = $dxcc[1]->state;
-		$self->{city} = $dxcc[1]->city;
-	}
+	($self->{dxcc}, $self->{itu}, $self->{cq}, $self->{state}, $self->{city}) =
+		Prefix::cty_data($call);
+
 	$self->{flags} = here(1);
 	
 	return $self; 

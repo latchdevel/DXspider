@@ -21,6 +21,12 @@ my $expr;
 my $hint;
 my $dxcc;
 my $real;
+my $zone;
+my $byzone;
+my $state;
+my $bystate;
+my $itu;
+my $byitu;
 my $fromdxcc;
 my ($doqsl, $doiota, $doqra, $dofilter);
 
@@ -104,6 +110,30 @@ while ($f = shift @list) {		# next field
 		$doqra = '\b([A-Z][A-Z]\d\d|[A-Z][A-Z]\d\d[A-Z][A-Z])\b' unless $doqra;
 		next;
 	}
+	if (lc $f eq 'zone') {
+		$zone = shift @list if @list;
+		next;
+	}
+	if (lc $f =~ /^by_?zone/) {
+		$byzone = shift @list if @list;
+		next;
+	}
+	if (lc $f eq 'itu') {
+		$itu = shift @list if @list;
+		next;
+	}
+	if (lc $f =~ /^by_?itu/) {
+		$byitu = shift @list if @list;
+		next;
+	}
+	if (lc $f eq 'state') {
+		$state = uc shift @list if @list;
+		next;
+	}
+	if (lc $f =~ /^by_?state/) {
+		$bystate = uc shift @list if @list;
+		next;
+	}
 	if (!$pre) {
 		$pre = uc $f;
 	}
@@ -152,19 +182,19 @@ if ($pre) {
 # now deal with any frequencies specified
 if (@freq) {
 	$expr .= ($expr) ? " && (" : "(";
-	$hint .= ($hint) ? " && (" : "(";
+#	$hint .= ($hint) ? " && (" : "(";
 	my $i;
 	for ($i = 0; $i < @freq; $i += 2) {
 		$expr .= "(\$f0 >= $freq[$i] && \$f0 <= $freq[$i+1]) ||";
 		my $r = Spot::ftor($freq[$i], $freq[$i+1]);
 #		$hint .= "m{$r\\.} ||" if $r;
 #		$hint .= "m{\d+\.} ||";
-		$hint .= "1 ||";
+#		$hint .= "1 ||";
 	}
 	chop $expr;	chop $expr;
-	chop $hint;	chop $hint;
+#	chop $hint;	chop $hint;
 	$expr .= ")";
-	$hint .= ")";
+#	$hint .= ")";
 }
 
 # any info
@@ -217,6 +247,72 @@ if ($spotter) {
 		$spotter =~ s/[\^\$]//g;
 		$hint .= "m{\U$spotter}";
 	}
+}
+
+# zone requests
+if ($zone) {
+	my @expr;
+	my @hint;
+	for (split /[:,]/, $zone) {
+		push @expr, "\$f9==$_";
+		push @hint, "m{$_}";
+	}
+	$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : $expr[0];
+	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+}
+if ($byzone) {
+	my @expr;
+	my @hint;
+	for (split /[:,]/, $byzone) {
+		push @expr, "\$f11==$_";
+		push @hint, "m{$_}";
+	}
+	$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : $expr[0];
+	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+}
+
+# itu requests
+if ($itu) {
+	my @expr;
+	my @hint;
+	for (split /[:,]/, $itu) {
+		push @expr, "\$f8==$_";
+		push @hint, "m{$_}";
+	}
+	$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : $expr[0];
+	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+}
+if ($byitu) {
+	my @expr;
+	my @hint;
+	for (split /[:,]/, $byitu) {
+		push @expr, "\$f10==$_";
+		push @hint, "m{$_}";
+	}
+	$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : $expr[0];
+	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+}
+
+# state requests
+if ($state) {
+	my @expr;
+	my @hint;
+	for (split /[:,]/, $state) {
+		push @expr, "\$f12 eq '$_'";
+		push @hint, "m{$_}";
+	}
+	$expr .= @expr > 1 ? '($f12 && (' . join(' || ', @expr) . '))' : "(\$f12 && $expr[0])";
+	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
+}
+if ($bystate) {
+	my @expr;
+	my @hint;
+	for (split /[:,]/, $bystate) {
+		push @expr, "\$f13 eq '$_'";
+		push @hint, "m{$_}";
+	}
+	$expr .= @expr > 1 ? '($f13 && (' . join(' || ', @expr) . '))' : "(\$f13 && $expr[0])";
+	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
 }
 
 # qsl requests

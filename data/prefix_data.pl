@@ -4369,7 +4369,7 @@
    334 => bless( { name => 'Paraguay-ZP', dxcc => 333, itu => 14, cq => 11, utcoff => 4.0, lat => -25.3, long => -57.7 }, 'Prefix'),
    335 => bless( { name => 'So-Africa-ZS1-ZS', dxcc => 265, itu => 57, cq => 38, utcoff => -2.0, lat => -33.9, long => 18.4 }, 'Prefix'),
    336 => bless( { name => 'Marion-Is-ZS8', dxcc => 266, itu => 57, cq => 38, utcoff => -2.0, lat => -46.8, long => 37.8 }, 'Prefix'),
-   337 => bless( { name => 'Pirat_Country', dxcc => 666, itu => 17, cq => 14, utcoff => -0.0, lat => 0, long => 0 }, 'Prefix'),
+   337 => bless( { name => 'Pirat_Country', dxcc => 666, itu => 0, cq => 0, utcoff => -0.0, lat => 0, long => 0 }, 'Prefix'),
    338 => bless( { name => 'Agalega-3B6', dxcc => 272, itu => 53, cq => 39, utcoff => -4.0, lat => -10.4, long => 56.6 }, 'Prefix'),
    339 => bless( { name => 'Fiji-Is-3D2/F', dxcc => 277, itu => 56, cq => 32, utcoff => -12.0, lat => -17, long => 178 }, 'Prefix'),
    340 => bless( { name => 'Russia-Antarcti-CE9(OLD_4K1)', dxcc => 102, itu => 67, cq => 12, utcoff => -4.0, lat => -65, long => -64 }, 'Prefix'),

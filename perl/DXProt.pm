@@ -1703,20 +1703,8 @@ sub send_wwv_spot
 	my $line = shift;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
-	my ($wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-	my @dxcc = Prefix::extract($_[6]);
-	if (@dxcc > 0) {
-		$wwv_dxcc = $dxcc[1]->dxcc;
-		$wwv_itu = $dxcc[1]->itu;
-		$wwv_cq = $dxcc[1]->cq;						
-	}
-	@dxcc = Prefix::extract($_[7]);
-	if (@dxcc > 0) {
-		$org_dxcc = $dxcc[1]->dxcc;
-		$org_itu = $dxcc[1]->itu;
-		$org_cq = $dxcc[1]->cq;						
-	}
-	
+	my @dxcc = ((Prefix::cty_data($_[6]))[0..2], (Prefix::cty_data($_[7]))[0..2]);
+
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
@@ -1725,7 +1713,7 @@ sub send_wwv_spot
 		my $routeit;
 		my ($filter, $hops);
 
-		$dxchan->wwv($line, $self->{isolate}, @_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->wwv($line, $self->{isolate}, @_, $self->{call}, @dxcc);
 	}
 }
 
@@ -1749,19 +1737,7 @@ sub send_wcy_spot
 	my $line = shift;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
-	my ($wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-	my @dxcc = Prefix::extract($_[10]);
-	if (@dxcc > 0) {
-		$wcy_dxcc = $dxcc[1]->dxcc;
-		$wcy_itu = $dxcc[1]->itu;
-		$wcy_cq = $dxcc[1]->cq;						
-	}
-	@dxcc = Prefix::extract($_[11]);
-	if (@dxcc > 0) {
-		$org_dxcc = $dxcc[1]->dxcc;
-		$org_itu = $dxcc[1]->itu;
-		$org_cq = $dxcc[1]->cq;						
-	}
+	my @dxcc = ((Prefix::cty_data($_[10]))[0..2], (Prefix::cty_data($_[11]))[0..2]);
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
@@ -1769,7 +1745,7 @@ sub send_wcy_spot
 		next if $dxchan == $main::me;
 		next if $dxchan == $self;
 
-		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, @dxcc);
 	}
 }
 
@@ -1813,28 +1789,13 @@ sub send_announce
 
 
 	# obtain country codes etc 
-	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-	my ($ann_state, $org_state) = ("", "");
-	my @dxcc = Prefix::extract($_[0]);
-	if (@dxcc > 0) {
-		$ann_dxcc = $dxcc[1]->dxcc;
-		$ann_itu = $dxcc[1]->itu;
-		$ann_cq = $dxcc[1]->cq;						
-		$ann_state = $dxcc[1]->state;
-	}
-	@dxcc = Prefix::extract($_[4]);
-	if (@dxcc > 0) {
-		$org_dxcc = $dxcc[1]->dxcc;
-		$org_itu = $dxcc[1]->itu;
-		$org_cq = $dxcc[1]->cq;						
-		$org_state = $dxcc[1]->state;
-	}
-
+	my @a = Prefix::cty_data($_[0]);
+	my @b = Prefix::cty_data($_[4]);
 	if ($self->{inannfilter}) {
 		my ($filter, $hops) = 
 			$self->{inannfilter}->it(@_, $self->{call}, 
-									 $ann_dxcc, $ann_itu, $ann_cq,
-									 $org_dxcc, $org_itu, $org_cq, $ann_state, $org_state);
+									 @a[0..2],
+									 @b[0..2], $a[3], $b[3]);
 		unless ($filter) {
 			dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
 			return;
@@ -1853,7 +1814,8 @@ sub send_announce
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
-		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call},
+						  @a[0..2], @b[0..2]);
 	}
 }
 
@@ -1883,28 +1845,13 @@ sub send_chat
 	}
 	
 	# obtain country codes etc 
-	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-	my ($ann_state, $org_state) = ("", "");
-	my @dxcc = Prefix::extract($_[0]);
-	if (@dxcc > 0) {
-		$ann_dxcc = $dxcc[1]->dxcc;
-		$ann_itu = $dxcc[1]->itu;
-		$ann_cq = $dxcc[1]->cq;						
-		$ann_state = $dxcc[1]->state;
-	}
-	@dxcc = Prefix::extract($_[4]);
-	if (@dxcc > 0) {
-		$org_dxcc = $dxcc[1]->dxcc;
-		$org_itu = $dxcc[1]->itu;
-		$org_cq = $dxcc[1]->cq;						
-		$org_state = $dxcc[1]->state;
-	}
-
+	my @a = Prefix::cty_data($_[0]);
+	my @b = Prefix::cty_data($_[4]);
 	if ($self->{inannfilter}) {
 		my ($filter, $hops) = 
 			$self->{inannfilter}->it(@_, $self->{call}, 
-									 $ann_dxcc, $ann_itu, $ann_cq,
-									 $org_dxcc, $org_itu, $org_cq, $ann_state, $org_state);
+									 @a[0..2],
+									 @b[0..2], $a[3], $b[3]);
 		unless ($filter) {
 			dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
 			return;
@@ -1934,7 +1881,8 @@ sub send_chat
 			}
 		}
 		
-		$dxchan->chat($is_ak1a ? $ak1a_line : $line, $self->{isolate}, $target, $_[1], $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->chat($is_ak1a ? $ak1a_line : $line, $self->{isolate}, $target, $_[1], 
+					  $text, @_, $self->{call}, @a[0..2], @b[0..2]);
 	}
 }
 
