@@ -1,6 +1,10 @@
 16Aug01=======================================================================
 1. send a forward/opernam for a logged in user once a month (when they next
 login).
+2. rearrange rcmd stuff to be more maintainable and also be certain that 
+they are translated in both directions correctly for clx and ak1a style.
+3. Allow PC41s to be propagated and hope that the ephemeral dup filters 
+do their job!
 15Aug01=======================================================================
 1. fix problem with talks not coming out anymore
 13Aug01=======================================================================

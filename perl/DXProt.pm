@@ -856,60 +856,12 @@ sub normal
 		}
 		
 		if ($pcno == 34 || $pcno == 36) { # remote commands (incoming)
-			if ($field[1] eq $main::mycall) {
-				my $ref = DXUser->get_current($field[2]);
-				my $cref = Route::Node::get($field[2]);
-				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[3]);
-				unless (!$cref || !$ref || $cref->call ne $ref->homenode) {    # not allowed to relay RCMDS!
-					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
-						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
-						my $oldpriv = $self->{priv};
-						$self->{priv} = $ref->{priv};     # assume the user's privilege level
-						my @in = (DXCommandmode::run_cmd($self, $field[3]));
-						$self->{priv} = $oldpriv;
-						for (@in) {
-							s/\s*$//og;
-							$self->send(pc35($main::mycall, $field[2], "$main::mycall:$_"));
-							Log('rcmd', 'out', $field[2], $_);
-						}
-						delete $self->{remotecmd};
-					} else {
-						$self->send(pc35($main::mycall, $field[2], "$main::mycall:sorry...!"));
-					}
-				} else {
-					$self->send(pc35($main::mycall, $field[2], "$main::mycall:your attempt is logged, Tut tut tut...!"));
-				}
-			} else {
-				my $ref = DXUser->get_current($field[1]);
-				if ($ref && $ref->is_clx) {
-					$self->route($field[1], pc84($field[2], $field[1], $field[2], $field[3]));
-				} else {
-					$self->route($field[1], $line);
-				}
-			}
+			$self->process_rcmd($field[1], $field[2], $field[2], $field[3]);
 			return;
 		}
 		
 		if ($pcno == 35) {		# remote command replies
-			if ($field[1] eq $main::mycall) {
-				my $s = $rcmds{$field[2]};
-				if ($s) {
-					my $dxchan = DXChannel->get($s->{call});
-					$dxchan->send($field[3]) if $dxchan;
-					delete $rcmds{$field[2]} if !$dxchan;
-				} else {
-					# send unsolicited ones to the sysop
-					my $dxchan = DXChannel->get($main::myalias);
-					$dxchan->send($field[3]) if $dxchan;
-				}
-			} else {
-				my $ref = DXUser->get_current($field[1]);
-				if ($ref && $ref->is_clx) {
-					$self->route($field[1], pc85($field[2], $field[1], $field[2], $field[3]));
-				} else {
-					$self->route($field[1], $line);
-				}
-			}
+			$self->process_rcmd_reply($field[1], $field[2], $field[1], $field[3]);
 			return;
 		}
 		
@@ -929,8 +881,19 @@ sub normal
 		}
 		
 		if ($pcno == 41) {		# user info
-			# add this station to the user database, if required
 			my $call = $field[1];
+
+			# input filter if required
+			my $ref = Route::get($call) || Route->new($call);
+			return unless $self->in_filter_route($ref);
+
+			# dup check it
+			if (eph_dup($line)) {
+				dbg("PCPROT: ephemeral PC41 dup dropped") if isdbg('chanerr');
+				return;
+			}
+
+			# add this station to the user database, if required
 			my $user = DXUser->get_current($call);
 			$user = DXUser->new($call) if !$user;
 			
@@ -948,13 +911,10 @@ sub normal
 			}
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
-			my $ref = Route::get($call) || Route->new($call);
 
-			# input filter if required
-			return unless $self->in_filter_route($ref);
-
-			$self->route_pc41($ref, $call, $field[2], $field[3], $field[4]) if $ref && !eph_dup($line);
-			return;
+#  perhaps this IS what we want after all
+#			$self->route_pc41($ref, $call, $field[2], $field[3], $field[4]);
+#			return;
 		}
 
 		if ($pcno == 43) {
@@ -1064,67 +1024,13 @@ sub normal
 		}
 
 		if ($pcno == 84) { # remote commands (incoming)
-			my $call = $field[1];
-			if ($call eq $main::mycall) {
-				my $ref = DXUser->get_current($field[2]);
-				my $cref = Route::Node::get($field[2]);
-				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[4]);
-				unless ($field[4] =~ /rcmd/i || !$cref || !$ref || $cref->call ne $ref->homenode) {    # not allowed to relay RCMDS!
-					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
-						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
-						my $oldpriv = $self->{priv};
-						$self->{priv} = $ref->{priv};     # assume the user's privilege level
-						my @in = (DXCommandmode::run_cmd($self, $field[4]));
-						$self->{priv} = $oldpriv;
-						for (@in) {
-							s/\s*$//og;
-							$self->send(pc85($main::mycall, $field[2], $field[3], "$main::mycall:$_"));
-							Log('rcmd', 'out', $field[2], $_);
-						}
-						delete $self->{remotecmd};
-					} else {
-						$self->send(pc85($main::mycall, $field[2], $field[3], "$main::mycall:sorry...!"));
-					}
-				} else {
-					$self->send(pc85($main::mycall, $field[2], $field[3],"$main::mycall:your attempt is logged, Tut tut tut...!"));
-				}
-			} else {
-				my $ref = DXUser->get_current($call);
-				if ($ref && $ref->is_clx) {
-					$self->route($call, $line);
-				} else {
-					$self->route($call, pc34($field[2], $call, $field[4]));
-				}
-			}
+			$self->process_rcmd($field[1], $field[2], $field[3], $field[4]);
 			return;
 		}
 
 		if ($pcno == 85) {		# remote command replies
-			my $call = $field[1];
-			if ($call eq $main::mycall) {
-				my $dxchan = DXChannel->get($field[3]);
-				if ($dxchan) {
-					$dxchan->send($field[4]);
-				} else {
-					my $s = $rcmds{$field[2]};
-					if ($s) {
-						$dxchan = DXChannel->get($s->{call});
-						$dxchan->send($field[4]) if $dxchan;
-						delete $rcmds{$field[2]} if !$dxchan;
-					} else {
-						# send unsolicited ones to the sysop
-						my $dxchan = DXChannel->get($main::myalias);
-						$dxchan->send($field[4]) if $dxchan;
-					}
-				}
-			} else {
-				my $ref = DXUser->get_current($call);
-				if ($ref && $ref->is_clx) {
-					$self->route($call, $line);
-				} else {
-					$self->route($call, pc35($field[2], $call, $field[4]));
-				}
-			}
+			$self->process_rcmd_reply($field[1], $field[2], $field[3], $field[4]);
+			
 			return;
 		}
 	}
@@ -1649,6 +1555,81 @@ sub addping
 	route(undef, $to, pc51($to, $main::mycall, 1));
 	push @$ref, $r;
 	$pings{$to} = $ref;
+}
+
+sub process_rcmd
+{
+	my ($self, $tonode, $fromnode, $user, $cmd) = @_;
+	if ($tonode eq $main::mycall) {
+		my $ref = DXUser->get_current($fromnode);
+		my $cref = Route::Node::get($fromnode);
+		Log('rcmd', 'in', $ref->{priv}, $fromnode, $cmd);
+		if ($cmd !~ /^\s*rcmd/i && $cref && $ref && $cref->call eq $ref->homenode) { # not allowed to relay RCMDS!
+			if ($ref->{priv}) {		# you have to have SOME privilege, the commands have further filtering
+				$self->{remotecmd} = 1; # for the benefit of any command that needs to know
+				my $oldpriv = $self->{priv};
+				$self->{priv} = $ref->{priv}; # assume the user's privilege level
+				my @in = (DXCommandmode::run_cmd($self, $cmd));
+				$self->{priv} = $oldpriv;
+				$self->send_rcmd_reply($main::mycall, $fromnode, $user, @in);
+				delete $self->{remotecmd};
+			} else {
+				$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
+			}
+		} else {
+			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "your attempt is logged, Tut tut tut...!");
+		}
+	} else {
+		my $ref = DXUser->get_current($tonode);
+		if ($ref && $ref->is_clx) {
+			$self->route($tonode, pc84($tonode, $fromnode, $user, $cmd));
+		} else {
+			$self->route($tonode, pc34($tonode, $fromnode, $cmd));
+		}
+	}
+}
+
+sub process_rcmd_reply
+{
+	my ($self, $tonode, $fromnode, $user, $line) = @_;
+	if ($tonode eq $main::mycall) {
+		my $s = $rcmds{$fromnode};
+		if ($s) {
+			my $dxchan = DXChannel->get($s->{call});
+			my $ref = DXChannel->get($user) || $dxchan;
+			$ref->send($line) if $ref;
+			delete $rcmds{$fromnode} if !$dxchan;
+		} else {
+			# send unsolicited ones to the sysop
+			my $dxchan = DXChannel->get($main::myalias);
+			$dxchan->send($line) if $dxchan;
+		}
+	} else {
+		my $ref = DXUser->get_current($tonode);
+		if ($ref && $ref->is_clx) {
+			$self->route($tonode, pc85($fromnode, $tonode, $user, $line));
+		} else {
+			$self->route($tonode, pc35($fromnode, $tonode, $line));
+		}
+	}
+}
+
+sub send_rcmd_reply
+{
+	my $self = shift;
+	my $tonode = shift;
+	my $fromnode = shift;
+	my $user = shift;
+	while (@_) {
+		my $line = shift;
+		$line =~ s/\s*$//;
+		Log('rcmd', 'out', $fromnode, $line);
+		if ($self->is_clx) {
+			$self->send(pc85($main::mycall, $fromnode, $user, "$main::mycall:$line"));
+		} else {
+			$self->send(pc35($main::mycall, $fromnode, "$main::mycall:$line"));
+		}
+	}
 }
 
 # add a rcmd request to the rcmd queues
