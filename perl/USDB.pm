@@ -133,6 +133,8 @@ sub load
 	for (@_) {
 		my $ofn = shift;
 
+		return "Cannot find $ofn" unless -r $ofn;
+		
 		# conditionally handle compressed files (don't cha just lurv live code, this is
 		# a rave from the grave and is "in memoriam Flossie" the ICT 1301G I learnt on.
 		# {for pedant computer historians a 1301G is an ICT 1301A that has been 
@@ -141,7 +143,7 @@ sub load
 		if ($nfn =~ /.gz$/i) {
 			my $gz;
 			eval qq{use Compress::Zlib; \$gz = gzopen(\$ofn, "rb")};
-			return "Cannot read compressed files $@" if $@;
+			return "Cannot read compressed files $@ $!" if $@ || !$gz;
 			$nfn =~ s/.gz$//i;
 			my $of = new IO::File ">$nfn" or return "Cannot write to $nfn $!";
 			my ($l, $buf);
