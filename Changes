@@ -1,5 +1,8 @@
 29Jun99=======================================================================
 1. fixed merge command that I broke.
+2. added some randomness in waittimes for aborted outgoing messages 
+3. made the queueing of messages asymetrical. Both of these to try to 
+minimise thrashing.
 28Jun99=======================================================================
 1. console.pl now works with history and editting.
 2. added scrolling to stuff sent by the cluster.

@@ -134,7 +134,7 @@ sub process
 				$ref->stop_msg($node);
 
 				# delay any outgoing messages that fail
-				$ref->{waitt} = $main::systime + $waittime if $node ne $main::mycall;
+				$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
 			}
 		}
 		
@@ -273,7 +273,7 @@ sub process
 			} else {
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			}
-			queue_msg(0);
+			# queue_msg(0);
 			last SWITCH;
 		}
 		
