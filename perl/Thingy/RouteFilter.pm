@@ -39,7 +39,7 @@ sub gen_DXProt
 	my $thing = shift;
 	my @out;
 	push @out, DXProt::pc21(@{$thing->{fpc21n}}) if $thing->{fpc21n};
-	push @out, DXProt::pc17($thing->{fpc17n}, $thing->{pc17u})  if $thing->{fpc17n};
+	push @out, DXProt::pc17($thing->{fpc17n}, @{$thing->{pc17u}})  if $thing->{fpc17n};
 	push @out, DXProt::pc19(@{$thing->{fpc19n}}) if $thing->{fpc19n};
 	push @out, DXProt::pc16($thing->{fpc16n}, @{$thing->{pc16u}}) if $thing->{fpc16n};
 	return \@out;

@@ -1,6 +1,9 @@
 #
 # Route Thingy handling
 #
+# Note that this is a generator of pc(16|17|19|21)n and pc(16|17)u
+# and a consumer of the fpc versions of the above
+#
 # $Id$
 #
 # Copyright (c) 2005 Dirk Koopman G1TLH
@@ -30,10 +33,10 @@ sub gen_Aranea
 	unless ($thing->{Aranea}) {
 		my $ref;
 		if ($ref = $thing->{anodes}) {
-			$thing->{n} = join(':', map {$_->{call}} @$ref);
+			$thing->{n} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
 		}
 		if ($ref = $thing->{ausers}) {
-			$thing->{u} = join(':', map {$_->{call}} @$ref);
+			$thing->{u} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
 		}
 	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(s n u)]);
 	}
@@ -63,19 +66,97 @@ sub handle
 	}
 }
 
+# this handles the standard local configuration, it 
+# will reset all the config, make / break links and
+# will generate pc sentences as required for nodes and users
+sub handle_lcf
+{
+	my $thing = shift;
+	my $dxchan = shift;
+	my $origin = $thing->{origin};
+	my $chan_call = $dxchan->{call};
+	
+	my $parent = Route::Node::get($origin);
+	unless ($parent) {
+		dbg("Thingy::Rt::lcf: received from $origin on $chan_call unknown") if isdbg('chanerr');
+		return;
+	}
 
-sub add_user
+	# do nodes
+	if ($thing->{n}) {
+		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{n});
+		my ($del, $add) = $parent->diff_nodes(keys %in);
+
+		my $call;
+
+		my @pc21;
+		foreach $call (@$del) {
+			RouteDB::delete($call, $chan_call);
+			my $ref = Route::Node::get($call);
+			push @pc21, $ref->del($parent) if $ref;
+		}
+		$thing->{pc21n} = \@pc21 if @pc21;
+		
+		my @pc19;
+		foreach $call (@$add) {
+			RouteDB::update($call, $chan_call);
+			my $ref = Route::Node::get($call);
+			push @pc19, $parent->add($call, 0, $in{$call}) unless $ref;
+		}
+		$thing->{pc19n} = \@pc19 if @pc19;
+	}
+	
+	# now users
+	if ($thing->{u}) {
+		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{u});
+		my ($del, $add) = $parent->diff_users(keys %in);
+
+		my $call;
+
+		my @pc17;
+		foreach $call (@$del) {
+			RouteDB::delete($call, $chan_call);
+			my $ref = Route::User::get($call);
+			if ($ref) {
+				$parent->del_user($ref);
+				push @pc17, $ref;
+			} else {
+				dbg("Thingy::Rt::lcf: del user $call not known, ignored") if isdbg('chanerr');
+				next;
+			}
+		}
+		if (@pc17) {
+			$thing->{pc17n} = $parent;
+			$thing->{pc17u} = \@pc17;
+		}
+	
+		my @pc16;
+		foreach $call (@$add) {
+			RouteDB::update($call, $chan_call);
+			push @pc16, _add_user($parent, $call, $in{$call});
+		}
+		if (@pc16) {
+			$thing->{pc16n} = $parent;
+			$thing->{pc16u} = \@pc16;
+		}
+	}
+
+	return $thing;
+}
+
+sub _add_user
 {
 	my $node = shift;
 	my $user = shift;
 	my $flag = shift;
 	
-	$node->add_user($user, $flag);
-	my $ur = upd_user_rec($user, $node);
+	my @out = $node->add_user($user, $flag);
+	my $ur = _upd_user_rec($user, $node);
 	$ur->put;
+	return @out;
 }
 
-sub upd_user_rec
+sub _upd_user_rec
 {
 	my $call = shift;
 	my $parentcall = shift;

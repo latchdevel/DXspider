@@ -107,8 +107,8 @@ sub pc16
 sub pc17
 {
 	my @out;
+	my $node = shift;
 	while (@_) {
-		my $node = shift;
 		my $ref = shift;
 		my $hops = get_hops(17);
 		my $ncall = $node->call;

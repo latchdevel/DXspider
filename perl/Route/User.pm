@@ -53,7 +53,7 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = [ $ncall ];
-	$self->{flags} = $flags;
+	$self->{flags} = 0 || $flags;
 	$list{$call} = $self;
 
 	return $self;

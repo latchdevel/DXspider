@@ -1,6 +1,9 @@
 #
 # Bye Thingy handling
 #
+# Note that this is a generator of pc21n and pc17n/pc17u
+# and a consumer of fpc21n and fpc21n
+#
 # $Id$
 #
 # Copyright (c) 2005 Dirk Koopman G1TLH
@@ -55,8 +58,8 @@ sub handle
 				@pc21 = $parent->del($uref);
 			} else {
 				$parent->del_user($uref);
-				$thing->{pc17n} = $thing->{origin};
-				$thing->{pc17u} = $user;
+				$thing->{pc17n} = $parent;
+				$thing->{pc17u} = [$uref];
 			}
 		}
 	} else {

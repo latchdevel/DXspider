@@ -27,8 +27,9 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
+		  build => '0,Build',
+		  sw => '0,Software',
 		  np => '0,Using New Prot,yesno',
-		  lid => '0,Last Msgid',
 );
 
 $filterdef = $Route::filterdef;
@@ -208,6 +209,39 @@ sub rnodes
 	return @out;
 }
 
+# return the differences in nodes between what we currently have and
+# the list proffered. Returns two refs one to a list of nodes to remove and  
+# the other a list of nodes to add
+# 
+# input is a list of callsigns (not refs)
+sub diff_nodes
+{
+	my $self = shift;
+	my $in = ref $_[0] ? shift : \@_;
+	my %del = map {($_, 1)} nodes($self);
+	my %in = map {($_, 1)} @$in;
+	
+	# remove all the calls that are in both lists
+	for (@$in) {
+		delete $in{$_} if delete $del{$_};
+	}
+	return ([keys %del], [keys %in]);
+}
+
+# same as above but for users
+sub diff_users
+{
+	my $self = shift;
+	my $in = ref $_[0] ? shift : \@_;
+	my %del = map {($_, 1)} users($self);
+	my %in = map {($_, 1)} @$in;
+	
+	# remove all the calls that are in both lists
+	for (@$in) {
+		delete $in{$_} if delete $del{$_};
+	}
+	return ([keys %del], [keys %in]);
+}
 
 sub new
 {
@@ -218,8 +252,8 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
-	$self->{version} = shift;
-	$self->{flags} = shift;
+	$self->{version} = 0 || shift;
+	$self->{flags} = 0 || shift;
 	$self->{users} = [];
 	$self->{nodes} = [];
 	$self->{lid} = 0;

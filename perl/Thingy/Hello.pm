@@ -33,14 +33,20 @@ $verify_on_login = 1;			# make sure that a HELLO coming from
 sub gen_Aranea
 {
 	my $thing = shift;
+	my $dxchan = shift;
+	
 	unless ($thing->{Aranea}) {
-		$thing->add_auth;
-
-		$thing->{sw} ||= 'DXSp';
-		$thing->{v} ||= $main::version;
-		$thing->{b} ||= $main::build;
+		if ($thing->{user}) {
+			$thing->{h} ||= $dxchan->here;
+		} else {
+			$thing->add_auth;
+			$thing->{sw} ||= 'DXSp';
+			$thing->{v} ||= $main::version;
+			$thing->{b} ||= $main::build;
+			$thing->{h} ||= $main::me->here;
+		}
 		
-		$thing->{Aranea} = Aranea::genmsg($thing, [qw(sw v b s auth)]);
+		$thing->{Aranea} = Aranea::genmsg($thing, [qw(sw h v b s auth)]);
 	}
 	return $thing->{Aranea};
 }
@@ -61,7 +67,7 @@ sub handle
 	if ($node eq $origin) {
 
 		# for directly connected calls
-		if ($verify_on_login) {
+		if ($verify_on_login && !$thing->{user}) {
 			my $pp = $dxchan->user->passphrase;
 			unless ($pp) {
 				dbglog('err', "Thingy::Hello::handle: verify on and $origin has no passphrase");
@@ -76,7 +82,7 @@ sub handle
 			}
 		}
 		if ($dxchan->{state} ne 'normal') {
-			$nref = $main::routeroot->add($origin, $thing->{v}, 1);
+			$nref = $main::routeroot->add($origin, $thing->{v}, $thing->{h});
 			push @{$thing->{pc19n}}, $nref if $nref;
 			$dxchan->start($dxchan->{conn}->{csort}, $dxchan->{conn}->{outbound} ? 'O' : 'A');
 			if ($dxchan->{outbound}) {
@@ -89,6 +95,7 @@ sub handle
 			}
 		}
 		$nref = Route::Node::get($origin);
+		$nref->np(1);
 	} else {
 		
 		# for otherwise connected calls, that come in relayed from other nodes
@@ -98,6 +105,7 @@ sub handle
 			my $v = $thing->{user} ? undef : $thing->{v};
 			$nref = Route::Node->new($origin, $v, 1);
 			push @{$thing->{pc19n}}, $nref;
+			$nref->np(1);
 		}
 	}
 
@@ -107,14 +115,21 @@ sub handle
 		unless ($ur) {
 			my $uref = DXUser->get_current($user);
 			if ($uref->is_node || $uref->is_aranea) {
-				my $u = $nref->add($user, $thing->{v}, 1);
-				push @{$thing->{pc19n}}, $u if $u;
+			    $ur = $nref->add($user, $thing->{v}, $thing->{h});
+				push @{$thing->{pc19n}}, $ur if $ur;
 			} else {
 				$thing->{pc16n} = $nref;
-				$thing->{pc16u} = [$nref->add_user($user, 1)];
+				$thing->{pc16u} = [$ur = $nref->add_user($user, $thing->{h})];
 			}
 		}
+		$ur->np(1);
+	} else {
+		$nref->version($thing->{v}) unless $nref->version;
+		$nref->build($thing->{b}) unless $nref->build;
+		$nref->sw($thing->{sw}) unless $nref->sw;
+		$nref->here($thing->{h}) if exists $thing->{h};
 	}
+
 	RouteDB::update($origin, $node, $thing->{hopsaway});
 	RouteDB::update($thing->{user}, $node, $thing->{hopsaway}) if $thing->{user};
 	
