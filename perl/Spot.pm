@@ -217,7 +217,7 @@ sub dup
 	unpad($text);
 	my $dupkey = "$freq|$call|$d|$text";
 	return 1 if exists $dup{$dupkey};
-	$dup{$dupkey} = $d * 60;         # in seconds (to the nearest minute)
+	$dup{$dupkey} = $d;         # in seconds (to the nearest minute)
 	return 0; 
 }
 

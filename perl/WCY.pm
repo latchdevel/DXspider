@@ -231,7 +231,7 @@ sub dup
 #	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $dupkey = "$d|$sfi|$k|$a|$r";
 	return 1 if exists $dup{$dupkey};
-	$dup{$dupkey} = $d * 60;         # in seconds (to the nearest minute)
+	$dup{$dupkey} = $d;         # in seconds (to the nearest minute)
 	return 0; 
 }
 
