@@ -14,7 +14,7 @@ if (opendir(DIR, "$main::root/perl")) {
 	closedir(DIR);
 	foreach my $fn (@d) {
 		if ($fn =~ /^cluster\.pl$/ || $fn =~ /\.pm$/) {
-			my $f = new IO::File $fn or next;
+			my $f = new IO::File "$main::root/perl/$fn" or next;
 			while (<$f>) {
 				if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)/ ) {
 					$build += $1;
