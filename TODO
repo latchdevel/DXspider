@@ -15,6 +15,7 @@ Maintenance and Enhancements
 * handle distros in announces
 * check set/homenode et al input for proper callsigns
 * filter names and stuff so that it doesn't cause bad syntax in user_asc
+* sh/cba and sh/contest
 
 New Protocol Stuff
 ------------------

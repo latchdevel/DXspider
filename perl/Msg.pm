@@ -37,6 +37,7 @@ $now = time;
 BEGIN {
     # Checks if blocking is supported
     eval {
+		local $^W;
         require POSIX; POSIX->import(qw(O_NONBLOCK F_SETFL F_GETFL))
     };
 	if ($@ || $main::is_win) {
@@ -50,12 +51,14 @@ BEGIN {
 
 	# import as many of these errno values as are available
 	eval {
+		local $^W;
 		require Errno; Errno->import(qw(EAGAIN EINPROGRESS EWOULDBLOCK));
 	};
 
 	unless ($^O eq 'MSWin32') {
 		if ($] >= 5.6) {
 			eval {
+				local $^W;
 				require Socket; Socket->import(qw(IPPROTO_TCP TCP_NODELAY));
 			};
 		} else {

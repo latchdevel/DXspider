@@ -1,3 +1,5 @@
+22Jan02=======================================================================
+1. limit spot dupe checking to first 12 characters
 13Jan02=======================================================================
 1. changed the backstop termination alarm routing in the C client so that
 it flushes the input and output buffer and then commits suicide.

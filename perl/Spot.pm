@@ -299,6 +299,7 @@ sub dup
 	return 2 if $d < $main::systime - $dupage;
  
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
+	$call = substr($call, 12) if length $call > 12;
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
