@@ -30,4 +30,13 @@ To run the latest CVS you need to additional perl modules.  The links are below.
 <item> <htmlurl url="ftp://ftp.plig.org/pub/CPAN/authors/id/M/MR/MROGASKI/Log-Agent-0.303.tar.gz" name="Log-Agent-0.303.tar.gz">
 </itemize>
 
+<P>
+For Windows versions, use the files below...
+
+<P>
+<itemize>
+<item> <htmlurl url="http://ppm.activestate.com/PPMPackages/zips/6xx-builds-only/Log-Agent.zip" name="Storable.zip">
+<item> <htmlurl url="http://ppm.activestate.com/PPMPackages/zips/6xx-builds-only/Storable.zip" name="Log-Agent.zip">
+</itemize>
+
 </article>
