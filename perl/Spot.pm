@@ -340,11 +340,11 @@ sub dup
 	my $ldupkey = "X$freq|$call|$by" . uc $text;
 	my $t = DXDupe::find($ldupkey);
 	return 1 if $t && $t - $main::systime > 0;
+	DXDupe::add($ldupkey, $main::systime+$dupage);
 #	my $sdupkey = "X$freq|$call|$by";
 #	$t = DXDupe::find($sdupkey);
 #	return 1 if $t && $t - $main::systime > 0;	
-	DXDupe::add($ldupkey, $main::systime+$dupage);
-	DXDupe::add($sdupkey, $main::systime+$dupage);
+#	DXDupe::add($sdupkey, $main::systime+$dupage);
 	return 0;
 }
 
