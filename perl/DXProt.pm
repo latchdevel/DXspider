@@ -1827,13 +1827,11 @@ sub broadcast_route
 	my $dxchan;
 	my $line;
 	
-	foreach $dxchan (@dxchan) {
-		next if $dxchan == $self;
-		next if $dxchan == $me;
-		if ($dxchan->{routefilter}) {
+	unless ($self->{isolate}) {
+		foreach $dxchan (@dxchan) {
+			next if $dxchan == $self;
+			next if $dxchan == $me;
 			$dxchan->send_route($generate, @_);
-		} else {
-			$dxchan->send_route($generate, @_) unless $self->{isolate};
 		}
 	}
 }
