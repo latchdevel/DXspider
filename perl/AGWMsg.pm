@@ -51,7 +51,7 @@ sub init
 	
 	finish();
 	dbg('err', "AGW initialising and connecting to $addr/$port ...");
-	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout => 30);
+	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout=>15);
 	unless ($sock) {
 		dbg('err', "Cannot connect to AGW Engine at $addr/$port $!");
 		return;
@@ -206,7 +206,7 @@ sub _error
 	Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
 	$sock = undef;
 	for (%circuit) {
-		next unless $_->isa('AGWMsg');
+		&{$_->{eproc}}() if $_->{eproc};
 		$_->disconnect;
 	}
 }
