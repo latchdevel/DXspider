@@ -85,6 +85,7 @@ sub finish
 		$finishing = 1;
 		dbg('err', "AGW ending...");
 		for (values %circuit) {
+			&{$_->{eproc}}() if $_->{eproc};
 			$_->disconnect;
 		}
 		# say we are going
@@ -319,7 +320,10 @@ sub _decode
 	} elsif ($sort eq 'd') {
 		dbg('agw', "AGW '$from'->'$to' port: $port Disconnected");
 		my $conn = _find($from eq $main::mycall ? $to : $from);
-		$conn->in_disconnect if $conn;
+		if ($conn) {
+			&{$conn->{eproc}}() if $conn->{eproc};
+			$conn->in_disconnect;
+		}
 	} elsif ($sort eq 'y') {
 		my ($frames) = unpack "V", $data;
 		dbg('agwpollans', "AGW Frames Outstanding on port $port = $frames");
@@ -391,7 +395,6 @@ sub in_disconnect
 {
 	my $conn = shift;
 	delete $circuit{$conn->{agwcall}}; 
-	_sendf('d', $conn->{agwcall}, $main::mycall, $conn->{agwport}, $conn->{agwpid});
 	$conn->SUPER::disconnect;
 }
 
@@ -414,6 +417,8 @@ sub enqueue
 		$msg =~ s/^[-\w]+\|//;
 #		_sendf('Y', $main::mycall, $conn->{call}, $conn->{agwport}, $conn->{agwpid});
 		_sendf('D', $main::mycall, $conn->{agwcall}, $conn->{agwport}, $conn->{agwpid}, $msg . $conn->{lineend});
+		my $len = length($msg) + 1; 
+		dbg('agw', "AGW Data Out port: $conn->{agwport} pid: $conn->{agwpid} '$main::mycall'->'$conn->{agwcall}' length: $len \"$msg\"");
 	}
 }
 
