@@ -949,13 +949,13 @@ sub handle_19
 			my $user = DXUser->get_current($origin);
 			if (!$user) {
 				$user = DXUser->new($origin);
-				$user->sort('S');
 				$user->priv(1);		# I have relented and defaulted nodes
 				$user->lockout(1);
 				$user->homenode($origin);
 				$user->node($origin);
 				$user->wantroutepc19(1);
 			}
+			$user->sort('A') unless $user->is_node;
 			$user->put;
 		}
 		$parent = $op;
@@ -988,12 +988,12 @@ sub handle_19
 		my $user = DXUser->get_current($call);
 		if (!$user) {
 			$user = DXUser->new($call);
-			$user->sort('A');
 			$user->priv(1);		# I have relented and defaulted nodes
 			$user->lockout(1);
 			$user->homenode($call);
 			$user->node($call);
 		}
+		$user->sort('A') unless $user->is_node;
 
 		# do we believe this call?
 		my $genline = "PC19^$here^$call^$conf^$ver^$_[-1]^"; 
@@ -1007,6 +1007,7 @@ sub handle_19
 			} else {
 				dbg("PCPROT: We don't believe $call on $self->{call}");
 			}
+			$user->put;
 			next;
 		}
 
