@@ -120,7 +120,8 @@ sub rec
 	
 	# set up the basic channel info - this needs a bit more thought - there is duplication here
 	if (!defined $dxchan) {
-		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
+		my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
+		return unless defined $sort;
  
 		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);
@@ -246,17 +247,15 @@ sub process_inqueue
 	
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
-	my ($sort, $call, $line) = $data =~ /^(\w)([^\|]+)\|(.*)$/;
 	my $error;
-	
-	# the above regexp must work
-	return unless ($sort && $call && $line);
+	my ($sort, $call, $line) = DXChannel::decode_input($dxchan, $data);
+	return unless defined $sort;
 	
 	# translate any crappy characters into hex characters 
 	if ($line =~ /[\x00-\x06\x08\x0a-\x1f\x7f-\xff]/o) {
 		$line =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
 	}
-	
+
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 	dbg('chan', "<- $sort $call $line\n") unless $sort eq 'D';
 

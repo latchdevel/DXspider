@@ -436,6 +436,26 @@ sub field_prompt
 	return $valid{$ele};
 }
 
+# take a standard input message and decode it into its standard parts
+sub decode_input
+{
+	my $dxchan = shift;
+	my $data = shift;
+	my ($sort, $call, $line) = $data =~ /^([A-Z])([A-Z1-9\-]{3,9})\|(.*)$/;
+
+	my $chcall = (ref $dxchan) ? $dxchan->call : "UN.KNOWN";
+	
+	# the above regexp must work
+	if (!defined $sort || !defined $call || !defined  $line ||
+		   (ref $dxchan && $call ne $chcall)) {
+		$data =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
+		dbg('chan', "DUFF Line from $chcall: $data");
+		return ();
+	}
+	
+	return ($sort, $call, $line);
+}
+
 no strict;
 sub AUTOLOAD
 {

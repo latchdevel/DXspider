@@ -4,6 +4,8 @@
 3. added update_sysop.pl which cleans out all previous versions of the sysops
 information from the user database and recreates it with that in DXVars.pm
 4. Added node type to links and who
+5. Hardened up the cluster->client link in the cluster software so that 
+rubbish on port 27754 doesn't (usually) crash the cluster.
 14Jun00=======================================================================
 1. fixed sh/node crash
 2. fixed RTT in who.pl
