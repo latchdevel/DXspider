@@ -10,6 +10,10 @@ Maintenance and Enhancements
 * sh/maxusers (max users in node since last restart)
 * review badwords
 * fix non-english apropos to only show english when there REALLY is nothing else
+* cmd for callbook server ab6qv.qnet.com 1235 (non-us calls only)
+* write a parallel event driven system for helper routines
+* handle distros in announces
+* check set/homenode et al input for proper callsigns
 
 New Protocol Stuff
 ------------------

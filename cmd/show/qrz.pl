@@ -23,17 +23,26 @@ use Net::Telnet;
 my $t = new Net::Telnet;
 
 foreach $l (@list) {
-	$t->open(Host     =>  $target,
-			 Port     =>  $port,
-			 Timeout  =>  15);
-	if ($t) {
+	eval {
+		$t->open(Host     =>  $target,
+				 Port     =>  $port,
+				 Timeout  =>  15);
+	};
+
+	if (!$t || $@) {
+		push @out, $self->msg('e18', 'QRZ.com');
+	} else {
 		my $s = "GET $url/dxcluster.cgi?callsign=$l\&uid=$Internet::qrz_uid\&pw=$Internet::qrz_pw HTTP/1.0\n\n";
 #		print $s;
 		$t->print($s);
 		Log('call', "$call: show/qrz \U$l");
 		my $state = "blank";
-		while (my $result = $t->getline) {
-			dbg($result) if isdbg('qrz');
+		while (my $result = eval { $t->getline(Timeout => 30) } || $@) {
+			dbg($result) if isdbg('qrz') && $result;
+			if ($@) {
+				push @out, $self->msg('e18', 'QRZ.com');
+				last;
+			}
 			if ($state eq 'blank' && $result =~ /^\s*Callsign\s*:/i) {
 				$state = 'go';
 			} elsif ($state eq 'go') {
@@ -44,8 +53,6 @@ foreach $l (@list) {
 		}
 		$t->close;
 		push @out, $self->msg('e3', 'qrz.com', uc $l) unless @out;
-	} else {
-		push @out, $self->msg('e18', 'QRZ.com');
 	}
 }
 

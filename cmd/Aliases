@@ -99,6 +99,7 @@ package CmdAlias;
 	  '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
 	],
 	's' => [
+	  '^s$', 'send', 'send',
 	  '^s/p$', 'send', 'send',
 	  '^sb$', 'send noprivate', 'send',
 	  '^set/home$', 'set/homenode', 'set/homenode',
