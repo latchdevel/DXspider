@@ -2,4 +2,4 @@
 # startup script example
 #
 # set maximum no of spots allowed to 100
-set/var $Spot::maxspots = 1
+set/var $Spot::maxspots = 100
