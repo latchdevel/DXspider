@@ -1703,14 +1703,25 @@ password for a user.
 
 === 0^SET/PROMPT <string>^Set your prompt to <string>
 === 0^UNSET/PROMPT^Set your prompt back to default
-This command will set your user prompt to exactly the string that you 
+This command will set your user prompt to the string that you 
 say. The point of this command to enable a user to interface to programs
 that are looking for a specific prompt (or else you just want a different
-fixed prompt).
+prompt).
 
   SET/PROMPT clx >
 
-UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back to
+There are some substitutions that can be added to the prompt:
+
+  %C - callsign [which will have ( and ) around it if not here]
+  %D - date
+  %T - time
+  %M - cluster 'mycall'
+
+The standard prompt is defined as:
+
+  SET/PROMPT %C de %M %D %T dxspider >
+
+UNSET/PROMPT will undo the SET/PROMPT command and set your prompt back to
 normal.
 
 === 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node

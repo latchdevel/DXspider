@@ -1,3 +1,18 @@
+12Jan05=======================================================================
+1. Add $main::bumpexisting variable which allows a new connection for a user
+call to disconnect an existing connection with the same call. The default for
+this variable is 'true' (1). This means that existing behaviour has changed.
+set/var $main::bumpexisting = 0 to return to original behaviour.
+2. Remind a user every hour (as default) that they have new messages.
+set/var $DXCommandmode::msgpolltime = 3*3600 to set it to 3 hours.
+3. Allow some substitutions in set/prompt (call, date, time and
+cluster call) and add dxspider just before the > as standard. 
+4. Add $main::allowdxby variable so that sysops can switch off the 
+'DX BY <othercall' command. It is set to 0 (ie disabled) by default. This
+is for sysops who don't want to bump privilege to allow it. That still works
+as before.
+5. Fix the bug in 'dx by <call>' that causes only the first word of the 
+comment to be recorded.
 27Dec04=======================================================================
 1. add improved VE data from Charlie K1XX. You should update usdb as well.
 22Dec04=======================================================================

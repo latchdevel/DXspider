@@ -115,7 +115,8 @@ package main;
 use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
-			$clusterport $mycall $decease $is_win $routeroot $me $reqreg
+			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
+			$allowdxby
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -125,6 +126,9 @@ $starttime = 0;                 # the starting time of the cluster
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
 $reqreg = 0;					# 1 = registration required, 2 = deregister people
+$bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't allow it
+$allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
+
 
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -170,9 +174,20 @@ sub new_channel
 	my $user = DXUser->get_current($call);
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
-		my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
-		already_conn($conn, $call, $mess);
-		return;
+		if ($user && $user->is_node) {
+			already_conn($conn, $call, DXM::msg($lang, 'concluster', $call, $main::mycall));
+			return;
+		}
+		if ($bumpexisting) {
+			my $ip = $conn->{peerhost} || 'unknown';
+			$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
+			Log('DXCommand', "$call bumped off by $ip, disconnected");
+			dbg("$call bumped off by $ip, disconnected");
+			$dxchan->disconnect;
+		} else {
+			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+			return;
+		}
 	}
 
 	# is he locked out ?

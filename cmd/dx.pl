@@ -34,11 +34,11 @@ return (1, $self->msg('dx2')) unless @f >= 2;
 # can be in any order
 
 if ($f[0] =~ /^by$/i) {
-	return (1, $self->msg('e5')) unless $self->priv;
+	return (1, $self->msg('e5')) unless $main::allowdxby || $self->priv;
     $spotter = uc $f[1];
-    $line =~ s/^\s*\Q$f[0]\s+\Q$f[1]\s+//;
-	$line = $f[2];
-	@f = split /\s+/, $line;
+    $line =~ s/\s*$f[0]\s+$f[1]\s+//;
+#	$line = $f[2];
+	@f = split /\s+/, $line, 3;
 	return (1, $self->msg('dx2')) unless @f >= 2;
 }
 

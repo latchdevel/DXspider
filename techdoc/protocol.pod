@@ -129,7 +129,7 @@ L</Node> to which this L</User> is connected.
 
 =head2 Endpoint
 
-An L</Endpoint> is a connection to a L<Node> that uses the protocol. From a routing point of
+An L</Endpoint> is a connection to a L</Node> that uses the protocol. From a routing point of
 view, it is indistiguishable from a L</Node>. The L</Endpoint> is responsible for creating and decoding
 well formed protocol messages. An L</Endpoint> does not route beyond the immediate L</Node>(s) to
 which it is connected. It may also be a L</Service> connected to a L</Node> which provides some 

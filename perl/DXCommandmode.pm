@@ -37,7 +37,7 @@ use DB_File;
 use VE7CC;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount $msgpolltime);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -46,6 +46,7 @@ $errstr = ();					# error string from eval
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 $maxbadcount = 3;				# no of bad words allowed before disconnection
+$msgpolltime = 3600;			# the time between polls for new messages 
 
 
 use vars qw($VERSION $BRANCH);
@@ -182,6 +183,7 @@ sub start
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
+	$self->lastmsgpoll($main::systime);
 	$self->prompt;
 }
 
@@ -492,6 +494,12 @@ sub process
 	
 	foreach $dxchan (@dxchan) {
 		next if $dxchan->sort ne 'U';  
+	
+		# send a outstanding message prompt if required
+		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
+			$dxchan->send($dxchan->msg('m9')) if DXMsg::for_me($dxchan->call);
+			$dxchan->lastmsgpoll($t);
+		}
 		
 		# send a prompt if no activity out on this channel
 		if ($t >= $dxchan->t + $main::user_interval) {
@@ -549,11 +557,18 @@ sub disconnect
 sub prompt
 {
 	my $self = shift;
-	if ($self->{prompt}) {
-		$self->send($self->{prompt});
-	} else {
-		$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call, cldate($main::systime), ztime($main::systime)));
-	}
+	my $call = $self->call;
+	my $date = cldate($main::systime);
+	my $time = ztime($main::systime);
+	my $prompt = $self->{prompt} || $self->msg('pr');
+
+	$call = "($call)" unless $self->here;
+	$prompt =~ s/\%C/$call/g;
+	$prompt =~ s/\%D/$date/g;
+	$prompt =~ s/\%T/$time/g;
+	$prompt =~ s/\%M/$main::mycall/g;
+	
+	$self->send($prompt);
 }
 
 # broadcast a message to all users [except those mentioned after buffer]
