@@ -128,7 +128,7 @@ sub start
 	# do we need to send a forward/opernam?
 	my $lastoper = $user->lastoper || 0;
 	my $homenode = $user->homenode || ""; 
-	if ($homenode eq $main::mycall && $lastoper < $main::systime + $DXUser::lastoperinterval) {
+	if ($homenode eq $main::mycall && $lastoper + $DXUser::lastoperinterval < $main::systime) {
 		run_cmd($DXProt::me, "forward/opernam $call");
 		$user->lastoper($main::systime);
 	}
