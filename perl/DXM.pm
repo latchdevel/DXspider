@@ -26,6 +26,8 @@ require Exporter;
   pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
   e1 => 'Invalid command',
   e2 => 'Error: $_[0]',
+  conother => 'Sorry $_[0] you are connected on another port',
+  concluster => 'Sorry $_[0] you are already connected elsewhere on the cluster',
 );
 
 sub msg

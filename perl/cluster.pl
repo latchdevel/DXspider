@@ -20,6 +20,8 @@ use DXUser;
 use DXM;
 use DXCommandmode;
 use DXProt;
+use DXCluster;
+use DXDebug;
 
 package main;
 
@@ -57,6 +59,28 @@ sub rec
 	 $user = DXUser->new($call) if !defined $user;
 	 $user->sort('U') if (!$user->sort());
 	 my $sort = $user->sort();
+	 
+	 # is there one already connected?
+	 if (DXChannel->get($call)) {
+	   my $mess = DXM::msg('conother', $call);
+	   dbg('chan', "-> D $call $mess\n"); 
+       $conn->send_now("D$call|$mess");
+	   dbg('chan', "-> Z $call bye\n");
+       $conn->send_now("Z$call|bye");          # this will cause 'client' to disconnect
+	   return;
+     }
+
+	 # is there one already connected elsewhere in the cluster?
+	 if (DXCluster->get($call)) {
+	   my $mess = DXM::msg('concluster', $call);
+	   dbg('chan', "-> D $call $mess\n"); 
+       $conn->send_now("D$call|$mess");
+	   dbg('chan', "-> Z $call bye\n");
+       $conn->send_now("Z$call|bye");          # this will cause 'client' to disconnect
+	   return;
+     }
+
+	 # create the channel
      $dxchan = DXCommandmode->new($call, $conn, $user) if ($sort eq 'U');
      $dxchan = DXProt->new($call, $conn, $user) if ($sort eq 'A');
 	 die "Invalid sort of user on $call = $sort" if !$dxchan;
@@ -98,8 +122,7 @@ sub process_inqueue
   my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
   
   # do the really sexy console interface bit! (Who is going to do the TK interface then?)
-  print DEBUG atime, " <- $sort $call $line\n" if defined DEBUG;
-  print "<- $sort $call $line\n";
+  dbg('chan', "<- $sort $call $line\n");
   
   # handle A records
   my $user = $dxchan->user;
@@ -123,9 +146,11 @@ sub process_inqueue
 #############################################################
 
 # open the debug file, set various FHs to be unbuffered
-open(DEBUG, ">>$debugfn") or die "can't open $debugfn($!)";
-select DEBUG; $| = 1;
-select STDOUT; $| = 1;
+dbginit($debugfn);
+foreach(@debug) {
+  dbgadd($_);
+}
+STDOUT->autoflush(1);
 
 # initialise User file system
 DXUser->init($userfn);

@@ -15,6 +15,7 @@ use DXUtil;
 use DXChannel;
 use DXUser;
 use DXVars;
+use DXDebug;
 
 use strict;
 use vars qw( %Cache $last_dir_mtime @cmd);
@@ -28,16 +29,19 @@ $last_dir_mtime = 0;          # the last time one of the cmd dirs was modified
 
 sub start
 { 
-  my $self = shift;
+  my ($self, $line) = @_;
   my $user = $self->{user};
   my $call = $self->{call};
   my $name = $self->{name};
   $name = $call if !defined $name;
+
   $self->msg('l2',$name);
   $self->send_file($main::motd) if (-e $main::motd);
   $self->msg('pr', $call);
   $self->state('prompt');                  # a bit of room for further expansion, passwords etc
-  $self->{priv} = 0;                  # set the connection priv to 0 - can be upgraded later
+  $self->{priv} = $user->priv;
+  $self->{priv} = 0 if $line =~ /^(ax|te)/;     # set the connection priv to 0 - can be upgraded later
+  $self->{consort} = $line;                # save the connection type
 }
 
 #
@@ -162,7 +166,7 @@ sub eval_file {
   my $path = shift;
   my $cmdname = shift;
   my $package = valid_package_name($cmdname);
-  my $filename = "$path/$cmdname";
+  my $filename = "$path/$cmdname.pl";
   my $mtime = -M $filename;
   
   # return if we can't find it
@@ -184,7 +188,14 @@ sub eval_file {
 		
     #wrap the code into a subroutine inside our unique package
 	my $eval = qq{package DXChannel; sub $package { $sub; }};
-	print "eval $eval\n";
+	if (isdbg('eval')) {
+	  my @list = split /\n/, $eval;
+	  my $line;
+	  foreach (@list) {
+	    dbg('eval', $_, "\n");
+	  }
+	}
+	#print "eval $eval\n";
 	{
 	  #hide our variables within this block
 	  my($filename,$mtime,$package,$sub);
@@ -201,7 +212,7 @@ sub eval_file {
   
   my @r;
   my $c = qq{ \@r = \$self->$package(\@_); };
-  print "c = $c\n";
+  dbg('eval', "cluster cmd = $c\n");
   eval  $c; ;
   if ($@) {
     delete_package($package);

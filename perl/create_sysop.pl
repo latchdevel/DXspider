@@ -25,7 +25,7 @@ sub create_it
   $self->{long} = $mylongtitude;
   $self->{email} = $myemail;
   $self->{bbsaddr} = $mybbsaddr;
-  $self->{sort} = 'C';           # C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
+  $self->{sort} = 'U';           # C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
   $self->{priv} = 9;             # 0 - 9 - with 9 being the highest
   $self->{lastin} = 0;
 

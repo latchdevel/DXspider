@@ -15,6 +15,7 @@ use DXUtil;
 use DXChannel;
 use DXUser;
 use DXM;
+use DXCluster;
 
 # this is how a pc connection starts (for an incoming connection)
 # issue a PC38 followed by a PC18, then wait for a PC20 (remembering
@@ -22,6 +23,13 @@ use DXM;
 sub start
 {
   my $self = shift;
+  my $call = $self->call;
+  
+  # do we have him connected on the cluster somewhere else?
+  if (DXCluster->get
+  $self->pc38();
+  $self->pc18();
+  $self->{state} = 'incoming';
 }
 
 #
@@ -48,6 +56,10 @@ sub finish
 {
 
 }
+ 
+#
+# All the various PC routines
+#
 
 1;
 __END__ 

@@ -20,11 +20,12 @@ BEGIN {
 use Msg;
 use DXVars;
 
-$mode = 1;                      # 1 - \n = \r as EOL, 2 - \n = \n, 0 - transparent
+$mode = 2;                      # 1 - \n = \r as EOL, 2 - \n = \n, 0 - transparent
 $call = "";                     # the callsign being used
 @stdoutq = ();                  # the queue of stuff to send out to the user
 $conn = 0;                      # the connection object for the cluster
 $lastbit = "";                  # the last bit of an incomplete input line
+$mynl = "\n";                   # standard terminator
 
 # cease communications
 sub cease
@@ -45,16 +46,11 @@ sub sig_term
 sub setmode
 {
   if ($mode == 1) {
-    $nl = "\r";
+    $mynl = "\r";
   } else {
-	$nl = "\n";
+	$mynl = "\n";
   }
-  $/ = $nl;
-  if ($mode == 0) {
-    $\ = undef;
-  } else {
-    $\ = $nl;
-  }
+  $/ = $mynl;
 }
 
 # handle incoming messages
@@ -68,9 +64,12 @@ sub rec_socket
     my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 	
 	if ($sort eq 'D') {
-	   $nl = "" if $mode == 0;
+	   my $snl = $mynl;
+	   $snl = "" if $mode == 0;
+	   $snl = ' ' if ($mode && $line =~ />$/);
 	   $line =~ s/\n/\r/og if $mode == 1;
-	   print $line;
+	   #my $p = qq($line$snl);
+	   print $line, $snl;
 	} elsif ($sort eq 'M') {
 	  $mode = $line;               # set new mode from cluster
       setmode();
@@ -115,11 +114,12 @@ sub rec_stdin
   }
 }
 
-$call = uc $ARGV[0];
-die "client.pl <call> [<mode>]\r\n" if (!$call);
-$mode = $ARGV[1] if (@ARGV > 1);
+$call = uc shift @ARGV;
+$call = uc $mycall if !$call; 
+$connsort = lc shift @ARGV;
+$connsort = 'local' if !$connsort;
+$mode = ($connsort =~ /^ax/) ? 1 : 2;
 setmode();
-
 
 #select STDOUT; $| = 1;
 STDOUT->autoflush(1);
@@ -129,7 +129,7 @@ $SIG{'TERM'} = \&sig_term;
 $SIG{'HUP'} = \&sig_term;
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
-$conn->send_now("A$call|start");
+$conn->send_now("A$call|$connsort");
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 Msg->event_loop();
 

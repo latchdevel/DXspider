@@ -28,6 +28,7 @@ package DXChannel;
 use Msg;
 use DXUtil;
 use DXM;
+use DXDebug;
 
 %channels = undef;
 
@@ -41,10 +42,11 @@ use DXM;
   oldstate => 'Last State',
   list => 'Dependant DXChannels list',
   name => 'User Name',
+  connsort => 'Connection Type'
 );
 
 
-# create a new connection object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
+# create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
 sub new
 {
   my ($pkg, $call, $conn, $user) = @_;
@@ -61,21 +63,21 @@ sub new
   return $channels{$call} = $self;
 }
 
-# obtain a connection object by callsign [$obj = DXChannel->get($call)]
+# obtain a channel object by callsign [$obj = DXChannel->get($call)]
 sub get
 {
   my ($pkg, $call) = @_;
-  return $connect{$call};
+  return $channels{$call};
 }
 
-# obtain all the connection objects
+# obtain all the channel objects
 sub get_all
 {
   my ($pkg) = @_;
   return values(%channels);
 }
 
-# obtain a connection object by searching for its connection reference
+# obtain a channel object by searching for its connection reference
 sub get_by_cnum
 {
   my ($pkg, $conn) = @_;
@@ -87,7 +89,7 @@ sub get_by_cnum
   return undef;
 }
 
-# get rid of a connection object [$obj->del()]
+# get rid of a channel object [$obj->del()]
 sub del
 {
   my $self = shift;
@@ -115,10 +117,8 @@ sub send_now
     my $line;
 	
     foreach $line (@_) {
-      my $t = atime;
 	  chomp $line;
-      print main::DEBUG "$t -> $sort $call $line\n" if defined DEBUG;
-	  print "-> $sort $call $line\n";
+      dbg('chan', "-> $sort $call $line\n");
       $conn->send_now("$sort$call|$line");
 	}
   }
@@ -144,10 +144,8 @@ sub send              # this is always later and always data
     my $line;
 
     foreach $line (@_) {
-      my $t = atime;
 	  chomp $line;
-	  print main::DEBUG "$t -> D $call $line\n" if defined DEBUG;
-	  print "-> D $call $line\n";
+	  dbg('chan', "-> D $call $line\n");
 	  $conn->send_later("D$call|$line");
 	}
   }
@@ -180,10 +178,30 @@ sub state
   my $self = shift;
   $self->{oldstate} = $self->{state};
   $self->{state} = shift;
-  print "Db   $self->{call} channel state $self->{oldstate} -> $self->{state}\n" if $main::debug;
+  dbg('state', "$self->{call} channel state $self->{oldstate} -> $self->{state}\n");
 }
 
 # various access routines
+
+#
+# return a list of valid elements 
+# 
+
+sub fields
+{
+  return keys(%valid);
+}
+
+#
+# return a prompt for a field
+#
+
+sub field_prompt
+{ 
+  my ($self, $ele) = @_;
+  return $valid{$ele};
+}
+
 sub AUTOLOAD
 {
   my $self = shift;

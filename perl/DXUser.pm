@@ -131,7 +131,7 @@ sub close
 # return a list of valid elements 
 # 
 
-sub elements
+sub fields
 {
   return keys(%valid);
 }
@@ -140,7 +140,7 @@ sub elements
 # return a prompt for a field
 #
 
-sub prompt
+sub field_prompt
 { 
   my ($self, $ele) = @_;
   return $valid{$ele};
