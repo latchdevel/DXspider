@@ -18,7 +18,8 @@ my $nowt = time;
 push @out, "                                      Ave   Obs   Ping   Sec Since";
 push @out, "  Callsign Type Started               RTT  count  Int.   Last Ping";
 
-foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
+foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all() ) {
+	next if $dxchan->is_user;
 	my $call = $dxchan->call();
 	next if $dxchan == $main::me;
 	my $t = cldatetime($dxchan->startt);
@@ -27,7 +28,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $obscount = $dxchan->nopings;
 	my $lastt = $nowt - ($dxchan->lastping);
 	my $pingint = $dxchan->pingint;
-	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
+	my $ping = $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
 	$sort = 'ANEA' if $dxchan->is_aranea;
 	$sort = "DXSP" if $dxchan->is_spider;
 	$sort = "CLX " if $dxchan->is_clx;
