@@ -15,7 +15,7 @@ if (@list == 0) {
 	push @out, "Work Queue Keys";
 	push @out, map { " $_" } sort keys %DXMsg::work;
 	push @out, "Busy Queue Data";
-	foreach $ref (sort {$a->call cmp $b->call} DXMsg::get_all_busy) {
+	foreach $ref (sort {$a->to cmp $b->to} DXMsg::get_all_busy) {
 		my $msgno = $ref->msgno;
 		my $stream = $ref->stream;
 		my $lines = scalar $ref->lines;
