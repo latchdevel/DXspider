@@ -148,7 +148,7 @@ sub normal
 # periodic processing (every second)
 #
 
-my $lastmin = 0;
+my $lastmin = time;
 
 sub process
 {
@@ -160,10 +160,8 @@ sub process
 		$daystart = $main::systime - ($main::systime % 86400);
 	}
 	if ($main::systime >= $lastmin + 60) {
-		if ($lastmin) {
-			per_minute();
-			$lastmin = $main::systime;
-		}
+		per_minute();
+		$lastmin = $main::systime;
 	}
 }
 
