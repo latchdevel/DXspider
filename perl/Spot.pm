@@ -23,7 +23,7 @@ use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $fil
 $fp = undef;
 $maxspots = 50;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
-$maxdays = 3*31;				# normal maximum no of days to go back
+$maxdays = 100;				# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 3*3600;               # the length of time to hold spot dups
@@ -169,7 +169,8 @@ sub search
 	my @todate;
 
 	$dayfrom = 0 if !$dayfrom;
-	$dayto = $maxdays if !$dayto;
+	$dayto = $maxdays unless $dayto;
+	$dayto = $dayfrom + $maxdays if $dayto < $dayfrom;
 	@fromdate = Julian::sub(@today, $dayfrom);
 	@todate = Julian::sub(@fromdate, $dayto);
 	$from = 0 unless $from;
