@@ -48,14 +48,14 @@ unless ($want{agw}) {
 
 $mc->cfgprint('msg', [], 64000, 
 		 "Data <font color=#00cc00>in</font> and <font color=#0000ff>out</font> of $main::mycall",
-		 'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
+		 'Bytes / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
 $mc->data('msg', $din, $dout, "Data in and out of $main::mycall") unless $want{cfgonly};
 
 # do AGW stats if they apply
 if ($want{agw}) {
 	$mc->cfgprint('agw', [], 64000, 
 				  "AGW Data <font color=#00cc00>in</font> and <font color=#0000ff>out</font> of $main::mycall",
-				  'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
+				  'Bytes / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
 	$mc->data('agw', $AGWMsg::total_in, $AGWMsg::total_out, "AGW Data in and out of $main::mycall") unless $want{cfgonly};
 }
 			 
