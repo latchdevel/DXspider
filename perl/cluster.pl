@@ -245,7 +245,7 @@ sub cease
 sub reap
 {
 	my $cpid;
-	while (($cpid = waitpid(-1, WNOHANG)) != -1) {
+	while (($cpid = waitpid(-1, WNOHANG)) > 0) {
 		dbg('reap', "cpid: $cpid");
 		@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
 		$zombies-- if $zombies > 0;
