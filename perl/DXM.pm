@@ -39,6 +39,8 @@ require Exporter;
   l1 => 'Sorry $_[0], you are already logged on on another channel',
   l2 => 'Hello $_[0], this is $main::mycall located in $main::myqth',
   m2 => '$_[0] Information: $_[1]',
+  node => '$_[0] set as AK1A style Node',
+  nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
   pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
   prx => '$main::$mycall >',
   talks => 'Talk flag set on $_[0]',

@@ -59,17 +59,13 @@ sub rec
   # set up the basic channel info - this needs a bit more thought - there is duplication here
   if (!defined $dxchan) {
      my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
-     my $user = DXUser->get($call);
-	 if (!defined $user) {
-	   $user = DXUser->new($call);
-	 }
-	 my $sort = $user->sort();
-	 
-	 # is there one already connected?
+
+     # is there one already connected?
 	 if (DXChannel->get($call)) {
 	   my $mess = DXM::msg('conother', $call);
 	   dbg('chan', "-> D $call $mess\n"); 
        $conn->send_now("D$call|$mess");
+	   sleep(1);
 	   dbg('chan', "-> Z $call bye\n");
        $conn->send_now("Z$call|bye");          # this will cause 'client' to disconnect
 	   return;
@@ -80,21 +76,20 @@ sub rec
 	   my $mess = DXM::msg('concluster', $call);
 	   dbg('chan', "-> D $call $mess\n"); 
        $conn->send_now("D$call|$mess");
+	   sleep(1);
 	   dbg('chan', "-> Z $call bye\n");
        $conn->send_now("Z$call|bye");          # this will cause 'client' to disconnect
 	   return;
      }
 
-     # set some necessary flags on the user if they are connecting
-	 $user->wwv(1) if !$user->wwv();
-	 $user->talk(1) if !$user->talk();
-	 $user->ann(1) if !$user->ann();
-	 $user->here(1) if !$user->here();
-	 $user->sort('U') if !$user->sort();
+     my $user = DXUser->get($call);
+	 if (!defined $user) {
+	   $user = DXUser->new($call);
+	 }
 
-	 # create the channel
-     $dxchan = DXCommandmode->new($call, $conn, $user) if ($sort eq 'U');
-     $dxchan = DXProt->new($call, $conn, $user) if ($sort eq 'A');
+     # create the channel
+     $dxchan = DXCommandmode->new($call, $conn, $user) if ($user->sort eq 'U');
+     $dxchan = DXProt->new($call, $conn, $user) if ($user->sort eq 'A');
 	 die "Invalid sort of user on $call = $sort" if !$dxchan;
   }
   

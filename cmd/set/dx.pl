@@ -15,9 +15,9 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $user = ($call eq $self->call) ? $self->user : DXUser->get($call);
-  if ($user) {
-    $user->dx(1);
+  my $chan = DXChannel->get($call);
+  if ($chan) {
+    $chan->dx(1);
 	push @out, DXM::msg('dxs', $call);
   } else {
     push @out, DXM::msg('e3', "Set DX Spots", $call);

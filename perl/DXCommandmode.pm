@@ -18,10 +18,22 @@ use DXVars;
 use DXDebug;
 
 use strict;
-use vars qw( %Cache $last_dir_mtime @cmd);
 
-$last_dir_mtime = 0;          # the last time one of the cmd dirs was modified
-@cmd = undef;                 # a list of commands+path pairs (in alphabetical order)
+#use vars qw( %Cache $last_dir_mtime @cmd);
+my %Cache = ();                  # cache of dynamically loaded routine's mod times
+my $last_dir_mtime = 0;          # the last time one of the cmd dirs was modified
+my @cmd = undef;                 # a list of commands+path pairs (in alphabetical order)
+
+#
+# obtain a new connection this is derived from dxchannel
+#
+
+sub new 
+{
+  my $self = DXChannel::alloc(@_);
+  $self->{sort} = 'U';   # in absence of how to find out what sort of an object I am
+  return $self;
+}
 
 # this is how a a connection starts, you get a hello message and the motd with
 # possibly some other messages asking you to set various things up if you are
@@ -42,7 +54,10 @@ sub start
   $self->{priv} = $user->priv;
   $self->{priv} = 0 if $line =~ /^(ax|te)/;     # set the connection priv to 0 - can be upgraded later
   $self->{consort} = $line;                # save the connection type
-  $self->sort('U');                        # set the channel type
+
+  # set some necessary flags on the user if they are connecting
+  $self->{wwv} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
+
 }
 
 #
@@ -125,6 +140,36 @@ sub prompt
   my $self = shift;
   my $call = $self->{call};
   DXChannel::msg($self, 'pr', $call);
+}
+
+# broadcast a message to all users [except those mentioned after buffer]
+sub broadcast
+{
+  my $pkg = shift;                # ignored
+  my $s = shift;                  # the line to be rebroadcast
+  my @except = @_;                # to all channels EXCEPT these (dxchannel refs)
+  my @list = DXChannel->get_all();   # just in case we are called from some funny object
+  my ($chan, $except);
+  
+L: foreach $chan (@list) {
+     next if !$chan->sort eq 'U';  # only interested in user channels  
+	 foreach $except (@except) {
+	   next L if $except == $chan;  # ignore channels in the 'except' list
+	 }
+	 chan->send($s);              # send it
+  }
+}
+
+# gimme all the users
+sub get_all
+{
+  my @list = DXChannel->get_all();
+  my $ref;
+  my @out;
+  foreach $ref (@list) {
+    push @out, $ref if $ref->sort eq 'U';
+  }
+  return @out;
 }
 
 #

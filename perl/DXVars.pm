@@ -57,23 +57,14 @@ $clusterport = 27754;
 # cluster debug file
 $debugfn = "/tmp/debug_cluster";
 
-# the version of DX cluster (tm) software I am masquerading as
-$myprot_version = "5447";
-
 # your favorite way to say 'Yes'
 $yes = 'Yes';
 
 # your favorite way to say 'No'
 $no = 'No';
 
-# the interval between pc50s (in seconds)
-$pc50_interval = 14*60;
-
 # the interval between unsolicited prompts if not traffic
 $user_interval = 11*60;
-
-# default hopcount to use - note this will override any incoming hop counts, if they are greater
-$def_hopcount = 7;
 
 # root of directory tree for this system
 $root = "/spider"; 

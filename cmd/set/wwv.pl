@@ -15,9 +15,9 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $user = ($call eq $self->call) ? $self->user : DXUser->get($call);
-  if ($user) {
-    $user->wwv(1);
+  my $chan = DXChannel->get($call);
+  if ($chan) {
+    $chan->wwv(1);
 	push @out, DXM::msg('wwvs', $call);
   } else {
     push @out, DXM::msg('e3', "Set WWV", $call);

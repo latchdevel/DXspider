@@ -28,6 +28,8 @@ sub create_it
   $self->{sort} = 'U';           # C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
   $self->{priv} = 9;             # 0 - 9 - with 9 being the highest
   $self->{lastin} = 0;
+  $self->{dxok} = 1;
+  $self->{annok} = 1;
 
   # write it away
   $self->close();
@@ -44,6 +46,8 @@ sub create_it
   $self->{sort} = 'U';           # C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
   $self->{priv} = 9;             # 0 - 9 - with 9 being the highest
   $self->{lastin} = 0;
+  $self->{dxok} = 1;
+  $self->{annok} = 1;
 
   # write it away
   $self->close();

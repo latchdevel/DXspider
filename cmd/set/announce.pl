@@ -15,9 +15,9 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $user = ($call eq $self->call) ? $self->user :  DXUser->get($call);
-  if ($user) {
-    $user->ann(1);
+  my $chan = DXChannel->get($call);
+  if ($chan) {
+    $chan->ann(1);
 	push @out, DXM::msg('anns', $call);
   } else {
     push @out, DXM::msg('e3', "Set Announce", $call);

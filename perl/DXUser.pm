@@ -32,15 +32,14 @@ $filename = undef;
   lastin => '0,Last Time in,cldatetime',
   passwd => '9,Password',
   addr => '0,Full Address',
-  sort => '0,Type of User',  # A - ak1a, U - User, S - spider cluster, B - BBS
-  wwv => '0,Want WWV,yesno',
-  talk => '0,Want Talk,yesno',
-  ann => '0,Want Announce,yesno',
-  here => '0,Here Status,yesno',
+  sort => '0,Type of User',                # A - ak1a, U - User, S - spider cluster, B - BBS
   xpert => '0,Expert Status,yesno',
   bbs => '0,Home BBS',
   node => '0,Home Node',
-  dx => '0,DX Spots,yesno',
+  lockout => '9,Locked out?,yesno',        # won't let them in at all
+  dxok => '9,DX Spots?,yesno',            # accept his dx spots?
+  annok => '9,Announces?,yesno',            # accept his announces?
+  reg => '0,Registered?,yesno',            # is this user registered? 
 );
 
 sub AUTOLOAD
@@ -92,17 +91,37 @@ sub new
 
   my $self = {};
   $self->{call} = $call;
+  $self->{sort} = 'U';
+  $self->{dxok} = 1;
+  $self->{annok} = 1;
   bless $self, $pkg;
   $u{call} = $self;
 }
 
 #
-# get - get an existing user
+# get - get an existing user - this seems to return a different reference everytime it is
+#       called - see below
 #
 
 sub get
 {
   my ($pkg, $call) = @_;
+  return $u{$call};
+}
+
+#
+# get an existing either from the channel (if there is one) or from the database
+#
+# It is important to note that if you have done a get (for the channel say) and you
+# want access or modify that you must use this call (and you must NOT use get's all
+# over the place willy nilly!)
+#
+
+sub get_current
+{
+  my ($pkg, $call) = @_;
+  my $dxchan = DXChannel->get($call);
+  return $dxchan->user if $dxchan;
   return $u{$call};
 }
 

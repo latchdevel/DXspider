@@ -30,9 +30,11 @@ use DXUtil;
 use DXM;
 use DXDebug;
 
-%channels = undef;
+use strict;
 
-%valid = (
+my %channels = undef;
+
+my %valid = (
   call => '0,Callsign',
   conn => '9,Msg Conn ref',
   user => '9,DXUser ref',
@@ -45,11 +47,17 @@ use DXDebug;
   name => '0,User Name',
   consort => '9,Connection Type',
   sort => '9,Type of Channel',
+  wwv => '0,Want WWV,yesno',
+  talk => '0,Want Talk,yesno',
+  ann => '0,Want Announce,yesno',
+  here => '0,Here?,yesno',
+  confmode => '0,In Conference?,yesno',
+  dx => '0,DX Spots,yesno',
 );
 
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
-sub new
+sub alloc
 {
   my ($pkg, $call, $conn, $user) = @_;
   my $self = {};
@@ -98,6 +106,19 @@ sub del
   delete $channels{$self->{call}};
 }
 
+# is it an ak1a cluster ?
+sub is_ak1a
+{
+  my $self = shift;
+  return $self->{sort} eq 'A';
+}
+
+# is it a user?
+sub is_user
+{
+  my $self = shift;
+  return $self->{sort} eq 'U';
+}
 
 # handle out going messages, immediately without waiting for the select to drop
 # this could, in theory, block
@@ -186,11 +207,11 @@ sub field_prompt
   return $valid{$ele};
 }
 
+no strict;
 sub AUTOLOAD
 {
   my $self = shift;
   my $name = $AUTOLOAD;
-  
   return if $name =~ /::DESTROY$/;
   $name =~ s/.*:://o;
   

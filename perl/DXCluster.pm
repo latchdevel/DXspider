@@ -17,17 +17,28 @@ package DXCluster;
 use Exporter;
 @ISA = qw(Exporter);
 
-%cluster = ();            # this is where we store the dxcluster database
+use strict;
+
+my %cluster = ();            # this is where we store the dxcluster database
+
+my %valid = (
+  mynode => '0,Parent Node',
+  call => '0,Callsign',
+  confmode => '0,Conference Mode,yesno',
+  here => '0,Here?,yesno',
+  dxchan => '5,Channel ref',
+  pcversion => '5,Node Version',
+);
 
 sub alloc
 {
-  my ($pkg, $call, $confmode, $here, $dxprot) = @_;
+  my ($pkg, $call, $confmode, $here, $dxchan) = @_;
   die "$call is already alloced" if $cluster{$call};
   my $self = {};
   $self->{call} = $call;
   $self->{confmode} = $confmode;
   $self->{here} = $here;
-  $self->{dxprot} = $dxprot;
+  $self->{dxchan} = $dxchan;
 
   $cluster{$call} = bless $self, $pkg;
   return $self;
@@ -52,14 +63,6 @@ sub delcluster;
   delete $cluster{$self->{call}};
 }
 
-%valid = (
-  mynode => '0,Parent Node',
-  call => '0,Callsign',
-  confmode => '5,Conference Mode,yesno',
-  here => '5,Here?,yesno',
-  dxprot => '5,Channel ref',
-  version => '5,Node Version',
-);
 
 # return a prompt for a field
 sub field_prompt
@@ -68,6 +71,7 @@ sub field_prompt
   return $valid{$ele};
 }
 
+no strict;
 sub AUTOLOAD
 {
   my $self = shift;
@@ -84,16 +88,17 @@ sub AUTOLOAD
 # USER special routines
 #
 
-package DXUser;
+package DXNodeuser;
 
 @ISA = qw(DXCluster);
 
-%users = ();
+use strict;
+my %users = ();
 
 sub new 
 {
-  my ($pkg, $mynode, $call, $confmode, $here, $dxprot) = @_;
-  my $self = $pkg->alloc($call, $confmode, $here, $dxprot);
+  my ($pkg, $mynode, $call, $confmode, $here, $dxchan) = @_;
+  my $self = $pkg->alloc($call, $confmode, $here, $dxchan);
   $self->{mynode} = $mynode;
 
   $users{$call} = $self;
@@ -112,6 +117,8 @@ sub count
   return %users + 1;                 # + 1 for ME (naf eh!)
 }
 
+no strict;
+
 #
 # NODE special routines
 #
@@ -120,13 +127,14 @@ package DXNode;
 
 @ISA = qw(DXCluster);
 
-%nodes = ();
+use strict;
+my %nodes = ();
 
 sub new 
 {
-  my ($pkg, $call, $confmode, $here, $version, $dxprot) = @_;
-  my $self = $pkg->alloc($call, $confmode, $here, $dxprot);
-  $self->{version} = $version;
+  my ($pkg, $call, $confmode, $here, $pcversion, $dxchan) = @_;
+  my $self = $pkg->alloc($call, $confmode, $here, $dxchan);
+  $self->{version} = $pcversion;
   $nodes{$call} = $self;
   return $self;
 }
@@ -144,7 +152,7 @@ sub get_all
   my $list;
   my @out;
   foreach $list (values(%nodes)) {
-    push @out, $list if $list->{version};
+    push @out, $list if $list->{pcversion};
   }
   return @out;
 }

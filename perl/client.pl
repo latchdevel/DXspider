@@ -143,11 +143,15 @@ sub rec_stdin
 }
 
 $call = uc shift @ARGV;
-$call = uc $mycall if !$call; 
+$call = uc $myalias if !$call; 
 $connsort = lc shift @ARGV;
 $connsort = 'local' if !$connsort;
 $mode = ($connsort =~ /^ax/o) ? 1 : 2;
 setmode();
+if ($call eq $mycall) {
+  print "You cannot connect as your cluster callsign ($mycall)", $nl;
+  cease(0);
+}
 
 #select STDOUT; $| = 1;
 STDOUT->autoflush(1);
