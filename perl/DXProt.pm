@@ -511,7 +511,11 @@ sub normal
 		}
 		
 		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42 || $pcno == 49) { # mail/file handling
-			DXMsg::process($self, $line);
+			if ($field[1] eq $main::mycall) {
+				DXMsg::process($self, $line);
+			} else {
+				route($field[1], $line);
+			}
 			return;
 		}
 		
