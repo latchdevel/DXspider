@@ -1,0 +1,5 @@
+timeout 15
+connect ax25 ax25_call g1tlh gb7djk
+'CONNECTED' 'cluster'
+'Connected' ''
+client /spider/perl/client.pl gb7tlh ax25

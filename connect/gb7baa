@@ -1,0 +1,3 @@
+timeout 45
+connect net gb7baa.tubby.org
+client /spider/perl/client.pl gb7baa
