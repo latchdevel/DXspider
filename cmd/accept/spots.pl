@@ -9,6 +9,8 @@
 my ($self, $line) = @_;
 my $sort = 'accept';
 
+return (0, $self->msg('filter5')) unless $line;
+
 my ($r, $filter, $fno, $user, $s) = $Spot::filterdef->parse($self, $line);
 return (0, $filter) if $r;
 

@@ -80,6 +80,7 @@ package DXM;
 				filter2 => 'Need a value for $_[0]',
 				filter3 => 'No filters defined for $_[0]',
 				filter4 => '$_[0]$_[1] Filter $_[2] deleted for $_[3]',
+				filter5 => 'need some filter commands...',
 				grids => 'DX Grid flag set on $_[0]',
 				gridu => 'DX Grid flag unset on $_[0]',
 				helpe1 => 'Help system unavailable, tell sysop',
