@@ -1,3 +1,7 @@
+16Oct02=======================================================================
+1. decrease the default max length of PC16/19 to around 180 characters to be
+slightly friendlier to ARC, which seems to have a difficulty reconstructing
+lines from multiple packets. Also make the value settable via set/var.
 15Oct02=======================================================================
 1. made some detail changes to the raw USDB data and the routines that 
 generate and operate on them. There were some bugs involving a few 'missing'

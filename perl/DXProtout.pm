@@ -94,13 +94,13 @@ sub pc16
 		next unless $_;
 		my $ref = $_;
 		my $str = sprintf "^%s %s %d", $ref->call, $ref->conf ? '*' : '-', $ref->here;
-		if (length($s) + length($str) >= $sentencelth) {
+		if (length($s) + length($str) > $sentencelth) {
 			push @out, "PC16^$ncall" . $s . sprintf "^%s^", get_hops(16);
 			$s = "";
 		}
 		$s .= $str;
 	}
-	push @out, "PC16^$ncall" . $s . sprintf "^%s^", get_hops(16) if length $s;
+	push @out, "PC16^$ncall" . $s . sprintf "^%s^", get_hops(16);
 	return @out;
 }
 
@@ -142,13 +142,13 @@ sub pc19
 		my $conf = $ref->conf;
 		my $version = $ref->version;
 		my $str = "^$here^$call^$conf^$version";
-		if (length($s) + length($str) >= $sentencelth) {
+		if (length($s) + length($str) > $sentencelth) {
 			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
 			$s = "";
 		}
 		$s .= $str;
 	}
-	push @out, "PC19" . $s . sprintf "^%s^", get_hops(19) if length $s;
+	push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
 	return @out;
 }
 
