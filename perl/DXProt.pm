@@ -652,13 +652,13 @@ sub normal
 					my $ar;
 					if ($call ne $parent->call) {
 						if ($self->in_filter_route($r)) {
-							$ar = $parent->add($r);
+							$ar = $parent->add($call, $ver, $flags);
 							push @rout, $ar if $ar;
 						}
 					}
 					if ($r->version ne $ver || $r->flags != $flags) {
 						$r->version($ver);
-						$r->flags(Route::here($here)|Route::conf($conf));
+						$r->flags($flags);
 						push @rout, $r unless $ar;
 					}
 				} else {
