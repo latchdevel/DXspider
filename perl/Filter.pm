@@ -76,6 +76,27 @@ sub getfn
 # in with a 'do' statement. The 'do' statement reads the filter into
 # @in which is a list of references
 #
+sub compile
+{
+	my $self = shift;
+	my $fname = shift;
+	my $ar = shift;
+	my $ref = $self->{$fname};
+	my $rr;
+	
+	if ($ref->{$ar} && exists $ref->{$ar}->{asc}) {
+		$ref->{$ar}->{code} = eval "sub { my \$r=shift; return $ref->{$ar}->{asc}; }" ;
+		if ($@) {
+			my $sort = $ref->{sort};
+			my $name = $ref->{name};
+			dbg('err', "Error compiling $ar $sort $name: $@");
+			Log('err', "Error compiling $ar $sort $name: $@");
+		}
+		$rr = $@;
+	}
+	return $rr;
+}
+
 sub read_in
 {
 	my ($sort, $call, $flag) = @_;
@@ -94,25 +115,8 @@ sub read_in
 			my $filter;
 			my $key;
 			foreach $key ($newin->getfilkeys) {
-				$filter = $newin->{$key};
-				if ($filter->{reject} && exists $filter->{reject}->{asc}) {
-					$filter->{reject}->{code} = eval $filter->{reject}->{asc} ;
-					if ($@) {
-						my $sort = $newin->{sort};
-						my $name = $newin->{name};
-						dbg('err', "Error compiling reject $sort $key $name: $@");
-						Log('err', "Error compiling reject $sort $key $name: $@");
-					}
-				}
-				if ($filter->{accept} && exists $filter->{accept}->{asc}) {
-					$filter->{accept}->{code} = eval $filter->{accept}->{asc} ;
-					if ($@) {
-						my $sort = $newin->{sort};
-						my $name = $newin->{name};
-						dbg('err', "Error compiling accept $sort $key $name: $@");
-						Log('err', "Error compiling accept $sort $key $name: $@");
-					}
-				} 
+				$newin->compile($key, 'reject');
+				$newin->compile($key, 'accept');
 			}
 		}
 		return $newin;
@@ -327,7 +331,7 @@ use vars qw(@ISA);
 # this is called as a subroutine not as a method
 sub parse
 {
-	my ($self, $dxchan, $line) = @_;
+	my ($self, $dxchan, $sort, $line) = @_;
 	my $ntoken = 0;
 	my $fno = 1;
 	my $filter;
@@ -336,7 +340,7 @@ sub parse
 	my $user;
 	
 	# check the line for non legal characters
-	return ('ill', $dxchan->msg('e19')) if $line =~ /[^\s\w,_\*\/\(\)]/;
+	return ('ill', $dxchan->msg('e19')) if $line =~ /[^\s\w,_\-\*\/\(\)]/;
 	
 	# add some spaces for ease of parsing
 	$line =~ s/([\(\)])/ $1 /g;
@@ -362,8 +366,8 @@ sub parse
 				$fno = shift @f;
 			}
 
-			$filter = Filter::read_in('spots', $call, $flag);
-			$filter = Filter->new('spots', $call, $flag) unless $filter;
+			$filter = Filter::read_in($sort, $call, $flag);
+			$filter = Filter->new($sort, $call, $flag) unless $filter;
 			
 			$ntoken++;
 			next;
@@ -481,7 +485,35 @@ sub parse
 	$user =~ s/\!/ not /g;
 	$user =~ s/\s+/ /g;
 	
-	return (0, $filter, $fno, $user, "sub { my \$r = shift; return ($s) ? 1 : 0 }");
+	return (0, $filter, $fno, $user, "$s");
+}
+
+# a filter accept/reject command
+sub cmd
+{
+	my ($self, $dxchan, $sort, $type, $line) = @_;
+	
+	return $dxchan->msg('filter5') unless $line;
+
+	my ($r, $filter, $fno, $user, $s) = $self->parse($dxchan, $sort, $line);
+	return (1,$filter) if $r;
+
+	my $fn = "filter$fno";
+
+	$filter->{$fn} = {} unless exists $filter->{$fn};
+	$filter->{$fn}->{$type} = {} unless exists $filter->{$fn}->{$type};
+
+	$filter->{$fn}->{$type}->{user} = $user;
+	$filter->{$fn}->{$type}->{asc} = $s;
+	$r = $filter->compile($fn, $type);
+	return (1,$r) if $r;
+	
+	$r = $filter->write;
+	return (1,$r) if $r;
+	
+	$filter->install;
+
+    return (0, $filter, $fno);
 }
 
 package Filter::Old;

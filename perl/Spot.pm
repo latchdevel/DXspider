@@ -44,6 +44,14 @@ $filterdef = bless ([
 			 ], 'Filter::Cmd');
 
 
+# create a Spot Object
+sub new
+{
+	my $class = shift;
+	my $self = [ @_ ];
+	return bless $self, $class;
+}
+
 sub decodefreq
 {
 	my $dxchan = shift;
@@ -113,7 +121,7 @@ sub add
 	my $spotter_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
 	push @out, $spotter_dxcc;
 	push @out, $spot[5];
-	
+
 	my $buf = join("\^", @out);
 
 	# compare dates to see whether need to open another save file (remember, redefining $fp 

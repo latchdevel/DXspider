@@ -11,6 +11,48 @@
 #
 # Comment lines are indented before printing
 #
+=== 0^ACCEPT/ANNOUNCE [0-9] <pattern>^Set an 'accept' filter line for announce
+Create an 'accept this announce' line for a filter. 
+
+An accept filter line means that if the announce matches this filter it is
+passed onto the user. See HELP FILTERS for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  info <string>            eg: iota or qsl
+  by <prefixes>            eg: G,M,2         
+  origin <prefixes>
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  channel <prefixes>
+  wx 1                     filter WX announces
+  dest <prefixes>          eg: 6MUK,WDX      (distros)
+
+some examples:-
+
+  acc/ann dest 6MUK
+  acc/ann 2 by_zone 14,15,16
+  (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
+or
+  acc/ann by G,M,2 
+
+You can use the tag 'all' to reject everything that is left, eg:
+
+  acc/ann all
+
+=== 8^ACCEPT/ANNOUNCE <call> [input] [0-9] <pattern>^Announce filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  accept/ann by G,M,2
+  accept/ann input node_default by G,M,2
+  accept/ann user_default by G,M,2
+
 === 0^ACCEPT/SPOTS [0-9] <pattern>^Set an 'accept' filter line for spots
 Create an 'accept this spot' line for a filter. 
 
@@ -40,7 +82,7 @@ some examples:-
 
 You can use the tag 'all' to reject everything that is left, eg:
 
-  rej/spot 3 all
+  ann/spot 3 all
 
 === 8^ACCEPT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
@@ -594,8 +636,46 @@ message either sent by or sent to your callsign.
 === 5^READ-^
 As a sysop you may read any message on the system
 
+=== 0^REJECT/ANNOUNCE [0-9] <pattern>^Set an 'reject' filter line for announce
+Create an 'reject this announce' line for a filter. 
+
+An reject filter line means that if the announce matches this filter it is
+passed onto the user. See HELP FILTERS for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  info <string>            eg: iota or qsl
+  by <prefixes>            eg: G,M,2         
+  origin <prefixes>
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  channel <prefixes>
+  wx 1                     filter WX announces
+  dest <prefixes>          eg: 6MUK,WDX      (distros)
+
+some examples:-
+
+  rej/ann by_zone 14,15,16 and not by G,M,2
+ 
+You can use the tag 'all' to reject everything that is left, eg:
+
+  rej/ann all
+
+=== 8^REJECT/ANNOUNCE <call> [input] [0-9] <pattern>^Announce filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  reject/ann by G,M,2
+  reject/ann input node_default by G,M,2
+  reject/ann user_default by G,M,2
+
 === 0^REJECT/SPOTS [0-9] <pattern>^Set an 'reject' filter line for spots
-Create an 'accept this spot' line for a filter. 
+Create an 'reject this spot' line for a filter. 
 
 An reject filter line means that if the spot matches this filter it is
 dumped (not passed on). See HELP FILTERS for more info. Please read this

@@ -1291,13 +1291,13 @@ sub send_announce
 
 		if ($dxchan->{annfilter}) {
 			my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-			my @dxcc = Prefix::extract($_[1]);
+			my @dxcc = Prefix::extract($_[0]);
 			if (@dxcc > 0) {
 				$ann_dxcc = $dxcc[1]->dxcc;
 				$ann_itu = $dxcc[1]->itu;
 				$ann_cq = $dxcc[1]->cq;						
 			}
-			@dxcc = Prefix::extract($_[5]);
+			@dxcc = Prefix::extract($_[4]);
 			if (@dxcc > 0) {
 				$org_dxcc = $dxcc[1]->dxcc;
 				$org_itu = $dxcc[1]->itu;

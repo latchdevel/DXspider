@@ -8,7 +8,7 @@
 
 my ($self, $line) = @_;
 my $type = 'accept';
-my $sort  = 'spots';
+my $sort  = 'ann';
 
-my ($r, $filter, $fno) = $Spot::filterdef->cmd($self, $sort, $type, $line);
+my ($r, $filter, $fno) = $AnnTalk::filterdef->cmd($self, $sort, $type, $line);
 return (0, $r ? $r : $self->msg('filter1', $fno, $filter->{name})); 
