@@ -94,14 +94,18 @@ sub handle_cf
 	my %in;
 	if ($thing->{n}) {
 		for (split(/:/, $thing->{n})) {
-			my ($here, $call) = unpack("A1 A*", $_); 
-			$in{$call} = $here;
+			my ($here, $call) = unpack("A1 A*", $_);
+			unless ($call eq $main::mycall) {
+				$in{$call} = $here;
+			}
 		}
 	}
 	if ($thing->{a}) {
 		for (split(/:/, $thing->{a})) {
 			my ($here, $call) = unpack("A1 A*", $_); 
-			$in{$call} = $here;
+			unless ($call eq $main::mycall) {
+				$in{$call} = $here;
+			}
 		} 
 	}
 	my ($del, $add) = $parent->diff_nodes(keys %in);
