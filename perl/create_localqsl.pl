@@ -112,7 +112,8 @@ sub update
 	if (@in && $in[0]->[0] < $t) {
 		@in = grep {$_->[1] ne $by} @in;
 	}
-	unshift @in, [$t, $by, $comment] if grep is_callsign($1), split(/\s+/, $comment);
+	$comment =~ s/://g;
+	unshift @in, [$t, $by, $comment] if grep is_callsign($_), split(/\s+/, $comment);
 	pop @in, if @in > 10;
 	return join "\n", (map {(cldatetime($_->[0]) . " by $_->[1]: $_->[2]")} @in);
 }
