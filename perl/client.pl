@@ -293,7 +293,16 @@ $call = uc $myalias if !$call;
 $connsort = lc shift @ARGV;
 $connsort = 'local' if !$connsort;
 
-$mode = ($connsort =~ /^ax/o) ? 1 : 2;
+#
+# strip off any SSID if it is a telnet connection 
+#
+# SSID's are a problem, basically we don't allow them EXCEPT for the special case
+# of local users. i.e. you can have a cluster call with an SSID and a usercall with
+# an SSID and they are different to the system to those without SSIDs
+#
+
+$call =~ s/-\d+$//o if $mode eq 'telnet';
+$mode = ($connsort eq 'ax25') ? 1 : 2;
 setmode();
 
 if ($call eq $mycall) {

@@ -86,7 +86,8 @@ sub rec
 		}
 		
 		# is there one already connected elsewhere in the cluster?
-		if (DXCluster->get($call)) {
+		if (($call eq $main::myalias && DXCluster->get_exact($call)) ||
+		    DXCluster->get($call)) {
 			my $mess = DXM::msg($lang, 'concluster', $call);
 			dbg('chan', "-> D $call $mess\n"); 
 			$conn->send_now("D$call|$mess");
@@ -96,6 +97,7 @@ sub rec
 			return;
 		}
 		
+		# the user MAY have an SSID if local, but otherwise doesn't
 		my $user = DXUser->get($call);
 		if (!defined $user) {
 			$user = DXUser->new($call);

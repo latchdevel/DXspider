@@ -39,7 +39,8 @@ $filename = undef;
   sort => '0,Type of User',                # A - ak1a, U - User, S - spider cluster, B - BBS
   xpert => '0,Expert Status,yesno',
   bbs => '0,Home BBS',
-  node => '0,Home Node',
+  node => '0,Last Node',
+  homenode => '0,Home Node',
   lockout => '9,Locked out?,yesno',        # won't let them in at all
   dxok => '9,DX Spots?,yesno',            # accept his dx spots?
   annok => '9,Announces?,yesno',            # accept his announces?
@@ -97,7 +98,7 @@ sub new
 {
   my $pkg = shift;
   my $call = uc shift;
-  $call =~ s/-\d+//o;
+#  $call =~ s/-\d+$//o;
   
   confess "can't create existing call $call in User\n!" if $u{$call};
 
@@ -120,7 +121,7 @@ sub get
 {
   my $pkg = shift;
   my $call = uc shift;
-  $call =~ s/-\d+$//o;       # strip ssid
+#  $call =~ s/-\d+$//o;       # strip ssid
   return $u{$call};
 }
 
@@ -145,7 +146,7 @@ sub get_current
 {
   my $pkg = shift;
   my $call = uc shift;
-  $call =~ s/-\d+$//o;       # strip ssid
+#  $call =~ s/-\d+$//o;       # strip ssid
   
   my $dxchan = DXChannel->get($call);
   return $dxchan->user if $dxchan;

@@ -49,11 +49,45 @@ sub alloc
   return $self;
 }
 
+# get an entry exactly as it is
+sub get_exact
+{
+  my ($pkg, $call) = @_;
+
+  # belt and braces
+  $call = uc $call;
+  
+  # search for 'as is'
+  return $cluster{$call}; 
+}
+
+#
 # search for a call in the cluster
+# taking into account SSIDs
+#
 sub get
 {
   my ($pkg, $call) = @_;
-  return $cluster{$call};
+
+  # belt and braces
+  $call = uc $call;
+  
+  # search for 'as is'
+  my $ref = $cluster{$call}; 
+  return $ref if $ref;
+
+  # search for the unSSIDed one
+  $call =~ s/-\d+$//o;
+  $ref = $cluster{$call};
+  return $ref if $ref;
+  
+  # search for the SSIDed one
+  my $i;
+  for ($i = 1; $i < 17; $i++) {
+	  $ref = $cluster{"$call-$i"};
+	  return $ref if $ref;
+  }
+  return undef;
 }
 
 # get all 
@@ -137,7 +171,7 @@ sub new
 {
   my ($pkg, $dxchan, $node, $call, $confmode, $here) = @_;
 
-  die "tried to add $call when it already exists" if DXCluster->get($call);
+  die "tried to add $call when it already exists" if DXCluster->get_exact($call);
   
   my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
   $self->{mynode} = $node;
