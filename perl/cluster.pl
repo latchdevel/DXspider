@@ -69,6 +69,7 @@ use DXDb;
 use DXHash;
 use DXDupe;
 use Prefix;
+use Spot;
 use Bands;
 use Keps;
 use Minimuf;
