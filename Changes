@@ -1,3 +1,8 @@
+11May00=======================================================================
+1. fixed looping in Msg.pm (at last)
+10May00=======================================================================
+1. wrote a cross between 'tail -f' and grepdbg so that you can watch the
+debug files for particular strings and only have them print out. 
 05May00=======================================================================
 1. rewrote parts of Msg.pm and client.c so that the messages no longer use
 a length word at the front of each one. They are simply strings of characters

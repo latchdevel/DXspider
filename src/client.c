@@ -264,7 +264,7 @@ void send_msg(fcb_t *f, char let, unsigned char *s, int l)
 			} else 
 				*mp->inp++ = *p;
 		}
-	}
+	} 
 	*mp->inp++ = '\n';
 	*mp->inp = 0;
 	cmsg_send(f->outq, mp, 0);
@@ -295,14 +295,14 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 			case EAGAIN:
 				goto lout;
 			default:
-				if (f->sort == MSG)
-					send_Z = 0;
+/*				if (f->sort == MSG)
+				send_Z = 0; */
 				ending++;
 				return 0;
 			}
 		} else if (r == 0) {
-			if (f->sort == MSG)
-				send_Z = 0;
+/*			if (f->sort == MSG)
+			send_Z = 0; */
 			ending++;
 			return 0;
 		}
@@ -473,8 +473,8 @@ lout:;
 				case EAGAIN:
 					goto lend;
 				default:
-					if (f->sort == MSG)
-						send_Z = 0;
+/*					if (f->sort == MSG)
+					send_Z = 0; */
 					ending++;
 					return;
 				}
@@ -597,6 +597,7 @@ void term_timeout(int i)
 	if (in && in->t_set)
 		tcsetattr(0, TCSANOW, &in->t);
 	if (node) {
+		shutdown(node->cnum, 3);
 		close(node->cnum);
 	}
 	exit(i);
@@ -605,7 +606,7 @@ void term_timeout(int i)
 void terminate(int i)
 {
 	if (node && send_Z && call) {
-		send_msg(node, 'Z', "", 0);
+		send_msg(node, 'Z', "bye", 3);
 	}
 	
 	signal(SIGALRM, term_timeout);
@@ -617,8 +618,10 @@ void terminate(int i)
 	}
 	if (in && in->t_set)
 		tcsetattr(0, TCSADRAIN, &in->t);
-	if (node) 
+	if (node) {
+		shutdown(node->cnum, 3);
 		close(node->cnum);
+	}
 	exit(i);
 }
 

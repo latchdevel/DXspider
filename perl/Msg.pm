@@ -128,6 +128,7 @@ sub _send {
                 } else {    # Uh, oh
 					delete $conn->{send_offset};
                     $conn->handle_send_err($!);
+					$conn->disconnect;
                     return 0; # fail. Message remains in queue ..
                 }
             }
@@ -231,9 +232,10 @@ sub _rcv {                     # Complement to _send
     }
 
 FINISH:
-    if (defined $bytes_read == 0) {
-		$conn->disconnect();
+    if (defined $bytes_read && $bytes_read == 0) {
+#		$conn->disconnect();
 		&{$conn->{rcvd_notification_proc}}($conn, undef, $!);
+		@lines = ();
     } 
 
 	while (@lines){

@@ -1,0 +1,66 @@
+#!/usr/bin/perl
+#
+# watch the end of the current debug file (like tail -f) applying
+# any regexes supplied on the command line.
+#
+# examples:-
+# 
+#   watchdbg g1tlh       # watch everything g1tlh does
+#   watchdbg gb7baa gb7djk   # watch the conversation between BAA and DJK 
+#
+
+require 5.004;
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
+use IO::File;
+use DXVars;
+use DXUtil;
+use DXLog;
+
+use strict;
+
+my $fp = DXLog::new('debug', 'dat', 'd');
+my @today = Julian::unixtoj(time()); 
+my $fh = $fp->open(@today) or die $!; 
+my $exp = join '|', @ARGV;
+
+# seek to end of file
+$fh->seek(0, 2);
+for (;;) {
+	my $line = <$fh>;
+	if ($line) {
+		if ($exp) {
+			printit($line) if $line =~ m{(?:$exp)}oi;
+		} else {
+            printit($line);
+        }
+	} else {
+		sleep(1);
+
+		# check that the debug hasn't rolled over to next day
+		# open it if it has
+		my @now = Julian::unixtoj(time()); 
+		if ($today[1] != $now[1]) {
+			$fp->close;
+			$fh = $fp->open(@now) or die $!; 
+		}
+	}
+}
+
+sub printit
+{
+	my $line = shift;
+	my @line =  split '\^', $line;
+	my $t = shift @line;
+	print atime($t), ' ', join('^', @line); 
+}
+exit(0);
