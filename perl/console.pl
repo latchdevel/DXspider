@@ -93,6 +93,7 @@ sub rec_stdin
 				shift @history if @history > $maxhist;
 				$histpos = @history;
 				$bot->move(0,0);
+				$bot->clrtoeol();
 				$bot->addstr(substr($inbuf, 0, COLS));
 			}
 		
@@ -129,7 +130,7 @@ sub rec_stdin
 			} else {
 				beep();
 			}
-		} elsif ($r eq KEY_HOME) {
+		} elsif ($r eq KEY_HOME || $r eq "\001") {
 			$pos = 0;
 		} elsif ($r eq KEY_BACKSPACE || $r eq "\010") {
 			if ($pos > 0) {

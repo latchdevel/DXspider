@@ -130,7 +130,7 @@ sub process
 		for (keys %busy) {
 			my $node = $_;
 			my $ref = $busy{$_};
-			if ($main::systime > $ref->{lastt} + $timeout) {
+			if (exists $ref->{lastt} && $main::systime > $ref->{lastt} + $timeout) {
 				$ref->stop_msg($node);
 
 				# delay any outgoing messages that fail
