@@ -205,6 +205,10 @@
 
   http://www.dcc.rsgb.org/WinSpider.zip
 
+  or if you want the lastest CVS version (which is produced every night)
+
+  http://www.dxcluster.org/download/CVSlatest.tgz
+
   If you went down the CVS route, then everything will be nicely set out
   on your local disk. If you got the ZIP file, unpack it to somewhere
   convenient. The following examples assume that you put it on drive
@@ -257,10 +261,10 @@
 
   o  $mycall  - Should hold the callsign of your DX Cluster
 
+
   o  $myname  - The SysOp's first name
 
   o  $myalias - the SysOp's callsign. Cannot be the same as $mycall!
-
 
   You really also ought to update the $mylatitude, $mylongitude, $myqth
   and $myemail variables. And unless you are absolutely certain you know
@@ -323,7 +327,8 @@
 
 
 
-       perl cluster.pl
+
+  perl cluster.pl
 
 
 
@@ -394,6 +399,9 @@
   If you want to enable inbound "TELNET" connections, you've got a
   little more work to do. From a handy "DOS box" that's not doing
   anything else, do the following:-
+
+
+
        copy \spider\perl\listeners.pm \spider\local
        cd \spider\local
        notepad listeners.pm
@@ -431,14 +439,6 @@
   me by Email if you want me to set up a connection for you.
 
   Last updated: 15-Apr-01
-
-
-
-
-
-
-
-
 
 
 

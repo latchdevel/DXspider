@@ -187,6 +187,10 @@ what this is, then it isn't for you) or get my package from:-
 
 <htmlurl url="http://www.dcc.rsgb.org/WinSpider.zip" name="http://www.dcc.rsgb.org/WinSpider.zip">
 
+or if you want the lastest CVS version (which is produced every night)
+
+<htmlurl url="http://www.dxcluster.org/download/CVSlatest.tgz" name="http://www.dxcluster.org/download/CVSlatest.tgz">
+
 If you went down the CVS route, then everything will be nicely
 set out on your local disk. If you got the ZIP file, unpack it to
 somewhere convenient. The following examples assume that you put
