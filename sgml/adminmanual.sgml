@@ -5,8 +5,8 @@
 <!-- Title information -->
 
 <title>The DXSpider Administration Manual v1.49</title> 
-<author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>December 2001 revision 1.2</date>
+<author>Ian Maude, G0VGS, (g0vgs@ea1dav.net)</author>
+<date>February 2002 revision 1.3</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -1200,150 +1200,76 @@ The page length will of course depend on what you have it set to!
 <sect1>The Aliases file
 
 <P>
-You will find a file in /spider/cmd/ called Aliases.  First, copy this file to
-/spider/local_cmd/Aliases and edit this file.  You will see something like this ...
+You will find a file in /spider/cmd/ called Aliases.  This is the file that
+controls what a user gets when issuing a command.  It is also possible to
+create your own aliases for databases and files you create locally.
+
+<P>
+You should not alter the original file in /spider/cmd/ but create a new file
+with the same name in /spider/local_cmd.  This means that any new Aliases files
+that is downloaded will not overwrite your self created Aliases and also that
+you do not override any new Aliases with your copy in /spider/local_cmd/.  You
+must remember that any files you store in /spider/local/ or /spider/local_cmd
+override the originals if the same lines are used in both files.
+
+<P>
+The best way of dealing with all this then is to only put your own locally
+created Aliases in the copy in /spider/local_cmd.  The example below is
+currently in use at GB7MBC.
 
 <tscreen><verb>
 
-#!/usr/bin/perl
-
-# provide some standard aliases for commands for terminally
-# helpless ak1a user (helpless in the sense that they never
-# read nor understand help files)
-
-# This file is automagically reloaded if its modification time is 
-# later than the one stored in CmdAlias.pm
-
-# PLEASE make this file consistant with reality! (the patterns MUST
-# match the filenames!)
-
-# Don't alter this file, copy it into the local_cmd tree and modify it.
-# This file will be replaced everytime I issue a new release.
-
-# You only need to put aliases in here for commands that don't work as
-# you desire naturally, e.g sh/dx on its own just works as you expect
-# so you need not add it as an alias.
-
-
+#
+# Local Aliases File
+#
 
 package CmdAlias;
 
 %alias = (
-    '?' => [
-          '^\?', 'apropos', 'apropos',
-        ],
-    'a' => [
-          '^ann.*/full', 'announce full', 'announce', 
-          '^ann.*/sysop', 'announce sysop', 'announce',
-          '^ann.*/(.*)$', 'announce $1', 'announce',
-        ],
-        'b' => [
-        ],
-        'c' => [
-        ],
-        'd' => [
-          '^del', 'kill', 'kill',
-          '^del\w*/fu', 'kill full', 'kill',
-          '^di\w*/a\w*', 'directory all', 'directory',
-          '^di\w*/b\w*', 'directory bulletins', 'directory',
-          '^di\w*/n\w*', 'directory new', 'directory',
-          '^di\w*/o\w*', 'directory own', 'directory',
-          '^di\w*/s\w*', 'directory subject', 'directory',
-          '^di\w*/t\w*', 'directory to', 'directory',
-          '^di\w*/f\w*', 'directory from', 'directory',
-          '^di\w*/(\d+)', 'directory $1', 'directory',
-        ],
-        'e' => [
-        ],
-        'f' => [
-        ],
-        'g' => [
-        ],
-        'h' => [
-        ],
-        'i' => [
-        ],
-        'j' => [
-        ],
-        'k' => [
-        ],
-        'l' => [
-          '^l$', 'directory', 'directory',
-          '^ll$', 'directory', 'directory',
-          '^ll/(\d+)', 'directory $1', 'directory',
-        ],
-        'm' => [
-        ],
-        'n' => [
-          '^news', 'type news', 'type',
-        ],
-        'o' => [
-        ],
-        'p' => [
-        ],
-        'q' => [
-          '^q', 'bye', 'bye',
-        ],
-        'r' => [        
-          '^r$', 'read', 'read',
-          '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
-        ],
-        's' => [
-          '^s/p$', 'send', 'send',
-          '^sb$', 'send noprivate', 'send',
-          '^set/home$', 'set/homenode', 'set/homenode',
-          '^set/nobe', 'unset/beep', 'unset/beep',
-          '^set/nohe', 'unset/here', 'unset/here',
-          '^set/noan', 'unset/announce', 'unset/announce',
-          '^set/nodx', 'unset/dx', 'unset/dx',
-          '^set/nota', 'unset/talk', 'unset/talk',
-          '^set/noww', 'unset/wwv', 'unset/wwv',
-          '^set/nowx', 'unset/wx', 'unset/wx',
-          '^sh$', 'show', 'show',
-          '^sh\w*/buck', 'dbshow buck', 'dbshow',
-          '^sh\w*/bu', 'show/files bulletins', 'show/files',
-          '^sh\w*/c/n', 'show/configuration nodes', 'show/configuration',
-          '^sh\w*/c$', 'show/configuration', 'show/configuration',
-          '^sh\w*/com', 'dbavail', 'dbavail',
-          '^sh\w*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
-          '^sh\w*/dx/(\d+)', 'show/dx $1', 'show/dx',
-          '^sh\w*/dx/d(\d+)', 'show/dx from $1', 'show/dx',
-          '^sh\w*/email', 'dbshow email', 'dbshow',
-          '^sh\w*/hftest', 'dbshow hftest', 'dbshow',
-          '^sh\w*/vhftest', 'dbshow vhftest', 'dbshow',
-          '^sh\w*/qsl', 'dbshow qsl', 'dbshow',
-          '^sh\w*/tnc', 'who', 'who',
-          '^sh\w*/up', 'show/cluster', 'show/cluster',
-          '^sh\w*/w\w*/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
-          '^sh\w*/w\w*/(\d+)', 'show/wwv $1', 'show/wwv',
-          '^sp$', 'send', 'send',
-        
+    'n' => [
+      '^news$', 'type news', 'type',
     ],
-        't' => [
-          '^ta$', 'talk', 'talk',
-          '^t$', 'talk', 'talk',
-        ],
-        'u' => [
-        ],
-        'v' => [
-        ],
-        'w' => [
-          '^wx/full', 'wx full', 'wx',
-          '^wx/sysop', 'wx sysop', 'wx',
-        ],
-        'x' => [
-        ],
-        'y' => [
-        ],
-        'z' => [
+    's' => [
+      '^sh\w*/buck$', 'show/qrz', 'show',
+      '^sh\w*/hftest$', 'dbshow hftest', 'dbshow',
+      '^sh\w*/qsl$', 'dbshow qsl', 'dbshow',
+      '^sh\w*/vhf$', 'dbshow vhf', 'dbshow',
+      '^sh\w*/vhftest$', 'dbshow vhftest', 'dbshow',
         ],
 )
+
 </verb></tscreen>
 
 <P>
-You can create aliases for commands at will.  Beware though, these may not 
-always turn out as you think.  Care is needed and you need to test the 
-results once you have set an alias.
+Each alphabetical section should be preceded by the initial letter and the section
+should be wrapped in square brackets as you can see.  The syntax is straightforward.
+The first section on each line is the new command that will be allowed once the
+alias is included.  The second section is the command it is replacing and the last
+section is the actual command that is being used.
+
+<P>
+The eagle-eyed amongst you will have noticed that in the first section, the new
+alias command has a '^' at the start and a '$' at the end.  Basically these force
+a perfect match on the alias.  The '^' says match the beginning exactly and the
+'$' says match the end exactly.  This prevents unwanted and unintentional matches
+with similar commands.
+
+<P>
+I have 3 different types of alias in this file.  At the top is an alias for 'news'.  
+This is a file I have created in the /spider/packclus/ directory where I can inform 
+users of new developments or points of interest.  In it's initial form a user would 
+have to use the command <em>type news</em>.  The alias allows them to simply type 
+<em>news</em> to get the info.  Second is an alias for the <em>show/qrz</em>
+command so that those users used to the original <em>show/buck</em> command in
+AK1A will not get an error, and the rest of the lines are for locally created
+databases so that a user can type <em>show/hftest</em> instead of having to use
+the command <em>dbshow hftest</em> which is not as intuitive.
+
+<P>
+This file is just an example and you should edit it to your own requirements.
+Once created, simply issue the command <em>load/alias</em> at the cluster
+prompt as the sysop user and the aliases should be available.
+
 
 <sect1>Console.pl
 
