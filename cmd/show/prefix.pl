@@ -13,8 +13,8 @@ my @out;
 #print "line: $line\n";
 foreach $l (@list) {
   my @ans = Prefix::extract($l);
-  my $dd = new Data::Dumper([ \@ans ]);
-  print "ans:", $dd->Dumpxs;
+#  my $dd = new Data::Dumper([ \@ans ]);
+#  print "ans:", $dd->Dumpxs;
   next if !@ans;
   my $pre = shift @ans;
   my $a;
