@@ -129,20 +129,6 @@ sub process
 
 		if ($main::systime >= $lastq + $queueinterval) {
 
-			# wander down the work queue stopping any messages that have timed out
-			for (keys %busy) {
-				my $node = $_;
-				my $ref = $busy{$_};
-				if (exists $ref->{lastt} && $main::systime >= $ref->{lastt} + $timeout) {
-					dbg('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
-					Log('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
-					$ref->stop_msg($node);
-					
-					# delay any outgoing messages that fail
-					$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
-				}
-			}
-
 			# queue some message if the interval timer has gone off
 			queue_msg(0);
 
@@ -591,14 +577,28 @@ sub queue_msg
 	dbg('msg', "queue msg ($sort)\n");
 	my @nodelist = DXChannel::get_all_nodes;
 	foreach $ref (@msg) {
-		# firstly, is it private and unread? if so can I find the recipient
-		# in my cluster node list offsite?
 
 		# ignore 'delayed' messages until their waiting time has expired
 		if (exists $ref->{waitt}) {
 			next if $ref->{waitt} > $main::systime;
 			delete $ref->{waitt};
 		} 
+
+		# any time outs?
+		if (exists $ref->{lastt} && $main::systime >= $ref->{lastt} + $timeout) {
+			my $node = $ref->{tonode};
+			dbg('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
+			Log('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
+			$ref->stop_msg($node);
+			
+			# delay any outgoing messages that fail
+			$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
+			delete $ref->{lastt};
+			next;
+		}
+
+		# firstly, is it private and unread? if so can I find the recipient
+		# in my cluster node list offsite?
 
 		# deal with routed private messages
 		my $dxchan;

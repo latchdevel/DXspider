@@ -82,6 +82,9 @@ use BBS;
 use WCY;
 use BadWords;
 use Timer;
+use Route;
+use Route::Node;
+use Route::User;
 
 use Data::Dumper;
 use IO::File;
@@ -430,6 +433,7 @@ Spot->init();
 
 # initialise the protocol engine
 dbg('err', "reading in duplicate spot and WWV info ...");
+Route::Node::init($mycall, $version);
 DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away

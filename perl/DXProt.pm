@@ -31,6 +31,7 @@ use WCY;
 use Time::HiRes qw(gettimeofday tv_interval);
 use BadWords;
 use DXHash;
+use Route::Node;
 
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
@@ -180,6 +181,7 @@ sub init
 	confess $@ if $@;
 	$me->{sort} = 'S';    # S for spider
 	$me->{priv} = 9;
+	$Route::Node::me->adddxchan($me);
 }
 
 #
