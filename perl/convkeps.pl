@@ -81,7 +81,7 @@ while (<$f>) {
 	++$line;
 	chomp;
 	s/^\s+//;
-    s/\s+$//;
+    s/[\s\r]+$//;
 	next unless $_;
 	last if m{^/EX}i;
 	last if m{^-};
@@ -93,7 +93,7 @@ while (<$f>) {
 		
 		if (/^\w+/) {
 			s/\s/-/g;
-			$name = $_;
+			$name = uc $_;
 			$ref = $keps{$name} = {}; 
 			$state = 2;
 		}

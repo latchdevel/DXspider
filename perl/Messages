@@ -229,7 +229,7 @@ package DXM;
 				sat1 => 'Tracking Table for $_[0] for the next $_[1] hours every $_[2] mins',
 				sat2 => 'dd/mm  UTC      Lat     Lon  Alt Km      Az      El Dist Km',
 				sat3 => 'Syntax: SH/SAT <name> [<hours> <interval>]',
-				sat4 => 'Satellites available:-',
+				sat4 => 'Satellites available/Age of Keps (days):-',
 				satnf => 'Satellite $_[0] unknown',
 				satdisc => '-----',
 				sethop1 => 'usage: set/hops <call> ann|spots|wwv|wcy <no of hops>',

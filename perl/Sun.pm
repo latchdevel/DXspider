@@ -18,6 +18,7 @@
 #
 # $Id$
 # 
+# 2001/12/16 Fixed Julian_Date_of_Epoch and now I actually use it...
 # 2001/09/15 some changes to take care of cases where the object 
 #            doesn't rise or set on a given day... 
 
@@ -76,13 +77,18 @@ sub Julian_Day
 sub Julian_Date_of_Epoch
 {
 	my $epoch=shift;
-	my $year=int($epoch*1e-3);
-	$year=$year+2000 if ($year < 57);
-	$year=$year+1900 if ($year >= 57);
-	my $day=$epoch-$year*1e3;
+	my $year=int($epoch/1000);
+	my $day=$epoch-$year*1000;
+	if ($year < 57 ) {
+		$year=$year+2000;
+	}
+	else {
+		$year=$year+1900;
+	}
 	my $Julian_Date_of_Epoch=Julian_Date_of_Year($year)+$day;
 	return $Julian_Date_of_Epoch;
 }
+
 sub Julian_Date_of_Year
 {
 	my $year=shift;
@@ -645,14 +651,7 @@ sub get_satellite_pos
 
 	my $epoch = $sat_ref ->{epoch};
 #printf("epoch = %10.2f\n",$epoch);
-	my $epoch_year=int($epoch/1000);
-	my $epoch_day=$epoch-int(1000*$epoch_year);
-#printf("epoch_year = %10.2f\n",$epoch_year);
-#printf("epoch_day = %17.12f\n",$epoch_day);
-	my $ep_year=$epoch_year+2000 if ($epoch_year < 57);
-	$ep_year=$epoch_year+1900 if ($epoch_year >= 57);
-	my $jt_epoch=Julian_Date_of_Year($ep_year);
-	$jt_epoch=$jt_epoch+$epoch_day;
+	my $jt_epoch=Julian_Date_of_Epoch($epoch);
 #printf("JT for epoch = %17.12f\n",$jt_epoch);
 	my $tsince=($jtime-$jt_epoch)*24*60;
 #printf("tsince (min) = %17.12f\n",$tsince);

@@ -6,14 +6,19 @@
 #
 # $Id$
 # 
+# 2001/12/16 added age of keps in the sh/sat output list.
+#   Note - there is the potential for problems when satellite name
+#   is longer than 20 characters. The list shows only the 
+#   first 20 chars, so user won't know the full name.
+#   So far, it seems that only the GPS sats even come close... 
 
 my ($self, $line) = @_;
 my @out;
 
 my @f = split /\s+/, $line;
 my $satname = uc shift @f;
-my $numhours = shift @f;               # the number of hours ahead to print
-my $step = shift @f;				# tracking table resolution in minutes
+my $numhours = shift @f;	# the number of hours ahead to print
+my $step = shift @f;		# tracking table resolution in minutes
 
 # default hours and step size
 $numhours = 3 unless $numhours && $numhours =~ /^\d+$/;
@@ -34,17 +39,18 @@ unless ($lon || $lat) {
 	$call = $main::mycall;
 }
 
+my $jtime; # lats and longs in radians
+my ($sec, $min, $hr, $day, $mon, $yr) = (gmtime($main::systime))[0,1,2,3,4,5];
+#printf("%2.2d %2.2d %2.2d %2.2d %2.2d\n",$min,$hr,$day,$mon,$yr);
+
+$mon++;
+$yr += 1900;
+
+$jtime=Sun::Julian_Day($yr,$mon,$day)+$hr/24+$min/60/24;
+
 #$DB::single=1;
 if ($satname && $Sun::keps{$satname}) {
-	my $jtime; # lats and longs in radians
-	my ($sec, $min, $hr, $day, $mon, $yr) = (gmtime($main::systime))[0,1,2,3,4,5];
-	#printf("%2.2d %2.2d %2.2d %2.2d %2.2d\n",$min,$hr,$day,$mon,$yr);
 
-	$mon++;
-	$yr += 1900;
-	$alt=0.0;
-
-	$jtime=Sun::Julian_Day($yr,$mon,$day)+$hr/24+$min/60/24;
 	($yr,$mon,$day,$hr,$min)=Sun::Calendar_date_and_time_from_JD($jtime);
 	#printf("%2.2d %2.2d %2.2d %2.2d %2.2d\n",$min,$hr,$day,$mon,$yr);
 	push @out, $self->msg("pos", $call, slat($lat), slong($lon));
@@ -86,15 +92,18 @@ if ($satname && $Sun::keps{$satname}) {
 	my $i = 0;
 	my $sat;
 	foreach $sat (sort keys %Sun::keps) {
-		if ($i >= 6) {
-			push @out, join ' + ', @l;
+		if ($i >= 2) {
+			push @out,join '  ', @l;
 			@l = ();
 			$i = 0;
 		}
-		push @l, $sat;
+		my $epoch=$Sun::keps{$sat}->{epoch};
+		my $jt_epoch=Sun::Julian_Date_of_Epoch($epoch);
+		my $keps_age=int($jtime-$jt_epoch);
+		push @l, sprintf("%20s: %4s",$sat,$keps_age);
 		$i++;
 	}
-	push @out, join ' + ', @l;
+	push @out, join '  ', @l;
 }
 
 return (1,@out);
