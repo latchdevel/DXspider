@@ -1547,7 +1547,7 @@ sub handle_51
 	}
 
 	my $thing = Thingy::Ping->new(origin=>$main::mycall);
-	$thing->from_DXProt(user=>$_[2], group=>$_[1], out=>$_[3], DXProt=>$line);
+	$thing->from_DXProt($_[2] eq $self->{call} ? (user=>$_[2]) : (user=>$self->{call}, o=>$_[2]), group=>$_[1], out=>$_[3], DXProt=>$line);
 	$thing->process($self);
 	
 }
