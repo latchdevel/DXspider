@@ -11,7 +11,7 @@ my $self = shift;
 my $dxchan;
 my @out;
 
-push @out, "  Callsign Type Started           Name           Ave RTT";
+push @out, "  Callsign Type Started           Name              Ave RTT";
 
 foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
     my $call = $dxchan->call();
@@ -20,7 +20,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	my $name = $dxchan->user->name || " ";
 	my $ping = $dxchan->is_ak1a ? sprintf("%6.2f", $dxchan->pingave) : "";
 	$ping = "" if $dxchan->call eq $main::mycall;
-	push @out, sprintf "%10s $sort $t %-15s $ping", $call, $name;
+	push @out, sprintf "%10s $sort $t %-18.18s $ping", $call, $name;
 }
 
 return (1, @out)
