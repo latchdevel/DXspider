@@ -59,7 +59,7 @@ if (@bad = BadWords::check($line)) {
 
 return (1, $self->msg('dup')) if AnnTalk::dup($from, $toflag, $line);
 Log('ann', $to, $from, $line);
-DXChannel::broadcast_list("To $to de $from <$t>: $line", 'ann', undef, @locals);
+DXChannel::broadcast_list("To $to de $from ($t): $line\a", 'ann', undef, @locals);
 if ($to ne "LOCAL") {
   my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 0);
   DXChannel::broadcast_nodes($pc);

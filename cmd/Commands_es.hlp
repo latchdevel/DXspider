@@ -1607,16 +1607,20 @@ Estas opciones son:
    
 on <banda>      - ej 160m 20m 2m 23cm 6mm
 on <region>     - ej hf vhf uhf shf      (ver SHOW/BANDS)
+on <de>/<a>     - ej 7000/7003   7000-7003  (en Khz)
+   <de>-<a>
    
 <numero>        - el numero de spots que quieres
-<from>-<to>     - <del> spot no <al> spot no en la lista seleccionada
+<del>-<al>      - <del> spot no <al> spot no en la lista seleccionada
+<del>/<al>
    
 <prefijo>       - por un indicativo que empiece con <prefijo>
 *<sufijo>       - por un indicativo que termine con el <sufijo>
 *<cadena>*      - por un indicativo que contenga la <cadena>
    
 day <number>    - empezando <numero> de días atrás
-day <from>-<to> - <de> días <a> días atrás
+day <de>-<a>    - <de> días <a> días atrás
+    <de>/<a>
    
 info <texto>    - cualquier spot que contenga <texto> en el campo de
                   los comentarios.
