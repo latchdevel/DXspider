@@ -48,6 +48,13 @@ $maxerrors = 20;				# the maximum number of concurrent errors allowed before dis
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
+
+	# routing, this must go out here to prevent race condx
+	my $pkg = shift;
+	my $call = shift;
+	my @rout = $main::routeroot->add_user($call, Route::here($self->{here}));
+	DXProt::route_pc16($DXProt::me, $main::routeroot, @rout) if @rout;
+
 	return $self;
 }
 
@@ -100,10 +107,6 @@ sub start
 
 	$DXProt::me->conn($self->conn) if $call eq $main::myalias; # send all output for mycall to myalias
 
-	# routing version
-	my @rout = $main::routeroot->add_user($call, Route::here($self->{here}));
-	dbg('route', "B/C PC16 on $main::mycall for: $call") if @rout;
-	DXProt::route_pc16($DXProt::me, $main::routeroot, @rout) if @rout;
 	Log('DXCommand', "$call connected");
 
 	# send prompts and things
