@@ -19,11 +19,12 @@ use IO::File;
 use DXDebug;
 
 use strict;
-use vars qw(%u $dbm $filename %valid);
+use vars qw(%u $dbm $filename %valid $lastoperinterval);
 
 %u = ();
 $dbm = undef;
 $filename = undef;
+$lastoperinterval = 30*24*60*60;
 
 # hash of valid elements and a simple prompt
 %valid = (

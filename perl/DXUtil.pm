@@ -284,7 +284,8 @@ sub writefilestr
 sub unpad
 {
 	my $s = shift;
-	$s =~ s/^\s+|\s+$//;
+	$s =~ s/\s+$//;
+	$s =~ s/^\s+//;
 	return $s;
 }
 

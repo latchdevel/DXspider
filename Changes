@@ -15,6 +15,10 @@ on DX announcements
 10. Removed export_user.pl (no longer needed)
 11. made import_users.pl accept a non related input filename and always
 update the current user file.
+12. added an 'auto rcmd <node> for/oper <call>' for people I can see on the
+cluster that issue spots and for whom I have no qra info (no more than once
+a month).
+13. Despace spot texts properly again for deduping purposes.
 25Jul00=======================================================================
 1. ignore \n in ax25 mode for C client.
 2. remove extra space at the end of a DX spot announce when no grid square

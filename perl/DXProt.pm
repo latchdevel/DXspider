@@ -255,6 +255,26 @@ sub normal
 						$user->put;
 					}
 				}
+
+				# send a remote command to a distant cluster if it is visible and there is no
+				# qra locator and we havn't done it for a month.
+
+				unless ($user->qra) {
+					my $node;
+					my $to = $user->homenode;
+					my $last = $user->lastoper || 0;
+					if ($main::systime > $last + $DXUser::lastoperinterval && $to && ($node = DXCluster->get_exact($to)) ) {
+						my $cmd = "forward/opernam $spot[4]";
+						# send the rcmd but we aren't interested in the replies...
+						if ($node && $node->dxchan && $node->dxchan->is_clx) {
+							route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
+						} else {
+							route(undef, $to, pc34($main::mycall, $to, $cmd));
+						}
+						$user->lastoper($main::systime);
+						$user->put;
+					}
+				}
 			}
 				
 			# local processing 
@@ -669,7 +689,8 @@ sub normal
 				$user->lat($lat);
 				$user->long($long);
 				my $qra = $user->qra || DXBearing::lltoqra($lat, $long);
-				$qra = DXBearing::lltoqra($lat, $long) unless DXBearing::is_qra($qra);
+				$qra = DXBearing::lltoqra($lat, $long) unless $qra && DXBearing::is_qra($qra);
+				$user->qra($qra) if $qra ne $user->qra;
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
 			}
