@@ -23,6 +23,14 @@ BEGIN {
 	
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
+
+	sub main::mkver
+	{
+		my $s = shift;
+		my ($v, $b) = $s =~ /(\d+\.\d+)(?:\.(\d+\.\d+))?/;
+		$main::build += sprintf "%.3f", $v;
+		$main::branch += sprintf("%.3f", $b) if $b;
+	}
 }
 
 use Msg;

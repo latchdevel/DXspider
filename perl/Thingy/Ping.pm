@@ -31,7 +31,7 @@ sub gen_Aranea
 {
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
-	 	$thing->{Aranea} = Aranea::genmsg($thing, qw(id));
+	 	$thing->{Aranea} = Aranea::genmsg($thing, qw(id out));
 	}
  	return $thing->{Aranea};
 }
@@ -47,6 +47,19 @@ sub gen_DXProt
 {
 	my $thing = shift;
 	my $dxchan = shift;
+	unless ($thing->{DXProt}) {
+		# we need to tease out the nodes out of all of this.
+		# bear in mind that a proxied PC prot node could be in
+		# {user} as well as a true user and also it may not
+		# have originated here.
+
+		my $from = $thing->{user} if Route::Node::get($thing->{user});
+		$from ||= $thing->{origin};
+		my $to = $thing->{touser} if Route::Node::get($thing->{touser});
+		$to ||= $thing->{group};
+		
+		$thing->{DXProt} = DXProt::pc51($to, $from, $thing->{out});
+	}
 	return $thing->{DXProt};
 }
 
