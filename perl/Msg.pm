@@ -134,9 +134,9 @@ sub pid_gone
 	my ($pkg, $pid) = @_;
 	
 	my @pid = grep {$_->{pid} == $pid} values %conns;
-	for (@pid) {
-		&{$_->{eproc}}($_, "$pid has gorn") if exists $_->{eproc};
-		$_->disconnect;
+	foreach my $p (@pid) {
+		&{$p->{eproc}}($p, "$pid has gorn") if exists $p->{eproc};
+		$p->disconnect;
 	}
 }
 
@@ -436,8 +436,8 @@ sub close_server
 # close all clients (this is for forking really)
 sub close_all_clients
 {
-	for (values %conns) {
-		$_->disconnect;
+	foreach my $conn (values %conns) {
+		$conn->disconnect;
 	}
 }
 
