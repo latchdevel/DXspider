@@ -66,6 +66,8 @@ foreach $ref ( @refs) {
 	if ($full) {
 		DXProt::broadcast_ak1a(DXProt::pc49($ref->{from}, $ref->{subject}), $DXProt::me);
 	}
+	my $tonode = $ref->tonode;
+	$ref->stop_msg($tonode) if $tonode;
 	$ref->del_msg;
 	push @out, $self->msg('m12', $ref->msgno);
 }
