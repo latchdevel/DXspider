@@ -33,6 +33,7 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
+use Investigate;
 
 use strict;
 
@@ -44,7 +45,7 @@ $main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
-			$pingint $obscount %pc19list $chatdupeage
+			$pingint $obscount %pc19list $chatdupeage $investigation_int
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -71,6 +72,7 @@ $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
 $chatdupeage = 20 * 60 * 60;
+$investigation_int = 7*86400;	# time between checks to see if we can see this node
 
 @checklist = 
 (
@@ -909,14 +911,6 @@ sub handle_19
 		next if length $call < 3; # min 3 letter callsigns
 		next if $call eq $main::mycall;
 
-		# do we believe this call? 
-		unless ($call eq $self->{call} || $self->is_believed($call)) {
-			dbg("PCPROT: We don't believe $call on $self->{call}");
-			next;
-		}
-
-		eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
-				
 		# add this station to the user database, if required (don't remove SSID from nodes)
 		my $user = DXUser->get_current($call);
 		if (!$user) {
@@ -928,7 +922,23 @@ sub handle_19
 			$user->node($call);
 		}
 		$user->wantroutepc19(1) unless defined $user->wantroutepc19;
+		$user->lastin($main::systime) unless DXChannel->get($call);
+		$user->put;
 
+		# do we believe this call? 
+		unless ($call eq $self->{call} || $self->is_believed($call)) {
+			my $pt = $user->lastping || 0;
+			if ($pt+$investigation_int < $main::systime && !Investigate::get($call)) {
+				my $iref = Investigate->new($call);
+				$iref->version($ver);
+				$iref->here($here);
+			}
+			dbg("PCPROT: We don't believe $call on $self->{call}");
+			next;
+		}
+
+		eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
+				
 		my $r = Route::Node::get($call) || Route::Node->new($call);
 		$r->here($here);
 		$r->conf($conf);
@@ -943,9 +953,6 @@ sub handle_19
 		# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
 		my $mref = DXMsg::get_busy($call);
 		$mref->stop_msg($call) if $mref;
-				
-		$user->lastin($main::systime) unless DXChannel->get($call);
-		$user->put;
 	}
 
 	# route out new nodes to legacy nodes
@@ -1403,7 +1410,15 @@ sub handle_51
 							} else {
 								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 							}
+							my $rref = Route::Node::get($tochan->{call});
+							$rref->pingtime($tochan->{pingave}) if $rref;
 							$tochan->{nopings} = $nopings; # pump up the timer
+						} elsif (my $rref = Route::Node::get($r->{call})) {
+							if (defined $rref->pingtime) {
+								$rref->pingtime($rref->pingtime + (($t - $rref->pingtime) / 6));
+							} else {
+								$rref->pingtime($t);
+							}
 						}
 					} 
 				}
@@ -2158,6 +2173,8 @@ sub addping
 	route(undef, $to, pc51($to, $main::mycall, 1));
 	push @$ref, $r;
 	$pings{$to} = $ref;
+	my $u = DXUser->get_current($to);
+	$u->lastping($main::systime) if $u;
 }
 
 sub process_rcmd

@@ -30,6 +30,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  usercount => '0,User Count',
 		  version => '0,Version',
 		  newroute => '0,New Routing?,yesno',
+		  pingtime => '0,Ping Time',
 );
 
 $filterdef = $Route::filterdef;

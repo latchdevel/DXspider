@@ -93,6 +93,7 @@ $v3 = 0;
 		  version => '1,Version',
 		  build => '1,Build',
 		  believe => '1,Believable nodes,parray',
+		  lastping => '1,Last Ping at,atime',
 		 );
 
 #no strict;
