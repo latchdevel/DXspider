@@ -1,6 +1,6 @@
 =head1 NAME
 
-DXSpiderWeb Orthogonal Communications Protocol
+DXSpiderWeb Orthogonal Communications Protocol $Revision$
 
 =head1 SYNOPSIS
 
@@ -58,7 +58,7 @@ discontinuity either caused by outage or deliberate filtering.
 
 However, as it is envisaged that most messages will be flood routed or,
 in the case of directed messages (those that have L</To> and/or
-L</ToUser> fields) down all interfaces showing a route for that
+L</ToUser> fields) down some/most/all interfaces showing a route for that
 direction, it is unlikely that messages will be lost in practice.
 
 =head2 Field Description
@@ -88,7 +88,7 @@ More detailed descriptions of the fields follow:
 
 =over
 
-=item Origin
+=item B<Origin>
 
 This is a compulsory field. It is the name of the originating node.
 The field can contain up to 12 characters in the set [-A-Z0-9_] in
@@ -96,16 +96,18 @@ any order. Higher layers may restrict this further.
 
 The field must not be changed by any other node.
 
-=item TimeSeq
+=item B<TimeSeq>
 
 This is a compulsory field. It is a 10 hexadecimal digit string which
-consists of a day no (1-31), seconds within that day (0-86399) [6
-hex digits] that are concatenated with a sequence number (0-65535)
-[4 hex digits] making the total of 10.
+consists of a day no (1-31), 
+a flag to indicate NTP syncronisation in use,
+seconds within that day (0-86399) [total of 6 hex digits] 
+that are concatenated with a sequence number (0-65535)
+[4 hex digits] making the total of 10 hexadecimal digits.
 
 The date portion is constructed as:
 
-  my $date = ((gmtime)[3] << 18) | (time % 86400);
+  my $date = ((((gmtime)[3] < 1) | $ntpflag) < 18) |  (time % 86400);
 
 The sequence number is simply an unsigned short (or 16 bit) number
 starting at 0. 
@@ -113,7 +115,7 @@ starting at 0.
 Each message originated at this node will increment the sequence
 number.
 
-=item Hop
+=item B<Hop>
 
 This is a compulsory field. It is the number of hops from the 
 originating node. It is incremented immediately on receipt and
@@ -127,7 +129,7 @@ Implementations may have an upper limit to this field and may
 silently drop incoming messages with a L</Hop> count greater than the
 limit.
 
-=item FrmUser
+=item B<FrmUser>
 
 This field is optional. It is the identifier of the originating
 user.  If it is missing then the message is 
@@ -136,7 +138,7 @@ assumed to come from the originating node itself.
 It can consist of up to 12 characters in the set [-A-Z0-9_] 
 in any order. Higher layers may restrict this further.
 
-=item To
+=item B<To>
 
 This field is optional. It is a string of up to 12 characters 
 in the set [-A-Z0-9_] in any order. 
@@ -156,7 +158,7 @@ intervening nodes are free to duplicate the message and send
 it down more than one, likely looking, interface - depending on any
 network policies that may pertain. 
 
-=item ToUser
+=item B<ToUser>
 
 This field is optional. It is a string of up to 12 characters
 in the set [-A-Z0-9_] in any order. Higher layers may restrict 
@@ -241,11 +243,12 @@ duplicated!
 
 =head2 Examples
 
- # on link startup
- GB7TLH,3D02350001,0|HELLO
+ # on link startup from GB7BAA (both sides hello)
+ GB7TLH,3D02350001,0,GB7BAA|HELLO,Aranea,bld=24.123
+ GB7BAA,3D02355421,1,GB7TLH|HELLO,Aranea,bld=23.245
 
- # on user startup
- GB7TLH,3D042506F2,0,G1TLH|HELLO
+ # on user startup to GB7TLH
+ GB7TLH,3D042506F2,0,G1TLH|HELLO,PClient,ver=1.03
 
  # on user disconnection
  GB7TLH,3D9534F32D,0,G1TLH|BYE
@@ -268,7 +271,7 @@ duplicated!
  GB7TLH,1512346543,0,G1TLH,GB7DJK,G7BRN|PING,35DE
 
  # A possible reply, same ID as ping followed by the no of hops on the 
- # received ping
+ # ping that was received
  GB7DJK,1512450534,3,G7BRN,GB7TLH,G1TLH|PONG,35DE,3 
 
 
@@ -344,6 +347,30 @@ Invalid tags include:
 There are a number of L</Standard Commands> which must be accepted by 
 all implementations.
 
+=over
+
+=item B<HELLO>
+
+Command sent on connection to another node.
+
+=item B<BYE>
+
+Command sent to voluntarily disconnect a connection.
+
+=item B<DISC>
+
+Command sent when a node has disconnected from this node.
+
+=item B<PING>
+
+Command to send a ping to a node or user.
+
+=item B<PONG>
+
+Command to reply to a successful ping
+
+=back
+
 =head1 AUTHOR
 
 Dirk Koopman, G1TLH, E<lt>djk@tobit.co.ukE<gt>
@@ -354,6 +381,8 @@ Copyright 2004 by Dirk Koopman, G1TLH
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
+$Revision$
 
 =cut
 
