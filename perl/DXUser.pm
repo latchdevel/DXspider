@@ -326,9 +326,10 @@ sub _want
 {
 	my $n = shift;
 	my $self = shift;
+	my $val = shift;
 	my $s = "want$n";
-	return $self->{$n} = shift if @_;
-	return defined $self->{$n} ? $self->{$n} : 1;
+	$self->{$n} = $val if $val;
+	return exists $self->{$n} ? $self->{$n} : 1;
 }
 
 sub wantbeep
