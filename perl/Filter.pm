@@ -143,12 +143,15 @@ sub getfilkeys
 # The filter returns 0 if an entry is matched by any reject rule and also if any
 # accept rule fails otherwise it returns 1
 #
-# Either set of rules may be missing meaning an implicit 'ok'
+# Either set of rules may be missing meaning an implicit 'opposite' ie if it
+# a reject then ok else if an accept then not ok.
+#
+# you can set a default with either an accept/xxxx all or reject/xxxx all
 #
 # Unlike the old system, this is kept as a hash of hashes so that you can
 # easily change them by program.
 #
-# You can have a [any] number of 'filters', they are tried in random order until 
+# You can have 10 filter lines (0->9), they are tried in order until 
 # one matches
 #
 # There is a parser that takes a Filter::Cmd object which describes all the possible

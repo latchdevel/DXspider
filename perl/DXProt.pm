@@ -1231,7 +1231,7 @@ sub send_wcy_spot
 			 ($filter, $hops) = $dxchan->{wcyfilter}->it(@_, $self->{call} );
 			 next unless $filter;
 		}
-		if ($dxchan->is_clx || $dxchan->is_spider) {
+		if ($dxchan->is_clx || $dxchan->is_spider || $dxchan->is_dxnet) {
 			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
