@@ -341,6 +341,7 @@ in debug mode i.e.
 	perl -d cluster.pl
 
 It will interrupt the cluster just after the debug command has finished.
+
 === 0^DIRECTORY^List messages 
 === 0^DIRECTORY ALL^List all messages
 === 0^DIRECTORY OWN^List your own messages

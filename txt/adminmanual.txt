@@ -988,6 +988,18 @@
 
 
 
+  This line works fine for RedHat and SuSE distributions.  The line
+  required for Slackware distributions is slightly different.  My thanks
+  to Aurelio, PA3EZL for this information.
+
+
+
+       DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/dev/tty7
+
+
+
+
+
   This will automatically start DXSpider on tty7 (ALT-F7) on bootup and
   restart it should it crash for any reason.
 
@@ -1048,61 +1060,55 @@
 
 
 
+       #
+       # hop table construction
+       #
+
+       package DXProt;
+
+       # default hopcount to use
+       $def_hopcount = 5;
+
+       # some variable hop counts based on message type
+       %hopcount =
+       (
+        11 => 10,
+        16 => 10,
+        17 => 10,
+        19 => 10,
+        21 => 10,
+       );
 
 
+       # the per node hop control thingy
 
 
+       %nodehops =
 
+        GB7ADX => {            11 => 8,
+                               12 => 8,
+                               16 => 8,
+                               17 => 8,
+                               19 => 8,
+                               21 => 8,
+                          },
 
-  #
-  # hop table construction
-  #
-
-  package DXProt;
-
-  # default hopcount to use
-  $def_hopcount = 5;
-
-  # some variable hop counts based on message type
-  %hopcount =
-  (
-   11 => 10,
-   16 => 10,
-   17 => 10,
-   19 => 10,
-   21 => 10,
-  );
-
-
-  # the per node hop control thingy
-
-
-  %nodehops =
-
-   GB7ADX => {            11 => 8,
-                          12 => 8,
-                          16 => 8,
-                          17 => 8,
-                          19 => 8,
-                          21 => 8,
-                     },
-
-   GB7UDX => {            11 => 8,
-                          12 => 8,
-                          16 => 8,
-                          17 => 8,
-                          19 => 8,
-                          21 => 8,
-                     },
-   GB7BAA => {
-                          11 => 5,
-                          12 => 8,
-                          16 => 8,
-                          17 => 8,
-                          19 => 8,
-                          21 => 8,
-                     },
-  };
+        GB7UDX => {            11 => 8,
+                               12 => 8,
+                               16 => 8,
+                               17 => 8,
+                               19 => 8,
+                               21 => 8,
+                          },
+        GB7BAA => {
+                               11 => 5,
+                               12 => 8,
+                               16 => 8,
+                               17 => 8,
+                               19 => 8,
+                               21 => 8,
+                          },
+       };
 
 
 
@@ -1117,7 +1123,6 @@
   You can alter this file at any time, including whilst the cluster is
   running.  If you alter the file during runtime, the command _l_o_a_d_/_h_o_p_s
   will bring your changes into effect.
-
 
 
   55..22..  IIssoollaattiinngg nneettwwoorrkkss
@@ -1244,11 +1249,6 @@
 
   The second element is the field_no.  There are 13 possiblities to
   choose from here ....
-
-
-
-
-
 
 
 

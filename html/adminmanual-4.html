@@ -38,6 +38,16 @@ DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/t
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
+<P>This line works fine for RedHat and SuSE distributions.  The line required for
+Slackware distributions is slightly different.  My thanks to Aurelio, PA3EZL for
+this information.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/dev/tty7
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
 <P>This will automatically start DXSpider on tty7 (ALT-F7) on bootup and restart 
 it should it crash for any reason.
 <P>

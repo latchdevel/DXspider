@@ -1,3 +1,7 @@
+10Mar01=======================================================================
+1. minor changes to the admin manual to reflect differences in distibutions
+thanks to pa3ezl (g0vgs)
+2. add (finally) the first draft of the usermanual (g0vgs)
 05Mar01=======================================================================
 1. do some major surgery on the connect logic to shorten the possibility of 
 duplicate connects happening
