@@ -27,14 +27,19 @@ designed to be an extensible basis for any type of one to many
 This protocol is designed to be flood routed in a meshed network in
 as efficient a manner as possible.
 
-The protocol consists of a L<Routing Section> and a L<Command Section>. 
-The two sections are separated with the '|' character. 
+Each message consists of a L</Routing Section> and a L</Command Section>. 
+The two sections are separated with the '|' character and the whole
+message is terminated in the standard RFC/Internet manner with the
+ascii <carraige return><linefeed> characters. It follows that these
+characters (as well as a small number of other reserved characters)
+can only be sent escaped. This is described further in the 
+L</Command Section>.
 
-Most of this document is concerned with the L<Routing Section>, however
-some L<Standard Commands> which all implementation should issue and
+Most of this document is concerned with the L</Routing Section>, however
+some L</Standard Commands> which all implementation should issue and
 must accept are described.
 
-=head2 Routing Section
+=head1 Routing Section
 
 The application that implements this protocol is essentially a line
 oriented message router. One line equals one message. Each line is
@@ -42,8 +47,8 @@ effectively a datagram.
 
 It is assumed that nodes are connected to
 each other using a "reliable" streaming protocol such as TCP/IP or
-AX25. Having said that: in context, elements of the protocol could be 
-multi or broadcast, either "as is" or wrapped in some other framing
+AX25. Having said that: in context, messages in this protocol could be 
+multi/broadcast, either "as is" or wrapped in some other framing
 protocol. 
 
 Because this is an unreliable, best effort, "please route my packets
@@ -52,21 +57,21 @@ will get to the other side of a mesh of nodes. There may be a
 discontinuity either caused by outage or deliberate filtering. 
 
 However, as it is envisaged that most messages will be flood routed or,
-in the case of directed messages (those that have a E<lt>tonodeE<gt> or
-E<lt>touserE<gt>) down all interfaces showing a route for that
+in the case of directed messages (those that have L</To> and/or
+L</ToUser> fields) down all interfaces showing a route for that
 direction, it is unlikely that messages will be lost in practice.
 
-=head3 Field Description
+=head2 Field Description
 
-Only the first three fields in the L<routing section> are compulsory
+Only the first three fields in the L</Routing Section> are compulsory
 and indicate that this is a broadcast to be sent to all nodes coming
-from the L<Origin>. If the message needs to be identified as coming
-from a user on a node, then the L<FrmUser> field is added.
+from the L</Origin>. If the message needs to be identified as coming
+from a user on a node, then the L</FrmUser> field is added.
 
-Adding a L<To> and/or L<ToUser> field will restrict the destinations
+Adding a L</To> and/or L</ToUser> field will restrict the destinations
 or recipients that receive this message. 
 
-The L<Hop> field is incremented on receipt of a message on a node.
+The L</Hop> field is incremented on receipt of a message on a node.
 
 Fields are separated by the comma ',' character with the last field 
 required followed by the vertical bar '|' character.
@@ -114,12 +119,12 @@ This is a compulsory field. It is the number of hops from the
 originating node. It is incremented immediately on receipt and
 before determining its value. 
 
-So the originating node sends a message with a L<Hop> of 0, the
+So the originating node sends a message with a L</Hop> of 0, the
 neighbouring nodes must increment this field before passing
 it on to higher layers for onward processing.
 
 Implementations may have an upper limit to this field and may
-silently drop incoming messages with a L<Hop> count greater than the
+silently drop incoming messages with a L</Hop> count greater than the
 limit.
 
 =item FrmUser
@@ -138,12 +143,12 @@ in the set [-A-Z0-9_] in any order.
 
 This field is used either to indicate particular node destination
 or to differentiate this broadcast in some way by making this
-message as a member of a L<Channel>. Any message can be sent
-down any L<Channel>. The names of L<Channel>s and their usage
+message as a member of a L</Channel>. Any message can be sent
+down any L</Channel>. The names of L</Channel>s and their usage
 is entirely up to the implementor.  
 
 It is assumed that node names can be differentiated from user
-names and L<Channel> names.
+names and L</Channel> names.
 
 If the field is set to a particular node destination, it will
 be routed (rather than broadcast) to that node. However, any
@@ -158,41 +163,41 @@ in the set [-A-Z0-9_] in any order. Higher layers may restrict
 this further.
 
 Conventionally this field is used to indicate the user to whom
-this message is directed. In an ideal world the L<To> field
+this message is directed. In an ideal world the L</To> field
 will be set, by the originating node, to the identifier of the node
 on which this user resides. 
 
-If the L<To> field is not set then this message will be 
+If the L</To> field is not set then this message will be 
 broadcast. However, should a node become apparent (on route)
-then nodes are free to fill in the L<To> field and proceed
+then nodes are free to fill in the L</To> field and proceed
 with a more directed approach. 
 
 If it becomes apparent (on route) that there may be more than
-one possible L<To> destination for a L<ToUser> then a node
-may duplicate the message (keeping the same L<TimeSeq>) and
-route it onwards. Because of the L<deduplication> inherent in 
+one possible L</To> destination for a L</ToUser> then a node
+may duplicate the message (keeping the same L</TimeSeq>) and
+route it onwards. Because of the L</DeDuplication> inherent in 
 the system, it is indeterminate as to which destination will
 receive the message. It is possible for all or just some 
-destinations to receive the message. The tuple (L<Origin>,
-L<TimeSeq>) will determine uniqueness. 
+destinations to receive the message. The tuple (L</Origin>,
+L</TimeSeq>) will determine uniqueness. 
 
-This field can, in the case where L<To>
-is set to the name of a node, be set to a L<Channel>. If this
+This field can, in the case where L</To>
+is set to the name of a node, be set to a L</Channel>. If this
 is the case then this will cause this message to be sent to
-a L<Channel> on the L<To> node only.
- 
+a L</Channel> on the L</To> node only.
+
 =back 
 
-=head3 Channel
+=head2 Channel
 
 Channels are a concept very similar to that on IRC. It is a 
 way of segregating data flows in a network. In principle, subject
 to local policy or application requirements, any data (or
-L<Command Section>) can be sent down any channel.
+L</Command Section>) can be sent down any channel.
 
 It is up to the implementation whether to use this feature or not.  
 
-=head3 Routing
+=head2 Routing
 
 It is assumed that nodes will be connected in a looped network with
 more than one route available (in many cases) to another node.
@@ -200,12 +205,12 @@ more than one route available (in many cases) to another node.
 In anycase, most traffic is not directed, but broadcast to all users
 on all nodes.
 
-Each message is uniquely identified by the (L<Origin>,L<TimeSeq>) 
+Each message is uniquely identified by the (L</Origin>,L</TimeSeq>) 
 tuple. The basic system will learn which interfaces can see what nodes
-by looking at the tuple and merging that with the L<Hop> count. 
-Each interface remembers the latest L<TimeSeq> with the lowest L<Hop>
-for each L<Origin> that arrives on that interface. It also remembers
-the number of messages for that L<Origin> that has been received on
+by looking at the tuple and merging that with the L</Hop> count. 
+Each interface remembers the latest L</TimeSeq> with the lowest L</Hop>
+for each L</Origin> that arrives on that interface. It also remembers
+the number of messages for that L</Origin> that has been received on
 that interface.
 
 Any message for onward broadcast is duplicated and sent out on all
@@ -216,10 +221,10 @@ the "best" interface based on routing information gathered so far. If there
 is more than one possible route then, depending on network or local
 policy, the message may be duplicated and sent on other interfaces
 as well.
-  
-=head3 DeDuplication
 
-On receipt of a message, its unique tuple (L<Origin>,L<TimeSeq>) is
+=head2 DeDuplication
+
+On receipt of a message, its unique tuple (L</Origin>,L</TimeSeq>) is
 checked against a hash table. If it exists: the message is silently
 dropped. If it does not exist in the hash table then the tuple is
 added.
@@ -232,18 +237,94 @@ required.
 This mechanism only ensures that a message broadcast around the network
 travels the least distance and through the fewest nodes possible. It
 is up to higher layers to make sure that data carried is not, itself,
-duplicated! 
- 
-=head2 Command Section
+duplicated!
 
-The Command Section of the message contains the actual data being
+=head2 Examples
+
+ # on link startup
+ GB7TLH,3D02350001,0|HELLO
+
+ # on user startup
+ GB7TLH,3D042506F2,0,G1TLH|HELLO
+
+ # on user disconnection
+ GB7TLH,3D9534F32D,0,G1TLH|BYE
+
+ # a talk (actually 'text') message to a user (some distance away
+ # from the origin node)
+ GB7TLH,3D03450019,3,G1TLH,GB7BAA,G8TIC|T,Hiya Mike what's happening?
+
+ # a talk/chat/text message to a channel or group
+ GB7TLH,0413525F23,2,G1TLH,VHF|T,2m is opening on MS
+
+ # a ping to find the whereabouts and distance of a user from a node
+ # the hex number on the end is the ping ID
+ GB7TLH,1512346543,0,,,G7BRN|PING,9F4D 
+
+ # the same from a user on GB7TLH
+ GB7TLH,1512346543,0,G1TLH,,G7BRN|PING,23
+
+ # this effectively asks whether the user is on-line on a particular node
+ GB7TLH,1512346543,0,G1TLH,GB7DJK,G7BRN|PING,35DE
+
+ # A possible reply, same ID as ping followed by the no of hops on the 
+ # received ping
+ GB7DJK,1512450534,3,G7BRN,GB7TLH,G1TLH|PONG,35DE,3 
+
+
+=head1 Command Section
+
+The L</Command Section> of the message contains the actual data being
 passed. It is called the Command Section because all commands
-are identified with a L<Command Tag> which is implemented by 
+are identified with a L</Tag> which is implemented by 
 the software using this protocol.
 
-=head3 Command Tag
+The L</Tag> is separated from its data by a comma ','. All fields
+in any subsequent data shall be separated by a comma ','.
+All fields shall
+be HTTP encoded such that reserved characters (comma ',', 
+vertical bar '|',
+percent '%', 
+equals '=' 
+and non printable characters less than 127 (or %7F in hex)
+[including newline and carraige return] are tranlated to
+their two hex digit equivalent preceeded by the percent '%' character.
 
-The Command Tag consists of string of uppercase letters and digits, starting
+For example:
+
+ "%0D%0A" is "<carriage return><linefeed>".
+ "hello%2C there" is "hello, there"
+
+This is not standard CSV, fields are not quoted (delimited with either
+' or ").
+
+All national characters above 127 are UTF8 encoded in the
+standard perl 5.8.x way. It follows that all (perl) programs that
+are written according to this specification must say:
+
+ use UTF8;
+
+A message (or line) is terminated with <carriage return><linefeed>
+0x0d 0x0a. Incoming messages must be accepted even when terminated
+with just <linefeed>.
+
+Care must be taken to make sure that fields have any reserved characters
+encoded. In particular: it is perfectly permissible to have <linefeed>
+characters in a field - so long as they are escaped.
+
+Fields come in two styles: either simple fields (just containing
+data) or B<key>=B<value> pairs. Each pair must be separated from
+the next by a comma ','. The B<key> must consist of the set of
+characters [a-z0-9_] (ie lowercase letters, digits and underscore),
+with a leading letter. The B<value> must be HTTP encoded as
+specified above and can otherwise contain any character.
+
+There is no maximum size specified for a message. It is up to each
+implimentation to enforce one (if only for their own protection).
+
+=head2 Tag
+
+The L</Tag> consists of string of uppercase letters and digits, starting
 with a leading, uppercase, letter. Tags should be as short as is meaningful.
 
 Valid tags would be:
@@ -258,7 +339,9 @@ Invalid tags include:
  dx
  Ann
 
-There are a number of standard commands which must be accepted by 
+=head2 Standard Commands
+
+There are a number of L</Standard Commands> which must be accepted by 
 all implementations.
 
 =head1 AUTHOR
