@@ -53,14 +53,18 @@ sub decodefreq
 	my $f;
 	
 	foreach $f (@f) {
-		my ($a, $b) = $f =~ m{^(\d+)/(\d+)$};
-		if ($a && $b) {
-			push @out, $a, $b;
+		my ($a, $b); 
+		if (m{^\d+/\d+$}) {
+			push @out, $f;
 		} elsif (($a, $b) = $f =~ m{^(\w+)(?:/(\w+))?$}) {
 			$b = lc $b if $b;
 			my @fr = Bands::get_freq(lc $a, $b);
 			if (@fr) {
-				push @out, @fr;    # add these to the list
+				while (@fr) {
+					$a = shift @fr;
+					$b = shift @fr;
+					push @out, "$a/$b";  # add them as ranges
+				}
 			} else {
 				return ('dfreq', $dxchan->msg('dfreq1', $f));
 			}

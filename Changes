@@ -1,6 +1,39 @@
 01Nov00=======================================================================
 1. put PC11 field 2 check back to m for pc text.
 2. improve 'simple' callsign checking
+3. Added the first cut of the new user/sysop filtering code. This cut works 
+for spots and the syntax is:-
+
+accept/spots [<call>] [input] [<filterno>] things ..
+reject/spots [<call>] [input] [<filterno>] things ..
+
+where things are: 
+  freq 0/30000 | hf | hf/cw | 6m,4m,2m
+  call G,PA,HB9
+  info iota
+  by G,PA,HB9
+  call_dxcc 61,62
+  call_itu 31
+  call_zone 14,15,16
+  by_dxcc 61,62
+  by_itu 31
+  by_zone 14,15,16
+  origin GB7,MB7
+  channel GB7DJK,GB7BAA
+      
+You can simply string these together on one line one after the other and 
+there is an implied 'and', you can also string together with 'or' 'not' (or
+'!') and '(' and ')' - in otherwords an arbitrary expression.
+              
+You can see what you have done with:
+
+show/filter [<call>]
+
+You can clear your work with:
+
+clear/spots [<call>] [input] [<filterno>|all]
+
+Have fun and someone please write the documentation.
 31Oct00=======================================================================
 1. add 0x8e to the list of characters we clobber (make xterm go into graphics
 mode).

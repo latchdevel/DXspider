@@ -74,11 +74,11 @@ use vars qw(%channels %valid);
 		  annfilter => '5,Announce Filter',
 		  wwvfilter => '5,WWV Filter',
 		  wcyfilter => '5,WCY Filter',
-		  spotfilter => '5,Spot Filter',
+		  spotsfilter => '5,Spot Filter',
 		  inannfilter => '5,Input Ann Filter',
 		  inwwvfilter => '5,Input WWV Filter',
 		  inwcyfilter => '5,Input WCY Filter',
-		  inspotfilter => '5,Input Spot Filter',
+		  inspotsfilter => '5,Input Spot Filter',
 		  passwd => '9,Passwd List,parray',
 		  pingint => '5,Ping Interval ',
 		  nopings => '5,Ping Obs Count',
@@ -102,10 +102,10 @@ sub DESTROY
 	undef $self->{delayed};
 	undef $self->{annfilter};
 	undef $self->{wwvfilter};
-	undef $self->{spotfilter};
+	undef $self->{spotsfilter};
 	undef $self->{inannfilter};
 	undef $self->{inwwvfilter};
-	undef $self->{inspotfilter};
+	undef $self->{inspotsfilter};
 	undef $self->{passwd};
 	undef $self->{node};
 }

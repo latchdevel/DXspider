@@ -70,7 +70,7 @@ $baddxfn = "$main::data/baddx.pl";
  [ qw(c c n n) ],				# pc25
  [ qw(f m d t m c c bc) ],		# pc26
  [ qw(d n n n n m c c bc) ],	# pc27
- [ qw(c c c c d t p m bp n p bp bc) ], # pc28
+ [ qw(c c c m d t p m bp n p bp bc) ], # pc28
  [ qw(c c n m) ],				# pc29
  [ qw(c c n) ],					# pc30
  [ qw(c c n) ],					# pc31
@@ -212,14 +212,14 @@ sub start
 	$self->{here} = 1;
 
 	# get the output filters
-	$self->{spotfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'node_default', 0);
+	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'node_default', 0);
 	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) || Filter::read_in('wwv', 'node_default', 0);
 	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0) || Filter::read_in('wcy', 'node_default', 0);
 	$self->{annfilter} = Filter::read_in('ann', $call, 0) || Filter::read_in('ann', 'node_default', 0) ;
 
 
 	# get the INPUT filters (these only pertain to Clusters)
-	$self->{inspotfilter} = Filter::read_in('spots', $call, 1) || Filter::read_in('spots', 'node_default', 1);
+	$self->{inspotsfilter} = Filter::read_in('spots', $call, 1) || Filter::read_in('spots', 'node_default', 1);
 	$self->{inwwvfilter} = Filter::read_in('wwv', $call, 1) || Filter::read_in('wwv', 'node_default', 1);
 	$self->{inwcyfilter} = Filter::read_in('wcy', $call, 1) || Filter::read_in('wcy', 'node_default', 1);
 	$self->{inannfilter} = Filter::read_in('ann', $call, 1) || Filter::read_in('ann', 'node_default', 1);
@@ -1138,8 +1138,8 @@ sub send_dx_spot
 		my $routeit;
 		my ($filter, $hops);
 
-		if ($dxchan->{spotfilter}) {
-		    ($filter, $hops) = $dxchan->{spotfilter}->it(@_, $self->{call} );
+		if ($dxchan->{spotsfilter}) {
+		    ($filter, $hops) = $dxchan->{spotsfilter}->it(@_, $self->{call} );
 			next unless $filter;
 		}
 		
@@ -1473,7 +1473,7 @@ sub broadcast_list
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
-			($filter) = $dxchan->{spotfilter}->it(@{$fref}) if ref $fref;
+			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
 			next unless $filter;
 		}
 		next if $sort eq 'ann' && !$dxchan->{ann};
