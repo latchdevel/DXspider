@@ -25,6 +25,9 @@ if ($line =~ /-a/) {			# append to the file
 }
 
 my ($fn, $rest) = split /\s+/, $line, 2;
+$fn = "$main::root/packclus/$fn" unless $fn =~ m|^/|;
+$fn =~ s/..//g;
+$fn =~ m|/+|/|g;
 $fn .= '_' . cldate if $date_req;
 $fn .= '_' . ztime if $time_req;
 $fn =~ s/\s+//g;
