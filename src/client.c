@@ -44,7 +44,7 @@
 #define MAXPATHLEN 256
 #endif
 
-#define DEFPACLEN 128
+#define DEFPACLEN 236
 #define MAXPACLEN 236
 #define MAXCALLSIGN 9
 
