@@ -456,6 +456,13 @@ sub parse
 								push @t, "(\$r->[$fref->[2]]>=$1 && \$r->[$fref->[2]]<=$2)";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
+						} elsif ($fref->[1] eq 't') {
+							my @t;
+							for (@val) {
+								s/\*//g;
+								push @t, "\$r->[$fref->[2]]=~/$_/i";
+							}
+							$s .= "(" . join(' || ', @t) . ")";
 						} else {
 							confess("invalid letter $fref->[1]");
 						}

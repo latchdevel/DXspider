@@ -636,7 +636,7 @@ sub queue_msg
 		# guess, use (to, from, time, subject) tuple?
 		foreach $dxchan (@nodelist) {
 			next if $dxchan->call eq $main::mycall;
-			next if grep { $_ eq $dxchan->call } @{$ref->{gotit}};
+			next if ref $ref->{gotit} && grep $_ eq $dxchan->call, @{$ref->{gotit}};
 			next unless $ref->forward_it($dxchan->call);           # check the forwarding file
 
 			# if we are here we have a node that doesn't have this message
