@@ -408,9 +408,9 @@ dbg("DXSpider Version $version, build $build started");
 
 # load Prefixes
 dbg("loading prefixes ...");
+dbg(USDB::init());
 my $r = Prefix::init();
 confess $r if $r;
-dbg(USDB::init());
 
 # load band data
 dbg("loading band data ...");
