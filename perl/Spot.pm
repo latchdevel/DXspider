@@ -17,6 +17,7 @@ use Julian;
 use Prefix;
 use DXDupe;
 use Data::Dumper;
+use QSL;
 
 use strict;
 
@@ -159,6 +160,10 @@ sub add
 		$hfspots++;
 	} else {
 		$vhfspots++;
+	}
+	if ($_[3] =~ /(?:QSL|VIA)/i) {
+		my $q = QSL::get($_[1]) || new QSL $_[1];
+		$q->update($_[3], $_[2], $_[4]);
 	}
 }
 

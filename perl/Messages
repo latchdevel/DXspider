@@ -235,6 +235,7 @@ package DXM;
 				qrashe1 => 'Please enter a QRA locator, eg sh/qra JO02LQ or sh/qra JO02LQ IO93NS',
 				qrae2 => 'Don\'t recognise \"$_[0]\" as a QRA locator (eg JO02LQ)',
 				qra => 'Your QRA Locator is now \"$_[0]\"',
+				qsl1 => 'Call           Manager   Times  Last Time Seen      De',
 				rcmdo => 'RCMD \"$_[0]\" sent to $_[1]',
 				read1 => 'Sorry, no new messages for you',
 				read2 => 'Msg $_[0] not found',

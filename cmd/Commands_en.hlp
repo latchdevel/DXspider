@@ -2095,6 +2095,25 @@ is provided for users of this software by http://www.qrz.com
 
 See also SHOW/WM7D for an alternative.
 
+=== 0^SHOW/QSL <callsign>^Show any QSL info gathered from spots
+The node collects information from the comment fields in spots (things
+like 'VIA EA7WA' or 'QSL-G1TLH') and stores these in a database.
+
+This command allows you to interrogate that database and if the callsign
+is found will display the manager(s) that people have spotted. This 
+information is NOT reliable, but it is normally reasonably accurate if
+it is spotted enough times.
+
+For example:-
+
+  sh/qsl 4k9w
+
+You can check the raw input spots yourself with:-
+
+  sh/dx 4k9w qsl
+
+This gives you more background information.
+
 === 9^SHOW/REGISTERED [<prefix>]^Show the registered users
 
 === 0^SHOW/ROUTE <callsign> ...^Show the route to the callsign

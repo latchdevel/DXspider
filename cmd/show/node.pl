@@ -17,8 +17,6 @@
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) unless $self->priv >= 1;
 
-use DB_File;
-
 my @call = map {uc $_} split /\s+/, $line; 
 my @out;
 my $count;
