@@ -50,7 +50,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.14";				# the version no of the software
+$version = "1.15";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
  
 # handle disconnections
