@@ -1,5 +1,5 @@
   The DXSpider User Manual v1.49
-  Ian Maude, G0VGS, (g0vgs@ea1dav.net)
+  Ian Maude, G0VGS, (g0vgs@gb7mbc.net)
   December 2001 revision 4.1
 
   A complete reference for users of the DXSpider DXCluster program.
