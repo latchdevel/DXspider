@@ -19,7 +19,7 @@ foreach my $call (@call) {
 	my $q = QSL::get($call);
 	if ($q) {
 		my $c = $call;
-		for (@{$q->[1]}) {
+		for (sort {$b->[2] <=> $a->[2]} @{$q->[1]}) {
 			push @out, sprintf "%-14s %-10s %4d  %s   %s", $c, $_->[0], $_->[1], cldatetime($_->[2]), $_->[3];
 			$c = "";
 		}
