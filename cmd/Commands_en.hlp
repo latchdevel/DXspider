@@ -471,6 +471,10 @@ enter:-
 See also SHOW/FILES to see what fileareas are available and a 
 list of content.
 
+=== 0^WHO^Show who is physically connected
+This is a quick listing that shows which callsigns are connected and
+what sort of connection they have
+
 === 0^WX <text>^Send a weather message to local users
 === 0^WX FULL <text>^Send a weather message to all cluster users
 === 5^WX SYSOP <text>^Send a weather message to other clusters only
