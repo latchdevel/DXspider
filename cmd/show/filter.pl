@@ -10,10 +10,12 @@ my @f = split /\s+/, $line;
 my @out;
 my $call = $self->call;
 
-if (@f && $self->priv >= 8) {
+if (@f) {
 	if (is_callsign(uc $f[0])) {
+		return (1, $self->msg('e5')) unless $self->priv >= 1;
 		$call = uc shift @f;
     } elsif ($f[0] eq 'node_default' || $f[0] eq 'user_default') {
+		return (1, $self->msg('e5')) unless $self->priv >= 1;
 		$call = shift @f;
 	}
 }

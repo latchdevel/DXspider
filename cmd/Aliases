@@ -48,6 +48,7 @@ package CmdAlias;
 	  '^di\w*/(\d+)', 'directory $1', 'directory',
 	],
 	'e' => [
+	  '^ex', 'bye', 'bye',
 	],
 	'f' => [
 	],

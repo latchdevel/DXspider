@@ -1662,7 +1662,7 @@ sub disconnect
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	foreach my $node (grep { $_->dxchan == $self } DXNode::get_all) {
-		next if $node->call eq $call;
+#		next if $node->call eq $call;
 		next if $node->call eq $main::mycall;
 		broadcast_ak1a(pc21($node->call, 'Gone.'), $self) unless $self->{isolate};
 		$node->del;
@@ -1681,8 +1681,6 @@ sub disconnect
 	$self->tell_login('logoutn');
 
 	Log('DXProt', $call . " Disconnected");
-	my $ref = DXCluster->get_exact($call);
-	$ref->del() if $ref;
 
 	$self->SUPER::disconnect;
 }
