@@ -361,14 +361,14 @@ sub pc51
 }
 
 my $hexlasttime = 0;
-my $hexlastlet = 'A';
+my $hexlastlet = '!';
 
 sub hexstamp
 {
 	my $t = shift || $main::systime;
-	if ($t ne $hexlasttime) {
+	if ($hexlastlet gt '>' || $t ne $hexlasttime) {
 		$hexlasttime = $t;
-		$hexlastlet = 'A';
+		$hexlastlet = '!';
 	} else {
 		do {
 			$hexlastlet = chr(ord($hexlastlet) + 1);
@@ -402,7 +402,7 @@ sub pc59
 		my $ref = $_;
 		my $call = $ref->call;
 		my $here = $ref->here;
-		$s .= $ref->isa('Route::Node') ? "^N$here$call" : "^U$here$call";
+		$s .= $ref->enc_pc59;
 	}
 	push @out, sprintf "$s^%s^", get_hops(59);
 	return @out;

@@ -526,9 +526,9 @@ sub process_pc59
 			}
 		}
 		push @addnode, $node if $self->{state} =~ /^init/;
-		push @delnode, $enode->remove_link($_, $self) for @dn;
+		push @delnode, $enode->remove_route($_, $self) for @dn;
 		push @deluser, $enode->del_user($_) for @du;
-		push @addnode, $enode->add_link($_, $self) for @an;
+		push @addnode, $enode->add_route($_, $self) for @an;
 		push @adduser, $enode->add_user($_) for @au;
 	}
 
@@ -537,8 +537,8 @@ sub process_pc59
 	$self->route_pc17($origin, $line, $enode, @deluser) if @deluser;
 	$self->route_pc16($origin, $line, $enode, @adduser) if @adduser;
 	
-	unshift @_, $enode if $node->call ne $enode->call;
-	$self->route_pc59($sort, $hexstamp, $ncall, @_) if @_;
+	unshift @_, $enode if $ncall ne $origin;
+	$self->route_pc59($origin, $line, $sort, $hexstamp, $origin, @_) if @_;
 
 	$_->delete for @deluser;
 	$_->delete for @delnode;
@@ -1118,7 +1118,7 @@ sub disconnect
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
-		$self->route_pc59('D', hexstamp(), $main::mycall, $node);
+		$self->route_pc59($main::mycall, "", 'D', hexstamp(), $main::mycall, $node);
 	}
 
 	# delete all the unwanted nodes
@@ -1220,7 +1220,8 @@ sub broadcast_route
 			next unless $dxchan->isa('DXProt');
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
 			if ($dxchan->{newroute}) {
-				next if ($generate == \&pc19 || $generate==\&pc21);
+				next if ($generate == \&pc19 || $generate==\&pc21 ||
+						$generate == \&pc16 || $generate==\&pc17);
 			} else {
 				next if ($generate == \&pc19 || $generate==\&pc21) && !$dxchan->user->wantroutepc19;
 				next if ($generate == \&pc59);
