@@ -278,7 +278,7 @@ print "reading cron jobs ...\n";
 DXCron->init();
 
 # starting local stuff
-print "doing local initialisation ...\n"
+print "doing local initialisation ...\n";
 eval {
 	Local::init();
 };
