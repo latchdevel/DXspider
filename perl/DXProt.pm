@@ -1548,7 +1548,7 @@ sub handle_51
 
 	my $thing = Thingy::Ping->new(origin=>$main::mycall);
 	$thing->from_DXProt($self, $line, @_);
-	$thing->broadcast($self);
+	$thing->handle($self);
 }
 
 # dunno but route it
