@@ -1,6 +1,8 @@
 # 
 # save the output of ANY command to a file
 #
+# From an idea by Rene OZ1LQH
+#
 # Copyright (c) 2002 Dirk Koopman G1TLH
 #
 # $Id$
