@@ -134,9 +134,14 @@ sub process
 	  my $ref = $work{"$f[1]$f[2]$f[3]"};
 	  if ($ref) {
 	    $self->send(DXProt::pc33($f[2], $f[1], $f[3]));# acknowledge it
+		
+		# get the next msg no - note that this has NOTHING to do with the stream number in PC protocol
+		my $msgno = next_transno("Msgno") if !$ref->{file};
+
 		$ref->store($ref->{lines});                    # store it (whatever that may mean)
 		$ref->workclean;
 		delete $work{"$f[1]$f[2]$f[3]"};       # remove the reference from the work vector
+		push @msg, $ref;           # add this message to the incore message list
 	  }
 	  last SWITCH;
 	}
@@ -210,17 +215,14 @@ sub store
 #	push @{$ref->{gotit}}, $ref->{fromnode} if $ref->{fromnode};
   } else {              # a normal message
 
-    # get the next msg no - note that this has NOTHING to do with the stream number in PC protocol
-	my $msgno = next_transno("Msgno");
-
     # attempt to open the message file
-	my $fn = filename($msgno);
+	my $fn = filename($ref->{msgno});
 
     dbg('msg', "To be stored in $fn\n");
   
     my $fh = new FileHandle "$fn", "w";
 	if (defined $fh) {
-      print $fh "=== $msgno^$ref->{to}^$ref->{from}^$ref->{t}^$ref->{private}^$ref->{subject}^$ref->{origin}^$ref->{read}\n";
+      print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$ref->{private}^$ref->{subject}^$ref->{origin}^$ref->{read}\n";
 	  print $fh "=== $ref->{fromnode}\n";
 	  my $line;
 	  foreach $line (@{$lines}) {
@@ -228,11 +230,9 @@ sub store
 		print $fh "$line\n";
 	  }
 	  $ref->{gotit} = [];
-	  $ref->{msgno} = $msgno;
 	  push @{$ref->{gotit}}, $ref->{fromnode} if $ref->{fromnode};
-	  push @msg, $ref;           # add this message to the incore message list
 	  $fh->close;
-	  dbg('msg', "msg $msgno stored\n");
+	  dbg('msg', "msg $ref->{msgno} stored\n");
     } else {
       confess "can't open msg file $fn $!";  
     }
@@ -314,8 +314,8 @@ sub read_msg_body
   chomp (@out = <$file>);
   close($file);
   
-  shift @out if $out[0] =~ /^=== \d+\^/;
-  shift @out if $out[0] =~ /^=== \d+\^/;
+  shift @out if $out[0] =~ /^=== /;
+  shift @out if $out[0] =~ /^=== /;
   return @out;
 }
 
@@ -372,6 +372,17 @@ sub init
 sub get_all
 {
   return @msg;
+}
+
+# get a particular message
+sub get
+{
+  my $msgno = shift;
+  for (@msg) {
+    return $_ if $_->{msgno} == $msgno;
+    last if $_->{msgno} > $msgno;
+  }
+  return undef;
 }
 
 # return the official filename for a message no
