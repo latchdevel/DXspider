@@ -114,7 +114,7 @@ sub new
 	my $call = uc shift;
 	#  $call =~ s/-\d+$//o;
   
-	confess "can't create existing call $call in User\n!" if $u{$call};
+#	confess "can't create existing call $call in User\n!" if $u{$call};
 
 	my $self = bless {}, $pkg;
 	$self->{call} = $call;
