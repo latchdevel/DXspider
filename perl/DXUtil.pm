@@ -130,6 +130,12 @@ sub promptf
 	if ($action) {
 		my $q = qq{\$value = $action(\$value)};
 		eval $q;
+	} elsif (ref $value) {
+		my $dd = new Data::Dumper([$value]);
+		$dd->Indent(0);
+		$dd->Terse(1);
+		$dd->Quotekeys($] < 5.005 ? 1 : 0);
+		$value = $dd->Dumpxs;
 	}
 	$prompt = sprintf "%15s: %s", $prompt, $value;
 	return ($priv, $prompt);
@@ -175,7 +181,21 @@ sub print_all_fields
 	foreach $field (sort {$ref->field_prompt($a) cmp $ref->field_prompt($b)} @fields) {
 		if (defined $ref->{$field}) {
 			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
-			push @out, $ans if ($self->priv >= $priv);
+			my @tmp;
+			if (length $ans > 79) {
+				my ($p, $a) = split /: /, $ans;
+				my $l = (length $p) + 2;
+				my $al = 79 - $l;
+				while (length $a > $al ) {
+					$a =~ s/^(.{$al})//;
+					push @tmp, "$p: $1";
+					$p = ' ' x ($l - 2);
+				}
+				push @tmp, "$p: $a" if length $a;
+			} else {
+				push @tmp, $ans;
+			}
+			push @out, @tmp if ($self->priv >= $priv);
 		}
 	}
 	return @out;

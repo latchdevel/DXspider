@@ -72,7 +72,9 @@ sub read_in
 		my $s = readfilestr($fn);
 		my $newin = eval $s;
 		dbg('conn', "$@") if $@;
-		return bless [ @$in ], 'Filter::Old' if $in;
+		if ($in) {
+			$newin = bless {filter => $in, name => "$flag$call.pl" }, 'Filter::Old'
+		}
 		return $newin;
 	}
 	return undef;
@@ -83,44 +85,12 @@ sub read_in
 sub write
 {
 	my $self = shift;
-	
-	my $sort = shift;
-	my $call = shift;
-	my $fn = "$filterbasefn/$sort";
-	
-	
-	# make the output directory
-	mkdir $fn, 0777 unless -e $fn;
+}
 
-	# write out the file
-	$fn = "$fn/$call.pl";
-	unless (open FILTER, ">$fn") {
-		warn "can't open $fn $!" ;
-		return;
-	}
-
-	my $today = localtime;
-	print FILTER "#!/usr/bin/perl
-#
-# Filter for $call stored $today
-#
-\$in = [
-";
-
-	my $ref;
-	for $ref (@_) {
-		my ($action, $field, $fieldsort, $comp, $actiondata) = @{$ref};
-		print FILTER "\t[ $action, $field, $fieldsort,";
-		if ($fieldsort eq 'n' || $fieldsort eq 'r') {
-			print FILTER "[ ", join (',', $comp), " ],";
-		} elsif ($fieldsort eq 'a') {
-			my $f = $comp;
-	        print FILTER "'$f'";
-		}
-		print FILTER " ],\n";
-	}
-	print FILTER "];\n";
-	close FILTER;
+sub print
+{
+	my $self = shift;
+	return $self->{name};
 }
 
 package Filter::Old;
@@ -161,7 +131,8 @@ use vars qw(@ISA);
 #
 sub it
 {
-	my $filter = shift;            # this is now a bless ref of course but so what
+	my $self = shift;
+	my $filter = $self->{filter};            # this is now a bless ref of course but so what
 	
 	my ($action, $field, $fieldsort, $comp, $actiondata);
 	my $ref;
