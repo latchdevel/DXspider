@@ -913,10 +913,13 @@ sub normal
 			$user->put;
 			my $ref = Route::get($call);
 			$self->route_pc41($ref, $call, $field[2], $field[3], $field[4]) if $ref && !eph_dup($line);
+			return;
 		}
+
 		if ($pcno == 43) {
 			last SWITCH;
 		}
+
 		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47 || $pcno == 48) {
 			DXDb::process($self, $line);
 			return;
