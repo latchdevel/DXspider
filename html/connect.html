@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Sun Sep  2 20:31:56 BST 2001
+Last modified: Sun Sep  2 20:44:59 BST 2001
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -28,23 +28,21 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
 	  
 	<p><em>Connect</em> scripts live in the <tt>/spider/connect</tt> directory and are simple ascii scripts
 	  that are written using a normal editor. There are a couple of examples in the issue directory.
-	  
-	<p>Here are a few of basic types, first a telnet connection where the 
-	   client is set up in the passwd file thus:-
-	<pre>
-    gb7djk:x:1372:1291::/home/gb7djk:/usr/bin/perl /spider/perl/client.pl gb7djk telnet
-	</pre>
-	and the connect script would be:-
+
+	<p>The first example is a simple telnet (TCP/IP) connect to port 7000 of WR3D (this will actually
+	  work if you have or make an arrangement to connect to WR3D)[oh, and substitute x1xxx for your real
+	  node callsign.</p>
+
 	<pre>
     timeout 15
     # this is a comment
-    connect telnet dirkl.tobit.co.uk
-    'login' 'gb7djk'
-    'word' 'gb7djk'
-    client gb7djk telnet
+    connect telnet wr3d.dxcluster.net 7000
+    'login' 'x1xxx'
+    client wr3d telnet
 	</pre>
+
 	<p>For a connect that requires a login and execution of the programs
-	  from a normal shell, do:-
+	  from a normal shell, do:-</p>
 
 	<pre>
     timeout 15
@@ -62,7 +60,7 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
     client gb7djk telnet
 	</pre>
 
-	<p>a ax25 example:-
+	<p>a ax25 example (connecting from GB7DJK, to GB7DXM via my local BPQ node and one X1J intermediate node):-
 	<pre>
     timeout 60
     abort (Busy|Sorry|Fail)
@@ -70,14 +68,16 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
     connect ax25 /usr/sbin/netrom_call bbs gb7djk-0 g1tlh-0
     'Connected' ''
     'Connected' 'c np7'
-    'linked to' 'c gb7dxm'
+    '*** Connect' 'c gb7dxm'
     'Connect' ''
 	</pre>
 
-    The <tt>-0</tt> ssid is important if you want it to work reliably. Obviously if you are
-    using a different ssid then you would use that.
+    <p>The <tt>-0</tt> ssid is important if you want it to work reliably. Obviously if you are
+    using a different ssid then you would use that. You can use the Netrom alias instead if it
+	it is in the machines node table</p>
 
-    <p>A AGW Engine example would be very similar and look like this:-
+    <p>A AGW Engine example would be very similar and look like this:-</p>
+
 	<pre>
     timeout 60
     abort (Busy|Sorry|Fail)
@@ -89,7 +89,8 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
 	</pre>
 	
 	<p>A connection is started manually by typing in <tt>connect &lt;scriptname&gt;</tt> on a sysop enabled
-	  <tt>client.pl</tt> session. For example:-
+	  <tt>client.pl</tt> session. For example:-</p>
+
 	<pre>
     G1TLH de GB7DJK 13-Dec-1998 2041Z > connect gb7djk-1
     connection to GB7DJK-1 started
@@ -107,7 +108,8 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
 
     <p>You can watch the progress of the connection (if you have <tt>connect</tt> 
      debugging enabled [<tt>set/debug connect</tt>]) on the
-	  <tt>cluster.pl</tt> screen and you should see something like this:-
+	  <tt>cluster.pl</tt> screen and you should see something like this:-</p>
+
 	<pre>
     &lt;- D G1TLH connect gb7djk-1
     -> D G1TLH connection to GB7DJK-1 started
@@ -142,7 +144,7 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
 	  <span class=cmd>These coloured lines are miscellaneous commands</span>, the <span class=expect>things
 	  that are this colour are the strings I am looking for (what I am "expecting")</span> 
 	  and the <span class=send>things that are this colour
-	  are the commands I am going to make when I see the "expect" strings in the input</span>.</p>
+	  are the commands I am going to send when I see the "expect" strings in the input</span>.</p>
 
 	<p>The script starts by setting the timeout to 15 seconds, then starts
 	  the connection. It is <b>important</b> to note that, in the case of 
@@ -166,7 +168,7 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
 	  only, the debug output is all one colour.</p>
 
 	<p>The connect scripts consist of lines which start with the
-	following keywords or symbols:-
+	following keywords or symbols:-</p>
 
 	<ul>
 
@@ -232,11 +234,8 @@ Last modified: Sun Sep  2 20:31:56 BST 2001
 
 <!-- Standard Footer!! -->
 	<p>&nbsp;</p>
-	<p>
-	  <FONT COLOR="#606060"><hr></font>
-	<font color="#FF0000" size=-2>
-	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
-	</font>
-	<font color="#000000" size=-2>$Id$</font>
+	<hr>
+	<span class=copy>Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved</span><br>
+	<span class=id>$Id$</span>
   </body>
 </html>
