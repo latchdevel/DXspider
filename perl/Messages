@@ -84,6 +84,7 @@ package DXM;
 				e28 => 'Sorry, you need to be registered (SP $main::myalias to register)',
 				e29 => 'Need a password',
 				e30 => 'Cannot Open $_[0] $!',
+				e31 => '$_[0] is not a user', 
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',
