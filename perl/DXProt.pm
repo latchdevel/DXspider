@@ -854,7 +854,7 @@ sub handle_17
 	}
 
 	$uref = Route->new($ucall) unless $uref; # throw away
-	$self->route_pc17($origin, $line, $parent, $uref) if (DXChannel::get($parent->call) || $parent->np);
+	$self->route_pc17($origin, $line, $parent, $uref) if (DXChannel::get($parent->call) || ($parent->isa('Route::Node') && $parent->np));
 }
 		
 # link request
