@@ -52,7 +52,7 @@ $filterdef = bless ([
 			  ['by_zone', 'nz', 11],
 			  ['channel', 'c', 12],
 			 ], 'Filter::Cmd');
-
+$totalspots = $hfspots = $vhfspots = 0;
 
 # create a Spot Object
 sub new
