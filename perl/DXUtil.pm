@@ -183,12 +183,13 @@ sub print_all_fields
 			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
 			my @tmp;
 			if (length $ans > 79) {
-				my ($p, $a) = split /: /, $ans;
+				my ($p, $a) = split /: /, $ans, 2;
 				my $l = (length $p) + 2;
 				my $al = 79 - $l;
+				my $bit;
 				while (length $a > $al ) {
-					$a =~ s/^(.{$al})//;
-					push @tmp, "$p: $1";
+					($bit, $a) = unpack "A$al A*", $a;
+					push @tmp, "$p: $bit";
 					$p = ' ' x ($l - 2);
 				}
 				push @tmp, "$p: $a" if length $a;
