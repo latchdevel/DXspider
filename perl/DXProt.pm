@@ -825,20 +825,21 @@ sub normal
 				$self->disconnect;
 				return;
 			}
-			my $node = Route::Node::get($call);
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
-				my $dxchan = $node->dxchan;
-				if ($dxchan && $dxchan ne $self) {
-					dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
-					return;
-				}
-
 				if ($call eq $self->{call}) {
 					dbg("PCPROT: Trying to disconnect myself with PC21") if isdbg('chanerr');
 					return;
 				}
 
+				my $node = Route::Node::get($call);
 				if ($node) {
+
+					my $dxchan = $node->dxchan;
+					if ($dxchan && $dxchan ne $self) {
+						dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
+						return;
+					}
+
 					# input filter it
 					return unless $self->in_filter_route($node);
 
