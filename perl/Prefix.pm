@@ -148,6 +148,7 @@ sub matchprefix
 	my $pref = shift;
 	my @partials;
 
+	$pref =~ s/-\d+$//;
 	for (my $i = length $pref; $i; $i--) {
 		$matchtotal++;
 		my $s = substr($pref, 0, $i);
