@@ -23,7 +23,7 @@ use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $fil
 $fp = undef;
 $maxspots = 50;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
-$maxdays = 365;					# normal maximum no of days to go back
+$maxdays = 3*31;				# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 3*3600;               # the length of time to hold spot dups
@@ -183,7 +183,7 @@ sub search
 	$expr =~ s/\$f(\d)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
-	dbg("search", "expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
+	dbg("search", "hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
   
 	# build up eval to execute
 	$eval = qq(
@@ -244,7 +244,7 @@ sub ftor
 		} elsif ($aa < $bb) {
 			$out .= "[$aa-$bb]";
 		} else {
-			$out .= "[$bb-$aa]";
+			$out .= "[0-$bb$aa-9]";
 		}
 	}
 	return $out;
