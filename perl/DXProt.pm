@@ -47,8 +47,8 @@ $main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
-			$pingint $obscount %pc19list $chatdupeage
-			$investigation_int $pc19_version
+			$pingint $obscount %pc19list $chatdupeage $chatimportfn
+			$investigation_int $pc19_version 
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -75,6 +75,7 @@ $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
 $chatdupeage = 20 * 60 * 60;
+$chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
 
@@ -1721,6 +1722,8 @@ sub process
 		# clean out ephemera 
 
 		eph_clean();
+		import_chat();
+		
 
 		$last10 = $t;
 	}
@@ -2549,5 +2552,69 @@ sub run_cmd
 {
 	goto &DXCommandmode::run_cmd;
 }
+
+
+# import any msgs in the chat directory
+# the messages are sent to the chat group which forms the
+# the first part of the name (eg: solar.1243.txt would be
+# sent to chat group SOLAR)
+# 
+# Each message found is sent: one non-blank line to one chat
+# message. So 4 lines = 4 chat messages.
+# 
+# The special name LOCAL is for local users ANN
+# The special name ALL is for ANN/FULL
+# The special name SYSOP is for ANN/SYSOP
+#
+sub import_chat
+{
+	# are there any to do in this directory?
+	return unless -d $chatimportfn;
+	unless (opendir(DIR, $chatimportfn)) {
+		dbg("can\'t open $chatimportfn $!") if isdbg('msg');
+		Log('msg', "can\'t open $chatimportfn $!");
+		return;
+	} 
+
+	my @names = readdir(DIR);
+	closedir(DIR);
+	my $name;
+	foreach $name (@names) {
+		next if $name =~ /^\./;
+		my $splitit = $name =~ /^split/;
+		my $fn = "$chatimportfn/$name";
+		next unless -f $fn;
+		unless (open(MSG, $fn)) {
+	 		dbg("can\'t open import file $fn $!") if isdbg('msg');
+			Log('msg', "can\'t open import file $fn $!");
+			unlink($fn);
+			next;
+		}
+		my @msg = map { s/\r?\n$//; $_ } <MSG>;
+		close(MSG);
+		unlink($fn);
+
+		my @cat = split /\./, $name;
+		my $target = uc $cat[0];
+
+		foreach my $text (@msg) {
+			next unless $text && $text !~ /^\s*#/;
+			if ($target eq 'ALL' || $target eq 'LOCAL' || $target eq 'SYSOP') {
+				my $sysopflag = $target eq 'SYSOP' ? '*' : ' ';
+				if ($target ne 'LOCAL') {
+					send_announce($main::me, pc12($main::mycall, $text, '*', $sysopflag), $main::mycall, '*', $text, $sysopflag, $main::mycall, '0');
+				} else {
+					Log('ann', 'LOCAL', $main::mycall, $text);
+					DXChannel::broadcast_list("To LOCAL de ${main::mycall}: $text\a", 'ann', undef, DXCommandmode->get_all());
+				}
+			} else {
+				my $msgid = nextchatmsgid();
+				$text = "#$msgid $text";
+				send_chat($main::me, pc12($main::mycall, $text, '*', $target), $main::mycall, '*', $text, $target, $main::mycall, '0');
+			}
+		}
+	}
+}
+
 1;
 __END__ 

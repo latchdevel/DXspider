@@ -6,7 +6,7 @@
 # and, if it is an URSIGRAM, imports it into the local
 # spider msg queue.
 #
-# Copyright (c) Dirk Koopman G1TLH
+# Copyright (c) 2004 Dirk Koopman G1TLH
 #
 # $Id$
 #
@@ -15,7 +15,20 @@ use strict;
 use Mail::Internet;
 use Mail::Header;
 
-my $import = '/spider/msg/import';
+our $root;
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
+my $import = "$root/msg/import";
+my $tmp = "$root/tmp";
 
 my $msg = Mail::Internet->new(\*STDIN) or die "Mail::Internet $!";
 my $head = $msg->head->header_hashref;
@@ -31,11 +44,14 @@ if ($head && $head->{From}->[0] =~ /sidc/i && $head->{Subject}->[0] =~ /Ursigram
 			last;
 		}
 	}
-	open OUT, ">$import/ursigram$date.txt" or die "import $!";
+	my $fn = "ursigram$date.txt.$$"; 
+	open OUT, ">$tmp/$fn" or die "import $tmp/$fn $!";
 	print OUT "SB ALL\n$title\n";
 	print OUT map {s/\r\n$/\n/; $_} @$body;
 	print OUT "/ex\n";
 	close OUT;
+	link "$tmp/$fn", "$import/$fn";
+	unlink "$tmp/$fn";
 }
 
 exit(0);

@@ -26,7 +26,7 @@ $main::branch += $BRANCH;
 
 use vars qw(@ISA $deftimeout);
 
-@ISA = qw(Msg);
+@ISA = qw(ExtMsg);
 $deftimeout = 60;
 
 sub enqueue

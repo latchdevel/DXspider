@@ -68,12 +68,12 @@ sub pc12
 {
 	my ($call, $text, $tonode, $sysop, $wx, $origin) = @_;
 	my $hops = get_hops(12);
-	$origin ||= $main::mycall;
-	$sysop ||= ' ';
 	$text ||= ' ';
-	$wx ||= '0';
-	$tonode ||= '*';
 	$text =~ s/\^/%5E/g;
+	$tonode ||= '*';
+	$sysop ||= ' ';
+	$wx ||= '0';
+	$origin ||= $main::mycall;
 	return "PC12^$call^$tonode^$text^$sysop^$origin^$wx^$hops^~";
 }
 
