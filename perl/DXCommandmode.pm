@@ -125,6 +125,13 @@ sub start
 	
 	$self->tell_login('loginu');
 	
+	# do we need to send a forward/opernam?
+	my $lastoper = $user->lastoper || 0;
+	my $homenode = $user->homenode || ""; 
+	if ($homenode eq $main::mycall && $lastoper < $main::systime + $DXUser::lastoperinterval) {
+		run_cmd($DXProt::me, "forward/opernam $call");
+		$user->lastoper($main::systime);
+	}
 }
 
 #
