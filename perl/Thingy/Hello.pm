@@ -118,14 +118,13 @@ sub handle
 			if ($uref->is_node || $uref->is_aranea) {
 			    push @ref, $nref->add($user, $thing->{v}, $thing->{h});
 				push @{$thing->{pc19n}}, @ref if @ref;
+				do $_->np(1) for @ref;
 			} else {
 				$thing->{pc16n} = $nref;
 				push @ref, $nref->add_user($user, $thing->{h});
 				$thing->{pc16u} = \@ref if @ref;
 			}
-			$ur = Route::get($user);
 		}
-		$ur->np(1);
 	} else {
 		$nref->version($thing->{v}) unless $nref->version;
 		$nref->build($thing->{b}) unless $nref->build;
