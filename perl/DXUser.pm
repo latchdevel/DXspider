@@ -32,7 +32,7 @@ $dbm = undef;
 $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
-$lrusize = 500;
+$lrusize = 2000;
 
 # hash of valid elements and a simple prompt
 %valid = (

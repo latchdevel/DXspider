@@ -30,7 +30,7 @@ $db = undef;					# the DB_File handle
 %prefix_loc = ();				# the meat of the info
 %pre = ();						# the prefix list
 $hits = $misses = $matchtotal = 1;		# cache stats
-$lrusize = 1000;				# size of prefix LRU cache
+$lrusize = 2000;				# size of prefix LRU cache
 
 $lru = LRU->newbase('Prefix', $lrusize);
 
