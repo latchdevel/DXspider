@@ -13,6 +13,8 @@ use DXVars;
 use DB_File;
 use Data::Dumper;
 use DXDebug;
+use DXUtil;
+
 
 use strict;
 
@@ -130,6 +132,28 @@ sub next
 	return ($gotkey, @outref);
 }
 
+# 
+# search for the nearest match of a prefix string (starting
+# from the RH end of the string passed)
+#
+
+sub matchprefix
+{
+	my $pref = shift;
+
+	for (my $i = length $pref; $i; $i--) {
+		my $s = substr($pref, 0, $i);
+		my @out = get($s);
+		if (isdbg('prefix')) {
+			my $part = $out[0] || "*";
+			$part .= '*' unless $part eq '*' || $part eq $s;
+			dbg("Partial prefix: $pref $s $part" );
+		} 
+		return @out if @out && $out[0] eq $s;
+	}
+	return ();
+}
+
 #
 # extract a 'prefix' from a callsign, in other words the largest entity that will
 # obtain a result from the prefix table.
@@ -146,7 +170,7 @@ sub extract
 	my @parts;
 	my ($call, $sp, $i);
   
-	foreach $call (split /,/, $calls) {
+LM:	foreach $call (split /,/, $calls) {
 		# first check if the whole thing succeeds
 		my @nout = get($call);
 		if (@nout && $nout[0] eq $call) {
@@ -157,30 +181,75 @@ sub extract
 
 		# now split the call into parts if required
 		@parts = ($call =~ '/') ? split('/', $call) : ($call);
+		dbg("Parts: $call = " . join(' ', @parts))	if isdbg('prefix');
 
 		# remove any /0-9 /P /A /M /MM /AM suffixes etc
 		if (@parts > 1) {
-			$p = $parts[0];
-			shift @parts if $p =~ /^(WEB|NET)$/o;
-			$p = $parts[$#parts];
-			pop @parts if $p =~ /^(\d+|[PABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
-			$p = $parts[$#parts];
-			pop @parts if $p =~ /^(\d+|[PABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
-	  
+			@parts = grep { !/^\d+$/ && !/^[PABM]$/ && !/^(?:|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/; } @parts;
+
 			# can we resolve them by direct lookup
-			foreach $p (@parts) {
-				@nout = get($p);
-				if (@nout && $nout[0] eq $call) {
-					dbg("got exact prefix: $nout[0]") if isdbg('prefix');
-					push @out, @nout;
+			my $s = join('/', @parts); 
+			@nout = get($s);
+			if (@nout && $nout[0] eq $s) {
+				dbg("got exact multipart prefix: $call $s") if isdbg('prefix');
+				push @out, @nout;
+				next;
+			}
+		}
+		dbg("Parts now: $call = " . join(' ', @parts))	if isdbg('prefix');
+  
+		# at this point we should have two or three parts
+		# if it is three parts then join the first and last parts together
+		# to get an answer
+
+		# first deal with prefix/x00xx/single letter things
+		if (@parts == 3 && length $parts[0] <= length $parts[1]) {
+			@nout = matchprefix($parts[0]);
+			if (@nout) {
+				my $s = join('/', $nout[0], $parts[2]);
+				my @try = get($s);
+				if (@try && $try[0] eq $s) {
+					dbg("got 3 part prefix: $call $s") if isdbg('prefix');
+					push @out, @try;
+					next;
+				}
+				
+				# if the second part is a callsign and the last part is one letter
+				if (is_callsign($parts[1]) && length $parts[2] == 1) {
+					pop @parts;
+				}
+			}
+		}
+
+		# if it is a two parter 
+		if (@parts == 2) {
+
+			# try it as it is as compound, taking the first part as the prefix
+			@nout = matchprefix($parts[0]);
+			if (@nout) {
+				my $s = join('/', $nout[0], $parts[1]);
+				my @try = get($s);
+				if (@try && $try[0] eq $s) {
+					dbg("got 2 part prefix: $call $s") if isdbg('prefix');
+					push @out, @try;
 					next;
 				}
 			}
 		}
-  
-		# which is the shortest part (first if equal)?
-		dbg("Parts: $call = " . join(' ', @parts))	if isdbg('prefix');
-		
+
+		# remove the problematic /J suffix
+		pop @parts if @parts > 1 && $parts[$#parts] eq 'J';
+
+		# single parter
+		if (@parts == 1) {
+			@nout = matchprefix($parts[0]);
+			if (@nout) {
+				dbg("got prefix: $call ]") if isdbg('prefix');
+				push @out, @nout;
+				next;
+			}
+		}
+
 		# try ALL the parts
         my @checked;
 		my $n;
@@ -199,57 +268,41 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 			$checked[$k] = 1;
 			$sp =~ s/-\d+$//;     # remove any SSID
 			
-			#		# now start to resolve it from the left hand end
-			#		for ($i = 1; $i <= length $sp; ++$i) {
 			# now start to resolve it from the right hand end
-			for ($i = length $sp; $i >= 1; --$i) {
-				my $ssp = substr($sp, 0, $i);
-				my @wout = get($ssp);
-				if (isdbg('prefix')) {
-					my $part = $wout[0] || "*";
-					$part .= '*' unless $part eq '*' || $part eq $ssp;
-					dbg("Partial prefix: $sp $ssp $part" );
-				} 
-				next if @wout > 0 && $wout[0] gt $ssp;
-
-				# try and search for it in the descriptions as
-				# a whole callsign if it has multiple parts and the output
-				# is more two long, this should catch things like
-				# FR5DX/T without having to explicitly stick it into
-				# the prefix table.
-
-				if (@wout) {
-					if (@parts > 1) {
-						$parts[$k] = $ssp;
-						my $try = join('/', @parts);
-						my @try = get($try);
-						if (isdbg('prefix')) {
-							my $part = $try[0] || "*";
-							$part .= '*' unless $part eq '*' || $part eq $try;
-							dbg("Compound prefix: $try $part" );
-						}
-#						if (@try == 0) {
-#							$try = join('/', reverse @parts);
-#							@try = get($try);
-#							if (isdbg('prefix')) {
-#								my $part = $try[0] || "*";
-#								$part .= '*' unless $part eq '*' || $part eq $try;
-#								dbg("Compound prefix: $try $part" );
-#							}
-#						}
-						if (@try && $try eq $try[0]) {
-							push @out, @try;
-						} else {
-							push @out, @wout;
-						}
-					} else {
-						push @out, @wout;
+			@nout = matchprefix($sp);
+			
+			# try and search for it in the descriptions as
+			# a whole callsign if it has multiple parts and the output
+			# is more two long, this should catch things like
+			# FR5DX/T without having to explicitly stick it into
+			# the prefix table.
+			
+			if (@nout) {
+				if (@parts > 1) {
+					$parts[$k] = $nout[0];
+					my $try = join('/', @parts);
+					my @try = get($try);
+					if (isdbg('prefix')) {
+						my $part = $try[0] || "*";
+						$part .= '*' unless $part eq '*' || $part eq $try;
+						dbg("Compound prefix: $try $part" );
 					}
-					last L1;
+					if (@try && $try eq $try[0]) {
+						push @out, @try;
+					} else {
+						push @out, @nout;
+					}
+				} else {
+					push @out, @nout;
 				}
+				next LM;
 			}
 		}
+
+		# we are a pirate!
+		push @out, matchprefix('Q');
 	}
+	
 	if (isdbg('prefix')) {
 		my $dd = new Data::Dumper([ \@out ], [qw(@out)]);
 		dbg($dd->Dumpxs);
