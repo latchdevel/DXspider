@@ -4,6 +4,21 @@ generate and operate on them. There were some bugs involving a few 'missing'
 callsigns which been fixed. Also there were some, for our purposes, invalid
 callsigns in the database which have been removed (down to about 820,000 
 entries now). You should really update your database. 
+
+The latest code now (conditionally; ie if you have it loaded it will use it)
+support Compress::Zlib on both *nux and Windows. The suggested procedure 
+is this:-
+
+1. Download the corrected database from
+   http://www.dxcluster.org/download/usdbraw.gz to somewhere like /tmp.
+2. update from CVS.
+3. Restart (on linux, just stop the node and *don't* restart on Windows).
+4. remove /spider/data/user.v1
+5. cd /spider/perl
+6. (perl) create_usdb.pl /tmp/usdbraw.gz (or wherever you put it)
+6a. If you don't have Compress::Zlib loaded then you will need to gunzip
+    it manually and do: create_usdb.pl /tmp/usdbraw (not Windows :-)
+7. on linux, in a console window do: load/usdb, on windows: restart the node. 
 14Oct02=======================================================================
 1. added show/usdb command as a simple, direct interface to the information
 available in the USDB stuff.
