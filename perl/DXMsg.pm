@@ -165,10 +165,11 @@ sub process
 			# first look for any messages in the busy queue 
 			# and cancel them this should both resolve timed out incoming messages
 			# and crossing of message between nodes, incoming messages have priority
+
 			if (exists $busy{$fromnode}) {
 				my $ref = $busy{$fromnode};
 				my $tonode = $ref->{tonode};
-				dbg("Busy, stopping msgno: $ref->{msgno} -> $fromnode") if isdbg('msg');
+				dbg("Busy, stopping msgno: $ref->{msgno} $fromnode->$tonode") if isdbg('msg');
 				$ref->stop_msg($self->call);
 			}
 
