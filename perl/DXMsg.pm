@@ -82,13 +82,6 @@ $importfn = "$msgdir/import";       # import directory
 		  waitt => '5,Wait until,cldatetime',
 		 );
 
-sub DESTROY
-{
-	my $self = shift;
-	undef $self->{lines};
-	undef $self->{gotit};
-}
-
 # allocate a new object
 # called fromnode, tonode, from, to, datetime, private?, subject, nolinesper  
 sub alloc                  
@@ -459,15 +452,13 @@ sub del_msg
 	my $self = shift;
 	
 	# remove it from the active message list
-	@msg = grep { ref($_) && $_ != $self } @msg;
-	
-	# belt and braces (one day I will ask someone if this is REALLY necessary)
-	delete $self->{gotit};
-	delete $self->{list};
+	dbg('msg', "\@msg = " . scalar @msg . " before delete");
+	@msg = grep { $_ != $self } @msg;
 	
 	# remove the file
 	unlink filename($self->{msgno});
 	dbg('msg', "deleting $self->{msgno}\n");
+	dbg('msg', "\@msg = " . scalar @msg . " after delete");
 }
 
 # clean out old messages from the message queue
@@ -476,18 +467,18 @@ sub clean_old
 	my $ref;
 	
 	# mark old messages for deletion
+	dbg('msg', "\@msg = " . scalar @msg . " before delete");
 	foreach $ref (@msg) {
 		if (ref($ref) && !$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
 			$ref->{deleteme} = 1;
-			delete $ref->{gotit};
-			delete $ref->{list};
 			unlink filename($ref->{msgno});
 			dbg('msg', "deleting old $ref->{msgno}\n");
 		}
 	}
 	
 	# remove them all from the active message list
-	@msg = grep { ref($_) && !$_->{deleteme} } @msg;
+	@msg = grep { !$_->{deleteme} } @msg;
+	dbg('msg', "\@msg = " . scalar @msg . " after delete");
 	$last_clean = $main::systime;
 }
 
@@ -635,12 +626,14 @@ sub queue_msg
 		# then start sending it - what happens when we get loops is anyone's
 		# guess, use (to, from, time, subject) tuple?
 		foreach $dxchan (@nodelist) {
-			next if $dxchan->call eq $main::mycall;
-			next if ref $ref->{gotit} && grep $_ eq $dxchan->call, @{$ref->{gotit}};
-			next unless $ref->forward_it($dxchan->call);           # check the forwarding file
+			my $call = $dxchan->call;
+			next unless $call;
+			next if $call eq $main::mycall;
+			next if ref $ref->{gotit} && grep $_ eq $call, @{$ref->{gotit}};
+			next unless $ref->forward_it($call);           # check the forwarding file
 
 			# if we are here we have a node that doesn't have this message
-			$ref->start_msg($dxchan) if !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
+			$ref->start_msg($dxchan) if !get_busy($call)  && $dxchan->state eq 'normal';
 			last;
 		}
 
