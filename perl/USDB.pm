@@ -95,7 +95,7 @@ sub load
 	
 	my %dbn;
 	if (-e $dbfn ) {
-		syscopy($dbfn, "$dbfn.new") or return "cannot copy $dbfn -> $dbfn.new $!";
+		copy($dbfn, "$dbfn.new") or return "cannot copy $dbfn -> $dbfn.new $!";
 	}
 	
 	tie %dbn, 'DB_File', "$dbfn.new", O_RDWR|O_CREAT, 0664, $a or return "cannot tie $dbfn.new $!";
