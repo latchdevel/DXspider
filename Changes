@@ -1,3 +1,8 @@
+09Feb03=======================================================================
+1. Correct some typos in the manuals and update perl modules etc.  Also
+amend some help files to show correct syntax, around the 'clear' commands
+swapping [input] and <callsign> in each case, translators please take note.
+Thanks to Dave N3RD for info. (g0vgs)
 20Jan03=======================================================================
 1. changed sh/c so that, by default, it only shows the caller's country nodes
 sh/c all will show the old style full list. "sh/c sk gb" will show the config

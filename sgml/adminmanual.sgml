@@ -7,7 +7,7 @@
 <title>The DXSpider Administration Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
 Charlie Carroll, K1XX, (k1xx@ptcnh.net)</author>
-<date>January 2003 revision 0.2</date>
+<date>February 2003 revision 0.3</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -483,7 +483,7 @@ $def_hopcount = 5;
 
 
 %nodehops = 
-
+(
  GB7ADX => {            11 => 8,
                         12 => 8,
                         16 => 8,
@@ -507,7 +507,7 @@ $def_hopcount = 5;
                         19 => 8,
                         21 => 8,
                    },
-};
+);
 </verb></tscreen>
 
 <P>
@@ -2243,7 +2243,7 @@ Order is not important.
 
 <P>
 <tt>
-<bf>clear/announce &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear an announce filter line
+<bf>clear/announce &lt;callsign&gt; &lsqb;input&rsqb; &lsqb;0-9&verbar;all&rsqb;</bf> Clear an announce filter line
 </tt>
 
 <P>
@@ -2254,7 +2254,7 @@ node_default or user_default.
 
 <P>
 <tt>
-<bf>clear/route &lsqb;input&rsqb; ^lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a route filter line
+<bf>clear/route &lt;callsign&gt; &lsqb;input&rsqb; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a route filter line
 </tt>
 
 <P>
@@ -2308,7 +2308,7 @@ the filter will be completely removed.
 
 <P>
 <tt>
-<bf>clear/spots &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a spot filter line
+<bf>clear/spots &lt;callsign&gt; &lsqb;input&rsqb; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a spot filter line
 </tt>
 
 <P>
@@ -2332,7 +2332,7 @@ see CLEAR/SPOTS for a more detailed explanation.
 
 <P>
 <tt>
-<bf>clear/wcy &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a WCY filter line
+<bf>clear/wcy &lt;callsign&gt; &lsqb;input&rsqb; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a WCY filter line
 </tt>
 
 <P>
@@ -2356,7 +2356,7 @@ see CLEAR/SPOTS for a more detailed explanation.
 
 <P>
 <tt>
-<bf>clear/wwv &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a WWV filter line
+<bf>clear/wwv &lt;callsign&gt; &lsqb;input&rsqb; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a WWV filter line
 </tt>
 
 <P>

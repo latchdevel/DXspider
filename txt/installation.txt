@@ -2,7 +2,7 @@
   Iain Philipps, G0RDI (g0rdi@77hz.com), Ian Maude, G0VGS,
   (g0vgs@gb7mbc.net) and Charlie Carroll, K1XX,
   (k1xx@ptcnh.net)
-  September 2002 revision 0.4
+  February 2003 revision 0.5
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -93,13 +93,13 @@
 
 
 
-  o  Data-Dumper-2.10.tar.gz
+  o  Data-Dumper-2.101.tar.gz
 
   o  TimeDate-1.10.tar.gz
 
   o  IO-1.20.tar.gz (for perl 5.00403 and lower)
 
-  o  Net-Telnet-3.02.tar.gz
+  o  Net-Telnet-3.03.tar.gz
 
   o  Curses-1.06.tar.gz
 
@@ -120,7 +120,7 @@
 
 
   # tar xvfz /usr/local/packages/Data-Dumper-2.10.tar.gz
-  # cd Data-Dumper-2.10
+  # cd Data-Dumper-2.101
   # perl Makefile.PL
   # make test
   # make install
@@ -140,7 +140,7 @@
   # make install UNINST=1
   # cd ..
   #
-  # tar xvfz /usr/local/packages/Net-Telnet-3.02.tar.gz
+  # tar xvfz /usr/local/packages/Net-Telnet-3.03.tar.gz
   # cd Net-Telnet-3.02
   # perl Makefile.PL
   # make test

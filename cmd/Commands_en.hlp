@@ -286,7 +286,7 @@ remove the whole filter.
 
 see CLEAR/SPOTS for a more detailed explanation.
 
-=== 8^CLEAR/ANNOUNCE [input] <callsign> [0-9|all]^Clear a announce filter line
+=== 8^CLEAR/ANNOUNCE <callsign> [input] [0-9|all]^Clear a announce filter line
 A sysop can clear an input or normal output filter for a user or the
 node_default or user_default. 
 
@@ -296,7 +296,7 @@ remove the whole filter.
 
 see CLEAR/SPOTS for a more detailed explanation.
 
-=== 8^CLEAR/ROUTE [input] <callsign> [0-9|all]^Clear a route filter line
+=== 8^CLEAR/ROUTE <callsign> [input] [0-9|all]^Clear a route filter line
 A sysop can clear an input or normal output filter for a user or the
 node_default or user_default. 
 
@@ -323,7 +323,7 @@ If you do:
 
 the filter will be completely removed.
 
-=== 8^CLEAR/SPOTS [input] <callsign> [0-9|all]^Clear a spot filter line
+=== 8^CLEAR/SPOTS <callsign> [input] [0-9|all]^Clear a spot filter line
 A sysop can clear an input or normal output filter for a user or the
 node_default or user_default. 
 
@@ -333,7 +333,7 @@ remove the whole filter.
 
 see CLEAR/SPOTS for a more detailed explanation.
 
-=== 8^CLEAR/WCY [input] <callsign> [0-9|all]^Clear a WCY filter line
+=== 8^CLEAR/WCY <callsign> [input] [0-9|all]^Clear a WCY filter line
 A sysop can clear an input or normal output filter for a user or the
 node_default or user_default. 
 
@@ -343,7 +343,7 @@ remove the whole filter.
 
 see CLEAR/SPOTS for a more detailed explanation.
 
-=== 8^CLEAR/WWV [input] <callsign> [0-9|all]^Clear a WWV filter line
+=== 8^CLEAR/WWV <callsign> [input] [0-9|all]^Clear a WWV filter line
 A sysop can clear an input or normal output filter for a user or the
 node_default or user_default. 
 

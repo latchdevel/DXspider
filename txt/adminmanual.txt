@@ -1,7 +1,7 @@
   The DXSpider Administration Manual v1.50
   Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and Charlie Carroll,
   K1XX, (k1xx@ptcnh.net)
-  January 2003 revision 0.2
+  February 2003 revision 0.3
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -760,7 +760,7 @@
 
 
   %nodehops =
-
+  (
    GB7ADX => {            11 => 8,
                           12 => 8,
                           16 => 8,
@@ -784,7 +784,7 @@
                           19 => 8,
                           21 => 8,
                      },
-  };
+  );
 
 
 
@@ -2624,7 +2624,7 @@
 
   11.16.  clear/announce (8)
 
-  clear/announce [input] <callsign> [0-9|all] Clear an announce filter
+  clear/announce <callsign> [input] [0-9|all] Clear an announce filter
   line
 
 
@@ -2634,7 +2634,7 @@
 
   11.17.  clear/route (8)
 
-  clear/route [input] ^lt;callsign> [0-9|all] Clear a route filter line
+  clear/route <callsign> [input] [0-9|all] Clear a route filter line
 
 
   This command allows you to clear (remove) a line in a route filter or
@@ -2691,7 +2691,7 @@
 
   11.19.  clear/spots (extended for sysops) (8)
 
-  clear/spots [input] <callsign> [0-9|all] Clear a spot filter line
+  clear/spots <callsign> [input] [0-9|all] Clear a spot filter line
 
 
   A sysop can clear an input or normal output filter for a user or the
@@ -2711,7 +2711,7 @@
 
   11.21.  clear/wcy (extended for sysops) (8)
 
-  clear/wcy [input] <callsign> [0-9|all] Clear a WCY filter line
+  clear/wcy <callsign> [input] [0-9|all] Clear a WCY filter line
 
 
 
@@ -2732,7 +2732,7 @@
 
   11.23.  clear/wwv (extended for sysops) (8)
 
-  clear/wwv [input] <callsign> [0-9|all] Clear a WWV filter line
+  clear/wwv <callsign> [input] [0-9|all] Clear a WWV filter line
 
 
   A sysop can clear an input or normal output filter for a user or the
