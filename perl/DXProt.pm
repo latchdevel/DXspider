@@ -1155,12 +1155,10 @@ sub finish
 	$mref->stop_msg($call) if $mref;
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
-	my @gonenodes = grep { $_->dxchan != $self && $_->dxchan != $me } DXNode::get_all();
-	my $node;
-	
-	foreach my $dxchan (DXChannel::get_all_nodes) {
-		next if $dxchan == $self || $dxchan == $me;
-		broadcast_ak1a(pc21($dxchan->call, 'Gone') , $self) unless $self->{isolate}; 
+	foreach my $node (grep { $_->dxchan == $self } DXNode::get_all) {
+		next if $node->call eq $call;
+		next if $node->call eq $main::mycall;
+		broadcast_ak1a(pc21($node->call, 'Gone.'), $self) unless $self->{isolate};
 	}
 
 	# remove outstanding pings
