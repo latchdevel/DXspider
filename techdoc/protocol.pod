@@ -31,20 +31,38 @@ for inter-node communications.
 
 =head1 DESCRIPTION
 
-This protocol is encoded in UTF8 with HTTP style escaping. It is
+This protocol is
 designed to be an extensible basis for any type of one to many
 "instant" line-based communications tasks.
 
 This protocol is designed to be flood routed in a meshed network in
-as efficient a manner as possible.
+as efficient a manner as possible. The reason we have chosen this
+mechanism is that most L</Messages> need to be broadcast to all nodes.
+
+Experience has shown that nodes will appear and (more infrequently) 
+disappear without much (or any) notice. 
+Therefore, the constantly changing and uncoordinated
+nature of the network doesn't lend itself to fixed routing policies.
+
+Having said that: directed routing is available where routes have
+been learned through past traffic.
+Those L</Messages> that could be routed (mainly single line one to 
+one "talk" L</Messages>) 
+happen sufficiently infrequently that, should they need to be flood routed
+(because no route has been learned yet) it is a small cost overall.
+
+=head1 Messages
+
+A message is a single line of UTF8 encoded and HTTP escaped text 
+terminated in the standard internet manner with a <CR><LF>. 
 
 Each message consists of a L</Routing Section> and a L</Command Section>. 
-The two sections are separated with the '|' character and the whole
-message is terminated in the standard RFC/Internet manner with the
-ascii <carraige return><linefeed> characters. It follows that these
-characters (as well as a small number of other reserved characters)
+The two sections are separated with the '|' character. 
+It follows that these
+characters (as well as non-printable characters, <CR>, <LF> and
+a small number of other reserved characters)
 can only be sent escaped. This is described further in the 
-L</Command Section>.
+L</Command Section> and L</Fields>.
 
 Most of this document is concerned with the L</Routing Section>, however
 some L</Standard Commands> which all implementation should issue and
@@ -58,7 +76,7 @@ effectively a datagram.
 
 It is assumed that nodes are connected to
 each other using a "reliable" streaming protocol such as TCP/IP or
-AX25. Having said that: in context, messages in this protocol could be 
+AX25. Having said that: in context, L</Messages> in this protocol could be 
 multi/broadcast, either "as is" or wrapped in some other framing
 protocol. 
 
@@ -67,10 +85,10 @@ through your node" protocol, there is no guarantee that a message
 will get to the other side of a mesh of nodes. There may be a
 discontinuity either caused by outage or deliberate filtering. 
 
-However, as it is envisaged that most messages will be flood routed or,
-in the case of directed messages (those that have L</To> and/or
+However, as it is envisaged that most L</Messages> will be flood routed or,
+in the case of directed L</Messages> (those that have L</To> and/or
 L</ToUser> fields) down some/most/all interfaces showing a route for that
-direction, it is unlikely that messages will be lost in practice.
+direction, it is unlikely that L</Messages> will be lost in practice.
 
 =head2 Field Description
 
@@ -137,7 +155,7 @@ neighbouring nodes must increment this field before passing
 it on to higher layers for onward processing.
 
 Implementations may have an upper limit to this field and may
-silently drop incoming messages with a L</Hop> count greater than the
+silently drop incoming L</Messages> with a L</Hop> count greater than the
 limit.
 
 =item B<FrmUser>
@@ -223,7 +241,7 @@ tuple. The basic system will learn which interfaces can see what nodes
 by looking at the tuple and merging that with the L</Hop> count. 
 Each interface remembers the latest L</TimeSeq> with the lowest L</Hop>
 for each L</Origin> that arrives on that interface. It also remembers
-the number of messages for that L</Origin> that has been received on
+the number of L</Messages> for that L</Origin> that has been received on
 that interface.
 
 Any message for onward broadcast is duplicated and sent out on all
@@ -341,7 +359,7 @@ are written according to this specification must say:
  use UTF8;
 
 A message (or line) is terminated with <carriage return><linefeed>
-0x0d 0x0a. Incoming messages must be accepted even when terminated
+0x0d 0x0a. Incoming L</Messages> must be accepted even when terminated
 with just <linefeed>.
 
 Care must be taken to make sure that fields have any reserved characters
