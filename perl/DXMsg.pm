@@ -154,19 +154,14 @@ sub process
 
 	my @f = split /\^/, $line;
 	my ($pcno) = $f[0] =~ /^PC(\d\d)/; # just get the number
+	my ($tonode, $fromnode) = @f[1, 2];
+	my $stream = $f[3] if $pcno > 29 && $pcno <= 33;
 
  SWITCH: {
 		if ($pcno == 28) {		# incoming message
 
 			# sort out various extant protocol errors that occur
-			my ($fromnode, $origin);
-			if ($self->is_arcluster && $f[13] eq $self->call) {
-				$fromnode = $f[13];
-				$origin = $f[2];
-			} else {
-				$fromnode = $f[2];
-			    $origin = $f[13];
-			}
+			my $origin = $f[13];
 			$origin = $self->call unless $origin && $origin gt ' ';
 
 			# first look for any messages in the busy queue 
@@ -175,27 +170,27 @@ sub process
 
 			if (exists $busy{$fromnode}) {
 				my $ref = $busy{$fromnode};
-				my $tonode = $ref->{tonode} || "unknown";
-				dbg("Busy, stopping msgno: $ref->{msgno} $fromnode->$tonode") if isdbg('msg');
-				$ref->stop_msg($self->call);
+				my $otonode = $ref->{tonode} || "unknown";
+				dbg("Busy, stopping msgno: $ref->{msgno} $fromnode->$otonode") if isdbg('msg');
+				$ref->stop_msg($fromnode);
 			}
 
 			my $t = cltounix($f[5], $f[6]);
-			my $stream = next_transno($fromnode);
+			$stream = next_transno($fromnode);
 			my $ref = DXMsg->alloc($stream, uc $f[3], $f[4], $t, $f[7], $f[8], $origin, '0', $f[11]);
 			
 			# fill in various forwarding state variables
 			$ref->{fromnode} = $fromnode;
-			$ref->{tonode} = $f[1];
+			$ref->{tonode} = $tonode;
 			$ref->{rrreq} = $f[11];
 			$ref->{linesreq} = $f[10];
 			$ref->{stream} = $stream;
 			$ref->{count} = 0;	# no of lines between PC31s
 			dbg("new message from $f[4] to $f[3] '$f[8]' stream $fromnode/$stream\n") if isdbg('msg');
-			Log('msg', "Incoming message $f[4] to $f[3] '$f[8]'" );
-			$work{"$fromnode$stream"} = $ref; # store in work
+			Log('msg', "Incoming message $f[4] to $f[3] '$f[8]' origin: $origin" );
+			$work{"$fromnode,$stream"} = $ref; # store in work
 			$busy{$fromnode} = $ref; # set interlock
-			$self->send(DXProt::pc30($fromnode, $f[1], $stream)); # send ack
+			$self->send(DXProt::pc30($fromnode, $tonode, $stream)); # send ack
 			$ref->{lastt} = $main::systime;
 
 			# look to see whether this is a non private message sent to a known callsign
@@ -203,67 +198,68 @@ sub process
 			if (is_callsign($ref->{to}) && !$ref->{private} && $uref && $uref->homenode) {
 				$ref->{private} = 1;
 				dbg("set bull to $ref->{to} to private") if isdbg('msg');
+				Log('msg', "set bull to $ref->{to} to private");
 			}
 			last SWITCH;
 		}
 		
 		if ($pcno == 29) {		# incoming text
-			my $ref = $work{"$f[2]$f[3]"};
+			my $ref = $work{"$fromnode,$stream"};
 			if ($ref) {
 				$f[4] =~ s/\%5E/^/g;
 				push @{$ref->{lines}}, $f[4];
 				$ref->{count}++;
 				if ($ref->{count} >= $ref->{linesreq}) {
-					$self->send(DXProt::pc31($f[2], $f[1], $f[3]));
-					dbg("stream $f[3]: $ref->{count} lines received\n") if isdbg('msg');
+					$self->send(DXProt::pc31($fromnode, $tonode, $stream));
+					dbg("stream $stream: $ref->{count} lines received\n") if isdbg('msg');
 					$ref->{count} = 0;
 				}
 				$ref->{lastt} = $main::systime;
 			} else {
-				dbg("PC29 from unknown stream $f[3] from $f[2]") if isdbg('msg');
-				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
+				dbg("PC29 from unknown stream $stream from $fromnode") if isdbg('msg');
+				$self->send(DXProt::pc42($fromnode, $tonode, $stream));	# unknown stream
 			}
 			last SWITCH;
 		}
 		
 		if ($pcno == 30) {		# this is a incoming subject ack
-			my $ref = $work{$f[2]};	# note no stream at this stage
+			my $ref = $work{"$fromnode,"};	# note no stream at this stage
 			if ($ref) {
-				delete $work{$f[2]};
-				$ref->{stream} = $f[3];
+				delete $work{"$fromnode,"};
+				$ref->{stream} = $stream;
 				$ref->{count} = 0;
 				$ref->{linesreq} = 5;
-				$work{"$f[2]$f[3]"} = $ref;	# new ref
-				dbg("incoming subject ack stream $f[3]\n") if isdbg('msg');
-				$busy{$f[2]} = $ref; # interlock
+				$work{"$fromnode,$stream"} = $ref;	# new ref
+				dbg("incoming subject ack stream $stream\n") if isdbg('msg');
+				$busy{$fromnode} = $ref; # interlock
 				push @{$ref->{lines}}, ($ref->read_msg_body);
 				$ref->send_tranche($self);
 				$ref->{lastt} = $main::systime;
 			} else {
-				dbg("PC30 from unknown stream $f[3] from $f[2]") if isdbg('msg');
-				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
+				dbg("PC30 from unknown stream $stream from $fromnode") if isdbg('msg');
+				$self->send(DXProt::pc42($fromnode, $tonode, $stream));	# unknown stream
 			} 
 			last SWITCH;
 		}
 		
 		if ($pcno == 31) {		# acknowledge a tranche of lines
-			my $ref = $work{"$f[2]$f[3]"};
+			my $ref = $work{"$fromnode,$stream"};
 			if ($ref) {
-				dbg("tranche ack stream $f[3]\n") if isdbg('msg');
+				dbg("tranche ack stream $stream\n") if isdbg('msg');
 				$ref->send_tranche($self);
 				$ref->{lastt} = $main::systime;
 			} else {
-				dbg("PC31 from unknown stream $f[3] from $f[2]") if isdbg('msg');
-				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
+				dbg("PC31 from unknown stream $stream from $fromnode") if isdbg('msg');
+				$self->send(DXProt::pc42($fromnode, $tonode, $stream));	# unknown stream
 			} 
 			last SWITCH;
 		}
 		
 		if ($pcno == 32) {		# incoming EOM
-			dbg("stream $f[3]: EOM received\n") if isdbg('msg');
-			my $ref = $work{"$f[2]$f[3]"};
+			dbg("stream $stream: EOM received\n") if isdbg('msg');
+			my $ref = $work{"$fromnode,$stream"};
 			if ($ref) {
-				$self->send(DXProt::pc33($f[2], $f[1], $f[3]));	# acknowledge it
+				$self->send(DXProt::pc33($fromnode, $tonode, $stream));	# acknowledge it
 				
 				# get the next msg no - note that this has NOTHING to do with the stream number in PC protocol
 				# store the file or message
@@ -279,7 +275,7 @@ sub process
 						my $m;
 						for $m (@msg) {
 							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from} && $ref->{to} eq $m->{to}) {
-								$ref->stop_msg($self->call);
+								$ref->stop_msg($fromnode);
 								my $msgno = $m->{msgno};
 								dbg("duplicate message from $ref->{from} -> $ref->{to} to msg: $msgno") if isdbg('msg');
 								Log('msg', "duplicate message from $ref->{from} -> $ref->{to} to msg: $msgno");
@@ -292,7 +288,7 @@ sub process
 						
 						# look for 'bad' to addresses 
 						if ($ref->dump_it($self->call)) {
-							$ref->stop_msg($self->call);
+							$ref->stop_msg($fromnode);
 							dbg("'Bad' message $ref->{to}") if isdbg('msg');
 							Log('msg', "'Bad' message $ref->{to}");
 							return;
@@ -311,43 +307,43 @@ sub process
 							for (@{$ref->{lines}}) {
 								Log('msg', "line: $_");
 							}
-							$ref->stop_msg($self->call);
+							$ref->stop_msg($fromnode);
 							return;
 						}
 							
 						$ref->{msgno} = next_transno("Msgno");
-						push @{$ref->{gotit}}, $f[2]; # mark this up as being received
+						push @{$ref->{gotit}}, $fromnode; # mark this up as being received
 						$ref->store($ref->{lines});
 						add_dir($ref);
 						my $dxchan = DXChannel->get($ref->{to});
 						$dxchan->send($dxchan->msg('m9')) if $dxchan && $dxchan->is_user;
-						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
+						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $fromnode for $ref->{to}");
 					}
 				}
-				$ref->stop_msg($self->call);
+				$ref->stop_msg($fromnode);
 			} else {
-				dbg("PC32 from unknown stream $f[3] from $f[2]") if isdbg('msg');
-				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
+				dbg("PC32 from unknown stream $stream from $fromnode") if isdbg('msg');
+				$self->send(DXProt::pc42($fromnode, $tonode, $stream));	# unknown stream
 			}
 			# queue_msg(0);
 			last SWITCH;
 		}
 		
 		if ($pcno == 33) {		# acknowledge the end of message
-			my $ref = $work{"$f[2]$f[3]"};
+			my $ref = $work{"$fromnode,$stream"};
 			if ($ref) {
 				if ($ref->{private}) { # remove it if it private and gone off site#
-					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $f[2] and deleted");
+					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $fromnode and deleted");
 					$ref->del_msg;
 				} else {
-					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $f[2]");
-					push @{$ref->{gotit}}, $f[2]; # mark this up as being received
+					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $fromnode");
+					push @{$ref->{gotit}}, $fromnode; # mark this up as being received
 					$ref->store($ref->{lines});	# re- store the file
 				}
-				$ref->stop_msg($self->call);
+				$ref->stop_msg($fromnode);
 			} else {
-				dbg("PC33 from unknown stream $f[3] from $f[2]") if isdbg('msg');
-				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
+				dbg("PC33 from unknown stream $stream from $fromnode") if isdbg('msg');
+				$self->send(DXProt::pc42($fromnode, $tonode, $stream));	# unknown stream
 			} 
 
 			# send next one if present
@@ -374,28 +370,28 @@ sub process
 				last SWITCH if !mkdir $fn, 0777;
 				dbg("created directory $fn\n") if isdbg('msg');
 			}
-			my $stream = next_transno($f[2]);
+			my $stream = next_transno($fromnode);
 			my $ref = DXMsg->alloc($stream, "$main::root/$f[3]", $self->call, time, !$f[4], $f[3], ' ', '0', '0');
 			
 			# forwarding variables
-			$ref->{fromnode} = $f[1];
-			$ref->{tonode} = $f[2];
+			$ref->{fromnode} = $tonode;
+			$ref->{tonode} = $fromnode;
 			$ref->{linesreq} = $f[5];
 			$ref->{stream} = $stream;
 			$ref->{count} = 0;	# no of lines between PC31s
 			$ref->{file} = 1;
 			$ref->{lastt} = $main::systime;
-			$work{"$f[2]$stream"} = $ref; # store in work
-			$self->send(DXProt::pc30($f[2], $f[1], $stream)); # send ack 
+			$work{"$fromnode,$stream"} = $ref; # store in work
+			$self->send(DXProt::pc30($fromnode, $tonode, $stream)); # send ack 
 			
 			last SWITCH;
 		}
 		
 		if ($pcno == 42) {		# abort transfer
-			dbg("stream $f[3]: abort received\n") if isdbg('msg');
-			my $ref = $work{"$f[2]$f[3]"};
+			dbg("stream $stream: abort received\n") if isdbg('msg');
+			my $ref = $work{"$fromnode,$stream"};
 			if ($ref) {
-				$ref->stop_msg($self->call);
+				$ref->stop_msg($fromnode);
 				$ref = undef;
 			}
 			last SWITCH;
@@ -710,16 +706,11 @@ sub start_msg
 	$self->{tonode} = $dxchan->call;
 	$self->{fromnode} = $main::mycall;
 	$busy{$self->{tonode}} = $self;
-	$work{$self->{tonode}} = $self;
+	$work{"$self->{tonode},"} = $self;
 	$self->{lastt} = $main::systime;
 	my ($fromnode, $origin);
-	if ($dxchan->is_arcluster) {
-		$fromnode = $self->{origin};
-		$origin = $self->{fromnode};
-	} else {
-		$fromnode = $self->{fromnode};
-		$origin = $self->{origin};
-	}
+	$fromnode = $self->{fromnode};
+	$origin = $self->{origin};
 	$dxchan->send(DXProt::pc28($self->{tonode}, $fromnode, $self->{to}, $self->{from}, $self->{t}, $self->{private}, $self->{subject}, $origin, $self->{rrreq}));
 }
 
@@ -751,8 +742,8 @@ sub stop_msg
 	
 	
 	dbg("stop msg $self->{msgno} -> node $node\n") if isdbg('msg');
-	delete $work{$node};
-	delete $work{"$node$stream"} if $stream;
+	delete $work{"$node,"};
+	delete $work{"$node,$stream"} if $stream;
 	$self->workclean;
 	delete $busy{$node};
 }
