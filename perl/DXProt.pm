@@ -906,7 +906,7 @@ sub normal
 		if ($pcno == 39) {		# incoming disconnect
 			if ($field[1] eq $self->{call}) {
 				$self->disconnect(1);
-				eph_dup_regex("^PC(?:1[679]|21).*$field[1]");
+				eph_del_regex("^PC(?:1[679]|21).*$field[1]");
 			} else {
 				dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
 			}
