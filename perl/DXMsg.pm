@@ -512,6 +512,11 @@ sub read_msg_header
 	}
 	$size = -s $fn;
 	$line = <$file>;			# first line
+	if ($size == 0 || !$line) {
+	    dbg('err', "Empty $fn $!");
+	    Log('err', "Empty $fn $!");
+		return undef;
+	}
 	chomp $line;
 	$size -= length $line;
 	if (! $line =~ /^===/o) {
@@ -758,7 +763,12 @@ sub init
 		next unless /^m\d+$/o;
 		
 		$ref = read_msg_header("$msgdir/$_");
-		next unless $ref;
+		unless ($ref) {
+			dbg('err', "Deleting $_");
+			Log('err', "Deleting $_");
+			unlink "$msgdir/$_";
+			next;
+		}
 		
 		# delete any messages to 'badmsg.pl' places
 		if (grep $ref->{to} eq $_, @badmsg) {
