@@ -536,6 +536,15 @@ Tell the system where you are. For example:-
 === 0^SET/WX^Allow WX messages to come out on your terminal
 === 0^UNSET/WX^Stop WX messages coming out on your terminal
 
+=== 0^SHOW/DATE [<prefix>|<callsign>]^Show the local time 
+This is very nearly the same as SHOW/TIME, the only difference the format
+of the date string if no arguments are given.
+
+If no prefixes or callsigns are given then this command returns the local
+time and UTC as the computer has it right now. If you give some prefixes
+then it will show UTC and UTC + the local offset (not including DST) at
+the prefixes or callsigns that you specify.
+
 === 0^SHOW/DX^Interrogate the spot database
 If you just type SHOW/DX you will get the last so many spots
 (sysop configurable, but usually 10).
@@ -692,6 +701,11 @@ propagation data.
 Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
+
+=== 1^SHOW/NODE [<callsign> ...]^Show the type and version number of nodes
+Show the type and version (if connected) of the nodes specified on the
+command line. If no callsigns are specified then a sorted list of all
+the non-user callsigns known to the system will be displayed.
 
 === 0^SHOW/PREFIX <callsign>^Interrogate the prefix database 
 This command takes the <callsign> (which can be a full or partial 
