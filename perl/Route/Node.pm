@@ -270,6 +270,24 @@ sub get_all
 	return values %list;
 }
 
+#
+# pc59 entity encoding and decoding
+#
+sub enc_pc59
+{
+	my $self = shift;
+	my $sort = shift || 'N';
+	my $out = "$sort$self->{flags}$self->{call}";
+	if ($sort eq 'N') {
+		if ($self->{build}) {
+			$out .= "b$self->{build}";
+		} elsif ($self->{version}) {
+			$out .= "v$self->{version}"; 
+		}
+	}
+	return $out;
+}
+
 sub DESTROY
 {
 	my $self = shift;

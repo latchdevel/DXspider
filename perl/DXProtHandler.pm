@@ -431,7 +431,7 @@ sub handle_16
 		$user->lastin($main::systime) unless DXChannel->get($call);
 		$user->put;
 	}
-	$self->process_pc59($pcno, 'A', hexstamp(), $main::routeroot, 
+	$self->process_pc59($pcno, 'A', hexstamp(), Route::Node::get($self->{call}), 
 						$node, undef, @rout);
 }
 		
@@ -488,7 +488,7 @@ sub handle_17
 		return;
 	}
 
-	$self->process_pc59($pcno, 'D', hexstamp(), $main::routeroot, $node, undef, $uref);  
+	$self->process_pc59($pcno, 'D', hexstamp(), Route::Node::get($self->{call}), $node, undef, $uref);  
 }
 		
 # link request
@@ -516,7 +516,7 @@ sub handle_18
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
 		$self->user->version($self->version);
 	}
-	$self->newroute( $_[1] =~ /!NRt/ );
+	$self->newroute( $_[1] =~ /\!NRt/ );
 
 	# first clear out any nodes on this dxchannel
 	my $node = Route::Node::get($self->{call}) ;
@@ -618,7 +618,7 @@ sub handle_19
 	# unshift in the route::node for this interface if isn't present
 	if (@rout) {
 		unshift @rout, $parent unless $rout[0]->call ne $self->{call};
-		$self->process_pc59($pcno, 'A', hexstamp(), $main::routeroot, $parent, undef, @rout);
+		$self->process_pc59($pcno, 'A', hexstamp(), Route::Node::get($self->{call}), $parent, undef, @rout);
 	}
 }
 		
@@ -684,7 +684,7 @@ sub handle_21
 		push @rout, $node;
 	}
 
-	$self->process_pc59($pcno, 'D', hexstamp(), $main::routeroot, $parent, undef, @rout);
+	$self->process_pc59($pcno, 'D', hexstamp(), Route::Node::get($self->{call}), $parent, undef, @rout);
 }
 		
 

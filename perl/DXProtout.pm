@@ -361,20 +361,29 @@ sub pc51
 }
 
 my $hexlasttime = 0;
-my $hexlastlet = '!';
+my $hexlastlet = 'A';
+my $hexoverflow = '';
 
 sub hexstamp
 {
 	my $t = shift || $main::systime;
-	if ($hexlastlet gt '>' || $t ne $hexlasttime) {
+	if ($t ne $hexlasttime) {
 		$hexlasttime = $t;
-		$hexlastlet = '!';
+		$hexoverflow = '';
+		$hexlastlet = 'A';
 	} else {
 		do {
 			$hexlastlet = chr(ord($hexlastlet) + 1);
+			if ($hexlastlet ge '~') {
+				$hexlastlet = 'A';
+				$hexoverflow ||= '@';
+				do {
+					$hexoverflow = chr(ord($hexoverflow) + 1);
+				} while ($hexoverflow eq '^');
+			}
 		} while ($hexlastlet eq '^');
 	}
-	return sprintf "%s%08X", $hexlastlet, $hexlasttime;
+	return sprintf "%08X%s%s", $hexlasttime, $hexoverflow, $hexlastlet;
 }
 
 sub pc58
@@ -402,7 +411,7 @@ sub pc59
 		my $ref = $_;
 		my $call = $ref->call;
 		my $here = $ref->here;
-		$s .= $ref->enc_pc59;
+		$s .= '^' . $ref->enc_pc59;
 	}
 	push @out, sprintf "$s^%s^", get_hops(59);
 	return @out;

@@ -111,6 +111,17 @@ sub nodes
 }
 
 #
+# pc59 entity encoding and decoding
+#
+sub enc_pc59
+{
+	my $self = shift;
+	my $sort = shift || 'U';
+	my $out = "$sort$self->{flags}$self->{call}";
+	return $out;
+}
+
+#
 # generic AUTOLOAD for accessors
 #
 
