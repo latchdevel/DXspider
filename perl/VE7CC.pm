@@ -30,9 +30,13 @@ sub dx_spot
 	my $freq = shift;
 	my $spotted = shift;
 	my $t = shift;
+
+	# remove any items above the top of the max spot data
+	pop while @_ > 11;
 	
-	# remove interface callsign;
-	pop;
+	# make sure both US states are defined
+	$_[9] ||= '';
+	$_[10] ||= '';
 	
 	my $spotter_cc = (Prefix::cty_data($spotted))[5];
 	my $spotted_cc = (Prefix::cty_data($_[1]))[5];

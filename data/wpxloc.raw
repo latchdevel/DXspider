@@ -167,24 +167,24 @@ CE Chile-CE                            16 14 12  4.0 33 30 0 S 70 48 0 W @
 CE Chile-N.-CE                         16 14 12  4.0 20 0 0 S 70 48 0 W *
 CE Chile-S.-CE                         16 14 12  4.0 55 0 0 S 70 48 0 W 
 CA,CB,CC,CD,XQ,3G,XQ,XR Chile-CE       16 14 12  4.0 33 30 0 S 70 48 0 W
-CE9 Antarctica_Byrd                   102 67 12  8.0 82 0 0 S 120 0 0 W * @
-CE9 Antarctica_Casey                  102 67 29 -8.0 66 17 0 S 110 32 0 E *
-CE9 Antarctica_Rockford               102 67 32  10.0 79 0 0 S 150 0 0 W *
-CE9 Antarctica_Breadmore              102 67 32 -12.0 83 0 0 S 178 0 0 E *
-CE9 Antarctica_Davis                  102 67 39 -5.0 68 35 0 S 77 58 0 E *
-CE9 Antarctica_Mawson                 102 67 39 -4.0 67 35 0 S 62 53 0 E *
-CE9 Antarctica_Palmer                 102 67 13  4.0 64 46 0 S 64 5 0 W *
-CE9 Antarctica_Sanae                  102 67 13  0.0 70 30 0 S 2 30 0 W *
-CE9 Antarctica_McMurdo                102 67 30 -11.0 77 50 0 S 166 25 0 E *
-CE9 Antarctica_Baudouin               102 67 38  0.0 70 25 0 S 11 50 0 E *
-CE9 Antarctica_Novolaz                102 67 38  0.0 70 50 0 S 11 50 0 E *
-CE9 Antarctica_Molodezanaja           102 67 13  3.0 67 35 0 S 46 35 0 W *
-CE9 Antarctica_Mirnyy                 102 67 29 -6.0 66 32 0 S 93 0 0 E *
-CE9 Antarctica_Scott                  102 67 30 -11.0 77 50 0 S 166 25 0 E *
-CE9 Antarctica_Dumont                 102 67 30 -9.0 66 40 0 S 140 0 0 E *
-CE9 Antarctica_Gen.Belgrado           102 67 13  2.0 77 30 0 S 36 0 0 W *
-CE9 Antarctica_Showa                  102 67 13  2.0 69 0 0 S 39 35 0 W 
-7S8,8J,AT0,CX0,DP0 Antarctica         102 67 12  8.0 80 0 0 S 120 0 0 W
+CE9 Antarctica_Byrdi-CE9              102 67 12  8.0 82 0 0 S 120 0 0 W * @
+CE9 Antarctica_Caseyi-CE9             102 67 29 -8.0 66 17 0 S 110 32 0 E *
+CE9 Antarctica_Rockfordi-CE9          102 67 32  10.0 79 0 0 S 150 0 0 W *
+CE9 Antarctica_Breadmorei-CE9         102 67 32 -12.0 83 0 0 S 178 0 0 E *
+CE9 Antarctica_Davisi-CE9             102 67 39 -5.0 68 35 0 S 77 58 0 E *
+CE9 Antarctica_Mawsoni-CE9            102 67 39 -4.0 67 35 0 S 62 53 0 E *
+CE9 Antarctica_Palmeri-CE9            102 67 13  4.0 64 46 0 S 64 5 0 W *
+CE9 Antarctica_Sanaei-CE9             102 67 13  0.0 70 30 0 S 2 30 0 W *
+CE9 Antarctica_McMurdoi-CE9           102 67 30 -11.0 77 50 0 S 166 25 0 E *
+CE9 Antarctica_Baudouini-CE9          102 67 38  0.0 70 25 0 S 11 50 0 E *
+CE9 Antarctica_Novolazi-CE9           102 67 38  0.0 70 50 0 S 11 50 0 E *
+CE9 Antarctica_Molodezanajai-CE9      102 67 13  3.0 67 35 0 S 46 35 0 W *
+CE9 Antarctica_Mirnyyi-CE9            102 67 29 -6.0 66 32 0 S 93 0 0 E *
+CE9 Antarctica_Scotti-CE9             102 67 30 -11.0 77 50 0 S 166 25 0 E *
+CE9 Antarctica_Dumonti-CE9            102 67 30 -9.0 66 40 0 S 140 0 0 E *
+CE9 Antarctica_Gen.Belgradoi-CE9      102 67 13  2.0 77 30 0 S 36 0 0 W *
+CE9 Antarctica_Showai-CE9             102 67 13  2.0 69 0 0 S 39 35 0 W 
+7S8,8J,AT0,CX0,DP0 Antarctica-CE9     102 67 12  8.0 80 0 0 S 120 0 0 W
 CE0A Easter-Island-CE0A                17 63 12  5.0 28 0 0 S 109 0 0 W @
 CE0X San-Felix-CE0X                    18 14 12  4.0 26 0 0 S 80 0 0 W @
 CE0Z Juan-Fernandez-CE0Z               19 14 12  4.0 33 36 0 S 78 48 0 W @
@@ -618,18 +618,18 @@ EM,EN,EO,E5, Ukraine-UR(OLD_UB)       183 29 16 -3.0 50 30 0 N 31 0 0 E
 EU Belarus-EU(OLD_UC)                 184 29 16 -3.0 54 0 0 N 27 30 0 E @
 EV,EW Belarus-EU(OLD_UC)              184 29 16 -3.0 54 0 0 N 27 30 0 E
 ! EM#C,EN#C,EO#C,EU#C,EV#C,EW#C Belarus-UC                   184 29 16 -3.0 54 0 0 N 27 30 0 E
-4J Azerbaijan-4J(OLD_UD)              185 29 21 -4.0 40 30 0 N 50 0 0 E @
-4K Azerbaijan-4J(OLD_UD)              185 29 21 -4.0 40 30 0 N 50 0 0 E
-4L Georgia-4L(OLD_UF)                 186 29 21 -4.0 41 30 0 N 45 0 0 E @
-EK Armenia-EK(OLD_UG)                 187 29 21 -4.0 50 30 0 N 44 30 0 E @
-EZ Turkmenistan-EZ(OLD_UH)            188 30 17 -5.0 38 0 0 N 58 0 0 E @
-UJ Uzbekistan-UJ(OLD_UI)              189 30 17 -5.0 40 0 0 N 64 0 0 E @
-UK,UL,UM Uzbekistan-UJ(OLD_UI)        189 30 17 -5.0 40 0 0 N 64 0 0 E
-EY Tajikistan-EY(OLD_UJ)              190 30 17 -6.0 39 30 0 N 67 0 0 E @
-UN Kazakhstan-UN(OLD_UL)              191 30 17 -6.0 53 0 0 N 76 0 0 E @
-UO,UP,UQ Kazakhstan-UN(OLD_UL)        191 30 17 -6.0 53 0 0 N 76 0 0 E
-EX Kyrgyzstan-EX(OLD_UM)              192 31 17 -6.0 42 0 0 N 75 0 0 E @
-ER Moldova-ER(OLD_UO)                 193 29 16 -3.0 47 0 0 N 29 0 0 E @
+4J Azerbaijan-4J                      185 29 21 -4.0 40 30 0 N 50 0 0 E @
+4K Azerbaijan-4J                      185 29 21 -4.0 40 30 0 N 50 0 0 E
+4L Georgia-4L                         186 29 21 -4.0 41 30 0 N 45 0 0 E @
+EK Armenia-EK                         187 29 21 -4.0 50 30 0 N 44 30 0 E @
+EZ Turkmenistan-EZ                    188 30 17 -5.0 38 0 0 N 58 0 0 E @
+UJ Uzbekistan-UJ                      189 30 17 -5.0 40 0 0 N 64 0 0 E @
+UK,UL,UM Uzbekistan-UJ                189 30 17 -5.0 40 0 0 N 64 0 0 E
+EY Tajikistan-EY                      190 30 17 -6.0 39 30 0 N 67 0 0 E @
+UN Kazakhstan-UN                      191 30 17 -6.0 53 0 0 N 76 0 0 E @
+UO,UP,UQ Kazakhstan-UN                191 30 17 -6.0 53 0 0 N 76 0 0 E
+EX Kyrgyzstan-EX                      192 31 17 -6.0 42 0 0 N 75 0 0 E @
+ER Moldova-ER                         193 29 16 -3.0 47 0 0 N 29 0 0 E @
 VE New-Brunsick-VE                    197  9  5  4.0 45 18 0 N 66 6 0 W * @
 VE Newfoundland-VE                    197  9  5  3.0 48 30 0 N 56 0 0 W *
 VE Nova-Scotia-VE                     197  9  5  4.0 44 36 0 N 63 36 0 W *
@@ -1612,6 +1612,6 @@ ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
 4W East-Timor-4W				340 54 28 -8.0 8 73 0 S 126 30 0 E  
 TX0 Chesterfield-Is-TX0         341 56 30 -11.0 19 31 0 S 158 11 0 E
-T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirat_Country 666 0 0 -0.0 0 0 0 S 0 0 0 E @
+T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirate-Ctry-QQ 666 0 0 -0.0 0 0 0 S 0 0 0 E @
 
 

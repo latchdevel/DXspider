@@ -481,9 +481,13 @@ sub cty_data
 	
 	my @dxcc = extract($call);
 	if (@dxcc) {
-		return ($dxcc[1]->dxcc, $dxcc[1]->itu, $dxcc[1]->cq, ($dxcc[1]->state||''), ($dxcc[1]->city||''), ($dxcc[1]->name||''));
+		my $state = $dxcc[1]->state || '';
+		my $city = $dxcc[1]->city || '';
+		my $name = $dxcc[1]->name || '';
+		
+		return ($dxcc[1]->dxcc, $dxcc[1]->itu, $dxcc[1]->cq, $state, $city, $name);
 	}
-	return (666,0,0,'','');		
+	return (666,0,0,'','','Pirate-Country-QQ');		
 }
 
 my %valid = (
