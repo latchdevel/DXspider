@@ -527,6 +527,11 @@ sub normal
 		
 		if ($pcno == 16) {		# add a user
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
+				return;
+			}
+
 			# general checks
 			my $dxchan;
 			my $ncall = $field[1];
@@ -556,6 +561,8 @@ sub normal
 				my ($call, $conf, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
 				next unless $call && $conf && defined $here && is_callsign($call);
 				next if $call eq $main::mycall;
+
+				eph_del_regex("^PC17\^$call\^$ncall");
 				
 				$conf = $conf eq '*';
 
@@ -594,6 +601,13 @@ sub normal
 			my $dxchan;
 			my $ncall = $field[2];
 			my $ucall = $field[1];
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
+				return;
+			}
+
+			eph_del_regex("^PC16.*$ncall.*$ucall");
+			
 			if ($ncall eq $main::mycall) {
 				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 				return;
@@ -633,6 +647,11 @@ sub normal
 			my $i;
 			my $newline = "PC19^";
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC19 detected") if isdbg('chanerr');
+				return;
+			}
+
 			# new routing list
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
@@ -649,6 +668,9 @@ sub normal
 				my $conf = $field[$i+2];
 				my $ver = $field[$i+3];
 				next unless defined $here && defined $conf && is_callsign($call);
+
+				eph_del_regex("^PC21\^$call");
+				
 				# check for sane parameters
 				$ver = 5000 if $ver eq '0000';
 				next if $ver < 5000; # only works with version 5 software
@@ -718,7 +740,15 @@ sub normal
 		}
 		
 		if ($pcno == 21) {		# delete a cluster from the list
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
+				return;
+			}
+
 			my $call = uc $field[1];
+
+			eph_del_regex("^PC19.*$call");
+			
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
 			unless ($parent) {
@@ -1842,6 +1872,17 @@ sub eph_dup
 	return 1 if exists $eph{$s};
 	$eph{$s} = $main::systime;
 	return undef;
+}
+
+sub eph_del_regex
+{
+	my $regex = shift;
+	my ($key, $val);
+	while (($key, $val) = each %eph) {
+		if ($key =~ m{$regex}) {
+			delete $eph{$key};
+		}
+	}
 }
 
 sub eph_clean
