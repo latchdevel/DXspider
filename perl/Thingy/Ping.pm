@@ -22,10 +22,12 @@ use Spot;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 
-use vars qw(@ISA %ping);
+use vars qw(@ISA %ping $ping_ttl);
 @ISA = qw(Thingy);
 
 my $id;
+$ping_ttl = 300;				# default ping ttl
+
 
 sub gen_Aranea
 {
@@ -74,14 +76,18 @@ sub gen_DXCommandmode
 	return $buf;
 }
 
+# called with the dxchan, line and the split out arguments
 sub from_DXProt
 {
-	my $thing = ref $_[0] ? shift : $_[0]->SUPER::new();
-	
-	while (@_) {
-		my $k = shift;
-		$thing->{$k} = shift;
-	}
+	my $thing = ref $_[0] ? shift : $_[0]->SUPER::new(origin=>$main::mycall);
+	my $dxchan = shift;
+	$thing->{DXProt} = shift;
+	$thing->{group} = shift;	# to call
+	my $from = shift;
+	$thing->{out} = shift;		# 1 = ping, 0 = pong;
+	$thing->{user} = $dxchan->{call};
+	$thing->{o} = $from unless $from eq $dxchan->{call};
+	$thing->remember if $thing->{out};
 	return $thing;
 }
 

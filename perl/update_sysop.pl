@@ -20,6 +20,7 @@ BEGIN {
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 
 	unshift @INC, "$root/local";
+	sub main::mkver {}
 }
 
 use DXVars;
