@@ -72,7 +72,10 @@ sub gen_DXCommandmode
 {
 	my $thing = shift;
 	my $dxchan = shift;
-	my $buf = $dxchan->msg('pingi', ($thing->{user} || $thing->{origin}), $thing->{ft}, $thing->{fave});
+	my $buf;
+	if ($dxchan->{call} eq $thing->{touser}) {
+		$buf = $dxchan->msg('pingi', ($thing->{user} || $thing->{origin}), $thing->{ft}, $thing->{fave});
+	}
 	return $buf;
 }
 

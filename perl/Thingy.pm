@@ -78,7 +78,7 @@ sub send
 	# function must return true to make the send happen
 	$sub = "before_send_$class";
 	if ($thing->can($sub)) {
-		return $thing->$sub($dxchan);
+		return unless $thing->$sub($dxchan);
 	}
 	
 	# generate the protocol line which may (or not) be cached
