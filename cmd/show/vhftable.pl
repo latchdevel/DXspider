@@ -11,6 +11,7 @@ my @f = split /\s+/, $line;
 my @calls;
 my $days = 31;
 my @dxcc;
+my $limit = 100;
 
 push @dxcc, (61..67) if $self->dxcc >= 61 && $self->dxcc < 67;
 push @dxcc, $self->dxcc unless @dxcc;
@@ -65,6 +66,7 @@ for (sort {$list{$b}->[0] <=> $list{$a}->[0] || $a cmp $b} keys %list) {
 		push @list, $r;
 	}
 	push @out, join('|', @list, "");
+	last if $limit && $nocalls >= $limit;
 }
 
 $nocalls = sprintf "%10s", "$nocalls calls";
