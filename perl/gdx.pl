@@ -15,6 +15,7 @@ BEGIN {
 
 use IO::Handle;
 use DXUtil;
+use Bands;
 use Spot;
 
 $dxdir = "/spider/cmd/show";
@@ -25,6 +26,7 @@ die $@ if $@;
 
 STDOUT->autoflush(1);
 Spot::init();
+Bands::load();
 
 for (;;) {
   print "expr: ";
