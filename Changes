@@ -4,6 +4,8 @@
 (def 72)
 3. help command should now return stuff that you expect.
 4. reduced necessary privilege to use 'MSG' command to 6.
+5. Correct the count of spots and wwv for a merge.
+6. Allow decodes of DK0WCY-3 WWV data beacon announces
 18Oct99=======================================================================
 1. changed help command so that it works correctly with multiple title lines.
 2. added to address to the list of things a message checks to see whether it

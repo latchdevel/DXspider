@@ -31,9 +31,10 @@ use strict;
 use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
 			%spotdup %wwvdup $last_hour %pings %rcmds
 			%nodehops @baddx $baddxfn $pc12_dup_age
-			%anndup $allowzero $pc12_dup_lth);
+			%anndup $allowzero $pc12_dup_lth $decode_dk0wcy);
 
 $me = undef;					# the channel id for this cluster
+$decode_dk0wcy = undef;			# if set use this callsign to decode announces from the EU WWV data beacon
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 $pc11_dup_age = 24*3600;		# the maximum time to keep the spot dup list for
@@ -270,7 +271,7 @@ sub normal
 			}
 			$anndup{$dupkey} = $main::systime;
 			
-			# global ann filtering
+			# global ann filtering on INPUT
 			my ($filter, $hops) = Filter::it($self->{annfilter}, @field[1..6], $self->{call} ) if $self->{annfilter};
 			if ($self->{annfilter} && !$filter) {
 			        dbg('chan', "Rejected by filter");
@@ -305,6 +306,11 @@ sub normal
 					broadcast_users("$target de $field[1]: $text", 'ann', undef);
 				}
 				Log('ann', $target, $field[1], $text);
+				
+				if ($decode_dk0wcy && $field[1] eq $decode_dk0wcy) {
+					my ($hour, $k, $next, $a, $r, $sfi) = $field[3] =~ /^Aurora Beacon\s+(\d+)UTC,\s+Kiel\s+K=(\d+),.*ed\s+K=(\d+),\s+A=(\d+),\s+R=(\d+),\s+SFI=(\d+),/;
+					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next", $decode_dk0wcy, $field[5], $r);
+				}
 				
 				return if $field[2] eq $main::mycall; # it's routed to me
 			} else {
@@ -509,26 +515,27 @@ sub normal
 			my $sfi = unpad($field[3]);
 			my $k = unpad($field[4]);
 			my $i = unpad($field[5]);
+			my $r = $field[6] =~ /R=(\d+)/ || 0;
 			my $dupkey = "$d.$sfi$k$i";
 			if ($wwvdup{$dupkey}) {
 				dbg('chan', "Dup WWV Spot ignored\n");
 				return;
 			}
-			if ($d < $main::systime - $pc23_max_age || $d > $main::systime + 900 || $field[2] < 0 || $field[2] > 23) {
+			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 900 || $field[2] < 0 || $field[2] > 23) {
 				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}
 			$wwvdup{$dupkey} = $d;
 			$field[6] =~ s/-\d+$//o;            # remove spotter's ssid
 		
-			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..8]);
+			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..8], $r);
 
-			my $r;
+			my $rep;
 			eval {
-				$r = Local::wwv($self, $field[1], $field[2], $sfi, $k, $i, @field[6..8]);
+				$rep = Local::wwv($self, $field[1], $field[2], $sfi, $k, $i, @field[6..8], $r);
 			};
 #			dbg('local', "Local::wwv2 error $@") if $@;
-			return if $r;
+			return if $rep;
 
 			# DON'T be silly and send on PC27s!
 			return if $pcno == 27;
@@ -559,7 +566,7 @@ sub normal
 			
 			# spots
 			if ($field[3] > 0) {
-				my @in = reverse Spot::search(1, undef, undef, 0, $field[3]-1);
+				my @in = reverse Spot::search(1, undef, undef, 0, $field[3]);
 				my $in;
 				foreach $in (@in) {
 					$self->send(pc26(@{$in}[0..4], $field[2]));

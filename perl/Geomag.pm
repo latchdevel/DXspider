@@ -18,13 +18,14 @@ use IO::File;
 use Carp;
 
 use strict;
-use vars qw($date $sfi $k $a $forecast @allowed @denied $fp $node $from);
+use vars qw($date $sfi $k $a $r $forecast @allowed @denied $fp $node $from);
 
 $fp = 0;						# the DXLog fcb
 $date = 0;						# the unix time of the WWV (notional)
 $sfi = 0;						# the current SFI value
 $k = 0;							# the current K value
 $a = 0;							# the current A value
+$r = 0;							# the current R value
 $forecast = "";					# the current geomagnetic forecast
 $node = "";						# originating node
 $from = "";						# who this came from
@@ -51,6 +52,7 @@ sub store
 	print $fh "\$sfi = $sfi;\n";
 	print $fh "\$a = $a;\n";
 	print $fh "\$k = $k;\n";
+	print $fh "\$r = $r;\n";
 	print $fh "\$from = '$from';\n";
 	print $fh "\$node = '$node';\n";
 	print $fh "\@denied = qw(", join(' ', @denied), ");\n" if @denied > 0;
@@ -58,13 +60,13 @@ sub store
 	close $fh;
 	
 	# log it
-	$fp->writeunix($date, "$from^$date^$sfi^$a^$k^$forecast^$node");
+	$fp->writeunix($date, "$from^$date^$sfi^$a^$k^$forecast^$node^$r");
 }
 
 # update WWV info in one go (usually from a PC23)
 sub update
 {
-	my ($mydate, $mytime, $mysfi, $mya, $myk, $myforecast, $myfrom, $mynode) = @_;
+	my ($mydate, $mytime, $mysfi, $mya, $myk, $myforecast, $myfrom, $mynode, $myr) = @_;
 	if ((@allowed && grep {$_ eq $from} @allowed) || 
 		(@denied && !grep {$_ eq $from} @denied) ||
 		(@allowed == 0 && @denied == 0)) {
@@ -72,6 +74,7 @@ sub update
 		#	my $trydate = cltounix($mydate, sprintf("%02d18Z", $mytime));
 		if ($mydate >= $date) {
 			$sfi = 0 + $mysfi;
+            $r = 0 + $myr unless !$r && $myk == $k;
 			$k = 0 + $myk;
 			$a = 0 + $mya;
 			$forecast = $myforecast;
@@ -125,6 +128,11 @@ sub k
 	@_ ? $k = shift : $k ;
 }
 
+sub r
+{
+	@_ ? $r = shift : $r ;
+}
+
 sub a
 {
 	@_ ? $a = shift : $a ;
@@ -134,6 +142,7 @@ sub forecast
 {
 	@_ ? $forecast = shift : $forecast ;
 }
+
 
 #
 # print some items from the log backwards in time

@@ -30,7 +30,7 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 	$foreground = COLOR_BLACK();
 	$background = COLOR_WHITE();
 	@colors = (
-		   [ '^DX de [\-A-Z0-9]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
+		   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
 		   [ '^DX', COLOR_PAIR(5) ],
 		   [ '^To', COLOR_PAIR(3) ],
 		   [ '^WWV', COLOR_PAIR(4) ],
@@ -44,7 +44,7 @@ if ($ENV{'TERM'} =~ /(console|linux)/) {
 	$foreground = COLOR_WHITE();
 	$background = COLOR_BLACK();
 	@colors = (
-		   [ '^DX de [\-\w]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
+		   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
 		   [ '^DX', COLOR_PAIR(4) ],
 		   [ '^To', COLOR_PAIR(3) ],
 		   [ '^WWV', COLOR_PAIR(5) ],
