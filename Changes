@@ -14,6 +14,9 @@ will not be allowed to login anymore.
 4. Fiddle with the lockout mechanism so that set/login g1tlh also locks out
 g1tlh-1 -> g1tlh-15 UNLESS one of these is specifically unlocked.
 5. Make sh/log only show stuff that sh/ann, sh/talk, sh/rcmd doesn't.
+6. Make the scripts look for user and node_default files if there isn't a 
+more specific one.
+7. add the blank command which prints nn blank lines (default 1)
 13Sep01=======================================================================
 1. did some work on making talk more intelligent and fixed a>b problem.
 2. fixed a nasty problem on input when being hit with full buffers of 

@@ -275,7 +275,7 @@ sub start
 	$self->tell_login('loginn');
 
 	# run a script send the output to the debug file
-	my $script = new Script(lc $call);
+	my $script = new Script(lc $call) || new Script('node_default');
 	$script->run($self) if $script;
 }
 

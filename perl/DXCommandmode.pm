@@ -147,7 +147,7 @@ sub start
 	}
 
 	# run a script send the output to the punter
-	my $script = new Script(lc $call);
+	my $script = new Script(lc $call) || new Script('user_default');
 	$script->run($self) if $script;
 }
 

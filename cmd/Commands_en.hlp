@@ -207,6 +207,8 @@ This will send your announcement cluster wide
 Search the help database for <string> (it isn't case sensitive), and print
 the names of all the commands that may be relevant.
 
+=== 0^BLANK <nn>^Print nn (default 1) blank lines
+
 === 0^BYE^Exit from the cluster
 This will disconnect you from the cluster
 
