@@ -238,10 +238,10 @@ sub normal
 			foreach $dxchan (@dxchan) {
 				next if $dxchan == $self;
 				my $routeit;
-				my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @spot) if $dxchan->{spotfilter};
+				my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @spot, $self->{call} ) if $dxchan->{spotfilter};
 				if ($hops) {
-					$line =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
 					$routeit = $line;
+					$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
 				} else {
 					$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
 					next unless $routeit;

@@ -88,6 +88,7 @@ package CmdAlias;
 	  '^set/nota', 'unset/talk', 'unset/talk',
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
+	  '^sh$', 'show', 'show',
 	  '^sh.*/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sh.*/c$', 'show/configuration', 'show/configuration',
 	  '^sh.*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',

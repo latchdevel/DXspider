@@ -1,3 +1,6 @@
+25Apr99=======================================================================
+1. Fixed problem with filtered spots not coming out.
+2. Added the possibility of filtering on channel callsign
 15Mar99=======================================================================
 1. added $actiondata to filter line to allow per action data such as no of hops
 2. fixed a silly problem in talk for non-existant callsigns
