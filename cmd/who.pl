@@ -18,7 +18,9 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	my $t = cldatetime($dxchan->user->lastin);
 	my $sort = $dxchan->is_ak1a() ? "NODE" : "USER";
 	my $name = $dxchan->user->name || " ";
-	push @out, sprintf "%10s $sort $t $name", $call;
+	my $ping = $dxchan->is_ak1a ? sprintf("(rtt %.2f secs)", $dxchan->pingave) : "";
+	$ping = "" if $dxchan->call eq $main::mycall;
+	push @out, sprintf "%10s $sort $t $name $ping", $call;
 }
 
 return (1, @out)
