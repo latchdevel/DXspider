@@ -125,15 +125,15 @@ sub blocking
                0x80000000 | (4 << 16) | (ord('f') << 8) | 126,
                "$_[1]"
              );
-	}
-	
-	my $flags = fcntl ($_[0], F_GETFL, 0);
-	if ($_[1]) {
-		$flags &= ~O_NONBLOCK;
 	} else {
-		$flags |= O_NONBLOCK;
+		my $flags = fcntl ($_[0], F_GETFL, 0);
+		if ($_[1]) {
+			$flags &= ~O_NONBLOCK;
+		} else {
+			$flags |= O_NONBLOCK;
+		}
+		fcntl ($_[0], F_SETFL, $flags);
 	}
-	fcntl ($_[0], F_SETFL, $flags);
 }
 
 # save it
