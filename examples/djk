@@ -1,0 +1,7 @@
+timeout 15
+connect telnet dirk1
+'login' 'djk'
+'word' 'xxxxx'
+'\$ ' 'cd spider/perl'
+'\$ ' 'client.pl gb7djk-1 telnet'
+client gb7djk telnet

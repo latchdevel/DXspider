@@ -1,0 +1,7 @@
+timeout 15
+# don't forget to chmod 4775 netrom_call!
+connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh-0
+'Connect' ''
+'Connect' 'cluster'
+'Connect'
+client gb7tlh ax25

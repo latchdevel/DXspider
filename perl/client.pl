@@ -348,28 +348,48 @@ if ($loginreq) {
 	my $user;
 	my $s;
 
+	if (-e "$data/issue") {
+		open(I, "$data/issue") or die;
+		local $/ = undef;
+		$issue = <I>;
+		close(I);
+		$issue = s/\n/\r/og if $mode == 1;
+		local $/ = $nl;
+		$stdout->print($issue) if issue;
+	}
+	
+
 	DXUser->init($userfn);
 	
+	# allow a login from an existing user. I could create a user but
+	# I want to check for valid callsigns and I don't have the 
+	# necessary info / regular expression yet
 	for ($state = 0; $state < 2; ) {
 		alarm($timeout);
 		
 		if ($state == 0) {
 			$stdout->print('login: ');
 			$stdout->flush();
-			local $/ = $mode == 1 ? "\r" : "\n";
+			local $\ = $nl;
 			$s = $stdin->getline();
 			chomp $s;
+			$s =~ s/\s+//og;
+			$s =~ s/-\d+$//o;            # no ssids!
+			cease(0) unless $s gt ' ';
 			$call = uc $s;
 			$user = DXUser->get($call);
 			$state = 1;
 		} elsif ($state == 1) {
 			$stdout->print('password: ');
 			$stdout->flush();
-			local $/ = $mode == 1 ? "\r" : "\n";
+			local $\ = $nl;
 			$s = $stdin->getline();
 			chomp $s;
 			$state = 2;
-			cease(0) if !$user || ($user->passwd && $user->passwd ne $s);
+			if (!$user || ($user->passwd && $user->passwd ne $s)) {
+				$stdout->print("sorry...$nl");
+				cease(0);
+			}
 		}
 	}
 }
