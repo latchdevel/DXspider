@@ -290,9 +290,7 @@ sub finish
 sub prompt
 {
 	my $self = shift;
-	my $call = $self->{call};
-	$self->send($self->msg('pr', $call));
-	#DXChannel::msg($self, 'pr', $call);
+	$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call));
 }
 
 # broadcast a message to all users [except those mentioned after buffer]

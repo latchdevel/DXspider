@@ -1,3 +1,6 @@
+22Dec98========================================================================
+1. Added brackets round callsign if not here for prompt
+2. Added Iain's set/password routine
 21Dec98============= late! ====================================================
 1. fixed problem with missing DXDebug in DXProt.
 2. Fixed DXDebug so that it actually works as advertised with and without 
