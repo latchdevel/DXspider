@@ -30,7 +30,15 @@ the following modules:-
   ..
   ..
   cpan> install IO::Select
+
+  In order to use IO::Select you will need to 
   
+  # cd /root/.cpan/build/IO-1.20  
+  # make install UNINST=1
+
+  The 'cd' is to the place where CPAN sets up its local cache. The example 
+  shown is for Linux defaults.
+
 3) select a user to run the cluster as UNDER _NO_ CIRCUMSTANCES USE ROOT.
 
    I say again DO NOT USE root.
@@ -115,6 +123,14 @@ the following modules:-
    :x
    
    $ cd ../perl
+
+   now create the basic user file with you as the sysop.
+
+   $ create_sysop.pl
+
+   try and run the cluster program and see whether all the various rivets are
+   flying in approximate formation...
+
    $ cluster.pl
    DXSpider DX Cluster Version x.x
    Copyright (c) 1998 Dirk Koopman G1TLH
