@@ -1049,7 +1049,7 @@ sub handle_19
 		my $flags = Route::here($here)|Route::conf($conf);
 
 		# is he under the control of the new protocol?
-		if ($r->np) {
+		if ($r && $r->np) {
 			dbg("PCPROT: $call aranea node, ignored") if isdbg('chanerr');
 			next;
 		}
