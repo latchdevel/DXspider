@@ -10,9 +10,12 @@
 use Sys::Hostname;
 my $HOSTNAME = hostname();
 
+# Please note that the HOSTNAME MUST be resolvable from the user end. Otherwise the
+# web interface will NOT work.
 # Uncomment and set the hostname manually here if the above fails.
 # $HOSTNAME = "gb7mbc.spoo.org" ;
 $PORT = "8000" ;
+$NODECALL = "XX0XX" ;
 
 # Send text/html header to the browser.
 print "Content-type: text/html\n\n";
@@ -48,7 +51,7 @@ print <<'EOF';
         <B><BR>Cluster Web - DX Cluster Web Interface.</B><BR>
 EOF
 
-        print("Welcome to $HOSTNAME<BR>") ;
+        print("Welcome to $NODECALL<BR>") ;
 
 print <<'EOF';
         </FONT>

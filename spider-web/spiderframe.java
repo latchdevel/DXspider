@@ -44,7 +44,7 @@ menubar.add(commands);
 		show = new Menu("Show");
 		show.add(new MenuItem("Show Last DX"));
 		show.add(new MenuItem("Show Beam Direction"));
-                            show.add(new MenuItem("Show wwv"));
+                            show.add(new MenuItem("Show WWV"));
                             show.add(new MenuItem("Search DX"));
 		show.add(new MenuItem("Search Address"));
                             show.add(new MenuItem("Search QSL Manager"));
@@ -70,6 +70,8 @@ menubar.add(dxann);
 		mailbox = new Menu("Mailbox");
 		mailbox.add(new MenuItem("Last 50 Msgs"));
 		mailbox.add(new MenuItem("List DX Bulletins"));
+		mailbox.add(new MenuItem("New Messages"));
+		mailbox.add(new MenuItem("Own Messages"));
 menubar.add(mailbox); 
 
 
@@ -429,17 +431,17 @@ menubar.add(mailbox);
 			} else if (arg.equals("Bye")) {
 				if (Connected) out.println("bye");
 			} else if (arg.equals("Help")) {
-				if (Connected) out.println("help overview");
+				if (Connected) out.println("? all");
 			} else if (arg.equals("Show Last DX")) {
 				if (Connected) out.println("sh/dx");
 			} else if (arg.equals("Status")) {
-				if (Connected) out.println("sh/conf");
+				if (Connected) out.println("sh/c");
 			} else if (arg.equals("Show WWV")) {
 				if (Connected) out.println("sh/wwv");
 			} else if (arg.equals("Show Beam Direction")) {
 				beam pp = new beam(this, Prefix, OutFont);
 			        if (Connected) out.println ("sh/heading " + Prefix );
-			} else if (arg.equals("search DX")) {
+			} else if (arg.equals("Search DX")) {
 				beam pp = new beam(this, Prefix, OutFont);
 			        if (Connected) out.println ("sh/dx " + Prefix );
 			
@@ -448,19 +450,19 @@ menubar.add(mailbox);
 			        if (Connected) out.println ("sh/qsl " + Prefix );
 			 
 
-			} else if (arg.equals("search Adress")) {
+			} else if (arg.equals("Search Address")) {
 				beam pp = new beam(this, Prefix, OutFont);
 			        if (Connected) out.println ("sh/qrz " + Prefix );
 			
 
-			} else if (arg.equals("search qsl Manager")) {
+			} else if (arg.equals("Search QSL Manager")) {
 				beam pp = new beam(this, Prefix, OutFont);
 			        if (Connected) out.println ("sh/qsl " + Prefix );
 			
 
-			} else if (arg.equals("search DXCC")) {
+			} else if (arg.equals("Search DXCC")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/dxcc " + Prefix );
+			        if (Connected) out.println ("sh/pr " + Prefix );
 			
 			// buttom settings
 
@@ -479,35 +481,33 @@ menubar.add(mailbox);
 			}
 			else if (arg.equals("Set Locator")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("set/loc " + Prefix );
+			        if (Connected) out.println ("set/qra " + Prefix );
 			
-
 			}
 			else if (arg.equals("Show Personal Settings")) {
-				if (Connected) out.println ("show/sta " + Call );
+				if (Connected) out.println ("sh/sta " + Call );
 			
-
 			}
 
 			// dx announce
 
 			else if (arg.equals("DXannounce")) {
 				dxannounce pp = new dxannounce(this, Call2, Freq, Remarks, OutFont);
-	        		if (Connected) out.println ("dx " + Call2 + " " + Freq + " " + Remarks );
+	        		if (Connected) out.println ("dx " + Freq + " " + Call2 + " " + Remarks );
 	
 			}
 			// mailbox 
-			 else if (arg.equals("last 50 Msgs")) {
-				if (Connected) out.println ("dir/50 " );
+			 else if (arg.equals("Last 50 Msgs")) {
+				if (Connected) out.println ("dir/50" );
 			 }
-			 else if (arg.equals("list DX Bulletins")) {
-				if (Connected) out.println ("dir/bul " );
+			 else if (arg.equals("List DX Bulletins")) {
+				if (Connected) out.println ("dir/bul" );
 			 }
-			 else if (arg.equals("new Msgs")) {
-			 	if (Connected) out.println ("dir/new " );
+			 else if (arg.equals("New Messages")) {
+			 	if (Connected) out.println ("dir/new" );
 			 }
-			 else if (arg.equals("own Msgs")) {
-				if (Connected) out.println ("dir/own " );
+			 else if (arg.equals("Own Messages")) {
+				if (Connected) out.println ("dir/own" );
 			 }
 				
 
