@@ -1,3 +1,5 @@
+21Dec04=======================================================================
+1. added AGW port no after an example by IW5DEZ.
 20Dec04=======================================================================
 1. updated create_prefix.pl to only use (supplied) wpxloc.raw and cty.dat
 2. Added IG9, GM/S, 4U1V and some other detail changes to make it compatible

@@ -29,7 +29,10 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%5.2f", $dxchan->pingave) : "     ";
 	my $conn = $dxchan->conn;
 	my $ip = '';
-	$ip = $conn->{peerhost} if $conn && $conn->{peerhost};
+	if ($conn) {
+		$ip = $conn->{peerhost} if exists $conn->{peerhost};
+		$ip = "AGW Port ($conn->{agwport})" if exists $conn->{agwport};
+	}
 	push @out, sprintf "%10s $type $sort $t %-10.10s $ping $ip", $call, $name;
 }
 
