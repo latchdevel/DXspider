@@ -11,28 +11,31 @@ my $cmdline = shift;
 my @f = split /\s+/, $cmdline;
 my $f;
 my @out;
-my ($from, $to, $who); 
+my ($from, $to, $who, $hint); 
 
 $from = 0;
 while ($f = shift @f) {                 # next field
 	#  print "f: $f list: ", join(',', @list), "\n";
-	if (!$from && !$to) {
+	unless ($from || $to) {
 		($from, $to) = $f =~ /^(\d+)-(\d+)$/o;         # is it a from -> to count?
 		next if $from && $to > $from;
 	}
-	if (!$to) {
+	unless ($to) {
 		($to) = $f =~ /^(\d+)$/o if !$to;              # is it a to count?
 		next if $to;
 	}
-	next if $who;
-	($who) = $f =~ /^(\w+)/o;
+	unless ($who) {
+		$who = $f; 
+		next if $who;
+	}
 }
 
 $to = 20 unless $to;
 $from = 0 unless $from;
+
 if ($self->priv < 6) {
-	$who = $self->call unless $who;
-	return (1, $self->msg('e5')) if $who ne $self->call;
+	return (1, $self->msg('e5')) if defined $who && $who ne $self->call;
+	$who = $self->call;
 }
 
 @out = DXLog::print($from, $to, $main::systime, undef, $who);
