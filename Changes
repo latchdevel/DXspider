@@ -13,12 +13,15 @@ is this:-
    http://www.dxcluster.org/download/usdbraw.gz to somewhere like /tmp.
 2. update from CVS.
 3. Restart (on linux, just stop the node and *don't* restart on Windows).
-4. remove /spider/data/user.v1
+4. remove /spider/data/usdb.v1
 5. cd /spider/perl
 6. (perl) create_usdb.pl /tmp/usdbraw.gz (or wherever you put it)
 6a. If you don't have Compress::Zlib loaded then you will need to gunzip
     it manually and do: create_usdb.pl /tmp/usdbraw (not Windows :-)
 7. on linux, in a console window do: load/usdb, on windows: restart the node. 
+
+Added set/usdb command to add adding or changing of a callsign in the USDB
+
 14Oct02=======================================================================
 1. added show/usdb command as a simple, direct interface to the information
 available in the USDB stuff.

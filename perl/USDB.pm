@@ -28,7 +28,7 @@ $dbfn = "$main::data/usdb.v1";
 sub init
 {
 	end();
-	if (tie %db, 'DB_File', $dbfn, O_RDONLY, 0664, $DB_BTREE) {
+	if (tie %db, 'DB_File', $dbfn, O_RDWR, 0664, $DB_BTREE) {
 		$present = 1;
 		return "US Database loaded";
 	}
@@ -50,6 +50,29 @@ sub get
 	return @s;
 }
 
+sub _add
+{
+	my ($db, $call, $city, $state) = @_;
+	
+	# lookup the city 
+	my $s = uc "$city|$state";
+	my $ctyn = $db->{$s};
+	unless ($ctyn) {
+		my $no = $db->{'##'} || 1;
+		$ctyn = "#$no";
+		$db->{$s} = $ctyn;
+		$db->{$ctyn} = $s; 
+		$no++;
+		$db->{'##'} = "$no";
+	}
+	$db->{uc $call} = $ctyn; 
+}
+
+sub add
+{
+	_add(\%db, @_);
+}
+
 sub getstate
 {
 	return () unless $present;
@@ -62,6 +85,12 @@ sub getcity
 	return () unless $present;
 	my @s = get($_[0]);
 	return @s ? $s[0] : undef;
+}
+
+sub del
+{
+	my $call = uc shift;
+	delete $db{$call};
 }
 
 #
@@ -128,19 +157,9 @@ sub load
 			my $l = $_;
 			$l =~ s/[\r\n]+$//;
 			my ($call, $city, $state) = split /\|/, $l;
+
+			_add(\%dbn, $call, $city, $state);
 			
-			# lookup the city 
-			my $s = "$city|$state";
-			my $ctyn = $dbn{$s};
-			unless ($ctyn) {
-				my $no = $dbn{'##'} || 1;
-				$ctyn = "#$no";
-				$dbn{$s} = $ctyn;
-				$dbn{$ctyn} = $s; 
-				$no++;
-				$dbn{'##'} = "$no";
-			}
-			$dbn{$call} = $ctyn; 
 			$count++;
 		}
 		$of->close;

@@ -40,7 +40,6 @@ package CmdAlias;
 	'^cre?a?t?e?$', 'apropos create', 'apropos',
 	],
 	'd' => [
-	  '^dele?t?e?/u', 'delete/user', 'delete/user',
 	  '^dele?t?e?/fu', 'kill full', 'kill',
 	  '^dele?t?e?$', 'kill', 'kill',
 	  '^dir?e?c?t?o?r?y?/a\w*', 'directory all', 'directory',
@@ -112,7 +111,7 @@ package CmdAlias;
 	  '^set/nota', 'unset/talk', 'unset/talk',
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
-      '^set/us', 'unset/node', 'unset/node',
+      '^set/user', 'unset/node', 'unset/node',
 	'^set$', 'apropos set', 'apropos',
 	  '^sho?w?/u$', 'show/user', 'show/user',
 	  '^sho?w?/bu', 'show/files bulletins', 'show/files',

@@ -353,6 +353,17 @@ DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
+=== 9^DELETE/USDB <callsign> ...^Delete this user from the US State Database
+This command will completely remove a one or more callsigns
+from the US States database.
+
+There is NO SECOND CHANCE.
+
+It goes without saying that you should use this command CAREFULLY!
+
+Note that these callsign may be re-instated by any weekly updates from 
+the FCC.
+
 === 9^DELETE/USER <callsign> ...^Delete this user from the User Database
 This command will completely remove a one or more users from the database.
 
@@ -1647,6 +1658,15 @@ SEND messages to the sysop.
  
 === 0^SET/TALK^Allow TALK messages to come out on your terminal
 === 0^UNSET/TALK^Stop TALK messages coming out on your terminal
+
+=== 9^SET/USDB <call> <state> <city>^add/update a US DB callsign
+This command allows you to add or alter a callsign in the US state
+database. Use with extreme caution. Anything you do here will be
+overwritten by any weekly updates that affect this callsign
+
+  set/usdb g1tlh nh downtown rindge
+
+see also DELETE/USDB
 
 === 0^SET/WCY^Allow WCY messages to come out on your terminal
 === 0^UNSET/WCY^Stop WCY messages coming out on your terminal
