@@ -50,4 +50,7 @@ $def_hopcount = 15;
 
 );
 
+# send out for/opernams for callsigns sending dx spots who haven't got qra locators
+$send_opernam = 0;
+
 1;

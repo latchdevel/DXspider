@@ -34,7 +34,7 @@ use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
 			$last_hour %pings %rcmds
 			%nodehops @baddx $baddxfn 
-			$allowzero $decode_dk0wcy);
+			$allowzero $decode_dk0wcy $send_opernam);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -263,7 +263,7 @@ sub normal
 					my $node;
 					my $to = $user->homenode;
 					my $last = $user->lastoper || 0;
-					if ($main::systime > $last + $DXUser::lastoperinterval && $to && ($node = DXCluster->get_exact($to)) ) {
+					if ($send_opernam && $main::systime > $last + $DXUser::lastoperinterval && $to && ($node = DXCluster->get_exact($to)) ) {
 						my $cmd = "forward/opernam $spot[4]";
 						# send the rcmd but we aren't interested in the replies...
 						if ($node && $node->dxchan && $node->dxchan->is_clx) {
@@ -694,6 +694,7 @@ sub normal
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
 			}
+			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
 			last SWITCH;
 		}
@@ -791,7 +792,7 @@ sub normal
 				my $ref = DXUser->get_current($field[2]);
 				my $cref = DXCluster->get($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[4]);
-				unless ($field[3] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
+				unless ($field[4] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
 					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
 						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 						my $oldpriv = $self->{priv};
@@ -815,7 +816,7 @@ sub normal
 				if ($ref && $ref->is_clx) {
 					$self->route($field[1], $line);
 				} else {
-					route($field[1], pc34($field[2], $field[1], $field[3]));
+					route($field[1], pc34($field[2], $field[1], $field[4]));
 				}
 			}
 			return;
@@ -839,7 +840,7 @@ sub normal
 				if ($ref && $ref->is_clx) {
 					$self->route($field[1], $line);
 				} else {
-					route($field[1], pc35($field[2], $field[1], $field[3]));
+					route($field[1], pc35($field[2], $field[1], $field[4]));
 				}
 			}
 			return;

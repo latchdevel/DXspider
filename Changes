@@ -17,8 +17,10 @@ on DX announcements
 update the current user file.
 12. added an 'auto rcmd <node> for/oper <call>' for people I can see on the
 cluster that issue spots and for whom I have no qra info (no more than once
-a month).
+a month). This isn't the default - set $send_opernam in
+/spider/local/DXProtVars.pm (copied from /spider/perl). Good for gateways.
 13. Despace spot texts properly again for deduping purposes.
+14. Corrected Pc84/85 handling a bit.
 25Jul00=======================================================================
 1. ignore \n in ax25 mode for C client.
 2. remove extra space at the end of a DX spot announce when no grid square
