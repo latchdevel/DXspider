@@ -497,6 +497,11 @@ sub queue_msg
 		if ($ref->{private}) {
 			if ($ref->{'read'} == 0) {
 				$clref = DXCluster->get_exact($ref->{to});
+				unless ($clref) {             # otherwise look for a homenode
+					my $uref = DXUser->get($ref->{to});
+					my $hnode =  $uref->homenode if $uref;
+					$clref = DXCluster->get_exact($hnode) if $hnode;
+				}
 				if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
 					$dxchan = $clref->{dxchan};
 					$ref->start_msg($dxchan) if $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';

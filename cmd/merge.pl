@@ -14,9 +14,10 @@ return (1, $self->msg('e5')) if $self->priv < 5;
 return (1, $self->msg('e12')) if !$f[0];
 
 my $call = uc $f[0];
-my $dxchan = DXChannel->get($call);
-return (1, $self->msg('e10', $call)) unless $dxchan;
-return (1, $self->msg('e13', $call)) unless $dxchan->is_ak1a();
+my $ref = DXCluster->get_exact($call);
+my $dxchan = $ref->dxchan if $ref;
+return (1, $self->msg('e10', $call)) unless $ref;
+return (1, $self->msg('e13', $call)) unless $ref->isa('DXNode');
 
 
 my ($spots, $wwv) = $f[1] =~ m{(\d+/\d+)} if $f[1];

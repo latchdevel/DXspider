@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Wed Dec 23 18:27:06 GMT 1998
+Last modified: Mon Dec 28 23:13:21 GMT 1998
 <!-- hhmts end -->
 	<h4>Introduction</h4>
 	
@@ -87,6 +87,10 @@ Last modified: Wed Dec 23 18:27:06 GMT 1998
 	  remember to remove or rename any files with new releases that claim to have incorporated 
 	  your modifications, otherwise <EM>it will continue to use the old ones in your local 
 		directories!</em>
+
+	<p>If you want to add facilities to the daemon itself or do some
+	fancy local spot routing, you might like to try looking at <a
+	href="local.html">Local</a> customisations.
 
 	<h4>Hints, Tips and Exhortations</h4>
 
@@ -335,6 +339,100 @@ return (1, @out)
 		people know about and how to use them!
 
 	</ol>
+
+	<h4>Editting the source</h4>
+	
+	I suppose this has to be discussed but although I may have confused some of you, I 
+	insist on the following formatting conventions:-
+
+	<ol>
+		<p><li>All white space to left of a line shall be tabs.
+		<p><li>A tab shall be 4 characters (unless it is 8) (I use 4). Anything you see
+		with multiples of 2 spaces will be reformatted next time I edit it. 
+		<p><li>You <b><u><i>WILL</i></u></b>use the one true (documented) bracing method as 
+		documented in K & R and all the 'official' perl books.
+	</ol>
+
+	<p>I have been experimenting with editors and tabwidths and have settled on 
+	  <a href="http://www.xemacs.org">XEmacs</a>. You can get a copy from the 
+	  <a href="ftp://contrib.redhat.com">RedHat Contrib</a> ftp site for your version
+	  of Redhat. I use the following parameters in my .emacs file.
+
+	  <pre>
+  ;; End of Options Menu Settings
+  (custom-set-variables
+   '(cperl-electric-parens t)
+   '(cperl-auto-newline t)
+   '(cperl-electric-linefeed t)
+   '(cperl-hairy t)
+   '(tab-width 4)
+   '(cperl-indent-level 4)
+   '(cperl-brace-offset 0)
+   '(cperl-continued-brace-offset -4)
+   '(cperl-label-offset -4)
+   '(cperl-merge-trailing-else nil)
+   '(cperl-continued-statement-offset 4)
+  )
+	</pre>
+
+	I also have all the fancy colouring on (don't know what sets that) but this is 
+	what I have in .xemacs-options file:-
+
+	<pre>
+  ;; -*- Mode: Emacs-Lisp -*-
+
+  (setq options-file-xemacs-version '(20 4))
+    (setq-default case-fold-search t)
+    (setq-default overwrite-mode nil)
+      (setq-default case-fold-search t)
+    (setq-default case-replace t)
+      (setq-default zmacs-regions t)
+    (setq-default mouse-yank-at-point t)
+    (setq-default require-final-newline t)
+    (setq-default next-line-add-newlines nil)
+    (setq-default teach-extended-commands-p t)
+    (setq-default teach-extended-commands-timeout 4)
+    (setq-default debug-on-error nil)
+    (setq-default debug-on-quit nil)
+    (setq-default lpr-switches nil)
+    (setq-default ps-print-color-p t)
+    (setq-default ps-paper-type 'letter)
+    (setq-default get-frame-for-buffer-default-instance-limit nil)
+    (setq-default temp-buffer-show-function 'show-temp-buffer-in-current-frame)
+      (setq-default font-lock-auto-fontify t)
+    (setq-default font-lock-use-fonts nil)
+    (setq-default font-lock-use-colors '(color))
+    (setq-default font-lock-maximum-decoration t)
+    (setq-default font-lock-maximum-size 256000)
+    (setq-default font-lock-mode-enable-list nil)
+    (setq-default font-lock-mode-disable-list nil)
+    (require 'font-lock)
+    (remove-hook 'font-lock-mode-hook 'turn-on-fast-lock)
+    (remove-hook 'font-lock-mode-hook 'turn-on-lazy-shot)
+    (require 'paren)
+    (paren-set-mode 'blink-paren)
+    (if (featurep 'scrollbar) (progn (add-spec-list-to-specifier scrollbar-width 'nil) (add-spe$
+    (add-spec-list-to-specifier modeline-shadow-thickness '((global (nil . 2))))
+    (setq-default truncate-lines nil)
+    (setq-default bar-cursor nil)   
+      (setq-default buffers-menu-max-size 25)
+    (setq-default complex-buffers-menu-p nil)
+    (setq-default buffers-menu-sort-function 'sort-buffers-menu-by-mode-then-alphabetically)
+    (setq-default buffers-menu-grouping-function 'group-buffers-menu-by-mode-then-alphabeticall$
+    (setq-default buffers-menu-submenus-for-groups-p nil)
+    (setq-default font-menu-ignore-scaled-fonts t)
+    (setq-default font-menu-this-frame-only-p nil)
+    (if (featurep 'toolbar) (progn (set-default-toolbar-position 'top) (add-spec-list-to-specif$
+    (setq-default mouse-avoidance-mode nil)
+    (setq-default browse-url-browser-function 'browse-url-w3)
+    </pre>
+
+	I also use <a href="../download/cperl-mode.el.4.19.gz">cperl-mode.el.4.19</a> which I got from
+	<a href="http://www.cpan.org">CPAN</a> for the auto formatting of the perl as I write it. Some
+	of its habits are rather peculiar, but you can either switch them off or learn to live with them
+	as I did. I installed my copy in <b>/usr/lib/xemacs/site-lisp</b>. 
+
+	<p>XEmacs runs perfectly happily on the console as well as under X.
 
 <!-- Standard Footer!! -->
 	<p>&nbsp;</p>

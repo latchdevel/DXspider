@@ -184,9 +184,10 @@ sub start_connect
 		if (!$pid) {
 			# in child, unset warnings, disable debugging and general clean up from us
 			$^W = 0;
-#			do "$main::root/perl/Disable_debug.pl";
 			eval "{ package DB; sub DB {} }";
+			$SIG{HUP} = 'IGNORE';
 			alarm(0);
+			DXChannel::closeall();
 			$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 			exec $prog, $call, 'connect';
 			dbg('cron', "exec '$prog' failed $!");
@@ -195,6 +196,9 @@ sub start_connect
 	} else {
 		dbg('cron', "can't fork for $prog $!");
 	}
+
+	# coordinate
+	sleep(1);
 }
 
 sub spawn
@@ -206,9 +210,10 @@ sub spawn
 		if (!$pid) {
 			# in child, unset warnings, disable debugging and general clean up from us
 			$^W = 0;
-#			do "$main::root/perl/Disable_debug.pl";
 			eval "{ package DB; sub DB {} }";
+			$SIG{HUP} = 'IGNORE';
 			alarm(0);
+			DXChannel::closeall();
 			$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 			exec "$line";
 			dbg('cron', "exec '$line' failed $!");
@@ -217,6 +222,9 @@ sub spawn
 	} else {
 		dbg('cron', "can't fork for $line $!");
 	}
+
+	# coordinate
+	sleep(1);
 }
 1;
 __END__

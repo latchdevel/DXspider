@@ -21,7 +21,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Mon Dec 28 01:06:43 GMT 1998
+Last modified: Mon Dec 28 23:19:21 GMT 1998
 <!-- hhmts end -->
 	<h4>Introduction</h4>
 
@@ -133,11 +133,12 @@ Last modified: Mon Dec 28 01:06:43 GMT 1998
 
 	<h4>Caveats</h4>
 	
-	There seems to be an intermittent problem when running
-	(especially?) with the debugger on. Essentially you will
-	experience random crashes with nonsensical error messages. I
-	believe that this is caused by stack tracing trying to work inside
-	<tt>forked</tt> processes.
+	There was an intermittent problem when running
+	(especially?) with the debugger on. Essentially you would
+	experience random crashes with nonsensical error messages returning from funny places on the stack (if 
+	the debugger was on) or just core dumping (if it wasn't).
+
+	<p>I believe this now to be fixed. YMMV, if so tell me about it!
 
 <!-- Standard Footer!! -->
 	<p>&nbsp;</p>

@@ -18,11 +18,14 @@ if (defined $pid) {
 	if (!$pid) {
 		# in child, unset warnings, disable debugging and general clean up from us
 		$^W = 0;
+		$SIG{HUP} = 'IGNORE';
 		eval "{ package DB; sub DB {} }";
 		alarm(0);
+		DXChannel::closeall();
 		$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 		exec $prog, $call, 'connect';
 	} else {
+		sleep(1);    # do a coordination
 		return(1, $self->msg('constart', $call));
 	}
 }

@@ -44,6 +44,8 @@ use Prefix;
 use Bands;
 use Geomag;
 use CmdAlias;
+use Local;
+
 use Carp;
 
 package main;
@@ -141,6 +143,12 @@ sub login
 sub cease
 {
 	my $dxchan;
+	
+	eval {
+		Local::finish();   # end local processing
+	};
+	dbg('local', "Local::finish error $@") if $@;
+	
 	foreach $dxchan (DXChannel->get_all()) {
 		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
@@ -261,13 +269,22 @@ DXProt->init();
 DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 
 
 # read in any existing message headers and clean out old crap
-print "reading existing message headers\n";
+print "reading existing message headers ...\n";
 DXMsg->init();
 DXMsg::clean_old();
 
 # read in any cron jobs
-print "reading cron jobs\n";
+print "reading cron jobs ...\n";
 DXCron->init();
+
+# starting local stuff
+print "doing local initialisation ...\n"
+eval {
+	Local::init();
+};
+dbg('local', "Local::init error $@") if $@;
+
+
 
 # print various flags
 #print "useful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P\n";
@@ -289,6 +306,10 @@ for (;;) {
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
 		DXConnect::process();
+		eval { 
+			Local::process();       # do any localised processing
+		};
+		dbg('local', "Local::process error $@") if $@;
 	}
 	if ($decease) {
 		last if --$decease <= 0;

@@ -231,6 +231,22 @@ sub disconnect
 	$self->del();
 }
 
+#
+# just close all the socket connections down without any fiddling about, cleaning, being
+# nice to other processes and otherwise telling them what is going on.
+#
+# This is for the benefit of forked processes to prepare for starting new programs, they
+# don't want or need all this baggage.
+#
+
+sub closeall
+{
+	my $ref;
+	foreach $ref (values %channels) {
+		$ref->{conn}->disconnect() if $ref->{conn};
+	}
+}
+
 # various access routines
 
 #

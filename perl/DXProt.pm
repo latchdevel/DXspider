@@ -22,6 +22,8 @@ use DXLog;
 use Spot;
 use DXProtout;
 use DXDebug;
+use Local;
+
 use Carp;
 
 use strict;
@@ -128,6 +130,14 @@ sub normal
 	return unless $pcno;
 	return if $pcno < 10 || $pcno > 51;
 	
+	# local processing 1
+	my $pcr;
+	eval {
+		$pcr = Local::pcprot($self, $pcno, @field);
+	};
+	dbg('local', "Local::pcprot error $@") if $@;
+	return if $pcr;
+	
  SWITCH: {
 		if ($pcno == 10) {		# incoming talk
 			
@@ -179,6 +189,14 @@ sub normal
 			
 			my $spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
 			
+			# local processing 
+			my $r;
+			eval {
+				$r = Local::spot1($self, $freq, $field[2], $d, $text, $spotter, $field[7]);
+			};
+			dbg('local', "Local::spot1 error $@") if $@;
+			return if $r;
+
 			# send orf to the users
 			if ($spot && $pcno == 11) {
 				my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
@@ -367,6 +385,13 @@ sub normal
 			
 			$wwvdup{$dupkey} = $d;
 			Geomag::update($field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
+
+			my $r;
+			eval {
+				$r = Local::wwv2($self, $field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
+			};
+			dbg('local', "Local::wwv2 error $@") if $@;
+			return if $r;
 
 			# DON'T be silly and send on PC27s!
 			return if $pcno == 27;
