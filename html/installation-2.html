@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The DXSpider Installation Manual v1.47: Linux quick installation guide</TITLE>
+ <LINK HREF="installation-3.html" REL=next>
+ <LINK HREF="installation-1.html" REL=previous>
+ <LINK HREF="installation.html#toc2" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="installation-3.html">Next</A>
+<A HREF="installation-1.html">Previous</A>
+<A HREF="installation.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. Linux quick installation guide</A></H2>
+
+<P>This section is designed for experienced Spider sysops who want to install
+Spider from scratch.  It is simply a check list of things that need to be
+done without any explanations.  The name in brackets at the end of each line
+is the user that should be doing that process.
+<P>
+<UL>
+<LI>Login as root</LI>
+<LI>Get the additional CPAN modules and install them (root)</LI>
+<LI>Create the "sysop" user and set a password (root)</LI>
+<LI>Put the Spider tarball in &nbsp;sysop and untar it (root)</LI>
+<LI>ln -s &nbsp;sysop/spider /spider (root)</LI>
+<LI>groupadd -g 251 spider (root)</LI>
+<LI>Add any more users you need to the group entry in /etc/group (root)</LI>
+<LI>Set the permissions on the spider tree (root)</LI>
+<LI>Fix permissions on ax25_call and netrom_call (root)</LI>
+<LI>Login as the sysop user</LI>
+<LI>cd to /spider (sysop)</LI>
+<LI>mkdir local (sysop)</LI>
+<LI>mkdir local_cmd (sysop)</LI>
+<LI>cp perl/DXVars.pm.issue local/DXVars.pm (sysop)</LI>
+<LI>cd to /spider/local and edit DXVars to set your details (sysop)</LI>
+<LI>cd ../perl (sysop)</LI>
+<LI>./create_sysop.pl (sysop)</LI>
+<LI>./cluster.pl (sysop)</LI>
+</UL>
+<P>Spider should now be running and you should be able to login using the
+client program.
+<P>
+<UL>
+<LI>Login as root</LI>
+<LI>Enter the correct line in ax25d.conf (root)</LI>
+<LI>Enter the correct line in /etc/services (root)</LI>
+<LI>Enter the correct line in /etc/inetd.conf (root)</LI>
+<LI>killall -HUP inetd (root)</LI>
+</UL>
+<P>Spider should now be able to accept logins via telnet, netrom and ax25.
+<P>
+<UL>
+<LI>Login as sysop</LI>
+<LI>Start the cluster (sysop)</LI>
+<LI>set/node and type for links (sysop)</LI>
+<LI>Write any connect scripts (sysop)</LI>
+<LI>Edit /spider/crontab as required (sysop)</LI>
+<LI>Edit any other files as necessary (sysop)</LI>
+<LI>Set filters, hops and forwarding files (sysop)</LI>
+<LI>Login as root</LI>
+<LI>Enter the correct line in /etc/inittab (root)</LI>
+</UL>
+<P>
+<HR>
+<A HREF="installation-3.html">Next</A>
+<A HREF="installation-1.html">Previous</A>
+<A HREF="installation.html#toc2">Contents</A>
+</BODY>
+</HTML>

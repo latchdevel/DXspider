@@ -2,13 +2,19 @@
 # Makefile for Ian, 2.1.2001
 #
 
-all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../txt/spiderFAQ.txt ../html/usermanual.html ../txt/usermanual.txt ../html/wininstallation.html ../txt/wininstallation.txt ../html/spiderCVS.html ../txt/spiderCVS.txt
+all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/installation.html ../txt/installation.txt ../html/spiderFAQ.html ../txt/spiderFAQ.txt ../html/usermanual.html ../txt/usermanual.txt ../html/spiderCVS.html ../txt/spiderCVS.txt
 
 #	../txt/adminmanual.txt: adminmanual.sgml
-	sgml2txt adminmanual.sgml
+	sgml2txt -f adminmanual.sgml
 
 #	../html/adminmanual.html: adminmanual.sgml
 	sgml2html adminmanual.sgml
+
+#	../txt/installation.txt: installation.sgml
+	sgml2txt -f installation.sgml
+
+#	../html/installation.html: installation.html
+	sgml2html installation.sgml
 
 #	../html/spiderFAQ.html: spiderFAQ.sgml 
 	sgml2txt spiderFAQ.sgml
@@ -21,12 +27,6 @@ all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../t
 
 #	../txt/usermanual.txt: usermanual.sgml
 	sgml2txt usermanual.sgml
-
-#	../html/wininstallation.html: wininstallation.sgml
-	sgml2html wininstallation.sgml
-
-#	../txt/winistallation.txt: wininstallation.sgml
-	sgml2txt -f wininstallation.sgml
 
 #	../html/spiderCVS.html: spiderCVS.sgml
 	sgml2html spiderCVS.sgml

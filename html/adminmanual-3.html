@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The DXSpider Administration Manual v1.47: Filtering (New Style v1.45 and later)</TITLE>
+ <LINK HREF="adminmanual-4.html" REL=next>
+ <LINK HREF="adminmanual-2.html" REL=previous>
+ <LINK HREF="adminmanual.html#toc3" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="adminmanual-4.html">Next</A>
+<A HREF="adminmanual-2.html">Previous</A>
+<A HREF="adminmanual.html#toc3">Contents</A>
+<HR>
+<H2><A NAME="s3">3. Filtering (New Style v1.45 and later)</A></H2>
+
+<H2><A NAME="ss3.1">3.1 General filter rules</A>
+</H2>
+
+<P>Upto v1.44 it was not possible for the user to set their own filters.  From 
+v1.45 though that has all changed.  It is now possible to set filters for just 
+about anything you wish.  If you have just updated from an older version of 
+DXSpider you will need to update your new filters.  You do not need to do 
+anything with your old filters, they will be renamed as you update.
+<P>
+<P>There are 3 basic commands involved in setting and manipulating filters.  These 
+are <EM>accept</EM>, <EM>reject</EM> and <EM>clear</EM>.  First we will look
+generally at filtering. There are a number of things you can filter in the 
+DXSpider system. They all use the same general mechanism.
+<P>
+<P>In general terms you can create a 'reject' or an 'accept' filter which can have 
+up to 10 lines in it. You do this using, for example ... 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+ 
+accept/spots .....
+reject/spots .....
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>where ..... are the specific commands for that type of filter. There are filters 
+for spots, wwv, announce, wcy and (for sysops) connects. See each different 
+accept or reject command reference for more details.
+<P>There is also a command to clear out one or more lines in a filter. They are ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots 1
+clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>There is clear/xxxx command for each type of filter.
+<P>
+<P>and you can check that your filters have worked by the command ... 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  
+show/filter
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>For now we are going to use spots for the examples, but you can apply the same
+principles to all types of filter.
+<P>
+<H2><A NAME="ss3.2">3.2 Types of filter</A>
+</H2>
+
+<P>There are two main types of filter, <EM>accept</EM> or <EM>reject</EM>.  You 
+can use either to achieve the result you want dependent on your own preference 
+and which is more simple to do.  It is pointless writing 8 lines of reject 
+filters when 1 accept filter would do the same thing!  Each filter has 10 
+lines (of any length) which are tried in order.  If a line matches then the 
+action you have specified is taken (ie reject means ignore it and accept 
+means take it)
+<P>
+<P>If you specify reject filters, then any lines that arrive that match the filter 
+will be dumped but all else will be accepted.  If you use an accept filter, 
+then ONLY the lines in the filter will be accepted and all else will be dumped.
+For example if you have a single line <EM>accept</EM> filter ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>then you will <EM>ONLY</EM> get VHF spots <EM>from</EM> or <EM>to</EM> CQ zones 
+14, 15 and 16.
+<P>
+<P>If you set a reject filter like this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots on hf/cw
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Then you will get everything <EM>EXCEPT</EM> HF CW spots.  You could make this 
+single filter even more flexible.  For example, if you are interested in IOTA 
+and will work it even on CW even though normally you are not interested in 
+CW, then you could say ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots on hf/cw and not info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>But in that case you might only be interested in iota and say:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots not on hf/cw or info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>which achieves exactly the same thing. You should choose one or the other 
+until you are comfortable with the way it works. You can mix them if you 
+wish (actually you can have an accept AND a reject on the same line) but 
+don't attempt this until you are sure you know what you are doing!
+<P>
+<P>You can arrange your filter lines into logical units, either for your own
+understanding or simply convenience. Here is an example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots 1 on hf/cw
+reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>What this does is to ignore all HF CW spots and also rejects any spots on VHF 
+which don't either originate or spot someone in Europe. 
+<P>
+<P>This is an example where you would use a line number (1 and 2 in this case), if 
+you leave the digit out, the system assumes '1'. Digits '0'-'9' are available.  
+This make it easier to see just what filters you have set.  It also makes it 
+more simple to remove individual filters, during a contest for example.
+<P>
+<P>You will notice in the above example that the second line has brackets.  Look 
+at the line logically.  You can see there are 2 separate sections to it.  We 
+are saying reject spots that are VHF or above <EM>APART</EM> from those in 
+zones 14, 15 and 16 (either spotted there or originated there).  If you did 
+not have the brackets to separate the 2 sections, then Spider would read it 
+logically from the front and see a different expression entirely ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+(on 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The simple way to remember this is, if you use OR - use brackets. Whilst we are 
+here CASE is not important. 'And BY_Zone' is just the same as 'and by_zone'.
+<P>As mentioned earlier, setting several filters can be more flexible than 
+simply setting one complex one.  Doing it in this way means that if you want 
+to alter your filter you can just redefine or remove one or more lines of it or 
+one line. For example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots 1 on hf/ssb
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>would redefine our earlier example, or 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots 1
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>To remove all the filter lines in the spot filter ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss3.3">3.3 Filter options</A>
+</H2>
+
+<P>You can filter in several different ways.  The options are listed in the
+various helpfiles for accept, reject and filter.
+<P>
+<H2><A NAME="ss3.4">3.4 Default filters</A>
+</H2>
+
+<P>Sometimes all that is needed is a general rule for node connects.  This can
+be done with a node_default filter.  This rule will always be followed, even
+if the link is isolated, unless another filter is set specifically.  Default
+rules can be set for nodes and users.  They can be set for spots, announces,
+WWV and WCY.  They can also be used for hops.  An example might look like 
+this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spot node_default by_zone 14,15,16,20,33
+set/hops node_default spot 50
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>This filter is for spots only, you could set others for announce, WWV and WCY.
+This filter would work for ALL nodes unless a specific filter is written to 
+override it for a particular node.  You can also set a user_default should
+you require.  It is important to note that default filters should be
+considered to be "connected".  By this I mean that should you override the
+default filter for spots, you need to add a rule for the hops for spots also.
+<P>
+<H2><A NAME="ss3.5">3.5 Advanced filtering</A>
+</H2>
+
+<P>Once you are happy with the results you get, you may like to experiment. 
+<P>
+<P>The previous example that filters hf/cw spots and accepts vhf/uhf spots from EU 
+can be written with a mixed filter, for example ... 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+rej/spot on hf/cw
+acc/spot on 0/30000
+acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Note that the first filter has not been specified with a number.  This will 
+automatically be assumed to be number 1.  In this case, we have said <EM>reject all
+HF spots in the CW section of the bands but accept all others at HF.  Also
+accept anything in VHF and above spotted in or by operators in the zones
+14, 15 and 16</EM>.  Each filter slot actually has a 'reject' slot and 
+an 'accept' slot. The reject slot is executed BEFORE the accept slot.
+<P>
+<P>It was mentioned earlier that after a reject test that doesn't match, the default 
+for following tests is 'accept', the reverse is true for 'accept'. In the example 
+what happens is that the reject is executed first, any non hf/cw spot is passed 
+to the accept line, which lets through everything else on HF.  The next filter line 
+lets through just VHF/UHF spots from EU.
+<P>
+<P>
+<HR>
+<A HREF="adminmanual-4.html">Next</A>
+<A HREF="adminmanual-2.html">Previous</A>
+<A HREF="adminmanual.html#toc3">Contents</A>
+</BODY>
+</HTML>

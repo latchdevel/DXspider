@@ -1,6 +1,6 @@
-  The DXSpider Installation and Administration Manual
+  The DXSpider Administration Manual v1.47
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.47 (Revision 1.30), April 2001
+
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -64,1215 +64,210 @@
 
 
 
-  1. Installation (Original version by Iain Philipps, G0RDI)
+  1. Hop control
 
-     1.1 Introduction
-     1.2 Preparation
-     1.3 Installing the software
-     1.4 Setting callsigns etc
-     1.5 Starting up for the first time
-     1.6 The Client program
+     1.1 Basic hop control
+     1.2 Isolating networks
 
-  2. Quick installation guide (Linux version)
+  2. Filtering (Old Style upto v1.44)
 
-  3. Configuration
+     2.1 Spots
+     2.2 Announcements
+     2.3 WWV
 
-     3.1 Allowing ax25 connects from users
-     3.2 Allowing telnet connects from users
-     3.3 Setting up telnet connects (from 1.47 onwards)
-     3.4 Setting up for AGW Engine (1.47 onwards)
-     3.5 Setting up node connects
-     3.6 Connection scripts
-     3.7 Starting the connection
-     3.8 Telnet echo
+  3. Filtering (New Style v1.45 and later)
 
-  4. Automating things
+     3.1 General filter rules
+     3.2 Types of filter
+     3.3 Filter options
+     3.4 Default filters
+     3.5 Advanced filtering
 
-     4.1 Autostarting the cluster
-     4.2 The crontab file
+  4. Other filters
 
-  5. Hop control
+     4.1 Filtering Mail
+     4.2 Filtering DX callouts (Depricated)
+     4.3 Filtering words from text fields in Announce, Talk and DX spots
 
-     5.1 Basic hop control
-     5.2 Isolating networks
+  5. Mail
 
-  6. Filtering (Old Style upto v1.44)
+     5.1 Personal mail
+     5.2 Bulletin mail
+     5.3 Forward.pl
+     5.4 The msg command
+     5.5 Message status
+     5.6 Filtering mail
+     5.7 Distribution lists
+     5.8 BBS interface
 
-     6.1 Spots
-     6.2 Announcements
-     6.3 WWV
+  6. Databases
 
-  7. Filtering (New Style v1.45 and later)
+     6.1 Creating databases
+     6.2 Importing databases
+     6.3 Checking available databases
+     6.4 Looking up databases
+     6.5 Removing databases
 
-     7.1 General filter rules
-     7.2 Types of filter
-     7.3 Filter options
-     7.4 Default filters
-     7.5 Advanced filtering
+  7. Information, files and useful programs
 
-  8. Other filters
+     7.1 MOTD
+     7.2 Downtime message
+     7.3 Other text messages
+     7.4 The Aliases file
+     7.5 Console.pl
+     7.6 Updating kepler data
+     7.7 The QRZ callbook
 
-     8.1 Filtering Mail
-     8.2 Filtering DX callouts (Depricated)
-     8.3 Filtering words from text fields in Announce, Talk and DX spots
+  8. CVS
 
-  9. Mail
+  9. The DXSpider command set
 
-     9.1 Personal mail
-     9.2 Bulletin mail
-     9.3 Forward.pl
-     9.4 The msg command
-     9.5 Message status
-     9.6 Filtering mail
-     9.7 Distribution lists
-     9.8 BBS interface
-
-  10. Databases
-
-     10.1 Creating databases
-     10.2 Importing databases
-     10.3 Checking available databases
-     10.4 Looking up databases
-     10.5 Removing databases
-
-  11. Information, files and useful programs
-
-     11.1 MOTD
-     11.2 Downtime message
-     11.3 Other text messages
-     11.4 The Aliases file
-     11.5 Console.pl
-     11.6 Updating kepler data
-     11.7 The QRZ callbook
-
-  12. CVS
-
-  13. The DXSpider command set
-
-     13.1 accept/announce (0)
-     13.2 accept/announce (extended for sysops) (8)
-     13.3 accept/spots (0)
-     13.4 accept/spots (extended for sysops) (8)
-     13.5 accept/wcy (0)
-     13.6 accept/wcy (extended for sysops) (8)
-     13.7 accept/wwv (0)
-     13.8 accept/wwv (extended for sysops) (8)
-     13.9 announce (0)
-     13.10 announce full (0)
-     13.11 announce sysop (5)
-     13.12 apropos (0)
-     13.13 bye (0)
-     13.14 catchup (5)
-     13.15 clear/spots (0)
-     13.16 connect (5)
-     13.17 dbavail (0)
-     13.18 dbcreate (9)
-     13.19 dbimport (9)
-     13.20 dbremove (9)
-     13.21 dbshow (0)
-     13.22 debug (9)
-     13.23 directory (0)
-     13.24 directory (extended for sysops) (5)
-     13.25 disconnect (8)
-     13.26 dx (0)
-     13.27 export (9)
-     13.28 export_users (9)
-     13.29 forward/latlong (8)
-     13.30 forward/opername (1)
-     13.31 help (0)
-     13.32 init (5)
-     13.33 kill (0)
-     13.34 kill (5)
-     13.35 kill full (5)
-     13.36 links (0)
-     13.37 load/aliases (9)
-     13.38 load/baddx (9)
-     13.39 load/badmsg (9)
-     13.40 load/badwords (9)
-     13.41 load/bands (9)
-     13.42 load/cmd_cache (9)
-     13.43 load/forward (9)
-     13.44 load/messages (9)
-     13.45 load/prefixes (9)
-     13.46 merge (5)
-     13.47 msg (9)
-     13.48 pc (8)
-     13.49 ping (1)
-     13.50 rcmd (1)
-     13.51 read (0)
-     13.52 read (extended for sysops) (5)
-     13.53 reject/announce
-     13.54 reject/announce (extended for sysops) (8)
-     13.55 reject/spots (0)
-     13.56 reject/spots (extended for sysops) (8)
-     13.57 reject/wcy (0)
-     13.58 reject/wcy (extended for sysops) (8)
-     13.59 reject/wwv (0)
-     13.60 reject/wwv (extended for sysops) (8)
-     13.61 reply (0)
-     13.62 send (0)
-     13.63 set/address (0)
-     13.64 set/announce (0)
-     13.65 set/arcluster (5)
-     13.66 set/baddx (8)
-     13.67 set/badnode (6)
-     13.68 set/badspotter (8)
-     13.69 set/beep (0)
-     13.70 set/clx (5)
-     13.71 set/debug (9)
-     13.72 set/dx (0)
-     13.73 set/dxgrid (0)
-     13.74 set/dxnet (5)
-     13.75 set/echo (0)
-     13.76 set/here (0)
-     13.77 set/homenode (0)
-     13.78 set/hops (8)
-     13.79 set/isolate (9)
-     13.80 set/language (0)
-     13.81 set/location (0)
-     13.82 set/sys_location (9)
-     13.83 set/logininfo (0)
-     13.84 set/lockout (9)
-     13.85 set/name (0)
-     13.86 set/node (9)
-     13.87 set/obscount (9)
-     13.88 set/page (0)
-     13.89 set/password (9)
-     13.90 set/pinginterval (9)
-     13.91 set/privilege (9)
-     13.92 set/spider (5)
-     13.93 set/sys_qra (9)
-     13.94 set/qra (0)
-     13.95 set/qth (0)
-     13.96 set/talk (0)
-     13.97 set/wcy (0)
-     13.98 set/wwv (0)
-     13.99 set/wx (0)
-     13.100 show/baddx (1)
-     13.101 show/badnode (6)
-     13.102 show/badspotter (1)
-     13.103 show/configuration (0)
-     13.104 show/configuration/node (0)
-     13.105 show/connect (1)
-     13.106 show/date (0)
-     13.107 show/debug (9)
-     13.108 show/dx (0)
-     13.109 show/dxcc (0)
-     13.110 show/files (0)
-     13.111 show/filter (0)
-     13.112 show/filter (extended for sysops) (5)
-     13.113 show/hops (8)
-     13.114 show/isolate (1)
-     13.115 show/lockout (9)
-     13.116 show/log (8)
-     13.117 show/moon (0)
-     13.118 show/muf (0)
-     13.119 show/node (1)
-     13.120 show/prefix (0)
-     13.121 show/program (5)
-     13.122 show/qra (0)
-     13.123 show/qrz (0)
-     13.124 show/route (0)
-     13.125 show/satellite (0)
-     13.126 show/sun (0)
-     13.127 show/time (0)
-     13.128 show/wcy (0)
-     13.129 show/wwv (0)
-     13.130 shutdown (5)
-     13.131 spoof (9)
-     13.132 stat/db (5)
-     13.133 stat/channel (5)
-     13.134 stat/msg (5)
-     13.135 stat/user (5)
-     13.136 sysop (0)
-     13.137 talk (0)
-     13.138 type (0)
-     13.139 who (0)
-     13.140 wx (0)
-     13.141 wx (enhanced for sysops) (5)
+     9.1 accept/announce (0)
+     9.2 accept/announce (extended for sysops) (8)
+     9.3 accept/spots (0)
+     9.4 accept/spots (extended for sysops) (8)
+     9.5 accept/wcy (0)
+     9.6 accept/wcy (extended for sysops) (8)
+     9.7 accept/wwv (0)
+     9.8 accept/wwv (extended for sysops) (8)
+     9.9 announce (0)
+     9.10 announce full (0)
+     9.11 announce sysop (5)
+     9.12 apropos (0)
+     9.13 bye (0)
+     9.14 catchup (5)
+     9.15 clear/spots (0)
+     9.16 connect (5)
+     9.17 dbavail (0)
+     9.18 dbcreate (9)
+     9.19 dbimport (9)
+     9.20 dbremove (9)
+     9.21 dbshow (0)
+     9.22 debug (9)
+     9.23 directory (0)
+     9.24 directory (extended for sysops) (5)
+     9.25 disconnect (8)
+     9.26 dx (0)
+     9.27 export (9)
+     9.28 export_users (9)
+     9.29 forward/latlong (8)
+     9.30 forward/opername (1)
+     9.31 help (0)
+     9.32 init (5)
+     9.33 kill (0)
+     9.34 kill (5)
+     9.35 kill full (5)
+     9.36 links (0)
+     9.37 load/aliases (9)
+     9.38 load/baddx (9)
+     9.39 load/badmsg (9)
+     9.40 load/badwords (9)
+     9.41 load/bands (9)
+     9.42 load/cmd_cache (9)
+     9.43 load/forward (9)
+     9.44 load/messages (9)
+     9.45 load/prefixes (9)
+     9.46 merge (5)
+     9.47 msg (9)
+     9.48 pc (8)
+     9.49 ping (1)
+     9.50 rcmd (1)
+     9.51 read (0)
+     9.52 read (extended for sysops) (5)
+     9.53 reject/announce
+     9.54 reject/announce (extended for sysops) (8)
+     9.55 reject/spots (0)
+     9.56 reject/spots (extended for sysops) (8)
+     9.57 reject/wcy (0)
+     9.58 reject/wcy (extended for sysops) (8)
+     9.59 reject/wwv (0)
+     9.60 reject/wwv (extended for sysops) (8)
+     9.61 reply (0)
+     9.62 send (0)
+     9.63 set/address (0)
+     9.64 set/announce (0)
+     9.65 set/arcluster (5)
+     9.66 set/baddx (8)
+     9.67 set/badnode (6)
+     9.68 set/badspotter (8)
+     9.69 set/beep (0)
+     9.70 set/clx (5)
+     9.71 set/debug (9)
+     9.72 set/dx (0)
+     9.73 set/dxgrid (0)
+     9.74 set/dxnet (5)
+     9.75 set/echo (0)
+     9.76 set/here (0)
+     9.77 set/homenode (0)
+     9.78 set/hops (8)
+     9.79 set/isolate (9)
+     9.80 set/language (0)
+     9.81 set/location (0)
+     9.82 set/sys_location (9)
+     9.83 set/logininfo (0)
+     9.84 set/lockout (9)
+     9.85 set/name (0)
+     9.86 set/node (9)
+     9.87 set/obscount (9)
+     9.88 set/page (0)
+     9.89 set/password (9)
+     9.90 set/pinginterval (9)
+     9.91 set/privilege (9)
+     9.92 set/spider (5)
+     9.93 set/sys_qra (9)
+     9.94 set/qra (0)
+     9.95 set/qth (0)
+     9.96 set/talk (0)
+     9.97 set/wcy (0)
+     9.98 set/wwv (0)
+     9.99 set/wx (0)
+     9.100 show/baddx (1)
+     9.101 show/badnode (6)
+     9.102 show/badspotter (1)
+     9.103 show/configuration (0)
+     9.104 show/configuration/node (0)
+     9.105 show/connect (1)
+     9.106 show/date (0)
+     9.107 show/debug (9)
+     9.108 show/dx (0)
+     9.109 show/dxcc (0)
+     9.110 show/files (0)
+     9.111 show/filter (0)
+     9.112 show/filter (extended for sysops) (5)
+     9.113 show/hops (8)
+     9.114 show/isolate (1)
+     9.115 show/lockout (9)
+     9.116 show/log (8)
+     9.117 show/moon (0)
+     9.118 show/muf (0)
+     9.119 show/node (1)
+     9.120 show/prefix (0)
+     9.121 show/program (5)
+     9.122 show/qra (0)
+     9.123 show/qrz (0)
+     9.124 show/route (0)
+     9.125 show/satellite (0)
+     9.126 show/sun (0)
+     9.127 show/time (0)
+     9.128 show/wcy (0)
+     9.129 show/wwv (0)
+     9.130 shutdown (5)
+     9.131 spoof (9)
+     9.132 stat/db (5)
+     9.133 stat/channel (5)
+     9.134 stat/msg (5)
+     9.135 stat/user (5)
+     9.136 sysop (0)
+     9.137 talk (0)
+     9.138 type (0)
+     9.139 who (0)
+     9.140 wx (0)
+     9.141 wx (enhanced for sysops) (5)
 
 
   ______________________________________________________________________
 
-  11..  IInnssttaallllaattiioonn ((OOrriiggiinnaall vveerrssiioonn bbyy IIaaiinn PPhhiilliippppss,, GG00RRDDII))
-
-  11..11..  IInnttrroodduuccttiioonn
-
-  This section describes the installation of DX Spider v1.46 on a RedHat
-  Linux Distribution.  Wherever possible I will try to include
-  differences for other distributions.  I do not intend to try and cover
-  the installation of Linux or the setup of the AX25 utilities.  If you
-  need help on this then read Iains original installation guide that
-  comes with the Spider distribution.
-
-
-  I am assuming a general knowledge of Linux and its commands.  You
-  should know how to use _t_a_r and how to edit files using your favourite
-  editor.
-
-
-  The crucial ingredient for all of this is Perl.  Earlier versions of
-  Spider required perl 5.004, however it is now _S_T_R_O_N_G_L_Y recommended
-  that you use at least version 5.005_03 as this is the version being
-  used in the development of Spider.
-
-
-  In addition to the standard Red Hat distribution you will require the
-  following modules from http://www.cpan.org/CPAN.html ...
-
-
-
-  +o  Data-Dumper-2.101.tar.gz
-
-  +o  TimeDate-1.10.tar.gz
-
-  +o  IO-1.20.tar.gz (for perl 5.00403 and lower)
-
-  +o  Net-Telnet-3.02.tar.gz
-
-  +o  Curses-1.05.tar.gz
-
-  +o  Time-HiRes-01.20.tar.gz
-
-
-
-  _D_o get the latest versions of these packages and install them but use
-  the above list as the earliest versions usable.
-
-
-  11..22..  PPrreeppaarraattiioonn
-
-  I will assume that you have already downloaded the latest tarball of
-  the DXSpider software and are ready to install it. I am assuming
-  version 1.46 for this section but of course you would use the latest
-  version.
-
-
-  Login as root and create a user to run the cluster under.  _U_N_D_E_R _N_O
-  _C_I_R_C_U_M_S_T_A_N_C_E_S _U_S_E _R_O_O_T _A_S _T_H_I_S _U_S_E_R_!.  I am going to use the name
-  _s_y_s_o_p.  You can call it anything you wish.  Depending on your security
-  requirements you may wish to use an existing user, however this is
-  your own choice.
-
-
-
-
-       # adduser -m sysop
-
-
-
-
-
-  Now set a password for the user ...
-
-
-
-       # passwd sysop
-       # New UNIX password:
-       # Retype new UNIX password:
-       passwd: all authentication tokens updated successfully
-
-
-
-
-
-  11..33..  IInnssttaalllliinngg tthhee ssooffttwwaarree
-
-  Now to unpack the DX Spider distribution, set symbolic links and group
-  permissions.  Copy the tarball to /home/sysop and do the following.
-
-
-
-       # cd ~sysop
-       # tar xvfz spider-1.46.tar.gz
-       # ln -s ~sysop/spider /spider
-       # groupadd -g 251 spider       (or another number)
-
-
-
-
-  If you do not have the command _g_r_o_u_p_a_d_d available to you simply add a
-  line in /etc/group by hand.
-
-       # vi /etc/group                (or your favorite editor)
-
-
-
-
-  You also need to add some others to the group, including your own
-  callsign (this will be used as an alias) and root.  The finished line
-  in /etc/group should look something like this
-
-  spider:x:251:sysop,g0vgs,root
-
-
-  The next step is to set the permissions on the Spider directory tree
-  and files ....
-
-
-
-       # chown -R sysop.spider spider
-       # find . -type d -exec chmod 2775 {} \;
-       # find . -type f -exec chmod 775 {} \;
-
-
-
-
-
-  This last step allows various users of the group _s_p_i_d_e_r to have write
-  access to all the directories.  This is not really needed just yet but
-  will be useful when web interfaces start to appear.
-
-
-  Finally, you need to fix the permissions on the ax25_call and
-  netrom_call programs.  Check where they are with the _l_o_c_a_t_e command
-  and alter the permissions with the _c_h_m_o_d command like this ..
-
-
-
-       # chown root ax25_call netrom_call
-       # chmod 4775 ax25_call netrom_call
-
-
-
-
-
-  11..44..  SSeettttiinngg ccaallllssiiggnnss eettcc
-
-  Now login to your machine as the user you created earlier.  In my case
-  that user is called _s_y_s_o_p.  Once logged in, issue the following
-  commands ....
-
-
-
-       $ cd /spider
-       $ mkdir local
-       $ mkdir local_cmd
-       $ cp perl/DXVars.pm.issue local/DXVars.pm
-       $ cd local
-       $ vi DXVars.pm (or your favourite editor)
-
-
-
-
-
-  Using the distributed DXVars.pm as a a template, set your cluster
-  callsign, sysop callsign and other user info to suit your own
-  environment. Note that this a perl file which will be parsed and
-  executed as part of the cluster. If you get it wrong then perl will
-  complain when you start the cluster process.  It is important only to
-  alter the text of any section.  Some of the lines look a little odd.
-  Take this line for example ....
-
-  $myemail = "ianmaude\@btinternet.com";
-
-
-  There appears to be an extra slash in there.  However this has to be
-  there for the file to work so leave it in.
-
-
-  PPLLEEAASSEE UUSSEE CCAAPPIITTAALL LLEETTTTEERRSS FFOORR CCAALLLLSSIIGGNNSS
-
-
-  DON'T alter any file in /spider/perl, they are overwritten with every
-  release. Any files or commands you place in /spider/local or
-  /spider/local_cmd will automagically be used in preference to the ones
-  in /spider/perl EVEN while the cluster is running!
-
-
-  Save the new file and change directory to ../perl ....
-
-
-
-       $ cd ../perl
-
-
-
-
-
-  Now type the following command which creates the basic user file with
-  you as the sysop.
-
-
-
-       $ ./create_sysop.pl
-
-
-
-
-
-  11..55..  SSttaarrttiinngg uupp ffoorr tthhee ffiirrsstt ttiimmee
-
-  We can now bring spider up for the first time and see if all is well
-  or not!  It should look something like this ...
-
-
-
-       $ ./cluster.pl
-       DXSpider DX Cluster Version 1.46
-       Copyright (c) 1998 Dirk Koopman G1TLH
-       loading prefixes ...
-       loading band data ...
-       loading user file system ...
-       starting listener ...
-       reading existing message headers
-       reading cron jobs
-       orft we jolly well go ...
-
-
-
-
-
-  If all is well then login on another term or console as _s_y_s_o_p and cd
-  to /spider/src.  Now issue the following command ...
-
-       $ ./client
-
-
-
-
-
-  This should log you into the cluster as the sysop under the alias
-  callsign we set earlier.  In this case the callsign is G0VGS.  The
-  cluster callsign is set in the DXVars.pm file in /spider/local.  In
-  this case we will assume that this was set as GB7MBC.  You should
-  therefore see this when you login ....
-
-
-
-       G0VGS de GB7MBC 19-Nov-1999 2150Z >
-
-
-
-
-  If you do, congratulations!  If not, look over the instructions again,
-  you have probably missed something out.  You can shut spider down
-  again with the command ....
-
-
-
-       shutdown
-
-
-
-
-
-  and both the cluster and the client should return to Linux prompts.
-
-
-  11..66..  TThhee CClliieenntt pprrooggrraamm
-
-  In earlier versions of Spider, all the processes were Perl scripts.
-  This was fine but with a lot of users your computer memory would soon
-  be used up.  To combat this a new client was written in "C".  This
-  client only works for _i_n_c_o_m_i_n_g connects at the moment.  Before you can
-  use it though it has to be "made".  CD to /spider/src and type _m_a_k_e.
-  You should see the output on your screen and hopefully now have a
-  small C program called _c_l_i_e_n_t.  Leave it in this directory.
-
-
-
-  22..  QQuuiicckk iinnssttaallllaattiioonn gguuiiddee ((LLiinnuuxx vveerrssiioonn))
-
-  This section is designed for experienced Spider sysops who want to
-  install Spider from scratch.  It is simply a check list of things that
-  need to be done without any explanations.  The name in brackets at the
-  end of each line is the user that should be doing that process.
-
-
-  +o  Login as root
-
-  +o  Get the additional CPAN modules and install them (root)
-
-  +o  Create the "sysop" user and set a password (root)
-
-  +o  Put the Spider tarball in  sysop and untar it (root)
-
-  +o  ln -s  sysop/spider /spider (root)
-
-  +o  groupadd -g 251 spider (root)
-
-  +o  Add any more users you need to the group entry in /etc/group (root)
-
-  +o  Set the permissions on the spider tree (root)
-
-  +o  Fix permissions on ax25_call and netrom_call (root)
-
-  +o  Login as the sysop user
-
-  +o  cd to /spider (sysop)
-
-  +o  mkdir local (sysop)
-
-  +o  mkdir local_cmd (sysop)
-
-  +o  cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
-
-  +o  cd to /spider/local and edit DXVars to set your details (sysop)
-
-  +o  cd ../perl (sysop)
-
-  +o  ./create_sysop.pl (sysop)
-
-  +o  ./cluster.pl (sysop)
-
-  Spider should now be running and you should be able to login using the
-  client program.
-
-
-  +o  Login as root
-
-  +o  Enter the correct line in ax25d.conf (root)
-
-  +o  Enter the correct line in /etc/services (root)
-
-  +o  Enter the correct line in /etc/inetd.conf (root)
-
-  +o  killall -HUP inetd (root)
-
-  Spider should now be able to accept logins via telnet, netrom and
-  ax25.
-
-
-  +o  Login as sysop
-
-  +o  Start the cluster (sysop)
-
-  +o  set/node and type for links (sysop)
-
-  +o  Write any connect scripts (sysop)
-
-  +o  Edit /spider/crontab as required (sysop)
-
-  +o  Edit any other files as necessary (sysop)
-
-  +o  Set filters, hops and forwarding files (sysop)
-
-  +o  Login as root
-
-  +o  Enter the correct line in /etc/inittab (root)
-
-
-  33..  CCoonnffiigguurraattiioonn
-
-
-
-
-  33..11..  AAlllloowwiinngg aaxx2255 ccoonnnneeccttss ffrroomm uusseerrss
-
-  As stated previously, the aim of this document is not to tell you how
-  to configure Linux or the ax25 utilities.  However, you do need to add
-  a line in your ax25d.conf to allow connections to DXSpider for your
-  users.  For each interface that you wish to allow connections on, use
-  the following format ...
-
-
-
-       default  * * * * * *  - sysop /spider/src/client client %u ax25
-
-
-
-
-  or, if you wish your users to be able to use SSID's on their callsigns
-  ..
-
-
-
-       default  * * * * * *  - sysop /spider/src/client client %s ax25
-
-
-
-
-  For most purposes this is not desirable. The only time you probably
-  will need this is when you need to allow other cluster nodes that are
-  using SSID's in. In this case it would probably be better to use the
-  first example and then add a specific line for that node like this:
-
-
-
-       GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
-       default  * * * * * *  - sysop /spider/src/client client %u ax25
-
-
-
-
-
-  33..22..  AAlllloowwiinngg tteellnneett ccoonnnneeccttss ffrroomm uusseerrss
-
-
-  From version 1.47 there is a new (more efficient) way of doing this
-  (see next section) but, if you prefer, the method of doing it
-  described here will continue to work just fine.
-
-
-  Allowing telnet connections is quite simple.  Firstly you need to add
-  a line in /etc/services to allow connections to a port number, like
-  this ....
-
-
-
-       spdlogin   8000/tcp     # spider anonymous login port
-
-
-
-
-  Then add a line in /etc/inetd.conf like this ....
-
-
-
-       spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/src/client login telnet
-
-
-
-  Once this is done, you need to restart inetd like this ....
-
-
-
-       killall -HUP inetd
-
-
-
-
-
-
-  Now login as _s_y_s_o_p and cd spider/src. You can test that spider is
-  accepting telnet logins by issuing the following command ....
-
-
-
-       ./client login telnet
-
-
-
-
-  You should get a login prompt and on issuing a callsign, you will be
-  given access to the cluster.  Note, you will not get a password login.
-  There seems no good reason for a password prompt to be given so it is
-  not asked for.
-
-
-  Assuming all is well, then try a telnet from your linux console ....
-
-
-
-       telnet localhost 8000
-
-
-
-
-
-  You should now get the login prompt and be able to login as before.
-
-
-  33..33..  SSeettttiinngg uupp tteellnneett ccoonnnneeccttss ((ffrroomm 11..4477 oonnwwaarrddss))
-
-  From version 1.47 you can choose to allow the perl cluster.pl program
-  to allow connections directly (i.e. not via the /spider/src/client
-  interface program). If you are using Windows then this is the only
-  method available of allowing incoming telnet connections.
-
-
-  To do this you need first to remove any line that you may previously
-  have set up in /etc/inetd.conf. Remember to:-
-
-
-
-       killall -HUP inetd
-
-
-
-
-
-  to make the change happen...
-
-
-  Having done that, you need to copy the file _/_s_p_i_d_e_r_/_p_e_r_l_/_L_i_s_t_e_n_e_r_s_._p_m
-  to _/_s_p_i_d_e_r_/_l_o_c_a_l and then edit it. You will need to uncomment the line
-  containing "0.0.0.0" and select the correct port to listen on. So that
-  it looks like this:-
-       @listen = (
-           ["0.0.0.0", 8000],
-       );
-
-
-
-
-
-  As standard, the listener will listen on all interfaces
-  simultaneously.  If you require more control than this, you can
-  specify each interface individually:-
-
-
-
-       @listen = (
-           ["gb7baa.dxcluster.net", 8000],
-           ["44.131.16.2", 6300],
-       );
-
-
-
-
-
-  This will only be successful if the IP addresses on each interface are
-  static.  If you are using some kind of dynamic IP addressing then the
-  'default' method is the only one that will work.
-
-
-  Restart the cluster.pl program to enable the listener.
-
-
-  One important difference with the internal listener is that no echoing
-  is done by the cluster program. Users will need to set 'local-echo' on
-  in their telnet clients if it isn't set automatically (as per the
-  standards).  Needless to say this will probably only apply to Windows
-  users.
-
-
-  33..44..  SSeettttiinngg uupp ffoorr AAGGWW EEnnggiinnee ((11..4477 oonnwwaarrddss))
-
-  AGW Engine is a Windows based ax25 stack. You can connect to an AGW
-  engine from Linux as well as Windows based machines.
-
-
-  In order to enable access to an AGW Engine you need to copy
-  _/_s_p_i_d_e_r_/_p_e_r_l_/_A_G_W_C_o_n_n_e_c_t_._p_m to _/_s_p_i_d_e_r_/_l_o_c_a_l and edit it.  Specifically
-  you must:-
-
-
-  +o  set $enable to 1.
-
-  +o  set $login and $passwd to the values set up in your AGW
-     installation.  If you haven't set any there, then you should not
-     touch these values.
-
-  +o  You can connect to a remote AGW engine (ie on some other machine)
-     by changing $addr and $port appropriately.
-
-  +o  Restart the cluster.pl program
-
-
-
-
-
-
-
-  33..55..  SSeettttiinngg uupp nnooddee ccoonnnneeccttss
-
-  In order to allow cluster node connections, spider needs to know that
-  the connecting callsign is a cluster node.  This is the case whether
-  the connect is incoming or outgoing.  In spider this is a simple task
-  and can be done in runtime.
-
-
-  Later versions of Spider can distinguish different software and treat
-  them differently.  For example, the WCY beacon cannot be handles by
-  AK1A type nodes as AK1A does not know what to do with PC73.  There are
-  4 different types of node at present and although they may not have
-  any major differences at the moment, it allows for compatibility.  The
-  4 types are ...
-
-
-
-       set/node        (AK1A type)
-       set/spider
-       set/dxnet
-       set/clx
-
-
-
-
-
-  For now, we will assume that the cluster we are going to connect to is
-  an AK1A type node.
-
-
-  Start up the cluster as you did before and login as the sysop with
-  client.  The cluster node I am wanting to make a connection to is
-  GB7BAA but you would obviously use whatever callsign you required.  At
-  the prompt type ...
-
-
-
-       set/node gb7baa
-
-
-
-
-
-  The case does not matter as long as you have a version of DXSpider
-  later than 1.33.  Earlier versions required the callsign to be in
-  upper case.
-
-
-  That is now set, it is as simple as that.  To prove it, login on yet
-  another console as sysop, cd to spider/src and issue the command ...
-
-
-
-       ./client gb7baa (using the callsign you set as a node)
-
-
-
-
-
-  You should get an initialisation string from DXSpider like this ...
-
-
-
-       ./client gb7baa
-       PC38^GB7MBC^~
-
-  If the callsign you just set up as a cluster node is for an incoming
-  connect, this is all that needs to be done.  If the connection is to
-  be outgoing then a connection script needs to be written.
-
-
-  Sometimes you make a mistake... Honest, it does happen.  If you want
-  to make a node back to being a normal user, regardless of what type it
-  is, do:
-
-
-
-       unset/node gb7baa
-
-
-
-
-
-  33..66..  CCoonnnneeccttiioonn ssccrriippttss
-
-  Because DXSpider operates under Linux, connections can be made using
-  just about any protocol;  AX25, NETRom, tcp/ip, ROSE etc are all
-  possible examples.  Connect scripts live in the /spider/connect
-  directory and are simple ascii files.  Writing a script for
-  connections is therefore relatively simple.
-
-
-  The connect scripts consist of lines which start with the following
-  keywords or symbols:-
-
-
-
-     ##  All lines starting with a # are ignored, as are completely blank
-        lines.
-
-
-     ttiimmeeoouutt
-        timeout followed by a number is the number of seconds to wait
-        for a command to complete. If there is no timeout specified in
-        the script then the default is 60 seconds.
-
-
-     aabboorrtt
-        abort is a regular expression containing one or more strings to
-        look for to abort a connection. This is a perl regular
-        expression and is executed ignoring case.
-
-
-     ccoonnnneecctt
-        connect followed by ax25, agw (for Windows users) or telnet and
-        some type dependent information. In the case of a telnet
-        connection, there can be up to two parameters.  The first is the
-        ip address or hostname of the computer you wish to connect to
-        and the second is the port number you want to use (this can be
-        left out if it is a normal telnet session).  In the case of an
-        ax25 session then this would normally be a call to ax25_call or
-        netrom_call as in the example above. It is your responsibility
-        to get your node and other ax25 parameters to work before going
-        down this route!
-
-
-     ''  line in a chat type script. The words/phrases normally come in
-        pairs, either can be empty. Each line reads input from the
-        connection until it sees the string (or perl regular expression)
-        contained in the left hand string. If the left hand string is
-        empty then it doesn't read or wait for anything. The comparison
-        is done ignoring case.  When the left hand string has found what
-        it is looking for (if it is) then the right hand string is sent
-        to the connection.  This process is repeated for every line of
-        chat script.
-
-
-     cclliieenntt
-        client starts the connection, put the arguments you would want
-        here if you were starting the client program manually. You only
-        need this if the script has a different name to the callsign you
-        are trying to connect to (i.e. you have a script called other
-        which actually connects to GB7DJK-1 [instead of a script called
-        gb7djk-1]).
-
-
-  There are many possible ways to configure the script but here are
-  three examples, one for a NETRom/AX25 connect, one for AGW engines and
-  one for tcp/ip.
-
-
-
-       timeout 60
-       abort (Busy|Sorry|Fail)
-       # don't forget to chmod 4775 netrom_call!
-       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-       # you can leave this out if you call the script 'gb7dxm'
-       client gb7dxm ax25
-
-
-
-
-
-
-
-
-       timeout 60
-       abort (Busy|Sorry|Fail)
-       # this does exactly the same as the previous example
-       # the '1' is the AGW port number to connect thru for g1tlh
-       connect agw 1 g1tlh
-       # you can leave this out if you call the script 'gb7dxm'
-       client gb7dxm ax25
-
-
-
-
-
-
-
-
-       timeout 15
-       connect telnet dirkl.tobit.co.uk
-       # tell GB7DJK-1 that it is connected to GB7DJK
-       # you can leave this out if you call this script 'gb7djk'
-       client gb7djk telnet
-
-
-
-
-
-  Both these examples assume that everything is set up properly at the
-  other end.  You will find other examples in the /spider/examples
-  directory.
-
-
-
-
-  33..77..  SSttaarrttiinngg tthhee ccoonnnneeccttiioonn
-
-  You start the connection, from within a sysop enabled cluster login,
-  by typing in the word _c_o_n_n_e_c_t followed by a script name like this ....
-
-
-
-       G0VGS de GB7MBC 13-Dec-1998 2041Z >connect gb7djk-1
-       connection to GB7DJK-1 started
-       G0VGS de GB7MBC 13-Dec-1998 2043Z >
-
-
-
-
-  This will start a connection using the script called _g_b_7_d_j_k_-_1.  You
-  can follow the connection by watching the term or console from where
-  you started _c_l_u_s_t_e_r_._p_l.  From version 1.47 onwards, you will need to
-  set/debug connect first.  You should see something like this ...
-
-
-
-       <- D G1TLH connect gb7djk-1
-       -> D G1TLH connection to GB7DJK-1 started
-       -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
-       timeout set to 15
-       CONNECT sort: telnet command: dirkl.tobit.co.uk
-       CHAT "login" -> "gb7djk"
-       received "
-       Red Hat Linux release 5.1 (Manhattan)
-       Kernel 2.0.35 on an i586
-       "
-       received "login: "
-       sent "gb7djk"
-       CHAT "word" -> "gb7djk"
-       received "gb7djk"
-       received "Password: "
-       sent "gb7djk"
-       Connected to GB7DJK-1, starting normal protocol
-       <- O GB7DJK-1 telnet
-       -> B GB7DJK-1 0
-       GB7DJK-1 channel func  state 0 -> init
-       <- D GB7DJK-1
-       <- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
-       <- D GB7DJK-1 PC38^GB7DJK-1^~
-       <- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime
-       0 00:00^5447^~
-           etc
-
-
-
-
-
-  With later versions of Spider there is a set/login command for users.
-  This tells them when a user or node logs in or out.  If you do not add
-  a line to your scripts after the final line (or before the client line
-  which should always be last if needed) then the login/logout
-  information will be sent to users _b_e_f_o_r_e the login actually completes.
-  This means if a node is unreachable, it will continue sending logins
-  and logouts to users even though it is not actually connecting.  To
-  avoid this use the following line ...
-
-
-
-
-
-
-  In a script, this might look like ...
-
-
-
-       timeout 35
-       abort (Busy|Sorry|Fail)
-       connect telnet mary 3000
-
-
-
-
-
-  33..88..  TTeellnneett eecchhoo
-
-  Cluster links in particular suffer greatly from the presence of telnet
-  echo.  This is caused by the telnet negotiation itself and can create
-  at worst severe loops.  At best it creates unnecessary bandwidth and
-  large logfiles!  There are things that can be done to limit this
-  problem but will not always work dependent on the route taken to
-  connect.
-
-
-  Telnet echo itself should only be a problem if the connection is being
-  made to the telnet port (23).  This port uses special rules that
-  include echo negotiation.  If the connection is to a different port,
-  such as 7300, this negotiation does not happen and therefore no echo
-  should be present.
-
-
-  Sometimes it is not possible to make a direct connection to another
-  node and this can cause problems.  There is a way of trying to
-  suppress the telnet echo but this will not always work, unfortunately
-  it is difficult to be more specific.  Here is an example of what I
-  mean ...
-
-
-
-       timeout 35
-       abort (Busy|Sorry|Fail)
-       connect telnet mary.lancs.ac.uk
-
-
-
-
-  So, the first connection is made by Spider.  This is fine as Spider
-  uses the Net_Telnet script from within perl.  This actually uses TCP
-  rather than TELNET so no negotiation will be done on the first
-  connection.  Once connected to mary.lancs.ac.uk, the command is sent
-  to suppress echo.  Now a telnet is made to a cluster node that is
-  accepting connections on port 23.  The problem with this link is that
-  the negotiation is made by the remote machine, therefore you have no
-  control over it.  The chances are that this link will create echo and
-  there will be no way you can stop it.
-
-
-
-  44..  AAuuttoommaattiinngg tthhiinnggss
-
-  Ok, you should now have DXSpider running nicely and allowing connects
-  by cluster nodes or users.  However, it has to be shutdown and
-  restarted manually and if connection scripts fail they have to be
-  started again manually too, not much use if you are not at the
-  console!  So, in this section we will automate both.  Firstly starting
-  the cluster.
-
-
-  44..11..  AAuuttoossttaarrttiinngg tthhee cclluusstteerr
-
-  This is not only a way to start the cluster automatically, it also
-  works as a watchdog, checking the sanity of DXSpider and respawning it
-  should it crash for any reason.  Before doing the following, shutdown
-  the cluster as you did earlier.
-
-
-  Login as root and bring up the /etc/inittab file in your favourite
-  editor.  Add the following lines to the file near the end ...
-
-
-
-       ##Start DXSpider on bootup and respawn it should it crash
-       DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
-
-
-
-
-
-  This line works fine for RedHat distributions. It is also fine for
-  SuSE up to 7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like
-  this ...
-
-
-
-       DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
-
-
-
-
-
-  The line required for Slackware distributions is slightly different.
-  My thanks to Aurelio, PA3EZL for this information.
-
-
-
-       DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/dev/tty7
-
-
-
-
-
-  This will automatically start DXSpider on tty7 (ALT-F7) on bootup and
-  restart it should it crash for any reason.
-
-
-  As root type the command _t_e_l_i_n_i_t _q.  DXSpider should start up
-  immediately.  You will see the output on tty7 and if you login as
-  _s_y_s_o_p you should find everything running nicely.
-
-
-  So far so good, now to automate script connections...
-
-
-  44..22..  TThhee ccrroonnttaabb ffiillee
-
-  Login as _s_y_s_o_p and create a file in /spider/local_cmd called crontab.
-  Edit it with your favourite editor and add a line like this (I have
-  included a comment)
-
-
-
-
-
-
-  # check every 10 minutes to see if gb7xxx is connected and if not
-  # start a connect job going
-
-  0,10,20,30,40,50 * * * * start_connect('gb7xxx') if unless connected('gb7xxx')
-
-
-
-
-
-  The callsign involved will be the callsign of the cluster node you are
-  going to connect to.  This will now check every 10 minutes to see if
-  gb7xxx is connected, if it is then nothing will be done.  If it is
-  not, then a connect attempt will be started.
-
-
-  There are probably lots of other things you could use this crontab
-  file for.  If you want to know more about it, look at the DXSpider
-  website at the cron page where it is explained more fully.
-
-
-  55..  HHoopp ccoonnttrrooll
+  1.  Hop control
 
   Starting with version 1.13 there is simple hop control available on a
   per node basis. Also it is possible to isolate a network completely so
@@ -1281,7 +276,7 @@
   (or vice versa).
 
 
-  55..11..  BBaassiicc hhoopp ccoonnttrrooll
+  1.1.  Basic hop control
 
   In /spider/data you will find a file called hop_table.pl.  This is the
   file that controls your hop count settings.  It has a set of default
@@ -1289,6 +284,21 @@
   alter the hops for.  You may be happy with the default settings of
   course, but this powerful tool can help to protect and improve the
   network.  The file will look something like this ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1379,15 +389,15 @@
 
 
   You can alter this file at any time, including whilst the cluster is
-  running.  If you alter the file during runtime, the command _l_o_a_d_/_h_o_p_s
+  running.  If you alter the file during runtime, the command load/hops
   will bring your changes into effect.
 
 
 
-  55..22..  IIssoollaattiinngg nneettwwoorrkkss
+  1.2.  Isolating networks
 
   It is possible to isolate networks from each other on a "gateway" node
-  using the _s_e_t_/_i_s_o_l_a_t_e _<_n_o_d_e___c_a_l_l_> command.
+  using the set/isolate <node_call> command.
 
 
   The effect of this is to partition an isolated network completely from
@@ -1431,14 +441,14 @@
   There is a lot more on filtering in the next section.
 
 
-  66..  FFiilltteerriinngg ((OOlldd SSttyyllee uuppttoo vv11..4444))
+  2.  Filtering (Old Style upto v1.44)
 
   Filters can be set for spots, announcements and WWV.  You will find
   the directories for these under /spider/filter.  You will find some
-  examples in the directories with the suffix _._i_s_s_u_e.  There are two
+  examples in the directories with the suffix .issue.  There are two
   types of filter, one for incoming information and one for outgoing
-  information.  Outgoing filters are in the form _C_A_L_L_S_I_G_N_._p_l and
-  incoming filters are in the form _i_n___C_A_L_L_S_I_G_N_._p_l.  Filters can be set
+  information.  Outgoing filters are in the form CALLSIGN.pl and
+  incoming filters are in the form in_CALLSIGN.pl.  Filters can be set
   for both nodes and users.
 
 
@@ -1446,7 +456,7 @@
   elements delimited by commas.  There can be many lines in the filter
   and they are read from the top by the program.  When writing a filter
   you need to think carefully about just what you want to achieve.  You
-  are either going to write a filter to _a_c_c_e_p_t or to _r_e_j_e_c_t.  Think of a
+  are either going to write a filter to accept or to reject.  Think of a
   filter as having 2 main elements.  For a reject filter, you would have
   a line or multiple lines rejecting the things you do not wish to
   receive and then a default line accepting everything else that is not
@@ -1489,7 +499,7 @@
   following sections.
 
 
-  66..11..  SSppoottss
+  2.1.  Spots
 
   The elements of the Spot filter are ....
 
@@ -1623,7 +633,7 @@
 
 
 
-  66..22..  AAnnnnoouunncceemmeennttss
+  2.2.  Announcements
 
 
 
@@ -1656,7 +666,7 @@
   allow the posting of his Aurora Beacon.
 
 
-  66..33..  WWWWVV
+  2.3.  WWV
 
 
 
@@ -1693,9 +703,9 @@
   will become more "comprehensive" in the near future.
 
 
-  77..  FFiilltteerriinngg ((NNeeww SSttyyllee vv11..4455 aanndd llaatteerr))
+  3.  Filtering (New Style v1.45 and later)
 
-  77..11..  GGeenneerraall ffiilltteerr rruulleess
+  3.1.  General filter rules
 
   Upto v1.44 it was not possible for the user to set their own filters.
   From v1.45 though that has all changed.  It is now possible to set
@@ -1706,7 +716,7 @@
 
 
   There are 3 basic commands involved in setting and manipulating
-  filters.  These are _a_c_c_e_p_t, _r_e_j_e_c_t and _c_l_e_a_r.  First we will look
+  filters.  These are accept, reject and clear.  First we will look
   generally at filtering. There are a number of things you can filter in
   the DXSpider system. They all use the same general mechanism.
 
@@ -1754,9 +764,9 @@
   the same principles to all types of filter.
 
 
-  77..22..  TTyyppeess ooff ffiilltteerr
+  3.2.  Types of filter
 
-  There are two main types of filter, _a_c_c_e_p_t or _r_e_j_e_c_t.  You can use
+  There are two main types of filter, accept or reject.  You can use
   either to achieve the result you want dependent on your own preference
   and which is more simple to do.  It is pointless writing 8 lines of
   reject filters when 1 accept filter would do the same thing!  Each
@@ -1769,7 +779,7 @@
   the filter will be dumped but all else will be accepted.  If you use
   an accept filter, then ONLY the lines in the filter will be accepted
   and all else will be dumped.  For example if you have a single line
-  _a_c_c_e_p_t filter ...
+  accept filter ...
 
 
 
@@ -1778,7 +788,7 @@
 
 
 
-  then you will _O_N_L_Y get VHF spots _f_r_o_m or _t_o CQ zones 14, 15 and 16.
+  then you will ONLY get VHF spots from or to CQ zones 14, 15 and 16.
 
   If you set a reject filter like this ...
 
@@ -1789,7 +799,7 @@
 
 
 
-  Then you will get everything _E_X_C_E_P_T HF CW spots.  You could make this
+  Then you will get everything EXCEPT HF CW spots.  You could make this
   single filter even more flexible.  For example, if you are interested
   in IOTA and will work it even on CW even though normally you are not
   interested in CW, then you could say ...
@@ -1842,7 +852,7 @@
   You will notice in the above example that the second line has
   brackets.  Look at the line logically.  You can see there are 2
   separate sections to it.  We are saying reject spots that are VHF or
-  above _A_P_A_R_T from those in zones 14, 15 and 16 (either spotted there or
+  above APART from those in zones 14, 15 and 16 (either spotted there or
   originated there).  If you did not have the brackets to separate the 2
   sections, then Spider would read it logically from the front and see a
   different expression entirely ...
@@ -1886,13 +896,13 @@
 
 
 
-  77..33..  FFiilltteerr ooppttiioonnss
+  3.3.  Filter options
 
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
 
 
-  77..44..  DDeeffaauulltt ffiilltteerrss
+  3.4.  Default filters
 
   Sometimes all that is needed is a general rule for node connects.
   This can be done with a node_default filter.  This rule will always be
@@ -1918,7 +928,7 @@
   to add a rule for the hops for spots also.
 
 
-  77..55..  AAddvvaanncceedd ffiilltteerriinngg
+  3.5.  Advanced filtering
 
   Once you are happy with the results you get, you may like to
   experiment.
@@ -1938,9 +948,9 @@
 
   Note that the first filter has not been specified with a number.  This
   will automatically be assumed to be number 1.  In this case, we have
-  said _r_e_j_e_c_t _a_l_l _H_F _s_p_o_t_s _i_n _t_h_e _C_W _s_e_c_t_i_o_n _o_f _t_h_e _b_a_n_d_s _b_u_t _a_c_c_e_p_t _a_l_l
-  _o_t_h_e_r_s _a_t _H_F_.  _A_l_s_o _a_c_c_e_p_t _a_n_y_t_h_i_n_g _i_n _V_H_F _a_n_d _a_b_o_v_e _s_p_o_t_t_e_d _i_n _o_r _b_y
-  _o_p_e_r_a_t_o_r_s _i_n _t_h_e _z_o_n_e_s _1_4_, _1_5 _a_n_d _1_6.  Each filter slot actually has a
+  said reject all HF spots in the CW section of the bands but accept all
+  others at HF.  Also accept anything in VHF and above spotted in or by
+  operators in the zones 14, 15 and 16.  Each filter slot actually has a
   'reject' slot and an 'accept' slot. The reject slot is executed BEFORE
   the accept slot.
 
@@ -1954,9 +964,9 @@
 
 
 
-  88..  OOtthheerr ffiilltteerrss
+  4.  Other filters
 
-  88..11..  FFiilltteerriinngg MMaaiill
+  4.1.  Filtering Mail
 
   In the /spider/msg directory you will find a file called
   badmsg.pl.issue.  Rename this to badmsg.pl and edit the file.  The
@@ -2018,9 +1028,9 @@
   etc in a particular country.
 
 
-  88..22..  FFiilltteerriinngg DDXX ccaalllloouuttss ((DDeepprriiccaatteedd))
+  4.2.  Filtering DX callouts (Depricated)
 
-  _F_r_o_m _v_e_r_s_i_o_n _1_._4_7_, _t_h_i_s _m_e_t_h_o_d _i_s _r_e_p_l_a_c_e_d _b_y _t_h_e _c_o_m_m_a_n_d _s_e_t_/_b_a_d_d_x
+  From version 1.47, this method is replaced by the command set/baddx
 
 
   In the same way as mail, there are some types of spot we do not wish
@@ -2072,9 +1082,9 @@
 
 
 
-  88..33..  FFiilltteerriinngg wwoorrddss ffrroomm tteexxtt ffiieellddss iinn AAnnnnoouunnccee,, TTaallkk aanndd DDXX ssppoottss
+  4.3.  Filtering words from text fields in Announce, Talk and DX spots
 
-  Create a file in /spider/data called _b_a_d_w_o_r_d_s.  The format is quite
+  Create a file in /spider/data called badwords.  The format is quite
   simple.  Lines beginning with # are ignored so comments can be added.
   An example file is below ...
 
@@ -2097,7 +1107,7 @@
   load/badwords.
 
 
-  99..  MMaaiill
+  5.  Mail
 
   DXSpider deals seamlessly with standard AK1A type mail.  It supports
   both personal and bulletin mail and the sysop has additional commands
@@ -2108,29 +1118,29 @@
   will be queued until it has finished.
 
   The cluster mail is automatically deleted after 30 days unless the
-  sysop sets the "keep" flag using the _m_s_g command.
+  sysop sets the "keep" flag using the msg command.
 
-  99..11..  PPeerrssoonnaall mmaaiill
+  5.1.  Personal mail
 
-  Personal mail is sent using the _s_p command.  This is actually the
-  default method of sending mail and so a simple _s for send will do.  A
-  full list of the send commands and options is in the _c_o_m_m_a_n_d _s_e_t
+  Personal mail is sent using the sp command.  This is actually the
+  default method of sending mail and so a simple s for send will do.  A
+  full list of the send commands and options is in the command set
   section, so I will not duplicate them here.
 
 
-  99..22..  BBuulllleettiinn mmaaiill
+  5.2.  Bulletin mail
 
-  Bulletin mail is sent by using the _s_b command.  This is one of the
+  Bulletin mail is sent by using the sb command.  This is one of the
   most common mistakes users make when sending mail.  They send a
-  bulletin mail with _s or _s_p instead of _s_b and of course the message
+  bulletin mail with s or sp instead of sb and of course the message
   never leaves the cluster.  This can be rectified by the sysop by using
-  the _m_s_g command.
+  the msg command.
 
 
   Bulletin addresses can be set using the Forward.pl file.
 
 
-  99..33..  FFoorrwwaarrdd..ppll
+  5.3.  Forward.pl
 
   DXSpider receives all and any mail sent to it without any alterations
   needed in files.  Because personal and bulletin mail are treated
@@ -2224,9 +1234,9 @@
 
 
 
-  99..44..  TThhee mmssgg ccoommmmaanndd
+  5.4.  The msg command
 
-  The _m_s_g command is a very powerful and flexible tool for the sysop.
+  The msg command is a very powerful and flexible tool for the sysop.
   It allows the sysop to alter to and from fields and make other changes
   to manage the cluster mail.
 
@@ -2264,10 +1274,10 @@
   user.
 
 
-  99..55..  MMeessssaaggee ssttaattuuss
+  5.5.  Message status
 
   You can check on a message from within the cluster by using the
-  command _s_t_a_t_/_m_s_g.  This will give you additional information on the
+  command stat/msg.  This will give you additional information on the
   message number including which nodes have received it, which node it
   was received from and when etc.  Here is an example of the output of
   the command ...
@@ -2293,17 +1303,17 @@
 
 
 
-  99..66..  FFiilltteerriinngg mmaaiill
+  5.6.  Filtering mail
 
-  This is described in the section on _O_t_h_e_r _f_i_l_t_e_r_s so I will not
+  This is described in the section on Other filters so I will not
   duplicate it here.
 
 
-  99..77..  DDiissttrriibbuuttiioonn lliissttss
+  5.7.  Distribution lists
 
   Distribution lists are simply a list of users to send certain types of
   mail to.  An example of this is mail you only wish to send to other
-  sysops.  In /spider/msg there is a directory called _d_i_s_t_r_o.  You put
+  sysops.  In /spider/msg there is a directory called distro.  You put
   any distibution lists in here.  For example, here is a file called
   SYSOP.pl that caters for the UK sysops.
 
@@ -2319,7 +1329,7 @@
   list.
 
 
-  99..88..  BBBBSS iinntteerrffaaccee
+  5.8.  BBS interface
 
   Spider provides a simple BBS interface.  No input is required from the
   sysop of the cluster at all.  The BBS simply sets the cluster as a BBS
@@ -2332,7 +1342,7 @@
   using the Forward.pl file very carefully.
 
 
-  1100..  DDaattaabbaasseess
+  6.  Databases
 
   Spider allows the creation of local or remote databases.  It supports
   chained databases, allowing several different databases to be scanned
@@ -2341,12 +1351,12 @@
   database but will expand with time.
 
 
-  1100..11..  CCrreeaattiinngg ddaattaabbaasseess
+  6.1.  Creating databases
 
   Creating a database could not be more simple.  All the commands are
-  sent from the cluster prompt as the _s_y_s_o_p user.
+  sent from the cluster prompt as the sysop user.
 
-  To create a database you use the command _d_b_c_r_e_a_t_e.  It can be used in
+  To create a database you use the command dbcreate.  It can be used in
   3 different ways like so ..
 
 
@@ -2389,7 +1399,7 @@
   chain can be a remote database.
 
 
-  1100..22..  IImmppoorrttiinngg ddaattaabbaasseess
+  6.2.  Importing databases
 
   The only databases that Spider can currently import are the standard
   AK1A databases such as OBLAST or the DB0SDX qsl and address database.
@@ -2409,10 +1419,10 @@
   does not exist.
 
 
-  1100..33..  CChheecckkiinngg aavvaaiillaabbllee ddaattaabbaasseess
+  6.3.  Checking available databases
 
   Once a database is created, you will want to check that it has been
-  added.  To do this use the _d_b_a_v_a_i_l command.  This will output the
+  added.  To do this use the dbavail command.  This will output the
   available databases.  For example ...
 
 
@@ -2428,9 +1438,9 @@
 
 
 
-  1100..44..  LLooookkiinngg uupp ddaattaabbaasseess
+  6.4.  Looking up databases
 
-  To look for information in a defined database, simply use the _d_b_s_h_o_w
+  To look for information in a defined database, simply use the dbshow
   command, for example ...
 
 
@@ -2443,7 +1453,7 @@
   will show the information for the callsign G0YLM from the buckmaster
   database if it exists.  To make things more standard for the users you
   can add an entry in the Aliases file so that it looks like a standard
-  _s_h_o_w command like this ...
+  show command like this ...
 
 
 
@@ -2454,9 +1464,9 @@
   Now you can simply use show/buckmaster or an abreviation.
 
 
-  1100..55..  RReemmoovviinngg ddaattaabbaasseess
+  6.5.  Removing databases
 
-  To delete an existing database you use the _d_b_r_e_m_o_v_e command.  For
+  To delete an existing database you use the dbremove command.  For
   example ...
 
 
@@ -2472,9 +1482,9 @@
   created from scratch if you still required it.
 
 
-  1111..  IInnffoorrmmaattiioonn,, ffiilleess aanndd uusseeffuull pprrooggrraammss
+  7.  Information, files and useful programs
 
-  1111..11..  MMOOTTDD
+  7.1.  MOTD
 
   One of the more important things a cluster sysop needs to do is to get
   information to his users.  The simplest way to do this is to have a
@@ -2485,7 +1495,7 @@
   to the cluster.
 
 
-  1111..22..  DDoowwnnttiimmee mmeessssaaggee
+  7.2.  Downtime message
 
   If for any reason the cluster is down, maybe for upgrade or
   maintenance but the machine is still running, a message can be sent to
@@ -2496,13 +1506,13 @@
   actually running.
 
 
-  1111..33..  OOtthheerr tteexxtt mmeessssaaggeess
+  7.3.  Other text messages
 
   You can set other text messages to be read by the user if they input
   the file name.  This could be for news items or maybe information for
   new users.  To set this up, make a directory under /spider called
-  _p_a_c_k_c_l_u_s.  Under this directory you can create files called _n_e_w_s or
-  _n_e_w_u_s_e_r for example.  In fact you can create files with any names you
+  packclus.  Under this directory you can create files called news or
+  newuser for example.  In fact you can create files with any names you
   like.  These can be listed by the user with the command ....
 
 
@@ -2520,17 +1530,17 @@
 
 
 
-  If the file they want to read is called _n_e_w_s.  You could also set an
-  alias for this in the Alias file to allow them just to type _n_e_w_s
+  If the file they want to read is called news.  You could also set an
+  alias for this in the Alias file to allow them just to type news
 
 
   You can also store other information in this directory, either
   directly or nested under directories.  One use for this would be to
   store DX bulletins such as the OPDX bulletins.  These can be listed
   and read by the user.  To keep things tidy, make a directory under
-  /spider/packclus called _b_u_l_l_e_t_i_n.  Now copy any OPDX or similar
+  /spider/packclus called bulletin.  Now copy any OPDX or similar
   bulletins into it.  These can be listed by the user in the same way as
-  above using the _s_h_o_w_/_f_i_l_e_s command with an extension for the bulletin
+  above using the show/files command with an extension for the bulletin
   directory you have just created, like this ....
 
 
@@ -2552,11 +1562,11 @@
 
 
   You can see that in the files area (basically the packclus directory)
-  there is a file called _n_e_w_s and a directory called _b_u_l_l_e_t_i_n.  You can
-  also see that dates they were created.  In the case of the file _n_e_w_s,
+  there is a file called news and a directory called bulletin.  You can
+  also see that dates they were created.  In the case of the file news,
   you can also see the time it was last modified, a good clue as to
   whether the file has been updated since you last read it.  To read the
-  file called _n_e_w_s you would simply issue the command ....
+  file called news you would simply issue the command ....
 
 
 
@@ -2616,7 +1626,7 @@
   The page length will of course depend on what you have it set to!
 
 
-  1111..44..  TThhee AAlliiaasseess ffiillee
+  7.4.  The Aliases file
 
   You will find a file in /spider/cmd/ called Aliases.  First, copy this
   file to /spider/local_cmd/Aliases and edit this file.  You will see
@@ -2780,7 +1790,7 @@
   the results once you have set an alias.
 
 
-  1111..55..  CCoonnssoollee..ppll
+  7.5.  Console.pl
 
   In later versions of Spider a simple console program is provided for
   the sysop.  This has a type ahead buffer with line editing facilities
@@ -2792,13 +1802,13 @@
   edit the file with your favourite editor.
 
 
-  1111..66..  UUppddaattiinngg kkeepplleerr ddaattaa
+  7.6.  Updating kepler data
 
   Spider has a powerful and flexible show/satellite command.  In order
   for this to be accurate, the kepler data has to be updated regularly.
   In general, this data is available as an email or via cluster mail.
   Updating it is simple.  First you need to export the mail message as a
-  file.  You do this with the _e_x_p_o_r_t command from the cluster prompt as
+  file.  You do this with the export command from the cluster prompt as
   the sysop.  For example ...
 
 
@@ -2812,7 +1822,7 @@
   /spider/perl directory.
 
   Now login to a VT as sysop and cd /spider/perl.  There is a command in
-  the perl directory called _c_o_n_v_k_e_p_s_._p_l.  All we need to do now is
+  the perl directory called convkeps.pl.  All we need to do now is
   convert the file like so ...
 
 
@@ -2836,9 +1846,9 @@
 
 
 
-  1111..77..  TThhee QQRRZZ ccaallllbbooookk
+  7.7.  The QRZ callbook
 
-  The command _s_h_/_q_r_z will only work once you have followed a few simple
+  The command sh/qrz will only work once you have followed a few simple
   steps.  First you need to get a user ID and password from qrz.com.
   Simply go to the site and create one.  Secondly you need to copy the
   file /spider/perl/Internet.pm to /spider/local and alter it to match
@@ -2847,7 +1857,7 @@
   proprieter of qrz.com for allowing this access.
 
 
-  1122..  CCVVSS
+  8.  CVS
 
   CVS stands for "Concurrent Versions System" and the CVS for DXSpider
   is held at Sourceforge.  This means that it is possible to update your
@@ -2878,7 +1888,7 @@
   steps which are listed below ...
 
 
-  First login as the user _s_y_s_o_p.  Next you need to connect to the CVS
+  First login as the user sysop.  Next you need to connect to the CVS
   repository.  You do this with the command below ...
 
 
@@ -2953,7 +1963,7 @@
 
 
   Now the magic part!  From now on when you want to update, simply
-  connect to the Internet and then, as the user _s_y_s_o_p ...
+  connect to the Internet and then, as the user sysop ...
 
 
 
@@ -2971,7 +1981,7 @@
   You will find any changes documented in the /spider/Changes file.
 
 
-  1133..  TThhee DDXXSSppiiddeerr ccoommmmaanndd sseett
+  9.  The DXSpider command set
 
   Below is a complete list of commands available from the cluster
   prompt.  Most maintenance tasks are automatic but there are some
@@ -2980,9 +1990,9 @@
   is the permissions level needed to use the command.
 
 
-  1133..11..  aacccceepptt//aannnnoouunnccee ((00))
+  9.1.  accept/announce (0)
 
-  aacccceepptt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for announce
+  accept/announce [0-9] <pattern> Set an accept filter line for announce
 
 
   Create an 'accept this announce' line for a filter.
@@ -3042,9 +2052,9 @@
   but this probably for advanced users...
 
 
-  1133..22..  aacccceepptt//aannnnoouunnccee ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.2.  accept/announce (extended for sysops) (8)
 
-  aacccceepptt//aannnnoouunnccee <<ccaallll>> [[iinnppuutt]] [[00--99]]<<ppaatttteerrnn>> Announce filter sysop
+  accept/announce <call> [input] [0-9]<pattern> Announce filter sysop
   version
 
 
@@ -3061,9 +2071,9 @@
 
 
 
-  1133..33..  aacccceepptt//ssppoottss ((00))
+  9.3.  accept/spots (0)
 
-  aacccceepptt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for spots
+  accept/announce [0-9] <pattern> Set an accept filter line for spots
 
 
   Create an 'accept this spot' line for a filter.
@@ -3122,9 +2132,9 @@
   but this probably for advanced users...
 
 
-  1133..44..  aacccceepptt//ssppoottss ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.4.  accept/spots (extended for sysops) (8)
 
-  aacccceepptt//ssppoottss <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> Spot filter sysop version
+  accept/spots <call> [input] [0-9] <pattern> Spot filter sysop version
 
 
   This version allows a sysop to set a filter for a callsign as well as
@@ -3142,9 +2152,9 @@
 
 
 
-  1133..55..  aacccceepptt//wwccyy ((00))
+  9.5.  accept/wcy (0)
 
-  aacccceepptt//wwccyy [[00--99]] <<ppaatttteerrnn>> set an accept WCY filter
+  accept/wcy [0-9] <pattern> set an accept WCY filter
 
 
   It is unlikely that you will want to do this, but if you do then you
@@ -3175,9 +2185,9 @@
   See HELP FILTER for information.
 
 
-  1133..66..  aacccceepptt//wwccyy ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.6.  accept/wcy (extended for sysops) (8)
 
-  aacccceepptt//wwccyy <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> WCY filter sysop version
+  accept/wcy <call> [input] [0-9] <pattern> WCY filter sysop version
 
 
   This version allows a sysop to set a filter for a callsign as well as
@@ -3192,9 +2202,9 @@
 
 
 
-  1133..77..  aacccceepptt//wwwwvv ((00))
+  9.7.  accept/wwv (0)
 
-  aacccceepptt//wwwwvv [[00--99]] <<ppaatttteerrnn>> Set an accept WWV filter
+  accept/wwv [0-9] <pattern> Set an accept WWV filter
 
 
   It is unlikely that you will want to do this, but if you do then you
@@ -3232,9 +2242,9 @@
 
 
 
-  1133..88..  aacccceepptt//wwwwvv ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.8.  accept/wwv (extended for sysops) (8)
 
-  aacccceepptt//wwwwvv <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> WWV filter sysop version
+  accept/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
 
 
   This version allows a sysop to set a filter for a callsign as well as
@@ -3252,18 +2262,18 @@
 
 
 
-  1133..99..  aannnnoouunnccee ((00))
+  9.9.  announce (0)
 
-  aannnnoouunnccee <<tteexxtt>> Send an announcement to local users
+  announce <text> Send an announcement to local users
 
 
   Send an announcement to LOCAL users only, where <text> is the text of
   the announcement you wish to broadcast
 
 
-  1133..1100..  aannnnoouunnccee ffuullll ((00))
+  9.10.  announce full (0)
 
-  aannnnoouunnccee ffuullll <<tteexxtt>> Send an announcement cluster wide
+  announce full <text> Send an announcement cluster wide
 
 
   This command will send your announcement across the whole cluster
@@ -3271,26 +2281,26 @@
 
 
 
-  1133..1111..  aannnnoouunnccee ssyyssoopp ((55))
+  9.11.  announce sysop (5)
 
-  aannnnoouunnccee ssyyssoopp <<tteexxtt>>
+  announce sysop <text>
 
 
   Send an announcement to Sysops only
 
 
-  1133..1122..  aapprrooppooss ((00))
+  9.12.  apropos (0)
 
-  aapprrooppooss <<ssttrriinngg>> Search the help database
+  apropos <string> Search the help database
 
 
   Search the help database for <string> (it isn't case sensitive), and
   print the names of all the commands that may be relevant.
 
 
-  1133..1133..  bbyyee ((00))
+  9.13.  bye (0)
 
-  bbyyee Exit from the cluster
+  bye Exit from the cluster
 
 
   This will disconnect you from the cluster
@@ -3298,9 +2308,9 @@
 
 
 
-  1133..1144..  ccaattcchhuupp ((55))
+  9.14.  catchup (5)
 
-  ccaattcchhuupp <<nnooddee__ccaallll>> AAllll||[[<<mmssggnnoo>> ......]] Mark a message as sent
+  catchup <node_call> All|[<msgno> ...] Mark a message as sent
 
 
   When you send messages the fact that you have forwarded it to another
@@ -3333,9 +2343,9 @@
   Order is not important.
 
 
-  1133..1155..  cclleeaarr//ssppoottss ((00))
+  9.15.  clear/spots (0)
 
-  cclleeaarr//ssppoottss [[11||aallll]] Clear a spot filter line
+  clear/spots [1|all] Clear a spot filter line
 
 
   This command allows you to clear (remove) a line in a spot filter or
@@ -3382,9 +2392,9 @@
 
 
 
-  1133..1166..  ccoonnnneecctt ((55))
+  9.16.  connect (5)
 
-  ccoonnnneecctt <<ccaallllssiiggnn>> Start a connection to another DX Cluster
+  connect <callsign> Start a connection to another DX Cluster
 
 
   Start a connection process that will culminate in a new connection to
@@ -3394,21 +2404,21 @@
   cluster <callsign>.
 
 
-  1133..1177..  ddbbaavvaaiill ((00))
+  9.17.  dbavail (0)
 
-  ddbbaavvaaiill Show a list of all the databases in the system
+  dbavail Show a list of all the databases in the system
 
 
   The title says it all really, this command lists all the databases
   defined in the system. It is also aliased to SHOW/COMMAND.
 
 
-  1133..1188..  ddbbccrreeaattee ((99))
+  9.18.  dbcreate (9)
 
-  ddbbccrreeaattee <<nnaammee>> Create a database entry
-  ddbbccrreeaattee <<nnaammee>> cchhaaiinn <<nnaammee>> [[<<nnaammee>>....]] Create a chained database
+  dbcreate <name> Create a database entry
+  dbcreate <name> chain <name> [<name>..] Create a chained database
   entry
-  ddbbccrreeaattee <<nnaammee>> rreemmoottee <<nnooddee>> Create a remote database entry
+  dbcreate <name> remote <node> Create a remote database entry
 
 
   DBCREATE allows you to define a database in the system. It doesn't
@@ -3471,9 +2481,9 @@
   databases.  See DBSHOW for generic database enquiry
 
 
-  1133..1199..  ddbbiimmppoorrtt ((99))
+  9.19.  dbimport (9)
 
-  ddbbiimmppoorrtt <<ddbbnnaammee>> Import AK1A data into a database
+  dbimport <dbname> Import AK1A data into a database
 
 
   If you want to import or update data in bulk to a database you can use
@@ -3486,9 +2496,9 @@
   oblast database held locally.
 
 
-  1133..2200..  ddbbrreemmoovvee ((99))
+  9.20.  dbremove (9)
 
-  ddbbrreemmoovvee <<ddbbnnaammee>> Delete a database
+  dbremove <dbname> Delete a database
 
 
   DBREMOVE will completely remove a database entry and also delete any
@@ -3510,9 +2520,9 @@
   You have been warned.
 
 
-  1133..2211..  ddbbsshhooww ((00))
+  9.21.  dbshow (0)
 
-  ddbbsshhooww <<ddbbnnaammee>> <<kkeeyy>> Display an entry, if it exists, in a database
+  dbshow <dbname> <key> Display an entry, if it exists, in a database
 
 
   This is the generic user interface to the database to the database
@@ -3539,9 +2549,9 @@
 
 
 
-  1133..2222..  ddeebbuugg ((99))
+  9.22.  debug (9)
 
-  ddeebbuugg Set the cluster program into debug mode
+  debug Set the cluster program into debug mode
 
 
   Executing this command will only have an effect if you are running the
@@ -3558,16 +2568,16 @@
   finished.
 
 
-  1133..2233..  ddiirreeccttoorryy ((00))
+  9.23.  directory (0)
 
-  ddiirreeccttoorryy List messages
-  ddiirreeccttoorryy oowwnn List your own messages
-  ddiirreeccttoorryy nneeww List all new messages
-  ddiirreeccttoorryy ttoo <<ccaallll>> List all messages to <call>
-  ddiirreeccttoorryy ffrroomm <<ccaallll>> List all messages from <call>
-  ddiirreeccttoorryy ssuubbjjeecctt <<ssttrriinngg>> List all messages with <string> in subject
-  ddiirreeccttoorryy <<nnnn>> List last <nn> messages
-  ddiirreeccttoorryy <<ffrroomm>>--<<ttoo>> List messages <from> message <to> message
+  directory List messages
+  directory own List your own messages
+  directory new List all new messages
+  directory to <call> List all messages to <call>
+  directory from <call> List all messages from <call>
+  directory subject <string> List all messages with <string> in subject
+  directory <nn> List last <nn> messages
+  directory <from>-<to> List messages <from> message <to> message
 
 
   List the messages in the messages directory.
@@ -3602,23 +2612,23 @@
 
 
 
-  1133..2244..  ddiirreeccttoorryy ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
+  9.24.  directory (extended for sysops) (5)
 
   Works just like the user command except that sysops can see ALL
   messages.
 
 
-  1133..2255..  ddiissccoonnnneecctt ((88))
+  9.25.  disconnect (8)
 
-  ddiissccoonnnneecctt <<ccaallll>> [[<<ccaallll>> ......]] Disconnect a user or node
+  disconnect <call> [<call> ...] Disconnect a user or node
 
 
   Disconnect any <call> connected locally
 
 
-  1133..2266..  ddxx ((00))
+  9.26.  dx (0)
 
-  ddxx [[bbyy <<ccaallll>>]] <<ffrreeqq>> <<ccaallll>> <<rreemmaarrkkss>> Send a DX spot
+  dx [by <call>] <freq> <call> <remarks> Send a DX spot
 
 
   This is how you send a DX Spot to other users. You can, in fact, now
@@ -3658,9 +2668,9 @@
   cluster.  See SHOW/BANDS for more information.
 
 
-  1133..2277..  eexxppoorrtt ((99))
+  9.27.  export (9)
 
-  eexxppoorrtt <<mmssggnnoo>> <<ffiilleennaammee>> Export a message to a file
+  export <msgno> <filename> Export a message to a file
 
 
   Export a message to a file. This command can only be executed on a
@@ -3676,9 +2686,9 @@
   EXPORT 2345 /tmp/a
 
 
-  1133..2288..  eexxppoorrtt__uusseerrss ((99))
+  9.28.  export_users (9)
 
-  eexxppoorrtt__uusseerrss [[<<ffiilleennaammee>>]] Export the users database to ascii
+  export_users [<filename>] Export the users database to ascii
 
 
   Export the users database to a file in ascii format. If no filename is
@@ -3694,9 +2704,9 @@
 
 
 
-  1133..2299..  ffoorrwwaarrdd//llaattlloonngg ((88))
+  9.29.  forward/latlong (8)
 
-  ffoorrwwaarrdd//llaattlloonngg <<nnooddee__ccaallll>> Send latitude and longitude information to
+  forward/latlong <node_call> Send latitude and longitude information to
   another cluster
 
 
@@ -3704,13 +2714,13 @@
   your cluster is holding against callsigns.  One advantage of recieving
   this information is that more locator information is held by you.
   This means that more locators are given on the DX line assuming you
-  have _s_e_t_/_d_x_g_r_i_d enabled.  This could be a LOT of information though,
+  have set/dxgrid enabled.  This could be a LOT of information though,
   so it is not recommended on slow links.
 
 
-  1133..3300..  ffoorrwwaarrdd//ooppeerrnnaammee ((11))
+  9.30.  forward/opername (1)
 
-  ffoorrwwaarrdd//ooppeerrnnaammee <<ccaallll>> Send out information on this <call> to all
+  forward/opername <call> Send out information on this <call> to all
   clusters
 
 
@@ -3720,9 +2730,9 @@
   available.
 
 
-  1133..3311..  hheellpp ((00))
+  9.31.  help (0)
 
-  hheellpp <<ccmmdd>> Get help on a command
+  help <cmd> Get help on a command
 
 
   All commands can be abbreviated, so SHOW/DX can be abbreviated to
@@ -3733,9 +2743,9 @@
   commands to look at with HELP.
 
 
-  1133..3322..  iinniitt ((55))
+  9.32.  init (5)
 
-  iinniitt <<nnooddee ccaallll>> Re-initialise a link to an AK1A compatible node
+  init <node call> Re-initialise a link to an AK1A compatible node
 
 
   This command attempts to re-initialise a link to a (usually) AK1A node
@@ -3747,9 +2757,9 @@
   Best of luck - you will need it.
 
 
-  1133..3333..  kkiillll ((00))
+  9.33.  kill (0)
 
-  kkiillll <<mmssggnnoo>> [[<<mmssggnnoo>> ....]] Delete a message from the local system
+  kill <msgno> [<msgno> ..] Delete a message from the local system
 
 
   Delete a message from the local system. You will only be able to
@@ -3760,11 +2770,11 @@
 
 
 
-  1133..3344..  kkiillll ((55))
+  9.34.  kill (5)
 
-  kkiillll <<mmssggnnoo>> [[<<mmssggnnoo>> ......]] Remove or erase a message from the system
-  kkiillll ffrroomm <<ccaallll>> Remove all messages from a callsign
-  kkiillll ttoo <<ccaallll>> Remove all messages to a callsign
+  kill <msgno> [<msgno> ...] Remove or erase a message from the system
+  kill from <call> Remove all messages from a callsign
+  kill to <call> Remove all messages to a callsign
 
 
   You can get rid of any message to or originating from your callsign
@@ -3773,9 +2783,9 @@
   As a sysop you can kill any message on the system.
 
 
-  1133..3355..  kkiillll ffuullll ((55))
+  9.35.  kill full (5)
 
-  kkiillll ffuullll <<mmssggnnoo>> [[<<mmssggnnoo>>]] Delete a message from the whole cluster
+  kill full <msgno> [<msgno>] Delete a message from the whole cluster
 
 
   Delete a message (usually a 'bulletin') from the whole cluster system.
@@ -3784,9 +2794,9 @@
   same subject will be deleted. Beware!
 
 
-  1133..3366..  lliinnkkss ((00))
+  9.36.  links (0)
 
-  lliinnkkss Show which nodes are physically connected
+  links Show which nodes are physically connected
 
 
   This is a quick listing that shows which links are connected and some
@@ -3794,9 +2804,9 @@
 
 
 
-  1133..3377..  llooaadd//aalliiaasseess ((99))
+  9.37.  load/aliases (9)
 
-  llooaadd//aalliiaasseess Reload the command alias table
+  load/aliases Reload the command alias table
 
 
   Reload the /spider/cmd/Aliases file after you have editted it. You
@@ -3805,9 +2815,9 @@
 
 
 
-  1133..3388..  llooaadd//bbaaddddxx ((99))
+  9.38.  load/baddx (9)
 
-  llooaadd//bbaaddddxx Reload the bad DX table
+  load/baddx Reload the bad DX table
 
 
   Reload the /spider/data/baddx.pl file if you have changed it manually
@@ -3815,9 +2825,9 @@
   if spotted, will not be passed on. FR0G and TEST are classic examples.
 
 
-  1133..3399..  llooaadd//bbaaddmmssgg ((99))
+  9.39.  load/badmsg (9)
 
-  llooaadd//bbaaddmmssgg Reload the bad message table
+  load/badmsg Reload the bad message table
 
 
   Reload the /spider/msg/badmsg.pl file if you have changed it manually
@@ -3826,9 +2836,9 @@
   each message.  If any of them match then that message is immediately
   deleted on receipt.
 
-  1133..4400..  llooaadd//bbaaddwwoorrddss ((99))
+  9.40.  load/badwords (9)
 
-  llooaadd//bbaaddwwoorrddss Reload the badwords file
+  load/badwords Reload the badwords file
 
 
   Reload the /spider/data/badwords file if you have changed it manually
@@ -3840,18 +2850,18 @@
   ignored.
 
 
-  1133..4411..  llooaadd//bbaannddss ((99))
+  9.41.  load/bands (9)
 
-  llooaadd//bbaannddss Reload the band limits table
+  load/bands Reload the band limits table
 
 
   Reload the /spider/data/bands.pl file if you have changed it manually
   whilst the cluster is running.
 
 
-  1133..4422..  llooaadd//ccmmdd__ccaacchhee ((99))
+  9.42.  load/cmd_cache (9)
 
-  llooaadd//ccmmdd__ccaacchhee Reload the automatic command cache
+  load/cmd_cache Reload the automatic command cache
 
 
   Normally, if you change a command file in the cmd or local_cmd tree it
@@ -3862,17 +2872,17 @@
   was just after a cluster restart.
 
 
-  1133..4433..  llooaadd//ffoorrwwaarrdd ((99))
+  9.43.  load/forward (9)
 
-  llooaadd//ffoorrwwaarrdd Reload the msg forwarding routing table
+  load/forward Reload the msg forwarding routing table
 
   Reload the /spider/msg/forward.pl file if you have changed it manually
   whilst the cluster is running.
 
 
-  1133..4444..  llooaadd//mmeessssaaggeess ((99))
+  9.44.  load/messages (9)
 
-  llooaadd//mmeessssaaggeess Reload the system messages file
+  load/messages Reload the system messages file
 
 
   If you change the /spider/perl/Messages file (usually whilst
@@ -3883,18 +2893,18 @@
   unknown message 'xxxx' in lang 'en'
 
 
-  1133..4455..  llooaadd//pprreeffiixxeess ((99))
+  9.45.  load/prefixes (9)
 
-  llooaadd//pprreeffiixxeess Reload the prefix table
+  load/prefixes Reload the prefix table
 
 
   Reload the /spider/data/prefix_data.pl file if you have changed it
   manually whilst the cluster is running.
 
 
-  1133..4466..  mmeerrggee ((55))
+  9.46.  merge (5)
 
-  mmeerrggee <<nnooddee>> [[<<nnoo ssppoottss>>//<<nnoo wwwwvv>>]] Ask for the latest spots and WWV
+  merge <node> [<no spots>/<no wwv>] Ask for the latest spots and WWV
 
 
   MERGE allows you to bring your spot and wwv database up to date. By
@@ -3907,9 +2917,9 @@
   data).
 
 
-  1133..4477..  mmssgg ((99))
+  9.47.  msg (9)
 
-  mmssgg <<ccmmdd>> <<mmssggnnoo>> [[ddaattaa ......]] Alter various message parameters
+  msg <cmd> <msgno> [data ...] Alter various message parameters
 
 
   Alter message parameters like To, From, Subject, whether private or
@@ -3943,9 +2953,9 @@
   This will display more information on the message than DIR does.
 
 
-  1133..4488..  ppcc ((88))
+  9.48.  pc (8)
 
-  ppcc <<ccaallll>> <<tteexxtt>> Send text (eg PC Protocol) to <call>
+  pc <call> <text> Send text (eg PC Protocol) to <call>
 
 
   Send some arbitrary text to a locally connected callsign. No
@@ -3961,9 +2971,9 @@
   pc G1TLH Try doing that properly!!!
 
 
-  1133..4499..  ppiinngg ((11))
+  9.49.  ping (1)
 
-  ppiinngg <<nnooddee>> Check the link quality between nodes
+  ping <node> Check the link quality between nodes
 
 
   his command allows you to send a frame to another cluster node on the
@@ -3974,9 +2984,9 @@
 
 
 
-  1133..5500..  rrccmmdd ((11))
+  9.50.  rcmd (1)
 
-  rrccmmdd <<nnooddee ccaallll>> <<ccmmdd>> Send a command to another DX cluster
+  rcmd <node call> <cmd> Send a command to another DX cluster
 
 
   This command allows you to send nearly any command to another DX
@@ -3988,10 +2998,10 @@
   whether you have permission to send this command at all.
 
 
-  1133..5511..  rreeaadd ((00))
+  9.51.  read (0)
 
-  rreeaadd Read the next unread personal message addressed to you
-  rreeaadd <<mmssggnnoo>> Read the specified message
+  read Read the next unread personal message addressed to you
+  read <msgno> Read the specified message
 
 
   You can read any messages that are sent as 'non-personal' and also any
@@ -3999,17 +3009,17 @@
 
 
 
-  1133..5522..  rreeaadd ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
+  9.52.  read (extended for sysops) (5)
 
-  rreeaadd <<mmssggnnoo>> Read a message on the system
+  read <msgno> Read a message on the system
 
 
   As a sysop you may read any message on the system
 
 
-  1133..5533..  rreejjeecctt//aannnnoouunnccee
+  9.53.  reject/announce
 
-  rreejjeecctt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set a reject filter for announce
+  reject/announce [0-9] <pattern> Set a reject filter for announce
 
 
   Create an 'reject this announce' line for a filter.
@@ -4061,9 +3071,9 @@
   but this probably for advanced users...
 
 
-  1133..5544..  rreejjeecctt//aannnnoouunnccee ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.54.  reject/announce (extended for sysops) (8)
 
-  rreejjeecctt//aannnnoouunnccee <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> Announce filter sysop
+  reject/announce <call> [input] [0-9] <pattern> Announce filter sysop
   version
 
 
@@ -4080,9 +3090,9 @@
 
 
 
-  1133..5555..  rreejjeecctt//ssppoottss ((00))
+  9.55.  reject/spots (0)
 
-  rreejjeecctt//ssppoottss [[00--99]] <<ppaatttteerrnn>> Set a reject filter line for spots
+  reject/spots [0-9] <pattern> Set a reject filter line for spots
 
 
   Create a 'reject this spot' line for a filter.
@@ -4141,9 +3151,9 @@
   but this probably for advanced users...
 
 
-  1133..5566..  rreejjeecctt//ssppoottss ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.56.  reject/spots (extended for sysops) (8)
 
-  rreejjeecctt//ssppoottss <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> Reject spot filter sysop
+  reject/spots <call> [input] [0-9] <pattern> Reject spot filter sysop
   version
 
 
@@ -4166,9 +3176,9 @@
 
 
 
-  1133..5577..  rreejjeecctt//wwccyy ((00))
+  9.57.  reject/wcy (0)
 
-  rreejjeecctt//wwccyy [[00--99]] <<ppaatttteerrnn>> Set a reject WCY filter
+  reject/wcy [0-9] <pattern> Set a reject WCY filter
 
 
   It is unlikely that you will want to do this, but if you do then you
@@ -4198,9 +3208,9 @@
   See HELP FILTER for information.
 
 
-  1133..5588..  rreejjeecctt//wwccyy ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.58.  reject/wcy (extended for sysops) (8)
 
-  rreejjeecctt//wwccyy <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> WCY reject filter sysop
+  reject/wcy <call> [input] [0-9] <pattern> WCY reject filter sysop
   version
 
 
@@ -4210,9 +3220,9 @@
   reject/wcy gb7djk all
 
 
-  1133..5599..  rreejjeecctt//wwwwvv ((00))
+  9.59.  reject/wwv (0)
 
-  rreejjeecctt//wwwwvv [[00--99]] <<ppaatttteerrnn>> Set a reject WWV filter
+  reject/wwv [0-9] <pattern> Set a reject WWV filter
 
 
   It is unlikely that you will want to do this, but if you do then you
@@ -4250,9 +3260,9 @@
   See HELP FILTER for information.
 
 
-  1133..6600..  rreejjeecctt//wwwwvv ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
+  9.60.  reject/wwv (extended for sysops) (8)
 
-  rreejjeecctt//wwwwvv <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> WWV reject filter sysop
+  reject/wwv <call> [input] [0-9] <pattern> WWV reject filter sysop
   version
 
 
@@ -4270,13 +3280,13 @@
 
 
 
-  1133..6611..  rreeppllyy ((00))
+  9.61.  reply (0)
 
-  rreeppllyy Reply (privately) to the last message that you have read
-  rreeppllyy <<mmssggnnoo>> Reply (privately) to the specified message
-  rreeppllyy BB <<mmssggnnoo>> Reply as a Bulletin to the specified message
-  rreeppllyy NNOOPPrriivvaattee <<mmssggnnoo>> Reply as a Bulletin to the specified message
-  rreeppllyy RRRR <<mmssggnnoo>> Reply to the specified message with read receipt
+  reply Reply (privately) to the last message that you have read
+  reply <msgno> Reply (privately) to the specified message
+  reply B <msgno> Reply as a Bulletin to the specified message
+  reply NOPrivate <msgno> Reply as a Bulletin to the specified message
+  reply RR <msgno> Reply to the specified message with read receipt
 
 
   You can reply to a message and the subject will automatically have
@@ -4288,13 +3298,13 @@
 
 
 
-  1133..6622..  sseenndd ((00))
+  9.62.  send (0)
 
-  sseenndd <<ccaallll>> [[<<ccaallll>> ......]] Send a message to one or more callsigns
-  sseenndd RRRR <<ccaallll>> Send a message and ask for a read receipt
-  sseenndd CCOOPPYY <<mmssggnnoo>> <<ccaallll>> Send a copy of a  message to someone
-  sseenndd PPRRIIVVAATTEE <<ccaallll>> Send a personal message
-  sseenndd NNOOPPRRIIVVAATTEE <<ccaallll>> Send a message to all stations
+  send <call> [<call> ...] Send a message to one or more callsigns
+  send RR <call> Send a message and ask for a read receipt
+  send COPY <msgno> <call> Send a copy of a  message to someone
+  send PRIVATE <call> Send a personal message
+  send NOPRIVATE <call> Send a message to all stations
 
 
   All the SEND commands will create a message which will be sent either
@@ -4322,34 +3332,34 @@
   is an alias for SEND PRIVATE
 
 
-  1133..6633..  sseett//aaddddrreessss ((00))
+  9.63.  set/address (0)
 
-  sseett//aaddddrreessss <<yyoouurr__aaddddrreessss>> Record your postal address
+  set/address <your_address> Record your postal address
 
 
   Literally, record your address details on the cluster.
 
 
-  1133..6644..  sseett//aannnnoouunnccee ((00))
+  9.64.  set/announce (0)
 
-  sseett//aannnnoouunnccee Allow announce messages
+  set/announce Allow announce messages
 
 
   Allow announce messages to arrive at your terminal.
 
 
-  1133..6655..  sseett//aarrcclluusstteerr ((55))
+  9.65.  set/arcluster (5)
 
-  sseett//aarrcclluusstteerr <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call an AR-
+  set/arcluster <node_call> [<node_call> ...] Make the node_call an AR-
   Cluster type node
 
 
   Set the node_call as an AR-Cluster type node
 
 
-  1133..6666..  sseett//bbaaddddxx ((88))
+  9.66.  set/baddx (8)
 
-  sseett//bbaaddddxx <<ccaallll>> Stop words we do not wish to see in the callsign
+  set/baddx <call> Stop words we do not wish to see in the callsign
   field of a dx spot being propagated
 
 
@@ -4377,9 +3387,9 @@
 
 
 
-  1133..6677..  sseett//bbaaddnnooddee ((66))
+  9.67.  set/badnode (6)
 
-  sseett//bbaaddnnooddee <<nnooddee__ccaallll>> Stop spots from this node_call being
+  set/badnode <node_call> Stop spots from this node_call being
   propagated
 
 
@@ -4411,9 +3421,9 @@
   FILTERing.
 
 
-  1133..6688..  sseett//bbaaddssppootttteerr ((88))
+  9.68.  set/badspotter (8)
 
-  sseett//bbaaddssppootttteerr <<ccaallll>> Stop spots from this callsign being propagated
+  set/badspotter <call> Stop spots from this callsign being propagated
 
 
   Setting a callsign as a 'badspotter' will prevent spots from this
@@ -4445,69 +3455,69 @@
   FILTERing.
 
 
-  1133..6699..  sseett//bbeeeepp ((00))
+  9.69.  set/beep (0)
 
-  sseett//bbeeeepp Add beeps to terminal messages
+  set/beep Add beeps to terminal messages
 
 
   Add a beep to DX and other terminal messages.
 
 
-  1133..7700..  sseett//ccllxx ((55))
+  9.70.  set/clx (5)
 
-  sseett//ccllxx <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a CLX type
+  set/clx <node_call> [<node_call> ...] Make the node_call a CLX type
   node
 
 
   Set the node_call as a CLX type node
 
 
-  1133..7711..  sseett//ddeebbuugg ((99))
+  9.71.  set/debug (9)
 
-  sseett//ddeebbuugg <<nnaammee>> Add a debug level to the debug set
+  set/debug <name> Add a debug level to the debug set
 
 
   You can choose to log several different levels.  The levels are
 
   chan state msg cron connect
 
-  You can show what levels you are logging with the _s_h_o_w_/_d_e_b_u_g command.
+  You can show what levels you are logging with the show/debug command.
 
   You can remove a debug level with unset/debug <name>
 
 
-  1133..7722..  sseett//ddxx ((00))
+  9.72.  set/dx (0)
 
-  sseett//ddxxAllow DX messages to arrive at your terminal
-
-
-  You can stop DX messages with the _u_n_s_e_t_/_d_x command
+  set/dxAllow DX messages to arrive at your terminal
 
 
+  You can stop DX messages with the unset/dx command
 
 
-  1133..7733..  sseett//ddxxggrriidd ((00))
 
-  sseett//ddxxggrriiddAllow grid squares on the end of DX messages
+
+  9.73.  set/dxgrid (0)
+
+  set/dxgridAllow grid squares on the end of DX messages
 
 
   Some logging programs do not like the additional information at the
-  end of a DX spot.  If this is the case, use the _u_n_s_e_t_/_d_x_g_r_i_d command
+  end of a DX spot.  If this is the case, use the unset/dxgrid command
   to remove the grid squares.
 
 
-  1133..7744..  sseett//ddxxnneett ((55))
+  9.74.  set/dxnet (5)
 
-  sseett//ddxxnneett <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a DXNet
+  set/dxnet <node_call> [<node_call> ...] Make the node_call a DXNet
   type node
 
 
   Set the node_call as a DXNet type node
 
 
-  1133..7755..  sseett//eecchhoo ((00))
+  9.75.  set/echo (0)
 
-  sseett//eecchhoo Make the cluster echo your input
+  set/echo Make the cluster echo your input
 
 
   If you are connected via a telnet session, different implimentations
@@ -4515,27 +3525,27 @@
   connected via port 23 or some other port. You can use this command to
   change the setting appropriately.
 
-  You can remove the echo with the _u_n_s_e_t_/_e_c_h_o command
+  You can remove the echo with the unset/echo command
 
   The setting is stored in your user profile.
 
   YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
 
-  1133..7766..  sseett//hheerree ((00))
+  9.76.  set/here (0)
 
-  sseett//hheerree Set the here flag
+  set/here Set the here flag
 
 
   Let others on the cluster know you are here by only displaying your
   callsign.  If you are away from your terminal you can use the
-  _u_n_s_e_t_/_h_e_r_e command to let people know you are away.  This simply puts
+  unset/here command to let people know you are away.  This simply puts
   brackets around your callsign to indicate you are not available.
 
 
-  1133..7777..  sseett//hhoommeennooddee ((00))
+  9.77.  set/homenode (0)
 
-  sseett//hhoommeennooddee <<nnooddee__ccaallll>> Set your home cluster
+  set/homenode <node_call> Set your home cluster
 
 
   Tell the cluster system where you normally connect to. Any Messages
@@ -4552,9 +3562,9 @@
 
 
 
-  1133..7788..  sseett//hhooppss ((88))
+  9.78.  set/hops (8)
 
-  sseett//hhooppss <<nnooddee__ccaallll>> aannnn||ssppoottss||wwwwvv||wwccyy <<nn>> Set hop count
+  set/hops <node_call> ann|spots|wwv|wcy <n> Set hop count
 
 
   Set the hop count for a particular type of broadcast for a node.
@@ -4575,9 +3585,9 @@
   creates a filter and works in conjunction with the filter system.
 
 
-  1133..7799..  sseett//iissoollaattee ((99))
+  9.79.  set/isolate (9)
 
-  sseett//iissoollaattee <<nnooddee ccaallll>> Isolate a node from the rest of the network
+  set/isolate <node call> Isolate a node from the rest of the network
 
 
   Connect a node to your system in such a way that you are a full
@@ -4593,22 +3603,22 @@
   You can remove the isolation with the command unset/isolate.
 
 
-  1133..8800..  sseett//llaanngguuaaggee ((00))
+  9.80.  set/language (0)
 
-  sseett//llaanngguuaaggee <<llaanngguuaaggee>> Set the language you wish to use
+  set/language <language> Set the language you wish to use
 
 
   You can select the language that you want the cluster to use.
-  Currently the languages available are _e_n (English) and _n_l (Dutch).
+  Currently the languages available are en (English) and nl (Dutch).
 
 
-  1133..8811..  sseett//llooccaattiioonn ((00))
+  9.81.  set/location (0)
 
-  sseett//llooccaattiioonn <<llaatt aanndd lloonngg>> Set your latitude and longitude
+  set/location <lat and long> Set your latitude and longitude
 
 
   You can set your latitude and longitude manually or alternatively use
-  the _s_e_t_/_q_r_a command which will do the conversion for you.
+  the set/qra command which will do the conversion for you.
 
 
 
@@ -4618,9 +3628,9 @@
 
 
 
-  1133..8822..  sseett//ssyyss__llooccaattiioonn ((99))
+  9.82.  set/sys_location (9)
 
-  sseett//ssyyss__llooccaattiioonn <<llaatt && lloonngg>> Set your cluster latitude and longitude
+  set/sys_location <lat & long> Set your cluster latitude and longitude
 
 
   In order to get accurate headings and such like you must tell the
@@ -4636,28 +3646,28 @@
 
 
 
-  1133..8833..  sseett//llooggiinniinnffoo ((00))
+  9.83.  set/logininfo (0)
 
-  sseett//llooggiinniinnffoo Show logins and logouts of nodes and users
+  set/logininfo Show logins and logouts of nodes and users
 
 
   Show users and nodes when they log in and out of the local cluster.
-  You can stop these messages by using the _u_n_s_e_t_/_l_o_g_i_n_i_n_f_o command.
+  You can stop these messages by using the unset/logininfo command.
 
 
 
-  1133..8844..  sseett//lloocckkoouutt ((99))
+  9.84.  set/lockout (9)
 
-  sseett//lloocckkoouutt <<ccaallll>> Stop a callsign connecting to the cluster
-
-
-  You can show who is locked out with the _s_h_o_w_/_l_o_c_k_o_u_t command.  To
-  allow the user to connect again, use the _u_n_s_e_t_/_l_o_c_k_o_u_t command.
+  set/lockout <call> Stop a callsign connecting to the cluster
 
 
-  1133..8855..  sseett//nnaammee ((00))
+  You can show who is locked out with the show/lockout command.  To
+  allow the user to connect again, use the unset/lockout command.
 
-  sseett//nnaammee <<yyoouurr__nnaammee>> Set your name
+
+  9.85.  set/name (0)
+
+  set/name <your_name> Set your name
 
 
   Tell the cluster what your name is, eg:-
@@ -4670,9 +3680,9 @@
 
 
 
-  1133..8866..  sseett//nnooddee ((99))
+  9.86.  set/node (9)
 
-  sseett//nnooddee <<ccaallll>> [[<<ccaallll>> ......]] Make the callsign an AK1A cluster
+  set/node <call> [<call> ...] Make the callsign an AK1A cluster
 
 
   Tell the system that the call(s) are to be treated as AK1A cluster and
@@ -4692,12 +3702,12 @@
 
 
 
-  To see what your nodes are set to, use the _s_h_o_w_/_n_o_d_e_s command.
+  To see what your nodes are set to, use the show/nodes command.
 
 
-  1133..8877..  sseett//oobbssccoouunntt ((99))
+  9.87.  set/obscount (9)
 
-  sseett//oobbssccoouunntt <<ccoouunntt>> <<nnooddee ccaallll>> Set the 'pump-up' obsolescence
+  set/obscount <count> <node call> Set the 'pump-up' obsolescence
   counter
 
 
@@ -4716,9 +3726,9 @@
   minutes, it is disconnected.
 
 
-  1133..8888..  sseett//ppaaggee ((00))
+  9.88.  set/page (0)
 
-  sseett//ppaaggee <<nn>> Set the number of lines per page
+  set/page <n> Set the number of lines per page
 
 
   Tell the system how many lines you wish on a page when the number of
@@ -4737,9 +3747,9 @@
 
 
 
-  1133..8899..  sseett//ppaasssswwoorrdd ((99))
+  9.89.  set/password (9)
 
-  sseett//ppaasssswwoorrdd <<ccaallllssiiggnn>> <<ssttrriinngg>> Set a users password
+  set/password <callsign> <string> Set a users password
 
 
   The password for a user can only be set by a full sysop. The string
@@ -4750,9 +3760,9 @@
 
 
 
-  1133..9900..  sseett//ppiinnggiinntteerrvvaall ((99))
+  9.90.  set/pinginterval (9)
 
-  sseett//ppiinnggiinntteerrvvaall <<ttiimmee>> <<nnooddee ccaallll>> Set the ping time to neighbouring
+  set/pinginterval <time> <node call> Set the ping time to neighbouring
   nodes
 
 
@@ -4771,9 +3781,9 @@
   for more information.
 
 
-  1133..9911..  sseett//pprriivviilleeggee ((99))
+  9.91.  set/privilege (9)
 
-  sseett//pprriivviilleeggee <<nn>> <<ccaallll>> [[<<ccaallll>> ......]] Set the privilege level on a
+  set/privilege <n> <call> [<call> ...] Set the privilege level on a
   call
 
 
@@ -4797,23 +3807,23 @@
   connection your privilege will automatically be set to 0.
 
 
-  1133..9922..  sseett//ssppiiddeerr ((55))
+  9.92.  set/spider (5)
 
-  sseett//ssppiiddeerr <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a DXSpider
+  set/spider <node_call> [<node_call> ...] Make the node_call a DXSpider
   type node
 
 
   Set the node_call as a DXSpider type node
 
 
-  1133..9933..  sseett//ssyyss__qqrraa ((99))
+  9.93.  set/sys_qra (9)
 
-  sseett//ssyyss__qqrraa <<llooccaattoorr>> Set your cluster QRA locator
+  set/sys_qra <locator> Set your cluster QRA locator
 
 
-  1133..9944..  sseett//qqrraa ((00))
+  9.94.  set/qra (0)
 
-  sseett//qqrraa <<llooccaattoorr>> Set your QRA locator
+  set/qra <locator> Set your QRA locator
 
 
   Tell the system what your QRA (or Maidenhead) locator is. If you have
@@ -4828,9 +3838,9 @@
 
 
 
-  1133..9955..  sseett//qqtthh ((00))
+  9.95.  set/qth (0)
 
-  sseett//qqtthh <<yyoouurr QQTTHH>> Set your QTH
+  set/qth <your QTH> Set your QTH
 
 
   Tell the system where your are.  For example:-
@@ -4843,79 +3853,79 @@
 
 
 
-  1133..9966..  sseett//ttaallkk ((00))
+  9.96.  set/talk (0)
 
-  sseett//ttaallkk Allow talk messages to be seen at your console
+  set/talk Allow talk messages to be seen at your console
 
 
   Allow talk messages to arrive at your console.  You can switch off
-  talks with the _u_n_s_e_t_/_t_a_l_k command.
+  talks with the unset/talk command.
 
 
-  1133..9977..  sseett//wwccyy ((00))
+  9.97.  set/wcy (0)
 
-  sseett//wwccyy Allow WCY messages to be seen at your console
+  set/wcy Allow WCY messages to be seen at your console
 
 
   Allow WCY information to be seen at your console.  You can switch off
-  WCY messages with the _u_n_s_e_t_/_w_c_y command.
+  WCY messages with the unset/wcy command.
 
 
-  1133..9988..  sseett//wwwwvv ((00))
+  9.98.  set/wwv (0)
 
-  sseett//wwwwvv Allow WWV messages to be seen at your console
+  set/wwv Allow WWV messages to be seen at your console
 
 
   Allow WWV information to be seen at your console.  You can switch off
-  WWV messages with the _u_n_s_e_t_/_w_w_v command.
+  WWV messages with the unset/wwv command.
 
 
-  1133..9999..  sseett//wwxx ((00))
+  9.99.  set/wx (0)
 
-  sseett//wwxx Allow WX messages to be seen at your console
+  set/wx Allow WX messages to be seen at your console
 
 
   Allow WX information to be seen at your console.  You can switch off
-  WX messages with the _u_n_s_e_t_/_w_x command.
+  WX messages with the unset/wx command.
 
 
 
 
 
-  1133..110000..  sshhooww//bbaaddddxx ((11))
+  9.100.  show/baddx (1)
 
-  sshhooww//bbaaddddxxShow all the bad dx calls in the system
+  show/baddxShow all the bad dx calls in the system
 
 
   Display all the bad dx callsigns in the system, see SET/BADDX for more
   information.
 
 
-  1133..110011..  sshhooww//bbaaddnnooddee ((66))
+  9.101.  show/badnode (6)
 
-  sshhooww//bbaaddnnooddee Show all the bad nodes in the system
+  show/badnode Show all the bad nodes in the system
 
 
   Display all the bad node callsigns in the system, see SET/BADNODE for
   more information.
 
 
-  1133..110022..  sshhooww//bbaaddssppootttteerr ((11))
+  9.102.  show/badspotter (1)
 
-  sshhooww//bbaaddssppootttteerr Show all the bad spotters in the system
+  show/badspotter Show all the bad spotters in the system
 
 
   Display all the bad spotter's callsigns in the system, see
   SET/BADSPOTTER for more information.
 
 
-  1133..110033..  sshhooww//ccoonnffiigguurraattiioonn ((00))
+  9.103.  show/configuration (0)
 
-  sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]] Show all visible nodes and their users
+  show/configuration [<node>] Show all visible nodes and their users
 
 
   This command allows you to see all the users that can be seen and the
-  nodes to which they are connected.  With the optional _n_o_d_e, you can
+  nodes to which they are connected.  With the optional node, you can
   specify a particular node to look at.
 
   This command is normally abbreviated to: sh/c
@@ -4923,27 +3933,27 @@
   BE WARNED: the list that is returned can be VERY long
 
 
-  1133..110044..  sshhooww//ccoonnffiigguurraattiioonn//nnooddee ((00))
+  9.104.  show/configuration/node (0)
 
-  sshhooww//ccoonnffiigguurraattiioonn//nnooddee Show all the nodes connected
+  show/configuration/node Show all the nodes connected
 
 
   Show all the nodes connected locally and the nodes they have
   connected.
 
 
-  1133..110055..  sshhooww//ccoonnnneecctt ((11))
+  9.105.  show/connect (1)
 
-  sshhooww//ccoonnnneecctt Show all the active connections
+  show/connect Show all the active connections
 
 
   This command shows information on all the active connections known to
   the node. This command gives slightly more information than WHO.
 
 
-  1133..110066..  sshhooww//ddaattee ((00))
+  9.106.  show/date (0)
 
-  sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
+  show/date [<prefix>|<callsign>] Show the local time
 
 
   This is very nearly the same as SHOW/TIME, the only difference the
@@ -4954,17 +3964,17 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1133..110077..  sshhooww//ddeebbuugg ((99))
+  9.107.  show/debug (9)
 
-  sshhooww//ddeebbuugg Show what levels of debug you are logging
-
-
-  The levels can be set with _s_e_t_/_d_e_b_u_g
+  show/debug Show what levels of debug you are logging
 
 
-  1133..110088..  sshhooww//ddxx ((00))
+  The levels can be set with set/debug
 
-  sshhooww//ddxx [[ooppttiioonnss]] interrogate the spot database
+
+  9.108.  show/dx (0)
+
+  show/dx [options] interrogate the spot database
 
 
   If you just type SHOW/DX you will get the last so many spots (sysop
@@ -5026,9 +4036,9 @@
 
 
 
-  1133..110099..  sshhooww//ddxxcccc ((00))
+  9.109.  show/dxcc (0)
 
-  sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
+  show/dxcc <prefix> Interrogate the spot database by country
 
 
   This command takes the <prefix> (which can be a full or partial
@@ -5047,9 +4057,9 @@
 
 
 
-  1133..111100..  sshhooww//ffiilleess ((00))
+  9.110.  show/files (0)
 
-  sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]] List the contents of a filearea
+  show/files [<filearea> [<string>]] List the contents of a filearea
 
 
   SHOW/FILES on its own will show you a list of the various fileareas
@@ -5080,26 +4090,26 @@
 
 
 
-  1133..111111..  sshhooww//ffiilltteerr ((00))
+  9.111.  show/filter (0)
 
-  sshhooww//ffiilltteerr Show the filters you have set
+  show/filter Show the filters you have set
 
 
   Show the contents of all the filters that are set by you. This command
   displays all the filters set - for all the various categories.
 
 
-  1133..111122..  sshhooww//ffiilltteerr ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
+  9.112.  show/filter (extended for sysops) (5)
 
-  sshhooww//ffiilltteerr <<ccaallllssiiggnn>> Show the filters set by <callsign>
+  show/filter <callsign> Show the filters set by <callsign>
 
 
   A sysop can look at any filters that have been set.
 
 
-  1133..111133..  sshhooww//hhooppss ((88))
+  9.113.  show/hops (8)
 
-  sshhooww//hhooppss <<nnooddee__ccaallll>> [[aannnn||ssppoottss||wwccyy||wwwwvv||]] Show the hop counts for a
+  show/hops <node_call> [ann|spots|wcy|wwv|] Show the hop counts for a
   node
 
 
@@ -5108,26 +4118,26 @@
   the categories will be listed.
 
 
-  1133..111144..  sshhooww//iissoollaattee ((11))
+  9.114.  show/isolate (1)
 
-  sshhooww//iissoollaattee Show a list of isolated nodes
+  show/isolate Show a list of isolated nodes
 
 
   Show which nodes are currently set to be isolated.
 
 
-  1133..111155..  sshhooww//lloocckkoouutt ((99))
+  9.115.  show/lockout (9)
 
-  sshhooww//lloocckkoouutt Show a list of excluded callsigns
+  show/lockout Show a list of excluded callsigns
 
 
   Show a list of callsigns that have been excluded (locked out) of the
-  cluster locally with the _s_e_t_/_l_o_c_k_o_u_t command
+  cluster locally with the set/lockout command
 
 
-  1133..111166..  sshhooww//lloogg ((88))
+  9.116.  show/log (8)
 
-  sshhooww//lloogg [[<<ccaallllssiiggnn>>]] Show excerpts from the system log
+  show/log [<callsign>] Show excerpts from the system log
 
 
   This command outputs a short section of the system log.  On its own it
@@ -5135,9 +4145,9 @@
   show output from the log associated with that callsign.
 
 
-  1133..111177..  sshhooww//mmoooonn ((00))
+  9.117.  show/moon (0)
 
-  sshhooww//mmoooonn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show moon rise and set times
+  show/moon [<prefix>|<callsign>] Show moon rise and set times
 
 
   Show the Moon rise and set times for a (list of) prefixes or
@@ -5165,9 +4175,9 @@
 
 
 
-  1133..111188..  sshhooww//mmuuff ((00))
+  9.118.  show/muf (0)
 
-  sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]] Show the likely propagation to
+  show/muf <prefix> [<hours>][long] Show the likely propagation to
   <prefix>
 
 
@@ -5256,9 +4266,9 @@
   terrible accurate, but it is included for completeness.
 
 
-  1133..111199..  sshhooww//nnooddee ((11))
+  9.119.  show/node (1)
 
-  sshhooww//nnooddee [[<<nnooddee__ccaallll>> ......]] Show the type and version number of nodes
+  show/node [<node_call> ...] Show the type and version number of nodes
 
 
   Show the type and version (if connected) of the nodes specified on the
@@ -5266,9 +4276,9 @@
   the non-user callsigns known to the system will be displayed.
 
 
-  1133..112200..  sshhooww//pprreeffiixx ((00))
+  9.120.  show/prefix (0)
 
-  sshhooww//pprreeffiixx <<ccaallllssiiggnn>> Interrogate the prefix database
+  show/prefix <callsign> Interrogate the prefix database
 
 
   This command takes the <callsign> (which can be a full or partial
@@ -5278,9 +4288,9 @@
 
   See also SHOW/DXCC
 
-  1133..112211..  sshhooww//pprrooggrraamm ((55))
+  9.121.  show/program (5)
 
-  sshhooww//pprrooggrraamm Show the locations of all the included program modules
+  show/program Show the locations of all the included program modules
 
 
   Show the name and location where every program module was load from.
@@ -5288,10 +4298,10 @@
   from.
 
 
-  1133..112222..  sshhooww//qqrraa ((00))
+  9.122.  show/qra (0)
 
-  sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]] Show the distance between locators
-  sshhooww//qqrraa <<llaatt>> <<lloonngg>> Convert latitude and longitude to a locator
+  show/qra <locator> [<locator>] Show the distance between locators
+  show/qra <lat> <long> Convert latitude and longitude to a locator
 
 
   This is a multipurpose command that allows you either to calculate the
@@ -5324,9 +4334,9 @@
 
 
 
-  1133..112233..  sshhooww//qqrrzz ((00))
+  9.123.  show/qrz (0)
 
-  sshhooww//qqrrzz <<ccaallllssiiggnn>> Show any callbook details on a callsign
+  show/qrz <callsign> Show any callbook details on a callsign
 
 
   This command queries the QRZ callbook server on the internet and
@@ -5334,9 +4344,9 @@
   provided for users of this software by http://www.qrz.com
 
 
-  1133..112244..  sshhooww//rroouuttee ((00))
+  9.124.  show/route (0)
 
-  sshhooww//rroouuttee <<ccaallllssiiggnn>> Show the route to <callsign>
+  show/route <callsign> Show the route to <callsign>
 
 
   This command allows you to see to which node the callsigns specified
@@ -5350,9 +4360,9 @@
 
 
 
-  1133..112255..  sshhooww//ssaatteelllliittee ((00))
+  9.125.  show/satellite (0)
 
-  sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]] Show satellite tracking
+  show/satellite <name> [<hours> <interval>] Show satellite tracking
   data
 
 
@@ -5383,9 +4393,9 @@
 
 
 
-  1133..112266..  sshhooww//ssuunn ((00))
+  9.126.  show/sun (0)
 
-  sshhooww//ssuunn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
+  show/sun [<prefix>|<callsign>] Show sun rise and set times
 
 
   Show the sun rise and set times for a (list of) prefixes or callsigns,
@@ -5410,9 +4420,9 @@
 
 
 
-  1133..112277..  sshhooww//ttiimmee ((00))
+  9.127.  show/time (0)
 
-  sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
+  show/time [<prefix>|<callsign>] Show the local time
 
 
   If no prefixes or callsigns are given then this command returns the
@@ -5421,20 +4431,20 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1133..112288..  sshhooww//wwccyy ((00))
+  9.128.  show/wcy (0)
 
-  sshhooww//wwccyy Show the last 10 WCY broadcasts
-  sshhooww//wwccyy <<nn>> Show the last <n> WCY broadcasts
+  show/wcy Show the last 10 WCY broadcasts
+  show/wcy <n> Show the last <n> WCY broadcasts
 
 
   Display the most recent WCY information that has been received by the
   system
 
 
-  1133..112299..  sshhooww//wwwwvv ((00))
+  9.129.  show/wwv (0)
 
-  sshhooww//wwwwvv Show the last 10 WWV broadcasts
-  sshhooww//wwwwvv <<nn>> Show the last <n> WWV broadcasts
+  show/wwv Show the last 10 WWV broadcasts
+  show/wwv <n> Show the last <n> WWV broadcasts
 
 
   Display the most recent WWV information that has been received by the
@@ -5442,18 +4452,18 @@
 
 
 
-  1133..113300..  sshhuuttddoowwnn ((55))
+  9.130.  shutdown (5)
 
-  sshhuuttddoowwnn Shutdown the cluster
+  shutdown Shutdown the cluster
 
 
   Shutdown the cluster and disconnect all the users.  If you have Spider
   set to respawn in /etc/inittab it will of course restart.
 
 
-  1133..113311..  ssppooooff ((99))
+  9.131.  spoof (9)
 
-  ssppooooff <<ccaallllssiiggnn>> <<ccoommmmaanndd>> Run commands as another user
+  spoof <callsign> <command> Run commands as another user
 
 
   This is a very simple yet powerful command for the sysop.  It allows
@@ -5462,9 +4472,9 @@
   like home_node for example.
 
 
-  1133..113322..  ssttaatt//ddbb ((55))
+  9.132.  stat/db (5)
 
-  ssttaatt//ddbb <<ddbbnnaammee>> Show the status of a database
+  stat/db <dbname> Show the status of a database
 
 
   Show the internal status of a database descriptor.
@@ -5476,9 +4486,9 @@
 
 
 
-  1133..113333..  ssttaatt//cchhaannnneell ((55))
+  9.133.  stat/channel (5)
 
-  ssttaatt//cchhaannnneell <<ccaallllssiiggnn>> Show the status of a channel on the cluster
+  stat/channel <callsign> Show the status of a channel on the cluster
 
 
   Show the internal status of the channel object either for the channel
@@ -5487,9 +4497,9 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  1133..113344..  ssttaatt//mmssgg ((55))
+  9.134.  stat/msg (5)
 
-  ssttaatt//mmssgg <<mmssggnnoo>> Show the status of a message
+  stat/msg <msgno> Show the status of a message
 
 
   This command shows the internal status of a message and includes
@@ -5497,9 +4507,9 @@
   etc etc.
 
 
-  1133..113355..  ssttaatt//uusseerr ((55))
+  9.135.  stat/user (5)
 
-  ssttaatt//uusseerr <<ccaallllssiiggnn>> Show the full status of a user
+  stat/user <callsign> Show the full status of a user
 
 
   Shows the full contents of a user record including all the secret
@@ -5508,9 +4518,9 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  1133..113366..  ssyyssoopp ((00))
+  9.136.  sysop (0)
 
-  ssyyssoopp Regain your privileges if you login remotely
+  sysop Regain your privileges if you login remotely
 
 
   The system automatically reduces your privilege level to that of a
@@ -5547,11 +4557,11 @@
   case sensitive.
 
 
-  1133..113377..  ttaallkk ((00))
+  9.137.  talk (0)
 
-  ttaallkk <<ccaallllssiiggnn>> Enter talk mode with <callsign>
-  ttaallkk <<ccaallllssiiggnn>> <<tteexxtt>> Send a text message to <callsign>
-  ttaallkk <<ccaallllssiiggnn>> >> <<nnooddee__ccaallll>> [[<<tteexxtt>>]] Send a text message to
+  talk <callsign> Enter talk mode with <callsign>
+  talk <callsign> <text> Send a text message to <callsign>
+  talk <callsign> > <node_call> [<text>] Send a text message to
   <callsign> via <node_call>
 
 
@@ -5598,9 +4608,9 @@
 
 
 
-  1133..113388..  ttyyppee ((00))
+  9.138.  type (0)
 
-  ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>> Look at a file in one of the fileareas
+  type <filearea>/<name> Look at a file in one of the fileareas
 
 
   Type out the contents of a file in a filearea. So, for example, in
@@ -5617,28 +4627,28 @@
   content.
 
 
-  1133..113399..  wwhhoo ((00))
+  9.139.  who (0)
 
-  wwhhoo Show who is physically connected locally
+  who Show who is physically connected locally
 
 
   This is a quick listing that shows which callsigns are connected and
   what sort of connection they have
 
 
-  1133..114400..  wwxx ((00))
+  9.140.  wx (0)
 
-  wwxx <<tteexxtt>> Send a weather message to local users
-  wwxx ffuullll <<tteexxtt>>  Send a weather message to all cluster users
+  wx <text> Send a weather message to local users
+  wx full <text>  Send a weather message to all cluster users
 
 
   Weather messages can sometimes be useful if you are experiencing an
   extreme that may indicate enhanced conditions
 
 
-  1133..114411..  wwxx ((eennhhaanncceedd ffoorr ssyyssooppss)) ((55))
+  9.141.  wx (enhanced for sysops) (5)
 
-  wwxx ssyyssoopp <<tteexxtt>> Send a weather message to other clusters only
+  wx sysop <text> Send a weather message to other clusters only
 
 
   Send a weather message only to other cluster nodes and not to general

@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The DXSpider Administration Manual v1.47: Filtering (Old Style upto v1.44)</TITLE>
+ <LINK HREF="adminmanual-3.html" REL=next>
+ <LINK HREF="adminmanual-1.html" REL=previous>
+ <LINK HREF="adminmanual.html#toc2" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="adminmanual-3.html">Next</A>
+<A HREF="adminmanual-1.html">Previous</A>
+<A HREF="adminmanual.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. Filtering (Old Style upto v1.44)</A></H2>
+
+<P>Filters can be set for spots, announcements and WWV.  You will find the 
+directories for these under /spider/filter.  You will find some examples in 
+the directories with the suffix <EM>.issue</EM>.  There are two types of 
+filter, one for incoming information and one for outgoing information. 
+Outgoing filters are in the form <EM>CALLSIGN.pl</EM> and incoming filters 
+are in the form <EM>in_CALLSIGN.pl</EM>.  Filters can be set for both nodes 
+and users.
+<P>
+<P>All filters work in basically the same way.  There are several elements 
+delimited by commas.  There can be many lines in the filter and they are 
+read from the top by the program.  When writing a filter you need to think 
+carefully about just what you want to achieve.  You are either going to write 
+a filter to <EM>accept</EM> or to <EM>reject</EM>.  Think of a filter as 
+having 2 main elements.  For a reject filter, you would have a line or multiple 
+lines rejecting the things you do not wish to receive and then a default line
+accepting everything else that is not included in the filter.  Likewise, for an
+accept filter, you would have a line or multiple lines accepting the things you 
+wish to receive and a default line rejecting everthing else.
+<P>
+<P>In the example below, a user requires a filter that would only return SSB spots
+posted in Europe on the HF bands.  This is achieved by first rejecting the CW 
+section of each HF band and rejecting all of VHF, UHF etc based on frequency.
+Secondly, a filter rule is set based on CQ zones to only accept spots posted in
+Europe.  Lastly, a default filter rule is set to reject anything outside the filter.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$in = [
+        [ 0, 0, 'r', # reject all CW spots
+                [
+                1800.0, 1850.0,
+                3500.0, 3600.0,
+                7000.0, 7040.0,
+                14000.0, 14100.0,
+                18068.0, 18110.0,
+                21000.0, 21150.0,
+                24890.0, 24930.0,
+                28000.0, 28180.0,
+                30000.0, 49000000000.0,
+                ] ,1 ],
+        [ 1, 11, 'n', [ 14, 15, 16, 20, 33, ], 15 ], #accept EU
+        [ 0, 0, 'd', 0, 1 ], # 1 = want, 'd' = everything else
+];
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The actual elements of each filter are described more fully in the following
+sections.
+<P>
+<H2><A NAME="ss2.1">2.1 Spots</A>
+</H2>
+
+<P>The elements of the Spot filter are ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+[action, field_no, sort, possible_values, hops]
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>There are 3 elements here to look at.  Firstly, the action element.  This is 
+very simple and only 2 possible states exist, accept (1) or drop (0).
+<P>
+<P>The second element is the field_no.  There are 13 possiblities to choose from 
+here ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+      0 = frequency
+      1 = call
+      2 = date in unix format
+      3 = comment
+      4 = spotter
+      5 = spotted dxcc country
+      6 = spotter's dxcc country
+      7 = origin
+      8 = spotted itu
+      9 = spotted cq
+      10 = spotter's itu
+      11 = spotter's cq
+      12 = callsign of the channel on which the spot has appeared
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The third element tells us what to expect in the fourth element.  There are 
+4 possibilities ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+     n - numeric list of numbers e.g. [ 1,2,3 ]
+     r - ranges of pairs of numbers e.g. between 2 and 4 or 10 to 17 - [ 2,4, 10,17 ]
+     a - an alphanumeric regex
+     d - the default rule
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>The fifth element is simply the hops to set in this filter.  This would only 
+be used if the filter was for a node of course and overrides the hop count in
+hop_table.pl.
+<P>
+<P>So, let's look at an example spot filter.  It does not matter in the example 
+who the filter is to be used for.  So, what do we need in the filter?  We need 
+to filter the spots the user/node requires and also set a default rule for 
+anything else outside the filter.  Below is a simple filter that stops spots 
+arriving from outside Europe.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$in = [
+  [ 0, 4, 'a', '^(K|N|A|W|VE|VA|J)'],  # 0 = drop, 'a' = alphanumeric
+  [ 1, 0, 'd', 0, 1 ],                 # 1 = want, 'd' = everything else
+                     ];
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>So the filter is wrapped in between a pair of square brackets.  This tells 
+Spider to look in between these limits.  Then each line is contained within 
+its own square brackets and ends with a comma. Lets look carefully at the first 
+line.  The first element is 0 (drop).  Therefore anything we put on this line 
+will not be accepted.  The next element is 4.  This means we are filtering by 
+the spotter.  The third element is the letter "a" which tells the program to 
+expect an alphanumeric expression in the fourth element.  The fourth element 
+is a list of letters separated by the pipe symbol.
+<P>
+<P>What this line does is tell the program to drop any spots posted by anyone in 
+the USA, Canada or Japan.
+<P>
+<P>The second line is the default rule for anything else.  The "d" tells us this 
+and the line simply reads... accept anything else.
+<P>
+<P>You can add as many lines as you need to complete the filter but if there are 
+several lines of the same type it is neater to enclose them all as one line.  
+An example of this is where specific bands are set.  We could write this like 
+this ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+[ 0,0,'r',[1800.0, 2000.0], 1],
+[ 0,0,'r',[10100.0, 10150.0], 1],
+[ 0,0,'r',[14000.0, 14350.0], 1],
+[ 0,0,'r',[18000.0, 18200.0], 1],
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>But the line below achieves the same thing and is more efficient ....
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  [ 0, 0, 'r',
+    [  
+      1800.0, 2000.0,         # top band 
+      10100.0, 10150.0,       # WARC  
+      14000.0, 14350.0,       # 20m
+      18000.0, 18200.0,       # WARC
+    [ ,1 ],
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<H2><A NAME="ss2.2">2.2 Announcements</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+# This is an example announce or filter allowing only West EU announces
+# 
+# The element list is:-
+# 0 - callsign of announcer
+# 1 - destination * = all, &lt;callsign> = routed to the node
+# 2 - text
+# 3 - * - sysop, &lt;some text> - special list eg 6MUK, ' ', normal announce
+# 4 - origin
+# 5 - 0 - announce, 1 - wx
+# 6 - channel callsign (the interface from which this spot came)
+
+$in = [
+        [ 1, 0, 'a', '^(P[ABCDE]|DK0WCY|G|M|2|EI|F|ON)' ],
+        [ 0, 0, 'd', 0 ]
+];
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>In this example, only the prefixes listed will be allowed.  It is possible to 
+be quite specific.  The Dutch prefix "P" is followed by several secondary 
+identifiers which are allowed.  So, in the example, "PA" or "PE" would be ok 
+but not "PG".  It is even possible to allow information from a single callsign.  
+In the example this is DK0WCY, to allow the posting of his Aurora Beacon.
+<P>
+<H2><A NAME="ss2.3">2.3 WWV</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+# This is an example WWV filter
+# 
+# The element list is:-
+# 0 - nominal unix date of spot (ie the day + hour:13)
+# 1 - the hour
+# 2 - SFI
+# 3 - K
+# 4 - I
+# 5 - text
+# 6 - spotter
+# 7 - origin
+# 8 - incoming interface callsign
+
+# this one doesn't filter, it just sets the hop count to 6 and is
+# used mainly just to override any isolation from WWV coming from
+# the internet.
+
+$in = [
+        [ 1, 0, 'd', 0, 6 ]
+];
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>It should be noted that the filter will start to be used only once a user/node 
+has logged out and back in again.
+<P>I am not going to spend any more time on these filters now as they will become 
+more "comprehensive" in the near future.
+<P>
+<HR>
+<A HREF="adminmanual-3.html">Next</A>
+<A HREF="adminmanual-1.html">Previous</A>
+<A HREF="adminmanual.html#toc2">Contents</A>
+</BODY>
+</HTML>
