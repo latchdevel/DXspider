@@ -56,7 +56,7 @@ sub create_it
 
 	# now do one for the alias
 	while ($ref = DXUser->get($myalias)) {
-		print "old call $mycall deleted\n";
+		print "old call $myalias deleted\n";
 		$ref->del();
 	}
 
@@ -78,7 +78,7 @@ sub create_it
   
 	# write it away
 	$self->close();
-	print "new call $mycall added\n";
+	print "new call $myalias added\n";
 
 }
 
