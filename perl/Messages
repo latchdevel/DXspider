@@ -56,7 +56,9 @@ package DXM;
 				e14 => 'First argument must be numeric and > 0',
 				e15 => 'invalid qualifier \"$_[0]\"',
 				e16 => 'File \"$_[0]\" exists',
-				
+
+				echoon => 'Echoing enabled',
+				echooff => 'Echoing disabled',
 				emaile1 => 'Please enter your email address, set/email <your e-mail address>',
 				emaila => 'Your E-Mail Address is now \"$_[0]\"',
 				email => 'E-mail address set to: $_[0]',

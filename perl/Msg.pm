@@ -89,7 +89,7 @@ sub _enqueue {
     my ($conn, $msg) = @_;
     # prepend length (encoded as network long)
     my $len = length($msg);
-	$msg =~ s/(\x00-\x2f\x7e-\xff%])/sprintf("%%%02X", ord($1))/eg; 
+	$msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
     push (@{$conn->{queue}}, $msg . "\n");
 }
 

@@ -89,6 +89,7 @@ package CmdAlias;
 	  '^set/nohe', 'unset/here', 'unset/here',
 	  '^set/noan', 'unset/announce', 'unset/announce',
 	  '^set/nodx', 'unset/dx', 'unset/dx',
+	  '^set/noe', 'unset/echo', 'unset/echo',
 	  '^set/nota', 'unset/talk', 'unset/talk',
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',

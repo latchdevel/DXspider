@@ -1,3 +1,8 @@
+08Jun00=======================================================================
+1. fixed problem with binary characters from cluster->client
+2. added set/echo and unset/echo commands
+3. echo login characters on login: prompt for C client
+4. Send \r\n on telnet connections for C Client
 11May00=======================================================================
 1. fixed looping in Msg.pm (at last)
 10May00=======================================================================
