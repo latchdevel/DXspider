@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Installing Spider</title>
+  </head>
+
+  <body>
+    <h2>Installing Spider</h2>
+
+    <hr>
+    <address><a href="mailto:djk@tobit.co.uk"></a></address>
+<!-- Created: Wed Dec  2 16:40:25 GMT 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Dec  2 18:19:38 GMT 1998
+<!-- hhmts end -->
+
+	<p>This version of dxspider requires perl5 (it is written entirely in perl5 and
+	makes extensive use of perl objects). This program is known to work with
+	RedHat 5.1 perl5_004.</p>
+
+	<p>In addition to the standard perl5 distribution you will require to load the
+	the following modules:-</p>
+
+	<ol>  
+	  <li> <a href="cpan.html">CPAN</a> - this has a load of the standard extra stuff in it. To load it type:-
+
+      <pre>
+  # perl -MCPAN -e shell
+  cpan> install Bundle::CPAN
+  cpan> q
+     </pre>
+
+		<p>Please sure there were no errors, be particularly careful when installing
+		  libwww stuff, I would suggest 'no host lookups' and pressing &lt;space> and
+		  enter for each of the offered default hostnames. </p>
+		
+		<p>I have monitored a typical load of <a href="cpan.html">CPAN</a> which you can
+		  look at <a href="cpan.html">here</a></p>
+
+	  <li> Date::Parse, MLDBM, IO::Select
+  
+		<p>As you have so carefully loaded it, I suggest you use the CPAN system
+		  above:-</p>
+		<pre>
+  # perl -MCPAN -e shell
+  cpan> install Date::Parse
+  ..
+  ..
+  cpan> install MLDBM
+  ..
+  ..
+  cpan> install IO::Select
+        </pre>
+		<p>In order to use IO::Select you will need to </p>
+		<pre>
+  # cd /root/.cpan/build/IO-1.20  
+  # make install UNINST=1
+        </pre>
+		<p>The 'cd' is to the place where CPAN sets up its local cache. The example 
+		  shown is for Linux defaults.</p>
+
+	  <li> select a user to run the cluster as UNDER _NO_ CIRCUMSTANCES USE ROOT.
+
+		<p>I say again DO NOT USE root.</p>
+   
+		<p>Pick an existing user or create a new one. Don't care which. I don't know
+		  your security requirements.</p>
+   
+	  <li> login as root (I shall use 'jim' for any examples).<br>
+
+	  <li> type in the following:-
+		<pre>
+   # cd ~jim
+   # tar xvfz spider-x.x.tar.gz
+   # ln -s ~jim/spider /spider
+   # groupadd -g 251 spider       (or another number)
+   # vi /etc/group                (or your favorite editor)
+		</pre>
+
+		<p>add jim (or whatever) and root to the group spider
+		  it should look something like:-</p>
+	 
+		<pre>
+     spider:x:251:jim,root
+     :x
+   # chown -R jim.spider spider
+   # find . -type d -exec chmod 2775 {} \;
+   # find . -type f -exec chmod 775 {} \;
+		</pre>
+		<p>This last step allows various users of group spider to have write
+		  access to all the directories. Not really needed for now but will 
+		  be useful when web interfaces start to appear.</p>
+
+	  <li> if you have any users that require network logins, set them up as real
+		users with useradd -m &lt;callsign>. Alter the default .bashrc so that it
+		contains just one line (assuming you use the default bash shell).
+		
+		<pre>
+		exec /spider/perl/client.pl &lt;callsign> telnet
+		</pre>
+   
+		<p>Don't forget to give them a real password. This is really for network
+		cluster logins. The telnet argument does two things, it sets the EOL 
+		convention to \n rather than AX25's \r and it automatically reduces
+		  the privilege of the &lt;callsign> to a 'safe[r]' level.</p>
+   
+	  <li> for incoming AX25 connections you are expected to have got the AX25
+		utilities setup, tested and working. See the AX25-HOWTO for more info
+		on this - it really is outside the scope of this document. I would 
+		recommend using ax25-utils-2.1.42a-5.i386.rpm or above as a starting 
+		point. DXSpider uses ax25d for incoming connections. You need to have 
+		entries like this:-
+		<pre>
+   [ether]                                                                         
+   NOCALL   * * * * * *  L                                                         
+   default  * * * * * *  - jim /spider/perl/client.pl client.pl %u ax25
+   &lt;bbs>
+   NOCALL   * * * * * *  L                                                         
+   default  * * * * * *  - jim /spider/perl/client.pl client.pl %u ax25
+		</pre>
+
+		<p>where ether and bbs are appropriate KNOWN WORKING axport and nrport 
+		names respectively.</p>
+   
+		<p>Obviously you can use different names, callsigns or whatever for your 
+		  purposes, but it is up to you to get it to work. </p>
+   
+		<p>Note I use BPQ over ethernet which why I have the port names I have.</p>
+
+	  <li>Find your <tt>netrom_call</tt> and <tt>ax25_call</tt> programs (which on
+		my system live in <tt>/usr/sbin</tt> and chmod them so that they are SUID <tt>root</tt>
+		<pre>
+   # chown root ax25_call netrom_call
+   # chmod 4775 ax25_call netrom_call
+        </pre>
+        <p>This has to be done to allow you to specify the correct callsigns on outgoing connects</p>
+   
+	  <li> login as jim (or whatever)
+		<pre>
+   $ startx                     (much easier to use X)
+   $ cd /spider
+   $ mkdir local
+   $ mkdir local_cmd
+   $ cp perl/DXVars.pm local
+   $ cd local
+   $ vi DXVars.pm
+		</pre>
+		<p>now alter your cluster callsign, sysop callsign and other user info 
+		  as you wish. Note that this a perl file which will parsed and executed
+		  as part of the cluster. If you get it wrong then perl will complain 
+		  when you start the cluster process.</p>
+   
+		<p><b>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</b><p>
+   
+		<p>DON'T alter the DXVars.pm (or any other file) in /spider/perl, they are
+		  overwritten with every release. Any files or commands you place in
+		  /spider/local or /spider/local_cmd will automagically be used in preference
+		  to the ones in /spider/perl EVEN whilst the cluster is running!</p>
+		<pre>
+   :x
+   
+   $ cd ../perl
+		</pre>
+
+		<p>now create the basic user file with you as the sysop.</p>
+		<pre>
+   $ create_sysop.pl
+		</pre>
+
+		<p>try and run the cluster program and see whether all the various rivets are
+		  flying in approximate formation...</p>
+		
+		<pre>
+   $ cluster.pl
+   DXSpider DX Cluster Version x.x
+   Copyright (c) 1998 Dirk Koopman G1TLH
+   loading prefixes ...
+   loading band data ...
+   loading user file system ...
+   starting listener ...
+   reading existing message headers
+   reading cron jobs
+   orft we jolly well go ...
+		</pre>
+   
+	  <li> now log in again or start another rxvt or xterm
+		<pre>
+   $ client.pl
+		</pre>
+
+		<p>you should now see a normal cluster prompt.</p>
+   
+		<p>at the cluster prompt:-</p>
+		<pre>
+   G1JIM de GB7JIM 10-Sep-98 1000Z> set/node GB7XXX
+        </pre>
+
+   <p>for every dxcluster you expect to connect to or from.</p>
+
+		<pre>
+   G1JIM de GB7JIM 10-Sep-98 1001Z> shutdown
+		</pre>
+
+		<p>The cluster and the client should both go back to prompts
+   
+		<p>Restart the cluster.
+   
+		<p>The callsigns should be the sysop callsign and the cluster callsign
+		  as per your modified DXVars.pm. You can check that the cluster 
+		  connections will work by:-
+		<pre>
+   $ client.pl gb7xxx      (doesn't have to be uppercase).
+   PC38^GB7JIM^~           <- the cluster thinks this is a cluster
+   ^C                      <- to get out
+        </pre>
+	</ol>
+   
+	<hr>
+	<h5>Version: $Id$</h5>
+  </body>
+</html>

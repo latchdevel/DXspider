@@ -1,11 +1,20 @@
 <html>
-<head>
-<title>CPAN and perl installation</title>
-</head>
-<body>
-<h2>CPAN and perl installation</h2>
+  <head>
+	<title>CPAN and perl installation</title>
+  </head>
+  <body>
+	<h2>CPAN and perl installation</h2>
+    <hr>
+    <address><a href="mailto:djk@tobit.co.uk"></a></address>
+<!-- Created: Wed Dec  2 16:40:25 GMT 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Dec  2 18:12:42 GMT 1998
+<!-- hhmts end -->
 
-<pre>
+	<p>I have captured a typical CPAN load here for your information. The details may be slightly
+	  different, but it should give you a vague idea of how it all goes together.
+	<p>Please note note warnings about loading libnet
+	<pre>
 [root@rufus djk]# perl -MCPAN -e shell
 
 We have to reconfigure CPAN.pm due to following uninitialized parameters:
@@ -404,7 +413,15 @@ with spaces. If you do not have a host available for any of the
 services, then enter a single space, followed by <CR>. To accept the
 default, hit <CR>
 
-Enter a list of available NNTP hosts : [news]  
+	</pre>
+	<b>
+	  ***<br>
+	  *** DO NOT ACCEPT THE DEFAULTS!!! (ed), please enter &lt;space>&lt;cr> ***<br>
+	  ***<br>
+	</b>
+	<pre>
+
+Enter a list of available NNTP hosts : [news]     
 Enter a list of available SMTP hosts : [mailhost]  
 Enter a list of available POP3 hosts : []  
 Enter a list of available SNPP hosts : []  
@@ -778,8 +795,8 @@ Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
 
 cpan> q
 Lockfile removed.
-</pre>
-<hr>
-<h5>Version: $Id$</h5>
-</body>
+	</pre>
+	<hr>
+	<h5>Version: $Id$</h5>
+  </body>
 </html>
