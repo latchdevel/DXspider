@@ -1,20 +1,37 @@
-#!/usr/bin/perl
 #
-# a little program to see if I can use ax25_call in a perl script
+# Query the PineKnot Database server for a callsign
 #
+# from an idea by Steve Franke K9AN and information from Angel EA7WA
+#
+# $Id$
+#
+my ($self, $line) = @_;
+my @list = split /\s+/, $line;		      # generate a list of callsigns
+my $l;
+my $call = $self->call;
+my @out;
 
-use FileHandle;
-use IPC::Open2;
+return (1, "SHOW/CALL <callsign>, e.g. SH/CALL g1tlh") unless @list;
 
-$pid = Open2( \*IN, \*OUT, "ax25_call ether GB7DJK-1 G1TLH");
+use Net::Telnet;
 
-IN->input_record_separator("\r");
-OUT->output_record_separator("\r");
-OUT->autoflush(1);
+my $t = new Net::Telnet;
 
-vec($rin, fileno(STDIN), 1) = 1;
-vec($rin, fileno(IN), 1) = 1;
-
-while (($nfound = select($rout=$rin, undef, undef, 0.001)) >= 0) {
-  
+push @out, $self->msg('call1', 'AA6HF');
+foreach $l (@list) {
+	$t->open(Host     =>  "jeifer.pineknot.com",
+			 Port     =>  1235,
+			 Timeout  =>  5);
+	if ($t) {
+		$t->print(uc $l);
+		Log('call', "$call: show/call \U$l");
+		while (my $result = $t->getline) {
+			push @out,$result;
+		}
+		$t->close;
+	} else {
+		push @out, $self->msg('e18', 'AA6HF');
+	}
 }
+
+return (1, @out);

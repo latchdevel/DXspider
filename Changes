@@ -1,3 +1,9 @@
+07Nov00=======================================================================
+1. removed sh/call because the owner isn't happy about us using it. 
+2. change sh/qrz to the new interface. MUCH QUICKER! you will need a user id
+and password from qrz.com to use it and you will have to copy the 
+/spider/perl/Interface.pm to /spider/local and alter it accordingly. Do 
+remember to set $allow=1 as well!
 06Nov00=======================================================================
 1. Added sh/qrz to the list of callbook services
 05Nov00=======================================================================

@@ -69,6 +69,7 @@ package DXM;
 				e21 => '$_[0] not numeric',
 				e22 => '$_[0] not a callsign',
 				e23 => '$_[0] not a range (eg 0/30000)', 
+				e24 => 'Sorry, Internet access is not enabled',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',

@@ -29,6 +29,7 @@ use DXDb;
 use AnnTalk;
 use WCY;
 use Sun;
+use Internet;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase);
