@@ -1488,7 +1488,7 @@ sub route
 	# always send it down the local interface if available
 	my $dxchan = DXChannel->get($call);
 	unless ($dxchan) {
-		my $cl = Route::Node::get($call);
+		my $cl = Route::get($call);
 		$dxchan = $cl->dxchan if $cl;
 		if (ref $dxchan) {
 			if (ref $self && $dxchan eq $self) {
