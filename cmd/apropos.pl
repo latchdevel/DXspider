@@ -14,9 +14,10 @@ my @out;
 my $lang = $self->lang;
 $lang = 'en' if !$lang;
 
-print "$line\n";
+#print "$line\n";
 my $in;
 $line = 'help' unless $line;
+$line =~ s/\ball\b/.*/;
 $line =~ s/\W//g;   # remove dubious characters
 print "$line\n";
 
