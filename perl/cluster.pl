@@ -97,6 +97,7 @@ use Route::User;
 use Editable;
 use Mrtg;
 use USDB;
+use UDPMsg;
 
 use Data::Dumper;
 use IO::File;
@@ -124,7 +125,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += 7;				# add an offset to make it bigger than last system
+$main::build += 6;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -274,6 +275,9 @@ sub cease
 
 	# disconnect AGW
 	AGWMsg::finish();
+
+	# disconnect UDP customers
+	UDPMsg::finish();
 
 	# end everything else
 	Msg->event_loop(100, 0.01);
@@ -427,7 +431,12 @@ foreach my $l (@main::listen) {
 	push @listeners, $conn;
 	dbg("External Port: $l->[0] $l->[1]");
 }
+
+dbg("AGW Listener") if $AGWMsg::enable;
 AGWrestart();
+
+dbg("UDP Listener") if $UDPMsg::enable;
+UDPMsg::init(\&new_channel);
 
 # load bad words
 dbg("load badwords: " . (BadWords::load or "Ok"));

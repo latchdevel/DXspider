@@ -163,20 +163,20 @@ sub handleI
 	my $self = shift;
 	
 	my @f = split /\^/, $_[2];
-	my $inv = Verify->new($f[7]);
-	unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
+	my $inv = Verify->new($f[8]);
+	unless ($inv->verify($f[9], $main::me->user->passphrase, $main::mycall, $self->call)) {
 		$self->sendnow('D','Sorry...');
 		$self->disconnect;
 	}
 	if ($self->{outbound}) {
 		$self->send($self->genI);
 	} 
-	if ($self->{sort} ne 'S' && $f[4] eq 'DXSpider') {
+	if ($self->{sort} ne 'S' && $f[5] eq 'DXSpider') {
 		$self->{user}->{sort} = $self->{sort} = 'S';
 		$self->{user}->{priv} = $self->{priv} = 1 unless $self->{priv};
 	}
-	$self->{version} = $f[5];
-	$self->{build} = $f[6];
+	$self->{version} = $f[6];
+	$self->{build} = $f[7];
 	$self->state('init1');
 	$self->{lastping} = 0;
 }

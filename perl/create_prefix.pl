@@ -215,7 +215,10 @@ sub ct
 		my $a;
 		foreach $a (@a) {
 			# for now remove (nn) [nn]
-			$a =~ s/(?:\(\d+\)|\[\d+\])//g;
+			my ($itu) = $a =~ /(\(\d+\))/; $a =~ s/(\(\d+\))//g;
+			my ($cq) = $a =~ /(\[\d+\])/; $a =~ s/(\[\d+\])//g;
+			my ($lat, $long) = $a =~ m{(<[-+\d.]+/[-+\d.]+>)}; $a =~ s{(<[-+\d.]+/[-+\d.]+>)}{}g;
+
 			unless ($a) {
 				print "line $line: blank prefix on $l in cty.dat\n";
 				next;
