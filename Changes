@@ -4,6 +4,7 @@
 callsigns to work better.
 3. added in set/usstate command which prints any US state information 
 available on both the spotted (LHS of time) and spotter (RHS of time).
+[Translators: I have added usstates and usstateu to Messages].
 4. Merged in the new (faster) DXUser.pm.
 
 [NOTE] this version will require Storable to be installed. On the
