@@ -70,7 +70,10 @@ sub normal
   
   SWITCH: {
     if ($pcno == 10) {last SWITCH;}
-    if ($pcno == 11) {last SWITCH;}
+    if ($pcno == 11) {             # dx spot
+	  
+	  last SWITCH;
+	}
     if ($pcno == 12) {last SWITCH;}
     if ($pcno == 13) {last SWITCH;}
     if ($pcno == 14) {last SWITCH;}
@@ -95,7 +98,10 @@ sub normal
 	  $self->send($self->pc22());
 	  return;
 	}
-    if ($pcno == 21) {last SWITCH;}
+    if ($pcno == 21) {             # delete a cluster from the list
+	  
+	  last SWITCH;
+	}
     if ($pcno == 22) {last SWITCH;}
     if ($pcno == 23) {last SWITCH;}
     if ($pcno == 24) {last SWITCH;}
@@ -153,11 +159,11 @@ sub normal
   my $hopfield = pop @field;
   push @field, $hopfield; 
   
-  if ($hopfield =~ /H\d\d./o) {
-    my ($hops) = $hopfield =~ /H(\d+)/o;
-	$hops--;
-	if ($hops > 0) {
-	  $line =~ s/\^H\d+(\^\~.)$/\^H$hops$1/;       # change the hop count
+  my $hops;
+  if (($hops) = $hopfield =~ /H(\d+)\^\~?$/o) {
+	my $newhops = $hops - 1;
+	if ($newhops > 0) {
+	  $line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;       # change the hop count
 	  DXProt->broadcast($line, $self);             # send it to everyone but me
 	}
   }
@@ -234,11 +240,16 @@ sub delnode
 #
 # route a message down an appropriate interface for a callsign
 #
-# expects $self to indicate 'from' and is called $self->route(from, pcline);
+# expects $self to indicate 'from' and is called $self->route(to, pcline);
 #
 sub route
 {
-
+  my ($self, $call, $line) = @_;
+  my $cl = DXCluster->get($call);
+  if ($cl) {
+    my $dxchan = $cl->{dxchan};
+    $cl->send($line) if $dxchan;
+  }
 }
 
 # broadcast a message to all clusters [except those mentioned after buffer]

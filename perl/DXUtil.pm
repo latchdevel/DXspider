@@ -11,7 +11,7 @@ package DXUtil;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf
-             print_all_fields
+             print_all_fields 
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -123,3 +123,4 @@ sub print_all_fields
   }
   return @out;
 }
+

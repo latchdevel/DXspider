@@ -28,6 +28,7 @@ my %valid = (
   here => '0,Here?,yesno',
   dxchan => '5,Channel ref',
   pcversion => '5,Node Version',
+  list => '5,User List,dolist',
 );
 
 sub alloc
@@ -71,6 +72,11 @@ sub field_prompt
   return $valid{$ele};
 }
 
+sub dolist
+{
+
+}
+
 no strict;
 sub AUTOLOAD
 {
@@ -105,7 +111,7 @@ sub new
   return $self;
 }
 
-sub delete
+sub del
 {
   my $self = shift;
   $self->delcluster();              # out of the whole cluster table
@@ -157,18 +163,23 @@ sub get_all
   return @out;
 }
 
-sub delete
+sub del
 {
   my $self = shift;
   my $call = $self->call;
   
-  DXUser->delete($call);     # delete all the users one this node
+  DXUser->delete($call);     # delete all the users on this node
   delete $nodes{$call};
 }
 
 sub count
 {
   return %nodes + 1;           # + 1 for ME!
+}
+
+sub dolist
+{
+
 }
 1;
 __END__
