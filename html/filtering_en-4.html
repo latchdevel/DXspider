@@ -87,7 +87,7 @@ However, if a spot matches an accept filter, it is sent immediately to the user.
 <P>Another important concept to know is that you can do everything you want to do 
 with multiple reject filters AND NO ACCEPT FILTERS.  By default, if a spot 
 doesn't match any of the reject filter definitions, then the system considers 
-you want the spots and sends it to you.  For example, the following two filters 
+you want the spot and sends it to you.  For example, the following two filters 
 perform exactly the same thing ...</P>
 <P>
 <BLOCKQUOTE><CODE>
@@ -131,17 +131,18 @@ filter1:    Is spot NOT on the HF contest bands?  No.
             The spot doesn't match the filter definition, so pass it to 
             next filter.
 
-filter2:    Is spot within the freq. Range defined for RTTY?  Yes.  
+filter2:    Is spot within the frequency range defined for RTTY?  Yes.  
             Since the spot matches the filter definition, the spot is rejected 
-            and the users never see it.
+            and the user never sees it.
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
 <P>Had the frequency of the spot been 14025, then the spot would have not matched 
 the filter2 definition either, would have passed through all the filters, and 
-would have been sent to the user at the end of the filter set.  Also, had the 
-spot been on 10 MHz, it would have met the definition of filter1, been rejected 
-immediately, and the filtering process would have stopped before processing 
+would have been sent to the user at the end of the filter set.  Similarly, had 
+the spot been on 10 MHz, it would have met the definition of filter1, been 
+rejected immediately, and the filtering process would have stopped before 
+processing 
 filter2.</P>
 
 <P>In addition, the filtering system has a rough time handling accept filters 

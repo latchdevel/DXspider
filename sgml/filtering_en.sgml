@@ -6,7 +6,7 @@
 
 <title>The DXSpider User Filtering Primer v1.0</title> 
 <author>Compiled By W3BG - Jim Samuels (jimsam@comcast.net) With Introduction by N3RD - Dave Hawes (dave.n3rd@comcast.net)</author>
-<date>March 2003 revision 0.1</date>
+<date>April 2003 revision 0.2</date>
 
 <abstract>
 A primer and tutorial for Users and SysOps of the DXSpider DXCluster program.
@@ -22,7 +22,7 @@ A primer and tutorial for Users and SysOps of the DXSpider DXCluster program.
 <P>
 The PacketCluster software written in the mid-80s by Dick Newell, AK1A, has 
 served us well.  Dick has moved on though and has not supported the software 
-with updates etc for the last 10 years.  Numerous PacketCluster "clones" have 
+with updates etc. for the last 10 years.  Numerous PacketCluster "clones" have 
 come and gone over the years, however there is one, called DX Spider, which 
 provides a very similar user interface to that of AK1A, allows internet 
 connections of users and node-to-node links, is actively supported by the 
@@ -95,10 +95,10 @@ interest to go back and read these other sources at their leisure.
 
 <P>
 A spot filter is one rule (a one line spot filter) or multiple rules (multiple 
-line spot filters) that a user can setup with-in DXSpider to control which 
+line spot filters) that a user can setup within DXSpider to control which 
 specific spot(s) are received at the shack console.  These configurable 
 filters/rules reside on the DXSpider node and are stored along with the user's 
-other information. Filters can be likened to a car wash . . . . . like cars; 
+other information. Filters can be likened to a car wash . . . . . like cars, 
 information goes in one end dirty, gets washed and comes out the other end 
 cleaned.
 
@@ -118,7 +118,7 @@ down the drain to the infamous "bit-bucket."
 <sect1>How can filters be used?  
 
 <P>
-For example, let's say our local user has never owned a microphone in this life 
+For example, let's say our local user has never owned a microphone in his life 
 and definitely doesn't want to see any of those useless SSB spots. Our user 
 simply sets up a basic filter to reject any SSB spots before they reach the 
 user's console.  Similarly, it's now the ARRL CW DX contest weekend, so not only
@@ -199,7 +199,7 @@ However, if a spot matches an accept filter, it is sent immediately to the user.
 Another important concept to know is that you can do everything you want to do 
 with multiple reject filters AND NO ACCEPT FILTERS.  By default, if a spot 
 doesn't match any of the reject filter definitions, then the system considers 
-you want the spots and sends it to you.  For example, the following two filters 
+you want the spot and sends it to you.  For example, the following two filters 
 perform exactly the same thing ...
 
 <tscreen><verb>
@@ -236,17 +236,17 @@ filter1:    Is spot NOT on the HF contest bands?  No.
             The spot doesn't match the filter definition, so pass it to 
             next filter.
 
-filter2:    Is spot within the freq. Range defined for RTTY?  Yes.  
+filter2:    Is spot within the frequency range defined for RTTY?  Yes.  
             Since the spot matches the filter definition, the spot is rejected 
-            and the users never see it.
+            and the user never sees it.
 </verb></tscreen>
 
 Had the frequency of the spot been 14025, then the spot would have not matched 
 the filter2 definition either, would have passed through all the filters, and 
-would have been sent to the user at the end of the filter set.  Also, had the 
-spot been on 10 MHz, it would have met the definition of filter1, been rejected 
-immediately, and the filtering process would have stopped before processing 
-filter2.
+would have been sent to the user at the end of the filter set.  Similarly, had 
+the spot been on 10 MHz, it would have met the definition of filter1, been 
+rejected immediately, and the filtering process would have stopped before 
+processing filter2.
 
 <P>
 In addition, the filtering system has a rough time handling accept filters 
@@ -514,8 +514,8 @@ reject/spot 2 info QSL
 </verb></tscreen>
 
 Note: The following series of filters are based on <em>call</em> and
-<em>by</em>.  Call always references the call sign of the spotted DX station.  
-By always references the call sign of the spotting station.
+<em>by</em>.  Call always references the callsign of the spotted DX station.  
+By always references the callsign of the spotting station.
 
 <sect1>Filters to reject spots based on call
 
@@ -649,7 +649,7 @@ reject/spot 0 call_zone 5
 Syntax:  reject/spot [0-9] call_state <state2-letter abbreviations>
 </verb></tscreen>
 
-This filter is based on the state of the call spotted, for those call signs 
+This filter is based on the state of the call spotted, for those callsigns 
 contained in the usdb database.  Use the command <em>show/usdb</em> to see an 
 example of a listing in the database, like this ...
 
@@ -672,14 +672,14 @@ reject/spot call_state nj,ny,pa,de,md
 
 <P>
 <em>by</em> filters are similar to and function exactly as call filters except 
-that they act on the spotting station call sign and not the spotted call sign.
+that they act on the spotting station callsign and not the spotted callsign.
 
 <P>
 So ...
 
 <P>
 This filter is similar to and functions like the call &lt;prefixes&gt;      
-(See above) except that it rejects spots generated by the spotting call sign 
+(See above) except that it rejects spots generated by the spotting callsign 
 and passes all other spots.
 
 <tscreen><verb>
@@ -696,7 +696,7 @@ Syntax:  reject/spot [0-9] by_dxcc <numbers>
 
 This next filter is based on ITU regions and uses the ITU region number found by
 using the command <em>show/prefix</em> (see above), except that it rejects
-spots generated by a spotting call sign within the ITU region and passes all
+spots generated by a spotting callsign within the ITU region and passes all
 other spots.
 
 <tscreen><verb>
@@ -705,7 +705,7 @@ Syntax:  reject/spot [0-9] by_itu <numbers>
 
 This filter is based on CQ zones and uses the CQ zone number found by using
 the command <em>show/prefix</em> (see above), except that it rejects spots
-generated by a spotting call sign within the CQ zone and passes all other
+generated by a spotting callsign within the CQ zone and passes all other
 spots.
 
 <tscreen><verb>
@@ -754,8 +754,8 @@ Using these patterns, we can accept spots based upon ...
 
 <tscreen><verb>
 Frequency of the spot
-Call sign of the spot (country or zone)
-Call sign of the spotter (country or zone)
+Callsign of the spot (country or zone)
+Callsign of the spotter (country or zone)
 Contents of the "information field" which comes with the spot
 </verb></tscreen>
 
@@ -871,8 +871,8 @@ accept/spot 2 info QSL
 </verb></tscreen>
 
 Note: The following series of filters are based on <em>call</em> and 
-<em>by</em>.  Call always references the call sign of the spotted DX station.  
-By always references the call sign of the spotting station.
+<em>by</em>.  Call always references the callsign of the spotted DX station.  
+By always references the callsign of the spotting station.
 
 <sect1>Filters to accept spots based on call
 
@@ -902,7 +902,7 @@ well as all others.
 accept/spot 1 call PA
 </verb></tscreen>
 
-This filter will accept spots for call signs beginning with "K", i.e., K1AA,
+This filter will accept spots for callsigns beginning with "K", i.e., K1AA,
 KC4AAA,  KH6DDD and reject spots for W3BG and N3RD as well as all other
 spots.
 
@@ -991,7 +991,7 @@ accept/spot 0 call_zone 5
 Syntax:  accept/spot [0-9] call_state <state2-letter postal codes>  
 </verb></tscreen>
 
-This filter is based on state of the call spotted for those call signs contained
+This filter is based on state of the call spotted for those callsigns contained
 in the usdb database.  
 
 <P>
@@ -1010,14 +1010,14 @@ accept/spot 0  call_state pa
 
 <P>
 <em>by</em> filters are similar to and function exactly as call filters except 
-that they act on the spotting station call sign and not the spotted call sign
+that they act on the spotting station callsign and not the spotted callsign
 
 <P>
 So ...
 
 <P>
 This filter is similar to and functions like the  call &lt;prefixes&gt; (See above)
-except that it accepts spots generated by the spotting call sign and dumps all
+except that it accepts spots generated by the spotting callsign and dumps all
 other spots.
 
 <tscreen><verb>
@@ -1034,7 +1034,7 @@ Syntax:  accept/spot [0-9] by_dxcc <numbers>
 
 This next filter is based on ITU regions and uses the ITU region number found by
 using the command <em>show/prefix</em> (see above), except that it accepts
-spots generated by a spotting call sign within the ITU region and rejects all
+spots generated by a spotting callsign within the ITU region and rejects all
 other spots.
 
 <tscreen><verb>
@@ -1043,7 +1043,7 @@ Syntax:  accept/spot [0-9] call_itu <numbers>
 
 This filter is based on CQ zones and uses the CQ zone number found by using
 the command <em>show/prefix</em> (see above), except that it accepts spots
-generated by a spotting call sign within the CQ zone and rejects all other
+generated by a spotting callsign within the CQ zone and rejects all other
 spots.
 
 <tscreen><verb>
@@ -1101,7 +1101,7 @@ following are some examples utilizing basic filters and some not so basic
 combination filters.
 
 <P>
-Lets say you only want to see any of those 6m, 2m, or 220 spots.
+Let's say you don't want to see any of those 6m, 2m, or 220 spots.
 
 <tscreen><verb>
 reject/spot 0 on uhf

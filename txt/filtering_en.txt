@@ -1,7 +1,7 @@
   The DXSpider User Filtering Primer v1.0
   Compiled By W3BG - Jim Samuels (jimsam@comcast.net) With
   Introduction by N3RD - Dave Hawes (dave.n3rd@comcast.net)
-  March 2003 revision 0.1
+  April 2003 revision 0.2
 
   A primer and tutorial for Users and SysOps of the DXSpider DXCluster
   program.
@@ -61,7 +61,7 @@
 
   The PacketCluster software written in the mid-80s by Dick Newell,
   AK1A, has served us well.  Dick has moved on though and has not
-  supported the software with updates etc for the last 10 years.
+  supported the software with updates etc. for the last 10 years.
   Numerous PacketCluster "clones" have come and gone over the years,
   however there is one, called DX Spider, which provides a very similar
   user interface to that of AK1A, allows internet connections of users
@@ -144,11 +144,11 @@
   3.1.  What is a spot filter?
 
   A spot filter is one rule (a one line spot filter) or multiple rules
-  (multiple line spot filters) that a user can setup with-in DXSpider to
+  (multiple line spot filters) that a user can setup within DXSpider to
   control which specific spot(s) are received at the shack console.
   These configurable filters/rules reside on the DXSpider node and are
   stored along with the user's other information. Filters can be likened
-  to a car wash . . . . . like cars; information goes in one end dirty,
+  to a car wash . . . . . like cars, information goes in one end dirty,
   gets washed and comes out the other end cleaned.
 
 
@@ -169,7 +169,7 @@
   3.2.  How can filters be used?
 
   For example, let's say our local user has never owned a microphone in
-  this life and definitely doesn't want to see any of those useless SSB
+  his life and definitely doesn't want to see any of those useless SSB
   spots. Our user simply sets up a basic filter to reject any SSB spots
   before they reach the user's console.  Similarly, it's now the ARRL CW
   DX contest weekend, so not only does our user not want to see SSB
@@ -254,7 +254,7 @@
   Another important concept to know is that you can do everything you
   want to do with multiple reject filters AND NO ACCEPT FILTERS.  By
   default, if a spot doesn't match any of the reject filter definitions,
-  then the system considers you want the spots and sends it to you.  For
+  then the system considers you want the spot and sends it to you.  For
   example, the following two filters perform exactly the same thing ...
 
 
@@ -300,18 +300,18 @@
                    The spot doesn't match the filter definition, so pass it to
                    next filter.
 
-       filter2:    Is spot within the freq. Range defined for RTTY?  Yes.
+       filter2:    Is spot within the frequency range defined for RTTY?  Yes.
                    Since the spot matches the filter definition, the spot is rejected
-                   and the users never see it.
+                   and the user never sees it.
 
 
 
   Had the frequency of the spot been 14025, then the spot would have not
   matched the filter2 definition either, would have passed through all
   the filters, and would have been sent to the user at the end of the
-  filter set.  Also, had the spot been on 10 MHz, it would have met the
-  definition of filter1, been rejected immediately, and the filtering
-  process would have stopped before processing filter2.
+  filter set.  Similarly, had the spot been on 10 MHz, it would have met
+  the definition of filter1, been rejected immediately, and the
+  filtering process would have stopped before processing filter2.
 
 
   In addition, the filtering system has a rough time handling accept
@@ -615,8 +615,8 @@
 
 
   Note: The following series of filters are based on call and by.  Call
-  always references the call sign of the spotted DX station.  By always
-  references the call sign of the spotting station.
+  always references the callsign of the spotted DX station.  By always
+  references the callsign of the spotting station.
 
 
   6.6.  Filters to reject spots based on call
@@ -774,9 +774,9 @@
        Syntax:  reject/spot [0-9] call_state <state2-letter abbreviations>
 
 
-  This filter is based on the state of the call spotted, for those call
-  signs contained in the usdb database.  Use the command show/usdb to
-  see an example of a listing in the database, like this ...
+  This filter is based on the state of the call spotted, for those
+  callsigns contained in the usdb database.  Use the command show/usdb
+  to see an example of a listing in the database, like this ...
 
 
 
@@ -800,16 +800,16 @@
   6.11.  Filters to reject spots based on by
 
   by filters are similar to and function exactly as call filters except
-  that they act on the spotting station call sign and not the spotted
-  call sign.
+  that they act on the spotting station callsign and not the spotted
+  callsign.
 
 
   So ...
 
 
   This filter is similar to and functions like the call <prefixes> (See
-  above) except that it rejects spots generated by the spotting call
-  sign and passes all other spots.
+  above) except that it rejects spots generated by the spotting callsign
+  and passes all other spots.
 
 
 
@@ -830,7 +830,7 @@
 
   This next filter is based on ITU regions and uses the ITU region
   number found by using the command show/prefix (see above), except that
-  it rejects spots generated by a spotting call sign within the ITU
+  it rejects spots generated by a spotting callsign within the ITU
   region and passes all other spots.
 
 
@@ -841,7 +841,7 @@
 
   This filter is based on CQ zones and uses the CQ zone number found by
   using the command show/prefix (see above), except that it rejects
-  spots generated by a spotting call sign within the CQ zone and passes
+  spots generated by a spotting callsign within the CQ zone and passes
   all other spots.
 
 
@@ -899,8 +899,8 @@
 
 
        Frequency of the spot
-       Call sign of the spot (country or zone)
-       Call sign of the spotter (country or zone)
+       Callsign of the spot (country or zone)
+       Callsign of the spotter (country or zone)
        Contents of the "information field" which comes with the spot
 
 
@@ -1038,8 +1038,8 @@
 
 
   Note: The following series of filters are based on call and by.  Call
-  always references the call sign of the spotted DX station.  By always
-  references the call sign of the spotting station.
+  always references the callsign of the spotted DX station.  By always
+  references the callsign of the spotting station.
 
 
   7.4.  Filters to accept spots based on call
@@ -1075,7 +1075,7 @@
        accept/spot 1 call PA
 
 
-  This filter will accept spots for call signs beginning with "K", i.e.,
+  This filter will accept spots for callsigns beginning with "K", i.e.,
   K1AA, KC4AAA,  KH6DDD and reject spots for W3BG and N3RD as well as
   all other spots.
 
@@ -1179,7 +1179,7 @@
 
 
 
-  This filter is based on state of the call spotted for those call signs
+  This filter is based on state of the call spotted for those callsigns
   contained in the usdb database.
 
 
@@ -1198,16 +1198,16 @@
   7.9.  Filters to accept spots based on by
 
   by filters are similar to and function exactly as call filters except
-  that they act on the spotting station call sign and not the spotted
-  call sign
+  that they act on the spotting station callsign and not the spotted
+  callsign
 
 
   So ...
 
 
   This filter is similar to and functions like the  call <prefixes> (See
-  above) except that it accepts spots generated by the spotting call
-  sign and dumps all other spots.
+  above) except that it accepts spots generated by the spotting callsign
+  and dumps all other spots.
 
 
 
@@ -1227,7 +1227,7 @@
 
   This next filter is based on ITU regions and uses the ITU region
   number found by using the command show/prefix (see above), except that
-  it accepts spots generated by a spotting call sign within the ITU
+  it accepts spots generated by a spotting callsign within the ITU
   region and rejects all other spots.
 
 
@@ -1238,7 +1238,7 @@
 
   This filter is based on CQ zones and uses the CQ zone number found by
   using the command show/prefix (see above), except that it accepts
-  spots generated by a spotting call sign within the CQ zone and rejects
+  spots generated by a spotting callsign within the CQ zone and rejects
   all other spots.
 
 
@@ -1305,7 +1305,7 @@
   so basic combination filters.
 
 
-  Lets say you only want to see any of those 6m, 2m, or 220 spots.
+  Let's say you don't want to see any of those 6m, 2m, or 220 spots.
 
 
 
