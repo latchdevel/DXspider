@@ -62,6 +62,13 @@ sub handle
 	my $nref;
 
 	$thing->{pc19n} ||= [];
+
+	my $v = $thing->{v};
+	if ($v) {
+		$v = $DXProt::myprot_version + int ($v*100) if $v > 2 && $v < 3;
+		$v = $DXProt::myprot_version + 150 unless $v >= 5400;
+		$thing->{pcv} = $v;
+	}
 	
 	# verify authenticity
 	if ($node eq $origin) {
@@ -82,7 +89,7 @@ sub handle
 			}
 		}
 		if ($dxchan->{state} ne 'normal') {
-			$nref = $main::routeroot->add($origin, $thing->{v}, $thing->{h});
+			$nref = $main::routeroot->add($origin, $thing->{pcv}, $thing->{h});
 			push @{$thing->{pc19n}}, $nref if $nref;
 			$dxchan->start($dxchan->{conn}->{csort}, $dxchan->{conn}->{outbound} ? 'O' : 'A');
 			if ($dxchan->{outbound}) {
@@ -102,7 +109,7 @@ sub handle
 		# note that we cannot do any connections at this point
 		$nref = Route::Node::get($origin);
 		unless ($nref) {
-			my $v = $thing->{user} ? undef : $thing->{v};
+			my $v = $thing->{user} ? undef : $thing->{pcv};
 			$nref = Route::Node->new($origin, $v, 1);
 			push @{$thing->{pc19n}}, $nref;
 			$nref->np(1);
@@ -116,7 +123,7 @@ sub handle
 			my @ref;
 			my $uref = DXUser->get_current($user) || Thingy::Rt::_upd_user_rec($user, $origin)->put;
 			if ($uref->is_node || $uref->is_aranea) {
-			    push @ref, $nref->add($user, $thing->{v} || 0, $thing->{h} || 0);
+			    push @ref, $nref->add($user, $thing->{pcv} || 0, $thing->{h} || 0);
 				push @{$thing->{pc19n}}, @ref if @ref;
 				do $_->np(1) for @ref;
 			} else {
@@ -126,7 +133,7 @@ sub handle
 			}
 		}
 	} else {
-		$nref->version($thing->{v}) unless $nref->version;
+		$nref->version($v) unless $nref->version;
 		$nref->build($thing->{b}) unless $nref->build;
 		$nref->sw($thing->{sw}) unless $nref->sw;
 		$nref->here($thing->{h}) if exists $thing->{h};
