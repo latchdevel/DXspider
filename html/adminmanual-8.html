@@ -1,0 +1,542 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The DXSpider Installation and Administration Manual : Sysop commands</TITLE>
+ <LINK HREF="adminmanual-7.html" REL=previous>
+ <LINK HREF="adminmanual.html#toc8" REL=contents>
+</HEAD>
+<BODY>
+Next
+<A HREF="adminmanual-7.html">Previous</A>
+<A HREF="adminmanual.html#toc8">Contents</A>
+<HR>
+<H2><A NAME="s8">8. Sysop commands</A></H2>
+
+<P>Most maintenance tasks are automatic but there are some commands that are useful for a sysop.  These are listed below in alphabetical order.  The number in brackets following the command name is the permissions level needed to use the command.
+<P>
+<H2><A NAME="ss8.1">8.1 announce sysop (5)</A>
+</H2>
+
+<P><CODE><B>announce sysop &lt;text&gt;</B></CODE>
+<P>
+<P>Send an announcement to Sysops only
+<P>
+<H2><A NAME="ss8.2">8.2 connect (5) </A>
+</H2>
+
+<P><CODE><B>connect &lt;callsign&gt;</B> Start a connection to another DX Cluster</CODE>
+<P>
+<P>Start a connection process that will culminate in a new connection to the
+DX cluster &lt;callsign&gt;. This process creates a new 'client' process which will
+use the script in /spider/connect/&lt;callsign&gt; to effect the 'chat' exchange
+necessary to traverse the network(s) to logon to the cluster &lt;callsign&gt;.
+<P>
+<P>
+<H2><A NAME="ss8.3">8.3 catch (9) </A>
+</H2>
+
+<P><CODE><B>&lt;node_call&gt; All [&lt;msgno&gt; ...]</B> Mark a message as sent</CODE>
+<P>
+<P>When you send messages the fact that you have forwarded it to another node 
+is remembered so that it isn't sent again. When you have a new partner
+node and you add their callsign to your /spider/msg/forward.pl file, all
+outstanding non-private messages will be forwarded to them. This may well
+be ALL the non-private messages. You can prevent this by using these 
+commmands:-
+<P>catch GB7DJK all
+catch GB7DJK 300 301 302 303
+<P>and to undo what you have just done:-
+<P>uncatch GB7DJK all
+uncatch GB7DJK 300 301 302 303
+<P>which will arrange for them to be forward candidates again.
+<P>
+<H2><A NAME="ss8.4">8.4 dbcreate (9)</A>
+</H2>
+
+<P><CODE><B>dbcreate &lt;name&gt;</B> Create a database entry<BR>
+<B>dbcreate &lt;name&gt; chain &lt;name&gt; [&lt;name&gt;..]</B> Create a chained database entry<BR>
+<B>dbcreate &lt;name&gt; remote &lt;node&gt;</B> Create a remote database entry<BR></CODE>
+<P>
+<P>DBCREATE allows you to define a database in the system. It doesn't actually
+create anything, just defines it.
+<P>The databases that are created are simple DB_File hash databases, they are 
+therefore already 'indexed'.
+<P>You can define a local database with the first form of the command eg:
+<P>DBCREATE oblast
+<P>You can also chain databases with the addition of the 'chain' keyword. 
+This will search each database one after the other. A typical example 
+is:
+<P>DBCREATE sdx_qsl chain sql_ad
+<P>No checking is done to see if the any of the chained databases exist, in
+fact it is usually better to do the above statement first then do each of
+the chained databases.
+<P>Databases can exist offsite. To define a database that lives on another 
+node do:
+<P>DBCREATE buckmaster remote gb7dxc
+<P>Remote databases cannot be chained; however, the last database in a 
+a chain can be a remote database eg:
+<P>DBCREATE qsl chain gb7dxc
+<P>To see what databases have been defined do:
+<P>DBAVAIL (or it will have been aliased to SHOW/COMMAND)
+<P>It would be normal for you to add an entry into your local Aliases file
+to allow people to use the 'SHOW/&lt;dbname&gt;' style syntax. So you would
+need to add a line like:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  's' => [
+    ..
+    ..
+    '^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
+    ..
+    ..
+   ],
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>to allow 
+<P>SH/BUCK g1tlh
+<P>to work as they may be used to.
+<P>See DBIMPORT for the importing of existing AK1A format data to databases.
+See DBSHOW for generic database enquiry
+<P>
+<H2><A NAME="ss8.5">8.5 dbimport (9)</A>
+</H2>
+
+<P><CODE><B>dbimport &lt;dbname&gt;</B> Import AK1A data into a database</CODE>
+<P>
+<P>If you want to import or update data in bulk to a database you can use
+this command. It will either create or update entries into an existing
+database. For example:-
+<P>DBIMPORT oblast /tmp/OBLAST.FUL
+<P>will import the standard OBLAST database that comes with AK1A into the
+oblast database held locally.
+<P>
+<H2><A NAME="ss8.6">8.6 dbremove (9)</A>
+</H2>
+
+<P><CODE><B>dbremove &lt;dbname&gt;</B> Delete a database</CODE>
+<P>
+<P>DBREMOVE will completely remove a database entry and also delete any data
+file that is associated with it. 
+<P>There is no warning, no comeback, no safety net. 
+<P>For example:
+<P>DBREMOVE oblast 
+<P>will remove the oblast database from the system and it will also remove
+the associated datafile.
+<P>I repeat:
+<P>There is no warning, no comeback, no safety net.
+<P>You have been warned.
+<P>
+<H2><A NAME="ss8.7">8.7 debug (9)</A>
+</H2>
+
+<P><CODE><B>debug</B> Set the cluster program into debug mode</CODE>
+<P>
+<P>Executing this command will only have an effect if you are running the cluster
+in debug mode i.e.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+        perl -d cluster.pl
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>It will interrupt the cluster just after the debug command has finished.
+<P>
+<H2><A NAME="ss8.8">8.8 directory (5)</A>
+</H2>
+
+<P>Works just like the user command except that sysops can see ALL messages.
+<P>
+<H2><A NAME="ss8.9">8.9 disconnect (8)</A>
+</H2>
+
+<P><CODE><B>disconnect &lt;call&gt; [&lt;call&gt; ...]</B> Disconnect a user or node</CODE>
+<P>
+<P>Disconnect any &lt;call&gt; connected locally
+<P>
+<H2><A NAME="ss8.10">8.10 export (9)</A>
+</H2>
+
+<P><CODE><B>export &lt;msgno&gt; &lt;filename&gt;</B> Export a message to a file</CODE>
+<P>
+<P>Export a message to a file. This command can only be executed on a local
+console with a fully privileged user. The file produced will be in a form
+ready to be imported back into the cluster by placing it in the import 
+directory (/spider/msg/import).
+<P>This command cannot overwrite an existing file. This is to provide some 
+measure of security. Any files written will owned by the same user as the 
+main cluster, otherwise you can put the new files anywhere the cluster can
+access. For example:-
+<P>EXPORT 2345 /tmp/a
+<P>
+<H2><A NAME="ss8.11">8.11 forward/opername (1)</A>
+</H2>
+
+<P><CODE><B>forward/opername &lt;call&gt;</B> Send out information on this &lt;call&gt; to all clusters</CODE>
+<P>
+<P>This command sends out any information held in the user file which can 
+be broadcast in PC41 protocol packets. This information is Name, QTH, Location
+and Homenode. PC41s are only sent for the information that is available.
+<P>
+<H2><A NAME="ss8.12">8.12 init (5)</A>
+</H2>
+
+<P><CODE><B>init &lt;node call&gt;</B> Re-initialise a link to an AK1A compatible node</CODE>
+<P>
+<P>This command attempts to re-initialise a link to a (usually) AK1A node
+that has got confused, usually by a protocol loop of some kind. It may
+work - but you usually will be better off simply disconnecting it (or
+better, if it is a real AK1A node, doing an RCMD &lt;node&gt; DISC/F &lt;your
+node&gt;).
+<P>Best of luck - you will need it.
+<P>
+<H2><A NAME="ss8.13">8.13 kill (5)</A>
+</H2>
+
+<P><CODE><B>kill &lt;msgno&gt; [&lt;msgno&gt; ...]</B> Remove or erase a message from the system<BR>
+<B>kill from &lt;call&gt;</B> Remove all messages from a callsign<BR>
+<B>kill to &lt;call&gt;</B> Remove all messages to a callsign<BR></CODE>
+<P>
+<P>You can get rid of any message to or originating from your callsign using 
+this command. You can remove more than one message at a time.
+<P>As a sysop you can kill any message on the system.
+<P>
+<H2><A NAME="ss8.14">8.14 kill full (5)</A>
+<CODE><B>kill full &lt;msgno&gt; [&lt;msgno&gt;]</B> Delete a message from the whole cluster</CODE></H2>
+
+<P>Delete a message (usually a 'bulletin') from the whole cluster system. 
+<P>This uses the subject field, so any messages that have exactly the same subject
+will be deleted. Beware!
+<P>
+<H2><A NAME="ss8.15">8.15 load/aliases (9)</A>
+</H2>
+
+<P><CODE><B>load/aliases</B> Reload the command alias table</CODE>
+<P>
+<P>Reload the /spider/cmd/Aliases file after you have editted it. You will need to
+do this if you change this file whilst the cluster is running in order for the
+changes to take effect.
+<P>
+<H2><A NAME="ss8.16">8.16 load/bands (9)</A>
+</H2>
+
+<P><CODE><B>load/bands</B> Reload the band limits table</CODE>
+<P>
+<P>Reload the /spider/data/bands.pl file if you have changed it manually whilst
+the cluster is running. 
+<P>
+<H2><A NAME="ss8.17">8.17 load/cmd_cache (9)</A>
+</H2>
+
+<P><CODE><B>load/cmd_cache</B> Reload the automatic command cache</CODE>
+<P>
+<P>Normally, if you change a command file in the cmd or local_cmd tree it will
+automatially be picked up by the cluster program. Sometimes it can get confused
+if you are doing a lot of moving commands about or delete a command in the 
+local_cmd tree and want to use the normal one again. Execute this command to
+reset everything back to the state it was just after a cluster restart.
+<P>
+<H2><A NAME="ss8.18">8.18 load/forward (9)</A>
+</H2>
+
+<P><CODE><B>load/forward</B> Reload the msg forwarding routing table</CODE>
+<P>Reload the /spider/msg/forward.pl file if you have changed it
+manually whilst the cluster is running.
+<P>
+<H2><A NAME="ss8.19">8.19 load/messages (9)</A>
+</H2>
+
+<P><CODE><B>load/messages</B> Reload the system messages file</CODE>
+<P>
+<P>If you change the /spider/perl/Messages file (usually whilst fiddling/writing ne
+commands) you can have them take effect during a cluster session by executing this
+command. You need to do this if get something like :-
+<P>unknown message 'xxxx' in lang 'en'
+<P>
+<H2><A NAME="ss8.20">8.20 load/prefixes (9)</A>
+</H2>
+
+<P><CODE><B>load/prefixes</B> Reload the prefix table</CODE>
+<P>
+<P>Reload the /spider/data/prefix_data.pl file if you have changed it manually whilst
+the cluster is running. 
+<P>
+<H2><A NAME="ss8.21">8.21 merge (5)</A>
+</H2>
+
+<P><CODE><B>merge &lt;node&gt; [&lt;no spots&gt;/&lt;no wwv&gt;]</B> Ask for the latest spots and WWV</CODE>
+<P>
+<P>MERGE allows you to bring your spot and wwv database up to date. By default
+it will request the last 10 spots and 5 WWVs from the node you select. The 
+node must be connected locally.
+<P>You can request any number of spots or wwv and although they will be appended
+to your databases they will not duplicate any that have recently been added 
+(the last 2 days for spots and last month for WWV data).
+<P>
+<H2><A NAME="ss8.22">8.22 msg (9)</A>
+</H2>
+
+<P><CODE><B>msg &lt;cmd&gt; &lt;msgno&gt; [data ...]</B> Alter various message parameters</CODE>
+<P>
+<P>Alter message parameters like To, From, Subject, whether private or bulletin
+or return receipt (RR) is required or whether to keep this message from timing
+out.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  MSG TO &lt;msgno> &lt;call>     - change TO callsign to &lt;call>
+  MSG FRom &lt;msgno> &lt;call>   - change FROM callsign to &lt;call>
+  MSG PRrivate &lt;msgno>      - set private flag
+  MSG NOPRrivate &lt;msgno>    - unset private flag
+  MSG RR &lt;msgno>            - set RR flag
+  MSG NORR &lt;msgno>          - unset RR flag
+  MSG KEep &lt;msgno>          - set the keep flag (message won't be deleted ever)
+  MSG NOKEep &lt;msgno>        - unset the keep flag
+  MSG SUbject &lt;msgno> &lt;new> - change the subject to &lt;new>
+  MSG WAittime &lt;msgno>      - remove any waitting time for this message
+  MSG NOREad &lt;msgno>        - mark message as unread
+  MSG REad &lt;msgno>          - mark message as read
+  MSG QUeue                 - queue any outstanding bulletins
+  MSG QUeue 1               - queue any outstanding private messages
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>You can look at the status of a message by using:-
+<P>STAT/MSG &lt;msgno&gt;      
+<P>This will display more information on the message than DIR does.
+<P>
+<H2><A NAME="ss8.23">8.23 pc (8)</A>
+</H2>
+
+<P><CODE><B>pc &lt;call&gt; &lt;text&gt;</B> Send text (eg PC Protocol) to &lt;call&gt;</CODE>
+<P>
+<P>Send some arbitrary text to a locally connected callsign. No processing is done on
+the text. This command allows you to send PC Protocol to unstick things if problems
+arise (messages get stuck etc). eg:-
+<P>pc gb7djk PC33^GB7TLH^GB7DJK^400^
+<P>You can also use in the same way as a talk command to a connected user but
+without any processing, added of "from &lt;blah&gt; to &lt;blah&gt;" or whatever.
+<P>pc G1TLH Try doing that properly!!!
+<P>
+<H2><A NAME="ss8.24">8.24 ping (1)</A>
+</H2>
+
+<P><CODE><B>ping &lt;node&gt;</B> Send a ping command to another cluster node</CODE>
+<P>
+<P>This command is used to estimate the quality of the link to another cluster. 
+The time returned is the length of time taken for a PC51 to go to another 
+cluster and be returned.
+<P>Any visible cluster node can be PINGed.
+<P>
+<H2><A NAME="ss8.25">8.25 rcmd (1)</A>
+</H2>
+
+<P><CODE><B>rcmd &lt;node call&gt; &lt;cmd&gt;</B> Send a command to another DX cluster</CODE>
+<P>
+<P>This command allows you to send nearly any command to another DX Cluster
+node that is connected to the system. 
+<P>Whether you get any output is dependant on a) whether the other system knows
+that the node callsign of this cluster is in fact a node b) whether the
+other system is allowing RCMDs from this node and c) whether you have
+permission to send this command at all.
+<P>
+<H2><A NAME="ss8.26">8.26 read (5)</A>
+</H2>
+
+<P><CODE><B>read &lt;msgno&gt;</B> Read a message on the system</CODE>
+<P>
+<P>As a sysop you may read any message on the system
+<P>
+<H2><A NAME="ss8.27">8.27 set/debug (9)</A>
+</H2>
+
+<P><CODE><B>set/debug &lt;name&gt;</B> Add a debug level to the debug set</CODE>
+<P>
+<P>You can remove this level with unset/debug &lt;name&gt;
+<P>
+<H2><A NAME="ss8.28">8.28 set/isolate (9)</A>
+</H2>
+
+<P><CODE><B>set/isolate &lt;node call&gt;</B> Isolate a node from the rest of the network</CODE>
+<P>
+<P>Connect a node to your system in such a way that you are a full protocol
+member of its network and can see all spots on it, but nothing either leaks
+out from it nor goes back into from the rest of the nodes connected to you.
+<P>You can potentially connect several nodes in this way.
+<P>You can see which nodes are isolated with the show/isolate (1) command.
+<P>You can remove the isolation with the command unset/isolate.
+<P>
+<H2><A NAME="ss8.29">8.29 set/sys_location (9)</A>
+</H2>
+
+<P><CODE><B>set/sys_location &lt;lat &amp; long&gt;</B> Set your cluster latitude and longitude</CODE>
+<P>
+<P>In order to get accurate headings and such like you must tell the system
+what your latitude and longitude is. If you have not yet done a SET/QRA
+then this command will set your QRA locator for you. For example:-
+<P>SET/LOCATION 52 22 N 0 57 E
+<P>
+<H2><A NAME="ss8.30">8.30 set/lockout (9)</A>
+</H2>
+
+<P><CODE><B>set/lockout &lt;call&gt;</B> Stop a callsign connecting to the cluster</CODE>
+<P>
+<P>You can show who is locked out with the show/lockout (9) command.
+<P>To allow the user to connect again, use the command unset/lockout
+<P>
+<H2><A NAME="ss8.31">8.31 set/node (9)</A>
+</H2>
+
+<P><CODE><B>set/node &lt;call&gt; [&lt;call&gt; ...]</B> Make the callsign an AK1A cluster</CODE>
+<P>
+<P>Tell the system that the call(s) are to be treated as AK1A cluster and
+fed PC Protocol rather normal user commands.
+<P>From version 1.41 you can also set the following types of cluster
+<P>
+<PRE>
+set/spider
+set/dxnet
+set/clx
+set/arcluster
+</PRE>
+<P>To see what your nodes are set to, use the show/nodes command.
+<P>
+<H2><A NAME="ss8.32">8.32 set/obscount (9)</A>
+</H2>
+
+<P><CODE><B>set/obscount &lt;count&gt; &lt;node call&gt;</B> Set the 'pump-up' obscelence counter</CODE>
+<P>
+<P>From version 1.35 onwards neighbouring nodes are pinged at regular intervals (see
+SET/PINGINTERVAL), usually 300 seconds or 5 minutes. There is a 'pump-up'
+counter which is decremented on every outgoing ping and then reset to
+the 'obscount' value on every incoming ping. The default value of this
+parameter is 2. 
+<P>What this means is that a neighbouring node will be pinged twice at 
+(default) 300 second intervals and if no reply has been heard just before
+what would be the third attempt, that node is disconnected.
+<P>If a ping is heard then the obscount is reset to the full value. Using
+default values, if a node has not responded to a ping within 15 minutes,
+it is disconnected.
+<P>
+<H2><A NAME="ss8.33">8.33 set/pinginterval (9)</A>
+</H2>
+
+<P><CODE><B>set/pinginterval &lt;time&gt; &lt;node call&gt;</B> Set the ping time to neighbouring nodes</CODE>
+<P>
+<P>As from version 1.35 all neighbouring nodes are pinged at regular intervals
+in order to determine the rolling quality of the link and, in future, to
+affect routing decisions. The default interval is 300 secs or 5 minutes.
+<P>You can use this command to set a different interval. Please don't. 
+<P>But if you do the value you enter is treated as minutes up 60 and seconds
+for numbers greater than that.
+<P>This is used also to help determine when a link is down at the far end
+(as certain cluster software doesn't always notice), see SET/OBSCOUNT
+for more information.
+<P>
+<H2><A NAME="ss8.34">8.34 set/privilege (9)</A>
+</H2>
+
+<P><CODE><B>set/privilege &lt;n&gt; &lt;call&gt; [&lt;call&gt; ...]</B> Set the privilege level on a call</CODE>
+<P>
+<P>Set the privilege level on a callsign. The privilege levels that pertain
+to commands are as default:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  0 - normal user
+  1 - allow remote nodes normal user RCMDs
+  5 - various privileged commands (including shutdown, but not disc-
+      connect), the normal level for another node.
+  8 - more privileged commands (including disconnect)
+  9 - local sysop privilege. DO NOT SET ANY REMOTE USER OR NODE TO THIS
+      LEVEL.
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If you are a sysop and you come in as a normal user on a remote connection
+your privilege will automatically be set to 0.
+<P>
+<H2><A NAME="ss8.35">8.35 set/password (9)</A>
+</H2>
+
+<P><CODE><B>set/password &lt;callsign&gt; &lt;string&gt;</B> Set a users password</CODE>
+<P>
+<P>The password for a user can only be set by a full sysop. The string
+can contain any characters but any spaces are removed (you can type in
+spaces - but they won't appear in the password). You can see the
+result with STAT/USER.  The password is the usual 30 character baycom
+type password.
+<P>
+<H2><A NAME="ss8.36">8.36 set/sys_qra (9)</A>
+</H2>
+
+<P><CODE><B>set/sys_qra &lt;locator&gt;</B> Set your cluster QRA locator</CODE>
+<P>
+<H2><A NAME="ss8.37">8.37 show program (5)</A>
+</H2>
+
+<P><CODE><B>show/program</B> Show the locations of all the included program modules</CODE>
+<P>
+<P>Show the name and location where every program module was load from. This
+is useful for checking where you think you have loaded a .pm file from.
+<P>
+<H2><A NAME="ss8.38">8.38 shutdown (5)</A>
+</H2>
+
+<P><CODE><B>shutdown</B> Shutdown the cluster</CODE>
+<P>
+<P>Shutdown the cluster and disconnect all the users.  If you have Spider
+set to respawn in /etc/inittab it will of course restart.
+<P>
+<H2><A NAME="ss8.39">8.39 spoof (9)</A>
+</H2>
+
+<P><CODE><B>spoof &lt;callsign&gt; &lt;command&gt;</B> Run commands as another user</CODE>
+<P>
+<P>This is a very simple yet powerful command for the sysop.  It allows you to
+issue commands as if you were a different user.  This is very useful for the
+kind of things that users seem to always get wrong.. like home_node for
+example.
+<P>
+<H2><A NAME="ss8.40">8.40 stat/db (5)</A>
+</H2>
+
+<P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE>
+<P>
+<P>Show the internal status of a database descriptor.
+<P>Depending on your privilege level you will see more or less information. 
+This command is unlikely to be of much use to anyone other than a sysop.
+<P>
+<H2><A NAME="ss8.41">8.41 stat/channel (5)</A>
+</H2>
+
+<P><CODE><B>stat/channel &lt;callsign&gt;</B> Show the status of a channel on the cluster</CODE>
+<P>
+<P>Show the internal status of the channel object either for the channel that 
+you are on or else for the callsign that you asked for.
+<P>Only the fields that are defined (in perl term) will be displayed.
+<P>
+<H2><A NAME="ss8.42">8.42 stat/msg (5)</A>
+</H2>
+
+<P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE>
+<P>
+<P>This command shows the internal status of a message and includes information
+such as to whom it has been forwarded, its size, origin etc etc.
+<P>
+<H2><A NAME="ss8.43">8.43 stat/user (5)</A>
+</H2>
+
+<P><CODE><B>stat/user &lt;callsign&gt;</B> Show the full status of a user</CODE>
+<P>
+<P>Shows the full contents of a user record including all the secret flags
+and stuff.
+<P>Only the fields that are defined (in perl term) will be displayed.
+<P>
+<P>
+<P>
+<HR>
+Next
+<A HREF="adminmanual-7.html">Previous</A>
+<A HREF="adminmanual.html#toc8">Contents</A>
+</BODY>
+</HTML>

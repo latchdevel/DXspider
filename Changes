@@ -1,3 +1,5 @@
+15Aug00=======================================================================
+1. added 1.25 of the admin manual html
 14Aug00=======================================================================
 1. Added regex support to sh/dup_*.pl commands
 2. fixed rcmd in crontab so that will work again
