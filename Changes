@@ -1,3 +1,5 @@
+21Aug02=======================================================================
+1. added 'warc' and 'contesthf' to the regions in bands.pl (K1XX).
 20Aug02=======================================================================
 1. fix lines containing just the character '0' in messages (and console.pl)
 (K1XX).
