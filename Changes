@@ -1,3 +1,6 @@
+02Jul02=======================================================================
+1. Fixed the problem with badspotter or badnode being set to baddx if either
+of the data files are missing. 
 25Jun02=======================================================================
 1. as predicted there was an error in the Prefix routine, I have improved it.
 24Jun02=======================================================================

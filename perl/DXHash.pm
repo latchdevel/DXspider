@@ -35,9 +35,10 @@ sub new
 {
 	my ($pkg, $name) = @_;
 	my $s = readfilestr($main::data, $name);
-	my $self = eval $s if $s;
+	my $self = undef;
+	$self = eval $s if $s;
 	dbg("error in reading $name in DXHash $@") if $@;
-	$self = bless {name => $name}, $pkg unless $self;
+	$self = bless({name => $name}, $pkg) unless defined $self;
 	return $self;
 }
 
