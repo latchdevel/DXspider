@@ -123,12 +123,12 @@ sub prepare
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @dxcc = Prefix::extract($out[1]);
-	my $spotted_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	my $spotted_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 666;
 	my $spotted_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
 	my $spotted_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
 	push @out, $spotted_dxcc;
 	@dxcc = Prefix::extract($out[4]);
-	my $spotter_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	my $spotter_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 666;
 	my $spotter_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
 	my $spotter_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
 	push @out, $spotter_dxcc;

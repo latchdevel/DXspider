@@ -242,6 +242,7 @@ package DXM;
 				talku => 'Talk flag unset on $_[0]',
 				talkend => 'Finished talking to you',
 				talkinst => 'Entering Talkmode, /EX to end, /<cmd> to run a command',
+				talknh => 'Sorry $_[0] is not online at the moment',
 				talkprompt => 'Talk ($_[0])>',
 				talkstart => 'Starting talking to you',
 				usernf => '*** User record for $_[0] not found ***',

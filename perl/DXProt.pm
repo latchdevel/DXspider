@@ -42,7 +42,7 @@ $main::build += $VERSION;
 $main::branch += $BRANCH;
 
 use vars qw($me $pc11_max_age $pc23_max_age $last_pc50
-			$last_hour $last10 %eph  %pings %rcmds
+			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -60,6 +60,7 @@ $baddx = new DXHash "baddx";
 $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
+$ann_to_talk = 1;
 
 @checklist = 
 (
@@ -322,18 +323,39 @@ sub normal
 			# is it for me or one of mine?
 			my ($to, $via, $call, $dxchan);
 			if ($field[5] gt ' ') {
-				$call = $via = $field[2];
+				$via = $field[2];
 				$to = $field[5];
 			} else {
-				$call = $to = $field[2];
+				$to = $field[2];
 			}
-			$dxchan = DXChannel->get($main::myalias) if $call eq $main::mycall;
-			$dxchan = DXChannel->get($call) unless $dxchan;
+
+			# it is here and logged on
+			$dxchan = DXChannel->get($main::myalias) if $to eq $main::mycall;
+			$dxchan = DXChannel->get($to) unless $dxchan;
 			if ($dxchan && $dxchan->is_user) {
 				$field[3] =~ s/\%5E/^/g;
 				$dxchan->talk($field[1], $to, $via, $field[3]);
-			} else {
-				$self->route($field[2], $line); # relay it on its way
+				return;
+			}
+
+			# is it elsewhere, visible on the cluster via the to address?
+			# note: this discards the via unless the to address is on
+			# the via address
+			my ($ref, $vref);
+			if ($ref = Route::get($to)) {
+				$vref = Route::Node::get($via) if $via;
+				$vref = undef unless $vref && grep $to eq $_, $vref->users;
+				$ref->dxchan->talk($field[1], $to, $vref ? $via : undef, $field[3], $field[6]);
+				return;
+			}
+
+			# not visible here, send a message of condolence
+			$vref = undef;
+			$ref = Route::get($field[1]);
+			$vref = $ref = Route::Node::get($field[6]) unless $ref; 
+			if ($ref) {
+				$dxchan = $ref->dxchan;
+				$dxchan->talk($main::mycall, $field[1], $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
 			}
 			return;
 		}
@@ -491,38 +513,30 @@ sub normal
 					return;
 				}
 			}
-			
+
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
-				
-				# global ann filtering on INPUT
-				if ($self->{inannfilter}) {
-					my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-					my @dxcc = Prefix::extract($field[1]);
-					if (@dxcc > 0) {
-						$ann_dxcc = $dxcc[1]->dxcc;
-						$ann_itu = $dxcc[1]->itu;
-						$ann_cq = $dxcc[1]->cq();						
-					}
-					@dxcc = Prefix::extract($field[5]);
-					if (@dxcc > 0) {
-						$org_dxcc = $dxcc[1]->dxcc;
-						$org_itu = $dxcc[1]->itu;
-						$org_cq = $dxcc[1]->cq();						
-					}
-					my ($filter, $hops) = $self->{inannfilter}->it(@field[1..6], $self->{call}, 
-													$ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
-					unless ($filter) {
-						dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
-						return;
+
+
+				# here's a bit of fun, convert incoming ann with a callsign in the first word
+				# or one saying 'to <call>' to a talk if we can route to the recipient
+				if ($ann_to_talk) {
+					my ($to, $call) = $field[3] =~ /^\s*([\w-]+)[\s:]+([\w-]+)/;
+					if ($to && $call) {
+						if ((uc $to eq 'TO' && is_callsign(uc $call)) || is_callsign($call = uc $to)) {
+							my $ref = Route::get($call);
+							if ($ref) {
+								$ref->dxchan->talk($field[1], $call, undef, $field[3], $field[5]);
+								return;
+							}
+						}
 					}
 				}
-
+	
 				# send it
 				$self->send_announce($line, @field[1..6]);
 			} else {
 				$self->route($field[2], $line);
 			}
-			
 			return;
 		}
 		
@@ -1260,13 +1274,13 @@ sub send_wwv_spot
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
 	my ($wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-	my @dxcc = Prefix::extract($_[7]);
+	my @dxcc = Prefix::extract($_[6]);
 	if (@dxcc > 0) {
 		$wwv_dxcc = $dxcc[1]->dxcc;
 		$wwv_itu = $dxcc[1]->itu;
 		$wwv_cq = $dxcc[1]->cq;						
 	}
-	@dxcc = Prefix::extract($_[8]);
+	@dxcc = Prefix::extract($_[7]);
 	if (@dxcc > 0) {
 		$org_dxcc = $dxcc[1]->dxcc;
 		$org_itu = $dxcc[1]->itu;
@@ -1307,13 +1321,13 @@ sub send_wcy_spot
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
 	my ($wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-	my @dxcc = Prefix::extract($_[11]);
+	my @dxcc = Prefix::extract($_[10]);
 	if (@dxcc > 0) {
 		$wcy_dxcc = $dxcc[1]->dxcc;
 		$wcy_itu = $dxcc[1]->itu;
 		$wcy_cq = $dxcc[1]->cq;						
 	}
-	@dxcc = Prefix::extract($_[12]);
+	@dxcc = Prefix::extract($_[11]);
 	if (@dxcc > 0) {
 		$org_dxcc = $dxcc[1]->dxcc;
 		$org_itu = $dxcc[1]->itu;
@@ -1367,8 +1381,7 @@ sub send_announce
 		$to = '';
 	}
 	$target = "ALL" if !$target;
-	
-	Log('ann', $target, $_[0], $text);
+
 
 	# obtain country codes etc 
 	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
@@ -1384,6 +1397,19 @@ sub send_announce
 		$org_itu = $dxcc[1]->itu;
 		$org_cq = $dxcc[1]->cq;						
 	}
+
+	if ($self->{inannfilter}) {
+		my ($filter, $hops) = 
+			$self->{inannfilter}->it(@_, $self->{call}, 
+									 $ann_dxcc, $ann_itu, $ann_cq,
+									 $org_dxcc, $org_itu, $org_cq);
+		unless ($filter) {
+			dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
+			return;
+		}
+	}
+
+	Log('ann', $target, $_[0], $text);
 
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
@@ -1792,11 +1818,11 @@ sub disconnect
 #
 sub talk
 {
-	my ($self, $from, $to, $via, $line) = @_;
+	my ($self, $from, $to, $via, $line, $origin) = @_;
 	
 	$line =~ s/\^/\\5E/g;			# remove any ^ characters
-	$self->send(DXProt::pc10($from, $to, $via, $line));
-	Log('talk', $self->call, $from, $via?$via:$main::mycall, $line);
+	$self->send(DXProt::pc10($from, $to, $via, $line, $origin));
+	Log('talk', $self->call, $from, $via?$via:$main::mycall, $line) unless $origin && $origin ne $main::mycall;
 }
 
 # send it if it isn't the except list and isn't isolated and still has a hop count

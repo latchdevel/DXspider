@@ -226,7 +226,7 @@ sub it
 	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
-		my $args = join '\',\'', @_;
+		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @_;
 		my $true = $r ? "OK " : "REJ";
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
@@ -310,8 +310,9 @@ sub install
 	}
 	foreach $dxchan (@dxchan) {
 		my $n = "$in$sort" . "filter";
+		my $i = $in ? 'IN_' : '';
 		my $ref = $dxchan->$n();
-		if (!$ref || ($ref && uc $ref->{name} eq "$name.PL")) {
+		if (!$ref || ($ref && uc $ref->{name} eq "$i$name.PL")) {
 			$dxchan->$n($remove ? undef : $self);
 		}
 	}

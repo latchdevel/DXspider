@@ -83,7 +83,7 @@ sub dequeue
 		if ($conn->{msg} =~ /\cJ$/) {
 			delete $conn->{msg};
 		} else {
-			$conn->{msg} = pop @lines;
+			$conn->{msg} =~ s/([^\cM\cJ]*)\cM?\cJ//g;
 		}
 		while (defined ($msg = shift @lines)) {
 			dbg("connect $conn->{cnum}: $msg") if $conn->{state} ne 'C' && isdbg('connect');

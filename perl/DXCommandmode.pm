@@ -32,7 +32,7 @@ use Sun;
 use Internet;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $suppress_ann_to_talk);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -40,6 +40,8 @@ $errstr = ();					# error string from eval
 %aliases = ();					# aliases for (parts of) commands
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
+$suppress_ann_to_talk = 1;		# don't announce 'to <call> ' or '<call> ' type announcements
+
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -702,6 +704,11 @@ sub announce
 	my $target = shift;
 	my $text = shift;
 	my ($filter, $hops);
+
+	if ($suppress_ann_to_talk) {
+		my ($to, $call) = $text =~ /^\s*([\w-]+)[\s:]+([\w-]+)/;
+		return if ($to && $call && ((uc $to eq 'TO' && is_callsign(uc $call)) || is_callsign($call = uc $to)));
+	}	
 
 	if ($self->{annfilter}) {
 		($filter, $hops) = $self->{annfilter}->it(@_ );

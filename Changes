@@ -1,3 +1,11 @@
+13Sep01=======================================================================
+1. did some work on making talk more intelligent and fixed a>b problem.
+2. fixed a nasty problem on input when being hit with full buffers of 
+data (eg at init time with large lists of node/users on fast links).
+3. fixed realtime input filter changing.
+4. added announce->talk conversion for routable calls when announces of the
+form 'to g1tlh hello' or 'g1tlh hello' appear. This also suppresses similar
+announces for users whose callsign is not the one in the announce.
 11Sep01=======================================================================
 1. added IP address logging of connections
 10Sep01=======================================================================

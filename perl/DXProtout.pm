@@ -32,7 +32,7 @@ $main::branch += $BRANCH;
 # create a talk string ($from, $to, $via, $text)
 sub pc10
 {
-	my ($from, $to, $via, $text) = @_;
+	my ($from, $to, $via, $text, $origin) = @_;
 	my ($user1, $user2);
 	if ($via && $via ne $to) {
 		$user1 = $via;
@@ -41,10 +41,11 @@ sub pc10
 		$user2 = ' ';
 		$user1 = $to;
 	}
+	$origin ||= $main::mycall;
 	$text = unpad($text);
 	$text = ' ' unless $text && length $text > 0;
 	$text =~ s/\^/%5E/g;
-	return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  
+	return "PC10^$from^$user1^$text^*^$user2^$origin^~";  
 }
 
 # create a dx message (call, freq, dxcall, text) 
