@@ -523,7 +523,7 @@ DXDb::load();
 
 # starting local stuff
 dbg("doing local initialisation ...");
-QSL::init(1) or die "Cannot open local QSL database";
+QSL::init(1);
 eval {
 	Local::init();
 };
