@@ -427,6 +427,15 @@ SP is an alias for SEND PRIVATE
 === 0^SET/DX^Allow DX messages to come out on your terminal
 === 0^UNSET/DX^Stop DX messages coming out on your terminal
 
+=== 0^SET/ECHO^Make the cluster echo your input
+=== 0^UNSET/ECHO^Stop the cluster echoing your input
+If you are connected via a telnet session, different implimentations
+of telnet handle echo differently depending on whether you are 
+connected via port 23 or some other port. You can use this command
+to change the setting appropriately. 
+
+YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
+
 === 0^SET/HERE^Tell the system you are present at your terminal
 === 0^UNSET/HERE^Tell the system you are absent from your terminal
 

@@ -12,8 +12,6 @@ use Date::Parse;
 use IO::File;
 use Data::Dumper;
 
-use DXDebug;
-
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 

@@ -68,7 +68,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.40";				# the version no of the software
+$version = "1.41";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
 @outstanding_connects = ();     # list of outstanding connects
@@ -299,7 +299,7 @@ STDOUT->autoflush(1);
 Log('cluster', "DXSpider V$version started");
 
 # banner
-dbg('err', "DXSpider DX Cluster Version $version", "Copyright (c) 1998-1999 Dirk Koopman G1TLH");
+dbg('err', "DXSpider DX Cluster Version $version", "Copyright (c) 1998-2000 Dirk Koopman G1TLH");
 
 # load Prefixes
 dbg('err', "loading prefixes ...");
