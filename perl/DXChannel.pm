@@ -366,9 +366,7 @@ sub disconnect
 {
 	my $self = shift;
 	my $user = $self->{user};
-	my $call = $self->{call};
 	
-	$self->finish;
 	$user->close() if defined $user;
 	$self->{conn}->disconnect;
 	$self->del();

@@ -384,7 +384,7 @@ sub process
 #
 # finish up a user context
 #
-sub finish
+sub disconnect
 {
 	my $self = shift;
 	my $call = $self->call;
@@ -409,6 +409,8 @@ sub finish
 	Log('DXCommand', "$call disconnected");
 	my $ref = DXCluster->get_exact($call);
 	$ref->del() if $ref;
+
+	$self->SUPER::disconnect;
 }
 
 #

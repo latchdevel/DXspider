@@ -1144,38 +1144,6 @@ sub process
 #
 # finish up a pc context
 #
-sub finish
-{
-	my $self = shift;
-	my $call = $self->call;
-	my $ref = DXCluster->get_exact($call);
-	
-	# unbusy and stop and outgoing mail
-	my $mref = DXMsg::get_busy($call);
-	$mref->stop_msg($call) if $mref;
-	
-	# broadcast to all other nodes that all the nodes connected to via me are gone
-	foreach my $node (grep { $_->dxchan == $self } DXNode::get_all) {
-		next if $node->call eq $call;
-		next if $node->call eq $main::mycall;
-		broadcast_ak1a(pc21($node->call, 'Gone.'), $self) unless $self->{isolate};
-	}
-
-	# remove outstanding pings
-	delete $pings{$call};
-	
-	# now broadcast to all other ak1a nodes that I have gone
-	broadcast_ak1a(pc21($call, 'Gone.'), $self) unless $self->{isolate};
-
-	# I was the last node visited
-    $self->user->node($main::mycall);
-
-	# send info to all logged in thingies
-	$self->tell_login('logoutn');
-
-	Log('DXProt', $call . " Disconnected");
-	$ref->del() if $ref;
-}
 
 #
 # some active measures
@@ -1682,10 +1650,39 @@ sub disconnect
 {
 	my $self = shift;
 	my $nopc39 = shift;
+	my $call = $self->call;
 
-	if ($self->{conn} && !$nopc39) {
+	unless ($nopc39) {
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
+
+	# unbusy and stop and outgoing mail
+	my $mref = DXMsg::get_busy($call);
+	$mref->stop_msg($call) if $mref;
+	
+	# broadcast to all other nodes that all the nodes connected to via me are gone
+	foreach my $node (grep { $_->dxchan == $self } DXNode::get_all) {
+		next if $node->call eq $call;
+		next if $node->call eq $main::mycall;
+		broadcast_ak1a(pc21($node->call, 'Gone.'), $self) unless $self->{isolate};
+		$node->del;
+	}
+
+	# remove outstanding pings
+	delete $pings{$call};
+	
+	# now broadcast to all other ak1a nodes that I have gone
+	broadcast_ak1a(pc21($call, 'Gone.'), $self) unless $self->{isolate};
+
+	# I was the last node visited
+    $self->user->node($main::mycall);
+
+	# send info to all logged in thingies
+	$self->tell_login('logoutn');
+
+	Log('DXProt', $call . " Disconnected");
+	my $ref = DXCluster->get_exact($call);
+	$ref->del() if $ref;
 
 	$self->SUPER::disconnect;
 }

@@ -102,7 +102,7 @@ sub error_handler
 {
 	my $dxchan = shift;
 	$dxchan->{conn}->set_error(undef) if exists $dxchan->{conn};
-	$dxchan->disconnect;
+	$dxchan->disconnect(1);
 }
 
 # handle incoming messages

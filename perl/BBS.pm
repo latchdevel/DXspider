@@ -123,11 +123,12 @@ sub normal
 #
 # end a connection (called by disconnect)
 #
-sub finish
+sub disconnect
 {
 	my $self = shift;
 	my $call = $self->call;
 	Log('BBS', "$call", "disconnected");
+	$self->SUPER::disconnect;
 }
 
 # 
