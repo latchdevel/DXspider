@@ -2,7 +2,6 @@
 <html>
   <head>
     <title>The Standard Client</title>
-    <title>Connecting to other Clusters</title>
 	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
 	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
 	<meta name="Author" content="Dirk Koopman G1TLH">
@@ -20,7 +19,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Mon Dec 21 12:26:18 GMT 1998
+Last modified: Wed Dec 23 16:08:12 GMT 1998
 <!-- hhmts end -->
 
 	<h4>Introduction</h4>
@@ -106,6 +105,14 @@ Last modified: Mon Dec 21 12:26:18 GMT 1998
 	and password is entered it uses
 	the standard cluster user file to check them.
 
+	<p>Having said all of that the client <em>appears</em> to use the following files and
+	  sends them to the user if they are present:-
+	<ul>
+	  <li><b>/spider/data/motd</b> which is sent to the user on normal user startup.
+	  <li><b>/spider/data/logout</b> which is sent to user on disconnection.
+	  <li><b>/spider/data/offline</b> which is sent to the user if the cluster daemon 
+		isn't running.
+	</ul>
 
 <!-- Standard Footer!! -->
 	<p>&nbsp;</p>

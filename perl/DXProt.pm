@@ -244,12 +244,13 @@ sub normal
 		if ($pcno == 16) {		# add a user
 			my $node = DXCluster->get_exact($field[1]); 
 			last SWITCH if !$node; # ignore if havn't seen a PC19 for this one yet
+			last SWITCH unless $node->isa('DXNode');
 			my $i;
 			
 			
 			for ($i = 2; $i < $#field; $i++) {
-				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (-) (\d)/o;
-				next if length $call < 3;
+				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
+				next if length $call < 3 || length $call > 8;
 				next if !$confmode;
 				$call = uc $call;
 				next if DXCluster->get_exact($call); # we already have this (loop?)

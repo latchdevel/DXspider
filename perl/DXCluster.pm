@@ -22,43 +22,43 @@ use Carp;
 use strict;
 use vars qw(%cluster %valid);
 
-%cluster = ();            # this is where we store the dxcluster database
+%cluster = ();					# this is where we store the dxcluster database
 
 %valid = (
-  mynode => '0,Parent Node,showcall',
-  call => '0,Callsign',
-  confmode => '0,Conference Mode,yesno',
-  here => '0,Here?,yesno',
-  dxchan => '5,Channel ref',
-  pcversion => '5,Node Version',
-  list => '5,User List,dolist',
-  users => '0,No of Users',
-);
+		  mynode => '0,Parent Node,showcall',
+		  call => '0,Callsign',
+		  confmode => '0,Conference Mode,yesno',
+		  here => '0,Here?,yesno',
+		  dxchan => '5,Channel ref',
+		  pcversion => '5,Node Version',
+		  list => '5,User List,dolist',
+		  users => '0,No of Users',
+		 );
 
 sub alloc
 {
-  my ($pkg, $dxchan, $call, $confmode, $here) = @_;
-  die "$call is already alloced" if $cluster{$call};
-  my $self = {};
-  $self->{call} = $call;
-  $self->{confmode} = $confmode;
-  $self->{here} = $here;
-  $self->{dxchan} = $dxchan;
+	my ($pkg, $dxchan, $call, $confmode, $here) = @_;
+	die "$call is already alloced" if $cluster{$call};
+	my $self = {};
+	$self->{call} = $call;
+	$self->{confmode} = $confmode;
+	$self->{here} = $here;
+	$self->{dxchan} = $dxchan;
 
-  $cluster{$call} = bless $self, $pkg;
-  return $self;
+	$cluster{$call} = bless $self, $pkg;
+	return $self;
 }
 
 # get an entry exactly as it is
 sub get_exact
 {
-  my ($pkg, $call) = @_;
+	my ($pkg, $call) = @_;
 
-  # belt and braces
-  $call = uc $call;
+	# belt and braces
+	$call = uc $call;
   
-  # search for 'as is' only
-  return $cluster{$call}; 
+	# search for 'as is' only
+	return $cluster{$call}; 
 }
 
 #
@@ -67,63 +67,63 @@ sub get_exact
 #
 sub get
 {
-  my ($pkg, $call) = @_;
+	my ($pkg, $call) = @_;
 
-  # belt and braces
-  $call = uc $call;
+	# belt and braces
+	$call = uc $call;
   
-  # search for 'as is'
-  my $ref = $cluster{$call}; 
-  return $ref if $ref;
+	# search for 'as is'
+	my $ref = $cluster{$call}; 
+	return $ref if $ref;
 
-  # search for the unSSIDed one
-  $call =~ s/-\d+$//o;
-  $ref = $cluster{$call};
-  return $ref if $ref;
+	# search for the unSSIDed one
+	$call =~ s/-\d+$//o;
+	$ref = $cluster{$call};
+	return $ref if $ref;
   
-  # search for the SSIDed one
-  my $i;
-  for ($i = 1; $i < 17; $i++) {
-	  $ref = $cluster{"$call-$i"};
-	  return $ref if $ref;
-  }
-  return undef;
+	# search for the SSIDed one
+	my $i;
+	for ($i = 1; $i < 17; $i++) {
+		$ref = $cluster{"$call-$i"};
+		return $ref if $ref;
+	}
+	return undef;
 }
 
 # get all 
 sub get_all
 {
-  return values(%cluster);
+	return values(%cluster);
 }
 
 # return a prompt for a field
 sub field_prompt
 { 
-  my ($self, $ele) = @_;
-  return $valid{$ele};
+	my ($self, $ele) = @_;
+	return $valid{$ele};
 }
 
 # this expects a reference to a list in a node NOT a ref to a node 
 sub dolist
 {
-  my $self = shift;
-  my $out;
-  my $ref;
+	my $self = shift;
+	my $out;
+	my $ref;
   
-  foreach $ref (@{$self}) {
-    my $s = $ref->{call};
-	$s = "($s)" if !$ref->{here};
-	$out .= "$s ";
-  }
-  chop $out;
-  return $out;
+	foreach $ref (@{$self}) {
+		my $s = $ref->{call};
+		$s = "($s)" if !$ref->{here};
+		$out .= "$s ";
+	}
+	chop $out;
+	return $out;
 }
 
 # this expects a reference to a node 
 sub showcall
 {
-  my $self = shift;
-  return $self->{call};
+	my $self = shift;
+	return $self->{call};
 }
 
 # the answer required by show/cluster
@@ -138,21 +138,21 @@ sub cluster
 
 sub DESTROY
 {
-  my $self = shift;
-  dbg('cluster', "destroying $self->{call}\n");
+	my $self = shift;
+	dbg('cluster', "destroying $self->{call}\n");
 }
 
 no strict;
 sub AUTOLOAD
 {
-  my $self = shift;
-  my $name = $AUTOLOAD;
+	my $self = shift;
+	my $name = $AUTOLOAD;
   
-  return if $name =~ /::DESTROY$/;
-  $name =~ s/.*:://o;
+	return if $name =~ /::DESTROY$/;
+	$name =~ s/.*:://o;
   
-  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
-  @_ ? $self->{$name} = shift : $self->{$name} ;
+	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+	@_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 #
@@ -169,33 +169,33 @@ use strict;
 
 sub new 
 {
-  my ($pkg, $dxchan, $node, $call, $confmode, $here) = @_;
+	my ($pkg, $dxchan, $node, $call, $confmode, $here) = @_;
 
-  die "tried to add $call when it already exists" if DXCluster->get_exact($call);
+	die "tried to add $call when it already exists" if DXCluster->get_exact($call);
   
-  my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
-  $self->{mynode} = $node;
-  $node->{list}->{$call} = $self;     # add this user to the list on this node
-  dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
-  $node->update_users;
-  return $self;
+	my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
+	$self->{mynode} = $node;
+	$node->{list}->{$call} = $self;	# add this user to the list on this node
+	dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
+	$node->update_users();
+	return $self;
 }
 
 sub del
 {
-  my $self = shift;
-  my $call = $self->{call};
-  my $node = $self->{mynode};
+	my $self = shift;
+	my $call = $self->{call};
+	my $node = $self->{mynode};
 
-  delete $node->{list}->{$call};
-  delete $DXCluster::cluster{$call};     # remove me from the cluster table
-  dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
-  $node->update_users;
+	delete $node->{list}->{$call};
+	delete $DXCluster::cluster{$call}; # remove me from the cluster table
+	dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
+	$node->update_users();
 }
 
 sub count
 {
-  return $DXNode::users;                 # + 1 for ME (naf eh!)
+	return $DXNode::users;		# + 1 for ME (naf eh!)
 }
 
 no strict;
@@ -220,62 +220,62 @@ $maxusers = 0;
 
 sub new 
 {
-  my ($pkg, $dxchan, $call, $confmode, $here, $pcversion) = @_;
-  my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
-  $self->{pcversion} = $pcversion;
-  $self->{list} = { } ;
-  $self->{mynode} = $self;   # for sh/station
-  $self->{users} = 0;
-  $nodes++;
-  dbg('cluster', "allocating node $call to cluster\n");
-  return $self;
+	my ($pkg, $dxchan, $call, $confmode, $here, $pcversion) = @_;
+	my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
+	$self->{pcversion} = $pcversion;
+	$self->{list} = { } ;
+	$self->{mynode} = $self;	# for sh/station
+	$self->{users} = 0;
+	$nodes++;
+	dbg('cluster', "allocating node $call to cluster\n");
+	return $self;
 }
 
 # get all the nodes
 sub get_all
 {
-  my $list;
-  my @out;
-  foreach $list (values(%DXCluster::cluster)) {
-    push @out, $list if $list->{pcversion};
-  }
-  return @out;
+	my $list;
+	my @out;
+	foreach $list (values(%DXCluster::cluster)) {
+		push @out, $list if $list->{pcversion};
+	}
+	return @out;
 }
 
 sub del
 {
-  my $self = shift;
-  my $call = $self->{call};
-  my $ref;
+	my $self = shift;
+	my $call = $self->{call};
+	my $ref;
 
-  # delete all the listed calls
-  foreach $ref (values %{$self->{list}}) {
-    $ref->del();      # this also takes them out of this list
-  }
-  delete $DXCluster::cluster{$call};     # remove me from the cluster table
-  dbg('cluster', "deleting node $call from cluster\n"); 
-  $nodes-- if $nodes > 0;
+	# delete all the listed calls
+	foreach $ref (values %{$self->{list}}) {
+		$ref->del();			# this also takes them out of this list
+	}
+	delete $DXCluster::cluster{$call}; # remove me from the cluster table
+	dbg('cluster', "deleting node $call from cluster\n"); 
+	$nodes-- if $nodes > 0;
 }
 
 sub update_users
 {
-  my $self = shift;
-  my $count = shift;
-  $count = 0 unless $count;
+	my $self = shift;
+	my $count = shift;
+	$count = 0 unless $count;
   
-  $users -= $self->{users} if $self->{users};
-  if ((keys %{$self->{list}})) {
-    $self->{users} = (keys %{$self->{list}});
-  } else {
-    $self->{users} = $count;
-  }
-  $users += $self->{users} if $self->{users};
-  $maxusers = $users+$nodes if $users+$nodes > $maxusers;
+	$users -= $self->{users} if $self->{users};
+	if ((keys %{$self->{list}})) {
+		$self->{users} = (keys %{$self->{list}});
+	} else {
+		$self->{users} = $count;
+	}
+	$users += $self->{users} if $self->{users};
+	$maxusers = $users+$nodes if $users+$nodes > $maxusers;
 }
 
 sub count
 {
-  return $nodes;           # + 1 for ME!
+	return $nodes;				# + 1 for ME!
 }
 
 sub dolist

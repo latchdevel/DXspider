@@ -1,3 +1,7 @@
+23Dec98========================================================================
+1. Reindented various things
+2. Added missing $main::mycall on the end of outgoing PC11s (!)
+3. Check that PC16/17 node calls really are nodes (AFAIAC).
 22Dec98========================================================================
 1. Added brackets round callsign if not here for prompt
 2. Added Iain's set/password routine
