@@ -294,9 +294,9 @@ sub input
 	# validate it further
 	$err .= "missing cmd or data," unless $cmd && $data;
 	$err .= "invalid command ($cmd)," unless $cmd =~ /^[A-Z][A-Z0-9]*$/;
-	my ($gp, $tus) = split /:/, $group, 2;
+	my ($gp, $tus) = split /:/, $group, 2 if $group;
 		
-	$err .= "invalid group ($gp)," unless $gp =~ /^[A-Z0-9]{2,}$/;
+	$err .= "invalid group ($gp)," if $gp && $gp !~ /^[A-Z0-9]{2,}$/;
 	$err .= "invalid tocall ($tus)," if $tus && !is_callsign($tus);
 	$err .= "invalid fromcall ($user)," if $user && !is_callsign($user);
 
