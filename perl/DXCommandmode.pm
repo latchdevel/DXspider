@@ -37,6 +37,8 @@ use DB_File;
 use VE7CC;
 use Thingy;
 use Thingy::Dx;
+use Thingy::Hello;
+use Thingy::Bye;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount $msgpolltime);
@@ -52,10 +54,8 @@ $msgpolltime = 3600;			# the time between polls for new messages
 
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /^\d+\.\d+(?:\.(\d+)\.(\d+))?$/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -71,9 +71,11 @@ sub new
 	my @rout = $main::routeroot->add_user($call, Route::here(1));
 
 	# ALWAYS output the user
+	my $thing = Thingy::Hello->new(user => $self->{call});
+	$thing->broadcast($self);
+	
 	my $ref = Route::User::get($call);
 	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
-
 	return $self;
 }
 
@@ -542,6 +544,9 @@ sub disconnect
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
+
+		my $thing = Thingy::Bye->new(user=>$call);
+		$thing->broadcast($self);
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}

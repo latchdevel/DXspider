@@ -11,10 +11,8 @@ use strict;
 package Thingy::Hello;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /^\d+\.\d+(?:\.(\d+)\.(\d+))?$/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 use DXChannel;
 use DXDebug;
@@ -103,7 +101,7 @@ sub handle
 sub new
 {
 	my $pkg = shift;
-	my $thing = $pkg->SUPER::new(origin=>$main::mycall);
+	my $thing = $pkg->SUPER::new(origin=>$main::mycall, @_);
 	return $thing;
 }
 1;

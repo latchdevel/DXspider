@@ -96,11 +96,21 @@ sub queue
 	push @queue, $thing;
 }
 
+#
 # this is the main commutator loop. In due course it will
-# become the *only* commutator loop
+# become the *only* commutator loop, This can be called in one
+# of two ways: either with 2 args or with none.
+#
+# The two arg form is an immediate "queue and handle" and does
+# a full cycle, immediately
+#
 sub process
 {
 	my $thing;
+	if (@_ == 2) {
+		$thing = shift;
+		$thing->queue(shift);
+	}
 	while (@queue) {
 		$thing = shift @queue;
 		my $dxchan = DXChannel->get($thing->{dxchan});

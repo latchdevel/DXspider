@@ -152,9 +152,12 @@ sub disconnect
 	my $call = $self->call;
 
 	return if $self->{disconnecting}++;
-	
+
+	my $thing = Thingy::Bye->new(origin=>$main::mycall, user=>$call);
+	$thing->process($self);
+
 	# get rid of any PC16/17/19
-#	eph_del_regex("^PC1[679]*$call");
+	eph_del_regex("^PC1[679]*$call");
 
 	# do routing stuff, remove me from routing table
 	my $node = Route::Node::get($call);
@@ -165,7 +168,7 @@ sub disconnect
 		# and all my ephemera as well
 		for (@rout) {
 			my $c = $_->call;
-#			eph_del_regex("^PC1[679].*$c");
+			eph_del_regex("^PC1[679].*$c");
 		}
 	}
 

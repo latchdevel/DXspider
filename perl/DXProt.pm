@@ -40,6 +40,8 @@ use Thingy::Dx;
 use Thingy::Rt;
 use Thingy::Ping;
 use Thingy::T;
+use Thingy::Hello;
+use Thingy::Bye;
 
 use strict;
 
@@ -237,7 +239,9 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
-
+	my $thing = Thingy::Hello->new(user=>$call);
+	$thing->broadcast($self);
+	
 	return $self;
 }
 
@@ -533,7 +537,7 @@ sub handle_11
 
 	my $thing = Thingy::Dx->new(origin=>$main::mycall);
 	$thing->from_DXProt(DXProt=>$line,spotdata=>\@spot);
-	$thing->queue($self);
+	$thing->process($self);
 
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
@@ -591,20 +595,6 @@ sub handle_11
 			}
 		}
 	}
-				
-	# local processing 
-	my $r;
-	eval {
-		$r = Local::spot($self, @spot);
-	};
-	#			dbg("Local::spot1 error $@") if isdbg('local') if $@;
-	return if $r;
-
-	# DON'T be silly and send on PC26s!
-	return if $pcno == 26;
-
-	# send out the filtered spots
-#	send_dx_spot($self, $line, @spot) if @spot;
 }
 		
 # announces
@@ -746,14 +736,15 @@ sub handle_16
 			eph_del_regex("^PC17\\^$call\\^$ncall");
 				
 			my $flags = $here ? 1 : 0;
-			$rout .= ":U$flags$call";
+			$rout .= "$flags$call:";
 		}
 		
 
 		if ($rout) {
+			chop $rout;
 			my $thing = Thingy::Rt->new(origin=>$main::mycall, user=>$self->{call});
-			$thing->from_DXProt(t=>'eau', d=>"N1$ncall$rout", DXProt=>$line);
-			$thing->queue($self);
+			$thing->from_DXProt(t=>'au', $ncall eq $self->{call} ? () : ('n', "1$ncall"), u=>$rout, DXProt=>$line);
+			$thing->process($self);
 		} else {
 			dbg("PCPROT: No usable users") if isdbg('chanerr');
 		}
@@ -819,8 +810,8 @@ sub handle_17
 
 	$uref = Route->new($ucall) unless $uref; # throw away
 	my $thing = Thingy::Rt->new(origin=>$main::mycall, user=>$self->{call});
-	$thing->from_DXProt(t=>'edu', d=>"N1$ncall:U1$ucall", DXProt=>$line);
-	$thing->queue($self);
+	$thing->from_DXProt(t=>'du', $ncall eq $self->{call} ? () : ('n', "1$ncall"), u=>"1$ucall", DXProt=>$line);
+	$thing->process($self);
 }
 		
 # link request
@@ -2217,6 +2208,9 @@ sub disconnect
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
+		my $thing = Thingy::Bye->new(user=>$call);
+		$thing->broadcast($self);
+
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
 	}
 
