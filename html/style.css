@@ -11,3 +11,6 @@
  .copy { font-size: small; color: red; }
  .id { font-size: small; } 
  .code { color: blue; }
+ .send { color: blue; }
+ .expect { color: red; }
+ .cmd { color: green; } 

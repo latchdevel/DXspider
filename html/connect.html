@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Tue Apr 10 00:21:34 BST 2001
+Last modified: Sun Sep  2 20:31:56 BST 2001
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -68,9 +68,9 @@ Last modified: Tue Apr 10 00:21:34 BST 2001
     abort (Busy|Sorry|Fail)
     # don't forget to chmod 4775 netrom_call!
     connect ax25 /usr/sbin/netrom_call bbs gb7djk-0 g1tlh-0
-    'Connect' ''
-    'Connect' 'c np7'
-    'Connect' 'c gb7dxm'
+    'Connected' ''
+    'Connected' 'c np7'
+    'linked to' 'c gb7dxm'
     'Connect' ''
 	</pre>
 
@@ -82,9 +82,9 @@ Last modified: Tue Apr 10 00:21:34 BST 2001
     timeout 60
     abort (Busy|Sorry|Fail)
     connect agw 2 g1tlh
-    'Connect' ''
-    'Connect' 'c np7'
-    'Connect' 'c gb7dxm'
+    '*** Connected' ''
+    '*** Connect' 'c np7'
+    'linked to' 'c gb7dxm'
     'Connect' ''
 	</pre>
 	
@@ -96,6 +96,15 @@ Last modified: Tue Apr 10 00:21:34 BST 2001
     G1TLH de GB7DJK 13-Dec-1998 2043Z > 
 	</pre>
 	
+	<p>Consider the following specific example, it is located in the file <tt>/spider/connect/gb7djk-1</tt> :-</p>
+
+    <pre>
+    <span class=cmd>timeout 15</span>
+    <span class=cmd>connect telnet dirkl.tobit.co.uk</span>
+    <span class=expect>'login'</span> <span class=send>'gb7djk'</span>
+    <span class=expect>'ssword'</span> <span class=send>'gb7djk'</span>
+    </pre>
+
     <p>You can watch the progress of the connection (if you have <tt>connect</tt> 
      debugging enabled [<tt>set/debug connect</tt>]) on the
 	  <tt>cluster.pl</tt> screen and you should see something like this:-
@@ -103,21 +112,21 @@ Last modified: Tue Apr 10 00:21:34 BST 2001
     &lt;- D G1TLH connect gb7djk-1
     -> D G1TLH connection to GB7DJK-1 started
     -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
-    timeout set to 15
-    CONNECT sort: telnet command: dirkl.tobit.co.uk
+    <span class=cmd>timeout set to 15</span>
+    <span class=cmd>CONNECT sort: telnet command: dirkl.tobit.co.uk</span>
     CHAT "login" -> "gb7djk"
     received "
     Red Hat Linux release 5.1 (Manhattan)
     Kernel 2.0.35 on an i586
     "
-    received "login: "
-    sent "gb7djk"
+    <span class=expect>received "login: "</span>
+    <span class=send>sent "gb7djk"</span>
     CHAT "word" -> "gb7djk"
     received "gb7djk
  
     "
-    received "Password: "
-    sent "gb7djk"
+    <span class=expect>received "Password: "</span>
+    <span class=send>sent "gb7djk"</span>
     Connected to GB7DJK-1, starting normal protocol
     &lt;- O GB7DJK-1 telnet
     -> B GB7DJK-1 0
@@ -128,7 +137,34 @@ Last modified: Tue Apr 10 00:21:34 BST 2001
     &lt;- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime 0 00:00^5447^~
     etc
 	</pre>
-	
+
+	<p>I have coloured the commands in an attempt to make it clear as to what goes on, where and why. 
+	  <span class=cmd>These coloured lines are miscellaneous commands</span>, the <span class=expect>things
+	  that are this colour are the strings I am looking for (what I am "expecting")</span> 
+	  and the <span class=send>things that are this colour
+	  are the commands I am going to make when I see the "expect" strings in the input</span>.</p>
+
+	<p>The script starts by setting the timeout to 15 seconds, then starts
+	  the connection. It is <b>important</b> to note that, in the case of 
+	  an ax25 connection (usually) this will be the callsign of the <i>first hop</i> along the 
+	  route that you are going to take to the destination, so this will be typically the callsign
+	  of your local node.</p>
+
+    <p>You will notice that the script waits until it sees the left hand string
+	  of the pair and <b>only then</b> does it send the, 
+	  string on the right 
+	  hand side. This is called a <i>State Machine</i>.</p>
+
+	<p>A <i>state machine</i> "walks" through a conversation (in this case) looking
+	  for "states" (in this case particular strings) and then performs some
+	  "action" (usually some kind of connect command for the type of system
+	  you are trying to navigate). When one "state" "fires" (detects the string
+	  are looking for), it sends the command associated with that state and then 
+	  moves onto the next "state", in our case: the next line.</p>
+
+	<p><b>PLEASE NOTE</b>: the colouration in the above example is for illustrative purposes
+	  only, the debug output is all one colour.</p>
+
 	<p>The connect scripts consist of lines which start with the
 	following keywords or symbols:-
 
