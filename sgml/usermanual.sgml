@@ -6,7 +6,7 @@
 
 <title>The DXSpider User Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.0, March 2001
+<date>Version 1.0 (Revision 3), March 2001
 <abstract>
 A complete reference for users of the DXSpider DXCluster program.
 </abstract>
@@ -1004,10 +1004,6 @@ back in again.  What is wrong?
 will not let you reconnect using the same call to prevent loops.
 Try logging on again adding an ssid to your callsign as DXSpider
 treats G0YLM and G0YLM-1 as different users.
-
-<bf/Q./I notice that all the commands are shown in lower case in
-the main section of this manual, but in upper case in the "DXSpider 
-Command Reference" section.  Why is that?
 
 <bf/Q./How do I know if I have got the latest version of this
 user manual?
