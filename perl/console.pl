@@ -216,6 +216,8 @@ sub rec_stdin
 			}
 		} elsif ($r eq KEY_HOME || $r eq "\001") {
 			$pos = 0;
+		} elsif ($r eq KEY_END || $r eq "\005") {
+			$pos = $lth;
 		} elsif ($r eq KEY_BACKSPACE || $r eq "\010") {
 			if ($pos > 0) {
 				my $a = substr($inbuf, 0, $pos-1);
@@ -253,8 +255,8 @@ sub rec_stdin
 			$scr->touchwin();
 			$scr->refresh();
 		} elsif ($r eq "\013") {
-			$inbuf = "";
-			$pos = $lth = 0;
+			$inbuf = substr($inbuf, 0, $pos);
+			$lth = length $inbuf;
 		} else {
 			beep();
 		}
