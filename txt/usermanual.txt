@@ -104,7 +104,7 @@
      9.2 Reading mail.
      9.3 Sending mail.
      9.4 Replying to mail.
-     9.5 Deleting mail To delete a message, you use the
+     9.5 Deleting mail
 
   10. Filtering (From version 1.45)
 
@@ -947,18 +947,20 @@
   The output of the DDIIRREECCTTOORRYY command could be something like this.
 
 
-  dir
-   20735      2      ALL   GW7SMV 21-Feb 1204Z REC 9E1S QSL TDY 50Mhz....
-   20823    308       UK    G0HDB 22-Feb 2334Z Help - which district code?
-   20824    105      ALL     W9AE 23-Feb 0349Z S0NY QSL address?
-   20825      2       UK    G0LRJ 23-Feb 0806Z QSL REC LZ2CJ/1.CARD NO-750.
-   20858      2      ALL   GW7SMV 24-Feb 0905Z REC S92DX QSL CARD TDY 50Mhz
-   20921    200      ALL   GM4FDM 27-Feb 2203Z Trip to VP8
-   20949    375      ALL     K0MN 27-Feb 0428Z ST0P cards are gd @ ARRL
-   20950      2       UK    G0LRJ 28-Feb 0835Z QSL REC SV9/IZ0CKJ/P EU-187.
-   20987    569      ALL   GD0TEP  1-Mar 1733Z Portable contests
-   21076      2      ALL    G4AFJ  3-Mar 1743Z kh6nd/kh5 qsl received
-   21184-p  599   GW4HAT    G0VGS  4-Mar 1518Z Re: Time
+
+       dir
+        20735      2      ALL   GW7SMV 21-Feb 1204Z REC 9E1S QSL TDY 50Mhz....
+        20823    308       UK    G0HDB 22-Feb 2334Z Help - which district code?
+        20824    105      ALL     W9AE 23-Feb 0349Z S0NY QSL address?
+        20825      2       UK    G0LRJ 23-Feb 0806Z QSL REC LZ2CJ/1.CARD NO-750.
+        20858      2      ALL   GW7SMV 24-Feb 0905Z REC S92DX QSL CARD TDY 50Mhz
+        20921    200      ALL   GM4FDM 27-Feb 2203Z Trip to VP8
+        20949    375      ALL     K0MN 27-Feb 0428Z ST0P cards are gd @ ARRL
+        20950      2       UK    G0LRJ 28-Feb 0835Z QSL REC SV9/IZ0CKJ/P EU-187.
+        20987    569      ALL   GD0TEP  1-Mar 1733Z Portable contests
+        21076      2      ALL    G4AFJ  3-Mar 1743Z kh6nd/kh5 qsl received
+        21184-p  599   GW4HAT    G0VGS  4-Mar 1518Z Re: Time
+
 
 
 
@@ -986,8 +988,6 @@
   it's entirety unless you specify a page length. You can set your page
   length to any number you like and when the message reaches that number
   of lines you will get a prompt giving you options.
-
-
   EExxaammppllee::
 
 
@@ -1049,11 +1049,11 @@
 
 
 
-  99..55..  TToo ddeelleettee aa mmeessssaaggee,, yyoouu uussee tthhee ddeelleettee  ccoommmmaanndd..  YYoouu ccaann oonnllyy
-  ddeelleettee mmeessssaaggeess sseenntt ttoo oorr rreecceeiivveedd bbyy yyoouurrsseellff.. BBuulllleettiinnss aarree ddeeaalltt
-  wwiitthh aauuttoommaattiiccaallllyy oorr bbyy tthhee ssyyssoopp..  DDeelleettiinngg mmaaiill
+  99..55..  DDeelleettiinngg mmaaiill
 
-
+  To delete a message, you use the _d_e_l_e_t_e command.  You can only delete
+  messages sent to or received by yourself.  Bulletins are dealt with
+  automatically or by the sysop.
   1100..  FFiilltteerriinngg ((FFrroomm vveerrssiioonn 11..4455))
 
   1100..11..  GGeenneerraall ffiilltteerr rruulleess

@@ -672,7 +672,7 @@ commands and these can be found in the DXSpider Command Reference section.
 The output of the <bf>DIRECTORY</bf> command could be something like 
 this.
 
-<verb>
+<tscreen><verb>
 dir
  20735      2      ALL   GW7SMV 21-Feb 1204Z REC 9E1S QSL TDY 50Mhz....    
  20823    308       UK    G0HDB 22-Feb 2334Z Help - which district code?   
@@ -685,7 +685,7 @@ dir
  20987    569      ALL   GD0TEP  1-Mar 1733Z Portable contests             
  21076      2      ALL    G4AFJ  3-Mar 1743Z kh6nd/kh5 qsl received
  21184-p  599   GW4HAT    G0VGS  4-Mar 1518Z Re: Time 
-</verb>
+</verb></tscreen>
 
 The first column is the actual message number.  If the message is a
 personal one to you, you will see a letter 'p' after this number.  If
@@ -763,6 +763,7 @@ reply 2500
 
 <sect1>Deleting mail
 
+<P>
 To delete a message, you use the <em>delete</em> command.
 You can only delete messages sent to or received by yourself.  
 Bulletins are dealt with automatically or by the sysop.
