@@ -16,7 +16,7 @@ return (1, $self->msg('e12')) if !$f[0];
 my $call = uc $f[0];
 return (1, $self->msg('e11')) if $call eq $main::mycall;
 
-my $ref = Route::Node:get($call);
+my $ref = Route::Node::get($call);
 my $dxchan = $ref->dxchan if $ref;
 return (1, $self->msg('e10', $call)) unless $ref;
 
