@@ -44,7 +44,7 @@ foreach  $n (@db) {
 		push @out, "@f";
 		for (@f) {
 			push @out, $db->name . " $_";
-			my $value = $db->getkey($_);
+			my $value = $db->getkey($_) || "";
 			push @out, $db->name . ": $_ : $value";
 			if ($value) {
 				push @out, split /\n/, $value;
