@@ -18,10 +18,11 @@ Move spider.cgi to the cgi-bin directory of your webserver, in my case that is
 /home/httpd/cgi-bin/ although ymmv.  For Suse the correct path should be
 /usr/local/httpd/cgi-bin/ for example.
 
-Change the permissions of the files to ensure they are correct :
+Change the permissions of the files to ensure they are correct, obviously you
+will need to use the correct path the the files according to your system:
 
-chmod 755 /var/www/cgi-bin/spider.cgi
-chmod -R 755 /var/www/html/client/
+chmod 755 /home/httpd/html/cgi-bin/spider.cgi
+chmod -R 755 /home/httpd/html/client/
 
 By default the spider.cgi script should pick up your hostname (As long as this
 is set correctly).  If it does not or your hostname differs from the name that
