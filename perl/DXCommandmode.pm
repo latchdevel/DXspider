@@ -237,6 +237,7 @@ sub normal
 			eval {	@ans = &{$self->{func}}($self, $cmdline) };
 		}
 		$self->send_ans("Syserr: on stored func $self->{func}", $@) if $@;
+		$self->send_ans(@ans);
 	} else {
 		$self->send_ans(run_cmd($self, $cmdline));
 	} 
@@ -558,6 +559,7 @@ sub clear_cmd_cache
 	
 	for (keys %Cache) {
 		undef *{$_};
+		dbg("Undefining cmd $_") if isdbg('command');
 	}
 	%cmd_cache = ();
 	%Cache = ();
@@ -625,8 +627,12 @@ sub find_cmd_name {
 		# get rid of any existing sub and try to compile the new one
 		no strict 'refs';
 
-		dbg("[Re]defining $package") if isdbg('command');
-		undef *$package;
+		if (exists $Cache{$package}) {
+			dbg("Redefining $package") if isdbg('command');
+			undef *$package;
+		} else {
+			dbg("Defining $package") if isdbg('command');
+		}
 		eval $eval;
 		
 		$Cache{$package} = {mtime => $mtime };

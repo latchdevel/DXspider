@@ -298,6 +298,23 @@ sub process
 							return;
 						}
 
+						# check the message for bad words 
+						my @words;
+						for (@{$ref->{lines}}) {
+							push @words, BadWords::check($_);
+						}
+						push @words, BadWords::check($ref->{subject});
+						if (@words) {
+							dbg("message with badwords '@words' $ref->{from} -> $ref->{to} '$ref->{subject}' origin: $ref->{origin}") if isdbg('msg');
+							Log('msg',"message with badwords '@words' $ref->{from} -> $ref->{to} origin: $ref->{origin}");
+							Log('msg',"subject: $ref->{subject}");
+							for (@{$ref->{lines}}) {
+								Log('msg', "line: $_");
+							}
+							$ref->stop_msg($self->call);
+							return;
+						}
+							
 						$ref->{msgno} = next_transno("Msgno");
 						push @{$ref->{gotit}}, $f[2]; # mark this up as being received
 						$ref->store($ref->{lines});
@@ -868,6 +885,10 @@ sub do_send_stuff
 		#  $DB::single = 1;
 		confess "local var gone missing" if !ref $self->{loc};
 		my $loc = $self->{loc};
+		if (my @ans = BadWords::check($line)) {
+			Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} in msg");
+			return ($self->msg('e17', @ans), $self->msg('m1'));
+		}
 		$loc->{subject} = $line;
 		$loc->{lines} = [];
 		$self->state('sendbody');
@@ -920,12 +941,17 @@ sub do_send_stuff
 			$self->func(undef);
 			$self->state('prompt');
 		} else {
+			if (my @ans = BadWords::check($line)) {
+				Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} subject: '$loc->{subject}' in msg");
+				Log('msg', "line: $line");
+				return ($self->msg('e17', @ans));
+			}
 			
 			# i.e. it ain't and end or abort, therefore store the line
 			push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
 		}
 	}
-	return (1, @out);
+	return @out;
 }
 
 # return the standard directory line for this ref 

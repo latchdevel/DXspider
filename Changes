@@ -8,6 +8,9 @@ type things as well (this only works for a few wellknown english ones).
 5. Go back to the old way of caching commands (but without the silly warnings
 because I know better what I am doing now). This allows symbolic debugging
 of commands again without coredumps. Hurrah!
+6. Add badword handling for messages. Users will get rude messages back if
+they try to send naughty words in msgs. Incoming messages with badwords will
+be dropped on receipt and their contents logged.
 30Sep01=======================================================================
 1. made some small bug fixes in rspf checking and also messages. 
 23Sep01=======================================================================

@@ -6,5 +6,5 @@
 # $Id$
 #
 my ($self, $line) = @_;
-return $BadWord::badwords->unset(8, $self->msg('e6'), $self, $line);
+return $BadWords::badword->unset(8, $self->msg('e6'), $self, $line);
 
