@@ -1,3 +1,8 @@
+01Aug00=======================================================================
+1. made the export and import ascii system work finally. The user_asc file
+generated (automatically and 0000Z Sunday morning) is autoloading. Just 
+execute it and it will automatically reload your user database.
+2. remove import_users.pl no longer necessary
 31Jul00=======================================================================
 1. try to fix paging problem.
 2. added help for spoof and set/forward

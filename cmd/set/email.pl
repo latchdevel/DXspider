@@ -13,6 +13,7 @@ my $user;
 # remove leading and trailing spaces
 $line =~ s/^\s+//;
 $line =~ s/\s+$//;
+$line =~ s/[{}]//g;  # remove any braces
 
 return (1, $self->msg('emaile1')) if !$line;
 

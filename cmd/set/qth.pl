@@ -13,6 +13,7 @@ my $user;
 # remove leading and trailing spaces
 $line =~ s/^\s+//;
 $line =~ s/\s+$//;
+$line =~ s/[{}]//g;   # no braces allowed
 
 return (1, $self->msg('qthe1')) if !$line;
 

@@ -103,7 +103,7 @@ sub init
 
 sub del_file
 {
-	my ($pkg, $fn, $mode) = @_;
+	my ($pkg, $fn) = @_;
   
 	confess "need a filename in User" if !$fn;
 	$fn .= ".v2";
@@ -308,11 +308,11 @@ sub export
 	my $count = 0;
 	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
 	if ($fh) {
-		my $ref;
-		my $key;
+		my $ref = 0;
+		my $key = 0;
 		my $action;
 		my $t = scalar localtime;
-		print $fh "#!/usr/bin/perl
+		print $fh q{#!/usr/bin/perl
 #
 # The exported userfile for a DXSpider System
 #
@@ -320,19 +320,56 @@ sub export
 #       Time: $t
 #
 
+package main;
+
+# search local then perl directories
+BEGIN {
+	umask 002;
+	
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+
+	# try to detect a lockfile (this isn't atomic but 
+	# should do for now
+	$lockfn = "$root/perl/cluster.lock";       # lock file name
+	if (-e $lockfn) {
+		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+		my $pid = <CLLOCK>;
+		chomp $pid;
+		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
+		close CLLOCK;
+	}
+}
+
 package DXUser;
 
-%u = (
-";
+use DXVars;
+use DXUser;
 
-		for ($action = R_FIRST; !$dbm->seq($key, $ref, $action); $action = R_NEXT) {
-			print $fh "'$key' => $ref,\n";
-			++$count;
-		} 
-		print $fh ");\n#\n# there were $count records\n#\n";
-		$fh->close;
-	} 
-	return $count;
+if (@ARGV) {
+        $main::userfn = shift @ARGV;
+        print "user filename now $userfn\n";
+}
+
+DXUser->del_file($main::userfn);
+DXUser->init($main::userfn, 1);
+
+%u = (
+   };
+	  
+for ($action = R_FIRST; !$dbm->seq($key, $ref, $action); $action = R_NEXT) {
+	print $fh "'$key' => q{$ref},\n";
+	++$count;
+} 
+print $fh ");\n#\nprint \"there were $count records\\n\";\n#\n";
+print $fh "DXUser->sync; DXUser->finish;\n#\n";
+$fh->close;
+} 
+		return $count;
 }
 
 #
