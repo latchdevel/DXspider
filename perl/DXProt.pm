@@ -291,13 +291,11 @@ sub normal
 					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next$alarm", $decode_dk0wcy, $field[5], $r);
 				}
 				
-				return if $field[2] eq $main::mycall; # it's routed to me
 			} else {
 				route($field[2], $line);
-				return;			# only on a routed one
 			}
 			
-			last SWITCH;
+			return;
 		}
 		
 		if ($pcno == 13) {
@@ -913,7 +911,7 @@ sub send_announce
 			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call} );
 			next unless $filter;
 		} 
-		if ($dxchan->is_ak1a) {
+		if ($dxchan->is_ak1a && $field[1] ne $main::mycall) {  # i.e not specifically routed to me
 			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
