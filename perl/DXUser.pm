@@ -24,48 +24,48 @@ $filename = undef;
 
 # hash of valid elements and a simple prompt
 %valid = (
-  call => '0,Callsign',
-  alias => '0,Real Callsign',
-  name => '0,Name',
-  qth => '0,Home QTH',
-  lat => '0,Latitude,slat',
-  long => '0,Longitude,slong',
-  qra => '0,Locator',
-  email => '0,E-mail Address',
-  priv => '9,Privilege Level',
-  lastin => '0,Last Time in,cldatetime',
-  passwd => '9,Password',
-  addr => '0,Full Address',
-  'sort' => '0,Type of User',                # A - ak1a, U - User, S - spider cluster, B - BBS
-  xpert => '0,Expert Status,yesno',
-  bbs => '0,Home BBS',
-  node => '0,Last Node',
-  homenode => '0,Home Node',
-  lockout => '9,Locked out?,yesno',        # won't let them in at all
-  dxok => '9,DX Spots?,yesno',            # accept his dx spots?
-  annok => '9,Announces?,yesno',            # accept his announces?
-  reg => '0,Registered?,yesno',            # is this user registered?
-  lang => '0,Language',
-  hmsgno => '0,Highest Msgno',
-  group => '0,Access Group,parray',               # used to create a group of users/nodes for some purpose or other
-  isolate => '9,Isolate network,yesno',
-);
+		  call => '0,Callsign',
+		  alias => '0,Real Callsign',
+		  name => '0,Name',
+		  qth => '0,Home QTH',
+		  lat => '0,Latitude,slat',
+		  long => '0,Longitude,slong',
+		  qra => '0,Locator',
+		  email => '0,E-mail Address',
+		  priv => '9,Privilege Level',
+		  lastin => '0,Last Time in,cldatetime',
+		  passwd => '9,Password',
+		  addr => '0,Full Address',
+		  'sort' => '0,Type of User', # A - ak1a, U - User, S - spider cluster, B - BBS
+		  xpert => '0,Expert Status,yesno',
+		  bbs => '0,Home BBS',
+		  node => '0,Last Node',
+		  homenode => '0,Home Node',
+		  lockout => '9,Locked out?,yesno',	# won't let them in at all
+		  dxok => '9,DX Spots?,yesno', # accept his dx spots?
+		  annok => '9,Announces?,yesno', # accept his announces?
+		  reg => '0,Registered?,yesno',	# is this user registered?
+		  lang => '0,Language',
+		  hmsgno => '0,Highest Msgno',
+		  group => '0,Access Group,parray',	# used to create a group of users/nodes for some purpose or other
+		  isolate => '9,Isolate network,yesno',
+		 );
 
 no strict;
 sub AUTOLOAD
 {
-  my $self = shift;
-  my $name = $AUTOLOAD;
+	my $self = shift;
+	my $name = $AUTOLOAD;
   
-  return if $name =~ /::DESTROY$/;
-  $name =~ s/.*:://o;
+	return if $name =~ /::DESTROY$/;
+	$name =~ s/.*:://o;
   
-  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
-  if (@_) {
-    $self->{$name} = shift;
-	$self->put();
-  }
-  return $self->{$name};
+	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+	if (@_) {
+		$self->{$name} = shift;
+		#	$self->put();
+	}
+	return $self->{$name};
 }
 
 #
@@ -73,11 +73,11 @@ sub AUTOLOAD
 #
 sub init
 {
-  my ($pkg, $fn) = @_;
+	my ($pkg, $fn) = @_;
   
-  confess "need a filename in User" if !$fn;
-  $dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or confess "can't open user file: $fn ($!)";
-  $filename = $fn;
+	confess "need a filename in User" if !$fn;
+	$dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or confess "can't open user file: $fn ($!)";
+	$filename = $fn;
 }
 
 use strict;
@@ -88,8 +88,8 @@ use strict;
 
 sub finish
 {
-  $dbm = undef;
-  untie %u;
+	$dbm = undef;
+	untie %u;
 }
 
 #
@@ -98,20 +98,20 @@ sub finish
 
 sub new
 {
-  my $pkg = shift;
-  my $call = uc shift;
-#  $call =~ s/-\d+$//o;
+	my $pkg = shift;
+	my $call = uc shift;
+	#  $call =~ s/-\d+$//o;
   
-  confess "can't create existing call $call in User\n!" if $u{$call};
+	confess "can't create existing call $call in User\n!" if $u{$call};
 
-  my $self = {};
-  $self->{call} = $call;
-  $self->{'sort'} = 'U';
-  $self->{dxok} = 1;
-  $self->{annok} = 1;
-  $self->{lang} = $main::lang;
-  bless $self, $pkg;
-  $u{call} = $self;
+	my $self = bless {}, $pkg;
+	$self->{call} = $call;
+	$self->{'sort'} = 'U';
+	$self->{dxok} = 1;
+	$self->{annok} = 1;
+	$self->{lang} = $main::lang;
+	$u{call} = $self;
+	return $self;
 }
 
 #
@@ -121,10 +121,10 @@ sub new
 
 sub get
 {
-  my $pkg = shift;
-  my $call = uc shift;
-#  $call =~ s/-\d+$//o;       # strip ssid
-  return $u{$call};
+	my $pkg = shift;
+	my $call = uc shift;
+	#  $call =~ s/-\d+$//o;       # strip ssid
+	return $u{$call};
 }
 
 #
@@ -133,7 +133,7 @@ sub get
 
 sub get_all_calls
 {
-  return (sort keys %u);
+	return (sort keys %u);
 }
 
 #
@@ -146,13 +146,13 @@ sub get_all_calls
 
 sub get_current
 {
-  my $pkg = shift;
-  my $call = uc shift;
-#  $call =~ s/-\d+$//o;       # strip ssid
+	my $pkg = shift;
+	my $call = uc shift;
+	#  $call =~ s/-\d+$//o;       # strip ssid
   
-  my $dxchan = DXChannel->get($call);
-  return $dxchan->user if $dxchan;
-  return $u{$call};
+	my $dxchan = DXChannel->get($call);
+	return $dxchan->user if $dxchan;
+	return $u{$call};
 }
 
 #
@@ -161,9 +161,9 @@ sub get_current
 
 sub put
 {
-  my $self = shift;
-  my $call = $self->{call};
-  $u{$call} = $self;
+	my $self = shift;
+	my $call = $self->{call};
+	$u{$call} = $self;
 }
 
 #
@@ -172,9 +172,9 @@ sub put
 
 sub del
 {
-  my $self = shift;
-  my $call = $self->{call};
-  delete $u{$call};
+	my $self = shift;
+	my $call = $self->{call};
+	delete $u{$call};
 }
 
 #
@@ -183,9 +183,9 @@ sub del
 
 sub close
 {
-  my $self = shift;
-  $self->{lastin} = time;
-  $self->put();
+	my $self = shift;
+	$self->{lastin} = time;
+	$self->put();
 }
 
 #
@@ -194,7 +194,7 @@ sub close
 
 sub fields
 {
-  return keys(%valid);
+	return keys(%valid);
 }
 
 #
@@ -264,15 +264,15 @@ sub new_group
 
 sub field_prompt
 { 
-  my ($self, $ele) = @_;
-  return $valid{$ele};
+	my ($self, $ele) = @_;
+	return $valid{$ele};
 }
 
 # some variable accessors
 sub sort
 {
-  my $self = shift;
-  @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
+	my $self = shift;
+	@_ ? $self->{'sort'} = shift : $self->{'sort'} ;
 }
 1;
 __END__
