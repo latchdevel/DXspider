@@ -1,3 +1,5 @@
+19Aug01=======================================================================
+1. Fix rcmds
 17Aug01=======================================================================
 1. Sort out PC41 handling to include type 5 records for QRA locators and also
 remove all filtering (but retain ephemeral dup checking).

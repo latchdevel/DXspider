@@ -200,8 +200,8 @@ sub _docmd
 				last;
 			}  
 		}
-		if ($cmd =~ /^\s*\'.*\'\s+\'.*\'/i) {
-			$conn->_dochat($cmd, $msg);
+		if ($cmd =~ /^\s*\'([^\']*)\'\s+\'([^\']*)\'/) {
+			$conn->_dochat($cmd, $msg, $1, $2);
 			last;
 		}
 		if ($cmd =~ /^\s*cl\w+\s+(.*)/i) {
@@ -317,9 +317,10 @@ sub _dochat
 	my $conn = shift;
 	my $cmd = shift;
 	my $line = shift;
+	my $expect = shift;
+	my $send = shift;
 		
 	if ($line) {
-		my ($expect, $send) = $cmd =~ /^\s*\'(.*)\'\s+\'(.*)\'/;
 		if ($expect) {
 			dbg("connect $conn->{cnum}: expecting: \"$expect\" received: \"$line\"") if isdbg('connect');
 			if ($conn->{abort} && $line =~ /\Q$conn->{abort}/i) {

@@ -1605,10 +1605,7 @@ sub process_rcmd_reply
 		my $s = $rcmds{$fromnode};
 		if ($s) {
 			my $dxchan = DXChannel->get($s->{call});
-			my $ref = DXChannel->get($user) || $dxchan;
-			if ($ref->{call} eq $main::mycall) {
-				$ref = DXChannel->get($main::myalias) || $ref;
-			}
+			my $ref = $user eq $tonode ? $dxchan : (DXChannel->get($user) || $dxchan);
 			$ref->send($line) if $ref;
 			delete $rcmds{$fromnode} if !$dxchan;
 		} else {
