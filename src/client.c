@@ -574,7 +574,7 @@ lend:;
 /* 
  * set up the various mode flags, NL endings and things
  */
-void setmode(char *m)
+void setconntype(char *m)
 {
 	connsort = strlower(m);
 	if (eq(connsort, "telnet") || eq(connsort, "local") || eq(connsort, "nlonly")) {
@@ -809,9 +809,9 @@ lerr:
 		die("Must have at least a callsign (for now)");
 
 	if (optind < argc) {
-		setmode(argv[optind]);		
+		setconntype(argv[optind]);		
 	} else {
-		setmode("local");
+		setconntype("local");
 	}
 
 	/* this is kludgy, but hey so is the rest of this! */
