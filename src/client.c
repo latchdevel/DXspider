@@ -813,7 +813,7 @@ lgotcall:
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
 	if (tcgetattr(0, &in->t) < 0) {
-		echo = 0;
+/*		echo = 0; */
 		in->t_set = 0;
 	} else {
 		struct termios t = in->t;
