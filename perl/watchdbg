@@ -30,8 +30,8 @@ use DXLog;
 use strict;
 
 my $fp = DXLog::new('debug', 'dat', 'd');
-my @today = Julian::unixtoj(time()); 
-my $fh = $fp->open(@today) or die $!; 
+my $today = $fp->unixtoj(time()); 
+my $fh = $fp->open($today) or die $!; 
 my $nolines = 1;
 $nolines = shift if $ARGV[0] =~ /^-?\d+$/;
 $nolines = abs $nolines if $nolines < 0;  
@@ -58,16 +58,16 @@ for (;;) {
 		
 		# check that the debug hasn't rolled over to next day
 		# open it if it has
-		my @now = Julian::unixtoj(time()); 
-		if ($today[1] != $now[1]) {
+		my $now = $fp->unixtoj(time()); 
+		if ($today->cmp($now)) {
 			$fp->close;
 			my $i;
 			for ($i = 0; $i < 20; $i++) {
-				last if $fh = $fp->open(@now);
+				last if $fh = $fp->open($now);
 				sleep 5;
 			}
 		 	die $! if $i >= 20; 
-			@today = @now;
+			$today = $now;
 		}
 	}
 }

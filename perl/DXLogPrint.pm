@@ -27,7 +27,7 @@ sub print
 	my $fcb = $DXLog::log;
 	my $from = shift;
 	my $to = shift;
-	my @date = Julian::unixtojm(shift);
+	my $jdate = $fcb->unixtoj(shift);
 	my $pattern = shift;
 	my $who = uc shift;
 	my $search;
@@ -67,7 +67,7 @@ sub print
 					if ($search) {
 						\$count++;
 						next if \$count < $from;
-						push \@out, print_item(\$ref);
+						unshift \@out, print_item(\$ref);
 						last if \$count >= \$to;                  # stop after n
 					}
 				}
@@ -75,7 +75,7 @@ sub print
 	
 	$fcb->close;                                      # close any open files
 
-	my $fh = $fcb->open(@date); 
+	my $fh = $fcb->open($jdate); 
 	for ($count = 0; $count < $to; ) {
 		my $ref;
 		if ($fh) {

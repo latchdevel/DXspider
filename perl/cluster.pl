@@ -455,6 +455,9 @@ eval {
 };
 dbg("Local::init error $@") if $@;
 
+dbg("cleaning out old debug files");
+DXDebug::dbgclean();
+
 # print various flags
 #dbg("seful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P");
 

@@ -6,5 +6,5 @@
 # for doing connections and things
 #
 1 0 * * 0 DXUser::export("$main::data/user_asc")
+5 0 * * * DXDebug::dbgclean()
 0 3 * * * Spot::daily()
-

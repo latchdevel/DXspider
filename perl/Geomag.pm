@@ -175,7 +175,7 @@ sub search
 {
 	my $from = shift;
 	my $to = shift;
-	my @date = $fp->unixtoj(shift);
+	my $date = $fp->unixtoj(shift);
 	my $pattern = shift;
 	my $search;
 	my @out;
@@ -199,7 +199,7 @@ sub search
 	
 	$fp->close;					# close any open files
 	
-	my $fh = $fp->open(@date); 
+	my $fh = $fp->open($date); 
 	for ($count = 0; $count < $to; ) {
 		my @in = ();
 		if ($fh) {
@@ -243,8 +243,8 @@ sub print_item
 #
 sub readfile
 {
-	my @date = $fp->unixtoj(shift);
-	my $fh = $fp->open(@date); 
+	my $date = $fp->unixtoj(shift);
+	my $fh = $fp->open($date); 
 	my @spots = ();
 	my @in;
 	

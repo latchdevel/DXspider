@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
 
 use strict;
-use vars qw(%dbglevel $fp $callback);
+use vars qw(%dbglevel $fp $callback $cleandays $keepdays);
 
 use DXUtil;
 use DXLog ();
@@ -23,6 +23,8 @@ use Carp ();
 %dbglevel = ();
 $fp = undef;
 $callback = undef;
+$keepdays = 10;
+$cleandays = 100;
 
 # Avoid generating "subroutine redefined" warnings with the following
 # hack (from CGI::Carp):
@@ -158,6 +160,24 @@ sub shortmess
 sub longmess 
 { 
 	return Carp::longmess(@_);
+}
+
+# clean out old debug files, stop when you get a gap of more than a month
+sub dbgclean
+{
+	my $date = $fp->unixtoj($main::systime)->sub($keepdays+1);
+	my $i = 0;
+
+	while ($i < 31) {
+		my $fn = $fp->_genfn($date);
+		if (-e $fn) {
+			unlink $fn;
+			$i = 0;
+		} else {
+			$i++;
+		}
+		$date = $date->sub(1);
+	}
 }
 
 1;

@@ -920,6 +920,11 @@ sub normal
 #			my $ref = Route::get($call) || Route->new($call);
 #			return unless $self->in_filter_route($ref);
 
+			if ($field[3] eq $field[2]) {
+				dbg('PCPROT: invalid value') if isdbg('chanerr');
+				return;
+			}
+
 			# add this station to the user database, if required
 			my $user = DXUser->get_current($call);
 			$user = DXUser->new($call) if !$user;

@@ -1,3 +1,9 @@
+20Aug01=======================================================================
+1. protect against PC41s with field[3] == field[2]
+2. Redo Julian stuff as proper objects
+3. Make the various Log display come out forwards instead of backwards
+4. Add the dbgclean routine to system cron to clear out all debug files 
+more then 10 days old.
 19Aug01=======================================================================
 1. Fix rcmds
 2. make isolation when there are no filters present work again?

@@ -167,15 +167,15 @@ sub search
 	my $ref;
 	my $i;
 	my $count;
-	my @today = Julian::unixtoj(time());
-	my @fromdate;
-	my @todate;
+	my $today = Julian::Day->new(time());
+	my $fromdate;
+	my $todate;
 
 	$dayfrom = 0 if !$dayfrom;
 	$dayto = $maxdays unless $dayto;
 	$dayto = $dayfrom + $maxdays if $dayto < $dayfrom;
-	@fromdate = Julian::sub(@today, $dayfrom);
-	@todate = Julian::sub(@fromdate, $dayto);
+	$fromdate = $today->sub($dayfrom);
+	$todate = $fromdate->sub($dayto);
 	$from = 0 unless $from;
 	$to = $defaultspots unless $to;
 	$hint = $hint ? "next unless $hint" : "";
@@ -211,11 +211,11 @@ sub search
 	$fp->close;					# close any open files
 
 	for ($i = $count = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
-		my @now = Julian::sub(@fromdate, $i); # but you can pick which $maxdays worth
-		last if Julian::cmp(@now, @todate) <= 0;         
+		my $now = $fromdate->sub($i); # but you can pick which $maxdays worth
+		last if $now->cmp($todate) <= 0;         
 	
 		my @spots = ();
-		my $fh = $fp->open(@now); # get the next file
+		my $fh = $fp->open($now); # get the next file
 		if ($fh) {
 			my $in;
 			eval $eval;			# do the search on this file
@@ -279,11 +279,11 @@ sub formatl
 #
 # return all the spots from a day's file as an array of references
 # the parameter passed is a julian day
-sub readfile
+sub readfile($)
 {
 	my @spots;
 	
-	my $fh = $fp->open(@_); 
+	my $fh = $fp->open(shift); 
 	if ($fh) {
 		my $in;
 		while (<$fh>) {
@@ -317,11 +317,11 @@ sub listdups
 	return DXDupe::listdups('X', $dupage, @_);
 }
 
-sub genstats
+sub genstats($)
 {
-	my @date = @_;
-	my $in = $fp->open(@date);
-	my $out = $statp->open(@date, 'w');
+	my $date = shift;
+	my $in = $fp->open($date);
+	my $out = $statp->open($date, 'w');
 	my @freq = (
 				[0, Bands::get_freq('160m')],
 				[1, Bands::get_freq('80m')],
@@ -382,20 +382,19 @@ sub genstats
 }
 
 # return true if the stat file is newer than than the spot file
-sub checkstats
+sub checkstats($)
 {
-	my @date = @_;
-	my $in = $fp->mtime(@date);
-	my $out = $statp->mtime(@date);
+	my $date = shift;
+	my $in = $fp->mtime($date);
+	my $out = $statp->mtime($date);
 	return defined $out && defined $in && $out >= $in;
 }
 
 # daily processing
 sub daily
 {
-	my @date = Julian::unixtoj($main::systime);
-	@date = Julian::sub(@date, 1);
-	genstats(@date) unless checkstats(@date);
+	my $date = Julian::Day->new($main::systime)->sub(1);
+	genstats($date) unless checkstats($date);
 }
 1;
 

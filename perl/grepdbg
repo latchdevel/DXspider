@@ -26,13 +26,14 @@ BEGIN {
 use DXVars;
 use DXUtil;
 use DXLog;
+use Julian;
 
 use strict;
 
-use vars qw(@list $fp @today $string);
+use vars qw(@list $fp $today $string);
 
 $fp = DXLog::new('debug', 'dat', 'd');
-@today = Julian::unixtoj(time()); 
+$today = $fp->unixtoj(time()); 
 my $nolines = 1;
 my @prev;
 
@@ -51,8 +52,8 @@ die "usage: grepdbg [nn] [[-nnn] ..] <regexp>\n" unless  $string;
 
 push @list, "0" unless @list;
 for my $entry (@list) {
-	my @now = Julian::sub(@today, $entry); 
-	my $fh = $fp->open(@now); 
+	my $now = $today->sub($entry); 
+	my $fh = $fp->open($now); 
 	my $line;
 	if ($fh) {
 		while (<$fh>) {
