@@ -786,18 +786,24 @@ sub handle_16
 		# input filter if required
 		return unless $self->in_filter_route($parent);
 	}
-		
-		my $i;
-	my @rout;
-		for ($i = 2; $i < $#_; $i++) {
-			my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
-			next unless $call && $conf && defined $here && is_callsign($call);
-			next if $call eq $main::mycall;
-			
-			eph_del_regex("^PC17\\^$call\\^$ncall");
-				
-		$conf = $conf eq '*';
 
+	# is he under the control of the new protocol?
+	if ($parent && $parent->np) {
+		dbg("PCPROT: $ncall aranea node, ignored") if isdbg('chanerr');
+		return;
+	}
+		
+	my $i;
+	my @rout;
+	for ($i = 2; $i < $#_; $i++) {
+		my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
+		next unless $call && $conf && defined $here && is_callsign($call);
+		next if $call eq $main::mycall;
+		
+		eph_del_regex("^PC17\\^$call\\^$ncall");
+		
+		$conf = $conf eq '*';
+		
 		# reject this if we think it is a node already
 		my $r = Route::Node::get($call);
 		my $u = DXUser->get_current($call) unless $r;
@@ -808,19 +814,19 @@ sub handle_16
 		
 		$r = Route::User::get($call);
 		my $flags = Route::here($here)|Route::conf($conf);
-
+		
 		if ($r) {
 			my $au = $r->addparent($parent);					
 			if ($r->flags != $flags) {
 				$r->flags($flags);
 				$au = $r;
-		}
+			}
 			push @rout, $r if $au;
-	} else {
+		} else {
 			push @rout, $parent->add_user($call, $flags);
 		}
 		
-				
+		
 		# add this station to the user database, if required
 		$call =~ s/-\d+$//o;	# remove ssid for users
 		my $user = DXUser->get_current($call);
@@ -880,6 +886,12 @@ sub handle_17
 	$dxchan = $parent->dxchan if $parent;
 	if ($dxchan && $dxchan ne $self) {
 		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+		return;
+	}
+
+	# is he under the control of the new protocol?
+	if ($parent && $parent->np) {
+		dbg("PCPROT: $ncall aranea node, ignored") if isdbg('chanerr');
 		return;
 	}
 
@@ -1036,6 +1048,11 @@ sub handle_19
 		my $r = Route::Node::get($call);
 		my $flags = Route::here($here)|Route::conf($conf);
 
+		# is he under the control of the new protocol?
+		if ($r->np) {
+			dbg("PCPROT: $call aranea node, ignored") if isdbg('chanerr');
+			next;
+		}
 		# modify the routing table if it is in it, otherwise store it in the pc19list for now
 		if ($r) {
 			my $ar;
@@ -1097,6 +1114,7 @@ sub handle_20
 	my $thing = Thingy::Rt->new(user=>$self->{call});
 	my $nref = Route::Node::get($self->{call});
 	$thing->broadcast if $thing->copy_pc16_data($nref);
+	$self->lastcf($main::systime);
 }
 		
 # delete a cluster from the list
@@ -1155,6 +1173,12 @@ sub handle_21
 						
 				# input filter it
 				return unless $self->in_filter_route($node);
+
+				# is he under the control of the new protocol?
+				if ($node->np) {
+					dbg("PCPROT: $call aranea node, ignored") if isdbg('chanerr');
+					return;
+				}
 						
 				# routing objects
 				push @rout, $node->del($parent);
@@ -1180,6 +1204,7 @@ sub handle_22
 	my $thing = Thingy::Rt->new(user=>$self->{call});
 	my $nref = Route::Node::get($self->{call});
 	$thing->broadcast if $thing->copy_pc16_data($nref);
+	$self->lastcf($main::systime);
 }
 				
 # WWV info

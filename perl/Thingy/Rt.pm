@@ -24,12 +24,16 @@ use Thingy;
 use Thingy::RouteFilter;
 use Spot;
 
-use vars qw(@ISA);
+use vars qw(@ISA $update_interval);
 @ISA = qw(Thingy Thingy::RouteFilter);
+
+$update_interval = 30 * 60;		# the interval between 'cf' updates for an interface
 
 sub gen_Aranea
 {
 	my $thing = shift;
+	my $dxchan = shift;
+	
 	unless ($thing->{Aranea}) {
 		my $ref;
 		if ($ref = $thing->{anodes}) {
@@ -43,6 +47,7 @@ sub gen_Aranea
 		}
 	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(s a n u)]);
 	}
+	
  	return $thing->{Aranea};
 }
 

@@ -118,6 +118,7 @@ $count = 0;
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  inscript => '9,In a script,yesno',
 		  inqueue => '9,Input Queue,parray',
+		  lastcf => '1,Last CF Update,atime',
 		 );
 
 use vars qw($VERSION $BRANCH);

@@ -124,6 +124,7 @@ sub start
 	unless ($self->{outbound}) {
 		my $thing = Thingy::Rt->new_cf;
 		$thing->broadcast;
+		$self->lastcf($main::systime);
 	}
 	
 	# run a script send the output to the debug file
