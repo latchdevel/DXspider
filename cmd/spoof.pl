@@ -10,6 +10,7 @@ my ($self, $line) = @_;
 
 my $mycall = $self->call;
 my $myuser = $self->user;
+my $mylang = $self->lang;
 
 my ($call, $newline) = split /\s+/, $line, 2;
 return (1, $self->msg('nodee1', $call)) if DXChannel->get($call);
@@ -39,5 +40,6 @@ my @in = $self->run_cmd($newline);
 push @out, map {"spoof $call: $_"} @in;
 $self->call($mycall);
 $self->user($myuser);
+$self->lang($mylang);
 
 return (1, @out);
