@@ -17,9 +17,9 @@
 	<address><A HREF="mailto:ip@g8sjp.demon.co.uk">Iain Phillips G0RDI</A></address>
 <!-- Created: Wed Dec  2 16:40:25 GMT 1998 -->
 <!-- hhmts start -->
-Last modified: Fri Jan  8 00:29:25 GMT 1999
+Last modified: Sun Nov 21 22:29:25 GMT 1999
 <!-- hhmts end -->
-	<P>This HOWTO describes the installation for DX Spider v1.11 on a "vanilla" 
+	<P>This HOWTO describes the installation for DX Spider v1.30 on a "vanilla" 
 	  <A href="http://www.redhat.com">RedHat</A> 5.1 platform, 
 	  and assumes that you have started with a clean disk, with nothing other than the standard 
 	  Red Hat 5.1 distribution. I always select 'everything', and that seems to ensure that 
@@ -36,21 +36,23 @@ Last modified: Fri Jan  8 00:29:25 GMT 1999
 	  <b>do not</b> come with 5.004 as standard, you need to 
 	  <a href="ftp://upgrade.redhat.com">upgrade</a>
 
-	<P>In addition to the standard Red Hat distribution you will require the following <A HREF="http://www.cpan.org/CPAN.html">CPAN</A> modules: -
+	<P>In addition to the standard Red Hat distribution you will require the following <A HREF="http://www.cpan.org/CPAN.html">CPAN</A> modules:
 	<p>
 	<dir>
-		MD5-1.7.tar.gz <BR>
-		Data-Dumper-2.10.tar.gz <BR>
-		FreezeThaw-0.3.tar.gz <BR>
-		MLDBM-2.00.ar.gz <BR>
-		TimeDate-1.8.tar.gz <BR>
-		IO-1.20.tar.tgz <BR>
-		Net-Telnet-3.01.tar.gz<BR>
-		&nbsp;
+		<a href="http://www.cpan.org/modules/by-module/MD5/MD5-1.7.tar.gz">MD5-1.7.tar.gz</a><BR>
+		<a href="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.10.tar.gz">Data-Dumper-2.10.tar.gz</a><BR>
+		<a href="http://www.cpan.org/modules/by-module/Date/TimeDate-1.08.tar.gz">TimeDate-1.08.tar.gz</a><BR>
+		<a href="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz">IO-1.20.tar.tgz</a><BR>
+		<a href="http://www.cpan.org/modules/by-module/Net/Net-Telnet-3.02.tar.gz">Net-Telnet-3.02.tar.gz</a><BR>
+		<a href="http://www.cpan.org/modules/by-module/Curses/Curses-1.02.tar.gz">Curses-1.02.tar.gz</a><BR>
+        <a href="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time::Hires</a>
 	</DIR>
 
-	<p><em>Do</em> get the latest versions of these packages if any of the above list
-	  is out of date.
+	<p>The modules above are the current versions found at <a href="http://www.cpan.org">www.cpan.org</a> in the appropriate directories -
+	you can click on the links (above) to download them - particularly useful if you use the Lynx text HTML browser from your Linux box.
+	You may wish to check for more recent versions of these modules and use the newer ones if they are available.</p>
+
+	<br>
 
 	<P>You'll also need the AX25 utility package. There is much debate about what is "best", what is "better". What works for 5.1 is this: -
 	<p>
@@ -89,20 +91,6 @@ Last modified: Fri Jan  8 00:29:25 GMT 1999
 # make install
 # cd ..
 #
-# tar xvfz /usr/local/packages/FreezeThaw-0.3.tar.gz
-# cd FreezeThaw-0.3
-# perl Makefile.PL
-# make test
-# make install
-# cd ..
-#
-# tar xvfz /usr/local/packages/MLDBM-2.00.tar.gz
-# cd MLDBM-2.00
-# perl Makefile.PL
-# make test
-# make install
-# cd ..
-#
 # tar xvfz /usr/local/packages/TimeDate-1.08.tar.gz
 # cd TimeDate-1.08
 # perl Makefile.PL
@@ -117,8 +105,22 @@ Last modified: Fri Jan  8 00:29:25 GMT 1999
 # make install UNINST=1
 # cd ..
 #
-# tar xvfz /usr/local/packages/Net-Telnet-3.01.tar.gz
-# cd Net-Telnet-3.01.tar.gz
+# tar xvfz /usr/local/packages/Net-Telnet-3.02.tar.gz
+# cd Net-Telnet-3.01
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Curses-1.02.tar.gz
+# cd Curses-1.02
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Time-HiRes-01.20.tar.gz 
+# cd Time-HiRes-01.20
 # perl Makefile.PL
 # make test
 # make install
@@ -162,6 +164,19 @@ spider:x:251:sysop,g0rdi,root
 		</PRE>
 		<P>This last step allows various users of group spider to have write access to all the directories. Not really needed for now but will be useful when web interfaces start to appear.
 		
+		<p><LI>In later releases there is a client program written in C. You
+		must <tt>make</tt> this program before you can use it (and you must 
+		remember to to remake with every new release).
+
+		<p>To do this you should:-
+		<PRE>
+# cd /spider/src
+# make
+        </PRE>
+
+		<p>You can continue to use the perl client (<tt>/spider/perl/client.pl</tt>, but
+		support of this will gradually whither away.
+ 
 		<p><LI><a name="connect"></a>If you want to be able to allow people or clusters
 		to login via IP then you will need to set up logins for them.
 
@@ -209,8 +224,8 @@ gb7tlh     8002/tcp
 		like this:-
 		
 		<p><pre>
-gb7djk  stream tcp   nowait   sysop /usr/sbin/tcpd /usr/bin/perl /spider/perl/client.pl gb7djk telnet
-gb7tlh  stream tcp   nowait   sysop /usr/sbin/tcpd /usr/bin/perl /spider/perl/client.pl gb7tlh telnet
+gb7djk  stream tcp   nowait   sysop /usr/sbin/tcpd /spider/src/client gb7djk telnet
+gb7tlh  stream tcp   nowait   sysop /usr/sbin/tcpd /spider/src/client gb7tlh telnet
 		</pre>
 
 		Please <b>DON'T</b> run the client as <tt>root</tt> you will only 
@@ -234,12 +249,12 @@ gb7tlh  stream tcp   nowait   sysop /usr/sbin/tcpd /usr/bin/perl /spider/perl/cl
 
 		<p><LI>As mentioned earlier, for AX25 connections <B><I>you</B></I> are expected to have the AX25 utilities installed, setup, tested and working. See the AX25-HOWTO for more info on this - it really is beyond the scope of this document DX Spider uses ax25d for incoming connections. You need to have entries like this:- 
 		<PRE>
-[ether]                                                                         
-NOCALL   * * * * * *  L                                                         
-default  * * * * * *  - sysop /spider/perl/client.pl client.pl %u ax25
-&lt;bbs&gt;
-NOCALL   * * * * * *  L                                                         
-default  * * * * * *  - sysop /spider/perl/client.pl client.pl %u ax25
+[ether]        
+NOCALL   * * * * * *  L                                                      
+default  * * * * * *  - sysop /spider/src/client client %u ax25
+&lt;cluster&gt;
+NOCALL   * * * * * *  L                                                       
+default  * * * * * *  - sysop /spider/src/client client %u ax25
 		</PRE>
 		<P>where 'ether' and 'bbs' are appropriate <B><I>KNOWN WORKING</B></I> axport and nrport names respectively. Obviously you can use different names, callsigns or whatever for your purposes, but it is up to you to get it to work. Note I use BPQ over ethernet which why I have the port names I have.
 		
@@ -310,6 +325,18 @@ $ client.pl gb7xxx      (doesn't have to be uppercase).
 PC38^GB7JIM^~           &lt;- the cluster thinks this is a cluster
 ^C                      &lt;- to get out
 		</pre>
+		<p>
+	  <li> Finally try:-
+	    <pre>
+$ console.pl 
+        </pre>
+		<p>This is the normal way (as of version 1.30) of running the cluster system
+		as a sysop. It is a simple program client program that allows you to
+        press &lt;up-arrow> &lt;down-arrow> and use all the usual line editting
+		keystrokes that you can use on the unix shell under linux or bash. 
+		<p>In addition, it will highlight certain type of lines in particular
+		colours and allow you to scroll the top window up and down with the
+		&lt;page-up> and &lt;page-down> keys.
 	</ol>
 
 	<p>You should now have a basic working system. Best of luck! Can I now draw your attention to

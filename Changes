@@ -6,6 +6,7 @@
 5. make the time stored on dups generated locally on spots an integer no of 
 minutes * 60 
 6. send unsolicited PC[38]5s to the sysop if online.
+7. merged current html from www.dxcluster.org with Ian's stuff
 26Jul00=======================================================================
 1. added wantgrid (to control display of grid square info on DX Broadcasts)
 2. added lastoper for controlling periodic demands for user info from other

@@ -19,15 +19,23 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Wed Dec 23 16:08:12 GMT 1998
+Last modified: Tue Jun 29 12:08:12 GMT 1999
 <!-- hhmts end -->
 
 	<h4>Introduction</h4>
 
-	The standard client program is written in perl and lives in <tt>/spider/perl/client.pl</tt>. 
+	The standard client program is written in perl and lives in <tt>/spider/perl/client.pl</tt>.
 	It performs the interface function
 	between the cluster daemon (<tt>/spider/perl/cluster.pl</tt>) and 
 	AX25 or Telnet connections, both incoming and outgoing.
+	
+	<p>There is a related program called <tt>/spider/perl/console.pl</tt> which,
+	as of version 1.30, is the standard sysop or full duplex telnet user
+	connected interface program. This is a simple screen oriented program
+	that has a bash or shell like command history editing facility as well
+	as a scrolling cluster window with colouration of particular lines of
+	interest (such as DX spots, Announces etc).
+
 
 	<h4>client.pl</h4>
 
