@@ -791,7 +791,7 @@ sub normal
 			$ref->here($field[2]) if $ref;
 			
 			# input filter if required
-			return unless $self->in_filter_route($ref);
+			return unless $self->in_filter_route($ref || Route::new($call));
 
 			$self->route_pc24($ref, $field[3]) if $ref && !eph_dup($line);
 			return;
@@ -931,7 +931,7 @@ sub normal
 			}
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
-			my $ref = Route::get($call);
+			my $ref = Route::get($call) || Route->new($call);
 
 			# input filter if required
 			return unless $self->in_filter_route($ref);
