@@ -23,11 +23,11 @@ use vars qw(%cluster %valid);
 %cluster = ();					# this is where we store the dxcluster database
 
 %valid = (
-		  mynode => '0,Parent Node,DXCluster::showcall',
+		  mynode => '0,Parent Node',
 		  call => '0,Callsign',
 		  confmode => '0,Conference Mode,yesno',
 		  here => '0,Here?,yesno',
-		  dxchan => '5,Channel ref,DXCluster::showcall',
+		  dxchan => '5,Channel Call',
 		  pcversion => '5,Node Version',
 		  list => '5,User List,DXCluster::dolist',
 		  users => '0,No of Users',
@@ -41,7 +41,7 @@ sub alloc
 	$self->{call} = $call;
 	$self->{confmode} = $confmode;
 	$self->{here} = $here;
-	$self->{dxchan} = $dxchan;
+	$self->{dxchan} = $dxchan->call;
 
 	$cluster{$call} = bless $self, $pkg;
 	return $self;
@@ -143,6 +143,42 @@ sub cluster
 	return " $DXNode::nodes nodes, $users local / $tot total users  Max users $DXNode::maxusers  Uptime $uptime";
 }
 
+sub mynode
+{
+	my $self = shift;
+	my $noderef = shift;
+	
+	if ($noderef) {
+		$self->{mynode} = $noderef->call;
+	} else {
+		$noderef = DXCluster->get_exact($self->{mynode});
+		unless ($noderef) {
+			my $mynode = $self->{mynode};
+			my $call = $self->{call};
+			dbg('err', "parent node $mynode has disappeared from $call" );
+		}
+	}
+	return $noderef;
+}
+
+sub dxchan
+{
+	my $self = shift;
+	my $dxchan = shift;
+
+	if ($dxchan) {
+		$self->{dxchan} = $dxchan->call;
+	} else {
+		$dxchan = DXChannel->get($self->{dxchan});
+		unless ($dxchan) {
+			my $dxcall = $self->{dxchan};
+			my $call = $self->{call};
+			dbg('err', "parent dxchan $dxcall has disappeared from $call" );
+		}
+	}
+	return $dxchan;
+}
+
 no strict;
 sub AUTOLOAD
 {
@@ -178,7 +214,7 @@ sub new
 	die "tried to add $call when it already exists" if DXCluster->get_exact($call);
   
 	my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
-	$self->{mynode} = $node;
+	$self->{mynode} = $node->call;
 	$node->add_user($call, $self);
 	dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
 	return $self;
@@ -188,7 +224,7 @@ sub del
 {
 	my $self = shift;
 	my $call = $self->{call};
-	my $node = $self->{mynode};
+	my $node = $self->mynode;
 
 	$node->del_user($call);
 	dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
@@ -225,7 +261,7 @@ sub new
 	my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
 	$self->{pcversion} = $pcversion;
 	$self->{list} = { } ;
-	$self->{mynode} = $self;	# for sh/station
+	$self->{mynode} = $self->call;	# for sh/station
 	$self->{users} = 0;
 	$nodes++;
 	dbg('cluster', "allocating node $call to cluster\n");

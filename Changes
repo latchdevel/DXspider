@@ -1,7 +1,9 @@
 29Oct00=======================================================================
 1. put in echo cancelling measures into the clients. This doesn't mean you
 shouldn't take steps to prevent echoing on node links, but it may help where
-(whatever you do) it still bloody echos! This is experimental. 
+(whatever you do) it still bloody echos! This is experimental.
+2. store dxchan and mynode as callsigns (and not references) in the routing 
+tables and do some checking in accessors to see if we can capture some errors. 
 28Oct00=======================================================================
 1. updated show/sun and show/moon from stuff sent by Steve Franke K9AN
 2. added show/call which queries jeifer.pineknot.com for any call in the 

@@ -368,7 +368,7 @@ DXProt->init();
 
 
 # put in a DXCluster node for us here so we can add users and take them away
-DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 
+DXNode->new($DXProt::me, $mycall, 0, 1, $DXProt::myprot_version); 
 
 # read in any existing message headers and clean out old crap
 dbg('err', "reading existing message headers ...");

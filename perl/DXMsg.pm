@@ -612,7 +612,7 @@ sub queue_msg
 		} 
 
 		# deal with routed private messages
-		my $noderef;
+		my $dxchan;
 		if ($ref->{private}) {
 			next if $ref->{'read'};           # if it is read, it is stuck here
 			$clref = DXCluster->get_exact($ref->{to});
@@ -621,10 +621,10 @@ sub queue_msg
 				my $hnode =  $uref->homenode if $uref;
 				$clref = DXCluster->get_exact($hnode) if $hnode;
 			}
-			if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all()) {
+			if ($clref && !grep { $clref->dxchan == $_ } DXCommandmode::get_all()) {
 				next if $clref->call eq $main::mycall;  # i.e. it lives here
-				$noderef = $clref->{dxchan};
-				$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
+				$dxchan = $clref->dxchan;
+				$ref->start_msg($dxchan) if $dxchan && !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
 			}
 		}
 		
@@ -633,13 +633,13 @@ sub queue_msg
 		# the nodelist up above, if there are sites that haven't got it yet
 		# then start sending it - what happens when we get loops is anyone's
 		# guess, use (to, from, time, subject) tuple?
-		foreach $noderef (@nodelist) {
-			next if $noderef->call eq $main::mycall;
-			next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
-			next unless $ref->forward_it($noderef->call);           # check the forwarding file
+		foreach $dxchan (@nodelist) {
+			next if $dxchan->call eq $main::mycall;
+			next if grep { $_ eq $dxchan->call } @{$ref->{gotit}};
+			next unless $ref->forward_it($dxchan->call);           # check the forwarding file
 
 			# if we are here we have a node that doesn't have this message
-			$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
+			$ref->start_msg($dxchan) if !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
 			last;
 		}
 

@@ -401,10 +401,10 @@ sub finish
 		sleep(1);
 	}
 
-	if ($call eq $main::myalias) { # unset the channel if it is us really
-		my $node = DXNode->get($main::mycall);
-		$node->{dxchan} = 0;
-	}
+#	if ($call eq $main::myalias) { # unset the channel if it is us really
+#		my $node = DXNode->get($main::mycall);
+#		$node->{dxchan} = 0;
+#	}
 	
 	# issue a pc17 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
