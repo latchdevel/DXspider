@@ -1044,9 +1044,8 @@ sub normal
 									shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
 
 									# cope with a missed ping, this means you must set the pingint large enough
-									my $miss = ($nopings-$tochan->{nopings}+1) * $tochan->{pingint}; 
-									if ($tochan->is_arcluster && $miss > 0 && $t > $miss  && $t < $miss + $tochan->{nopings} ) {
-										$t -= $miss;
+									if ($tochan->is_arcluster && $t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
+										$t -= $tochan->{pingint};
 									}
 
 									# calc smoothed RTT a la TCP
