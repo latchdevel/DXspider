@@ -415,7 +415,7 @@ sub normal
 			}
 
 			# is it 'baddx'
-			if ($baddx->in($field[2])) {
+			if ($baddx->in($field[2]) || BadWords::check($field[2])) {
 				dbg("PCPROT: Bad DX spot, ignored") if isdbg('chanerr');
 				return;
 			}
