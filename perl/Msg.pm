@@ -405,6 +405,7 @@ sub nolinger
 		setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
 		setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt linger: $!";
 		setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!";
+		$conn->{sock}->autoflush(0);
 
 		if (isdbg('sock')) {
 			my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
@@ -413,7 +414,6 @@ sub nolinger
 			dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
 		}
 	} 
-	$conn->{sock}->autoflush(0);
 }
 
 sub dequeue
