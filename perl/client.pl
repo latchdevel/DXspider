@@ -41,10 +41,10 @@ BEGIN {
 use Msg;
 use DXVars;
 use DXDebug;
+use Net::Telnet qw(TELOPT_ECHO);
 use IO::File;
 use IO::Socket;
 use IPC::Open2;
-use Net::Telnet qw(TELOPT_ECHO);
 use Carp qw{cluck};
 
 # cease communications
@@ -209,12 +209,13 @@ sub doconnect
 		$port = 23 if !$port;
 		
 #		if ($port == 23) {
+
 			$sock = new Net::Telnet (Timeout => $timeout, Port => $port);
 			$sock->option_callback(\&optioncb);
 			$sock->output_record_separator('');
-			$sock->option_log('option_log');
-			$sock->dump_log('dump');
-			$sock->option_accept(Wont => TELOPT_ECHO);
+#			$sock->option_log('option_log');
+#			$sock->dump_log('dump');
+			$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
 			$sock->open($host) or die "Can't connect to $host port $port $!";
 #		} else {
 #			$sock = IO::Socket::INET->new(PeerAddr => "$host:$port", Proto => 'tcp')
