@@ -44,7 +44,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 } else {
 	# build up the screen from the Node table
 	foreach $node (@nodes) {
-		next if scalar @list && !grep $node->call eq $_, @list;
+		next if scalar @list && !grep $node->call =~ /^$_/, @list;
 		my $call = $node->call;
 		$call = "($call)" if $node->here == 0;
 		@l = ();
