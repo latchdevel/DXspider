@@ -220,6 +220,17 @@ sub get_all_user_calls
 	return @out;
 }
 
+# return a list of all node callsigns
+sub get_all_node_calls
+{
+	my $ref;
+	my @out;
+	foreach $ref (values %channels) {
+		push @out, $ref->{call} if $ref->is_node;
+	}
+	return @out;
+}
+
 # obtain a channel object by searching for its connection reference
 sub get_by_cnum
 {

@@ -326,32 +326,6 @@ sub send
 	}
 }
 
-my $pc90msgid = 0;
-
-sub nextpc90
-{
-	$pc90msgid = 0 if $pc90msgid > 9999;
-	return $pc90msgid++;
-}
-
-sub mungepc90
-{
-	unless ($_[0] =~ /^PC9\d/) {
-		my $id = nextpc90();
-		return "PC90^$main::mycall^$id^" . $_[0]; 
-	} 
-	return $_[0];
-}
-
-sub mungepc91
-{
-	unless ($_[1] =~ /^PC9\d/) {
-		my $id = nextpc90();
-		return "PC91^$main::mycall^$id^$_[0]^" . $_[1]; 
-	} 
-	return $_[1];
-}
-
 #
 # This is the normal pcxx despatcher
 #
@@ -380,68 +354,8 @@ sub normal
 		return;
 	}
 
-	# handle PC90 frames in a special way.
-    # 
-	# PC90 frames are normal frames that that are wrapped in inside a PC90 
-    # The extra fields are "originating node" and a sequence number.
-    # The sequence number is checked against the nodes 'last one' to see if
-	# it is a duplicate and, if so, is dropped at this stage; before any
-	# other processing.
-	#
-	# This is done here simply for efficiency. Adding another function would
-	# add more copying and so on.
-	#
-
 	my $origin = $self->{call};
 	
-	if ($pcno >= 90) {
-		$origin = $field[1];
-		if ($origin eq $main::mycall) {
-			dbg("PCPROT: loop dupe") if isdbg('chanerr');
-			return;
-		}
-		$self->user->wantpc90(1) unless $self->user->wantpc90 || $origin ne $self->{call};
-		my $seq = $field[2];
-		my $node = Route::Node::get($origin);
-		if ($node) {
-			if (my $lid = $node->lid) {
-				my $cmp = $seq >= $lid ? $seq : $seq + 9999;
-				if ($cmp <= $lid) {
-					dbg("PCPROT: sequence dupe $seq ($cmp) <= $lid") if isdbg('chanerr');
-					return;
-				}
-			}
-			$node->lid($seq);
-		}
-
-		# do a recheck on the contents of the PC90
-		if ($pcno >= 90) {
-			shift @field;
-			shift @field;
-			shift @field;
-			$origin = shift @field if $pcno == 91;
-
-			($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
-			unless (defined $pcno && $pcno >= 10 && $pcno <= 89) {
-				dbg("PCPROT: unknown protocol") if isdbg('chanerr');
-				return;
-			}
-			
-			# check for and dump bad protocol messages
-			my $n = check($pcno, @field);
-			if ($n) {
-				dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
-				return;
-			}
-		}
-	} else {
-		if ($pcno == 16 || $pcno == 17 || $pcno == 19 || $pcno == 21) {
-			$line = mungepc91($origin, $line);
-		} else {
-			$line = mungepc90($line);
-		}
-	}
-
 	no strict 'subs';
 	my $sub = "handle_$pcno";
 

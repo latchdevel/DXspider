@@ -30,6 +30,7 @@ use Route::Node;
 use Script;
 use DXProt;
 use Verify;
+use Thingy;
 
 use strict;
 
@@ -42,7 +43,7 @@ $main::branch += $BRANCH;
 sub init
 {
 	my $user = DXUser->get($main::mycall);
-	$DXProt::myprot_version += $main::version*100;
+	$DXProt::myprot_version += ($main::version - 1 + 0.52)*100;
 	$main::me = QXProt->new($main::mycall, 0, $user); 
 	$main::me->{here} = 1;
 	$main::me->{state} = "indifferent";
@@ -67,7 +68,8 @@ sub sendinit
 {
 	my $self = shift;
 	
-	$self->send($self->genI);
+	my $t = Thingy::Route->new_node_connect($main::mycall, $main::mycall, nextmsgid(), $self->{call});
+	$t->add;
 }
 
 sub normal
@@ -76,54 +78,41 @@ sub normal
 		DXProt::normal(@_);
 		return;
 	}
-	my ($sort, $tonode, $fromnode, $msgid, $incs);
-	return unless ($sort, $tonode, $fromnode, $msgid, $incs) = $_[1] =~ /^QX([A-Z])\^(\*|[-A-Z0-9]+)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
 
-	$msgid = hex $msgid;
-	my $noderef = Route::Node::get($fromnode);
-	$noderef = Route::Node::new($fromnode) unless $noderef;
+	# Although this is called the 'QX' Protocol, this is historical
+	# I am simply using this module to save a bit of time.
+	# 
+	
+	return unless my ($tonode, $fromnode, $class, $msgid, $hoptime, $rest) = 
+		$_[1] =~ /^([^,]+,){5,5}:(.*)$/;
 
-	my $il = length $incs; 
-	my $cs = sprintf("%02X", unpack("%32C*", substr($_[1], 0, length($_[1]) - ($il+1))) & 255);
-	if ($incs ne $cs) {
-		dbg("QXPROT: Checksum fail in: $incs ne calc: $cs" ) if isdbg('chanerr');
-		return;
-	}
-
-	return unless $noderef->newid($msgid);
-
-	$_[0]->handle($sort, $tonode, $fromnode, $msgid, $_[1]);
-	return;
-}
-
-sub handle
-{
-	no strict 'subs';
 	my $self = shift;
-	my $sort = shift;
-	my $sub = "handle$sort";
-	$self->$sub(@_) if $self->can($sub);
-	return;
-}
+	
+	# add this interface's hop time to the one passed
+	my $newhoptime = $self->{pingave} >= 999 ? 
+		$hoptime+10 : ($hoptime + int($self->{pingave}*10));
+ 
+	# split up the 'rest' which are 'a=b' pairs separated by commas
+    # and create a new thingy based on the class passed (if known)
+	# ignore pairs with a leading '_'.
 
-sub gen
-{
-	no strict 'subs';
-	my $self = shift;
-	my $sort = shift;
-	my $sub = "gen$sort";
- 	$self->$sub(@_) if $self->can($sub);
+	my @par = map {/^_/ ? split(/=/,$_,2) : ()} split /,/, $rest;
+	no strict 'refs';
+	my $pkg = "Thingy::${class}";
+	my $t = $pkg->new(_tonode=>$tonode, _fromnode=>$fromnode,
+					  _msgid=>$msgid, _hoptime=>$newhoptime,
+					  _newdata=>$rest, _inon=>$self->{call},
+					  @par) if defined *$pkg && $pkg->can('new');
+	$t->add if $t;
 	return;
 }
 
 my $last_node_update = 0;
-my $node_update_interval = 60*15;
+my $node_update_interval = 60*60;
 
 sub process
 {
 	if ($main::systime >= $last_node_update+$node_update_interval) {
-#		sendallnodes();
-#		sendallusers();
 		$last_node_update = $main::systime;
 	}
 }
@@ -131,116 +120,25 @@ sub process
 sub disconnect
 {
 	my $self = shift;
+	my $t = Thingy::Route->new_node_disconnect($main::mycall, $main::mycall, nextmsgid(), $self->{call});
+	$t->add;
 	$self->DXProt::disconnect(@_);
 }
 
 my $msgid = 1;
 
-sub frame
+sub nextmsgid
 {
-	my $sort = shift;
-	my $to = shift || "*";
-	my $ht;
-	
-	$ht = sprintf "%X", $msgid;
-	my $line = join '^', "QX$sort", $to, $main::mycall, $ht, @_;
-	my $cs = sprintf "%02X", unpack("%32C*", $line) & 255;
-	$msgid = 1 if ++$msgid > 0xffff;
-	return "$line^$cs";
+	my $r = $msgid;
+	$msgid = 1 if ++$msgid > 99999;
+	return $r;
 }
 
-sub handleI
+sub node_update
 {
-	my $self = shift;
-	
-	my @f = split /\^/, $_[3];
-	if ($self->passphrase && $f[7] && $f[8]) {
-		my $inv = Verify->new($f[7]);
-		unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
-			$self->sendnow('D','Sorry...');
-			$self->disconnect;
-		}
-		$self->{verified} = 1;
-	} else {
-		$self->{verified} = 0;
-	}
-	if ($self->{outbound}) {
-		$self->send($self->genI);
-	} 
-	if ($self->{sort} ne 'S' && $f[4] eq 'DXSpider') {
-		$self->{user}->{sort} = $self->{sort} = 'S';
-		$self->{user}->{priv} = $self->{priv} = 1 unless $self->{priv};
-	}
-	$self->{version} = $f[5];
-	$self->{build} = $f[6];
-	$self->state('init1');
-	$self->{lastping} = 0;
+	my $t = Thingy::Route->new_node_update(nextmsgid());
+	$t->add if $t;
 }
 
-sub genI
-{
-	my $self = shift;
-	my @out = ('I', $self->call, "DXSpider", ($main::version + 53) * 100, $main::build);
-	if (my $pass = $self->user->passphrase) {
-		my $inp = Verify->new;
-		push @out, $inp->challenge, $inp->response($pass, $self->call, $main::mycall);
-	}
-	return frame(@out);
-}
-
-sub handleR
-{
-
-}
-
-sub genR
-{
-
-}
-
-sub handleP
-{
-
-}
-
-sub genP
-{
-
-}
-
-sub gen2
-{
-	my $self = shift;
-	
-	my $node = shift;
-	my $sort = shift;
-	my @out;
-	my $dxchan;
-	
-	while (@_) {
-		my $str = '';
-		for (; @_ && length $str <= 230;) {
-			my $ref = shift;
-			my $call = $ref->call;
-			my $flag = 0;
-			
-			$flag += 1 if $ref->here;
-			$flag += 2 if $ref->conf;
-			if ($ref->is_node) {
-				my $ping = int($ref->pingave * 10);
-				$str .= "^N$flag$call,$ping";
-				my $v = $ref->build || $ref->version;
-				$str .= ",$v" if defined $v;
-			} else {
-				$str .= "^U$flag$call";
-			}
-		}
-		push @out, $str if $str;
-	}
-	my $n = @out;
-	my $h = get_hops(90);
-	@out = map { sprintf "PC90^%s^%X^%s%d%s^%s^", $node->call, $main::systime, $sort, --$n, $_, $h } @out;
-	return @out;
-}
 
 1;

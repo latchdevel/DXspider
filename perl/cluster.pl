@@ -118,7 +118,7 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.51";				# the version no of the software
+$version = "2.00";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
@@ -397,7 +397,6 @@ foreach (@debug) {
 STDOUT->autoflush(1);
 
 # calculate build number
-$build += $main::version;
 $build = "$build.$branch" if $branch;
 
 Log('cluster', "DXSpider V$version, build $build started");
