@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Sun Sep  2 21:33:58 BST 2001
+Last modified: Sun Sep  2 22:02:36 BST 2001
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -167,17 +167,20 @@ Last modified: Sun Sep  2 21:33:58 BST 2001
 	  route that you are going to take to the destination, so this will be typically the callsign
 	  of your local node.</p>
 
-    <p>You will notice that the script waits until it sees the left hand string
-	  of the pair and <b>only then</b> does it send the, 
-	  string on the right 
-	  hand side. This is called a <i>State Machine</i>.</p>
+    <p>You will notice that the script <span class=expect>waits</span>
+    until it sees the left hand string of the pair and <b>only
+    then</b> does it <span class=send>send</span> the string on the
+    right hand side. This is called a <i>State Machine</i>.</p>
 
-	<p>A <i>state machine</i> "walks" through a conversation (in this case) looking
-	  for "states" (in this case particular strings) and then performs some
-	  "action" (usually some kind of connect command for the type of system
-	  you are trying to navigate). When one "state" "fires" (detects the string
-	  are looking for), it sends the command associated with that state and then 
-	  moves onto the next "state", in our case: the next line.</p>
+	<p>A <i>state machine</i> "walks" through a conversation (in this
+	case) looking for "<span class=expect>states</span>" (in this case
+	particular strings) and then performs some "<span
+	class=send>action</span>" (usually some kind of connect command
+	for the type of system you are trying to navigate). When one
+	"<span class=expect>state</span>" "<span class=send>fires</span>"
+	(detects the string are looking for), it sends the command
+	associated with that state and then moves onto the next "<span
+	class=expect>state</span>", in our case: the next line.</p>
 
 	<p><b>PLEASE NOTE</b>: the colouration in the above example is for illustrative purposes
 	  only, the debug output is all one colour.</p>
