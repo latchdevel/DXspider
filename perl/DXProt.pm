@@ -316,7 +316,11 @@ sub normal
 			return unless $node; # ignore if havn't seen a PC19 for this one yet
 			return unless $node->isa('DXNode');
 			if ($node->dxchan != $self) {
-				dbg('chan', "LOOP: come in on wrong channel");
+				dbg('chan', "LOOP: $field[1] came in on wrong channel");
+				return;
+			}
+			if (DXChannel->get($field[1])) {
+				dbg('chan', "LOOP: $field[1] connected locally");
 				return;
 			}
 			my $i;
@@ -352,7 +356,11 @@ sub normal
 			return unless $node;
 			return unless $node->isa('DXNode');
 			if ($node->dxchan != $self) {
-				dbg('chan', "LOOP: come in on wrong channel");
+				dbg('chan', "LOOP: $field[2] came in on wrong channel");
+				return;
+			}
+			if (DXChannel->get($field[2])) {
+				dbg('chan', "LOOP: $field[2] connected locally");
 				return;
 			}
 			my $ref = DXCluster->get_exact($field[1]);
@@ -369,23 +377,33 @@ sub normal
 		
 		if ($pcno == 19) {		# incoming cluster list
 			my $i;
+			my $newline = "PC19^";
 			for ($i = 1; $i < $#field-1; $i += 4) {
 				my $here = $field[$i];
 				my $call = uc $field[$i+1];
-				my $confmode = $field[$i+2] eq '*';
+				my $confmode = $field[$i+2];
 				my $ver = $field[$i+3];
 				
 				# now check the call over
 				my $node = DXCluster->get_exact($call);
-				if ($node && $node->dxchan != $self) {
-					dbg('chan', "LOOP: come in on wrong channel");
-					return;
+				if ($node) {
+					if (DXChannel->get($call)) {
+						dbg('chan', "LOOP: $call connected locally");
+					}
+				    if ($node->dxchan != $self) {
+						dbg('chan', "LOOP: $call come in on wrong channel");
+						next;
+					}
+					dbg('chan', "already have $call");
+					next;
 				}
-				next if $node; # we already have this
 				
 				# check for sane parameters
 				next if $ver < 5000; # only works with version 5 software
 				next if length $call < 3; # min 3 letter callsigns
+
+				# add it to the nodes table and outgoing line
+				$newline .= "$here^$call^$confmode^$ver^";
 				DXNode->new($self, $call, $confmode, $here, $ver);
 				
 				# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
@@ -408,6 +426,11 @@ sub normal
 			
 			# queue up any messages
 			DXMsg::queue_msg(0) if $self->state eq 'normal';
+			return if $newline eq "PC19^";
+
+			# add hop count 
+			$newline .=  get_hops(19) . "^";
+			$line = $newline;
 			last SWITCH;
 		}
 		
@@ -428,7 +451,11 @@ sub normal
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
 					if ($node->dxchan != $self) {
-						dbg('chan', "LOOP: come in on wrong channel");
+						dbg('chan', "LOOP: $call come in on wrong channel");
+						return;
+					}
+					if (DXChannel->get($call)) {
+						dbg('chan', "LOOP: $call connected locally");
 						return;
 					}
 					$node->del();
@@ -979,7 +1006,7 @@ sub get_all_user_calls
 
 sub get_hops
 {
-	my ($pcno) = @_;
+	my $pcno = shift;
 	my $hops = $DXProt::hopcount{$pcno};
 	$hops = $DXProt::def_hopcount if !$hops;
 	return "H$hops";       

@@ -76,6 +76,22 @@ use vars qw(%channels %valid);
 		  passwd => '9,Passwd List,parray',
 		 );
 
+# object destruction
+sub DESTROY
+{
+	my $self = shift;
+	undef $self->{user};
+	undef $self->{conn};
+	undef $self->{loc};
+	undef $self->{pagedata};
+	undef $self->{group};
+	undef $self->{delayed};
+	undef $self->{annfilter};
+	undef $self->{wwvfilter};
+	undef $self->{spotfilter};
+	undef $self->{passwd};
+}
+
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
 sub alloc
 {

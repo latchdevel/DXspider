@@ -67,7 +67,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.29";				# the version no of the software
+$version = "1.30";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
       
@@ -270,6 +270,7 @@ sub uptime
 $starttime = $systime = time;
 
 # open the debug file, set various FHs to be unbuffered
+dbginit();
 foreach (@debug) {
 	dbgadd($_);
 }

@@ -161,7 +161,14 @@ sub close
 {
 	my $self = shift;
 	undef $self->{fh};			# close the filehandle
-	delete $self->{fh};
+	delete $self->{fh};	
+}
+
+sub DESTROY
+{
+	my $self = shift;
+	undef $self->{fh};			# close the filehandle
+	delete $self->{fh} if $self->{fh};
 }
 
 # log something in the system log 

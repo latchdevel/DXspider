@@ -225,6 +225,8 @@ sub doconnect
 		$rfh = new IO::File;
 		$wfh = new IO::File;
 		$pid = open2($rfh, $wfh, "$line") or die "can't do $line $!";
+		die "no receive channel $!" unless $rfh;
+		die "no transmit channel $!" unless $wfh;
 		dbg('connect', "got pid $pid");
 		$wfh->autoflush(1);
 	} else {

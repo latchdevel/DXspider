@@ -67,6 +67,13 @@ $forwardfn = "$msgdir/forward.pl";  # the forwarding table
 		  keep => '0,Keep this?,yesno',
 		 );
 
+sub DESTROY
+{
+	my $self = shift;
+	undef $self->{lines};
+	undef $self->{gotit};
+}
+
 # allocate a new object
 # called fromnode, tonode, from, to, datetime, private?, subject, nolinesper  
 sub alloc                  

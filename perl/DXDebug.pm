@@ -11,8 +11,8 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbg dbgadd dbgsub dbglist isdbg dbgclose);
-@EXPORT_OK = qw(dbg dbgadd dbgsub dbglist isdbg dbgclose);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist isdbg dbgclose);
+@EXPORT_OK = qw(dbginit dbg dbgadd dbgsub dbglist isdbg dbgclose);
 
 use strict;
 use vars qw(%dbglevel $fp);
@@ -25,15 +25,21 @@ use Carp;
 %dbglevel = ();
 $fp = DXLog::new('debug', 'dat', 'd');
 
-# add sig{__DIE__} handling
-if (!defined $DB::VERSION) {
-	$SIG{__WARN__} = $SIG{__DIE__} = sub { 
-		my $t = time; 
-		for (@_) {
-			$fp->writeunix($t, "$t^$_"); 
-#			print STDERR $_;
-		}
-	};
+sub _store
+{
+	my $t = time; 
+	for (@_) {
+		$fp->writeunix($t, "$t^$_"); 
+		print STDERR $_;
+	}
+}
+
+sub dbginit
+{
+	# add sig{__DIE__} handling
+	if (!defined $DB::VERSION) {
+		$SIG{__WARN__} = $SIG{__DIE__} = \&_store;
+	}
 }
 
 sub dbgclose
