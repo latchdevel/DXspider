@@ -48,7 +48,7 @@ $main::branch += $BRANCH;
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
-			$investigation_int $pc19_version 
+			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -206,6 +206,21 @@ sub init
 {
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
+
+	my $user = DXUser->get($main::mycall);
+	die "User $main::mycall not setup or disappeared RTFM" unless $user;
+	
+	$myprot_version += $main::version*100;
+	$main::me = DXProt->new($main::mycall, 0, $user); 
+	$main::me->{here} = 1;
+	$main::me->{state} = "indifferent";
+	$main::me->{sort} = 'S';    # S for spider
+	$main::me->{priv} = 9;
+	$main::me->{metric} = 0;
+	$main::me->{pingave} = 0;
+	$main::me->{registered} = 1;
+	$main::me->{version} = $main::version;
+	$main::me->{build} = $main::build;
 }
 
 #

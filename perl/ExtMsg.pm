@@ -32,6 +32,11 @@ use vars qw(@ISA $deftimeout);
 @ISA = qw(Msg);
 $deftimeout = 60;
 
+sub login
+{
+	goto &main::login;        # save some writing, this was the default
+}
+
 sub enqueue
 {
 	my ($conn, $msg) = @_;

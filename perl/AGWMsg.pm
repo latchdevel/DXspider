@@ -104,6 +104,11 @@ sub finish
 	}
 }
 
+sub login
+{
+	goto &main::login;        # save some writing, this was the default
+}
+
 sub active
 {
 	return $sock;

@@ -8,6 +8,8 @@
 # Copyright (c) 2004 Dirk Koopman G1TLH
 #
 
+use strict;
+
 package Thingy;
 
 use vars qw($VERSION $BRANCH);
@@ -16,36 +18,43 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-
 use DXChannel;
 use DXDebug;
-
-use vars qw(@queue);
-@queue = ();					# the thingy queue
 
 # we expect all thingies to be subclassed
 sub new
 {
 	my $class = shift;
-	my $self = {@_};
+	my $thing = {@_};
 	
-	bless $self, $class;
-	return $self;
+	bless $thing, $class;
+	return $thing;
 }
 
-# add the Thingy to the queue
-sub add
+# send it out in the format asked for, if available
+sub send
 {
-	push @queue, shift;
+	my $thing = shift;
+	my $chan = shift;
+	my $class;
+	if (@_) {
+		$class = shift;
+	} elsif ($chan->isa('DXChannel')) {
+		$class = ref $chan;
+	}
+
+	# generate the line which may (or not) be cached
+	my @out;
+	if (my $ref = $thing->{class}) {
+		push @out, ref $ref ? @$ref : $ref;
+	} else {
+		no strict 'refs';
+		my $sub = "gen_$class";
+		push @out, $thing->$sub if $thing->can($sub);
+	}
+	$chan->send(@out) if @out;
 }
 
-# dispatch Thingies to action it.
-sub process
-{
-	my $t = pop @queue if @queue;
-
-	$t->process if $t;
-}
 
 1;
 

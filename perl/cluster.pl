@@ -68,7 +68,7 @@ use DXCommandmode;
 use DXProtVars;
 use DXProtout;
 use DXProt;
-use QXProt;
+use Aranea;
 use DXMsg;
 use DXCron;
 use DXConnect;
@@ -226,29 +226,10 @@ sub new_channel
 
 	# set callbacks
 	$conn->set_error(sub {error_handler($dxchan)});
-	$conn->set_rproc(sub {my ($conn,$msg) = @_; rec($dxchan, $conn, $msg);});
-	rec($dxchan, $conn, $msg);
+	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg);});
+	$dxchan->rec($msg);
 }
 
-sub rec	
-{
-	my ($dxchan, $conn, $msg) = @_;
-	
-	# queue the message and the channel object for later processing
-	if (defined $msg) {
-		my $self = bless {}, "inqueue";
-		$self->{dxchan} = $dxchan;
-		$self->{data} = $msg;
-		push @inqueue, $self;
-	}
-}
-
-# remove any outstanding entries on the inqueue after a disconnection (usually)
-sub clean_inqueue
-{
-	my $dxchan = shift;
-	@inqueue = grep {$_->{dxchan} != $dxchan} @inqueue;
-}
 
 sub login
 {
@@ -325,45 +306,6 @@ sub reap
 
 # this is where the input queue is dealt with and things are dispatched off to other parts of
 # the cluster
-sub process_inqueue
-{
-	while (@inqueue) {
-		my $self = shift @inqueue;
-		return if !$self;
-
-		my $data = $self->{data};
-		my $dxchan = $self->{dxchan};
-		my $error;
-		my ($sort, $call, $line) = DXChannel::decode_input($dxchan, $data);
-		return unless defined $sort;
-	
-		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-		dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
-		if ($self->{disconnecting}) {
-			dbg('In disconnection, ignored');
-			next;
-		}
-		
-		# handle A records
-		my $user = $dxchan->user;
-		if ($sort eq 'A' || $sort eq 'O') {
-			$dxchan->start($line, $sort);  
-		} elsif ($sort eq 'I') {
-			die "\$user not defined for $call" if !defined $user;
-
-			# normal input
-			$dxchan->normal($line);
-		} elsif ($sort eq 'Z') {
-			$dxchan->disconnect;
-		} elsif ($sort eq 'D') {
-			;					# ignored (an echo)
-		} elsif ($sort eq 'G') {
-			$dxchan->enhanced($line);
-		} else {
-			print STDERR atime, " Unknown command letter ($sort) received from $call\n";
-		}
-	}
-}
 
 sub uptime
 {
@@ -438,10 +380,12 @@ dbg("Internal port: $clusteraddr $clusterport using IntMsg");
 foreach my $l (@main::listen) {
 	no strict 'refs';
 	my $pkg = $l->[2] || 'ExtMsg';
-	$conn = $pkg->new_server($l->[0], $l->[1], \&login);
-	$conn->conns("Server $l->[0]/$l->[1] using $pkg");
+	my $login = $l->[3] || 'login'; 
+	
+	$conn = $pkg->new_server($l->[0], $l->[1], \&{"${pkg}::${login}"});
+	$conn->conns("Server $l->[0]/$l->[1] using ${pkg}::${login}");
 	push @listeners, $conn;
-	dbg("External Port: $l->[0] $l->[1] using $pkg");
+	dbg("External Port: $l->[0] $l->[1] using ${pkg}::${login}");
 }
 
 dbg("AGW Listener") if $AGWMsg::enable;
@@ -501,7 +445,7 @@ Spot->init();
 # initialise the protocol engine
 dbg("Start Protocol Engines ...");
 DXProt->init();
-QXProt->init();
+Aranea->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
 $routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
@@ -545,7 +489,9 @@ for (;;) {
 	
 	Msg->event_loop(10, 0.010);
 	my $timenow = time;
-	process_inqueue();			# read in lines from the input queue and despatch them
+
+	DXChannel::process();
+	
 #	$DB::trace = 0;
 	
 	# do timed stuff, ongoing processing happens one a second
@@ -555,7 +501,7 @@ for (;;) {
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
-		QXProt::process();
+		Aranea::process();
 		DXConnect::process();
 		DXMsg::process();
 		DXDb::process();
@@ -563,9 +509,6 @@ for (;;) {
 		DXDupe::process();
 		AGWMsg::process();
 
-		# this where things really start to happen (in DXSpider 2)
-		Thingy::process();
-		
 		eval { 
 			Local::process();       # do any localised processing
 		};

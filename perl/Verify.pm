@@ -7,15 +7,13 @@
 # $Id$
 # 
 
+use strict;
+
 package Verify;
 
-use DXChannel;
 use DXUtil;
 use DXDebug;
-use Time::HiRes qw(gettimeofday);
 use Digest::SHA1 qw(sha1_base64);
-
-use strict;
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -27,35 +25,48 @@ sub new
 {
 	my $class = shift;
 	my $self = bless {}, ref($class) || $class; 
-	$self->{seed} = shift if @_;
+	if (@_) {
+		$self->newseed(@_);
+		$self->newsalt;
+	}
 	return $self;
+}
+
+sub newseed
+{
+	my $self = shift;
+	return $self->{seed} = sha1_base64('RbG4tST2dYPWnh6bfAaq7pPSL04', @_);
+}
+
+sub newsalt
+{
+	my $self = shift;
+	return $self->{salt} = substr sha1_base64($self->{seed}, rand, rand, rand), 0, 6;
 }
 
 sub challenge
 {
 	my $self = shift;
-	my @t = gettimeofday();
-	my $r = unpack("xxNxx", pack("d", rand));
-	@t = map {$_ ^ $r} @t;
-	dbg("challenge r: $r seed: $t[0] $t[1]" ) if isdbg('verify');
-	$r = unpack("xxNxx", pack("d", rand));
-	@t = map {$_ ^ $r} @t;
-	dbg("challenge r: $r seed: $t[0] $t[1]" ) if isdbg('verify');
-	return $self->{seed} = sha1_base64(@t, gettimeofday, rand, rand, rand, @_);
-}
-
-sub response
-{
-	my $self = shift;
-	return sha1_base64($self->{seed}, @_);
+	return $self->{salt} . sha1_base64($self->{salt}, $self->{seed}, @_);
 }
 
 sub verify
 {
 	my $self = shift;
 	my $answer = shift;
-	my $p = sha1_base64($self->{seed}, @_);
+	my $p = sha1_base64($self->{salt}, $self->{seed}, @_);
 	return $p eq $answer;
 }
 
+sub seed
+{
+	my $self = shift;
+	return @_ ? $self->{seed} = shift : $self->{seed};
+}
+
+sub salt
+{
+	my $self = shift;
+	return @_ ? $self->{salt} = shift : $self->{salt};
+}
 1;

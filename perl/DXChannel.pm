@@ -117,6 +117,7 @@ $count = 0;
 		  ve7cc => '0,VE7CC program special,yesno',
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  inscript => '9,In a script,yesno',
+		  inqueue => '9,Input Queue,parray',
 		 );
 
 use vars qw($VERSION $BRANCH);
@@ -168,11 +169,22 @@ sub alloc
 		$self->{itu} = $dxcc[1]->itu;
 		$self->{cq} = $dxcc[1]->cq;						
 	}
+	$self->{inqueue} = [];
 
 	$count++;
 	dbg("DXChannel $self->{call} created ($count)") if isdbg('chan');
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
+}
+
+sub rec	
+{
+	my ($self, $msg) = @_;
+	
+	# queue the message and the channel object for later processing
+	if (defined $msg) {
+		push @{$self->{inqueue}}, $msg;
+	}
 }
 
 # obtain a channel object by callsign [$obj = DXChannel->get($call)]
@@ -185,7 +197,6 @@ sub get
 # obtain all the channel objects
 sub get_all
 {
-	my ($pkg) = @_;
 	return values(%channels);
 }
 
@@ -255,7 +266,7 @@ sub is_bbs
 sub is_node
 {
 	my $self = shift;
-	return $self->{'sort'} =~ /[ACRSX]/;
+	return $self->{'sort'} =~ /[ACRSXW]/;
 }
 # is it an ak1a node ?
 sub is_ak1a
@@ -276,6 +287,13 @@ sub is_clx
 {
 	my $self = shift;
 	return $self->{'sort'} eq 'C';
+}
+
+# it is Aranea
+sub is_aranea
+{
+	my $self = shift;
+	return $self->{'sort'} eq 'W';
 }
 
 # is it a spider node
@@ -439,7 +457,6 @@ sub disconnect
 	my $self = shift;
 	my $user = $self->{user};
 	
-	main::clean_inqueue($self);          # clear out any remaining incoming frames
 	$user->close() if defined $user;
 	$self->{conn}->disconnect;
 	$self->del();
@@ -551,7 +568,7 @@ sub broadcast_nodes
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_nodes();
+	my @dxchan = get_all_nodes();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
@@ -571,7 +588,7 @@ sub broadcast_all_nodes
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_nodes();
+	my @dxchan = get_all_nodes();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
@@ -592,7 +609,7 @@ sub broadcast_users
 	my $sort = shift;           # the type of transmission
 	my $fref = shift;           # a reference to an object to filter on
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_users();
+	my @dxchan = get_all_users();
 	my $dxchan;
 	my @out;
 	
@@ -636,6 +653,42 @@ sub broadcast_list
 	}
 }
 
+sub process
+{
+	foreach my $dxchan (get_all()) {
+
+		while (my $data = shift @{$dxchan->{inqueue}}) {
+			my ($sort, $call, $line) = $dxchan->decode_input($data);
+			next unless defined $sort;
+
+			# do the really sexy console interface bit! (Who is going to do the TK interface then?)
+			dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
+			if ($dxchan->{disconnecting}) {
+				dbg('In disconnection, ignored');
+				next;
+			}
+
+			# handle A records
+			my $user = $dxchan->user;
+			if ($sort eq 'A' || $sort eq 'O') {
+				$dxchan->start($line, $sort);
+			} elsif ($sort eq 'I') {
+				die "\$user not defined for $call" if !defined $user;
+			
+				# normal input
+				$dxchan->normal($line);
+			} elsif ($sort eq 'Z') {
+				$dxchan->disconnect;
+			} elsif ($sort eq 'D') {
+				;				# ignored (an echo)
+			} elsif ($sort eq 'G') {
+				$dxchan->enhanced($line);
+			} else {
+				print STDERR atime, " Unknown command letter ($sort) received from $call\n";
+			}
+		}
+	}
+}
 
 #no strict;
 sub AUTOLOAD
