@@ -48,7 +48,7 @@ sub process
 	return unless $inp =~ s/2Line\s+Orbital\s+Elements/2Line Keps/;
 	
 	# open the output file in the data area
-	my $fn = "$root/data/keps.txt.$$";
+	my $fn = "$root/tmp/keps.txt.$$";
 	open OUT, ">$fn" or die "$fn $!";
 	print OUT $inp;
 	close OUT;

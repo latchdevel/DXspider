@@ -13,6 +13,9 @@ my @list = split /\s+/, $line;
 my $l;
 my @out;
 my $t = $main::systime;
+if ($list[0] =~ /^\d+$/) {
+	$t = shift @list;
+}
 
 push @out, $self->msg("time1", cldate($t, 1), ztime($t, 1), ztime($t));
 
