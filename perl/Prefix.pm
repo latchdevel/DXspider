@@ -149,9 +149,12 @@ sub extract
 	foreach $call (split /,/, $calls) {
 		# first check if the whole thing succeeds
 		my @nout = get($call);
-		push @out, @nout if @nout;
-		next if @nout > 0 && $nout[0] eq $call;
-	  
+		if (@nout && $nout[0] eq $call) {
+			dbg("got exact prefix: $nout[0]") if isdbg('prefix');
+			push @out, @nout;
+			next;
+		}
+
 		# now split the call into parts if required
 		@parts = ($call =~ '/') ? split('/', $call) : ($call);
 
@@ -167,8 +170,11 @@ sub extract
 			# can we resolve them by direct lookup
 			foreach $p (@parts) {
 				@nout = get($p);
-				push @out, @nout if @nout;
-				next if @nout > 0 && $nout[0] eq $call;
+				if (@nout && $nout[0] eq $call) {
+					dbg("got exact prefix: $nout[0]") if isdbg('prefix');
+					push @out, @nout;
+					next;
+				}
 			}
 		}
   
@@ -184,8 +190,10 @@ sub extract
 #		for ($i = 1; $i <= length $sp; ++$i) {
 		# now start to resolve it from the right hand end
 		for ($i = length $sp; $i >= 1; --$i) {
-			my @wout = get(substr($sp, 0, $i));
-			next if @wout > 0 && $wout[0] gt $sp;
+			my $ssp = substr($sp, 0, $i);
+			my @wout = get($ssp);
+			dbg("Partial prefix: $sp $ssp $wout[0]" ) if isdbg('prefix') && $wout[0];
+			next if @wout > 0 && $wout[0] gt $ssp;
 #			last if @wout == 0;
 			push @out, @wout;
 			last if @wout;

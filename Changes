@@ -1,3 +1,6 @@
+04Jul02=======================================================================
+1. added another fix to Prefix.pm so that it resolves Japan callsigns again
+also you can 'set/debug prefix' to see what it is trying to do.
 03Jul02=======================================================================
 1. Added the DEMONSTRATE command which allows a sysop to demonstrate a 
 command to a user (from a request by Charlie K1XX). 
