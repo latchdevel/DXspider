@@ -207,7 +207,25 @@ This will send your announcement cluster wide
 Search the help database for <string> (it isn't case sensitive), and print
 the names of all the commands that may be relevant.
 
-=== 0^BLANK <nn>^Print nn (default 1) blank lines
+=== 0^BLANK [<string>] [<nn>]^Print nn (default 1) blank lines (or strings)
+In its basic form this command prints one or more blank lines. However if
+you pass it a string it will replicate the string for the width of the 
+screen (default 80) and then print that one or more times, so:
+
+  blank 2
+
+prints two blank lines
+
+  blank - 
+
+prints a row of - characters once.
+
+  blank abc
+
+prints 'abcabcabcabcabcabc....'
+
+This is really only of any use in a script file and you can print a maximum
+of 9 lines.
 
 === 0^BYE^Exit from the cluster
 This will disconnect you from the cluster

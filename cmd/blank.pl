@@ -7,8 +7,19 @@
 #
 
 my ($self, $line) = @_;
-my ($lines) = $line =~ /^\s*(\d+)/;
-$lines ||= 1;
+my $lines = 1;
+my $data = ' ';
+my @f = split /\s+/, $line;
+if (@f && $f[0] !~ /^\d+$/) {
+	$data = shift @f;
+	$data = $data x int(($self->width-1) / length($data));
+	$data .= substr $data, 0, int(($self->width-1) % length($data))
+}
+if (@f && $f[0] =~ /^\d+$/) {
+	$lines = shift @f;
+	$lines = 9 if $lines < 9;
+	$lines = 1 if $lines < 1;
+}
 my @out;
-push @out, ' ' for (1..$lines);
+push @out, $data for (1..$lines);
 return (1, @out);
