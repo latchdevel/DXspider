@@ -235,7 +235,7 @@ sub doconnect
 		$sock->output_record_separator('');
 		$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
 		$sock->open($host) or die "Can't connect to $host port $port $!";
-		$sock->binmode(1);
+		$sock->binmode(0);
 		$mode = 3;
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		my @args = split /\s+/, $line;
@@ -316,8 +316,8 @@ sub dochat
 	}
 	if ($send) {
 		if ($csort eq 'telnet') {
-			local $\ = $out_lineend;
-			$sock->print("$send$out_lineend");
+#			local $\ = $out_lineend;
+			$sock->print("$send\n");
 		} elsif ($csort eq 'ax25') {
 			local $\ = $out_lineend;
 			$wfh->print("$send");
