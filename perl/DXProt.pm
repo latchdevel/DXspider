@@ -1664,9 +1664,11 @@ sub disconnect
 
 	# do routing stuff
 	my $node = Route::Node::get($call);
-	my @rout = $node->del_nodes;    # at the next level
-
-	@rout = $node->del($main::routeroot) if $node;
+	my @rout;
+	if ($node) {
+		@rout = $node->del_nodes;    # at the next level
+		@rout = $node->del($main::routeroot);
+	}
 	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
