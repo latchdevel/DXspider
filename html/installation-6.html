@@ -15,10 +15,9 @@
 <HR>
 <H2><A NAME="s6">6. Installing the software</A></H2>
 
-<P>Ensure that your CVS session or your WINunZIPped file have left you with
-a directory "C:\spider\local" and C:\spider\local_cmd"; if not, go to
-"C:\spider\" and create them. If "C:\spider" is missing, go back and
-figure out why, because it shouldn't be.
+<P>At this point you will need to create 2 additional directories under 
+"C:\Spider."  Make directories "C:\spider\local" and "C:\spider\local_cmd". 
+If "C:\spider" is missing, go back and figure out why, because it shouldn't be.
 <P>Now create your own local copy of the DXVars.pm file by:-
 <P>
 <BLOCKQUOTE><CODE>
@@ -27,7 +26,7 @@ copy c:\spider\perl\DXVars.pm.issue
 c:\spider\local\DXVars.pm
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>Now you'll need to edit this file using a text editor. If nothing
+<P>Now you'll need to edit this file using a text editor like Notepad. If nothing
 else, you can simply
 <P>
 <BLOCKQUOTE><CODE>
@@ -60,12 +59,11 @@ should change nothing else in this file. Note that if you use an "@" or
 a "$" character in one of the above strings (typically in $myemail) you must 
 write them as "\@" or "\$". 
 <P>
-<P>
 <H2><A NAME="ss6.1">6.1 Incoming telnets</A>
 </H2>
 
 <P>If you want to enable inbound "TELNET" connections (or you are running
-Windows NT, 2000 or XP), you've got a little more work to do. From a
+Windows 98, NT, 2000 or XP), you've got a little more work to do. From a
 handy "DOS box" that's not doing anything else, do the following:-
 <P>
 <BLOCKQUOTE><CODE>
@@ -75,22 +73,22 @@ cd \spider\local
 notepad listeners.pm
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>The following lines need attention:-
+<P>The following line need attention:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-["0.0.0.0", 7300],
+#               ["0.0.0.0", 7300],
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>On my machine, I've simply uncommented the "0.0.0.0" entry by
 removing the '#' from the front of the line. 
 <P><B>You MUST carry out this step if you are
-running on a Windows NT, 2000 or XP based system</B>
+running on a Windows 98, NT, 2000 or XP based system</B>
 <P>If you don't have a static hostname for your machine, and you
 intend to allow folk to connect to your machine across the
 internet, then I'd suggest you pay a visit to www.dyndns.org and
 create one for yourself. While it's free, it will take a modest
-an amount of effort on your part to read, understand and
+amount of effort on your part to read, understand and
 implement what needs to be done to set this up.
 <P>
 <P>If your machine is connected to the internet <B>and</B> you don't
@@ -106,8 +104,17 @@ addresses).
 </H2>
 
 <P>On the assumption that you'll be using the SV2AGW Packet Engine
-to interface your radios to the cluster, you should now create
-your own local copy of AGWConnect.pm by:-
+to interface your radios to the cluster, it would be a good idea to
+download the Packet Engine software!  You can get this software from:
+<P>
+<A HREF="http://www.raag.org/sv2agw/agwpe.zip">http://www.raag.org/sv2agw/agwpe.zip</A><P>Depending upon your TNCs, you may also need to get:
+<P>
+<A HREF="http://www.raag.org/sv2agw/drivers.zip">http://www.raag.org/sv2agw/drivers.zip</A><P>A couple of the tools:
+<P>
+<A HREF="http://www.raag.org/sv2agw/agwterm.zip">http://www.raag.org/sv2agw/agwterm.zip</A><P>
+<A HREF="http://www.raag.org/sv2agw/agwmonitor.zip">http://www.raag.org/sv2agw/agwmonitor.zip</A><P>will also help with troubleshooting of the RF links themselves.
+<P>Install and configure AGWPE.  You should now create your own local copy of 
+AGWConnect.pm by:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -130,6 +137,8 @@ consider adjusting the following items in AGWConnect.pm:-
 <LI>$login  - the login ID you chose when you set up the SV2AGW security :-)</LI>
 <LI>$passwd - password that matches $login</LI>
 </UL>
+<P>The login ID and passwd only need to be set if you are accessing AGW separately
+via its web interface.  This interface is normally not needed for use with DXSpider.
 <P>
 <H2><A NAME="ss6.3">6.3 Setting up the initial user files</A>
 </H2>
@@ -159,8 +168,8 @@ hold a display which looks something like:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-DXSpider DX Cluster Version 1.47
-Copyright (c) 1998-2001 Dirk Koopman G1TLH
+DXSpider DX Cluster Version 1.50
+Copyright (c) 1998-2002 Dirk Koopman G1TLH
 loading prefixes ...
 loading band data ...
 loading user file system ...
@@ -217,7 +226,7 @@ client than that which comes with windows (I use
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.47
+Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.50
 Cluster: 1 nodes, 1 local / 1 total users Max users 2 Uptime 0 00:00
 M0ADI de GB7SJP 4-Mar-2001 1511Z >
 </PRE>

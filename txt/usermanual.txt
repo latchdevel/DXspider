@@ -1,6 +1,6 @@
-  The DXSpider User Manual v1.49
+  The DXSpider User Manual v1.50
   Ian Maude, G0VGS, (g0vgs@gb7mbc.net)
-  December 2001 revision 4.1
+  September 2002 revision 0.1
 
   A complete reference for users of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -214,18 +214,19 @@
 
   There are several new compatible cluster programs around now,
   including DXSpider.  DXSpider is a clone of PacketCluster software
-  that runs under the Linux operating system.  Linux is fast becoming
-  the choice for amateur radio stations because of it's flexibility,
-  reliability and the lack of the memory limitations of DOS.  Linux
-  supports multitasking and is also multiuser. It has support for AX25,
-  ROSE, NetROM and TCPIP built in, making it the ideal choice for
-  amateur radio.  It is also totally free!
+  that runs under several operating systems including Linux and Windows.
+  Linux is fast becoming the choice for amateur radio stations because
+  of it's flexibility, reliability and the lack of the memory
+  limitations of DOS.  Linux supports multitasking and is also
+  multiuser. It has support for AX25, ROSE, NetROM and TCPIP built in,
+  making it the ideal choice for amateur radio.  It is also totally
+  free!
 
   DXSpider was conceived and begun in 1998 by Dirk Koopman, G1TLH as an
   exercise in perl programming.  It has developed rapidly and today is a
   very powerful cluster program.  It was designed to be totally
   compatible with the AK1A program, although several commands have been
-  extended to try and improve functionality.
+  extended to improve functionality.
 
   This manual is designed to help you become familiar with the commands
   that DXSpider supports and to help you get the best from the program
@@ -261,7 +262,6 @@
 
 
 
-
   connect GB7MBC
   connect GB7MBC-1
 
@@ -291,12 +291,11 @@
 
   22..33..  TTeellnneett llooggiinnss..
 
-  Because DXSpider runs under the Linux operating system, it is possible
-  to make a direct telnet connection into the cluster.  With telnet
-  connections, the source callsign is not seen by DXSpider, so you will
-  be asked to login with your callsign.  To telnet to DXSpider, you
-  would connect to a specific port.  There is no standard at the moment
-  for a cluster telnet port but ask the sysop if you are unsure.
+  With telnet connections, the source callsign is not seen by DXSpider,
+  so you will be asked to login with your callsign.  To telnet to
+  DXSpider, you would connect to a specific port.  There is no standard
+  at the moment for a cluster telnet port but ask the sysop if you are
+  unsure.
 
   EExxaammppllee::
 
@@ -321,12 +320,13 @@
   command if you are connected via telnet.  If you do not log out
   gracefully using one of the above commands, you may find you are
   unable to get a full connect next time.  This may also happen if a
-  NETRom connection drops.  You may get connected, but nothing else will
+  netrom connection drops.  You may get connected, but nothing else will
   happen because the program thinks you are still connected and will not
   let you connect twice under the same call.  However you could
   reconnect by adding a number to the end of your call, for example
-  G0YLM2.  This can be done by either altering your MYCALL setting in
+  G0YLM-2.  This can be done by either altering your MYCALL setting in
   the TNC or by altering your program configuration.
+
 
   33..  SSeettttiinngg yyoouurr ppeerrssoonnaall ddeettaaiillss..
 

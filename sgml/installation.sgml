@@ -5,9 +5,10 @@
 <!-- Title information -->
 
 <title>The DXSpider Installation Manual v1.50</title> 
-<author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
-Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>July 2002 revision 0.3</date>
+<author>Iain Philipps, G0RDI (g0rdi@77hz.com),
+Ian Maude, G0VGS, (g0vgs@gb7mbc.net) and Charlie
+Carroll, K1XX, (k1xx@ptcnh.net)</author>
+<date>September 2002 revision 0.4</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -887,7 +888,7 @@ This is dealt with in the previous section
 <sect1>Allowing telnet connects from users 
 
 <P> 
-From version 1.47 there is a new (more efficient) way of doing this
+>From version 1.47 there is a new (more efficient) way of doing this
 (see next section) but, if you prefer, the method of doing it described 
 here will continue to work just fine.
  
@@ -939,7 +940,7 @@ You should now get the login prompt and be able to login as before.
 <sect1>Setting up telnet connects (from 1.47 onwards)
 
 <P>
-From version 1.47 you can choose to allow the perl cluster.pl program to 
+>From version 1.47 you can choose to allow the perl cluster.pl program to 
 allow connections directly (i.e. not via the <tt>/spider/src/client</tt>
 interface program). If you are using Windows then this is the only method
 available of allowing incoming telnet connections.
@@ -1356,12 +1357,9 @@ you should find everything running nicely.
 <bf>IMPORTANT:</bf> 
 
 What you'll be left with once you've followed these instructions
-is (hopefully) a working DX Spider v1.47 system that is capable
+is (hopefully) a working DX Spider v1.50 system that is capable
 of accepting or originating "internet" connections, plus inbound
-AX.25 and TCP/IP radio connections. If the absence of outbound
-radio connections is a serious limitation for you, it would be
-better for you to wait a couple more weeks until this support has
-been added.
+and outbound AX.25 and TCP/IP radio connections.
 
 On the other hand, you may have an enquiring mind, or better yet,
 may be looking for a useful way of connecting your current
@@ -1422,16 +1420,22 @@ and I have zero intention of trying to make them say otherwise.
 Install your chosen Perl environment. Unless you have a very good
 reason for not doing so, I strongly suggest that you use
 ActivePerl v5.6. For my testing & development, I used build 623.
-You can get this from:- <htmlurl
-url="http://www.activestate.com/Products/ActivePerl/Download.html"
+(A recent installation used the newer ActivePerl v5.6.1, build
+633 without any noticable difficulty.)  You can get this from:
+<htmlurl url="http://www.activestate.com/Products/ActivePerl/Download.html"
 name="http://www.activestate.com/Products/ActivePerl/Download.html">
 
-You will need to choose either the MSI or the AS package. My
-recommendation is that you choose the MSI package and deal with
-the consequences if your system isn't equipped with support for
-the latest MS Installer; you'll be better off in the long run.
-The build 623 download is 7,460 KB, so now is a really good time
-to have some tea if you're on a slow dial-up connection.
+The link takes you to an initial page of System Requirements and
+Software Prerequisites.  If you do not have it already installed, 
+you can download and install the Windows Installer 2.0 for a Win98
+installation.  Be forewarned, you will have to reboot your PC at the
+completion of the installer's installation.  
+
+If you already have the installer on your PC, simply click on the 
+Next arrow at the bottom of the page.  Two clicks will finally get
+you to the actual download page.  The MSI version of Build 633 is 
+now 8.6MB in size, so make that a big cup of tea or coffee if you're
+on a slow dial-up connection.
 
 During installation, please ensure that you do choose the options
 to "Add Perl to the PATH environment variable" and "Create Perl
@@ -1474,12 +1478,15 @@ Time-HiRes.zip
 DB_File.zip
 </verb></tscreen>
 
-Make yourself a convenient directory to unpack all of these zip
-files into (I put mine in "D:\ppm>") and do the following (the
-bits you type in are blue ). Note that where these files land
-will be directly related to where you chose to install your
-ActivePerl (mine, as you can probably guess from what follows,
-went into "D:\Perl"):-
+If this is a new installation, now would also be a good time to 
+install a copy of WinZip on your PC.  Make yourself a convenient 
+directory to unpack all of these zip files into (I put mine in 
+"D:\ppm>" but "C:\ppm" works just as well.) and do the following 
+(the bits you type in are blue ).  You can upzip all of the files into
+the same directory.  When prompted, simply overwrite the Readme file 
+from each zip package.  Note that where these files land will be 
+directly related to where you chose to install your ActivePerl 
+(mine, as you can probably guess from what follows, went into "D:\Perl"):-
 
 <tscreen><verb>
 D:\ppm>ppm install Data-Dumper.ppd
@@ -1515,10 +1522,10 @@ do it that way because it suits me.
 
 <P>
 Get the current version of the DX Spider distribution. This needs
-to be v1.47 or later. You've got two ways (currently) of getting
+to be v1.50 or later. You've got two ways (currently) of getting
 this; either get a CVS update from sourceforge (if you don't know
 what this is, then it isn't for you) or get the latest "official"
-release from:-
+release from:
 
 <htmlurl url="http://www.dxcluster.org/download/index.html" name="http://www.dxcluster.org/download/index.html">
 
@@ -1532,28 +1539,34 @@ date. However, there is always the very slight chance that it might
 unstable. Generally, there will be a note on the website if this is 
 the case. 
 
-<p>The only difference between "CVSlatest.tgz" and the latest
-"official" release version is that it is more up to date. Don't confuse 
-this TGZ file with "Downloading from Sourceforge with CVS" - they are two
-quite different things.  
+
+The only difference between "CVSlatest.tgz" and the latest
+"official" release version is that it is more up to date. <bf>Do not confuse 
+the "CVSlatest.tgz" file with "Downloading from Sourceforge with CVS" - they
+are two quite different things.</bf>  "Downloading from Sourceforge with CVS" is
+explained in a section within the Admin manual.
 
 <p>
-If you went down the CVS route (ie installed wincvs and downloaded from
-sourceforge), then everything will be nicely
-set out on your local disk. If you got the TGZ file, unpack it to
-somewhere convenient. The following examples assume that you put
-it on drive "C:\", for convenience.
-
-<p>You will need <htmlurl url="http://www.winzip.com" name="winzip"> to
-manipulate the TGZ files (they are bit like ZIP files) if you are not using CVS.
+If you go down the CVS route (ie installing WinCVS as explained in the Admin
+manual and downloaded from sourceforge), then everything will be nicely
+installed on your local disk. If you got the CVSlatest.tgz file, unzip 
+(<htmlurl url="http://www.winzip.com" name="winzip">) it to "C:\".  
+This is an important point since paths are included within the .tgz 
+file.  Make sure you unzip to the root directory of whichever drive you use...
+"C:\" or "D:\" or .., not "C:\spider."  If you double click on CVSlatest.tgz, 
+WinZip should open with a dialogue box that says the Archive contains a single
+file (CVSlatest.tar) and asks whether WinZip should decompress it to a 
+temporary fold and then open it.  Say "Yes" and then you will get the typical 
+Classical WinZip listing of files ready for extraction.  Remember, extract 
+them to your desired root directory ("C:\" or "D:\" or ...).  The following 
+examples assume that you put it on drive "C:\", for convenience.
 
 <sect>Installing the software
 
 <P>
-Ensure that your CVS session or your WINunZIPped file have left you with
-a directory "C:\spider\local" and C:\spider\local_cmd"; if not, go to
-"C:\spider\" and create them. If "C:\spider" is missing, go back and
-figure out why, because it shouldn't be.
+At this point you will need to create 2 additional directories under 
+"C:\Spider."  Make directories "C:\spider\local" and "C:\spider\local_cmd". 
+If "C:\spider" is missing, go back and figure out why, because it shouldn't be.
 
 Now create your own local copy of the DXVars.pm file by:-
 
@@ -1562,7 +1575,7 @@ copy c:\spider\perl\DXVars.pm.issue
 c:\spider\local\DXVars.pm
 </verb></tscreen>
 
-Now you'll need to edit this file using a text editor. If nothing
+Now you'll need to edit this file using a text editor like Notepad. If nothing
 else, you can simply
 
 <tscreen><verb>
@@ -1594,12 +1607,11 @@ should change nothing else in this file. Note that if you use an "@" or
 a "$" character in one of the above strings (typically in $myemail) you must 
 write them as "\@" or "\$". 
 
-
 <sect1>Incoming telnets
 
 <P>
 If you want to enable inbound "TELNET" connections (or you are running
-Windows NT, 2000 or XP), you've got a little more work to do. From a
+Windows 98, NT, 2000 or XP), you've got a little more work to do. From a
 handy "DOS box" that's not doing anything else, do the following:-
 
 <tscreen><verb>
@@ -1608,23 +1620,23 @@ cd \spider\local
 notepad listeners.pm
 </verb></tscreen>
 
-The following lines need attention:-
+The following line need attention:-
 
 <tscreen><verb>
-["0.0.0.0", 7300],
+#               ["0.0.0.0", 7300],
 </verb></tscreen>
 
 On my machine, I've simply uncommented the "0.0.0.0" entry by
 removing the '#' from the front of the line. 
 
 <bf>You MUST carry out this step if you are
-running on a Windows NT, 2000 or XP based system</bf>
+running on a Windows 98, NT, 2000 or XP based system</bf>
 
 If you don't have a static hostname for your machine, and you
 intend to allow folk to connect to your machine across the
 internet, then I'd suggest you pay a visit to www.dyndns.org and
 create one for yourself. While it's free, it will take a modest
-an amount of effort on your part to read, understand and
+amount of effort on your part to read, understand and
 implement what needs to be done to set this up.
 
 <p>If your machine is connected to the internet <bf>and</bf> you don't
@@ -1640,8 +1652,25 @@ addresses).
 
 <P>
 On the assumption that you'll be using the SV2AGW Packet Engine
-to interface your radios to the cluster, you should now create
-your own local copy of AGWConnect.pm by:-
+to interface your radios to the cluster, it would be a good idea to
+download the Packet Engine software!  You can get this software from:
+
+<htmlurl url="http://www.raag.org/sv2agw/agwpe.zip" name="http://www.raag.org/sv2agw/agwpe.zip">
+
+Depending upon your TNCs, you may also need to get:
+
+<htmlurl url="http://www.raag.org/sv2agw/drivers.zip" name="http://www.raag.org/sv2agw/drivers.zip">
+
+A couple of the tools:
+
+<htmlurl url="http://www.raag.org/sv2agw/agwterm.zip" name="http://www.raag.org/sv2agw/agwterm.zip">
+
+<htmlurl url="http://www.raag.org/sv2agw/agwmonitor.zip" name="http://www.raag.org/sv2agw/agwmonitor.zip">
+
+will also help with troubleshooting of the RF links themselves.
+
+Install and configure AGWPE.  You should now create your own local copy of 
+AGWConnect.pm by:-
 
 <tscreen><verb>
 copy c:\spider\perl\AGWConnect.pm
@@ -1662,6 +1691,9 @@ consider adjusting the following items in AGWConnect.pm:-
 <item>$login  - the login ID you chose when you set up the SV2AGW security :-)
 <item>$passwd - password that matches $login
 </itemize>
+
+The login ID and passwd only need to be set if you are accessing AGW separately
+via its web interface.  This interface is normally not needed for use with DXSpider.
 
 <sect1>Setting up the initial user files
 
@@ -1689,8 +1721,8 @@ If you did everything you were told, your DOS window will now
 hold a display which looks something like:-
 
 <tscreen><verb>
-DXSpider DX Cluster Version 1.47
-Copyright (c) 1998-2001 Dirk Koopman G1TLH
+DXSpider DX Cluster Version 1.50
+Copyright (c) 1998-2002 Dirk Koopman G1TLH
 loading prefixes ...
 loading band data ...
 loading user file system ...
@@ -1746,7 +1778,7 @@ name="PuTTY">).
 <p>Anyway, if you are rewarded with a display which looks something like:-
 
 <tscreen><verb>
-Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.47
+Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.50
 Cluster: 1 nodes, 1 local / 1 total users Max users 2 Uptime 0 00:00
 M0ADI de GB7SJP 4-Mar-2001 1511Z >
 </verb></tscreen>
@@ -1807,3 +1839,5 @@ If you want to know more about it, look at the
 at the cron page where it is explained more fully.
 
 </article>
+
+
