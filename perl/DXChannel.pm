@@ -544,7 +544,7 @@ sub broadcast_nodes
 
 # broadcast a message to all clusters ignoring isolation
 # [except those mentioned after buffer]
-sub broadcast_all_ak1a
+sub broadcast_all_nodes
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
