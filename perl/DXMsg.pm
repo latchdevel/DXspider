@@ -171,13 +171,17 @@ sub process
 				# remove it from the work in progress vector
 				# stuff it on the msg queue
 				if ($ref->{lines} && @{$ref->{lines}} > 0) { # ignore messages with 0 lines
-					$ref->{msgno} = next_transno("Msgno") if !$ref->{file};
-					push @{$ref->{gotit}}, $f[2]; # mark this up as being received
-					$ref->store($ref->{lines});
-					add_dir($ref);
-					my $dxchan = DXChannel->get($ref->{to});
-					$dxchan->send("New mail has arrived for you") if $dxchan;
-					Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
+					if ($ref->{file}) {
+						$ref->store($ref->{lines});
+					} else {
+						$ref->{msgno} = next_transno("Msgno");
+						push @{$ref->{gotit}}, $f[2]; # mark this up as being received
+						$ref->store($ref->{lines});
+						add_dir($ref);
+						my $dxchan = DXChannel->get($ref->{to});
+						$dxchan->send("New mail has arrived for you") if $dxchan;
+						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
+					}
 				}
 				$ref->stop_msg($self);
 				queue_msg();
@@ -286,7 +290,6 @@ sub store
 		} else {
 			confess "can't open file $ref->{to} $!";  
 		}
-		#	push @{$ref->{gotit}}, $ref->{fromnode} if $ref->{fromnode};
 	} else {					# a normal message
 		
 		# attempt to open the message file
