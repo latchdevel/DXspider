@@ -254,15 +254,14 @@ sub start
 	$self->{pingint} = $ping;
 	$self->{nopings} = $user->nopings || 2;
 	$self->{pingtime} = [ ];
-	$self->{pingave} = 0;
+	$self->{pingave} = 999;
+	$self->{lastping} = $main::systime;
 
 	# send initialisation string
 	unless ($self->{outbound}) {
 		$self->send(pc18());
-		$self->{lastping} = $main::systime;
-	} else {
-		$self->{lastping} = $main::systime + ($self->pingint / 2);
 	}
+	
 	$self->state('init');
 	$self->{pc50_t} = $main::systime;
 
@@ -753,6 +752,7 @@ sub normal
 			$self->send_local_config();
 			$self->send(pc22());
 			$self->state('normal');
+			$self->{lastping} = 0;
 			return;
 		}
 		
@@ -798,6 +798,7 @@ sub normal
 		
 		if ($pcno == 22) {
 			$self->state('normal');
+			$self->{lastping} = 0;
 			return;
 		}
 				
