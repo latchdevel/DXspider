@@ -42,7 +42,7 @@ use Msg;
 use DXVars;
 use DXDebug;
 use DXUtil;
-use Net::Telnet qw(TELOPT_ECHO);
+use Net::Telnet qw(TELOPT_ECHO TELOPT_BINARY);
 use IO::File;
 use IO::Socket;
 use IPC::Open2;
@@ -108,6 +108,7 @@ sub rec_socket
 			my $snl = $mynl;
 			my $newsavenl = "";
 			$snl = "" if $mode == 0;
+			$snl = "\r\n" if $mode == 3;
 			$snl = "\n" if $mode == 2;
 			if ($mode == 2 && $line =~ />$/) {
 				$newsavenl = $snl;
@@ -222,19 +223,13 @@ sub doconnect
 		my ($host, $port) = split /\s+/, $line;
 		$port = 23 if !$port;
 		
-#		if ($port == 23) {
-
-			$sock = new Net::Telnet (Timeout => $timeout, Port => $port);
-			$sock->option_callback(\&optioncb);
-			$sock->output_record_separator('');
-#			$sock->option_log('option_log');
-#			$sock->dump_log('dump');
-			$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
-			$sock->open($host) or die "Can't connect to $host port $port $!";
-#		} else {
-#			$sock = IO::Socket::INET->new(PeerAddr => "$host:$port", Proto => 'tcp')
-#				or die "Can't connect to $host port $port $!";
-#		}
+		$sock = new Net::Telnet (Timeout => $timeout, Port => $port);
+		$sock->option_callback(\&optioncb);
+		$sock->output_record_separator('');
+		$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
+		$sock->open($host) or die "Can't connect to $host port $port $!";
+		$sock->binmode(1);
+		$mode = ($port == 23) ? 2 : 3;
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		my @args = split /\s+/, $line;
 		$rfh = new IO::File;
@@ -244,6 +239,7 @@ sub doconnect
 		die "no transmit channel $!" unless $wfh;
 		dbg('connect', "got pid $pid");
 		$wfh->autoflush(1);
+		$mode = 1;
 	} else {
 		die "invalid type of connection ($sort)";
 	}
@@ -472,12 +468,12 @@ if ($connsort eq "connect") {
     $outbound = 1;
 	$connsort = $csort;
 	$stdout->autoflush(1);
+	$mode = ($connsort eq 'ax25') ? 1 : $mode;
 	close STDIN;
 	close STDOUT;
 	close STDERR;
 }
 
-$mode = ($connsort eq 'ax25') ? 1 : 2;
 setmode();
 
 # adjust the callsign if it has an SSID, SSID <= 8 are legal > 8 are netrom connections
