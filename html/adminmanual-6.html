@@ -72,7 +72,7 @@ For example if you have a single line <EM>accept</EM> filter ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-accept/spots freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+accept/spots on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>then you will <EM>ONLY</EM> get VHF spots <EM>from</EM> or <EM>to</EM> CQ zones 14, 15 and 16.
@@ -81,7 +81,7 @@ accept/spots freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-reject/spots freq hf/cw
+reject/spots on hf/cw
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>Then you will get everything <EM>EXCEPT</EM> HF CW spots.  You could make this single filter
@@ -90,14 +90,14 @@ even though normally you are not interested in CW, then you could say ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-reject/spots freq hf/cw and not info iota
+reject/spots on hf/cw and not info iota
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>But in that case you might only be interested in iota and say:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-accept/spots not freq hf/cw or info iota
+accept/spots not on hf/cw or info iota
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>which achieves exactly the same thing. You should choose one or the other until you are 
@@ -110,8 +110,8 @@ convenience. Here is an example ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-reject/spots 1 freq/cw
-reject/spots 2 freq 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
+reject/spots 1 on hf/cw
+reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>What this does is to ignore all HF CW spots and also rejects any spots on VHF which don't
@@ -130,7 +130,7 @@ would read it logically from the front and see a different expression entirely .
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-(freq 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
+(on 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>The simple way to remember this is, if you use OR - use brackets. Whilst we are here CASE is not 
@@ -141,7 +141,7 @@ remove one or more lines of it or one line. For example ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-reject/spots 1 freq/ssb
+reject/spots 1 on hf/ssb
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>would redefine our earlier example, or 
@@ -169,9 +169,9 @@ can be written with a mixed filter, for example ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-rej/spot freq hf/cw
-acc/spot freq 0/30000
-acc/spot 2 freq 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+rej/spot on hf/cw
+acc/spot on 0/30000
+acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>Note that the first filter has not been specified with a number.  This will 
