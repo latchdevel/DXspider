@@ -718,7 +718,7 @@ sub handle_16
 
 	# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
 	# fix it up in the routing tables and issue it forth before the PC16
-	unless ($parent) {
+	if ($parent) {
 		$dxchan = $parent->dxchan;
 		if ($dxchan && $dxchan ne $self) {
 			dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
