@@ -217,28 +217,21 @@ sub cease
 	dbg('local', "Local::finish error $@") if $@;
 
 	# disconnect nodes
-	foreach $dxchan (DXChannel->get_all()) {
-		next unless $dxchan->is_node;
-	    $dxchan->disconnect unless $dxchan == $DXProt::me;
+	foreach $dxchan (DXChannel->get_all_nodes) {
+	    $dxchan->disconnect(2) unless $dxchan == $DXProt::me;
 	}
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
+	Msg->event_loop(100, 0.01);
 
 	# disconnect users
-	foreach $dxchan (DXChannel->get_all()) {
-		next if $dxchan->is_node;
-		$dxchan->disconnect(2) unless $dxchan == $DXProt::me;
+	foreach $dxchan (DXChannel->get_all_users) {
+		$dxchan->disconnect;
 	}
 
 	# disconnect AGW
 	AGWMsg::finish();
-	
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
+
+	# end everything else
+	Msg->event_loop(100, 0.01);
 	DXUser::finish();
 	DXDupe::finish();
 
