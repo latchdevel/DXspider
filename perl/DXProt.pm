@@ -670,7 +670,7 @@ sub normal
 								$parent = Route::Node::get($_->[0]);
 								$dxchan = $parent->dxchan if $parent;
 								if ($dxchan && $dxchan ne $self) {
-									dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+									dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 									$parent = undef;
 								}
 								if ($parent) {
@@ -685,6 +685,10 @@ sub normal
 							# route the pc19 - this will cause 'stuttering PC19s' for a while
 							$self->route_pc19(@nrout) if @nrout ;
 							$parent = Route::Node::get($ncall);
+							unless ($parent) {
+								dbg("PCPROT: lost $ncall after sending PC19 for it?");
+								return;
+							}
 						} else {
 							return;
 						}
@@ -1141,7 +1145,9 @@ sub normal
 		if ($pcno == 41) {		# user info
 			my $call = $field[1];
 
-			if (eph_dup($line, $eph_info_restime)) {
+			my $l = $line;
+			$l =~ s/[\x00-\x20\x7f-\xff]+//g; # remove all funny characters and spaces for dup checking
+			if (eph_dup($l, $eph_info_restime)) {
 				dbg("PCPROT: dupe") if isdbg('chanerr');
 				return;
 			}

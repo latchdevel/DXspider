@@ -16,6 +16,9 @@ second time the system needs to issue a PC19.
 2. Alter the export_user command to remove users that have no useful info
 and have not been seen for more than (default) 1 year.
 3. fix the problem of users on more than one node not being propagated
+4. remove spaces and all non-US ascii characters from PC41 for the dup check.
+5. put in check to see if the parent of a newly allowed PC19 is still there
+(this needs further investigation).
 17Jan03=======================================================================
 1. Fix problem with lines being left in the main input queue for a 
 disconnected/ing node.
