@@ -302,7 +302,7 @@ sub run_cmd
 		
 		# split the command line up into parts, the first part is the command
 		my ($cmd, $args) = split /\s+/, $cmdline, 2;
-		$args = "" unless $args;
+		$args = "" unless defined $args;
 		
 		if ($cmd) {
 			
@@ -314,7 +314,7 @@ sub run_cmd
 			my $acmd = CmdAlias::get_cmd($cmd);
 			if ($acmd) {
 				($cmd, $args) = split /\s+/, "$acmd $args", 2;
-				$args = "" unless $args;
+				$args = "" unless defined $args;
 				dbg('command', "aliased cmd: $cmd $args");
 			}
 			

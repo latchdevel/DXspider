@@ -30,6 +30,7 @@ $dupage = 3*3600;               # the length of time to hold spot dups
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['freq', 'r', 0, 0, \&decodefreq],
+			  ['on', 'r', 0, 0, \&decodefreq],
 			  ['call', 'c', 1],
 			  ['info', 't', 3],
 			  ['by', 'c', 4],
