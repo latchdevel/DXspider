@@ -1,3 +1,7 @@
+20Jan03=======================================================================
+1. changed sh/c so that, by default, it only shows the caller's country nodes
+sh/c all will show the old style full list. "sh/c sk gb" will show the config
+of all the GB and SK nodes.
 19Jan03=======================================================================
 1. I have made a fundemental change to the way PC19s are dealt with as a 
 result of the discussions on the mailing list. From now on, only nodes that

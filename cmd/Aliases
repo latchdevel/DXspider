@@ -115,6 +115,7 @@ package CmdAlias;
 	'^set$', 'apropos set', 'apropos',
 	  '^sho?w?/u$', 'show/user', 'show/user',
 	  '^sho?w?/bu', 'show/files bulletins', 'show/files',
+	  '^sho?w?/c/a', 'show/configuration all', 'show/configuration',
 	  '^sho?w?/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sho?w?/c$', 'show/configuration', 'show/configuration',
 	  '^sho?w?/com', 'dbavail', 'dbavail',

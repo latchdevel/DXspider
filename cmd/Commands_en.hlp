@@ -1699,7 +1699,22 @@ and the nodes to which they are connected.
 
 This command is normally abbreviated to: sh/c
 
+Normally, the list returned will be just for the nodes from your 
+country (because the list otherwise will be very long).
+
+  SH/C ALL 
+
+will produce a complete list of all nodes. 
+
 BE WARNED: the list that is returned can be VERY long
+
+It is possible to supply a node or part of a prefix and you will get 
+a list of the users for that node or list of nodes starting with
+that prefix.
+
+  SH/C GB7DJK
+
+  SH/C SK
 
 === 0^SHOW/CONFIGURATION/NODE^Show all the nodes connected locally
 Show all the nodes connected to this node.

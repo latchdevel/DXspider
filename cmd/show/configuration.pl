@@ -45,9 +45,19 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 } else {
+	my $printall;
+	
+	$printall = 1 if @list && $list[0] =~ /^ALL/i;
+	
 	# build up the screen from the Node table
 	foreach $node (@nodes) {
-		next if scalar @list && !grep $node->call =~ /^$_/, @list;
+		unless ($printall) {
+			if (@list) {
+				next unless grep $node->call =~ /^$_/, @list;
+			} else {
+				next unless $node->dxcc == $self->dxcc;
+			}
+		}
 		my $call = $node->call;
 		@l = ();
 		$call ||= '???';
