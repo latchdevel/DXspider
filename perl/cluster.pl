@@ -110,7 +110,8 @@ $starttime = 0;                 # the starting time of the cluster
 sub already_conn
 {
 	my ($conn, $call, $mess) = @_;
-	
+
+	$conn->disable_read(1);
 	dbg('chan', "-> D $call $mess\n"); 
 	$conn->send_now("D$call|$mess");
 	sleep(2);

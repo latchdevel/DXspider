@@ -398,7 +398,9 @@ FINISH:
 		&{$conn->{eproc}}($conn, $!) if exists $conn->{eproc};
 		$conn->disconnect;
     } else {
-		$conn->dequeue if exists $conn->{msg};
+		unless ($conn->{disable_read}) {
+			$conn->dequeue if exists $conn->{msg};
+		}
 	}
 }
 
@@ -442,6 +444,13 @@ sub close_all_clients
 	foreach my $conn (values %conns) {
 		$conn->disconnect;
 	}
+}
+
+sub disable_read
+{
+	my $conn = shift;
+	set_event_handler ($conn->{sock}, read => undef);
+	return $_[0] ? $conn->{disable_read} = $_[0] : $_[0];
 }
 
 #

@@ -1,5 +1,7 @@
 14May01=======================================================================
 1. fix problem with re-reading in db definitions for remote databases.
+2. try to prevent situations where two can (semi) successfully login, probably
+under load, and get a 'tried to connect whilst already connected' abort.
 11May01=======================================================================
 1. allow stat/msg on priv 1
 07May01=======================================================================
