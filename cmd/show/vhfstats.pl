@@ -36,7 +36,7 @@ my @out;
 my @tot;
 
 push @out, $self->msg('statvhf');
-push @out, sprintf "%11s|%6s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|", qw(Callsign Total 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
+push @out, sprintf "%11s|%6s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|", qw(Date Total 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
 foreach my $ref (@in) {
 	my $linetot = 0;
 	foreach my $j (12..14,16..21) {
