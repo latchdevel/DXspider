@@ -22,6 +22,7 @@ if (defined $pid) {
 		eval "{ package DB; sub DB {} }";
 		alarm(0);
 		DXChannel::closeall();
+		Msg::close_server();
 		$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 		exec $prog, $call, 'connect';
 	} else {

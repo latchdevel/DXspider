@@ -1,3 +1,6 @@
+14Nov99=======================================================================
+1. added BBS.pm to start BBS input of mail
+2. fixed eval in DXUser to log errors rather than banging out
 12Nov99=======================================================================
 1. added sh/sun command kindly supplied by Steve K9AN.
 2. allow ^Z on its own on a line to terminate a message

@@ -60,6 +60,8 @@ use CmdAlias;
 use Filter;
 use Local;
 use DXDb;
+use Data::Dumper;
+
 use Fcntl ':flock'; 
 
 use Carp qw(cluck);
