@@ -27,18 +27,25 @@ if ($ENV{'TERM'} =~ /xterm/) {
 	$ENV{'TERM'} = 'color_xterm';
 	$foreground = COLOR_BLACK();
 	$background = A_BOLD|COLOR_WHITE();
+	@colors = (
+		   [ '^DX de [\-\w]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
+		   [ '^DX', COLOR_PAIR(5) ],
+		   [ '^To', COLOR_PAIR(3) ],
+		   [ '^WWV', COLOR_PAIR(4) ],
+		   [ '^WX', COLOR_PAIR(3) ],
+		   );
 }
 if ($ENV{'TERM'} =~ /(console|linux)/) {
 	$foreground = COLOR_WHITE();
 	$background = COLOR_BLACK();
-}
-
-@colors = (
+	@colors = (
 		   [ '^DX de [\-\w]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
-		   [ '^DX', COLOR_PAIR(2) ],
+		   [ '^DX', COLOR_PAIR(5) ],
 		   [ '^To', COLOR_PAIR(3) ],
 		   [ '^WWV', COLOR_PAIR(4) ],
-		   [ '^WX', COLOR_PAIR(5) ],
-);
+		   [ '^WX', COLOR_PAIR(3) ],
+		   );
+}
+
 
 1; 
