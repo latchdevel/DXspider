@@ -1,3 +1,8 @@
+05Feb05=======================================================================
+1. Fix a long standing (ie since the first bulletin was sent) bug with old
+mail not being deleted until a restart was done.
+2. As well as a duplicate check on existing bulletins, I have added a check 
+the message is not (already) too old. 
 03Feb05=======================================================================
 1. Added latest Spanish translations courtesy of Angel EA7WA.
 2. Force all languages to use pr in en in Messages, as the prompt is

@@ -151,7 +151,10 @@ sub process
 	}
 
 	# clean the message queue
-	clean_old() if $main::systime - $last_clean > 3600 ;
+	if ($main::systime >= $last_clean+3600) {
+		clean_old();
+		$last_clean = $main::systime;
+	}
 	
 	# actual remove all the 'deleted' messages in one hit.
 	# this has to be delayed until here otherwise it only does one at 
@@ -161,7 +164,6 @@ sub process
 		$_->del_msg;
 	}
 	
-	$last_clean = $main::systime;
 }
 
 # incoming message
@@ -311,6 +313,14 @@ sub handle_32
 			if ($ref->{file}) {
 				$ref->store($ref->{lines});
 			} else {
+
+				# is it too old
+				if ($ref->{t}+$maxage < $main::systime ) {
+					$ref->stop_msg($fromnode);
+					dbg("old message from $ref->{from} -> $ref->{to} " . atime($ref->{t}) . " ignored") if isdbg('msg');
+					Log('msg', "old message from $ref->{from} -> $ref->{to} " . cldatetime($ref->{t}) . " ignored");
+					return;
+				}
 
 				# does an identical message already exist?
 				my $m;
