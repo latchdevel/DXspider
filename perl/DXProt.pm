@@ -34,7 +34,7 @@ use BadWords;
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
 			$last_hour %pings %rcmds
-			%nodehops @baddx $baddxfn 
+			%nodehops @baddx $baddxfn $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
 $me = undef;					# the channel id for this cluster
@@ -46,7 +46,7 @@ $last_hour = time;				# last time I did an hourly periodic update
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
 @baddx = ();                    # list of illegal spotted callsigns
-
+$censorpc = 0;					# Do a BadWords::check on text fields and reject things
 
 $baddxfn = "$main::data/baddx.pl";
 
@@ -297,10 +297,12 @@ sub normal
 		if ($pcno == 10) {		# incoming talk
 
 			# will we allow it at all?
-			my @bad;
-			if (@bad = BadWords::check($field[3])) {
-				dbg('chan', "Bad words: @bad, dropped" );
-				return;
+			if ($censorpc) {
+				my @bad;
+				if (@bad = BadWords::check($field[3])) {
+					dbg('chan', "Bad words: @bad, dropped" );
+					return;
+				}
 			}
 
 			# is it for me or one of mine?
@@ -357,10 +359,12 @@ sub normal
 				dbg('chan', "Duplicate Spot ignored\n");
 				return;
 			}
-			my @bad;
-			if (@bad = BadWords::check($field[5])) {
-				dbg('chan', "Bad words: @bad, dropped" );
-				return;
+			if ($censorpc) {
+				my @bad;
+				if (@bad = BadWords::check($field[5])) {
+					dbg('chan', "Bad words: @bad, dropped" );
+					return;
+				}
 			}
 			
 			my @spot = Spot::add($field[1], $field[2], $d, $field[5], $field[6], $field[7]);
@@ -439,11 +443,14 @@ sub normal
 				return;
 			}
 
-			my @bad;
-			if (@bad = BadWords::check($field[3])) {
-				dbg('chan', "Bad words: @bad, dropped" );
-				return;
+			if ($censorpc) {
+				my @bad;
+				if (@bad = BadWords::check($field[3])) {
+					dbg('chan', "Bad words: @bad, dropped" );
+					return;
+				}
 			}
+			
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
 				
 				# global ann filtering on INPUT

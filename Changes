@@ -1,3 +1,6 @@
+04Sep00=======================================================================
+1. made PC10,11,12 badword checking dependant on a flag variable ($censorpc)
+default = 0 (off).
 02Sep00=======================================================================
 1. fix a long standing talk bug to do with routing to specific nodes (t xxx >
 yyy .....)
