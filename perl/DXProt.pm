@@ -642,6 +642,8 @@ sub normal
 					$node->flags(Route::here($here)|Route::conf($conf));
 					push @rout, $node;
 				} elsif ($node->call ne $call) {
+					next if $call eq $main::mycall || $call eq $self->{call};
+
 					my $r = $node->add($call, $ver, Route::here($here)|Route::conf($conf));
 					push @rout, $r if $r;
 				}
@@ -1691,7 +1693,7 @@ sub send_route
 				$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
 				next unless $routeit;
 			}
-			$self->send($routeit) unless $self->{isolate} || $self->{isolate};
+			$self->send($routeit);
 		}
 	}
 }

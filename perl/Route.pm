@@ -232,18 +232,21 @@ sub get
 sub alldxchan
 {
 	my $self = shift;
-
+	my @dxchan;
 	my $dxchan = DXChannel->get($self->{call});
-	if ($dxchan) {
-		return (grep $dxchan == $_, @_) ? () : ($dxchan);
-	}
+	push @dxchan, $dxchan if $dxchan;
 	
 	# it isn't, build up a list of dxchannels and possible ping times 
 	# for all the candidates.
-	my @dxchan = @_;
 	foreach my $p (@{$self->{parent}}) {
-		my $ref = $self->get($p);
-		push @dxchan, $ref->alldxchan(@dxchan) if $ref;
+		my $dxchan = DXChannel->get($p);
+		if ($dxchan) {
+			push @dxchan, $dxchan if grep $dxchan ne $_, @dxchan;
+		} else {
+			next if $p eq $main::mycall; # the root
+			my $ref = $self->get($p);
+			push @dxchan, $ref->alldxchan if $ref;
+		}
 	}
 	return @dxchan;
 }
@@ -251,7 +254,9 @@ sub alldxchan
 sub dxchan
 {
 	my $self = shift;
-	my $dxchan;
+	my $dxchan = DXChannel->get($self->{call});
+	return $dxchan = $dxchan;
+	
 	my @dxchan = $self->alldxchan;
 	return undef unless @dxchan;
 	
