@@ -95,24 +95,15 @@ sub search
 	my @today = Julian::unixtoj(time);
 	my @fromdate;
 	my @todate;
-  
-	if ($dayfrom > 0) {
-		@fromdate = Julian::sub(@today, $dayfrom);
-	} else {
-		@fromdate = @today;
-		$dayfrom = 0;
-	}
-	if ($dayto > 0) {
-		@todate = Julian::sub(@fromdate, $dayto);
-	} else {
-		@todate = Julian::sub(@fromdate, $maxdays);
-	}
-	if ($from || $to) {
-		$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
-	} else {
-		$from = 0;
-		$to = $defaultspots;
-	}
+
+	$dayfrom = 0 if !$dayfrom;
+	$dayto = $maxdays if !$dayto;
+	@fromdate = Julian::sub(@today, $dayfrom);
+	@todate = Julian::sub(@fromdate, $dayto);
+	$from = 0 unless $from;
+	$to = $defaultspots unless $to;
+	
+	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
 
 	$expr =~ s/\$f(\d)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
@@ -123,13 +114,13 @@ sub search
 	$eval = qq(
 			   my \$c;
 			   my \$ref;
-			   for (\$c = \$	#spots; \$c >= 0; \$c--) {
+			   for (\$c = \$#spots; \$c >= 0; \$c--) {
 					\$ref = \$spots[\$c];
 					if ($expr) {
 						\$count++;
 						next if \$count < \$from; # wait until from 
 						push(\@out, \$ref);
-						last LOOP if \$count >= \$to; # stop after to
+						last if \$count >= \$to; # stop after to
 					}
 				}
 			  );
@@ -150,6 +141,7 @@ sub search
 				push @spots, [ split '\^' ];
 			}
 			eval $eval;			# do the search on this file
+			last if $count >= $to; # stop after to
 			return ("Spot search error", $@) if $@;
 		}
 	}

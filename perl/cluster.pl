@@ -91,7 +91,7 @@ sub rec
 		# is there one already connected elsewhere in the cluster (and not a cluster)
 		my $user = DXUser->get($call);
 		if ($user) {
-			if (($user->sort eq 'A' || $call == $myalias) && !DXCluster->get_exact($call)) {
+			if (($user->sort eq 'A' || $call eq $myalias) && !DXCluster->get_exact($call)) {
 				;
 			} else {
 				if (DXCluster->get($call) || DXChannel->get($call)) {

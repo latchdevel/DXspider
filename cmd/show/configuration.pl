@@ -15,7 +15,7 @@ my @l;
 my @val;
 
 push @out, "Node         Callsigns";
-if ($list[0] =~ /^NOD/) {
+if ($list[0] && $list[0] =~ /^NOD/) {
 	my @ch = DXProt::get_all_ak1a();
 	my $dxchan;
 	

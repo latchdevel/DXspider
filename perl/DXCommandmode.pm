@@ -488,11 +488,7 @@ sub find_cmd_name {
 		close $fh;
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq{ 
-			sub $package 
-			{ 
-			 $sub 
-			} };
+		my $eval = qq{ sub $package { $sub } };
 		
 		if (isdbg('eval')) {
 			my @list = split /\n/, $eval;
