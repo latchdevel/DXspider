@@ -180,26 +180,32 @@ sub extract
   
 		# which is the shortest part (first if equal)?
 		dbg("Parts: $call = " . join('|', @parts))	if isdbg('prefix');
-		$sp = $parts[0];
-		foreach $p (@parts) {
-			$sp = $p if length $p < length $sp;
-		}
-		$sp =~ s/-\d+$//;     # remove any SSID
 		
-#		# now start to resolve it from the left hand end
-#		for ($i = 1; $i <= length $sp; ++$i) {
-		# now start to resolve it from the right hand end
-		for ($i = length $sp; $i >= 1; --$i) {
-			my $ssp = substr($sp, 0, $i);
-			my @wout = get($ssp);
-			if (isdbg('prefix')) {
-				my $part = $wout[0] || "*";
-				dbg("Partial prefix: $sp $ssp $part" );
-			} 
-			next if @wout > 0 && $wout[0] gt $ssp;
-#			last if @wout == 0;
-			push @out, @wout;
-			last if @wout;
+		# try ALL the parts
+L1:		for (;@parts;) {
+			$sp = $parts[0];
+			foreach $p (@parts) {
+				$sp = $p if length $p < length $sp;
+			}
+			@parts = grep { $_ ne $sp } @parts;	# remove it from the list
+			$sp =~ s/-\d+$//;     # remove any SSID
+			
+			#		# now start to resolve it from the left hand end
+			#		for ($i = 1; $i <= length $sp; ++$i) {
+			# now start to resolve it from the right hand end
+			for ($i = length $sp; $i >= 1; --$i) {
+				my $ssp = substr($sp, 0, $i);
+				my @wout = get($ssp);
+				if (isdbg('prefix')) {
+					my $part = $wout[0] || "*";
+					$part .= '*' unless $part eq '*' || $part eq $ssp;
+					dbg("Partial prefix: $sp $ssp $part" );
+				} 
+				next if @wout > 0 && $wout[0] gt $ssp;
+				#			last if @wout == 0;
+				push @out, @wout;
+				last L1 if @wout;
+			}
 		}
 	}
 	if (isdbg('prefix')) {
