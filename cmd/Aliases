@@ -107,7 +107,6 @@ package CmdAlias;
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
 	'^set$', 'apropos set', 'apropos',
-	  '^sh$', 'show', 'show',
 	  '^sho?w?/u$', 'show/user', 'show/user',
 	  '^sho?w?/bu', 'show/files bulletins', 'show/files',
 	  '^sho?w?/c/n', 'show/configuration nodes', 'show/configuration',
