@@ -98,7 +98,8 @@ sub handle
 		} else {
 
 			# it's a reply, look in the ping list for this one
-			my $ref = $ping{$thing->{id}} || $thing->find;
+			my $ref = $ping{$thing->{id}} if $thing->{id}
+			$ref ||= $thing->find;
 			if ($ref) {
 				my $t = tv_interval($thing->{t}, [ gettimeofday ]);
 				if (my $dxc = DXChannel::get($thing->{user} || $thing->{origin})) {
