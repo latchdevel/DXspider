@@ -95,20 +95,20 @@ sub prefix
 	return $fp->{prefix};
 }
 
-# add a spot to the data file (call as Spot::add)
-sub add
+# fix up the full spot data from the basic spot data
+sub prepare
 {
-	my @spot = @_;				# $freq, $call, $t, $comment, $spotter = @_
-	my @out = @spot[0..4];      # just up to the spotter
+	# $freq, $call, $t, $comment, $spotter = @_
+	my @out = @_[0..4];      # just up to the spotter
 
 	# normalise frequency
-	$spot[0] = sprintf "%.f", $spot[0];
+	$_[0] = sprintf "%.f", $_[0];
   
 	# remove ssids if present on spotter
 	$out[4] =~ s/-\d+$//o;
 
 	# remove leading and trailing spaces
-	$spot[3] = unpad($spot[3]);
+	$_[3] = unpad($_[3]);
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @dxcc = Prefix::extract($out[1]);
@@ -121,15 +121,14 @@ sub add
 	my $spotter_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
 	my $spotter_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
 	push @out, $spotter_dxcc;
-	push @out, $spot[5];
-
-	my $buf = join("\^", @out);
-
-	# compare dates to see whether need to open another save file (remember, redefining $fp 
-	# automagically closes the output file (if any)). 
-	$fp->writeunix($out[2], $buf);
-  
+	push @out, $_[5];
 	return (@out, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
+}
+
+sub add
+{
+	my $buf = join("\^", @_[0..7]);
+	$fp->writeunix($_[2], $buf);
 }
 
 # search the spot database for records based on the field no and an expression

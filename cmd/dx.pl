@@ -104,8 +104,11 @@ if (grep $_ eq $spotted, @DXProt::baddx) {
 	push @out, $buf;
 } else {
 	return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, (int ($main::systime/60)) * 60, $line);
-	my @spot = Spot::add($freq, $spotted, $main::systime, $line, $spotter, $main::mycall);
+	my @spot = Spot::prepare($freq, $spotted, $main::systime, $line, $spotter, $main::mycall);
 	if (@spot) {
+		# store it 
+		Spot::add(@out);
+
 		# send orf to the users
 		DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
 	}

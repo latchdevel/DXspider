@@ -370,8 +370,19 @@ sub normal
 					return;
 				}
 			}
+
+			my @spot = Spot::prepare($field[1], $field[2], $d, $field[5], $field[6], $field[7]);
+			# global spot filtering on INPUT
+			if ($self->{inspotsfilter}) {
+				my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
+				unless ($filter) {
+					dbg('chan', "PCPROT: Rejected by filter");
+					return;
+				}
+			}
 			
-			my @spot = Spot::add($field[1], $field[2], $d, $field[5], $field[6], $field[7]);
+			# add it 
+			Spot::add(@spot);
 
             #
 			# @spot at this point contains:-

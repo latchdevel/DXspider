@@ -271,12 +271,11 @@ sub install
 	my $remove = shift;
 	my $name = uc $self->{name};
 	my $sort = $self->{sort};
-	my ($in) = $name =~ s/^IN_//;
+	my $in = "in" if $name =~ s/^IN_//;
 	$name =~ s/.PL$//;
 		
 	my $dxchan = DXChannel->get($name);
 	if ($dxchan) {
-		$in = lc $in if $in;
 		my $n = "$in$sort" . "filter";
 		$dxchan->$n($remove ? undef : $self);
 	}
