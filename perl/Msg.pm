@@ -53,13 +53,16 @@ BEGIN {
 		require Errno; Errno->import(qw(EAGAIN EINPROGRESS EWOULDBLOCK));
 	};
 
-	eval {
-		require Socket; Socket->import(qw(IPPROTO_TCP TCP_NODELAY));
-	};
-	unless (*IPPROTO_TCP  && !$^O =~ /^MS/) {
-		dbg("IPPROTO_TCP and TCP_NODELAY manually defined");
-		eval '*IPPROTO_TCP     = sub {     6 };';
-		eval '*TCP_NODELAY     = sub {     1 };';
+	unless ($^O eq 'MSWin32') {
+		if ($] >= 5.6) {
+			eval {
+				require Socket; Socket->import(qw(IPPROTO_TCP TCP_NODELAY));
+			};
+		} else {
+			dbg("IPPROTO_TCP and TCP_NODELAY manually defined");
+			eval 'sub IPPROTO_TCP {     6 };';
+			eval 'sub TCP_NODELAY {     1 };';
+		}
 	}
 	# http://support.microsoft.com/support/kb/articles/Q150/5/37.asp
 	# defines EINPROGRESS as 10035.  We provide it here because some
@@ -394,7 +397,7 @@ sub nolinger
 	if (isdbg('sock')) {
 		my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
 		my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
-		my $n = unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
+		my $n = $main::is_win ? 0 : unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
 		dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
 	}
 
@@ -408,7 +411,7 @@ sub nolinger
 	if (isdbg('sock')) {
 		my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
 		my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
-		my $n = unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
+		my $n = $main::is_win ? 0 : unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
 		dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
 	}
 }
