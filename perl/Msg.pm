@@ -119,14 +119,12 @@ sub blocking
 	return unless $blocking_supported;
 
 	# Make the handle stop blocking, the Windows way.
-	if ($^O eq 'MSWin32') { 
-        my $set_it = $_[1];
-		
+	if ($main::iswin) { 
         # 126 is FIONBIO (some docs say 0x7F << 16)
         ioctl( $_[0],
                0x80000000 | (4 << 16) | (ord('f') << 8) | 126,
-               $set_it
-             ) or confess "Can't set the handle non-blocking: $!";
+               "$_[1]"
+             );
 	}
 	
 	my $flags = fcntl ($_[0], F_GETFL, 0);
@@ -375,8 +373,11 @@ sub new_server {
 	return $self;
 }
 
+my $oldw = $^W;
+$^W = 0;
 eval "use Socket qw(IPPROTO_TCP TCP_NODELAY)";
-if ($@) {
+$^W = $oldw;
+if ($@ && !$main::inwin) {
 	sub IPPROTO_TCP {6;}
 	sub TCP_NODELAY {1;};
 }
