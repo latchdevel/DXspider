@@ -18,6 +18,7 @@ foreach $call (@args) {
   my $chan = DXChannel->get($call);
   if ($chan) {
     $chan->wx(1);
+    $chan->user->wantwx(1);
 	push @out, $self->msg('wxs', $call);
   } else {
     push @out, $self->msg('e3', "Set WX Spots", $call);

@@ -18,6 +18,7 @@ foreach $call (@args) {
   my $chan = DXChannel->get($call);
   if ($chan) {
     $chan->talk(1);
+    $chan->user->wanttalk(1);
 	push @out, $self->msg('talks', $call);
   } else {
     push @out, $self->msg('e3', "Set Talk", $call);

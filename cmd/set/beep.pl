@@ -7,4 +7,5 @@
 #
 my $self = shift;
 $self->beep(1);
+$self->user->wantbeep(1);
 return (1, $self->msg('beepon'));

@@ -18,6 +18,7 @@ foreach $call (@args) {
   my $chan = DXChannel->get($call);
   if ($chan) {
     $chan->dx(0);
+	$chan->user->wantdx(0);
 	push @out, $self->msg('dxu', $call);
   } else {
     push @out, $self->msg('e3', "Unset DX Spots", $call);

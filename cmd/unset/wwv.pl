@@ -18,6 +18,7 @@ foreach $call (@args) {
   my $chan = DXChannel->get($call);
   if ($chan) {
     $chan->wwv(0);
+    $chan->user->wantwwv(0);
 	push @out, $self->msg('wwvu', $call);
   } else {
     push @out, $self->msg('e3', "Unset WWV", $call);

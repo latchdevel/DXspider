@@ -9,7 +9,7 @@
 #
 
 my ($self, $line) = @_;
-my @f = split /\s+/, $line;
+my @f = split /\s+/, $line, 3;
 my $spotter = $self->call;
 my $spotted;
 my $freq;
@@ -26,8 +26,8 @@ return (1, $self->msg('dx2')) unless @f >= 2;
 if ($f[0] =~ /^by$/i) {
     $spotter = uc $f[1];
     $line =~ s/^\s*$f[0]\s+$f[1]\s+//;
-    shift @f;
-	shift @f;
+	$line = $f[2];
+	@f = split /\s+/, $line;
 	return (1, $self->msg('dx2')) unless @f >= 2;
 }
 
@@ -41,7 +41,10 @@ if ($f[0] =~ /[A-Za-z]/) {
 } else {
 	return (1, $self->msg('dx2'));
 }
-$line =~ s/^$f[0]\s+$f[1]\s*//;
+
+# make line the rest of the line
+$line = $f[2];
+@f = split /\s+/, $line;
 
 # bash down the list of bands until a valid one is reached
 my $bandref;

@@ -18,6 +18,7 @@ foreach $call (@args) {
   my $chan = DXChannel->get($call);
   if ($chan) {
     $chan->ann(0);
+	$chan->user->wantann(0);
 	push @out, $self->msg('annu', $call);
   } else {
     push @out, $self->msg('e3', "Unset Announce", $call);

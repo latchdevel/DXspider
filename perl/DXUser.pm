@@ -44,8 +44,8 @@ $filename = undef;
 		  node => '0,Last Node',
 		  homenode => '0,Home Node',
 		  lockout => '9,Locked out?,yesno',	# won't let them in at all
-		  dxok => '9,DX Spots?,yesno', # accept his dx spots?
-		  annok => '9,Announces?,yesno', # accept his announces?
+		  dxok => '9,Accept DX Spots?,yesno', # accept his dx spots?
+		  annok => '9,Accept Announces?,yesno', # accept his announces?
 		  reg => '0,Registered?,yesno',	# is this user registered?
 		  lang => '0,Language',
 		  hmsgno => '0,Highest Msgno',
@@ -123,8 +123,8 @@ sub new
 	my $self = bless {}, $pkg;
 	$self->{call} = $call;
 	$self->{'sort'} = 'U';
-	$self->{dxok} = 1;
-	$self->{annok} = 1;
+	$self->{dxok} = '1';
+	$self->{annok} = '1';
 	$self->{lang} = $main::lang;
 	$self->put;
 	return $self;
@@ -328,8 +328,8 @@ sub _want
 	my $self = shift;
 	my $val = shift;
 	my $s = "want$n";
-	$self->{$n} = $val if $val;
-	return exists $self->{$n} ? $self->{$n} : 1;
+	$self->{$s} = $val if defined $val;
+	return exists $self->{$s} ? $self->{$s} : 1;
 }
 
 sub wantbeep
