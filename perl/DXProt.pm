@@ -607,7 +607,9 @@ sub handle_12
 
 	my $dxchan;
 	
-	if ($_[2] eq '*' || $_[2] eq $main::mycall) {
+	if ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w]+$/){
+		$self->send_chat($line, @_[1..6]);
+	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
 
 		# here's a bit of fun, convert incoming ann with a callsign in the first word
@@ -626,8 +628,6 @@ sub handle_12
 	
 		# send it
 		$self->send_announce($line, @_[1..6]);
-	} elsif ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w]+$/){
-		$self->send_chat($line, @_[1..6]);
 	} else {
 		$self->route($_[2], $line);
 	}
