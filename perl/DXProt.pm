@@ -49,7 +49,8 @@ sub start
   # send initialisation string
   $self->send($self->pc38()) if DXNode->get_all();
   $self->send($self->pc18());
-  $self->{state} = 'incoming';
+  $self->state('normal');
+  $self->pc50_t(time);
 }
 
 #
@@ -92,7 +93,7 @@ sub normal
 		$self->send($out);
 	  }
 	  $self->send($self->pc22());
-	  last SWITCH;
+	  return;
 	}
     if ($pcno == 21) {last SWITCH;}
     if ($pcno == 22) {last SWITCH;}
@@ -123,8 +124,22 @@ sub normal
     if ($pcno == 47) {last SWITCH;}
     if ($pcno == 48) {last SWITCH;}
     if ($pcno == 49) {last SWITCH;}
-    if ($pcno == 50) {last SWITCH;}
-    if ($pcno == 51) {last SWITCH;}
+    if ($pcno == 50) {
+	  last SWITCH;
+	}
+    if ($pcno == 51) {              # incoming ping requests/answers
+	  
+	  # is it for us?
+	  if ($field[1] eq $main::mycall) {
+	    my $flag = $field[3];
+	    $flag ^= 1;
+	    $self->send($self->pc51($field[2], $field[1], $flag));
+	  } else {
+	    # route down an appropriate thingy
+		$self->route($field[1], $line);
+	  }
+	  return;
+	}
   }
   
   # if get here then rebroadcast the thing with its Hop count decremented (if
@@ -162,9 +177,9 @@ sub process
     next if !$chan->is_ak1a();
 
     # send a pc50 out on this channel
-    if ($t >= $chan->t + $DXProt::pc50_interval) {
+    if ($t >= $chan->pc50_t + $DXProt::pc50_interval) {
       $chan->send(pc50());
-	  $chan->t($t);
+	  $chan->pc50_t($t);
 	}
   }
 }
@@ -215,6 +230,16 @@ sub delnode
 #
 # some active measures
 #
+
+#
+# route a message down an appropriate interface for a callsign
+#
+# expects $self to indicate 'from' and is called $self->route(from, pcline);
+#
+sub route
+{
+
+}
 
 # broadcast a message to all clusters [except those mentioned after buffer]
 sub broadcast
@@ -351,11 +376,18 @@ sub pc38
   return "PC38^" . join(',', @nodes) . "^~";
 }
 
+# periodic update of users, plus keep link alive device (always H99)
 sub pc50
 {
   my $n = DXNodeuser->count;
   return "PC50^$main::mycall^$n^H99^";
 }
 
+# generate pings
+sub pc51
+{
+  my ($self, $to, $from, $val) = @_;
+  return "PC51^$to^$from^$val^";
+}
 1;
 __END__ 

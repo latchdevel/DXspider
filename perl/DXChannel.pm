@@ -40,6 +40,7 @@ my %valid = (
   user => '9,DXUser ref',
   startt => '0,Start Time,atime',
   t => '9,Time,atime',
+  pc50_t => '9,Last PC50 Time,atime',
   priv => '9,Privilege',
   state => '0,Current State',
   oldstate => '5,Last State',
