@@ -6,8 +6,8 @@ my @calls = split /\s+/, $line;
 my $call;
 my @out;
 
-if ($self->priv < 9) {
-  return (1, "not allowed");
+if ($self->priv < 8) {
+  return (1, $self->msg('e5'));
 }
 
 foreach $call (@calls) {
@@ -16,13 +16,14 @@ foreach $call (@calls) {
   my $dxchan = DXChannel->get($call);
   if ($dxchan) {
     if ($dxchan->is_ak1a) {
-      $dxchan->send_now("D", DXProt::pc39($main::mycall, 'Disconnected'));
+      $dxchan->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1')));
     } else {
-      $dxchan->disconnect;
+	  $dxchan->send_now('D', $self->msg('disc1', $self->call));
 	} 
-	push @out, "disconnected $call";
+    $dxchan->disconnect;
+	push @out, $self->msg('disc2', $call);
   } else {
-    push @out, "$call not connected locally";
+    push @out, $self->msg('e10', $call);
   }
 }
 

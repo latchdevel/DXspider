@@ -21,9 +21,44 @@ This will send your announcement cluster wide
 === 0^ANNOUNCE-
 <text> is the text of the announcement you wish to broadcast 
 
+=== 0^APROPOS <string>^Search help database for <string>
+Search the help database for <string> (it isn't case sensitive), and print
+the names of all the commands that may be relevant.
+
 === 0^BYE^Exit from the cluster
 This will disconnect you from the cluster
-   
+
+=== 5^CONNECT <callsign>^Start a connection to another DX Cluster
+Start a connection process that will culminate in a new connection to the
+DX cluster <callsign>. This process creates a new 'client' process which will
+use the script in /spider/connect/<callsign> to effect the 'chat' exchange
+necessary to traverse the network(s) to logon to the cluster <callsign>.
+
+=== 9^DEBUG^Set the cluster program into debug mode
+Executing this command will only have an effect if you are running the cluster
+in debug mode i.e.
+
+	perl -d cluster.pl
+
+It will interrupt the cluster just after the debug command has finished.
+=== 0^DIRECTORY^List messages 
+=== 0^DIRECTORY ALL^List all messages
+=== 0^DIRECTORY OWN^List your own messages
+=== 0^DIRECTORY NEW^List your own new messages
+List the messages in the messages directory. 
+
+If there is a 'p' one space after the message number then it is a 
+personal message.
+
+If there is a - after the message number then this indicates that the
+message has been read.
+
+=== 5^DIRECTORY-^
+Sysops can see all users' messages.
+
+=== 8^DISCONNECT <call> [<call> ...]^Disconnect a user or cluster
+Disconnect any <call> connected locally
+
 === 0^DX <freq> <callsign> <remarks>^Send a DX spot throughout the cluster
 <freq> is compared against the available bands set up in the cluster.
 see show/bands for more information.
@@ -36,8 +71,11 @@ HELP is available for a number of commands. The syntax is:-
 Where <cmd> is the name of the command you want help on.
 
 All commands can be abbreviated, so SHOW/DX can be abbreviated
-to SH/DX, ANNOUNCE can be shorted to AN and so on.
+to SH/DX, ANNOUNCE can be shortened to AN and so on.
 
+Look at the APROPOS <string> command which will search the help database
+for the <string> you specify and give you a list of likely commands
+to look at with HELP.
 === 0^SHOW/DX^Interrogate the spot database
 If you just type SHOW/DX you will get the last so many spots
 (sysop configurable, but usually 10).
@@ -68,6 +106,68 @@ e.g.
    SH/DX on 20m info iota
    SH/DX 9a on vhf day 30
 
+=== 0^KILL <msgno> [<msgno> ...]^Remove or erase a message from the system
+You can get rid of any message to or originating from your callsign using 
+this command. You can remove more than one message at a time.
+
+=== 5^KILL-^
+As a sysop you can kill any message on the system.
+
+=== 1^PING <node call>^Find out the delays an a circuit to another node
+This command will enable sysops to determine the speed of an inter-cluster
+node. 
+
+Any visible cluster node can be PINGed.
+
+=== 1^RCMD <node call> <cmd>^Send a command to another DX Cluster
+This command allows you to send nearly any command to another DX Cluster
+node that is connected to the system. 
+
+Whether you get any output is dependant on a) whether the other system knows
+that the node callsign of this cluster is in fact a node b) whether the
+other system is allowing RCMDs from this node and c) whether you have
+permission to send this command at all.
+
+=== 0^READ^Read the next unread personal message addressed to you
+=== 0^READ <msgno>^Read the specified message
+You can read any messages that are sent as 'non-personal' and also any
+message either sent by or sent to your callsign.
+
+=== 5^READ-^
+As a sysop you may read any message on the system
+
+=== 0^REPLY^Reply to the last message that you have read
+=== 0^REPLY <msgno>^Reply to the specified message
+=== 0^REPLY PRIVATE <msgno>^Reply privately to the specified message
+=== 0^REPLY RR <msgno>^Reply to the specified message with read receipt
+You can reply to a message and the subject will automatically have
+"Re:" inserted in front of it, if it isn't already present.
+
+You can also use all the extra qualifiers such as RR, PRIVATE, 
+NOPRIVATE that you can use with the SEND command (see SEND
+for further details)
+
+=== 0^SEND <call> [<call> ...]^Send a message to one or more callsigns
+=== 0^SEND RR <call>^Send a message and ask for a read receipt
+=== 0^SEND COPY <msgno> <call>^Send a copy of a  message to someone
+=== 0^SEND PRIVATE <call>^Send a personal message
+=== 0^SEND NOPRIVATE <call>^Send a message to all stations
+All the SEND commands will create a message which will be sent either to
+an individual callsign or to one of the 'bulletin' addresses. 
+
+SEND <call> on its own acts as though you had typed SEND PRIVATE, that is
+it will mark the message as personal and send it to the cluster node that
+that callsign is connected to.
+
+You can have more than one callsign in all of the SEND commands.
+
+You can have multiple qualifiers so that you can have for example:-
+
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+
+which should send a copy of message 123 to G1TLH and G0RDI and you will
+receive a read receipt when they have read the message.
+  
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 
 callsign if desired), looks up which internal country number it is
@@ -79,10 +179,33 @@ e.g.
    SH/DXCC G
    SH/DXCC W on 20m info iota
 
-=== 0^SHOW/PREFIX <callsign>^Interrogate the spot database by country
+=== 0^SHOW/PREFIX <callsign>^Interrogate the prefix database 
 This command takes the <callsign> (which can be a full or partial 
-callsign or a prefix if desired), looks up which internal country number 
+callsign or a prefix), looks up which internal country number 
 it is and then displays all the relevant prefixes for that country
 together with the internal country no, the CQ and ITU regions. 
 
 See also SHOW/DXCC
+
+=== 5^SHUTDOWN^Shutdown the cluster
+Shutdown the cluster and disconnect all the users 
+
+=== 0^TALK <call> <text>^Send a text message to another station
+=== 0^TALK <call> > <node> <text>^Send a text message to another station via a node
+Send a short message to any other station that is visible on the cluster
+system. You can send it to anyone you can see with a SHOW/CONFIGURATION 
+command, they don't have to be connected locally.
+
+The second form of TALK is used when other cluster nodes are connected
+with restricted information. This usually means that they don't send 
+the user information usually associated with loging on and off the cluster.
+
+If you know that G3JNB is likly to be present on GB7TLH, but you can only
+see GB7TLH in the SH/C list but with no users, then you would use the
+second form of the talk message.
+
+=== 0^WX <text>^Send a weather message to local users
+=== 0^WX FULL <text>^Send a weather message to all cluster users
+=== 5^WX SYSOP <text>^Send a weather message to other clusters only
+Weather messages can sometimes be useful if you are experiencing an extreme
+that may indicate enhanced conditions

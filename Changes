@@ -5,6 +5,7 @@
 4. Changed help system to use just one file per language
 5. Started adding more help
 6. Fixed 24Mhz band limits
+7. Added apropos command and lots of new help text
 05Dec98========================================================================
 1. Added sh/heading and QRA locator calculation stuff
 04Dec98========================================================================
