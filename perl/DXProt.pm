@@ -388,7 +388,7 @@ sub normal
 			if ($self->{inspotsfilter}) {
 				my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
 				unless ($filter) {
-					dbg("PCPROT: Rejected by filter") if isdbg('chanerr');
+					dbg("PCPROT: Rejected by input spot filter") if isdbg('chanerr');
 					return;
 				}
 			}
@@ -502,7 +502,7 @@ sub normal
 					my ($filter, $hops) = $self->{inannfilter}->it(@field[1..6], $self->{call}, 
 													$ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 					unless ($filter) {
-						dbg("PCPROT: Rejected by filter") if isdbg('chanerr');
+						dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
 						return;
 					}
 				}
@@ -1759,7 +1759,7 @@ sub send_route
 				if ($filter) {
 					push @rin, $r;
 				} else {
-					dbg('DXPROT: Rejected by filter') if isdbg('chanerr');
+					dbg("DXPROT: $self->{call}/" . $r->call . " rejected by output filter") if isdbg('chanerr');
 				}
 			} else {
 				dbg("was sent a null value") if isdbg('chanerr');
@@ -1851,7 +1851,7 @@ sub in_filter_route
 	
 	if ($self->{inroutefilter}) {
 		($filter, $hops) = $self->{inroutefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
-		dbg('PCPROT: rejected by filter') if !$filter && isdbg('chanerr');
+		dbg("PCPROT: $self->{call}/" . $r->call . ' rejected by in_filter_route') if !$filter && isdbg('chanerr');
 	}
 	return $filter;
 }
