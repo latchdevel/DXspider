@@ -16,8 +16,8 @@ my @out;
 use DB_File;
 
 my ($action, $count, $key, $data) = (0,0,0,0);
-for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
-	if ($data =~ m{isolate\s*=>}) {
+for ($action = DXUser::R_FIRST, $count=0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
+	if ($data =~ m{isolate}) {
 		my $u = DXUser->get_current($key);
 		if ($u && $u->isolate) {
 			push @out, $key;
