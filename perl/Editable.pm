@@ -62,7 +62,7 @@ sub modline
 	if (my @ans = BadWord::check($line)) {
 		return ($dxchan->msg('e17', @ans));
 	}
-    ${$self->{lines}}[$no], $line;
+    ${$self->{lines}}[$no] = $line;
 	return ();
 }
 

@@ -76,6 +76,10 @@ sub check
 		return "COCK";
 	} elsif ($s =~ /S[\s\W]*H[\s\W]*[I1][\s\W]*T/) {
 		return "SHIT";
+	} elsif ($s =~ /P[\s\W]*[I1][\s\W]*S[\s\W]*S/) {
+		return "PISS";
+	} elsif ($s =~ /B[\s\W]*[O0][\s\W]*L[\s\W]*L[\s\W]*[O0][\s\W]*[CK]/) {
+		return "BOLLOCKS";
 	}
 	
 	return ();
