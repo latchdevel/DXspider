@@ -369,6 +369,7 @@ sub genstats($)
 			my ($freq, $by, $dxcc) = (split /\^/)[0,4,6];
 			my $ref = $list{$by} || [0, $dxcc];
 			for (@freq) {
+				next unless defined $_;
 				if ($freq >= $_->[1] && $freq <= $_->[2]) {
 					$$ref[$_->[0]+2]++;
 					$tot[$_->[0]+2]++;

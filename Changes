@@ -1,3 +1,11 @@
+05Dec02=======================================================================
+1. Fix SSID issues with AGWMsg.
+2. updated show/hftable, vhftable, hfstats, vhfstats and dxstats after K1XX
+sent in some sample code indicated new functionality he requires. Translators
+please note that the stat* messages have been changed and e33 added. I have 
+also added quite a bit of extra examples and things to the relevant HELP
+texts. It is now possible to search from any date for up to 365 days of data.
+You can get the information by prefix or by callsign or for ALL spots. 
 04Dec02=======================================================================
 1. updated sh/log to allow searching for more arbitrary strings such as IP
 addresses

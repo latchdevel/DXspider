@@ -11,10 +11,33 @@ my @f = split /\s+/, $line;
 my @calls;
 my $days = 31;
 my @dxcc;
-
-my $now = Julian::Day->new(time())->sub(31);
 my $i;
 my @in;
+
+my $now;
+my $date = cldate($main::systime);
+my $utime = $main::systime;
+my @out;
+
+while (@f) {
+	my $f = shift @f;
+
+	if ($f =~ /^\d+$/ && $f < 366) {		# no of days
+		$days = $f;
+		next;
+	}
+	if (my $ut = Date::Parse::str2time($f)) {	# is it a parseable date?
+		$utime = $ut+3600;
+		next;
+	}
+	push @out, $self->msg('e33', $f);
+}
+
+return (1, @out) if @out;
+
+$now = Julian::Day->new($utime);
+$now = $now->sub($days);
+$date = cldate($utime);
 
 # generate the spot list
 for ($i = 0; $i < $days; $i++) {
@@ -35,10 +58,9 @@ for ($i = 0; $i < $days; $i++) {
 	$now = $now->add(1);
 }
 
-my @out;
 my $tot;
 
-push @out, $self->msg('statdx');
+push @out, $self->msg('statdx', $date, $days);
 foreach my $ref (@in) {
 	push @out, sprintf "%12s: %7d", $ref->[0]->as_string, $ref->[1];
 	$tot += $ref->[1];

@@ -327,15 +327,9 @@ sub _decode
 				$conn->{incoming} = 1;
 				$conn->{agwcall} = $call;
 				$circuit{$call} = $conn;
-				if ($call =~ /^(\w+)-(\d\d?)$/) {
-					my $c = $1;
-					my $s = $2;
-					$s = 15 - $s;
-					if ($s <= 8 && $s > 0) {
-						$call = "${c}-${s}";
-					} else {
-						$call = $c;
-					}
+				if (my ($c, $s) = $call =~ /^(\w+)-(\d\d?)$/) {
+					$s = 15 - $s if $s > 8;
+					$call = $s > 0 ? "${c}-${s}" : $c;
 				}
 				$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
 			}
