@@ -341,65 +341,6 @@ have no control over it.  The chances are that this link will create echo and
 there will be no way you can stop it.
 <P>
 <P>
-<H2><A NAME="ss3.7">3.7 Automating things</A>
-</H2>
-
-<P>Ok, you should now have DXSpider running nicely and allowing connects by cluster
-nodes or users.  However, it has to be shutdown and restarted manually and if
-connection scripts fail they have to be started again manually too, not much use 
-if you are not at the console!  So, in this section we will automate both.  
-Firstly starting the cluster.
-<P>
-<H3>Autostarting the cluster</H3>
-
-<P>This is not only a way to start the cluster automatically, it also works as a
-watchdog, checking the sanity of DXSpider and respawning it should it crash for 
-any reason.  Before doing the following, shutdown the cluster as you did earlier.
-<P>
-<P>Login as root and bring up the /etc/inittab file in your favourite editor.  Add 
-the following lines to the file near the end ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-##Start DXSpider on bootup and respawn it should it crash
-DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<P>This will automatically start DXSpider on tty7 (ALT-F7) on bootup and restart 
-it should it crash for any reason.
-<P>
-<P>As root type the command <EM>telinit q</EM>.  DXSpider should start up 
-immediately.  You will see the output on tty7 and if you login as <EM>sysop</EM> 
-you should find everything running nicely.
-<P>
-<P>So far so good, now to automate script connections...
-<P>
-<H3>The crontab file</H3>
-
-<P>Login as <EM>sysop</EM> and create a file in /spider/local_cmd called crontab.  
-Edit it with your favourite editor and add a line like this (I have included 
-a comment)
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# check every 10 minutes to see if gb7xxx is connected and if not
-# start a connect job going
-
-0,10,20,30,40,50 * * * * start_connect('gb7xxx') if !connected('gb7xxx')
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<P>The callsign involved will be the callsign of the cluster node you are 
-going to connect to.  This will now check every 10 minutes to see if 
-gb7xxx is connected, if it is then nothing will be done.  If it is not, 
-then a connect attempt will be started.
-<P>
-<P>There are probably lots of other things you could use this crontab file for.  
-If you want to know more about it, look at the
-<A HREF="http://www.dxcluster.org/cron.html">DXSpider</A> website 
-at the cron page where it is explained more fully.
-<P>
 <HR>
 <A HREF="adminmanual-4.html">Next</A>
 <A HREF="adminmanual-2.html">Previous</A>

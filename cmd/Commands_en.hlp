@@ -547,6 +547,14 @@ thru everything else on HF.
 
 The next filter line lets through just VHF/UHF spots from EU.
 
+=== 8^FORWARD/LATLONG <node_call>^Send latitude and longitude information to another cluster
+This command sends all the latitude and longitude information that your
+cluster is holding against callsigns.  One advantage of recieving this
+information is that more locator information is held by you.  This
+means that more locators are given on the DX line assuming you have
+SET/DXGRID enabled.  This could be a LOT of information though, so
+it is not recommended on slow links.
+
 === 1^FORWARD/OPERNAM <call>^Send out information on this <call> to all clusters
 This command sends out any information held in the user file which can 
 be broadcast in PC41 protocol packets. This information is Name, QTH, Location
@@ -735,10 +743,10 @@ message either sent by or sent to your callsign.
 === 5^READ-^
 As a sysop you may read any message on the system
 
-=== 0^REJECT/ANNOUNCE [0-9] <pattern>^Set an 'reject' filter line for announce
+=== 0^REJECT/ANNOUNCE [0-9] <pattern>^Set a 'reject' filter line for announce
 Create an 'reject this announce' line for a filter. 
 
-An reject filter line means that if the announce matches this filter it is
+A reject filter line means that if the announce matches this filter it is
 passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 
@@ -775,10 +783,10 @@ default for nodes and users eg:-
   reject/ann input node_default by G,M,2
   reject/ann user_default by G,M,2
 
-=== 0^REJECT/SPOTS [0-9] <pattern>^Set an 'reject' filter line for spots
-Create an 'reject this spot' line for a filter. 
+=== 0^REJECT/SPOTS [0-9] <pattern>^Set a 'reject' filter line for spots
+Create a 'reject this spot' line for a filter. 
 
-An reject filter line means that if the spot matches this filter it is
+A reject filter line means that if the spot matches this filter it is
 dumped (not passed on). See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 
@@ -825,7 +833,7 @@ default for nodes and users eg:-
 
   reject/spot user_default by G,M,2
 
-=== 0^REJECT/WCY [0-9] <pattern>^set an 'reject' WCY filter
+=== 0^REJECT/WCY [0-9] <pattern>^set a 'reject' WCY filter
 It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 
@@ -852,7 +860,7 @@ default for nodes and users eg:-
 
   reject/wcy gb7djk all
 
-=== 0^REJECT/WWV [0-9] <pattern>^set an 'reject' WWV filter
+=== 0^REJECT/WWV [0-9] <pattern>^set a 'reject' WWV filter
 It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 

@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.27 December 2000
+<date>Version 1.28 January 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -19,7 +19,7 @@ A reference for SysOps of the DXSpider DXCluster program.
 <sect>Installation (Original version by Iain Phillips, G0RDI)
 
 <P>
-Last modified: 28 December 2000 by Ian Maude, G0VGS
+Last modified: 02 January 2001 by Ian Maude, G0VGS
 
 <sect1>Introduction
 
@@ -579,7 +579,7 @@ have no control over it.  The chances are that this link will create echo and
 there will be no way you can stop it.
 
 
-<sect1>Automating things
+<sect>Automating things
 
 <P>
 Ok, you should now have DXSpider running nicely and allowing connects by cluster
@@ -588,7 +588,7 @@ connection scripts fail they have to be started again manually too, not much use
 if you are not at the console!  So, in this section we will automate both.  
 Firstly starting the cluster.
 
-<sect2>Autostarting the cluster
+<sect1>Autostarting the cluster
 
 <P>
 This is not only a way to start the cluster automatically, it also works as a
@@ -616,7 +616,7 @@ you should find everything running nicely.
 <P>
 So far so good, now to automate script connections...
 
-<sect2>The crontab file
+<sect1>The crontab file
 
 <P>
 Login as <em>sysop</em> and create a file in /spider/local_cmd called crontab.  
@@ -2469,6 +2469,22 @@ suffix.
 
 BE WARNED: this will write to any file you have write access to. No check is
 made on the filename (if any) that you specify.
+
+<sect1>forward/latlong (8)
+
+<P>
+<tt>
+<bf>forward/latlong &lt;node_call&gt;</bf> Send latitude and longitude 
+information to another cluster
+</tt>
+
+<P>
+This command sends all the latitude and longitude information that your
+cluster is holding against callsigns.  One advantage of recieving this
+information is that more locator information is held by you.  This
+means that more locators are given on the DX line assuming you have
+<em>set/dxgrid</em> enabled.  This could be a LOT of information though, so
+it is not recommended on slow links.
 
 <sect1>forward/opername (1)
 
