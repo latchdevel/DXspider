@@ -56,24 +56,14 @@ sub max
 sub add
 {
 	my $parent = shift;
-	my $call = shift;
-	my $self;
-	
-	if (ref $call) {
-		$self = $call;
-		$call = $self->{call};
-	} else {
-		$self = get($call);
-	}
-
-	confess "Trying to add NULL Node call to routing tables" unless $call;
-	
+	my $call = uc shift;
+	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
+	my $self = get($call);
 	if ($self) {
 		$self->_addparent($parent->{call});
 		$parent->_addnode($call);
 		return undef;
 	}
-	confess "Route::Node::add trying to add $call to myself" if $call eq $parent->{call};	
 	$parent->_addnode($call);
 	$self = $parent->new($call, @_);
 	return $self;

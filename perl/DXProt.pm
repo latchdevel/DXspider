@@ -651,8 +651,10 @@ sub normal
 				if ($r) {
 					my $ar;
 					if ($call ne $parent->call) {
-						$ar = $parent->add($r);
-						push @rout, $ar if $ar;
+						if ($self->in_filter_route($r)) {
+							$ar = $parent->add($r);
+							push @rout, $ar if $ar;
+						}
 					}
 					if ($r->version ne $ver || $r->flags != $flags) {
 						$r->version($ver);
@@ -662,12 +664,10 @@ sub normal
 				} else {
 					next if $call eq $main::mycall || $call eq $self->{call};
 					
-					my $new = $parent->new($call, $ver, Route::here($here)|Route::conf($conf));
+					my $new = Route->new($call);          # throw away
 				    if ($self->in_filter_route($new)) {
-						$parent->add($new);
-						push @rout, $new;
-					} else {
-						$new->del($parent);
+						my $r = $parent->add($call, $ver, $flags);
+						push @rout, $r;
 					}
 				}
 
@@ -1792,7 +1792,7 @@ sub broadcast_route
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan == $me;
-		if ($self->{routefilter} || !$self->{isolate}) {
+		if ($dxchan->{routefilter} || !$self->{isolate}) {
 			$dxchan->send_route($generate, @_) 
 		} else {
 			dbg('DXPROT: isolated') if isdbg('chanerr');
