@@ -209,9 +209,10 @@ sub put
 	confess "Trying to put nothing!" unless $self && ref $self;
 	my $call = $self->{call};
 	# delete all instances of this 
-	for ($dbm->get_dup($call)) {
-		$dbm->del_dup($call, $_);
-	}
+#	for ($dbm->get_dup($call)) {
+#		$dbm->del_dup($call, $_);
+#	}
+	$dbm->del($call);
 	delete $self->{annok} if $self->{annok};
 	delete $self->{dxok} if $self->{dxok};
 	$dbm->put($call, $self->encode);
@@ -255,9 +256,10 @@ sub del
 	my $self = shift;
 	my $call = $self->{call};
 	# delete all instances of this 
-	for ($dbm->get_dup($call)) {
-		$dbm->del_dup($call, $_);
-	}
+#	for ($dbm->get_dup($call)) {
+#		$dbm->del_dup($call, $_);
+#	}
+	$dbm->del($call);
 }
 
 #
