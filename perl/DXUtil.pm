@@ -67,6 +67,7 @@ sub cltounix
 	my ($thisyear) = (gmtime)[5] + 1900;
 
 	return 0 unless $date =~ /^\s*(\d+)-(\w\w\w)-([12][90]\d\d)$/;
+	return 0 if $3 > 2036;
 	return 0 unless abs($thisyear-$3) <= 1;
 	$date = "$1 $2 $3";
 	return 0 unless $time =~ /^([012]\d)([012345]\d)Z$/;

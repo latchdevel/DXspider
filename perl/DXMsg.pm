@@ -76,7 +76,7 @@ sub alloc
 	$self->{msgno} = shift;
 	my $to = shift;
 	#  $to =~ s/-\d+$//o;
-	$self->{to} = $to;
+	$self->{to} = ($to eq $main::mycall) ? $main::myalias : $to;
 	my $from = shift;
 	$from =~ s/-\d+$//o;
 	$self->{from} = uc $from;

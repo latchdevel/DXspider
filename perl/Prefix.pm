@@ -24,6 +24,7 @@ $db = undef;					# the DB_File handle
 sub load
 {
 	if ($db) {
+		undef $db;
 		untie %pre;
 		%pre = ();
 		%prefix_loc = ();
@@ -76,7 +77,8 @@ sub store
 		$fh->print("$str ],\n");
 	}
 	$fh->print(");\n");
-	$fh->close;
+	undef $fh;
+	untie %pre; 
 }
 
 # what you get is a list that looks like:-

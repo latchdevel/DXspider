@@ -67,7 +67,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.24";				# the version no of the software
+$version = "1.25";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
       
@@ -159,6 +159,9 @@ sub login
 sub cease
 {
 	my $dxchan;
+
+	$SIG{'TERM'} = 'IGNORE';
+	$SIG{'INT'} = 'IGNORE';
 	
 	eval {
 		Local::finish();   # end local processing
@@ -172,8 +175,8 @@ sub cease
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
-	Log('cluster', "DXSpider V$version stopped");
 	DXUser::finish();
+	Log('cluster', "DXSpider V$version stopped");
 	unlink $lockfn;
 	exit(0);
 }
@@ -335,5 +338,7 @@ for (;;) {
 		last if --$decease <= 0;
 	}
 }
+cease(0);
+exit(0);
 
 

@@ -80,6 +80,7 @@ package CmdAlias;
 	  '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
 	],
 	's' => [
+	  '^s/p$', 'send', 'send',
 	  '^set/nobe', 'unset/beep', 'unset/beep',
 	  '^set/nohe', 'unset/here', 'unset/here',
 	  '^set/noan', 'unset/announce', 'unset/announce',

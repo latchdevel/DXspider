@@ -94,6 +94,7 @@ use strict;
 
 sub finish
 {
+	undef $dbm;
 	untie %u;
 }
 
