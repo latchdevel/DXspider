@@ -695,11 +695,6 @@ etc). eg:-
 or 
    pc G1TLH Try doing that properly!!!
 
-=== 1^PING <node>^Send a ping command to another cluster
-This command is used to estimate the quality of the link to another cluster. 
-The time returned is the length of time taken for a PC51 to go to another 
-cluster and be returned.
-
 === 0^KILL <msgno> [<msgno> ...]^Remove or erase a message from the system
 You can get rid of any message to or originating from your callsign using 
 this command. You can remove more than one message at a time.
@@ -720,10 +715,11 @@ PC protocol to connected nodes either for testing or to unstick things.
 You can also use in the same way as a talk command to a connected user but
 without any processing, added of "from <blah> to <blah" or whatever.
  
-=== 1^PING <node call>^Find out the delays an a circuit to another node
-This command will enable sysops to determine the speed of an inter-cluster
-node. 
-
+=== 1^PING <node call>^Check the link quality between nodes
+This command allows you to send a frame to another cluster node on
+the network and get a return frame.  The time it takes to do this
+is a good indication of the quality of the link.  The actual time
+it takes is output to the console in seconds.
 Any visible cluster node can be PINGed.
 
 === 1^RCMD <node call> <cmd>^Send a command to another DX Cluster
@@ -1353,7 +1349,7 @@ is provided for users of this software by http://www.qrz.com
 
 === 0^SHOW/ROUTE <callsign> ...^Show the route to the callsign
 This command allows you to see which node the callsigns specified are
-connected via. It is a sort of inverse sh/config.
+connected. It is a sort of inverse sh/config.
 
 sh/route n2tly
 

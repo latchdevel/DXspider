@@ -19,7 +19,7 @@ A reference for SysOps of the DXSpider DXCluster program.
 <sect>Installation (Original version by Iain Phillips, G0RDI)
 
 <P>
-Last modified: 02 January 2001 by Ian Maude, G0VGS
+Last modified: 03 January 2001 by Ian Maude, G0VGS
 
 <sect1>Introduction
 
@@ -2771,15 +2771,16 @@ without any processing, added of "from &lt;blah&gt; to &lt;blah&gt;" or whatever
 
 <P>
 <tt>
-<bf>ping &lt;node&gt;</bf> Send a ping command to another cluster node
+<bf>ping &lt;node&gt;</bf> Check the link quality between nodes
 </tt>
 
 <P>
-This command is used to estimate the quality of the link to another cluster. 
-The time returned is the length of time taken for a PC51 to go to another 
-cluster and be returned.
-
+his command allows you to send a frame to another cluster node on
+the network and get a return frame.  The time it takes to do this
+is a good indication of the quality of the link.  The actual time
+it takes is output to the console in seconds.
 Any visible cluster node can be PINGed.
+
 
 <sect1>rcmd (1)
 
@@ -4006,6 +4007,21 @@ SH/QRA 52 41 N 0 58 E
 This command queries the QRZ callbook server on the internet
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
+
+<sect1>show/route (0)
+
+<P>
+<tt>
+<bf>show/route &lt;callsign&gt;</bf> Show the route to &lt;callsign&gt;
+</tt>
+
+<P>
+This command allows you to see which node the callsigns specified are
+connected. It is a sort of inverse sh/config.
+
+<verb>
+  sh/route n2tly
+</verb>
 
 <sect1>show/satellite (0)
 
