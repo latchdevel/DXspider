@@ -957,6 +957,7 @@ sub normal
 		}
 
 		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42 || $pcno == 49) { # mail/file handling
+			return if $pcno == 49 && eph_dup($line);
 			if ($pcno == 49 || $field[1] eq $main::mycall) {
 				DXMsg::process($self, $line);
 			} else {

@@ -5,6 +5,7 @@ last port of call).
 3. ignore deleted messages for queuing purposes
 4. store deleted status across restarts!
 5. make callsign checking more rigorous
+6. dup check PC49 (kill full)
 03Oct01=======================================================================
 1. don't allow @WWW to become a 'TO' field...
 2. handle @gb7tlh.#35.eu type addresses as well
