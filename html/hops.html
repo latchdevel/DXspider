@@ -42,11 +42,11 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 	values.
 
 	<p>From version 1.13 onwards a new mechanism has been introduced
-	which uses a file called <tt>/spider/data/hop_count.pl</tt>. The
+	which uses a file called <tt>/spider/data/hop_table.pl</tt>. The
 	prefered way of doing basic hop control is now to create this file
 	and modify it as you wish. Eventually this file will contain all
 	the hop control and related information. An example of the
-	<tt>hop_count.pl</tt> file can be found in the
+	<tt>hop_table.pl</tt> file can be found in the
 	<tt>/spider/examples</tt> directory.
 
 	<p>You can change this file at any time, including when the
@@ -58,7 +58,7 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 
 	From version 1.13 it is possible to control the number of hops to each
 	node. This is done by adding information to the <tt>%nodehops</tt> perl
-	variable in the <tt>hop_count.pl</tt> file (as described above). This
+	variable in the <tt>hop_table.pl</tt> file (as described above). This
 	variable is a perl "hash of hashes", which means that you create an 
 	entry for every callsign you wish to control and then one line for
 	every PC protocol message that you wish to alter. 
@@ -67,7 +67,7 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 	  so you can set the hops as a whole for all PC messages to just that
 	  callsign. This is overridden by any specific hop counts you may have.
 
-	<h4>Example <tt>hop_count.pl</tt> File</h4>
+	<h4>Example <tt>hop_table.pl</tt> File</h4>
 
 	An example for you:-
 
