@@ -102,7 +102,6 @@ sub check
 	my $s = uc shift;
 	my @out;
 
-	dbg($s) if isdbg('badword');
 	push @out, &$regexcode($s) if $regexcode;
 	
 	return @out if @out;
