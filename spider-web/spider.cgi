@@ -4,13 +4,13 @@
 # @author Ian Norton 
 # - Based on clx-web by DL6DBH (ftp://clx.muc.de/pub/clx/clx-java_10130001.tgz)
 # - Modified by PA4AB
-# @version 0.1 beta.  20010610.
+# @version 0.2 beta.  20020519.
 
 # Work out the hostname of this server.
 use Sys::Hostname;
 my $HOSTNAME = hostname();
 
-# Set the hostname manually here if the above fails.
+# Uncomment and set the hostname manually here if the above fails.
 # $HOSTNAME = "gb7mbc.spoo.org" ;
 $PORT = "8000" ;
 
@@ -86,6 +86,7 @@ else
         <INPUT name="password" size=10 TYPE=PASSWORD><BR>
         <INPUT type=submit value="Click here to Login">
     </FORM>
+    <BR>If you do not have a password set - don't enter one :)
     </CENTER>
 EOF
     }
