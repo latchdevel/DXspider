@@ -10,8 +10,6 @@ all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../t
 
 #	../html/adminmanual.html: adminmanual.sgml
 	sgml2html adminmanual.sgml
-	perl -p -e 's/<BODY>/<BODY BGCOLOR="#ffffff">/' *.html
-	mv admin*.html ../html/	
 
 #	../html/spiderFAQ.html: spiderFAQ.sgml 
 	sgml2txt spiderFAQ.sgml
@@ -20,5 +18,5 @@ all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../t
 #	../html/spiderFAQ.html: spiderFAQ.sgml
 	sgml2html spiderFAQ.sgml
 	perl -pi.bak -e 's|</HEAD>|<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">\n</HEAD>|' *.html
-	mv spid*.html ../html
+	mv *.html ../html
 	rm -f *.bak
