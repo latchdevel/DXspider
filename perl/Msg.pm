@@ -359,7 +359,16 @@ sub new_server {
 sub nolinger
 {
 	my $conn = shift;
+	my $buf;
+	if (isdbg('sock') && ($buf = getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER))) {
+		my ($l, $t) = unpack("ll", $buf);
+		dbg("Linger is: $buf = $l $t");
+	}
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt: $!";
+	if (isdbg('sock') && ($buf = getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER))) {
+		my ($l, $t) = unpack("ll", $buf);
+		dbg("Linger is: $buf = $l $t");
+	}
 }
 
 sub dequeue
