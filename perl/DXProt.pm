@@ -181,7 +181,7 @@ sub normal
 				my $ref = DXChannel->get($call);
 				$ref->send("$call de $field[1]: $text") if $ref && $ref->{talk};
 			} else {
-				route($field[2], $line); # relay it on its way
+				$self->route($field[2], $line); # relay it on its way
 			}
 			return;
 		}
@@ -191,7 +191,7 @@ sub normal
 			# route 'foreign' pc26s 
 			if ($pcno == 26) {
 				if ($field[7] ne $main::mycall) {
-					route($field[7], $line);
+					$self->route($field[7], $line);
 					return;
 				}
 			}
@@ -295,7 +295,7 @@ sub normal
 				}
 				
 			} else {
-				route($field[2], $line);
+				$self->route($field[2], $line);
 			}
 			
 			return;
@@ -498,7 +498,7 @@ sub normal
 			# route 'foreign' pc27s 
 			if ($pcno == 27) {
 				if ($field[8] ne $main::mycall) {
-					route($field[8], $line);
+					$self->route($field[8], $line);
 					return;
 				}
 			}
@@ -548,7 +548,7 @@ sub normal
 		
 		if ($pcno == 25) {      # merge request
 			if ($field[1] ne $main::mycall) {
-				route($field[1], $line);
+				$self->route($field[1], $line);
 				return;
 			}
 			if ($field[2] eq $main::mycall) {
@@ -582,7 +582,7 @@ sub normal
 			if ($pcno == 49 || $field[1] eq $main::mycall) {
 				DXMsg::process($self, $line);
 			} else {
-				route($field[1], $line);
+				$self->route($field[1], $line);
 			}
 			return;
 		}
@@ -612,7 +612,7 @@ sub normal
 					$self->send(pc35($main::mycall, $field[2], "$main::mycall:your attempt is logged, Tut tut tut...!"));
 				}
 			} else {
-				route($field[1], $line);
+				$self->route($field[1], $line);
 			}
 			return;
 		}
@@ -626,7 +626,7 @@ sub normal
 					delete $rcmds{$field[2]} if !$dxchan;
 				}
 			} else {
-				route($field[1], $line);
+				$self->route($field[1], $line);
 			}
 			return;
 		}
@@ -673,7 +673,7 @@ sub normal
 			if ($field[1] eq $main::mycall) {
 				;
 			} else {
-				route($field[1], $line);
+				$self->route($field[1], $line);
 			}
 			return;
 		}
@@ -707,7 +707,7 @@ sub normal
 				
 			} else {
 				# route down an appropriate thingy
-				route($field[1], $line);
+				$self->route($field[1], $line);
 			}
 			return;
 		}
@@ -1003,9 +1003,10 @@ sub send_local_config
 #
 sub route
 {
-	my ($call, $line) = @_;
+	my ($self, $call, $line) = @_;
 	my $cl = DXCluster->get_exact($call);
-	if ($cl) {
+	if ($cl) {       # don't route it back down itself
+		return if ref $self && $call eq $self->{call};
 		my $hops;
 		my $dxchan = $cl->{dxchan};
 		if ($dxchan) {
@@ -1212,7 +1213,7 @@ sub addping
 	my $r = {};
 	$r->{call} = $from;
 	$r->{t} = $main::systime;
-	route($to, pc51($to, $main::mycall, 1));
+	route(undef, $to, pc51($to, $main::mycall, 1));
 	push @$ref, $r;
 }
 
@@ -1224,7 +1225,7 @@ sub addrcmd
 	$r->{call} = $from;
 	$r->{t} = $main::systime;
 	$r->{cmd} = $cmd;
-	route($to, pc34($main::mycall, $to, $cmd));
+	route(undef, $to, pc34($main::mycall, $to, $cmd));
 	$rcmds{$to} = $r;
 }
 1;
