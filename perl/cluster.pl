@@ -266,35 +266,37 @@ sub reap
 # the cluster
 sub process_inqueue
 {
-	my $self = shift @inqueue;
-	return if !$self;
+	while (@inqueue) {
+		my $self = shift @inqueue;
+		return if !$self;
 	
-	my $data = $self->{data};
-	my $dxchan = $self->{dxchan};
-	my $error;
-	my ($sort, $call, $line) = DXChannel::decode_input($dxchan, $data);
-	return unless defined $sort;
+		my $data = $self->{data};
+		my $dxchan = $self->{dxchan};
+		my $error;
+		my ($sort, $call, $line) = DXChannel::decode_input($dxchan, $data);
+		return unless defined $sort;
 	
-	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-	dbg("<- $sort $call $line\n") if $sort ne 'D' && isdbg('chan');
+		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
+		dbg("<- $sort $call $line\n") if $sort ne 'D' && isdbg('chan');
 
-	# handle A records
-	my $user = $dxchan->user;
-	if ($sort eq 'A' || $sort eq 'O') {
-		$dxchan->start($line, $sort);  
-	} elsif ($sort eq 'I') {
-		die "\$user not defined for $call" if !defined $user;
-		# normal input
-		$dxchan->normal($line);
-		$dxchan->disconnect if ($dxchan->{state} eq 'bye');
-	} elsif ($sort eq 'Z') {
-		$dxchan->disconnect;
-	} elsif ($sort eq 'D') {
-		;                       # ignored (an echo)
-	} elsif ($sort eq 'G') {
-		$dxchan->enhanced($line);
-	} else {
-		print STDERR atime, " Unknown command letter ($sort) received from $call\n";
+		# handle A records
+		my $user = $dxchan->user;
+		if ($sort eq 'A' || $sort eq 'O') {
+			$dxchan->start($line, $sort);  
+		} elsif ($sort eq 'I') {
+			die "\$user not defined for $call" if !defined $user;
+			# normal input
+			$dxchan->normal($line);
+			$dxchan->disconnect if ($dxchan->{state} eq 'bye');
+		} elsif ($sort eq 'Z') {
+			$dxchan->disconnect;
+		} elsif ($sort eq 'D') {
+			;					# ignored (an echo)
+		} elsif ($sort eq 'G') {
+			$dxchan->enhanced($line);
+		} else {
+			print STDERR atime, " Unknown command letter ($sort) received from $call\n";
+		}
 	}
 }
 
