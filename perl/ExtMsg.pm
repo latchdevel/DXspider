@@ -122,29 +122,34 @@ sub to_connected
 sub new_client {
 	my $server_conn = shift;
     my $sock = $server_conn->{sock}->accept();
-    my $conn = $server_conn->new($server_conn->{rproc});
-	$conn->{sock} = $sock;
-
-    my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
-	if ($eproc) {
-		$conn->{eproc} = $eproc;
-        Msg::set_event_handler ($sock, "error" => $eproc);
+	if ($sock) {
+		my $conn = $server_conn->new($server_conn->{rproc});
+		$conn->{sock} = $sock;
+		
+		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
+		if ($eproc) {
+			$conn->{eproc} = $eproc;
+			Msg::set_event_handler ($sock, "error" => $eproc);
+		}
+		if ($rproc) {
+			$conn->{rproc} = $rproc;
+			my $callback = sub {$conn->_rcv};
+			Msg::set_event_handler ($sock, "read" => $callback);
+			# send login prompt
+			$conn->{state} = 'WL';
+			#		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
+			#		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
+			#		$conn->send_raw("\xFF\xFC\x01");
+			$conn->_send_file("$main::data/issue");
+			$conn->send_raw("login: ");
+			$conn->_dotimeout(60);
+		} else { 
+			&{$conn->{eproc}}() if $conn->{eproc};
+			$conn->disconnect();
+		}
+	} else {
+		dbg('err', "ExtMsg: error on accept ($!)");
 	}
-    if ($rproc) {
-        $conn->{rproc} = $rproc;
-        my $callback = sub {$conn->_rcv};
-		Msg::set_event_handler ($sock, "read" => $callback);
-		# send login prompt
-		$conn->{state} = 'WL';
-#		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
-#		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
-#		$conn->send_raw("\xFF\xFC\x01");
-		$conn->_send_file("$main::data/issue");
-		$conn->send_raw("login: ");
-		$conn->_dotimeout(60);
-    } else { 
-        $conn->disconnect();
-    }
 }
 
 sub start_connect
