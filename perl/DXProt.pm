@@ -126,19 +126,23 @@ sub start
 	$self->send_now('B',"0");
 	$self->send_now('E',"0");
 	
+	# ping neighbour node stuff
+	$self->pingint($user->pingint || 3*60);
+	$self->nopings(3);
+	$self->pingtime([ ]);
+
 	# send initialisation string
-	if (!$self->{outbound}) {
+	unless ($self->{outbound}) {
 		$self->send(pc38()) if DXNode->get_all();
 		$self->send(pc18());
+		$self->lastping($main::systime);
+	} else {
 		# remove from outstanding connects queue
 		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
+		$self->lastping($main::systime + $self->pingint / 2);
 	}
 	$self->state('init');
 	$self->pc50_t(time);
-	$self->pingint($user->pingint || 3*60);
-	$self->nopings(3);
-	$self->lastping($main::systime);
-	$self->pingtime([ ]);
 
 	Log('DXProt', "$call connected");
 }
