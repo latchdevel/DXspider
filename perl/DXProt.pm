@@ -534,7 +534,7 @@ sub normal
 				return;
 			}
 			$dxchan = DXChannel->get($ncall);
-			if ($dxchan ne $self) {
+			if ($dxchan && $dxchan ne $self) {
 				dbg('chan', "PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!");
 				return;
 			}
@@ -579,7 +579,7 @@ sub normal
 				return;
 			}
 			$dxchan = DXChannel->get($ncall);
-			if ($dxchan ne $self) {
+			if ($dxchan && $dxchan ne $self) {
 				dbg('chan', "PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!");
 				return;
 			}
