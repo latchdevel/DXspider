@@ -43,7 +43,10 @@ for (;;) {
 		if ($exp) {
 			push @prev, $line;
 			shift @prev while @prev > $nolines; 
-			printit(@prev) if $line =~ m{(?:$exp)}oi;
+			if ($line =~ m{(?:$exp)}oi) {
+				printit(@prev);	
+				@prev = ();
+			}
 		} else {
 			printit($line);
 		}

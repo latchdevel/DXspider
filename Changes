@@ -4,6 +4,8 @@ the condx that you are looking for so:-
   grepdbg 3 LOOP
   watchdbg 3 LOOP 
 will show both the LOOP line and the preceeding 2 lines.
+2. add PCPROT to all error condx lines in DXProt.pm so that you can watch
+for them more easily.
 30Nov00=======================================================================
 1. remove %nn strings from dups of announces and spots
 2. remove check for ssids on PC41s 

@@ -66,6 +66,7 @@ for my $entry (@list) {
 					my $t = shift @line;
 					print atime($t), ' ', join('^', @line), "\n"; 
 				}
+				@prev = ();
 			}
 		}
 		$fp->close();

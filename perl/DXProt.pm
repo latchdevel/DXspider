@@ -279,7 +279,7 @@ sub normal
 	# check for and dump bad protocol messages
 	my $n = check($pcno, @field);
 	if ($n) {
-		dbg('chan', "bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")");
+		dbg('chan', "PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")");
 		return;
 	}
 
@@ -298,7 +298,7 @@ sub normal
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[3])) {
-					dbg('chan', "Bad words: @bad, dropped" );
+					dbg('chan', "PCPROT: Bad words: @bad, dropped" );
 					return;
 				}
 			}
@@ -333,7 +333,7 @@ sub normal
 			
 			# if this is a 'nodx' node then ignore it
 			if (grep $field[7] =~ /^$_/,  @DXProt::nodx_node) {
-				dbg('chan', "Bad DXNode, dropped");
+				dbg('chan', "PCPROT: Bad DXNode, dropped");
 				return;
 			}
 			
@@ -341,26 +341,26 @@ sub normal
 			my $d = cltounix($field[3], $field[4]);
 			# bang out (and don't pass on) if date is invalid or the spot is too old (or too young)
 			if (!$d || ($pcno == 11 && ($d < $main::systime - $pc11_max_age || $d > $main::systime + 900))) {
-				dbg('chan', "Spot ignored, invalid date or out of range ($field[3] $field[4])\n");
+				dbg('chan', "PCPROT: Spot ignored, invalid date or out of range ($field[3] $field[4])\n");
 				return;
 			}
 
 			# is it 'baddx'
 			if (grep $field[2] eq $_, @baddx) {
-				dbg('chan', "Bad DX spot, ignored");
+				dbg('chan', "PCPROT: Bad DX spot, ignored");
 				return;
 			}
 			
 			# do some de-duping
 			$field[5] =~ s/^\s+//;      # take any leading blanks off
 			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
-				dbg('chan', "Duplicate Spot ignored\n");
+				dbg('chan', "PCPROT: Duplicate Spot ignored\n");
 				return;
 			}
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[5])) {
-					dbg('chan', "Bad words: @bad, dropped" );
+					dbg('chan', "PCPROT: Bad words: @bad, dropped" );
 					return;
 				}
 			}
@@ -437,14 +437,14 @@ sub normal
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
-				dbg('chan', "Duplicate Announce ignored");
+				dbg('chan', "PCPROT: Duplicate Announce ignored");
 				return;
 			}
 
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[3])) {
-					dbg('chan', "Bad words: @bad, dropped" );
+					dbg('chan', "PCPROT: Bad words: @bad, dropped" );
 					return;
 				}
 			}
@@ -469,7 +469,7 @@ sub normal
 					my ($filter, $hops) = $self->{inannfilter}->it(@field[1..6], $self->{call}, 
 													$ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 					unless ($filter) {
-						dbg('chan', "Rejected by filter");
+						dbg('chan', "PCPROT: Rejected by filter");
 						return;
 					}
 				}
@@ -500,32 +500,32 @@ sub normal
 				# add it to the node table if it isn't present and it's
 				# connected locally
 				$node = DXNode->new($dxchan, $field[1], 0, 1, 5400);
-				dbg('chan', "$field[1] no PC19 yet, autovivified as node");
+				dbg('chan', "PCPROT: $field[1] no PC19 yet, autovivified as node");
 #				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 				
 			}
 			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
-				dbg('chan', "LOOP: trying to alter config on this node from outside!");
+				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
 			}
 			if ($field[2] eq $main::myalias && DXChannel->get($field[1])) {
-				dbg('chan', "LOOP: trying to connect sysop from outside!");
+				dbg('chan', "PCPROT: trying to connect sysop from outside!");
 				return;
 			}
 			unless ($node) {
-				dbg('chan', "Node $field[1] not in config");
+				dbg('chan', "PCPROT: Node $field[1] not in config");
 				return;
 			}
 			unless ($node->isa('DXNode')) {
-				dbg('chan', "$field[1] is not a node");
+				dbg('chan', "PCPROT: $field[1] is not a node");
 				return;
 			}
 			if ($node->dxchan != $self) {
-				dbg('chan', "LOOP: $field[1] came in on wrong channel");
+				dbg('chan', "PCPROT: $field[1] came in on wrong channel");
 				return;
 			}
 			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
-				dbg('chan', "LOOP: $field[1] connected locally");
+				dbg('chan', "PCPROT: $field[1] connected locally");
 				return;
 			}
 			my $i;
@@ -536,11 +536,11 @@ sub normal
 				my $ref = DXCluster->get_exact($call); 
 				if ($ref) {
 					if ($ref->isa('DXNode')) {
-						dbg('chan', "LOOP: $call is a node");
+						dbg('chan', "PCPROT: $call is a node");
 						next;
 					}
 					my $rcall = $ref->mynode->call;
-					dbg('chan', "LOOP: already have $call on $rcall");
+					dbg('chan', "PCPROT: already have $call on $rcall");
 					next;
 				}
 				
@@ -569,38 +569,38 @@ sub normal
 				# add it to the node table if it isn't present and it's
 				# connected locally
 				$node = DXNode->new($dxchan, $field[2], 0, 1, 5400);
-				dbg('chan', "$field[2] no PC19 yet, autovivified as node");
+				dbg('chan', "PCPROT: $field[2] no PC19 yet, autovivified as node");
 #				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 			}
 			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
-				dbg('chan', "LOOP: trying to alter config on this node from outside!");
+				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
 			}
 			if ($field[1] eq $main::myalias && DXChannel->get($field[1])) {
-				dbg('chan', "LOOP: trying to disconnect sysop from outside!");
+				dbg('chan', "PCPROT: trying to disconnect sysop from outside!");
 				return;
 			}
 			unless ($node) {
-				dbg('chan', "Node $field[2] not in config");
+				dbg('chan', "PCPROT: Node $field[2] not in config");
 				return;
 			}
 			unless ($node->isa('DXNode')) {
-				dbg('chan', "LOOP: $field[2] is not a node");
+				dbg('chan', "PCPROT: $field[2] is not a node");
 				return;
 			}
 			if ($node->dxchan != $self) {
-				dbg('chan', "LOOP: $field[2] came in on wrong channel");
+				dbg('chan', "PCPROT: $field[2] came in on wrong channel");
 				return;
 			}
 			if (($dxchan = DXChannel->get($field[2])) && $dxchan != $self) {
-				dbg('chan', "LOOP: $field[2] connected locally");
+				dbg('chan', "PCPROT: $field[2] connected locally");
 				return;
 			}
 			my $ref = DXCluster->get_exact($field[1]);
 			if ($ref) {
 				$ref->del;
 			} else {
-				dbg('chan', "$field[1] not known" );
+				dbg('chan', "PCPROT: $field[1] not known" );
 				return;
 			}
 			last SWITCH;
@@ -638,14 +638,14 @@ sub normal
 				if ($node) {
 					my $dxchan;
 					if (($dxchan = DXChannel->get($call)) && $dxchan != $self) {
-						dbg('chan', "LOOP: $call connected locally");
+						dbg('chan', "PCPROT: $call connected locally");
 					}
 				    if ($node->dxchan != $self) {
-						dbg('chan', "LOOP: $call come in on wrong channel");
+						dbg('chan', "PCPROT: $call come in on wrong channel");
 						next;
 					}
 					my $rcall = $node->mynode->call;
-					dbg('chan', "already have $call on $rcall");
+					dbg('chan', "PCPROT: already have $call on $rcall");
 					next;
 				}
 				
@@ -696,29 +696,29 @@ sub normal
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
 					unless ($node->isa('DXNode')) {
-						dbg('chan', "$call is not a node");
+						dbg('chan', "PCPROT: $call is not a node");
 						return;
 					}
 					if ($call eq $self->{call}) {
-						dbg('chan', "LOOP: Trying to disconnect myself with PC21");
+						dbg('chan', "PCPROT: Trying to disconnect myself with PC21");
 						return;
 					} 
 					if ($node->dxchan != $self) {
-						dbg('chan', "LOOP: $call come in on wrong channel");
+						dbg('chan', "PCPROT: $call come in on wrong channel");
 						return;
 					}
 					my $dxchan;
 					if ($dxchan = DXChannel->get($call)) {
-						dbg('chan', "LOOP: $call connected locally");
+						dbg('chan', "PCPROT: $call connected locally");
 						return;
 					}
 					$node->del();
 				} else {
-					dbg('chan', "$call not in table, dropped");
+					dbg('chan', "PCPROT: $call not in table, dropped");
 					return;
 				}
 			} else {
-				dbg('chan', "I WILL NOT be disconnected!");
+				dbg('chan', "PCPROT: I WILL _NOT_ be disconnected!");
 				return;
 			}
 			last SWITCH;
@@ -747,11 +747,11 @@ sub normal
 			my ($r) = $field[6] =~ /R=(\d+)/;
 			$r = 0 unless $r;
 			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
-				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
+				dbg('chan', "PCPROT: WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}
 			if (Geomag::dup($d,$sfi,$k,$i,$field[6])) {
-				dbg('chan', "Dup WWV Spot ignored\n");
+				dbg('chan', "PCPROT: Dup WWV Spot ignored\n");
 				return;
 			}
 			$field[7] =~ s/-\d+$//o;            # remove spotter's ssid
@@ -786,7 +786,7 @@ sub normal
 				return;
 			}
 			if ($field[2] eq $main::mycall) {
-				dbg('chan', "Trying to merge to myself, ignored");
+				dbg('chan', "PCPROT: Trying to merge to myself, ignored");
 				return;
 			}
 
@@ -889,7 +889,7 @@ sub normal
 			if ($field[1] eq $self->{call}) {
 				$self->disconnect(1);
 			} else {
-				dbg('chan', "LOOP: came in on wrong channel");
+				dbg('chan', "PCPROT: came in on wrong channel");
 			}
 			return;
 		}
@@ -988,12 +988,12 @@ sub normal
 			# do some de-duping
 			my $d = cltounix($field[1], sprintf("%02d18Z", $field[2]));
 			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
-				dbg('chan', "WCY Date ($field[1] $field[2]) out of range");
+				dbg('chan', "PCPROT: WCY Date ($field[1] $field[2]) out of range");
 				return;
 			}
 			@field = map { unpad($_) } @field;
 			if (WCY::dup($d,@field[3..7])) {
-				dbg('chan', "Dup WCY Spot ignored\n");
+				dbg('chan', "PCPROT: Dup WCY Spot ignored\n");
 				return;
 			}
 		
@@ -1438,7 +1438,7 @@ sub route
 	my ($self, $call, $line) = @_;
 
 	if (ref $self && $call eq $self->{call}) {
-		dbg('chan', "Trying to route back to source, dropped");
+		dbg('chan', "PCPROT: Trying to route back to source, dropped");
 		return;
 	}
 
