@@ -522,7 +522,9 @@ sub normal
 				if ($ann_to_talk) {
 					my ($to, $call) = $field[3] =~ /^\s*([\w-]+)[\s:]+([\w-]+)/;
 					if ($to && $call) {
-						if ((uc $to eq 'TO' && is_callsign(uc $call)) || is_callsign($call = uc $to)) {
+						$to = uc $to;
+						$call = uc $call;
+						if (($to =~ /^TO?$/ && is_callsign($call)) || is_callsign($call = $to)) {
 							my $ref = Route::get($call);
 							if ($ref) {
 								my $dxchan = $ref->dxchan;

@@ -707,7 +707,7 @@ sub announce
 
 	if ($suppress_ann_to_talk) {
 		my ($to, $call) = $text =~ /^\s*([\w-]+)[\s:]+([\w-]+)/;
-		return if ($to && $call && ((uc $to eq 'TO' && is_callsign(uc $call)) || is_callsign($call = uc $to)));
+		return if ($to && $call && ((uc $to =~ /^TO?$/ && is_callsign(uc $call)) || is_callsign($call = uc $to)));
 	}	
 
 	if ($self->{annfilter}) {
