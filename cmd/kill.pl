@@ -68,7 +68,8 @@ foreach $ref ( @refs) {
 	}
 	my $tonode = $ref->tonode;
 	$ref->stop_msg($tonode) if $tonode;
-	$ref->del_msg($self);
+	$ref->delete(1);
+	$ref->deletetime($main::systime + $DXMsg::residencetime);
 	push @out, $self->msg('m12', $ref->msgno);
 }
 

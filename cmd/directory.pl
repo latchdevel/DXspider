@@ -13,7 +13,11 @@ my $ref;
 my @out;
 my $f;
 my $n = 0;
+
+# select candidates
 my @all = grep {!$_->private || !($self->priv < 5 && $_->to ne $self->call && $_->from ne $self->call)} (DXMsg::get_all());
+@all =  grep {!$_->delete  || ($self->priv >= 5 && $_->delete)} @all;
+
 return (1, $self->msg('e3', 'directory', $line)) unless @all;
 my $sel = 0;
 my $from = 0;

@@ -34,7 +34,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
+use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean $residencetime
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
 		    $queueinterval $lastq $importfn $minchunk $maxchunk $bulltopriv);
 
@@ -55,6 +55,7 @@ $lastq = 0;
 $minchunk = 4800;               # minimum chunk size for a split message
 $maxchunk = 6000;               # maximum chunk size
 $bulltopriv = 1;				# convert msgs with callsigns to private if they are bulls
+$residencetime = 2*86400;       # keep deleted messages for this amount of time
 
 
 $badmsgfn = "$msgdir/badmsg.pl";    # list of TO address we wont store
@@ -87,6 +88,7 @@ $importfn = "$msgdir/import";       # import directory
 		  lastt => '5,Last processed,cldatetime',
 		  waitt => '5,Wait until,cldatetime',
 		  delete => '5,Awaiting Delete,yesno',
+		  deletetime => '5,Deletion Time,cldatetime',
 		 );
 
 # allocate a new object
@@ -137,6 +139,7 @@ sub process
 
 		# clean the message queue
 		clean_old() if $main::systime - $last_clean > 3600 ;
+		$last_clean = $main::systime;
 		return;
 	}
 
@@ -195,7 +198,22 @@ sub process
 			my $ref = get_fwq($fromnode, $stream);
 			if ($ref) {
 				$f[4] =~ s/\%5E/^/g;
-				push @{$ref->{lines}}, $f[4];
+				if (@{$ref->{lines}}) {
+					push @{$ref->{lines}}, $f[4];
+				} else {
+					# temporarily store any R: lines so that we end up with 
+					# only the first and last ones stored.
+					if ($f[4] =~ m|^R:\d{6}/\d{4}|) {
+						push @{$ref->{tempr}}, $f[4];
+					} else {
+						if (exists $ref->{tempr}) {
+							push @{$ref->{lines}}, shift @{$ref->{tempr}};
+							push @{$ref->{lines}}, pop @{$ref->{tempr}} if @{$ref->{tempr}};
+							delete $ref->{tempr};
+						}
+						push @{$ref->{lines}}, $f[4];
+					} 
+				}
 				$ref->{count}++;
 				if ($ref->{count} >= $ref->{linesreq}) {
 					$self->send(DXProt::pc31($fromnode, $tonode, $stream));
@@ -323,6 +341,7 @@ sub process
 				if ($ref->{private}) { # remove it if it private and gone off site#
 					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $fromnode and deleted");
 					$ref->{delete}++;
+					$ref->{deletetime} = $main::systime + $residencetime;
 				} else {
 					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $fromnode");
 					push @{$ref->{gotit}}, $fromnode; # mark this up as being received
@@ -389,6 +408,7 @@ sub process
 			for (@msg) {
 				if ($_->{from} eq $f[1] && $_->{subject} eq $f[2]) {
 					$_->{delete}++;
+					$_->{deletetime} = $main::systime + $residencetime;
 					Log('msg', "Message $_->{msgno} from $_->{from} ($_->{subject}) fully deleted");
 					DXChannel::broadcast_nodes($line, $self);
 				}
@@ -458,6 +478,7 @@ sub del_msg
 	
 	if ($self->{tonode}) {
 		$self->{delete}++;
+		$self->{deletetime} = 0;
 	} else {
 		my $call;
 		if ($dxchan) {
@@ -480,19 +501,12 @@ sub clean_old
 	my $ref;
 	
 	# mark old messages for deletion
-	dbg("\@msg = " . scalar @msg . " before delete") if isdbg('msg');
 	foreach $ref (@msg) {
 		if (ref($ref) && !$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
-			$ref->{deleteme} = 1;
-			unlink filename($ref->{msgno});
-			dbg("deleting old $ref->{msgno}\n") if isdbg('msg');
+			$ref->{delete} = 1;
+			$ref->{deletetime} = 0;
 		}
 	}
-	
-	# remove them all from the active message list
-	@msg = grep { !$_->{deleteme} } @msg;
-	dbg("\@msg = " . scalar @msg . " after delete") if isdbg('msg');
-	$last_clean = $main::systime;
 }
 
 # read in a message header
@@ -630,7 +644,7 @@ sub queue_msg
 		next if $ref->{tonode};	          # ignore it if it already being processed
 		
 		# is it awaiting deletion?
-		if ($ref->{delete}) {
+		if ($ref->{delete} && $main::systime > $ref->{deletetime}) {
 			$ref->del_msg;
 			next;
 		}
@@ -796,8 +810,9 @@ sub workclean
 	delete $ref->{stream};
 	delete $ref->{file};
 	delete $ref->{count};
-	delete $ref->{lastt} if exists $ref->{lastt};
-	delete $ref->{waitt} if exists $ref->{waitt};
+	delete $ref->{tempr};
+	delete $ref->{lastt};
+	delete $ref->{waitt};
 }
 
 # get a new transaction number from the file specified
