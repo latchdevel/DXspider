@@ -34,8 +34,8 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 				push @l, "";
 				$i = 0;
 			}
-			my $s = $call->{call};
-			$s = sprintf "(%s)", $s if $call->{here} == 0;
+			my $s = $call->call;
+			$s = sprintf "(%s)", $s unless $call->here;
 			push @l, $s;
 			$i++;
 		}
