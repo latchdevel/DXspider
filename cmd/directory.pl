@@ -13,7 +13,7 @@ my $ref;
 my @out;
 my $f;
 my $n = 0;
-my @all = grep {!($self->priv < 5 && $_->private && $_->to ne $self->call && $_->from ne $self->call)} (DXMsg::get_all());
+my @all = grep {!($self->priv < 5 && $_->to ne $self->call && $_->from ne $self->call)} (DXMsg::get_all());
 my $sel = 0;
 my $from = 0;
 my $to = $all[@all-1]->msgno;

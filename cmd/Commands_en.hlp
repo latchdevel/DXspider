@@ -153,7 +153,13 @@ cluster and be returned.
 You can get rid of any message to or originating from your callsign using 
 this command. You can remove more than one message at a time.
 
-=== 5^KILL-^
+=== 5^KILL <from>-<to>^Remove a range of messages from the system
+=== 5^KILL FROM <call>^Remove all messages from a callsign
+=== 5^KILL TO <call>^Remove all messages to a callsign
+=== 5^KILL FULL <msgno> [<msgno]^Remove a message from the entire cluster
+Remove this message from the entire cluster system as well as your node.
+
+=== 5^KILL^
 As a sysop you can kill any message on the system.
 
 === 5^MERGE <node> [<no spots>/<no wwv>]^Ask for the latest spots and WWV 
