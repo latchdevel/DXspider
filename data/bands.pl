@@ -87,6 +87,9 @@
                     ssb => [144150, 144500]
                   }, 'Bands'),
 
+   '220' => bless( { band => [220000, 222000],
+                  }, 'Bands'),
+
    '70cm' => bless( { band => [430000, 450000],
                       cw => [432000, 432150],
                       ssb => [432150, 432500],
@@ -126,6 +129,39 @@
                      cw => [47087000, 47089000],
                      ssb => [47087000, 47089000],
                   }, 'Bands'),
+
+   'band1' => bless ( { band => [47000, 68000],
+                      }, 'Bands'),
+		      
+   'band2' => bless ( { band => [87500, 108000],
+                      }, 'Bands'),
+		      
+   'band3' => bless ( { band => [176000, 230000],
+                      }, 'Bands'),
+		      
+   'band4' => bless ( { band => [471000, 550000],
+                      }, 'Bands'),
+		      
+   'band5' => bless ( { band => [550000, 868000],
+                      }, 'Bands'),
+
+   'military' => bless ( { band => [29700, 50000, 230000, 420000],
+                    }, 'Bands'),
+		    
+   'aircraft' => bless ( { band => [108000, 137500],
+                      }, 'Bands'),
+   
+   'pmrlow' => bless ( { band => [68000, 87500],
+                      }, 'Bands'),
+		      
+   'pmrmid' => bless ( { band => [138000, 165000],
+                      }, 'Bands'),
+
+   'pmrhigh' => bless ( { band => [165000, 174000],
+                      }, 'Bands'),
+
+   'pmruhf' => bless ( { band => [425000, 430000, 440000, 471000],
+                      }, 'Bands'),
 );
 
 #
@@ -139,7 +175,11 @@
 
 %regions = (
   hf => [ '160m', '80m', '40m', '30m', '20m', '17m', '15m', '12m', '10m' ],
-  vhf => [ '6m', '4m', '2m', '70cm' ],
+  vhf => [ '6m', '4m', '2m', '220' ],
+  vhfradio => [ 'band1', 'band2' ],
+  vhftv => [ 'band1', 'band3' ],
   uhf => [ '70cm', '23cm' ],
+  uhftv => [ 'band4', 'band5' ],
   shf => [ '23cm', '13cm', '9cm', '6cm', '3cm' ],
+  pmr => [ 'pmrlow', 'pmrmid', 'pmrhigh', 'pmruhf' ],
 );  
