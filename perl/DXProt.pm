@@ -1768,7 +1768,7 @@ sub eph_dup
 	my $s = shift;
 
 	# chop the end off
-	$s =~ s/\^H\d\d?\^?~?@//;
+	$s =~ s/\^H\d\d?\^?~?$//;
 	return 1 if exists $eph{$s};
 	$eph{$s} = $main::systime;
 	return undef;
