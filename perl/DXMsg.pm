@@ -528,9 +528,10 @@ sub queue_msg
 			my $noderef;
 			foreach $noderef (@nodelist) {
 				next if $noderef->call eq $main::mycall;
-				next if $noderef->isolate;               # maybe add code for stuff originated here?
 				next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
-				next if DXUser->get( ${$ref->{gotit}}[0] )->isolate;  # is the origin isolated?
+				next unless $ref->forward_it($noderef->call);           # check the forwarding file
+				# next if $noderef->isolate;               # maybe add code for stuff originated here?
+				# next if DXUser->get( ${$ref->{gotit}}[0] )->isolate;  # is the origin isolated?
 				
 				# if we are here we have a node that doesn't have this message
 				$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
@@ -814,6 +815,39 @@ sub load_badmsg
 	do "$badmsgfn" if -e "$badmsgfn";
 	push @out, $@ if $@;
 	return @out;
+}
+
+#
+# forward that message or not according to the forwarding table
+# returns 1 for forward, 0 - to ignore
+#
+
+sub forward_it
+{
+	my $ref = shift;
+	my $call = shift;
+	my $i;
+	
+	for ($i = 0; $i < @forward; $i += 5) {
+		my ($sort, $field, $pattern, $action, $bbs) = @forward[$i..($i+4)]; 
+		my $tested;
+		
+		# are we interested?
+		last if $ref->{private} && $sort ne 'P';
+		last if !$ref->{private} && $sort ne 'B';
+		
+		# select field
+		$tested = $ref->{to} if $field eq 'T';
+		$tested = $ref->{from} if $field eq 'F';
+		$tested = $ref->{origin} if $field eq 'O';
+		$tested = $ref->{subject} if $field eq 'S';
+
+		if (!$pattern || $tested =~ m{$pattern}i) {
+			return 0 if $action eq 'I';
+			return 1 if !$bbs || grep $_ eq $call, @{$bbs};
+		}
+	}
+	return 0;
 }
 
 no strict;

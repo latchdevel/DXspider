@@ -1,3 +1,11 @@
+15Feb99========================================================================
+1. Added msg forwarding code which uses $main::root/msg/forward.pl.
+14Feb99========================================================================
+1. Changed A & K in WWV to be the other way around (I am told by G3IOR that
+this will mean that we won't have pole to pole aurora nor all the power lines
+overloading everywhere as well as a result of having values of K > 10).
+2. allow the '~' character in message bodies.
+3. Moved $main::data/badmsg.pl to $main::root/msg/badmsg.pl.
 11Feb99========================================================================
 1. Fixed a problem with isolated nodes' configurations being sent on sending 
 local configs to new connections.
