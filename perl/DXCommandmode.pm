@@ -177,30 +177,88 @@ sub normal
 		}
 		delete $self->{passwd};
 		$self->state('prompt');
-	} else {
-		@ans = run_cmd($self, $cmdline);           # if length $cmdline;
-		
-		if ($self->{pagelth} && @ans > $self->{pagelth}) {
-			my $i;
-			for ($i = $self->{pagelth}; $i-- > 0; ) {
-				my $line = shift @ans;
-				$line =~ s/\s+$//o;	# why am having to do this? 
-				$self->send($line);
+	} elsif ($self->{state} eq 'talk') {
+		if ($cmdline =~ m{^(?:/EX|/ABORT)}i) {
+			for (@{$self->{talklist}}) {
+				my $ent = $_;
+				my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
+				my $dxchan = DXChannel->get($via);
+				$dxchan->talk($self->{call}, $to, $via, $self->msg('talkend')) if $dxchan;
 			}
-			$self->{pagedata} =  \@ans;
-			$self->state('page');
-			$self->send($self->msg('page', scalar @ans));
+			$self->state('prompt');
+			delete $self->{talklist};
+		} elsif ($cmdline =~ m(^/\w+)) {
+			$cmdline =~ s(^/)();
+			$self->send_ans(run_cmd($self, $cmdline));
+			$self->send($self->talk_prompt);
+		} elsif ($self->{talklist} && @{$self->{talklist}}) {
+			# send what has been said to whoever is in this person's talk list
+			for (@{$self->{talklist}}) {
+				my $ent = $_;
+				my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
+				my $dxchan = DXChannel->get($via);
+				if ($dxchan && DXCluster->get_exact($to)) {
+					$dxchan->talk($self->{call}, $to, $via, $cmdline);
+				} else {
+					$self->send($self->msg('disc2', $via ? $via : $to));
+					my @l = grep { $_ ne $ent } @{$self->{talklist}};
+					if (@l) {
+						$self->{talklist} = \@l;
+					} else {
+						delete $self->{talklist};
+						$self->state('prompt');
+					}
+				}
+			}
+			$self->send($self->talk_prompt) if $self->{state} eq 'talk';
 		} else {
-			for (@ans) {
-				$self->send($_) if $_;
-			}
-		} 
+			# for safety
+			$self->state('prompt');
+		}
+	} else {
+		$self->send_ans(run_cmd($self, $cmdline));
 	} 
 	
 	# send a prompt only if we are in a prompt state
 	$self->prompt() if $self->{state} =~ /^prompt/o;
 }
 
+sub talk_prompt
+{
+	my $self = shift;
+	my @call;
+	for (@{$self->{talklist}}) {
+		my ($to, $via) = /(\S+)>(\S+)/;
+		push @call, $to;
+	}
+	return $self->msg('talkprompt', join(',', @call));
+}
+
+#
+# send a load of stuff to a command user with page prompting
+# and stuff
+#
+
+sub send_ans
+{
+	my $self = shift;
+	
+	if ($self->{pagelth} && @_ > $self->{pagelth}) {
+		my $i;
+		for ($i = $self->{pagelth}; $i-- > 0; ) {
+			my $line = shift @_;
+			$line =~ s/\s+$//o;	# why am having to do this? 
+			$self->send($line);
+		}
+		$self->{pagedata} =  \@_;
+		$self->state('page');
+		$self->send($self->msg('page', scalar @_));
+	} else {
+		for (@_) {
+			$self->send($_) if $_;
+		}
+	} 
+}
 # 
 # this is the thing that runs the command, it is done like this for the 
 # benefit of remote command execution
@@ -272,7 +330,7 @@ sub run_cmd
 				    };
 					
 					if ($@) {
-						cluck($@);
+						#cluck($@);
 						return (DXDebug::shortmess($@));
 					};
 				}
@@ -557,6 +615,27 @@ sub find_cmd_name {
 	}
 
 	return $package;
+}
+
+# send a talk message here
+sub talk
+{
+	my ($self, $from, $to, $via, $line) = @_;
+	$line =~ s/\\5E/\^/g;
+	$self->send("$to de $from $line") if $self->{talk};
+	Log('talk', $to, $from, $main::mycall, $line);
+}
+
+# send an announce
+sub announce
+{
+
+}
+
+# send a dx spot
+sub dx_spot
+{
+	
 }
 
 1;

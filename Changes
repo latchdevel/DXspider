@@ -6,6 +6,9 @@ count of 1.
 sequentially reading the data directly and only 'get'ting the ones that are
 nodes.
 3. did the same for show/isolate and show/lockout.
+4. Added talk mode so that I don't have to keep typing T <call> all the time.
+5. fiddled around with storing of Debug messages a bit more.
+6. bomb proofed the type command.
 28Jul00=======================================================================
 1. fixed watchdbg midnight rollover loop and removed the date part of the 
 date/time translation to leave just the time.

@@ -996,7 +996,7 @@ sub send_dx_spot
 		} elsif ($dxchan->is_user && $dxchan->{dx}) {
 			my $buf = Spot::formatb($dxchan->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
 			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 				$dxchan->send($buf);
 			} else {
 				$dxchan->delay($buf);
@@ -1040,7 +1040,7 @@ sub send_wwv_spot
 		} elsif ($dxchan->is_user && $dxchan->{wwv}) {
 			my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
 			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 				$dxchan->send($buf);
 			} else {
 				$dxchan->delay($buf);
@@ -1083,7 +1083,7 @@ sub send_wcy_spot
 		} elsif ($dxchan->is_user && $dxchan->{wcy}) {
 			my $buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
 			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 				$dxchan->send($buf);
 			} else {
 				$dxchan->delay($buf);
@@ -1147,7 +1147,7 @@ sub send_announce
 			next if $target eq 'SYSOP' && $dxchan->{priv} < 5;
 			my $buf = "$to$target de $_[0]: $text";
 			$buf .= "\a\a" if $dxchan->{beep};
-			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 				$dxchan->send($buf);
 			} else {
 				$dxchan->delay($buf);
@@ -1298,7 +1298,7 @@ sub broadcast_list
 
 		$s =~ s/\a//og unless $dxchan->{beep};
 
-		if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+		if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
 			$dxchan->send($s);	
 		} else {
 			$dxchan->delay($s);
@@ -1407,6 +1407,18 @@ sub disconnect
 	}
 
 	$self->SUPER::disconnect;
+}
+
+# 
+# send a talk message to this thingy
+#
+sub talk
+{
+	my ($self, $from, $to, $via, $line) = @_;
+	
+	$line =~ s/\^/\\5E/g;			# remove any ^ characters
+	$self->send(DXProt::pc10($from, $to, $via, $line));
+	Log('talk', $self->call, $from, $via?$via:$main::mycall, $line);
 }
 1;
 __END__ 

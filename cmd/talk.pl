@@ -6,51 +6,54 @@
 # $Id$
 #
 
-my ($self, $line) = @_;
-my @argv = split /\s+/, $line;	# generate an argv
-my $to = uc $argv[0];
+my ($self, $inline) = @_;
+my $to;
 my $via;
-my $from = $self->call();
+my $line;
+my $from = $self->call;
 my @out;
 
-# have we a callsign and some text?
-return (1, $self->msg('e8')) if @argv < 2;
+# analyse the line there are four situations...
+# 1) talk call
+# 2) talk call <text>
+# 3) talk call>node 
+# 4) talk call>node text
+#
 
-if ($argv[1] eq '>') {
-	$via = uc $argv[2];
-	$line =~ s/^$argv[0]\s+>\s+$argv[2]\s*//;
+($to, $via, $line) = $inline =~ /^\s*([A-Za-z0-9\-]+)\s*>([A-Za-z0-9\-]+)(.*)$/;
+if ($via) {
+	$line =~ s/\s+// if $line;
 } else {
-	$line =~ s/^$argv[0]\s*//;
+	($to, $line) = split /\s+/, $inline, 2;  
 }
 
+$to = uc $to if $to;
+$via = uc $via if $via;
 my $call = $via ? $via : $to;
-my $ref = DXCluster->get_exact($call);     # try an exact call
-$ref = DXCluster->get($call) unless $ref;  # try one ignoring SSID
-$ref = DXChannel->get($call) unless $ref;  # is it local?
+my $clref = DXCluster->get_exact($call);     # try an exact call
+my $dxchan = $clref->dxchan if $clref;
+return (1, $self->msg('e7', $call)) unless $dxchan;
 
-# if we haven't got an explicit via and we can't see them, try their node
-unless ($ref || $via) {
-	my $user = DXUser->get_current($call);
-	$ref = DXCluster->get_exact($user->node) if $user;
-	if ($ref) {
-		$via = $user->node;
-		push @out, "trying via $via..";
-	}
-}
-return (1, "$call not visible on the cluster") if !$ref;
-
-# change ^ into : for transmission
-$line =~ s/\^/:/og;
-
-my $dxchan = DXCommandmode->get($to); # is it for us?
-if ($dxchan && $dxchan->is_user) {
-	$dxchan->send("$to de $from $line") if $dxchan->talk;
-	Log('talk', $to, $from, $main::mycall, $line);
+# if there is a line send it, otherwise add this call to the talk list
+# and set talk mode for command mode
+if ($line) {
+	$dxchan->talk($self->call, $to, $via, $line) if $dxchan;
 } else {
-	$line =~ s/\^//og;			# remove any ^ characters
-	my $prot = DXProt::pc10($from, $to, $via, $line);
-	DXProt::route(undef,$via?$via:$to, $prot);
-	Log('talk', $to, $from, $via?$via:$main::mycall, $line);
+	my $s = "$to>" . $dxchan->call;
+	my $ref = $self->talklist;
+	if ($ref) {
+		unless (grep { $_ eq $s } @$ref) {
+			$dxchan->talk($self->call, $to, $via, $self->msg('talkstart'));
+			$self->state('talk');
+			push @$ref, $s;
+		}
+	} else { 
+		$self->talklist([ $s ]);
+		$dxchan->talk($self->call, $to, $via, $self->msg('talkstart'));
+		push @out, $self->msg('talkinst');
+		$self->state('talk');
+	}
+	push @out, $self->talk_prompt;
 }
 
 return (1, @out);

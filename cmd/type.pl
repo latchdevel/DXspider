@@ -16,9 +16,8 @@ my @slot;
 
 if (@f) {
 	my $fn = lc $f[0];
-	$fn =~ s/\\/\//og;
-	$fn =~ s/\.//og;
-	$fn =~ s/^\///og;
+	$fn =~ s([^A-Za-z0-9_/])()g;
+	$fn =~ s(^/+)();
 	$root = "$root/$fn";
 }
 

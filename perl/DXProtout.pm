@@ -27,8 +27,16 @@ use strict;
 sub pc10
 {
 	my ($from, $to, $via, $text) = @_;
-	my $user2 = $via ? $to : ' ';
-	my $user1 = $via ? $via : $to;
+	my ($user1, $user2);
+	if ($via && $via ne $to) {
+		$user1 = $via;
+		$user2 = $to;
+	} else {
+		$user2 = ' ';
+		$user1 = $to;
+	}
+#	my $user2 = $via ? $to : ' ';
+#	my $user1 = $via ? $via : $to;
 	$text = unpad($text);
 	$text = ' ' if !$text;
 	return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  

@@ -289,7 +289,7 @@ sub dochat
 				$line =~ s/\r/\n/g;
 				chomp;
 			}
-			dbg('connect', "received \"$line\"");
+			dbg('connect', map { "received \"$_\"" } split /\n/, $line);
 			if ($abort && $line =~ /$abort/i) {
 				dbg('connect', "aborted on /$abort/");
 				cease(11);

@@ -18,7 +18,7 @@ use vars qw(%dbglevel $fp);
 
 use DXUtil;
 use DXLog ();
-use Carp;
+use Carp qw(cluck);
 
 %dbglevel = ();
 $fp = DXLog::new('debug', 'dat', 'd');
@@ -28,13 +28,13 @@ $fp = DXLog::new('debug', 'dat', 'd');
 if (!defined $DB::VERSION) {
 	local $^W=0;
 	eval qq( sub confess { 
-	   \$SIG{__DIE__} = 'DEFAULT'; 
-	   DXDebug::_store(Carp::longmess(\@_)); 
-	   exit(-1); 
+	    \$SIG{__DIE__} = 'DEFAULT'; 
+        DXDebug::_store(\$@, Carp::shortmess(\@_));
+	    exit(-1); 
 	}
-	sub confess { 
+	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
-		DXDebug::_store(Carp::shortmess(\@_)); 
+        DXDebug::_store(\$@, Carp::longmess(\@_));
 		exit(-1); 
 	}
 	sub carp    { DXDebug::_store(Carp::shortmess(\@_)); }
@@ -42,15 +42,23 @@ if (!defined $DB::VERSION) {
 	);
 
     CORE::die(Carp::shortmess($@)) if $@;
-}
+} else {
+    eval qq( sub confess { Carp::confess(\@_); }; 
+	sub cluck { Carp::cluck(\@_); }; 
+   );
+} 
 
 
 sub _store
 {
 	my $t = time; 
 	for (@_) {
-		$fp->writeunix($t, "$t^$_"); 
-		print STDERR $_;
+		chomp;
+		my @l = split /\n/;
+		for (@l) {
+			print "$_\n" if defined \*STDOUT;
+			$fp->writeunix($t, "$t^$_"); 
+		}
 	}
 }
 
@@ -58,8 +66,8 @@ sub dbginit
 {
 	# add sig{__DIE__} handling
 	if (!defined $DB::VERSION) {
-		$SIG{__WARN__} = sub { _store(Carp::shortmess(@_)); };
-		$SIG{__DIE__} = sub { _store(Carp::shortmess(@_)); };
+		$SIG{__WARN__} = sub { _store($@, Carp::shortmess(@_)); };
+		$SIG{__DIE__} = sub { _store($@, Carp::longmess(@_)); };
 	}
 }
 

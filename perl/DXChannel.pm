@@ -86,6 +86,7 @@ use vars qw(%channels %valid);
 		  pingtime => '5,Ping totaltime,parray',
 		  pingave => '0,Ping ave time',
 		  logininfo => '9,Login info req,yesno',
+		  talklist => '0,Talk List,parray',
 		 );
 
 # object destruction
@@ -361,7 +362,7 @@ sub state
 		dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
 
 		# if there is any queued up broadcasts then splurge them out here
-		if ($self->{delayed} && ($self->{state} eq 'prompt' || $self->{state} eq 'convers')) {
+		if ($self->{delayed} && ($self->{state} eq 'prompt' || $self->{state} eq 'talk')) {
 			$self->send (@{$self->{delayed}});
 			delete $self->{delayed};
 		}

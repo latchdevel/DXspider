@@ -911,8 +911,8 @@ They will all match. If there is no password you will still be offered
 numbers but nothing will happen when you input a string. Any match is
 case sensitive.
 
-=== 0^TALK <call> <text>^Send a text message to another station
-=== 0^TALK <call> > <node> <text>^Send a text message to another station via a node
+=== 0^TALK <call> [<text>]^Send a text message to another station
+=== 0^TALK <call> > <node> [<text>]^Send a text message to another station via a node
 Send a short message to any other station that is visible on the cluster
 system. You can send it to anyone you can see with a SHOW/CONFIGURATION 
 command, they don't have to be connected locally.
@@ -924,6 +924,25 @@ the user information usually associated with logging on and off the cluster.
 If you know that G3JNB is likely to be present on GB7TLH, but you can only
 see GB7TLH in the SH/C list but with no users, then you would use the
 second form of the talk message.
+
+If you want to have a ragchew with someone you can leave the text message
+out and the system will go into 'Talk' mode. What this means is that a
+short message is sent to the recipient telling them that you are in a
+'Talking' frame of mind and then you just type - everything you send will
+go to the station that you asked for. 
+
+All the usual announcements, spots and so on will still come out on your
+terminal.
+
+If you want to do something (such as send a spot) you preceed the normal 
+command with a '/' character, eg:-
+
+   /DX 14001 G1TLH What's a B class licensee doing on 20m CW?
+   /HELP talk
+
+To leave talk mode type:
+   
+   /EX
 
 === 0^TYPE <filearea>/<name>^Look at the contents of a file in one of the fileareas
 Type out the contents of a file in a filearea. So, for example, in 
