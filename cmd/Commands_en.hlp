@@ -280,6 +280,42 @@ which will arrange for them to be forward candidates again.
 
 Order is not important.
 
+=== 0^CHAT <group> <text>^Chat or Conference to a group
+It is now possible to JOIN a group and have network wide conferencing to that
+group. DXSpider does not (and probably will not) implement the AK1A 
+conference mode as this seems very limiting, is hardly used and doesn't seem
+to work too well anyway.
+
+This system uses the existing ANN system and is compatible with both other
+DXSpider nodes and AK1A clusters (they use ANN/<group>). 
+
+You can be a member of as many "groups" as you want. To join a group type:-
+
+  JOIN FOC    (where FOC is the group name)
+
+To leave a group type:-
+
+  LEAVE FOC
+
+You can see which groups you are in by typing:-
+
+  STAT/USER
+
+and you can see whether your mate is in the group, if he connects to the
+same node as you, by typing:-
+
+  STAT/USER g1tlh
+
+To send a message to a group type:-
+
+  CHAT FOC hello everyone
+
+or
+
+  CH #9000 hello I am back
+
+See also JOIN, LEAVE, SHOW/CHAT
+
 === 0^CLEAR/ANNOUNCE [1|all]^Clear a announce filter line
 This command allows you to clear (remove) a line in a annouce filter or to 
 remove the whole filter.
@@ -791,6 +827,14 @@ Note that this command is similar to SPOOF and will have the same side
 effects. Commands are run at the privilege of the user which is being
 demonstrated to. 
 
+=== 0^JOIN <group>^Join a chat or conference group
+JOIN allows you to join a network wide conference group. To join a
+group (called FOC in this case) type:-
+
+  JOIN FOC
+
+See also CHAT, LEAVE, SHOW/CHAT
+
 === 0^KILL <msgno> [<msgno..]^Delete a message from the local system
 === 0^KILL <from msgno>-<to msgno>^Delete a range of messages
 === 0^KILL from <regex>^Delete messages FROM a callsign or pattern
@@ -827,6 +871,14 @@ The KILL EXPUNGE command causes the message to be truly deleted more or less
 immediately.
 
 It otherwise is used in the same way as the KILL command.
+
+=== 0^LEAVE <group>^Leave a chat or conference group
+LEAVE allows you to leave a network wide conference group. To leave a
+group (called FOC in this case) type:-
+
+  LEAVE FOC
+
+See also CHAT, JOIN, SHOW/CHAT
 
 === 0^LINKS^Show which nodes is physically connected
 This is a quick listing that shows which links are connected and
@@ -1746,6 +1798,12 @@ for more information.
 === 1^SHOW/BADWORD^Show all the bad words in the system
 Display all the bad words in the system, see SET/BADWORD
 for more information.
+
+=== 0^SHOW/CHAT [<group>] [<lines>]^Show any chat or conferencing 
+This command allows you to see any chat or conferencing that has  
+occurred whilst you were away. SHOW/CHAT on its own will show data for
+all groups. If you use a group name then it will show only chat for
+that group.
 
 === 0^SHOW/CONFIGURATION [<node>]^Show all the nodes and users visible
 This command allows you to see all the users that can be seen
