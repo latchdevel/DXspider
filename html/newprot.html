@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html">
+  <title>DXSpider Protocol</title>
+  <meta name="Keywords"
+  content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+  <meta name="Description"
+  content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+  <meta name="Author" content="Dirk Koopman G1TLH">
+  <link rel="stylesheet" href="style.css" type="text/css"
+  title="default stylesheet">
+</head>
+
+<body>
+<hr>
+
+<h2>DXSpider Protocol</h2>
+<hr>
+<address>
+  <a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a>
+</address>
+<!-- standard footer -->
+
+
+<h3>Introduction</h3>
+
+<p><br>
+For some time now it has become obvious that the original AK1A protocol has
+become stretched to beyond breaking point. Some attempts have been made to
+extend it, but none have done what is actually required: which is to throw it
+away completely and start from scratch.</p>
+
+<p>This is an attempt at starting again.</p>
+
+<h3>Design Criteria</h3>
+<ul>
+  <li>The protocol shall be open, published and available for any author to
+    use.</li>
+  <li>The protocol shall versioned, to allow easy upgrade.</li>
+  <li>The protocol shall be layered to allow the use of different transport
+    mechanisms (eg: radio, UDP, TCP, multicast).</li>
+  <li>Sentences in the protocol shall be capable of being verified as being
+    unaltered.</li>
+  <li>all sentences shall have an originating node, a serial number and a
+    destination. These fields must not be altered by intermediate nodes.</li>
+  <li>all sentences shall have similar fields in the same order.</li>
+  <li>sentences shall be in latin-1 and must not contain any characters other
+    than those between 0x20 and 0x7e. Any characters outside of this range
+    will be HTML escaped (viz: converted into the form '%', hex digit, hex
+    digit; eg: carriage return (0x0d) is converted to '%0D').</li>
+  <li>There shall be a mechanism for verifying "sensitive" information and/or
+    connections.</li>
+</ul>
+
+<h3>Definitions</h3>
+<dl>
+  <dt>&lt;callsign&gt;</dt>
+    <dd>A callsign can contain the characters [0-9A-Z\-/]. It is always in
+      upper case.</dd>
+  <dt>&lt;nodecall&gt;</dt>
+    <dd>A callsign of a node. It can contain the same characters as a
+      &lt;callsign&gt;</dd>
+  <dt>&lt;origin&gt;</dt>
+    <dd>The callsign of the originating node, it is a &lt;nodecall&gt;.</dd>
+  <dt>&lt;destination&gt;</dt>
+    <dd>The callsign of the destination node, this could be a
+      &lt;nodecall&gt; or empty (which implies that this is a broadcast).</dd>
+  <dt>&lt;touser&gt;</dt>
+    <dd>The callsign of a user to which this sentence is directed. It is a
+      &lt;callsign&gt; or empty.</dd>
+  <dt>&lt;fromuser&gt;</dt>
+    <dd><p>The callsign of the user from which this sentence originally come
+      came from. It is a &lt;callsign&gt;.</p>
+    </dd>
+  <dt>&lt;serial&gt;</dt>
+    <dd>The serial number of this sentence. It is a number between 0 and
+    9999.</dd>
+  <dt>&lt;time&gt;</dt>
+    <dd>A time in standard 'time_t' format, the number of seconds since 00:00
+      1st Jan 1970 (the 'epoch'), the output of the standard system 'time()'
+      subroutine call in both unix and MS-Dos/Windows.</dd>
+  <dt>&lt;minutes&gt;</dt>
+    <dd>The number of minutes since the epoch. This is actually &lt;time&gt;
+      / 60 with no remainder.</dd>
+  <dt>&lt;flags&gt;</dt>
+    <dd>A bit field containing various binary values.</dd>
+  <dt>&lt;digit&gt;</dt>
+    <dd>A character, representing a numeral, befween '0' and '9'.</dd>
+  <dt>&lt;hex digit&gt;</dt>
+    <dd>A character, representing a hexadecimal numeral (a value between
+      0-&gt;15 [a nibble]), '0'-&gt;'9' and 'A'-&gt;'F'.</dd>
+  <dt>&lt;field&gt;</dt>
+    <dd>A part of a protocol sentence.</dd>
+  <dt>&lt;freq&gt;</dt>
+    <dd>A frequency, in kilohertz with an optional (single digit) decimal
+      part (ie both 14001 and 14325.1 are valid).</dd>
+  <dt>&lt;text&gt;</dt>
+    <dd>Some text in ISO-Latin-1 in both upper and lower case.</dd>
+  <dt>&lt;cs&gt;</dt>
+    <dd>A checksum of two &lt;hex digits&gt;</dd>
+  <dt>&lt;cr&gt;</dt>
+    <dd>A carriage return character (0x0d)</dd>
+  <dt>&lt;lf&gt;</dt>
+    <dd>A line feed character (0x0a)</dd>
+</dl>
+
+<p></p>
+
+<h3>The Protocol</h3>
+
+<p></p>
+
+<p>Each protocol line is separate and distinct. This is a "datagram" style
+protocol. Each protocol line is called a "sentence" and begins with the
+string "DX" in upper case, followed by two digits. The sentence is terminated
+by a &lt;cr&gt; or a &lt;lf&gt; character or both. Internally, the
+terminating characters should be discarded completely and the sentence
+processed without.</p>
+
+<p>The character set used shall be ISO-Latin-1, with only the characters 0x20
+-&gt; 0x7e permitted within a sentence. All other characters shall be "HTML
+Escaped" which is that they shall be replaced by the three character scheme
+of '%', &lt;hex digit&gt;, &lt;hex digit&gt;.</p>
+
+<p>The sentence is split up into &lt;fields&gt; which are delimited by the
+'|' character (0x7c). If the '|' character occurs within a &lt;field&gt; it
+shall be replaced by the string '%7C'.</p>
+
+<p>There is no intrinsic maximum length of a sentence. Having said that,
+there will be some underlying maximum lengths implied by the transport
+mechanisms employed. Because one of those transport mechanisms is likely to
+be AX25 in UI mode. It is recommended that broadcast sentences shall be no
+more than 200 bytes in length.</p>
+
+<p>All sentences shall have a &lt;checksum&gt; in a separate &lt;field&gt; at
+the end. The checksum is simply the sum, modulo 256, of all the characters of
+the sentence except for the final &lt;field&gt; separator and the two &lt;hex
+digits&gt; of the checksum itself.  The purpose of the checksum is to check
+that no intermediate node has changed the sentence. It is assumed that the
+underlying transport mechanisms will deal with communications errors.</p>
+
+<p>All sentences shall have an &lt;origin&gt;, a &lt;destination&gt; and a
+&lt;serial&gt; number. The &lt;destination&gt; can be empty which implies
+that this sentence is to be broadcast. The &lt;serial&gt; number is a global
+number, which is used for all sentences originating at a node, that is
+incremented modulo 10000, and is used to determine duplicate or out of date
+sentences.</p>
+
+<p>So the generic form of a sentence is:-</p>
+
+<p></p>
+
+<blockquote class="code">
+  DX99|&lt;origin&gt;|&lt;destination&gt;|&lt;serial&gt;|...|&lt;cs&gt;</blockquote>
+
+<p></p>
+
+<p>Some examples:-</p>
+
+<blockquote>
+  <p class="code">DX01|GB7TLH||0|</p>
+</blockquote>
+
+<p></p>
+<hr>
+<span class="copy">Copyright © 2001 by Dirk Koopman G1TLH. All Rights
+Reserved</span>
+ <br>
+<span class="id">$Id: index.html,v 1.19 2001/04/17 20:44:11 g0vgs Exp
+$</span></body>
+</html>
