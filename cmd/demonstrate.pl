@@ -9,10 +9,6 @@
 #
 my ($self, $line) = @_;
 
-my $mycall = $self->call;
-my $myuser = $self->user;
-my $mypriv = $self->priv;
-
 my ($call, $newline) = split /\s+/, $line, 2;
 $call = uc $call;
 my $dxchan = DXChannel->get($call);
@@ -22,23 +18,12 @@ if ($self->remotecmd) {
 	Log('DXCommand', "$mycall is trying to 'demo' to $call remotely");
 	return (1, $self->msg('e5'));
 }
-if ($mypriv < 8) {
+if ($self->priv < 9) {
 	Log('DXCommand', "$mycall is trying to 'demo' to $call locally");
 	return (1, $self->msg('e5'));
 }
-
-$call = uc $call;
-my $user = $dxchan->user;
-
-# set up basic environment
-$self->call($call);
-$self->user($user);
-$self->priv($dxchan->priv);
 Log('DXCommand', "demo '$newline' to $call by $mycall");
-my @in = $self->run_cmd($newline);
-$self->call($mycall);
-$self->user($myuser);
-$self->priv($mypriv);
+my @in = $dxchan->run_cmd($newline);
 
 $dxchan->send($newline, @in);
 
