@@ -66,14 +66,15 @@ sub pc11
 # create an announce message
 sub pc12
 {
-	my ($call, $text, $tonode, $sysop, $wx) = @_;
+	my ($call, $text, $tonode, $sysop, $wx, $origin) = @_;
 	my $hops = get_hops(12);
-	$sysop = ' ' if !$sysop;
-	$text = ' ' if !$text;
-	$wx = '0' if !$wx;
-	$tonode = '*' if !$tonode;
+	$origin ||= $main::mycall;
+	$sysop ||= ' ';
+	$text ||= ' ';
+	$wx ||= '0';
+	$tonode ||= '*';
 	$text =~ s/\^/%5E/g;
-	return "PC12^$call^$tonode^$text^$sysop^$main::mycall^$wx^$hops^~";
+	return "PC12^$call^$tonode^$text^$sysop^$origin^$wx^$hops^~";
 }
 
 #

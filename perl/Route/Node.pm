@@ -254,7 +254,7 @@ sub newid
 	if ($id > $self->{lid}) {
 		$self->{lid} = $id;
 		return 1;
-	} elsif ($self->{lid} - $id > 60000) {
+	} elsif ($self->{lid} - $id > 500) {
 		$self->{id} = $id;
 		return 1;
 	}

@@ -29,7 +29,7 @@ while ($f = shift @f) {                 # next field
 $from = 1 unless $from;
 $to = 5 unless $to;
 
-push @out, "Date        Hour   SFI   A   K Forecast                               Logger";
+push @out, $self->msg('wwv3');
 my @in = Geomag::search($from, $to, $main::systime);
 for (@in) {
 	push @out, Geomag::print_item($_);

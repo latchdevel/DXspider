@@ -1062,7 +1062,7 @@ sub handle_23
 	my $pcno = shift;
 	my $line = shift;
 			
-	# route 'foreign' pc27s 
+	# route foreign' pc27s 
 	if ($pcno == 27) {
 		if ($_[8] ne $main::mycall) {
 			$self->route($_[8], $line);
@@ -1392,7 +1392,7 @@ sub handle_51
 						$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
 					} elsif ($dxchan->is_node) {
 						if ($tochan) {
-							my $nopings = $tochan->user->nopings || 2;
+							my $nopings = $tochan->user->nopings || $obscount;
 							push @{$tochan->{pingtime}}, $t;
 							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
 
@@ -1485,7 +1485,7 @@ sub handle_85
 	my $line = shift;
 	$self->process_rcmd_reply($_[1], $_[2], $_[3], $_[4]);
 }
-	 
+	
 # if get here then rebroadcast the thing with its Hop count decremented (if
 # there is one). If it has a hop count and it decrements to zero then don't
 # rebroadcast it.
@@ -1504,7 +1504,7 @@ sub handle_default
 		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
 	} else {
 		unless ($self->{isolate}) {
-			DXChannel::broadcast_nodes($line, $self); # send it to everyone but me
+			DXChannel::broadcast_nodes($line, $self) if $line =~ /\^H\d+\^?~?$/; # send it to everyone but me
 		}
 	}
 }
@@ -1531,7 +1531,7 @@ sub process
 		next unless $dxchan->is_node();
 		next if $dxchan == $main::me;
 
-		# send the pc50 or PC90
+		# send the pc50
 		$dxchan->send($pc50s) if $pc50s;
 		
 		# send a ping out on this channel
@@ -2311,12 +2311,6 @@ sub route_pc50
 {
 	my $self = shift;
 	broadcast_route($self, \&pc50, 1, @_);
-}
-
-sub route_pc90
-{
-	my $self = shift;
-	broadcast_route($self, \&pc90, 1, @_);
 }
 
 sub in_filter_route
