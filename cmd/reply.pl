@@ -31,44 +31,45 @@ if ($self->state eq "prompt") {
 	$loc = $self->{loc} = {};
 	
 	my $i = 0;
+	my @extra = ();
+	my $msgno = $self->lastread;
 	$loc->{private} = '1';
-	if ($i < @f) {
-		if ($f[0] =~ /^(B|NOP)/oi) {
+	$loc->{rrreq} = '0';
+	while (@f) {
+		my $w = shift @f;
+		if ($w =~ /^\d+$/) {
+			$msgno = $w;
+		} elsif ($w =~ /^(B|NOP)/i) {
 			$loc->{private} = '0';
-			$i += 1;
-		} elsif ($f[0] =~ /^P/oi) {
-			$i += 1;
+		} elsif ($w =~ /^P/i) {
+			;
+		} elsif (uc $w eq 'RR') {
+			$loc->{rrreq} = '1';
+		} else {
+			push @extra, uc $w;
 		}
 	}
 	
-	if ($i < @f) {
-		$loc->{rrreq} = '0';
-		if (uc $f[$i] eq 'RR') {
-			$loc->{rrreq} = '1';
-			$i++;
-		}
-	}
 	my $oref; 
 	
 	# check we have a reply number
 	#  $DB::single = 1;
 	
-	if ($i < @f) {
-		$oref = DXMsg::get($f[$i]);
-		if (!$oref) {
-			delete $self->{loc};
-			return (1, $self->msg('m4', $i));
-		}
-	} else {
-		if (!($oref = DXMsg::get($self->lastread))) {
-			delete $self->{loc};
-			return (1, $self->msg('m5'));
-		}
+	$oref = DXMsg::get($msgno) if $msgno;
+	unless ($oref) {
+		delete $self->{loc};
+		return (1, $self->msg('m4', $i));
 	}
 	
 	# now save all the 'to' callsigns for later
-	my $to = $loc->{private} ? $oref->from : $oref->to;
-	$loc->{to} = [ $to ];       # to is an array
+	my $to;
+	if ($loc->{private}) {
+		$to = $oref->from;
+	} else {
+		$to = $oref->to;
+		@extra = ();
+	} 
+	$loc->{to} = [ $to, @extra ];       # to is an array
 	$loc->{subject} = $oref->subject;
 	$loc->{subject} = "Re: " . $loc->{subject} if !($loc->{subject} =~ /^Re:\s/io); 
 	
@@ -76,7 +77,7 @@ if ($self->state eq "prompt") {
 	# keep calling me for every line until I relinquish control
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('sendbody');
-	push @out, $self->msg('m6', $to);
+	push @out, $self->msg('m6', join(',', $to, @extra));
 	push @out, $self->msg('m7', $loc->{subject});
 	push @out, $self->msg('m8');
 }

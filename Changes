@@ -1,10 +1,12 @@
+25Apr00=======================================================================
+1. Changed reply so that you can reply to more than one address privately
 31Mar00=======================================================================
 1. fixed nnn-mmm in kill (erase/delete) msgs so that mmm is also deleted and
 not just nnn -> mmm-1.
 2. Added an autosplit to message importing so that messages are split
 automagically into bits if the filename used in the import directory starts
 with "split". This will add a [1/5] type string on the the end of the subject. 
-3. dedupe more aggressively on the text of Spots so that only the 1st 28 chars
+3. dedupe more aggressively on the text of Spots so that only the 1st 27 chars
 of text are considered (as opposed to the whole lot).
 30Mar00=======================================================================
 1. altered client.pl connect code so that it doesn't falsely recognise 
