@@ -745,6 +745,13 @@ sub normal
 				next if length $call < 3; # min 3 letter callsigns
 				next if $call eq $main::mycall;
 
+				# check that this PC19 isn't trying to alter the wrong dxchan
+				my $dxchan = DXChannel->get($call);
+				if ($dxchan && $dxchan != $self) {
+					dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
+					return;
+				}
+
 				# update it if required
 				my $r = Route::Node::get($call);
 				my $flags = Route::here($here)|Route::conf($conf);
@@ -835,8 +842,8 @@ sub normal
 				my $node = Route::Node::get($call);
 				if ($node) {
 
-					my $dxchan = $node->dxchan;
-					if ($dxchan && $dxchan ne $self) {
+					my $dxchan = DXChannel->get($call);
+					if ($dxchan && $dxchan != $self) {
 						dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
 						return;
 					}
