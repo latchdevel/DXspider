@@ -1,3 +1,9 @@
+05May00=======================================================================
+1. rewrote parts of Msg.pm and client.c so that the messages no longer use
+a length word at the front of each one. They are simply strings of characters
+separated by a \n. No binary characters are allowed (they are encoded as %nn)
+a la HTTP. This hopefully cures Arnold's problem and also make it more
+secure anyway. It also paves the way for the ax25/ip multicast client.
 30Apr00=======================================================================
 1. put some extra checks and balances in to message send routine in Msg.pm to
 see if I can prevent the error seen by Arnold (which I think is only likely to

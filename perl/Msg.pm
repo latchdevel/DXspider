@@ -56,7 +56,7 @@ sub connect {
     };
     
     if ($rcvd_notification_proc) {
-        my $callback = sub {_rcv($conn, 0)};
+        my $callback = sub {_rcv($conn)};
         set_event_handler ($sock, "read" => $callback);
     }
     return bless $conn, $pkg;
@@ -89,8 +89,8 @@ sub _enqueue {
     my ($conn, $msg) = @_;
     # prepend length (encoded as network long)
     my $len = length($msg);
-    $msg = pack ('N', $len) . $msg; 
-    push (@{$conn->{queue}}, $msg);
+	$msg =~ s/(\x00-\x2f\x7e-\xff%])/sprintf("%%%02X", ord($1))/eg; 
+    push (@{$conn->{queue}}, $msg . "\n");
 }
 
 sub _send {
@@ -198,71 +198,50 @@ sub new_server {
     $g_login_proc = $login_proc; $g_pkg = $pkg;
 }
 
-sub rcv_now {
-    my ($conn) = @_;
-    my ($msg, $err) = _rcv ($conn, 1); # 1 ==> rcv now
-    return wantarray ? ($msg, $err) : $msg;
-}
-
 sub _rcv {                     # Complement to _send
-    my ($conn, $rcv_now) = @_; # $rcv_now complement of $flush
+    my $conn = shift; # $rcv_now complement of $flush
     # Find out how much has already been received, if at all
     my ($msg, $offset, $bytes_to_read, $bytes_read);
     my $sock = $conn->{sock};
     return unless defined($sock);
-    if (exists $conn->{msg}) {
-        $msg           = $conn->{msg};
-        $offset        = length($msg) - 1;  # sysread appends to it.
-        $bytes_to_read = $conn->{bytes_to_read};
-        delete $conn->{'msg'};              # have made a copy
-    } else {
-        # The typical case ...
-        $msg           = "";                # Otherwise -w complains 
-        $offset        = 0 ;  
-        $bytes_to_read = 0 ;                # Will get set soon
-    }
-    # We want to read the message length in blocking mode. Quite
-    # unlikely that we'll get blocked too long reading 4 bytes
-    if (!$bytes_to_read)  {                 # Get new length 
-        my $buf;
-        $conn->set_blocking();
-        $bytes_read = sysread($sock, $buf, 4);
-        if ($! || ($bytes_read != 4)) {
-            goto FINISH;
-        }
-        $bytes_to_read = unpack ('N', $buf);
-    }
-    $conn->set_non_blocking() unless $rcv_now;
-    while ($bytes_to_read) {
-        $bytes_read = sysread ($sock, $msg, $bytes_to_read, $offset);
-        if (defined ($bytes_read)) {
-            if ($bytes_read == 0) {
-                last;
-            }
-            $bytes_to_read -= $bytes_read;
-            $offset        += $bytes_read;
-        } else {
-            if (_err_will_block($!)) {
-                # Should come here only in non-blocking mode
-                $conn->{msg}           = $msg;
-                $conn->{bytes_to_read} = $bytes_to_read;
-                return ;   # .. _rcv will be called later
-                           # when socket is readable again
-            } else {
-                last;
-            }
-        }
+
+	my @lines;
+    $conn->set_non_blocking();
+	$bytes_read = sysread ($sock, $msg, 1024, 0);
+	if (defined ($bytes_read)) {
+		if ($bytes_read > 0) {
+			if ($msg =~ /\n/) {
+				@lines = split /\n/, $msg;
+				$lines[0] = $conn->{msg} . $lines[0] if $conn->{msg};
+				if ($msg =~ /\n$/) {
+					delete $conn->{msg};
+				} else {
+					$conn->{msg} = pop @lines;
+				}
+			} else {
+				$conn->{msg} .= $msg;
+			}
+		} 
+	} else {
+		if (_err_will_block($!)) {
+			return ; 
+		} else {
+			$bytes_read = 0;
+		}
     }
 
-  FINISH:
-    if (length($msg) == 0) {
-        $conn->disconnect();
-    }
-    if ($rcv_now) {
-        return ($msg, $!);
-    } else {
-        &{$conn->{rcvd_notification_proc}}($conn, $msg, $!);
-    }
+FINISH:
+    if (defined $bytes_read == 0) {
+		$conn->disconnect();
+		&{$conn->{rcvd_notification_proc}}($conn, undef, $!);
+    } 
+
+	while (@lines){
+		$msg = shift @lines;
+		$msg =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
+		&{$conn->{rcvd_notification_proc}}($conn, $msg, $!);
+		$! = 0;
+	}
 }
 
 sub _new_client {
@@ -275,7 +254,7 @@ sub _new_client {
         &$g_login_proc ($conn, $sock->peerhost(), $sock->peerport());
     if ($rcvd_notification_proc) {
         $conn->{rcvd_notification_proc} = $rcvd_notification_proc;
-        my $callback = sub {_rcv($conn,0)};
+        my $callback = sub {_rcv($conn)};
         set_event_handler ($sock, "read" => $callback);
     } else {  # Login failed
         $conn->disconnect();

@@ -237,24 +237,35 @@ void send_text(fcb_t *f, char *s, int l)
 		flush_text(f);
 }
 
-void send_msg(fcb_t *f, char let, char *s, int l)
+void send_msg(fcb_t *f, char let, unsigned char *s, int l)
 {
 	cmsg_t *mp;
 	int ln;
 	int myl = strlen(call)+2+l;
 
 	mp = cmsg_new(myl+4+1, f->sort, f);
-	ln = htonl(myl);
-	memcpy(mp->inp, &ln, 4);
-	mp->inp += 4;
 	*mp->inp++ = let;
 	strcpy(mp->inp, call);
 	mp->inp += strlen(call);
 	*mp->inp++ = '|';
 	if (l > 0) {
-		memcpy(mp->inp, s, l);
-		mp->inp += l;
+		unsigned char *p;
+		for (p = s; p < s+l; ++p) {
+			if (mp->inp >= mp->data + (myl - 4)) {
+				int off = mp->inp - mp->data;
+				myl += 256;
+				mp = realloc(mp, myl);
+				mp->inp = mp->data + off;
+			}
+			
+			if (*p < 0x20 || *p > 0x7e || *p == '%') {
+				sprintf(mp->inp, "%%%02X", *p & 0xff);
+				mp->inp += strlen(mp->inp);
+			} else 
+				*mp->inp++ = *p;
+		}
 	}
+	*mp->inp++ = '\n';
 	*mp->inp = 0;
 	cmsg_send(f->outq, mp, 0);
 	f->sp->flags |= SEL_OUTPUT;
@@ -268,6 +279,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 {
 	fcb_t *f = sp->fcb;
 	cmsg_t *mp, *omp;
+	unsigned char c;
 	
 	/* input modes */
 	if (in) {
@@ -372,30 +384,60 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 		case MSG:
 			p = buf;
 			while (r > 0 && p < &buf[r]) {
+				unsigned char ch = *p++;
+				
+				if (mp->inp >= mp->data + (MAXBUFL-1)) {
+					mp->state = 0;
+					mp->inp = mp->data;
+					dbg(DMSG, "Message longer than %d received", MAXBUFL);
+				}
 
-				/* build up the size into the likely message length (yes I know it's a short) */
 				switch (mp->state) {
-				case 0:
-				case 1:
-					mp->state++;
-					break;
-				case 2:
-				case 3:
-					mp->size = (mp->size << 8) | (*p++ & 0xff);
-					if (mp->size > MAXBUFL)
-						die("Message size too big from node (%d > %d)", mp->size, MAXBUFL);
-					mp->state++;
-					break;
-				default:
-					if (mp->inp - mp->data < mp->size) {
-						*mp->inp++ = *p++;
-					} 
-					if (mp->inp - mp->data >= mp->size) {
+				case 0: 
+					if (ch == '%') {
+						c = 0;
+						mp->state = 1;
+					} else if (ch == '\n') {
 						/* kick it upstairs */
+						*mp->inp = 0;
 						dbgdump(DMSG, "QUEUE MSG", mp->data, mp->inp - mp->data);
 						cmsg_send(f->inq, mp, 0);
 						mp = f->in = cmsg_new(MAXBUFL+1, f->sort, f);
+					} else if (ch < 0x20 || ch > 0x7e) {
+						dbg(DMSG, "Illegal character (0x%02X) received", *p);
+						mp->inp = mp->data;
+					} else {
+						*mp->inp++ = ch;
 					}
+					break;
+
+				case 1:
+					mp->state = 2;
+					if (ch >= '0' && ch <= '9') 
+						c = (ch - '0') << 4;
+					else if (ch >= 'A' && ch <= 'F')
+						c = (ch - 'A' + 10) << 4;
+					else if (ch >= 'a' && ch <= 'a')
+						c = (ch - 'a' + 10) << 4;
+					else {
+						dbg(DMSG, "Illegal hex char (%c) received in state %d", ch, mp->state);
+						mp->inp = mp->data;
+						mp->state = 0;
+					}
+					break;
+					
+				case 2:
+					if (ch >= '0' && ch <= '9') 
+						*mp->inp++ = c | (ch - '0');
+					else if (ch >= 'A' && ch <= 'F')
+						*mp->inp++ = c | (ch - 'A' + 10);
+					else if (ch >= 'a' && ch <= 'a')
+						*mp->inp++ = c | (ch - 'a' + 10);
+					else {
+						dbg(DMSG, "Illegal hex char (%c) received in state %d", ch, mp->state);
+						mp->inp = mp->data;
+					}
+					mp->state = 0;
 				}
 			}
 			break;

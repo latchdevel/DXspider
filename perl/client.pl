@@ -53,7 +53,7 @@ sub cease
 {
 	my $sendz = shift;
 	if ($conn && $sendz) {
-		$conn->send_now("Z$call|bye...\n");
+		$conn->send_now("Z$call|bye...");
 		sleep(1);
 	}
 	$stdout->flush if $stdout;

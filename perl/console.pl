@@ -104,7 +104,7 @@ sub cease
 {
 	my $sendz = shift;
 	if ($conn && $sendz) {
-		$conn->send_now("Z$call|bye...\n");
+		$conn->send_now("Z$call|bye...");
 	}
 	endwin();
 	dbgclose();
@@ -438,9 +438,9 @@ do_initscr();
 
 $SIG{__DIE__} = \&sig_term;
 
-$conn->send_now("A$call|$connsort");
-$conn->send_now("I$call|set/page $maxshist");
-$conn->send_now("I$call|set/nobeep");
+$conn->send_later("A$call|$connsort");
+$conn->send_later("I$call|set/page $maxshist");
+$conn->send_later("I$call|set/nobeep");
 
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
