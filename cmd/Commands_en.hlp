@@ -936,7 +936,7 @@ The call must be a full eg:-
 
   set/baddx FORSALE VIDEO FR0G 
 
-  unset/badnode VIDEO
+  unset/baddx VIDEO
 
 will allow spots to that callsign again.
 
@@ -972,7 +972,7 @@ The call must be a full eg:-
 will stop anything from VE2STN. If you want SSIDs as well then you must
 enter them specifically.
 
-  unset/badnode VE2STN
+  unset/badspotter VE2STN
 
 will allow spots from him again.
 
