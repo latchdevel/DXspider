@@ -1,5 +1,6 @@
 ! highest DXCC number is now 341
 !
+! added VR to Hong kong made it main pfx      001024
 ! added 4W to 340                             000327
 ! added TX0 to 341                            000327
 ! changed FO/M (Marquesas) to 339             991111
@@ -675,8 +676,8 @@ VK9 Cocos-Keeling-VK9/Y               201 54 29 -6.30 12 12 0 S 96 48 0 E *
 VK9 Mellish-Reef-VK9/Z                202 56 30 -10.0 17 36 0 S 155 48 0 E *
 VK9 Norfolk-Is-VK9/N                  203 60 32 -11.30 29 0 0 S 168 0 0 E *
 VK9 Willis-Is-VK9/W                   204 60 30 -10.0 16 0 0 S 149 30 0 E
-VK0 Heard-Is-VK0/H                    205 68 39 -5.0 53 0 0 S 73 24 0 E *
-VK0 Macquarie-Is-VK0/M                206 60 30 -11.0 54 42 0 S 158 48 0 E
+VK0H Heard-Is-VK0H                    205 68 39 -5.0 53 0 0 S 73 24 0 E *
+VK0M Macquarie-Is-VK0M                206 60 30 -11.0 54 42 0 S 158 48 0 E
 VK9L,VK9ZL,VK9KL,VK9NL Lord-Howe-Is-VK9/L  199 60 30 -10.0 31 36 0 S 159 6 0 E
 VK9X,VK9ZX,VK9KX,VK9NX Christmas-Is-VK9/X  200 54 29 -6.30 10 30 0 S 105 42 0 E
 VK9C,VK9ZC,VK9KC,VK9NC Cocos-Keeling-VK9/Y 201 54 29 -6.30 12 12 0 S 96 48 0 E
@@ -710,8 +711,8 @@ VP6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W @
 VR6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W 
 VP9 Bermuda-VP9                       215 11  5  4.0 32 18 0 N 64 42 0 W @
 VQ9 Chagos-VQ9                        216 41 39 -5.0 7 18 0 S 72 24 0 E @
-VS Hong-Kong-VS                       218 44 24 -8.0 22 30 0 N 114 0 0 E @
-VR2,VS6 Hong-Kong-VS                      218 44 24 -8.0 22 14 0 N 114 14 0 E
+VR Hong-Kong-VR                      218 44 24 -8.0 22 14 0 N 114 14 0 E
+VS Hong-Kong-VR                       218 44 24 -8.0 22 30 0 N 114 0 0 E @
 VU India-Bombay-VU                    219 41 22 -5.30 19 0 0 N 72 48 0 E * @
 VU India-Calcutta-VU                  219 41 22 -5.30 22 36 0 N 88 24 0 E *
 VU India-New-Delhi-VU                 219 41 22 -5.30 28 0 0 N 77 0 0 E

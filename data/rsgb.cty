@@ -302,7 +302,7 @@ South Sandwich:           SA: 73: 13: VP8/s: 4K1ZI=VP8SSI;
 Bermuda:                  NA: 11: 05: VP9:   VP9;
 Chagos Is.:               AF: 41: 39: VQ9:   VQ9;
 Pitcairn I.:              OC: 63: 32: VR6:   VR6=VR8B;
-Hong Kong:                AS: 44: 24: VS6:   VS6=VR2;
+Hong Kong:                AS: 44: 24: VR:    VR=VS=VS6;
 India:                    AS: 41: 22: VU:    8T=8U=8V=8W=8X=8Y=AT=AU=AV=AW=VT=VU=VV=VW;
 Andaman & Nicobar:        AS: 49: 26: VU4:   8T4=8U4=8V4=8W4=8X4=8Y4=AT4=AU4=AV4=AW4=VT4=VU4=VV4=VW4;
 Laccadive Is.:            AS: 41: 22: VU7:   8T7=8U7=8V7=8W7=8X7=8Y7=AT7=AU7=AV7=AW7=VT7=VU7=VV7=VW7;

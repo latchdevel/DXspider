@@ -115,6 +115,42 @@ while (<IN>) {
 		print "line $line: unknown prefix '$p' on $l in rsgb.cty\n";
 	}
 }
+close IN;
+
+# now open the cty.dat file if it is there
+my @f;
+my @a;
+$line = 0;
+if (open(IN, "$main::data/cty.dat")) {
+	my $state = 0;
+	while (<IN>) {
+		$line++;
+		s/\r$//;
+		next if /^\s*\#/;
+		next if /^\s*$/;
+		chomp;
+		if ($state == 0) {
+			s/:$//;
+			@f = split /:\s+/;
+			@a = ();
+			$state = 1;
+		} elsif ($state == 1) {
+			s/^\s+//;
+			if (/;$/) {
+				$state = 0;
+				s/[,;]$//;
+				push @a, split /\s*,/;
+				next if $f[7] =~ /^\*/;   # ignore callsigns starting '*'
+				ct($_, uc $f[7], @a) if @a;
+			} else {
+				s/,$//;
+				push @a, split /\s*,/;
+			}
+		}
+	}
+}
+close IN;
+
 
 open(OUT, ">$main::data/prefix_data.pl") or die "Can't open $main::data/prefix_data.pl ($!)";
 
@@ -169,6 +205,30 @@ sub printpre
 	return $out;
 }
 
+sub ct
+{
+	my $l = shift;
+	my $p = shift; 
+	my @a = @_;
+	my $ref = $pre{$p};
+	if ($ref) {
+		my $a;
+		foreach $a (@a) {
+			# for now remove (nn) [nn]
+			$a =~ s/(?:\(\d+\)|\[\d+\])//g;
+			unless ($a) {
+				print "line $line: blank prefix on $l in cty.dat\n";
+				next;
+			}
+			next if $a eq $p;	# ignore if we have it already
+			my $nref = $pre{$a};
+			$pre{$a} = $ref if !$nref; # copy the original ref if new 
+		}
+	} else {
+		print "line $line: unknown prefix '$p' on $l in cty.dat\n";
+	}
+}
+
 sub addloc
 {
 	my $locstr = shift;
@@ -177,3 +237,4 @@ sub addloc
 	$locn{$loc} = $locstr;
 	return $loc;
 }
+

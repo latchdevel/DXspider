@@ -1,3 +1,6 @@
+24Oct00=======================================================================
+1. added cty.dat from http://www.k1ea.com/cty/index.htm to the prefix_data.pl
+data file and modified create_prefix.pl accordingly.
 23Oct00=======================================================================
 1. Added K5K as Kingman Reef
 1. Added K7K as Kure
