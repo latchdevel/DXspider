@@ -1,5 +1,6 @@
 29Jul02=======================================================================
-1.Changed max R value in wcy to 500 from 300.
+1. Changed max R value in wcy to 500 from 300.
+2. Got rid of warnings on startup using 5.8.0 
 28Jul02=======================================================================
 1. stick the invalid key deletes in an eval loop in export_user
 18Jul02=======================================================================
