@@ -369,6 +369,9 @@ if ($loginreq) {
 	my $user;
 	my $s;
 
+	$connsort = 'telnet' if $connsort eq 'local';
+	setmode();
+
 	if (-e "$data/issue") {
 		open(I, "$data/issue") or die;
 		local $/ = undef;
@@ -386,14 +389,17 @@ if ($loginreq) {
 		
 	$stdout->print('login: ');
 	$stdout->flush();
-	local $\ = $nl;
+	local $\ = $mynl;
 	$s = $stdin->getline();
 	chomp $s;
 	$s =~ s/\s+//og;
 	$s =~ s/-\d+$//o;            # no ssids!
-	cease(0) unless $s gt ' ' && iscallsign($s);
+	cease(0) unless $s && $s gt ' ';
+	unless (iscallsign($s)) {
+		$stdout->print("Sorry, $s is an invalid callsign");
+		cease(0);
+	} 
 	$call = uc $s;
-	$connsort = 'telnet' if $connsort eq 'local';
 	alarm(0);
 }
 
