@@ -36,12 +36,14 @@ use vars qw($VERSION $BRANCH);
 
 main::mkver($VERSION = q$Revision$);
 
-use vars qw(@ISA $ntpflag $dupeage);
+use vars qw(@ISA $ntpflag $dupeage $cf_interval $hello_interval);
 
 @ISA = qw(DXChannel);
 
 $ntpflag = 0;					# should be set in startup if NTP in use
 $dupeage = 12*60*60;			# duplicates stored half a day 
+$cf_interval = 30*60;			# interval between config broadcasts
+$hello_interval = 3*60*60;		# interval between hello broadcasts for me and local users
 
 my $seqno = 0;
 my $dayno = 0;
@@ -143,8 +145,10 @@ sub normal
 }
 
 #
-# periodic processing
+# periodic processing (every second)
 #
+
+my $lastmin = 0;
 
 sub process
 {
@@ -154,6 +158,40 @@ sub process
 	if ($d != $dayno) {
 		$dayno = $d;
 		$daystart = $main::systime - ($main::systime % 86400);
+	}
+	if ($main::systime >= $lastmin + 60) {
+		if ($lastmin) {
+			per_minute();
+			$lastmin = $main::systime;
+		}
+	}
+}
+
+sub per_minute
+{
+	# send hello and cf packages periodically
+	foreach my $dxchan (DXChannel::get_all()) {
+		next if $dxchan == $main::me;
+		next if $dxchan->is_aranea;
+		if ($main::systime > $dxchan->lasthello + $hello_interval) {
+			my $thing = Thingy::Hello->new(user => $dxchan->call, h => $dxchan->here);
+			$thing->broadcast($dxchan);
+			$dxchan->lasthello($main::systime);
+		}
+		if ($dxchan->is_node) {
+			if ($main::systime > $dxchan->lasthello + $hello_interval) {
+				my $call = $dxchan->call;
+				my $thing = Thingy::Rt->new(user => $call);
+				if (my $nref = Route::Node::get($call)) {
+					$thing->copy_pc16_data($nref);
+					$thing->broadcast($dxchan);
+					$dxchan->lastcf($main::systime);
+				} else {
+					dbg("Aranea::per_minute: Route::Node for $call disappeared");
+					$dxchan->disconnect;
+				}
+			}
+		}
 	}
 }
 
@@ -278,7 +316,7 @@ sub tdecode
 	my $s = shift;
 	$s =~ s/^'(.*)'$/$1/;
 	$s =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	return $s;
+	return length $s ? $s : '';
 }
 
 sub genmsg

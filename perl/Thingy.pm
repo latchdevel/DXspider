@@ -55,25 +55,42 @@ sub send
 	my $thing = shift;
 	my $dxchan = shift;
 	my $class;
+	my $sub;
+	
 	if (@_) {
 		$class = shift;
 	} elsif ($dxchan->isa('DXChannel')) {
 		$class = ref $dxchan;
 	}
 
+	# BEWARE!!!!!
+	no strict 'refs';
+
 	# do output filtering
 	if ($thing->can('out_filter')) {
 		return unless $thing->out_filter($dxchan);
 	}
 
-	# generate the line which may (or not) be cached
+	# before send (and line generation) things
+	# function must return true to make the send happen
+	$sub = "before_send_$class";
+	return unless $thing->can($sub) && $thing->$sub($dxchan);
+	
+	# generate the protocol line which may (or not) be cached
 	my $ref;
 	unless ($ref = $thing->{class}) {
-		no strict 'refs';
-		my $sub = "gen_$class";
+		$sub = "gen_$class";
 		$ref = $thing->$sub($dxchan) if $thing->can($sub);
 	}
 	$dxchan->send(ref $ref ? @$ref : $ref) if $ref;
+
+	# after send
+	if ($thing->can('after_send_all')) {
+		$thing->after_send_all($dxchan);
+	} else {
+		$sub = "after_send_$class";
+		$thing->$sub($dxchan) if $thing->can($sub);
+	}
 }
 
 # broadcast to all except @_

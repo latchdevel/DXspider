@@ -24,10 +24,8 @@ use Thingy;
 use Thingy::RouteFilter;
 use Spot;
 
-use vars qw(@ISA $update_interval);
+use vars qw(@ISA);
 @ISA = qw(Thingy Thingy::RouteFilter);
-
-$update_interval = 30 * 60;		# the interval between 'cf' updates for an interface
 
 sub gen_Aranea
 {
@@ -37,13 +35,13 @@ sub gen_Aranea
 	unless ($thing->{Aranea}) {
 		my $ref;
 		if ($ref = $thing->{anodes}) {
-			$thing->{a} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
+			$thing->{a} = join(':', map {"$_->{flags}$_->{call}"} @$ref) || '';
 		}
 		if ($ref = $thing->{anodes}) {
-			$thing->{n} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
+			$thing->{n} = join(':', map {"$_->{flags}$_->{call}"} @$ref) || '';
 		}
 		if ($ref = $thing->{ausers}) {
-			$thing->{u} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
+			$thing->{u} = join(':', map {"$_->{flags}$_->{call}"} @$ref) || '';
 		}
 	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(s a n u)]);
 	}
@@ -238,12 +236,9 @@ sub copy_pc16_data
 
 	$thing->{'s'} = 'cf';
 
-	my @u = $uref->users;
-	if (@u) {
-		$thing->{ausers} = [map {Route::User::get($_)} @u];
-		return scalar @u;
-	}
-	return undef;
+	my @u = map {Route::User::get($_)} $uref->users;
+	$thing->{ausers} = \@u;
+	return @u;
 }
 
 

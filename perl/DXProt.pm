@@ -239,11 +239,6 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
-	if ($self->{call} ne $main::mycall) {
-		my $thing = Thingy::Hello->new(user=>$call);
-		$thing->broadcast($self);
-	}
-	
 	return $self;
 }
 
@@ -313,8 +308,10 @@ sub start
 	$self->state('init');
 	$self->{pc50_t} = $main::systime;
 
-	my $thing = Thingy::Hello->new(origin=>$main::mycall, user=>$call);
+	# ALWAYS output the hello
+	my $thing = Thingy::Hello->new(user => $call, h => $self->{here});
 	$thing->broadcast($self);
+	$self->lasthello($main::systime);
 	
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
@@ -1113,7 +1110,9 @@ sub handle_20
 	$self->{lastping} = 0;
 	my $thing = Thingy::Rt->new(user=>$self->{call});
 	my $nref = Route::Node::get($self->{call});
-	$thing->broadcast if $thing->copy_pc16_data($nref);
+	$thing->copy_pc16_data($nref);
+	$thing->broadcast;
+	
 	$self->lastcf($main::systime);
 }
 		
@@ -1203,7 +1202,8 @@ sub handle_22
 	$self->{lastping} = 0;
 	my $thing = Thingy::Rt->new(user=>$self->{call});
 	my $nref = Route::Node::get($self->{call});
-	$thing->broadcast if $thing->copy_pc16_data($nref);
+	$thing->copy_pc16_data($nref);
+	$thing->broadcast;
 	$self->lastcf($main::systime);
 }
 				

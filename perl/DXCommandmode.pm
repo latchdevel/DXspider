@@ -70,9 +70,6 @@ sub new
 	my $call = shift;
 	my @rout = $main::routeroot->add_user($call, Route::here(1));
 
-	# ALWAYS output the user
-	my $thing = Thingy::Hello->new(user => $call);
-	$thing->broadcast($self);
 	
 	my $ref = Route::User::get($call);
 	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
@@ -177,6 +174,11 @@ sub start
 		run_cmd($main::me, "forward/opernam $call");
 		$user->lastoper($main::systime + ((int rand(10)) * 86400));
 	}
+
+	# ALWAYS output the user
+	my $thing = Thingy::Hello->new(user => $call, h => $self->{here});
+	$thing->broadcast($self);
+	$self->lasthello($main::systime);
 
 	# run a script send the output to the punter
 	my $script = new Script(lc $call) || new Script('user_default');

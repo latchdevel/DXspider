@@ -119,6 +119,7 @@ $count = 0;
 		  inscript => '9,In a script,yesno',
 		  inqueue => '9,Input Queue,parray',
 		  lastcf => '1,Last CF Update,atime',
+		  lasthello => '1,Last Hello Update,atime',
 		 );
 
 use vars qw($VERSION $BRANCH);
