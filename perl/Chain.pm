@@ -30,10 +30,11 @@ sub setcheck
 # constructor			
 sub new
 {
-	my $name = shift;
-	my $ref = shift;
+	my $pkg = shift;
+	my $name = ref $pkg || $pkg;
+
 	my $self = [];
-	push @$self, $self, $self, $ref;
+	push @$self, $self, $self, @_;
 	return bless $self, $name;
 }
 
@@ -44,7 +45,7 @@ sub ins
 	
 	$docheck && _check($p);
 	
-	my $q = ref $ref && $ref->isa('Chain') ? $ref : new Chain $ref;
+	my $q = ref $ref && $ref->isa('Chain') ? $ref : Chain->new($ref);
 	$q->[PREV] = $p->[PREV];
 	$q->[NEXT] = $p;
 	$p->[PREV]->[NEXT] = $q;
@@ -68,9 +69,10 @@ sub del
 	
 	$docheck && _check($p);
 	
-	$p->[PREV]->[NEXT] = $p->[NEXT];
+	my $q = $p->[PREV]->[NEXT] = $p->[NEXT];
 	$p->[NEXT]->[PREV] = $p->[PREV];
-	return $p->[PREV];
+	$p->[NEXT] = $p->[PREV] = undef;
+	return $q;
 }
 
 # Is this chain empty?
@@ -104,7 +106,7 @@ sub prev
 	
 	$docheck && _check($base);
 	
-	return $base->[NEXT] == $base ? undef : $base->[PREV] unless $p; 
+	return $base->[PREV] == $base ? undef : $base->[PREV] unless $p; 
 	
 	$docheck && _check($p);
 	
@@ -161,9 +163,9 @@ Chain - Double linked circular chain handler
 =head1 SYNOPSIS
 
   use Chain;
-  $base = new Chain;
-  $p->ins($ref);
-  $p->add($ref);
+  $base = new Chain [$obj];
+  $p->ins($ref [,$obj]);
+  $p->add($ref [,$obj]);
   $ref = $p->obj or $p->obj($ref);
   $q = $base->next($p);
   $q = $base->prev($p);

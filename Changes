@@ -1,3 +1,5 @@
+29Sep02=======================================================================
+1. Added LRU caching to DXUsers and Prefix.
 28Sep02=======================================================================
 1. Put some transparent caching into Prefix.pm to see if this has a 
 performance impact.

@@ -1078,7 +1078,7 @@ sub normal
 
 			# add this station to the user database, if required
 			my $user = DXUser->get_current($call);
-			$user = DXUser->new($call) if !$user;
+			$user = DXUser->new($call) unless $user;
 			
 			if ($field[2] == 1) {
 				$user->name($field[3]);

@@ -15,6 +15,7 @@ use Fcntl;
 use IO::File;
 use DXDebug;
 use DXUtil;
+use LRU;
 
 use strict;
 
@@ -24,13 +25,14 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize);
 
 %u = ();
 $dbm = undef;
 $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
+$lrusize = 500;
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -121,6 +123,7 @@ sub init
 	}
 	
 	$filename = $fn;
+	$lru = LRU->newbase("DXUser", $lrusize);
 }
 
 sub del_file
@@ -182,8 +185,16 @@ sub get
 	my $pkg = shift;
 	my $call = uc shift;
 	my $data;
+	
+	# is it in the LRU cache?
+	my $ref = $lru->get($call);
+	return $ref if $ref;
+	
+	# search for it
 	unless ($dbm->get($call, $data)) {
-		return decode($data);
+		$ref = decode($data);
+		$lru->put($call, $ref);
+		return $ref;
 	}
 	return undef;
 }
@@ -233,7 +244,9 @@ sub put
 	$dbm->del($call);
 	delete $self->{annok} if $self->{annok};
 	delete $self->{dxok} if $self->{dxok};
-	$dbm->put($call, $self->encode);
+	$lru->put($call, $self);
+	my $ref = $self->encode;
+	$dbm->put($call, $ref);
 }
 
 # 
@@ -277,6 +290,7 @@ sub del
 #	for ($dbm->get_dup($call)) {
 #		$dbm->del_dup($call, $_);
 #	}
+	$lru->remove($call);
 	$dbm->del($call);
 }
 
