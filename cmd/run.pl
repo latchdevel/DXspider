@@ -19,7 +19,7 @@ while (@f) {
 		push @out, $self->msg('e5');
 		next;
 	}
-	$f =~ s|[^-\w/]||g;
+	$f =~ s|[^-\w/\\]||g;
 	my $script = new Script(lc $f);
 	unless ($script) {
 		push @out, $self->msg('e3', 'script', $f);
