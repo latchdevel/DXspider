@@ -1057,7 +1057,7 @@ sub import_msgs
 	closedir(DIR);
 	my $name;
 	foreach $name (@names) {
-		next if $name =~ /^./;
+		next if $name =~ /^\./;
 		my $fn = "$importfn/$name";
 		next unless -f $fn;
 		unless (open(MSG, $fn)) {
@@ -1066,7 +1066,7 @@ sub import_msgs
 			unlink($fn);
 			next;
 		}
-		my @msg = map { chomp } <MSG>;
+		my @msg = map { chomp; $_ } <MSG>;
 		close(MSG);
 		unlink($fn);
 		my @out = import_one($DXProt::me, \@msg);
@@ -1089,7 +1089,13 @@ sub import_one
 	my @out;
 				
 	# first line;
-	my @f = split /\s+/, shift @$ref;
+	my $line = shift @$ref;
+	my @f = split /\s+/, $line;
+	unless ($f[0] =~ /^(:?S|SP|SB|SEND)$/ ) {
+		my $m = "invalid first line in import '$line'";
+		dbg('MSG', $m );
+		return (1, $m);
+	}
 	while (@f) {
 		my $f = uc shift @f;
 		next if $f eq 'SEND';
@@ -1147,7 +1153,7 @@ sub import_one
 	pop @$ref while (@$ref && ($$ref[-1] eq '' || $$ref[-1] =~ /^\s+$/));
 
 	# strip off /EX or /ABORT
-	return () if (@$ref && $$ref[-1] =~ m{^/ABORT$}i); 
+	return ("aborted") if (@$ref && $$ref[-1] =~ m{^/ABORT$}i); 
 	pop @$ref if (@$ref && $$ref[-1] =~ m{^/EX$}i);									 
 
     # write all the messages away
@@ -1166,12 +1172,12 @@ sub import_one
 							$rr);
 		$mref->store($ref);
 		$mref->add_dir();
-		push @out, $dxchan->msg('m11', $ref->{msgno}, $to);
+		push @out, $dxchan->msg('m11', $mref->{msgno}, $to);
 		#push @out, "msgno $ref->{msgno} sent to $to";
 		my $todxchan = DXChannel->get(uc $to);
 		if ($todxchan) {
 			if ($todxchan->is_user()) {
-				$todxchan->send($dxchan->msg('m9'));
+				$todxchan->send($todxchan->msg('m9'));
 			}
 		}
 	}

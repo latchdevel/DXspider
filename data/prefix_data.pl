@@ -3233,7 +3233,7 @@
    541 => bless( { name => 'So-Africa-ZS', dxcc => 265, itu => 57, cq => 38, utcoff => -2.0, lat => -33.9, long => 18.4 }, 'Prefix'),
    542 => bless( { name => 'So-Africa-ZS', dxcc => 265, itu => 57, cq => 38, utcoff => -2.0, lat => -28.5, long => 27 }, 'Prefix'),
    543 => bless( { name => 'So-Africa-ZS', dxcc => 265, itu => 57, cq => 38, utcoff => -2.0, lat => -29.9, long => 30.9 }, 'Prefix'),
-   544 => bless( { name => 'East-Timor-4W', dxcc => 340, itu => 51, cq => 28, utcoff => -8.0, lat => -9.21666666666667, long => 126.5 }, 'Prefix'),
-   545 => bless( { name => 'Chesterfield-Is-TX0', dxcc => 341, itu => 56, cq => 32, utcoff => -11.0, lat => -19.5166666666667, long => 158.183333333333 }, 'Prefix'),
+   544 => bless( { name => 'East-Timor-4W', dxcc => 340, itu => 54, cq => 28, utcoff => -8.0, lat => -9.21666666666667, long => 126.5 }, 'Prefix'),
+   545 => bless( { name => 'Chesterfield-Is-TX0', dxcc => 341, itu => 56, cq => 30, utcoff => -11.0, lat => -19.5166666666667, long => 158.183333333333 }, 'Prefix'),
 );
 
