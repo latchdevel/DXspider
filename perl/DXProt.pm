@@ -304,53 +304,17 @@ sub sendinit
 sub removepc90
 {
 	$_[0] =~ s/^PC90\^[-A-Z0-9]+\^\d+\^//;
-}
-
-sub removepc91
-{
 	$_[0] =~ s/^PC91\^[-A-Z0-9]+\^\d+\^[-A-Z0-9]+\^//;
 }
 
-sub send
-{
-	my $self = shift;
-	while (@_) {
-		my $line = shift;
-		if ($self->user->wantpc90) {
-			$line = mungepc90($line);
-		} else {
-			removepc91($line);
-			removepc90($line);
-		}
-		$self->SUPER::send($line);
-	}
-}
-
-my $pc90msgid = 0;
-
-sub nextpc90
-{
-	$pc90msgid = 0 if $pc90msgid > 9999;
-	return $pc90msgid++;
-}
-
-sub mungepc90
-{
-	unless ($_[0] =~ /^PC9\d/) {
-		my $id = nextpc90();
-		return "PC90^$main::mycall^$id^" . $_[0]; 
-	} 
-	return $_[0];
-}
-
-sub mungepc91
-{
-	unless ($_[1] =~ /^PC9\d/) {
-		my $id = nextpc90();
-		return "PC91^$main::mycall^$id^$_[0]^" . $_[1]; 
-	} 
-	return $_[1];
-}
+#sub send
+#{
+#	my $self = shift;
+#	while (@_) {
+#		my $line = shift;
+#		$self->SUPER::send($line);
+#	}
+#}
 
 #
 # This is the normal pcxx despatcher
@@ -358,6 +322,10 @@ sub mungepc91
 sub normal
 {
 	my ($self, $line) = @_;
+
+	# remove any incoming PC90 frames
+	removepc90($line);
+
 	my @field = split /\^/, $line;
 	return unless @field;
 	
@@ -380,68 +348,7 @@ sub normal
 		return;
 	}
 
-	# handle PC90 frames in a special way.
-    # 
-	# PC90 frames are normal frames that that are wrapped in inside a PC90 
-    # The extra fields are "originating node" and a sequence number.
-    # The sequence number is checked against the nodes 'last one' to see if
-	# it is a duplicate and, if so, is dropped at this stage; before any
-	# other processing.
-	#
-	# This is done here simply for efficiency. Adding another function would
-	# add more copying and so on.
-	#
-
 	my $origin = $self->{call};
-	
-	if ($pcno >= 90) {
-		$origin = $field[1];
-		if ($origin eq $main::mycall) {
-			dbg("PCPROT: loop dupe") if isdbg('chanerr');
-			return;
-		}
-		$self->user->wantpc90(1) unless $self->user->wantpc90 || $origin ne $self->{call};
-		my $seq = $field[2];
-		my $node = Route::Node::get($origin);
-		if ($node) {
-			if (my $lid = $node->lid) {
-				my $cmp = $seq >= $lid ? $seq : $seq + 9999;
-				if ($cmp <= $lid) {
-					dbg("PCPROT: sequence dupe $seq ($cmp) <= $lid") if isdbg('chanerr');
-					return;
-				}
-			}
-			$node->lid($seq);
-		}
-
-		# do a recheck on the contents of the PC90
-		if ($pcno >= 90) {
-			shift @field;
-			shift @field;
-			shift @field;
-			$origin = shift @field if $pcno == 91;
-
-			($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
-			unless (defined $pcno && $pcno >= 10 && $pcno <= 89) {
-				dbg("PCPROT: unknown protocol") if isdbg('chanerr');
-				return;
-			}
-			
-			# check for and dump bad protocol messages
-			my $n = check($pcno, @field);
-			if ($n) {
-				dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
-				return;
-			}
-		}
-	} else {
-		if ($pcno == 16 || $pcno == 17 || $pcno == 19 || $pcno == 21) {
-			$line = mungepc91($origin, $line);
-		} else {
-			$line = mungepc90($line);
-		}
-	}
-
 	no strict 'subs';
 	my $sub = "handle_$pcno";
 
@@ -1028,7 +935,6 @@ sub handle_19
 				$user->homenode($origin);
 				$user->node($origin);
 				$user->wantroutepc19(1);
-				$user->wantpc90(1);
 			}
 			$user->put;
 		}
@@ -1578,7 +1484,7 @@ sub handle_51
 			}
 		}
 	} else {
-		if ($line !~ /^PC90/ && eph_dup($line)) {
+		if (eph_dup($line)) {
 			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
 			return;
 		}
@@ -2078,30 +1984,18 @@ sub send_local_config
 		$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
 
 		my $node;
-		if ($self->user->wantpc90) {
-			for $node (@localnodes) {
-				my @nodes = map {my $r = Route::Node::get($_); $r ? $r : ()} $node->nodes;
-				$self->send_route($node->call, \&pc19, scalar(@nodes)+1, @nodes);
-				for my $r (@nodes) {
-					push @remotenodes, $r unless grep $r eq $_, @remotenodes;
-				}
-			}
-		} else {
-			my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
-			my @intcalls;
-			for $node (@rawintcalls) {
-				push @intcalls, $node unless grep $node eq $_, @intcalls; 
-			}
-			my $ref = Route::Node::get($self->{call});
-			my @rnodes = $ref->nodes;
-			for $node (@intcalls) {
-				push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
-			}
-			$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
+		my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
+		my @intcalls;
+		for $node (@rawintcalls) {
+			push @intcalls, $node unless grep $node eq $_, @intcalls; 
 		}
+		my $ref = Route::Node::get($self->{call});
+		my @rnodes = $ref->nodes;
+		for $node (@intcalls) {
+			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
+		}
+		$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
 	}
-	
-
 	
 	# get all the users connected on the above nodes and send them out
 	foreach $node ($main::routeroot, @localnodes, @remotenodes) {
@@ -2435,7 +2329,6 @@ sub send_route
 				next unless $routeit;
 			}
 			
-			$routeit = mungepc91($origin, $routeit) if $self->user->wantpc90;
 			$self->send($routeit);
 		}
 	}
@@ -2457,11 +2350,7 @@ sub broadcast_route
 			next unless $dxchan->isa('DXProt');
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
  
-			if ($self->user->wantpc90 && $line) {
-				$dxchan->send(mungepc91($origin, $line));
-			} else {
-				$dxchan->send_route($origin, $generate, @_);
-			}
+			$dxchan->send_route($origin, $generate, @_);
 		}
 	}
 }
@@ -2545,7 +2434,6 @@ sub eph_dup
 
 	# chop the end off
 	$s =~ s/\^H\d\d?\^?\~?$//;
-	removepc90($s);
 	$r = 1 if exists $eph{$s};    # pump up the dup if it keeps circulating
 	$eph{$s} = $main::systime + $t;
 	return $r;
