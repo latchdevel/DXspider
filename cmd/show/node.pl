@@ -17,13 +17,14 @@
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) unless $self->priv >= 1;
 
+use DB_File;
+
 my @call = map {uc $_} split /\s+/, $line; 
 my @out;
 my $count;
 
 # search thru the user for nodes
 unless (@call) {
-	use DB_File;
 	
 	my ($action, $key, $data);
 	for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = R_NEXT) {
