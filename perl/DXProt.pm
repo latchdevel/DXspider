@@ -710,6 +710,9 @@ sub handle_16
 
 	# do we believe this call? 
 	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		}
 		dbg("PCPROT: We don't believe $ncall on $self->{call}");
 		return;
 	}
@@ -790,6 +793,9 @@ sub handle_17
 
 	# do we believe this call? 
 	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		}
 		dbg("PCPROT: We don't believe $ncall on $self->{call}");
 		return;
 	}
@@ -928,10 +934,11 @@ sub handle_19
 		# do we believe this call? 
 		unless ($call eq $self->{call} || $self->is_believed($call)) {
 			my $pt = $user->lastping || 0;
-			if ($pt+$investigation_int < $main::systime && !Investigate::get($call)) {
-				my $iref = Investigate->new($call);
-				$iref->version($ver);
-				$iref->here($here);
+			if ($pt+$investigation_int < $main::systime && !Investigate::get($call, $self->{call})) {
+				my $ivp  = Investigate->new($call, $self->{call});
+				$ivp->version($ver);
+				$ivp->here($here);
+				$ivp->store_pcxx($pcno,$line,$origin,'PC19',$here,$call,$conf,$ver,$_[-1]);
 			}
 			dbg("PCPROT: We don't believe $call on $self->{call}");
 			next;
@@ -985,6 +992,9 @@ sub handle_21
 	return if $call eq $main::mycall;  # don't allow malicious buggers to disconnect me (or ignore loops)!
 
 	unless ($call eq $self->{call} || $self->is_believed($call)) {
+		if (my $ivp = Investigate::get($call, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		}
 		dbg("PCPROT: We don't believe $call on $self->{call}");
 		return;
 	}
@@ -1413,11 +1423,17 @@ sub handle_51
 							my $rref = Route::Node::get($tochan->{call});
 							$rref->pingtime($tochan->{pingave}) if $rref;
 							$tochan->{nopings} = $nopings; # pump up the timer
+							if (my $ivp = Investigate::get($from, $self->{call})) {
+								$ivp->handle_ping;
+							}
 						} elsif (my $rref = Route::Node::get($r->{call})) {
 							if (defined $rref->pingtime) {
 								$rref->pingtime($rref->pingtime + (($t - $rref->pingtime) / 6));
 							} else {
 								$rref->pingtime($t);
+							}
+							if (my $ivp = Investigate::get($from, $self->{call})) {
+								$ivp->handle_ping;
 							}
 						}
 					} 
@@ -1692,6 +1708,8 @@ sub handle_default
 # This is called from inside the main cluster processing loop and is used
 # for despatching commands that are doing some long processing job
 #
+# It is called once per second
+#
 sub process
 {
 	my $t = time;
@@ -1725,6 +1743,8 @@ sub process
 		}
 	}
 
+	Investigate::process();
+	
 	# every ten seconds
 	if ($t - $last10 >= 10) {	
 		# clean out ephemera 
@@ -2165,16 +2185,23 @@ sub load_hops
 # add a ping request to the ping queues
 sub addping
 {
-	my ($from, $to) = @_;
+	my ($from, $to, $via) = @_;
 	my $ref = $pings{$to} || [];
 	my $r = {};
 	$r->{call} = $from;
 	$r->{t} = [ gettimeofday ];
-	route(undef, $to, pc51($to, $main::mycall, 1));
+	if ($via && (my $dxchan = DXChannel->get($via))) {
+		$dxchan->send(pc51($to, $main::mycall, 1));
+	} else {
+		route(undef, $to, pc51($to, $main::mycall, 1));
+	}
 	push @$ref, $r;
 	$pings{$to} = $ref;
 	my $u = DXUser->get_current($to);
-	$u->lastping($main::systime) if $u;
+	if ($u) {
+		$u->lastping($main::systime);
+		$u->put;
+	}
 }
 
 sub process_rcmd

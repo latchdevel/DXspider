@@ -785,7 +785,7 @@ sub set_believe
 	my $self = shift;
 	my $call = uc shift;
 	$self->{believe} ||= [];
-	push @{$self->{believe}}, $call;
+	push @{$self->{believe}}, $call unless grep $_ eq $call, @{$self->{believe}};
 }
 
 sub unset_believe
