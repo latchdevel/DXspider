@@ -299,7 +299,7 @@ STDOUT->autoflush(1);
 Log('cluster', "DXSpider V$version started");
 
 # banner
-dbg('err', "DXSpider DX Cluster Version $version\nCopyright (c) 1998-1999 Dirk Koopman G1TLH");
+dbg('err', "DXSpider DX Cluster Version $version", "Copyright (c) 1998-1999 Dirk Koopman G1TLH");
 
 # load Prefixes
 dbg('err', "loading prefixes ...");
@@ -368,7 +368,6 @@ dbg('local', "Local::init error $@") if $@;
 
 # this, such as it is, is the main loop!
 dbg('err', "orft we jolly well go ...");
-Log('err', "DXSpider version $version started...");
 
 #open(DB::OUT, "|tee /tmp/aa");
 

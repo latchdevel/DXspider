@@ -147,7 +147,13 @@ sub rec_socket
 			$buffered = $line;	# set buffered or unbuffered
 		} elsif ($sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
-		}	  
+		} 
+
+		# ******************************************************
+		# ******************************************************
+		# any other sorts that might happen are silently ignored.
+		# ******************************************************
+		# ******************************************************
 	}
 	$lasttime = time; 
 }

@@ -41,7 +41,7 @@ $pc11_dup_age = 3*3600;			# the maximum time to keep the spot dup list for
 $pc23_dup_age = 3*3600;			# the maximum time to keep the wwv dup list for
 $pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
 $pc12_dup_lth = 60;				# the length of ANN text to save for deduping 
-$pc11duptext = 27;				# maximum lth of the text field in PC11 to use for duduping
+$pc11duptext = 20;				# maximum lth of the text field in PC11 to use for duduping
 
 %spotdup = ();				    # the pc11 and 26 dup hash 
 %wwvdup = ();				    # the pc23 and 27 dup hash
@@ -72,15 +72,15 @@ sub init
 	@today = Julian::sub(@today, 1);
 	push @spots, Spot::readfile(@today);
 	for (@spots) {
-		my $dupkey = "$_->[0]$_->[1]$_->[2]$_->[3]$_->[4]";
+		my $duptext = length $_->[3] > $pc11duptext ? substr($_->[3], 0, $pc11duptext) : $_->[3] ;
+		my $dupkey = "$_->[0]$_->[1]$_->[2]$duptext$_->[4]";
 		$spotdup{$dupkey} = $_->[2];
 	}
 
 	# now prime the wwv duplicates file with just this month's data
 	my @wwv = Geomag::readfile(time);
 	for (@wwv) {
-		my $duptext = substr $_->[3], 0, $pc11duptext;
-		my $dupkey = "$_->[1].$_->[2]$duptext$_->[4]";
+		my $dupkey = "$_->[1].$_->[2]$_->[3]$_->[4]";
 		$wwvdup{$dupkey} = $_->[1];
 	}
 
@@ -231,6 +231,7 @@ sub normal
 			}
 
 			# strip off the leading & trailing spaces from the comment
+			my $duptext = length $field[5] > $pc11duptext ? substr($field[5], 0, $pc11duptext) : $field[5];
 			my $text = unpad($field[5]);
 			
 			# store it away
@@ -239,8 +240,7 @@ sub normal
 			
 			# do some de-duping
 			my $freq = $field[1] - 0;
-			my $duptext = substr $text, 0, $pc11duptext;
-			my $dupkey = "$freq$field[2]$d$duptext$spotter";
+			my $dupkey = "$freq$field[2]$d$text$spotter";
 			if ($spotdup{$dupkey}) {
 				dbg('chan', "Duplicate Spot ignored\n");
 				return;
