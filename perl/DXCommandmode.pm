@@ -124,7 +124,7 @@ sub normal
 	  ($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
       my $package = find_cmd_name($path, $fcmd);
-	  @ans = (0, "Syserr: compile err on $package\n$@$errstr") if !$package ;
+	  @ans = (0) if !$package ;
 
       if ($package) {
 	    my $c = qq{ \@ans = $package(\$self, \$args) };
@@ -145,7 +145,7 @@ sub normal
   } else {
     shift @ans;
 	if (@ans > 0) {
-	  $self->send($self->msg('e2', @ans));
+	  $self->send($self->msg('e2'), @ans);
 	} else {
       $self->send($self->msg('e1'));
 	}
@@ -394,6 +394,7 @@ sub find_cmd_name {
 	my $fh = new FileHandle;
 	if (!open $fh, $filename) {
 	  $errstr = "Syserr: can't open '$filename' $!";
+	  return undef;
 	};
 	local $/ = undef;
 	my $sub = <$fh>;
@@ -424,7 +425,6 @@ sub find_cmd_name {
 	  print "\$\@ = $@";
 	  $errstr = $@;
 	  delete_package($package);
-	  $package = undef;
 	} else {
       #cache it unless we're cleaning out each time
 	  $Cache{$package}{mtime} = $mtime;
@@ -433,6 +433,7 @@ sub find_cmd_name {
   
   #print Devel::Symdump->rnew($package)->as_string, $/;
   $package = "DXCommandmode::$package" if $package;
+  $package = undef if $errstr;
   return $package;
 }
 
