@@ -24,28 +24,38 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($db  %prefix_loc %pre %cache $lasttime $hits $matchtotal);
+use vars qw($db  %prefix_loc %pre %cache $misses $hits $matchtotal $lasttime);
 
 $db = undef;					# the DB_File handle
 %prefix_loc = ();				# the meat of the info
 %pre = ();						# the prefix list
 %cache = ();					# a runtime cache of matched prefixes
 $lasttime = 0;					# last time this cache was cleared
-$hits = $matchtotal = 1;		# cache stats
+$hits = $misses = $matchtotal = 1;		# cache stats
+
+#my $cachefn = "$main::data/prefix_cache";
 
 sub load
 {
+	# untie every thing
+#	unlink $cachefn;
+	
 	if ($db) {
 		undef $db;
 		untie %pre;
 		%pre = ();
 		%prefix_loc = ();
+		untie %cache;
 	}
-	$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0666, $DB_BTREE) or confess "can't tie \%pre ($!)";  
+
+	# tie the main prefix database
+	$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0664, $DB_BTREE) or confess "can't tie \%pre ($!)";  
 	my $out = $@ if $@;
 	do "$main::data/prefix_data.pl" if !$out;
 	$out = $@ if $@;
-	#  print Data::Dumper->Dump([\%pre, \%prefix_loc], [qw(pre prefix_loc)]);
+
+	# tie the prefix cache
+#	tie (%cache, "DB_File", $cachefn, O_RDWR|O_CREAT, 0664, $DB_HASH) or confess "can't tie prefix cache to $cachefn $!";
 	return $out;
 }
 
@@ -145,11 +155,12 @@ sub matchprefix
 		if ($p) {
 			$hits++;
 			if (isdbg('prefix')) {
-				my $percent = sprintf "%.1f", $hits * 100 / $matchtotal;
-				dbg("Partial Prefix Cache Hit: $s Hits: $hits of $matchtotal = $percent\%");
+				my $percent = sprintf "%.1f", $hits * 100 / $misses;
+				dbg("Partial Prefix Cache Hit: $s Hits: $hits/$misses of $matchtotal = $percent\%");
 			}
 			return @$p;
 		} else {
+			$misses++;
 			push @partials, $s;
 			my @out = get($s);
 			if (isdbg('prefix')) {
@@ -158,7 +169,7 @@ sub matchprefix
 				dbg("Partial prefix: $pref $s $part" );
 			} 
 			if (@out && $out[0] eq $s) {
-				$cache{$_} = \@out for @partials;
+				$cache{$_} = [ @out ] for @partials;
 				return @out;
 			} 
 		}
@@ -181,17 +192,17 @@ sub extract
 	my $p;
 	my @parts;
 	my ($call, $sp, $i);
-  
+
 	# clear out the cache periodically to stop it growing for ever.
-	if ($main::systime - $lasttime >= 15*60) {
+	if ($main::systime - $lasttime >= 20*60) {
 		if (isdbg('prefix')) {
-			my $percent = sprintf "%.1f", $hits * 100 / $matchtotal;
-			dbg("Prefix Cache Cleared, Hits: $hits of $matchtotal = $percent\%") ;
+			my $percent = sprintf "%.1f", $hits * 100 / $misses;
+			dbg("Prefix Cache Cleared, Hits: $hits/$misses of $matchtotal = $percent\%") ;
 		}
 		%cache =();
 		$lasttime = $main::systime;
 		$hits = $matchtotal = 0;
-	} 
+	}
 
 LM:	foreach $call (split /,/, $calls) {
 
@@ -203,14 +214,15 @@ LM:	foreach $call (split /,/, $calls) {
 		if ($p) {
 			$hits++;
 			if (isdbg('prefix')) {
-				my $percent = sprintf "%.1f", $hits * 100 / $matchtotal;
-				dbg("Prefix Cache Hit: $call Hits: $hits of $matchtotal = $percent\%");
+				my $percent = sprintf "%.1f", $hits * 100 / $misses;
+				dbg("Prefix Cache Hit: $call Hits: $hits/$misses of $matchtotal = $percent\%");
 			}
 			push @out, @$p;
 			next;
 		} else {
 			@nout =  get($call);
 			if (@nout && $nout[0] eq $call) {
+				$misses++;
 				$cache{$call} = \@nout;
 				dbg("got exact prefix: $nout[0]") if isdbg('prefix');
 				push @out, @nout;
@@ -231,6 +243,7 @@ LM:	foreach $call (split /,/, $calls) {
 			@nout = get($s);
 			if (@nout && $nout[0] eq $s) {
 				dbg("got exact multipart prefix: $call $s") if isdbg('prefix');
+				$misses++;
 				$cache{$call} = \@nout;
 				push @out, @nout;
 				next;
@@ -250,6 +263,7 @@ LM:	foreach $call (split /,/, $calls) {
 				my @try = get($s);
 				if (@try && $try[0] eq $s) {
 					dbg("got 3 part prefix: $call $s") if isdbg('prefix');
+					$misses++;
 					$cache{$call} = \@try;
 					push @out, @try;
 					next;
@@ -272,6 +286,7 @@ LM:	foreach $call (split /,/, $calls) {
 				my @try = get($s);
 				if (@try && $try[0] eq $s) {
 					dbg("got 2 part prefix: $call $s") if isdbg('prefix');
+					$misses++;
 					$cache{$call} = \@try;
 					push @out, @try;
 					next;
@@ -287,6 +302,7 @@ LM:	foreach $call (split /,/, $calls) {
 			@nout = matchprefix($parts[0]);
 			if (@nout) {
 				dbg("got prefix: $call = $nout[0]") if isdbg('prefix');
+				$misses++;
 				$cache{$call} = \@nout;
 				push @out, @nout;
 				next;
@@ -331,13 +347,16 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 						dbg("Compound prefix: $try $part" );
 					}
 					if (@try && $try eq $try[0]) {
+						$misses++;
 						$cache{$call} = \@try;
 						push @out, @try;
 					} else {
+						$misses++;
 						$cache{$call} = \@nout;
 						push @out, @nout;
 					}
 				} else {
+					$misses++;
 					$cache{$call} = \@nout;
 					push @out, @nout;
 				}
@@ -347,6 +366,7 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 
 		# we are a pirate!
 		@nout = matchprefix('Q');
+		$misses++;
 		$cache{$call} = \@nout;
 		push @out, @nout;
 	}
