@@ -73,10 +73,15 @@ sub AUTOLOAD
 #
 sub init
 {
-	my ($pkg, $fn) = @_;
+	my ($pkg, $fn, $mode) = @_;
   
 	confess "need a filename in User" if !$fn;
-	$dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or confess "can't open user file: $fn ($!)";
+	if ($mode) {
+		$dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or confess "can't open user file: $fn ($!)";
+	} else {
+		$dbm = tie (%u, MLDBM, $fn, O_RDONLY) or confess "can't open user file: $fn ($!)";
+	}
+	
 	$filename = $fn;
 }
 

@@ -254,7 +254,7 @@ Bands::load();
 
 # initialise User file system
 print "loading user file system ...\n"; 
-DXUser->init($userfn);
+DXUser->init($userfn, 1);
 
 # start listening for incoming messages/connects
 print "starting listener ...\n";

@@ -41,7 +41,6 @@ BEGIN {
 use Msg;
 use DXVars;
 use DXDebug;
-use DXUser;
 use IO::File;
 use IO::Socket;
 use IPC::Open2;
@@ -365,6 +364,8 @@ if ($loginreq) {
 	}
 	
 
+	use DXUser;
+	
 	DXUser->init($userfn);
 	
 	# allow a login from an existing user. I could create a user but

@@ -80,19 +80,19 @@ if (-e "$userfn") {
 	$ans = <STDIN>;
 	if ($ans =~ /^[Yy]/) {
 		delete_it();
-		DXUser->init($userfn);
+		DXUser->init($userfn, 1);
 		create_it();
 	} else {
 		print "Do you wish to reset your cluster and sysop information? [y/N]: ";
 		$ans = <STDIN>;
 		if ($ans =~ /^[Yy]/) {
-			DXUser->init($userfn);
+			DXUser->init($userfn, 1);
 			create_it();
 		}
 	}
   
 } else {
-	DXUser->init($userfn);
+	DXUser->init($userfn, 1);
 	create_it();
 }
 DXUser->finish();

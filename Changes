@@ -1,3 +1,7 @@
+17Feb99========================================================================
+1. added export_user.pl to export user files (for interest and safety)
+2. changed DXUser::init to allow O_RDONLY access which may limit the number
+of coredumps G0RDI seems to get.
 15Feb99========================================================================
 1. Added msg forwarding code which uses $main::root/msg/forward.pl.
 14Feb99========================================================================
