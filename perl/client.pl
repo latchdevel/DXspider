@@ -39,6 +39,7 @@ BEGIN {
 }
 
 use Msg;
+use IntMsg;
 use DXVars;
 use DXDebug;
 use DXUtil;
@@ -78,8 +79,10 @@ sub sig_term
 # terminate a child
 sub sig_chld
 {
-	$SIG{CHLD} = \&sig_chld;
-	$waitedpid = wait;
+	unless ($^O =~ /^MS/i) {
+		$SIG{CHLD} = \&sig_chld;
+		$waitedpid = wait;
+	}
 	dbg('connect', "caught $pid");
 }
 
@@ -401,11 +404,12 @@ if ($call eq $mycall) {
 
 $stdout->autoflush(1);
 
-$SIG{'INT'} = \&sig_term;
-$SIG{'TERM'} = \&sig_term;
-$SIG{'HUP'} = \&sig_term;
-$SIG{'CHLD'} = \&sig_chld;
-$SIG{'ALRM'} = \&timeout;
+unless ($^O =~ /^MS/i) {
+	$SIG{'INT'} = \&sig_term;
+	$SIG{'TERM'} = \&sig_term;
+	$SIG{'HUP'} = \&sig_term;
+	$SIG{'CHLD'} = \&sig_chld;
+}
 
 dbgadd('connect');
 
@@ -520,7 +524,7 @@ if ($ssid) {
 }
 
 
-$conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
+$conn = IntMsg->connect("$clusteraddr", $clusterport, \&rec_socket);
 if (! $conn) {
 	if (-r "$data/offline") {
 		open IN, "$data/offline" or die;
@@ -541,7 +545,7 @@ Msg->set_event_handler($stdin, "read" => \&rec_stdin);
 
 for (;;) {
 	my $t;
-	Msg->event_loop(1, 1);
+	Msg->event_loop(1, 0.1);
 	$t = time;
 	if ($t > $lasttime) {
 		if ($outqueue) {

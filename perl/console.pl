@@ -26,6 +26,7 @@ BEGIN {
 }
 
 use Msg;
+use IntMsg;
 use DXVars;
 use DXDebug;
 use DXUtil;
@@ -422,7 +423,7 @@ if ($call eq $mycall) {
 	exit(0);
 }
 
-$conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
+$conn = IntMsg->connect("$clusteraddr", $clusterport, \&rec_socket);
 if (! $conn) {
 	if (-r "$data/offline") {
 		open IN, "$data/offline" or die;
@@ -437,8 +438,11 @@ if (! $conn) {
 }
 
 
-$SIG{'INT'} = \&sig_term;
-$SIG{'TERM'} = \&sig_term;
+unless ($DB::VERSION) {
+	$SIG{'INT'} = \&sig_term;
+	$SIG{'TERM'} = \&sig_term;
+}
+
 #$SIG{'WINCH'} = \&do_resize;
 $SIG{'HUP'} = \&sig_term;
 
@@ -455,7 +459,7 @@ Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 my $lastmin = 0;
 for (;;) {
 	my $t;
-	Msg->event_loop(1, 1);
+	Msg->event_loop(1, 0.1);
 	$t = time;
 	if ($t > $lasttime) {
 		my ($min)= (gmtime($t))[1];

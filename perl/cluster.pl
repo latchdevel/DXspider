@@ -39,6 +39,8 @@ BEGIN {
 }
 
 use Msg;
+use IntMsg;
+use ExtMsg;
 use DXVars;
 use DXDebug;
 use DXLog;
@@ -82,15 +84,9 @@ $version = "1.47";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
 @outstanding_connects = ();     # list of outstanding connects
-      
-# handle disconnections
-sub disconnect
-{
-	my $dxchan = shift;
-	return if !defined $dxchan;
-	$dxchan->disconnect();
-}
+@listeners = ();				# list of listeners
 
+      
 # send a message to call on conn and disconnect
 sub already_conn
 {
@@ -102,7 +98,7 @@ sub already_conn
 	dbg('chan', "-> Z $call bye\n");
 	$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
 	sleep(1);
-	$conn->disconnect();
+	$conn->disconnect;
 }
 
 # handle incoming messages
@@ -205,19 +201,15 @@ sub cease
 	# disconnect nodes
 	foreach $dxchan (DXChannel->get_all()) {
 		next unless $dxchan->is_node;
-		disconnect($dxchan) unless $dxchan == $DXProt::me;
+	    $dxchan->disconnect unless $dxchan == $DXProt::me;
 	}
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
-	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 
 	# disconnect users
 	foreach $dxchan (DXChannel->get_all()) {
 		next if $dxchan->is_node;
-		disconnect($dxchan) unless $dxchan == $DXProt::me;
+		$dxchan->disconnect unless $dxchan == $DXProt::me;
 	}
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
@@ -230,7 +222,12 @@ sub cease
 
 	# close all databases
 	DXDb::closeall;
-	
+
+	# close all listeners
+	for (@listeners) {
+		$_->close_server;
+	}
+
 	dbg('chan', "DXSpider version $version ended");
 	Log('cluster', "DXSpider V$version stopped");
 	dbgclose();
@@ -276,10 +273,10 @@ sub process_inqueue
 		die "\$user not defined for $call" if !defined $user;
 		# normal input
 		$dxchan->normal($line);
-		disconnect($dxchan) if ($dxchan->{state} eq 'bye');
+		$dxchan->disconnect if ($dxchan->{state} eq 'bye');
 	} elsif ($sort eq 'Z') {
 		$dxchan->conn(undef);
-		disconnect($dxchan);
+		$dxchan->disconnect;
 	} elsif ($sort eq 'D') {
 		;                       # ignored (an echo)
 	} else {
@@ -331,16 +328,25 @@ dbg('err', "loading user file system ...");
 DXUser->init($userfn, 1);
 
 # start listening for incoming messages/connects
-dbg('err', "starting listener ...");
-Msg->new_server("$clusteraddr", $clusterport, \&login);
+use Listeners;
+
+dbg('err', "starting listeners ...");
+push @listeners, IntMsg->new_server("$clusteraddr", $clusterport, \&login);
+dbg('err', "Internal port: $clusteraddr $clusterport");
+for (@main::listen) {
+	push @listeners, ExtMsg->new_server($_->[0], $_->[1], \&login);
+	dbg('err', "External Port: $_->[0] $_->[1]");
+}
 
 # load bad words
 dbg('err', "load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
 unless ($^O =~ /^MS/) {
-	$SIG{INT} = \&cease;
-	$SIG{TERM} = \&cease;
+	unless ($DB::VERSION) {
+		$SIG{INT} = \&cease;
+		$SIG{TERM} = \&cease;
+	}
 	$SIG{HUP} = 'IGNORE';
 	$SIG{CHLD} = sub { $zombies++ };
 	
