@@ -41,7 +41,7 @@ my $mc = new Mrtg or return (1, "cannot initialise Mrtg $!");
 my $users = DXChannel::get_all_users();
 my $nodes = DXChannel::get_all_nodes();
 
-$mc->cfgprint('users', [qw(gauge)], 500, 
+$mc->cfgprint('users', [qw(unknaszero gauge)], 500, 
 		 "Users and Nodes on $main::mycall",
 		 'Users / Nodes', 'Users', 'Nodes') unless $want{dataonly};
 $mc->data('users', $users, $nodes, 'Users / Nodes') unless $want{cfgonly};
@@ -50,7 +50,7 @@ $mc->data('users', $users, $nodes, 'Users / Nodes') unless $want{cfgonly};
 if ($want{totalusers} || $want{all}) {
 	$nodes = Route::Node::count();
 	$users = Route::User::count();
-	$mc->cfgprint('totalusers', [qw(gauge)], 10000, 
+	$mc->cfgprint('totalusers', [qw(unknaszero gauge)], 10000, 
 			'Total Users and Nodes in the Visible Cluster Network',
 			 'Users / Nodes', 'Users', 'Nodes') unless $want{dataonly};
 	$mc->data('totalusers', $users, $nodes, 'Total Users and Nodes in the Visible Cluster Network') unless $want{cfgonly};
