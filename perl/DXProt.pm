@@ -76,7 +76,7 @@ $chatdupeage = 20 * 60 * 60;
 (
  [ qw(c c m bp bc c) ],			# pc10
  [ qw(f m d t m c c h) ],		# pc11
- [ qw(c bm m bp bm p h) ],		# pc12
+ [ qw(c bm m bm bm p h) ],		# pc12
  [ qw(c h) ],					# 
  [ qw(c h) ],					# 
  [ qw(c m h) ],					# 
