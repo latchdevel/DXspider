@@ -52,6 +52,14 @@ BEGIN {
 	eval {
 		require Errno; Errno->import(qw(EAGAIN EINPROGRESS EWOULDBLOCK));
 	};
+	# http://support.microsoft.com/support/kb/articles/Q150/5/37.asp
+	# defines EINPROGRESS as 10035.  We provide it here because some
+	# Win32 users report POSIX::EINPROGRESS is not vendor-supported.
+	if ($^O eq 'MSWin32') { 
+		eval '*EINPROGRESS = sub { 10036 };';
+		eval '*EWOULDBLOCK = *EAGAIN = sub { 10035 };';
+		$blocking_supported = 1;
+	} 
 }
 
 my $w = $^W;
@@ -109,6 +117,17 @@ sub set_rproc
 sub blocking
 {
 	return unless $blocking_supported;
+
+	# Make the handle stop blocking, the Windows way.
+	if ($^O eq 'MSWin32') { 
+        my $set_it = $_[1];
+		
+        # 126 is FIONBIO (some docs say 0x7F << 16)
+        ioctl( $_[0],
+               0x80000000 | (4 << 16) | (ord('f') << 8) | 126,
+               $set_it
+             ) or confess "Can't set the handle non-blocking: $!";
+	}
 	
 	my $flags = fcntl ($_[0], F_GETFL, 0);
 	if ($_[1]) {
@@ -356,19 +375,29 @@ sub new_server {
 	return $self;
 }
 
+use Socket qw(IPPROTO_TCP TCP_NODELAY);
+
 sub nolinger
 {
 	my $conn = shift;
-	my $buf;
-	if (isdbg('sock') && ($buf = getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER))) {
-		my ($l, $t) = unpack("ll", $buf);
-		dbg("Linger is: $buf = $l $t");
+
+	if (isdbg('sock')) {
+		my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
+		my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
+		my $n = unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
+		dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
 	}
+
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt linger: $!";
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
-	if (isdbg('sock') && ($buf = getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER))) {
-		my ($l, $t) = unpack("ll", $buf);
-		dbg("Linger is: $buf = $l $t");
+	setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!";
+	$conn->{sock}->autoflush(0);
+	
+	if (isdbg('sock')) {
+		my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
+		my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
+		my $n = unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
+		dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
 	}
 }
 

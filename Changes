@@ -3,8 +3,11 @@
 socket. This MAY help some of the hanging problems (but I am now beginning
 to doubt this).
 2. do the same on the C client (which means DON'T FORGET to make it).
-3. set KEEPALIVE on TCP connections for both the node and C Client (you will
+3. set no nagling on the output from the node.
+4. set KEEPALIVE on TCP connections for both the node and C Client (you will
 have to make the C client again) and you will need to restart.
+5. It appears that it IS possible to set non blocking on M$ you just need to
+know how.
 08Jan02=======================================================================
 1. altered sh/qrz to point to the new server
 2. alter the character set handling a bit to make it better for spanish
