@@ -81,13 +81,29 @@ sub handle_cf
 {
 	my $thing = shift;
 	my $dxchan = shift;
-	my $origin = $thing->{user} || $thing->{origin};
+	my $origin = $thing->{origin};
 	my $chan_call = $dxchan->{call};
 	
 	my $parent = Route::Node::get($origin);
 	unless ($parent) {
-		dbg("Thingy::Rt::cf: received from $thing->{origin}/$origin on $chan_call unknown") if isdbg('chanerr');
+		dbg("Thingy::Rt::cf: received from $origin on $chan_call unknown") if isdbg('chanerr');
 		return;
+	}
+	$parent->np(1);
+	
+	my @pc19;
+	my @pc21;
+
+	# move the origin over to the user, if required
+	if ($thing->{user}) {
+		$origin = $thing->{user};
+		my $ref = Route::Node::get($origin);
+		unless ($ref) {
+			# auto vivify a node that has come that we don't know about
+			push @pc19, $parent->add($origin, 0, 1);
+			$parent = Route::Node::get($origin); # reparent to me now.
+		}
+		$parent->np(1);
 	}
 
 	# do nodes
@@ -108,25 +124,23 @@ sub handle_cf
 	}
 	my ($del, $add) = $parent->diff_nodes(keys %in);
 	if ($del) {
-		my @pc21;
 		foreach my $call (@$del) {
 			next if $call eq $main::mycall;
 			RouteDB::delete($call, $chan_call);
 			my $ref = Route::Node::get($call);
 			push @pc21, $ref->del($parent) if $ref;
 		}
-		$thing->{pc21n} = \@pc21 if @pc21;
 	}
 	if ($add) {
-		my @pc19;
 		foreach my $call (@$add) {
 			next if $call eq $main::mycall;
 			RouteDB::update($call, $chan_call);
 			my $here = $in{$call};
 			push @pc19, $parent->add($call, 0, $here);
 		}
-		$thing->{pc19n} = \@pc19 if @pc19;
 	}
+	$thing->{pc21n} = \@pc21 if @pc21;
+	$thing->{pc19n} = \@pc19 if @pc19;
 	
 	# now users
 	if ($thing->{u}) {
