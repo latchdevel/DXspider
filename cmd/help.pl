@@ -59,7 +59,7 @@ my $in;
 $line =~ s{[^\w/]}{}g;
 $line =~ s{/}{.*/}g;
 $line =~ s/^\s+//g;
-$line =~ s/\s+$//g;
+$line =~ s/[\s\r]+$//g;
 $line = "help" if $line =~ /^\s*$/;
 
 # sort out aliases
@@ -72,6 +72,7 @@ if ($h) {
 	foreach $in (<$h>) {
 		next if $in =~ /^\#/;
 		chomp $in;
+		$in =~ s/\r$//;
 		if ($in =~ /^===/) {
 			last if $state == 2;           # come out on next command
 			$in =~ s/=== //;

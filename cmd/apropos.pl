@@ -44,6 +44,7 @@ my $include;
 foreach $in (<$defh>) {
 	next if $in =~ /^\#/;
 	chomp $in;
+	$in =~ s/\r$//;
 	if ($in =~ /^===/) {
 		$cmd{$cmd} = "$cmd $desc" if $include;
 		$include = 0;
@@ -66,6 +67,7 @@ if ($h) {
 	foreach $in (<$h>) {
 		next if $in =~ /^\#/;
 		chomp $in;
+		$in =~ s/\r$//;
 		if ($in =~ /^===/) {
 			$cmd{$cmd} = "$cmd $desc" if $include;
 			$include = 0;
