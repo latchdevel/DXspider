@@ -19,7 +19,7 @@ foreach $call (@args) {
 	if ($user) {
 		$user->wantpc90(1);
 		$user->put;
-		push @out, $self->msg('pc90s', $call);
+		push @out, $self->msg('set', 'PC90', $call);
 	} else {
 		push @out, $self->msg('e3', "Set PC90", $call);
 	}

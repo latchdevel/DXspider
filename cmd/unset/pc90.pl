@@ -18,7 +18,8 @@ foreach $call (@args) {
 	my $user = DXUser->get_current($call);
 	if ($user) {
 		$user->wantpc90(0);
-		push @out, $self->msg('pc90u', $call);
+		$user->put;
+		push @out, $self->msg('unset', 'PC90', $call);
 	} else {
 		push @out, $self->msg('e3', "Unset PC90", $call);
 	}
