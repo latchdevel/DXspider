@@ -263,6 +263,8 @@ sub normal
 {
 	my ($self, $line) = @_;
 	my @field = split /\^/, $line;
+	return unless @field;
+	
 	pop @field if $field[-1] eq '~';
 	
 #	print join(',', @field), "\n";
@@ -1354,7 +1356,7 @@ sub broadcast_ak1a
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_ak1a();
+	my @dxchan = DXChannel::get_all_nodes();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
@@ -1371,7 +1373,7 @@ sub broadcast_all_ak1a
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_ak1a();
+	my @dxchan = DXChannel::get_all_nodes();
 	my $dxchan;
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count

@@ -1,3 +1,5 @@
+28Aug00=======================================================================
+1. changes DXChannel::get_all_ak1a to get_all_nodes.
 26Aug00=======================================================================
 1. make blank origins on messages the node call.
 2. added new version of FAQ from Ian G0VGS

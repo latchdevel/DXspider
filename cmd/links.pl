@@ -15,7 +15,7 @@ my @out;
 
 push @out, "  Callsign Type Started            Ave RTT";
 
-foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_ak1a ) {
+foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $call = $dxchan->call();
 	my $t = cldatetime($dxchan->startt);
 	my $sort;

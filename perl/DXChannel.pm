@@ -87,6 +87,7 @@ use vars qw(%channels %valid);
 		  pingave => '0,Ping ave time',
 		  logininfo => '9,Login info req,yesno',
 		  talklist => '0,Talk List,parray',
+		  node => '5,Node data',
 		 );
 
 # object destruction
@@ -106,6 +107,7 @@ sub DESTROY
 	undef $self->{inwwvfilter};
 	undef $self->{inspotfilter};
 	undef $self->{passwd};
+	undef $self->{node};
 }
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
@@ -158,12 +160,11 @@ sub get_all
 #
 # gimme all the ak1a nodes
 #
-sub get_all_ak1a
+sub get_all_nodes
 {
-	my @list = DXChannel->get_all();
 	my $ref;
 	my @out;
-	foreach $ref (@list) {
+	foreach $ref (values %channels) {
 		push @out, $ref if $ref->is_node;
 	}
 	return @out;
@@ -172,10 +173,9 @@ sub get_all_ak1a
 # return a list of all users
 sub get_all_users
 {
-	my @list = DXChannel->get_all();
 	my $ref;
 	my @out;
-	foreach $ref (@list) {
+	foreach $ref (values %channels) {
 		push @out, $ref if $ref->is_user;
 	}
 	return @out;
@@ -184,11 +184,10 @@ sub get_all_users
 # return a list of all user callsigns
 sub get_all_user_calls
 {
-	my @list = DXChannel->get_all();
 	my $ref;
 	my @out;
-	foreach $ref (@list) {
-		push @out, $ref->call if $ref->is_user;
+	foreach $ref (values %channels) {
+		push @out, $ref->{call} if $ref->is_user;
 	}
 	return @out;
 }

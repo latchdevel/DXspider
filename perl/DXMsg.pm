@@ -600,12 +600,12 @@ sub queue_msg
 	my $call = shift;
 	my $ref;
 	my $clref;
-	my @nodelist = DXChannel::get_all_ak1a();
 	
 	# bat down the message list looking for one that needs to go off site and whose
 	# nearest node is not busy.
 
 	dbg('msg', "queue msg ($sort)\n");
+	my @nodelist = DXChannel::get_all_nodes;
 	foreach $ref (@msg) {
 		# firstly, is it private and unread? if so can I find the recipient
 		# in my cluster node list offsite?
