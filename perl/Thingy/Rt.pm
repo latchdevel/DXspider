@@ -162,7 +162,7 @@ sub handle_cf
 # copy out the PC16 data for a node into the
 # pc16n and u slots if there are any users 
 #
-sub copy_node_pc16_data
+sub copy_pc16_data
 {
 	my $thing = shift;
 	my $uref = shift;
