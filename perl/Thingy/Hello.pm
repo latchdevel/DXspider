@@ -67,11 +67,18 @@ sub handle
 		if ($dxchan->{state} ne 'normal') {
 			$dxchan->start($dxchan->{conn}->{csort}, $dxchan->{conn}->{outbound} ? 'O' : 'A');
 			if ($dxchan->{outbound}) {
-				my $thing = Thingy::Hello->new(origin=>$main::mycall, group=>'ROUTE');
+				my $thing = Thingy::Hello->new();
 				$thing->send($dxchan);
 			}
 		}
 	}
 	$thing->broadcast($dxchan);
+}
+
+sub new
+{
+	my $pkg = shift;
+	my $thing = $pkg->SUPER::new(origin=>$main::mycall, group=>'RT');
+	return $thing;
 }
 1;

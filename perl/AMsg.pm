@@ -71,7 +71,7 @@ sub dequeue
 				# this is the first stage that we have a callsign
 				# do we have a hello?
 				$msg =~ s/[\r\n]+$//;
-				if ($msg =~ m{ROUTE,[0-9A-F,]+|HELLO}) {
+				if ($msg =~ m{RT,[0-9A-F,]+|HELLO}) {
 					# a possibly valid HELLO line, process it
 					$conn->new_channel($msg);
 				}
@@ -127,7 +127,7 @@ sub new_client {
 			Log('Aranea', "Incoming connection from $conn->{peerhost}");
 			$conn->{outbound} = 0;
 			$conn->{state} = 'WH';		# wait for return authorize
-			my $thing = $conn->{lastthing} = Thingy::Hello->new(origin=>$main::mycall, group=>'ROUTE');
+			my $thing = $conn->{lastthing} = Thingy::Hello->new();
 
 			$thing->send($conn, 'Aranea');
 			dbg("-> D $conn->{peerhost} $thing->{Aranea}") if isdbg('chan');

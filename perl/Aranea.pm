@@ -55,7 +55,7 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
+	$main::routeroot->add($call, '5251', Route::here(1)) if $call ne $main::mycall;
 	$self->{'sort'} = 'W';
 	return $self;
 }
