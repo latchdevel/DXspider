@@ -1,3 +1,7 @@
+05Jan03=======================================================================
+1. fix some irritating messages caused by protocol loops in sh/c
+2. update copyright
+3. move GN from GJ to GI
 31Dec02=======================================================================
 1. Update files in the java client with fixes and additions from Rene, OZ1LQH
 05Dec02=======================================================================

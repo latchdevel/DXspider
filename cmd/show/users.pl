@@ -49,6 +49,7 @@ if (@list) {
 		push @l, $s;
 		$i++;
 	}
+	push @l, "" while $i++ < 5;
 	push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 }
 
