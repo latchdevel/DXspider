@@ -718,7 +718,7 @@ sub normal
 								if ($tochan) {
 									$tochan->nopings(3); # pump up the timer
 									push @{$tochan->pingtime}, $t;
-									shift @{$tochan->pingtime} if @{$tochan->pingtime} > 10;
+									shift @{$tochan->pingtime} if @{$tochan->pingtime} > 6;
 									my $st;
 									for (@{$tochan->pingtime}) {
 										$st += $_;
