@@ -2665,7 +2665,8 @@
 
   You can select the language that you want the cluster to use.
   Currently the languages available are en (English), de (German), es
-  (Spanish) and nl (Dutch).
+  (Spanish), Czech (cz), French (fr), Portuguese (pt), Italian (it) and
+  nl (Dutch).
 
   12.70.  set/location <lat & long>
 
@@ -2676,7 +2677,6 @@
   12.71.  set/logininfo
 
   set/logininfo Inform when a station logs in locally
-
 
   12.72.  set/name <your name>
 

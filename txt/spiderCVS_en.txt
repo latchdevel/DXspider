@@ -25,10 +25,14 @@
   For Windows versions, use the files below...
 
 
+  Please note that these files may not be needed for a recent version of
+  Windows
 
-  o  Storable.zip
+
 
   o  Log-Agent.zip
+
+  o  Storable.zip
 
 
 

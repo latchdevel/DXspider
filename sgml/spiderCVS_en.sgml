@@ -34,9 +34,12 @@ To run the latest CVS you need to additional perl modules.  The links are below.
 For Windows versions, use the files below...
 
 <P>
+Please note that these files may not be needed for a recent version of Windows
+
+<P>
 <itemize>
-<item> <htmlurl url="http://ppm.activestate.com/PPMPackages/zips/6xx-builds-only/Log-Agent.zip" name="Storable.zip">
-<item> <htmlurl url="http://ppm.activestate.com/PPMPackages/zips/6xx-builds-only/Storable.zip" name="Log-Agent.zip">
+<item> <htmlurl url="http://ppm.activestate.com/PPMPackages/zips/6xx-builds-only/Log-Agent.zip" name="Log-Agent.zip">
+<item> <htmlurl url="http://ppm.activestate.com/PPMPackages/zips/6xx-builds-only/Storable.zip" name="Storable.zip">
 </itemize>
 
 </article>

@@ -2379,8 +2379,8 @@ eg:-
 
 <P>
 You can select the language that you want the cluster to use. Currently
-the languages available are en (English), de (German), es (Spanish) 
-and nl (Dutch).
+the languages available are en (English), de (German), es (Spanish),
+Czech (cz), French (fr), Portuguese (pt), Italian (it) and nl (Dutch).
 <sect1>set/location &lt;lat & long&gt;
 
 <P>

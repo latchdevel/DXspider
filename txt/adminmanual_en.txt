@@ -4183,7 +4183,8 @@
 
   You can select the language that you want the cluster to use.
   Currentlythe languages available are en (English), de (German), es
-  (Spanish) and nl (Dutch).
+  (Spanish),Czech (cz), French (fr), Portuguese (pt), Italian (it) and
+  nl (Dutch).
 
   11.140.  set/location <lat & long> (0)
 
@@ -4195,9 +4196,11 @@
   set/lockout <call> Stop a callsign connecting to the cluster
 
 
+
   11.142.  set/logininfo (0)
 
   set/logininfo Inform when a station logs in locally
+
 
   11.143.  set/name <your name> (0)
 
@@ -4261,8 +4264,6 @@
   the screenas you type, depending on the type of telnet client you
   have.
 
-
-
   11.148.  set/password <callsign> <string> (9)
 
   set/password <callsign> <string> Set a users password
@@ -4325,7 +4326,6 @@
   11.151.  set/prompt <string> (0)
 
   set/prompt <string> Set your prompt to <string>
-
 
 
   11.152.  set/qra <locator> (0)
