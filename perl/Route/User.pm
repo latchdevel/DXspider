@@ -49,14 +49,21 @@ sub new
 	my $call = uc shift;
 	my $ncall = uc shift;
 	my $flags = shift;
-	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = [ $ncall ];
 	$self->{flags} = $flags;
-	$list{$call} = $self;
 
 	return $self;
+}
+
+sub register
+{
+	my $self = shift;
+	
+	confess "already have $call in $pkg" if $list{$self->{call}};
+	
+	$list{$call} = $self;
 }
 
 sub get_all
@@ -104,17 +111,16 @@ sub delparent
 sub AUTOLOAD
 {
 	no strict;
-	my ($pkg,$name) = $AUTOLOAD =~ /^(.*)::(\w+)$/;
-	return if $name eq 'DESTROY';
+
+	my $self = shift;
+	$name = $AUTOLOAD;
+	return if $name =~ /::DESTROY$/;
+	$name =~ s/.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" unless $valid{$name} || $Route::valid{$name};
 
-	# this clever line of code creates a subroutine which takes over from autoload
-	# from OO Perl - Conway
-	*$AUTOLOAD = sub {$_[0]->{$name} = $_[1] if @_ > 1; return $_[0]->{$name}};
-	goto &$AUTOLOAD;	
-#	*{"${pkg}::$name"} = sub {$_[0]->{$name} = $_[1] if @_ > 1; return $_[0]->{$name}};
-#	goto &{"${pkg}::$name"};	
+	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
+	&$AUTOLOAD($self, @_);
 }
 
 1;

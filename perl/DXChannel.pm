@@ -33,12 +33,19 @@ use DXDebug;
 use Filter;
 use Prefix;
 use Route;
+use Time::HiRes qw(gettimeofday tv_interval);
 
 use strict;
-use vars qw(%channels %valid @ISA $count);
+use vars qw(
+			%channels %pings %valid @ISA $count
+			$pingint $obscount
+		   );
 
-%channels = ();
+%pings = ();                    # outstanding ping requests outbound
+%channels = ();					# the channel list
 $count = 0;
+$pingint = 5*60;				# default pinginterval
+$obscount = 2;					# default obscount for pings
 
 %valid = (
 		  call => '0,Callsign',
@@ -186,6 +193,43 @@ sub get_all
 }
 
 #
+# route a message down an appropriate interface for a callsign
+#
+# is called route(to, pcline);
+#
+
+sub route
+{
+	my ($self, $call, $line) = @_;
+
+	if (ref $self && $call eq $self->{call}) {
+		dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
+		return;
+	}
+
+	# always send it down the local interface if available
+	my $dxchan = DXChannel->get($call);
+	unless ($dxchan) {
+		my $cl = Route::get($call);
+		$dxchan = $cl->dxchan if $cl;
+		if (ref $dxchan) {
+			if (ref $self && $dxchan eq $self) {
+				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
+				return;
+			}
+		}
+	}
+	if ($dxchan) {
+		my $routeit = $dxchan->adjust_hops($line);   # adjust its hop count by node name
+		if ($routeit) {
+			$dxchan->send($routeit) unless $dxchan == $main::me;
+		}
+	} else {
+		dbg("PCPROT: No route available, dropped") if isdbg('chanerr');
+	}
+}
+
+#
 # gimme all the ak1a nodes
 #
 sub get_all_nodes
@@ -253,6 +297,21 @@ sub is_node
 	my $self = shift;
 	return $self->{'sort'} =~ /[ACRSX]/;
 }
+
+# is a node and uses old protocol
+sub is_op
+{
+	my $self = shift;
+	return $self->is_node && !$self->user->wantnp;
+}
+
+# is a node and uses new protocol
+sub is_np
+{
+	my $self = shift;
+	return $self->is_node && $self->user->wantnp;
+}
+
 # is it an ak1a node ?
 sub is_ak1a
 {
@@ -425,8 +484,10 @@ sub disconnect
 {
 	my $self = shift;
 	my $user = $self->{user};
+
+	# remove outstanding pings
+	delete $pings{$self->{call}};
 	
-	main::clean_inqueue($self);          # clear out any remaining incoming frames
 	$user->close() if defined $user;
 	$self->{conn}->disconnect;
 	$self->del();
@@ -623,10 +684,50 @@ sub broadcast_list
 	}
 }
 
+sub handlepingreply
+{
+	my ($self, $from) = @_;
+	
+	my $ref = $pings{$from};
+	if ($ref) {
+		my $tochan =  DXChannel->get($from);
+		while (@$ref) {
+			my $r = shift @$ref;
+			my $dxchan = DXChannel->get($r->{call});
+			next unless $dxchan;
+			my $t = tv_interval($r->{t}, [ gettimeofday ]);
+			if ($dxchan->is_user) {
+				my $s = sprintf "%.2f", $t; 
+				my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
+				$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
+			} elsif ($dxchan->is_node) {
+				if ($tochan) {
+					my $nopings = $tochan->user->nopings || 2;
+					push @{$tochan->{pingtime}}, $t;
+					shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
+					
+					# cope with a missed ping, this means you must set the pingint large enough
+					if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
+						$t -= $tochan->{pingint};
+					}
+					
+					# calc smoothed RTT a la TCP
+					if (@{$tochan->{pingtime}} == 1) {
+						$tochan->{pingave} = $t;
+					} else {
+						$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
+					}
+					$tochan->{nopings} = $nopings; # pump up the timer
+				}
+			} 
+		}
+	}
+}
 
 #no strict;
 sub AUTOLOAD
 {
+	my $self = shift;
 	no strict;
 	my $name = $AUTOLOAD;
 	return if $name =~ /::DESTROY$/;
@@ -637,7 +738,9 @@ sub AUTOLOAD
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
 	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
-        goto &$AUTOLOAD;
+	&$AUTOLOAD($self, @_);
+#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+#    @_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 

@@ -31,6 +31,11 @@ use Script;
 use DXProt;
 use Verify;
 
+# sub modules
+use QXProt::QXI;
+use QXProt::QXP;
+use QXProt::QXR;
+
 use strict;
 
 use vars qw($VERSION $BRANCH);
@@ -67,7 +72,7 @@ sub sendinit
 {
 	my $self = shift;
 	
-	$self->send($self->genI);
+	$self->send($self->QXI::gen);
 }
 
 sub normal
@@ -76,8 +81,8 @@ sub normal
 		DXProt::normal(@_);
 		return;
 	}
-	my ($sort, $tonode, $fromnode, $msgid, $incs);
-	return unless ($sort, $tonode, $fromnode, $msgid, $incs) = $_[1] =~ /^QX([A-Z])\^(\*|[-A-Z0-9]+)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
+	my ($sort, $tonode, $fromnode, $msgid, $line, $incs);
+	return unless ($sort, $tonode, $fromnode, $msgid, $line, $incs) = $_[1] =~ /^QX([A-Z])\^(\*|[-A-Z0-9]+)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^(.*)\^([0-9A-F]{2})$/;
 
 	$msgid = hex $msgid;
 	my $noderef = Route::Node::get($fromnode);
@@ -92,27 +97,11 @@ sub normal
 
 	return unless $noderef->newid($msgid);
 
-	$_[0]->handle($sort, $tonode, $fromnode, $msgid, $_[1]);
-	return;
-}
-
-sub handle
-{
-	no strict 'subs';
-	my $self = shift;
-	my $sort = shift;
-	my $sub = "handle$sort";
-	$self->$sub(@_) if $self->can($sub);
-	return;
-}
-
-sub gen
-{
-	no strict 'subs';
-	my $self = shift;
-	my $sort = shift;
-	my $sub = "gen$sort";
- 	$self->$sub(@_) if $self->can($sub);
+	{
+		no strict 'subs';
+		my $sub = "QX${sort}::handle";
+		$_[0]->$sub($tonode, $fromnode, $msgid, $line) if $_[0]->can($sub);
+	}
 	return;
 }
 
@@ -121,11 +110,35 @@ my $node_update_interval = 60*15;
 
 sub process
 {
-	if ($main::systime >= $last_node_update+$node_update_interval) {
+	
+	my $t = $main::systime;
+	
+	foreach my $dxchan (DXChannel->get_all()) {
+		next unless $dxchan->is_np;
+		next if $dxchan == $main::me;
+
+		# send a ping out on this channel
+		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
+			if ($dxchan->{nopings} <= 0) {
+				$dxchan->disconnect;
+			} else {
+				$dxchan->addping($main::mycall, $dxchan->call);
+				$dxchan->{nopings} -= 1;
+				$dxchan->{lastping} = $t;
+			}
+		}
+	}
+
+	if ($t >= $last_node_update+$node_update_interval) {
 #		sendallnodes();
 #		sendallusers();
 		$last_node_update = $main::systime;
 	}
+}
+
+sub adjust_hops
+{
+	return $_[1];
 }
 
 sub disconnect
@@ -138,6 +151,7 @@ my $msgid = 1;
 
 sub frame
 {
+	my $self = shift;
 	my $sort = shift;
 	my $to = shift || "*";
 	my $ht;
@@ -149,98 +163,19 @@ sub frame
 	return "$line^$cs";
 }
 
-sub handleI
+# add a ping request to the ping queues
+sub addping
 {
-	my $self = shift;
-	
-	my @f = split /\^/, $_[3];
-	if ($self->passphrase && $f[7] && $f[8]) {
-		my $inv = Verify->new($f[7]);
-		unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
-			$self->sendnow('D','Sorry...');
-			$self->disconnect;
-		}
-		$self->{verified} = 1;
-	} else {
-		$self->{verified} = 0;
-	}
-	if ($self->{outbound}) {
-		$self->send($self->genI);
-	} 
-	if ($self->{sort} ne 'S' && $f[4] eq 'DXSpider') {
-		$self->{user}->{sort} = $self->{sort} = 'S';
-		$self->{user}->{priv} = $self->{priv} = 1 unless $self->{priv};
-	}
-	$self->{version} = $f[5];
-	$self->{build} = $f[6];
-	$self->state('init1');
-	$self->{lastping} = 0;
+	my ($self, $usercall, $to) = @_;
+	my $ref = $DXChannel::pings{$to} || [];
+	my $r = {};
+	$r->{call} = $usercall;
+	$r->{t} = [ gettimeofday ];
+	DXChannel::route(undef, $to, $self->QXP::gen($to, 1, $usercall, @{$r->{t}}));
+	push @$ref, $r;
+	$DXCHannel::pings{$to} = $ref;
 }
 
-sub genI
-{
-	my $self = shift;
-	my @out = ('I', $self->call, "DXSpider", ($main::version + 53) * 100, $main::build);
-	if (my $pass = $self->user->passphrase) {
-		my $inp = Verify->new;
-		push @out, $inp->challenge, $inp->response($pass, $self->call, $main::mycall);
-	}
-	return frame(@out);
-}
 
-sub handleR
-{
-
-}
-
-sub genR
-{
-
-}
-
-sub handleP
-{
-
-}
-
-sub genP
-{
-
-}
-
-sub gen2
-{
-	my $self = shift;
-	
-	my $node = shift;
-	my $sort = shift;
-	my @out;
-	my $dxchan;
-	
-	while (@_) {
-		my $str = '';
-		for (; @_ && length $str <= 230;) {
-			my $ref = shift;
-			my $call = $ref->call;
-			my $flag = 0;
-			
-			$flag += 1 if $ref->here;
-			$flag += 2 if $ref->conf;
-			if ($ref->is_node) {
-				my $ping = int($ref->pingave * 10);
-				$str .= "^N$flag$call,$ping";
-				my $v = $ref->build || $ref->version;
-				$str .= ",$v" if defined $v;
-			} else {
-				$str .= "^U$flag$call";
-			}
-		}
-		push @out, $str if $str;
-	}
-	my $n = @out;
-	my $h = get_hops(90);
-	@out = map { sprintf "PC90^%s^%X^%s%d%s^%s^", $node->call, $main::systime, $sort, --$n, $_, $h } @out;
-	return @out;
-}
 
 1;

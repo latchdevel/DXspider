@@ -25,6 +25,7 @@ my $noderef = Route::Node::get($call);
 return (1, $self->msg('e7', $call)) unless $noderef;
 
 # ping it
+
 DXProt::addping($self->call, $call);
 
 return (1, $self->msg('pingo', $call));

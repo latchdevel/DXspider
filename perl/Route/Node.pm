@@ -74,6 +74,7 @@ sub add
 		return undef;
 	}
 	$self = $parent->new($call, @_);
+	$self->register;
 	$parent->_addnode($self);
 	return $self;
 }
@@ -145,6 +146,7 @@ sub add_user
 		@out = $uref->addparent($self);
 	} else {
 		$uref = Route::User->new($ucall, $self->{call}, @_);
+		$uref->register;
 		@out = $uref;
 	}
 	$self->_adduser($uref);
@@ -215,9 +217,6 @@ sub new
 {
 	my $pkg = shift;
 	my $call = uc shift;
-	
-	confess "already have $call in $pkg" if $list{$call};
-	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
 	$self->{version} = shift;
@@ -226,9 +225,14 @@ sub new
 	$self->{nodes} = [];
 	$self->{lid} = 0;
 	
-	$list{$call} = $self;
-	
 	return $self;
+}
+
+sub register
+{
+	my $self = shift;
+	confess "already have $call in $pkg" if $list{$self->{call}};
+	$list{$call} = $self;
 }
 
 sub get
@@ -315,16 +319,16 @@ sub DESTROY
 sub AUTOLOAD
 {
 	no strict;
-	my $name = $AUTOLOAD;
+
+	my $self = shift;
+	$name = $AUTOLOAD;
 	return if $name =~ /::DESTROY$/;
-	$name =~ s/^.*:://o;
+	$name =~ s/.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" unless $valid{$name} || $Route::valid{$name};
 
-	# this clever line of code creates a subroutine which takes over from autoload
-	# from OO Perl - Conway
-        *$AUTOLOAD = sub {$_[0]->{$name} = $_[1] if @_ > 1; return $_[0]->{$name}};
-        goto &$AUTOLOAD;
+	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
+	&$AUTOLOAD($self, @_);
 }
 
 1;

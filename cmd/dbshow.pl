@@ -33,7 +33,7 @@ foreach  $n (@db) {
 		push @f, " " unless @f;
 		for (@f) {
 			my $n = DXDb::newstream($self->call);
-			DXProt::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
+			DXChannel::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
 		}
 		last;
 	} else {

@@ -33,7 +33,7 @@ BEGIN {
 
 	# try to create and lock a lockfile (this isn't atomic but 
 	# should do for now
-	$lockfn = "$root/perl/cluster.lck";       # lock file name
+	$lockfn = "$root/local/cluster.lck";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -194,19 +194,14 @@ sub new_channel
 
 	# create the channel
 	if ($user->wantnp) {
-		if ($user->passphrase && $main::me->user->passphrase) {
-			$dxchan = QXProt->new($call, $conn, $user);
-		} else {
-			unless ($user->passphrase) {
-				Log('DXCommand', "$call using NP but has no passphrase");
-				dbg("$call using NP but has no passphrase");
-			}
-			unless ($main::me->user->passphrase) {
-				Log('DXCommand', "$main::mycall using NP but has no passphrase");
-				dbg("$main::mycall using NP but has no passphrase");
-			}
-			already_conn($conn, $call, "Need to exchange passphrases");
-			return;
+		$dxchan = QXProt->new($call, $conn, $user);
+		unless ($user->passphrase) {
+			Log('DXCommand', "$call using NP but has no passphrase");
+			dbg("$call using NP but has no passphrase");
+		}
+		unless ($main::me->user->passphrase) {
+			Log('DXCommand', "$main::mycall using NP but has no passphrase");
+			dbg("$main::mycall using NP but has no passphrase");
 		}
 	} elsif ($user->is_node) {
 		$dxchan = DXProt->new($call, $conn, $user);
@@ -238,13 +233,6 @@ sub rec
 		$self->{data} = $msg;
 		push @inqueue, $self;
 	}
-}
-
-# remove any outstanding entries on the inqueue after a disconnection (usually)
-sub clean_inqueue
-{
-	my $dxchan = shift;
-	@inqueue = grep {$_->{dxchan} != $dxchan} @inqueue;
 }
 
 sub login
@@ -406,7 +394,7 @@ dbg("DXSpider Version $version, build $build started");
 
 # load Prefixes
 dbg("loading prefixes ...");
-my $r = Prefix::init();
+my $r = Prefix::load();
 confess $r if $r;
 dbg(USDB::init());
 

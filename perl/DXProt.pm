@@ -43,8 +43,7 @@ $main::build += $VERSION;
 $main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
-			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
-			$pingint $obscount %pc19list
+			$last_hour $last10 %eph %rcmds $ann_to_talk
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -52,11 +51,8 @@ $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 
 $last_hour = time;				# last time I did an hourly periodic update
-%pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
-%pc19list = ();					# list of outstanding PC19s that haven't had PC16s on them
-
 $censorpc = 1;					# Do a BadWords::check on text fields and reject things
 								# loads of 'bad things'
 $baddx = new DXHash "baddx";
@@ -68,8 +64,6 @@ $rspfcheck = 1;
 $eph_restime = 180;
 $eph_info_restime = 60*60;
 $eph_pc34_restime = 30;
-$pingint = 5*60;
-$obscount = 2;
 
 @checklist = 
 (
@@ -260,9 +254,9 @@ sub start
 	
 	# ping neighbour node stuff
 	my $ping = $user->pingint;
-	$ping = $pingint unless defined $ping;
+	$ping = $DXChannel::pingint unless defined $ping;
 	$self->{pingint} = $ping;
-	$self->{nopings} = $user->nopings || $obscount;
+	$self->{nopings} = $user->nopings || $DXChannel::obscount;
 	$self->{pingtime} = [ ];
 	$self->{pingave} = 999;
 	$self->{metric} ||= 100;
@@ -516,9 +510,9 @@ sub normal
 						# send the rcmd but we aren't interested in the replies...
 						my $dxchan = $node->dxchan;
 						if ($dxchan && $dxchan->is_clx) {
-							route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
+							DXChannel::route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
 						} else {
-							route(undef, $to, pc34($main::mycall, $to, $cmd));
+							DXChannel::route(undef, $to, pc34($main::mycall, $to, $cmd));
 						}
 						if ($to ne $field[7]) {
 							$to = $field[7];
@@ -526,9 +520,9 @@ sub normal
 							if ($node) {
 								$dxchan = $node->dxchan;
 								if ($dxchan && $dxchan->is_clx) {
-									route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
+									DXChannel::route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
 								} else {
-									route(undef, $to, pc34($main::mycall, $to, $cmd));
+									DXChannel::route(undef, $to, pc34($main::mycall, $to, $cmd));
 								}
 							}
 						}
@@ -641,76 +635,25 @@ sub normal
 				return;
 			}
 			my $parent = Route::Node::get($ncall); 
-
-			# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
-			# fix it up in the routing tables and issue it forth before the PC16
 			unless ($parent) {
-				my $nl = $pc19list{$ncall};
-
-				if ($nl && @field > 3) {                     # 3 because of the hop count!
-
-					# this is a new (remembered) node, now attach it to me if it isn't in filtered
-					# and we haven't disallowed it
-					my $user = DXUser->get_current($ncall);
-					if (!$user) {
-						$user = DXUser->new($ncall);
-						$user->sort('A');
-						$user->priv(1);                   # I have relented and defaulted nodes
-						$user->lockout(1);
-						$user->homenode($ncall);
-						$user->node($ncall);
-					}
-
-					my $wantpc19 = $user->wantroutepc19;
-					if ($wantpc19 || !defined $wantpc19) {
-						my $new = Route->new($ncall);          # throw away
-						if ($self->in_filter_route($new)) {
-							my @nrout;
-							for (@$nl) {
-								$parent = Route::Node::get($_->[0]);
-								$dxchan = $parent->dxchan if $parent;
-								if ($dxchan && $dxchan ne $self) {
-									dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
-									$parent = undef;
-								}
-								if ($parent) {
-									my $r = $parent->add($ncall, $_->[1], $_->[2]);
-									push @nrout, $r unless @nrout;
-								}
-							}
-							$user->wantroutepc19(1) unless defined $wantpc19;              # for now we work on the basis that pc16 = real route 
-							$user->lastin($main::systime) unless DXChannel->get($ncall);
-							$user->put;
-						
-							# route the pc19 - this will cause 'stuttering PC19s' for a while
-							$self->route_pc19(@nrout) if @nrout ;
-							$parent = Route::Node::get($ncall);
-							unless ($parent) {
-								dbg("PCPROT: lost $ncall after sending PC19 for it?");
-								return;
-							}
-						} else {
-							return;
-						}
-						delete $pc19list{$ncall};
-					}
-				} else {
-					dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
-					return;
-				}
-			} else {
-				
-				$dxchan = $parent->dxchan;
-				if ($dxchan && $dxchan ne $self) {
-					dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
-					return;
-				}
-
-				# input filter if required
-				return unless $self->in_filter_route($parent);
+				dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
+				return;
+			}
+			$dxchan = $parent->dxchan;
+			if ($dxchan && $dxchan ne $self) {
+				dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+				return;
 			}
 
+			my ($hops) = $field[-1] =~ /H(\d+)/;
+			my $thing = Thingy::Route->new(fromnode => $ncall, fromdxchan => $self, pcline=>$line, hops=>$hops);
+			
+
+			# input filter if required
+			return unless $self->in_filter_route($parent);
+			
 			my $i;
+			my @list;
 			my @rout;
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $conf, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
@@ -729,35 +672,14 @@ sub normal
 					next;
 				}
 				
-				$r = Route::User::get($call);
 				my $flags = Route::here($here)|Route::conf($conf);
-				
-				if ($r) {
-					my $au = $r->addparent($parent);					
-					if ($r->flags != $flags) {
-						$r->flags($flags);
-						$au = $r;
-					}
-					push @rout, $r if $au;
-				} else {
-					push @rout, $parent->add_user($call, $flags);
-				}
-		
-				
-				# add this station to the user database, if required
-				$call =~ s/-\d+$//o;        # remove ssid for users
-				my $user = DXUser->get_current($call);
-				$user = DXUser->new($call) if !$user;
-				$user->homenode($parent->call) if !$user->homenode;
-				$user->node($parent->call);
-				$user->lastin($main::systime) unless DXChannel->get($call);
-				$user->put;
+				$r = Route::User::new($call, $ncall, $flags);
+				push @list, $r;
 			}
-			
-			# queue up any messages (look for privates only)
-			DXMsg::queue_msg(1) if $self->state eq 'normal';     
 
-			$self->route_pc16($parent, @rout) if @rout;
+			$thing->list(\@list);
+			$thing->add;
+			$thing->route;
 			return;
 		}
 		
@@ -849,14 +771,19 @@ sub normal
 
 			# new routing list
 			my @rout;
-			my $parent = Route::Node::get($self->{call});
+			my $ncall = $self->{call};
+			my $parent = Route::Node::get($ncall);
 			unless ($parent) {
-				dbg("DXPROT: my parent $self->{call} has disappeared");
+				dbg("DXPROT: my parent $ncall has disappeared");
 				$self->disconnect;
 				return;
 			}
 
+			my ($hops) = $field[-1] =~ /H(\d+)/;
+			my $thing = Thingy::Route->new(fromnode=>$ncall, fromdxchan => $self, pcline=>$line, hops=>$hops);
+
 			# parse the PC19
+			my @list;
 			for ($i = 1; $i < $#field-1; $i += 4) {
 				my $here = $field[$i];
 				my $call = uc $field[$i+1];
@@ -879,65 +806,15 @@ sub normal
 					next;
 				}
 
-				# add this station to the user database, if required (don't remove SSID from nodes)
-				my $user = DXUser->get_current($call);
-				if (!$user) {
-					$user = DXUser->new($call);
-					$user->sort('A');
-					$user->priv(1);                   # I have relented and defaulted nodes
-					$user->lockout(1);
-					$user->homenode($call);
-					$user->node($call);
-				}
-
-				my $r = Route::Node::get($call);
-				my $flags = Route::here($here)|Route::conf($conf);
-
-				# modify the routing table if it is in it, otherwise store it in the pc19list for now
-				if ($r) {
-					my $ar;
-					if ($call ne $parent->call) {
-						if ($self->in_filter_route($r)) {
-							$ar = $parent->add($call, $ver, $flags);
-							push @rout, $ar if $ar;
-						} else {
-							next;
-						}
-					}
-					if ($r->version ne $ver || $r->flags != $flags) {
-						$r->version($ver);
-						$r->flags($flags);
-						push @rout, $r unless $ar;
-					}
-				} else {
-
-					# if he is directly connected or allowed then add him, otherwise store him up for later
-					if ($call eq $self->{call} || $user->wantroutepc19) {
-						my $new = Route->new($call);          # throw away
-						if ($self->in_filter_route($new)) {
-							my $ar = $parent->add($call, $ver, $flags);
-							$user->wantroutepc19(1) unless defined $user->wantroutepc19;
-							push @rout, $ar if $ar;
-						} else {
-							next;
-						}
-					} else {
-						$pc19list{$call} = [] unless exists $pc19list{$call};
-						my $nl = $pc19list{$call};
-						push @{$pc19list{$call}}, [$self->{call}, $ver, $flags] unless grep $_->[0] eq $self->{call}, @$nl;
-					}
-				}
-
-				# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
-				my $mref = DXMsg::get_busy($call);
-				$mref->stop_msg($call) if $mref;
-				
-				$user->lastin($main::systime) unless DXChannel->get($call);
-				$user->put;
+				# decide whether we want this or not?
+				my $r = Route::Node->new($call, $ver, $flags);
+				push @list, $r if $call ne $ncall && $self->in_filter_route($r);
 			}
-
-
-			$self->route_pc19(@rout) if @rout;
+			if (@list) {
+				$thing->list(\@list);
+				$thing->add;
+				$thing->route;
+			}
 			return;
 		}
 		
@@ -952,7 +829,7 @@ sub normal
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
 
-			eph_del_regex("^PC1[679].*$call");
+			eph_del_regex("^PC1[79].*$call");
 			
 			# if I get a PC21 from the same callsign as self then treat it
 			# as a PC39: I have gone away
@@ -961,41 +838,38 @@ sub normal
 				return;
 			}
 
-			# check to see if we are in the pc19list, if we are then don't bother with any of
-			# this routing table manipulation, just remove it from the list and dump it
 			my @rout;
-			if (my $nl = $pc19list{$call}) {
-				$pc19list{$call} = [ grep {$_->[0] ne $self->{call}} @$nl ];
-				delete $pc19list{$call} unless @{$pc19list{$call}};
-			} else {
-				
-				my $parent = Route::Node::get($self->{call});
-				unless ($parent) {
-					dbg("DXPROT: my parent $self->{call} has disappeared");
-					$self->disconnect;
-					return;
-				}
-				if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
-					my $node = Route::Node::get($call);
-					if ($node) {
-						
-						my $dxchan = DXChannel->get($call);
-						if ($dxchan && $dxchan != $self) {
-							dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
-							return;
-						}
-						
-						# input filter it
-						return unless $self->in_filter_route($node);
-						
-						# routing objects
-						push @rout, $node->del($parent);
-					}
-				} else {
-					dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
-					return;
-				}
+			my $parent = Route::Node::get($self->{call});
+			unless ($parent) {
+				dbg("DXPROT: my parent $self->{call} has disappeared");
+				$self->disconnect;
+				return;
 			}
+			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
+				my $node = Route::Node::get($call);
+				if ($node) {
+
+					my $dxchan = DXChannel->get($call);
+					if ($dxchan && $dxchan != $self) {
+						dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
+						return;
+					}
+
+					# input filter it
+					return unless $self->in_filter_route($node);
+
+					# routing objects
+					push @rout, $node->del($parent);
+				}
+			} else {
+				dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
+				return;
+			}
+
+#			if (eph_dup($line)) {
+#				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
+#				return;
+#			}
 
 			$self->route_pc21(@rout) if @rout;
 			return;
@@ -1145,9 +1019,7 @@ sub normal
 		if ($pcno == 41) {		# user info
 			my $call = $field[1];
 
-			my $l = $line;
-			$l =~ s/[\x00-\x20\x7f-\xff]+//g; # remove all funny characters and spaces for dup checking
-			if (eph_dup($l, $eph_info_restime)) {
+			if (eph_dup($line, $eph_info_restime)) {
 				dbg("PCPROT: dupe") if isdbg('chanerr');
 				return;
 			}
@@ -1240,40 +1112,7 @@ sub normal
 					$self->send(pc51($from, $to, '0'));
 				} else {
 					# it's a reply, look in the ping list for this one
-					my $ref = $pings{$from};
-					if ($ref) {
-						my $tochan =  DXChannel->get($from);
-						while (@$ref) {
-							my $r = shift @$ref;
-							my $dxchan = DXChannel->get($r->{call});
-							next unless $dxchan;
-							my $t = tv_interval($r->{t}, [ gettimeofday ]);
-							if ($dxchan->is_user) {
-								my $s = sprintf "%.2f", $t; 
-								my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-								$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
-							} elsif ($dxchan->is_node) {
-								if ($tochan) {
-									my $nopings = $tochan->user->nopings || 2;
-									push @{$tochan->{pingtime}}, $t;
-									shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-
-									# cope with a missed ping, this means you must set the pingint large enough
-									if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
-										$t -= $tochan->{pingint};
-									}
-
-									# calc smoothed RTT a la TCP
-									if (@{$tochan->{pingtime}} == 1) {
-										$tochan->{pingave} = $t;
-									} else {
-										$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
-									}
-									$tochan->{nopings} = $nopings; # pump up the timer
-								}
-							} 
-						}
-					}
+					$self->handlepingreply($from);
 				}
 			} else {
 				if (eph_dup($line)) {
@@ -1374,7 +1213,7 @@ sub process
 	}
 
 	foreach $dxchan (@dxchan) {
-		next unless $dxchan->is_node();
+		next unless $dxchan->is_op();
 		next if $dxchan == $main::me;
 
 		# send the pc50 or PC90
@@ -1385,7 +1224,7 @@ sub process
 			if ($dxchan->{nopings} <= 0) {
 				$dxchan->disconnect;
 			} else {
-				addping($main::mycall, $dxchan->call);
+				$dxchan->addping($main::mycall, $dxchan->call);
 				$dxchan->{nopings} -= 1;
 				$dxchan->{lastping} = $t;
 			}
@@ -1413,7 +1252,6 @@ sub process
 #
 # some active measures
 #
-
 
 sub send_dx_spot
 {
@@ -1678,49 +1516,15 @@ sub send_local_config
 	# get all the users connected on the above nodes and send them out
 	foreach $node (@localnodes, @remotenodes) {
 		if ($node) {
-			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->send_route(\&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
+			$self->send_route(\&pc16, 1, $node, 
+							  map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users)
+				if $self->user->wantsendpc16;
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
 		}
 	}
 }
 
-#
-# route a message down an appropriate interface for a callsign
-#
-# is called route(to, pcline);
-#
-sub route
-{
-	my ($self, $call, $line) = @_;
-
-	if (ref $self && $call eq $self->{call}) {
-		dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
-		return;
-	}
-
-	# always send it down the local interface if available
-	my $dxchan = DXChannel->get($call);
-	unless ($dxchan) {
-		my $cl = Route::get($call);
-		$dxchan = $cl->dxchan if $cl;
-		if (ref $dxchan) {
-			if (ref $self && $dxchan eq $self) {
-				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
-				return;
-			}
-		}
-	}
-	if ($dxchan) {
-		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
-		if ($routeit) {
-			$dxchan->send($routeit) unless $dxchan == $main::me;
-		}
-	} else {
-		dbg("PCPROT: No route available, dropped") if isdbg('chanerr');
-	}
-}
 
 #
 # obtain the hops from the list for this callsign and pc no 
@@ -1777,20 +1581,6 @@ sub load_hops
 	do "$main::data/hop_table.pl";
 	return $@ if $@;
 	return ();
-}
-
-
-# add a ping request to the ping queues
-sub addping
-{
-	my ($from, $to) = @_;
-	my $ref = $pings{$to} || [];
-	my $r = {};
-	$r->{call} = $from;
-	$r->{t} = [ gettimeofday ];
-	route(undef, $to, pc51($to, $main::mycall, 1));
-	push @$ref, $r;
-	$pings{$to} = $ref;
 }
 
 sub process_rcmd
@@ -1882,9 +1672,9 @@ sub addrcmd
 	my $ref = Route::Node::get($to);
 	my $dxchan = $ref->dxchan;
 	if ($dxchan && $dxchan->is_clx) {
-		route(undef, $to, pc84($main::mycall, $to, $self->{call}, $cmd));
+		DXChannel::route(undef, $to, pc84($main::mycall, $to, $self->{call}, $cmd));
 	} else {
-		route(undef, $to, pc34($main::mycall, $to, $cmd));
+		DXChannel::route(undef, $to, pc34($main::mycall, $to, $cmd));
 	}
 }
 
@@ -1900,35 +1690,17 @@ sub disconnect
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
 
-	# get rid of any PC16/17/19
-	eph_del_regex("^PC1[679]*$call");
+	# get rid of any PC16 and 19s
+	eph_del_regex("^PC16\\^$call");
+	eph_del_regex("^PC19\\^.*$call");
 
-	# do routing stuff, remove me from routing table
+	# do routing stuff
 	my $node = Route::Node::get($call);
 	my @rout;
 	if ($node) {
 		@rout = $node->del($main::routeroot);
-		
-		# and all my ephemera as well
-		for (@rout) {
-			my $c = $_->call;
-			eph_del_regex("^PC1[679].*$c");
-		}
 	}
 	
-	# remove them from the pc19list as well
-	while (my ($k,$v) = each %pc19list) {
-		my @l = grep {$_->[0] ne $call} @{$pc19list{$k}};
-		if (@l) {
-			$pc19list{$k} = \@l;
-		} else {
-			delete $pc19list{$k};
-		}
-		
-		# and the ephemera
-		eph_del_regex("^PC1[679].*$k");
-	}
-
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;
@@ -1938,9 +1710,6 @@ sub disconnect
 		$self->route_pc21(@rout) if @rout;
 	}
 
-	# remove outstanding pings
-	delete $pings{$call};
-	
 	# I was the last node visited
     $self->user->node($main::mycall);
 
@@ -2090,6 +1859,19 @@ sub in_filter_route
 		dbg("PCPROT: $self->{call}/" . $r->call . ' rejected by in_filter_route') if !$filter && isdbg('chanerr');
 	}
 	return $filter;
+}
+
+# add a ping request to the ping queues
+sub addping
+{
+	my ($self, $from, $to) = @_;
+	my $ref = $DXChannel::pings{$to} || [];
+	my $r = {};
+	$r->{call} = $from;
+	$r->{t} = [ gettimeofday ];
+	DXChannel::route(undef, $to, pc51($to, $main::mycall, 1));
+	push @$ref, $r;
+	$DXCHannel::pings{$to} = $ref;
 }
 
 sub eph_dup

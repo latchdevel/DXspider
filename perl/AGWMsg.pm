@@ -268,6 +268,8 @@ sub _decode
 		
 		$data = '' unless defined $data;
 		if ($sort eq 'D') {
+
+			# incoming data
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM\cJ?$//;
 			$d =~ s/^\cJ//;
@@ -295,6 +297,8 @@ sub _decode
 				dbg("AGW error Unsolicited Data!");
 			}
 		} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
+			
+			# incoming monitoring
 			my $d = unpack "Z*", $data;
 			$d =~ s/^\cJ//;
 			$d =~ s/\cM\cJ?$//;
@@ -305,6 +309,8 @@ sub _decode
 				dbg("AGW Monitor port: $port \"$_\"") if isdbg('agw');
 			}
 		} elsif ($sort eq 'C') {
+			
+			# incoming connection 
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM\cJ?$//;
 			dbg("AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"") if isdbg('agw');
@@ -334,6 +340,8 @@ sub _decode
 				$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
 			}
 		} elsif ($sort eq 'd') {
+
+			# incoming disconnection
 			my $d = unpack "Z*", $data;
 			$d =~ s/\cM\cJ?$//;
 			dbg("AGW '$from'->'$to' port: $port Disconnected ($d)") if isdbg('agw');
@@ -343,30 +351,42 @@ sub _decode
 				$conn->in_disconnect;
 			}
 		} elsif ($sort eq 'y') {
+			
+			# outstanding frames statistics (unconnected)
 			my ($frames) = unpack "V", $data;
 			dbg("AGW Frames Outstanding on port $port = $frames") if isdbg('agwpollans');
 			my $conn = _find($from);
 			$conn->{oframes} = $frames if $conn;
 		} elsif ($sort eq 'Y') {
+			
+			# outstanding frames statistics (connected)
 			my ($frames) = unpack "V", $data;
 			dbg("AGW Frames Outstanding on circuit '$from'->'$to' = $frames") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			$conn->{oframes} = $frames if $conn;
 		} elsif ($sort eq 'H') {
+
+			# heard stations
 			unless ($from =~ /^\s+$/) {
 				my $d = unpack "Z*", $data;
 				$d =~ s/\cM\cJ?$//;
 				dbg("AGW Heard port: $port \"$d\"") if isdbg('agw');
 			}
 		} elsif ($sort eq 'X') {
+
+			# registration reply
 			my ($r) = unpack "C", $data;
 			$r = $r ? "Successful" : "Failed";
 			dbg("AGW Register $from $r");
 			finish() unless $r;
 		} elsif ($sort eq 'R') {
+			
+			# version string
 			my ($major, $minor) = unpack "v x2 v x2", $data;
 			dbg("AGW Version $major.$minor") if isdbg('agw');
 		} elsif ($sort eq 'G') {
+
+			# list of ports 
 			my @ports = split /;/, $data;
 			$noports = shift @ports || '0';
 			dbg("AGW $noports Ports available") if isdbg('agw');
@@ -380,6 +400,8 @@ sub _decode
 				_sendf('g', undef, undef, $i);
 			}
 		} else {
+
+			# some other frame
 			my $d = unpack "Z*", $data;
 			dbg("AGW decode $sort port: $port pid: $pid '$from'->'$to' length: $len \"$d\"") if isdbg('agw');
 		}

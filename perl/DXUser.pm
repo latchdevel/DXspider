@@ -25,7 +25,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize);
 
 %u = ();
 $dbm = undef;
@@ -33,7 +33,6 @@ $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 $lrusize = 2000;
-$tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -80,8 +79,7 @@ $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to
 		  wantpc90 => '1,Req PC90,yesno',
 		  wantnp => '1,Req New Protocol,yesno',
 		  wantpc16 => '9,Want Users from node,yesno',
-		  wantsendpc16 => '9,Send PC16,yesno',
-		  wantroutepc19 => '9,Route PC19,yesno',
+		  wantsendpc16 => '9,Send users to node,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -93,6 +91,7 @@ $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to
 #no strict;
 sub AUTOLOAD
 {
+	my $self = shift;
 	no strict;
 	my $name = $AUTOLOAD;
   
@@ -103,7 +102,12 @@ sub AUTOLOAD
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
 	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
-       goto &$AUTOLOAD;
+	&$AUTOLOAD($self, @_);
+#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+#	if (@_) {
+#		$self->{$name} = shift;
+#	}
+#	return $self->{$name};
 }
 
 #use strict;
@@ -342,7 +346,6 @@ sub export
 
 	my $count = 0;
 	my $err = 0;
-	my $del = 0;
 	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
 	if ($fh) {
 		my $key = 0;
@@ -372,7 +375,7 @@ BEGIN {
 	
 	# try to detect a lockfile (this isn't atomic but 
 	# should do for now
-	$lockfn = "$root/perl/cluster.lck";       # lock file name
+	$lockfn = "$root/local/cluster.lck";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -424,29 +427,18 @@ print "There are $count user records and $err errors\n";
 			}
 			my $ref = decode($val);
 			if ($ref) {
-				my $t = $ref->{lastin} || 0;
-				if ($main::systime > $t + $tooold) {
-					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
-						Log('DXCommand', "$ref->{call} deleted, too old");
-						$del++;
-						next;
-					}
-				}
-				# only store users that are reasonably active or have useful information
 				print $fh "$key\t" . $ref->encode . "\n";
 				++$count;
 			} else {
-				Log('DXCommand', "Export Error3: $key\t$val");
+				Log('DXCommand', "Export Error2: $key\t$val");
 				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
+				dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
 				++$err;
 			}
 		} 
         $fh->close;
     } 
-	return "$count Users $del Deleted $err Errors ('sh/log Export' for details)";
+	return "$count Users $err Errors ('sh/log Export' for details)";
 }
 
 #
@@ -601,11 +593,6 @@ sub wantpc16
 sub wantsendpc16
 {
 	return _want('sendpc16', @_);
-}
-
-sub wantroutepc16
-{
-	return _want('routepc16', @_);
 }
 
 sub wantlogininfo
