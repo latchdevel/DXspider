@@ -7,7 +7,8 @@
 #
 my $self = shift;
 
-return (1, $self->msg('e5')) if $self->priv < 9;
+# this appears to be a reasonable thing for users to do (thank you JE1SGH)
+# return (1, $self->msg('e5')) if $self->priv < 9;
 
 my $cmdline = shift;
 my @f = split /\s+/, $cmdline;

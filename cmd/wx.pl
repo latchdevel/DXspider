@@ -36,7 +36,7 @@ if ($sort eq "FULL") {
   $to = "LOCAL";
 }
 
-DXProt::broadcast_list("WX de $from <$t>: $line", @locals);
+DXProt::broadcast_list("WX de $from <$t>: $line", 'wx', undef, @locals);
 if ($to ne "LOCAL") {
   $line =~ s/\^//og;    # remove ^ characters!
   my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 1);

@@ -1,5 +1,5 @@
 #
-# unset the announce flag
+# set the announce flag
 #
 # Copyright (c) 1998 - Dirk Koopman
 #
@@ -15,9 +15,9 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $user = ($call eq $self->call) ? $self->user :  DXUser->get($call);
-  if ($user) {
-    $user->ann(0);
+  my $chan = DXChannel->get($call);
+  if ($chan) {
+    $chan->ann(0);
 	push @out, $self->msg('annu', $call);
   } else {
     push @out, $self->msg('e3', "Unset Announce", $call);

@@ -153,7 +153,7 @@ sub normal
 				Log('talk', $call, $field[1], $field[6], $text);
 				$call = $main::myalias if $call eq $main::mycall;
 				my $ref = DXChannel->get($call);
-				$ref->send("$call de $field[1]: $text") if $ref;
+				$ref->send("$call de $field[1]: $text") if $ref && $ref->{talk};
 			} else {
 				route($field[2], $line); # relay it on its way
 			}
@@ -167,9 +167,9 @@ sub normal
 			
 			# convert the date to a unix date
 			my $d = cltounix($field[3], $field[4]);
-			# bang out (and don't pass on) if date is invalid or the spot is too old
-			if (!$d || ($pcno == 11 && $d < $main::systime - $pc11_max_age)) {
-				dbg('chan', "Spot ignored, invalid date or too old\n");
+			# bang out (and don't pass on) if date is invalid or the spot is too old (or too young)
+			if (!$d || ($pcno == 11 && ($d < $main::systime - $pc11_max_age || $d > $main::systime + 900))) {
+				dbg('chan', "Spot ignored, invalid date or out of range ($field[3] $field[4])\n");
 				return;
 			}
 
@@ -203,7 +203,7 @@ sub normal
 			# send orf to the users
 			if ($spot && $pcno == 11) {
 				my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
-				broadcast_users("$buf\a\a");
+				broadcast_users("$buf\a\a", 'dx', $spot);
 			}
 
 			# DON'T be silly and send on PC26s!
@@ -237,9 +237,9 @@ sub normal
 				$target = "All" if !$target;
 				
 				if (@list > 0) {
-					broadcast_list("$to$target de $field[1]: $text", @list);
+					broadcast_list("$to$target de $field[1]: $text", 'ann', undef, @list);
 				} else {
-					broadcast_users("$target de $field[1]: $text");
+					broadcast_users("$target de $field[1]: $text", 'ann', undef);
 				}
 				Log('ann', $target, $field[1], $text);
 				
@@ -385,9 +385,13 @@ sub normal
 				dbg('chan', "Dup WWV Spot ignored\n");
 				return;
 			}
+			if ($d > $main::systime + 900) {
+				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
+				return;
+			}
 			
 			$wwvdup{$dupkey} = $d;
-			Geomag::update($field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
+			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..$#field]);
 
 			my $r;
 			eval {
@@ -398,7 +402,9 @@ sub normal
 
 			# DON'T be silly and send on PC27s!
 			return if $pcno == 27;
-			
+
+			# broadcast to the eager users
+			broadcast_users("WWV de $field[7] <$field[2]>:   SFI=$sfi, K=$k, A=$i, $field[6]", 'wwv', $wwv );
 			last SWITCH;
 		}
 		
@@ -724,28 +730,45 @@ sub broadcast_ak1a
 }
 
 # broadcast to all users
+# storing the spot or whatever until it is in a state to receive it
 sub broadcast_users
 {
 	my $s = shift;				# the line to be rebroadcast
+	my $sort = shift;           # the type of transmission
+	my $fref = shift;           # a reference to an object to filter on
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
 	my @dxchan = get_all_users();
 	my $dxchan;
+	my @out;
 	
 	foreach $dxchan (@dxchan) {
 		next if grep $dxchan == $_, @except;
-		$s =~ s/\a//og if !$dxchan->{beep};
-		$dxchan->send($s);		# send it if it isn't the except list or hasn't a passout flag
+		push @out, $dxchan;
 	}
+	broadcast_list($s, $sort, $fref, @out);
 }
 
 # broadcast to a list of users
 sub broadcast_list
 {
 	my $s = shift;
+	my $sort = shift;
+	my $fref = shift;
 	my $dxchan;
 	
 	foreach $dxchan (@_) {
-		$dxchan->send($s);		# send it 
+		
+		next if $sort eq 'dx' && !$dxchan->{dx};
+		next if $sort eq 'ann' && !$dxchan->{ann};
+		next if $sort eq 'wwv' && !$dxchan->{wwv};
+		next if $sort eq 'wx' && !$dxchan->{wx};
+
+		$s =~ s/\a//og unless $dxchan->{beep};
+		if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+			$dxchan->send($s);	
+		} else {
+			$dxchan->delay($s);
+		}
 	}
 }
 

@@ -247,6 +247,7 @@ You can potentially connect several nodes in this way.
 Remove isolation from a node - SET/ISOLATE
 
 === 0^SET/LOCATION <lat & long>^Set your latitude and longitude
+=== 9^SET/SYS_LOCATION <lat & long>^Set your cluster latitude and longitude
 In order to get accurate headings and such like you must tell the system
 what your latitude and longitude is. If you have not yet done a SET/QRA
 then this command will set your QRA locator for you. For example:-
@@ -288,6 +289,7 @@ If you are a sysop and you come in as a normal user on a remote connection
 your privilege will automatically be set to 0.
 
 === 0^SET/QRA <locator>^Set your QRA locator
+=== 9^SET/SYS_QRA <locator>^Set your cluster QRA locator
 Tell the system what your QRA (or Maidenhead) locator is. If you have not
 done a SET/LOCATION then your latitude and longitude will be set roughly
 correctly (assuming your locator is correct ;-). For example:-
@@ -302,6 +304,9 @@ Tell the system where you are. For example:-
 
 === 0^SET/WWV^Allow WWV messages to come out on your terminal
 === 0^UNSET/WWV^Stop WWV messages coming out on your terminal
+
+=== 0^SET/WX^Allow WX messages to come out on your terminal
+=== 0^UNSET/WX^Stop WX messages coming out on your terminal
 
 === 0^SHOW/DX^Interrogate the spot database
 If you just type SHOW/DX you will get the last so many spots

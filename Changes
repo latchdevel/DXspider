@@ -1,3 +1,14 @@
+06Jan99========================================================================
+1. Do some range checking for spots and WWV in the future (got a WWV for Oct 
+2034 whhich caused a bit of confusion!)
+2. Make WWV spots broadcast them to the users! (as opposed to merely storing 
+them)(thank you G0RDI).
+3. Allow users to do show/announce (thank you JE1SGH).
+4. Delay broadcasts to users if they are not in a 'prompt' state (means you can
+add messages and see what you are doing on a busy system)
+5. Made set/unset dx,ann,wx,talk,wwv do what is expected
+6. added set/sys_location and set/set_qra to set the cluster lat/long and qra
+7. New messages will now be announced on logon (if there are any)
 03Jan99========================================================================
 1. Upped the version no !!!!
 2. made the DXProtocol routines much less sensitive to '~' characters (JE1SGH)

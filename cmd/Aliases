@@ -82,6 +82,11 @@ package CmdAlias;
 	's' => [
 	  '^set/nobe', 'unset/beep', 'unset/beep',
 	  '^set/nohe', 'unset/here', 'unset/here',
+	  '^set/noan', 'unset/announce', 'unset/announce',
+	  '^set/nodx', 'unset/dx', 'unset/dx',
+	  '^set/nota', 'unset/talk', 'unset/talk',
+	  '^set/noww', 'unset/wwv', 'unset/wwv',
+	  '^set/nowx', 'unset/wx', 'unset/wx',
 	  '^sh.*/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sh.*/c$', 'show/configuration', 'show/configuration',
 	  '^sh.*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',

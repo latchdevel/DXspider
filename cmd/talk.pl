@@ -42,7 +42,7 @@ $line =~ s/\^/:/og;
 
 my $dxchan = DXCommandmode->get($to); # is it for us?
 if ($dxchan && $dxchan->is_user) {
-	$dxchan->send("$to de $from $line");
+	$dxchan->send("$to de $from $line") if $dxchan->talk;
 	Log('talk', $to, $from, $main::mycall, $line);
 } else {
 	$line =~ s/\^//og;			# remove any ^ characters

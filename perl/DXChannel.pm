@@ -51,6 +51,7 @@ use vars qw(%channels %valid);
 		  consort => '9,Connection Type',
 		  'sort' => '9,Type of Channel',
 		  wwv => '0,Want WWV,yesno',
+		  wx => '0,Want WX,yesno',
 		  talk => '0,Want Talk,yesno',
 		  ann => '0,Want Announce,yesno',
 		  here => '0,Here?,yesno',
@@ -68,6 +69,7 @@ use vars qw(%channels %valid);
 		  pagedata => '9,Page Data Store',
 		  group => '0,Access Group,parray',	# used to create a group of users/nodes for some purpose or other
 		  isolate => '9,Isolate network,yesno',
+		  delayed => '9,Delayed messages,parray',
 		 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
@@ -203,6 +205,16 @@ sub msg
 	return DXM::msg($self->{lang}, @_);
 }
 
+# stick a broadcast on the delayed queue
+sub delay
+{
+	my $self = shift;
+	my $s = shift;
+	
+	$self->{delayed} = [] unless $self->{delayed};
+	push @{$self->{delayed}}, $s;
+}
+
 # change the state of the channel - lots of scope for debugging here :-)
 sub state
 {
@@ -212,6 +224,14 @@ sub state
 		$self->{state} = shift;
 		$self->{func} = '' unless defined $self->{func};
 		dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
+
+		# if there is any queued up broadcasts then splurge them out here
+		if ($self->{delayed} && ($self->{state} eq 'prompt' || $self->{state} eq 'convers')) {
+			for (@{$self->{delayed}}) {
+				$self->send($_);
+			}
+			delete $self->{delayed};
+		}
 	}
 	return $self->{state};
 }

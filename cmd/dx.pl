@@ -84,7 +84,7 @@ $line =~ s/\^/:/og;
 if (Spot::add($freq, $spotted, $main::systime, $line, $spotter)) {
 	# send orf to the users
 	my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
-	DXProt::broadcast_users($buf);
+	DXProt::broadcast_users($buf, 'dx', $buf);
 
 
 	# send it orf to the cluster (hang onto your tin helmets)!

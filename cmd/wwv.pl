@@ -6,4 +6,4 @@
 # $Id$
 #
 my ($self, $line) = @_;
-my @f = 
+return (1, "not implimented yet");

@@ -15,9 +15,9 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $user = ($call eq $self->call) ? $self->user :  DXUser->get($call);
-  if ($user) {
-    $user->talk(0);
+  my $chan = DXChannel->get($call);
+  if ($chan) {
+    $chan->talk(0);
 	push @out, $self->msg('talku', $call);
   } else {
     push @out, $self->msg('e3', "Unset Talk", $call);

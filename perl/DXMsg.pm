@@ -201,7 +201,7 @@ sub process
 						$ref->store($ref->{lines});
 						add_dir($ref);
 						my $dxchan = DXChannel->get($ref->{to});
-						$dxchan->send("New mail has arrived for you") if $dxchan;
+						$dxchan->msg('msgnew') if $dxchan;
 						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
 					}
 				}
@@ -529,6 +529,21 @@ sub queue_msg
 	}
 }
 
+# is there a message for me?
+sub for_me
+{
+	my $call = uc shift;
+	my $ref;
+	
+	foreach $ref (@msg) {
+		# is it for me, private and unread? 
+		if ($ref->{to} eq $call && $ref->{private}) {
+			return 1 if !$ref->{'read'};
+		}
+	}
+	return 0;
+}
+
 # start the message off on its travels with a PC28
 sub start_msg
 {
@@ -727,9 +742,9 @@ sub do_send_stuff
 			delete $loc->{lines};
 			delete $loc->{to};
 			delete $self->{loc};
-			$self->state('prompt');
 			$self->func(undef);
 			DXMsg::queue_msg(0);
+			$self->state('prompt');
 		} elsif ($line eq "\031" || uc $line eq "/ABORT" || uc $line eq "/QUIT") {
 			#push @out, $self->msg('sendabort');
 			push @out, "aborted";

@@ -20,7 +20,6 @@ return (1, $self->msg('loce2', $line)) unless $line =~ /\d+ \d+ [NnSs] \d+ \d+ [
 $user = DXUser->get_current($call);
 if ($user) {
 	$line = uc $line;
-	$user->qra($line);
 	my ($lat, $long) = DXBearing::stoll($line);
 	$user->lat($lat);
 	$user->long($long);

@@ -65,7 +65,7 @@ sub start
 	$self->{consort} = $line;	# save the connection type
 	
 	# set some necessary flags on the user if they are connecting
-	$self->{beep} = $self->{wwv} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
+	$self->{beep} = $self->{wwv} = $self->{wx} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
 	#  $self->prompt() if $self->{state} =~ /^prompt/o;
 	
 	# add yourself to the database
@@ -86,7 +86,7 @@ sub start
 	$self->send($self->msg('qthe1')) if !$user->qth;
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
-
+	$self->send($self->msg('msgnew')) if DXMsg::for_me($call);
 	
 	$self->send($self->msg('pr', $call));
 }
