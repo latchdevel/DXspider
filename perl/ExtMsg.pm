@@ -90,7 +90,9 @@ sub dequeue
 			} elsif ($conn->{state} eq 'WL' ) {
 				$msg = uc $msg;
 				if (is_callsign($msg)) {
-					$conn->to_connected($msg, 'A', $conn->{csort});
+					my $sort = $conn->{csort};
+					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
+					$conn->to_connected($msg, 'A', $sort);
 				} else {
 					$conn->send_now("Sorry $msg is an invalid callsign");
 					$conn->disconnect;

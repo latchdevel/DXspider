@@ -1,3 +1,7 @@
+22Apr01=======================================================================
+1. Sysops can now have full privileges if there is a ExtMsg listener on 
+localhost (or everything) and they telnet to localhost and login with their
+callsign.
 18Apr01=======================================================================
 1. added Ian M0AZM's Java Client (SpiderConsole)
 17Apr01=======================================================================
