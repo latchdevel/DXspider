@@ -189,6 +189,18 @@ sub state
   dbg('state', "$self->{call} channel state $self->{oldstate} -> $self->{state}\n");
 }
 
+# disconnect this channel
+sub disconnect
+{
+  my $self = shift;
+  my $user = $self->{user};
+  my $conn = $self->{conn};
+  $self->finish();
+  $user->close() if defined $user;
+  $conn->disconnect() if defined $conn;
+  $self->del();
+}
+
 # various access routines
 
 #

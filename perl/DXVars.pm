@@ -15,7 +15,7 @@ require Exporter;
 @EXPORT_OK = qw($mycall $myname $myalias $mylatitude $mylongtitude $mylocator
                 $myqth $myemail $myprot_version 
                 $clusterport $clusteraddr $debugfn 
-                $def_hopcount $root $data $system $cmd
+                $def_hopcount $data $system $cmd
 				$userfn $motd $local_cmd $mybbsaddr
 				$pc50_interval, $user_interval
                );
@@ -65,9 +65,6 @@ $no = 'No';
 
 # the interval between unsolicited prompts if not traffic
 $user_interval = 11*60;
-
-# root of directory tree for this system
-$root = "/spider"; 
 
 # data files live in 
 $data = "$root/data";

@@ -122,7 +122,9 @@ package DXNodeuser;
 use DXDebug;
 
 use strict;
-my $users = 0;
+use vars qw($users);
+
+$users = 0;
 
 sub new 
 {
@@ -168,13 +170,15 @@ package DXNode;
 use DXDebug;
 
 use strict;
-my $nodes = 0;
+use vars qw($nodes);
+
+$nodes = 0;
 
 sub new 
 {
   my ($pkg, $dxchan, $call, $confmode, $here, $pcversion) = @_;
   my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
-  $self->{version} = $pcversion;
+  $self->{pcversion} = $pcversion;
   $self->{list} = { } ;
   $nodes++;
   dbg('cluster', "allocating node $call to cluster\n");

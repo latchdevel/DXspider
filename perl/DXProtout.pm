@@ -28,10 +28,10 @@ sub pc10
   my ($self, $to, $via, $text) = @_;
   my $user2 = $via ? $to : ' ';
   my $user1 = $via ? $via : $to;
-  my $mycall = $self->call;
+  my $from = $self->call();
   $text = unpad($text);
   $text = ' ' if !$text;
-  return "PC10^$mycall^$user1^$text^*^$user2^$main::mycall^~";  
+  return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  
 }
 
 # create a dx message (called $self->pc11(...)
@@ -106,12 +106,14 @@ sub pc19
   my @out;
 
   while (@_) {
-    my $str = "PC19^$self->{call}";
+    my $str = "PC19";
     my $i;
     
     for ($i = 0; @_ && $i < $DXProt::pc19_max_nodes; $i++) {
       my $ref = shift;
-      $str .= "^$ref->{here}^$ref->{call}^$ref->{confmode}^$ref->{pcversion}";
+	  my $here = $ref->{here} ? '1' : '0';
+	  my $confmode = $ref->{confmode} ? '1' : '0';
+      $str .= "^$here^$ref->{call}^$confmode^$ref->{pcversion}";
 	}
     $str .= sprintf "^%s^", get_hops(19);
 	push @out, $str;
@@ -157,7 +159,8 @@ sub pc38
 # periodic update of users, plus keep link alive device (always H99)
 sub pc50
 {
-  my $n = DXNodeuser->count;
+  my $me = DXCluster->get($main::mycall);
+  my $n = $me->users ? $me->users : '0';
   return "PC50^$main::mycall^$n^H99^";
 }
 

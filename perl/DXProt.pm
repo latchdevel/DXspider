@@ -167,6 +167,12 @@ sub normal
 		
 		$confmode = $confmode eq '*';
 		DXNodeuser->new($self, $node, $call, $confmode, $here);
+		
+		# add this station to the user database, if required
+		my $user = DXUser->get_current($call);
+		$user = DXUser->new($call) if !$user;
+		$user->node($node->call) if !$user->node;
+		$user->put;
 	  }
 	  last SWITCH;
 	}
@@ -179,12 +185,7 @@ sub normal
 	
     if ($pcno == 18) {              # link request
 	
-      # send our nodes
-	  my $hops = get_hops(19);
-	  $self->send($me->pc19(get_all_ak1a()));
-	  
-      # get all the local users and send them out
-	  $self->send($me->pc16(get_all_users()));
+	  $self->send_local_config();
 	  $self->send(pc20());
 	  last SWITCH;
 	}
@@ -209,13 +210,7 @@ sub normal
 	}
 	
     if ($pcno == 20) {              # send local configuration
-
-      # send our nodes
-	  my $hops = get_hops(19);
-	  $self->send($me->pc19(get_all_ak1a()));
-	  
-      # get all the local users and send them out
-	  $self->send($me->pc16(get_all_users()));
+	  $self->send_local_config();
 	  $self->send(pc22());
 	  return;
 	}
@@ -228,7 +223,13 @@ sub normal
 	
     if ($pcno == 22) {last SWITCH;}
     if ($pcno == 23) {last SWITCH;}
-    if ($pcno == 24) {last SWITCH;}
+
+    if ($pcno == 24) {             # set here status
+	  my $user = DXCluster->get($field[1]);
+	  $user->here($field[2]);
+	  last SWITCH;
+	}
+	
     if ($pcno == 25) {last SWITCH;}
     if ($pcno == 26) {last SWITCH;}
     if ($pcno == 27) {last SWITCH;}
@@ -243,9 +244,36 @@ sub normal
     if ($pcno == 36) {last SWITCH;}
     if ($pcno == 37) {last SWITCH;}
     if ($pcno == 38) {last SWITCH;}
-    if ($pcno == 39) {last SWITCH;}
+
+    if ($pcno == 39) {              # incoming disconnect
+      $self->disconnect();
+	  return;
+	}
+	
     if ($pcno == 40) {last SWITCH;}
-    if ($pcno == 41) {last SWITCH;}
+    if ($pcno == 41) {              # user info
+      # add this station to the user database, if required
+	  my $user = DXUser->get_current($field[1]);
+	  $user = DXUser->new($field[1]) if !$user;
+	  
+	  if ($field[2] == 1) {
+	    $user->name($field[3]);
+	  } elsif ($field[2] == 2) {
+	    $user->qth($field[3]);
+	  } elsif ($field[2] == 3) {
+        my ($latd, $latm, $latl, $longd, $longm, $longl) = split /\s+/, $field[3];
+		$longd += ($longm/60);
+		$longd = 0-$longd if (uc $longl) eq 'W'; 
+		$user->long($longd);
+		$latd += ($latm/60);
+		$latd = 0-$latd if (uc $latl) eq 'S';
+		$user->lat($latd);
+	  } elsif ($field[2] == 4) {
+	    $user->node($field[3]);
+	  }
+	  $user->put;
+	  last SWITCH;
+	}
     if ($pcno == 42) {last SWITCH;}
     if ($pcno == 43) {last SWITCH;}
     if ($pcno == 44) {last SWITCH;}
@@ -284,11 +312,8 @@ sub normal
   #        REBROADCAST!!!!
   #
   
-  my $hopfield = pop @field;
-  push @field, $hopfield; 
-  
   my $hops;
-  if (($hops) = $hopfield =~ /H(\d+)\^\~?$/o) {
+  if (($hops) = $line =~ /H(\d+)\^\~?$/o) {
 	my $newhops = $hops - 1;
 	if ($newhops > 0) {
 	  $line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;       # change the hop count
@@ -333,6 +358,25 @@ sub finish
 # some active measures
 #
 
+sub send_local_config
+{
+  my $self = shift;
+  my $n;
+
+  # send our nodes
+  my @nodes = DXNode::get_all();
+  
+  # create a list of all the nodes that are not connected to this connection
+  @nodes = map { $_->dxchan != $self ? $_ : () } @nodes;
+  $self->send($me->pc19(@nodes));
+	  
+  # get all the users connected on the above nodes and send them out
+  foreach $n (@nodes) {
+    my @users = values %{$n->list};
+    $self->send(DXProt::pc16($n, @users));
+  }
+}
+
 #
 # route a message down an appropriate interface for a callsign
 #
@@ -343,8 +387,17 @@ sub route
   my ($call, $line) = @_;
   my $cl = DXCluster->get($call);
   if ($cl) {
-    my $dxchan = $cl->{dxchan};
-    $cl->send($line) if $dxchan;
+    my $hops;
+	my $dxchan = $cl->{dxchan};
+	if (($hops) = $line =~ /H(\d+)\^\~?$/o) {
+	  my $newhops = $hops - 1;
+	  if ($newhops > 0) {
+	    $line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;       # change the hop count
+		$dxchan->send($line) if $dxchan;
+	  }
+	} else {
+ 	  $dxchan->send($line) if $dxchan;                    # for them wot don't have Hops
+	}
   }
 }
 
@@ -357,7 +410,8 @@ sub broadcast_ak1a
   my $chan;
   
   foreach $chan (@chan) {
-	 $chan->send($s) if !grep $chan, @except;              # send it if it isn't the except list
+     next if grep $chan == $_, @except;
+	 $chan->send($s);              # send it if it isn't the except list
   }
 }
 
@@ -370,7 +424,8 @@ sub broadcast_users
   my $chan;
   
   foreach $chan (@chan) {
-	 $chan->send($s) if !grep $chan, @except;              # send it if it isn't the except list
+    next if grep $chan == $_, @except;
+	$chan->send($s);              # send it if it isn't the except list
   }
 }
 

@@ -352,10 +352,10 @@ sub eval_file {
   my @r;
   my $c = qq{ \@r = \$self->$package(\@_); };
   dbg('eval', "cluster cmd = $c\n");
-  eval  $c; ;
+  eval  $c;
   if ($@) {
     delete_package($package);
-	return (0, "Syserr: Eval err $@ on cached $package");
+	return (1, "Syserr: Eval err $@ on cached $package");
   }
 
   #take a look if you want

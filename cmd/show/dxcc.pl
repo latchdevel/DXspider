@@ -75,7 +75,7 @@ if (@ans) {                               # we have a valid prefix!
     $expr .= " && (";
 	my $i;
 	for ($i; $i < @freq; $i += 2) {
-	  $expr .= "(\$f0 >= $freq[0] && \$f0 <= $freq[1]) ||";
+	  $expr .= "(\$f0 >= $freq[$i] && \$f0 <= $freq[$i+1]) ||";
 	}
 	chop $expr;
 	chop $expr;

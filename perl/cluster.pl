@@ -12,8 +12,12 @@
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
-  unshift @INC, '/spider/perl';  # this IS the right way round!
-  unshift @INC, '/spider/local';
+  # root of directory tree for this system
+  $root = "/spider"; 
+  $root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+
+  unshift @INC, '$root/perl';  # this IS the right way round!
+  unshift @INC, '$root/local';
 }
 
 use Msg;
@@ -33,18 +37,14 @@ package main;
 
 @inqueue = ();                # the main input queue, an array of hashes
 $systime = 0;                 # the time now (in seconds)
+$version = 1.1;               # the version no of the software
 
 # handle disconnections
 sub disconnect
 {
   my $dxchan = shift;
   return if !defined $dxchan;
-  my $user = $dxchan->{user};
-  my $conn = $dxchan->{conn};
-  $dxchan->finish();
-  $user->close() if defined $user;
-  $conn->disconnect() if defined $conn;
-  $dxchan->del();
+  $dxchan->disconnect();
 }
 
 # handle incoming messages
@@ -186,7 +186,7 @@ $SIG{'HUP'} = 'IGNORE';
 DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-DXNode->new(0, $mycall, 0, 1, $DXProtvars::myprot_version); 
+DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 
 
 # this, such as it is, is the main loop!
 print "orft we jolly well go ...\n";
