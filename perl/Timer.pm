@@ -22,6 +22,8 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
+my $lasttime = 0;
+
 sub new
 {
     my ($pkg, $time, $proc, $recur) = @_;
@@ -45,7 +47,9 @@ sub del
 sub handler
 {
 	my $now = time;
-	
+
+	return unless $now != $lasttime;
+
 	# handle things on the timer chain
 	my $t;
 	foreach $t (@timerchain) {
@@ -54,6 +58,8 @@ sub handler
 			$t->{t} = $now + $t->{interval} if exists $t->{interval};
 		}
 	}
+
+	$lasttime = $now;
 }
 
 sub DESTROY

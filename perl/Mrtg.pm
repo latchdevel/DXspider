@@ -56,17 +56,24 @@ sub run
 	return `mrtg $self->{cfg}`;
 }
 
-sub cfgprint
+sub data
 {
-	my ($self, $name, $vali, $valo, $options, $max, $title, $legend, $iname, $oname) = @_;
-	my $opt = join ', ', @$options, qw(withzeroes gauge growright nopercent integer);
+	my ($self, $name, $vali, $valo, $title) = @_;
 	my $uptime = main::uptime();
 
-	if (my $m = new IO::File ">$self->{dir}/$name") {
+	if (my $m = new IO::File ">$self->{dir}/$name" ) {
 		$m->print("$vali\n$valo\n$uptime\n$title\n");
 		$m->close;
+	} else {
+		dbg("MRTG: cannot open $self->{dir}/$name $!");
 	}
-		
+}
+
+sub cfgprint
+{
+	my ($self, $name, $options, $max, $title, $legend, $iname, $oname) = @_;
+	my $opt = join ', ', @$options, qw(withzeroes gauge growright nopercent integer);
+
 	$self->{mc}->print(<<"EOF");
 
 #
