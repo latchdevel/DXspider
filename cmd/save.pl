@@ -24,7 +24,7 @@ if ($line =~ /-a/) {			# append to the file
 	$app_req = '>>';
 }
 
-$DB::single = 1;
+#$DB::single = 1;
 
 my ($fn, $rest) = split /\s+/, $line, 2;
 $fn = "$main::root/packclus/$fn" unless $fn =~ m|^/|;
