@@ -1,9 +1,13 @@
+01Jul99=======================================================================
+1. Altered priv to 5 for connect.pl to match disconnect for nodes
 29Jun99=======================================================================
 1. fixed merge command that I broke.
 2. added some randomness in waittimes for aborted outgoing messages 
 3. Message Queuing now only occurs every 5 minutes (configurable if anyone 
 wants to write the command for doing it) nad on receipt of a PC16. This is
 a further attempt at sorting the crossing of messages!
+4. a PC33 will cause another attempt at queuing. If you are on a roll, keep
+going!
 28Jun99=======================================================================
 1. console.pl now works with history and editting.
 2. added scrolling to stuff sent by the cluster.

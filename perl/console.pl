@@ -118,6 +118,15 @@ sub show_screen
 	$top->refresh();
 }
 
+# add a line to the end of the top screen
+sub addtotop
+{
+	my $inbuf = shift;
+	push @shistory, $inbuf;
+	shift @shistory if @shistory > $maxshist;
+	show_screen();
+}
+
 # handle incoming messages
 sub rec_socket
 {
@@ -129,10 +138,7 @@ sub rec_socket
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 		
 		if ($sort eq 'D') {
-			push @shistory, $line;
-			shift @shistory if @shistory > $maxshist;
-#			$spos = @shistory if $spos >= @shistory - 1;
-			show_screen();
+			addtotop($line);
 		} elsif ($sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
 		}	  
@@ -164,6 +170,9 @@ sub rec_stdin
 				$bot->clrtoeol();
 				$bot->addstr(substr($inbuf, 0, COLS));
 			}
+
+			# add it to the monitor window
+			addtotop($inbuf) if $inbuf;
 		
 			# send it to the cluster
 			$inbuf = " " unless $inbuf;
@@ -252,11 +261,8 @@ sub rec_stdin
 			$pos++;
 			$lth++;
 		} elsif ($r eq "\014" || $r eq "\022") {
-			$top->touchwin();
-			$bot->touchwin();
-			$scr->touchwin();
-			$scr->refresh();
-			$top->refresh();
+#			curscr()->refresh();
+			return;
 		} elsif ($r eq "\013") {
 			$inbuf = substr($inbuf, 0, $pos);
 			$lth = length $inbuf;
