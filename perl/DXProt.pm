@@ -214,7 +214,6 @@ sub init
 	my $user = DXUser->get($main::mycall);
 	die "User $main::mycall not setup or disappeared RTFM" unless $user;
 	
-	$myprot_version += $main::version*100;
 	$main::me = DXProt->new($main::mycall, 0, $user); 
 	$main::me->{here} = 1;
 	$main::me->{state} = "indifferent";
@@ -223,7 +222,7 @@ sub init
 	$main::me->{metric} = 0;
 	$main::me->{pingave} = 0;
 	$main::me->{registered} = 1;
-	$main::me->{version} = 5252 + $main::version;
+	$main::me->{version} = $myprot_version + int ($main::version * 100);
 	$main::me->{build} = $main::build;
 	$main::me->{lastcf} = $main::me->{lasthello} = time;
 }
@@ -1107,8 +1106,7 @@ sub handle_20
 	my $thing = Thingy::Rt->new(user=>$self->{call});
 	my $nref = Route::Node::get($self->{call});
 	$thing->copy_pc16_data($nref);
-	$thing->broadcast;
-	
+	$thing->broadcast($self);
 	$self->lastcf($main::systime);
 }
 		
@@ -1199,7 +1197,7 @@ sub handle_22
 	my $thing = Thingy::Rt->new(user=>$self->{call});
 	my $nref = Route::Node::get($self->{call});
 	$thing->copy_pc16_data($nref);
-	$thing->broadcast;
+	$thing->broadcast($self);
 	$self->lastcf($main::systime);
 }
 				

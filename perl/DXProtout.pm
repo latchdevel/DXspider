@@ -121,7 +121,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $v = $DXProt::myprot_version + $main::version;
+	my $v = $DXProt::myprot_version + int($main::version * 100);
 	return "PC18^DXSpider Version: $main::version Build: $main::build^$v^";
 }
 
