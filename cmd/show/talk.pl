@@ -7,8 +7,6 @@
 #
 my $self = shift;
 
-return (1, $self->msg('e5')) if $self->priv < 9;
-
 my $cmdline = shift;
 my @f = split /\s+/, $cmdline;
 my $f;
@@ -32,6 +30,10 @@ while ($f = shift @f) {                 # next field
 
 $to = 20 unless $to;
 $from = 0 unless $from;
+if ($self->priv < 6) {
+	$who = $self->call unless $who;
+	return (1, $self->msg('e5')) if $who ne $self->call;
+}
 
 @out = DXLog::print($from, $to, $main::systime, '^talk', $who);
 return (1, @out);

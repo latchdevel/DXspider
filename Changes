@@ -1,5 +1,8 @@
 27Mar00=======================================================================
-1. updated wpxloc.raw and rsgb.cty for 4W and TX0
+1. updated wpxloc.raw and rsgb.cty for 4W and TX0.
+2. display 'start time' rather than 'user last time in' in who.
+3. Allow local users to see their own sh/talk or sh/log stuff.
+4. A more robust version of the C client.
 26Mar00=======================================================================
 1. first cut of C client
 18Mar00=======================================================================
