@@ -1046,7 +1046,12 @@ sub normal
 									for (@{$tochan->{pingtime}}) {
 										$st += $_;
 									}
-									$tochan->{pingave} = $st / @{$tochan->{pingtime}};
+									if (@{$tochan->{pingtime}} == 1) {
+										$tochan->{pingave} = $t;
+									} else {
+										$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 8);
+									}
+#									$tochan->{pingave} = $st / @{$tochan->{pingtime}};
 								}
 							} 
 						}

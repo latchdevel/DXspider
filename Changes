@@ -1,5 +1,6 @@
 06Sep01=======================================================================
 1. prevent nodes appearing as users from incoming PC16s
+2. Change ping averaging to be like TCP and become a smoothed RTT.
 04Sep01=======================================================================
 1. add delete/user command
 03Sep01=======================================================================
