@@ -850,9 +850,9 @@ lgotcall:
 	send_msg(node, 'A', connsort, strlen(connsort));
 	
 	/* main processing loop */
-	while (!ending) {
+	while (ending == 0) {
 		sel_run();
-		if (!ending) {
+		if (ending == 0) {
 			process_stdin();
 			process_node();
 		}
