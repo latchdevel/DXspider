@@ -101,8 +101,28 @@ sub load
 	tie %dbn, 'DB_File', "$dbfn.new", O_RDWR|O_CREAT, 0664, $a or return "cannot tie $dbfn.new $!";
 	
 	# now write away all the files
+	my $count = 0;
 	for (@_) {
 		my $ofn = shift;
+
+		# conditionally handle compressed files (don't cha just lurv live code, this is
+		# a rave from the grave and is "in memoriam Flossie" the ICT 1301G I learnt on.
+		# {for pedant computer historians a 1301G is an ICT 1301A that has been 
+		# Galdorised[tm] (for instance had decent IOs and a 24 pre-modify instruction)}
+		my $nfn = $ofn;
+		if ($nfn =~ /.gz$/i) {
+			my $gz;
+			eval qq{use Compress::Zlib; \$gz = gzopen(\$ofn, "rb")};
+			return "Cannot read compressed files $@" if $@;
+			$nfn =~ s/.gz$//i;
+			my $of = new IO::File ">$nfn" or return "Cannot write to $nfn $!";
+			my ($l, $buf);
+			$of->write($buf, $l) while ($l = $gz->gzread($buf));
+			$gz->gzclose;
+			$of->close;
+			$ofn = $nfn;
+		}
+
 		my $of = new IO::File "$ofn" or return "Cannot read $ofn $!";
 
 		while (<$of>) {
@@ -122,14 +142,15 @@ sub load
 				$dbn{'##'} = "$no";
 			}
 			$dbn{$call} = $ctyn; 
+			$count++;
 		}
 		$of->close;
-		unlink $ofn;
+		unlink $nfn;
 	}
 	
 	untie %dbn;
 	rename "$dbfn.new", $dbfn;
-	return ();
+	return "$count records";
 }
 
 1;

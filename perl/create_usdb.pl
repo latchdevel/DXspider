@@ -30,7 +30,7 @@ use USDB;
 
 die "no input (usdbraw?) files specified\n" unless @ARGV;
 
-USDB::load(@ARGV);
+print "\n", USDB::load(@ARGV), "\n";
 exit(0);
 
 

@@ -73,7 +73,6 @@ foreach my $argv (@ARGV) {
 }
 
 $gzfh->gzclose;
-print "$ctycount Cities found\n";
 
 exit(0);
 
@@ -96,19 +95,20 @@ sub handleEN
 				$l =~ s/[\r\n]+$//;
 				my ($rt,$usi,$ulsfn,$ebfno,$call,$type,$lid,$name,$first,$middle,$last,$suffix,
 					$phone,$fax,$email,$street,$city,$state,$zip,$pobox,$attl,$sgin,$frn) = split /\|/, $l;
-				
-				my $rec = uc join '|', $call,$city,$state if $city && $state;
-				$buf .= "$rec\n";
-				if (length $buf > $blksize) {
-					$gzfh->gzwrite($buf);
-					undef $buf;
+
+#				print "ERR: $l\n" unless $call && $city && $state;
+
+				if ($call && $city && $state) {
+					my $rec = uc join '|', $call,$city,$state if $city && $state;
+					$buf .= "$rec\n";
+					if (length $buf > $blksize) {
+						$gzfh->gzwrite($buf);
+						undef $buf;
+					}
+					$count++;
 				}
-				my $c = uc "$city|$state";
-				$count++;
 			}
-			if (length $buf > $blksize) {
-				$gzfh->gzwrite($buf);
-			}
+			$gzfh->gzwrite($buf) if length $buf;
 			print ", $count records\n";
 			$fh->close;
 		}
