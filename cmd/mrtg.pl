@@ -80,7 +80,7 @@ if (!$main::is_win && ($want{proc} || $want{all})) {
 		$f->close;
 	}
 	if ($secs) {
-		$mc->cfgprint('proc', [qw(noi perminute)], 5*60, 
+		$mc->cfgprint('proc', [qw(noo perminute)], 5*60, 
 					  "Processor Usage",
 					  'Proc Secs / min', 'Proc Secs', 'Proc Secs') unless $want{dataonly};
 		$mc->data('proc', $secs, $secs, "Processor Usage") unless $want{cfgonly};
