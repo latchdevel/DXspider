@@ -64,7 +64,8 @@ sub dbglist
 
 sub isdbg
 {
-	return $dbglevel{shift};
+	my $s = shift;
+	return $dbglevel{$s};
 }
 1;
 __END__

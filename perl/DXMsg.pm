@@ -50,7 +50,7 @@ $last_clean = 0;				# last time we did a clean
 		  file => '9,File?,yesno',
 		  gotit => '9,Got it Nodes,parray',
 		  lines => '9,Lines,parray',
-		  read => '9,Times read',
+		  'read' => '9,Times read',
 		  size => '0,Size',
 		  msgno => '0,Msgno',
 		  keep => '0,Keep this?,yesno',
@@ -73,7 +73,7 @@ sub alloc
 	$self->{private} = shift;
 	$self->{subject} = shift;
 	$self->{origin} = shift;
-	$self->{read} = shift;
+	$self->{'read'} = shift;
 	$self->{rrreq} = shift;
 	$self->{gotit} = [];
     
@@ -201,11 +201,11 @@ sub process
 					}
 				}
 				$ref->stop_msg($self);
-				queue_msg();
+				queue_msg(0);
 			} else {
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			}
-			queue_msg();
+			queue_msg(0);
 			last SWITCH;
 		}
 		
@@ -224,7 +224,7 @@ sub process
 			} else {
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			} 
-			queue_msg();
+			queue_msg(0);
 			last SWITCH;
 		}
 		
@@ -328,7 +328,7 @@ sub store
 		if (defined $fh) {
 			my $rr = $ref->{rrreq} ? '1' : '0';
 			my $priv = $ref->{private} ? '1': '0';
-			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{read}^$rr\n";
+			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr\n";
 			print $fh "=== ", join('^', @{$ref->{gotit}}), "\n";
 			my $line;
 			$ref->{size} = 0;
@@ -484,20 +484,20 @@ sub queue_msg
 	
 	# bat down the message list looking for one that needs to go off site and whose
 	# nearest node is not busy.
-	
+
 	dbg('msg', "queue msg ($sort)\n");
 	foreach $ref (@msg) {
 		# firstly, is it private and unread? if so can I find the recipient
 		# in my cluster node list offsite?
 		if ($ref->{private}) {
-			if ($ref->{read} == 0) {
+			if ($ref->{'read'} == 0) {
 				$clref = DXCluster->get_exact($ref->{to});
 				if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
 					$dxchan = $clref->{dxchan};
 					$ref->start_msg($dxchan) if $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';
 				}
 			}
-		} elsif ($sort == undef) {
+		} elsif (!$sort) {
 			# otherwise we are dealing with a bulletin, compare the gotit list with
 			# the nodelist up above, if there are sites that haven't got it yet
 			# then start sending it - what happens when we get loops is anyone's
@@ -719,7 +719,7 @@ sub do_send_stuff
 			delete $self->{loc};
 			$self->state('prompt');
 			$self->func(undef);
-			DXMsg::queue_msg();
+			DXMsg::queue_msg(0);
 		} elsif ($line eq "\031" || uc $line eq "/ABORT" || uc $line eq "/QUIT") {
 			#push @out, $self->msg('sendabort');
 			push @out, "aborted";

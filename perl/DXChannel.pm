@@ -34,7 +34,7 @@ use Carp;
 use strict;
 use vars qw(%channels %valid);
 
-%channels = undef;
+%channels = ();
 
 %valid = (
 		  call => '0,Callsign',
@@ -49,7 +49,7 @@ use vars qw(%channels %valid);
 		  list => '9,Dep Chan List',
 		  name => '0,User Name',
 		  consort => '9,Connection Type',
-		  sort => '9,Type of Channel',
+		  'sort' => '9,Type of Channel',
 		  wwv => '0,Want WWV,yesno',
 		  talk => '0,Want Talk,yesno',
 		  ann => '0,Want Announce,yesno',
@@ -87,6 +87,7 @@ sub alloc
 	$self->{lang} = $main::lang if !$self->{lang};
 	$user->new_group() if !$user->group;
 	$self->{group} = $user->group;
+	$self->{func} = "";
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }
@@ -130,21 +131,21 @@ sub del
 sub is_ak1a
 {
 	my $self = shift;
-	return $self->{sort} eq 'A';
+	return $self->{'sort'} eq 'A';
 }
 
 # is it a user?
 sub is_user
 {
 	my $self = shift;
-	return $self->{sort} eq 'U';
+	return $self->{'sort'} eq 'U';
 }
 
 # is it a connect type
 sub is_connect
 {
 	my $self = shift;
-	return $self->{sort} eq 'C';
+	return $self->{'sort'} eq 'C';
 }
 
 # handle out going messages, immediately without waiting for the select to drop

@@ -50,7 +50,7 @@ sub new
 	my $ref = {};
 	$ref->{prefix} = "$main::data/$prefix";
 	$ref->{suffix} = $suffix if $suffix;
-	$ref->{sort} = $sort;
+	$ref->{'sort'} = $sort;
 		
 	# make sure the directory exists
 	mkdir($ref->{prefix}, 0777) if ! -e $ref->{prefix};
@@ -71,8 +71,8 @@ sub open
 		delete $self->{mode};
 	}
 	
-	$self->{fn} = sprintf "$self->{prefix}/$year/%02d", $thing if $self->{sort} eq 'm';
-	$self->{fn} = sprintf "$self->{prefix}/$year/%03d", $thing if $self->{sort} eq 'd';
+	$self->{fn} = sprintf "$self->{prefix}/$year/%02d", $thing if $self->{'sort'} eq 'm';
+	$self->{fn} = sprintf "$self->{prefix}/$year/%03d", $thing if $self->{'sort'} eq 'd';
 	$self->{fn} .= ".$self->{suffix}" if $self->{suffix};
 	
 	$mode = 'r' if !$mode;
@@ -93,9 +93,9 @@ sub open
 sub openprev
 {
 	my $self = shift;
-	if ($self->{sort} eq 'm') {
+	if ($self->{'sort'} eq 'm') {
 		($self->{year}, $self->{thing}) = Julian::subm($self->{year}, $self->{thing}, 1);
-	} elsif ($self->{sort} eq 'd') {
+	} elsif ($self->{'sort'} eq 'd') {
 		($self->{year}, $self->{thing}) = Julian::sub($self->{year}, $self->{thing}, 1);
 	}
 	return $self->open($self->{year}, $self->{thing}, @_);
@@ -105,9 +105,9 @@ sub openprev
 sub opennext
 {
 	my $self = shift;
-	if ($self->{sort} eq 'm') {
+	if ($self->{'sort'} eq 'm') {
 		($self->{year}, $self->{thing}) = Julian::addm($self->{year}, $self->{thing}, 1);
-	} elsif ($self->{sort} eq 'd') {
+	} elsif ($self->{'sort'} eq 'd') {
 		($self->{year}, $self->{thing}) = Julian::add($self->{year}, $self->{thing}, 1);
 	}
 	return $self->open($self->{year}, $self->{thing}, @_);
@@ -118,9 +118,9 @@ sub unixtoj
 {
 	my $self = shift;
 	
-	if ($self->{sort} eq 'm') {
+	if ($self->{'sort'} eq 'm') {
 		return Julian::unixtojm(shift);
-	} elsif ($self->{sort} eq 'd') {
+	} elsif ($self->{'sort'} eq 'd') {
 		return Julian::unixtoj(shift);
 	}
 	confess "shouldn't get here";

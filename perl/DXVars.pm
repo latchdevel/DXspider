@@ -18,7 +18,7 @@ require Exporter;
                 $def_hopcount $data $system $cmd
 				$userfn $motd $local_cmd $mybbsaddr
                 $lang
-				$pc50_interval, $user_interval
+				$pc50_interval $user_interval
                );
 			   
 			   

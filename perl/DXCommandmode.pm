@@ -39,7 +39,7 @@ $errstr = ();					# error string from eval
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
-	$self->{sort} = 'U';		# in absence of how to find out what sort of an object I am
+	$self->{'sort'} = 'U';		# in absence of how to find out what sort of an object I am
 	return $self;
 }
 
@@ -237,16 +237,16 @@ sub run_cmd
 sub process
 {
 	my $t = time;
-	my @chan = DXChannel->get_all();
-	my $chan;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
 	
-	foreach $chan (@chan) {
-		next if $chan->sort ne 'U';  
+	foreach $dxchan (@dxchan) {
+		next if $dxchan->sort ne 'U';  
 		
 		# send a prompt if no activity out on this channel
-		if ($t >= $chan->t + $main::user_interval) {
-			$chan->prompt() if $chan->{state} =~ /^prompt/o;
-			$chan->t($t);
+		if ($t >= $dxchan->t + $main::user_interval) {
+			$dxchan->prompt() if $dxchan->{state} =~ /^prompt/o;
+			$dxchan->t($t);
 		}
 	}
 }
@@ -293,14 +293,14 @@ sub broadcast
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
 	my @list = DXChannel->get_all(); # just in case we are called from some funny object
-	my ($chan, $except);
+	my ($dxchan, $except);
 	
- L: foreach $chan (@list) {
-		next if !$chan->sort eq 'U'; # only interested in user channels  
+ L: foreach $dxchan (@list) {
+		next if !$dxchan->sort eq 'U'; # only interested in user channels  
 		foreach $except (@except) {
-			next L if $except == $chan;	# ignore channels in the 'except' list
+			next L if $except == $dxchan;	# ignore channels in the 'except' list
 		}
-		chan->send($s);			# send it
+		$dxchan->send($s);			# send it
 	}
 }
 
@@ -333,7 +333,7 @@ sub search
 	return () if $short_cmd =~ /\/$/;
 
 	# return immediately if we have it
-	my ($apath, $acmd) = split ',', $cmd_cache{$short_cmd};
+	($apath, $acmd) = split ',', $cmd_cache{$short_cmd} if $cmd_cache{$short_cmd};
 	if ($apath && $acmd) {
 		dbg('command', "cached $short_cmd = ($apath, $acmd)\n");
 		return ($apath, $acmd);
@@ -369,6 +369,7 @@ sub search
 					pop @lparts; #  remove the suffix
 					$l = join '.', @lparts;
 					#		  chop $dirfn;               # remove trailing /
+					$dirfn = "" unless $dirfn;
 					$cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn$l")); # cache it
 					dbg('command', "got path: $path cmd: $dirfn$l\n");
 					return ($path, "$dirfn$l"); 

@@ -56,6 +56,7 @@ package DXM;
 				isoc => '$_[0] created and Isolated',
 				l1 => 'Sorry $_[0], you are already logged on on another channel',
 				l2 => 'Hello $_[0], this is $main::mycall in $main::myqth running DXSpider V$main::version',
+				lh1 => '$main::data/hop_table.pl doesn\'t exist',
 				loce1 => 'Please enter your location,, set/location <latitude longitude>',
 				loce2 => 'Don\'t recognise \"$_[0]\" as a Lat/Long (eg 52 20 N 0 16 E)',
 				loc => 'Your Lat/Long is now \"$_[0]\"',

@@ -17,9 +17,9 @@ use Carp;
 use strict;
 use vars qw($db  %prefix_loc %pre);
 
-$db;     # the DB_File handle
-%prefix_loc;   # the meat of the info
-%pre;       # the prefix list
+$db = undef;     # the DB_File handle
+%prefix_loc = ();   # the meat of the info
+%pre = ();       # the prefix list
 
 sub load
 {

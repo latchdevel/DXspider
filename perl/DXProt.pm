@@ -24,7 +24,7 @@ use DXProtout;
 use Carp;
 
 use strict;
-use vars qw($me $pc11_max_age $pc11_dup_age %dup $last_hour %pings %rcmds);
+use vars qw($me $pc11_max_age $pc11_dup_age %dup $last_hour %pings %rcmds %nodehops);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -33,13 +33,18 @@ $pc11_dup_age = 24*3600;		# the maximum time to keep the dup list for
 $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
+%nodehops = ();                 # node specific hop control
+
 
 sub init
 {
 	my $user = DXUser->get($main::mycall);
 	$DXProt::myprot_version += $main::version*100;
-	$me = DXProt->new($main::mycall, undef, $user); 
+	$me = DXProt->new($main::mycall, 0, $user); 
 	$me->{here} = 1;
+	$me->{state} = "indifferent";
+	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
+	confess $@ if $@;
 	#  $me->{sort} = 'M';    # M for me
 }
 
@@ -50,7 +55,7 @@ sub init
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
-	$self->{sort} = 'A';		# in absence of how to find out what sort of an object I am
+	$self->{'sort'} = 'A';		# in absence of how to find out what sort of an object I am
 	return $self;
 }
 
@@ -99,6 +104,7 @@ sub normal
 	
 	# process PC frames
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
+	return unless $pcno;
 	return if $pcno < 10 || $pcno > 51;
 	
  SWITCH: {
@@ -282,7 +288,7 @@ sub normal
 			}
 			
 			# queue up any messages
-			DXMsg::queue_msg() if $self->state eq 'normal';
+			DXMsg::queue_msg(0) if $self->state eq 'normal';
 			last SWITCH;
 		}
 		
@@ -292,7 +298,7 @@ sub normal
 			$self->state('normal');
 			
 			# queue mail
-			DXMsg::queue_msg();
+			DXMsg::queue_msg(0);
 			return;
 		}
 		
@@ -309,7 +315,7 @@ sub normal
 			$self->state('normal');
 			
 			# queue mail
-			DXMsg::queue_msg();
+			DXMsg::queue_msg(0);
 			return;
 		}
 		
@@ -467,13 +473,8 @@ sub normal
 	 #        REBROADCAST!!!!
 	 #
 	 
-	my $hops;
-	if (!$self->{isolate} && (($hops) = $line =~ /H(\d+)\^\~?$/o)) {
-		my $newhops = $hops - 1;
-		if ($newhops > 0) {
-			$line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;	# change the hop count
-			broadcast_ak1a($line, $self); # send it to everyone but me
-		}
+	if (!$self->{isolate}) {
+		broadcast_ak1a($line, $self); # send it to everyone but me
 	}
 }
 
@@ -484,16 +485,17 @@ sub normal
 sub process
 {
 	my $t = time;
-	my @chan = DXChannel->get_all();
-	my $chan;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
 	
-	foreach $chan (@chan) {
-		next if !$chan->is_ak1a();
+	foreach $dxchan (@dxchan) {
+		next unless $dxchan->is_ak1a();
+		next if $dxchan == $me;
 		
 		# send a pc50 out on this channel
-		if ($t >= $chan->pc50_t + $DXProt::pc50_interval) {
-			$chan->send(pc50());
-			$chan->pc50_t($t);
+		if ($t >= $dxchan->pc50_t + $DXProt::pc50_interval) {
+			$dxchan->send(pc50());
+			$dxchan->pc50_t($t);
 		}
 	}
 	
@@ -560,12 +562,21 @@ sub send_local_config
 		@nodes = DXNode::get_all();
 		@nodes = grep { $_->dxchan != $self } @nodes;
 	}
-	$self->send($me->pc19(@nodes));
+
+	my @s = $me->pc19(@nodes);
+	for (@s) {
+		my $routeit = adjust_hops($self, $_);
+		$self->send($_) if $routeit;
+	}
 	
 	# get all the users connected on the above nodes and send them out
 	foreach $n (@nodes) {
 		my @users = values %{$n->list};
-		$self->send(DXProt::pc16($n, @users));
+		my @s = pc16($n, @users);
+		for (@s) {
+			my $routeit = adjust_hops($self, $_);
+			$self->send($_) if $routeit;
+		}
 	}
 }
 
@@ -581,14 +592,11 @@ sub route
 	if ($cl) {
 		my $hops;
 		my $dxchan = $cl->{dxchan};
-		if (($hops) = $line =~ /H(\d+)\^\~?$/o) {
-			my $newhops = $hops - 1;
-			if ($newhops > 0) {
-				$line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;	# change the hop count
+		if ($dxchan) {
+			my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
+			if ($routeit) {
 				$dxchan->send($line) if $dxchan;
 			}
-		} else {
-			$dxchan->send($line) if $dxchan; # for them wot don't have Hops
 		}
 	}
 }
@@ -598,12 +606,14 @@ sub broadcast_ak1a
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @chan = get_all_ak1a();
-	my $chan;
+	my @dxchan = get_all_ak1a();
+	my $dxchan;
 	
-	foreach $chan (@chan) {
-		next if grep $chan == $_, @except;
-		$chan->send($s) unless $chan->{isolate};		# send it if it isn't the except list
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	foreach $dxchan (@dxchan) {
+		next if grep $dxchan == $_, @except;
+		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name       
+		$dxchan->send($s) unless $dxchan->{isolate} || !$routeit; 
 	}
 }
 
@@ -612,13 +622,13 @@ sub broadcast_users
 {
 	my $s = shift;				# the line to be rebroadcast
 	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @chan = get_all_users();
-	my $chan;
+	my @dxchan = get_all_users();
+	my $dxchan;
 	
-	foreach $chan (@chan) {
-		next if grep $chan == $_, @except;
-		$s =~ s/\a//og if !$chan->{beep};
-		$chan->send($s);		# send it if it isn't the except list or hasn't a passout flag
+	foreach $dxchan (@dxchan) {
+		next if grep $dxchan == $_, @except;
+		$s =~ s/\a//og if !$dxchan->{beep};
+		$dxchan->send($s);		# send it if it isn't the except list or hasn't a passout flag
 	}
 }
 
@@ -626,10 +636,10 @@ sub broadcast_users
 sub broadcast_list
 {
 	my $s = shift;
-	my $chan;
+	my $dxchan;
 	
-	foreach $chan (@_) {
-		$chan->send($s);		# send it 
+	foreach $dxchan (@_) {
+		$dxchan->send($s);		# send it 
 	}
 }
 
@@ -681,6 +691,50 @@ sub get_hops
 	my $hops = $DXProt::hopcount{$pcno};
 	$hops = $DXProt::def_hopcount if !$hops;
 	return "H$hops";       
+}
+
+# 
+# adjust the hop count on a per node basis using the user loadable 
+# hop table if available or else decrement an existing one
+#
+
+sub adjust_hops
+{
+	my $self = shift;
+	my $call = $self->{call};
+	my $hops;
+	
+	if (($hops) = $_[0] =~ /\^H(\d+)\^~?$/o) {
+		my ($pcno) = $_[0] =~ /^PC(\d\d)/o;
+		confess "$call called adjust_hops with '$_[0]'" unless $pcno;
+		my $ref = $nodehops{$call} if %nodehops;
+		if ($ref) {
+			my $newhops = $ref->{$pcno};
+			return 0 if defined $newhops && $newhops == 0;
+			$newhops = $ref->{default} unless $newhops;
+			return 0 if defined $newhops && $newhops == 0;
+			$newhops = $hops if !$newhops;
+			$_[0] =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
+		} else {
+			# simply decrement it
+			$hops--;
+			return 0 if !$hops;
+			$_[0] =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/ if $hops;
+		}
+	}
+	return 1;
+}
+
+# 
+# load hop tables
+#
+sub load_hops
+{
+	my $self = shift;
+	return $self->msg('lh1') unless -e "$main::data/hop_table.pl";
+	do "$main::data/hop_table.pl";
+	return $@ if $@;
+	return 0;
 }
 
 # remove leading and trailing spaces from an input string

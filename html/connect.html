@@ -19,7 +19,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Thu Dec 17 00:06:40 GMT 1998
+Last modified: Sun Dec 20 17:04:05 GMT 1998
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -90,31 +90,59 @@ Last modified: Thu Dec 17 00:06:40 GMT 1998
     etc
 	</pre>
 	
-	<p>The connect scripts consist of lines which start with the following keywords or symbols:-
+	<p>The connect scripts consist of lines which start with the
+	following keywords or symbols:-
+
 	<ul>
-		<p><li><b>#</b> All lines starting with a <b>#</b> are ignored, as are wholly blank lines.
-		<p><li><b>timeout</b> followed by a number is the number of seconds to wait for a command
-		to complete. If there is no <b>timeout</b> specified in the script then the default is 60 seconds.
-		<P><li><b>abort</b> is a regular expression containing one or more strings to look for to abort a 
-		connection. This is a perl regular expression and is executed ignoring case.
-		<p><li><b>connect</b> followed by <b>ax25</b> or <b>telnet</b> and some type dependent information. In 
-		the case of a <b>telnet</b> connection, there can be up to two parameters, the first is the ip
-		address or hostname of the computer you wish to connect to and the second is the port number you
-		want to use (this can be left out if it is a normal telnet session).
-		<p>In the case of an <b>ax25</b> session then this would normally be a call to <tt>ax25_call</tt>
-		  or <tt>netrom_call</tt> as in the example above. It is your responsibility to get your node
-		  and other ax25 parameters to work before going down this route!
-		<p><li><b>'</b> or <b>"</b> are the delimiting characters for a <tt>chat</tt> type script. They normally
-		come in pairs, either can be empty. Each line reads input from the connection until it sees the string
-		(or perl regular expression) contained in the left hand string. If the  left hand string is empty then
-		it doesn't read or wait for anything. The comparison is done ignoring case.
-		<p>When the left hand string has found what it is looking (if it is) then the right hand string is
-		  sent to the connection. 
+
+		<p><li><b>#</b> All lines starting with a <b>#</b> are
+		ignored, as are wholly blank lines.
+
+		<p><li><b>timeout</b> followed by a number is the number of
+		seconds to wait for a command to complete. If there is no
+		<b>timeout</b> specified in the script then the default is 60
+		seconds.
+
+		<P><li><b>abort</b> is a regular expression containing one or
+		more strings to look for to abort a connection. This is a perl
+		regular expression and is executed ignoring case.
+
+		<p><li><b>connect</b> followed by <b>ax25</b> or <b>telnet</b>
+		and some type dependent information. In the case of a
+		<b>telnet</b> connection, there can be up to two parameters,
+		the first is the ip address or hostname of the computer you
+		wish to connect to and the second is the port number you want
+		to use (this can be left out if it is a normal telnet
+		session).
+
+		<p>In the case of an <b>ax25</b> session then this would
+		normally be a call to <tt>ax25_call</tt> or
+		<tt>netrom_call</tt> as in the example above. It is your
+		responsibility to get your node and other ax25 parameters to
+		work before going down this route!
+
+		<p><li><b>'</b> is the delimiting character for a word or
+		phrase of an expect/send line in a <tt>chat</tt> type
+		script. The words/phrases normally come in pairs, either can
+		be empty. Each line reads input from the connection until it
+		sees the string (or perl regular expression) contained in the
+		left hand string. If the left hand string is empty then it
+		doesn't read or wait for anything. The comparison is done
+		ignoring case.
+
+		<p>When the left hand string has found what it is looking (if
+		it is) then the right hand string is sent to the connection.
+
 		<p>This process is repeated for every line of <tt>chat</tt> script. 
-		<p><li><b>client</b> starts the connection, put the arguments you would want here if you were
-		starting the client program manually. You only need this if the script has a different name to
-		the callsign you are trying to connect to (i.e. you have a script called <tt>other</tt> which actually
-		connects to <tt>GB7DJK-1</tt> [instead of a script called <tt>gb7djk-1</tt>]).
+
+		<p><li><b>client</b> starts the connection, put the arguments
+		you would want here if you were starting the client program
+		manually. You only need this if the script has a different
+		name to the callsign you are trying to connect to (i.e. you
+		have a script called <tt>other</tt> which actually connects to
+		<tt>GB7DJK-1</tt> [instead of a script called
+		<tt>gb7djk-1</tt>]).
+
 	</ul>
 
 <!-- Standard Footer!! -->

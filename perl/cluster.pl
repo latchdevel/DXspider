@@ -110,7 +110,7 @@ sub rec
 
 		
 		# the user MAY have an SSID if local, but otherwise doesn't
-		my $user = DXUser->get($call);
+		$user = DXUser->get($call);
 		if (!defined $user) {
 			$user = DXUser->new($call);
 		} else {
@@ -149,7 +149,7 @@ sub cease
 {
 	my $dxchan;
 	foreach $dxchan (DXChannel->get_all()) {
-		disconnect($dxchan);
+		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
 	Log('cluster', "DXSpider V$version stopped");
 	exit(0);

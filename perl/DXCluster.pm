@@ -225,6 +225,7 @@ sub new
   $self->{pcversion} = $pcversion;
   $self->{list} = { } ;
   $self->{mynode} = $self;   # for sh/station
+  $self->{users} = 0;
   $nodes++;
   dbg('cluster', "allocating node $call to cluster\n");
   return $self;
@@ -266,7 +267,7 @@ sub update_users
   } else {
     $self->{users} = $count;
   }
-  $users += $self->{users};
+  $users += $self->{users} if $self->{users};
   $maxusers = $users+$nodes if $users+$nodes > $maxusers;
 }
 

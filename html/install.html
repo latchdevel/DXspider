@@ -17,7 +17,7 @@
 	<address><A HREF="mailto:ip@g8sjp.demon.co.uk">Iain Phillips G0RDI</A></address>
 <!-- Created: Wed Dec  2 16:40:25 GMT 1998 -->
 <!-- hhmts start -->
-Last modified: Sat Dec 19 16:10:14 GMT 1998
+Last modified: Sun Dec 20 17:55:19 GMT 1998
 <!-- hhmts end -->
 	<P>This HOWTO describes the installation for DX Spider v1.11 on a "vanilla" 
 	  <A href="http://www.redhat.com">RedHat</A> 5.1 platform, 
@@ -158,25 +158,76 @@ spider:x:251:sysop,g0rdi,root
 		</PRE>
 		<P>This last step allows various users of group spider to have write access to all the directories. Not really needed for now but will be useful when web interfaces start to appear.
 		
-		<p><LI>Should you have any users that require network logins, set them up as real users with 'useradd -m &lt;callsign&gt;'. Alter the default .bashrc so that it contains just one line (assuming you use the default bash shell). 
-		<PRE>
-exec /spider/perl/client.pl &lt;callsign&gt; telnet
-		</PRE>
-		<p>Alternatively you can set up a real login for a person (or another cluster) by creating a login using:-
-		<pre>
-# useradd gb7djk
+		<p><LI><a name="connect"></a>If you want to be able to allow people or clusters
+		to login via IP then you will need to set up logins for them.
+
+		<p><pre>
+# useradd -m gb7djk
 # passwd gb7djk
 New UNIX password: 
 Retype new UNIX password: 
 passwd: all authentication tokens updated successfully
 		</pre>
-		<p>and editing the <tt>/etc/passwd</tt> file to look like this (do substitute the correct callsigns here ;-):-
+
+		<p>You can then either alter the default .bashrc so that it
+		contains just one line (assuming you use the default bash
+		shell).
+	
+		<p><PRE>
+exec /spider/perl/client.pl &lt;callsign&gt; telnet
+		</PRE>
+		
+		<p>Alternatively you can alter the <tt>/etc/passwd</tt> thus:-
+
 		<pre>
 fbb:x:505:505::/home/fbb:/bin/bash
 gb7djk:x:506:506::/home/gb7djk:/usr/bin/perl /spider/perl/client.pl gb7djk telnet
 		</pre>
-		<P>Don't forget to give them a real password. This is really for network cluster logins. The telnet argument does two things, it sets the EOL convention to \n rather than AX25's \r and it automatically reduces the privilege of the &lt;callsign&gt; to a 'safe[r]' level.). 
 		
+		Don't forget to give them a real password. The <tt>telnet</tt> argument
+		does two things, it sets the EOL convention to \n rather than
+		AX25's \r and it automatically reduces the privilege of the
+		&lt;callsign&gt; to a 'safe[r]' level.). If the user or other cluster
+		program requires AX25 conventions to operate then you can use 
+		<tt>ax25</tt> instead.
+
+		<p>Another thing you can do is to get <tt>inetd</tt> to listen
+		on a specific port and then start the client up directly. To
+		  do this, create an entry in <tt>/etc/services</tt> with a
+		  port number > 1000 that isn't used elsewhere eg:-
+
+		<p><pre>
+gb7djk     8001/tcp 
+gb7tlh     8002/tcp
+        </pre>
+
+		Then create some lines in <tt>/etc/inetd.conf</tt> that look 
+		like this:-
+		
+		<p><pre>
+gb7djk  stream tcp   nowait   sysop /usr/sbin/tcpd /usr/bin/perl /spider/perl/client.pl gb7djk telnet
+gb7tlh  stream tcp   nowait   sysop /usr/sbin/tcpd /usr/bin/perl /spider/perl/client.pl gb7tlh telnet
+		</pre>
+
+		Please <b>DON'T</b> run the client as <tt>root</tt> you will only 
+		come to regret it later when the next person finds a security hole
+		in DX Spider (there are bound to be some although I have tried to
+		avoid the obvious ones I could think of).
+
+		<p>The only reason I would use this mechanism is for Internet connections
+		  to other or from other clusters. Don't use this for normal users.
+
+		<p>In the example I have used <tt>tcpd</tt> as the access control 
+		  mechanism to the port. Don't (I can't be bothered to emphasize 
+		  it any more) run a system like this without one, you are asking
+		  for trouble. In fact I use the <a href="http://www.tis.com">TIS
+		  Firewall Toolkit</a> myself, you may find this more intuitive 
+		  to use. The point is that <tt>gb7djk</tt> would only be coming
+		  from one IP address, if it coming from another, it is an imposter!
+
+		<p><b>You are responsible for arranging and looking after your 
+			security - not me.</b>
+
 		<p><LI>As mentioned earlier, for AX25 connections <B><I>you</B></I> are expected to have the AX25 utilities installed, setup, tested and working. See the AX25-HOWTO for more info on this - it really is beyond the scope of this document DX Spider uses ax25d for incoming connections. You need to have entries like this:- 
 		<PRE>
 [ether]                                                                         
@@ -258,8 +309,7 @@ PC38^GB7JIM^~           &lt;- the cluster thinks this is a cluster
 	</ol>
 
 	<p>You should now have a basic working system. Best of luck! Can I now draw your attention to
-	  the <a href="http://www.dxcluster.org/spider">Bug Reporting</a> System. Some mailing lists will
-	  be created RSN for more general discussions.
+	  the <a href="http://www.dxcluster.org/spider">Bug Reporting</a> System. 
 
 	<p>Can I commend to you the Announcements mailing list to which you may 
 	  <a href="mailto:majordomo@dxcluster.org?subject=Subscribe&body=subscribe%20dxspider-announce%0D%0A--%0D%0A">subscribe</a>.
@@ -268,7 +318,7 @@ PC38^GB7JIM^~           &lt;- the cluster thinks this is a cluster
 
 	<p>If you like what you see and want to be a part of the ongoing development then 
 	  <a href="mailto:majordomo@dxcluster.org?subject=Subscribe&body=subscribe%20dxspider-support%0D%0A--%0D%0A">subscribe</a> 
-	  to the support mailing list which will be the initial focus of any discussions.
+	  to the support mailing list which will be the focus of any discussion/bug fixing etc.
 
 <!-- Standard Footer!! -->
 	<p>&nbsp;</p>

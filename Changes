@@ -1,3 +1,10 @@
+20Dec98========================================================================
+1. Removed all the warnings I get with perl -w (at least for just starting the
+cluster and running a few commands).
+2. Added per node hop control.
+3. Added some docs on how to use it and isolation
+4. Made talk command more intelligent in that if the user isn't seen and the
+user's last node is visible it tries the talk anyway.
 19Dec98========================================================================
 1. Fixed problems with sh/rcmd (talk/ann/log) with a callsign as argument and
 also made what G0RDI wanted work as well!

@@ -25,16 +25,16 @@ package CmdAlias;
     '?' => [
 	  '^\?', 'help', 'help',
 	],
-    a => [
+    'a' => [
 	  '^ann.*/full', 'announce full', 'announce', 
 	  '^ann.*/sysop', 'announce sysop', 'announce',
 	  '^ann.*/(.*)$', 'announce $1', 'announce',
 	],
-	b => [
+	'b' => [
 	],
-	c => [
+	'c' => [
 	],
-	d => [
+	'd' => [
 	  '^del', 'kill', 'kill',
 	  '^del.*/fu', 'kill full', 'kill',
 	  '^di\w*/a\w*', 'directory all', 'directory',
@@ -45,41 +45,41 @@ package CmdAlias;
 	  '^di\w*/(\d+)-(\d+)', 'directory $1-$2', 'directory',
 	  '^di\w*/(\d+)', 'directory $1', 'directory',
 	],
-	e => [
+	'e' => [
 	],
-	f => [
+	'f' => [
 	],
-	g => [
+	'g' => [
 	],
-	h => [
+	'h' => [
 	],
-	i => [
+	'i' => [
 	],
-	j => [
+	'j' => [
 	],
-	k => [
+	'k' => [
 	],
-	l => [
+	'l' => [
 	  '^l$', 'directory', 'directory',
 	  '^ll$', 'directory', 'directory',
 	  '^ll/(\d+)', 'directory $1', 'directory',
 	],
-	m => [
+	'm' => [
 	],
-	n => [
+	'n' => [
 	],
-	o => [
+	'o' => [
 	],
-	p => [
+	'p' => [
 	],
-	q => [
+	'q' => [
 	  '^q', 'bye', 'bye',
 	],
-	r => [	
+	'r' => [	
 	  '^r$', 'read', 'read',
 	  '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
 	],
-	s => [
+	's' => [
 	  '^set/nobe', 'unset/beep', 'unset/beep',
 	  '^set/nohe', 'unset/here', 'unset/here',
 	  '^sh.*/c/n', 'show/configuration nodes', 'show/configuration',
@@ -92,20 +92,20 @@ package CmdAlias;
 	  '^sh.*/wwv/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
 	  '^sh.*/wwv/(\d+)', 'show/wwv $1', 'show/wwv',
     ],
-	t => [
+	't' => [
 	],
-	u => [
+	'u' => [
 	],
-	v => [
+	'v' => [
 	],
-	w => [
+	'w' => [
 	  '^wx/full', 'wx full', 'wx',
 	  '^wx/sysop', 'wx sysop', 'wx',
 	],
-	x => [
+	'x' => [
 	],
-	y => [
+	'y' => [
 	],
-	z => [
+	'z' => [
 	],
 )

@@ -25,7 +25,7 @@ $lasttime = 0;
 
 
 my $fn = "$main::cmd/crontab";
-my $localfn = "$main::local_cmd/crontab";
+my $localfn = "$main::localcmd/crontab";
 
 # cron initialisation / reading in cronjobs
 sub init

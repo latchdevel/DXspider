@@ -18,7 +18,7 @@ use Carp;
 use strict;
 use vars qw(%u $dbm $filename %valid);
 
-%u = undef;
+%u = ();
 $dbm = undef;
 $filename = undef;
 
@@ -36,7 +36,7 @@ $filename = undef;
   lastin => '0,Last Time in,cldatetime',
   passwd => '9,Password',
   addr => '0,Full Address',
-  sort => '0,Type of User',                # A - ak1a, U - User, S - spider cluster, B - BBS
+  'sort' => '0,Type of User',                # A - ak1a, U - User, S - spider cluster, B - BBS
   xpert => '0,Expert Status,yesno',
   bbs => '0,Home BBS',
   node => '0,Last Node',
@@ -106,7 +106,7 @@ sub new
 
   my $self = {};
   $self->{call} = $call;
-  $self->{sort} = 'U';
+  $self->{'sort'} = 'U';
   $self->{dxok} = 1;
   $self->{annok} = 1;
   $self->{lang} = $main::lang;
@@ -272,7 +272,7 @@ sub field_prompt
 sub sort
 {
   my $self = shift;
-  @_ ? $self->{sort} = shift : $self->{sort} ;
+  @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
 }
 1;
 __END__

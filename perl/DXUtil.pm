@@ -148,11 +148,9 @@ sub print_all_fields
 {
 	my $self = shift;			# is a dxchan
 	my $ref = shift;			# is a thingy with field_prompt and fields methods defined
-	my @out = @_;
- 
+	my @out;
 	my @fields = $ref->fields;
 	my $field;
-	my @out;
 
 	foreach $field (sort @fields) {
 		if (defined $ref->{$field}) {

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Hops, Network Isolation and other matters...</title>
+	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+	<meta name="Author" content="Dirk Koopman G1TLH">
+  </head>
+
+  <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF">
+	<FONT COLOR="#606060"> 
+	  <hr>
+	  <h2>Hops, Network Isolation and other matters...</h2>
+	  <hr>
+	</font>
+	
+	
+	<address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+	<p>
+	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+	  <!-- hhmts start -->
+Last modified: Sun Dec 20 18:15:15 GMT 1998
+<!-- hhmts end -->
+
+	<h4>Introduction</h4>
+	
+	Starting with version 1.13 there is simple hop control available on a per
+	node basis. Also it is possible to isolate a network completely so that you 
+	get all the benefits of being on that network, but can't pass on information
+	from it to
+	to any other networks you may be connected to (or vice versa).
+	
+	<h4>Basic Hop Control</h4>
+
+	The number of hops that are set for all PC protocol messages (that require them)
+	are specified in <tt>/spider/perl/DXProtVars.pm</tt>. 
+
+	<p>In versions prior to 1.13 you would move this file to
+	<tt>/spider/local/</tt> and modify the perl variables:
+	<tt>$def_hopcount</tt> and <tt>%hopcount</tt> to some reasonable
+	values.
+
+	<p>From version 1.13 onwards a new mechanism has been introduced
+	which uses a file called <tt>/spider/data/hop_count.pl</tt>. The
+	prefered way of doing basic hop control is now to create this file
+	and modify it as you wish. Eventually this file will contain all
+	the hop control and related information. An example of the
+	<tt>hop_count.pl</tt> file can be found in the
+	<tt>/spider/examples</tt> directory.
+
+	<p>You can change this file at any time, including when the
+	cluster is running. If you do this then the changes only take
+	effect after you have run the <tt>load/hops</tt> command on a
+	client console with full sysop privileges.
+
+	<h4>Per Node Hop Control</h4>
+
+	From version 1.13 it is possible to control the number of hops to each
+	node. This is done by adding information to the <tt>%nodehops</tt> perl
+	variable in the <tt>hop_count.pl</tt> file (as described above). This
+	variable is a perl "hash of hashes", which means that you create an 
+	entry for every callsign you wish to control and then one line for
+	every PC protocol message that you wish to alter. 
+
+	<p>You can also have a entry called <tt>default</tt> for every callsign 
+	  so you can set the hops as a whole for all PC messages to just that
+	  callsign. This is overridden by any specific hop counts you may have.
+
+	<h4>Example <tt>hop_count.pl</tt> File</h4>
+
+	An example for you:-
+
+	<p><pre>
+#
+# hop table construction
+#
+
+package DXProt;
+
+# default hopcount to use
+$def_hopcount = 15;
+
+# some variable hop counts based on message type
+%hopcount =
+(
+    11 => 10,
+    16 => 10,
+    17 => 10,
+    19 => 10,
+    21 => 10,
+);
+
+#
+# the per node hop control thingy
+#
+ 
+%nodehops =
+(
+    GB7DJK-1 => 
+    {
+         11 => 5,
+         16 => 23,
+         17 => 23,
+         default => 50,
+    },
+
+    GB7TLH => 
+    {
+         19 => 45,
+         21 => 45,
+         16 => 45,
+         17 => 45,
+         default => 15, 
+    },
+);                              
+	</pre>
+
+	<p>The figures chosen are not necessarily what I use. What I would say is that
+	  until you are certain that you know what you are doing (and that the software
+	  is working at least as well as advertised) you should keep the default hop 
+	  counts down to the sort of levels shown above.
+ 
+	<h4>Isolated Networks</h4>
+
+	It is possible to isolate networks from each other on a "gateway" node using
+	the <tt>set/isolate &lt;node call></tt> command.
+	
+	<p>The effect of this is to partition an isolated network
+	completely from another nodes connected to your node. Your node
+	will appear on and otherwise behave normally on every network to
+	which you are connected, but data from isolated network will not
+	cross onto any other network or vice versa.
+
+	<P>However all the spot, announce and WWV traffic and personal
+	messages will still be handled locally (because you are a real
+	node on all connected networks), that is locally connected users
+	will appear on all networks and will be able to access and receive
+	information from all networks transparently.
+
+	<p>All routed messages will be sent as normal, so if a user on one
+	  network knows that you are a gateway for another network, he can still
+	  still send a talk/announce etc message via your node and it will 
+	  be routed across.
+
+	<p>The only limitation currently is that non-private messages
+	cannot be passed down isolated links regardless of whether they
+	are generated locally. This will change when the bulletin routing
+	facility is added.
+
+<!-- Standard Footer!! -->
+	<p>&nbsp;</p>
+	<p>
+	  <FONT COLOR="#606060"><hr></font>
+	<font color="#FF0000" size=-2>
+	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
+	</font>
+	<font color="#000000" size=-2>$Id$</font>
+  </body>
+</html>
