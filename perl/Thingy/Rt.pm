@@ -132,8 +132,7 @@ sub handle_cf
 			RouteDB::delete($call, $chan_call);
 			my $ref = Route::Node::get($call);
 			if ($ref) {
-				my $r = $ref->del($parent);
-				push @pc21, $r if $r;
+				push @pc21, grep {$_} $ref->del($parent);
 			}
 		}
 	}
@@ -142,8 +141,7 @@ sub handle_cf
 			next if $call eq $main::mycall;
 			RouteDB::update($call, $chan_call);
 			my $here = $in{$call};
-			my $r = $parent->add($call, 0, $here);
-			push @pc19, $r if $r;
+			push @pc19, grep {$_} $parent->add($call, 0, $here);
 		}
 	}
 	$thing->{pc21n} = \@pc21 if @pc21;
