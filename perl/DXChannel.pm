@@ -508,7 +508,8 @@ sub rspfcheck
 	if ($nref) {
 	    if ($nref->dxchan == $self) {
 			return 1 unless $user;
-			return 1 if grep $user eq $_, $nref->users;
+			my @users = $nref->users;
+			return 1 if @users == 0 || grep $user eq $_, @users;
 			dbg("RSPF: $user not on $node") if isdbg('rspf');
 		} else {
 			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('rspf');

@@ -79,7 +79,7 @@ sub do_initscr
 		init_pair(12, COLOR_MAGENTA, COLOR_BLUE);
 		init_pair(13, COLOR_YELLOW, COLOR_GREEN);
 		init_pair(14, COLOR_RED, COLOR_GREEN);
-		assume_default_colors($foreground, $background);
+		eval { assume_default_colors($foreground, $background) };
 	}
 	
 	$top = $scr->subwin($lines-4, $cols, 0, 0);
