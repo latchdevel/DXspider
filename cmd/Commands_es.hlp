@@ -1339,6 +1339,7 @@ Actualmente los idiomas disponibles son:
  Alemán:    set/language de
  Holandés:  set/language nl
  Español :  set/language es
+ Italiano:  set/language it
 
 === 0^SET/LOCATION <lat & long>^Introduce tus datos de latitud y longitud
 === 9^SET/SYS_LOCATION <lat & long>^Define latitud y longitud del cluster
@@ -1467,17 +1468,6 @@ uso no autorizado. Si quieres tener de nuevo tus privilegios deberás
 bien desconectarte y conectarte de nuevo (si estas en consola) o usar
 el comando SYSOP.
 
-=== 0^SET/PASSWORD^Define tu password
-Este comando solo funciona para un usuario que haya conectado vía
-telnet ( de momento). Solo funcionara si ya tienes un password 
-definido. El password inicial solo lo podrá definir el sysop.
-
-Cuando ejecutas este comando este te preguntara por tu password
-antiguo, luego te pedirá que entres el password nuevo dos veces
-(para estar seguro de que se envía correctamente). Puedes ver o
-no ver lo que escribas enviado de vuelta por el eco local dependiendo
-del cliente que uses para hacer el telnet.
-
 === 9^SET/PASSWORD <indicativo> <cadena>^Define un password para un usuario
 El password solo puede ser definido en primer lugar por el sysop. La cadena
 puede contener cualquier carácter.
@@ -1496,6 +1486,17 @@ es ejecutada en el script de arranque (/spider/scripts/startup) del nodo,
 entonces un prompt requiriendo un password es enviado después del normal
 prompt 'login: '. Deberemos dar la cadena completa del password que hayamos
 definido.
+
+=== 0^SET/PASSWORD^Define tu password
+Este comando solo funciona para un usuario que haya conectado vía
+telnet ( de momento). Solo funcionara si ya tienes un password 
+definido. El password inicial solo lo podrá definir el sysop.
+
+Cuando ejecutas este comando este te preguntara por tu password
+antiguo, luego te pedirá que entres el password nuevo dos veces
+(para estar seguro de que se envía correctamente). Puedes ver o
+no ver lo que escribas enviado de vuelta por el eco local dependiendo
+del cliente que uses para hacer el telnet.
 
 === 9^UNSET/PASSWORD <call> ...^Borra (quita) el password a un usuario
 Este comando permite al sysop borrar por completo y quitar el password

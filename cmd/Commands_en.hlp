@@ -1384,16 +1384,6 @@ use. If you want to get your normal privilege back you will need to
 either logout and login again (if you are on a console) or use the
 SYSOP command.
 
-=== 0^SET/PASSWORD^Set your own password
-This command only works for a 'telnet' user (currently). It will
-only work if you have a password already set. This initial password
-can only be set by the sysop.
-
-When you execute this command it will ask you for your old password,
-then ask you to type in your new password twice (to make sure you
-get it right). You may or may not see the data echoed on the screen
-as you type, depending on the type of telnet client you have.
-
 === 9^SET/PASSWORD <callsign> <string>^Set a users password
 The password for a user can only be set by a full sysop. The string
 can contain any characters. 
@@ -1410,6 +1400,16 @@ is set or the:
 
 command is executed in the startup script, then a password prompt is
 given after the normal 'login: ' prompt.  
+
+=== 0^SET/PASSWORD^Set your own password
+This command only works for a 'telnet' user (currently). It will
+only work if you have a password already set. This initial password
+can only be set by the sysop.
+
+When you execute this command it will ask you for your old password,
+then ask you to type in your new password twice (to make sure you
+get it right). You may or may not see the data echoed on the screen
+as you type, depending on the type of telnet client you have.
 
 === 9^UNSET/PASSWORD <call> ...^Delete (remove) a user's password
 This command allows the sysop to completely delete and remove a 

@@ -1243,8 +1243,8 @@ an den anderen Node uebertragen.
 === 9^UNSET/ISOLATE^Stoppt Isolation eines Nodes vom Rest des Netzwerkes
 
 === 0^SET/LANGUAGE <lang>^Setzt die System Sprache
-Zur Zeit werden en (english), nl (dutch, es (spain) und de (deutsch)
-unterstuetzt.
+Zur Zeit werden en (english), nl (nederlandse), es (espanol), it (italiano) 
+und de (deutsch) unterstuetzt.
 
 === 0^SET/LOCATION <lat & long>^Setzt Breiten- und Laengengrad der eigenen Station
 Beispiel:-
@@ -1338,18 +1338,6 @@ Um die Privilegien wieder zu erhalten ist es notwendig erneut
 wieder einzuloggen oder an der Konsole das SYSOP Kommando zu
 verwenden.
 
-=== 0^SET/PASSWORD^Setzt das eigene Passwort
-Diese Kommando arbeitet zur Zeit nur fuer 'telnet' Verbindungen.
-Es funktioniert auch nur wenn zuvor das initial Passwort vom
-Sysop gesetzt wurde (Nachricht an Sysop).
-
-Nach dem ausfuehren des Kommandos wird zuerst nach dem alten
-Passwort gefragt, danach dann nach dem neuen Passwort. Das
-neue Passwort muss erneut bestaetigt werden.
-Abhaengig davon ob man sein eigenes Echo sieht (HELP SET/ECHO), kann
-man sehen was man schreibt.
-Wer sein Rufzeichen schuetzen will benutzt ein Passwort!
-
 === 9^SET/PASSWORD <callsign> <string>^Setzt ein User Passwort
 Das Passwort eines Users kann vom Sysop nur mit Level 9
 gesetzt werden. Die Zeichenkette kann alle Zeichen enthalten.
@@ -1366,6 +1354,18 @@ Passwort gesetzt wurde oder bei :-
 
 wird das Kommando im startup Skript ausgefuehrt und ein Passwort prompt wird
 ausgegeben nach dem normalen Login prompt.
+
+=== 0^SET/PASSWORD^Setzt das eigene Passwort
+Diese Kommando arbeitet zur Zeit nur fuer 'telnet' Verbindungen.
+Es funktioniert auch nur wenn zuvor das initial Passwort vom
+Sysop gesetzt wurde (Nachricht an Sysop).
+
+Nach dem ausfuehren des Kommandos wird zuerst nach dem alten
+Passwort gefragt, danach dann nach dem neuen Passwort. Das
+neue Passwort muss erneut bestaetigt werden.
+Abhaengig davon ob man sein eigenes Echo sieht (HELP SET/ECHO), kann
+man sehen was man schreibt.
+Wer sein Rufzeichen schuetzen will benutzt ein Passwort!
 
 === 9^UNSET/PASSWORD <rufzeichen> ...^Loescht ein User Passwort
 Diese Kommando erlaubt dem Sysop das Passwort eines Users
