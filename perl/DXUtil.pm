@@ -189,7 +189,7 @@ sub shellregex
 sub iscallsign
 {
 	my $call = shift;
-	return 1 if $call =~ /^\w+\s+/;
+	return 1 if $call =~ /^\w+\d+/;
 	return 1 if $call =~ /^\d+\w+/;
 	return undef;
 }
