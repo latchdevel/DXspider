@@ -40,7 +40,7 @@ that you use at least version 5.005_03 as this is the version being used
 in the development of Spider.
 
 <P>In addition to the standard Red Hat distribution you will require the 
-following <htmlurl url="http://www.cpan.org/CPAN.html" name="CPAN"> modules: -
+following modules from <htmlurl url="http://www.cpan.org/CPAN.html" name="http://www.cpan.org/CPAN.html"> ...
 
 <P>
 <itemize>
