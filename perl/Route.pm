@@ -37,6 +37,7 @@ use vars qw(%list %valid $filterdef);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  lastseen => 'Last Seen,atime',
 		 );
 
 $filterdef = bless ([
@@ -165,12 +166,6 @@ sub conf
 	return $r ? 1 : 0;
 }
 
-sub parents
-{
-	my $self = shift;
-	return @{$self->{parent}};
-}
-
 # 
 # display routines
 #
@@ -287,8 +282,8 @@ sub alldxchan
 	# it isn't, build up a list of dxchannels and possible ping times 
 	# for all the candidates.
 	unless (@dxchan) {
-		foreach my $p (@{$self->{parent}}) {
-#			dbg("Trying parent $p") if isdbg('routech');
+		foreach my $p (@{$self->{dxchan}}) {
+#			dbg("Trying dxchan $p") if isdbg('routech');
 			next if $p eq $main::mycall; # the root
 			my $dxchan = DXChannel->get($p);
 			if ($dxchan) {
@@ -305,7 +300,7 @@ sub alldxchan
 	return @dxchan;
 }
 
-sub dxchan
+sub bestdxchan
 {
 	my $self = shift;
 	
@@ -329,6 +324,29 @@ sub dxchan
 	return $dxchan;
 }
 
+sub _adddxchan
+{
+	my $self = shift;
+    return $self->_addlist('dxchan', @_);
+}
+
+sub _deldxchan
+{
+	my $self = shift;
+    return $self->_dellist('dxchan', @_);
+}
+
+sub _addnode
+{
+	my $self = shift;
+    return $self->_addlist('nodes', @_);
+}
+
+sub _delnode
+{
+	my $self = shift;
+    return $self->_dellist('nodes', @_);
+}
 
 
 #

@@ -123,7 +123,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	return "PC18^DXSpider Version: $main::version Build: $main::build^$DXProt::myprot_version^";
+	return "PC18^DXSpider Version: $main::version Build: $main::build NewRoute^$DXProt::myprot_version^";
 }
 
 #
@@ -356,6 +356,68 @@ sub pc51
 {
 	my ($to, $from, $val) = @_;
 	return "PC51^$to^$from^$val^";
+}
+
+my $hexlasttime = 0;
+my $hexlastlet = 'A';
+
+sub hexstamp
+{
+	my $t = shift || $main::systime;
+	if ($t ne $hexlasttime) {
+		$hexlasttime = $t;
+		$hexlastlet = 'A';
+	} else {
+		do {
+			$hexlastlet = chr(ord($hexlastlet) + 1);
+		} while ($hexlastlet eq '^');
+	}
+	return sprintf "%c%08X", $hexlastlet, $hexlasttime;
+}
+
+sub pc58
+{
+	my $sort = shift;
+	my $hexstamp = shift || hexstamp();
+	my $from = shift;
+	my $to = shift;
+	my $text = unpad(shift);
+	$text = ' ' if !$text;
+	$text =~ s/\^/%5E/g;
+	return "PC58^$sort^$hexstamp^$from^$to^$text" . sprintf "^%s^", get_hops(58);
+}
+
+sub pc59
+{
+	my @out;
+	my $sort = shift;
+	my $hexstamp = shift || hexstamp();
+	
+	my $node = $_[0]->call;
+	for (@_) {
+		next unless $_;
+		my $ref = $_;
+		my $call = $ref->call;
+		my $here = $ref->here;
+		$s .= $ref->isa('Route::Node') ? "^N$here$call" : "^U$here$call";
+	}
+	push @out, "PC59^$sort^$hexstamp^$node^$s" . sprintf "^%s^", get_hops(59);
+	return @out;
+}
+
+sub PC59c
+{
+	return PC59('C', @_);
+}
+
+sub PC59a
+{
+	return PC59('A', @_);
+}
+
+sub PC59d
+{
+	return PC59('D', @_);
 }
 
 # clx remote cmd send

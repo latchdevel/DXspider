@@ -24,7 +24,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
-		  parent => '0,Parent Calls,parray',
+		  dxchan => '0,Visible on DXChans,parray',
 		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
@@ -59,22 +59,22 @@ sub max
 # object with that callsign. The upper layers are expected to do something
 # sensible with this!
 #
-# called as $parent->add(call, dxchan, version, flags) 
+# called as $dxchan->add(call, dxchan, version, flags) 
 #
 
 sub add
 {
-	my $parent = shift;
+	my $dxchan = shift;
 	my $call = uc shift;
-	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
+	confess "Route::add trying to add $call to myself" if $call eq $dxchan->{call};
 	my $self = get($call);
 	if ($self) {
-		$self->_addparent($parent);
-		$parent->_addnode($self);
+		$self->_adddxchan($dxchan);
+		$dxchan->_addnode($self);
 		return undef;
 	}
-	$self = $parent->new($call, @_);
-	$parent->_addnode($self);
+	$self = $dxchan->new($call, @_);
+	$dxchan->_addnode($self);
 	return $self;
 }
 
@@ -90,14 +90,14 @@ sub del
 	my $self = shift;
 	my $pref = shift;
 
-	# delete parent from this call's parent list
+	# delete dxchan from this call's dxchan list
 	$pref->_delnode($self);
-    $self->_delparent($pref);
+    $self->_deldxchan($pref);
 	my @nodes;
 	my $ncall = $self->{call};
 	
-	# is this the last connection, I have no parents anymore?
-	unless (@{$self->{parent}}) {
+	# is this the last connection, I have no dxchan anymore?
+	unless (@{$self->{dxchan}}) {
 		foreach my $rcall (@{$self->{nodes}}) {
 			next if grep $rcall eq $_, @_;
 			my $r = Route::Node::get($rcall);
@@ -112,11 +112,11 @@ sub del
 
 sub del_nodes
 {
-	my $parent = shift;
+	my $dxchan = shift;
 	my @out;
-	foreach my $rcall (@{$parent->{nodes}}) {
+	foreach my $rcall (@{$dxchan->{nodes}}) {
 		my $r = get($rcall);
-		push @out, $r->del($parent, $parent->{call}, @_) if $r;
+		push @out, $r->del($dxchan, $dxchan->{call}, @_) if $r;
 	}
 	return @out;
 }
@@ -142,7 +142,7 @@ sub add_user
 	my $uref = Route::User::get($ucall);
 	my @out;
 	if ($uref) {
-		@out = $uref->addparent($self);
+		@out = $uref->adddxchan($self);
 	} else {
 		$uref = Route::User->new($ucall, $self->{call}, @_);
 		@out = $uref;
@@ -191,12 +191,6 @@ sub nodes
 	return @{$self->{nodes}};
 }
 
-sub parents
-{
-	my $self = shift;
-	return @{$self->{parent}};
-}
-
 sub rnodes
 {
 	my $self = shift;
@@ -219,7 +213,7 @@ sub new
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
-	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
+	$self->{dxchan} = ref $pkg ? [ $pkg->{call} ] : [ ];
 	$self->{version} = shift;
 	$self->{flags} = shift;
 	$self->{users} = [];
@@ -243,47 +237,6 @@ sub get
 sub get_all
 {
 	return values %list;
-}
-
-sub newid
-{
-	my $self = shift;
-	my $id = shift;
-	
-	return 0 if $id == $self->{lid};
-	if ($id > $self->{lid}) {
-		$self->{lid} = $id;
-		return 1;
-	} elsif ($self->{lid} - $id > 500) {
-		$self->{id} = $id;
-		return 1;
-	}
-	return 0;
-}
-
-sub _addparent
-{
-	my $self = shift;
-    return $self->_addlist('parent', @_);
-}
-
-sub _delparent
-{
-	my $self = shift;
-    return $self->_dellist('parent', @_);
-}
-
-
-sub _addnode
-{
-	my $self = shift;
-    return $self->_addlist('nodes', @_);
-}
-
-sub _delnode
-{
-	my $self = shift;
-    return $self->_dellist('nodes', @_);
 }
 
 

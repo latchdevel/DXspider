@@ -113,6 +113,7 @@ $count = 0;
 		  version => '1,Node Version',
 		  build => '1,Node Build',
 		  verified => '9,Verified?,yesno',
+		  newroute => '1,New Style Routing,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);
@@ -637,7 +638,7 @@ sub AUTOLOAD
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
 	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
-        goto &$AUTOLOAD;
+	goto &$AUTOLOAD;
 }
 
 

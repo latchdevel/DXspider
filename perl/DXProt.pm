@@ -887,6 +887,7 @@ sub handle_18
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
 		$self->user->version($self->version);
 	}
+	$self->newroute( $_[1] =~ /NewRoute/ );
 
 	# first clear out any nodes on this dxchannel
 	my $parent = Route::Node::get($self->{call});
@@ -931,7 +932,7 @@ sub handle_19
 			my $user = DXUser->get_current($origin);
 			if (!$user) {
 				$user = DXUser->new($origin);
-				$user->sort('S');
+				$user->sort('A');
 				$user->priv(1);		# I have relented and defaulted nodes
 				$user->lockout(1);
 				$user->homenode($origin);
@@ -1498,6 +1499,116 @@ sub handle_51
 	}
 }
 
+# New style routing handler
+sub handle_59
+{
+	my $self = shift;
+	my $pcno = shift;
+	my $line = shift;
+	my $origin = shift;
+
+	return unless eph_dup($line);
+
+	my ($sort, $hextime, $ncall) = @_[1,2,3];
+	if ($ncall eq $main::mycall) {
+		dbg("PCPROT: ignoring PC59 for me") if isdbg('chan');
+		return;
+	}
+
+	# mark myself as NewRoute if I get a PC59
+	$self->{newroute} = 1 if $ncall eq $self->{call};
+
+	# do this once for filtering with a throwaway routing entry if a new node
+	my $fnode = Route::Node::get($ncall) || Route::new($ncall);
+	return unless $self->in_filter_route($fnode);
+
+	# now do it properly for actions
+	my $node = Route::Node::get($ncall) || Route::Node::new($ncall);
+
+	# find each of the entries (or create new ones)
+	my @refs;
+	for my $ent (@_[4..-1]) {
+		my ($esort, $ehere, $ecall) = unpack "A A A*", $ent;
+		my $ref;
+		
+		# create user, if required
+		my $user = DXUser->get_current($ecall);
+		unless ($user) {
+			$user = DXUser->new($ecall);
+			$user->sort();
+			$user->priv(1);		# I have relented and defaulted nodes
+			$user->lockout(1);
+			$user->homenode($call);
+			$user->node($call);
+		}
+		if ($esort eq 'U') {
+			$ref = Route::User::get($ecall);
+			unless ($ref) {
+				# create user, if required
+				my $user = DXUser->get_current($ecall);
+				unless ($user) {
+					$user = DXUser->new($ecall);
+					$user->sort('U');
+					$user->homenode($ncall);
+					$user->node($ncall);
+					$user->put;
+				}
+				$ref = Route::User::new($ecall, 0); 
+			}
+		} elsif ($esort eq 'N') {
+			$ref = Route::Node::get($ecall);
+			unless ($ref) {
+				# create user, if required
+				my $user = DXUser->get_current($ecall);
+				unless ($user) {
+					$user = DXUser->new($ecall);
+					$user->priv(1);		# I have relented and defaulted nodes
+					$user->lockout(1);
+					$user->sort('A');
+					$user->homenode($ncall);
+					$user->node($ncall);
+					$user->put;
+				}
+				$ref = Route::Node::new($ecall, 0); 
+			} 
+		} else {
+			dbg("DXPROT: unknown entity type '$esort' on $ecall for node $ncall") if isdbg('chan');
+			next;
+		}
+		$ref->here($here);		# might as well set this here
+		push @refs, $ref;
+	}
+
+	# if it is a delete or a configure, disconnect all the entries mentioned
+	# from this node (which is a parent in this context).
+	my @del;
+	if ($sort eq 'D' || $sort eq 'C') {
+		for my $ref (@refs) {
+			next if $ref->call eq $ncall;
+			if ($ref->isa('Route::Node')) {
+				push @del, $ref->del($node);
+			} elsif ($ref->isa('Route::User')) {
+				push @del, $node->del_user($ref);
+			}
+		}
+	}
+
+	# if it is an add or a configure, connect all the entries
+	my @add;
+	if ($sort eq 'A' || $sort eq 'C') {
+		for my $ref (@refs) {
+			next if $ref->call eq $ncall;
+			if ($ref->isa('Route::Node')) {
+				my $new = $node->add($ref->call);
+				push @add, $new if $new;
+			} elsif ($ref->isa('Route::User')) {
+				push @add, $node->add_user($ref->call);
+			}
+		}
+	}
+}
+	
+
 # dunno but route it
 sub handle_75
 {
@@ -1921,42 +2032,48 @@ sub send_local_config
 	my @remotenodes;
 
 	dbg('DXProt::send_local_config') if isdbg('trace');
-	
-	# send our nodes
-	if ($self->{isolate}) {
-		@localnodes = ( $main::routeroot );
-		$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
+
+	if ($self->{newroute}) {
+		my @nodes = $self->{isolate} ? ($main::routeroot) : grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
+		my @users = DXChannel::get_all_users();
+		$self->send_route($main::mycall, \&pc59c, @nodes+@users+1, (grep { Route::get($_) } $main::routeroot, @nodes, @users));
 	} else {
-		# create a list of all the nodes that are not connected to this connection
-		# and are not themselves isolated, this to make sure that isolated nodes
-        # don't appear outside of this node
-
-		# send locally connected nodes
-		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
-		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
-		$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
-
-		my $node;
-		my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
-		my @intcalls;
-		for $node (@rawintcalls) {
-			push @intcalls, $node unless grep $node eq $_, @intcalls; 
-		}
-		my $ref = Route::Node::get($self->{call});
-		my @rnodes = $ref->nodes;
-		for $node (@intcalls) {
-			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
-		}
-		$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
-	}
-	
-	# get all the users connected on the above nodes and send them out
-	foreach $node ($main::routeroot, @localnodes, @remotenodes) {
-		if ($node) {
-			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->send_route($main::mycall, \&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
+		# send our nodes
+		if ($self->{isolate}) {
+			@localnodes = ( $main::routeroot );
+			$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
 		} else {
-			dbg("sent a null value") if isdbg('chanerr');
+			# create a list of all the nodes that are not connected to this connection
+			# and are not themselves isolated, this to make sure that isolated nodes
+			# don't appear outside of this node
+			
+			# send locally connected nodes
+			my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
+			@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
+			$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
+			
+			my $node;
+			my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
+			my @intcalls;
+			for $node (@rawintcalls) {
+				push @intcalls, $node unless grep $node eq $_, @intcalls; 
+			}
+			my $ref = Route::Node::get($self->{call});
+			my @rnodes = $ref->nodes;
+			for $node (@intcalls) {
+				push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
+			}
+			$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
+		}
+		
+		# get all the users connected on the above nodes and send them out
+		foreach $node ($main::routeroot, @localnodes, @remotenodes) {
+			if ($node) {
+				my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+				$self->send_route($main::mycall, \&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
+			} else {
+				dbg("sent a null value") if isdbg('chanerr');
+			}
 		}
 	}
 }

@@ -23,7 +23,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
-		  parent => '0,Parent Calls,parray',
+		  dxchan => '0,Dxchan Calls,parray',
 );
 
 $filterdef = $Route::filterdef;
@@ -52,7 +52,7 @@ sub new
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
-	$self->{parent} = [ $ncall ];
+	$self->{nodes} = [ $ncall ];
 	$self->{flags} = $flags;
 	$list{$call} = $self;
 
@@ -68,8 +68,8 @@ sub del
 {
 	my $self = shift;
 	my $pref = shift;
-	$self->delparent($pref);
-	unless (@{$self->{parent}}) {
+	$self->deldxchan($pref);
+	unless (@{$self->{dxchan}}) {
 		delete $list{$self->{call}};
 		return $self;
 	}
@@ -83,18 +83,6 @@ sub get
 	my $ref = $list{uc $call};
 	dbg("Failed to get User $call" ) if !$ref && isdbg('routerr');
 	return $ref;
-}
-
-sub addparent
-{
-	my $self = shift;
-    return $self->_addlist('parent', @_);
-}
-
-sub delparent
-{
-	my $self = shift;
-    return $self->_dellist('parent', @_);
 }
 
 #

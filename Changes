@@ -1,5 +1,7 @@
 05Jul04=======================================================================
 1. fix rspfcheck on pc27
+24Jun04=======================================================================
+1. reduced lower limit of 13cm band to 2304Mhz
 23Jun04=======================================================================
 1. Add zone, by_zone, itu, by_itu, state and by_state searches to sh/dx
 2. Update manuals for CVS and new commands
