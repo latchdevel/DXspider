@@ -89,7 +89,7 @@ $starttime = 0;                 # the starting time of the cluster
 $lockfn = "cluster.lock";       # lock file name
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
-$is_win = $^O =~ /^MS/ || $^O =~ /^OS-2/; # is it Windows?
+$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 
 
       
