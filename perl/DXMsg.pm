@@ -1182,6 +1182,32 @@ sub forward_it
 	return 0;
 }
 
+#
+# look down the forward table to see whether this is a valid bull
+# or not (ie it will forward somewhere even if it is only here)
+#
+sub valid_bull_addr
+{
+	my $call = shift;
+	my $i;
+	
+	unless (@forward) {
+		return 1 if $call =~ /^ALL/;
+		return 1 if $call =~ /^DX/;
+		return 0;
+	}
+	
+	for ($i = 0; $i < @forward; $i += 5) {
+		my ($sort, $field, $pattern, $action, $bbs) = @forward[$i..($i+4)]; 
+		if ($field eq 'T') {
+			if (!$pattern || $call =~ m{$pattern}i) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
 sub dump_it
 {
 	my $ref = shift;

@@ -32,8 +32,9 @@ $loc->{rrreq} = '0';
 
 if ($self->state eq "prompt") {
 
-	my @f = split /([\s\@\$])/, $line;
+	my @f = split /([\s\@\$,])/, $line;
 	@f = map {s/\s+//g; length $_ ? $_ : ()} @f;
+	@f = grep {$_ ne ','} @f;
 	
 	# any thing after send?
 	return (1, $self->msg('e6')) if !@f;
@@ -109,6 +110,8 @@ if ($self->state eq "prompt") {
 			# callsign ?
 			$notincalls = 0;
 
+#			$DB::single = 1;
+			
 			# is this callsign a distro?
 			my $fn = "/spider/msg/distro/$f.pl";
 			if (-e $fn) {
@@ -127,10 +130,14 @@ if ($self->state eq "prompt") {
 				}
 			}
 
-			if (grep $_ eq $f, @DXMsg::badmsg) {
-				push @out, $self->msg('m3', $f);
+			if (($loc->{private} && is_callsign($f)) || (!$loc->{private} && DXMsg::valid_bull_addr($f))) {
+				if (grep $_ eq $f, @DXMsg::badmsg) {
+					push @out, $self->msg('m3', $f);
+				} else {
+					push @to, $f;
+				}
 			} else {
-				push @to, $f;
+				push @out, $self->msg('m3', $f);
 			}
 		}
 	}
@@ -140,7 +147,7 @@ if ($self->state eq "prompt") {
 		$loc->{to} = \@to;
 	} else {
 		delete $self->{loc};
-		return (1, $self->msg('e6'));
+		return (1, @out, $self->msg('e6'));
 	}
 	$loc->{from} ||= $self->call;
 	unless (is_callsign($loc->{from})) {

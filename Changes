@@ -2,6 +2,12 @@
 1. Allow the user to equal the node in RSPF checks (this allows spots and 
 stuff with the origin and spotter to be the same (although it is STRONGLY 
 recommended that they are NOT!!! [hint hint]).
+2. make the send command rather more sensitive to what is allowed. Basically
+it will only allow TO addresses that are bull addresses (if not private) or
+vaild callsigns (if private). Bull addresses are the ones in 
+/spider/msg/forward.pl with a 'T' flag on them. If there is no forward 
+file it will only allow 'ALL' and 'DX' as valid Bull TO addresses. You may
+use commas as callsign separators if you like.  
 02Nov01=======================================================================
 1. fixed some Aliasing problems, but this whole area will have to be addressed
 more comprehensively.
