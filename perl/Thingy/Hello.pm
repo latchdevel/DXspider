@@ -116,12 +116,12 @@ sub handle
 			my @ref;
 			my $uref = DXUser->get_current($user) || Thingy::Rt::_upd_user_rec($user, $origin)->put;
 			if ($uref->is_node || $uref->is_aranea) {
-			    push @ref, $nref->add($user, $thing->{v}, $thing->{h});
+			    push @ref, $nref->add($user, $thing->{v} || 0, $thing->{h} || 0);
 				push @{$thing->{pc19n}}, @ref if @ref;
 				do $_->np(1) for @ref;
 			} else {
 				$thing->{pc16n} = $nref;
-				push @ref, $nref->add_user($user, $thing->{h});
+				push @ref, $nref->add_user($user, $thing->{h} || 0);
 				$thing->{pc16u} = \@ref if @ref;
 			}
 		}
