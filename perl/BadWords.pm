@@ -104,8 +104,6 @@ sub check
 	return @out if @out;
 	
 	for (split(/\s+/, $s)) {
-		s/[^\w]//g;
-		push @out, $_ if $badword->in($_);
 		s/\'?S$//;
 		push @out, $_ if $badword->in($_);
 	}
