@@ -52,7 +52,7 @@ sub new
 	# routing, this must go out here to prevent race condx
 	my $pkg = shift;
 	my $call = shift;
-	my @rout = $main::routeroot->add_user($call, Route::here($self->{here}));
+	my @rout = $main::routeroot->add_user($call, Route::here(1));
 	DXProt::route_pc16($DXProt::me, $main::routeroot, @rout) if @rout;
 
 	return $self;
