@@ -265,9 +265,24 @@ sub normal
 			}
 			$self->state('prompt');
 			delete $self->{talklist};
-		} elsif ($cmdline =~ m(^/\w+)) {
-			$cmdline =~ s(^/)();
-			$self->send_ans(run_cmd($self, $cmdline));
+		} elsif ($cmdline =~ m|^/+\w+|) {
+			$cmdline =~ s|^/||;
+			my $sendit = $cmdline =~ s|^/+||;
+			my @in = $self->run_cmd($cmdline);
+			$self->send_ans(@in);
+			if ($sendit && $self->{talklist} && @{$self->{talklist}}) {
+				foreach my $l (@in) {
+					my @bad;
+					if (@bad = BadWords::check($l)) {
+						$self->badcount(($self->badcount||0) + @bad);
+						Log('DXCommand', "$self->{call} swore: $l");
+					} else {
+						for (@{$self->{talklist}}) {
+							$self->send_talks($_, $l);
+						}
+					}
+				}
+			}
 			$self->send($self->talk_prompt);
 		} elsif ($self->{talklist} && @{$self->{talklist}}) {
 			# send what has been said to whoever is in this person's talk list

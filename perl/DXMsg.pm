@@ -1086,6 +1086,24 @@ sub do_send_stuff
 			delete $self->{loc};
 			$self->func(undef);
 			$self->state('prompt');
+		} elsif ($line =~ m|^/+\w+|) {
+			# this is a command that you want display for your own reference
+			# or if it has TWO slashes is a command 
+			$line =~ s|^/||;
+			my $store = $line =~ s|^/+||;
+			my @in = $self->run_cmd($line);
+			push @out, @in;
+			if ($store) {
+				foreach my $l (@in) {
+					if (my @ans = BadWords::check($l)) {
+						$self->{badcount} += @ans;
+						Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} subject: '$loc->{subject}' in msg") unless $loc->{reject};
+						Log('msg', "line: $l");
+						$loc->{reject}++;
+					} 
+					push @{$loc->{lines}}, length($l) > 0 ? $l : " ";
+				}
+			}
 		} else {
 			if (my @ans = BadWords::check($line)) {
 				$self->{badcount} += @ans;

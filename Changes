@@ -9,7 +9,12 @@ list of commands in "<cmd>") to a file.
 7. Add a new command "echo" which echos its argument to the screen (useful
 for titling in the save command above.
 8. Increase interval between logins causing for/opernam to 60 days (from 30)
-+ a random factor between 0 and 9
++ a random factor between 0 and 9.
+9. Added Italian Messages from Luca IT9ROT (thank you very much).
+10. Added the /<cmd> feature (as in talk) to execute a cmd whilst typing a 
+message, then enhanced it so that if you do //sh/dx (for instance) it will
+put the result into the message (as well as show it to you).
+11. Added the // feature to talk as well. 
 02Jan02=======================================================================
 1. updated the copyright dates
 2. modernised and extended the Windows instructions a bit.
