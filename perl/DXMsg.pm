@@ -616,7 +616,7 @@ sub queue_msg
 			next if $ref->{'read'};           # if it is read, it is stuck here
 			$clref = DXCluster->get_exact($ref->{to});
 			unless ($clref) {             # otherwise look for a homenode
-				my $uref = DXUser->get($ref->{to});
+				my $uref = DXUser->get_current($ref->{to});
 				my $hnode =  $uref->homenode if $uref;
 				$clref = DXCluster->get_exact($hnode) if $hnode;
 			}

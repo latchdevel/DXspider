@@ -15,6 +15,7 @@ use DXLog;
 use DB_File;
 use Data::Dumper;
 use Fcntl;
+use IO::File;
 use DXDebug;
 
 use strict;
@@ -63,6 +64,8 @@ $filename = undef;
 		  pingint => '9,Node Ping interval',
 		  nopings => '9,Ping Obs Count',
 		  wantlogininfo => '9,Login info req,yesno',
+	          wantgrid => '0,DX Grid Info,yesno',
+		  lastoper => '9,Last for/oper,cldatetime',
 		 );
 
 no strict;
@@ -126,9 +129,6 @@ sub new
 	my $self = bless {}, $pkg;
 	$self->{call} = $call;
 	$self->{'sort'} = 'U';
-	$self->{dxok} = '1';
-	$self->{annok} = '1';
-	$self->{lang} = $main::lang;
 	$self->put;
 	return $self;
 }
@@ -172,8 +172,7 @@ sub get_current
   
 	my $dxchan = DXChannel->get($call);
 	return $dxchan->user if $dxchan;
-	my $s = $u{$call};
-	return $s ? decode($s) : undef;
+	return get($pkg, $call);
 }
 
 #
@@ -185,7 +184,14 @@ sub put
 	my $self = shift;
 	confess "Trying to put nothing!" unless $self && ref $self;
 	my $call = $self->{call};
+	# delete all instances of this 
+	for ($dbm->get_dup($call)) {
+		$dbm->del_dup($call, $_);
+	}
+	delete $self->{annok} if $self->{annok};
+	delete $self->{dxok} if $self->{dxok};
 	$u{$call} = $self->encode();
+	$dbm->sync;
 }
 
 # 
@@ -223,7 +229,11 @@ sub del
 {
 	my $self = shift;
 	my $call = $self->{call};
-	delete $u{$call};
+	# delete all instances of this 
+	for ($dbm->get_dup($call)) {
+		$dbm->del_dup($call, $_);
+	}
+	$dbm->sync;
 }
 
 #
@@ -244,6 +254,52 @@ sub close
 sub fields
 {
 	return keys(%valid);
+}
+
+
+#
+# export the database to an ascii file
+#
+
+sub export
+{
+	my $fn = shift;
+	
+	# save old ones
+        rename "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
+        rename "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
+        rename "$fn.oo", "$fn.ooo" if -e "$fn.oo";
+        rename "$fn.o", "$fn.oo" if -e "$fn.o";
+        rename "$fn", "$fn.o" if -e "$fn";
+
+	my $count = 0;
+	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
+	if ($fh) {
+		my $ref;
+		my $key;
+		my $action;
+		my $t = scalar localtime;
+		print $fh "#!/usr/bin/perl
+#
+# The exported userfile for a DXSpider System
+#
+# Input file: $filename
+#       Time: $t
+#
+
+package DXUser;
+
+%u = (
+";
+
+		for ($action = R_FIRST; !$dbm->seq($key, $ref, $action); $action = R_NEXT) {
+			print $fh "'$key' => $ref,\n";
+			++$count;
+		} 
+		print $fh ");\n#\n# there were $count records\n#\n";
+		$fh->close;
+	} 
+	return $count;
 }
 
 #
@@ -373,6 +429,11 @@ sub wantdx
 sub wanttalk
 {
 	return _want('talk', @_);
+}
+
+sub wantgrid
+{
+	return _want('grid', @_);
 }
 
 sub wantlogininfo

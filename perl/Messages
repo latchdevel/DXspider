@@ -67,6 +67,8 @@ package DXM;
 				export1 => 'usage: export <msgno> <filename>',
 				export2 => '$_[3] has error exporting msg $_[0] to $_[1] ($_[2])',
 				export3 => '$_[2 ] exported msg $_[0] to $_[1]',
+				grids => 'DX Grid flag set on $_[0]',
+				gridu => 'DX Grid flag unset on $_[0]',
 				helpe1 => 'Help system unavailable, tell sysop',
 				helpe2 => 'No help available on $_[0]',
 				heres => 'Here set on $_[0]',

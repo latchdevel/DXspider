@@ -168,22 +168,21 @@ sub search
 # format a spot for user output in 'broadcast' mode
 sub formatb
 {
-	my @dx = @_;
-	my $t = ztime($dx[2]);
-	my $ref = DXUser->get_current($dx[4]);
-	my $loc = $ref->qra if $ref && $ref->qra;
+	my $wantgrid = shift;
+	my $t = ztime($_[2]);
+	my $ref = DXUser->get_current($_[4]);
+	my $loc = $ref->qra if $ref && $ref->qra && $wantgrid;
 	$loc = ' ' . substr($ref->qra, 0, 4) if $loc;
 	$loc = "" unless $loc;
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s$loc", "$dx[4]:", $dx[0], $dx[1], $dx[3], $t ;
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s$loc", "$_[4]:", $_[0], $_[1], $_[3], $t ;
 }
 
 # format a spot for user output in list mode
 sub formatl
 {
-	my @dx = @_;
-	my $t = ztime($dx[2]);
-	my $d = cldate($dx[2]);
-	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $dx[0], $dx[1], $d, $t, $dx[3], "<$dx[4]" ;
+	my $t = ztime($_[2]);
+	my $d = cldate($_[2]);
+	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, $_[3], "<$_[4]" ;
 }
 
 #

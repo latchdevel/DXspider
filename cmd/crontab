@@ -5,3 +5,4 @@
 # create and edit the one in /spider/local_cmd/crontab
 # for doing connections and things
 #
+1 0 * * 0 DXUser::export("$main::data/user_asc")

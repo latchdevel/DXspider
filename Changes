@@ -1,3 +1,17 @@
+26Jul00=======================================================================
+1. added wantgrid (to control display of grid square info on DX Broadcasts)
+2. added lastoper for controlling periodic demands for user info from other
+nodes.
+3. added spiderFAQ stuff from Ian G0VGS and latest update of the admin manual
+4. changed updating and deleting from user file in an attempt to keep down
+duplicates and possibly corruptions.
+5. added a DXUser::export routine to allow the cluster to automatically 
+export the user data in ascii from cron.
+6. added a line in the ISSUED crontab to do the export once a week
+7. delete annok and dxok if set to 1 in user records.
+8. added export_users command to allow arbitary exporting of user files
+9. added set and unset/dxgrid command to allow control over the grid squares 
+on DX announcements
 25Jul00=======================================================================
 1. ignore \n in ax25 mode for C client.
 2. remove extra space at the end of a DX spot announce when no grid square

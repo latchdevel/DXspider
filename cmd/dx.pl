@@ -97,7 +97,7 @@ $line =~ s/\^/:/og;
 
 # Store it here (but only if it isn't baddx)
 if (grep $_ eq $spotted, @DXProt::baddx) {
-	my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
+	my $buf = Spot::formatb($self->user->wantgrid, $freq, $spotted, $main::systime, $line, $spotter);
 	push @out, $buf;
 } else {
 	return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $main::systime, $line);

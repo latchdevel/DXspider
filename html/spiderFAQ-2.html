@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The DXSpider FAQ : Administration</TITLE>
+ <LINK HREF="spiderFAQ-1.html" REL=previous>
+ <LINK HREF="spiderFAQ.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+Next
+<A HREF="spiderFAQ-1.html">Previous</A>
+<A HREF="spiderFAQ.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. Administration</A></H2>
+
+<H2><A NAME="ss2.1">2.1 How can I get Spider to restart automatically if it crashes?</A>
+</H2>
+
+<P>Put this line into /etc/inittab ..
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop > /dev/tty7
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Run <EM>telinit q</EM> as root.  Spider will restart so be aware.  However, any
+time you reboot, cluster.pl will start in tty7 and if it crashes, it should restart ok.
+<P>
+<H2><A NAME="ss2.2">2.2 How can I monitor traffic to and from a node or user?</A>
+</H2>
+
+<P>There are 2 ways to achieve this.  You can use the <EM>tail</EM> command like this ..
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+tail -f /spider/data/debug/167.dat |grep G0VGS
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>or in later versions of Spider, there is a command called <EM>watchdbg</EM> in which
+case you simply type ..
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+watchdbg G0VGS
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss2.3">2.3 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.</A>
+</H2>
+
+<P>Assuming that the permissions are set correctly (perm level 5 required), it could be
+that the home_node is set incorrectly.  You can reset the home_node using the <EM>spoof</EM>
+command like this ..
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+spoof gb7adx set/home gb7adx
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Assuming that the node_call you are changing is gb7adx.
+<P>
+<H2><A NAME="ss2.4">2.4 I do not seem to be sending any bulletin mail to my link partners, what is wrong?</A>
+</H2>
+
+<P>There is a file in /spider/msg called forward.pl.issue.  Rename this to
+forward.pl and edit it to meet your requirements.  You will need to restart
+Spider for the changes to take effect.
+<P>
+<HR>
+Next
+<A HREF="spiderFAQ-1.html">Previous</A>
+<A HREF="spiderFAQ.html#toc2">Contents</A>
+</BODY>
+</HTML>

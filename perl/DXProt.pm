@@ -957,7 +957,7 @@ sub send_dx_spot
 				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
 			}
 		} elsif ($dxchan->is_user && $dxchan->{dx}) {
-			my $buf = Spot::formatb($_[0], $_[1], $_[2], $_[3], $_[4]);
+			my $buf = Spot::formatb($dxchan->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
 			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
 				$dxchan->send($buf);

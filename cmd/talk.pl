@@ -30,7 +30,7 @@ $ref = DXChannel->get($call) unless $ref;  # is it local?
 
 # if we haven't got an explicit via and we can't see them, try their node
 unless ($ref || $via) {
-	my $user = DXUser->get($call);
+	my $user = DXUser->get_current($call);
 	$ref = DXCluster->get_exact($user->node) if $user;
 	if ($ref) {
 		$via = $user->node;

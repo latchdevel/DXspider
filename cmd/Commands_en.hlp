@@ -229,6 +229,16 @@ access. For example:-
 
   EXPORT 2345 /tmp/a
 
+=== 9^EXPORT_USERS [<filename>]^Export the users database to ascii
+Export the users database to a file in ascii format. If no filename
+is given then it will export the file to /spider/data/user_asc.
+
+If the file already exists it will be renamed to <filename>.o. In fact
+up to 5 generations of the file can be kept each one with an extra 'o' on the
+suffix. 
+
+BE WARNED: this will write to any file you have write access to. No check is
+made on the filename (if any) that you specify.
 
 === 1^FORWARD/OPERNAME <call>^Send out information on this <call> to all clusters
 This command sends out any information held in the user file which can 
@@ -444,6 +454,14 @@ SP is an alias for SEND PRIVATE
 
 === 0^SET/DX^Allow DX messages to come out on your terminal
 === 0^UNSET/DX^Stop DX messages coming out on your terminal
+
+=== 0^SET/DXGRID^Allow Grid Squares on the end of DX announcements
+=== 0^UNSET/DXGRID^Stop Grid Squares on the end of DX announcements
+A standard feature which is enabled in version 1.43 and above is 
+that if the spotter's grid square is known it is output on the end
+of a DX announcement (there is just enough room). Some user programs
+cannot cope with this. You can use this command to reset (or set)
+this feature.
 
 === 0^SET/ECHO^Make the cluster echo your input
 === 0^UNSET/ECHO^Stop the cluster echoing your input
