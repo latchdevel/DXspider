@@ -16,4 +16,4 @@ foreach $ref (DXChannel::get_all()) {
 $main::decease = 250;
 	
 
-return (1, $self->msg('shutting'));
+return (1);
