@@ -23,6 +23,7 @@ foreach $l (@list) {
 			 Timeout  =>  5);
 	if ($t) {
 		$t->print(uc $l);
+		Log('call', "show/call $l");
 		while (my $result = $t->getline) {
 			push @out,$result;
 		}
