@@ -708,7 +708,9 @@ VP8/O So-Orkney-VP8/O                 212 73 13  2.0 60 0 0 S 46 0 0 W @
 VP8/S So-Sandwich-VP8/S             213 73 13  2.0 57 0 0 S 28 0 0 W @
 VP8/H So-Shetland-VP8/H             214 73 13  2.0 62 0 0 S 58 30 0 W @
 HF0 So-Shetland-VP8/H                214 73 13  2.0 62 0 0 S 58 30 0 W
-VP6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W @
+VP6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W * @ 
+VP6 Ducie-Is-VP6/D             342 63 32  8.30 24 39 57 S 124 48 21 W 
+VP6D,VP6/D Ducie-Is-VP6/D             342 63 32  8.30 24 39 57 S 124 48 21 W
 VR6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W 
 VP9 Bermuda-VP9                       215 11  5  4.0 32 18 0 N 64 42 0 W @
 VQ9 Chagos-VQ9                        216 41 39 -5.0 7 18 0 S 72 24 0 E @
@@ -741,57 +743,57 @@ N,NA,NB,NC,ND,NE,NF,NG,NI,NJ,NK,NM United-States-W 226 7 4 6.0 43 0 0 N 87 54 0 
 NN,NO,NQ,NR,NS,NT,NU,NV,NW,NY,NZ Unites-States-W   226 7 4 6.0 43 0 0 N 87 54 0 W
 WA,WB,WC,WD,WE,WF,WG,WI,WJ,WK,WM United-States-W   226 7 4 6.0 43 0 0 N 87 54 0 W
 WN,WO,WQ,WR,WS,WT,WU,WV,WW,WY,WZ United-States-W   226 7 4 6.0 43 0 0 N 87 54 0 W
-W1 Connecticut-W                226  8  5  5.0 41 48 0 N 72 42 0 W *
-W1 Maine-W                      226  8  5  5.0 44 48 0 N 68 48 0 W *
-W1 Massachusetts-W              226  8  5  5.0 42 24 0 N 71 6 0 W *
-W1 New-Hampshire-W              226  8  5  5.0 43 12 0 N 71 30 0 W *
-W1 Rhode-Island-W               226  8  5  5.0 41 48 0 N 71 24 0 W *
-W1 Vermont-W                    226  8  5  5.0 44 18 0 N 72 36 0 W
-W2 New-Jersey-W                 226  8  5  5.0 39 24 0 N 74 24 0 W *
-W2 New-York-W                   226  8  5  5.0 43 6 0 N 73 48 0 W
-W3 Delaware-W                   226  8  5  5.0 39 42 0 N 75 30 0 W *
-W3 D.C.-W                       226  8  5  5.0 38 54 0 N 77 0 0 W *
-W3 Maryland-W                   226  8  5  5.0 39 18 0 N 76 36 0 W *
-W3 Pennsylvania-W               226  8  5  5.0 40 18 0 N 76 54 0 W
-W4 Alabama-W                    226  8  5  5.0 32 24 0 N 86 18 0 W *
-W4 Florida-W                    226  8  5  5.0 30 18 0 N 81 42 0 W *
-W4 Georgia-W                    226  8  5  5.0 33 48 0 N 84 24 0 W *
-W4 Kentucky-W                   226  8  4  5.0 38 12 0 N 85 48 0 W *
-W4 North-Carolina-W             226  8  5  5.0 35 12 0 N 80 48 0 W *
-W4 South-Carolina-W             226  8  5  5.0 34 0 0 N 81 0 0 W *
-W4 Tennessee-W                  226  8  4  5.0 36 0 0 N 83 54 0 W *
-W4 Virginia-W                   226  8  5  5.0 37 30 0 N 77 24 0 W
-W5 Arkansas-W                   226  8  4  6.0 34 42 0 N 92 18 0 W *
-W5 Louisiana-W                  226  8  4  6.0 29 54 0 N 90 6 0 W *
-W5 Mississippi-W                226  8  4  6.0 32 18 0 N 90 12 0 W *
-W5 New-Mexico-W                 226  7  4  7.0 35 6 0 N 106 42 0 W *
-W5 Oklahoma-W                   226  7  4  6.0 35 30 0 N 97 30 0 W *
-W5 Texas-W                      226  7  4  6.0 32 48 0 N 96 48 0 W
-W6 California-LA-W              226  6  3  8.0 34 6 0 N 118 12 0 W *
-W6 California-SF-W              226  6  3  8.0 37 35 0 N 122 30 0 W *
-W6 California-MV-W                    226 6 3 8.0 37 25 0 N 122 4 0 W *
-W6 California-SACTO-W           226  6  3  8.0 38 42 0 N 121 28 0 W
-W7 Arizona-W                    226  6  3  7.0 33 30 0 N 112 6 0 W *
-W7 Idaho-W                      226  6  3  7.0 43 36 0 N 116 12 0 W *
-W7 Montana-W                    226  7  4  7.0 45 48 0 N 108 30 0 W *
-W7 Nevada-W                     226  6  3  7.0 36 12 0 N 115 6 0 W *
-W7 Oregon-W                     226  6  3  8.0 45 30 0 N 122 42 0 W *
-W7 Utah-W                       226  7  4  7.0 40 48 0 N 111 54 0 W *
-W7 Washington-W                 226  6  3  8.0 47 36 0 N 122 18 0 W *
-W7 Wyoming-W                    226  7  4  7.0 41 6 0 N 104 48 0 W
-W8 Michigan-W                   226  8  4  5.0 42 18 0 N 83 0 0 W *
-W8 Ohio-W                       226  8  4  5.0 41 30 0 N 81 42 0 W *
-W8 West-Virginia-W              226  8  5  5.0 38 24 0 N 81 36 0 W
-W9 Illinois-W                   226  8  4  6.0 41 54 0 N 87 36 0 W * 
-W9 Indiana-W                    226  8  4  5.0 39 48 0 N 86 12 0 W *
-W9 Wisconsin-W                  226  8  4  6.0 43 0 0 N 87 54 0 W
-W0 Colorado-W                   226  7  4  7.0 39 42 0 N 105 0 0 W * 
-W0 Iowa-W                       226  7  4  6.0 41 36 0 N 93 36 0 W *
-W0 Kansas-W                     226  7  4  6.0 37 42 0 N 97 18 0 W *
-W0 Minnesota-W                  226  7  4  6.0 45 0 0 N 93 18 0 W *
-W0 Missouri-W                   226  7  4  6.0 39 6 0 N 94 36 0 W *
-W0 Nebraska-W                   226  7  4  6.0 41 18 0 N 95 54 0 W *
-W0 North-Dakota-W               226  7  4  6.0 46 54 0 N 96 48 0 W *
+N1,K1,W1 Connecticut-W                226  8  5  5.0 41 48 0 N 72 42 0 W *
+N1,K1,W1 Maine-W                      226  8  5  5.0 44 48 0 N 68 48 0 W *
+N1,K1,W1 Massachusetts-W              226  8  5  5.0 42 24 0 N 71 6 0 W *
+N1,K1,W1 New-Hampshire-W              226  8  5  5.0 43 12 0 N 71 30 0 W *
+N1,K1,W1 Rhode-Island-W               226  8  5  5.0 41 48 0 N 71 24 0 W *
+N1,K1,W1 Vermont-W                    226  8  5  5.0 44 18 0 N 72 36 0 W
+N2,K2,W2 New-Jersey-W                 226  8  5  5.0 39 24 0 N 74 24 0 W *
+N2,K2,W2 New-York-W                   226  8  5  5.0 43 6 0 N 73 48 0 W
+N3,K3,W3 Delaware-W                   226  8  5  5.0 39 42 0 N 75 30 0 W *
+N3,K3,W3 D.C.-W                       226  8  5  5.0 38 54 0 N 77 0 0 W *
+N3,K3,W3 Maryland-W                   226  8  5  5.0 39 18 0 N 76 36 0 W *
+N3,K3,W3 Pennsylvania-W               226  8  5  5.0 40 18 0 N 76 54 0 W
+N4,K4,W4 Alabama-W                    226  8  5  5.0 32 24 0 N 86 18 0 W *
+N4,K4,W4 Florida-W                    226  8  5  5.0 30 18 0 N 81 42 0 W *
+N4,K4,W4 Georgia-W                    226  8  5  5.0 33 48 0 N 84 24 0 W *
+N4,K4,W4 Kentucky-W                   226  8  4  5.0 38 12 0 N 85 48 0 W *
+N4,K4,W4 North-Carolina-W             226  8  5  5.0 35 12 0 N 80 48 0 W *
+N4,K4,W4 South-Carolina-W             226  8  5  5.0 34 0 0 N 81 0 0 W *
+N4,K4,W4 Tennessee-W                  226  8  4  5.0 36 0 0 N 83 54 0 W *
+N4,K4,W4 Virginia-W                   226  8  5  5.0 37 30 0 N 77 24 0 W
+N5,K5,W5 Arkansas-W                   226  8  4  6.0 34 42 0 N 92 18 0 W *
+N5,K5,W5 Louisiana-W                  226  8  4  6.0 29 54 0 N 90 6 0 W *
+N5,K5,W5 Mississippi-W                226  8  4  6.0 32 18 0 N 90 12 0 W *
+N5,K5,W5 New-Mexico-W                 226  7  4  7.0 35 6 0 N 106 42 0 W *
+N5,K5,W5 Oklahoma-W                   226  7  4  6.0 35 30 0 N 97 30 0 W *
+N5,K5,W5 Texas-W                      226  7  4  6.0 32 48 0 N 96 48 0 W
+N6,K6,W6 California-LA-W              226  6  3  8.0 34 6 0 N 118 12 0 W *
+N6,K6,W6 California-SF-W              226  6  3  8.0 37 35 0 N 122 30 0 W *
+N6,K6,W6 California-MV-W                    226 6 3 8.0 37 25 0 N 122 4 0 W *
+N6,K6,W6 California-SACTO-W           226  6  3  8.0 38 42 0 N 121 28 0 W
+N7,K7,W7 Arizona-W                    226  6  3  7.0 33 30 0 N 112 6 0 W *
+N7,K7,W7 Idaho-W                      226  6  3  7.0 43 36 0 N 116 12 0 W *
+N7,K7,W7 Montana-W                    226  7  4  7.0 45 48 0 N 108 30 0 W *
+N7,K7,W7 Nevada-W                     226  6  3  7.0 36 12 0 N 115 6 0 W *
+N7,K7,W7 Oregon-W                     226  6  3  8.0 45 30 0 N 122 42 0 W *
+N7,K7,W7 Utah-W                       226  7  4  7.0 40 48 0 N 111 54 0 W *
+N7,K7,W7 Washington-W                 226  6  3  8.0 47 36 0 N 122 18 0 W *
+N7,K7,W7 Wyoming-W                    226  7  4  7.0 41 6 0 N 104 48 0 W
+N8,K8,W8 Michigan-W                   226  8  4  5.0 42 18 0 N 83 0 0 W *
+N8,K8,W8 Ohio-W                       226  8  4  5.0 41 30 0 N 81 42 0 W *
+N8,K8,W8 West-Virginia-W              226  8  5  5.0 38 24 0 N 81 36 0 W
+N9,K9,W9 Illinois-W                   226  8  4  6.0 41 54 0 N 87 36 0 W * 
+N9,K9,W9 Indiana-W                    226  8  4  5.0 39 48 0 N 86 12 0 W *
+N9,K9,W9 Wisconsin-W                  226  8  4  6.0 43 0 0 N 87 54 0 W
+N0,K0,W0 Colorado-W                   226  7  4  7.0 39 42 0 N 105 0 0 W * 
+N0,K0,W0 Iowa-W                       226  7  4  6.0 41 36 0 N 93 36 0 W *
+N0,K0,W0 Kansas-W                     226  7  4  6.0 37 42 0 N 97 18 0 W *
+N0,K0,W0 Minnesota-W                  226  7  4  6.0 45 0 0 N 93 18 0 W *
+N0,K0,W0 Missouri-W                   226  7  4  6.0 39 6 0 N 94 36 0 W *
+N0,K0,W0 Nebraska-W                   226  7  4  6.0 41 18 0 N 95 54 0 W *
+N0,K0,W0 North-Dakota-W               226  7  4  6.0 46 54 0 N 96 48 0 W *
 W0,K0,N0 South-Dakota-W         226  7  4  6.0 44 6 0 N 103 12 0 W
 XE Mexico-XE1-XE                227 10  6  6.0 19 24 0 N 99 6 0 W * @
 XE Mexico-XE2-XE                227 10  6  6.0 28 42 0 N 106 0 0 W *
@@ -887,7 +889,6 @@ ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
 4W East-Timor-4W				340 54 28 -8.0 8 73 0 S 126 30 0 E  
 TX0 Chesterfield-Is-TX0         341 56 30 -11.0 19 31 0 S 158 11 0 E
-VP6D Ducie-Is-VP6/D             342 63 32  8.30 24 39 57 S 124 48 21 W
 T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirat_Country 666 17 14 -0.0 0 0 0 S 0 0 0 E @
 
 
