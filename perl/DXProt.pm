@@ -74,48 +74,48 @@ $chatdupeage = 20 * 60 * 60;
 
 @checklist = 
 (
- [ qw(c c m bp bc c) ],			# pc10
- [ qw(f m d t m c c h) ],		# pc11
- [ qw(c bm m bm bm p h) ],		# pc12
- [ qw(c h) ],					# 
- [ qw(c h) ],					# 
- [ qw(c m h) ],					# 
+ [ qw(i c c m bp bc c) ],			# pc10
+ [ qw(i f m d t m c c h) ],		# pc11
+ [ qw(i c bm m bm bm p h) ],		# pc12
+ [ qw(i c h) ],					# 
+ [ qw(i c h) ],					# 
+ [ qw(i c m h) ],					# 
  undef ,						# pc16 has to be validated manually
- [ qw(c c h) ],					# pc17
- [ qw(m n) ],					# pc18
+ [ qw(i c c h) ],					# pc17
+ [ qw(i m n) ],					# pc18
  undef ,						# pc19 has to be validated manually
  undef ,						# pc20 no validation
- [ qw(c m h) ],					# pc21
+ [ qw(i c m h) ],					# pc21
  undef ,						# pc22 no validation
- [ qw(d n n n n m c c h) ],		# pc23
- [ qw(c p h) ],					# pc24
- [ qw(c c n n) ],				# pc25
- [ qw(f m d t m c c bc) ],		# pc26
- [ qw(d n n n n m c c bc) ],	# pc27
- [ qw(c c m c d t p m bp n p bp bc) ], # pc28
- [ qw(c c n m) ],				# pc29
- [ qw(c c n) ],					# pc30
- [ qw(c c n) ],					# pc31
- [ qw(c c n) ],					# pc32
- [ qw(c c n) ],					# pc33
- [ qw(c c m) ],					# pc34
- [ qw(c c m) ],					# pc35
- [ qw(c c m) ],					# pc36
- [ qw(c c n m) ],				# pc37
+ [ qw(i d n n n n m c c h) ],		# pc23
+ [ qw(i c p h) ],					# pc24
+ [ qw(i c c n n) ],				# pc25
+ [ qw(i f m d t m c c bc) ],		# pc26
+ [ qw(i d n n n n m c c bc) ],	# pc27
+ [ qw(i c c m c d t p m bp n p bp bc) ], # pc28
+ [ qw(i c c n m) ],				# pc29
+ [ qw(i c c n) ],					# pc30
+ [ qw(i c c n) ],					# pc31
+ [ qw(i c c n) ],					# pc32
+ [ qw(i c c n) ],					# pc33
+ [ qw(i c c m) ],					# pc34
+ [ qw(i c c m) ],					# pc35
+ [ qw(i c c m) ],					# pc36
+ [ qw(i c c n m) ],				# pc37
  undef,							# pc38 not interested
- [ qw(c m) ],					# pc39
- [ qw(c c m p n) ],				# pc40
- [ qw(c n m h) ],				# pc41
- [ qw(c c n) ],					# pc42
+ [ qw(i c m) ],					# pc39
+ [ qw(i c c m p n) ],				# pc40
+ [ qw(i c n m h) ],				# pc41
+ [ qw(i c c n) ],					# pc42
  undef,							# pc43 don't handle it
- [ qw(c c n m m c) ],			# pc44
- [ qw(c c n m) ],				# pc45
- [ qw(c c n) ],					# pc46
+ [ qw(i c c n m m c) ],			# pc44
+ [ qw(i c c n m) ],				# pc45
+ [ qw(i c c n) ],					# pc46
  undef,							# pc47
  undef,							# pc48
- [ qw(c m h) ],					# pc49
- [ qw(c n h) ],					# pc50
- [ qw(c c n) ],					# pc51
+ [ qw(i c m h) ],					# pc49
+ [ qw(i c n h) ],					# pc50
+ [ qw(i c c n) ],					# pc51
  undef,
  undef,
  undef,
@@ -137,7 +137,7 @@ $chatdupeage = 20 * 60 * 60;
  undef,							# pc70
  undef,
  undef,
- [ qw(d n n n n n n m m m c c h) ],	# pc73
+ [ qw(i d n n n n n n m m m c c h) ],	# pc73
  undef,
  undef,
  undef,
@@ -148,8 +148,13 @@ $chatdupeage = 20 * 60 * 60;
  undef,
  undef,
  undef,
- [ qw(c c c m) ],				# pc84
- [ qw(c c c m) ],				# pc85
+ [ qw(i c c c m) ],				# pc84
+ [ qw(i c c c m) ],				# pc85
+ undef,
+ undef,
+ undef,
+ undef,
+ [ qw(i c n) ],					# pc90
 );
 
 # use the entry in the check list to check the field list presented
@@ -163,28 +168,29 @@ sub check
 	return 0 unless ref $ref;
 	
 	my $i;
-	shift;    # not interested in the first field
-	for ($i = 0; $i < @$ref; $i++) {
+	for ($i = 1; $i < @$ref; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
 		return 0 unless $act;
 		next if $blank && $_[$i] =~ /^[ \*]$/;
 		if ($act eq 'c') {
-			return $i+1 unless is_callsign($_[$i]);
+			return $i unless is_callsign($_[$i]);
+		} elsif ($act eq 'i') {			
+			;					# do nothing
 		} elsif ($act eq 'm') {
-			return $i+1 unless is_pctext($_[$i]);
+			return $i unless is_pctext($_[$i]);
 		} elsif ($act eq 'p') {
-			return $i+1 unless is_pcflag($_[$i]);
+			return $i unless is_pcflag($_[$i]);
 		} elsif ($act eq 'f') {
-			return $i+1 unless is_freq($_[$i]);
+			return $i unless is_freq($_[$i]);
 		} elsif ($act eq 'n') {
-			return $i+1 unless $_[$i] =~ /^[\d ]+$/;
+			return $i unless $_[$i] =~ /^[\d ]+$/;
 		} elsif ($act eq 'h') {
-			return $i+1 unless $_[$i] =~ /^H\d\d?$/;
+			return $i unless $_[$i] =~ /^H\d\d?$/;
 		} elsif ($act eq 'd') {
-			return $i+1 unless $_[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
+			return $i unless $_[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
 		} elsif ($act eq 't') {
-			return $i+1 unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
-		}
+			return $i unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
+		} 
 	}
 	return 0;
 }
@@ -295,6 +301,40 @@ sub sendinit
 	$self->send(pc18());
 }
 
+sub removepc90
+{
+	$_[0] =~ s/^PC90\^[-A-Z0-9]+\^\d+\^//;
+}
+
+sub send
+{
+	my $self = shift;
+	my $line = shift;
+	if ($self->user->wantpc90) {
+		$line = mungepc90($line);
+	} else {
+		removepc90($line);
+	}
+	$self->SUPER::send($line);
+}
+
+my $pc90msgid = 0;
+
+sub nextpc90
+{
+	$pc90msgid = 0 if $pc90msgid > 9999;
+	return $pc90msgid++;
+}
+
+sub mungepc90
+{
+	unless ($_[0] =~ /^PC90/) {
+		my $id = nextpc90();
+		return "PC90^$main::mycall^$id^" . $_[0]; 
+	} 
+	return $_[0];
+}
+
 #
 # This is the normal pcxx despatcher
 #
@@ -321,6 +361,58 @@ sub normal
 		return;
 	}
 
+	# handle PC90 frames in a special way.
+    # 
+	# PC90 frames are normal frames that that are wrapped in inside a PC90 
+    # The extra fields are "originating node" and a sequence number.
+    # The sequence number is checked against the nodes 'last one' to see if
+	# it is a duplicate and, if so, is dropped at this stage; before any
+	# other processing.
+	#
+	# This is done here simply for efficiency. Adding another function would
+	# add more copying and so on.
+	#
+
+	my $origin = $self->call;
+	
+	if ($pcno >= 90) {
+		$origin = $field[1];
+		if ($origin eq $main::mycall) {
+			dbg("PCPROT: loop dupe") if isdbg('chanerr');
+			return;
+		}
+		my $seq = $field[2];
+		my $node = Route::Node::get($origin);
+		if ($node) {
+			if (my $lid = $node->lid) {
+				my $cmp = $seq >= $lid ? $seq : $seq + 9999;
+				if ($cmp <= $lid) {
+					dbg("PCPROT: sequence dupe $seq ($cmp) <= $lid") if isdbg('chanerr');
+					return;
+				}
+			}
+			$node->lid($seq);
+		}
+
+		# do a recheck on the contents of the PC90
+		if ($pcno == 90) {
+			shift @field;
+			shift @field;
+			shift @field;
+			
+			($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
+			return unless $pcno;
+			return if $pcno < 10 || $pcno > 99;
+			
+			# check for and dump bad protocol messages
+			my $n = check($pcno, @field);
+			if ($n) {
+				dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
+				return;
+			}
+		}
+	}
+
 	# local processing 1
 	my $pcr;
 	eval {
@@ -331,10 +423,14 @@ sub normal
 
 	no strict 'subs';
 	my $sub = "handle_$pcno";
+
+	# add missing PC90 if not present (for ongoing distribution)
+	$line = mungepc90($line) if $pcno < 90;
+
 	if ($self->can($sub)) {
-		$self->$sub($pcno, $line, @field);
+		$self->$sub($pcno, $line, $origin, @field);
 	} else {
-		$self->handle_default($pcno, $line, @field);
+		$self->handle_default($pcno, $line, $origin, @field);
 	}
 }
 	
@@ -344,8 +440,9 @@ sub handle_10
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
-			# rsfp check
+	# rsfp check
 	return if $rspfcheck and !$self->rspfcheck(0, $_[6], $_[1]);
 			
 	# will we allow it at all?
@@ -425,6 +522,7 @@ sub handle_11
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
 	# route 'foreign' pc26s 
 	if ($pcno == 26) {
@@ -577,6 +675,7 @@ sub handle_12
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
 	#			return if $rspfcheck and !$self->rspfcheck(1, $_[5], $_[1]);
 
@@ -645,7 +744,7 @@ sub handle_16
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
-
+	my $origin = shift;
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
@@ -790,6 +889,7 @@ sub handle_17
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $dxchan;
 	my $ncall = $_[2];
 	my $ucall = $_[1];
@@ -842,6 +942,7 @@ sub handle_18
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	$self->state('init');	
 
 	# record the type and version offered
@@ -875,6 +976,7 @@ sub handle_19
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
 	my $i;
 	my $newline = "PC19^";
@@ -983,6 +1085,7 @@ sub handle_20
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	$self->send_local_config();
 	$self->send(pc22());
 	$self->state('normal');
@@ -995,6 +1098,7 @@ sub handle_21
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $call = uc $_[1];
 
 	eph_del_regex("^PC1[679].*$call");
@@ -1051,6 +1155,7 @@ sub handle_22
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	$self->state('normal');
 	$self->{lastping} = 0;
 }
@@ -1061,6 +1166,7 @@ sub handle_23
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 			
 	# route foreign' pc27s 
 	if ($pcno == 27) {
@@ -1111,6 +1217,7 @@ sub handle_24
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $call = uc $_[1];
 	my ($nref, $uref);
 	$nref = Route::Node::get($call);
@@ -1136,6 +1243,7 @@ sub handle_25
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	if ($_[1] ne $main::mycall) {
 		$self->route($_[1], $line);
 		return;
@@ -1175,6 +1283,7 @@ sub handle_28
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	if ($_[1] eq $main::mycall) {
 		no strict 'refs';
 		my $sub = "DXMsg::handle_$pcno";
@@ -1195,6 +1304,7 @@ sub handle_34
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	if (eph_dup($line, $eph_pc34_restime)) {
 		dbg("PCPROT: dupe PC34, ignored") if isdbg('chanerr');
 	} else {
@@ -1208,6 +1318,7 @@ sub handle_35
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	eph_del_regex("^PC35\\^$_[2]\\^$_[1]\\^");
 	$self->process_rcmd_reply($_[1], $_[2], $_[1], $_[3]);
 }
@@ -1220,6 +1331,7 @@ sub handle_37
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	DXDb::process($self, $line);
 }
 
@@ -1229,6 +1341,7 @@ sub handle_38
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 }
 		
 # incoming disconnect
@@ -1237,6 +1350,7 @@ sub handle_39
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	if ($_[1] eq $self->{call}) {
 		$self->disconnect(1);
 	} else {
@@ -1252,6 +1366,7 @@ sub handle_41
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $call = $_[1];
 
 	my $l = $line;
@@ -1328,6 +1443,7 @@ sub handle_49
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: Dup PC49 ignored\n") if isdbg('chanerr');
@@ -1347,6 +1463,7 @@ sub handle_50
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
 	my $call = $_[1];
 	my $node = Route::Node::get($call);
@@ -1367,6 +1484,7 @@ sub handle_51
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $to = $_[1];
 	my $from = $_[2];
 	my $flag = $_[3];
@@ -1429,6 +1547,7 @@ sub handle_75
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $call = $_[1];
 	if ($call ne $main::mycall) {
 		$self->route($call, $line);
@@ -1441,6 +1560,7 @@ sub handle_73
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	my $call = $_[1];
 			
 	# do some de-duping
@@ -1474,6 +1594,7 @@ sub handle_84
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	$self->process_rcmd($_[1], $_[2], $_[3], $_[4]);
 }
 
@@ -1483,9 +1604,10 @@ sub handle_85
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 	$self->process_rcmd_reply($_[1], $_[2], $_[3], $_[4]);
 }
-	
+
 # if get here then rebroadcast the thing with its Hop count decremented (if
 # there is one). If it has a hop count and it decrements to zero then don't
 # rebroadcast it.
@@ -1499,6 +1621,7 @@ sub handle_default
 	my $self = shift;
 	my $pcno = shift;
 	my $line = shift;
+	my $origin = shift;
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
@@ -1603,7 +1726,8 @@ sub send_prot_line
 {
 	my ($self, $filter, $hops, $isolate, $line) = @_;
 	my $routeit;
-	
+
+
 	if ($hops) {
 		$routeit = $line;
 		$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
@@ -2334,6 +2458,7 @@ sub eph_dup
 
 	# chop the end off
 	$s =~ s/\^H\d\d?\^?\~?$//;
+	removepc90($s);
 	$r = 1 if exists $eph{$s};    # pump up the dup if it keeps circulating
 	$eph{$s} = $main::systime + $t;
 	return $r;

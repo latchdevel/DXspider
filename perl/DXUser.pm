@@ -592,6 +592,8 @@ sub sort
 }
 
 # some accessors
+
+# want is default = 1
 sub _want
 {
 	my $n = shift;
@@ -600,6 +602,17 @@ sub _want
 	my $s = "want$n";
 	$self->{$s} = $val if defined $val;
 	return exists $self->{$s} ? $self->{$s} : 1;
+}
+
+# wantnot is default = 0
+sub _wantnot
+{
+	my $n = shift;
+	my $self = shift;
+	my $val = shift;
+	my $s = "want$n";
+	$self->{$s} = $val if defined $val;
+	return exists $self->{$s} ? $self->{$s} : 0;
 }
 
 sub wantbeep
@@ -662,6 +675,11 @@ sub wantpc16
 	return _want('pc16', @_);
 }
 
+sub wantpc90
+{
+	return _wantnot('pc90', @_);
+}
+
 sub wantsendpc16
 {
 	return _want('sendpc16', @_);
@@ -685,6 +703,11 @@ sub wantdxcq
 sub wantdxitu
 {
 	return _want('dxitu', @_);
+}
+
+sub wantnp
+{
+	return _wantnot('np', @_);
 }
 
 sub wantlogininfo
