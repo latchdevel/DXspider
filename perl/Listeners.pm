@@ -16,4 +16,5 @@ use vars qw(@listen);
 #		   ["localhost", 7300],
 #		   ["foo.dxcluster.net", 7300],
 		  );
-
+ 
+1;
