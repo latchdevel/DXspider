@@ -784,16 +784,18 @@ sub normal
 		if ($pcno == 24) {		# set here status
 			my $call = uc $field[1];
 			my ($nref, $uref);
-			$nref = Route::Node::get($call) && $nref->here($field[2]);
-			$uref = Route::User::get($call) && $uref->here($field[2]);
+			$nref = Route::Node::get($call);
+			$uref = Route::User::get($call);
 			return unless $nref || $uref;	# if we don't know where they are, it's pointless sending it on
 			
 			unless (eph_dup($line)) {
 				if ($nref) {
+					$nref->here($field[2]);
 					return unless $self->in_filter_route($nref);
 					$self->route_pc24($nref, $field[3])
 				}
 				if ($uref) {
+					$uref->here($field[2]);
 					return unless $self->in_filter_route($uref);
 					$self->route_pc24($uref, $field[3]);
 				}
