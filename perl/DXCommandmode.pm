@@ -103,6 +103,11 @@ sub start
 	my $cuser = DXNodeuser->new($self, $node, $call, 0, 1);
 	$node->dxchan($self) if $call eq $main::myalias; # send all output for mycall to myalias
 
+	# routing version
+	my $pref = Route::Node::get($main::mycall)  or die "$main::mycall not allocated in Route database";
+	$pref->add_user($call, Route::here($self->{here}));
+	dbg('route', "B/C PC16 on $main::mycall for: $call");
+	
 	# issue a pc16 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
 	my @pc16 = DXProt::pc16($nchan, $cuser);
@@ -409,6 +414,12 @@ sub disconnect
 	if ($call eq $main::myalias) {
 		my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
 		$node->dxchan($DXProt::me);
+	}
+
+	my $pref = Route::Node::get($main::mycall);
+	if ($pref) {
+		my @rout = $pref->del_user($main::mycall);
+		dbg('route', "B/C PC17 on $main::mycall for: $call");
 	}
 
 	# I was the last node visited

@@ -15,7 +15,7 @@ use Data::Dumper;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
-			 parray parraypairs shellregex readfilestr writefilestr
+			 parray parraypairs phex shellregex readfilestr writefilestr
              print_all_fields cltounix unpad is_callsign
 			 is_freq is_digits is_pctext is_pcflag insertitem deleteitem
             );
@@ -139,6 +139,13 @@ sub promptf
 	}
 	$prompt = sprintf "%15s: %s", $prompt, $value;
 	return ($priv, $prompt);
+}
+
+# turn a hex field into printed hex
+sub phex
+{
+	my $val = shift;
+	return sprintf '%X', $val;
 }
 
 # take an arg as an array list and print it

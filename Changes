@@ -1,3 +1,13 @@
+06Jun01=======================================================================
+1. add stat/route_node and stat/route_user commands
+05Jun01=======================================================================
+1. add set/bbs command
+2. more work on Routing code.
+3. status/msg on its own will print the status of the msg system.
+4. add sh/newconfig command
+03Jun01=======================================================================
+1. Fix the problem with ExtMsg and unresolvable IP addresses, hopefully
+properly this time.
 15May01=======================================================================
 1. set/lockout now prevents any outgoing connection taking place.
 2. Started the new routing stuff which will run in parallel for a while.

@@ -80,7 +80,7 @@ sub pc16
 
 	for ($i = 0; @_; ) {
 		my $str = "PC16^$self->{call}";
-		for ( ; @_ && $i < $DXProt::pc16_max_users; $i++) {
+		for ( ; @_ && length $str < 200; $i++) {
 			my $ref = shift;
 			$str .= sprintf "^%s %s %d", $ref->call, $ref->confmode ? '*' : '-', $ref->here;
 		}
@@ -117,7 +117,7 @@ sub pc19
 
 	for ($i = 0; @_; ) {
 		my $str = "PC19";
-		for (; @_ && $i < $DXProt::pc19_max_nodes; $i++) {
+		for (; @_ && length $str < 200; $i++) {
 			my $ref = shift;
 			my $here = $ref->{here} ? '1' : '0';
 			my $confmode = $ref->{confmode} ? '1' : '0';

@@ -983,6 +983,8 @@ Use with extreme care. This command may well be superceded by FILTERing.
 === 0^SET/BEEP^Add a beep to DX and other messages on your terminal
 === 0^UNSET/BEEP^Stop beeps for DX and other messages on your terminal
 
+=== 5^SET/BBS <call> [<call>..]^Make the callsign a BBS
+
 === 5^SET/CLX <call> [<call>..]^Make the callsign an CLX node
 
 === 9^SET/DEBUG <name>^Add a debug level to the debug set
@@ -1520,9 +1522,17 @@ you are on or else for the callsign that you asked for.
 
 Only the fields that are defined (in perl term) will be displayed.
 
+=== 1^STAT/MSG^Show the status of the message system
 === 1^STAT/MSG <msgno>^Show the status of a message
 This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
+
+If no message number is given then the status of the message system is 
+displayed.
+
+=== 5^STAT/ROUTE_NODE <callsign>^Show the data in a Route::Node object
+
+=== 5^STAT/ROUTE_USER <callsign>^Show the data in a Route::User object
 
 === 5^STAT/USER [<callsign>]^Show the full status of a user
 Shows the full contents of a user record including all the secret flags

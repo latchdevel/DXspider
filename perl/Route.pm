@@ -22,13 +22,16 @@ use vars qw(%list %valid);
 
 %valid = (
 		  call => "0,Callsign",
+		  flags => "0,Flags,phex",
 		 );
 
 sub new
 {
 	my ($pkg, $call) = @_;
-	dbg('route', "$pkg created $call");
-	return bless {call => $call}, $pkg;
+
+	dbg('routelow', "create " . (ref($pkg) || $pkg) ." with $call");
+	
+	return bless {call => $call}, (ref $pkg || $pkg);
 }
 
 #
@@ -57,9 +60,10 @@ sub _addlist
 		my $call = _getcall($c);
 		unless (grep {$_ eq $call} @{$self->{$field}}) {
 			push @{$self->{$field}}, $call;
-			dbg('route', ref($self) . " adding $call to " . $self->{call} . "->\{$field\}");
+			dbg('routelow', ref($self) . " adding $call to " . $self->{call} . "->\{$field\}");
 		}
 	}
+	return $self->{$field};
 }
 
 sub _dellist
@@ -70,9 +74,96 @@ sub _dellist
 		my $call = _getcall($c);
 		if (grep {$_ eq $call} @{$self->{$field}}) {
 			$self->{$field} = [ grep {$_ ne $call} @{$self->{$field}} ];
-			dbg('route', ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}");
+			dbg('routelow', ref($self) . " deleting $call from " . $self->{call} . "->\{$field\}");
 		}
 	}
+	return $self->{$field};
+}
+
+#
+# flag field constructors/enquirers
+#
+
+sub here
+{
+	my $self = shift;
+	my $r = shift;
+	return $self ? 2 : 0 unless ref $self;
+	return $self->{flags} & 2 unless $r;
+	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
+	return $r;
+}
+
+sub conf
+{
+	my $self = shift;
+	my $r = shift;
+	return $self ? 1 : 0 unless ref $self;
+	return $self->{flags} & 1 unless $r;
+	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
+	return $r;
+}
+
+# 
+# display routines
+#
+
+sub user_call
+{
+	my $self = shift;
+	my $call = sprintf "%s", $self->{call};
+	return $self->here ? "$call" : "($call)";
+}
+
+sub config
+{
+	my $self = shift;
+	my $nodes_only = shift;
+	my $level = shift;
+	my @out;
+	my $line;
+	my $call = $self->user_call;
+
+	$line = ' ' x ($level*2) . "$call";
+	$call = ' ' x length $call; 
+	unless ($nodes_only) {
+		if (@{$self->{users}}) {
+			$line .= '->';
+			foreach my $ucall (sort @{$self->{users}}) {
+				my $uref = Route::User::get($ucall);
+				my $c;
+				if ($uref) {
+					$c = $uref->user_call;
+				} else {
+					$c = "$ucall?";
+				}
+				if ((length $line) + (length $c) + 1 < 79) {
+					$line .= $c . ' ';
+				} else {
+					$line =~ s/\s+$//;
+					push @out, $line;
+					$line = ' ' x ($level*2) . "$call->";
+				}
+			}
+		}
+	}
+	$line =~ s/->$//g;
+	$line =~ s/\s+$//;
+	push @out, $line if length $line;
+	
+	foreach my $ncall (sort @{$self->{nodes}}) {
+		my $nref = Route::Node::get($ncall);
+		next if @_ && !grep $ncall =~ m|$_|, @_;
+		
+		if ($nref) {
+			my $c = $nref->user_call;
+			push @out, $nref->config($nodes_only, $level+1, @_);
+		} else {
+			push @out, ' ' x (($level+1)*2)  . "$ncall?";
+		}
+	}
+
+	return @out;
 }
 
 #
@@ -84,7 +175,7 @@ sub DESTROY
 	my $self = shift;
 	my $pkg = ref $self;
 	
-	dbg('route', "$pkg $self->{call} destroyed");
+	dbg('routelow', "$pkg $self->{call} destroyed");
 }
 
 no strict;
@@ -95,7 +186,8 @@ no strict;
 sub fields
 {
 	my $pkg = shift;
-	my @out, keys %pkg::valid if ref $pkg;
+	$pkg = ref $pkg if ref $pkg;
+	my @out, keys %$pkg::valid;
 	push @out, keys %valid;
 	return @out;
 }
@@ -117,14 +209,15 @@ sub field_prompt
 sub AUTOLOAD
 {
 	my $self = shift;
-	my ($pkg, $name) = $AUTOLOAD =~ /^(.*)::([^:]*)$/;
-	return if $name eq 'DESTROY';
+	my $name = $AUTOLOAD;
+	return if $name =~ /::DESTROY$/;
+	$name =~ s/.*:://o;
   
-	confess "Non-existant field '$AUTOLOAD'" unless $valid{$name} || $pkg::valid{$name};
+	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
     @_ ? $self->{$name} = shift : $self->{$name} ;
 }
 

@@ -11,14 +11,14 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbgstore dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck cluck);
+@EXPORT = qw(dbginit dbgstore dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
 
 use strict;
 use vars qw(%dbglevel $fp);
 
 use DXUtil;
 use DXLog ();
-use Carp qw(cluck);
+use Carp ();
 
 %dbglevel = ();
 $fp = undef;
@@ -44,7 +44,8 @@ if (!defined $DB::VERSION) {
     CORE::die(Carp::shortmess($@)) if $@;
 } else {
     eval qq( sub confess { Carp::confess(\@_); }; 
-	sub cluck { Carp::cluck(\@_); }; 
+			 sub croak { Carp::croak(\@_); }; 
+			 sub cluck { Carp::cluck(\@_); }; 
    );
 } 
 

@@ -159,6 +159,8 @@ package DXM;
 				name => 'Your name is now \"$_[0]\"',
 				nodea => '$_[0] set as AK1A style Node',
 				nodeac => '$_[0] created as AK1A style Node',
+				nodeb => '$_[0] set as BBS',
+				nodebc => '$_[0] created as BBS',
 				nodec => '$_[0] set as CLX style Node',
 				nodecc => '$_[0] created as CLX style Node',
 				noder => '$_[0] set as AR-Cluster style Node',

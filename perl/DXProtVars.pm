@@ -11,12 +11,6 @@
 
 package DXProt;
 
-# maximum number of users in a PC16 message
-$pc16_max_users = 5;
-
-# maximum number of nodes in a PC19 message
-$pc19_max_nodes = 5;
-
 # the interval between pc50s (in seconds)
 $pc50_interval = 14*60;
 

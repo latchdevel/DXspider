@@ -92,6 +92,7 @@ $count = 0;
 		  cluster => '5,Cluster data',
 		  isbasic => '9,Internal Connection', 
 		  errors => '9,Errors',
+		  route => '9,Route Data',
 		 );
 
 # object destruction

@@ -98,7 +98,7 @@ package main;
 use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
-			$clusterport $mycall $decease $build $is_win
+			$clusterport $mycall $decease $build $is_win $routeroot 
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -433,11 +433,11 @@ Spot->init();
 
 # initialise the protocol engine
 dbg('err', "reading in duplicate spot and WWV info ...");
-Route::Node::init($mycall, $version);
 DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
 DXNode->new($DXProt::me, $mycall, 0, 1, $DXProt::myprot_version); 
+$routeroot = Route::Node->new($mycall, $version, Route::here($DXProt::me->here)|Route::conf($DXProt::me->confmode));
 
 # read in any existing message headers and clean out old crap
 dbg('err', "reading existing message headers ...");

@@ -31,6 +31,7 @@ use WCY;
 use Time::HiRes qw(gettimeofday tv_interval);
 use BadWords;
 use DXHash;
+use Route;
 use Route::Node;
 
 use strict;
@@ -181,7 +182,7 @@ sub init
 	confess $@ if $@;
 	$me->{sort} = 'S';    # S for spider
 	$me->{priv} = 9;
-	$Route::Node::me->adddxchan($me);
+#	$Route::Node::me->adddxchan($me);
 }
 
 #
@@ -250,6 +251,7 @@ sub start
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
 
+	$main::routeroot->add($call);
 	Log('DXProt', "$call connected");
 }
 
@@ -514,16 +516,9 @@ sub normal
 		}
 		
 		if ($pcno == 16) {		# add a user
-			my $node = DXCluster->get_exact($field[1]); 
+
+			# general checks
 			my $dxchan;
-			if (!$node && ($dxchan = DXChannel->get($field[1]))) {
-				# add it to the node table if it isn't present and it's
-				# connected locally
-				$node = DXNode->new($dxchan, $field[1], 0, 1, 5400);
-				dbg('chan', "PCPROT: $field[1] no PC19 yet, autovivified as node");
-#				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
-				
-			}
 			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
 				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
@@ -532,50 +527,68 @@ sub normal
 				dbg('chan', "PCPROT: trying to connect sysop from outside!");
 				return;
 			}
-			unless ($node) {
-				dbg('chan', "PCPROT: Node $field[1] not in config");
-				return;
-			}
-			unless ($node->isa('DXNode')) {
-				dbg('chan', "PCPROT: $field[1] is not a node");
-				return;
-			}
-			if ($node->dxchan != $self) {
-				dbg('chan', "PCPROT: $field[1] came in on wrong channel");
-				return;
-			}
 			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
 				dbg('chan', "PCPROT: $field[1] connected locally");
 				return;
 			}
+
+			my $node = DXCluster->get_exact($field[1]); 
+			unless ($node) {
+				dbg('chan', "PCPROT: Node $field[1] not in config");
+				return;
+			}
+			my $pref = Route::Node::get($field[1]);
+			unless ($pref) {
+				dbg('chan', "PCPROT: Route::Node $field[1] not in config");
+				return;
+			}
+			my $wrong;
+			unless ($node->isa('DXNode')) {
+				dbg('chan', "PCPROT: $field[1] is not a node");
+				$wrong = 1;
+			}
+			if ($node->dxchan != $self) {
+				dbg('chan', "PCPROT: $field[1] came in on wrong channel");
+				$wrong = 1;
+			}
 			my $i;
-						
+			my @rout;
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
 				next unless $call && $confmode && defined $here && is_callsign($call);
-				my $ref = DXCluster->get_exact($call); 
-				if ($ref) {
-					if ($ref->isa('DXNode')) {
-						dbg('chan', "PCPROT: $call is a node");
+				$confmode = $confmode eq '*';
+
+				push @rout, $pref->add_user($call, Route::here($here)|Route::conf($confmode));
+				
+				unless ($wrong) {
+					my $ref = DXCluster->get_exact($call); 
+					if ($ref) {
+						if ($ref->isa('DXNode')) {
+							dbg('chan', "PCPROT: $call is a node");
+							next;
+						}
+						my $rcall = $ref->mynode->call;
+						dbg('chan', "PCPROT: already have $call on $rcall");
 						next;
 					}
-					my $rcall = $ref->mynode->call;
-					dbg('chan', "PCPROT: already have $call on $rcall");
-					next;
+					
+					DXNodeuser->new($self, $node, $call, $confmode, $here);
+					
+					# add this station to the user database, if required
+					$call =~ s/-\d+$//o;        # remove ssid for users
+					my $user = DXUser->get_current($call);
+					$user = DXUser->new($call) if !$user;
+					$user->homenode($node->call) if !$user->homenode;
+					$user->node($node->call);
+					$user->lastin($main::systime) unless DXChannel->get($call);
+					$user->put;
 				}
-				
-				$confmode = $confmode eq '*';
-				DXNodeuser->new($self, $node, $call, $confmode, $here);
-				
-				# add this station to the user database, if required
-				$call =~ s/-\d+$//o;        # remove ssid for users
-				my $user = DXUser->get_current($call);
-				$user = DXUser->new($call) if !$user;
-				$user->homenode($node->call) if !$user->homenode;
-				$user->node($node->call);
-				$user->lastin($main::systime) unless DXChannel->get($call);
-				$user->put;
 			}
+
+			dbg('route', "B/C PC16 on $field[1] for: " . join(',', map{$_->call} @rout)) if @rout;
+
+			# all these 'wrong' is just while we are swopping over to the Route stuff
+			return if $wrong;
 			
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
@@ -585,15 +598,7 @@ sub normal
 		}
 		
 		if ($pcno == 17) {		# remove a user
-			my $node = DXCluster->get_exact($field[2]);
 			my $dxchan;
-			if (!$node && ($dxchan = DXChannel->get($field[2]))) {
-				# add it to the node table if it isn't present and it's
-				# connected locally
-				$node = DXNode->new($dxchan, $field[2], 0, 1, 5400);
-				dbg('chan', "PCPROT: $field[2] no PC19 yet, autovivified as node");
-#				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
-			}
 			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
 				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
@@ -602,6 +607,20 @@ sub normal
 				dbg('chan', "PCPROT: trying to disconnect sysop from outside!");
 				return;
 			}
+			if ($dxchan = DXChannel->get($field[1])) {
+				dbg('chan', "PCPROT: $field[1] connected locally");
+				return;
+			}
+
+			my $pref = Route::Node::get($field[2]);
+			unless ($pref) {
+				dbg('chan', "PCPROT: Route::Node $field[2] not in config");
+				return;
+			}
+			$pref->del_user($field[1]);
+			dbg('route', "B/C PC17 on $field[2] for: $field[1]");
+			
+			my $node = DXCluster->get_exact($field[2]);
 			unless ($node) {
 				dbg('chan', "PCPROT: Node $field[2] not in config");
 				return;
@@ -612,10 +631,6 @@ sub normal
 			}
 			if ($node->dxchan != $self) {
 				dbg('chan', "PCPROT: $field[2] came in on wrong channel");
-				return;
-			}
-			if ($dxchan = DXChannel->get($field[1])) {
-				dbg('chan', "PCPROT: $field[1] connected locally");
 				return;
 			}
 			my $ref = DXCluster->get_exact($field[1]);
@@ -652,34 +667,58 @@ sub normal
 		if ($pcno == 19) {		# incoming cluster list
 			my $i;
 			my $newline = "PC19^";
+
+			# new routing list
+			my @rout;
+			my $pref = Route::Node::get($self->{call});
+
+			# parse the PC19
 			for ($i = 1; $i < $#field-1; $i += 4) {
 				my $here = $field[$i];
 				my $call = uc $field[$i+1];
 				my $confmode = $field[$i+2];
 				my $ver = $field[$i+3];
 				next unless defined $here && defined $confmode && is_callsign($call);
+				# check for sane parameters
+				$ver = 5000 if $ver eq '0000';
+				next if $ver < 5000; # only works with version 5 software
+				next if length $call < 3; # min 3 letter callsigns
 
-				$ver = 5400 if !$ver && $allowzero;
 				
 				# now check the call over
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
 					my $dxchan;
-					if (($dxchan = DXChannel->get($call)) && $dxchan != $self) {
+					if ((my $dxchan = DXChannel->get($call)) && $dxchan != $self) {
 						dbg('chan', "PCPROT: $call connected locally");
 					}
 				    if ($node->dxchan != $self) {
 						dbg('chan', "PCPROT: $call come in on wrong channel");
 						next;
 					}
+
+					# add a route object
+					if ($call eq $pref->call && !$pref->version) {
+						$pref->version($ver);
+						$pref->flags(Route::here($here)|Route::conf($confmode));
+					} else {
+						my $r = $pref->add($call, $ver, Route::here($here)|Route::conf($confmode));
+						push @rout, $r if $r;
+					}
+
 					my $rcall = $node->mynode->call;
 					dbg('chan', "PCPROT: already have $call on $rcall");
 					next;
 				}
-				
-				# check for sane parameters
-				next if $ver < 5000; # only works with version 5 software
-				next if length $call < 3; # min 3 letter callsigns
+
+				# add a route object
+				if ($call eq $pref->call && !$pref->version) {
+					$pref->version($ver);
+					$pref->flags(Route::here($here)|Route::conf($confmode));
+				} else {
+					my $r = $pref->add($call, $ver, Route::here($here)|Route::conf($confmode));
+					push @rout, $r if $r;
+				}
 
 				# add it to the nodes table and outgoing line
 				$newline .= "$here^$call^$confmode^$ver^";
@@ -702,6 +741,8 @@ sub normal
 				$user->lastin($main::systime) unless DXChannel->get($call);
 				$user->put;
 			}
+
+			dbg('route', "B/C PC19 for: " . join(',', map{$_->call} @rout)) if @rout;
 			
 			return if $newline eq "PC19^";
 
@@ -720,24 +761,34 @@ sub normal
 		
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
+			my @rout;
+			my $pref = Route::Node::get($call);
+			
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
+				if ($call eq $self->{call}) {
+					dbg('chan', "PCPROT: Trying to disconnect myself with PC21");
+					return;
+				}
+				if (my $dxchan = DXChannel->get($call)) {
+					dbg('chan', "PCPROT: $call connected locally");
+					return;
+				}
+
+				# routing objects
+				if ($pref) {
+					push @rout, $pref->del_node($call);
+				} else {
+					dbg('chan', "PCPROT: Route::Node $call not in config");
+				}
+				
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
 					unless ($node->isa('DXNode')) {
 						dbg('chan', "PCPROT: $call is not a node");
 						return;
 					}
-					if ($call eq $self->{call}) {
-						dbg('chan', "PCPROT: Trying to disconnect myself with PC21");
-						return;
-					} 
 					if ($node->dxchan != $self) {
 						dbg('chan', "PCPROT: $call come in on wrong channel");
-						return;
-					}
-					my $dxchan;
-					if ($dxchan = DXChannel->get($call)) {
-						dbg('chan', "PCPROT: $call connected locally");
 						return;
 					}
 					$node->del();
@@ -749,6 +800,8 @@ sub normal
 				dbg('chan', "PCPROT: I WILL _NOT_ be disconnected!");
 				return;
 			}
+			dbg('route', "B/C PC21 for: " . join(',', (map{$_->call} @rout))) if @rout;
+			
 #			broadcast_route($line, $self, $call);
 #			return;
 			last SWITCH;
@@ -1710,6 +1763,12 @@ sub disconnect
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
 
+	# do routing stuff
+	my $pref = Route::Node::get($self->{call});
+	my @rout = $pref->del_nodes;
+	push @rout, $main::routeroot->del_node($call);
+	dbg('route', "B/C PC21 (from PC39) for: " . join(',', (map{ $_->call } @rout))) if @rout;
+	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;

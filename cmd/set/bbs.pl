@@ -1,9 +1,9 @@
 #
-# set user type to 'C' for CLX node
+# set user type to 'B' for BBS node
 #
 # Please note that this is only effective if the user is not on-line
 #
-# Copyright (c) 1998 - Dirk Koopman
+# Copyright (c) 2001 - Dirk Koopman
 #
 # $Id$
 #
@@ -27,13 +27,12 @@ foreach $call (@args) {
 		$create = !$user;
 		$user = DXUser->new($call) if $create;
 		if ($user) {
-			$user->sort('C');
+			$user->sort('B');
 			$user->homenode($call);
-			$user->priv(1) unless $user->priv;
 			$user->close();
 			push @out, $self->msg($create ? 'nodecc' : 'nodec', $call);
 		} else {
-			push @out, $self->msg('e3', "Set Spider", $call);
+			push @out, $self->msg('e3', "Set BBS", $call);
 		}
 	}
 }
