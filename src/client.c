@@ -53,7 +53,7 @@ typedef struct
 	sel_t *sp;					/* my select fcb address */
 	struct termios t;			/* any termios associated with this cnum */
 	char echo;					/* echo characters back to this cnum */
-        char t_set;                                     /* the termios structure is valid */
+	char t_set;					/* the termios structure is valid */
 } fcb_t;
 
 char *node_addr = "localhost";	/* the node tcp address */
@@ -270,6 +270,8 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 				case 2:
 				case 3:
 					mp->size = (mp->size << 8) | (*p++ & 0xff);
+					if (mp->size > MAXBUFL)
+						die("Message size too big from node (%d > %d)", mp->size, MAXBUFL);
 					mp->state++;
 					break;
 				default:
@@ -346,11 +348,14 @@ void initargs(int argc, char *argv[])
 {
 	int i, c, err = 0;
 
-	while ((c = getopt(argc, argv, "h:x:")) > 0) {
+	while ((c = getopt(argc, argv, "h:p:x:")) > 0) {
 		switch (c) {
 		case 'h':
-		        node_addr = optarg;
-		        break;
+			node_addr = optarg;
+			break;
+		case 'p':
+			node_port = atoi(optarg);
+			break;
 		case 'x':
 			dbginit("client");
 			dbgset(atoi(optarg));
@@ -519,21 +524,23 @@ main(int argc, char *argv[])
 	signal(SIGINT, terminate);
 	signal(SIGQUIT, terminate);
 	signal(SIGTERM, terminate);
+#ifdef SIGPWR
 	signal(SIGPWR, terminate);
+#endif
 
 	/* connect up stdin, stdout and message system */
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
 	if (tcgetattr(0, &in->t) < 0) {
-	        echo = 0;
-	        in->t_set = 0;
+		echo = 0;
+		in->t_set = 0;
 	} else {
 		struct termios t = in->t;
 		t.c_lflag &= ~(ECHO|ECHONL|ICANON);
 		if (tcsetattr(0, TCSANOW, &t) < 0) 
 			die("tcsetattr (%d)", errno);
 		in->echo = echo;
-	        in->t_set = 1;
+		in->t_set = 1;
 	}
 	connect_to_node();
 
