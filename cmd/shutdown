@@ -1,4 +1,6 @@
 #
 # the shutdown command
+# 
+# $Id$
 #
 &main::cease();

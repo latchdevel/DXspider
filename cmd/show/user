@@ -1,6 +1,9 @@
 #
 # show either the current user or a nominated set
 #
+# $Id$
+#
+
 my $self = shift;
 my @set = split;      # the list of users you want listings (may be null)
 
