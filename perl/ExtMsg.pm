@@ -68,9 +68,9 @@ sub dequeue
 		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
 			$conn->to_connected($conn->{call}, 'O', 'telnet');
 		}
-	} elsif ($conn->{msg} =~ /\n/) {
-		my @lines = split /\r?\n/, $conn->{msg};
-		if ($conn->{msg} =~ /\n$/) {
+	} elsif ($conn->{msg} =~ /\cJ/) {
+		my @lines =  $conn->{msg} =~ /([^\cM\cJ]*)\cM?\cJ/g;
+		if ($conn->{msg} =~ /\cJ$/) {
 			delete $conn->{msg};
 		} else {
 			$conn->{msg} = pop @lines;

@@ -421,7 +421,7 @@ dbg('err', "orft we jolly well go ...");
 for (;;) {
 #	$DB::trace = 1;
 	
-	Msg->event_loop(10, 0.001);
+	Msg->event_loop(25, 0.001);
 	my $timenow = time;
 	process_inqueue();			# read in lines from the input queue and despatch them
 #	$DB::trace = 0;

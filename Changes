@@ -2,6 +2,7 @@
 1. implemented first cut at non blocking connect
 2. removed memory leakage in connects
 3. add link IP address if available on who
+4. made the \r\n work correctly
 10Mar01=======================================================================
 1. minor changes to the admin manual to reflect differences in distibutions
 thanks to pa3ezl (g0vgs)
