@@ -735,7 +735,6 @@ void terminate(int i)
 	
 	if (node && node->sp->sort) {
 		sel_close(node->sp);
-		close(node->cnum);
 	}
 	while (in && in->sp->sort && !is_chain_empty(in->outq)) {
 		sel_run();
