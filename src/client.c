@@ -51,8 +51,9 @@ typedef struct
 	reft *inq;					/* input queue */
 	reft *outq;					/* output queue */
 	sel_t *sp;					/* my select fcb address */
-	int echo;					/* echo characters back to this cnum */
 	struct termios t;			/* any termios associated with this cnum */
+	char echo;					/* echo characters back to this cnum */
+        char t_set;                                     /* the termios structure is valid */
 } fcb_t;
 
 char *node_addr = "localhost";	/* the node tcp address */
@@ -345,8 +346,11 @@ void initargs(int argc, char *argv[])
 {
 	int i, c, err = 0;
 
-	while ((c = getopt(argc, argv, "x:")) > 0) {
+	while ((c = getopt(argc, argv, "h:x:")) > 0) {
 		switch (c) {
+		case 'h':
+		        node_addr = optarg;
+		        break;
 		case 'x':
 			dbginit("client");
 			dbgset(atoi(optarg));
@@ -423,7 +427,7 @@ void connect_to_node()
 void term_timeout(int i)
 {
 	/* none of this is going to be reused so don't bother cleaning up properly */
-	if (in)
+	if (in && in->t_set)
 		tcsetattr(0, TCSANOW, &in->t);
 	if (node) {
 		close(node->cnum);
@@ -444,7 +448,7 @@ void terminate(int i)
 		   (node && !is_chain_empty(node->outq))) {
 		sel_run();
 	}
-	if (in)
+	if (in && in->t_set)
 		tcsetattr(0, TCSANOW, &in->t);
 	if (node) 
 		close(node->cnum);
@@ -520,14 +524,16 @@ main(int argc, char *argv[])
 	/* connect up stdin, stdout and message system */
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
-	if (tcgetattr(0, &in->t) < 0) 
-		die("tcgetattr (%d)", errno);
-	{
+	if (tcgetattr(0, &in->t) < 0) {
+	        echo = 0;
+	        in->t_set = 0;
+	} else {
 		struct termios t = in->t;
 		t.c_lflag &= ~(ECHO|ECHONL|ICANON);
 		if (tcsetattr(0, TCSANOW, &t) < 0) 
 			die("tcsetattr (%d)", errno);
 		in->echo = echo;
+	        in->t_set = 1;
 	}
 	connect_to_node();
 
