@@ -28,10 +28,13 @@ use vars qw(@ISA);
 sub _filter
 {
 	my $dxchan = shift;
-	my $r = shift;
+	my @out;
 	
-	my ($filter, $hops) = $dxchan->{inroutefilter}->it($dxchan->{call}, $dxchan->{dxcc}, $dxchan->{itu}, $dxchan->{cq}, $r->{call}, $r->{dxcc}, $r->{itu}, $r->{cq}, $dxchan->{state}, $r->{state});
-	return $filter ? $r : undef;
+	foreach my $r (@_) {
+		my ($filter, $hops) = $dxchan->{routefilter}->it($dxchan->{call}, $dxchan->{dxcc}, $dxchan->{itu}, $dxchan->{cq}, $r->{call}, $r->{dxcc}, $r->{itu}, $r->{cq}, $dxchan->{state}, $r->{state});
+		push @out, $r if $filter;
+	}
+	return @out;
 }
 
 sub gen_DXProt
@@ -87,8 +90,10 @@ sub out_filter
 	
 			$thing->{fpc16n} = _filter($dxchan, $thing->{pc16n}) if $thing->{pc16n};
 			$thing->{fpc17n} = _filter($dxchan, $thing->{pc17n}) if $thing->{pc17n};
-			$thing->{fpc19n} = [_filter($dxchan, @{$thing->{pc19n}})] if $thing->{pc19n};
-			$thing->{fpc21n} = [_filter($dxchan, @{$thing->{pc21n}})] if $thing->{pc21n};
+			my @pc19 = _filter($dxchan, @{$thing->{pc19n}}) if $thing->{pc19n};
+			$thing->{fpc19n} = \@pc19 if @pc19;
+			my @pc21 = _filter($dxchan, @{$thing->{pc21n}}) if $thing->{pc21n};
+			$thing->{fpc21n} = \@pc21 if @pc21;
 		}
 		return 1;
 		
