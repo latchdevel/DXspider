@@ -240,6 +240,13 @@ sub rec
 	}
 }
 
+# remove any outstanding entries on the inqueue after a disconnection (usually)
+sub clean_inqueue
+{
+	my $dxchan = shift;
+	@inqueue = grep {$_ != $dxchan} @inqueue;
+}
+
 sub login
 {
 	return \&new_channel;

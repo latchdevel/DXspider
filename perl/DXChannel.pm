@@ -426,6 +426,7 @@ sub disconnect
 	my $self = shift;
 	my $user = $self->{user};
 	
+	main::clean_inqueue($self);          # clear out any remaining incoming frames
 	$user->close() if defined $user;
 	$self->{conn}->disconnect;
 	$self->del();
