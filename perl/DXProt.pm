@@ -1155,7 +1155,7 @@ sub finish
 	$mref->stop_msg($call) if $mref;
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
-	my @gonenodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
+	my @gonenodes = grep { $_->dxchan != $self && $_->dxchan != $me } DXNode::get_all();
 	my $node;
 	
 	foreach $node (@gonenodes) {
@@ -1513,6 +1513,8 @@ sub broadcast_ak1a
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	foreach $dxchan (@dxchan) {
 		next if grep $dxchan == $_, @except;
+		next if $dxchan == $me;
+		
 		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
 		$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
 	}
@@ -1530,6 +1532,8 @@ sub broadcast_all_ak1a
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	foreach $dxchan (@dxchan) {
 		next if grep $dxchan == $_, @except;
+		next if $dxchan == $me;
+
 		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
 		$dxchan->send($routeit);
 	}
@@ -1564,6 +1568,7 @@ sub broadcast_list
 	
 	foreach $dxchan (@_) {
 		my $filter = 1;
+		next if $dxchan == $me;
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
