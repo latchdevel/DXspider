@@ -119,7 +119,7 @@ sub rec_socket
 			if ($buffered) {
 				if (length $outqueue >= $client_buffer_lth) {
 					print $stdout $outqueue;
-					pop @echo if @echo > $maxecho;
+					pop @echo while (@echo > $maxecho);
 					push @echo, $outqueue;
 					$outqueue = "";
 				}
@@ -146,7 +146,7 @@ sub rec_socket
 		} elsif ($sort eq 'B') {
 			if ($buffered && $outqueue) {
 				print $stdout $outqueue;
-				pop @echo if @echo > $maxecho;
+				pop @echo while(@echo > $maxecho);
 				push @echo, $outqueue;
 				$outqueue = "";
 			}
