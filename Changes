@@ -7,6 +7,8 @@ poluting the nodes table. Maybe this will make things slightly more stable.
 to take the strain.
 4. Move the dupe checking AFTER the input filtering for announces and spots.
 5. Changed the checking of PC19/21 that it doesn't alter the wrong node
+6. Alter the storage of messages so that illegal characters are stored as '.' 
+in an attempt to stop such messages from hanging.
 26Nov01=======================================================================
 1. Make changes to the installation manual to show making the client before
 actually trying to use it!  Thanks to oz1lqh.  Also add a line for SuSE

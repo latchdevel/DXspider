@@ -518,6 +518,7 @@ sub store
 			my $line;
 			$ref->{size} = 0;
 			foreach $line (@{$lines}) {
+				$line =~ s/[\x00-\x08\x0a-\x1f\xf0-\xff]/./g;
 				$ref->{size} += (length $line) + 1;
 				print $fh "$line\n";
 			}
@@ -530,7 +531,7 @@ sub store
 	}
 
 	# actual remove all the 'deleted' messages in one hit.
-	# this has to me delayed until here otherwise it only does one at 
+	# this has to be delayed until here otherwise it only does one at 
 	# a time because @msg is rewritten everytime del_msg is called.
 	my @del = grep {!$_->{tonode} && $_->{delete} && $_->{deletetime} < $main::systime} @msg;
 	for (@del) {
