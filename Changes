@@ -3,6 +3,9 @@
 unread.
 2. stop remote passive nodes (those with version numbers of 0000) from
 poluting the nodes table. Maybe this will make things slightly more stable.
+3. Take off rspf checks on announces and spots and allow the dupe filters
+to take the strain.
+4. Move the dupe checking AFTER the input filtering for announces and spots.
 26Nov01=======================================================================
 1. Make changes to the installation manual to show making the client before
 actually trying to use it!  Thanks to oz1lqh.  Also add a line for SuSE

@@ -396,7 +396,7 @@ sub normal
 			}
 			
 			# rsfp check
-			return if $rspfcheck and !$self->rspfcheck(1, $field[7], $field[6]);
+#			return if $rspfcheck and !$self->rspfcheck(1, $field[7], $field[6]);
 
 			# if this is a 'nodx' node then ignore it
 			if ($badnode->in($field[7])) {
@@ -431,10 +431,6 @@ sub normal
 				dbg("PCPROT: useless 'BUSTED' spot") if isdbg('chanerr');
 				return;
 			}
-			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
-				dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
-				return;
-			}
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[5])) {
@@ -453,6 +449,11 @@ sub normal
 				}
 			}
 			
+			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
+				dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
+				return;
+			}
+
 			# add it 
 			Spot::add(@spot);
 
@@ -528,14 +529,10 @@ sub normal
 		
 		if ($pcno == 12) {		# announces
 
-			return if $rspfcheck and !$self->rspfcheck(1, $field[5], $field[1]);
+#			return if $rspfcheck and !$self->rspfcheck(1, $field[5], $field[1]);
 
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
-			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
-				dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
-				return;
-			}
 
 			if ($censorpc) {
 				my @bad;
@@ -1449,6 +1446,11 @@ sub send_announce
 			dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
 			return;
 		}
+	}
+
+	if (AnnTalk::dup($_[0], $_[1], $_[2])) {
+		dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
+		return;
 	}
 
 	Log('ann', $target, $_[0], $text);
