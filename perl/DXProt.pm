@@ -911,7 +911,7 @@ sub send_announce
 
 		if ($dxchan->{annfilter}) {
 			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call} );
-			return unless $filter;
+			next unless $filter;
 		} 
 		if ($dxchan->is_ak1a) {
 			next if $dxchan == $self;
