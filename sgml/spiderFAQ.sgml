@@ -4,9 +4,9 @@
 
 <!-- Title information -->
 
-<title>The DXSpider FAQ 
-<author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 0.5 March 2001
+<title>The DXSpider FAQ</title>
+<author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
+<date>$Date$ $Revision$</date>
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
