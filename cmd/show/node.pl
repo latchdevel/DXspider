@@ -26,7 +26,7 @@ my $count;
 # search thru the user for nodes
 unless (@call) {
 	
-	my ($action, $key, $data);
+	my ($action, $key, $data) = (0,0,0);
 	for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
 		if ($data =~ m{sort => '[ACRSX]'}) {
 		    push @call, $key;
