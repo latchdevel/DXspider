@@ -691,12 +691,29 @@ node>).
 Best of luck - you will need it.
   
 === 0^KILL <msgno> [<msgno..]^Delete a message from the local system
+=== 0^KILL <from msgno>-<to msgno>^Delete a range of messages
+=== 0^KILL from <regex>^Delete messages FROM a callsign or pattern
+=== 0^KILL to <regex>^Delete messages TO a callsign or pattern
+=== 5^KILL FULL <msgno> [<msgno..]^Delete a message from the whole cluster
 Delete a message from the local system. You will only be able to
 delete messages that you have originated or been sent (unless you are
 the sysop).
 
-=== 5^KILL FULL <msgno> [<msgno..]^Delete a message from the whole cluster
-Delete a message (usually a 'bulletin') from the whole cluster system. 
+  KILL 1234-1255
+
+Will delete all the messages that you own between msgnos 1234 and 1255.
+
+  KILL from g1tlh
+
+will delete all the messages from g1tlh (if you are g1tlh). Similarly:
+
+  KILL to g1tlh
+
+will delete all messages to g1tlh.
+
+  KILL FULL 1234
+ 
+will delete a message (usually a 'bulletin') from the whole cluster system. 
 
 This uses the subject field, so any messages that have exactly the
 same subject will be deleted. Beware!
@@ -1140,7 +1157,7 @@ The word must be written in full, no wild cards are allowed eg:-
 
 will stop anything with these words in the text.
 
-  unset/badspotter annihilated
+  unset/badword annihilated
 
 will allow text with this word again.
 
