@@ -1582,9 +1582,9 @@ sub process_rcmd
 	} else {
 		my $ref = DXUser->get_current($tonode);
 		if ($ref && $ref->is_clx) {
-			$self->route($tonode, pc84($tonode, $fromnode, $user, $cmd));
+			$self->route($tonode, pc84($fromnode, $tonode, $user, $cmd));
 		} else {
-			$self->route($tonode, pc34($tonode, $fromnode, $cmd));
+			$self->route($tonode, pc34($fromnode, $tonode, $cmd));
 		}
 	}
 }
