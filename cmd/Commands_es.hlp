@@ -46,7 +46,7 @@ algunos ejemplos:-
   acc/ann dest 6MUK
   acc/ann 2 by_zone 14,15,16
   (Esto puede ir en una sola línea: acc/ann dest 6MUK or by_zone 14,15,16)
-o
+
   acc/ann by EA,EB  
 
 por estados americanos:
@@ -2023,7 +2023,7 @@ el numero de horas que deseas después del prefijo. Por ejemplo:
 
 produce:
 
-  RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
+  RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
   Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
   Location                       Lat / Long           Azim
   East Dereham, Norfolk          52 41 N 0 57 E         47
