@@ -1,0 +1,9 @@
+04Dec98========================================================================
+1. Started Changes file
+2. Added load/cmd_cache.pl to clear cmd cache shortcuts (use this if cluster.pl
+get confused about where it is getting its commands from eg if you have
+removed a file from local_cmd 'cos you want to go back to standard one)
+3. Fixed bull handling at least to the extent that it stores them and
+doesn't mess up the normal directory handling.
+4. Fixed the unset/debug command so that it actually does the job!
+5. Removed the middle line 'written in perl for unix' from show/version.pl
