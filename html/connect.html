@@ -20,7 +20,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Sun Sep  2 21:12:19 BST 2001
+Last modified: Sun Sep  2 21:33:58 BST 2001
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
@@ -71,7 +71,6 @@ Last modified: Sun Sep  2 21:12:19 BST 2001
     <span class=cmd>abort (Busy|Sorry|Fail)</span>
     # don't forget to chmod 4775 netrom_call!
     <span class=connect>connect ax25 /usr/sbin/netrom_call bbs gb7djk-0 g1tlh-0</span>
-    <span class=expect>'Connected'</span> <span class=send>''</span>
     <span class=expect>'Connected'</span> <span class=send>'c np7'</span>
     <span class=expect>'*** Connect'</span> <span class=send>'c gb7dxm'</span>
     <span class=expect>'Connect'</span> <span class=send>''</span>
@@ -79,7 +78,13 @@ Last modified: Sun Sep  2 21:12:19 BST 2001
 
     <p>The <tt>-0</tt> ssid is important if you want it to work reliably. Obviously if you are
     using a different ssid then you would use that. You can use the Netrom alias instead if it
-	it is in the machines node table</p>
+	it is in the machines node table.</p>
+
+	<p>The line: "<tt><span class=expect>'Connected'</span> <span class=send>''</span></tt>" means: wait for
+	  the string <span class=expect>Connected</span> and when that is seen, then move onto the next line
+	  <b>without <span class=send>sending</span> anything</b>. The reason you do this (in this case) is to wait
+	for the final "connect" string from the BPQ node that directly connects you to the
+	cluster node itself.</p>
 
     <p>A AGW Engine example would be very similar and look like this:-</p>
 
@@ -87,7 +92,6 @@ Last modified: Sun Sep  2 21:12:19 BST 2001
     <span class=cmd>timeout 60</span>
     <span class=cmd>abort (Busy|Sorry|Fail)</span>
     <span class=connect>connect agw 2 g1tlh</span>
-    <span class=expect>'*** Connected'</span> <span class=send>''</span>
     <span class=expect>'*** Connect'</span> <span class=send>'c np7'</span>
     <span class=expect>'Connected'</span> <span class=send>'c gb7dxm'</span>
     <span class=expect>'Connect'</span> <span class=send>''</span>
@@ -187,18 +191,18 @@ Last modified: Sun Sep  2 21:12:19 BST 2001
 		ignored, as are wholly blank lines.
         <br><br>
 
-		<li><b>timeout</b> followed by a number is the number of
+		<li><b><span class=cmd>timeout</span></b> followed by a number is the number of
 		seconds to wait for a command to complete. If there is no
-		<b>timeout</b> specified in the script then the default is 60
+		<b><span class=cmd>timeout</span></b> specified in the script then the default is 60
 		seconds.
         <br><br>
 
-		<li><b>abort</b> is a regular expression containing one or
+		<li><b><span class=cmd>abort</span></b> is a regular expression containing one or
 		more strings to look for to abort a connection. This is a perl
 		regular expression and is executed ignoring case.
         <br><br>
 
-		<li><b>connect</b> followed by <b>ax25</b>, <b>telnet</b> or <b>agw</b>
+		<li><b><span class=connect>connect</span></b> followed by <b>ax25</b>, <b>telnet</b> or <b>agw</b>
 		and some type dependent information. 
 
         <p>In the case of a
@@ -218,22 +222,26 @@ Last modified: Sun Sep  2 21:12:19 BST 2001
         from 1) and the callsign of the first &quot;hop&quot; along the way.
         <br><br>
 
-		<li><b>'</b> is the delimiting character for a word or
-		phrase of an expect/send line in a <tt>chat</tt> type
-		script. The words/phrases normally come in pairs, either can
-		be empty. Each line reads input from the connection until it
-		sees the string (or perl regular expression) contained in the
-		left hand string. If the left hand string is empty then it
-		doesn't read or wait for anything. The comparison is done
-		ignoring case.
+		<li><b>'</b> is the delimiting character for a word or phrase
+		of an <span class=expect>expect</span>/<span
+		class=send>send</span> line.  The words/phrases normally come
+		in pairs, but either can be empty. Each line reads input from
+		the connection until it sees the string (or perl regular
+		expression) that 
+		is contained in the left hand string. If the left hand
+		string is empty then it doesn't read or wait for anything. The
+		comparison is done ignoring case.
 
-		<p>When the left hand string has found what it is looking (if
-		it is) then the right hand string is sent to the connection.
+		<p>When the left hand string has found what it is <span class=expect>expecting</span> (if
+		it is) then the right hand string is <span class=send>sent</span> to the connection.
+
+		<p>If the right hand string is empty ('') then nothing is <span class=send>sent</span>, the 
+		  script simply moves onto the next line.</P>
 
 		<p>This process is repeated for every line of <tt>chat</tt> script. 
         <br><br>
 
-		<li><b>client</b> starts the connection, put the arguments
+		<li><b><span=cmd>client</span></b> starts the connection, put the arguments
 		you would want here if you were starting the client program
 		manually. You only need this if the script has a different
 		name to the callsign you are trying to connect to (i.e. you
