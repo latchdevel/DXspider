@@ -1,22 +1,27 @@
+15Jul99=======================================================================
+1. Changed grepdbg to accept a regexp. More useful (to me anyway).
+2. Altered init command so that it doesn't send PC21s down the initted 
+channel.
 10Jul99=======================================================================
 1. added an explicit disconnect from my side for already connected calls. This
 appears to have fixed a problem where if two consoles connect at the same time
 with the same (sysop?) callsign the cluster would stop.
 2. added some debugging in the Message handler to allow more state to be seen.
+3. Message handler now seems to work better for longer and doesn't spew out
+PC42 aborts with quite such gay abandon.
 05Jul99=======================================================================
 1. added stat/msg and stat/cluster commands to allow me to poke about inside
 the msg and cluster node tables.
 04Jul99=======================================================================
-1. removed silly 'new message has arrived' to connected nodes if message is
+1. removed silly 'new message has arrived' to connected nodes 
 2. added a ! command to the console.pl program; works like the bash shell.
-addressed to the node call.
 01Jul99=======================================================================
 1. Altered priv to 5 for connect.pl to match disconnect for nodes
 29Jun99=======================================================================
 1. fixed merge command that I broke.
 2. added some randomness in waittimes for aborted outgoing messages 
 3. Message Queuing now only occurs every 5 minutes (configurable if anyone 
-wants to write the command for doing it) nad on receipt of a PC16. This is
+wants to write the command for doing it) and on receipt of a PC16. This is
 a further attempt at sorting the crossing of messages!
 4. a PC33 will cause another attempt at queuing. If you are on a roll, keep
 going!

@@ -1,6 +1,10 @@
 #
 # reinit a cluster connection
 #
+# Copyright (c) 1999 Dirk Koopman G1TLH
+#
+# $Id$
+#
 my ($self, $line) = @_;
 my @calls = split /\s+/, $line;
 my $call;
@@ -18,12 +22,14 @@ foreach $call (@calls) {
 			# first clear out any nodes on this dxchannel
 			my @gonenodes = map { $_->dxchan == $dxchan ? $_ : () } DXNode::get_all();
 			foreach my $node (@gonenodes) {
-				next if $dxchan == $DXProt::me;
+				next if $node->dxchan == $DXProt::me;
+				next if $node->dxchan == $dxchan;
 				DXProt::broadcast_ak1a(DXProt::pc21($node->call, 'Gone, re-init') , $dxchan) unless $dxchan->{isolate}; 
 				$node->del();
 			}
 			$dxchan->send(DXProt::pc38());
 			$dxchan->send(DXProt::pc18());
+			$dxchan->state('init');
 			push @out, $self->msg('init1', $call);
 		} 
 	} else {

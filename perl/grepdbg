@@ -43,7 +43,7 @@ for my $arg (@ARGV) {
 		last;
 	}
 }
-die "usage: dispdbg [[-nnn] ..] <string>\n" unless  $string;
+die "usage: grepdbg [[-nnn] ..] <regexp>\n" unless  $string;
 
 push @list, "0" unless @list;
 for my $entry (@list) {
@@ -54,7 +54,7 @@ for my $entry (@list) {
 		while (<$fh>) {
 			my $line = $_;
 			chomp $line;
-			if ($line =~ m{\Q$string}io) {
+			if ($line =~ m{$string}io) {
 				my @line =  split '\^', $line;
 				my $t = shift @line;
 				print atime($t), ' ', join('^', @line), "\n"; 
