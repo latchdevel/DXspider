@@ -148,7 +148,6 @@ sub matchprefix
 	my $pref = shift;
 	my @partials;
 
-	$pref =~ s/-\d+$//;
 	for (my $i = length $pref; $i; $i--) {
 		$matchtotal++;
 		my $s = substr($pref, 0, $i);
@@ -211,6 +210,7 @@ LM:	foreach $call (split /,/, $calls) {
 		# first check if the whole thing succeeds either because it is cached
 		# or because it simply is a stored prefix as callsign (or even a prefix)
 		$matchtotal++;
+		$call =~ s/-\d+$//;		# ignore SSIDs
 		my $p = $cache{$call};
 		my @nout;
 		if ($p) {
