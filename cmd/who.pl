@@ -26,7 +26,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 		$sort = "AK1A" if $dxchan->is_ak1a;
 	}
 	my $name = $dxchan->user->name || " ";
-	my $ping = $dxchan->is_node && $dxchan != $DXProt::me ? sprintf("%5.2f", $dxchan->pingave) : "     ";
+	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%5.2f", $dxchan->pingave) : "     ";
 	my $conn = $dxchan->conn;
 	my $ip = '';
 	$ip = $conn->{peerhost} if $conn && $conn->{peerhost};

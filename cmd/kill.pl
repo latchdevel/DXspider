@@ -64,7 +64,7 @@ while (@f) {
 foreach $ref ( @refs) {
 	Log('msg', "Message $ref->{msgno} from $ref->{from} to $ref->{to} deleted by $call");
 	if ($full) {
-		DXProt::broadcast_ak1a(DXProt::pc49($ref->{from}, $ref->{subject}), $DXProt::me);
+		DXChannel::broadcast_nodes(DXProt::pc49($ref->{from}, $ref->{subject}), $main::me);
 	}
 	my $tonode = $ref->tonode;
 	$ref->stop_msg($tonode) if $tonode;

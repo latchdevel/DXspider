@@ -15,13 +15,20 @@ my @out;
 
 use DB_File;
 
+if ($line) {
+	$line =~ s/[^\w-\/]+//g;
+	$line = "^\U\Q$line";
+}
+
 my ($action, $count, $key, $data) = (0,0,0,0);
 for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
 	if ($data =~ m{lockout =>}) {
-		my $u = DXUser->get_current($key);
-		if ($u && $u->lockout) {
-			push @out, $key;
-			++$count;
+		if ($line && $key =~ /$line/) {
+			my $u = DXUser->get_current($key);
+			if ($u && $u->lockout) {
+				push @out, $key;
+				++$count;
+			}
 		}
 	}
 } 

@@ -30,7 +30,7 @@ if ($user) {
 		my $l = DXBearing::lltos($lat, $long);
 		my $s = DXProt::pc41($call, 3, $l);
 		DXProt::eph_dup($s);
-		DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
+		DXChannel::broadcast_all_nodes($s, $main::me) ;
 	}
 	my $qra = DXBearing::lltoqra($lat, $long);
 	my $oldqra = $user->qra || "";
@@ -38,7 +38,7 @@ if ($user) {
 		$user->qra($qra);
 		my $s = DXProt::pc41($call, 5, $qra);
 		DXProt::eph_dup($s);
-		DXProt::broadcast_all_ak1a($s, $DXProt::me);
+		DXChannel::broadcast_all_nodes($s, $main::me);
 	}
 	
 	$user->put();

@@ -42,12 +42,11 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($me $pc11_max_age $pc23_max_age $last_pc50
+use vars qw($pc11_max_age $pc23_max_age $last_pc50
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
-$me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 
@@ -185,14 +184,17 @@ sub init
 {
 	my $user = DXUser->get($main::mycall);
 	$DXProt::myprot_version += $main::version*100;
-	$me = DXProt->new($main::mycall, 0, $user); 
-	$me->{here} = 1;
-	$me->{state} = "indifferent";
+	$main::me = DXProt->new($main::mycall, 0, $user); 
+	$main::me->{here} = 1;
+	$main::me->{state} = "indifferent";
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
-	$me->{sort} = 'S';    # S for spider
-	$me->{priv} = 9;
-#	$Route::Node::me->adddxchan($me);
+	$main::me->{sort} = 'S';    # S for spider
+	$main::me->{priv} = 9;
+	$main::me->{metric} = 0;
+	$main::me->{pingave} = 0;
+	
+#	$Route::Node::me->adddxchan($main::me);
 }
 
 #
@@ -262,6 +264,7 @@ sub start
 	$self->{nopings} = $user->nopings || 2;
 	$self->{pingtime} = [ ];
 	$self->{pingave} = 999;
+	$self->{metric} ||= 100;
 	$self->{lastping} = $main::systime;
 
 	# send initialisation string
@@ -1178,7 +1181,7 @@ sub normal
 		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
 	} else {
 		unless ($self->{isolate}) {
-			broadcast_ak1a($line, $self); # send it to everyone but me
+			DXChannel::broadcast_nodes($line, $self); # send it to everyone but me
 		}
 	}
 }
@@ -1196,14 +1199,14 @@ sub process
 	
 	# send out a pc50 on EVERY channel all at once
 	if ($t >= $last_pc50 + $DXProt::pc50_interval) {
-		$pc50s = pc50($me, scalar DXChannel::get_all_users);
+		$pc50s = pc50($main::me, scalar DXChannel::get_all_users);
 		eph_dup($pc50s);
 		$last_pc50 = $t;
 	}
 
 	foreach $dxchan (@dxchan) {
 		next unless $dxchan->is_node();
-		next if $dxchan == $me;
+		next if $dxchan == $main::me;
 
 		# send the pc50
 		$dxchan->send($pc50s) if $pc50s;
@@ -1252,7 +1255,7 @@ sub send_dx_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $me;
+		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
 		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
 	}
@@ -1315,7 +1318,7 @@ sub send_wwv_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $me;
+		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
 		my $routeit;
 		my ($filter, $hops);
@@ -1362,7 +1365,7 @@ sub send_wcy_spot
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $me;
+		next if $dxchan == $main::me;
 		next if $dxchan == $self;
 
 		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
@@ -1439,7 +1442,7 @@ sub send_announce
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		next if $dxchan == $me;
+		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
 		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 	}
@@ -1532,102 +1535,12 @@ sub route
 	if ($dxchan) {
 		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 		if ($routeit) {
-			$dxchan->send($routeit) unless $dxchan == $me;
+			$dxchan->send($routeit) unless $dxchan == $main::me;
 		}
 	} else {
 		dbg("PCPROT: No route available, dropped") if isdbg('chanerr');
 	}
 }
-
-# broadcast a message to all clusters taking into account isolation
-# [except those mentioned after buffer]
-sub broadcast_ak1a
-{
-	my $s = shift;				# the line to be rebroadcast
-	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_nodes();
-	my $dxchan;
-	
-	# send it if it isn't the except list and isn't isolated and still has a hop count
-	foreach $dxchan (@dxchan) {
-		next if grep $dxchan == $_, @except;
-		next if $dxchan == $me;
-		
-		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
-		$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
-	}
-}
-
-# broadcast a message to all clusters ignoring isolation
-# [except those mentioned after buffer]
-sub broadcast_all_ak1a
-{
-	my $s = shift;				# the line to be rebroadcast
-	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_nodes();
-	my $dxchan;
-	
-	# send it if it isn't the except list and isn't isolated and still has a hop count
-	foreach $dxchan (@dxchan) {
-		next if grep $dxchan == $_, @except;
-		next if $dxchan == $me;
-
-		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
-		$dxchan->send($routeit);
-	}
-}
-
-# broadcast to all users
-# storing the spot or whatever until it is in a state to receive it
-sub broadcast_users
-{
-	my $s = shift;				# the line to be rebroadcast
-	my $sort = shift;           # the type of transmission
-	my $fref = shift;           # a reference to an object to filter on
-	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
-	my @dxchan = DXChannel::get_all_users();
-	my $dxchan;
-	my @out;
-	
-	foreach $dxchan (@dxchan) {
-		next if grep $dxchan == $_, @except;
-		push @out, $dxchan;
-	}
-	broadcast_list($s, $sort, $fref, @out);
-}
-
-# broadcast to a list of users
-sub broadcast_list
-{
-	my $s = shift;
-	my $sort = shift;
-	my $fref = shift;
-	my $dxchan;
-	
-	foreach $dxchan (@_) {
-		my $filter = 1;
-		next if $dxchan == $me;
-		
-		if ($sort eq 'dx') {
-		    next unless $dxchan->{dx};
-			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
-			next unless $filter;
-		}
-		next if $sort eq 'ann' && !$dxchan->{ann} && $s !~ /^To\s+LOCAL\s+de\s+(?:$main::myalias|$main::mycall)/i;
-		next if $sort eq 'wwv' && !$dxchan->{wwv};
-		next if $sort eq 'wcy' && !$dxchan->{wcy};
-		next if $sort eq 'wx' && !$dxchan->{wx};
-
-		$s =~ s/\a//og unless $dxchan->{beep};
-
-		if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
-			$dxchan->send($s);	
-		} else {
-			$dxchan->delay($s);
-		}
-	}
-}
-
 
 #
 # obtain the hops from the list for this callsign and pc no 
@@ -1905,7 +1818,7 @@ sub broadcast_route
 	unless ($self->{isolate}) {
 		foreach $dxchan (@dxchan) {
 			next if $dxchan == $self;
-			next if $dxchan == $me;
+			next if $dxchan == $main::me;
 			$dxchan->send_route($generate, @_);
 		}
 	}

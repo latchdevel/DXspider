@@ -25,7 +25,7 @@ foreach $call (@args) {
 			$ref->here(0);
 			my $s = DXProt::pc24($ref);
 			DXProt::eph_dup($s);
-			DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
+			DXChannel::broadcast_all_nodes($s, $main::me) ;
 		}
 	} else {
 		push @out, $self->msg('e3', "Unset Here", $call);

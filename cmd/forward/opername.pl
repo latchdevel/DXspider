@@ -32,29 +32,29 @@ foreach $call (@f) {
 		my $qra = $ref->qra;
 		my $latlong = DXBearing::lltos($lat, $long) if $lat && $long;
 		if ($name) {
-			my $l = DXProt::pc41($DXProt::me, $call, 1, $name);
+			my $l = DXProt::pc41($main::me, $call, 1, $name);
 			DXProt::eph_dup($l);
-			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
+			DXChannel::broadcast_all_nodes($l, $main::me) ;
 		}
 		if ($qth) {
 			my $l = DXProt::pc41($call, 2, $qth);
 			DXProt::eph_dup($l);
-			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
+			DXChannel::broadcast_all_nodes($l, $main::me) ;
 		}
 		if ($latlong) {
 			my $l = DXProt::pc41($call, 3, $latlong);
 			DXProt::eph_dup($l);
-			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
+			DXChannel::broadcast_all_nodes($l, $main::me) ;
 		}
 		if ($node) {
 			my $l = DXProt::pc41($call, 4, $node);
 			DXProt::eph_dup($l);
-			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
+			DXChannel::broadcast_all_nodes($l, $main::me) ;
 		}
 		if ($qra) {
 			my $l = DXProt::pc41($call, 5, $qra);
 			DXProt::eph_dup($l);
-			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
+			DXChannel::broadcast_all_nodes($l, $main::me) ;
 		}
 	}
 }

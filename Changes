@@ -1,3 +1,11 @@
+21Sep01=======================================================================
+1. fix set/lockout so that it is possible to lock out all SSIDs except those
+specifically unlocked and so that you don't need to lock the non-SSID call in
+order to lock an SSID call. So set/lock g1tlh will lock out all instances of
+g1tlh, g1tlh-1, g1tlh-15 etc except (for instance) unset/lock g1tlh-9.
+2. show/lock allows partial callsign matching so sh/lock gb7 will only show
+GB7* calls that are locked.
+3. Had a grand shift around for the start of NP.
 19Sep01=======================================================================
 1. put in some rudimentory rsfp checking for various things
 2. tried to do some fixes on console.pl - YOU WILL REQUIRE Curses 1.06 from

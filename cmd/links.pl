@@ -20,7 +20,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $t = cldatetime($dxchan->startt);
 	my $sort;
 	my $name = $dxchan->user->name || " ";
-	my $ping = $dxchan->is_node && $dxchan != $DXProt::me ? sprintf("%8.2f",
+	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",
 																	$dxchan->pingave) : "";
 	$sort = "DXSP" if $dxchan->is_spider;
 	$sort = "CLX " if $dxchan->is_clx;

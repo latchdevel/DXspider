@@ -24,7 +24,7 @@ if ($user) {
 	$user->put();
 	my $s = DXProt::pc41($call, 4, $line);
 	DXProt::eph_dup($s);
-	DXProt::broadcast_all_ak1a($s, $DXProt::me) ;
+	DXChannel::broadcast_all_nodes($s, $main::me) ;
 	return (1, $self->msg('hnode', $line));
 } else {
 	return (1, $self->msg('namee2', $call));

@@ -61,7 +61,7 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 	my @rout = $main::routeroot->add_user($call, Route::here(1));
-	DXProt::route_pc16($DXProt::me, $main::routeroot, @rout) if @rout;
+	DXProt::route_pc16($main::me, $main::routeroot, @rout) if @rout;
 
 	return $self;
 }
@@ -132,7 +132,7 @@ sub start
 	my $lastoper = $user->lastoper || 0;
 	my $homenode = $user->homenode || ""; 
 	if ($homenode eq $main::mycall && $lastoper + $DXUser::lastoperinterval < $main::systime) {
-		run_cmd($DXProt::me, "forward/opernam $call");
+		run_cmd($main::me, "forward/opernam $call");
 		$user->lastoper($main::systime);
 	}
 
@@ -451,7 +451,7 @@ sub disconnect
 	}
 
 	# issue a pc17 to everybody interested
-	DXProt::route_pc17($DXProt::me, $main::routeroot, @rout) if @rout;
+	DXProt::route_pc17($main::me, $main::routeroot, @rout) if @rout;
 
 	# I was the last node visited
     $self->user->node($main::mycall);

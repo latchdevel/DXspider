@@ -389,7 +389,7 @@ sub process
 				if ($_->{from} eq $f[1] && $_->{subject} eq $f[2]) {
 					$_->del_msg();
 					Log('msg', "Message $_->{msgno} from $_->{from} ($_->{subject}) fully deleted");
-					DXProt::broadcast_ak1a($line, $self);
+					DXChannel::broadcast_nodes($line, $self);
 				}
 			}
 		}
@@ -1111,7 +1111,7 @@ sub import_msgs
 		my @msg = map { chomp; $_ } <MSG>;
 		close(MSG);
 		unlink($fn);
-		my @out = import_one($DXProt::me, \@msg, $splitit);
+		my @out = import_one($main::me, \@msg, $splitit);
 		Log('msg', @out);
 	}
 }

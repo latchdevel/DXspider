@@ -32,7 +32,8 @@ become stretched to beyond breaking point. Some attempts have been made to
 extend it, but none have done what is actually required: which is to throw it
 away completely and start from scratch.</p>
 
-<p>This is an attempt at starting again.</p>
+<p>This is an attempt at starting again. In fit of originality I am calling
+it "New Protocol" or "NP" for short</p>
 
 <h3>Design Criteria</h3>
 <ul>
@@ -111,12 +112,12 @@ away completely and start from scratch.</p>
 
 <p></p>
 
-<p>Each protocol line is separate and distinct. This is a "datagram" style
-protocol. Each protocol line is called a "sentence" and begins with the
-string "DX" in upper case, followed by two digits. The sentence is terminated
-by a &lt;cr&gt; or a &lt;lf&gt; character or both. Internally, the
-terminating characters should be discarded completely and the sentence
-processed without.</p>
+<p>Each protocol line is separate and distinct and is called a "sentence".
+This is a "datagram" style protocol. Each protocol line is called a
+"sentence" and begins with the string "QX" in upper case, followed by two
+digits. The sentence is terminated by a &lt;cr&gt; or a &lt;lf&gt; character
+or both. Internally, the terminating characters should be discarded
+completely and the sentence processed without.</p>
 
 <p>The character set used shall be ISO-Latin-1, with only the characters 0x20
 -&gt; 0x7e permitted within a sentence. All other characters shall be "HTML
@@ -140,34 +141,69 @@ digits&gt; of the checksum itself.  The purpose of the checksum is to check
 that no intermediate node has changed the sentence. It is assumed that the
 underlying transport mechanisms will deal with communications errors.</p>
 
-<p>All sentences shall have an &lt;origin&gt;, a &lt;serial&gt; and a
-&lt;destination&gt; number. The &lt;destination&gt; can be empty which implies
-that this sentence is to be broadcast. The &lt;serial&gt; number is a global
-number, which is used for all sentences originating at a node, that is
-incremented modulo 10000, and is used to determine duplicate or out of date
-sentences.</p>
+<p>All sentences shall have an &lt;origin&gt; and a &lt;destination&gt;
+number. The &lt;destination&gt; can be empty which implies that this sentence
+is to be broadcast. </p>
 
 <p>So the generic form of a sentence is:-</p>
 
 <p></p>
 
 <blockquote class="code">
-  DX99|&lt;origin&gt;|&lt;serial&gt;|&lt;destination&gt;|...|&lt;cs&gt;</blockquote>
+  QX99|&lt;destination&gt;|&lt;origin&gt;|...|&lt;cs&gt;</blockquote>
 
 <p></p>
 
 <p>Some examples:-</p>
 
 <blockquote class="code">
-  DX01|GB7TLH|0|GB7DJK|DXSpider 1.48/53.287|DE450A30|F4<br>
-  DX01|GB7DJK|345|GB7TLH|DXSpider 1.49/60.45|4532DA56|A1<br>
-  DX11|GB7TLH|1||G1TLH|FR0G|164563|14001.1|Easy|53<br>
-  DX10|GB7TLH|2||G1TLH|SYSOP|GB7TLH rebooting|4A<br>
-  DX02|GB7TLH|3|GB7MBC|1|98012349|5D<br>
-  DX02|GB7MBC|9356|GB7TLH|0|GB7DJK/0.76,GB7BAA/1.2|AE<br>
+  QX01|GB7TLH|GB7DJK|1|DXSpider:1.48:53.287|90001FFF|5234FE12|DE450A30|F4<br>
+  QX01|GB7DJK|GB7TLH|1|DXSpider:1.49:60.45|90002010|AD412458|4532DA56|A1<br>
+  QX11||GB7TLH|1|G1TLH|FR0G|164563|14001.1|Easy|53<br>
+  QX10||GB7TLH|2|G1TLH|SYSOP|GB7TLH rebooting|4A<br>
 </blockquote>
 
 <p></p>
+
+<p>Some fields are split further into subfields. The separator character
+shall be ' :' .</p>
+
+<p>Some sentences will have serial numbers associated with them which
+functions both as a generation number and as an aid to deduplication. The
+particular usage for each type of sentence is discussed later, but the
+general form will be as a modulo 10000 number (0-9999).</p>
+
+<p></p>
+
+<h1>Initialisation</h1>
+
+<p>When a node wishes to speak NP it shall send a "QX01" initialisation
+sentence to the other node on connection. It does not wait, it connects and
+sends. Both sides of the connection send simultaniously and symetrically. The
+fields currently in this sentence are:-</p>
+
+<p><span class="code">QX01|&lt;destination&gt;|&lt;origin&gt;|&lt;protocol
+version&gt;|&lt;software
+info&gt;|&lt;time&gt;|&lt;random&gt;|&lt;challange&gt;|&lt;cs&gt;</span> </p>
+
+<p>All NP nodes <span style="font-weight: bold">shall<span
+style="font-weight: normal"> use a cryptograph</span></span>ic challenge to
+determine that the node that they are talking to is correct. In this
+protocol, wherever a challenge is mandated, the challenge field will be the
+last field before the checksum and shall include the whole of the sentence
+upto that point as the "salt" to that challenge. </p>
+
+<p>Because we are not yet sufficiently paranoid to include full crytography,
+we will use the standard 32 bit CCITT CRC algorithm on a shared secret
+phrase, each side shall have a different phrase each known to both sides.
+Each connection shall have a different pair of phrases. Each phrase shall be
+at least 40 characters long.</p>
+
+<p>Each sentence that uses a challenge shall include some random element of
+at least 8 characters. The &lt;time&gt; field (if included) is not
+sufficient!</p>
+
+<p>Getting back to the initialisation sentence  </p>
 <hr>
 <span class="copy">Copyright © 2001 by Dirk Koopman G1TLH. All Rights
 Reserved</span>

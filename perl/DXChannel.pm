@@ -105,6 +105,7 @@ $count = 0;
 		  width => '0,Column Width',
 		  disconnecting => '9,Disconnecting,yesno',
 		  ann_talk => '0,Suppress Talk Anns,yesno',
+		  metric => '1,Route metric',
 		 );
 
 use vars qw($VERSION $BRANCH);
@@ -520,6 +521,98 @@ sub rspfcheck
 	}
 	return 0;
 }
+
+# broadcast a message to all clusters taking into account isolation
+# [except those mentioned after buffer]
+sub broadcast_nodes
+{
+	my $s = shift;				# the line to be rebroadcast
+	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
+	my @dxchan = DXChannel::get_all_nodes();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	foreach $dxchan (@dxchan) {
+		next if grep $dxchan == $_, @except;
+		next if $dxchan == $main::me;
+		
+		my $routeit = $dxchan->can('adjust_hops') ? $dxchan->adjust_hops($s) : $s;      # adjust its hop count by node name
+
+		$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
+	}
+}
+
+# broadcast a message to all clusters ignoring isolation
+# [except those mentioned after buffer]
+sub broadcast_all_ak1a
+{
+	my $s = shift;				# the line to be rebroadcast
+	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
+	my @dxchan = DXChannel::get_all_nodes();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	foreach $dxchan (@dxchan) {
+		next if grep $dxchan == $_, @except;
+		next if $dxchan == $main::me;
+
+		my $routeit = $dxchan->can('adjust_hops') ? $dxchan->adjust_hops($s) : $s;      # adjust its hop count by node name
+		$dxchan->send($routeit);
+	}
+}
+
+# broadcast to all users
+# storing the spot or whatever until it is in a state to receive it
+sub broadcast_users
+{
+	my $s = shift;				# the line to be rebroadcast
+	my $sort = shift;           # the type of transmission
+	my $fref = shift;           # a reference to an object to filter on
+	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
+	my @dxchan = DXChannel::get_all_users();
+	my $dxchan;
+	my @out;
+	
+	foreach $dxchan (@dxchan) {
+		next if grep $dxchan == $_, @except;
+		push @out, $dxchan;
+	}
+	broadcast_list($s, $sort, $fref, @out);
+}
+
+
+# broadcast to a list of users
+sub broadcast_list
+{
+	my $s = shift;
+	my $sort = shift;
+	my $fref = shift;
+	my $dxchan;
+	
+	foreach $dxchan (@_) {
+		my $filter = 1;
+		next if $dxchan == $main::me;
+		
+		if ($sort eq 'dx') {
+		    next unless $dxchan->{dx};
+			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
+			next unless $filter;
+		}
+		next if $sort eq 'ann' && !$dxchan->{ann} && $s !~ /^To\s+LOCAL\s+de\s+(?:$main::myalias|$main::mycall)/i;
+		next if $sort eq 'wwv' && !$dxchan->{wwv};
+		next if $sort eq 'wcy' && !$dxchan->{wcy};
+		next if $sort eq 'wx' && !$dxchan->{wx};
+
+		$s =~ s/\a//og unless $dxchan->{beep};
+
+		if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'talk') {
+			$dxchan->send($s);	
+		} else {
+			$dxchan->delay($s);
+		}
+	}
+}
+
 
 no strict;
 sub AUTOLOAD

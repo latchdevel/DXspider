@@ -25,7 +25,7 @@ if ($user) {
 	my ($lat, $long) = DXBearing::stoll($line);
 	$user->lat($lat);
 	$user->long($long);
-	DXProt::broadcast_all_ak1a(DXProt::pc41($call, 3, $line), $DXProt::me);
+	DXChannel::broadcast_all_nodes(DXProt::pc41($call, 3, $line), $main::me);
 	if (!$user->qra) {
 		my $qra = DXBearing::lltos($lat, $long);
 		$user->qra($qra);

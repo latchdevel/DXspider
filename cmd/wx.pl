@@ -36,11 +36,11 @@ if ($sort eq "FULL") {
   $to = "LOCAL";
 }
 
-DXProt::broadcast_list("WX de $from <$t>: $line", 'wx', undef, @locals);
+DXChannel::broadcast_list("WX de $from <$t>: $line", 'wx', undef, @locals);
 if ($to ne "LOCAL") {
   $line =~ s/\^//og;    # remove ^ characters!
   my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 1);
-  DXProt::broadcast_ak1a($pc, $DXProt::me);
+  DXChannel::broadcast_nodes($pc, $main::me);
 }
 
 return (1, ());

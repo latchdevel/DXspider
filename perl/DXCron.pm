@@ -286,13 +286,13 @@ sub rcmd
 	return  unless $noderef && $noderef->version;
 
 	# send it 
-	DXProt::addrcmd($DXProt::me, $call, $line);
+	DXProt::addrcmd($main::me, $call, $line);
 }
 
 sub run_cmd
 {
 	my $line = shift;
-	my @in = DXCommandmode::run_cmd($DXProt::me, $line);
+	my @in = DXCommandmode::run_cmd($main::me, $line);
 	dbg("cmd run: $line") if isdbg('cron');
 	for (@in) {
 		s/\s*$//og;

@@ -60,6 +60,7 @@ use DXCommandmode;
 use DXProtVars;
 use DXProtout;
 use DXProt;
+use QXProt;
 use DXMsg;
 use DXCron;
 use DXConnect;
@@ -98,7 +99,7 @@ package main;
 use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
-			$clusterport $mycall $decease $is_win $routeroot 
+			$clusterport $mycall $decease $is_win $routeroot $me
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -161,8 +162,8 @@ sub new_channel
 	my $basecall = $call;
 	$basecall =~ s/-\d+$//;
 	my $baseuser = DXUser->get($basecall);
-	if ($baseuser && $baseuser->lockout) {
-		my $lock = $user->lockout if $user;
+	my $lock = $user->lockout if $user;
+	if ($baseuser && $baseuser->lockout || $lock) {
 		if (!$user || !defined $lock || $lock) {
 			my $host = $conn->{peerhost} || "unknown";
 			Log('DXCommand', "$call on $host is locked out, disconnected");
@@ -179,10 +180,17 @@ sub new_channel
 	
 
 	# create the channel
-	$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
-	$dxchan = DXProt->new($call, $conn, $user) if $user->is_node;
-	$dxchan = BBS->new($call, $conn, $user) if $user->is_bbs;
-	die "Invalid sort of user on $call = $sort" if !$dxchan;
+	if ($user->is_spider) {
+		$dxchan = QXProt->new($call, $conn, $user);
+	} elsif ($user->is_node) {
+		$dxchan = DXProt->new($call, $conn, $user);
+	} elsif ($user->is_user) {
+		$dxchan = DXCommandmode->new($call, $conn, $user);
+	} elsif ($user->is_bbs) {
+		$dxchan = BBS->new($call, $conn, $user);
+	} else {
+		die "Invalid sort of user on $call = $sort";
+	}
 
 	# check that the conn has a callsign
 	$conn->conns($call) if $conn->isa('IntMsg');
@@ -230,7 +238,7 @@ sub cease
 
 	# disconnect nodes
 	foreach $dxchan (DXChannel->get_all_nodes) {
-	    $dxchan->disconnect(2) unless $dxchan == $DXProt::me;
+	    $dxchan->disconnect(2) unless $dxchan == $main::me;
 	}
 	Msg->event_loop(100, 0.01);
 
@@ -429,12 +437,12 @@ dbg("reading in duplicate spot and WWV info ...");
 DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($DXProt::me->here)|Route::conf($DXProt::me->conf));
+$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
 
 # make sure that there is a routing OUTPUT node default file
 #unless (Filter::read_in('route', 'node_default', 0)) {
-#	my $dxcc = $DXProt::me->dxcc;
-#	$Route::filterdef->cmd($DXProt::me, 'route', 'accept', "node_default call $mycall" );
+#	my $dxcc = $main::me->dxcc;
+#	$Route::filterdef->cmd($main::me, 'route', 'accept', "node_default call $mycall" );
 #}
 
 # read in any existing message headers and clean out old crap
@@ -466,7 +474,7 @@ DXDebug::dbgclean();
 # this, such as it is, is the main loop!
 dbg("orft we jolly well go ...");
 my $script = new Script "startup";
-$script->run($DXProt::me) if $script;
+$script->run($main::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 
@@ -485,6 +493,7 @@ for (;;) {
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
+		QXProt::process();
 		DXConnect::process();
 		DXMsg::process();
 		DXDb::process();
