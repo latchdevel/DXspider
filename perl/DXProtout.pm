@@ -372,7 +372,7 @@ sub hexstamp
 			$hexlastlet = chr(ord($hexlastlet) + 1);
 		} while ($hexlastlet eq '^');
 	}
-	return sprintf "%c%08X", $hexlastlet, $hexlasttime;
+	return sprintf "%s%08X", $hexlastlet, $hexlasttime;
 }
 
 sub pc58

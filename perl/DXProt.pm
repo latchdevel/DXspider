@@ -1427,20 +1427,20 @@ sub handle_59
 	my $line = shift;
 	my $origin = shift;
 
-	return unless eph_dup($line);
-
 	my ($sort, $hextime, $ncall) = @_[1,2,3];
 	if ($ncall eq $main::mycall) {
 		dbg("PCPROT: ignoring PC59 for me") if isdbg('chan');
 		return;
 	}
 
-	# mark myself as NewRoute if I get a PC59
-	$self->{newroute} = 1 if $ncall eq $self->{call};
-
 	# do this once for filtering with a throwaway routing entry if a new node
 	my $fnode = Route::Node::get($ncall) || Route::new($ncall);
 	return unless $self->in_filter_route($fnode);
+
+	return if eph_dup($line);
+
+	# mark myself as NewRoute if I get a PC59
+	$self->{newroute} = 1 if $ncall eq $self->{call};
 
 	# now do it properly for actions
 	my $node = Route::Node::get($ncall) || Route::Node->new($ncall);
@@ -1448,10 +1448,14 @@ sub handle_59
 
 	# find each of the entries (or create new ones)
 	my @refs;
-	for my $ent (@_[4..-1]) {
+	for my $ent (@_[4..$#_]) {
+		next if $ent =~ /^H\d+$/;
+		
 		my ($esort, $ehere, $ecall) = unpack "A A A*", $ent;
 		my $ref;
 
+		next unless $esort && defined $ehere && $ecall;
+		
 		# create user, if required
 		my $user = DXUser->get_current($ecall);
 		unless ($user) {
@@ -1508,6 +1512,7 @@ sub handle_59
 	if ($sort eq 'D') {
 		for my $ref (@refs) {
 			next if $ref->call eq $ncall;
+			next if $ref->call eq $main::mycall;
 			if ($ref->isa('Route::Node')) {
 				push @delnode, $node->unlink_node($ref, $self);
 			} elsif ($ref->isa('Route::User')) {
@@ -1522,6 +1527,7 @@ sub handle_59
 	if ($sort eq 'A') {
 		for my $ref (@refs) {
 			next if $ref->call eq $ncall;
+			next if $ref->call eq $main::mycall;
 			if ($ref->isa('Route::Node')) {
 				my $new = $node->link_node($ref, $self);
 				push @addnode, $new if $new;
@@ -1542,6 +1548,8 @@ sub handle_59
 		my @au;
 		for my $r (map {Route::Node::get($_)} $node->nodes) {
 			next unless $r;
+			next if $r->call eq $ncall;
+			next if $r->call eq $main::mycall;
 			push @dn, $r unless grep $_->call eq $r->call, @refs;
 		}
 		for my $r (map {Route::User::get($_)} $node->users) {
@@ -1550,6 +1558,8 @@ sub handle_59
 		}
 		for my $r (@refs) {
 			next unless $r;
+			next if $r->call eq $ncall;
+			next if $r->call eq $main::mycall;
 			if ($r->isa('Route::Node')) {
 				push @an, $r unless grep $r->call eq $_, $node->nodes;
 			} elsif ($r->isa('Route::User')) {
@@ -1999,7 +2009,9 @@ sub send_local_config
 	if ($self->{newroute}) {
 		my @nodes = $self->{isolate} ? ($main::routeroot) : grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
 		my @users = DXChannel::get_all_users();
-		$self->send_route($main::mycall, \&pc59, @nodes+@users+4, 'C', 0, $main::mycall, (grep { Route::get($_) } $main::routeroot, @nodes, @users));
+		@localnodes = map { Route::Node::get($_->{call}) } @nodes;
+		my @localusers = map { Route::User::get($_->{call}) } @users;
+		$self->send_route($main::mycall, \&pc59, @nodes+@users+4, 'C', 0, $main::mycall, $main::routeroot, @localnodes, @localusers);
 	} else {
 		# send our nodes
 		if ($self->{isolate}) {
@@ -2382,8 +2394,12 @@ sub broadcast_route
 			next if $dxchan == $main::me;
 			next unless $dxchan->isa('DXProt');
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
-			next if ($generate == \&pc19 || $generate==\&pc21) && !$dxchan->user->wantsendpc19;
-			next if ($generate == \&pc59) && !$dxchan->{newroute};
+			if ($dxchan->{newroute}) {
+				next if ($generate == \&pc19 || $generate==\&pc21);
+			} else {
+				next if ($generate == \&pc19 || $generate==\&pc21) && !$dxchan->user->wantroutepc19;
+				next if ($generate == \&pc59);
+			}
  
 			$dxchan->send_route($origin, $generate, @_);
 		}
