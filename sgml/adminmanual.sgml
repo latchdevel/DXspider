@@ -6,7 +6,7 @@
 
 <title>The DXSpider Administration Manual v1.47</title> 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.47 April 2001 revision 1.0</date>
+<date>Version 1.48 July 2001 revision 1.0</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -17,352 +17,128 @@ A reference for SysOps of the DXSpider DXCluster program.
 
 <!-- Begin the document -->
 
-<sect>Hop control
+<sect>Routing and Filtering
+
+<sect1>Introduction
 
 <P>
-Starting with version 1.13 there is simple hop control available on a per
-node basis. Also it is possible to isolate a network completely so that you 
-get all the benefits of being on that network, but can't pass on information
-from it to any other networks you may be connected to (or vice versa).
-
-<sect1>Basic hop control
+From DXSpider version 1.48, major changes were introduced to the way 
+node connections are treated.  This is part of an ongoing process to
+remove problems with loops and to enable talk and other functions to
+propagate across the whole of the worldwide cluster network.  In fact,
+in a Spider network, it would be useful, perhaps even necessary to
+have loops.  This would give real resilience to the network, meaning
+that if a link dropped, the information flow would simply come in and
+go out via a different route.  Of course, we do not have a complete
+network of Spider nodes, there are other programs out there.  Some of
+these do not have any protection from loops.  Certainly AK1A does not 
+handle loops well at all.  It is therefore necessary to have some form 
+of protection for these nodes.
 
 <P>
-In /spider/data you will find a file called hop_table.pl.  This is the file 
-that controls your hop count settings.  It has a set of default hops on the 
-various PC frames and also a set for each node you want to alter the hops for.  
-You may be happy with the default settings of course, but this powerful tool 
-can help to protect and improve the network.  The file will look something 
-like this ...
+This is achieved by using filtering on a route basis.  There is a
+default setting to help to protect the network, especially useful for new
+and inexperienced SysOps.  The idea is simple.  When Spider is started
+for the first time and a connection is made to or from another node, 
+the default is to only send the nodes you already have that are in your
+own zone.  For example, in the UK the default setting would be to send
+only UK nodes to any connection.  This can be filtered further (down to
+a single node if needed) or expanded as required.
+
+
+<sect1>Route Filters
+
+<P>
+As mentioned in the introduction, a default setting exists.  If this is
+all you want to use then that is fine, you have nothing else to do.
+However, if you want to make any alterations then you need to know
+a bit about filters.
+
+<P>
+It is possible to reset the default setting for node connections should
+you wish to do so, however this can be dangerous to the network unless
+you have some experience in how all this works.... be careful!  It is
+also possible to change settings for one connection only.  You can,
+therefore, have many different filters set dependent on the amount of
+node links you have.
+
+<P>
+I should at this stage give a little bit of background on filters.  All
+the filters in Spider work in basically the same way.  You can either
+accept or reject various options in order to create the filter rules
+you wish to achieve.  Some filters are user settable, others can only
+be altered by the sysop.  Route filtering can only be done by the sysop.
+
+<sect1>The default_node filter
+
+<P>
+As discussed previously, a default setting exists that only sends nodes
+from your own zone.  This can be overridden by using the default_node
+filter option like this ...
 
 <tscreen><verb>
-# 
-# hop table construction
-# 
+reject/route default_node &lt;filter_option&gt;
 
-package DXProt;
+or
 
-# default hopcount to use
-$def_hopcount = 5;
-
-# some variable hop counts based on message type
-%hopcount = 
-(
- 11 => 10,
- 16 => 10,
- 17 => 10,
- 19 => 10,
- 21 => 10,
-);
-
-
-# the per node hop control thingy
-
-
-%nodehops = 
-
- GB7ADX => {            11 => 8,
-                        12 => 8,
-                        16 => 8,
-                        17 => 8,
-                        19 => 8,
-                        21 => 8,
-                   },
-
- GB7UDX => {            11 => 8,
-                        12 => 8,
-                        16 => 8,
-                        17 => 8,
-                        19 => 8,
-                        21 => 8,
-                   },
- GB7BAA => {
-                        11 => 5,
-                        12 => 8,
-                        16 => 8,
-                        17 => 8,
-                        19 => 8,
-                        21 => 8,
-                   },
-};
+accept/route default_node &lt;filter_option&gt;
 </verb></tscreen>
 
 <P>
-Each set of hops is contained within a pair of curly braces and contains a 
-series of PC frame types.  PC11 for example is a DX spot. The figures here 
-are not exhaustive but should give you a good idea of how the file works.
-
-<P>
-You can alter this file at any time, including whilst the cluster is running.  
-If you alter the file during runtime, the command <em>load/hops</em> will 
-bring your changes into effect.
-
-<sect1>Isolating networks
-
-<P>
-It is possible to isolate networks from each other on a "gateway" node using the
- <em>set/isolate &lt;node_call&gt;</em> command.
-	
-<P>
-The effect of this is to partition an isolated network completely from another 
-nodes connected to your node. Your node will appear on and otherwise behave 
-normally on every network to which you are connected, but data from an isolated 
-network will not cross onto any other network or vice versa. However all the 
-spot, announce and WWV traffic and personal messages will still be handled 
-locally (because you are a real node on all connected networks), that is locally
-connected users will appear on all networks and will be able to access and 
-receive information from all networks transparently.  All routed messages will 
-be sent as normal, so if a user on one network knows that you are a gateway for 
-another network, he can still still send a talk/announce etc message via your 
-node and it will be routed across.
-
-<P>
-The only limitation currently is that non-private messages cannot be passed down 
-isolated links regardless of whether they are generated locally. This will change 
-when the bulletin routing facility is added.
-
-<P>
-If you use isolate on a node connection you will continue to receive all 
-information from the isolated partner, however you will not pass any information 
-back to the isolated node.  There are times when you would like to forward only 
-spots across a link (maybe during a contest for example).  To do this, isolate 
-the node in the normal way and put in a filter in the /spider/filter/spots 
-directory to override the isolate.  This filter can be very simple and consists 
-of just one line ....
+where filter_option is one of the following ...
 
 <tscreen><verb>
-$in = [
-	[ 1, 0, 'd', 0, 3]	# The last figure (3) is the hop count
-];
+call &lt;prefixes&gt;
+call_dxcc &lt;numbers&gt;
+call_itu &lt;numbers&gt;
+call_zone &lt;numbers&gt;
+origin &lt;prefixes&gt;
+origin_dxcc &lt;numbers&gt;
+origin_itu &lt;numbers&gt;
+origin_zone &lt;numbers&gt;
 </verb></tscreen>
 
 <P>
-There is a lot more on filtering in the next section.
+Please be careful if you alter this setting, it will affect 
+<bf><it>ALL</it></bf> your links!
 
-<sect>Filtering (Old Style upto v1.44)
-
-<P>
-Filters can be set for spots, announcements and WWV.  You will find the 
-directories for these under /spider/filter.  You will find some examples in 
-the directories with the suffix <em>.issue</em>.  There are two types of 
-filter, one for incoming information and one for outgoing information. 
-Outgoing filters are in the form <em>CALLSIGN.pl</em> and incoming filters 
-are in the form <em>in_CALLSIGN.pl</em>.  Filters can be set for both nodes 
-and users.
+<sect1>General route filtering
 
 <P>
-All filters work in basically the same way.  There are several elements 
-delimited by commas.  There can be many lines in the filter and they are 
-read from the top by the program.  When writing a filter you need to think 
-carefully about just what you want to achieve.  You are either going to write 
-a filter to <em>accept</em> or to <em>reject</em>.  Think of a filter as 
-having 2 main elements.  For a reject filter, you would have a line or multiple 
-lines rejecting the things you do not wish to receive and then a default line
-accepting everything else that is not included in the filter.  Likewise, for an
-accept filter, you would have a line or multiple lines accepting the things you 
-wish to receive and a default line rejecting everthing else.
-
-<P>
-In the example below, a user requires a filter that would only return SSB spots
-posted in Europe on the HF bands.  This is achieved by first rejecting the CW 
-section of each HF band and rejecting all of VHF, UHF etc based on frequency.
-Secondly, a filter rule is set based on CQ zones to only accept spots posted in
-Europe.  Lastly, a default filter rule is set to reject anything outside the filter.
+Exactly the same rules apply for general route filtering.  You would
+use either an accept filter or a reject filter like this ...
 
 <tscreen><verb>
-$in = [
-	[ 0, 0, 'r', # reject all CW spots
-		[
-		1800.0, 1850.0,
-		3500.0, 3600.0,
-		7000.0, 7040.0,
-		14000.0, 14100.0,
-		18068.0, 18110.0,
-		21000.0, 21150.0,
-		24890.0, 24930.0,
-		28000.0, 28180.0,
-		30000.0, 49000000000.0,
-		] ,1 ],
-	[ 1, 11, 'n', [ 14, 15, 16, 20, 33, ], 15 ], #accept EU
-	[ 0, 0, 'd', 0, 1 ], # 1 = want, 'd' = everything else
-];
+reject/route &lt;node_call&gt; &lt;filter_option&gt;
+
+or
+
+accept/route &lt;node_call&gt; &lt;filter_option&gt; 
 </verb></tscreen>
 
 <P>
-The actual elements of each filter are described more fully in the following
-sections.
-
-<sect1>Spots
-
-<P>
-The elements of the Spot filter are ....
+where filter_option is one of the following ...
 
 <tscreen><verb>
-[action, field_no, sort, possible_values, hops]
+call &lt;prefixes&gt;
+call_dxcc &lt;numbers&gt;
+call_itu &lt;numbers&gt;
+call_zone &lt;numbers&gt;
+origin &lt;prefixes&gt;
+origin_dxcc &lt;numbers&gt;
+origin_itu &lt;numbers&gt;
+origin_zone &lt;numbers&gt;
 </verb></tscreen>
 
 <P>
-There are 3 elements here to look at.  Firstly, the action element.  This is 
-very simple and only 2 possible states exist, accept (1) or drop (0).
-
-<P>
-The second element is the field_no.  There are 13 possiblities to choose from 
-here ....
+Here are some examples of route filters ...
 
 <tscreen><verb>
-      0 = frequency
-      1 = call
-      2 = date in unix format
-      3 = comment
-      4 = spotter
-      5 = spotted dxcc country
-      6 = spotter's dxcc country
-      7 = origin
-      8 = spotted itu
-      9 = spotted cq
-      10 = spotter's itu
-      11 = spotter's cq
-      12 = callsign of the channel on which the spot has appeared
+rej/route gb7djk call_zone 61,38 (everything except  UK+EIRE nodes)
+rej/route all     (equiv to [very] restricted mode)
+acc/route gb7djk call_zone 61,38 (send only UK+EIRE nodes)
+acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
 </verb></tscreen>
-
-<P>
-The third element tells us what to expect in the fourth element.  There are 
-4 possibilities ....
-
-<tscreen><verb>
-     n - numeric list of numbers e.g. [ 1,2,3 ]
-     r - ranges of pairs of numbers e.g. between 2 and 4 or 10 to 17 - [ 2,4, 10,17 ]
-     a - an alphanumeric regex
-     d - the default rule
-</verb></tscreen>
-
-<P>
-The fifth element is simply the hops to set in this filter.  This would only 
-be used if the filter was for a node of course and overrides the hop count in
-hop_table.pl.
-
-<P>
-So, let's look at an example spot filter.  It does not matter in the example 
-who the filter is to be used for.  So, what do we need in the filter?  We need 
-to filter the spots the user/node requires and also set a default rule for 
-anything else outside the filter.  Below is a simple filter that stops spots 
-arriving from outside Europe.
-
-<tscreen><verb>$in = [
-  [ 0, 4, 'a', '^(K|N|A|W|VE|VA|J)'],  # 0 = drop, 'a' = alphanumeric
-  [ 1, 0, 'd', 0, 1 ],                 # 1 = want, 'd' = everything else
-		     ];
-</verb></tscreen>
-
-<P>
-So the filter is wrapped in between a pair of square brackets.  This tells 
-Spider to look in between these limits.  Then each line is contained within 
-its own square brackets and ends with a comma. Lets look carefully at the first 
-line.  The first element is 0 (drop).  Therefore anything we put on this line 
-will not be accepted.  The next element is 4.  This means we are filtering by 
-the spotter.  The third element is the letter "a" which tells the program to 
-expect an alphanumeric expression in the fourth element.  The fourth element 
-is a list of letters separated by the pipe symbol.
-
-<P>
-What this line does is tell the program to drop any spots posted by anyone in 
-the USA, Canada or Japan.
-
-<P>
-The second line is the default rule for anything else.  The "d" tells us this 
-and the line simply reads... accept anything else.
-
-<P>
-You can add as many lines as you need to complete the filter but if there are 
-several lines of the same type it is neater to enclose them all as one line.  
-An example of this is where specific bands are set.  We could write this like 
-this ....
-
-<tscreen><verb>
-[ 0,0,'r',[1800.0, 2000.0], 1],
-[ 0,0,'r',[10100.0, 10150.0], 1],
-[ 0,0,'r',[14000.0, 14350.0], 1],
-[ 0,0,'r',[18000.0, 18200.0], 1],
-</verb></tscreen>
-
-<P>
-But the line below achieves the same thing and is more efficient ....
-
-<tscreen><verb>
-  [ 0, 0, 'r',
-    [  
-      1800.0, 2000.0,         # top band 
-      10100.0, 10150.0,       # WARC  
-      14000.0, 14350.0,       # 20m
-      18000.0, 18200.0,       # WARC
-    [ ,1 ],
-</verb></tscreen>
-
-
-<sect1>Announcements
-
-<P>
-<tscreen><verb>
-
-# This is an example announce or filter allowing only West EU announces
-# 
-# The element list is:-
-# 0 - callsign of announcer
-# 1 - destination * = all, <callsign> = routed to the node
-# 2 - text
-# 3 - * - sysop, <some text> - special list eg 6MUK, ' ', normal announce
-# 4 - origin
-# 5 - 0 - announce, 1 - wx
-# 6 - channel callsign (the interface from which this spot came)
-
-$in = [
-        [ 1, 0, 'a', '^(P[ABCDE]|DK0WCY|G|M|2|EI|F|ON)' ],
-        [ 0, 0, 'd', 0 ]
-];
-</verb></tscreen>
-
-In this example, only the prefixes listed will be allowed.  It is possible to 
-be quite specific.  The Dutch prefix "P" is followed by several secondary 
-identifiers which are allowed.  So, in the example, "PA" or "PE" would be ok 
-but not "PG".  It is even possible to allow information from a single callsign.  
-In the example this is DK0WCY, to allow the posting of his Aurora Beacon.
-
-<sect1>WWV
-
-<P>
-<tscreen><verb>
-
-# This is an example WWV filter
-# 
-# The element list is:-
-# 0 - nominal unix date of spot (ie the day + hour:13)
-# 1 - the hour
-# 2 - SFI
-# 3 - K
-# 4 - I
-# 5 - text
-# 6 - spotter
-# 7 - origin
-# 8 - incoming interface callsign
-
-# this one doesn't filter, it just sets the hop count to 6 and is
-# used mainly just to override any isolation from WWV coming from
-# the internet.
-
-$in = [
-        [ 1, 0, 'd', 0, 6 ]
-];
-
-</verb></tscreen>
-
-<P>
-It should be noted that the filter will start to be used only once a user/node 
-has logged out and back in again.
-<P>
-I am not going to spend any more time on these filters now as they will become 
-more "comprehensive" in the near future.
-
-<sect>Filtering (New Style v1.45 and later)
 
 <sect1>General filter rules
 
@@ -574,6 +350,116 @@ what happens is that the reject is executed first, any non hf/cw spot is passed
 to the accept line, which lets through everything else on HF.  The next filter line 
 lets through just VHF/UHF spots from EU.
 
+<sect1>Basic hop control
+
+<P>
+In /spider/data you will find a file called hop_table.pl.  This is the file 
+that controls your hop count settings.  It has a set of default hops on the 
+various PC frames and also a set for each node you want to alter the hops for.  
+You may be happy with the default settings of course, but this powerful tool 
+can help to protect and improve the network.  The file will look something 
+like this ...
+
+<tscreen><verb>
+# 
+# hop table construction
+# 
+
+package DXProt;
+
+# default hopcount to use
+$def_hopcount = 5;
+
+# some variable hop counts based on message type
+%hopcount = 
+(
+ 11 => 10,
+ 16 => 10,
+ 17 => 10,
+ 19 => 10,
+ 21 => 10,
+);
+
+
+# the per node hop control thingy
+
+
+%nodehops = 
+
+ GB7ADX => {            11 => 8,
+                        12 => 8,
+                        16 => 8,
+                        17 => 8,
+                        19 => 8,
+                        21 => 8,
+                   },
+
+ GB7UDX => {            11 => 8,
+                        12 => 8,
+                        16 => 8,
+                        17 => 8,
+                        19 => 8,
+                        21 => 8,
+                   },
+ GB7BAA => {
+                        11 => 5,
+                        12 => 8,
+                        16 => 8,
+                        17 => 8,
+                        19 => 8,
+                        21 => 8,
+                   },
+};
+</verb></tscreen>
+
+<P>
+Each set of hops is contained within a pair of curly braces and contains a 
+series of PC frame types.  PC11 for example is a DX spot. The figures here 
+are not exhaustive but should give you a good idea of how the file works.
+
+<P>
+You can alter this file at any time, including whilst the cluster is running.  
+If you alter the file during runtime, the command <em>load/hops</em> will 
+bring your changes into effect.
+
+<sect1>Isolating networks
+
+<P>
+It is possible to isolate networks from each other on a "gateway" node using the
+ <em>set/isolate &lt;node_call&gt;</em> command.
+	
+<P>
+The effect of this is to partition an isolated network completely from another 
+node connected to your node. Your node will appear on and otherwise behave 
+normally on every network to which you are connected, but data from an isolated 
+network will not cross onto any other network or vice versa. However all the 
+spot, announce and WWV traffic and personal messages will still be handled 
+locally (because you are a real node on all connected networks), that is locally
+connected users will appear on all networks and will be able to access and 
+receive information from all networks transparently.  All routed messages will 
+be sent as normal, so if a user on one network knows that you are a gateway for 
+another network, he can still still send a talk/announce etc message via your 
+node and it will be routed across.
+
+<P>
+The only limitation currently is that non-private messages cannot be passed down 
+isolated links regardless of whether they are generated locally. This will change 
+when the bulletin routing facility is added.
+
+<P>
+If you use isolate on a node connection you will continue to receive all 
+information from the isolated partner, however you will not pass any information 
+back to the isolated node.  There are times when you would like to forward only 
+spots across a link (maybe during a contest for example).  To do this, isolate 
+the node in the normal way and put in a filter in the /spider/filter/spots 
+directory to override the isolate.  This filter can be very simple and consists 
+of just one line ....
+
+<tscreen><verb>
+$in = [
+	[ 1, 0, 'd', 0, 3]	# The last figure (3) is the hop count
+];
+</verb></tscreen>
 
 <sect>Other filters
 
@@ -1509,6 +1395,50 @@ default for nodes and users eg:-
   accept/ann user_default by G,M,2
 </verb></tscreen>
 
+<sect1>accept/route (8)
+
+<P>
+<tt>
+<bf>accept/route &lt;call&gt; &lsqb;0-9&rsqb; &lt;pattern&gt;</bf> Set an 'accept' filter line for routing
+</tt>
+
+<P>
+Create an 'accept this routing PC Protocol' line for a filter. 
+
+<P>
+An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is passed thru that interface. See HELP FILTERING for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+<P>
+You can use any of the following things in this line:-
+
+<tscreen><verb>
+  call <prefixes>        the callsign of the thingy
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  origin <prefixes>      really the interface it came in on
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+</verb></tscreen>
+
+<P>
+some examples:-
+
+<tscreen><verb>
+  acc/route gb7djk call_zone 61,38 (send only UK+EIRE nodes)
+  acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+</verb></tscreen>
+
+<P>
+You can use the tag 'all' to accept everything eg:
+
+<tscreen><verb>
+  acc/route all
+</verb></tscreen>
+
 <sect1>accept/spots (0)
 
 <P>
@@ -1695,7 +1625,9 @@ default for nodes and users eg:-
 
 <P>
 Send an announcement to LOCAL users only, where &lt;text&gt; is the text 
-of the announcement you wish to broadcast
+of the announcement you wish to broadcast.  If you do not wish to receive
+announces, use the <em>set/noannounce</em> command.  Any announces made by
+a sysop will override set/noannounce.
 
 <sect1>announce full (0)
 
@@ -2534,6 +2466,47 @@ default for nodes and users eg:-
   reject/ann user_default by G,M,2
 </verb></tscreen>
 
+<sect1>reject/route (8)
+
+<P>
+<tt>
+<bf>reject/route &lt;call&gt; &lsqb;0-9&rsqb; &lt;pattern&gt;</bf> Set an 'reject' filter line for routing
+</tt>
+
+<P>
+Create an 'reject this routing PC Protocol' line for a filter. 
+
+<P>
+An reject filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+it is NOT passed thru that interface. See HELP FILTERING for more info. Please 
+read this to understand how filters work - it will save a lot of grief later on.
+You can use any of the following things in this line:-
+
+<tscreen><verb>
+  call <prefixes>        the callsign of the thingy
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  origin <prefixes>      really the interface it came in on
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+</verb></tscreen>
+
+<P>
+some examples:-
+
+<tscreen><verb>
+  rej/route gb7djk call_zone 61,38 (everything except  UK+EIRE nodes)
+</verb></tscreen>
+
+<P>
+You can use the tag 'all' to reject everything eg:
+
+<tscreen><verb>
+  rej/route all     (equiv to [very] restricted mode)
+</verb></tscreen>
+
 <sect1>reject/spots (0)
 
 <P>
@@ -2883,6 +2856,13 @@ Use with extreme care. This command may well be superceded by FILTERing.
 
 <P>
 Add a beep to DX and other terminal messages.
+
+<sect1>set/bbs (5)
+
+<P>
+<tt>
+<bf>set/bbs &lt;call&gt; &lsqb;&lt;call&gt;..&rsqb;</bf>Make &lt;call&gt; a BBS
+</tt>
 
 <sect1>set/clx (5)
 
@@ -3974,6 +3954,24 @@ Only the fields that are defined (in perl term) will be displayed.
 <P>
 This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
+
+<P>
+If no message number is given then the status of the message system is 
+displayed.
+
+<sect1>stat/route_node (5)
+
+<P>
+<tt>
+<bf>stat/route_node &lt;callsign&gt;</bf> Show the data in a Route::Node object
+</tt>
+
+<sect1>stat/route_user (5)
+
+<P>
+<tt>
+<bf>stat/route_user &lt;callsign&gt;</bf> Show the data in a Route::User object
+</tt>
 
 <sect1>stat/user (5)
 
