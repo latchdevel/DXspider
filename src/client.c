@@ -39,6 +39,11 @@
 #define MSG 2
 #define MAXBUFL 1024
 
+#ifndef MAXPATHLEN 
+#define MAXPATHLEN 256
+#endif
+
+#define MAXPACLEN 236
 #define DBUF 1
 #define DMSG 2
 
@@ -48,16 +53,18 @@ typedef struct
 	int sort;					/* the type of connection either text or msg */
 	cmsg_t *in;					/* current input message being built up */
 	cmsg_t *out;				/* current output message being sent */
+	cmsg_t *obuf;				/* current output being buffered */
 	reft *inq;					/* input queue */
 	reft *outq;					/* output queue */
 	sel_t *sp;					/* my select fcb address */
 	struct termios t;			/* any termios associated with this cnum */
 	char echo;					/* echo characters back to this cnum */
 	char t_set;					/* the termios structure is valid */
+	char buffer_it;				/* buffer outgoing packets for paclen */
 } fcb_t;
 
-char *node_addr = "localhost";	/* the node tcp address */
-int node_port = 27754;			/* the tcp port of the node at the above address */
+char *node_addr = "localhost";	/* the node tcp address, can be overridden by DXSPIDER_HOST */
+int node_port = 27754;			/* the tcp port of the node at the above address can be overidden by DXSPIDER_PORT*/
 char *call;						/* the caller's callsign */
 char *connsort;					/* the type of connection */
 fcb_t *in;						/* the fcb of 'stdin' that I shall use */
@@ -66,6 +73,11 @@ char nl = '\n';					/* line end character */
 char ending = 0;				/* set this to end the program */
 char send_Z = 1;				/* set a Z record to the node on termination */
 char echo = 1;					/* echo characters on stdout from stdin */
+char int_tabs = 0;				/* interpret tabs -> spaces */
+char *root = "/spider";         /* root of data tree, can be overridden by DXSPIDER_ROOT  */
+int timeout = 60;				/* default timeout for logins and things */
+int paclen = 128;				/* default buffer size for outgoing packets */
+int tabsize = 8;				/* default tabsize for text messages */
 
 void terminate(int);
 
@@ -79,7 +91,7 @@ void die(char *s, ...)
 	
 	va_list ap;
 	va_start(ap, s);
-	vsprintf(buf, s, ap);
+	vsnprintf(buf, sizeof(buf)-1, s, ap);
 	va_end(ap);
 	fprintf(stderr,"%s\n", buf);
 	terminate(-1);
@@ -112,6 +124,44 @@ int eq(char *a, char *b)
 	return (strcmp(a, b) == 0);
 }
 
+int xopen(char *dir, char *name, int mode)
+{
+	char fn[MAXPATHLEN+1];
+	snprintf(fn, MAXPATHLEN, "%s/%s/%s", root, dir, name);
+	return open(fn, mode);
+}
+
+int iscallsign(char *s)
+{
+	char *p, ch, state = 0;
+	
+	ch = *p;
+	while (ch) {
+		switch (state) {
+		case 0:					/* initial numerics */
+			if (isalpha(ch)) {
+				if (p == s) 
+					state = 10;
+				else
+					state = 1;
+			} if (isdigit(ch)) {
+				;
+			} else 
+				goto lend;
+			break;
+		case 1:					/* letter(s) */
+		case 10:				/* had an initial character */
+			if (isdigit(ch))
+				state = 11;
+			
+		}
+		ch = ++*p;
+	}
+
+lend:
+	return 1;
+}
+
 /*
  * higher level send and receive routines
  */
@@ -129,15 +179,40 @@ fcb_t *fcb_new(int cnum, int sort)
 	return f;
 }
 
+void flush_text(fcb_t *f)
+{
+	if (f->obuf) {
+		cmsg_send(f->outq, f->obuf, 0);
+		f->sp->flags |= SEL_OUTPUT;
+		f->obuf = 0;
+	}
+}
+
 void send_text(fcb_t *f, char *s, int l)
 {
 	cmsg_t *mp;
-	mp = cmsg_new(l+1, f->sort, f);
-	memcpy(mp->inp, s, l);
-	mp->inp += l;
+	char *p;
+	
+	if (f->buffer_it && f->obuf) {
+		mp = f->obuf;
+	} else {
+		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
+	}
+
+	for (p = s; p < s+l; ) {
+		if (mp->inp >= mp->data + paclen) {
+			flush_text(f);
+			f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
+		}
+		*mp->inp++ = *p++;
+	}
+	if (mp->inp >= mp->data + paclen) {
+		flush_text(f);
+		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
+	}
 	*mp->inp++ = nl;
-	cmsg_send(f->outq, mp, 0);
-	f->sp->flags |= SEL_OUTPUT;
+	if (!f->buffer_it)
+		flush_text(f);
 }
 
 void send_msg(fcb_t *f, char let, char *s, int l)
@@ -227,6 +302,15 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 				
 				/* character processing */
 				switch (*p) {
+				case '\t':
+					if (int_tabs) {
+						memset(mp->inp, ' ', tabsize);
+						mp->inp += tabsize;
+						++p;
+					} else {
+						*mp->inp++ = *p++;
+					}
+					break;
 				case '\b':
 				case 0x7f:
 					if (mp->inp > mp->data)
@@ -245,7 +329,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 						f->in = mp = cmsg_new(MAXBUFL+1, f->sort, f);
 						++p;
 					} else {
-						if (mp->inp < &mp->data[MAXBUFL])
+						if (mp->inp < &mp->data[MAXBUFL-8])
 							*mp->inp++ = *p++;
 						else {
 							mp->inp = mp->data;
@@ -357,6 +441,13 @@ void initargs(int argc, char *argv[])
 		case 'h':
 			node_addr = optarg;
 			break;
+		case 'l':
+			paclen = atoi(optarg);
+			if (paclen < 80)
+				paclen = 80;
+			if (paclen > MAXPACLEN)
+				paclen = MAXPACLEN;
+			break;
 		case 'p':
 			node_port = atoi(optarg);
 			break;
@@ -372,13 +463,11 @@ void initargs(int argc, char *argv[])
 
 lerr:
 	if (err) {
-		die("usage: client [-x n|-h<host>|-p<port>] <call>|login [local|telnet|ax25]");
+		die("usage: client [-x n|-h<host>|-p<port>|-l<paclen>] <call>|login [local|telnet|ax25]");
 	}
 	
 	if (optind < argc) {
 		call = strupper(argv[optind]);
-		if (eq(call, "LOGIN"))
-			die("login not implemented (yet)");
 		++optind;
 	}
 	if (!call)
@@ -458,9 +547,19 @@ void terminate(int i)
 		sel_run();
 	}
 	if (in && in->t_set)
-		tcsetattr(0, TCSANOW, &in->t);
+		tcsetattr(0, TCSADRAIN, &in->t);
 	if (node) 
 		close(node->cnum);
+	exit(i);
+}
+
+void login_timeout(int i)
+{
+	write(0, "Timed Out", 10);
+	write(0, &nl, 1);
+	sel_run();					/* force a coordination */
+	if (in && in->t_set)
+		tcsetattr(0, TCSANOW, &in->t);
 	exit(i);
 }
 
@@ -500,6 +599,10 @@ void process_node()
 				if (isdigit(*p))
 					in->echo = *p - '0';
 				break;
+			case 'B':
+				if (isdigit(*p))
+					in->buffer_it = *p - '0';
+				break;
 			case 'D':
 				if (p) {
 					int l = mp->inp - (unsigned char *) p;
@@ -511,6 +614,8 @@ void process_node()
 			}
 		}
 		cmsg_callback(mp, 0);
+	} else {
+		flush_text(in);
 	}
 }
 
@@ -520,11 +625,33 @@ void process_node()
 
 main(int argc, char *argv[])
 {
+	/* set up environment */
+	{
+		char *p = getenv("DXSPIDER_ROOT");
+		if (p)
+			root = p;
+		p = getenv("DXSPIDER_HOST");
+		if (p)
+			node_addr = p;
+		p = getenv("DXSPIDER_PORT");
+		if (p)
+			node_port = atoi(p);
+		p = getenv("DXSPIDER_PACLEN");
+		if (p) {
+			paclen = atoi(p);
+			if (paclen < 80)
+				paclen = 80;
+			if (paclen > MAXPACLEN)
+				paclen = MAXPACLEN;
+		}
+	}
+	
+	/* get program arguments, initialise stuff */
 	initargs(argc, argv);
 	sel_init(10, 0, 10000);
 
+	/* trap signals */
 	signal(SIGHUP, SIG_IGN);
-
 	signal(SIGINT, terminate);
 	signal(SIGQUIT, terminate);
 	signal(SIGTERM, terminate);
@@ -532,7 +659,46 @@ main(int argc, char *argv[])
 	signal(SIGPWR, terminate);
 #endif
 
-	/* connect up stdin, stdout and message system */
+	/* is this a login? */
+	if (eq(call, "LOGIN")) {
+		char buf[MAXPACLEN+1];
+		int r;
+		int f = xopen("data", "issue", 0);
+		if (f > 0) {
+			while ((r = read(f, buf, paclen)) > 0) {
+				if (nl != '\n') {
+					char *p;
+					for (p = buf; p < &buf[r]; ++p) {
+						if (*p == '\n')
+							*p = nl;
+					}
+				}
+				write(0, buf, r);
+			}
+			close(f);
+		}
+		signal(SIGALRM, login_timeout);
+		alarm(timeout);
+		write(0, "login: ", 7);
+		r = read(0, buf, 20);
+		if (r <= 0)
+			die("No login or error (%d)", errno);
+		signal(SIGALRM, SIG_IGN);
+		alarm(0);
+		while (r > 0) {
+			if (buf[r-1] == ' ' || buf[r-1] == '\r' || buf[r-1] == '\n')
+				--r;
+			else
+				break;
+		}
+		buf[r] = 0;
+		call = strupper(buf);
+		if (!iscallsign(call)) {
+			die("Sorry, %s isn't a valid callsign", buf);
+		}
+	}
+	
+	/* connect up stdin */
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
 	if (tcgetattr(0, &in->t) < 0) {
@@ -546,6 +712,9 @@ main(int argc, char *argv[])
 		in->echo = echo;
 		in->t_set = 1;
 	}
+	in->buffer_it = 1;
+
+	/* connect up node */
 	connect_to_node();
 
 	/* tell the cluster who I am */
