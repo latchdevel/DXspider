@@ -236,9 +236,9 @@ for (;;) {
 		$systime = $timenow;
 		$cldate = &cldate();
 		$ztime = &ztime();
+		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
-		DXCron::process();
 		DXConnect::process();
 	}
 }

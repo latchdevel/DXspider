@@ -137,8 +137,6 @@ sub normal
 	}
   }
  	
-#    my @ans = $self->eval_file($path, $fcmd, $args) if $path && $fcmd;
-#	@ans = $self->eval_file($main::cmd, $cmd, $args) if !$ans[0];
   if ($ans[0]) {
     shift @ans;
 	$self->send(@ans) if @ans > 0;

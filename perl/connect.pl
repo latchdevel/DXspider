@@ -38,6 +38,7 @@ BEGIN {
 
 use DXVars;
 use IO::Socket;
+use POSIX;
 use Carp;
 
 $timeout = 30;         # default timeout for each stage of the connect
