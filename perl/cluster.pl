@@ -20,6 +20,20 @@ BEGIN {
 	
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
+
+	# try to create and lock a lockfile (this isn't atomic but 
+	# should do for now
+	$lockfn = "$root/perl/cluster.lock";       # lock file name
+	if (-e $lockfn) {
+		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+		my $pid = <CLLOCK>;
+		chomp $pid;
+		die "Lockfile ($lockfn) and process $pid exist, another cluster running?" if kill 0, $pid;
+		close CLLOCK;
+	}
+	open(CLLOCK, ">$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+	print CLLOCK "$$\n";
+	close CLLOCK;
 }
 
 use Msg;
@@ -42,6 +56,7 @@ use Bands;
 use Geomag;
 use CmdAlias;
 use Local;
+use Fcntl ':flock'; 
 
 use Carp;
 
@@ -51,7 +66,8 @@ package main;
 $systime = 0;					# the time now (in seconds)
 $version = "1.23";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
- 
+$lockfn = "cluster.lock";       # lock file name
+      
 # handle disconnections
 sub disconnect
 {
@@ -150,6 +166,7 @@ sub cease
 		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
 	Log('cluster', "DXSpider V$version stopped");
+	unlink $lockfn;
 	exit(0);
 }
 
@@ -280,8 +297,6 @@ eval {
 	Local::init();
 };
 dbg('local', "Local::init error $@") if $@;
-
-
 
 # print various flags
 #print "useful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P\n";

@@ -25,6 +25,17 @@ use Carp;
 %dbglevel = ();
 $fp = DXLog::new('debug', 'dat', 'd');
 
+# add sig{__DIE__} handling
+if (!defined $DB::VERSION) {
+	$SIG{__WARN__} = $SIG{__DIE__} = sub { 
+		my $t = time; 
+		for (@_) {
+			$fp->writeunix($t, "$t^$_"); 
+#			print STDERR $_;
+		}
+	};
+}
+
 sub dbg
 {
 	my $l = shift;

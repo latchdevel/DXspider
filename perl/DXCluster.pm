@@ -131,7 +131,7 @@ sub cluster
 {
 	my $users = DXCommandmode::get_all();
 	my $uptime = main::uptime();
-	my $tot = $DXNode::users + 1;
+	my $tot = $DXNode::users;
 		
 	return " $DXNode::nodes nodes, $users local / $tot total users  Max users $DXNode::maxusers  Uptime $uptime";
 }
@@ -175,9 +175,8 @@ sub new
   
 	my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
 	$self->{mynode} = $node;
-	$node->{list}->{$call} = $self;	# add this user to the list on this node
+	$node->add_user($call, $self);
 	dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
-	$node->update_users();
 	return $self;
 }
 
@@ -187,10 +186,8 @@ sub del
 	my $call = $self->{call};
 	my $node = $self->{mynode};
 
-	delete $node->{list}->{$call};
-	delete $DXCluster::cluster{$call}; # remove me from the cluster table
+	$node->del_user($call);
 	dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
-	$node->update_users();
 }
 
 sub count
@@ -257,19 +254,40 @@ sub del
 	$nodes-- if $nodes > 0;
 }
 
+sub add_user
+{
+	my $self = shift;
+	my $call = shift;
+	my $ref = shift;
+	
+	$self->{list}->{$call} = $ref; # add this user to the list on this node
+	$self->{users} = keys %{$self->{list}};
+	$users++;
+	$maxusers = $users+$nodes if $users+$nodes > $maxusers;
+}
+
+sub del_user
+{
+	my $self = shift;
+	my $call = shift;
+
+	delete $self->{list}->{$call};
+	delete $DXCluster::cluster{$call}; # remove me from the cluster table
+	$self->{users} = keys %{$self->{list}};
+	$users--;
+	$users = 0, warn "\$users gone neg, reset" if $users < 0;
+	$maxusers = $users+$nodes if $users+$nodes > $maxusers;
+}
+
 sub update_users
 {
 	my $self = shift;
 	my $count = shift;
 	$count = 0 unless $count;
-  
-	$users -= $self->{users} if $self->{users};
-	if ((keys %{$self->{list}})) {
-		$self->{users} = (keys %{$self->{list}});
-	} else {
-		$self->{users} = $count;
-	}
-	$users += $self->{users} if $self->{users};
+	
+	$users -= $self->{users};
+	$self->{users} = $count unless keys %{$self->{list}};
+	$users += $self->{users};
 	$maxusers = $users+$nodes if $users+$nodes > $maxusers;
 }
 

@@ -138,7 +138,7 @@ sub normal
 	eval {
 		$pcr = Local::pcprot($self, $pcno, @field);
 	};
-	dbg('local', "Local::pcprot error $@") if $@;
+#	dbg('local', "Local::pcprot error $@") if $@;
 	return if $pcr;
 	
  SWITCH: {
@@ -195,9 +195,9 @@ sub normal
 			# local processing 
 			my $r;
 			eval {
-				$r = Local::spot1($self, $freq, $field[2], $d, $text, $spotter, $field[7]);
+				$r = Local::spot($self, $freq, $field[2], $d, $text, $spotter, $field[7]);
 			};
-			dbg('local', "Local::spot1 error $@") if $@;
+#			dbg('local', "Local::spot1 error $@") if $@;
 			return if $r;
 
 			# send orf to the users
@@ -396,9 +396,9 @@ sub normal
 
 			my $r;
 			eval {
-				$r = Local::wwv2($self, $field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
+				$r = Local::wwv($self, $field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
 			};
-			dbg('local', "Local::wwv2 error $@") if $@;
+#			dbg('local', "Local::wwv2 error $@") if $@;
 			return if $r;
 
 			# DON'T be silly and send on PC27s!
@@ -545,7 +545,7 @@ sub normal
 		
 		if ($pcno == 50) {		# keep alive/user list
 			my $ref = DXCluster->get_exact($field[1]);
-			$ref->update_users($field[2]) if $ref;
+			$ref->update_users($field[2]) if $ref;			
 			last SWITCH;
 		}
 		

@@ -247,8 +247,7 @@ sub start_connect
 			alarm(0);
 			DXChannel::closeall();
 			$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
-			exec $prog, $call, 'connect';
-			dbg('cron', "exec '$prog' failed $!");
+			exec $prog, $call, 'connect' or dbg('cron', "exec '$prog' failed $!");
 		}
 		dbg('cron', "connect to $call started");
 	} else {
@@ -274,8 +273,7 @@ sub spawn
 			alarm(0);
 			DXChannel::closeall();
 			$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
-			exec "$line";
-			dbg('cron', "exec '$line' failed $!");
+			exec "$line" or dbg('cron', "exec '$line' failed $!");
 		}
 		dbg('cron', "spawn of $line started");
 	} else {

@@ -14,6 +14,15 @@ the -M semantics are rather strange!
 if connected).
 7. Added present_on(call, node) and presentish_on(ditto) which returns true if 
 the call is connected to the node.
+8. incoming messages for users will now send a 'new message' message (instead
+of merely generating the message)[who wrote this rubbish?].
+9. Hooked $SIG{__WARN__} and $SIG{__DIE__} so we store these nasty error 
+messages.
+10. Print the no of users on restricted protocol links if we have had PC50
+11. Had a go at making the sh/cl stats more accurate.
+12. PC11 was trying to call Local::spot1 instead of Local::spot, no warning 
+previously.
+13. Added a simple lockfile to prevent more than one cluster running at a time
 17Jan99========================================================================
 1. fixed some permission problems on DXLog.
 2. There is a circumstance in DXMsg which caused the cluster to stop on an 
