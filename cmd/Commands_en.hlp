@@ -729,7 +729,7 @@ node>).
 
 Best of luck - you will need it.
   
-=== 9^DEMOSTRATE <call> <command>^Demonstrate a command to another user
+=== 9^DEMONSTRATE <call> <command>^Demonstrate a command to another user
 This command is provided so that sysops can demonstrate commands to 
 other users. It runs a command as though that user had typed it in and
 then sends the output to that user, together with the command that 
