@@ -163,7 +163,9 @@ sub rec_stdin
 	#  $prbuf =~ s/\r/\\r/;
 	#  $prbuf =~ s/\n/\\n/;
 	#  print "sys: $r ($prbuf)\n";
-	if ($r > 0) {
+	if (!defined $r || $r == 0) {
+		cease(1);
+	} elsif ($r > 0) {
 		if ($mode) {
 			$buf =~ s/\r/\n/og if $mode == 1;
 			$buf =~ s/\r\n/\n/og if $mode == 2;
@@ -189,9 +191,7 @@ sub rec_stdin
 		} else {
 			$conn->send_later("I$call|$buf");
 		}
-	} elsif ($r == 0) {
-		cease(1);
-	}
+	} 
 	$lasttime = time;
 }
 

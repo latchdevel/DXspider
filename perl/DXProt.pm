@@ -742,7 +742,7 @@ sub finish
 	delete $pings{$call};
 	
 	# now broadcast to all other ak1a nodes that I have gone
-	broadcast_ak1a(pc21($call, 'Gone.'), $self);
+	broadcast_ak1a(pc21($call, 'Gone.'), $self) unless $self->{isolate};
 	
 	Log('DXProt', $call . " Disconnected");
 	$ref->del() if $ref;
