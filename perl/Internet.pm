@@ -69,7 +69,7 @@ $wm7d_url = 'www.wm7d.net';   # used by show/wm7d
 $db0sdx_url = 'dotnet.grossmann.com';   # used by show/db0sdx
 $dx425_url = 'www.ariscandicci.it';		# used by show/425
 $contest_host = 'www.sk3bg.se';         # used by show/contest
-$contest_url = "http://$contest_url/contest/text";         # used by show/contest
+$contest_url = "http://$contest_host/contest/text";         # used by show/contest
 
 #
 # end
