@@ -911,6 +911,7 @@ sub normal
 						my $new = Route->new($call);          # throw away
 						if ($self->in_filter_route($new)) {
 							my $ar = $parent->add($call, $ver, $flags);
+							$user->wantroutepc19(1) unless defined $user->wantroutepc19;
 							push @rout, $ar if $ar;
 						} else {
 							next;
