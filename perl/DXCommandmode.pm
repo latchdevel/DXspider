@@ -107,6 +107,7 @@ sub start
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{ann_talk} = $user->wantann_talk;
 	$self->{here} = 1;
+	$self->{prompt} = $user->prompt if $user->prompt;
 
 	# sort out registration
 	if ($main::reqreg == 1) {
@@ -523,7 +524,11 @@ sub disconnect
 sub prompt
 {
 	my $self = shift;
-	$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call, cldate($main::systime), ztime($main::systime)));
+	if ($self->{prompt}) {
+		$self->send($self->{prompt});
+	} else {
+		$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call, cldate($main::systime), ztime($main::systime)));
+	}
 }
 
 # broadcast a message to all users [except those mentioned after buffer]

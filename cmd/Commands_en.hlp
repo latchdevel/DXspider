@@ -1415,6 +1415,18 @@ given after the normal 'login: ' prompt.
 This command allows the sysop to completely delete and remove a 
 password for a user. 
 
+=== 0^SET/PROMPT <string>^Set your prompt to <string>
+=== 0^UNSET/PROMPT^Set your prompt back to default
+This command will set your user prompt to exactly the string that you 
+say. The point of this command to enable a user to interface to programs
+that are looking for a specific prompt (or else you just want a different
+fixed prompt).
+
+  SET/PROMPT clx >
+
+UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back to
+normal.
+
 === 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.

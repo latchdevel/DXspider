@@ -109,6 +109,7 @@ $count = 0;
 		  badcount => '1,Bad Word Count',
 		  edit => '7,Edit Function',
 		  registered => '9,Registered?,yesno',
+		  prompt => '0,Required Prompt',
 		 );
 
 use vars qw($VERSION $BRANCH);
