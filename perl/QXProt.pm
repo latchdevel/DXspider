@@ -72,28 +72,45 @@ sub sendinit
 
 sub normal
 {
-	if ($_[1] =~ /^PC\d\d\^/) {
-		DXProt::normal(@_);
-		return;
+	my $r;
+	
+	if  (ref $_[1] && $_->isa('Thingy')) {
+		$_[1]->handle($_[0]);
+	} else {
+		if ($_[1] =~ /^PC\d\d\^/) {
+			DXProt::normal(@_);
+		} elsif ($_[1] =~ /^QX\w\^/){
+
+			my ($sort, $tonode, $fromnode, $msgid, $incs);
+			return unless ($sort, $tonode, $fromnode, $msgid, $incs) = $_[1] =~ /^QX([A-Z])\^(\*|[-A-Z0-9]+)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
+			
+			$msgid = hex $msgid;
+			my $noderef = Route::Node::get($fromnode);
+			$noderef = Route::Node::new($fromnode) unless $noderef;
+			
+			my $il = length $incs; 
+			my $cs = sprintf("%02X", unpack("%32C*", substr($_[1], 0, length($_[1]) - ($il+1))) & 255);
+			if ($incs ne $cs) {
+				dbg("QXPROT: Checksum fail in: $incs ne calc: $cs" ) if isdbg('chanerr');
+				return;
+			}
+			
+			unless ($noderef->newid($msgid)) {
+				dbg("QXPROT: Dupe, dropped") if isdbg('chanerr');
+				return;
+			}
+			
+			no strict 'subs';
+			my $sub = "Thingy::QX$sort";
+			my $thing = $sub->new(sort => $sort, tonode => $tonode, fromnode => $fromnode, id=> $msgid, line => $line);
+			$r = $thing->handle($_[0]); 
+		} else {
+			dbg("QXProt: unrecognised protocol, dropped") if isdbg('chanerr') 
+		}
 	}
-	my ($sort, $tonode, $fromnode, $msgid, $incs);
-	return unless ($sort, $tonode, $fromnode, $msgid, $incs) = $_[1] =~ /^QX([A-Z])\^(\*|[-A-Z0-9]+)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
-
-	$msgid = hex $msgid;
-	my $noderef = Route::Node::get($fromnode);
-	$noderef = Route::Node::new($fromnode) unless $noderef;
-
-	my $il = length $incs; 
-	my $cs = sprintf("%02X", unpack("%32C*", substr($_[1], 0, length($_[1]) - ($il+1))) & 255);
-	if ($incs ne $cs) {
-		dbg("QXPROT: Checksum fail in: $incs ne calc: $cs" ) if isdbg('chanerr');
-		return;
+	unless (ref $r) {
+		dbg($r) if isdbg("chanerr");
 	}
-
-	return unless $noderef->newid($msgid);
-
-	$_[0]->handle($sort, $tonode, $fromnode, $msgid, $_[1]);
-	return;
 }
 
 sub handle
@@ -224,7 +241,7 @@ sub handleX
 
 	my ($pcno) = $line =~ /^PC(\d\d)/;
 	if ($pcno) {
-		$line =~ s/^[\x\x]$//;
+		$line =~ s/\^[[0-9A-F]+]$//;
 		DXProt::normal($self, $line);
 	}
 }
