@@ -58,7 +58,8 @@ sub dequeue
 	my $conn = shift;
 	my $msg;
 	
-	while ($msg = shift @{$conn->{inqueue}}){
+	while (@{$conn->{inqueue}}){
+		$msg = shift @{$conn->{inqueue}};
 		dbg('connect', $msg) unless $conn->{state} eq 'C';
 		
 		$msg =~ s/\xff\xfa.*\xff\xf0|\xff[\xf0-\xfe].//g; # remove telnet options
@@ -91,6 +92,7 @@ sub dequeue
 		}
 	}
 	if ($conn->{msg} && $conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}}) {
+		dbg('connect', $conn->{msg});
 		$conn->_docmd($conn->{msg});
 		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
 			$conn->{state} = 'C';
@@ -286,7 +288,7 @@ sub _send_file
 		if ($f) {
 			while (<$f>) {
 				chomp;
-				$conn->send_later($_);
+				$conn->send_raw($_ . $conn->{lineend});
 			}
 			$f->close;
 		}

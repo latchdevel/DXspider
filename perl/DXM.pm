@@ -34,7 +34,7 @@ sub msg
 	}
 	return "unknown message '$m' in lang '$lang'" if !defined $s;
 	my $ans = eval qq{ "$s" };
-	confess $@ if $@;
+	warn $@ if $@;
 	return $ans;
 }
 
