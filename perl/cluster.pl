@@ -336,7 +336,7 @@ sub process_inqueue
 		return unless defined $sort;
 	
 		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-		dbg("<- $sort $call $line\n") if $sort ne 'D' && isdbg('chan');
+		dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
 		if ($self->{disconnecting}) {
 			dbg('In disconnection, ignored');
 			next;

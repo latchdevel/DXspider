@@ -21,7 +21,7 @@ foreach $call (@calls) {
 			# first clear out any nodes on this dxchannel
 			my $parent = Route::Node::get($call);
 			my @rout = $parent->del_nodes;
-			$dxchan->route_pc21($self, @rout) if @rout;
+			$dxchan->route_pc21(undef, $self, @rout) if @rout;
 			$dxchan->send(DXProt::pc18());
 			$dxchan->state('init');
 			push @out, $self->msg('init1', $call);

@@ -306,16 +306,24 @@ sub removepc90
 	$_[0] =~ s/^PC90\^[-A-Z0-9]+\^\d+\^//;
 }
 
+sub removepc91
+{
+	$_[0] =~ s/^PC91\^[-A-Z0-9]+\^\d+\^[-A-Z0-9]+\^//;
+}
+
 sub send
 {
 	my $self = shift;
-	my $line = shift;
-	if ($self->user->wantpc90) {
-		$line = mungepc90($line);
-	} else {
-		removepc90($line);
+	while (@_) {
+		my $line = shift;
+		if ($self->user->wantpc90) {
+			$line = mungepc90($line);
+		} else {
+			removepc91($line);
+			removepc90($line);
+		}
+		$self->SUPER::send($line);
 	}
-	$self->SUPER::send($line);
 }
 
 my $pc90msgid = 0;
@@ -328,11 +336,20 @@ sub nextpc90
 
 sub mungepc90
 {
-	unless ($_[0] =~ /^PC90/) {
+	unless ($_[0] =~ /^PC9\d/) {
 		my $id = nextpc90();
 		return "PC90^$main::mycall^$id^" . $_[0]; 
 	} 
 	return $_[0];
+}
+
+sub mungepc91
+{
+	unless ($_[1] =~ /^PC9\d/) {
+		my $id = nextpc90();
+		return "PC91^$main::mycall^$id^$_[0]^" . $_[1]; 
+	} 
+	return $_[1];
 }
 
 #
@@ -351,8 +368,10 @@ sub normal
 	
 	# process PC frames, this will fail unless the frame starts PCnn
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
-	return unless $pcno;
-	return if $pcno < 10 || $pcno > 99;
+	unless (defined $pcno && $pcno >= 10 && $pcno <= 99) {
+		dbg("PCPROT: unknown protocol") if isdbg('chanerr');
+		return;
+	}
 
 	# check for and dump bad protocol messages
 	my $n = check($pcno, @field);
@@ -373,7 +392,7 @@ sub normal
 	# add more copying and so on.
 	#
 
-	my $origin = $self->call;
+	my $origin = $self->{call};
 	
 	if ($pcno >= 90) {
 		$origin = $field[1];
@@ -381,6 +400,7 @@ sub normal
 			dbg("PCPROT: loop dupe") if isdbg('chanerr');
 			return;
 		}
+		$self->user->wantpc90(1) unless $self->user->wantpc90 || $origin ne $self->{call};
 		my $seq = $field[2];
 		my $node = Route::Node::get($origin);
 		if ($node) {
@@ -395,14 +415,17 @@ sub normal
 		}
 
 		# do a recheck on the contents of the PC90
-		if ($pcno == 90) {
+		if ($pcno >= 90) {
 			shift @field;
 			shift @field;
 			shift @field;
-			
+			$origin = shift @field if $pcno == 91;
+
 			($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
-			return unless $pcno;
-			return if $pcno < 10 || $pcno > 99;
+			unless (defined $pcno && $pcno >= 10 && $pcno <= 89) {
+				dbg("PCPROT: unknown protocol") if isdbg('chanerr');
+				return;
+			}
 			
 			# check for and dump bad protocol messages
 			my $n = check($pcno, @field);
@@ -411,21 +434,16 @@ sub normal
 				return;
 			}
 		}
+	} else {
+		if ($pcno == 16 || $pcno == 17 || $pcno == 19 || $pcno == 21) {
+			$line = mungepc91($origin, $line);
+		} else {
+			$line = mungepc90($line);
+		}
 	}
-
-	# local processing 1
-	my $pcr;
-	eval {
-		$pcr = Local::pcprot($self, $pcno, @field);
-	};
-#	dbg("Local::pcprot error $@") if isdbg('local') if $@;
-	return if $pcr;
 
 	no strict 'subs';
 	my $sub = "handle_$pcno";
-
-	# add missing PC90 if not present (for ongoing distribution)
-	$line = mungepc90($line) if $pcno < 90;
 
 	if ($self->can($sub)) {
 		$self->$sub($pcno, $line, $origin, @field);
@@ -809,7 +827,7 @@ sub handle_16
 					$user->put;
 						
 					# route the pc19 - this will cause 'stuttering PC19s' for a while
-					$self->route_pc19(@nrout) if @nrout ;
+					$self->route_pc19($origin, $line, @nrout) if @nrout ;
 					$parent = Route::Node::get($ncall);
 					unless ($parent) {
 						dbg("PCPROT: lost $ncall after sending PC19 for it?");
@@ -879,8 +897,7 @@ sub handle_16
 		$user->lastin($main::systime) unless DXChannel->get($call);
 		$user->put;
 	}
-			
-	$self->route_pc16($parent, @rout) if @rout;
+	$self->route_pc16($origin, $line, $parent, @rout) if @rout;
 }
 		
 # remove a user
@@ -933,7 +950,7 @@ sub handle_17
 		return;
 	}
 
-	$self->route_pc17($parent, $uref);
+	$self->route_pc17($origin, $line, $parent, $uref);
 }
 		
 # link request
@@ -965,7 +982,7 @@ sub handle_18
 	# first clear out any nodes on this dxchannel
 	my $parent = Route::Node::get($self->{call});
 	my @rout = $parent->del_nodes;
-	$self->route_pc21(@rout, $parent) if @rout;
+	$self->route_pc21($origin, $line, @rout, $parent) if @rout;
 	$self->send_local_config();
 	$self->send(pc20());
 }
@@ -1076,7 +1093,7 @@ sub handle_19
 	}
 
 
-	$self->route_pc19(@rout) if @rout;
+	$self->route_pc19($origin, $line, @rout) if @rout;
 }
 		
 # send local configuration
@@ -1146,7 +1163,7 @@ sub handle_21
 		}
 	}
 
-	$self->route_pc21(@rout) if @rout;
+	$self->route_pc21($origin, $line, @rout) if @rout;
 }
 		
 
@@ -1234,7 +1251,7 @@ sub handle_24
 	my $ref = $nref || $uref;
 	return unless $self->in_filter_route($ref);
 
-	$self->route_pc24($ref, $_[3]);
+	$self->route_pc24($origin, $line, $ref, $_[3]);
 }
 		
 # merge request
@@ -1474,7 +1491,7 @@ sub handle_50
 		# input filter if required
 		return unless $self->in_filter_route($node);
 
-		$self->route_pc50($node, $_[2], $_[3]) unless eph_dup($line);
+		$self->route_pc50($origin, $line, $node, $_[2], $_[3]) unless eph_dup($line);
 	}
 }
 		
@@ -1532,7 +1549,7 @@ sub handle_51
 			}
 		}
 	} else {
-		if (eph_dup($line)) {
+		if ($line !~ /^PC90/ && eph_dup($line)) {
 			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
 			return;
 		}
@@ -1773,7 +1790,6 @@ sub send_wwv_spot
 
 		$dxchan->wwv($line, $self->{isolate}, @_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
 	}
-	
 }
 
 sub wwv
@@ -2021,29 +2037,48 @@ sub send_local_config
 	# send our nodes
 	if ($self->{isolate}) {
 		@localnodes = ( $main::routeroot );
+		$self->send_route(\&pc19, 1, $main::routeroot, $main::routeroot);
 	} else {
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
+
+		# send locally connected nodes
 		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
-		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
-		my $ref = Route::Node::get($self->{call});
-		my @rnodes = $ref->nodes;
-		for my $node (@intcalls) {
-			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes;
+		$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
+
+		my $node;
+		if ($self->user->wantpc90) {
+			for $node (@localnodes) {
+				my @nodes = map {my $r = Route::Node::get($_); $r ? $r : ()} $node->nodes;
+				$self->send_route($node->call, \&pc19, scalar(@nodes)+1, @nodes);
+				for my $r (@nodes) {
+					push @remotenodes, $r unless grep $r eq $_, @remotenodes;
+				}
+			}
+		} else {
+			my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
+			my @intcalls;
+			for $node (@rawintcalls) {
+				push @intcalls, $node unless grep $node eq $_, @intcalls; 
+			}
+			my $ref = Route::Node::get($self->{call});
+			my @rnodes = $ref->nodes;
+			for $node (@intcalls) {
+				push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
+			}
+			$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
 		}
-		unshift @localnodes, $main::routeroot;
 	}
 	
 
-	$self->send_route(\&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
 	
 	# get all the users connected on the above nodes and send them out
-	foreach $node (@localnodes, @remotenodes) {
+	foreach $node ($main::routeroot, @localnodes, @remotenodes) {
 		if ($node) {
 			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->send_route(\&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
+			$self->send_route($main::mycall, \&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
 		}
@@ -2299,7 +2334,7 @@ sub disconnect
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
-		$self->route_pc21(@rout) if @rout;
+		$self->route_pc21($main::mycall, undef, @rout) if @rout;
 	}
 
 	# remove outstanding pings
@@ -2331,9 +2366,11 @@ sub talk
 
 # send it if it isn't the except list and isn't isolated and still has a hop count
 # taking into account filtering and so on
+
 sub send_route
 {
 	my $self = shift;
+	my $origin = shift;
 	my $generate = shift;
 	my $no = shift;     # the no of things to filter on 
 	my $routeit;
@@ -2368,6 +2405,8 @@ sub send_route
 				$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
 				next unless $routeit;
 			}
+			
+			$routeit = mungepc91($origin, $routeit) if $self->user->wantpc90;
 			$self->send($routeit);
 		}
 	}
@@ -2376,10 +2415,11 @@ sub send_route
 sub broadcast_route
 {
 	my $self = shift;
+	my $origin = shift;
 	my $generate = shift;
+	my $line = shift;
 	my @dxchan = DXChannel::get_all_nodes();
 	my $dxchan;
-	my $line;
 	
 	unless ($self->{isolate}) {
 		foreach $dxchan (@dxchan) {
@@ -2388,7 +2428,11 @@ sub broadcast_route
 			next unless $dxchan->isa('DXProt');
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
  
-			$dxchan->send_route($generate, @_);
+			if ($self->user->wantpc90 && $line) {
+				$dxchan->send(mungepc91($origin, $line));
+			} else {
+				$dxchan->send_route($origin, $generate, @_);
+			}
 		}
 	}
 }
@@ -2397,44 +2441,58 @@ sub route_pc16
 {
 	my $self = shift;
 	return unless $self->user->wantpc16;
-	broadcast_route($self, \&pc16, 1, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc16, $line, 1, @_);
 }
 
 sub route_pc17
 {
 	my $self = shift;
 	return unless $self->user->wantpc16;
-	broadcast_route($self, \&pc17, 1, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc17, $line, 1, @_);
 }
 
 sub route_pc19
 {
 	my $self = shift;
-	broadcast_route($self, \&pc19, scalar @_, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc19, $line, scalar @_, @_);
 }
 
 sub route_pc21
 {
 	my $self = shift;
-	broadcast_route($self, \&pc21, scalar @_, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc21, $line, scalar @_, @_);
 }
 
 sub route_pc24
 {
 	my $self = shift;
-	broadcast_route($self, \&pc24, 1, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc24, $line, 1, @_);
 }
 
 sub route_pc41
 {
 	my $self = shift;
-	broadcast_route($self, \&pc41, 1, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc41, $line, 1, @_);
 }
 
 sub route_pc50
 {
 	my $self = shift;
-	broadcast_route($self, \&pc50, 1, @_);
+	my $origin = shift;
+	my $line = shift;
+	broadcast_route($self, $origin, \&pc50, $line, 1, @_);
 }
 
 sub in_filter_route

@@ -68,7 +68,7 @@ sub new
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
-	DXProt::route_pc16($main::me, $main::routeroot, $ref) if $ref;
+	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
 
 	return $self;
 }
@@ -526,7 +526,7 @@ sub disconnect
 		dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
 
 		# issue a pc17 to everybody interested
-		DXProt::route_pc17($main::me, $main::routeroot, $uref);
+		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}
