@@ -1475,12 +1475,18 @@ sub route
 	unless ($dxchan) {
 		my $cl = DXCluster->get_exact($call);
 		$dxchan = $cl->dxchan if $cl;
+		if ($dxchan eq $self) {
+			dbg('chan', "PCPROT: Trying to route back to source, dropped");
+			return;
+		}
 	}
 	if ($dxchan) {
 		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 		if ($routeit) {
 			$dxchan->send($routeit);
 		}
+	} else {
+		dbg('chan', "PCPROT: No route available, dropped");
 	}
 }
 
