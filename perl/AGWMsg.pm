@@ -327,7 +327,9 @@ sub _decode
 				$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
 			}
 		} elsif ($sort eq 'd') {
-			dbg('agw', "AGW '$from'->'$to' port: $port Disconnected");
+			my $d = unpack "Z*", $data;
+			$d =~ s/\cM$//;
+			dbg('agw', "AGW '$from'->'$to' port: $port Disconnected ($d)");
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			if ($conn) {
 				&{$conn->{eproc}}() if $conn->{eproc};
