@@ -205,7 +205,7 @@ sub new_channel
 				Log('DXCommand', "$main::mycall using NP but has no passphrase");
 				dbg("$main::mycall using NP but has no passphrase");
 			}
-			already_conn($conn, $call, "Need to exchange passphrases");
+#			already_conn($conn, $call, "Need to exchange passphrases");
 			return;
 		}
 	} elsif ($user->is_node) {
