@@ -1,9 +1,12 @@
+08Nov00=======================================================================
+1. fix cosmetic errors in for/oper for 'users'.
 07Nov00=======================================================================
 1. removed sh/call because the owner isn't happy about us using it. 
 2. change sh/qrz to the new interface. MUCH QUICKER! you will need a user id
 and password from qrz.com to use it and you will have to copy the 
 /spider/perl/Internet.pm to /spider/local and alter it accordingly. Do 
-remember to set $allow=1 as well!
+remember to set $allow=1 as well! The new interface comes courtesy of Fred
+LLoyd, the proprietor of http://www.qrz.com
 06Nov00=======================================================================
 1. Added sh/qrz to the list of callbook services
 05Nov00=======================================================================
