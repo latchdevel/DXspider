@@ -35,5 +35,5 @@ if ($self->priv < 6) {
 	return (1, $self->msg('e5')) if $who ne $self->call;
 }
 
-@out = DXLog::print($from, $to, $main::systime, $who);
+@out = DXLog::print($from, $to, $main::systime, undef, $who);
 return (1, @out);

@@ -37,12 +37,10 @@ sub print
 	my $count;
 	my $hint = "";
 	    
-	$search = '1' unless $pattern || $who;
 	if ($pattern) {
-		$search = "\$ref->[1] =~ m{$pattern}i";
+		$search = "\$ref->[1] =~ m{^$pattern}i";
 		$hint = "m{$pattern}i";
 	}
-
 	if ($who) {
 		if ($search) {
 			$search .= ' && ';
@@ -52,6 +50,7 @@ sub print
 		$hint .= 'm{$who}i';
 	}
 	$hint = "next unless $hint" if $hint;
+	$search = "1" unless $search;
 	
 	$eval = qq(
 			   \@in = ();
