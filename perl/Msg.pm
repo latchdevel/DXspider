@@ -15,8 +15,6 @@ use IO::Select;
 use IO::Socket;
 use DXDebug;
 use Timer;
-use Errno qw(EWOULDBLOCK EAGAIN EINPROGRESS);
-use POSIX qw(F_GETFL F_SETFL O_NONBLOCK);
 
 use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns);
 
@@ -33,9 +31,14 @@ my $blocking_supported = 0;
 BEGIN {
     # Checks if blocking is supported
     eval {
-        require POSIX; POSIX->import(qw (F_SETFL O_NONBLOCK));
+        require POSIX; POSIX->import(qw (F_SETFL F_GETFL O_NONBLOCK));
     };
     $blocking_supported = 1 unless $@;
+
+	# import as many of these errno values as are available
+	eval {
+		require Errno; Errno->import(qw(EAGAIN EINPROGRESS EWOULDBLOCK));
+	};
 }
 
 my $w = $^W;
