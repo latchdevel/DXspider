@@ -312,7 +312,7 @@ sub readfile($)
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($freq, $call, $d, $text) = @_; 
+	my ($freq, $call, $d, $text, $by) = @_; 
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
@@ -331,11 +331,14 @@ sub dup
 	$text =~ s/[^a-zA-Z0-9]//g;
 	for (-60, -120, -180, -240, 0, 60, 120, 180, 240, 300) {
 		my $dt = $d - $_;
-		my $dupkey = "X$freq|$call|$dt|\L$text";
-		return 1 if DXDupe::find($dupkey);
+		my $ldupkey = "X$freq|$call|$dt|\L$text";
+		my $sdupkey = "X$freq|$call|$dt|$by";
+		return 1 if DXDupe::find($ldupkey) || DXDupe::find($sdupkey);
 	}
-	my $dupkey = "X$freq|$call|$d|\L$text";
-	DXDupe::add($dupkey, $main::systime+$dupage);
+	my $ldupkey = "X$freq|$call|$d|\L$text";
+	my $sdupkey = "X$freq|$call|$d|$by";
+	DXDupe::add($ldupkey, $main::systime+$dupage);
+	DXDupe::add($sdupkey, $main::systime+$dupage);
 	return 0;
 }
 

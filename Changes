@@ -19,9 +19,9 @@ is this:-
 6a. If you don't have Compress::Zlib loaded then you will need to gunzip
     it manually and do: create_usdb.pl /tmp/usdbraw (not Windows :-)
 7. on linux, in a console window do: load/usdb, on windows: restart the node. 
-
-Added set/usdb command to add adding or changing of a callsign in the USDB
-
+--
+2. Added set/usdb command to add adding or changing of a callsign in the USDB
+3. Stop dupe spots from the same spotter (with or without comment corruption)
 14Oct02=======================================================================
 1. added show/usdb command as a simple, direct interface to the information
 available in the USDB stuff.

@@ -471,7 +471,7 @@ sub normal
 			# this goes after the input filtering, but before the add
 			# so that if it is input filtered, it isn't added to the dup
 			# list. This allows it to come in from a "legitimate" source
-			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
+			if (Spot::dup($field[1], $field[2], $d, $field[5], $field[6])) {
 				dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
 				return;
 			}
