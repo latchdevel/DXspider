@@ -133,8 +133,12 @@ sub normal
 			
 			# convert the date to a unix date
 			my $d = cltounix($field[3], $field[4]);
-			return if !$d || ($pcno == 11 && $d < $main::systime - $pc11_max_age); # bang out (and don't pass on) if date is invalid or the spot is too old
-			
+			# bang out (and don't pass on) if date is invalid or the spot is too old
+			if (!$d || ($pcno == 11 && $d < $main::systime - $pc11_max_age)) {
+				dbg('chan', "Spot ignored, invalid date or too old");
+				return;
+			}
+
 			# strip off the leading & trailing spaces from the comment
 			my $text = unpad($field[5]);
 			
@@ -144,7 +148,11 @@ sub normal
 			
 			# do some de-duping
 			my $dupkey = "$field[1]$field[2]$d$text$field[6]";
-			return if $dup{$dupkey};
+			if ($dup{$dupkey}) {
+				dbg('chan', "Duplicate Spot ignored");
+				return;
+			}
+			
 			$dup{$dupkey} = $d;
 			
 			my $spot = Spot::add($field[1], $field[2], $d, $text, $spotter);
@@ -250,7 +258,7 @@ sub normal
 			$self->send_local_config();
 			$self->send(pc20());
 			$self->state('init');	
-			last SWITCH;
+			return;             # we don't pass these on
 		}
 		
 		if ($pcno == 19) {		# incoming cluster list
@@ -529,8 +537,8 @@ sub finish
 	my $node;
 	
 	foreach $node (@gonenodes) {
-		next if $node->call eq $call; 
-		broadcast_ak1a(pc21($node->call, 'Gone'), $self) unless $self->{isolate}; # done like this 'cos DXNodes don't have a pc21 method
+		next if $node->call eq $call;
+		broadcast_ak1a(pc21($node->call, 'Gone') , $self) unless $self->{isolate}; 
 		$node->del();
 	}
 
@@ -566,7 +574,7 @@ sub send_local_config
 	my @s = $me->pc19(@nodes);
 	for (@s) {
 		my $routeit = adjust_hops($self, $_);
-		$self->send($_) if $routeit;
+		$self->send($routeit) if $routeit;
 	}
 	
 	# get all the users connected on the above nodes and send them out
@@ -575,7 +583,7 @@ sub send_local_config
 		my @s = pc16($n, @users);
 		for (@s) {
 			my $routeit = adjust_hops($self, $_);
-			$self->send($_) if $routeit;
+			$self->send($routeit) if $routeit;
 		}
 	}
 }
@@ -595,7 +603,7 @@ sub route
 		if ($dxchan) {
 			my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 			if ($routeit) {
-				$dxchan->send($line) if $dxchan;
+				$dxchan->send($routeit) if $dxchan;
 			}
 		}
 	}
@@ -612,8 +620,8 @@ sub broadcast_ak1a
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	foreach $dxchan (@dxchan) {
 		next if grep $dxchan == $_, @except;
-		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name       
-		$dxchan->send($s) unless $dxchan->{isolate} || !$routeit; 
+		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
+		$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
 	}
 }
 
@@ -701,28 +709,29 @@ sub get_hops
 sub adjust_hops
 {
 	my $self = shift;
+	my $s = shift;
 	my $call = $self->{call};
 	my $hops;
 	
-	if (($hops) = $_[0] =~ /\^H(\d+)\^~?$/o) {
-		my ($pcno) = $_[0] =~ /^PC(\d\d)/o;
-		confess "$call called adjust_hops with '$_[0]'" unless $pcno;
+	if (($hops) = $s =~ /\^H(\d+)\^~?$/o) {
+		my ($pcno) = $s =~ /^PC(\d\d)/o;
+		confess "$call called adjust_hops with '$s'" unless $pcno;
 		my $ref = $nodehops{$call} if %nodehops;
 		if ($ref) {
 			my $newhops = $ref->{$pcno};
-			return 0 if defined $newhops && $newhops == 0;
+			return "" if defined $newhops && $newhops == 0;
 			$newhops = $ref->{default} unless $newhops;
-			return 0 if defined $newhops && $newhops == 0;
+			return "" if defined $newhops && $newhops == 0;
 			$newhops = $hops if !$newhops;
-			$_[0] =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
+			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
 		} else {
 			# simply decrement it
 			$hops--;
-			return 0 if !$hops;
-			$_[0] =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/ if $hops;
+			return "" if !$hops;
+			$s =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/ if $hops;
 		}
 	}
-	return 1;
+	return $s;
 }
 
 # 

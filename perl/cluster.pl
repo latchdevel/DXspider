@@ -10,6 +10,8 @@
 # $Id$
 # 
 
+require 5.004;
+
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	# root of directory tree for this system
@@ -98,23 +100,16 @@ sub rec
 					return;
 				}
 			}
+			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 		} else {
-			if (DXCluster->get($call) || DXChannel->get($call)) {
+			if (DXCluster->get($call)) {
 				my $mess = DXM::msg($lang, 'conother', $call);
 				already_conn($conn, $call, $mess);
 				return;
 			}
+			$user = DXUser->new($call);
 		}
 
-		
-		# the user MAY have an SSID if local, but otherwise doesn't
-		$user = DXUser->get($call);
-		if (!defined $user) {
-			$user = DXUser->new($call);
-		} else {
-			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
-		}
-		
 		# is he locked out ?
 		if ($user->lockout) {
 			Log('DXCommand', "$call is locked out, disconnected");

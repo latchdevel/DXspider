@@ -26,6 +26,7 @@
 # $Id$
 # 
 
+require 5.004;
 
 # search local then perl directories
 BEGIN {
@@ -55,7 +56,10 @@ sub cease
 		$conn->send_now("Z$call|bye...\n");
 	}
 	$stdout->flush if $stdout;
-	kill(15, $pid) if $pid;
+	if ($pid) {
+		dbg('connect', "killing $pid");
+		kill(9, $pid);
+	}
 	sleep(1);
 	exit(0);	
 }
@@ -71,6 +75,7 @@ sub sig_chld
 {
 	$SIG{CHLD} = \&sig_chld;
 	$waitedpid = wait;
+	dbg('connect', "caught $pid");
 }
 
 
@@ -201,19 +206,18 @@ sub doconnect
 		my ($host, $port) = split /\s+/, $line;
 		$port = 23 if !$port;
 		
-		if ($port == 23) {
-			$sock = new Net::Telnet (Timeout => $timeout);
+#		if ($port == 23) {
+			$sock = new Net::Telnet (Timeout => $timeout, Port => $port);
 			$sock->option_callback(\&optioncb);
 			$sock->output_record_separator('');
 			$sock->option_log('option_log');
 			$sock->dump_log('dump');
 			$sock->option_accept(Wont => TELOPT_ECHO);
 			$sock->open($host) or die "Can't connect to $host port $port $!";
-		} else {
-			$sock = IO::Socket::INET->new(PeerAddr => "$host:$port", Proto => 'tcp')
-				or die "Can't connect to $host port $port $!";
-			
-		}
+#		} else {
+#			$sock = IO::Socket::INET->new(PeerAddr => "$host:$port", Proto => 'tcp')
+#				or die "Can't connect to $host port $port $!";
+#		}
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		my @args = split /\s+/, $line;
 		$rfh = new IO::File;
@@ -282,7 +286,7 @@ sub dochat
 sub timeout
 {
 	dbg('connect', "timed out after $timeout seconds");
-	cease(10);
+	cease(0);
 }
 
 
@@ -411,7 +415,7 @@ if ($connsort eq "connect") {
 	@in = <IN>;
 	close IN;
 	
-	#	alarm($timeout);
+	alarm($timeout);
 	
 	for (@in) {
 		chomp;
