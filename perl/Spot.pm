@@ -246,7 +246,7 @@ sub search
                                     push \@\$ref, \@dxcc;
                                 }
                             }
-		                    my (\$filter, \$hops) = \$dxchan->{inspotsfilter}->it(\@\$ref);
+		                    my (\$filter, \$hops) = \$dxchan->{spotsfilter}->it(\@\$ref);
 		                    next unless (\$filter);
                         }
 						\$count++;
