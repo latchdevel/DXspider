@@ -1,5 +1,5 @@
 #
-# show the dxcc number for each callsign or prefix entered
+# show the prefix info for each callsign or prefix entered
 #
 # $Id$
 #
@@ -18,8 +18,8 @@ foreach $l (@list) {
   my $pre = shift @ans;
   my $a;
   foreach $a (@ans) {
-    push @out, sprintf "%-9s DXCC: %3d ITU: %3d CQ: %3d (%s, %s)", uc $l, $a->dxcc(), $a->itu(), $a->cq(), $pre, $a->name();
-	$l = "";
+    push @out, sprintf "%s DXCC: %d ITU: %d CQ: %d LL: %s %s (%s, %s)", uc $l, $a->dxcc(), $a->itu(), $a->cq(), slat($a->lat), slong($a->long), $pre, $a->name();
+	$l = " " x length $l;
   }
 }
 

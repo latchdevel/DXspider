@@ -78,7 +78,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.46";				# the version no of the software
+$version = "1.47";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
 @outstanding_connects = ();     # list of outstanding connects
