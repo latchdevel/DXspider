@@ -1701,8 +1701,8 @@ sub disconnect
 	
 	# create a list of all the nodes that have gone and delete them from the table
 	my @nodes;
-	foreach my $node (grep { $_->dxchan == $self } DXNode::get_all) {
-		next if $node->dxchancall eq $call;
+	foreach my $node (grep { $_->dxchancall eq $call } DXNode::get_all) {
+		next if $node->call eq $call;
 		next if $node->call eq $main::mycall;
 		push @nodes, $node->call;
 		$node->del;
