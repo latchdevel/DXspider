@@ -11,10 +11,8 @@ use strict;
 package Thingy::Rt;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /^\d+\.\d+(?:\.(\d+)\.(\d+))?$/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 use DXChannel;
 use DXDebug;
@@ -91,9 +89,9 @@ sub handle_eau
 	my $dxchan = shift;
 
 	if (my $d = $thing->{d}) {
+		my $nref;
 		for (split /:/, $d) {
 			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
-			my $nref;
 			if ($type eq 'U') {
 				unless ($nref) {
 					dbg("Thingy::Rt::ea need a node before $call");
@@ -114,10 +112,6 @@ sub handle_eau
 				dbg("Thingy::Rt::ea invalid type $type");
 				return;
 			}
-			unless ($nref) {
-				dbg("Thingy::Rt::ea no node");
-				return;
-			}
 		}
 	}
 	return $thing;
@@ -129,9 +123,9 @@ sub handle_edu
 	my $dxchan = shift;
 
 	if (my $d = $thing->{d}) {
+		my $nref;
 		for (split /:/, $d) {
 			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
-			my $nref;
 			if ($type eq 'U') {
 				unless ($nref) {
 					dbg("Thingy::Rt::ed need a node before $call");
@@ -148,10 +142,6 @@ sub handle_edu
 				RouteDB::update($nref->{call}, $dxchan->{call}, $dxchan->{call} eq $nref->{call} ? 2 : ($thing->{hops} || 99));
 			} else {
 				dbg("Thingy::Rt::ed invalid type $type");
-				return;
-			}
-			unless ($nref) {
-				dbg("Thingy::Rt::ed no node");
 				return;
 			}
 		}
