@@ -1,6 +1,7 @@
 04Nov00=======================================================================
 1. fix sh/filter so ity now works for any callsign (and not just connected
 ones).
+2. Have only one is_callsign and not an iscallsign as well.
 03Nov00=======================================================================
 1. allow - in filter strings
 2. store only the filter expression NOTE BENE: you will need to clear all 

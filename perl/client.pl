@@ -419,7 +419,7 @@ if ($loginreq) {
 	$s =~ s/\s+//og;
 	$s =~ s/-\d+$//o;            # no ssids!
 	cease(0) unless $s && $s gt ' ';
-	unless (iscallsign($s)) {
+	unless (is_callsign($s)) {
 		$stdout->print("Sorry, $s is an invalid callsign");
 		cease(0);
 	} 

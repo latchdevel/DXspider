@@ -16,7 +16,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs shellregex readfilestr writefilestr
-             print_all_fields cltounix iscallsign unpad is_callsign
+             print_all_fields cltounix unpad is_callsign
 			 is_freq is_digits is_pctext is_pcflag insertitem deleteitem
             );
 

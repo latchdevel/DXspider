@@ -203,7 +203,7 @@ sub process
 
 			# look to see whether this is a non private message sent to a known callsign
 			my $uref = DXUser->get_current($ref->{to});
-			if (iscallsign($ref->{to}) && !$ref->{private} && $uref && $uref->homenode) {
+			if (is_callsign($ref->{to}) && !$ref->{private} && $uref && $uref->homenode) {
 				$ref->{private} = 1;
 				dbg('msg', "set bull to $ref->{to} to private");
 			}
