@@ -32,7 +32,7 @@ use Sun;
 use Internet;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -393,6 +393,12 @@ sub process
 			$dxchan->t($t);
 		}
 	}
+
+	while (my ($k, $v) = each %nothereslug) {
+		if ($main::systime >= $v + 300) {
+			delete $nothereslug{$k};
+		}
+	}
 }
 
 #
@@ -646,11 +652,15 @@ sub talk
 	Log('talk', $to, $from, $main::mycall, $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
-		my ($ref, $dxchan);
-		if (($ref = Route::get($from)) && ($dxchan = $ref->dxchan)) {
-			my $name = $self->user->name || $to;
-			my $s = $self->user->nothere || $dxchan->msg('nothere', $name);
-			$dxchan->talk($to, $from, undef, $s);
+		my $key = "$to$from";
+		unless (exists $nothereslug{$key}) {
+			my ($ref, $dxchan);
+			if (($ref = Route::get($from)) && ($dxchan = $ref->dxchan)) {
+				my $name = $self->user->name || $to;
+				my $s = $self->user->nothere || $dxchan->msg('nothere', $name);
+				$nothereslug{$key} = $main::systime;
+				$dxchan->talk($to, $from, undef, $s);
+			}
 		}
 	}
 }
