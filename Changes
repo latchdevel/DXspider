@@ -5,6 +5,7 @@ in convkeps.pl.
 file from a msg (hopefully containing 2 Line Nasa keps) and then load - all
 in one step. Added load/keps to the help files
 3. Updated spanish Messages
+4. Improve wcy command from Stephan DK8LV's input
 15Dec01=======================================================================
 1. added superfluous spaces back into PC73 for the benefit of clx
 14Dec01=======================================================================

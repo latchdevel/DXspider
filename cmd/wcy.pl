@@ -60,7 +60,7 @@ my $today = cldate($main::systime);
 # 14-Dec-2001   15   220   3   1     0 212 act   qui       no <DK0WCY-3>
 my @field = ('PC73',$today,$hour,$args{sf},$args{a},$args{k},$args{expk},$args{r},$args{sa},$args{gmf},$args{au}, $self->call ,$main::mycall, 'H99');
 
-my $s = sprintf "%s^%s^%02d^%3d^%2d^%2d^%2d^%3d^%s^%s^%s^%s^%s^%s^", @field;
+my $s = sprintf "%s^%s^%02d^%3d^%3d^%2d^%2d^%3d^%s^%s^%s^%s^%s^%s^", @field;
 WCY::update($d, @field[2..12]);
 DXProt::send_wcy_spot($self, $s, $d, @field[2..12]);
 $self->wcy($s, 0, @field[1..12]);
