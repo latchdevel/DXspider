@@ -302,6 +302,9 @@ sub process
 			} else {
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			} 
+
+			# send next one if present
+			queue_msg(0);
 			last SWITCH;
 		}
 		
