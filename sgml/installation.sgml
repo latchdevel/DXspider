@@ -7,7 +7,7 @@
 <title>The DXSpider Installation Manual v1.50</title> 
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
 Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>July 2002 revision 0.1</date>
+<date>July 2002 revision 0.2</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -40,7 +40,7 @@ in the development of Spider.
 
 <P>
 In addition to the standard Red Hat distribution you will require the 
-following modules from <htmlurl url="http://www.cpan.org/CPAN.html" name="http://www.cpan.org/CPAN.html"> , please note however that with later versions of perl, some of these
+following modules from <htmlurl url="http://www.cpan.org/modules/by-module/" name="http://www.cpan.org/modules/bymodule/"> , please note however that with later versions of perl, some of these
 modules may be included with the distribution.  Get the modules anyway and try
 to install as below.  If they complain, they are probably already a part of your
 perl distribution.
@@ -109,7 +109,7 @@ Log in as 'root', and make sure you're at '/root' before you continue. Here are 
 #
 # tar xvfz /usr/local/packages/Digest-SHA1-2.01.tar.gz
 # cd Digest-SHA1-2.01
-# perl Makefile.pl
+# perl Makefile.PL
 # make test
 # make install
 # cd ..
