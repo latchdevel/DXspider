@@ -52,6 +52,15 @@ BEGIN {
 	eval {
 		require Errno; Errno->import(qw(EAGAIN EINPROGRESS EWOULDBLOCK));
 	};
+
+	eval {
+		require Socket; Socket->import(qw(IPPROTO_TCP TCP_NODELAY));
+	};
+	if ($@ && !$^O =~ /^MS/) {
+		dbg("IPPROTO_TCP and TCP_NODELAY manually defined");
+		eval '*IPPROTO_TCP     = sub {     6 };';
+		eval '*TCP_NODELAY     = sub {     1 };';
+	}
 	# http://support.microsoft.com/support/kb/articles/Q150/5/37.asp
 	# defines EINPROGRESS as 10035.  We provide it here because some
 	# Win32 users report POSIX::EINPROGRESS is not vendor-supported.
@@ -375,11 +384,6 @@ sub new_server {
 	return $self;
 }
 
-eval "use Socket qw(IPPROTO_TCP TCP_NODELAY)";
-if ($@ && !$main::is_win) {
-	sub IPPROTO_TCP {6;}
-	sub TCP_NODELAY {1;};
-}
 
 sub nolinger
 {
