@@ -1,3 +1,5 @@
+10Jan00=======================================================================
+1. added Steve Franke's new Sun.pm and show/satellite command
 08Jan00=======================================================================
 1. really removed the restriction on 0 length messages.
 2. added a periodic msg file import system a la FBB. Stick one or more files

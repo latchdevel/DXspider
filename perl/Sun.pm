@@ -34,7 +34,7 @@ $pi = 3.141592653589;
 $d2r = ($pi/180);
 $r2d = (180/$pi);
 
-sub julian_day
+sub Julian_Day
 {
 	my $year = shift;
 	my $month = shift;
@@ -47,12 +47,54 @@ sub julian_day
 	$julianday = int(365.25*($year+4716)+int(30.6001*($month+1)))+$day-13-1524.5;
 	return $julianday;
 }
+sub Julian_Date_of_Epoch
+{
+	my $epoch=shift;
+	my $year=int($epoch*1e-3);
+	$year=$year+2000 if ($year < 57);
+	$year=$year+1900 if ($year >= 57);
+	my $day=$epoch-$year*1e3;
+	my $Julian_Date_of_Epoch=Julian_Date_of_Year($year)+$day;
+	return $Julian_Date_of_Epoch;
+}
+sub Julian_Date_of_Year
+{
+	my $year=shift;
+	$year=$year-1;
+	my $A=int($year/100);
+	my $B=2-$A+int($A/4);
+	my $Julian_Date_of_Year=int(365.25*$year)+int(30.6001*14)+
+		1720994.5+$B;
+	return $Julian_Date_of_Year;
+}	
+sub ThetaG_JD
+{
+	my $jd=shift;
+	my $omega_E=1.00273790934; # earth rotations per sidereal day
+	my $secday=86400;
+	my $UT=($jd+0.5)-int($jd+0.5);
+	$jd=$jd-$UT;
+	my $TU=($jd-2451545.0)/36525;
+	my $GMST=24110.54841+$TU*(8640184.812866+$TU*(0.093104-$TU*6.2e-6));
+	my $thetag_jd=mod2p(2*$pi*($GMST/$secday+$omega_E*$UT));
+	return $thetag_jd;
+}
+
 sub reduce_angle_to_360
 {
 	my $angle = shift;
 
 	$angle=$angle-int($angle/360)*360;
 	$angle=$angle+360 if( $angle < 0 );		
+	return $angle;
+}
+sub mod2p
+{
+	my $twopi=$pi*2;
+	my $angle = shift;
+
+	$angle=$angle-int($angle/$twopi)*$twopi;
+	$angle=$angle+$twopi if( $angle < 0 );		
 	return $angle;
 }
 sub sindeg
@@ -98,7 +140,7 @@ sub rise_set
 	my ($m0,$m1,$m2,$theta,$alpha,$delta,$H,$az,$h,$h0,$aznow,$hnow,$corr);
 	my ($i,$arg,$argtest,$H0,$alphanow,$deltanow,$distance,$distancenow);
 	
-	my $julianday=julian_day($year,$month,$day);
+	my $julianday=Julian_Day($year,$month,$day);
 	my $tt1 = ($julianday-1-2451545)/36525.;
 	my $tt2 = ($julianday-2451545)/36525.;
 	my $tt3 = ($julianday+1-2451545)/36525.;
@@ -464,9 +506,9 @@ sub get_moon_alpha_delta
  
 sub get_sun_alpha_delta 
 {
-	#
-	# Calculate Sun's right ascension and declination
-	#
+#
+# Calculate Sun's right ascension and declination
+#
 	my $tt = shift;
 
 	my $L0 = 280.46646+36000.76983*$tt+0.0003032*($tt^2);
@@ -493,4 +535,374 @@ sub get_sun_alpha_delta
 
 	return ($alpha,$delta);
 }
+sub get_satellite_pos
+{
+#
+# This code was translated more-or-less directly from the Pascal
+# routines contained in a report compiled by TS Kelso and based on:
+# Spacetrack Report No. 3
+# "Models for Propagation of NORAD Element Sets"
+# Felix R. Hoots, Ronald L Roehrich
+# December 1980
+#
+# See TS Kelso's web site for more details...
+# Only the SGP propagation model is implemented. 
+#
+# Steve Franke, K9AN.   9 Dec 1999.
+
+#
+#NOAA 15
+#1 25338U 98030A   99341.00000000 +.00000376 +00000-0 +18612-3 0 05978
+#2 25338 098.6601 008.2003 0011401 112.4684 042.5140 14.23047277081382          
+#TDRS 5
+#1 21639U 91054B   99341.34471854  .00000095  00000-0  10000-3 0  4928
+#2 21639   1.5957  88.4884 0003028 161.6582 135.4323  1.00277774 30562
+#OSCAR 16 (PACSAT)
+#1 20439U 90005D   99341.14501399 +.00000343 +00000-0 +14841-3 0 02859
+#2 20439 098.4690 055.0032 0012163 066.4615 293.7842 14.30320285515297      
+#
+#Temporary keps database...
+#
+my %keps = (
+	noaa15 => {
+		number => 25338,
+		id => 98030,
+		epoch => 99341.00000000,
+		mm1 => .00000376,
+		mm2 => .00000e-0,
+		bstar => .18612e-3,
+		inclination => 98.6601,  
+		raan => 8.2003,
+		eccentricity => .0011401,
+		argperigee => 112.4684,
+		meananomaly => 42.5140,
+		meanmotion => 14.23047277081382,
+	},
+	tdrs5 => {
+		number => 21639,
+		id => 91054,
+		epoch => 99341.34471854,
+		mm1 => .00000095,
+		mm2 => .00000e-0,
+		bstar => .10000e-3,
+		inclination => 1.5957,  
+		raan => 88.4884,
+		eccentricity => .003028,
+		argperigee => 161.6582,
+		meananomaly => 135.4323,
+		meanmotion => 1.00277774,
+	},
+	oscar16 => {
+		number => 20439,
+		id => 90005,
+		epoch => 99341.14501399,
+		mm1 => .00000343,
+		mm2 => .00000e-0,
+		bstar => .14841e-3,
+		inclination => 98.4690,  
+		raan => 55.0032,
+		eccentricity => .0012163,
+		argperigee => 66.4615,
+		meananomaly => 293.7842,
+		meanmotion => 14.303202855,
+	},
+);
+	my $jtime = shift;
+	my $lat = shift;
+	my $lon = shift;
+	my $alt = shift;
+	my $satname = shift;
+	my $sat_ref = $keps{$satname};
+#printf("$jtime $lat $lon $alt Satellite name = $satname\n");	
+
+	my $qo=120;
+	my $so=78;
+	my $xj2=1.082616e-3;
+	my $xj3=-.253881e-5;
+	my $xj4=-1.65597e-6;
+	my $xke=.743669161e-1;
+	my $xkmper=6378.135;
+	my $xmnpda=1440.;
+	my $ae=1.;
+	my $ck2=.5*$xj2*$ae**2;
+	my $ck4=-.375*$xj4*$ae**4;
+	my $qoms2t=(($qo-$so)*$ae/$xkmper)**4;
+	my $s=$ae*(1+$so/$xkmper);
+
+	my $epoch = $sat_ref ->{epoch};
+#printf("epoch = %10.2f\n",$epoch);
+	my $epoch_year=int($epoch/1000);
+	my $epoch_day=$epoch-int(1000*$epoch_year);
+#printf("epoch_year = %10.2f\n",$epoch_year);
+#printf("epoch_day = %17.12f\n",$epoch_day);
+	$epoch_year=$epoch_year+2000 if ($epoch_year < 57);
+	$epoch_year=$epoch_year+1900 if ($epoch_year >= 57);
+	my $jt_epoch=Julian_Date_of_Year($epoch_year);
+	$jt_epoch=$jt_epoch+$epoch_day;
+#printf("JT for epoch = %17.12f\n",$jt_epoch);
+	my $tsince=($jtime-$jt_epoch)*24*60;
+#printf("tsince (min) = %17.12f\n",$tsince);
+
+	my $mm1 = $sat_ref ->{mm1};
+	my $mm2 = $sat_ref ->{mm2};
+	my $bstar=$sat_ref ->{bstar};             # drag term for sgp4 model 
+	my $inclination=$sat_ref->{inclination};  # inclination in degrees
+	my $raan=$sat_ref->{raan};                # right ascension of ascending node in degs
+	my $eccentricity=$sat_ref ->{eccentricity};  # eccentricity - dimensionless
+	my $omegao=$sat_ref ->{argperigee};          # argument of perigee in degs
+	my $xmo=$sat_ref ->{meananomaly};            # mean anomaly in degrees
+	my $xno=$sat_ref ->{meanmotion};             # mean motion in revs per day
+
+#printf("%10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n",
+#$mm1,$mm2,$bstar,$inclination,$raan,$eccentricity,$omegao,$xmo,$xno);
+	$raan=$raan*$d2r;
+	$omegao=$omegao*$d2r;
+	$xmo=$xmo*$d2r;
+	$inclination=$inclination*$d2r;
+	my $temp=2*$pi/$xmnpda/$xmnpda;
+	$xno=$xno*$temp*$xmnpda;
+	$mm1=$mm1*$temp;
+	$mm2=$mm2*$temp/$xmnpda;
+
+	my $c1=$ck2*1.5;
+	my $c2=$ck2/4.0;
+	my $c3=$ck2/2.0;
+	my $c4=$xj3*$ae**3/(4*$ck2);
+	my $cosio=cos($inclination);
+	my $sinio=sin($inclination);
+	my $a1=($xke/$xno)**(2./3.);
+	my $d1=$c1/$a1/$a1*(3*$cosio*$cosio-1)/(1-$eccentricity*$eccentricity)**1.5;
+	my $ao=$a1*(1-1./3.*$d1-$d1*$d1-134./81.*$d1*$d1*$d1);
+	my $po=$ao*(1-$eccentricity*$eccentricity);
+	$qo=$ao*(1-$eccentricity);
+	my $xlo=$xmo+$omegao+$raan;
+	my $d10=$c3*$sinio*$sinio;
+	my $d20=$c2*(7.*$cosio*$cosio-1);
+	my $d30=$c1*$cosio;
+	my $d40=$d30*$sinio;
+	my $po2no=$xno/($po*$po);
+	my $omgdt=$c1*$po2no*(5.*$cosio*$cosio-1);
+	my $xnodot=-2.*$d30*$po2no;
+	my $c5=0.5*$c4*$sinio*(3+5*$cosio)/(1+$cosio);
+	my $c6=$c4*$sinio;
+	
+	my $a=$xno+(2*$mm1+3*$mm2*$tsince)*$tsince;
+	$a=$ao*($xno/$a)**(2./3.);
+	my $e=1e-6;
+	$e =1-$qo/$a if ($a > $qo);
+	my $p=$a*(1-$e*$e);
+	my $xnodes=$raan+$xnodot*$tsince;
+	my $omgas=$omegao+$omgdt*$tsince;
+	my $xls=mod2p($xlo+($xno+$omgdt+$xnodot+($mm1+$mm2*$tsince)*$tsince)*$tsince);
+
+	my $axnsl=$e*cos($omgas);
+	my $aynsl=$e*sin($omgas)-$c6/$p;
+	my $xl=mod2p($xls-$c5/$p*$axnsl);
+
+	my $u=mod2p($xl-$xnodes);
+	my $item3=0;	
+	my $eo1=$u;
+	my $tem5=1;
+	my $coseo1=0;
+	my $sineo1=0;
+	while ( abs($tem5) >= 1e-6 && $item3 < 10 )
+	{
+		$sineo1=sin($eo1);
+		$coseo1=cos($eo1);
+		$item3 = $item3+1;
+		$tem5=1-$coseo1*$axnsl-$sineo1*$aynsl;
+		$tem5=($u-$aynsl*$coseo1+$axnsl*$sineo1-$eo1)/$tem5;
+		my $tem2=abs($tem5);
+		$tem5=$tem2/$tem5 if ($tem2 > 1);
+		$eo1=$eo1+$tem5;
+	}
+
+	$sineo1=sin($eo1);
+	$coseo1=cos($eo1);
+	my $ecose=$axnsl*$coseo1+$aynsl*$sineo1;
+	my $esine=$axnsl*$sineo1-$aynsl*$coseo1;
+	my $el2=$axnsl*$axnsl+$aynsl*$aynsl;
+	my $pl=$a*(1-$el2);
+	my $pl2=$pl*$pl;
+	my $r=$a*(1-$ecose);
+	my $rdot=$xke*sqrt($a)/$r*$esine;
+	my $rvdot=$xke*sqrt($pl)/$r;
+	$temp=$esine/(1+sqrt(1-$el2));
+	my $sinu=$a/$r*($sineo1-$aynsl-$axnsl*$temp);
+	my $cosu=$a/$r*($coseo1-$axnsl+$aynsl*$temp);
+	my $su=atan2($sinu,$cosu);
+
+	my $sin2u=($cosu+$cosu)*$sinu;
+	my $cos2u=1-2*$sinu*$sinu;
+	my $rk=$r+$d10/$pl*$cos2u;
+	my $uk=$su-$d20/$pl2*$sin2u;
+	my $xnodek=$xnodes+$d30*$sin2u/$pl2;
+	my $xinck=$inclination+$d40/$pl2*$cos2u;
+
+	my $sinuk=sin($uk);
+	my $cosuk=cos($uk);
+	my $sinnok=sin($xnodek);
+	my $cosnok=cos($xnodek);
+	my $sinik=sin($xinck);
+	my $cosik=cos($xinck);
+	my $xmx=-$sinnok*$cosik;
+	my $xmy=$cosnok*$cosik;
+	my $ux=$xmx*$sinuk+$cosnok*$cosuk;
+	my $uy=$xmy*$sinuk+$sinnok*$cosuk;
+	my $uz=$sinik*$sinuk;
+	my $vx=$xmx*$cosuk-$cosnok*$sinuk;
+	my $vy=$xmy*$cosuk-$sinnok*$sinuk;
+	my $vz=$sinik*$cosuk;
+
+	my $x=$rk*$ux*$xkmper/$ae;
+	my $y=$rk*$uy*$xkmper/$ae;
+	my $z=$rk*$uz*$xkmper/$ae;
+	my $xdot=$rdot*$ux;
+	my $ydot=$rdot*$uy;
+	my $zdot=$rdot*$uz;
+	$xdot=($rvdot*$vx+$xdot)*$xkmper/$ae*$xmnpda/86400;
+	$ydot=($rvdot*$vy+$ydot)*$xkmper/$ae*$xmnpda/86400;
+	$zdot=($rvdot*$vz+$zdot)*$xkmper/$ae*$xmnpda/86400;
+#printf("x=%17.6f y=%17.6f z=%17.6f \n",$x,$y,$z);
+#printf("xdot=%17.6f ydot=%17.6f zdot=%17.6f \n",$xdot,$ydot,$zdot);
+	my ($sat_lat,$sat_lon,$sat_alt,$sat_theta)=Calculate_LatLonAlt($x,$y,$z,$jtime);
+	my ($az, $el, $distance) = Calculate_Obs($x,$y,$z,$sat_theta,$xdot,$ydot,$zdot,$jtime,$lat,$lon,$alt);
+	return ($sat_lat,$sat_lon,$sat_alt,$az,$el,$distance);
+}
+
+sub Calculate_LatLonAlt
+{
+#
+# convert from ECI coordinates to latitude, longitude and altitude.
+#
+	my $x=shift;
+	my $y=shift;
+	my $z=shift;
+	my $time=shift;
+
+	my $theta=atan2($y,$x);
+	my $lon=mod2p($theta-ThetaG_JD($time));
+	my $range=sqrt($x**2+$y**2);
+	my $f=1/298.26;      # earth flattening constant
+	my $e2=$f*(2-$f);
+	my $xkmper=6378.135;
+	my $lat=atan2($z,$range);
+	my ($phi,$c);
+	do
+	{
+		$phi=$lat;
+		$c=1/sqrt(1-$e2*sin($phi)**2);
+		$lat=atan2($z+$xkmper*$c*$e2*sin($phi),$range);
+	} until abs($lat-$phi) < 1e-10;
+	my $alt=$range/cos($lat)-$xkmper*$c;
+	return ($lat,$lon,$alt,$theta); # radians and kilometers
+	
+}			
+
+sub Calculate_User_PosVel
+{
+# change from lat/lon/alt/time coordinates to earth centered inertial (ECI)
+# position and local hour angle.
+	my $lat=shift;
+	my $lon=shift;
+	my $alt=shift;
+	my $time=shift;
+	my $theta=mod2p(ThetaG_JD($time)+$lon);
+	my $omega_E=1.00273790934; # earth rotations per sidereal day
+	my $secday=86400;
+	my $mfactor=2*$pi*$omega_E/$secday;
+	my $f=1/298.26;      # earth flattening constant
+	my $xkmper=6378.135;
+	my $c=1/sqrt(1+$f*($f-2)*sin($lat)**2);
+	my $s=(1-$f)*(1-$f)*$c;
+	my $achcp=($xkmper*$c+$alt)*cos($lat);
+	my $x_user=$achcp*cos($theta);
+	my $y_user=$achcp*sin($theta);
+	my $z_user=($xkmper*$s+$alt)*sin($lat);
+	my $xdot_user=-$mfactor*$y_user;
+	my $ydot_user=$mfactor*$x_user;
+	my $zdot_user=0;
+	return ($x_user,$y_user,$z_user,$xdot_user,$ydot_user,$zdot_user,$theta);
+}
+sub Calculate_Obs
+{
+# calculate the azimuth/el of an object as viewed from observers position
+# with object position given in ECI coordinates and observer in lat/long/alt.
+#
+# inputs:	object ECI position vector (km)
+#		object velocity vector (km/s)
+#		julian time
+#		observer lat,lon,altitude (km)
+	my $x=shift;
+	my $y=shift;
+	my $z=shift;
+	my $theta_s=shift;
+	my $xdot=shift; 
+	my $ydot=shift; 
+	my $zdot=shift; 
+	my $time=shift;
+	my $lat=shift;
+	my $lon=shift;
+	my $alt=shift;
+
+	my ($x_o,$y_o,$z_o,$xdot_o,$ydot_o,$zdot_o,$theta)=
+		Calculate_User_PosVel($lat,$lon,$alt,$time);
+	my $xx=$x-$x_o;
+	my $yy=$y-$y_o;
+	my $zz=$z-$z_o;
+	my $xxdot=$xdot-$xdot_o;
+	my $yydot=$ydot-$ydot_o;
+	my $zzdot=$zdot-$zdot_o;
+
+	my $sin_lat=sin($lat);
+	my $cos_lat=cos($lat);
+	my $sin_theta=sin($theta);
+	my $cos_theta=cos($theta);
+	
+	my $top_s=$sin_lat*$cos_theta*$xx
+		+ $sin_lat*$sin_theta*$yy
+		- $cos_lat*$zz;
+
+	my $top_e=-$sin_theta*$xx
+		+ $cos_theta*$yy;
+
+	my $top_z=$cos_lat*$cos_theta*$xx
+		+ $cos_lat*$sin_theta*$yy
+		+ $sin_lat*$zz;
+
+	my $az=atan(-$top_e/$top_s);
+	$az=$az+$pi if ( $top_s > 0 );
+	$az=$az+2*$pi if ( $az < 0 );
+
+	my $range=sqrt($xx*$xx+$yy*$yy+$zz*$zz);
+	my $el=asin($top_z/$range);
+	return ($az, $el, $range);
+}
+
+sub Calendar_date_and_time_from_JD
+{
+	my ($jd,$z,$frac,$alpha,$a,$b,$c,$d,$e,$dom,$yr,$mon,$day,$hr,$min);
+	$jd=shift;
+	$jd=$jd+0.5;
+	$z=int($jd);
+	$frac=$jd-$z;
+	$alpha = int( ($z-1867216.5)/36524.25 );
+	$a=$z + 1 + $alpha - int($alpha/4);
+	$a=$z if( $z < 2299161 );
+	$b=$a+1524;
+	$c=int(($b-122.1)/365.25);
+	$d=int(365.25*$c);
+	$e=int(($b-$d)/30.6001);
+	$dom=$b-$d-int(30.6001*$e)+$frac;
+	$day=int($dom);
+	$mon=$e-1 if( $e < 14 );
+	$mon=$e-13 if( $e == 14 || $e == 15 );
+	$yr = $c-4716 if( $mon > 2 );
+	$yr = $c-4715 if( $mon == 1 || $mon == 2 );
+	$hr = int($frac*24);
+	$min= int(($frac*24 - $hr)*60+0.5);
+	return ($yr,$mon,$day,$hr,$min);
+}
+	
+
 
