@@ -158,23 +158,6 @@ sub handle_cf
 	return $thing;
 }
 
-# 
-# copy out the PC16 data for a node into the
-# pc16n and u slots if there are any users 
-#
-sub copy_pc16_data
-{
-	my $thing = shift;
-	my $uref = shift;
-	
-	my @u = $uref->users;
-	if (@u) {
-		$thing->{pc16n} = $uref;
-		$thing->{pc16u} = [map {Route::User::get($_)} @u];
-		return scalar @u;
-	}
-	return undef;
-}
 
 sub _add_user
 {
@@ -240,6 +223,25 @@ sub new_cf
 	return $thing;
 }
 
+# 
+# copy out the PC16 data for a node into the
+# pc16n and u slots if there are any users 
+#
+sub copy_pc16_data
+{
+	my $thing = shift;
+	my $uref = shift;
+
+	$thing->{'s'} = 'cf';
+
+	my @u = $uref->users;
+	if (@u) {
+		$thing->{pc16n} = $uref;
+		$thing->{pc16u} = [map {Route::User::get($_)} @u];
+		return scalar @u;
+	}
+	return undef;
+}
 
 
 
