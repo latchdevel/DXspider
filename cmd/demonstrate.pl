@@ -19,11 +19,11 @@ my $dxchan = DXChannel->get($call);
 
 return (1, $self->msg('e7', $call)) unless $dxchan;
 if ($self->remotecmd) {
-	Log('DXCommand', "$mycall is trying to 'input' $call remotely");
+	Log('DXCommand', "$mycall is trying to 'demo' to $call remotely");
 	return (1, $self->msg('e5'));
 }
 if ($mypriv < 8) {
-	Log('DXCommand', "$mycall is trying to 'input' $call locally");
+	Log('DXCommand', "$mycall is trying to 'demo' to $call locally");
 	return (1, $self->msg('e5'));
 }
 
@@ -34,7 +34,7 @@ my $user = $dxchan->user;
 $self->call($call);
 $self->user($user);
 $self->priv($dxchan->priv);
-Log('DXCommand', "input '$newline' as $call by $mycall");
+Log('DXCommand', "demo '$newline' to $call by $mycall");
 my @in = $self->run_cmd($newline);
 $self->call($mycall);
 $self->user($myuser);
