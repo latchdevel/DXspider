@@ -356,7 +356,9 @@ sub normal
 			}
 
 			# if this is a 'bad spotter' user then ignore it
-			if ($badspotter->in($from)) {
+			my $nossid = $from;
+			$nossid =~ s/-\d+$//;
+			if ($badspotter->in($nossid)) {
 				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
 				return;
 			}
@@ -420,7 +422,9 @@ sub normal
 			}
 			
 			# if this is a 'bad spotter' user then ignore it
-			if ($badspotter->in($field[6])) {
+			my $nossid = $field[6];
+			$nossid =~ s/-\d+$//;
+			if ($badspotter->in($nossid)) {
 				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
 				return;
 			}
@@ -568,7 +572,9 @@ sub normal
 			}
 
 			# if this is a 'bad spotter' user then ignore it
-			if ($badspotter->in($field[1])) {
+			my $nossid = $field[1];
+			$nossid =~ s/-\d+$//;
+			if ($badspotter->in($nossid)) {
 				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
 				return;
 			}
@@ -1231,6 +1237,9 @@ sub normal
 			
 			return;
 		}
+		if ($pcno == 90) {		# new style PC16,17,19,21
+			return;
+		}
 	}
 	 
 	# if get here then rebroadcast the thing with its Hop count decremented (if
@@ -1272,8 +1281,12 @@ sub process
 		next unless $dxchan->is_node();
 		next if $dxchan == $main::me;
 
-		# send the pc50
-		$dxchan->send($pc50s) if $pc50s;
+		# send the pc50 or PC90
+		if ($pc50s && $dxchan->is_spider) {
+#			$dxchan->send_route(\&pc90, 1, $main::me, 'T', @dxchan);
+		} else {
+			$dxchan->send($pc50s) if $pc50s;
+		}
 		
 		# send a ping out on this channel
 		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
@@ -1308,6 +1321,7 @@ sub process
 #
 # some active measures
 #
+
 
 sub send_dx_spot
 {
@@ -1573,6 +1587,7 @@ sub send_local_config
 			dbg("sent a null value") if isdbg('chanerr');
 		}
 	}
+#	$self->send_route(\&pc90, 1, $main::me, 'T', DXChannel::get_all());
 }
 
 #
@@ -1937,6 +1952,12 @@ sub route_pc50
 {
 	my $self = shift;
 	broadcast_route($self, \&pc50, 1, @_);
+}
+
+sub route_pc90
+{
+	my $self = shift;
+	broadcast_route($self, \&pc90, 1, @_);
 }
 
 sub in_filter_route

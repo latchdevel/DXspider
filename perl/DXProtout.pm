@@ -360,6 +360,37 @@ sub pc85
 	return "PC85^$tonode^$fromnode^$call^$msg^~";
 }
 
+# spider route broadcast
+sub pc90
+{
+	my $node = shift;
+	my $sort = shift;
+	my @out;
+	my $dxchan;
+	my $n = @_;
+	
+	while (@_) {
+		my $str = sprintf "PC90^%s^%X^%s%d", $node->call, $main::systime, $sort, $n-1 ;
+		for (; @_ && length $str < 200;) {
+			my $ref = shift;
+			next if $ref == $main::me;
+			my $call = $ref->call;
+			my $flag = 0;
+			$flag += 1 if $ref->here;
+			$flag += 2 if $ref->conf;
+			if ($ref->is_node) {
+				my $ping = int($ref->pingave * 10);
+				$str .= "^N$flag$call,$ping";
+			} else {
+				$str .= "^U$flag$call";
+			}
+		}
+		$str .= sprintf "^%s^", get_hops(90);
+		push @out, $str;
+	}
+	return @out;
+}
+
 1;
 __END__
 

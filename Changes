@@ -1,3 +1,6 @@
+24Jun02=======================================================================
+1. make set/badspotter non SSID sensitive. Set/badnode is left to be SSID
+sensitive. 
 19Jun02=======================================================================
 1. make set/badspotter and set/badnode apply to announces and talks as well
 as spots. 
