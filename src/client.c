@@ -901,13 +901,6 @@ main(int argc, char *argv[])
 #ifdef SIGPWR
 	signal(SIGPWR, terminate);
 #endif
-#ifdef SIGCLD
-	signal(SIGCLD, reaper);
-#else
-	#ifdef SIGCHILD
-	signal(SIGCHILD, reaper);
-	#endif
-#endif
 	
 	/* init a few things */
 	chain_init(&echobase);
