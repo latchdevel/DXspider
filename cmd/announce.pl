@@ -39,10 +39,8 @@ if ($sort eq "FULL") {
 } elsif ($sort eq "LOCAL") {
   $line =~ s/^$f[0]\s+//;     # remove it
   $to = "LOCAL";
-} elsif ($sort eq "") {
-  $to = "LOCAL";
 } else {
-  return (1, $self->msg('e11'));
+  $to = "LOCAL";
 }
 
 Log('ann', $to, $from, $line);

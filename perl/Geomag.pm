@@ -142,13 +142,11 @@ sub forecast
 #
 sub print
 {
-	my $self = $fp;
 	my $from = shift;
 	my $to = shift;
-	my @date = $self->unixtoj(shift);
+	my @date = $fp->unixtoj(shift);
 	my $pattern = shift;
 	my $search;
-	my @in;
 	my @out;
 	my $eval;
 	my $count;
@@ -161,19 +159,19 @@ sub print
 					\$ref = \$in[\$c];
 					if ($search) {
 						\$count++;
-						next if \$count < $from;
+						next if \$count < \$from;
 						push \@out, print_item(\$ref);
 						last LOOP if \$count >= \$to;                  # stop after n
 					}
 				}
 			  );
 	
-	$self->close;                                      # close any open files
+	$fp->close;                                      # close any open files
 
-	my $fh = $self->open(@date); 
+	my $fh = $fp->open(@date); 
 LOOP:
 	while ($count < $to) {
-		my @spots = ();
+		my @in = ();
 		if ($fh) {
 			while (<$fh>) {
 				chomp;
@@ -182,7 +180,7 @@ LOOP:
 			eval $eval;               # do the search on this file
 			return ("Spot search error", $@) if $@;
 		}
-		$fh = $self->openprev();      # get the next file
+		$fh = $fp->openprev();      # get the next file
 		last if !$fh;
 	}
 
@@ -209,5 +207,23 @@ sub print_item
 	return sprintf("$d   %02d %5d %3d %3d %-37s <%s>", $t, $ref[2], $ref[3], $ref[4], $ref[5], $ref[0]);
 }
 
+#
+# read in this month's data
+#
+sub readfile
+{
+	my @date = $fp->unixtoj(shift);
+	my $fh = $fp->open(@date); 
+	my @spots = ();
+	my @in;
+	
+	if ($fh) {
+		while (<$fh>) {
+			chomp;
+			push @in, [ split '\^' ] if length > 2;
+		}
+	}
+	return @in;
+}
 1;
 __END__;

@@ -156,12 +156,11 @@ sub send_now
 	my $conn = $self->{conn};
 	my $sort = shift;
 	my $call = $self->{call};
-	my $line;
 	
-	foreach $line (@_) {
-		chomp $line;
-		$conn->send_now("$sort$call|$line") if $conn;
-		dbg('chan', "-> $sort $call $line") if $conn;
+	for (@_) {
+		chomp;
+		$conn->send_now("$sort$call|$_") if $conn;
+		dbg('chan', "-> $sort $call $_") if $conn;
 	}
 	$self->{t} = time;
 }
@@ -174,12 +173,11 @@ sub send						# this is always later and always data
 	my $self = shift;
 	my $conn = $self->{conn};
 	my $call = $self->{call};
-	my $line;
 
-	foreach $line (@_) {
-		chomp $line;
-		$conn->send_later("D$call|$line") if $conn;
-		dbg('chan', "-> D $call $line") if $conn;
+	for (@_) {
+		chomp;
+		$conn->send_later("D$call|$_") if $conn;
+		dbg('chan', "-> D $call $_") if $conn;
 	}
 	$self->{t} = time;
 }

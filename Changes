@@ -1,3 +1,16 @@
+21Dec98============= late! ====================================================
+1. fixed problem with missing DXDebug in DXProt.
+2. Fixed DXDebug so that it actually works as advertised with and without 
+trailing \n. 
+3. Added deduping of WWV spots as well (at for date,time,sfi,k and i) dups
+4. Replaced the 0 in "02-Dec-1998" with ' ' so it reads " 2-Dec-1998", it seems
+hard to credit it but some 'programs' out there that connect to clusters have
+problems with the leading '0'!
+5. In the same vain, included a strictly AK1A compatible sh/heading, apparently
+this is necessary for the same reason as 4.
+6. Started contrib tree stored the old show/heading in contrib/g0rdi/show.
+7. Because I now correctly dedupe spots and wwv (there's a hostage to fortune..)
+I have added a merge command. 
 21Dec98========================================================================
 1. Added "issue" to the client program for 'login' connections
 2. Added more docs for client program.

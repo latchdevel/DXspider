@@ -50,7 +50,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.13";				# the version no of the software
+$version = "1.14";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
  
 # handle disconnections
@@ -245,14 +245,16 @@ DXM->init();
 # read in command aliases
 CmdAlias->init();
 
-# initialise the protocol engine
-DXProt->init();
-
 # initialise the Geomagnetic data engine
 Geomag->init();
 
 # initial the Spot stuff
 Spot->init();
+
+# initialise the protocol engine
+print "reading in duplicate spot and WWV info ...\n";
+DXProt->init();
+
 
 # put in a DXCluster node for us here so we can add users and take them away
 DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 

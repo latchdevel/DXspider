@@ -46,7 +46,7 @@ sub cldate
 	my $t = shift;
 	my ($sec,$min,$hour,$mday,$mon,$year) = gmtime((defined $t) ? $t : time);
 	$year += 1900;
-	my $buf = sprintf "%02d-%s-%04d", $mday, $month[$mon], $year;
+	my $buf = sprintf "%2d-%s-%04d", $mday, $month[$mon], $year;
 	return $buf;
 }
 

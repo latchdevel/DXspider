@@ -29,13 +29,14 @@ sub dbg
 {
 	my $l = shift;
 	if ($dbglevel{$l}) {
-		for (@_) {
-			s/\n$//og;
-			s/\a//og;   # beeps
-		}
-		print "@_\n" if defined \*STDOUT;
+	    my @in = @_;
 		my $t = time;
-		$fp->writeunix($t, "$t^@_");
+		for (@in) {
+		    s/\n$//o;
+			s/\a//og;   # beeps
+			print "$_\n" if defined \*STDOUT;
+			$fp->writeunix($t, "$t^$_");
+		}
 	}
 }
 

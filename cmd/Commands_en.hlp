@@ -139,6 +139,15 @@ this command. You can remove more than one message at a time.
 === 5^KILL-^
 As a sysop you can kill any message on the system.
 
+=== 5^MERGE <node> [<no spots>/<no wwv>]^Ask for the latest spots and WWV 
+MERGE allows you to bring your spot and wwv database up to date. By default
+it will request the last 10 spots and 5 WWVs from the node you select. The 
+node must be connected locally.
+
+You can request any number of spots or wwv and although they will be appended
+to your databases they will not duplicate any that have recently been added 
+(the last 2 days for spots and last month for WWV data).
+
 === 8^PC <call> <text>^Send arbitrary text to a connected callsign
 Send any text you like to the callsign requested. This is used mainly to send
 PC protocol to connected nodes either for testing or to unstick things. 
@@ -243,8 +252,8 @@ what your latitude and longitude is. If you have not yet done a SET/QRA
 then this command will set your QRA locator for you. For example:-
   SET/LOCATION 52 22 N 0 57 E
 
-=== 0^SET/LOCKOUT <call>^Stop a callsign connecting to the cluster
-=== 0^UNSET/LOCKOUT <call>^Allow a callsign to connect to the cluster
+=== 9^SET/LOCKOUT <call>^Stop a callsign connecting to the cluster
+=== 9^UNSET/LOCKOUT <call>^Allow a callsign to connect to the cluster
 
 === 0^SET/NAME <your name>^Set your name
 Tell the system what your name is eg:-

@@ -21,9 +21,9 @@ use strict;
 use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix);
 
 $fp = undef;
-$maxspots = 50;      # maximum spots to return
-$defaultspots = 10;    # normal number of spots to return
-$maxdays = 35;        # normal maximum no of days to go back
+$maxspots = 50;					# maximum spots to return
+$defaultspots = 10;				# normal number of spots to return
+$maxdays = 35;					# normal maximum no of days to go back
 $dirprefix = "spots";
 
 sub init
@@ -34,32 +34,32 @@ sub init
 
 sub prefix
 {
-  return $fp->{prefix};
+	return $fp->{prefix};
 }
 
 # add a spot to the data file (call as Spot::add)
 sub add
 {
-  my @spot = @_;    # $freq, $call, $t, $comment, $spotter = @_
+	my @spot = @_;				# $freq, $call, $t, $comment, $spotter = @_
 
-  # sure that the numeric things are numeric now (saves time later)
-  $spot[0] = 0 + $spot[0];
-  $spot[2] = 0 + $spot[2];
+	# sure that the numeric things are numeric now (saves time later)
+	$spot[0] = 0 + $spot[0];
+	$spot[2] = 0 + $spot[2];
   
-  # remove ssid if present on spotter
-  $spot[4] =~ s/-\d+$//o;
+	# remove ssid if present on spotter
+	$spot[4] =~ s/-\d+$//o;
 
-  # add the 'dxcc' country on the end
-  my @dxcc = Prefix::extract($spot[1]);
-  push @spot, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	# add the 'dxcc' country on the end
+	my @dxcc = Prefix::extract($spot[1]);
+	push @spot, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
 
-  my $buf = join("\^", @spot);
+	my $buf = join("\^", @spot);
 
-  # compare dates to see whether need to open another save file (remember, redefining $fp 
-  # automagically closes the output file (if any)). 
-  $fp->writeunix($spot[2], $buf);
+	# compare dates to see whether need to open another save file (remember, redefining $fp 
+	# automagically closes the output file (if any)). 
+	$fp->writeunix($spot[2], $buf);
   
-  return $buf;
+	return $buf;
 }
 
 # search the spot database for records based on the field no and an expression
@@ -86,93 +86,109 @@ sub add
 
 sub search
 {
-  my ($expr, $dayfrom, $dayto, $from, $to) = @_;
-  my $eval;
-  my @out;
-  my $ref;
-  my $i;
-  my $count;
-  my @today = Julian::unixtoj(time);
-  my @fromdate;
-  my @todate;
+	my ($expr, $dayfrom, $dayto, $from, $to) = @_;
+	my $eval;
+	my @out;
+	my $ref;
+	my $i;
+	my $count;
+	my @today = Julian::unixtoj(time);
+	my @fromdate;
+	my @todate;
   
-  if ($dayfrom > 0) {
-    @fromdate = Julian::sub(@today, $dayfrom);
-  } else {
-    @fromdate = @today;
-	$dayfrom = 0;
-  }
-  if ($dayto > 0) {
-    @todate = Julian::sub(@fromdate, $dayto);
-  } else {
-    @todate = Julian::sub(@fromdate, $maxdays);
-  }
-  if ($from || $to) {
-    $to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
-  } else {
-    $from = 0;
-	$to = $defaultspots;
-  }
-
-  $expr =~ s/\$f(\d)/\$ref->[$1]/g;               # swap the letter n for the correct field name
-#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
-  
-  dbg("search", "expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
-  
-  # build up eval to execute
-  $eval = qq(
-    my \$c;
-	my \$ref;
-    for (\$c = \$#spots; \$c >= 0; \$c--) {
-	  \$ref = \$spots[\$c];
-	  if ($expr) {
-	    \$count++;
-		next if \$count < \$from;                  # wait until from 
-        push(\@out, \$ref);
-		last LOOP if \$count >= \$to;                  # stop after to
-	  }
-    }
-  );
-
-  $fp->close;                                      # close any open files
-
-LOOP:
-  for ($i = 0; $i < $maxdays; ++$i) {             # look thru $maxdays worth of files only
-    my @now = Julian::sub(@fromdate, $i);         # but you can pick which $maxdays worth
-	last if Julian::cmp(@now, @todate) <= 0;         
-	
-	my @spots = ();
-	my $fh = $fp->open(@now);  # get the next file
-	if ($fh) {
-	  my $in;
-	  while (<$fh>) {
-		  chomp;
-		  push @spots, [ split '\^' ];
-	  }
-	  eval $eval;               # do the search on this file
-	  return ("Spot search error", $@) if $@;
+	if ($dayfrom > 0) {
+		@fromdate = Julian::sub(@today, $dayfrom);
+	} else {
+		@fromdate = @today;
+		$dayfrom = 0;
 	}
-  }
+	if ($dayto > 0) {
+		@todate = Julian::sub(@fromdate, $dayto);
+	} else {
+		@todate = Julian::sub(@fromdate, $maxdays);
+	}
+	if ($from || $to) {
+		$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
+	} else {
+		$from = 0;
+		$to = $defaultspots;
+	}
 
-  return @out;
+	$expr =~ s/\$f(\d)/\$ref->[$1]/g; # swap the letter n for the correct field name
+	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
+  
+	dbg("search", "expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
+  
+	# build up eval to execute
+	$eval = qq(
+			   my \$c;
+			   my \$ref;
+			   for (\$c = \$	#spots; \$c >= 0; \$c--) {
+					\$ref = \$spots[\$c];
+					if ($expr) {
+						\$count++;
+						next if \$count < \$from; # wait until from 
+						push(\@out, \$ref);
+						last LOOP if \$count >= \$to; # stop after to
+					}
+				}
+			  );
+
+	$fp->close;					# close any open files
+
+ LOOP:
+	for ($i = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
+		my @now = Julian::sub(@fromdate, $i); # but you can pick which $maxdays worth
+		last if Julian::cmp(@now, @todate) <= 0;         
+	
+		my @spots = ();
+		my $fh = $fp->open(@now); # get the next file
+		if ($fh) {
+			my $in;
+			while (<$fh>) {
+				chomp;
+				push @spots, [ split '\^' ];
+			}
+			eval $eval;			# do the search on this file
+			return ("Spot search error", $@) if $@;
+		}
+	}
+
+	return @out;
 }
 
 # format a spot for user output in 'broadcast' mode
 sub formatb
 {
-  my @dx = @_;
-  my $t = ztime($dx[2]);
-  return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s", "$dx[4]:", $dx[0], $dx[1], $dx[3], $t ;
+	my @dx = @_;
+	my $t = ztime($dx[2]);
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s", "$dx[4]:", $dx[0], $dx[1], $dx[3], $t ;
 }
 
 # format a spot for user output in list mode
 sub formatl
 {
-  my @dx = @_;
-  my $t = ztime($dx[2]);
-  my $d = cldate($dx[2]);
-  return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $dx[0], $dx[1], $d, $t, $dx[3], "<$dx[4]" ;
+	my @dx = @_;
+	my $t = ztime($dx[2]);
+	my $d = cldate($dx[2]);
+	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $dx[0], $dx[1], $d, $t, $dx[3], "<$dx[4]" ;
 }
 
-
+#
+# return all the spots from a day's file as an array of references
+# the parameter passed is a julian day
+sub readfile
+{
+	my @spots;
+	
+	my $fh = $fp->open(@_); 
+	if ($fh) {
+		my $in;
+		while (<$fh>) {
+			chomp;
+			push @spots, [ split '\^' ];
+		}
+	}
+	return @spots;
+}
 1;

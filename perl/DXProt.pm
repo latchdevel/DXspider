@@ -21,15 +21,18 @@ use DXCommandmode;
 use DXLog;
 use Spot;
 use DXProtout;
+use DXDebug;
 use Carp;
 
 use strict;
-use vars qw($me $pc11_max_age $pc11_dup_age %dup $last_hour %pings %rcmds %nodehops);
+use vars qw($me $pc11_max_age $pc11_dup_age $pc23_dup_age %spotdup %wwvdup $last_hour %pings %rcmds %nodehops);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
-$pc11_dup_age = 24*3600;		# the maximum time to keep the dup list for
-%dup = ();						# the pc11 and 26 dup hash 
+$pc11_dup_age = 24*3600;		# the maximum time to keep the spot dup list for
+$pc23_dup_age = 24*3600;		# the maximum time to keep the wwv dup list for
+%spotdup = ();				    # the pc11 and 26 dup hash 
+%wwvdup = ();				    # the pc23 and 27 dup hash 
 $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
@@ -46,6 +49,24 @@ sub init
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
 	#  $me->{sort} = 'M';    # M for me
+
+	# now prime the spot duplicates file with today's and yesterday's data
+    my @today = Julian::unixtoj(time);
+	my @spots = Spot::readfile(@today);
+	@today = Julian::sub(@today, 1);
+	push @spots, Spot::readfile(@today);
+	for (@spots) {
+		my $dupkey = "$_->[0]$_->[1]$_->[2]$_->[3]$_->[4]";
+		$spotdup{$dupkey} = $_->[2];
+	}
+
+	# now prime the wwv duplicates file with just this month's data
+	my @wwv = Geomag::readfile(time);
+	for (@wwv) {
+		my $dupkey = "$_->[1].$_->[2]$_->[3]$_->[4]";
+		$wwvdup{$dupkey} = $_->[1];
+	}
+
 }
 
 #
@@ -135,7 +156,7 @@ sub normal
 			my $d = cltounix($field[3], $field[4]);
 			# bang out (and don't pass on) if date is invalid or the spot is too old
 			if (!$d || ($pcno == 11 && $d < $main::systime - $pc11_max_age)) {
-				dbg('chan', "Spot ignored, invalid date or too old");
+				dbg('chan', "Spot ignored, invalid date or too old\n");
 				return;
 			}
 
@@ -147,21 +168,25 @@ sub normal
 			$spotter =~ s/-\d+$//o;	# strip off the ssid from the spotter
 			
 			# do some de-duping
-			my $dupkey = "$field[1]$field[2]$d$text$field[6]";
-			if ($dup{$dupkey}) {
-				dbg('chan', "Duplicate Spot ignored");
+			my $freq = $field[1] - 0;
+			my $dupkey = "$freq$field[2]$d$text$spotter";
+			if ($spotdup{$dupkey}) {
+				dbg('chan', "Duplicate Spot ignored\n");
 				return;
 			}
 			
-			$dup{$dupkey} = $d;
+			$spotdup{$dupkey} = $d;
 			
-			my $spot = Spot::add($field[1], $field[2], $d, $text, $spotter);
+			my $spot = Spot::add($freq, $field[2], $d, $text, $spotter);
 			
 			# send orf to the users
 			if ($spot && $pcno == 11) {
 				my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
 				broadcast_users("$buf\a\a");
 			}
+
+			# DON'T be silly and send on PC26s!
+			return if $pcno == 26;
 			
 			last SWITCH;
 		}
@@ -328,7 +353,23 @@ sub normal
 		}
 		
 		if ($pcno == 23 || $pcno == 27) { # WWV info
-			Geomag::update(@field[1..$#field]);
+			# do some de-duping
+			my $d = cltounix($field[1], sprintf("%02d18Z", $field[2]));
+			my $sfi = unpad($field[3]);
+			my $k = unpad($field[4]);
+			my $i = unpad($field[5]);
+			my $dupkey = "$d.$sfi$k$i";
+			if ($wwvdup{$dupkey}) {
+				dbg('chan', "Dup WWV Spot ignored\n");
+				return;
+			}
+			
+			$wwvdup{$dupkey} = $d;
+			Geomag::update($field[1], $field[2], $sfi, $k, $i, @field[6..$#field]);
+
+			# DON'T be silly and send on PC27s!
+			return if $pcno == 27;
+			
 			last SWITCH;
 		}
 		
@@ -512,8 +553,12 @@ sub process
 	my $cutoff;
 	if ($main::systime - 3600 > $last_hour) {
 		$cutoff  = $main::systime - $pc11_dup_age;
-		while (($key, $val) = each %dup) {
-			delete $dup{$key} if $val < $cutoff;
+		while (($key, $val) = each %spotdup) {
+			delete $spotdup{$key} if $val < $cutoff;
+		}
+		$cutoff = $main::systime - $pc23_dup_age;
+		while (($key, $val) = each %wwvdup) {
+			delete $wwvdup{$key} if $val < $cutoff;
 		}
 		$last_hour = $main::systime;
 	}
