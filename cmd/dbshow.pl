@@ -35,7 +35,7 @@ foreach  $n (@db) {
 			my $n = DXDb::newstream($self->call);
 			DXProt::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
 		}
-		last;
+#		last;
 	} else {
 
 		# local databases can chain to remote ones
@@ -55,7 +55,7 @@ foreach  $n (@db) {
 		}
 		if ($count) {
 			push @out, $db->print('post');
-			last;
+#			last;
 		}
 	}
 }

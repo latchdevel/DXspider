@@ -71,6 +71,7 @@ if (!$main::is_win && ($want{proc} || $want{all})) {
 			my $l = $_;
 #			dbg($l);
 			next unless $l =~ m{cluster\.pl$};
+			next if $l =~ m{bash\s+\-c};
 			my @f = split /\s+/, $l;
 #			dbg("$f[9]");
 			my ($m, $s) = split /:/, $f[9];
