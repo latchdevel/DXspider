@@ -43,11 +43,12 @@ use DXUtil;
 sub new
 {
 	my $class = shift;
+	my $pkg = ref $class || $class;
 	my $thing = {@_};
 
 	$thing->{origin} ||= $main::mycall;
 	
-	bless $thing, $class;
+	bless $thing, $pkg;
 	return $thing;
 }
 
@@ -241,9 +242,11 @@ sub new_reply
 	if ($thing->{group} eq $main::mycall) {
 		$out = $thing->new;
 		$out->{touser} = $thing->{user} if $thing->{user};
+		$out->{group} = $thing->{origin};
 	} elsif (DXChannel::get($thing->{group})) {
 		$out = $thing->new(user => $thing->{group});
 		$out->{touser} = $thing->{user} if $thing->{user};
+		$out->{group} = $thing->{origin};
 	} elsif ($thing->{touser} && DXChannel::get($thing->{touser})) {
 		$out = $thing->new(user => $thing->{touser});
 		$out->{group} = $thing->{group};
