@@ -18,11 +18,13 @@ return (1, $self->msg('e6')) if !$call;
 
 # can we see it? Is it a node?
 my $noderef = DXCluster->get_exact($call);
+$noderef = DXChannel->get($call) unless $noderef;
+
 return (1, $self->msg('e7', $call)) if !$noderef || !$noderef->pcversion;
 
 # ping it
 DXProt::addping($self->call, $call);
 
-return (1, $self->msg('pingo', $call, atime($main::systime)));
+return (1, $self->msg('pingo', $call));
 
 

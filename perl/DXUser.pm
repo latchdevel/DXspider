@@ -354,5 +354,10 @@ sub wantdx
 	return _want('dx', @_);
 }
 
+sub wanttalk
+{
+	return _want('talk', @_);
+}
+
 1;
 __END__

@@ -703,6 +703,7 @@ sub normal
 					# it's a reply, look in the ping list for this one
 					my $ref = $pings{$field[2]};
 					if ($ref) {
+						my $tochan =  DXChannel->get($field[2]);
 						while (@$ref) {
 							my $r = shift @$ref;
 							my $dxchan = DXChannel->get($r->{call});
@@ -710,9 +711,9 @@ sub normal
 							my $t = tv_interval($r->{t}, [ gettimeofday ]);
 							if ($dxchan->is_user) {
 								my $s = sprintf "%.2f", $t; 
-								$dxchan->send($dxchan->msg('pingi', $field[2], $s))
+								my $ave = $tochan->pingave if $tochan;
+								$dxchan->send($dxchan->msg('pingi', $field[2], $s, $ave))
 							} elsif ($dxchan->is_ak1a) {
-								my $tochan =  DXChannel->get($field[2]);
 								if ($tochan) {
 									$tochan->nopings(3); # pump up the timer
 									$tochan->{pingtime} += $t;
