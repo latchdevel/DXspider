@@ -31,7 +31,8 @@ use strict;
 my $fp = DXLog::new('debug', 'dat', 'd');
 my @today = Julian::unixtoj(time()); 
 my $fh = $fp->open(@today) or die $!; 
-my $nolines = shift if $ARGV[0] =~ /^\d+$/ || 1;
+my $nolines = 1;
+$nolines = shift if $ARGV[0] =~ /^\d+$/;
 my $exp = join '|', @ARGV;
 my @prev;
 

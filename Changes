@@ -1,3 +1,5 @@
+25Feb01=======================================================================
+1. Fixed watchdbg so that simple arguments work again
 22Feb01=======================================================================
 1. Added platform name to sh/version
 2. changed client.pl so that it send \r\n instead of \n on telnet connects
