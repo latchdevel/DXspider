@@ -470,7 +470,7 @@ sub run_cmd
 			return ();
 		}
 	}
-	return map {s/[^\s]\s+$//; $_} @ans;
+	return map {s/([^\s])\s+$/$1/; $_} @ans;
 }
 
 #
