@@ -1,5 +1,5 @@
 #
-# merge_qra <node>
+# forward/latlong <node> ...
 #
 # send out PC41s toward a node for every user that has a lat/long 
 #
@@ -46,4 +46,4 @@ for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $a
 		}
 	}
 }
-return(1, @out, "$count records sent");
+return(1, @out, $self->msg('rec', $count));

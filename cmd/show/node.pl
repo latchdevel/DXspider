@@ -22,8 +22,6 @@ my @out;
 
 # search thru the user for nodes
 unless (@call) {
-#  the official way
-#	@call = sort map { my $ref; (($ref = DXUser->get_current($_)) && $ref->sort ne 'U') ? $_ : () } DXUser::get_all_calls;
 	use DB_File;
 	
 	my ($action, $count, $key, $data);
@@ -71,7 +69,7 @@ foreach $call (@call) {
 	}
 }
 
-return (1, @out);
+return (1, @out, $self->msg('rec', $count));
 
 
 

@@ -2,6 +2,10 @@
 1. added forward/latlong which will forward ALL the users that have a latitude
 and longitude set on them to one or more locally connected nodes - with a hop
 count of 1.
+2. speeded up the show/node command by using the DB_File interface and 
+sequentially reading the data directly and only 'get'ting the ones that are
+nodes.
+3. did the same for show/isolate and show/lockout.
 28Jul00=======================================================================
 1. fixed watchdbg midnight rollover loop and removed the date part of the 
 date/time translation to leave just the time.

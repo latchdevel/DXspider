@@ -159,6 +159,7 @@ package DXM;
 				qrae2 => 'Don\'t recognise \"$_[0]\" as a QRA locator (eg JO02LQ)',
 				qra => 'Your QRA Locator is now \"$_[0]\"',
 				rcmdo => 'RCMD \"$_[0]\" sent to $_[1]',
+				rec => '$_[0] records',
 				read1 => 'Sorry, no new messages for you',
 				read2 => 'Msg $_[0] not found',
 				read3 => 'Msg $_[0] not available',

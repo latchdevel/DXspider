@@ -11,7 +11,21 @@
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) unless $self->priv >= 9;
 
-# search thru the user for nodes
-my @out = sort map { my $ref; (($ref = DXUser->get_current($_)) && $ref->lockout) ? $_ : () } DXUser::get_all_calls;
-return (1, @out);
+my @out;
+
+use DB_File;
+
+my ($action, $count, $key, $data);
+for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = R_NEXT) {
+	if ($data =~ m{lockout =>}) {
+		my $u = DXUser->get_current($key);
+		if ($u && $u->lockout) {
+			push @out, $key;
+			++$count;
+		}
+	}
+} 
+
+return (1, @out, $self->msg('rec', $count));
+
 
