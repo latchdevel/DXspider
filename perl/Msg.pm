@@ -402,9 +402,9 @@ sub nolinger
 			dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
 		}
 		
-		eval {setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1)} or confess "setsockopt keepalive: $!";
-		eval {setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0))} or confess "setsockopt linger: $!";
-		eval {setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1)} or eval {setsockopt($conn->{sock}, SOL_SOCKET, TCP_NODELAY, 1)} or confess "setsockopt tcp_nodelay: $!";
+		eval {setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1)} or dbg("setsockopt keepalive: $!");
+		eval {setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0))} or dbg("setsockopt linger: $!");
+		eval {setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1)} or eval {setsockopt($conn->{sock}, SOL_SOCKET, TCP_NODELAY, 1)} or dbg("setsockopt tcp_nodelay: $!");
 		$conn->{sock}->autoflush(0);
 
 		if (isdbg('sock')) {
