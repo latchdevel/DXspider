@@ -1,4 +1,7 @@
 23May99=======================================================================
+1. Got rid of some of the useless error messages on global destruction when
+quiting a program.
+23May99=======================================================================
 1. tried to change connection to raw mode for cluster connections
 2. sh/c and sh/u are now sorted in alphabetical order
 3. Limited the number of queued dx spots when composing messages to 20 (the 
