@@ -82,8 +82,8 @@ sub sig_chld
 	unless ($^O =~ /^MS/i) {
 		$SIG{CHLD} = \&sig_chld;
 		$waitedpid = wait;
+		dbg('connect', "caught $waitedpid");
 	}
-	dbg('connect', "caught $pid");
 }
 
 

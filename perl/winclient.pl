@@ -83,7 +83,7 @@ if ($childpid) {
 			# newline ends all lines except a prompt
 			$lastend = $end;
 			$end = "\n";
-			if ($line =~ /^$call de $mycall\s+\d+-\w\w\w-\d+\s+\d+Z >$/) {
+			if ($line =~ /^$call de $mycall\s+\d+-\w\w\w-\d+\s+\d+Z >$/o) {
 				$end = ' ';
 			}
 			my $begin = ($lastend eq "\n") ? '' : "\n";
