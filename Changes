@@ -1,3 +1,6 @@
+13Jan02=======================================================================
+1. changed the backstop termination alarm routing in the C client so that
+it flushes the input and output buffer and then commits suicide.
 12Jan02=======================================================================
 1. put setsockopts into eval block to allow some of them to fail
 11Jan02=======================================================================

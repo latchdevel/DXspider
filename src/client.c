@@ -723,13 +723,8 @@ void process_node()
 void term_timeout(int i)
 {
 	/* none of this is going to be reused so don't bother cleaning up properly */
-	if (in && in->t_set)
-		tcsetattr(0, TCSANOW, &in->t);
-	if (node) {
-		shutdown(node->cnum, 3);
-		close(node->cnum);
-	}
-	exit(i);
+	tcflush(0, TCIOFLUSH);
+	kill(getpid(), 9);			/* commit suicide */
 }
 
 void terminate(int i)
@@ -919,8 +914,7 @@ main(int argc, char *argv[])
 	/* connect up stdin */
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
-	if (tcgetattr(0, &in->t) < 0) {
-/*		echo = 0; */
+	if (!isatty(0) || tcgetattr(0, &in->t) < 0) {
 		in->echo = echo;
 		in->t_set = 0;
 	} else {
