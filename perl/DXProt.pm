@@ -390,7 +390,7 @@ sub normal
 				return;
 			}
 			$wwvdup{$dupkey} = $d;
-			$field[6] =~ s/-\d+$//o            # remove spotter's ssid
+			$field[6] =~ s/-\d+$//o;            # remove spotter's ssid
 		
 			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..$#field]);
 
