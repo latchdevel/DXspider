@@ -76,9 +76,13 @@ sub init
 	_sendf('m') if $monitor;
 }
 
+my $finishing = 0;
+
 sub finish
 {
+	return if $finishing;
 	if ($sock) {
+		$finishing = 1;
 		dbg('err', "AGW ending...");
 		for (values %circuit) {
 			$_->disconnect;
