@@ -814,11 +814,31 @@ sub dx_spot
 
 
 	my $t = ztime($_[2]);
+	my $loc;
+	my $clth = $self->{consort} eq 'local' ? 29 : 30;
+	my $comment = substr $_[3], 0, $clth; 
+	$comment .= ' ' x ($clth - length($comment));
 	my $ref = DXUser->get_current($_[4]);
-	my $loc = $ref->qra if $ref && $ref->qra && $self->{user}->wantgrid;
-	$loc = ' ' . substr($loc, 0, 4) if $loc;
+	if ($ref) {
+		$loc = $ref->qra || '' if $self->{user}->wantgrid; 
+		$loc = ' ' . substr($loc, 0, 4) if $loc;
+	} 
 	$loc = "" unless $loc;
-	my $buf = sprintf "DX de %-7.7s%11.1f  %-12.12s %-*s $t$loc", "$_[4]:", $_[0], $_[1], $self->{consort} eq 'local' ? 29 : 30, $_[3];
+
+	# USDB stuff
+	if ($USDB::present && $self->{user}->wantusstate) {
+		my ($city, $state) = USDB::get($_[4]);
+		if ($state) {
+			$loc = ' ' . $state;
+		}
+		($city, $state) = USDB::get($_[1]);
+		if ($state) {
+			$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $state; 
+		}
+	}
+
+	my $buf = sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	
 	$buf .= "\a\a" if $self->{beep};
 	$buf =~ s/\%5E/^/g;
 	$self->local_send('X', $buf);

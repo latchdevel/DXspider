@@ -1668,6 +1668,19 @@ overwritten by any weekly updates that affect this callsign
 
 see also DELETE/USDB
 
+=== 0^SET/DXSTATE^Allow US State info on the end of DX announcements
+=== 0^UNSET/DXSTATE^Stop US State info on the end of DX announcements
+If the spotter's or spotted's US State is known it is output on the 
+end of a DX announcement (there is just enough room). 
+
+A spotter's state will appear on the RHS of the time (like 
+SET/DXGRID) and the spotted's State will appear on the LHS of the
+time field. Any information found will override any locator 
+information from SET/DXGRID.
+
+Some user programs cannot cope with this. You can use this command 
+to reset (or set) this feature.
+
 === 0^SET/WCY^Allow WCY messages to come out on your terminal
 === 0^UNSET/WCY^Stop WCY messages coming out on your terminal
 

@@ -83,6 +83,7 @@ $v3 = 0;
 		  wantpc16 => '9,Want Users from node,yesno',
 		  wantsendpc16 => '9,Send PC16,yesno',
 		  wantroutepc19 => '9,Route PC19,yesno',
+		  wantusstate => '9,Show US State,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -667,6 +668,11 @@ sub wantsendpc16
 sub wantroutepc16
 {
 	return _want('routepc16', @_);
+}
+
+sub wantusstate
+{
+	return _want('usstate', @_);
 }
 
 sub wantlogininfo
