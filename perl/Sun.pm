@@ -18,6 +18,8 @@
 #
 # $Id$
 # 
+# 2001/09/15 some changes to take care of cases where the object 
+#            doesn't rise or set on a given day... 
 
 package Sun;
 
@@ -160,6 +162,10 @@ sub rise_set
 	my $lon = shift;
 	my $sun0_moon1=shift;		# 0 for sun, 1 for moon, 2 for venus...
 
+	my $norise = 0;
+	my $noset = 0;
+	my ($risehr,$risemin,$risetime,$sethr,$setmin,$settime);
+
 	my ($alpha1,$alpha2,$alpha3,$delta1,$delta2,$delta3);
 	my ($m0,$m1,$m2,$theta,$alpha,$delta,$H,$az,$h,$h0,$aznow,$hnow,$corr);
 	my ($i,$arg,$argtest,$H0,$alphanow,$deltanow,$distance,$distancenow);
@@ -205,14 +211,10 @@ sub rise_set
 	}
 
 	$arg = (sindeg($h0)-sindeg($lat)*sindeg($delta2))/(cosdeg($lat)*cosdeg($delta2));
-	$argtest = tandeg($lat)*tandeg($delta2);
-
-	if ( $argtest < -1. ) {
-		return sprintf("Doesn't rise.");
-	}
-	if ( $argtest > 1. ) {
-		return sprintf("Doesn't set.");
-	}
+	if ( abs($arg) > 1. ) {    # either up all day or down all day 
+		$norise = 1;       # leave it to the user to examine 
+		$noset = 1;        # the elevation angle (or look outside!) 
+	}                          # to figure out which.
 
 	$H0 = acos($arg)*$r2d;
 	my $aa=$alpha2-$alpha1;
@@ -248,56 +250,71 @@ sub rise_set
 		$m0=$m0-1 if( $m0 > 1 );
 	}
 
-	$m1 = $m0 - $H0/360.;
-	$m1=$m1+1 if( $m1 < 0 );
-	$m1=$m1-1 if( $m1 > 1 );
-	for ($i=1; $i<=2; $i++) {
-		$theta = $theta0+360.985647*$m1;
-		$alpha=$alpha2+$m1*($aa+$ba+$m1*$ca)/2;
-		$delta=$delta2+$m1*($ad+$bd+$m1*$cd)/2;
-		$H=$theta-$lon-$alpha;
-		$H=reduce_angle_to_360($H);
-		($az,$h)=get_az_el($H,$delta,$lat);
-		$corr=($h-$h0)/(360*(cosdeg($delta)*cosdeg($lat)*sindeg($H)));
-		$m1=$m1+$corr;
+
+	if( !$norise ){
+		$m1 = $m0 - $H0/360.;
 		$m1=$m1+1 if( $m1 < 0 );
 		$m1=$m1-1 if( $m1 > 1 );
+		for ($i=1; $i<=2; $i++) {
+			$theta = $theta0+360.985647*$m1;
+			$alpha=$alpha2+$m1*($aa+$ba+$m1*$ca)/2;
+			$delta=$delta2+$m1*($ad+$bd+$m1*$cd)/2;
+			$H=$theta-$lon-$alpha;
+			$H=reduce_angle_to_360($H);
+			($az,$h)=get_az_el($H,$delta,$lat);
+			$corr=($h-$h0)/(360*(cosdeg($delta)*cosdeg($lat)*sindeg($H)));
+			$m1=$m1+$corr;
+			$norise=1 if( $m1 < 0 || $m1 > 1); 
+		}
 	}
 
-	$m2 = $m0 + $H0/360.;
-	$m2=$m2+1 if( $m2 < 0 );
-	$m2=$m2-1 if( $m2 > 1 );
-	for ($i=1; $i<=2; $i++) {
-		$theta = $theta0+360.985647*$m2;
-		$alpha=$alpha2+$m2*($aa+$ba+$m2*$ca)/2;
-		$delta=$delta2+$m2*($ad+$bd+$m2*$cd)/2;
-		$H=$theta-$lon-$alpha;
-		$H=reduce_angle_to_360($H);
-		($az,$h)=get_az_el($H,$delta,$lat);
-		$corr=($h-$h0)/(360*(cosdeg($delta)*cosdeg($lat)*sindeg($H)));
-		$m2 = $m2 + $corr;
+	if( !$norise ) {
+		$risehr=int($m1*24);
+		$risemin=($m1*24-int($m1*24))*60+0.5;
+		if ( $risemin >= 60 ) {
+			$risemin=$risemin-60;
+			$risehr=$risehr+1;
+		}
+		$risetime=sprintf("%02d:%02dZ",$risehr,$risemin);
+	} else {
+		$risetime="NoRise";
+	}
+
+	if( !$noset ){
+		$m2 = $m0 + $H0/360.;
 		$m2=$m2+1 if( $m2 < 0 );
 		$m2=$m2-1 if( $m2 > 1 );
-	}
-	my ($risehr,$risemin,$sethr,$setmin);
-	$risehr=int($m1*24);
-	$risemin=($m1*24-int($m1*24))*60+0.5;
-	if ( $risemin >= 60 ) {
-		$risemin=$risemin-60;
-		$risehr=$risehr+1;
-	}
-	$sethr=int($m2*24);
-	$setmin=($m2*24-int($m2*24))*60+0.5;
-	if ( $setmin >= 60 ) {
-		$setmin=$setmin-60;
-		$sethr=$sethr+1;
+		for ($i=1; $i<=2; $i++) {
+			$theta = $theta0+360.985647*$m2;
+			$alpha=$alpha2+$m2*($aa+$ba+$m2*$ca)/2;
+			$delta=$delta2+$m2*($ad+$bd+$m2*$cd)/2;
+			$H=$theta-$lon-$alpha;
+			$H=reduce_angle_to_360($H);
+			($az,$h)=get_az_el($H,$delta,$lat);
+			$corr=($h-$h0)/(360*(cosdeg($delta)*cosdeg($lat)*sindeg($H)));
+			$m2 = $m2 + $corr;
+			$noset=1 if( $m2 < 0 || $m2 > 1); 
+		}
 	}
 
+	if( !$noset ) {
+		$sethr=int($m2*24);
+		$setmin=($m2*24-int($m2*24))*60+0.5;
+		if ( $setmin >= 60 ) {
+			$setmin=$setmin-60;
+			$sethr=$sethr+1;
+		}
+		$settime=sprintf("%02d:%02dZ",$sethr,$setmin);
+	} else {
+		$settime="NoSet ";
+	}			
+
+
 	if ( $sun0_moon1 == 0 ) {
-		return (sprintf("%02d:%02dZ", $risehr,$risemin), sprintf("%02d:%02dZ",$sethr,$setmin),$aznow+180,$hnow);
+		return (sprintf("%s", $risetime), sprintf("%s",$settime),$aznow+180,$hnow);
 	}
 	if ( $sun0_moon1 == 1 ) {
-		return (sprintf("%02d:%02dZ", $risehr,$risemin), sprintf("%02d:%02dZ",$sethr,$setmin), 
+		return (sprintf("%s", $risetime), sprintf("%s",$settime), 
 				$aznow+180,$hnow, -40*log10($distance/385000) );
 	}
 }

@@ -1514,6 +1514,15 @@ For example:-
   SH/MOON
   SH/MOON G1TLH W5UN
 
+You can also use this command to see into the past or the future, so
+if you want to see yesterday's times then do:-
+
+  SH/MOON -1 
+
+or in three days time:-
+
+  SH/MOON +3 W9
+
 === 0^SHOW/MUF <prefix> [<hours>][long]^Show the likely propagation to a prefix
 This command allow you to estimate the likelihood of you contacting
 a station with the prefix you have specified. The output assumes a modest
@@ -1673,7 +1682,7 @@ that callsign is connected to the cluster.
 
 If no callsign is given then show the information for yourself.
 
-=== 0^SHOW/SUN [<prefix>|<callsign>]^Show sun rise and set times
+=== 0^SHOW/SUN [+/- days][<prefix>|<callsign>]^Show sun rise and set times
 Show the sun rise and set times for a (list of) prefixes or callsigns, 
 together with the azimuth and elevation of the sun currently at those
 locations.
@@ -1689,6 +1698,15 @@ For example:-
 
   SH/SUN
   SH/SUN G1TLH K9CW ZS
+
+You can also use this command to see into the past or the future, so
+if you want to see yesterday's times then do:-
+
+  SH/SUN -1 
+
+or in three days time:-
+
+  SH/SUN +3 W9
 
 === 0^SHOW/TIME [<prefix>|<callsign>]^Show the local time 
 If no prefixes or callsigns are given then this command returns the local

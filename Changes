@@ -1,3 +1,11 @@
+23Sep01=======================================================================
+1. I have incorporated Steve's (K9AN) lastest sh/sun and sh/moon stuff which
+copes much better with some of the end effects that occur in these calc-
+ulations. You can now also see up to a year into the past or future. The 
+results compare favourably with the US Naval Obs (unlike certain other
+software's output which "I would not want to use their results to aim my 
+moon rocket..."). It also fixes some ambiguity about which day the results
+are actually for.
 21Sep01=======================================================================
 1. fix set/lockout so that it is possible to lock out all SSIDs except those
 specifically unlocked and so that you don't need to lock the non-SSID call in
