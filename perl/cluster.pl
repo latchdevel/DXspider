@@ -466,12 +466,6 @@ eval {
 };
 dbg("Local::init error $@") if $@;
 
-dbg("cleaning out old debug files");
-DXDebug::dbgclean();
-
-# print various flags
-#dbg("seful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P");
-
 # this, such as it is, is the main loop!
 dbg("orft we jolly well go ...");
 my $script = new Script "startup";
