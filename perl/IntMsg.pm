@@ -34,12 +34,12 @@ sub dequeue
 {
 	my $conn = shift;
 
-	if ($conn && $conn->{msg} =~ /\n/) {
-		my @lines = split /\r?\n/, $conn->{msg};
-		if ($conn->{msg} =~ /\n$/) {
+	if ($conn && $conn->{msg} =~ /\cJ/) {
+		my @lines =  $conn->{msg} =~ /([^\cM\cJ]*)\cM?\cJ/g;
+		if ($conn->{msg} =~ /\cJ$/) {
 			delete $conn->{msg};
 		} else {
-			$conn->{msg} = pop @lines;
+			$conn->{msg} =~ s/([^\cM\cJ]*)\cM?\cJ//g;
 		}
 		for (@lines) {
 			if (defined $_) {
