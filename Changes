@@ -2,6 +2,8 @@
 1. add a ':' after 'G7BRN de G1TLH' in a talk message.
 2. added /J to the list of things to ignore (as in G1TLH/J) in prefix 
 processing (ie /J mean Jota not /JA [Japan]).
+3. change all INCOMING 00-08 0A-1F and 9B characters that make it past the
+intermediate client->server protocol to '.'.
 04Sep00=======================================================================
 1. made PC10,11,12 badword checking dependant on a flag variable ($censorpc)
 default = 0 (off).
