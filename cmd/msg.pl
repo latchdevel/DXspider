@@ -8,7 +8,7 @@
 #
 
 my ($self, $line) = @_;
-return (1, $self->msg('e5')) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 6;
 
 # a line is cmd, msgno, data 
 my @f = split /\s+/, $line, 3;

@@ -59,7 +59,7 @@ foreach $in (<$h>) {
 		$in =~ s/=== //;
 		my ($priv, $cmd, $desc) = split /\^/, $in;
 		next if $priv > $self->priv;             # ignore subcommands that are of no concern
-		next unless $cmd =~ /$line/i;
+		next unless $cmd =~ /^$line/i;
 		push @out, "$cmd $desc" unless $cmd =~ /-$/o;
 		$state = 1;
 		next;
