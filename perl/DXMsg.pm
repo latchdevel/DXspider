@@ -305,8 +305,8 @@ sub process
 						}
 						push @words, BadWords::check($ref->{subject});
 						if (@words) {
-							dbg("message with badwords '@words' $ref->{from} -> $ref->{to} '$ref->{subject}' origin: $ref->{origin}") if isdbg('msg');
-							Log('msg',"message with badwords '@words' $ref->{from} -> $ref->{to} origin: $ref->{origin}");
+							dbg("message with badwords '@words' $ref->{from} -> $ref->{to} '$ref->{subject}' origin: $ref->{origin} via " . $self->call) if isdbg('msg');
+							Log('msg',"message with badwords '@words' $ref->{from} -> $ref->{to} origin: $ref->{origin} via " . $self->call);
 							Log('msg',"subject: $ref->{subject}");
 							for (@{$ref->{lines}}) {
 								Log('msg', "line: $_");
