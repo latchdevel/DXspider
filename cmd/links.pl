@@ -28,6 +28,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $lastt = $nowt - ($dxchan->lastping);
 	my $pingint = $dxchan->pingint;
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
+	$sort = 'ANEA' if $dxchan->is_aranea;
 	$sort = "DXSP" if $dxchan->is_spider;
 	$sort = "CLX " if $dxchan->is_clx;
 	$sort = "DXNT" if $dxchan->is_dxnet;

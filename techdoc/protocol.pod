@@ -251,7 +251,7 @@ that are concatenated with a sequence number (0-65535)
 
 The date portion is constructed as:
 
-  my $date = ((((gmtime)[3] < 1) | $ntpflag) < 18) |  (time % 86400);
+  my $date = ((((gmtime)[3] << 1) | $ntpflag) << 18) |  (time % 86400);
 
 The sequence number is simply an unsigned short (or 16 bit) number
 starting at 0. 
