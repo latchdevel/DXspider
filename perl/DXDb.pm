@@ -42,6 +42,7 @@ $dbbase = "$main::root/db";		# where all the databases are kept;
 		  tae => '9,End App txt',
 		  atemplate => '9,App Templates,parray',
 		  help => '0,Help txt,parray',
+		  localcmd => '0,Local Command',
 		 );
 
 $lastprocesstime = time;
@@ -157,7 +158,16 @@ sub getkey
 
 	# make sure we are open
 	$self->open;
-	if ($self->{db}) {
+	if ($self->{localcmd}) {
+		my $dxchan = $main::me;
+		$dxchan->{remotecmd} = 1; # for the benefit of any command that needs to know
+		my $oldpriv = $dxchan->{priv};
+		$dxchan->{priv} = 0;
+		my @in = (DXCommandmode::run_cmd($dxchan, "$self->{localcmd} $key"));
+		$dxchan->{priv} = $oldpriv;
+		delete $dxchan->{remotecmd};
+		return @in ? join("\n", @in) : undef;
+	} elsif ($self->{db}) {
 		my $s = $self->{db}->get($key, $value);
 		return $s ? undef : $value;
 	}
@@ -187,10 +197,14 @@ sub new
 	my $name = shift;
 	my $remote = shift;
 	my $chain = shift;
+	my $cmd = shift;
+	
 	$self->{name} = lc $name;
 	$self->{remote} = uc $remote if $remote;
 	$self->{chain} = $chain if $chain && ref $chain;
 	$self->{accesst} = $self->{createt} = $self->{lastt} = $main::systime;
+	$self->{localcmd} = lc $cmd if $cmd;
+	
 	$avail{$self->{name}} = $self;
 	mkdir $dbbase, 02775 unless -e $dbbase;
 	save();

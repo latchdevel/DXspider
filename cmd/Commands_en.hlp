@@ -378,6 +378,7 @@ in the system. It is also aliased to SHOW/COMMAND.
 === 9^DBCREATE <name>^Create a database entry
 === 9^DBCREATE <name> chain <name> [<name>..]^Create a chained database entry
 === 9^DBCREATE <name> remote <node>^Create a remote database entry
+=== 9^DBCREATE <name> cmd <dxspider command>^make a local command available as a DB
 DBCREATE allows you to define a database in the system. It doesn't actually
 create anything, just defines it.
 
@@ -429,6 +430,16 @@ to allow
   SH/BUCK g1tlh
 
 to work as they may be used to.
+
+You can also make local commands available as 'pseudo' databases. You
+can therefore make spider special commands available as a database. I
+imagine that this will be primarily useful for remote access from 
+legacy nodes. For example:-
+
+  DBCREATE dxqsl cmd show/dxqsl
+
+You also use one of these databases in a chain. This may be useful 
+locally. 
 
 See DBIMPORT for the importing of existing AK1A format data to databases.
 See DBSHOW for generic database enquiry

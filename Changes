@@ -2,6 +2,11 @@
 1. added HC and QRZ.com to possible QSL locations, if you want to pick up
 historical info (ie start again), run create_qsl.pl after update and restart
 the node (which you will need to do anyway).
+2. changed the dbcreate command so that you can say: 
+   dbcreate dxqsl cmd show/dxqsl
+which will allow local and remote users to execute commands as though they
+are Databases. You can also include these databases in chains. What you do
+with this, is ofcourse a moot question.   
 11Mar03=======================================================================
 1. Changed the name of show/qsl to show/dxqsl.
 2. Alter Commands_en.hlp to match new name and issue manual updates (g0vgs)
