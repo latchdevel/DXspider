@@ -136,12 +136,15 @@ sub process
 	    $self->send(DXProt::pc33($f[2], $f[1], $f[3]));# acknowledge it
 		
 		# get the next msg no - note that this has NOTHING to do with the stream number in PC protocol
-		my $msgno = next_transno("Msgno") if !$ref->{file};
-
-		$ref->store($ref->{lines});                    # store it (whatever that may mean)
+                # store the file or message
+                # remove extraneous rubbish from the hash
+                # remove it from the work in progress vector
+                # stuff it on the msg queue
+		$ref->{msgno} = next_transno("Msgno") if !$ref->{file};
+		$ref->store($ref->{lines});             
 		$ref->workclean;
-		delete $work{"$f[1]$f[2]$f[3]"};       # remove the reference from the work vector
-		push @msg, $ref;           # add this message to the incore message list
+		delete $work{"$f[1]$f[2]$f[3]"};       
+		push @msg, $ref;           
 	  }
 	  last SWITCH;
 	}
@@ -225,6 +228,7 @@ sub store
       print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$ref->{private}^$ref->{subject}^$ref->{origin}^$ref->{read}\n";
 	  print $fh "=== $ref->{fromnode}\n";
 	  my $line;
+	  $ref->{size} = 0;
 	  foreach $line (@{$lines}) {
         $ref->{size} += (length $line) + 1;
 		print $fh "$line\n";
