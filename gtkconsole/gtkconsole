@@ -104,7 +104,7 @@ $bot->can_default(1);
 $bot->grab_focus;
 $bot->grab_default;
 $toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
-#$bot->{signalid} = $bot->signal_connect(insert_text => \&doinsert, $bot); 
+#$bot->{signalid} = $bot->signal_connect(insert_text => \&botinsert, $bot); 
 $vbox->pack_end($bot, 0, 1, 0);
 $vbox->pack_end($top, 1, 1, 0);
 $vbox->show;
