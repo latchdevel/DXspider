@@ -67,8 +67,8 @@ $baddxfn = "$main::data/baddx.pl";
  [ qw(d n n n n m c c h) ],		# pc23
  [ qw(c p h) ],					# pc24
  [ qw(c c n n) ],				# pc25
- [ qw(f m d t m c c) ],			# pc26
- [ qw(d n n n n m c c) ],		# pc27
+ [ qw(f m d t m c c bc) ],		# pc26
+ [ qw(d n n n n m c c bc) ],	# pc27
  [ qw(c c c c d t p m bp n p bp bc) ], # pc28
  [ qw(c c n m) ],				# pc29
  [ qw(c c n) ],					# pc30
@@ -141,7 +141,7 @@ sub check
 	
 	my $i;
 	shift;    # not interested in the first field
-	for ($i = 0; $i < @_; $i++) {
+	for ($i = 0; $i < @$ref; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
 		return 0 unless $act;
 		next if $blank && $_[$i] =~ /^[ \*]$/;
