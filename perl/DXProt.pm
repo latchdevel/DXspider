@@ -318,6 +318,8 @@ sub normal
 				# add it to the node table if it isn't present and it's
 				# connected locally
 				$node = DXNode->new($dxchan, $field[1], 0, 1, 5400);
+				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
+				
 			}
 			return unless $node; # ignore if havn't seen a PC19 for this one yet
 			return unless $node->isa('DXNode');
