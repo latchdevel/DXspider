@@ -20,10 +20,8 @@ $lasttime = 0;
 $fn = "$main::data/dupefile";
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 sub init
 {
