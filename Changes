@@ -5,6 +5,7 @@ regardless of whatever else you might have in the directory.
 3. made shortcut at shutdown so that you don't get a storm of PC21s on busy
 nodes as each connection goes down. Just send a pc39 to each interface and
 nothing else.
+4. changed action of SIG{INT} and SIG{TERM} so that they now work on MSWin32
 10Apr01=======================================================================
 1. altered PC21 logic somewhat to eliminate dup PC21s
 2. disconnect should remove dangling local users in the routing table.

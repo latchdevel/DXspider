@@ -206,8 +206,10 @@ sub cease
 {
 	my $dxchan;
 
-	$SIG{'TERM'} = 'IGNORE';
-	$SIG{'INT'} = 'IGNORE';
+	unless ($is_win) {
+		$SIG{'TERM'} = 'IGNORE';
+		$SIG{'INT'} = 'IGNORE';
+	}
 	
 	DXUser::sync;
 
@@ -386,11 +388,11 @@ AGWrestart();
 dbg('err', "load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
+unless ($DB::VERSION) {
+	$SIG{INT} = $SIG{TERM} = sub { $decease = 1 };
+}
+
 unless ($is_win) {
-	unless ($DB::VERSION) {
-		$SIG{INT} = \&cease;
-		$SIG{TERM} = \&cease;
-	}
 	$SIG{HUP} = 'IGNORE';
 	$SIG{CHLD} = sub { $zombies++ };
 	
