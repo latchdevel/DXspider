@@ -1,6 +1,6 @@
   The DXSpider Administration Manual v1.48
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.49 November 2001 revision 1.0
+  Version 1.49 November 2001 revision 1.1
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -116,7 +116,6 @@
      6.6 Console.pl
      6.7 Updating kepler data
      6.8 The QRZ callbook
-     6.9 Scripts
 
   7. Security
 
@@ -142,135 +141,159 @@
      9.13 apropos (0)
      9.14 bye (0)
      9.15 catchup (5)
-     9.16 clear/spots (0)
-     9.17 connect (5)
-     9.18 dbavail (0)
-     9.19 dbcreate (9)
-     9.20 dbimport (9)
-     9.21 dbremove (9)
-     9.22 dbshow (0)
-     9.23 debug (9)
-     9.24 directory (0)
-     9.25 directory (extended for sysops) (5)
-     9.26 disconnect (8)
-     9.27 dx (0)
-     9.28 export (9)
-     9.29 export_users (9)
-     9.30 forward/latlong (8)
-     9.31 forward/opername (1)
-     9.32 help (0)
-     9.33 init (5)
-     9.34 kill (0)
-     9.35 kill (5)
-     9.36 kill full (5)
-     9.37 links (0)
-     9.38 load/aliases (9)
-     9.39 load/badmsg (9)
-     9.40 load/bands (9)
-     9.41 load/cmd_cache (9)
-     9.42 load/forward (9)
-     9.43 load/messages (9)
-     9.44 load/prefixes (9)
-     9.45 merge (5)
-     9.46 msg (9)
-     9.47 pc (8)
-     9.48 ping (1)
-     9.49 rcmd (1)
-     9.50 read (0)
-     9.51 read (extended for sysops) (5)
-     9.52 reject/announce
-     9.53 reject/announce (extended for sysops) (8)
-     9.54 reject/route (8)
-     9.55 reject/spots (0)
-     9.56 reject/spots (extended for sysops) (8)
-     9.57 reject/wcy (0)
-     9.58 reject/wcy (extended for sysops) (8)
-     9.59 reject/wwv (0)
-     9.60 reject/wwv (extended for sysops) (8)
-     9.61 reply (0)
-     9.62 send (0)
-     9.63 set/address (0)
-     9.64 set/announce (0)
-     9.65 set/arcluster (5)
-     9.66 set/baddx (8)
-     9.67 set/badnode (6)
-     9.68 set/badspotter (8)
-     9.69 set/beep (0)
-     9.70 set/bbs (5)
-     9.71 set/clx (5)
-     9.72 set/debug (9)
-     9.73 set/dx (0)
-     9.74 set/dxgrid (0)
-     9.75 set/dxnet (5)
-     9.76 set/echo (0)
-     9.77 set/here (0)
-     9.78 set/homenode (0)
-     9.79 set/hops (8)
-     9.80 set/isolate (9)
-     9.81 set/language (0)
-     9.82 set/location (0)
-     9.83 set/sys_location (9)
-     9.84 set/logininfo (0)
-     9.85 set/lockout (9)
-     9.86 set/name (0)
-     9.87 set/node (9)
-     9.88 set/obscount (9)
-     9.89 set/page (0)
-     9.90 set/password (9)
-     9.91 set/pinginterval (9)
-     9.92 set/privilege (9)
-     9.93 set/spider (5)
-     9.94 set/sys_qra (9)
-     9.95 set/qra (0)
-     9.96 set/qth (0)
-     9.97 set/talk (0)
-     9.98 set/wcy (0)
-     9.99 set/wwv (0)
-     9.100 set/wx (0)
-     9.101 show/baddx (1)
-     9.102 show/badnode (6)
-     9.103 show/badspotter (1)
-     9.104 show/configuration (0)
-     9.105 show/configuration/node (0)
-     9.106 show/connect (1)
-     9.107 show/date (0)
-     9.108 show/debug (9)
-     9.109 show/dx (0)
-     9.110 show/dxcc (0)
-     9.111 show/files (0)
-     9.112 show/filter (0)
-     9.113 show/filter (extended for sysops) (5)
-     9.114 show/hops (8)
-     9.115 show/isolate (1)
-     9.116 show/lockout (9)
-     9.117 show/log (8)
-     9.118 show/moon (0)
-     9.119 show/muf (0)
-     9.120 show/node (1)
-     9.121 show/prefix (0)
-     9.122 show/program (5)
-     9.123 show/qra (0)
-     9.124 show/qrz (0)
-     9.125 show/route (0)
-     9.126 show/satellite (0)
-     9.127 show/sun (0)
-     9.128 show/time (0)
-     9.129 show/wcy (0)
-     9.130 show/wwv (0)
-     9.131 shutdown (5)
-     9.132 spoof (9)
-     9.133 stat/db (5)
-     9.134 stat/channel (5)
-     9.135 stat/msg (5)
-     9.136 stat/route_node (5)
-     9.137 stat/route_user (5)
-     9.138 stat/user (5)
-     9.139 sysop (0)
-     9.140 talk (0)
-     9.141 type (0)
-     9.142 who (0)
-     9.143 wx (0)
-     9.144 wx (enhanced for sysops) (5)
+     9.16 clear/announce (8)
+     9.17 clear/route (8)
+     9.18 clear/spots (0)
+     9.19 clear/spots (extended for sysops) (8)
+     9.20 clear/wcy (0)
+     9.21 clear/wcy (extended for sysops) (8)
+     9.22 clear/wwv (0)
+     9.23 clear/wwv (extended for sysops) (8)
+     9.24 connect (5)
+     9.25 dbavail (0)
+     9.26 dbcreate (9)
+     9.27 dbimport (9)
+     9.28 dbremove (9)
+     9.29 dbshow (0)
+     9.30 debug (9)
+     9.31 delete/user (9)
+     9.32 directory (0)
+     9.33 directory (extended for sysops) (5)
+     9.34 disconnect (8)
+     9.35 dx (0)
+     9.36 export (9)
+     9.37 export_users (9)
+     9.38 filtering (0)
+     9.39 forward/latlong (8)
+     9.40 forward/opername (1)
+     9.41 help (0)
+     9.42 init (5)
+     9.43 kill (0)
+     9.44 kill (5)
+     9.45 kill full (5)
+     9.46 kill/expunge (6)
+     9.47 links (0)
+     9.48 load/aliases (9)
+     9.49 load/badmsg (9)
+     9.50 load/badwords (9)
+     9.51 load/bands (9)
+     9.52 load/cmd_cache (9)
+     9.53 load/forward (9)
+     9.54 load/messages (9)
+     9.55 load/prefixes (9)
+     9.56 merge (5)
+     9.57 msg (9)
+     9.58 pc (8)
+     9.59 ping (1)
+     9.60 rcmd (1)
+     9.61 read (0)
+     9.62 read (extended for sysops) (5)
+     9.63 reject/announce
+     9.64 reject/announce (extended for sysops) (8)
+     9.65 reject/route (8)
+     9.66 reject/spots (0)
+     9.67 reject/spots (extended for sysops) (8)
+     9.68 reject/wcy (0)
+     9.69 reject/wcy (extended for sysops) (8)
+     9.70 reject/wwv (0)
+     9.71 reject/wwv (extended for sysops) (8)
+     9.72 reply (0)
+     9.73 send (0)
+     9.74 set/address (0)
+     9.75 set/announce (0)
+     9.76 set/arcluster (5)
+     9.77 set/baddx (8)
+     9.78 set/badnode (6)
+     9.79 set/badspotter (8)
+     9.80 set/badword (8)
+     9.81 set/beep (0)
+     9.82 set/bbs (5)
+     9.83 set/clx (5)
+     9.84 set/debug (9)
+     9.85 set/dx (0)
+     9.86 set/dxgrid (0)
+     9.87 set/dxnet (5)
+     9.88 set/echo (0)
+     9.89 set/email (0)
+     9.90 set/here (0)
+     9.91 set/homenode (0)
+     9.92 set/hops (8)
+     9.93 set/isolate (9)
+     9.94 set/language (0)
+     9.95 set/location (0)
+     9.96 set/sys_location (9)
+     9.97 set/logininfo (0)
+     9.98 set/lockout (9)
+     9.99 set/name (0)
+     9.100 set/node (9)
+     9.101 set/obscount (9)
+     9.102 set/page (0)
+     9.103 set/password (0)
+     9.104 set/password (9)
+     9.105 set/pinginterval (9)
+     9.106 set/privilege (9)
+     9.107 set/spider (5)
+     9.108 set/sys_qra (9)
+     9.109 set/qra (0)
+     9.110 set/qth (0)
+     9.111 set/register (9)
+     9.112 set/talk (0)
+     9.113 set/wcy (0)
+     9.114 set/wwv (0)
+     9.115 set/wx (0)
+     9.116 show/baddx (1)
+     9.117 show/badnode (6)
+     9.118 show/badspotter (1)
+     9.119 show/badword (1)
+     9.120 show/configuration (0)
+     9.121 show/configuration/node (0)
+     9.122 show/connect (1)
+     9.123 show/date (0)
+     9.124 show/debug (9)
+     9.125 show/dx (0)
+     9.126 show/dxcc (0)
+     9.127 sh/dxstats (0)
+     9.128 show/files (0)
+     9.129 show/filter (0)
+     9.130 show/filter (extended for sysops) (5)
+     9.131 show/hfstats (0)
+     9.132 show/hftable (0)
+     9.133 show/hops (8)
+     9.134 show/isolate (1)
+     9.135 show/lockout (9)
+     9.136 show/log (8)
+     9.137 show/moon (0)
+     9.138 show/muf (0)
+     9.139 show/newconfiguration (0)
+     9.140 show/newconfiguration/node (0)
+     9.141 show/node (1)
+     9.142 show/prefix (0)
+     9.143 show/program (5)
+     9.144 show/qra (0)
+     9.145 show/qrz (0)
+     9.146 show/registered (9)
+     9.147 show/route (0)
+     9.148 show/satellite (0)
+     9.149 show/sun (0)
+     9.150 show/time (0)
+     9.151 show/vhfstats (0)
+     9.152 show/vhftable (0)
+     9.153 show/wcy (0)
+     9.154 show/wwv (0)
+     9.155 shutdown (5)
+     9.156 spoof (9)
+     9.157 stat/db (5)
+     9.158 stat/channel (5)
+     9.159 stat/msg (5)
+     9.160 stat/route_node (5)
+     9.161 stat/route_user (5)
+     9.162 stat/user (5)
+     9.163 sysop (0)
+     9.164 talk (0)
+     9.165 type (0)
+     9.166 who (0)
+     9.167 wx (0)
+     9.168 wx (enhanced for sysops) (5)
 
 
   ______________________________________________________________________
@@ -328,6 +351,8 @@
   network, then you do not need to do route filtering and you will feel
   a lot better for not getting involved. If you are successfully using
   isolation then you also probably don't need to use route filtering.
+
+
   To put it simply, you should not mix Isolation and Route Filtering.
   It will work, of sorts, but you will not get the expected results.  If
   you are using Isolation sucessfully at the moment, do not get involved
@@ -369,8 +394,6 @@
 
   The generic commands are:-
 
-
-
        reject/route node_default <filter_option>
 
        or
@@ -392,6 +415,8 @@
        channel_dxcc <numbers>
        channel_itu <numbers>
        channel_zone <numbers>
+
+
 
 
   Please be careful if you alter this setting, it will affect ALL your
@@ -456,6 +481,7 @@
 
 
        unset/debug filter
+
 
 
 
@@ -658,6 +684,7 @@
 
 
 
+
   What this does is to ignore all HF CW spots and also rejects any spots
   on VHF which don't either originate or spot someone in Europe.
 
@@ -697,9 +724,6 @@
 
        reject/spots 1 on hf/ssb
 
-
-
-
   would redefine our earlier example, or
 
 
@@ -723,6 +747,7 @@
 
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
+
 
   1.8.  Default filters
 
@@ -765,9 +790,6 @@
        acc/spot on 0/30000
        acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
 
-
-
-
   Note that the first filter has not been specified with a number.  This
   will automatically be assumed to be number 1.  In this case, we have
   said reject all HF spots in the CW section of the bands but accept all
@@ -796,55 +818,93 @@
 
 
 
-       #
-       # hop table construction
-       #
-
-       package DXProt;
-
-       # default hopcount to use
-       $def_hopcount = 5;
-
-       # some variable hop counts based on message type
-       %hopcount =
-       (
-        11 => 10,
-        16 => 10,
-        17 => 10,
-        19 => 10,
-        21 => 10,
-       );
 
 
-       # the per node hop control thingy
 
 
-       %nodehops =
 
-        GB7ADX => {            11 => 8,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
 
-        GB7UDX => {            11 => 8,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
-        GB7BAA => {
-                               11 => 5,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
-       };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #
+  # hop table construction
+  #
+
+  package DXProt;
+
+  # default hopcount to use
+  $def_hopcount = 5;
+
+  # some variable hop counts based on message type
+  %hopcount =
+  (
+   11 => 10,
+   16 => 10,
+   17 => 10,
+   19 => 10,
+   21 => 10,
+  );
+
+
+  # the per node hop control thingy
+
+
+  %nodehops =
+
+   GB7ADX => {            11 => 8,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+
+   GB7UDX => {            11 => 8,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+   GB7BAA => {
+                          11 => 5,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+  };
 
 
 
@@ -859,6 +919,7 @@
   You can alter this file at any time, including whilst the cluster is
   running.  If you alter the file during runtime, the command load/hops
   will bring your changes into effect.
+
 
 
   1.11.  Hop Control on Specific Nodes
@@ -919,6 +980,11 @@
   In the /spider/msg directory you will find a file called
   badmsg.pl.issue.  Rename this to badmsg.pl and edit the file.  The
   original looks something like this ....
+
+
+
+
+
 
 
 
@@ -1232,46 +1298,81 @@
   DXSpider's operation with scripts of various kinds.
 
 
-  In the first instance, in 1.48, the sysop can create, with their
-  favorite text editor, files in the directory /spider/scripts which
-  contain any legal command for a callsign or class of connection which
-  will be executed at logon.
-
-
-
-  The filename is the callsign of the connection that you want the
-  script to operate on, eg: /spider/scripts/g1tlh. The filenames are
-  always in lower case on those architectures where this makes a
-  difference.
-
-
-  In addition to the callsign specific scripts there are three others:-
+  The directory /spider/scripts is where it all happens and is used for
+  several things.  Firstly it contains a file called startup that can be
+  used to call in any changes to the cluster from the default settings
+  on startup.  This script is executed immediately after all
+  initialisation of the node is done but before any connections are
+  possible.  Examples of this include how many spots it is possible to
+  get with the sh/dx command, whether you want registration/passwords to
+  be permanently on etc.  An example file is shown below and is included
+  in the distribution as startup.issue.
 
 
 
 
 
 
-  startup
-  user_default
+
+
+
+
+
+  #
+  # startup script example
+  #
+  # set maximum no of spots allowed to 100
+  # set/var $Spot::maxspots = 1
+  #
+  # Set registration on
+  # set/var $main::reqreg = 1
+  #
+  # Set passwords on
+  # set/var $main::passwdreq = 1
+  #
+
+
+
+
+
+  As usual, any text behind a # is treated as a comment and not read.
+
+  Secondly, it is used to store the login scripts for users and nodes.
+  Currently this can only be done by the sysop but it is envisaged that
+  eventually users will be able to set their own.  An example is
+  included in the distibution but here is a further example.
+
+
+
+       #
+       # G0FYD
+       #
+       blank +
+       sh/wwv 3
+       blank +
+       sh/dx
+       blank +
+       t g0jhc You abt?
+       blank +
+
+
+
+
+  The lines in between commands can simply insert a blank line or a
+  character such as a + sign to make the output easier to read.  Simply
+  create this script with your favourite editor and save it with the
+  callsign of the user as the filename.  Filenames should always be in
+  lower case.
+
+
+  Commands can be inserted in the same way for nodes.  A node may wish a
+  series of commands to be issued on login, such as a merge command for
+  example.
+
+
+  Thirdly, there are 2 default scripts for users and nodes who do not
+  have a specifically defined script.  These are user_default and
   node_default
-
-
-
-
-  The startup script is executed immediately after all initialisation of
-  the node is done, but before any connections are possible.
-
-
-  The user_default script is executed for every user that does NOT
-  already have a specific script.
-
-
-  The node_default script is executed for every node that doesn't have a
-  specific script.
-
-
-  There are a couple of examples in the /spider/scripts directory.
 
 
   5.  Databases
@@ -1318,6 +1419,7 @@
 
 
 
+
   This creates a remote entry.  the first name field is the database
   name at the remote node, then the remote switch, then the actual
   node_call of the remote node, for example...
@@ -1345,7 +1447,6 @@
 
 
        dbimport oblast /tmp/OBLAST.FUL
-
 
 
 
@@ -1415,7 +1516,6 @@
   If you remove a database it ceases to exist and would have to be
   created from scratch if you still required it.
 
-
   6.  Information, files and useful programs
 
   6.1.  MOTD
@@ -1445,9 +1545,6 @@
   file and edit it to say whatever you wish.  This file will be sent to
   a user attempting to log into the cluster when DXSpider is not
   actually running.
-
-
-
 
 
   6.4.  Other text messages
@@ -1515,8 +1612,7 @@
 
 
 
-
-  type news
+       type news
 
 
 
@@ -1549,19 +1645,22 @@
 
 
 
-       type bulletin/opdx391
-       Ohio/Penn DX Bulletin No. 391
-       The Ohio/Penn Dx PacketCluster
-       DX Bulletin No. 391
-       BID: $OPDX.391
-       January 11, 1999
-       Editor Tedd Mirgliotta, KB8NW
-       Provided by BARF-80 BBS Cleveland, Ohio
-       Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
-       Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
-       Association, Ohio/Penn PacketCluster Network, K1XN & Golist, WB2RAJ/WB2YQH
-       & The 59(9) DXReport, W3UR & The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
-       Press Enter to continue, A to abort (508 lines) >
+
+
+
+  type bulletin/opdx391
+  Ohio/Penn DX Bulletin No. 391
+  The Ohio/Penn Dx PacketCluster
+  DX Bulletin No. 391
+  BID: $OPDX.391
+  January 11, 1999
+  Editor Tedd Mirgliotta, KB8NW
+  Provided by BARF-80 BBS Cleveland, Ohio
+  Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
+  Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
+  Association, Ohio/Penn PacketCluster Network, K1XN & Golist, WB2RAJ/WB2YQH
+  & The 59(9) DXReport, W3UR & The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
+  Press Enter to continue, A to abort (508 lines) >
 
 
 
@@ -1574,6 +1673,39 @@
   You will find a file in /spider/cmd/ called Aliases.  First, copy this
   file to /spider/local_cmd/Aliases and edit this file.  You will see
   something like this ...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1791,61 +1923,6 @@
   proprieter of qrz.com for allowing this access.
 
 
-  6.9.  Scripts
-
-  The directory /spider/scripts is used for several things.  Firstly it
-  contains a file called startup that can be used to call in any changes
-  to the cluster from the default settings on startup.  Examples of this
-  include how many spots it is possible to get with the sh/dx command,
-  whether you want registration/passwords to be permanently on etc.  An
-  example file is shown below and is included in the distribution as
-  startup.issue.
-
-
-
-       #
-       # startup script example
-       #
-       # set maximum no of spots allowed to 100
-       # set/var $Spot::maxspots = 1
-       #
-       # Set registration on
-       # set/var $main::reqreg = 1
-       #
-       # Set passwords on
-       # set/var $main::passwdreq = 1
-       #
-
-
-
-
-  Secondly, it is used to store the login scripts for users.  Currently
-  this can only be done by the sysop but it is envisaged that eventually
-  users will be able to set their own.  An example is included in the
-  distibution but here is a further example.
-
-
-
-       #
-       # G0FYD
-       #
-       blank +
-       sh/wwv 3
-       blank +
-       sh/dx
-       blank +
-       t g0jhc You abt?
-       blank +
-
-
-
-
-  The lines in between commands can simply insert a blank line or a
-  character such as a + sign to make the output easier to read.
-
-
-
-
   7.  Security
 
   From version 1.49 DXSpider has some additional security features.
@@ -1912,6 +1989,9 @@
 
        set/var $main::passwdreq = 1
 
+
+
+
   at the cluster prompt.  This can also be added to the
   /spider/scripts/startup file as above to make the change permanent.
 
@@ -1963,7 +2043,6 @@
 
   First login as the user sysop.  Next you need to connect to the CVS
   repository.  You do this with the command below ...
-
 
   cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
 
@@ -2044,6 +2123,7 @@
 
 
 
+
   and your files will be updated.  As above, remember to recompile the
   "C" client if it has been updated (CVS will tell you) and restart if
   any of the perl scripts have been altered or added, again, CVS will
@@ -2096,8 +2176,6 @@
 
   some examples:-
 
-
-
          acc/ann dest 6MUK
          acc/ann 2 by_zone 14,15,16
          (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
@@ -2109,8 +2187,7 @@
 
 
 
-
-    acc/ann by G,M,2
+         acc/ann by G,M,2
 
 
 
@@ -2165,7 +2242,6 @@
   You can use any of the following things in this line:-
 
 
-
          call <prefixes>        the callsign of the thingy
          call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
          call_itu <numbers>
@@ -2174,6 +2250,9 @@
          origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
          origin_itu <numbers>
          origin_zone <numbers>
+
+
+
 
 
   some examples:-
@@ -2229,8 +2308,6 @@
 
 
 
-
-
   For frequencies, you can use any of the band names defined in
   SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
   thus: hf/ssb. You can also just have a simple range like: 0/30000 -
@@ -2241,9 +2318,8 @@
 
 
 
-
-    acc/spot 1 on hf/cw
-    acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+         acc/spot 1 on hf/cw
+         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
 
@@ -2290,15 +2366,23 @@
 
 
 
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
+
+
+
+
+
+
+
+
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <numbers>
+    origin_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    channel <prefixes>
 
 
 
@@ -2356,7 +2440,6 @@
   for example
 
 
-
          accept/wwv by_zone 4
 
 
@@ -2371,7 +2454,6 @@
   9.9.  accept/wwv (extended for sysops) (8)
 
   accept/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
-
 
 
   This version allows a sysop to set a filter for a callsign as well as
@@ -2423,6 +2505,7 @@
   apropos <string> Search the help database
 
 
+
   Search the help database for <string> (it isn't case sensitive), and
   print the names of all the commands that may be relevant.
 
@@ -2470,7 +2553,32 @@
   Order is not important.
 
 
-  9.16.  clear/spots (0)
+  9.16.  clear/announce (8)
+
+  clear/announce [input] <callsign> [0-9|all] Clear an announce filter
+  line
+
+
+  A sysop can clear an input or normal output filter for a user or the
+  node_default or user_default.
+
+
+  9.17.  clear/route (8)
+
+  clear/route [input] ^lt;callsign> [0-9|all] Clear a route filter line
+
+
+  This command allows you to clear (remove) a line in a route filter or
+  to remove the whole filter.
+
+
+  see CLEAR/SPOTS for a more detailed explanation.
+
+  A sysop can clear an input or normal output filter for a user or the
+  node_default or user_default.
+
+
+  9.18.  clear/spots (0)
 
   clear/spots [1|all] Clear a spot filter line
 
@@ -2518,8 +2626,59 @@
   the filter will be completely removed.
 
 
+  9.19.  clear/spots (extended for sysops) (8)
 
-  9.17.  connect (5)
+  clear/spots [input] <callsign> [0-9|all] Clear a spot filter line
+
+
+  A sysop can clear an input or normal output filter for a user or the
+  node_default or user_default.
+
+
+
+
+
+  9.20.  clear/wcy (0)
+
+  clear/wcy [1|all] Clear a WCY filter line
+
+
+  This command allows you to clear (remove) a line in a WCY filter or to
+  remove the whole filter.
+
+  see CLEAR/SPOTS for a more detailed explanation.
+
+
+  9.21.  clear/wcy (extended for sysops) (8)
+
+  clear/wcy [input] <callsign> [0-9|all] Clear a WCY filter line
+
+
+  A sysop can clear an input or normal output filter for a user or the
+  node_default or user_default.
+
+
+  9.22.  clear/wwv (0)
+
+  clear/wwv [1|all] Clear a WWV filter line
+
+
+  This command allows you to clear (remove) a line in a WWV filter or to
+  remove the whole filter.
+
+  see CLEAR/SPOTS for a more detailed explanation.
+
+
+  9.23.  clear/wwv (extended for sysops) (8)
+
+  clear/wwv [input] <callsign> [0-9|all] Clear a WWV filter line
+
+
+  A sysop can clear an input or normal output filter for a user or the
+  node_default or user_default.
+
+
+  9.24.  connect (5)
 
   connect <callsign> Start a connection to another DX Cluster
 
@@ -2531,7 +2690,7 @@
   cluster <callsign>.
 
 
-  9.18.  dbavail (0)
+  9.25.  dbavail (0)
 
   dbavail Show a list of all the databases in the system
 
@@ -2540,7 +2699,7 @@
   defined in the system. It is also aliased to SHOW/COMMAND.
 
 
-  9.19.  dbcreate (9)
+  9.26.  dbcreate (9)
 
   dbcreate <name> Create a database entry
   dbcreate <name> chain <name> [<name>..] Create a chained database
@@ -2570,7 +2729,6 @@
 
   Databases can exist offsite. To define a database that lives on
   another node do:
-
 
   DBCREATE buckmaster remote gb7dxc
 
@@ -2610,7 +2768,9 @@
   databases.  See DBSHOW for generic database enquiry
 
 
-  9.20.  dbimport (9)
+
+
+  9.27.  dbimport (9)
 
   dbimport <dbname> Import AK1A data into a database
 
@@ -2625,7 +2785,7 @@
   oblast database held locally.
 
 
-  9.21.  dbremove (9)
+  9.28.  dbremove (9)
 
   dbremove <dbname> Delete a database
 
@@ -2636,7 +2796,6 @@
   There is no warning, no comeback, no safety net.
 
   For example:
-
 
   DBREMOVE oblast
 
@@ -2650,7 +2809,7 @@
   You have been warned.
 
 
-  9.22.  dbshow (0)
+  9.29.  dbshow (0)
 
   dbshow <dbname> <key> Display an entry, if it exists, in a database
 
@@ -2677,9 +2836,7 @@
 
 
 
-
-
-  9.23.  debug (9)
+  9.30.  debug (9)
 
   debug Set the cluster program into debug mode
 
@@ -2698,7 +2855,21 @@
   finished.
 
 
-  9.24.  directory (0)
+  9.31.  delete/user (9)
+
+  delete/user <callsign> Delete a user from the User Database
+
+
+  This command will completely remove a one or more users from the
+  database.
+
+  There is NO SECOND CHANCE.
+
+  It goes without saying that you should use this command CAREFULLY!
+
+
+
+  9.32.  directory (0)
 
   directory List messages
   directory own List your own messages
@@ -2731,9 +2902,6 @@
 
   You can abbreviate all the commands to one letter and use ak1a
   syntax:-
-
-
-
           DIR/T G1* 10
           DIR/S QSL 10-100 5
 
@@ -2742,13 +2910,13 @@
 
 
 
-  9.25.  directory (extended for sysops) (5)
+  9.33.  directory (extended for sysops) (5)
 
   Works just like the user command except that sysops can see ALL
   messages.
 
 
-  9.26.  disconnect (8)
+  9.34.  disconnect (8)
 
   disconnect <call> [<call> ...] Disconnect a user or node
 
@@ -2756,7 +2924,7 @@
   Disconnect any <call> connected locally
 
 
-  9.27.  dx (0)
+  9.35.  dx (0)
 
   dx [by <call>] <freq> <call> <remarks> Send a DX spot
 
@@ -2769,6 +2937,9 @@
           DX FR0G 144.600
           DX 144.600 FR0G
           DX 144600 FR0G
+
+
+
 
   will all give the same result. You can add some remarks to the end of
   the command and they will be added to the spot.
@@ -2793,10 +2964,9 @@
   cluster.  See SHOW/BANDS for more information.
 
 
-  9.28.  export (9)
+  9.36.  export (9)
 
   export <msgno> <filename> Export a message to a file
-
 
   Export a message to a file. This command can only be executed on a
   local console with a fully privileged user. The file produced will be
@@ -2811,7 +2981,7 @@
   EXPORT 2345 /tmp/a
 
 
-  9.29.  export_users (9)
+  9.37.  export_users (9)
 
   export_users [<filename>] Export the users database to ascii
 
@@ -2827,7 +2997,140 @@
   check is made on the filename (if any) that you specify.
 
 
-  9.30.  forward/latlong (8)
+  9.38.  filtering (0)
+
+  filtering Filtering things in DXSpider
+
+
+  There are a number of things you can filter in the DXSpider system.
+  They all use the same general mechanism.
+
+  In general terms you can create a 'reject' or an 'accept' filter which
+  can have up to 10 lines in it. You do this using, for example:-
+
+  accept/spots .....  reject/spots .....
+
+  where ..... are the specific commands for that type of filter. There
+  are filters for spots, wwv, announce, wcy and (for sysops) connects.
+  See each different accept or reject command reference for more
+  details.
+
+  There is also a command to clear out one or more lines in a filter and
+  one to show you what you have set. They are:-
+
+  clear/spots 1 clear/spots all
+
+  and
+
+  show/filter
+
+  There is clear/xxxx command for each type of filter.
+
+  For now we are going to use spots for the examples, but you can apply
+  the principles to all types of filter.
+
+  There are two main types of filter 'accept' or 'reject'; which you use
+  depends entirely on how you look at the world and what is least
+  writing to achieve what you want. Each filter has 10 lines (of any
+  length) which are tried in order. If a line matches then the action
+  you have specified is taken (ie reject means ignore it and accept
+  means gimme it).
+
+  The important thing to remember is that if you specify a 'reject'
+  filter (all the lines in it say 'reject/spots' (for instance) then if
+  a spot comes in that doesn't match any of the lines then you will get
+  it BUT if you specify an 'accept' filter then any spots that don't
+  match are dumped. For example if I have a one line accept filter:-
+
+  accept/spots on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+  then automatically you will ONLY get VHF spots from or to CQ zones 14
+  15 and 16.  If you set a reject filter like:
+
+  reject/spots on hf/cw
+
+  Then you will get everything EXCEPT HF CW spots, If you am interested
+  in IOTA and will work it even on CW then you could say:-
+
+  reject/spots on hf/cw and not info iota
+
+  But in that case you might only be interested in iota and say:-
+
+  accept/spots not on hf/cw or info iota
+
+  which is exactly the same. You should choose one or the other until
+  you are confortable with the way it works. Yes, you can mix them
+  (actually you can have an accept AND a reject on the same line) but
+  don't try this at home until you can analyse the results that you get
+  without ringing up the sysop for help.
+
+  You can arrange your filter lines into logical units, either for your
+  own understanding or simply convenience. I have one set frequently:-
+
+  reject/spots 1 on hf/cw reject/spots 2 on 50000/1400000 not (by_zone
+  14,15,16 or call_zone 14,15,16)
+
+  What this does is to ignore all HF CW spots (being a class B I can't
+  read any CW and couldn't possibly be interested in HF :-) and also
+  rejects any spots on VHF which don't either originate or spot someone
+  in Europe.
+
+  This is an exmaple where you would use the line number (1 and 2 in
+  this case), if you leave the digit out, the system assumes '1'. Digits
+
+  You can leave the word 'and' out if you want, it is implied. You can
+  use any number of brackets to make the 'expression' as you want it.
+  There are things called precedence rules working here which mean that
+  you will NEED brackets in a situation like line 2 because, without it,
+  will assume:-
+
+  (on 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16
+
+  annoying, but that is the way it is. If you use OR - use brackets.
+  Whilst we are here CASE is not important. 'And BY_Zone' is just 'and
+  by_zone'.
+
+  If you want to alter your filter you can just redefine one or more
+  lines of it or clear out one line. For example:-
+
+  reject/spots 1 on hf/ssb
+
+  or
+
+  clear/spots 1
+
+
+  To remove the filter in its entirty:-
+
+  clear/spots all
+
+  There are similar CLEAR commands for the other filters:-
+
+  clear/announce clear/wcy clear/wwv
+
+  ADVANCED USERS:-
+
+  Once you are happy with the results you get, you may like to
+  experiment.
+
+  my example that filters hf/cw spots and accepts vhf/uhf spots from EU
+  can be written with a mixed filter, eg:
+
+  rej/spot on hf/cw acc/spot on 0/30000 acc/spot 2 on 50000/1400000 and
+  (by_zone 14,15,16 or call_zone 14,15,16)
+
+  each filter slot actually has a 'reject' slot and an 'accept' slot.
+  The reject slot is executed BEFORE the accept slot.
+
+  It was mentioned earlier that after a reject test that doesn't match,
+  the default for following tests is 'accept', the reverse is true for
+  first, any non hf/cw spot is passed to the accept line, which lets
+  thru everything else on HF.
+
+  The next filter line lets through just VHF/UHF spots from EU.
+
+
+  9.39.  forward/latlong (8)
 
   forward/latlong <node_call> Send latitude and longitude information to
   another cluster
@@ -2841,7 +3144,7 @@
   so it is not recommended on slow links.
 
 
-  9.31.  forward/opername (1)
+  9.40.  forward/opername (1)
 
   forward/opername <call> Send out information on this <call> to all
   clusters
@@ -2853,7 +3156,7 @@
   available.
 
 
-  9.32.  help (0)
+  9.41.  help (0)
 
   help <cmd> Get help on a command
 
@@ -2866,7 +3169,7 @@
   commands to look at with HELP.
 
 
-  9.33.  init (5)
+  9.42.  init (5)
 
   init <node call> Re-initialise a link to an AK1A compatible node
 
@@ -2880,7 +3183,7 @@
   Best of luck - you will need it.
 
 
-  9.34.  kill (0)
+  9.43.  kill (0)
 
   kill <msgno> [<msgno> ..] Delete a message from the local system
 
@@ -2890,7 +3193,7 @@
   the sysop).
 
 
-  9.35.  kill (5)
+  9.44.  kill (5)
 
   kill <msgno> [<msgno> ...] Remove or erase a message from the system
   kill from <call> Remove all messages from a callsign
@@ -2902,7 +3205,8 @@
 
   As a sysop you can kill any message on the system.
 
-  9.36.  kill full (5)
+
+  9.45.  kill full (5)
 
   kill full <msgno> [<msgno>] Delete a message from the whole cluster
 
@@ -2913,7 +3217,22 @@
   same subject will be deleted. Beware!
 
 
-  9.37.  links (0)
+  9.46.  kill/expunge (6)
+
+  kill/expunge <msgno> [<msgno>..]Expunge a message
+
+
+  Deleting a message using the normal KILL commands only marks that
+  message for deletion. The actual deletion only happens later (usually
+  two days later).
+
+  The KILL EXPUNGE command causes the message to be truly deleted more
+  or less immediately.
+
+  It otherwise is used in the same way as the KILL command.
+
+
+  9.47.  links (0)
 
   links Show which nodes are physically connected
 
@@ -2923,7 +3242,7 @@
 
 
 
-  9.38.  load/aliases (9)
+  9.48.  load/aliases (9)
 
   load/aliases Reload the command alias table
 
@@ -2933,7 +3252,7 @@
   running in order for the changes to take effect.
 
 
-  9.39.  load/badmsg (9)
+  9.49.  load/badmsg (9)
 
   load/badmsg Reload the bad message table
 
@@ -2945,7 +3264,21 @@
   deleted on receipt.
 
 
-  9.40.  load/bands (9)
+  9.50.  load/badwords (9)
+
+  load/badwords Reload the bad words table
+
+
+  Reload the /spider/data/badwords file if you have changed it manually
+  whilst the cluster is running. This file contains a list of words
+  which, if found on certain text portions of PC protocol, will cause
+  those protocol frames to be rejected. It will all put out a message if
+  any of these words are used on the announce, dx and talk commands. The
+  words can be one or more on a line, lines starting with '#' are
+  ignored.
+
+
+  9.51.  load/bands (9)
 
   load/bands Reload the band limits table
 
@@ -2954,7 +3287,7 @@
   whilst the cluster is running.
 
 
-  9.41.  load/cmd_cache (9)
+  9.52.  load/cmd_cache (9)
 
   load/cmd_cache Reload the automatic command cache
 
@@ -2965,10 +3298,7 @@
   delete a command in the local_cmd tree and want to use the normal one
   again. Execute this command to reset everything back to the state it
   was just after a cluster restart.
-
-
-
-  9.42.  load/forward (9)
+  9.53.  load/forward (9)
 
   load/forward Reload the msg forwarding routing table
 
@@ -2976,7 +3306,7 @@
   whilst the cluster is running.
 
 
-  9.43.  load/messages (9)
+  9.54.  load/messages (9)
 
   load/messages Reload the system messages file
 
@@ -2989,7 +3319,7 @@
   unknown message 'xxxx' in lang 'en'
 
 
-  9.44.  load/prefixes (9)
+  9.55.  load/prefixes (9)
 
   load/prefixes Reload the prefix table
 
@@ -2998,7 +3328,7 @@
   manually whilst the cluster is running.
 
 
-  9.45.  merge (5)
+  9.56.  merge (5)
 
   merge <node> [<no spots>/<no wwv>] Ask for the latest spots and WWV
 
@@ -3013,7 +3343,7 @@
   data).
 
 
-  9.46.  msg (9)
+  9.57.  msg (9)
 
   msg <cmd> <msgno> [data ...] Alter various message parameters
 
@@ -3059,7 +3389,7 @@
   This will display more information on the message than DIR does.
 
 
-  9.47.  pc (8)
+  9.58.  pc (8)
 
   pc <call> <text> Send text (eg PC Protocol) to <call>
 
@@ -3078,7 +3408,7 @@
   pc G1TLH Try doing that properly!!!
 
 
-  9.48.  ping (1)
+  9.59.  ping (1)
 
   ping <node> Check the link quality between nodes
 
@@ -3091,7 +3421,7 @@
 
 
 
-  9.49.  rcmd (1)
+  9.60.  rcmd (1)
 
   rcmd <node call> <cmd> Send a command to another DX cluster
 
@@ -3106,7 +3436,7 @@
   whether you have permission to send this command at all.
 
 
-  9.50.  read (0)
+  9.61.  read (0)
 
   read Read the next unread personal message addressed to you
   read <msgno> Read the specified message
@@ -3117,7 +3447,7 @@
 
 
 
-  9.51.  read (extended for sysops) (5)
+  9.62.  read (extended for sysops) (5)
 
   read <msgno> Read a message on the system
 
@@ -3125,7 +3455,7 @@
   As a sysop you may read any message on the system
 
 
-  9.52.  reject/announce
+  9.63.  reject/announce
 
   reject/announce [0-9] <pattern> Set a reject filter for announce
 
@@ -3178,7 +3508,7 @@
   but this probably for advanced users...
 
 
-  9.53.  reject/announce (extended for sysops) (8)
+  9.64.  reject/announce (extended for sysops) (8)
 
   reject/announce <call> [input] [0-9] <pattern> Announce filter sysop
   version
@@ -3197,7 +3527,7 @@
 
 
 
-  9.54.  reject/route (8)
+  9.65.  reject/route (8)
 
   reject/route <call> [0-9] <pattern> Set an 'reject' filter line for
   routing
@@ -3248,7 +3578,7 @@
 
 
 
-  9.55.  reject/spots (0)
+  9.66.  reject/spots (0)
 
   reject/spots [0-9] <pattern> Set a reject filter line for spots
 
@@ -3310,7 +3640,7 @@
   but this probably for advanced users...
 
 
-  9.56.  reject/spots (extended for sysops) (8)
+  9.67.  reject/spots (extended for sysops) (8)
 
   reject/spots <call> [input] [0-9] <pattern> Reject spot filter sysop
   version
@@ -3331,7 +3661,7 @@
 
 
 
-  9.57.  reject/wcy (0)
+  9.68.  reject/wcy (0)
 
   reject/wcy [0-9] <pattern> Set a reject WCY filter
 
@@ -3364,7 +3694,7 @@
 
 
 
-  9.58.  reject/wcy (extended for sysops) (8)
+  9.69.  reject/wcy (extended for sysops) (8)
 
   reject/wcy <call> [input] [0-9] <pattern> WCY reject filter sysop
   version
@@ -3376,7 +3706,7 @@
   reject/wcy gb7djk all
 
 
-  9.59.  reject/wwv (0)
+  9.70.  reject/wwv (0)
 
   reject/wwv [0-9] <pattern> Set a reject WWV filter
 
@@ -3414,7 +3744,7 @@
   See HELP FILTER for information.
 
 
-  9.60.  reject/wwv (extended for sysops) (8)
+  9.71.  reject/wwv (extended for sysops) (8)
 
   reject/wwv <call> [input] [0-9] <pattern> WWV reject filter sysop
   version
@@ -3430,7 +3760,7 @@
 
          reject/wwv user_default by W
 
-  9.61.  reply (0)
+  9.72.  reply (0)
 
   reply Reply (privately) to the last message that you have read
   reply <msgno> Reply (privately) to the specified message
@@ -3447,7 +3777,7 @@
   further details)
 
 
-  9.62.  send (0)
+  9.73.  send (0)
 
   send <call> [<call> ...] Send a message to one or more callsigns
   send RR <call> Send a message and ask for a read receipt
@@ -3481,7 +3811,7 @@
   is an alias for SEND PRIVATE
 
 
-  9.63.  set/address (0)
+  9.74.  set/address (0)
 
   set/address <your_address> Record your postal address
 
@@ -3489,14 +3819,14 @@
   Literally, record your address details on the cluster.
 
 
-  9.64.  set/announce (0)
+  9.75.  set/announce (0)
 
   set/announce Allow announce messages
 
 
   Allow announce messages to arrive at your terminal.
 
-  9.65.  set/arcluster (5)
+  9.76.  set/arcluster (5)
 
   set/arcluster <node_call> [<node_call> ...] Make the node_call an AR-
   Cluster type node
@@ -3505,7 +3835,7 @@
   Set the node_call as an AR-Cluster type node
 
 
-  9.66.  set/baddx (8)
+  9.77.  set/baddx (8)
 
   set/baddx <call> Stop words we do not wish to see in the callsign
   field of a dx spot being propagated
@@ -3534,7 +3864,7 @@
 
 
 
-  9.67.  set/badnode (6)
+  9.78.  set/badnode (6)
 
   set/badnode <node_call> Stop spots from this node_call being
   propagated
@@ -3568,7 +3898,7 @@
   FILTERing.
 
 
-  9.68.  set/badspotter (8)
+  9.79.  set/badspotter (8)
 
   set/badspotter <call> Stop spots from this callsign being propagated
 
@@ -3602,20 +3932,41 @@
   FILTERing.
 
 
-  9.69.  set/beep (0)
+  9.80.  set/badword (8)
+
+  set/badword <word> Stop things with this word being propogated
+
+
+  Setting a word as a 'badword' will prevent things like spots,
+  announces or talks with this word in the the text part from going any
+  further. They will not be displayed and they will not be sent onto
+  other nodes.
+
+  The word must be written in full, no wild cards are allowed eg:-
+
+  set/badword annihilate annihilated annihilation
+
+  will stop anything with these words in the text.
+
+  unset/badword annihilated
+
+  will allow text with this word again.
+
+
+
+  9.81.  set/beep (0)
 
   set/beep Add beeps to terminal messages
-
 
   Add a beep to DX and other terminal messages.
 
 
-  9.70.  set/bbs (5)
+  9.82.  set/bbs (5)
 
   set/bbs <call> [<call>..]Make <call> a BBS
 
 
-  9.71.  set/clx (5)
+  9.83.  set/clx (5)
 
   set/clx <node_call> [<node_call> ...] Make the node_call a CLX type
   node
@@ -3624,9 +3975,10 @@
   Set the node_call as a CLX type node
 
 
-  9.72.  set/debug (9)
+  9.84.  set/debug (9)
 
   set/debug <name> Add a debug level to the debug set
+
 
   You can choose to log several different levels.  The levels are
 
@@ -3637,7 +3989,7 @@
   You can remove a debug level with unset/debug <name>
 
 
-  9.73.  set/dx (0)
+  9.85.  set/dx (0)
 
   set/dxAllow DX messages to arrive at your terminal
 
@@ -3645,7 +3997,7 @@
   You can stop DX messages with the unset/dx command
 
 
-  9.74.  set/dxgrid (0)
+  9.86.  set/dxgrid (0)
 
   set/dxgridAllow grid squares on the end of DX messages
 
@@ -3655,7 +4007,7 @@
   to remove the grid squares.
 
 
-  9.75.  set/dxnet (5)
+  9.87.  set/dxnet (5)
 
   set/dxnet <node_call> [<node_call> ...] Make the node_call a DXNet
   type node
@@ -3664,7 +4016,7 @@
   Set the node_call as a DXNet type node
 
 
-  9.76.  set/echo (0)
+  9.88.  set/echo (0)
 
   set/echo Make the cluster echo your input
 
@@ -3681,7 +4033,27 @@
   YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
 
-  9.77.  set/here (0)
+  9.89.  set/email (0)
+
+  set/email <email_address> Set email address(es) and forward your
+  personals
+
+
+  If any personal messages come in for your callsign then you can use
+  these commands to control whether they are forwarded onto your email
+  address. To enable the forwarding do something like:-
+
+  SET/EMAIL mike.tubby@somewhere.com
+
+  You can have more than one email address (each one separated by a
+  space).  Emails are forwarded to all the email addresses you specify.
+
+  You can disable forwarding by:-
+
+  UNSET/EMAIL
+
+
+  9.90.  set/here (0)
 
   set/here Set the here flag
 
@@ -3692,9 +4064,7 @@
   brackets around your callsign to indicate you are not available.
 
 
-
-
-  9.78.  set/homenode (0)
+  9.91.  set/homenode (0)
 
   set/homenode <node_call> Set your home cluster
 
@@ -3711,7 +4081,7 @@
 
 
 
-  9.79.  set/hops (8)
+  9.92.  set/hops (8)
 
   set/hops <node_call> ann|spots|wwv|wcy <n> Set hop count
 
@@ -3720,9 +4090,6 @@
 
   This command allows you to set up special hop counts for a node for
   currently: announce, spots, wwv and wcy broadcasts.
-
-
-
        eg:
          set/hops gb7djk ann 10
          set/hops gb7mbc spots 20
@@ -3734,7 +4101,7 @@
   creates a filter and works in conjunction with the filter system.
 
 
-  9.80.  set/isolate (9)
+  9.93.  set/isolate (9)
 
   set/isolate <node call> Isolate a node from the rest of the network
 
@@ -3752,7 +4119,7 @@
   You can remove the isolation with the command unset/isolate.
 
 
-  9.81.  set/language (0)
+  9.94.  set/language (0)
 
   set/language <language> Set the language you wish to use
 
@@ -3760,7 +4127,8 @@
   You can select the language that you want the cluster to use.
   Currently the languages available are en (English) and nl (Dutch).
 
-  9.82.  set/location (0)
+
+  9.95.  set/location (0)
 
   set/location <lat and long> Set your latitude and longitude
 
@@ -3777,7 +4145,7 @@
 
 
 
-  9.83.  set/sys_location (9)
+  9.96.  set/sys_location (9)
 
   set/sys_location <lat & long> Set your cluster latitude and longitude
 
@@ -3788,14 +4156,13 @@
   example:-
 
 
-
          SET/LOCATION 52 22 N 0 57 E
 
 
 
 
 
-  9.84.  set/logininfo (0)
+  9.97.  set/logininfo (0)
 
   set/logininfo Show logins and logouts of nodes and users
 
@@ -3805,7 +4172,7 @@
 
 
 
-  9.85.  set/lockout (9)
+  9.98.  set/lockout (9)
 
   set/lockout <call> Stop a callsign connecting to the cluster
 
@@ -3814,7 +4181,7 @@
   allow the user to connect again, use the unset/lockout command.
 
 
-  9.86.  set/name (0)
+  9.99.  set/name (0)
 
   set/name <your_name> Set your name
 
@@ -3826,7 +4193,10 @@
          set/name Dirk
 
 
-  9.87.  set/node (9)
+
+
+
+  9.100.  set/node (9)
 
   set/node <call> [<call> ...] Make the callsign an AK1A cluster
 
@@ -3849,7 +4219,10 @@
   To see what your nodes are set to, use the show/nodes command.
 
 
-  9.88.  set/obscount (9)
+
+
+
+  9.101.  set/obscount (9)
 
   set/obscount <count> <node call> Set the 'pump-up' obsolescence
   counter
@@ -3870,7 +4243,7 @@
   minutes, it is disconnected.
 
 
-  9.89.  set/page (0)
+  9.102.  set/page (0)
 
   set/page <n> Set the number of lines per page
 
@@ -3890,21 +4263,48 @@
   The setting is stored in your user profile.
 
 
+  9.103.  set/password (0)
+
+  set/password Set your own password
 
 
-  9.90.  set/password (9)
+  This command only works for a 'telnet' user (currently). It will only
+  work if you have a password already set. This initial password can
+  only be set by the sysop.
+
+  When you execute this command it will ask you for your old password,
+  then ask you to type in your new password twice (to make sure you get
+  it right). You may or may not see the data echoed on the screen as you
+  type, depending on the type of telnet client you have.
+
+
+  9.104.  set/password (9)
 
   set/password <callsign> <string> Set a users password
 
 
   The password for a user can only be set by a full sysop. The string
-  can contain any characters but any spaces are removed (you can type in
-  spaces - but they won't appear in the password). You can see the
-  result with STAT/USER.  The password is the usual 30 character baycom
-  type password.
+  can contain any characters.
+
+  The way this field is used depends on context. If it is being used in
+  the SYSOP command context then you are offered 5 random numbers and
+  you have to supply the corresponding letters. This is now mainly for
+  ax25 connections.
+
+  If it is being used on incoming telnet connections then, if a password
+  is set or the:
+
+  set/var $main::passwdreq = 1
+
+  command is executed in the startup script, then a password prompt is
+  given after the normal 'login: ' prompt.
+
+  The command "unset/password" is provided to allow a sysop to remove a
+  users password completely in case a user forgets or loses their
+  password.
 
 
-  9.91.  set/pinginterval (9)
+  9.105.  set/pinginterval (9)
 
   set/pinginterval <time> <node call> Set the ping time to neighbouring
   nodes
@@ -3925,7 +4325,7 @@
   for more information.
 
 
-  9.92.  set/privilege (9)
+  9.106.  set/privilege (9)
 
   set/privilege <n> <call> [<call> ...] Set the privilege level on a
   call
@@ -3951,22 +4351,24 @@
   connection your privilege will automatically be set to 0.
 
 
-  9.93.  set/spider (5)
+
+
+
+  9.107.  set/spider (5)
 
   set/spider <node_call> [<node_call> ...] Make the node_call a DXSpider
   type node
 
 
-
   Set the node_call as a DXSpider type node
 
 
-  9.94.  set/sys_qra (9)
+  9.108.  set/sys_qra (9)
 
   set/sys_qra <locator> Set your cluster QRA locator
 
 
-  9.95.  set/qra (0)
+  9.109.  set/qra (0)
 
   set/qra <locator> Set your QRA locator
 
@@ -3983,7 +4385,7 @@
 
 
 
-  9.96.  set/qth (0)
+  9.110.  set/qth (0)
 
   set/qth <your QTH> Set your QTH
 
@@ -3998,7 +4400,30 @@
 
 
 
-  9.97.  set/talk (0)
+  9.111.  set/register (9)
+
+  set/register <call> Mark a user as registered
+
+
+  Registration is a concept that you can switch on by executing the
+
+  set/var $main::regreq = 1
+
+  command (usually in your startup file)
+
+  If a user is NOT registered then, firstly, instead of the normal motd
+  file (/spider/data/motd) being sent to the user at startup, the user
+  is sent the motd_nor file instead. Secondly, the non registered user
+  only has READ-ONLY access to the node. The non-registered user cannot
+  use DX, ANN etc.
+
+  The only exception to this is that a non-registered user can TALK or
+  SEND messages to the sysop.
+
+  To unset a user use the 'unset/register' command
+
+
+  9.112.  set/talk (0)
 
   set/talk Allow talk messages to be seen at your console
 
@@ -4007,7 +4432,7 @@
   talks with the unset/talk command.
 
 
-  9.98.  set/wcy (0)
+  9.113.  set/wcy (0)
 
   set/wcy Allow WCY messages to be seen at your console
 
@@ -4016,7 +4441,7 @@
   WCY messages with the unset/wcy command.
 
 
-  9.99.  set/wwv (0)
+  9.114.  set/wwv (0)
 
   set/wwv Allow WWV messages to be seen at your console
 
@@ -4024,7 +4449,8 @@
   Allow WWV information to be seen at your console.  You can switch off
   WWV messages with the unset/wwv command.
 
-  9.100.  set/wx (0)
+
+  9.115.  set/wx (0)
 
   set/wx Allow WX messages to be seen at your console
 
@@ -4033,7 +4459,7 @@
   WX messages with the unset/wx command.
 
 
-  9.101.  show/baddx (1)
+  9.116.  show/baddx (1)
 
   show/baddxShow all the bad dx calls in the system
 
@@ -4042,7 +4468,7 @@
   information.
 
 
-  9.102.  show/badnode (6)
+  9.117.  show/badnode (6)
 
   show/badnode Show all the bad nodes in the system
 
@@ -4051,7 +4477,7 @@
   more information.
 
 
-  9.103.  show/badspotter (1)
+  9.118.  show/badspotter (1)
 
   show/badspotter Show all the bad spotters in the system
 
@@ -4060,7 +4486,16 @@
   SET/BADSPOTTER for more information.
 
 
-  9.104.  show/configuration (0)
+  9.119.  show/badword (1)
+
+  show/badword Show all the bad words in the system
+
+
+  Display all the bad words in the system, see SET/BADWORD for more
+  information.
+
+
+  9.120.  show/configuration (0)
 
   show/configuration [<node>] Show all visible nodes and their users
 
@@ -4074,7 +4509,7 @@
   BE WARNED: the list that is returned can be VERY long
 
 
-  9.105.  show/configuration/node (0)
+  9.121.  show/configuration/node (0)
 
   show/configuration/node Show all the nodes connected
 
@@ -4083,14 +4518,16 @@
   connected.
 
 
-  9.106.  show/connect (1)
+  9.122.  show/connect (1)
 
   show/connect Show all the active connections
 
 
   This command shows information on all the active connections known to
   the node. This command gives slightly more information than WHO.
-  9.107.  show/date (0)
+
+
+  9.123.  show/date (0)
 
   show/date [<prefix>|<callsign>] Show the local time
 
@@ -4104,7 +4541,7 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  9.108.  show/debug (9)
+  9.124.  show/debug (9)
 
   show/debug Show what levels of debug you are logging
 
@@ -4112,7 +4549,10 @@
   The levels can be set with set/debug
 
 
-  9.109.  show/dx (0)
+
+
+
+  9.125.  show/dx (0)
 
   show/dx [options] interrogate the spot database
 
@@ -4156,6 +4596,9 @@
        qra [<locator>] - this will look for the specific locator if
                          you specify one or else anything that looks like a locator.
 
+
+
+
   e.g.
 
 
@@ -4173,7 +4616,9 @@
 
 
 
-  9.110.  show/dxcc (0)
+
+
+  9.126.  show/dxcc (0)
 
   show/dxcc <prefix> Interrogate the spot database by country
 
@@ -4194,7 +4639,16 @@
 
 
 
-  9.111.  show/files (0)
+  9.127.  sh/dxstats (0)
+
+  sh/dxstats Show the DX Statistics for last 31 days
+
+
+  Show the total DX spots for the last 31 days
+
+
+
+  9.128.  show/files (0)
 
   show/files [<filearea> [<string>]] List the contents of a filearea
 
@@ -4222,19 +4676,19 @@
 
 
 
+
   See also TYPE - to see the contents of a file.
 
 
-  9.112.  show/filter (0)
+  9.129.  show/filter (0)
 
   show/filter Show the filters you have set
-
 
   Show the contents of all the filters that are set by you. This command
   displays all the filters set - for all the various categories.
 
 
-  9.113.  show/filter (extended for sysops) (5)
+  9.130.  show/filter (extended for sysops) (5)
 
   show/filter <callsign> Show the filters set by <callsign>
 
@@ -4242,7 +4696,23 @@
   A sysop can look at any filters that have been set.
 
 
-  9.114.  show/hops (8)
+  9.131.  show/hfstats (0)
+
+  show/hfstats Show the HF DX Statistics for last 31 days
+
+
+  Show the HF DX spots breakdown by band for the last 31 days
+
+
+  9.132.  show/hftable (0)
+
+  show/hftable Show the HF DX Spotter Table for your country
+
+
+  Show the HF DX Spotter table for your country for the last 31 days
+
+
+  9.133.  show/hops (8)
 
   show/hops <node_call> [ann|spots|wcy|wwv|] Show the hop counts for a
   node
@@ -4253,7 +4723,7 @@
   the categories will be listed.
 
 
-  9.115.  show/isolate (1)
+  9.134.  show/isolate (1)
 
   show/isolate Show a list of isolated nodes
 
@@ -4261,7 +4731,7 @@
   Show which nodes are currently set to be isolated.
 
 
-  9.116.  show/lockout (9)
+  9.135.  show/lockout (9)
 
   show/lockout Show a list of excluded callsigns
 
@@ -4270,7 +4740,7 @@
   cluster locally with the set/lockout command
 
 
-  9.117.  show/log (8)
+  9.136.  show/log (8)
 
   show/log [<callsign>] Show excerpts from the system log
 
@@ -4280,7 +4750,7 @@
   show output from the log associated with that callsign.
 
 
-  9.118.  show/moon (0)
+  9.137.  show/moon (0)
 
   show/moon [<prefix>|<callsign>] Show moon rise and set times
 
@@ -4288,6 +4758,7 @@
   Show the Moon rise and set times for a (list of) prefixes or
   callsigns, together with the azimuth and elevation of the sun
   currently at those locations.
+
   If you don't specify any prefixes or callsigns, it will show the times
   for your QTH (assuming you have set it with either SET/LOCATION or
   SET/QRA), together with the current azimuth and elevation.
@@ -4309,7 +4780,7 @@
 
 
 
-  9.119.  show/muf (0)
+  9.138.  show/muf (0)
 
   show/muf <prefix> [<hours>][long] Show the likely propagation to
   <prefix>
@@ -4354,7 +4825,7 @@
 
 
 
-    SH/MUF W
+         SH/MUF W
 
 
 
@@ -4378,7 +4849,7 @@
   indicating that you will have weak, fading circuits on top band and
   80m but usable signals on 40m (about S3).
 
-  inputing:-
+  inputting:-
 
 
 
@@ -4403,7 +4874,31 @@
   terrible accurate, but it is included for completeness.
 
 
-  9.120.  show/node (1)
+  9.139.  show/newconfiguration (0)
+
+  show/newconfiguration [<node>] Show all the nodes and users visible
+
+
+  This command allows you to see all the users that can be seen and the
+  nodes to which they are connected.
+
+  This command produces essentially the same information as
+  SHOW/CONFIGURATION except that it shows all the duplication of any
+  routes that might be present It also uses a different format which may
+  not take up quite as much space if you don't have any loops.
+
+  BE WARNED: the list that is returned can be VERY long
+
+
+  9.140.  show/newconfiguration/node (0)
+
+  show/newconfiguration/node Show all the nodes connected locally
+
+
+  Show all the nodes connected to this node in the new format.
+
+
+  9.141.  show/node (1)
 
   show/node [<node_call> ...] Show the type and version number of nodes
 
@@ -4413,7 +4908,7 @@
   the non-user callsigns known to the system will be displayed.
 
 
-  9.121.  show/prefix (0)
+  9.142.  show/prefix (0)
 
   show/prefix <callsign> Interrogate the prefix database
 
@@ -4427,7 +4922,7 @@
 
 
 
-  9.122.  show/program (5)
+  9.143.  show/program (5)
 
   show/program Show the locations of all the included program modules
 
@@ -4437,7 +4932,7 @@
   from.
 
 
-  9.123.  show/qra (0)
+  9.144.  show/qra (0)
 
   show/qra <locator> [<locator>] Show the distance between locators
   show/qra <lat> <long> Convert latitude and longitude to a locator
@@ -4452,9 +4947,6 @@
 
        SH/QRA IO92QL
        SH/QRA JN06 IN73
-
-
-
 
   The first example will show the distance and bearing to the locator
   from yourself, the second example will calculate the distance and
@@ -4473,7 +4965,7 @@
 
 
 
-  9.124.  show/qrz (0)
+  9.145.  show/qrz (0)
 
   show/qrz <callsign> Show any callbook details on a callsign
 
@@ -4483,10 +4975,12 @@
   provided for users of this software by http://www.qrz.com
 
 
+  9.146.  show/registered (9)
+
+  show/registered [<prefix>[ Show the registered users
 
 
-
-  9.125.  show/route (0)
+  9.147.  show/route (0)
 
   show/route <callsign> Show the route to <callsign>
 
@@ -4502,7 +4996,7 @@
 
 
 
-  9.126.  show/satellite (0)
+  9.148.  show/satellite (0)
 
   show/satellite <name> [<hours> <interval>] Show satellite tracking
   data
@@ -4518,6 +5012,7 @@
   that start and finish 5 degrees below the horizon. As default it will
   give information for the next three hours for every five minute
   period.
+
 
   You can alter the number of hours and the step size, within certain
   limits.
@@ -4535,7 +5030,7 @@
 
 
 
-  9.127.  show/sun (0)
+  9.149.  show/sun (0)
 
   show/sun [<prefix>|<callsign>] Show sun rise and set times
 
@@ -4551,7 +5046,6 @@
   If all else fails it will show the sunrise and set times for the node
   that you are connected to.
 
-
   For example:-
 
 
@@ -4563,7 +5057,7 @@
 
 
 
-  9.128.  show/time (0)
+  9.150.  show/time (0)
 
   show/time [<prefix>|<callsign>] Show the local time
 
@@ -4574,7 +5068,22 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  9.129.  show/wcy (0)
+  9.151.  show/vhfstats (0)
+
+  show/vhfstats Show the VHF DX Statistics for last 31 days
+
+
+  Show the VHF DX spots breakdown by band for the last 31 days
+
+
+  9.152.  show/vhftable (0)
+
+  show/vhftable Show the VHF DX Spotter Table for your country
+
+  Show the VHF DX Spotter table for your country for the last 31 days
+
+
+  9.153.  show/wcy (0)
 
   show/wcy Show the last 10 WCY broadcasts
   show/wcy <n> Show the last <n> WCY broadcasts
@@ -4584,7 +5093,7 @@
   system
 
 
-  9.130.  show/wwv (0)
+  9.154.  show/wwv (0)
 
   show/wwv Show the last 10 WWV broadcasts
   show/wwv <n> Show the last <n> WWV broadcasts
@@ -4595,7 +5104,7 @@
 
 
 
-  9.131.  shutdown (5)
+  9.155.  shutdown (5)
 
   shutdown Shutdown the cluster
 
@@ -4604,7 +5113,7 @@
   set to respawn in /etc/inittab it will of course restart.
 
 
-  9.132.  spoof (9)
+  9.156.  spoof (9)
 
   spoof <callsign> <command> Run commands as another user
 
@@ -4615,10 +5124,7 @@
   like home_node for example.
 
 
-
-
-
-  9.133.  stat/db (5)
+  9.157.  stat/db (5)
 
   stat/db <dbname> Show the status of a database
 
@@ -4630,7 +5136,7 @@
   other than a sysop.
 
 
-  9.134.  stat/channel (5)
+  9.158.  stat/channel (5)
 
   stat/channel <callsign> Show the status of a channel on the cluster
 
@@ -4640,8 +5146,7 @@
 
   Only the fields that are defined (in perl term) will be displayed.
 
-
-  9.135.  stat/msg (5)
+  9.159.  stat/msg (5)
 
   stat/msg <msgno> Show the status of a message
 
@@ -4655,17 +5160,17 @@
   displayed.
 
 
-  9.136.  stat/route_node (5)
+  9.160.  stat/route_node (5)
 
   stat/route_node <callsign> Show the data in a Route::Node object
 
 
-  9.137.  stat/route_user (5)
+  9.161.  stat/route_user (5)
 
   stat/route_user <callsign> Show the data in a Route::User object
 
 
-  9.138.  stat/user (5)
+  9.162.  stat/user (5)
 
   stat/user <callsign> Show the full status of a user
 
@@ -4676,7 +5181,7 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  9.139.  sysop (0)
+  9.163.  sysop (0)
 
   sysop Regain your privileges if you login remotely
 
@@ -4706,9 +5211,10 @@
 
 
 
-        aa2bbbb0ccc5ddd7xxx3n
-        or 2 0 5 7 3
-        or 20573
+
+   aa2bbbb0ccc5ddd7xxx3n
+   or 2 0 5 7 3
+   or 20573
 
 
 
@@ -4718,7 +5224,7 @@
   case sensitive.
 
 
-  9.140.  talk (0)
+  9.164.  talk (0)
 
   talk <callsign> Enter talk mode with <callsign>
   talk <callsign> <text> Send a text message to <callsign>
@@ -4750,6 +5256,9 @@
 
   If you want to do something (such as send a spot) you precede the
   normal command with a '/' character, eg:-
+
+
+
           /DX 14001 G1TLH What's a B class licensee doing on 20m CW?
           /HELP talk
 
@@ -4766,7 +5275,10 @@
 
 
 
-  9.141.  type (0)
+
+
+
+  9.165.  type (0)
 
   type <filearea>/<name> Look at a file in one of the fileareas
 
@@ -4786,7 +5298,7 @@
   content.
 
 
-  9.142.  who (0)
+  9.166.  who (0)
 
   who Show who is physically connected locally
 
@@ -4795,7 +5307,7 @@
   what sort of connection they have
 
 
-  9.143.  wx (0)
+  9.167.  wx (0)
 
   wx <text> Send a weather message to local users
   wx full <text>  Send a weather message to all cluster users
@@ -4805,63 +5317,13 @@
   extreme that may indicate enhanced conditions
 
 
-  9.144.  wx (enhanced for sysops) (5)
+  9.168.  wx (enhanced for sysops) (5)
 
   wx sysop <text> Send a weather message to other clusters only
 
 
   Send a weather message only to other cluster nodes and not to general
   users.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

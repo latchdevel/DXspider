@@ -18,36 +18,63 @@
 <P>From 1.48 onwards it will become increasingly possible to control DXSpider's
 operation with scripts of various kinds.
 <P>
-<P>In the first instance, in 1.48, the sysop can create, with their favorite 
-text editor, files in the directory <EM>/spider/scripts</EM> which contain
-any legal command for a callsign or class of connection which will be executed
-at logon.
-<P>
-<P> 
-The filename is the callsign of the connection that you want the script to 
-operate on, eg: <EM>/spider/scripts/g1tlh</EM>. The filenames are always in 
-lower case on those architectures where this makes a difference.
-<P>
-<P>In addition to the callsign specific scripts there are three others:-
+<P>The directory /spider/scripts is where it all happens and is used for several 
+things.  Firstly it contains a file called startup that can be used to call 
+in any changes to the cluster from the default settings on startup.  This
+script is executed immediately after all initialisation of the node is done
+but before any connections are possible.  Examples of this include how many 
+spots it is possible to get with the sh/dx command, whether you want 
+registration/passwords to be permanently on etc.  An example file is shown 
+below and is included in the distribution as startup.issue.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-startup
-user_default
-node_default
+#
+# startup script example
+#
+# set maximum no of spots allowed to 100
+# set/var $Spot::maxspots = 1
+#
+# Set registration on
+# set/var $main::reqreg = 1
+#
+# Set passwords on
+# set/var $main::passwdreq = 1
+#
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>The <EM>startup</EM> script is executed immediately after all
-initialisation of the node is done, but before any connections are
-possible.
 <P>
-<P>The <EM>user_default</EM> script is executed for every user that does
-<B>NOT</B> already have a specific script.
+<P>As usual, any text behind a # is treated as a comment and not read.
+<P>Secondly, it is used to store the login scripts for users and nodes.  Currently
+this can only be done by the sysop but it is envisaged that eventually users will 
+be able to set their own.  An example is included in the distibution but here is 
+a further example.
 <P>
-<P>The <EM>node_default</EM> script is executed for every node that doesn't
-have a specific script.
+<BLOCKQUOTE><CODE>
+<PRE>
+#
+# G0FYD
+#
+blank +
+sh/wwv 3
+blank +
+sh/dx 
+blank +
+t g0jhc You abt?
+blank +
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The lines in between commands can simply insert a blank line or a character
+such as a + sign to make the output easier to read.  Simply create this script
+with your favourite editor and save it with the callsign of the user as the
+filename.  Filenames should always be in lower case.
 <P>
-<P>There are a couple of examples in the <EM>/spider/scripts</EM> directory.
+<P>Commands can be inserted in the same way for nodes.  A node may wish a series
+of commands to be issued on login, such as a merge command for example.
+<P>
+<P>Thirdly, there are 2 default scripts for users and nodes who do not have a
+specifically defined script.  These are <EM>user_default</EM> and
+<EM>node_default</EM>
 <P>
 <HR>
 <A HREF="adminmanual-5.html">Next</A>

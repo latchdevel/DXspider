@@ -6,7 +6,7 @@
 
 <title>The DXSpider Administration Manual v1.48</title> 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.49 November 2001 revision 1.0</date>
+<date>Version 1.49 November 2001 revision 1.1</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -877,40 +877,65 @@ Forward.pl file very carefully.
 From 1.48 onwards it will become increasingly possible to control DXSpider's
 operation with scripts of various kinds.
 
-<p>
-In the first instance, in 1.48, the sysop can create, with their favorite 
-text editor, files in the directory <em>/spider/scripts</em> which contain
-any legal command for a callsign or class of connection which will be executed
-at logon.
-
-<p> 
-The filename is the callsign of the connection that you want the script to 
-operate on, eg: <em>/spider/scripts/g1tlh</em>. The filenames are always in 
-lower case on those architectures where this makes a difference.
-
-<p>
-In addition to the callsign specific scripts there are three others:-
+<P>
+The directory /spider/scripts is where it all happens and is used for several 
+things.  Firstly it contains a file called startup that can be used to call 
+in any changes to the cluster from the default settings on startup.  This
+script is executed immediately after all initialisation of the node is done
+but before any connections are possible.  Examples of this include how many 
+spots it is possible to get with the sh/dx command, whether you want 
+registration/passwords to be permanently on etc.  An example file is shown 
+below and is included in the distribution as startup.issue.
 
 <tscreen><verb>
-startup
-user_default
-node_default
+#
+# startup script example
+#
+# set maximum no of spots allowed to 100
+# set/var $Spot::maxspots = 1
+#
+# Set registration on
+# set/var $main::reqreg = 1
+#
+# Set passwords on
+# set/var $main::passwdreq = 1
+#
 </verb></tscreen>
-  
-The <em>startup</em> script is executed immediately after all
-initialisation of the node is done, but before any connections are
-possible.
 
-<p>
-The <em>user_default</em> script is executed for every user that does
-<bf>NOT</bf> already have a specific script.
+<P>
+As usual, any text behind a # is treated as a comment and not read.
 
-<p>
-The <em>node_default</em> script is executed for every node that doesn't
-have a specific script.
+Secondly, it is used to store the login scripts for users and nodes.  Currently
+this can only be done by the sysop but it is envisaged that eventually users will 
+be able to set their own.  An example is included in the distibution but here is 
+a further example.
 
-<p>
-There are a couple of examples in the <em>/spider/scripts</em> directory.
+<tscreen><verb>
+#
+# G0FYD
+#
+blank +
+sh/wwv 3
+blank +
+sh/dx 
+blank +
+t g0jhc You abt?
+blank +
+</verb></tscreen>
+
+The lines in between commands can simply insert a blank line or a character
+such as a + sign to make the output easier to read.  Simply create this script
+with your favourite editor and save it with the callsign of the user as the
+filename.  Filenames should always be in lower case.
+
+<P>
+Commands can be inserted in the same way for nodes.  A node may wish a series
+of commands to be issued on login, such as a merge command for example.
+
+<P>
+Thirdly, there are 2 default scripts for users and nodes who do not have a
+specifically defined script.  These are <em>user_default</em> and
+<em>node_default</em>
 
 <sect>Databases
 
@@ -1355,53 +1380,6 @@ Simply go to the site and create one.  Secondly you need to copy the file
 ID and password.  You also at this point need to set $allow=1 to complete
 the setup.  Many thanks to Fred Lloyd, the proprieter of
 <htmlurl url="http://www.qrz.com" name="qrz.com"> for allowing this access.
-
-<sect1>Scripts
-
-<P>
-The directory /spider/scripts is used for several things.  Firstly it
-contains a file called startup that can be used to call in any changes
-to the cluster from the default settings on startup.  Examples of this
-include how many spots it is possible to get with the sh/dx command, 
-whether you want registration/passwords to be permanently on etc.  An
-example file is shown below and is included in the distribution as
-startup.issue.
-
-<tscreen><verb>
-#
-# startup script example
-#
-# set maximum no of spots allowed to 100
-# set/var $Spot::maxspots = 1
-#
-# Set registration on
-# set/var $main::reqreg = 1
-#
-# Set passwords on
-# set/var $main::passwdreq = 1
-#
-</verb></tscreen>
-
-Secondly, it is used to store the login scripts for users.  Currently
-this can only be done by the sysop but it is envisaged that eventually
-users will be able to set their own.  An example is included in the
-distibution but here is a further example.
-
-<tscreen><verb>
-#
-# G0FYD
-#
-blank +
-sh/wwv 3
-blank +
-sh/dx 
-blank +
-t g0jhc You abt?
-blank +
-</verb></tscreen>
-
-The lines in between commands can simply insert a blank line or a character
-such as a + sign to make the output easier to read.
 
 <sect>Security
 
@@ -1976,6 +1954,33 @@ which will arrange for them to be forward candidates again.
 
 Order is not important.
 
+<sect1>clear/announce (8)
+
+<P>
+<tt>
+<bf>clear/announce &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear an announce filter line
+</tt>
+
+<P>
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+<sect1>clear/route (8)
+
+<P>
+<tt>
+<bf>clear/route &lsqb;input&rsqb; ^lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a route filter line
+</tt>
+
+<P>
+This command allows you to clear (remove) a line in a route filter or to 
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
 <sect1>clear/spots (0)
 
 <P>
@@ -2014,6 +2019,64 @@ If you do:
 
 the filter will be completely removed.
 
+<sect1>clear/spots (extended for sysops) (8)
+
+<P>
+<tt>
+<bf>clear/spots &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a spot filter line
+</tt>
+
+<P>
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+<sect1>clear/wcy (0)
+
+<P>
+<tt>
+<bf>clear/wcy &lsqb;1&verbar;all&rsqb;</bf> Clear a WCY filter line
+</tt>
+
+<P>
+This command allows you to clear (remove) a line in a WCY filter or to 
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+<sect1>clear/wcy (extended for sysops) (8)
+
+<P>
+<tt>
+<bf>clear/wcy &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a WCY filter line
+</tt>
+
+<P>
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default. 
+
+<sect1>clear/wwv (0)
+
+<P>
+<tt>
+<bf>clear/wwv &lsqb;1&verbar;all&rsqb;</bf> Clear a WWV filter line
+</tt>
+
+<P>
+This command allows you to clear (remove) a line in a WWV filter or to
+remove the whole filter.
+
+see CLEAR/SPOTS for a more detailed explanation.
+
+<sect1>clear/wwv (extended for sysops) (8)
+
+<P>
+<tt>
+<bf>clear/wwv &lsqb;input&rsqb; &lt;callsign&gt; &lsqb;0-9&verbar;all&rsqb;</bf> Clear a WWV filter line
+</tt>
+
+<P>
+A sysop can clear an input or normal output filter for a user or the
+node_default or user_default.
 
 <sect1>connect (5) 
 
@@ -2193,6 +2256,21 @@ in debug mode i.e.
 
 It will interrupt the cluster just after the debug command has finished.
 
+<sect1>delete/user (9)
+
+<P>
+<tt>
+<bf>delete/user &lt;callsign&gt;</bf> Delete a user from the User Database
+</tt>
+
+<P>
+This command will completely remove a one or more users from the database.
+
+There is NO SECOND CHANCE.
+
+It goes without saying that you should use this command CAREFULLY!
+
+
 <sect1>directory (0)
 
 <P>
@@ -2321,6 +2399,146 @@ suffix.
 BE WARNED: this will write to any file you have write access to. No check is
 made on the filename (if any) that you specify.
 
+<sect1>filtering (0)
+
+<P>
+<tt>
+<bf>filtering</bf> Filtering things in DXSpider
+</tt>
+
+<P>
+There are a number of things you can filter in the DXSpider system. They
+all use the same general mechanism.
+
+In general terms you can create a 'reject' or an 'accept' filter which
+can have up to 10 lines in it. You do this using, for example:-
+ 
+  accept/spots .....
+  reject/spots .....
+
+where ..... are the specific commands for that type of filter. There
+are filters for spots, wwv, announce, wcy and (for sysops)
+connects. See each different accept or reject command reference for
+more details.
+
+There is also a command to clear out one or more lines in a filter and
+one to show you what you have set. They are:-
+
+  clear/spots 1
+  clear/spots all
+
+and 
+  
+  show/filter
+
+There is clear/xxxx command for each type of filter.
+
+For now we are going to use spots for the examples, but you can apply
+the principles to all types of filter.
+
+There are two main types of filter 'accept' or 'reject'; which you use
+depends entirely on how you look at the world and what is least
+writing to achieve what you want. Each filter has 10 lines (of any
+length) which are tried in order. If a line matches then the action
+you have specified is taken (ie reject means ignore it and accept
+means gimme it).
+
+The important thing to remember is that if you specify a 'reject'
+filter (all the lines in it say 'reject/spots' (for instance) then if
+a spot comes in that doesn't match any of the lines then you will get
+it BUT if you specify an 'accept' filter then any spots that don't
+match are dumped. For example if I have a one line accept filter:-
+
+  accept/spots on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+then automatically you will ONLY get VHF spots from or to CQ zones 14
+15 and 16.  If you set a reject filter like:
+
+  reject/spots on hf/cw
+
+Then you will get everything EXCEPT HF CW spots, If you am interested in IOTA
+and will work it even on CW then you could say:-
+
+  reject/spots on hf/cw and not info iota
+
+But in that case you might only be interested in iota and say:-
+
+  accept/spots not on hf/cw or info iota
+
+which is exactly the same. You should choose one or the other until
+you are confortable with the way it works. Yes, you can mix them
+(actually you can have an accept AND a reject on the same line) but
+don't try this at home until you can analyse the results that you get
+without ringing up the sysop for help.
+
+You can arrange your filter lines into logical units, either for your
+own understanding or simply convenience. I have one set frequently:-
+
+  reject/spots 1 on hf/cw
+  reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
+
+What this does is to ignore all HF CW spots (being a class B I can't
+read any CW and couldn't possibly be interested in HF :-) and also
+rejects any spots on VHF which don't either originate or spot someone
+in Europe.
+
+This is an exmaple where you would use the line number (1 and 2 in
+this case), if you leave the digit out, the system assumes '1'. Digits
+'0'-'9' are available.
+
+You can leave the word 'and' out if you want, it is implied. You can
+use any number of brackets to make the 'expression' as you want
+it. There are things called precedence rules working here which mean
+that you will NEED brackets in a situation like line 2 because,
+without it, will assume:-
+
+  (on 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
+
+annoying, but that is the way it is. If you use OR - use
+brackets. Whilst we are here CASE is not important. 'And BY_Zone' is
+just 'and by_zone'.
+
+If you want to alter your filter you can just redefine one or more
+lines of it or clear out one line. For example:-
+
+  reject/spots 1 on hf/ssb
+
+or 
+
+  clear/spots 1
+
+To remove the filter in its entirty:-
+
+  clear/spots all
+
+There are similar CLEAR commands for the other filters:-
+
+  clear/announce
+  clear/wcy
+  clear/wwv
+
+ADVANCED USERS:-
+
+Once you are happy with the results you get, you may like to experiment. 
+
+my example that filters hf/cw spots and accepts vhf/uhf spots from EU
+can be written with a mixed filter, eg:
+
+  rej/spot on hf/cw
+  acc/spot on 0/30000
+  acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+
+each filter slot actually has a 'reject' slot and an 'accept'
+slot. The reject slot is executed BEFORE the accept slot.
+
+It was mentioned earlier that after a reject test that doesn't match,
+the default for following tests is 'accept', the reverse is true for
+'accept'. In the example what happens is that the reject is executed
+first, any non hf/cw spot is passed to the accept line, which lets
+thru everything else on HF.
+
+The next filter line lets through just VHF/UHF spots from EU.
+
 <sect1>forward/latlong (8)
 
 <P>
@@ -2424,6 +2642,23 @@ Delete a message (usually a 'bulletin') from the whole cluster system.
 This uses the subject field, so any messages that have exactly the same subject
 will be deleted. Beware!
 
+<sect1>kill/expunge (6)
+
+<P>
+<tt>
+<bf>kill/expunge &lt;msgno&gt; &lsqb;&lt;msgno&gt;..&rsqb;</bf>Expunge a message
+</tt>
+
+<P>
+Deleting a message using the normal KILL commands only marks that message
+for deletion. The actual deletion only happens later (usually two days later).
+
+The KILL EXPUNGE command causes the message to be truly deleted more or less
+immediately.
+
+It otherwise is used in the same way as the KILL command.
+
+
 <sect1>links (0)
 
 <P>
@@ -2460,6 +2695,21 @@ Reload the /spider/msg/badmsg.pl file if you have changed it manually whilst
 the cluster is running. This table contains a number of perl regular 
 expressions which are searched for in the fields targetted of each message. 
 If any of them match then that message is immediately deleted on receipt. 
+
+<sect1>load/badwords (9)
+
+<P>
+<tt>
+<bf>load/badwords</bf> Reload the bad words table
+</tt>
+
+<P>
+Reload the /spider/data/badwords file if you have changed it manually whilst
+the cluster is running. This file contains a list of words which, if found
+on certain text portions of PC protocol, will cause those protocol frames
+to be rejected. It will all put out a message if any of these words are
+used on the announce, dx and talk commands. The words can be one or 
+more on a line, lines starting with '#' are ignored.
 
 <sect1>load/bands (9)
 
@@ -3091,6 +3341,30 @@ will allow spots from him again.
 
 Use with extreme care. This command may well be superceded by FILTERing.
 
+<sect1>set/badword (8)
+
+<P>
+<tt>
+<bf>set/badword &lt;word&gt;</bf> Stop things with this word being propogated
+</tt>
+
+<P>
+Setting a word as a 'badword' will prevent things like spots,
+announces or talks with this word in the the text part from going any
+further. They will not be displayed and they will not be sent onto
+other nodes.
+
+The word must be written in full, no wild cards are allowed eg:-
+
+  set/badword annihilate annihilated annihilation 
+
+will stop anything with these words in the text.
+
+  unset/badword annihilated
+
+will allow text with this word again.
+
+
 <sect1>set/beep (0)
 
 <P>
@@ -3191,6 +3465,27 @@ You can remove the echo with the <em>unset/echo</em> command
 The setting is stored in your user profile.
 
 YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
+
+<sect1>set/email (0)
+
+<P>
+<tt>
+<bf>set/email &lt;email_address&gt;</bf> Set email address(es) and forward your personals
+</tt>
+
+<P>
+If any personal messages come in for your callsign then you can use
+these commands to control whether they are forwarded onto your email
+address. To enable the forwarding do something like:-
+
+  SET/EMAIL mike.tubby@somewhere.com
+
+You can have more than one email address (each one separated by a space).
+Emails are forwarded to all the email addresses you specify.
+
+You can disable forwarding by:-
+
+  UNSET/EMAIL
 
 <sect1>set/here (0)
 
@@ -3406,6 +3701,22 @@ explicitly to 0 will disable paging.
 
 The setting is stored in your user profile.
 
+<sect1>set/password (0)
+
+<P>
+<tt>
+<bf>set/password</bf> Set your own password
+</tt>
+
+<P>
+This command only works for a 'telnet' user (currently). It will
+only work if you have a password already set. This initial password
+can only be set by the sysop.
+
+When you execute this command it will ask you for your old password,
+then ask you to type in your new password twice (to make sure you
+get it right). You may or may not see the data echoed on the screen
+as you type, depending on the type of telnet client you have.
 
 <sect1>set/password (9)
 
@@ -3416,16 +3727,28 @@ The setting is stored in your user profile.
 
 <P>
 The password for a user can only be set by a full sysop. The string
-can contain any characters but any spaces are removed (you can type in
-spaces - but they won't appear in the password). You can see the
-result with STAT/USER.  The password is the usual 30 character baycom
-type password.
+can contain any characters. 
+
+The way this field is used depends on context. If it is being used in
+the SYSOP command context then you are offered 5 random numbers and you
+have to supply the corresponding letters. This is now mainly for ax25
+connections.
+
+If it is being used on incoming telnet connections then, if a password
+is set or the:
+
+  set/var $main::passwdreq = 1
+
+command is executed in the startup script, then a password prompt is
+given after the normal 'login: ' prompt.  
+
+The command "unset/password" is provided to allow a sysop to remove a
+users password completely in case a user forgets or loses their password.
 
 <sect1>set/pinginterval (9)
 
 <P>
-<tt>
-<bf>set/pinginterval &lt;time&gt; &lt;node call&gt;</bf> Set the ping time 
+<tt><bf>set/pinginterval &lt;time&gt; &lt;node call&gt;</bf> Set the ping time 
 to neighbouring nodes
 </tt>
 
@@ -3516,6 +3839,31 @@ Tell the system where your are.  For example:-
   set/qth East Dereham, Norfolk
 </verb></tscreen>
 
+<sect1>set/register (9)
+
+<P>
+<tt>
+<bf>set/register &lt;call&gt;</bf> Mark a user as registered
+</tt>
+
+<P>
+Registration is a concept that you can switch on by executing the
+
+  set/var $main::regreq = 1 
+
+command (usually in your startup file)
+
+If a user is NOT registered then, firstly, instead of the normal
+motd file (/spider/data/motd) being sent to the user at startup, the
+user is sent the motd_nor file instead. Secondly, the non registered
+user only has READ-ONLY access to the node. The non-registered user
+cannot use DX, ANN etc. 
+
+The only exception to this is that a non-registered user can TALK or
+SEND messages to the sysop.
+ 
+To unset a user use the 'unset/register' command
+
 <sect1>set/talk (0)
 
 <P>
@@ -3591,6 +3939,17 @@ for more information.
 
 <P>
 Display all the bad spotter's callsigns in the system, see SET/BADSPOTTER
+for more information.
+
+<sect1>show/badword (1)
+
+<P>
+<tt>
+<bf>show/badword</bf> Show all the bad words in the system
+</tt>
+
+<P>
+Display all the bad words in the system, see SET/BADWORD
 for more information.
 
 <sect1>show/configuration (0)
@@ -3735,6 +4094,17 @@ e.g.
    SH/DXCC W on 20m info iota
 </verb></tscreen>
 
+<sect1>sh/dxstats (0)
+
+<P>
+<tt>
+<bf>sh/dxstats</bf> Show the DX Statistics for last 31 days
+</tt>
+
+<P>
+Show the total DX spots for the last 31 days
+
+
 <sect1>show/files (0)
 
 <P>
@@ -3784,6 +4154,26 @@ displays all the filters set - for all the various categories.
 
 <P>
 A sysop can look at any filters that have been set.
+
+<sect1>show/hfstats (0)
+
+<P>
+<tt>
+<bf>show/hfstats</bf> Show the HF DX Statistics for last 31 days
+</tt>
+
+<P>
+Show the HF DX spots breakdown by band for the last 31 days
+
+<sect1>show/hftable (0)
+
+<P>
+<tt>
+<bf>show/hftable</bf> Show the HF DX Spotter Table for your country
+</tt>
+
+<P>
+Show the HF DX Spotter table for your country for the last 31 days
 
 <sect1>show/hops (8)
 
@@ -3925,7 +4315,7 @@ produces:
 indicating that you will have weak, fading circuits on top band and 
 80m but usable signals on 40m (about S3).
 
-inputing:-
+inputting:-
 
 <tscreen><verb>
   SH/MUF W 24
@@ -3942,6 +4332,35 @@ propagation data.
 Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
+
+<sect1>show/newconfiguration (0)
+
+<P>
+<tt>
+<bf>show/newconfiguration &lsqb;&lt;node&gt;&rsqb;</bf> Show all the nodes and users visible
+</tt>
+
+<P>
+This command allows you to see all the users that can be seen
+and the nodes to which they are connected. 
+
+This command produces essentially the same information as 
+SHOW/CONFIGURATION except that it shows all the duplication of
+any routes that might be present It also uses a different format
+which may not take up quite as much space if you don't have any
+loops.
+
+BE WARNED: the list that is returned can be VERY long
+
+<sect1>show/newconfiguration/node (0)
+
+<P>
+<tt>
+<bf>show/newconfiguration/node</bf> Show all the nodes connected locally
+</tt>
+
+<P>
+Show all the nodes connected to this node in the new format.
 
 <sect1>show/node (1)
 
@@ -4027,6 +4446,13 @@ SH/QRA 52 41 N 0 58 E
 This command queries the QRZ callbook server on the internet
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
+
+<sect1>show/registered (9)
+
+<P>
+<tt>
+<bf>show/registered &lsqb;&lt;prefix&gt;&lsqb;</bf> Show the registered users
+</tt>
 
 <sect1>show/route (0)
 
@@ -4114,6 +4540,26 @@ If no prefixes or callsigns are given then this command returns the local
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
+
+<sect1>show/vhfstats (0)
+
+<P>
+<tt>
+<bf>show/vhfstats</bf> Show the VHF DX Statistics for last 31 days
+</tt>
+
+<P>
+Show the VHF DX spots breakdown by band for the last 31 days
+
+<sect1>show/vhftable (0)
+
+<P>
+<tt>
+<bf>show/vhftable</bf> Show the VHF DX Spotter Table for your country
+</tt>
+
+<P>
+Show the VHF DX Spotter table for your country for the last 31 days
 
 <sect1>show/wcy (0)
 

@@ -348,55 +348,6 @@ ID and password.  You also at this point need to set $allow=1 to complete
 the setup.  Many thanks to Fred Lloyd, the proprieter of
 <A HREF="http://www.qrz.com">qrz.com</A> for allowing this access.
 <P>
-<H2><A NAME="ss6.9">6.9 Scripts</A>
-</H2>
-
-<P>The directory /spider/scripts is used for several things.  Firstly it
-contains a file called startup that can be used to call in any changes
-to the cluster from the default settings on startup.  Examples of this
-include how many spots it is possible to get with the sh/dx command, 
-whether you want registration/passwords to be permanently on etc.  An
-example file is shown below and is included in the distribution as
-startup.issue.
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-#
-# startup script example
-#
-# set maximum no of spots allowed to 100
-# set/var $Spot::maxspots = 1
-#
-# Set registration on
-# set/var $main::reqreg = 1
-#
-# Set passwords on
-# set/var $main::passwdreq = 1
-#
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Secondly, it is used to store the login scripts for users.  Currently
-this can only be done by the sysop but it is envisaged that eventually
-users will be able to set their own.  An example is included in the
-distibution but here is a further example.
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-#
-# G0FYD
-#
-blank +
-sh/wwv 3
-blank +
-sh/dx 
-blank +
-t g0jhc You abt?
-blank +
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>The lines in between commands can simply insert a blank line or a character
-such as a + sign to make the output easier to read.
-<P>
 <HR>
 <A HREF="adminmanual-7.html">Next</A>
 <A HREF="adminmanual-5.html">Previous</A>
