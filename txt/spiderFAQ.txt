@@ -1,5 +1,5 @@
   The DXSpider FAQ
-  Ian Maude, G0VGS, (ianmaude@btinternet.com)
+  Ian Maude, G0VGS, (g0vgs@ea1dav.net)
   December 2001 Revision: 1.8
 
   A reference for SysOps of the DXSpider DXCluster program.
