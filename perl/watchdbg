@@ -6,6 +6,7 @@
 # examples:-
 # 
 #   watchdbg g1tlh       # watch everything g1tlh does
+#   watchdbg 2 PCPROT       # watch all PCPROT messages + up to 2 lines before
 #   watchdbg gb7baa gb7djk   # watch the conversation between BAA and DJK 
 #
 
