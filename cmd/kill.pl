@@ -68,7 +68,7 @@ foreach $ref ( @refs) {
 	}
 	my $tonode = $ref->tonode;
 	$ref->stop_msg($tonode) if $tonode;
-	$ref->del_msg;
+	$ref->del_msg($self);
 	push @out, $self->msg('m12', $ref->msgno);
 }
 

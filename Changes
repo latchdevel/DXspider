@@ -1,6 +1,7 @@
 02Oct01=======================================================================
 1. fixed the 'ever lengthening msg' syndrome and probably made the whole
 thing more reliable at the same time.
+2. do some restructuring of the msg system and upissue the version no.
 01Oct01=======================================================================
 1. made login info not the default
 2. change the looping protoection for PC16/17/19/21 and also be more rigorous
