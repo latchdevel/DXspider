@@ -3,6 +3,10 @@
 Digest::SHA1 and any dependant packages to run this release. HOWEVER tempted
 you are, please don't set/newprotocol on any nodes. It won't work.
 2. Make the cluster node registered on from startup (from Mark HB9DBM).
+3. Make the 'export_users' process *MUCH* more robust. It should now accept
+funny characters and not rely on an absolutely 'perfect' user file to work.
+Errors are displayed (and logged if done from the cluster) and then ignored.
+Invalid callsigns are removed. 
 09Jul02=======================================================================
 1. make the is_qra more accurate (from Mark HB9DBM).
 04Jul02=======================================================================

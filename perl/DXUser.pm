@@ -14,6 +14,7 @@ use Data::Dumper;
 use Fcntl;
 use IO::File;
 use DXDebug;
+use DXUtil;
 
 use strict;
 
@@ -325,10 +326,11 @@ sub export
         rename "$fn", "$fn.o" if -e "$fn";
 
 	my $count = 0;
+	my $err = 0;
 	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
 	if ($fh) {
-		my $ref = 0;
 		my $key = 0;
+		my $val = undef;
 		my $action;
 		my $t = scalar localtime;
 		print $fh q{#!/usr/bin/perl
@@ -376,19 +378,46 @@ if (@ARGV) {
 
 DXUser->del_file($main::userfn);
 DXUser->init($main::userfn, 1);
+%u = ();
+my $count = 0;
+my $err = 0;
+while (<DATA>) {
+	chomp;
+	my @f = split /\t/;
+	my $ref = decode($f[1]);
+	if ($ref) {
+		$ref->put();
+		$count++;
+	} else {
+		print "# Error: $f[0]\t$f[1]\n";
+		$err++
+	}
+}
+DXUser->sync; DXUser->finish;
+print "There are $count user records and $err errors\n";
+};
+		print $fh "__DATA__\n";
 
-%u = (
-  };
-
-        for ($action = R_FIRST; !$dbm->seq($key, $ref, $action); $action = R_NEXT) {
-			print $fh "'$key' => q{$ref},\n";
-			++$count;
+        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
+			if (!is_callsign($key) || $key =~ /^0/) {
+				Log('DXCommand', "Export Error: $key\t$val");
+				$dbm->del($key);
+				++$err;
+				next;
+			}
+			my $ref = decode($val);
+			if ($ref) {
+				print $fh "$key\t" . $ref->encode . "\n";
+				++$count;
+			} else {
+				Log('DXCommand', "Export Error: $key\t$val");
+				$dbm->del($key);
+				++$err;
+			}
 		} 
-        print $fh ");\n#\nprint \"there were $count records\\n\";\n#\n";
-        print $fh "DXUser->sync; DXUser->finish;\n#\n";
         $fh->close;
     } 
-	return $count;
+	return "$count Users $err Errors ('sh/log Export' for details)";
 }
 
 #
