@@ -1,3 +1,11 @@
+17Jan99========================================================================
+1. fixed some permission problems on DXLog.
+2. There is a circumstance in DXMsg which caused the cluster to stop on an 
+null ref pointer which I can't get to the bottom of but have bandaided out 
+for now.
+3. Started filter and Database code.
+4. Upper cased all the TO callsigns for sending to more than one station in
+messages.
 07Jan99========================================================================
 1. Fixed Geomag after emacs reformatted it wrong so sh/wwv works again.
 2. Added more range checking in WWV spots (they really are a heap of ...)
