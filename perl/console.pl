@@ -137,7 +137,7 @@ sub measure
 # display the top screen
 sub show_screen
 {
-	if ($spos == @shistory - 1) {
+	if ($spos >= @shistory - 1) {
 
 		# if we really are scrolling thru at the end of the history
 		my $line = $shistory[$spos];

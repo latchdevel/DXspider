@@ -270,6 +270,10 @@ sub dochat
 				$line = <$rfh>;
 				$line =~ s/\r//og;
 			}
+			if (length $line == 0) {
+				dbg('connect', "received 0 length line, aborting...");
+				cease(11);
+			}
 			dbg('connect', "received \"$line\"");
 			if ($abort && $line =~ /$abort/i) {
 				dbg('connect', "aborted on /$abort/");
