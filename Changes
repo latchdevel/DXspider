@@ -1,3 +1,5 @@
+21Mar05=======================================================================
+1. log AGW port on connection
 16Mar05=======================================================================
 1. make the correct correction to the DL entry in wpxloc.raw (left out the
 'N' of 'North' in the latitude).

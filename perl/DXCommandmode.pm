@@ -87,7 +87,9 @@ sub start
 	my $name = $user->{name};
 	
 	# log it
-	my $host = $self->{conn}->{peerhost} || "unknown";
+	my $host = $self->{conn}->{peerhost};
+	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
+	$host ||= "unknown";
 	Log('DXCommand', "$call connected from $host");
 
 	$self->{name} = $name ? $name : $call;

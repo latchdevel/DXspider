@@ -249,7 +249,10 @@ sub start
 	my $user = $self->{user};
 
 	# log it
-	my $host = $self->{conn}->{peerhost} || "unknown";
+	my $host = $self->{conn}->{peerhost};
+	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
+	$host ||= "unknown";
+
 	Log('DXProt', "$call connected from $host");
 	
 	# remember type of connection
