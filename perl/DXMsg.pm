@@ -309,8 +309,8 @@ sub process
 						}
 						push @words, BadWords::check($ref->{subject});
 						if (@words) {
-							dbg("message with badwords '@words' $ref->{from} -> $ref->{to} '$ref->{subject}' origin: $ref->{origin} via " . $self->call) if isdbg('msg');
-							Log('msg',"message with badwords '@words' $ref->{from} -> $ref->{to} origin: $ref->{origin} via " . $self->call);
+							dbg("$ref->{from} swore: '@words' -> $ref->{to} '$ref->{subject}' origin: $ref->{origin} via " . $self->call) if isdbg('msg');
+							Log('msg',"$ref->{from} swore: '@words' -> $ref->{to} origin: $ref->{origin} via " . $self->call);
 							Log('msg',"subject: $ref->{subject}");
 							for (@{$ref->{lines}}) {
 								Log('msg', "line: $_");
@@ -482,15 +482,12 @@ sub del_msg
 		$self->{delete}++;
 		$self->{deletetime} = 0;
 	} else {
-		my $call;
-		if ($dxchan) {
-			$call = " by " . $dxchan->call;
-		} else {
-			$call = '';
-		}
-
 		# remove it from the active message list
 		@msg = grep { $_ != $self } @msg;
+
+		my $call = '';
+		$call = ' by ' . $dxchan->call if $dxchan;
+		Log("Msgno $self->{msgno} expunged$call");
 		
 		# remove the file
 		unlink filename($self->{msgno});
@@ -659,7 +656,7 @@ sub queue_msg
 		next if $ref->{tonode};	          # ignore it if it already being processed
 		
 		# is it awaiting deletion?
-		if ($ref->{delete} && $main::systime > $ref->{deletetime}) {
+		if ($ref->{delete} && $main::systime >= $ref->{deletetime}) {
 			$ref->del_msg;
 			next;
 		}
@@ -962,7 +959,7 @@ sub do_send_stuff
 		if (my @ans = BadWords::check($line)) {
 			$self->{badcount} += @ans;
 			Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} in msg");
-			return ($self->msg('e17', @ans), $self->msg('m1'));
+			$loc->{reject}++;
 		}
 		$loc->{subject} = $line;
 		$loc->{lines} = [];
@@ -974,33 +971,36 @@ sub do_send_stuff
 		my $loc = $self->{loc};
 		if ($line eq "\032" || $line eq '%1A' || uc $line eq "/EX") {
 			my $to;
-			
-			foreach $to (@{$loc->{to}}) {
-				my $ref;
-				my $systime = $main::systime;
-				my $mycall = $main::mycall;
-				$ref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
-									uc $to,
-									exists $loc->{from} ? $loc->{from} : $self->call, 
-									$systime,
-									$loc->{private}, 
-									$loc->{subject}, 
-									exists $loc->{origin} ? $loc->{origin} : $mycall,
-									'0',
-									$loc->{rrreq});
-				$ref->swop_it($self->call);
-				$ref->store($loc->{lines});
-				$ref->add_dir();
-				push @out, $self->msg('m11', $ref->{msgno}, $to);
-				#push @out, "msgno $ref->{msgno} sent to $to";
-				my $dxchan = DXChannel->get(uc $to);
-				if ($dxchan) {
-					if ($dxchan->is_user()) {
-						$dxchan->send($dxchan->msg('m9'));
+			unless ($loc->{reject}) {
+				foreach $to (@{$loc->{to}}) {
+					my $ref;
+					my $systime = $main::systime;
+					my $mycall = $main::mycall;
+					$ref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
+										uc $to,
+										exists $loc->{from} ? $loc->{from} : $self->call, 
+										$systime,
+										$loc->{private}, 
+										$loc->{subject}, 
+										exists $loc->{origin} ? $loc->{origin} : $mycall,
+										'0',
+										$loc->{rrreq});
+					$ref->swop_it($self->call);
+					$ref->store($loc->{lines});
+					$ref->add_dir();
+					push @out, $self->msg('m11', $ref->{msgno}, $to);
+					#push @out, "msgno $ref->{msgno} sent to $to";
+					my $dxchan = DXChannel->get(uc $to);
+					if ($dxchan) {
+						if ($dxchan->is_user()) {
+							$dxchan->send($dxchan->msg('m9'));
+						}
 					}
 				}
+			} else {
+				Log('msg', $self->call . " swore to @{$loc->{to}} subject: '$loc->{subject}' in msg, REJECTED");
 			}
-
+			
 			delete $loc->{lines};
 			delete $loc->{to};
 			delete $self->{loc};
@@ -1018,9 +1018,9 @@ sub do_send_stuff
 		} else {
 			if (my @ans = BadWords::check($line)) {
 				$self->{badcount} += @ans;
-				Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} subject: '$loc->{subject}' in msg");
+				Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} subject: '$loc->{subject}' in msg") unless $loc->{reject};
 				Log('msg', "line: $line");
-				return ($self->msg('e17', @ans));
+				$loc->{reject}++;
 			}
 			
 			# i.e. it ain't and end or abort, therefore store the line

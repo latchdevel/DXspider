@@ -1,3 +1,15 @@
+09Oct01=======================================================================
+1. change Aliases to allow shutdown as a command again. If you have changed
+/spider/cmd/Aliases and you update from CVS you may find it better to remove
+this file and then do another 'cvs update'. Otherwise you may get conflicts
+and the Aliase file will not load properly. The cvs update will recreate 
+the (now) missing file.
+2. Remove the 'please don't use XXXX on here' messages to prevent people
+from exploring the 'bad words space'. Three bad words will still disconnect
+without warning. 
+3. Sending dx spots/announces with bad words will succeed - but only back to
+the sender. These two mods are designed to annoy the perpitrators of the
+sort of filth as much as possible whilst not inconveniencing 'normal' users.
 04Oct01=======================================================================
 1. allow a residence time of (default) 2 days before actually deleting a msg.
 2. reduce the number R: lines on a bull from a bbs to 2 (the origin and the

@@ -74,6 +74,7 @@ $lasttime = 0;
 		  wantann_talk => '0,Talklike Anns,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
+		  registered => '9,Registered?,yesno',
 		 );
 
 no strict;

@@ -108,6 +108,7 @@ $count = 0;
 		  metric => '1,Route metric',
 		  badcount => '1,Bad Word Count',
 		  edit => '7,Edit Function',
+		  registered => '9,Registered?,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);

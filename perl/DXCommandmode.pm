@@ -222,8 +222,14 @@ sub normal
 			$self->send($self->talk_prompt);
 		} elsif ($self->{talklist} && @{$self->{talklist}}) {
 			# send what has been said to whoever is in this person's talk list
-			for (@{$self->{talklist}}) {
-				$self->send_talks($_, $cmdline);
+			my @bad;
+			if (@bad = BadWords::check($cmdline)) {
+				$self->badcount(($self->badcount||0) + @bad);
+				Log('DXCommand', "$self->{call} swore: $cmdline");
+			} else {
+				for (@{$self->{talklist}}) {
+					$self->send_talks($_, $cmdline);
+				}
 			}
 			$self->send($self->talk_prompt) if $self->{state} eq 'talk';
 		} else {

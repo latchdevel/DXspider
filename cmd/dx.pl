@@ -15,12 +15,14 @@ my $spotted;
 my $freq;
 my @out;
 my $valid = 0;
+my $localonly;
 return (1, $self->msg('e5')) if $self->remotecmd;
 
 my @bad;
 if (@bad = BadWords::check($line)) {	
 	$self->badcount(($self->badcount||0) + @bad);
-	return (1, $self->msg('e17', @bad));
+	Log('DXCommand', "$self->{call} swore: $line");
+	$localonly++;
 }
 
 # do we have at least two args?
@@ -102,7 +104,7 @@ return (1, @out) unless $valid;
 
 
 # Store it here (but only if it isn't baddx)
-if ($DXProt::baddx->in($spotted) || $freq =~ /^69/) {
+if ($DXProt::baddx->in($spotted) || $freq =~ /^69/ || $localonly) {
 
 	# heaven forfend that we get a 69Mhz band :-)
 	if ($freq =~ /^69/) {
