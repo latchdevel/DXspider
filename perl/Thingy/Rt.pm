@@ -33,12 +33,15 @@ sub gen_Aranea
 	unless ($thing->{Aranea}) {
 		my $ref;
 		if ($ref = $thing->{anodes}) {
+			$thing->{a} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
+		}
+		if ($ref = $thing->{anodes}) {
 			$thing->{n} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
 		}
 		if ($ref = $thing->{ausers}) {
 			$thing->{u} = join(':', map {"$_->{flags}$_->{call}"} @$ref);
 		}
-	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(s n u)]);
+	 	$thing->{Aranea} = Aranea::genmsg($thing, [qw(s a n u)]);
 	}
  	return $thing->{Aranea};
 }
@@ -69,7 +72,7 @@ sub handle
 # this handles the standard local configuration, it 
 # will reset all the config, make / break links and
 # will generate pc sentences as required for nodes and users
-sub handle_lcf
+sub handle_cf
 {
 	my $thing = shift;
 	my $dxchan = shift;
@@ -83,10 +86,20 @@ sub handle_lcf
 	}
 
 	# do nodes
+	my ($del, $add)
 	if ($thing->{n}) {
 		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{n});
-		my ($del, $add) = $parent->diff_nodes(keys %in);
-
+		my ($tdel, $tadd) = $parent->diff_nodes(keys %in);
+		$add = $tadd;
+		$del = $tdel;
+	}
+	if ($thing->{a}) {
+		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{a});
+		my ($tdel, $tadd) = $parent->diff_nodes(keys %in);
+		push @$add, @$tadd;
+		push @$del, @$tdel;
+	}
+	if (@$add || @$del) {
 		my $call;
 
 		my @pc21;
@@ -109,7 +122,7 @@ sub handle_lcf
 	# now users
 	if ($thing->{u}) {
 		my %in = (map {my ($here, $call) = unpack "A1 A*", $_; ($call, $here)} split /:/, $thing->{u});
-		my ($del, $add) = $parent->diff_users(keys %in);
+		($del, $add) = $parent->diff_users(keys %in);
 
 		my $call;
 
@@ -183,21 +196,27 @@ sub new_lcf
 	my $pkg = shift;
 	my $thing = $pkg->SUPER::new(@_);
 	
-	$thing->{'s'} = 'lcf';
+	$thing->{'s'} = 'cf';
 
-	my @nodes;
+	my @anodes;
+	my @pnodes;
 	my @users;
 	
 	foreach my $dxchan (DXChannel::get_all()) {
-		if ($dxchan->is_node || $dxchan->is_aranea) {
+		next if $dxchan == $main::me;
+		if ($dxchan->is_node) {
 			my $ref = Route::Node::get($dxchan->{call});
-			push @nodes, $ref if $ref;
+			push @pnodes, $ref if $ref;
+		} elsif ($dxchan->is_aranea) {
+			my $ref = Route::Node::get($dxchan->{call});
+			push @anodes, $ref if $ref;
 		} else {
 			my $ref = Route::User::get($dxchan->{call});
 			push @users, $ref if $ref;
 		}
 	}
-	$thing->{anodes} = \@nodes if @nodes;
+	$thing->{anodes} = \@anodes if @anodes;
+	$thing->{pnodes} = \@pnodes if @pnodes;
 	$thing->{ausers} = \@users if @users;
 	return $thing;
 }
