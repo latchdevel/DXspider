@@ -26,6 +26,7 @@ package CmdAlias;
 	  '^\?', 'apropos', 'apropos',
 	],
     'a' => [
+	'^ac\w*$', 'apropos accept', 'apropos',
 	  '^ann\w*/full', 'announce full', 'announce', 
 	  '^ann\w*/sysop', 'announce sysop', 'announce',
 	  '^ann\w*/(.*)$', 'announce $1', 'announce',
@@ -34,8 +35,11 @@ package CmdAlias;
 	  '^b$', 'bye', 'bye',
 	],
 	'c' => [
+	'^cl\w+$', 'apropos clear', 'apropos',
+	'^cr\w+$', 'apropos create', 'apropos',
 	],
 	'd' => [
+	'^del\w*$', 'apropos delete', 'apropos',
 	  '^del\w*/u', 'delete/user', 'delete/user',
 	  '^del\w*/fu', 'kill full', 'kill',
 	  '^del', 'kill', 'kill',
@@ -53,6 +57,7 @@ package CmdAlias;
 	  '^ex', 'bye', 'bye',
 	],
 	'f' => [
+	'^fo\w*$', 'apropos forward', 'apropos',
 	],
 	'g' => [
 	],
@@ -65,6 +70,7 @@ package CmdAlias;
 	'k' => [
 	],
 	'l' => [
+	'^lo\w*$', 'apropos load', 'apropos',
 	  '^l$', 'directory', 'directory',
 	  '^ll$', 'directory', 'directory',
 	  '^ll/(\d+)', 'directory $1', 'directory',
@@ -82,10 +88,14 @@ package CmdAlias;
 	  '^q', 'bye', 'bye',
 	],
 	'r' => [	
+	'^rej\w*$', 'apropos reject', 'apropos',
 	  '^r$', 'read', 'read',
 	  '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
 	],
 	's' => [
+	'^set$', 'apropos set', 'apropos',
+	'^sh\w*$', 'apropos show', 'apropos',
+	'^st\w*$', 'apropos show', 'apropos',
 	  '^s/p$', 'send', 'send',
 	  '^sb$', 'send noprivate', 'send',
 	  '^set/home$', 'set/homenode', 'set/homenode',
@@ -120,6 +130,7 @@ package CmdAlias;
 	  '^t$', 'talk', 'talk',
 	],
 	'u' => [
+	'^un\w*$', 'apropos unset', 'apropos',
 	],
 	'v' => [
 	],
