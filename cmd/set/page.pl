@@ -7,8 +7,7 @@
 #
 my $self = shift;
 my $l = shift;
-$l = 20 if $l == 0;
-$l = 10 if $l < 10;
+$l = 10 if $l < 10 && $l > 0;
 $self->pagelth($l);
 $self->user->pagelth($l);
 return (1, $self->msg('pagelth', $l));
