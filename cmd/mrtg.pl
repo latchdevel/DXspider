@@ -6,7 +6,8 @@
 #
 # The arguments (keywords) to the mrtg command are these
 #
-# a) content          (you always get the node users and nodes)
+# a) content          (you always get the node users and nodes and data in/out)
+#    proc             - get the processor usage
 #    agw              - include the AGW stats separately 
 #    totalspots       - all spots
 #    hfvhf            - all spots split into HF and VHF
@@ -47,7 +48,7 @@ unless ($want{agw}) {
 }
 
 $mc->cfgprint('msg', [], 64000, 
-		 "Data <font color=#00cc00>in</font> and <font color=#0000ff>out</font> of $main::mycall",
+		 "Cluster Data <font color=#00cc00>in</font> and <font color=#0000ff>out</font> of $main::mycall",
 		 'Bytes / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
 $mc->data('msg', $din, $dout, "Data in and out of $main::mycall") unless $want{cfgonly};
 
@@ -58,7 +59,33 @@ if ($want{agw}) {
 				  'Bytes / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
 	$mc->data('agw', $AGWMsg::total_in, $AGWMsg::total_out, "AGW Data in and out of $main::mycall") unless $want{cfgonly};
 }
-			 
+
+if (!$main::is_win && ($want{proc} || $want{all})) {
+	my $secs;
+	my $f = new IO::File "ps aux |";
+#	dbg("$f");
+	if ($f) {
+		while (<$f>) {
+			chomp;
+			my $l = $_;
+#			dbg($l);
+			next unless $l =~ /cluster\.p/;
+			my @f = split /\s+/, $l;
+#			dbg("$f[9]");
+			my ($m, $s) = split /:/, $f[9];
+			$secs = ($m * 60) + $s;
+			last;
+		}
+		$f->close;
+	}
+	if ($secs) {
+		$mc->cfgprint('proc', [qw(noi)], 64000, 
+					  "Processor Usage",
+					  'Secs', 'Secs', 'Secs') unless $want{dataonly};
+		$mc->data('proc', $secs, $secs, "Processor Usage") unless $want{cfgonly};
+	}
+}
+
 # do the users and nodes
 my $users = DXChannel::get_all_users();
 my $nodes = DXChannel::get_all_nodes();
