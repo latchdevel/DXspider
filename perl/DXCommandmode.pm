@@ -439,7 +439,6 @@ sub run_cmd
 	if ($cmd) {
 		# strip out // and .. on command only
 		$cmd =~ s|//|/|g;
-		$cmd =~ s|\.+||g;		# no dots allowed
 		$cmd =~ s|^/||g;		# no leading / either
 		$cmd =~ s|[^-\w/]||g;	# and no funny characters
 					
