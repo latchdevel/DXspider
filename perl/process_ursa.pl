@@ -32,6 +32,7 @@ my $tmp = "$root/tmp";
 
 my $msg = Mail::Internet->new(\*STDIN) or die "Mail::Internet $!";
 my $head = $msg->head->header_hashref;
+my $fromcall = shift || 'G1TLH';
 
 if ($head && $head->{From}->[0] =~ /sidc/i && $head->{Subject}->[0] =~ /Ursigram/i) {
 	my $body = $msg->body;
@@ -46,7 +47,7 @@ if ($head && $head->{From}->[0] =~ /sidc/i && $head->{Subject}->[0] =~ /Ursigram
 	}
 	my $fn = "ursigram$date.txt.$$"; 
 	open OUT, ">$tmp/$fn" or die "import $tmp/$fn $!";
-	print OUT "SB ALL\n$title\n";
+	print OUT "SB ALL < $fromcall\n$title\n";
 	print OUT map {s/\r\n$/\n/; $_} @$body;
 	print OUT "/ex\n";
 	close OUT;
