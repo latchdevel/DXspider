@@ -213,17 +213,16 @@ Last modified: Sun Sep  2 22:02:36 BST 2001
 		the first is the ip address or hostname of the computer you
 		wish to connect to and the second is the port number you want
 		to use (this can be left out if it is a normal telnet
-		session).
+		session).</p>
 
 		<p>In the case of an <b>ax25</b> session then this would
 		normally be a call to <tt>/usr/sbin/ax25_call</tt> or
 		<tt>/usr/sbin/netrom_call</tt> as in the example above. It is your
 		responsibility to get your node and other ax25 parameters to
-		work before going down this route!
+		work before going down this route!</p>
 
         <p>For <b>agw</b> connections you will need a port number (starting
-        from 1) and the callsign of the first &quot;hop&quot; along the way.
-        <br><br>
+        from 1) and the callsign of the first &quot;hop&quot; along the way.</p>
 
 		<li><b>'</b> is the delimiting character for a word or phrase
 		of an <span class=expect>expect</span>/<span
@@ -231,18 +230,21 @@ Last modified: Sun Sep  2 22:02:36 BST 2001
 		in pairs, but either can be empty. Each line reads input from
 		the connection until it sees the string (or perl regular
 		expression) that 
-		is contained in the left hand string. If the left hand
-		string is empty then it doesn't read or wait for anything. The
-		comparison is done ignoring case.
+		is contained in the left hand string. 
 
-		<p>When the left hand string has found what it is <span class=expect>expecting</span> (if
-		it is) then the right hand string is <span class=send>sent</span> to the connection.
+		<p>When the <span class=expect>left hand string</span> has found what it is <span class=expect>expecting</span> (if
+		it is) then the <span class=send>right hand string</span> is <span class=send>sent</span> to the connection.</p>
 
-		<p>If the right hand string is empty ('') then nothing is <span class=send>sent</span>, the 
+		<p>If the <span class=expect>left hand
+		string</span> is empty then it doesn't read or wait for anything, it
+		simply <span class=send>sends</span> whatever is on the <span class=send>right hand side</span>.</p> 
+
+		<p>All comparisons are done ignoring case.</p>
+
+		<p>If the <span class=send>right hand string</span> is empty ('') then nothing is <span class=send>sent</span>, the 
 		  script simply moves onto the next line.</P>
 
-		<p>This process is repeated for every line of <tt>chat</tt> script. 
-        <br><br>
+		<p>This process is repeated for every line of <tt>chat</tt> script.</p> 
 
 		<li><b><span class=cmd>client</span></b> starts the connection, put the arguments
 		you would want here if you were starting the client program
