@@ -545,6 +545,10 @@ sub normal
 				route($field[1], $line);
 				return;
 			}
+			if ($field[2] eq $main::mycall) {
+				dbg('chan', "Trying to merge to myself, ignored");
+				return;
+			}
 
 			Log('DXProt', "Merge request for $field[3] spots and $field[4] WWV from $field[1]");
 			

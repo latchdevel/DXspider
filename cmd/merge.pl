@@ -12,6 +12,7 @@ my @f = split /\s+/, $line;
 # check for callsign
 return (1, $self->msg('e5')) if $self->priv < 5;
 return (1, $self->msg('e12')) if !$f[0];
+return (1, $self->msg('e11')) if $call eq $main::mycall;
 
 my $call = uc $f[0];
 my $ref = DXCluster->get_exact($call);

@@ -1,3 +1,5 @@
+20Jun99=======================================================================
+1. prevented a merge to myself (causes a loop)
 18Jun99=======================================================================
 1. fixed a problem with DXLogPrint repeating log entries.
 2. altered the permissions on disconnnect so that priv 5 users can disconnect

@@ -39,6 +39,7 @@ package DXM;
 				e8 => 'Need a callsign and some text',
 				e9 => 'Need at least some text',
 				e10 => '$_[0] not connected locally',
+				e11 => 'Can\'t use $main:mycall as target',
 				e12 => 'Need a node callsign',
 				e13 => '$_[0] is not a node',
 				emaile1 => 'Please enter your email address, set/email <your e-mail address>',
