@@ -19,6 +19,7 @@ use DXDebug;
 use DXM;
 use DXLog;
 use DXLogPrint;
+use DXBearing;
 use CmdAlias;
 use FileHandle;
 use Carp;

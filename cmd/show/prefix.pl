@@ -18,7 +18,8 @@ foreach $l (@list) {
   my $pre = shift @ans;
   my $a;
   foreach $a (@ans) {
-    push @out, sprintf "%s   DXCC: %3d ITU: %3d CQ: %3d (%s, %s)", uc $l, $a->dxcc(), $a->itu(), $a->cq(), $pre, $a->name();
+    push @out, sprintf "%-9s DXCC: %3d ITU: %3d CQ: %3d (%s, %s)", uc $l, $a->dxcc(), $a->itu(), $a->cq(), $pre, $a->name();
+	$l = "";
   }
 }
 
