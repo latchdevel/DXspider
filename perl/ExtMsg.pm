@@ -118,7 +118,7 @@ sub new_client {
 		$conn->{state} = 'WL';
 #		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
 #		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
-		$conn->send_raw("\xFF\xFC\x01");
+#		$conn->send_raw("\xFF\xFC\x01");
 		_send_file($conn, "$main::data/issue");
 		$conn->send_raw("login: ");
     } else { 
