@@ -527,10 +527,7 @@ sub wantann_talk
 
 sub wantlogininfo
 {
-	my $self = shift;
-	my $n = shift;
-	$self->{wantlogininfo} = $n if $n;
-	return exists $self->{wantlogininfo} ? $self->{wantlogininfo} : 0;
+	return _want('logininfo', @_);
 }
 
 sub is_node
