@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>new protocol</title>
+  </head>
+
+  <body bgcolor="#FFFFFF">
+    <h2>new protocol</h2>
+
+    <hr>
+    <address><a href="mailto:djk@tobit.co.uk"></a>Dirk Koopman G1TLH</address><br>
+<!-- Created: Sat Sep  4 21:11:44 BST 1999 -->
+<!-- hhmts start -->
+Last modified: Sat Sep  4 22:49:36 BST 1999
+<!-- hhmts end -->
+	<hr>
+	<h4>Some thoughts</h4>
+
+    <ol>
+	  <li>The protocol must be capable of being multi/broadcast.
+      <li>The format must regular.
+      <li>All packets will have a to, from and date field and a checksum of
+		some kind.
+	  <li>space is a premium, therefore I am prepared to break layering rules
+		in specific cases to avoid duplicating fields. E.g. in AX25 using
+		callsign fields as part of the data (which means reconstructing the
+		packets from ax25 to be like you expect)
+	  <li>the protocol will continue to be ascii for simplicity of use.
+	</ol>
+
+	<h4>packet format</h4>
+
+	The overall format of a packet shall look like this:-
+
+	<p>
+	  <table border=3>
+		<tr>
+		  <td width="20%"><b>Field</b></td>
+		  <td width="80%"><b>Description</b></td>
+		</tr>
+		<tr>
+		  <td width="20%"><b>OP Code</b></td>
+		  <td width="80%">
+			This will be 'B' for now, but will be extended when multicasting
+			comes into being
+		  </td>
+		</tr>
+		<tr>
+		  <td width="20%"><b>From Address</b></td>
+		  <td width="80%">
+			This will always be the originating cluster callsign and shall 
+			<emph>never</emph> be changed
+		  </td>
+		</tr>
+		<tr>
+		  <td width="20%"><b>To Address</b></td>
+		  <td width="80%">
+			The <i>To</i> address can be anything at all that is likely
+			to be meaningful to a cluster program, it could be a callsign, a 'group' name of
+			some sort (eg <tt>6MUK</tt>) or it could be empty, indicating a broadcast 
+		  </td>
+		</tr>
+		<tr>
+		  <td width="20%"><b>Date/Time/Count</b></td>
+		  <td width="80%">
+			This is a unix time_t, in hex (ie 8 characters) with an optional
+			2 byte hex count on the end which can allow up to 256 protocol messages to be originated
+			a second. Programs must allow for both 8 or 10 digit hex numbers
+		  </td>
+		</tr>
+		<tr>
+		  <td width="20%"><b>Data</b></td>
+		  <td width="80%">
+			The actual cluster data. The data in this field can contain only
+			ascii data. Any non ascii data shall be converted to <tt>%XX</tt> format, where 
+			<tt>XX</tt> is the hex equivalent of the character represented, certain special
+			characters in the data such as '%', '|' and '^' shall also be converted. Although
+			it is envisaged that most data will be ascii, things like mail files can and
+			will contain newline characters and these will be converted.
+			<br><br>It is suggested that the raw version of the data in this packet be no
+			more than 128 characters, if it any packets are likely to be routed over
+			ax25 bearers. However, programs should be prepared to accept 1024 characters (after
+			decoding) for point to point wire links and routed data.
+		  </td>
+		</tr>
+		<tr>
+		  <td width="20%"><b>Checksum</b></td>
+		  <td width="80%">
+			This is calculated as the simple arithmetic checksum, modulo 256, 
+			of the whole packet excluding
+			this field and any preceeding field separator,  as two hex digits
+			this checksum is designed solely to pick up errors in any connections between 
+			this protocol and lower layers - where hopefully real CRC checking is done 
+		  </td>
+		</tr>
+	  </table>
+	</P>
+  
+	<p>
+	  Each field in the above packet shall be separated by the '|' character <b>EXCEPT</b> the
+	  <tt>op code</tt> which is concatenated onto the <tt>from</tt> field. The '|' character 
+	  must not appear in any field in the overall packet, it is the data providers responsibility
+	  make sure this happens. If it is necessary for operations there can be a locally generated
+	  newline sequence added on the end of the packet for sending or delimiting purposes
+	  which is stripped off before presenting the packet for decoding.  
+	</p>
+
+	<p>
+	  A typical packet might look like:- <br><br>
+	  <quote>
+		BGB7DJK||8BCF65DE|DX^G1TLH^M0BAA^144123^Humungous Signal!|A8<BR>
+		BGB7DJK|SYSOP|8BCF65FC|AN^G1TLH^What @$%7C%5E!** condxs?|5C<BR>
+		BGB7DJK|GB7BAA|8BCF670102|TA^G1TLH^G8TIC^Baaaaaaaaaaa|FD<BR>
+      </quote>
+    <p>
+
+    <p>
+	  As mentioned earlier, astute readers will see that there is a mix up of lower
+	  layer data with higher. This is deliberate (as well as potentially messy), but it saves 
+	  characters and promotes regularity on format. Apart from anything else, most directed
+	  data actually needs to pass from cluster to cluster and it is important for the higher
+	  layers to know where a packet originated. Also higher layers need to address packets to
+	  other clusters or groups and there would otherwise be considerable duplication.
+	</P>
+
+	<p>
+	  If a packet fails a checksum, then it is silently dropped - for now. When reliable
+	  multicast comes in, other actions will occur at this level. In any event, higher level
+	  functions that require some state to be maintained between packets (eg mail transfer)
+	  should make their own arrangements in case reliable multicast isn't available between
+	  two cluster nodes.
+    </p> 
+	<br>
+	<hr>
+	Document Id: $Id$
+  </body>
+</html>
