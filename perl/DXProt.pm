@@ -1384,7 +1384,7 @@ sub send_local_config
 		my $ref = Route::Node::get($self->{call});
 		my @rnodes = $ref->nodes;
 		for my $n (@intcalls) {
-			push @remotenodes, Route::Node::get($n) if grep $n ne $_, @rnodes;
+			push @remotenodes, Route::Node::get($n) unless grep $n == $_, @rnodes;
 		}
 		unshift @localnodes, $main::routeroot;
 	}
