@@ -1,3 +1,8 @@
+25May99=======================================================================
+1. try to make the lastin value correct even for local users
+2. got rid of the stupid bug that failed to print out the offline message
+but put a "*main::STDOUTmain" for every line of that message instead.
+3. Ported to 5.00503 (well actually just installed it and it just runs). 
 23May99=======================================================================
 1. Got rid of some of the useless error messages on global destruction when
 quiting a program.

@@ -326,7 +326,7 @@ sub normal
 				$user = DXUser->new($call) if !$user;
 				$user->homenode($node->call) if !$user->homenode;
 				$user->node($node->call);
-				$user->lastin($main::systime);
+				$user->lastin($main::systime) unless DXChannel->get($call);
 				$user->put;
 			}
 			
@@ -379,7 +379,7 @@ sub normal
 					$user->homenode($call);
 					$user->node($call);
 				}
-				$user->lastin($main::systime);
+				$user->lastin($main::systime) unless DXChannel->get($call);
 				$user->put;
 			}
 			

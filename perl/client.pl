@@ -474,7 +474,7 @@ if (! $conn) {
 		open IN, "$data/offline" or die;
 		while (<IN>) {
 			s/\n/\r/og if $mode == 1;
-			print $stdout;
+			print $stdout $_;
 		}
 		close IN;
 	} else {
