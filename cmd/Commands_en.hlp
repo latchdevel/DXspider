@@ -1213,6 +1213,21 @@ The setting is stored in your user profile.
 
 YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
+=== 0^SET/EMAIL <email> ...^Set email address(es) and forward your personals
+=== 0^UNSET/EMAIL^Stop personal msgs being forwarded by email
+If any personal messages come in for your callsign then you can use
+these commands to control whether they are forwarded onto your email
+address. To enable the forwarding do something like:-
+
+  SET/EMAIL mike.tubby@somewhere.com
+
+You can have more than one email address (each one separated by a space).
+Emails are forwarded to all the email addresses you specify.
+
+You can disable forwarding by:-
+
+  UNSET/EMAIL
+
 === 0^SET/HERE^Tell the system you are present at your terminal
 === 0^UNSET/HERE^Tell the system you are absent from your terminal
 

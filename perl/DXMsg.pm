@@ -26,6 +26,10 @@ use DXLog;
 use IO::File;
 use Fcntl;
 
+eval {
+	require Mail::Send;
+};
+
 use strict;
 
 use vars qw($VERSION $BRANCH);
@@ -322,9 +326,8 @@ sub process
 						$ref->{msgno} = next_transno("Msgno");
 						push @{$ref->{gotit}}, $fromnode; # mark this up as being received
 						$ref->store($ref->{lines});
+						$ref->notify;
 						add_dir($ref);
-						my $dxchan = DXChannel->get($ref->{to});
-						$dxchan->send($dxchan->msg('m9')) if $dxchan && $dxchan->is_user;
 						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $fromnode for $ref->{to}");
 					}
 				}
@@ -417,6 +420,30 @@ sub process
 	}
 }
 
+
+sub notify
+{
+	my $ref = shift;
+	my $to = $ref->{to};
+	my $uref = DXUser->get($to);
+	my $dxchan = DXChannel->get($to);
+	if (*Mail::Send && $uref && $uref->wantemail) {
+		my $email = $uref->email;
+		if ($email) {
+			my @list = ref $email ? @{$email} : $email;
+			my $msg = new Mail::Send Subject=>"[DXSpider: $ref->{from}] $ref->{subject}";
+			$msg->to(@list);
+			my $fh = $msg->open;
+			print $fh "From: $ref->{from} To: $to On Node: $main::mycall Origin: $ref->{origin} Msgno: $ref->{msgno}\r\n\r\n";
+			print $fh map {"$_\r\n"} $ref->read_msg_body;
+			$fh->close;
+			for (@list) {
+				Log('msg', "Msgno $ref->{msgno} from $ref->{from} emailed to $_");
+			}
+		}
+	}
+	$dxchan->send($dxchan->msg('m9')) if $dxchan && $dxchan->is_user;
+}
 
 # store a message away on disc or whatever
 #
@@ -990,12 +1017,7 @@ sub do_send_stuff
 					$ref->add_dir();
 					push @out, $self->msg('m11', $ref->{msgno}, $to);
 					#push @out, "msgno $ref->{msgno} sent to $to";
-					my $dxchan = DXChannel->get(uc $to);
-					if ($dxchan) {
-						if ($dxchan->is_user()) {
-							$dxchan->send($dxchan->msg('m9'));
-						}
-					}
+					$ref->notify;
 				}
 			} else {
 				Log('msg', $self->call . " swore to @{$loc->{to}} subject: '$loc->{subject}' in msg, REJECTED");
@@ -1366,12 +1388,7 @@ sub import_one
 			$mref->add_dir();
 			push @out, $dxchan->msg('m11', $mref->{msgno}, $to);
 			#push @out, "msgno $ref->{msgno} sent to $to";
-			my $todxchan = DXChannel->get(uc $to);
-			if ($todxchan) {
-				if ($todxchan->is_user()) {
-					$todxchan->send($todxchan->msg('m9'));
-				}
-			}
+			$mref->notify;
 		}
 	}
 	return @out;

@@ -41,33 +41,29 @@ for $msgno (@f) {
 	@body = $ref->read_msg_body;
 	push @out, @body;
 	
-	# mark my privates as read
-	if ($ref->private && $self->call eq $ref->to && $ref->read == 0) {
-		$ref->read(1);
-		$ref->store(\@body);    # note call by reference!
+	# mark it as read
+	$ref->read($ref->read() + 1);
+	$ref->store(\@body);    # note call by reference!
 
-		# if it had a read receipt on it generate a new message to send back to
-        # the sender.
-		if ($ref->rrreq) {
-			my $sub = $ref->subject;
-			$sub = "Re: $sub" unless $sub =~ /^\s*re:/i;
-			my $to = $ref->to;
-			my $from = $ref->from;
-			my $rref = DXMsg->alloc(1, $from, $main::mycall, time, 
-									1, $sub, $main::mycall, 0, 0 );
-			my $msgno = DXMsg::next_transno("Msgno");
-			$rref->msgno($msgno);
-			$rref->gotit( [ "$main::mycall" ] );
-			$rref->store( [ "Return receipt from delivering node. Message read by $to." ] );
-			DXMsg::add_dir($rref);
-			DXMsg::queue_msg(0);
-		}
+	# if it had a read receipt on it generate a new message to send back to
+	# the sender.
+	if ($ref->rrreq) {
+		my $sub = $ref->subject;
+		$sub = "Re: $sub" unless $sub =~ /^\s*re:/i;
+		my $to = $ref->to;
+		my $from = $ref->from;
+		my $rref = DXMsg->alloc(1, $from, $main::mycall, time, 
+								1, $sub, $main::mycall, 0, 0 );
+		my $msgno = DXMsg::next_transno("Msgno");
+		$rref->msgno($msgno);
+		$rref->gotit( [ "$main::mycall" ] );
+		$rref->store( [ "Return receipt from delivering node. Message read by $to." ] );
+		DXMsg::add_dir($rref);
+		DXMsg::queue_msg(0);
 	}
 	
 	# remember this one as the last one read
 	$self->lastread($msgno);
-
-
 }
 
 return (1, @out);

@@ -10,16 +10,15 @@ my ($self, $line) = @_;
 my $call = $self->call;
 my $user;
 
-# remove leading and trailing spaces
-$line =~ s/^\s+//;
-$line =~ s/\s+$//;
-$line =~ s/[{}]//g;  # remove any braces
+$line =~ s/[<>()\[\]{}]//g;  # remove any braces
+my @f = split /\s+/, $line;
 
 return (1, $self->msg('emaile1')) if !$line;
 
 $user = DXUser->get_current($call);
 if ($user) {
-	$user->email($line);
+	$user->email(\@f);
+	$user->wantemail(1);
 	$user->put();
 	return (1, $self->msg('emaila', $line));
 } else {

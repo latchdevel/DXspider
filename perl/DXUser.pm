@@ -65,6 +65,7 @@ $lasttime = 0;
 		  wanttalk => '0,Rec Talk,yesno',
 		  wantwx => '0,Rec WX,yesno',
 		  wantdx => '0,Rec DX Spots,yesno',
+		  wantemail => '0,Rec Msgs as Email,yesno',
 		  pagelth => '0,Current Pagelth',
 		  pingint => '9,Node Ping interval',
 		  nopings => '9,Ping Obs Count',
@@ -518,6 +519,11 @@ sub wanttalk
 sub wantgrid
 {
 	return _want('grid', @_);
+}
+
+sub wantemail
+{
+	return _want('email', @_);
 }
 
 sub wantann_talk
