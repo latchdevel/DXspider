@@ -21,7 +21,7 @@ use DXLog ();
 use Carp qw(cluck);
 
 %dbglevel = ();
-$fp = DXLog::new('debug', 'dat', 'd');
+$fp = undef;
 
 # Avoid generating "subroutine redefined" warnings with the following
 # hack (from CGI::Carp):
@@ -71,18 +71,21 @@ sub dbginit
 		$SIG{__WARN__} = sub { _store($@, Carp::shortmess(@_)); };
 		$SIG{__DIE__} = sub { _store($@, Carp::longmess(@_)); };
 	}
+
+	$fp = DXLog::new('debug', 'dat', 'd');
 }
 
 sub dbgclose
 {
 	$SIG{__DIE__} = $SIG{__WARN__} = 'DEFAULT';
-	$fp->close();
+	$fp->close() if $fp;
+	undef $fp;
 }
 
 sub dbg
 {
 	my $l = shift;
-	if ($dbglevel{$l} || $l eq 'err') {
+	if ($fp && ($dbglevel{$l} || $l eq 'err')) {
 	    my @in = @_;
 		my $t = time;
 		for (@in) {
