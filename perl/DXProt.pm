@@ -966,7 +966,7 @@ sub handle_19
 
 	# route out new nodes to legacy nodes
 	$self->route_pc19($origin, $line, @new) if @new;
-	$self->route_pc59('A', 0, $self->{call}, @rout) if @rout;
+	$self->route_pc59('A', hexstamp(), $self->{call}, @rout) if @rout;
 }
 		
 # send local configuration
@@ -2340,7 +2340,7 @@ sub disconnect
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
-		$self->route_pc59('D', 0, $main::mycall, $node);
+		$self->route_pc59('D', hexstamp(), $main::mycall, $node);
 	}
 
 	# delete all the unwanted nodes
