@@ -12,6 +12,7 @@ my $via;
 my $line;
 my $from = $self->call;
 my @out;
+return (1, $self->msg('e5')) if $self->remotecmd;
 
 # analyse the line there are four situations...
 # 1) talk call
@@ -39,7 +40,8 @@ return (1, $self->msg('e7', $call)) unless $dxchan;
 if ($line) {
 	$dxchan->talk($self->call, $to, $via, $line) if $dxchan;
 } else {
-	my $s = "$to>" . $dxchan->call;
+	my $s = $to;
+	$s .= ">$via" if $via;
 	my $ref = $self->talklist;
 	if ($ref) {
 		unless (grep { $_ eq $s } @$ref) {

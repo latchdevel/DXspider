@@ -446,8 +446,12 @@ SP is an alias for SEND PRIVATE
 === 0^SET/ANNOUNCE^Allow announce messages to come out on your terminal
 === 0^UNSET/ANNOUNCE^Stop announce messages coming out on your terminal
 
+=== 5^SET/ARCLUSTER <call> [<call>..]^Make the callsign an AR-Cluster node
+
 === 0^SET/BEEP^Add a beep to DX and other messages on your terminal
 === 0^UNSET/BEEP^Stop beeps for DX and other messages on your terminal
+
+=== 5^SET/CLX <call> [<call>..]^Make the callsign an CLX node
 
 === 9^SET/DEBUG <name>^Add a debug level to the debug set
 === 9^UNSET/DEBUG <name>^Remove a debug level from the debug set
@@ -462,6 +466,8 @@ that if the spotter's grid square is known it is output on the end
 of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. You can use this command to reset (or set)
 this feature.
+
+=== 5^SET/DXNET <call> [<call>..]^Make the callsign an DXNet node
 
 === 0^SET/ECHO^Make the cluster echo your input
 === 0^UNSET/ECHO^Stop the cluster echoing your input
@@ -514,11 +520,11 @@ then this command will set your QRA locator for you. For example:-
 Tell the system what your name is eg:-
   SET/NAME Dirk
 
-=== 9^SET/NODE <call> [<call>..]^Make the callsign an AK1A cluster
+=== 5^SET/NODE <call> [<call>..]^Make the callsign an AK1A cluster
 Tell the system that the call(s) are to be treated as AK1A cluster and
 fed PC Protocol rather normal user commands.
 
-=== 9^SET/OBSCOUNT <count> <nodecall>^Set the 'pump-up' obscelence counter 
+=== 8^SET/OBSCOUNT <count> <nodecall>^Set the 'pump-up' obscelence counter 
 From 1.35 onwards neighbouring nodes are pinged at regular intervals (see
 SET/PINGINTERVAL), usually 300 seconds or 5 minutes. There is a 'pump-up'
 counter which is decremented on every outgoing ping and then reset to
@@ -575,7 +581,7 @@ can contain any characters but any spaces are removed (you can type in
 spaces - but they won't appear in the password). You can see the
 result with STAT/USER.
 
-=== 9^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
+=== 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.
 

@@ -9,6 +9,7 @@
 my $self = shift;
 my $line = shift; 
 my ($call) = $line =~ /^\s*(\S+)/;
+return (1, $self->msg('e5')) if $self->remotecmd;
 
 # are we permitted?
 return (1, $self->msg('e5')) if $self->priv < 6;

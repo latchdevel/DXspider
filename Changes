@@ -1,3 +1,11 @@
+30Jul00=======================================================================
+1. Added talk mode so that I don't have to keep typing T <call> all the time.
+2. fiddled around with storing of Debug messages a bit more.
+3. bomb proofed the type command.
+4. started the objectifying for talk, dx and announcements.
+5. fix talkmode so that it only does 'via' PC10s when it really needs to.
+6. SEND now displays a message if you try to do it in not prompt mode.
+7. stopped a few more things being done by rcmd (eg send, talk, ann, dx)
 29Jul00=======================================================================
 1. added forward/latlong which will forward ALL the users that have a latitude
 and longitude set on them to one or more locally connected nodes - with a hop
@@ -6,9 +14,6 @@ count of 1.
 sequentially reading the data directly and only 'get'ting the ones that are
 nodes.
 3. did the same for show/isolate and show/lockout.
-4. Added talk mode so that I don't have to keep typing T <call> all the time.
-5. fiddled around with storing of Debug messages a bit more.
-6. bomb proofed the type command.
 28Jul00=======================================================================
 1. fixed watchdbg midnight rollover loop and removed the date part of the 
 date/time translation to leave just the time.

@@ -146,6 +146,8 @@ if ($self->state eq "prompt") {
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('send1');
 	push @out, $self->msg('m1');
+} else {
+	push @out, $self->msg('m17', $self->state);
 }
 
 return (1, @out);

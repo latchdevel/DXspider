@@ -15,6 +15,7 @@ my $spotted;
 my $freq;
 my @out;
 my $valid = 0;
+return (1, $self->msg('e5')) if $self->remotecmd;
 
 # do we have at least two args?
 return (1, $self->msg('dx2')) unless @f >= 2;
