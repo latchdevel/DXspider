@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Installation and Administration Manual : Information, files and useful programs</TITLE>
+ <TITLE>The DXSpider Installation and Administration Manual : Filtering (New Style v1.45 and later)</TITLE>
  <LINK HREF="adminmanual-7.html" REL=next>
  <LINK HREF="adminmanual-5.html" REL=previous>
  <LINK HREF="adminmanual.html#toc6" REL=contents>
@@ -12,341 +12,181 @@
 <A HREF="adminmanual-5.html">Previous</A>
 <A HREF="adminmanual.html#toc6">Contents</A>
 <HR>
-<H2><A NAME="s6">6. Information, files and useful programs</A></H2>
+<H2><A NAME="s6">6. Filtering (New Style v1.45 and later)</A></H2>
 
-<H2><A NAME="ss6.1">6.1 MOTD</A>
+<P>Upto v1.44 it was not possible for the user to set their own filters.  From v1.45 though that has 
+all changed.  It is now possible to set filters for just about anything you wish.  If you have just
+updated from an older version of DXSpider you will need to update your new filters.  You do not
+need to do anything with your old filters, they will be renamed as you update.
+<P>
+<P>There are 3 basic commands involved in setting and manipulating filters.  These are <EM>accept</EM>, 
+<EM>reject</EM> and <EM>clear</EM>.  First we will look generally at filtering. There are a number
+of things you can filter in the DXSpider system. They all use the same general mechanism.
+<P>
+<P>In general terms you can create a 'reject' or an 'accept' filter which can have up to 10 lines in 
+it. You do this using, for example ... 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+ 
+accept/spots .....
+reject/spots .....
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>where ..... are the specific commands for that type of filter. There are filters for spots, wwv, 
+announce, wcy and (for sysops) connects. See each different accept or reject command reference
+for more details.
+<P>There is also a command to clear out one or more lines in a filter. They are ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots 1
+clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>There is clear/xxxx command for each type of filter.
+<P>
+<P>and you can check that your filters have worked by the command ... 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  
+show/filter
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>For now we are going to use spots for the examples, but you can apply the same principles 
+to all types of filter.
+<P>
+<P>There are two main types of filter, <EM>accept</EM> or <EM>reject</EM>.  You can use either
+to achieve the result you want dependent on your own preference and which is more simple to
+do.  It is pointless writing 8 lines of reject filters when 1 accept filter would do the
+same thing!  Each filter has 10 lines (of any length) which are tried in order.  If a line 
+matches then the action you have specified is taken (ie reject means ignore it and accept 
+means take it)
+<P>
+<P>If you specify reject filters, then any lines that arrive that match the filter will be
+dumped but all else will be accepted.  If you use an accept filter, then ONLY the lines
+in the filter will be accepted and all else will be dumped.
+For example if you have a single line <EM>accept</EM> filter ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>then you will <EM>ONLY</EM> get VHF spots <EM>from</EM> or <EM>to</EM> CQ zones 14, 15 and 16.
+<P>
+<P>If you set a reject filter like this ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots freq hf/cw
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Then you will get everything <EM>EXCEPT</EM> HF CW spots.  You could make this single filter
+even more flexible.  For example, if you are interested in IOTA and will work it even on CW 
+even though normally you are not interested in CW, then you could say ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots freq hf/cw and not info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>But in that case you might only be interested in iota and say:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+accept/spots not freq hf/cw or info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>which achieves exactly the same thing. You should choose one or the other until you are 
+comfortable with the way it works. You can mix them if you wish (actually you can have an accept
+AND a reject on the same line) but don't attempt this until you are sure you know what you
+are doing!
+<P>
+<P>You can arrange your filter lines into logical units, either for your own understanding or simply 
+convenience. Here is an example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots 1 freq/cw
+reject/spots 2 freq 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>What this does is to ignore all HF CW spots and also rejects any spots on VHF which don't
+either originate or spot someone in Europe. 
+<P>
+<P>This is an example where you would use a line number (1 and 2 in this case), if you leave the 
+digit out, the system assumes '1'. Digits '0'-'9' are available.  This make it easier to see
+just what filters you have set.  It also makes it more simple to remove individual filters, 
+during a contest for example.
+<P>
+<P>You will notice in the above example that the second line has brackets.  Look at the line
+logically.  You can see there are 2 separate sections to it.  We are saying reject spots that
+are VHF or above <EM>APART</EM> from those in zones 14, 15 and 16 (either spotted there or
+originated there).  If you did not have the brackets to separate the 2 sections, then Spider
+would read it logically from the front and see a different expression entirely ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+(freq 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The simple way to remember this is, if you use OR - use brackets. Whilst we are here CASE is not 
+important. 'And BY_Zone' is just the same as 'and by_zone'.
+<P>As mentioned earlier, setting several filters can be more flexible than simply setting one complex
+one.  Doing it in this way means that if you want to alter your filter you can just redefine or 
+remove one or more lines of it or one line. For example ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+reject/spots 1 freq/ssb
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>would redefine our earlier example, or 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots 1
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>To remove all the filter lines in the spot filter ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss6.1">6.1 Advanced filtering</A>
 </H2>
 
-<P>One of the more important things a cluster sysop needs to do is to get information to his users.  The simplest way to do this is to have a banner that is sent to the user on login.  This is know as a "message of the day" or "motd".  To set this up, simply create a file in /spider/data called motd and edit it to say whatever you want.  It is purely a text file and will be sent automatically to anyone logging in to the cluster.
+<P>Once you are happy with the results you get, you may like to experiment. 
 <P>
-<H2><A NAME="ss6.2">6.2 Downtime message</A>
-</H2>
-
-<P>If for any reason the cluster is down, maybe for upgrade or maintenance but the machine is still running, a message can be sent to the user advising them of the fact.  This message lives in the /spider/data directory and is called "offline".  Simply create the file and edit it to say whatever you wish.  This file will be sent to a user attempting to log into the cluster when DXSpider is not actually running.
-<P>
-<H2><A NAME="ss6.3">6.3 Other text messages</A>
-</H2>
-
-<P>You can set other text messages to be read by the user if they input the file name.  This could be for news items or maybe information for new users.  To set this up, make a directory under /spider called <EM>packclus</EM>.  Under this directory you can create files called <EM>news</EM> or <EM>newuser</EM> for example.  In fact you can create files with any names you like.  These can be listed by the user with the command ....
+<P>The previous example that filters hf/cw spots and accepts vhf/uhf spots from EU 
+can be written with a mixed filter, for example ... 
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-show/files
+rej/spot freq hf/cw
+acc/spot freq 0/30000
+acc/spot 2 freq 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>They can be read by the user by typing the command ....
+<P>Note that the first filter has not been specified with a number.  This will 
+automatically be assumed to be number 1.  In this case, we have said "reject all
+HF spots in the CW section of the bands but accept all others at HF.  Also
+accept anything in VHF and above spotted in or by operators in the zones
+14, 15 and 16".  Each filter slot actually has a 'reject' slot and 
+an 'accept' slot. The reject slot is executed BEFORE the accept slot.
 <P>
-<BLOCKQUOTE><CODE>
-<PRE>
-type news
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>If the file they want to read is called <EM>news</EM>.  You could also set an alias for this in the Alias file to allow them just to type <EM>news</EM>
+<P>It was mentioned earlier that after a reject test that doesn't match, the default 
+for following tests is 'accept', the reverse is true for 'accept'. In the example 
+what happens is that the reject is executed first, any non hf/cw spot is passed 
+to the accept line, which lets through everything else on HF.  The next filter line 
+lets through just VHF/UHF spots from EU.
 <P>
-<P>You can also store other information in this directory, either directly or nested under directories.  One use for this would be to store DX bulletins such as the OPDX bulletins.  These can be listed and read by the user.  To keep things tidy, make a directory under /spider/packclus called <EM>bulletins</EM>.  Now copy any OPDX or similar bulletins into it.  These can be listed by the user in the same way as above using the <EM>show/files</EM> command with an extension for the bulletins directory you have just created, like this ....
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-show/files bulletins
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<P>An example would look like this ....
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-sh/files
-bulletins      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>You can see that in the files area (basically the packclus directory) there is a file called <EM>news</EM> and a directory called <EM>bulletins</EM>.  You can also see that dates they were created.  In the case of the file <EM>news</EM>, you can also see the time it was last modified, a good clue as to whether the file has been updated since you last read it.  To read the file called <EM>news</EM> you would simply issue the command ....
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-type news
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>To look what is in the bulletins directory you issue the command ....
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-show/files bulletins
-opdx390      21381 29-Nov-1999 1621Z opdx390.1     1670 29-Nov-1999 1621Z
-opdx390.2     2193 29-Nov-1999 1621Z opdx391      25045 29-Nov-1999 1621Z  
-opdx392      35969 29-Nov-1999 1621Z opdx393      15023 29-Nov-1999 1621Z  
-opdx394      33429 29-Nov-1999 1621Z opdx394.1     3116 29-Nov-1999 1621Z  
-opdx395      24319 29-Nov-1999 1621Z opdx396      32647 29-Nov-1999 1621Z
-opdx396.1     5537 29-Nov-1999 1621Z opdx396.2     6242 29-Nov-1999 1621Z
-opdx397      18433 29-Nov-1999 1621Z opdx398      19961 29-Nov-1999 1621Z  
-opdx399      17719 29-Nov-1999 1621Z opdx400      19600 29-Nov-1999 1621Z
-opdx401      27738 29-Nov-1999 1621Z opdx402      18698 29-Nov-1999 1621Z
-opdx403      24994 29-Nov-1999 1621Z opdx404      15685 29-Nov-1999 1621Z
-opdx405      13984 29-Nov-1999 1621Z opdx405.1     4166 29-Nov-1999 1621Z
-opdx406      28934 29-Nov-1999 1621Z opdx407      24153 29-Nov-1999 1621Z
-opdx408      15081 29-Nov-1999 1621Z opdx409      23234 29-Nov-1999 1621Z
-Press Enter to continue, A to abort (16 lines) >
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>You can now read any file in this directory using the type command, like this ....
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-type bulletins/opdx391
-Ohio/Penn DX Bulletin No. 391
-The Ohio/Penn Dx PacketCluster
-DX Bulletin No. 391
-BID: $OPDX.391
-January 11, 1999
-Editor Tedd Mirgliotta, KB8NW
-Provided by BARF-80 BBS Cleveland, Ohio
-Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
-Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
-Association, Ohio/Penn PacketCluster Network, K1XN &amp; Golist, WB2RAJ/WB2YQH
-&amp; The 59(9) DXReport, W3UR &amp; The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
-Press Enter to continue, A to abort (508 lines) >
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>The page length will of course depend on what you have it set to!
-<P>
-<H2><A NAME="ss6.4">6.4 The Aliases file</A>
-</H2>
-
-<P>You will find a file in /spider/cmd/ called Aliases.  First, copy this file to /spider/local_cmd/Aliases and edit this file.  You will see something like this ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-
-#!/usr/bin/perl
-
-# provide some standard aliases for commands for terminally
-# helpless ak1a user (helpless in the sense that they never
-# read nor understand help files)
-
-# This file is automagically reloaded if its modification time is 
-# later than the one stored in CmdAlias.pm
-
-# PLEASE make this file consistant with reality! (the patterns MUST
-# match the filenames!)
-
-# Don't alter this file, copy it into the local_cmd tree and modify it.
-# This file will be replaced everytime I issue a new release.
-
-# You only need to put aliases in here for commands that don't work as
-# you desire naturally, e.g sh/dx on its own just works as you expect
-# so you need not add it as an alias.
-
-
-
-package CmdAlias;
-
-%alias = (
-    '?' => [
-          '^\?', 'apropos', 'apropos',
-        ],
-    'a' => [
-          '^ann.*/full', 'announce full', 'announce', 
-          '^ann.*/sysop', 'announce sysop', 'announce',
-          '^ann.*/(.*)$', 'announce $1', 'announce',
-        ],
-        'b' => [
-        ],
-        'c' => [
-        ],
-        'd' => [
-          '^del', 'kill', 'kill',
-          '^del\w*/fu', 'kill full', 'kill',
-          '^di\w*/a\w*', 'directory all', 'directory',
-          '^di\w*/b\w*', 'directory bulletins', 'directory',
-          '^di\w*/n\w*', 'directory new', 'directory',
-          '^di\w*/o\w*', 'directory own', 'directory',
-          '^di\w*/s\w*', 'directory subject', 'directory',
-          '^di\w*/t\w*', 'directory to', 'directory',
-          '^di\w*/f\w*', 'directory from', 'directory',
-          '^di\w*/(\d+)', 'directory $1', 'directory',
-        ],
-        'e' => [
-        ],
-        'f' => [
-        ],
-        'g' => [
-        ],
-        'h' => [
-        ],
-        'i' => [
-        ],
-        'j' => [
-        ],
-        'k' => [
-        ],
-        'l' => [
-          '^l$', 'directory', 'directory',
-          '^ll$', 'directory', 'directory',
-          '^ll/(\d+)', 'directory $1', 'directory',
-        ],
-        'm' => [
-        ],
-        'n' => [
-          '^news', 'type news', 'type',
-        ],
-        'o' => [
-        ],
-        'p' => [
-        ],
-        'q' => [
-          '^q', 'bye', 'bye',
-        ],
-        'r' => [        
-          '^r$', 'read', 'read',
-          '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
-        ],
-        's' => [
-          '^s/p$', 'send', 'send',
-          '^sb$', 'send noprivate', 'send',
-          '^set/home$', 'set/homenode', 'set/homenode',
-          '^set/nobe', 'unset/beep', 'unset/beep',
-          '^set/nohe', 'unset/here', 'unset/here',
-          '^set/noan', 'unset/announce', 'unset/announce',
-          '^set/nodx', 'unset/dx', 'unset/dx',
-          '^set/nota', 'unset/talk', 'unset/talk',
-          '^set/noww', 'unset/wwv', 'unset/wwv',
-          '^set/nowx', 'unset/wx', 'unset/wx',
-          '^sh$', 'show', 'show',
-          '^sh\w*/buck', 'dbshow buck', 'dbshow',
-          '^sh\w*/bu', 'show/files bulletins', 'show/files',
-          '^sh\w*/c/n', 'show/configuration nodes', 'show/configuration',
-          '^sh\w*/c$', 'show/configuration', 'show/configuration',
-          '^sh\w*/com', 'dbavail', 'dbavail',
-          '^sh\w*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
-          '^sh\w*/dx/(\d+)', 'show/dx $1', 'show/dx',
-          '^sh\w*/dx/d(\d+)', 'show/dx from $1', 'show/dx',
-          '^sh\w*/email', 'dbshow email', 'dbshow',
-          '^sh\w*/hftest', 'dbshow hftest', 'dbshow',
-          '^sh\w*/vhftest', 'dbshow vhftest', 'dbshow',
-          '^sh\w*/qsl', 'dbshow qsl', 'dbshow',
-          '^sh\w*/tnc', 'who', 'who',
-      '^sh\w*/up', 'show/cluster', 'show/cluster',
-          '^sh\w*/w\w*/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
-          '^sh\w*/w\w*/(\d+)', 'show/wwv $1', 'show/wwv',
-          '^sp$', 'send', 'send',
-        
-    ],
-        't' => [
-          '^ta$', 'talk', 'talk',
-          '^t$', 'talk', 'talk',
-        ],
-        'u' => [
-        ],
-        'v' => [
-        ],
-        'w' => [
-          '^wx/full', 'wx full', 'wx',
-          '^wx/sysop', 'wx sysop', 'wx',
-        ],
-        'x' => [
-        ],
-        'y' => [
-        ],
-        'z' => [
-        ],
-)
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>You can create aliases for commands at will.  Beware though, these may not always turn out as you think.  Care is needed and you need to test the results once you have set an alias.
-<P>
-<H2><A NAME="ss6.5">6.5 Forward.pl</A>
-</H2>
-
-<P>DXSpider receives all and any mail sent to it without any alterations needed
-in files.  Because personal and bulletin mail are treated differently, there
-is no need for a list of accepted bulletin addresses.  It is necessary, however,
-to tell the program which links accept which bulletins.  For example, it is
-pointless sending bulletins addresses to "UK" to any links other than UK
-ones.  The file that does this is called forward.pl and lives in /spider/msg.
-At default, like other spider files it is named forward.pl.issue.  Rename it
-to forward.pl and edit the file to match your requirements.
-The format is below ...
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-#
-# this is an example message forwarding file for the system
-#
-# The format of each line is as follows
-#
-#     type    to/from/at pattern action  destinations
-#     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
-#
-# type: P - private, B - bulletin (msg), F - file (ak1a bull)
-# to/from/at: T - to field, F - from field, A - home bbs, O - origin 
-# pattern: a perl regex on the field requested
-# action: I - ignore, F - forward
-# destinations: a reference to an array containing node callsigns
-#
-# if it is non-private and isn't in here then it won't get forwarded 
-#
-# Currently only type B msgs are affected by this code.
-# 
-# The list is read from the top down, the first pattern that matches
-# causes the action to be taken.
-#
-# The pattern can be undef or 0 in which case it will always be selected
-# for the action specified
-#
-# If the BBS list is undef or 0 and the action is 'F' (and it matches the
-# pattern) then it will always be forwarded to every node that doesn't have 
-# it (I strongly recommend you don't use this unless you REALLY mean it, if
-# you allow a new link with this on EVERY bull will be forwarded immediately
-# on first connection)
-#
-
-package DXMsg;
-
-@forward = (
-'B',    'T',    'LOCAL',        'F',    [ qw(GB7MBC) ],
-'B',    'T',    'ALL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'UK',           'F',    [ qw(GB7BAA GB7ADX) ],
-'B',    'T',    'QSL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'QSLINF',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DX',           'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXINFO',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXNEWS',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXQSL',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'SYSOP',        'F',    [ qw(GB7BAA GB7ADX) ],
-'B',    'T',    '50MHZ',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-);
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Simply insert a bulletin address and state in the brackets where you wish
-that mail to go.  For example, you can see here that mail sent to "UK" will
-only be sent to the UK links and not to PA4AB-14.
-<P>
-<P>To force the cluster to reread the file use load/forward
-<P>
-<H2><A NAME="ss6.6">6.6 Distribution lists</A>
-</H2>
-
-<P>Distribution lists are simply a list of users to send certain types of
-mail to.  An example of this is mail you only wish to send to other
-sysops.  In /spider/msg there is a directory called <EM>distro</EM>.  You
-put any distibution lists in here.  For example, here is a file called
-SYSOP.pl that caters for the UK sysops.
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
-   GB7NDX GB7SDX GB7TDX GB7UDX GB7YDX GB7ADX GB7BAA GB7DXA GB7DXH 
-   GB7DXK GB7DXI GB7DXS)
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Any mail sent to "sysop" would only be sent to the callsigns in this list.
-<P>
-<H2><A NAME="ss6.7">6.7 Console.pl</A>
-</H2>
-
-<P>In later versions of Spider a simple console program is provided for the sysop.  This has a type ahead buffer with line editing facilities and colour for spots, announces etc.
-To use this program, simply use console.pl instead of client.pl.
-<P>
-<P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the file with your favourite editor.
 <P>
 <HR>
 <A HREF="adminmanual-7.html">Next</A>

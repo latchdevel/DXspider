@@ -1,6 +1,9 @@
 23Dec00=======================================================================
 1. don't route anything back down the channel it came from.
 2. and, in the process, fix some silly errors in routing converted rcmd PCs
+3. changed all occurrances of 'freq' in filter help to 'on' and corrected
+some errors (eg freq/ssb).
+4. added latest admin manual.
 18Dec00=======================================================================
 1. fix double printing of DB results
 2. add new style filtering for WWV and WCY to complete the set

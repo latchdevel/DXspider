@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Installation and Administration Manual : CVS</TITLE>
+ <TITLE>The DXSpider Installation and Administration Manual : Other filters</TITLE>
  <LINK HREF="adminmanual-8.html" REL=next>
  <LINK HREF="adminmanual-6.html" REL=previous>
  <LINK HREF="adminmanual.html#toc7" REL=contents>
@@ -12,99 +12,113 @@
 <A HREF="adminmanual-6.html">Previous</A>
 <A HREF="adminmanual.html#toc7">Contents</A>
 <HR>
-<H2><A NAME="s7">7. CVS</A></H2>
+<H2><A NAME="s7">7. Other filters</A></H2>
 
-<P>CVS stands for "Concurrent Versions System" and the CVS for DXSpider is held
-at 
-<A HREF="http://www.sourceforge.net">Sourceforge</A>.  This means
-that it is possible to update your DXSpider installation to the latest
-sources by using a few simple commands.
-<P>
-<P>THIS IS NOT FOR THE FAINT HEARTED!!!  ONLY DO THIS IF YOU HAVE A TEST
-INSTALLATION OR ARE WILLING TO HAVE YOUR CLUSTER CRASH ON YOU!!!
-THIS MUST BE CONSIDERED AT LEAST BETA TESTING AND MAYBE EVEN ALPHA!!
-YOU HAVE BEEN WARNED!!!
-<P>
-<P>DID I MENTION..... ONLY DO THIS IF YOU ARE WILLING TO ACCEPT THE
-CONSEQUENCES!!!
-<P>
-<P>I am of course assuming that you have a machine with both DXSpider and
-Internet access running.
-<P>
-<P>BEFORE YOU EVEN CONSIDER STARTING WITH THIS MAKE A BACKUP OF YOUR
-ENTIRE SPIDER TREE!!
-<P>
-<P>Assuming you are connected to the Internet, you need to login to the
-CVS repository and then update your Spider source.  There are several
-steps which are listed below ...
-<P>
-<P>First login as the user <EM>sysop</EM>.  Next you need to connect to the CVS
-repository.  You do this with the command below ...
-<P>
-<PRE>
-cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/DXSpider login 
-</PRE>
-<P>You will get a password prompt.  Simply hit return here and your machine should
-return to a normal linux prompt.
-<P>
-<P>What happens next depends on whether you have an existing installation that 
-you want to update with the latest and greatest or whether you just want
-to see what is there and/or run it on a new machine for testing.
-Either way you will want to change directory to a new place, if you want to
-update an existing installation then I suggest /tmp, otherwise choose a
-suitable place according to the normal installation instructions.
-<P>
-<P>The next step will create a brand new 'spider' directory in your current
-directory.
-<P>
-<PRE>
-cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/DXSpider co spider
-</PRE>
-<P>This command is all on one line.
-<P>
-<P>Hopefully your screen should show you downloading files.  The -z3 simply compresses
-the download to improve speed.
-When this has finished, you will have exactly the same as if you had untarred a full 
-tarball PLUS some extra directories and files that CVS needs to do the magic that 
-it does.
-<P>
-<P>Now if you are doing a new installation, that's it.  Carry on as if you have
-just downloaded and untarred the lastest tarball.
-<P>
-<P>If you want to upgrade your current installation then do this ...
+<H2><A NAME="ss7.1">7.1 Filtering Mail</A>
+</H2>
+
+<P>In the /spider/msg directory you will find a file called badmsg.pl.issue.  Rename this to badmsg.pl and edit the file.  
+The original looks something like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-tar cvfz /tmp/s.tgz spider
-cd /
-tar xvfzp /tmp/s.tgz
+
+# the list of regexes for messages that we won't store having
+# received them (bear in mind that we must receive them fully before
+# we can bin them)
+
+
+# The format of each line is as follows
+
+#     type      source             pattern 
+#     P/B/F     T/F/O/S            regex  
+
+# type: P - private, B - bulletin (msg), F - file (ak1a bull)
+# source: T - to field, F - from field,  O - origin, S - subject 
+# pattern: a perl regex on the field requested
+
+# Currently only type B and P msgs are affected by this code.
+# 
+# The list is read from the top down, the first pattern that matches
+# causes the action to be taken.
+
+# The pattern can be undef or 0 in which case it will always be selected
+# for the action specified
+
+
+
+package DXMsg;
+
+@badmsg = (
+'B',    'T',    'SALE', 
+'B',    'T',    'WANTED',
+'B',    'S',    'WANTED',
+'B',    'S',    'SALE', 
+'B',    'S',    'WTB',
+'B',    'S',    'WTS',
+'B',    'T',    'FS',
+);
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>This is assuming you downloaded to the /tmp directory of course.
 <P>
-<P>NOTE:  the 'p' on the end of the 'xvfz' is IMPORTANT!   It keeps the permissions
-correct.  YOU WERE LOGGED IN AS THE USER SYSOP WEREN'T YOU?????
-<P>Remember to recompile the C client (cd /spider/src; make)
+<P>I think this is fairly self explanatory.  It is simply a list of subject headers that we do not want to pass on to either 
+the users of the cluster or the other cluster nodes that we are linked to.  This is usually because of rules and regulations 
+pertaining to items for sale etc in a particular country.
 <P>
-<P>At this point the files have been upgraded.  You can (usually) restrt the cluster
-in your own time.  However, if you attempt to use any new commands or features
-expect it to be fatal!  At least your cluster will have been restarted then so it
-will be too late to worry about it!
-<P>
-<P>Now the magic part!  From now on when you want to update, simply connect to the 
-Internet and then, as the user <EM>sysop</EM> ...
+<H2><A NAME="ss7.2">7.2 Filtering DX callouts</A>
+</H2>
+
+<P>In the same way as mail, there are some types of spot we do not wish to pass on to users or linked cluster nodes.  In the 
+/spider/data directory you will find a file called baddx.pl.issue.  Rename this to baddx.pl and edit the file.  The original 
+looks like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-cd /spider
-cvs -z3 update
+
+# the list of dx spot addresses that we don't store and don't pass on
+
+
+package DXProt;
+
+@baddx = qw 
+
+ FROG 
+ SALE
+ FORSALE
+ WANTED
+ P1RATE
+ PIRATE
+ TEST
+ DXTEST
+ NIL
+ NOCALL 
+);
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>and your files will be updated.  As above, remember to recompile the "C" client 
-if it has been updated (CVS will tell you) and restart if any of the perl scripts
-have been altered or added, again, CVS will tell you.
 <P>
-<P>You will find any changes documented in the /spider/Changes file.
+<P>Again, this is simply a list of names we do not want to see in the spotted field of a DX callout.
+<P>
+<P>
+<H2><A NAME="ss7.3">7.3 Filtering words from text fields in Announce, Talk and DX spots</A>
+</H2>
+
+<P>Create a file in /spider/data called <EM>badwords</EM>.  The format is quite
+simple.  Lines beginning with # are ignored so comments can be added.  An
+example file is below ...
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# Below is a list of words we do not wish to see on the cluster
+grunge grunged grunging
+splodge splodger splodging
+grince
+fluffle
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Multiple words can be used on the same line as shown.  Obviously these
+are just examples :-)
+<P>
+<P>You can reload the file from the cluster prompt as sysop with load/badwords.
 <P>
 <HR>
 <A HREF="adminmanual-8.html">Next</A>

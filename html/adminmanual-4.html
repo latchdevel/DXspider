@@ -22,7 +22,10 @@ from it to any other networks you may be connected to (or vice versa).
 <H2><A NAME="ss4.1">4.1 Basic hop control</A>
 </H2>
 
-<P>In /spider/data you will find a file called hop_table.pl.  This is the file that controls your hop count settings.  It has a set of default hops on the various PC frames and also a set for each node you want to alter the hops for.  You may be happy with the default settings of course, but this powerful tool can help to protect and improve the network.  The file will look something like this ...
+<P>In /spider/data you will find a file called hop_table.pl.  This is the file that controls your hop count settings.  
+It has a set of default hops on the various PC frames and also a set for each node you want to alter the hops for.  
+You may be happy with the default settings of course, but this powerful tool can help to protect and improve the 
+network.  The file will look something like this ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -37,7 +40,7 @@ $def_hopcount = 5;
 
 # some variable hop counts based on message type
 %hopcount = 
-
+(
  11 => 10,
  16 => 10,
  17 => 10,
@@ -78,9 +81,11 @@ $def_hopcount = 5;
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>Each set of hops is contained within a pair of curly braces and contains a series of PC frame types.  PC11 for example is a DX spot. The figures here are not exhaustive but should give you a good idea of how the file works.
+<P>Each set of hops is contained within a pair of curly braces and contains a series of PC frame types.  PC11 for example 
+is a DX spot. The figures here are not exhaustive but should give you a good idea of how the file works.
 <P>
-<P>You can alter this file at any time, including whilst the cluster is running.  If you alter the file during runtime, the command <EM>load/hops</EM> will bring your changes into effect.
+<P>You can alter this file at any time, including whilst the cluster is running.  If you alter the file during runtime, 
+the command <EM>load/hops</EM> will bring your changes into effect.
 <P>
 <H2><A NAME="ss4.2">4.2 Isolating networks</A>
 </H2>
@@ -104,7 +109,11 @@ node and it will be routed across.
 isolated links regardless of whether they are generated locally. This will change 
 when the bulletin routing facility is added.
 <P>
-<P>If you use isolate on a node connection you will continue to receive all information from the isolated partner, however you will not pass any information back to the isolated node.  There are times when you would like to forward only spots across a link (maybe during a contest for example).  To do this, isolate the node in the normal way and put in a filter in the /spider/filter/spots directory to override the isolate.  This filter can be very simple and consists of just one line ....
+<P>If you use isolate on a node connection you will continue to receive all information from the isolated partner, 
+however you will not pass any information back to the isolated node.  There are times when you would like to 
+forward only spots across a link (maybe during a contest for example).  To do this, isolate the node in the normal 
+way and put in a filter in the /spider/filter/spots directory to override the isolate.  This filter can be very 
+simple and consists of just one line ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>

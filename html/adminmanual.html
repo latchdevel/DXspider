@@ -14,7 +14,7 @@ Contents
 <HR>
 <H1>The DXSpider Installation and Administration Manual </H1>
 
-<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 1.26 September 2000
+<H2>Ian Maude, G0VGS, (ianmaude@btinternet.com)</H2>Version 1.27 December 2000
 <P><HR>
 <EM>A reference for SysOps of the DXSpider DXCluster program.</EM>
 <HR>
@@ -38,7 +38,10 @@ Contents
 <LI><A HREF="adminmanual-3.html#ss3.1">3.1 Allowing ax25 connects from users</A>
 <LI><A HREF="adminmanual-3.html#ss3.2">3.2 Allowing telnet connects from users</A>
 <LI><A HREF="adminmanual-3.html#ss3.3">3.3 Setting up node connects</A>
-<LI><A HREF="adminmanual-3.html#ss3.4">3.4 Automating things</A>
+<LI><A HREF="adminmanual-3.html#ss3.4">3.4 Connection scripts</A>
+<LI><A HREF="adminmanual-3.html#ss3.5">3.5 Starting the connection</A>
+<LI><A HREF="adminmanual-3.html#ss3.6">3.6 Telnet echo</A>
+<LI><A HREF="adminmanual-3.html#ss3.7">3.7 Automating things</A>
 </UL>
 <P>
 <H2><A NAME="toc4">4.</A> <A HREF="adminmanual-4.html">Hop control</A></H2>
@@ -48,81 +51,93 @@ Contents
 <LI><A HREF="adminmanual-4.html#ss4.2">4.2 Isolating networks</A>
 </UL>
 <P>
-<H2><A NAME="toc5">5.</A> <A HREF="adminmanual-5.html">Filtering</A></H2>
+<H2><A NAME="toc5">5.</A> <A HREF="adminmanual-5.html">Filtering (Old Style upto v1.44)</A></H2>
 
 <UL>
 <LI><A HREF="adminmanual-5.html#ss5.1">5.1 Spots</A>
 <LI><A HREF="adminmanual-5.html#ss5.2">5.2 Announcements</A>
 <LI><A HREF="adminmanual-5.html#ss5.3">5.3 WWV</A>
-<LI><A HREF="adminmanual-5.html#ss5.4">5.4 Filtering Mail</A>
-<LI><A HREF="adminmanual-5.html#ss5.5">5.5 Filtering DX callouts</A>
-<LI><A HREF="adminmanual-5.html#ss5.6">5.6 Filtering words from text fields in Announce, Talk and DX spots</A>
 </UL>
 <P>
-<H2><A NAME="toc6">6.</A> <A HREF="adminmanual-6.html">Information, files and useful programs</A></H2>
+<H2><A NAME="toc6">6.</A> <A HREF="adminmanual-6.html">Filtering (New Style v1.45 and later)</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-6.html#ss6.1">6.1 MOTD</A>
-<LI><A HREF="adminmanual-6.html#ss6.2">6.2 Downtime message</A>
-<LI><A HREF="adminmanual-6.html#ss6.3">6.3 Other text messages</A>
-<LI><A HREF="adminmanual-6.html#ss6.4">6.4 The Aliases file</A>
-<LI><A HREF="adminmanual-6.html#ss6.5">6.5 Forward.pl</A>
-<LI><A HREF="adminmanual-6.html#ss6.6">6.6 Distribution lists</A>
-<LI><A HREF="adminmanual-6.html#ss6.7">6.7 Console.pl</A>
+<LI><A HREF="adminmanual-6.html#ss6.1">6.1 Advanced filtering</A>
 </UL>
 <P>
-<H2><A NAME="toc7">7.</A> <A HREF="adminmanual-7.html">CVS</A></H2>
-
-<P>
-<H2><A NAME="toc8">8.</A> <A HREF="adminmanual-8.html">Sysop commands</A></H2>
+<H2><A NAME="toc7">7.</A> <A HREF="adminmanual-7.html">Other filters</A></H2>
 
 <UL>
-<LI><A HREF="adminmanual-8.html#ss8.1">8.1 announce sysop (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.2">8.2 connect (5) </A>
-<LI><A HREF="adminmanual-8.html#ss8.3">8.3 catch (9) </A>
-<LI><A HREF="adminmanual-8.html#ss8.4">8.4 dbcreate (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.5">8.5 dbimport (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.6">8.6 dbremove (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.7">8.7 debug (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.8">8.8 directory (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.9">8.9 disconnect (8)</A>
-<LI><A HREF="adminmanual-8.html#ss8.10">8.10 export (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.11">8.11 forward/opername (1)</A>
-<LI><A HREF="adminmanual-8.html#ss8.12">8.12 init (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.13">8.13 kill (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.14">8.14 kill full (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.15">8.15 load/aliases (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.16">8.16 load/baddx (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.17">8.17 load/badmsg (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.18">8.18 load/badwords (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.19">8.19 load/bands (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.20">8.20 load/cmd_cache (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.21">8.21 load/forward (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.22">8.22 load/messages (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.23">8.23 load/prefixes (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.24">8.24 merge (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.25">8.25 msg (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.26">8.26 pc (8)</A>
-<LI><A HREF="adminmanual-8.html#ss8.27">8.27 ping (1)</A>
-<LI><A HREF="adminmanual-8.html#ss8.28">8.28 rcmd (1)</A>
-<LI><A HREF="adminmanual-8.html#ss8.29">8.29 read (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.30">8.30 set/debug (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.31">8.31 set/isolate (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.32">8.32 set/sys_location (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.33">8.33 set/lockout (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.34">8.34 set/node (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.35">8.35 set/obscount (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.36">8.36 set/pinginterval (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.37">8.37 set/privilege (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.38">8.38 set/password (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.39">8.39 set/sys_qra (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.40">8.40 show program (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.41">8.41 shutdown (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.42">8.42 spoof (9)</A>
-<LI><A HREF="adminmanual-8.html#ss8.43">8.43 stat/db (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.44">8.44 stat/channel (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.45">8.45 stat/msg (5)</A>
-<LI><A HREF="adminmanual-8.html#ss8.46">8.46 stat/user (5)</A>
+<LI><A HREF="adminmanual-7.html#ss7.1">7.1 Filtering Mail</A>
+<LI><A HREF="adminmanual-7.html#ss7.2">7.2 Filtering DX callouts</A>
+<LI><A HREF="adminmanual-7.html#ss7.3">7.3 Filtering words from text fields in Announce, Talk and DX spots</A>
+</UL>
+<P>
+<H2><A NAME="toc8">8.</A> <A HREF="adminmanual-8.html">Information, files and useful programs</A></H2>
+
+<UL>
+<LI><A HREF="adminmanual-8.html#ss8.1">8.1 MOTD</A>
+<LI><A HREF="adminmanual-8.html#ss8.2">8.2 Downtime message</A>
+<LI><A HREF="adminmanual-8.html#ss8.3">8.3 Other text messages</A>
+<LI><A HREF="adminmanual-8.html#ss8.4">8.4 The Aliases file</A>
+<LI><A HREF="adminmanual-8.html#ss8.5">8.5 Forward.pl</A>
+<LI><A HREF="adminmanual-8.html#ss8.6">8.6 Distribution lists</A>
+<LI><A HREF="adminmanual-8.html#ss8.7">8.7 Console.pl</A>
+</UL>
+<P>
+<H2><A NAME="toc9">9.</A> <A HREF="adminmanual-9.html">CVS</A></H2>
+
+<P>
+<H2><A NAME="toc10">10.</A> <A HREF="adminmanual-10.html">Sysop commands</A></H2>
+
+<UL>
+<LI><A HREF="adminmanual-10.html#ss10.1">10.1 announce sysop (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.2">10.2 connect (5) </A>
+<LI><A HREF="adminmanual-10.html#ss10.3">10.3 catch (9) </A>
+<LI><A HREF="adminmanual-10.html#ss10.4">10.4 dbcreate (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.5">10.5 dbimport (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.6">10.6 dbremove (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.7">10.7 debug (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.8">10.8 directory (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.9">10.9 disconnect (8)</A>
+<LI><A HREF="adminmanual-10.html#ss10.10">10.10 export (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.11">10.11 forward/opername (1)</A>
+<LI><A HREF="adminmanual-10.html#ss10.12">10.12 init (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.13">10.13 kill (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.14">10.14 kill full (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.15">10.15 load/aliases (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.16">10.16 load/baddx (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.17">10.17 load/badmsg (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.18">10.18 load/badwords (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.19">10.19 load/bands (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.20">10.20 load/cmd_cache (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.21">10.21 load/forward (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.22">10.22 load/messages (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.23">10.23 load/prefixes (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.24">10.24 merge (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.25">10.25 msg (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.26">10.26 pc (8)</A>
+<LI><A HREF="adminmanual-10.html#ss10.27">10.27 ping (1)</A>
+<LI><A HREF="adminmanual-10.html#ss10.28">10.28 rcmd (1)</A>
+<LI><A HREF="adminmanual-10.html#ss10.29">10.29 read (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.30">10.30 set/debug (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.31">10.31 set/isolate (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.32">10.32 set/sys_location (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.33">10.33 set/lockout (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.34">10.34 set/node (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.35">10.35 set/obscount (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.36">10.36 set/pinginterval (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.37">10.37 set/privilege (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.38">10.38 set/password (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.39">10.39 set/sys_qra (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.40">10.40 show/call (1)</A>
+<LI><A HREF="adminmanual-10.html#ss10.41">10.41 show/program (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.42">10.42 shutdown (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.43">10.43 spoof (9)</A>
+<LI><A HREF="adminmanual-10.html#ss10.44">10.44 stat/db (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.45">10.45 stat/channel (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.46">10.46 stat/msg (5)</A>
+<LI><A HREF="adminmanual-10.html#ss10.47">10.47 stat/user (5)</A>
 </UL>
 <HR>
 <A HREF="adminmanual-1.html">Next</A>
