@@ -14,6 +14,7 @@ use DB_File;
 use Data::Dumper;
 use DXDebug;
 use DXUtil;
+use USDB;
 use LRU;
 
 use strict;
@@ -129,7 +130,32 @@ sub next
 	return () if $db->seq($gotkey, $ref, R_NEXT);
 	return () if $key ne substr $gotkey, 0, length $key;
   
-	return ($gotkey, map { $prefix_loc{$_} } split ',', $ref);
+	return ($gotkey,  map { $prefix_loc{$_} } split ',', $ref);
+}
+
+#
+# put the key LRU incluing the city state info
+#
+
+sub lru_put
+{
+	my ($call, $ref) = @_;
+	my @s = USDB::get($call);
+	
+	if (@s) {
+		# this is deep magic, because this is a reference to static data, it
+        # must be copied.
+		my $h = { %{$ref->[1]} };
+		bless $h, ref $ref->[1];
+		$h->{city} = $s[0];
+		$h->{state} = $s[1];
+		$ref->[1] = $h;
+	} else {
+		$ref->[1]->{city} = $ref->[1]->{state} = "" unless exists $ref->[1]->{state};
+	}
+	
+	dbg("Prefix::lru_put $call -> ($ref->[1]->{city}, $ref->[1]->{state})") if isdbg('prefix');
+	$lru->put($call, $ref);
 }
 
 # 
@@ -153,7 +179,7 @@ sub matchprefix
 				my $percent = sprintf "%.1f", $hits * 100 / $misses;
 				dbg("Partial Prefix Cache Hit: $s Hits: $hits/$misses of $matchtotal = $percent\%");
 			}
-			$lru->put($_, $p) for @partials;
+			lru_put($_, $p) for @partials;
 			return @$p;
 		} else {
 			$misses++;
@@ -164,7 +190,6 @@ sub matchprefix
 				dbg("Partial prefix: $pref $s $part" );
 			} 
 			if (@out && $out[0] eq $s) {
-				$lru->put($_, \@out) for @partials;
 				return @out;
 			} 
 		}
@@ -205,10 +230,21 @@ LM:	foreach $call (split /,/, $calls) {
 			push @out, @$p;
 			next;
 		} else {
-			@nout =  get($call);
+			
+			# is it in the USDB, force a matchprefix to match?
+			my @s = USDB::get($call);
+			if (@s) {
+				@nout = get($call);
+				@nout = matchprefix($call) unless @nout;
+				$nout[0] = $call if @nout;
+			} else {
+				@nout =  get($call);
+			}
+
+			# now store it
 			if (@nout && $nout[0] eq $call) {
 				$misses++;
-				$lru->put($call, \@nout);
+				lru_put($call, \@nout);
 				dbg("got exact prefix: $nout[0]") if isdbg('prefix');
 				push @out, @nout;
 				next;
@@ -229,7 +265,7 @@ LM:	foreach $call (split /,/, $calls) {
 			if (@nout && $nout[0] eq $s) {
 				dbg("got exact multipart prefix: $call $s") if isdbg('prefix');
 				$misses++;
-				$lru->put($call, \@nout);
+				lru_put($call, \@nout);
 				push @out, @nout;
 				next;
 			}
@@ -249,7 +285,7 @@ LM:	foreach $call (split /,/, $calls) {
 				if (@try && $try[0] eq $s) {
 					dbg("got 3 part prefix: $call $s") if isdbg('prefix');
 					$misses++;
-					$lru->put($call, \@try);
+					lru_put($call, \@try);
 					push @out, @try;
 					next;
 				}
@@ -272,7 +308,7 @@ LM:	foreach $call (split /,/, $calls) {
 				if (@try && $try[0] eq $s) {
 					dbg("got 2 part prefix: $call $s") if isdbg('prefix');
 					$misses++;
-					$lru->put($call, \@try);
+					lru_put($call, \@try);
 					push @out, @try;
 					next;
 				}
@@ -288,7 +324,7 @@ LM:	foreach $call (split /,/, $calls) {
 			if (@nout) {
 				dbg("got prefix: $call = $nout[0]") if isdbg('prefix');
 				$misses++;
-				$lru->put($call, \@nout);
+				lru_put($call, \@nout);
 				push @out, @nout;
 				next;
 			}
@@ -333,16 +369,16 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 					}
 					if (@try && $try eq $try[0]) {
 						$misses++;
-						$lru->put($call, \@try);
+						lru_put($call, \@try);
 						push @out, @try;
 					} else {
 						$misses++;
-						$lru->put($call, \@nout);
+						lru_put($call, \@nout);
 						push @out, @nout;
 					}
 				} else {
 					$misses++;
-					$lru->put($call, \@nout);
+					lru_put($call, \@nout);
 					push @out, @nout;
 				}
 				next LM;
@@ -352,7 +388,7 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 		# we are a pirate!
 		@nout = matchprefix('Q');
 		$misses++;
-		$lru->put($call, \@nout);
+		lru_put($call, \@nout);
 		push @out, @nout;
 	}
 	
@@ -369,6 +405,7 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 # nc = dxcc
 # ni = itu
 # nz = zone
+# ns = state
 #
 
 sub to_ciz
@@ -377,18 +414,24 @@ sub to_ciz
 	my @out;
 	
 	foreach my $v (@_) {
-		if ($v =~ /^\d+$/) {	
+		if ($cmd ne 'ns' && $v =~ /^\d+$/) {	
 			push @out, $v unless grep $_ eq $v, @out;
 		} else {
-			my @pre = Prefix::extract($v);
-			return () unless @pre;
-			shift @pre;
-			foreach my $p (@pre) {
-				my $n = $p->dxcc if $cmd eq 'nc' ;
-				$n = $p->itu if $cmd eq 'ni' ;
-				$n = $p->cq if $cmd eq 'nz' ;
-				push @out, $n unless grep $_ eq $n, @out;
-			}
+			if ($cmd eq 'ns' && $v =~ /^[A-Z][A-Z]$/i) {
+				push @out, uc $v unless grep $_ eq uc $v, @out;
+			} else {
+				my @pre = Prefix::extract($v);
+				if (@pre) {
+					shift @pre;
+					foreach my $p (@pre) {
+						my $n = $p->dxcc if $cmd eq 'nc' ;
+						$n = $p->itu if $cmd eq 'ni' ;
+						$n = $p->cq if $cmd eq 'nz' ;
+						$n = $p->state if $cmd eq 'ns';
+						push @out, $n unless grep $_ eq $n, @out;
+					}
+				}
+			}			
 		}
 	}
 	return @out;
@@ -401,29 +444,27 @@ my %valid = (
 			 name => '0,Name',
 			 itu => '0,ITU',
 			 cq => '0,CQ',
+			 state => '0,State',
+			 city => '0,City',
 			 utcoff => '0,UTC offset',
 			 cont => '0,Continent',
 			);
 
-no strict;
 sub AUTOLOAD
 {
 	my $self = shift;
+	no strict;
 	my $name = $AUTOLOAD;
   
 	return if $name =~ /::DESTROY$/;
-	$name =~ s/.*:://o;
+	$name =~ s/^.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
-	if (@_) {
-		$self->{$name} = shift;
-	}
-	return $self->{$name};
+	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+	&$AUTOLOAD($self, @_);
 }
-use strict;
 
 #
 # return a prompt for a field

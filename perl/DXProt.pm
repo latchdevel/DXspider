@@ -1498,24 +1498,27 @@ sub send_announce
 
 	# obtain country codes etc 
 	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+	my ($ann_state, $org_state) = ("", "");
 	my @dxcc = Prefix::extract($_[0]);
 	if (@dxcc > 0) {
 		$ann_dxcc = $dxcc[1]->dxcc;
 		$ann_itu = $dxcc[1]->itu;
 		$ann_cq = $dxcc[1]->cq;						
+		$ann_state = $dxcc[1]->state;
 	}
 	@dxcc = Prefix::extract($_[4]);
 	if (@dxcc > 0) {
 		$org_dxcc = $dxcc[1]->dxcc;
 		$org_itu = $dxcc[1]->itu;
 		$org_cq = $dxcc[1]->cq;						
+		$org_state = $dxcc[1]->state;
 	}
 
 	if ($self->{inannfilter}) {
 		my ($filter, $hops) = 
 			$self->{inannfilter}->it(@_, $self->{call}, 
 									 $ann_dxcc, $ann_itu, $ann_cq,
-									 $org_dxcc, $org_itu, $org_cq);
+									 $org_dxcc, $org_itu, $org_cq, $ann_state, $org_state);
 		unless ($filter) {
 			dbg("PCPROT: Rejected by input announce filter") if isdbg('chanerr');
 			return;
@@ -1875,7 +1878,7 @@ sub send_route
 		if (!$self->{isolate} && $self->{routefilter}) {
 			$filter = undef;
 			if ($r) {
-				($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
+				($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq, $self->{state}, $r->{state});
 				if ($filter) {
 					push @rin, $r;
 				} else {
@@ -1976,7 +1979,7 @@ sub in_filter_route
 	my ($filter, $hops) = (1, 1);
 	
 	if ($self->{inroutefilter}) {
-		($filter, $hops) = $self->{inroutefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
+		($filter, $hops) = $self->{inroutefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq, $self->state, $r->state);
 		dbg("PCPROT: $self->{call}/" . $r->call . ' rejected by in_filter_route') if !$filter && isdbg('chanerr');
 	}
 	return $filter;

@@ -86,26 +86,29 @@ $lrusize = 2000;
 		  build => '1,Build',
 		 );
 
-no strict;
+#no strict;
 sub AUTOLOAD
 {
 	my $self = shift;
+	no strict;
 	my $name = $AUTOLOAD;
   
 	return if $name =~ /::DESTROY$/;
-	$name =~ s/.*:://o;
+	$name =~ s/^.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
-	if (@_) {
-		$self->{$name} = shift;
-	}
-	return $self->{$name};
+	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
+	&$AUTOLOAD($self, @_);
+#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+#	if (@_) {
+#		$self->{$name} = shift;
+#	}
+#	return $self->{$name};
 }
 
-use strict;
+#use strict;
 
 #
 # initialise the system

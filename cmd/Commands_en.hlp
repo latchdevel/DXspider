@@ -32,9 +32,11 @@ You can use any of the following things in this line:-
   origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   origin_itu <prefixes or numbers>     or: G,GM,GW
   origin_zone <prefixes or numbers>
+  origin_state <states>                eg: VA,NH,RI,NH
   by_dxcc <prefixes or numbers>
   by_itu <prefixes or numbers>
   by_zone <prefixes or numbers>
+  by_state <states>
   channel <prefixes>
   wx 1                     filter WX announces
   dest <prefixes>          eg: 6MUK,WDX      (distros)
@@ -46,6 +48,10 @@ some examples:-
   (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
 or
   acc/ann by G,M,2 
+
+for american states
+
+  acc/ann by_state va,nh,ri,nh
 
 You can use the tag 'all' to accept everything eg:
 
@@ -74,15 +80,24 @@ You can use any of the following things in this line:-
   call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   call_itu <prefixes or numbers>     or: G,GM,GW
   call_zone <prefixes or numbers>
+  call_state <states>                eg: VA,NH,RI,NH
   origin <prefixes>      really the interface it came in on
   origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   origin_itu <prefixes or numbers>     or: G,GM,GW
   origin_zone <prefixes or numbers>
+  origin_state <states>                eg: VA,NH,RI,NH
 
 some examples:-
 
   acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
   acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+
+you can now use 'by' as a synonym for 'call' so:
+
+  by = call
+  by_dxcc = call_dxcc 
+
+and so on
 
 You can use the tag 'all' to accept everything eg:
 
@@ -106,11 +121,15 @@ You can use any of the following things in this line:-
   call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   call_itu <prefixes or numbers>     or: G,GM,GW
   call_zone <prefixes or numbers>
+  call_state <states>                eg: VA,NH,RI,ME
   by_dxcc <prefixes or numbers>
   by_itu <prefixes or numbers>
   by_zone <prefixes or numbers>
+  by_state <states>                eg: VA,NH,RI,ME
   origin <prefixes>
   channel <prefixes>
+
+'call' means the callsign that has spotted 'by' whoever.
 
 For frequencies, you can use any of the band names defined in
 SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
@@ -126,6 +145,10 @@ some examples:-
 You can use the tag 'all' to accept everything, eg:
 
   acc/spot 3 all
+
+for US states 
+
+  acc/spots by_state VA,NH,RI,MA,ME
 
 but this probably for advanced users...
 
@@ -598,7 +621,7 @@ you have specified is taken (ie reject means ignore it and accept
 means gimme it).
 
 The important thing to remember is that if you specify a 'reject'
-filter (all the lines in it say 'reject/spots' (for instance) then if
+filter (all the lines in it say 'reject/spots' (for instance)) then if
 a spot comes in that doesn't match any of the lines then you will get
 it BUT if you specify an 'accept' filter then any spots that don't
 match are dumped. For example if I have a one line accept filter:-
@@ -624,6 +647,10 @@ you are confortable with the way it works. Yes, you can mix them
 (actually you can have an accept AND a reject on the same line) but
 don't try this at home until you can analyse the results that you get
 without ringing up the sysop for help.
+
+Another useful addition now is filtering by US state
+
+  accept/spots by_state VA,NH,RI,ME
 
 You can arrange your filter lines into logical units, either for your
 own understanding or simply convenience. I have one set frequently:-
@@ -954,9 +981,11 @@ You can use any of the following things in this line:-
   origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   origin_itu <prefixes or numbers>     or: G,GM,GW
   origin_zone <prefixes or numbers>
+  origin_state <states>                eg: VA,NH,RI,ME
   by_dxcc <prefixes or numbers>
   by_itu <prefixes or numbers>
   by_zone <prefixes or numbers>
+  by_state <states>                eg: VA,NH,RI,ME
   channel <prefixes>
   wx 1                     filter WX announces
   dest <prefixes>          eg: 6MUK,WDX      (distros)
@@ -996,12 +1025,16 @@ You can use any of the following things in this line:-
   call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   call_itu <prefixes or numbers>     or: G,GM,GW
   call_zone <prefixes or numbers>
+  call_state <states>                eg: VA,NH,RI,ME
   by_dxcc <prefixes or numbers>
   by_itu <prefixes or numbers>
   by_zone <prefixes or numbers>
+  by_state <states>                eg: VA,NH,RI,ME
   origin <prefixes>
   channel <prefixes>
 
+'call' means the callsign that has spotted 'by' whoever.
+ 
 For frequencies, you can use any of the band names defined in
 SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
 thus: hf/ssb. You can also just have a simple range like: 0/30000 -
@@ -1032,10 +1065,12 @@ You can use any of the following things in this line:-
   call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   call_itu <prefixes or numbers>     or: G,GM,GW
   call_zone <prefixes or numbers>
+  call_state <states>                eg: VA,NH,RI,ME
   origin <prefixes>      really the interface it came in on
   origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
   origin_itu <prefixes or numbers>     or: G,GM,GW
   origin_zone <prefixes or numbers>
+  origin_state <states>                eg: VA,NH,RI,ME
 
 some examples:-
 
@@ -1044,6 +1079,8 @@ some examples:-
 You can use the tag 'all' to reject everything eg:
 
   rej/route all     (equiv to [very] restricted mode)
+
+as with ACCEPT/ROUTE 'by' is now a synonym for 'call'.
 
 === 8^REJECT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the

@@ -1506,19 +1506,22 @@ sub import_one
 	return @out;
 }
 
-no strict;
+#no strict;
 sub AUTOLOAD
 {
 	my $self = shift;
+	no strict;
 	my $name = $AUTOLOAD;
 	return if $name =~ /::DESTROY$/;
-	$name =~ s/.*:://o;
+	$name =~ s/^.*:://o;
 	
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
-	@_ ? $self->{$name} = shift : $self->{$name} ;
+	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
+	&$AUTOLOAD($self, @_);
+#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+#	@_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 1;

@@ -28,7 +28,12 @@ $dbfn = "$main::data/usdb.v1";
 sub init
 {
 	end();
-	tie %db, 'DB_File', $dbfn and $present = 1;
+	if (tie %db, 'DB_File', $dbfn, O_RDONLY, 0664, $DB_BTREE) {
+		$present = 1;
+		dbg("US Database loaded");
+	} else {
+		dbg("US Database not loaded");
+	}
 }
 
 sub end
@@ -122,6 +127,7 @@ sub load
 	
 	untie %dbn;
 	rename "$dbfn.new", $dbfn;
+	return ();
 }
 
 1;

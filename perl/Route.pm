@@ -35,6 +35,8 @@ use vars qw(%list %valid $filterdef);
 		  dxcc => '0,Country Code',
 		  itu => '0,ITU Zone',
 		  cq => '0,CQ Zone',
+		  state => '0,State',
+		  city => '0,City',
 		 );
 
 $filterdef = bless ([
@@ -44,9 +46,16 @@ $filterdef = bless ([
 			  ['channel_itu', 'ni', 2],
 			  ['channel_zone', 'nz', 3],
 			  ['call', 'c', 4],
+			  ['by', 'c', 4],
 			  ['call_dxcc', 'nc', 5],
+			  ['by_dxcc', 'nc', 5],
 			  ['call_itu', 'ni', 6],
+			  ['by_itu', 'ni', 6],
 			  ['call_zone', 'nz', 7],
+			  ['by_zone', 'nz', 7],
+			  ['channel_state', 'ns', 8],
+			  ['call_state', 'ns', 9],
+			  ['by_state', 'ns', 9],
 			 ], 'Filter::Cmd');
 
 
@@ -63,7 +72,9 @@ sub new
 	if (@dxcc > 0) {
 		$self->{dxcc} = $dxcc[1]->dxcc;
 		$self->{itu} = $dxcc[1]->itu;
-		$self->{cq} = $dxcc[1]->cq;						
+		$self->{cq} = $dxcc[1]->cq;
+		$self->{state} = $dxcc[1]->state;
+		$self->{city} = $dxcc[1]->city;
 	}
 	$self->{flags} = here(1);
 	
@@ -370,16 +381,19 @@ sub field_prompt
 sub AUTOLOAD
 {
 	my $self = shift;
+	no strict;
 	my $name = $AUTOLOAD;
 	return if $name =~ /::DESTROY$/;
-	$name =~ s/.*:://o;
+	$name =~ s/^.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
-#	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
-    @_ ? $self->{$name} = shift : $self->{$name} ;
+	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
+	&$AUTOLOAD($self, @_);
+
+#    @_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 1;

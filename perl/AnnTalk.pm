@@ -34,6 +34,8 @@ $filterdef = bless ([
 			  ['origin_dxcc', 'nc', 10],
 			  ['origin_itu', 'ni', 11],
 			  ['origin_zone', 'nz', 12],
+			  ['by_state', 'nz', 13],
+			  ['origin_state', 'nz', 14],
 			 ], 'Filter::Cmd');
 
 use vars qw($VERSION $BRANCH);

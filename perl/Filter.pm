@@ -494,6 +494,11 @@ sub parse
 							my @pre = Prefix::to_ciz($cmd, @val);
 							return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
 							$s .= "(" . join(' || ', map {"\$r->[$fref->[2]]==$_"} @pre) . ")";
+						} elsif ($fref->[1] =~ /^ns$/ ) {    # for DXCC, ITU, CQ Zone    
+							my $cmd = $fref->[1];
+							my @pre = Prefix::to_ciz($cmd, @val);
+							return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
+							$s .= "(" . "!\$USDB::present || grep \$r->[$fref->[2]] eq \$_, qw(" . join(' ' ,map {uc} @pre) . "))";
 						} elsif ($fref->[1] eq 'r') {
 							my @t;
 							for (@val) {

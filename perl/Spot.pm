@@ -50,7 +50,10 @@ $filterdef = bless ([
 			  ['call_zone', 'nz', 9],
 			  ['by_itu', 'ni', 10],
 			  ['by_zone', 'nz', 11],
-			  ['channel', 'c', 12],
+			  ['call_state', 'ns', 12],
+			  ['by_state', 'ns', 13],
+			  ['channel', 'c', 14],
+					 
 			 ], 'Filter::Cmd');
 $totalspots = $hfspots = $vhfspots = 0;
 
@@ -122,19 +125,28 @@ sub prepare
 	# remove leading and trailing spaces
 	$_[3] = unpad($_[3]);
 	
+	my ($spotted_dxcc, $spotted_itu, $spotted_cq, $spotted_state) = (666, 0, 0, "");
+	my ($spotter_dxcc, $spotter_itu, $spotter_cq, $spotter_state) = (666, 0, 0, "");
+	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @dxcc = Prefix::extract($out[1]);
-	my $spotted_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 666;
-	my $spotted_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
-	my $spotted_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
+	if (@dxcc) {
+		$spotted_dxcc = $dxcc[1]->dxcc();
+		$spotted_itu = $dxcc[1]->itu();
+		$spotted_cq = $dxcc[1]->cq();
+		$spotted_state = $dxcc[1]->state();
+	}
 	push @out, $spotted_dxcc;
 	@dxcc = Prefix::extract($out[4]);
-	my $spotter_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 666;
-	my $spotter_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
-	my $spotter_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
+	if (@dxcc) {
+		$spotter_dxcc = $dxcc[1]->dxcc();
+		$spotter_itu = $dxcc[1]->itu();
+		$spotter_cq = $dxcc[1]->cq();
+		$spotter_state = $dxcc[1]->state();
+	}
 	push @out, $spotter_dxcc;
 	push @out, $_[5];
-	return (@out, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
+	return (@out, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq, $spotted_state, $spotter_state);
 }
 
 sub add
@@ -317,7 +329,7 @@ sub dup
 	unpad($text);
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^a-zA-Z0-9]//g;
-	for (0,60,120,180,240,300) {
+	for (-60, -120, -180, -240, 0, 60, 120, 180, 240, 300) {
 		my $dt = $d - $_;
 		my $dupkey = "X$freq|$call|$dt|\L$text";
 		return 1 if DXDupe::find($dupkey);
