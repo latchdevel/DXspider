@@ -66,7 +66,7 @@ sub start
 	$self->send_file($main::motd) if (-e $main::motd);
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv || 0;
-	$self->{lang} = $user->lang || 'en';
+	$self->{lang} = $user->lang || $main::lang || 'en';
 	$self->{pagelth} = $user->pagelth || 20;
 	$self->{priv} = 0 if $line =~ /^(ax|te)/; # set the connection priv to 0 - can be upgraded later
 	$self->{consort} = $line;	# save the connection type
@@ -118,7 +118,7 @@ sub start
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
-	$self->send($self->msg('pr', $call));
+	$self->prompt;
 
 	# decide on echo
 	if (!$user->wantecho) {
@@ -427,7 +427,7 @@ sub finish
 sub prompt
 {
 	my $self = shift;
-	$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call));
+	$self->send($self->msg($self->here ? 'pr' : 'pr2', $self->call, cldate($main::systime), ztime($main::systime)));
 }
 
 # broadcast a message to all users [except those mentioned after buffer]

@@ -28,6 +28,7 @@ package DXChannel;
 use Msg;
 use DXM;
 use DXUtil;
+use DXVars;
 use DXDebug;
 use Filter;
 

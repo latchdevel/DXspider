@@ -25,7 +25,7 @@ BEGIN {
 
 	# try to create and lock a lockfile (this isn't atomic but 
 	# should do for now
-	$lockfn = "$root/perl/cluster.lock";       # lock file name
+	my $lockfn = "$root/perl/cluster.lock";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -37,6 +37,7 @@ BEGIN {
 	print CLLOCK "$$\n";
 	close CLLOCK;
 }
+
 
 use Msg;
 use DXVars;
@@ -71,6 +72,10 @@ use POSIX ":sys_wait_h";
 use Local;
 
 package main;
+
+#use strict;
+#use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects $zombies $root
+#		   $lang $myalias @debug $userfn $clusteraddr $clusterport $mycall $decease );
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
@@ -240,9 +245,10 @@ sub cease
 sub reap
 {
 	my $cpid;
-	while (($cpid = waitpid(1, &WNOHANG)) != -1) {
+	while (($cpid = waitpid(-1, WNOHANG)) != -1) {
 		dbg('reap', "cpid: $cpid");
 		@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
+		$zombies-- if $zombies > 0;
 	}
 	dbg('reap', "cpid: $cpid");
 }
@@ -299,6 +305,7 @@ sub uptime
 #############################################################
 
 $starttime = $systime = time;
+$lang = 'en' unless $lang;
 
 # open the debug file, set various FHs to be unbuffered
 dbginit();
@@ -335,7 +342,7 @@ dbg('err', "load badwords: " . (BadWords::load or "Ok"));
 $SIG{INT} = \&cease;
 $SIG{TERM} = \&cease;
 $SIG{HUP} = 'IGNORE';
-$SIG{CHLD} = \&reap;
+$SIG{CHLD} = sub { $zombies++ };
 
 $SIG{PIPE} = sub { 	dbg('err', "Broken PIPE signal received"); };
 $SIG{IO} = sub { 	dbg('err', "SIGIO received"); };
@@ -403,19 +410,17 @@ dbg('err', "orft we jolly well go ...");
 #open(DB::OUT, "|tee /tmp/aa");
 
 for (;;) {
-	my $timenow;
 #	$DB::trace = 1;
 	
 	Msg->event_loop(1, 0.1);
-	$timenow = time;
+	my $timenow = time;
 	process_inqueue();			# read in lines from the input queue and despatch them
 #	$DB::trace = 0;
 	
 	# do timed stuff, ongoing processing happens one a second
 	if ($timenow != $systime) {
+		reap if $zombies;
 		$systime = $timenow;
-		$cldate = &cldate();
-		$ztime = &ztime();
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
