@@ -100,7 +100,7 @@ package main;
 use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
-			$clusterport $mycall $decease $is_win $routeroot $me
+			$clusterport $mycall $decease $is_win $routeroot $me $reqreg
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -109,6 +109,7 @@ $version = "1.49";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
+$reqreg = 0;					# 1 = registration required, 2 = deregister people
 
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
