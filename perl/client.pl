@@ -325,9 +325,9 @@ $waitedpid = 0;
 # deal with args
 #
 
-$call = uc shift @ARGV;
+$call = uc shift @ARGV if @ARGV;
 $call = uc $myalias if !$call;
-$connsort = lc shift @ARGV;
+$connsort = lc shift @ARGV if @ARGV;
 $connsort = 'local' if !$connsort;
 
 $loginreq = $call eq 'LOGIN';
