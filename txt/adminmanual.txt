@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.32 February 2001
+  Version 1.33 February 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -140,6 +140,7 @@
      11.4 The Aliases file
      11.5 Console.pl
      11.6 Updating kepler data
+     11.7 The QRZ callbook
 
   12. CVS
 
@@ -326,6 +327,7 @@
 
   +o  Net-Telnet-3.02.tar.gz
 
+
   +o  Curses-1.05.tar.gz
 
   +o  Time-HiRes-01.20.tar.gz
@@ -392,7 +394,10 @@
 
 
 
-       # vi /etc/group                (or your favorite editor)
+  # vi /etc/group                (or your favorite editor)
+
+
+
 
   You also need to add some others to the group, including your own
   callsign (this will be used as an alias) and root.  The finished line
@@ -459,7 +464,6 @@
   alter the text of any section.  Some of the lines look a little odd.
   Take this line for example ....
 
-
   $myemail = "ianmaude\@btinternet.com";
 
 
@@ -522,11 +526,7 @@
 
   If all is well then login on another term or console as _s_y_s_o_p and cd
   to /spider/perl.  Now issue the following command ...
-
-
-
-
-  $ client.pl
+       $ client.pl
 
 
 
@@ -2572,6 +2572,17 @@
 
 
 
+  1111..77..  TThhee QQRRZZ ccaallllbbooookk
+
+  The command _s_h_/_q_r_z will only work once you have followed a few simple
+  steps.  First you need to get a user ID and password from qrz.com.
+  Simply go to the site and create one.  Secondly you need to copy the
+  file /spider/perl/Internet.pm to /spider/local and alter it to match
+  your user ID and password.  You also at this point need to set
+  $allow=1 to complete the setup.  Many thanks to Fred Lloyd, the
+  proprieter of qrz.com for allowing this access.
+
+
   1122..  CCVVSS
 
   CVS stands for "Concurrent Versions System" and the CVS for DXSpider
@@ -2626,6 +2637,7 @@
   If you are wanting to update Spider then cd to /tmp
 
 
+
   The next step will create a brand new 'spider' directory in your
   current directory.
 
@@ -2635,7 +2647,6 @@
 
 
   This command is all on one line.
-
 
 
   Hopefully your screen should show you downloading files.  The -z3
@@ -2693,7 +2704,6 @@
   any of the perl scripts have been altered or added, again, CVS will
   tell you.
 
-
   You will find any changes documented in the /spider/Changes file.
 
 
@@ -2704,6 +2714,8 @@
   commands that are useful for a sysop.  These are listed below in
   alphabetical order.  The number in brackets following the command name
   is the permissions level needed to use the command.
+
+
   1133..11..  aacccceepptt//aannnnoouunnccee ((00))
 
   aacccceepptt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for announce
@@ -2758,16 +2770,12 @@
 
   This filter would only allow announces that were posted buy UK
   stations.  You can use the tag 'all' to accept everything eg:
-
-
-
          acc/ann all
 
 
 
 
   but this probably for advanced users...
-
 
 
   1133..22..  aacccceepptt//aannnnoouunnccee ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
@@ -2828,13 +2836,15 @@
   thus: hf/ssb. You can also just have a simple range like: 0/30000 -
   this is more efficient than saying simply: freq HF (but don't get too
   hung up about that)
-
   some examples:-
 
 
 
          acc/spot 1 on hf/cw
          acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+
+
 
   You can use the tag 'all' to accept everything, eg:
 
@@ -2901,7 +2911,6 @@
   See HELP FILTER for information.
 
 
-
   1133..66..  aacccceepptt//wwccyy ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
 
   aacccceepptt//wwccyy <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> WCY filter sysop version
@@ -2957,6 +2966,8 @@
   See HELP FILTER for information.
 
 
+
+
   1133..88..  aacccceepptt//wwwwvv ((eexxtteennddeedd ffoorr ssyyssooppss)) ((88))
 
   aacccceepptt//wwwwvv <<ccaallll>> [[iinnppuutt]] [[00--99]] <<ppaatttteerrnn>> WWV filter sysop version
@@ -2967,12 +2978,11 @@
 
 
 
+         accept/wwv db0sue-7 1 by_zone 4
+         accept/wwv node_default all
+         set/hops node_default 10
 
-    accept/wwv db0sue-7 1 by_zone 4
-    accept/wwv node_default all
-    set/hops node_default 10
-
-    accept/wwv user_default by W,K
+         accept/wwv user_default by W,K
 
 
 
@@ -3022,6 +3032,8 @@
   This will disconnect you from the cluster
 
 
+
+
   1133..1144..  ccaattcchhuupp ((55))
 
   ccaattcchhuupp <<nnooddee__ccaallll>> AAllll||[[<<mmssggnnoo>> ......]] Mark a message as sent
@@ -3033,6 +3045,8 @@
   file, all outstanding non-private messages will be forwarded to them.
   This may well be ALL the non-private messages. You can prevent this by
   using these commmands:-
+
+
 
          catchup GB7DJK all
          catchup GB7DJK 300 301 302 303 500-510
@@ -3086,7 +3100,7 @@
 
 
 
-         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+    acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
 
@@ -3152,7 +3166,6 @@
   No checking is done to see if the any of the chained databases exist,
   in fact it is usually better to do the above statement first then do
   each of the chained databases.
-
   Databases can exist offsite. To define a database that lives on
   another node do:
 
@@ -3164,7 +3177,6 @@
   DBCREATE qsl chain gb7dxc
 
   To see what databases have been defined do:
-
 
   DBAVAIL (or it will have been aliased to SHOW/COMMAND)
 
@@ -3231,7 +3243,6 @@
 
   There is no warning, no comeback, no safety net.
 
-
   You have been warned.
 
 
@@ -3297,7 +3308,6 @@
 
   List the messages in the messages directory.
 
-
   If there is a 'p' one space after the message number then it is a
   personal message. If there is a '-' between the message number and the
 
@@ -3352,9 +3362,11 @@
 
 
 
-          DX FR0G 144.600
-          DX 144.600 FR0G
-          DX 144600 FR0G
+
+
+     DX FR0G 144.600
+     DX 144.600 FR0G
+     DX 144600 FR0G
 
 
 
@@ -3364,7 +3376,7 @@
 
 
 
-     DX FR0G 144600 this is a test
+          DX FR0G 144600 this is a test
 
 
 
@@ -3414,6 +3426,8 @@
 
   BE WARNED: this will write to any file you have write access to. No
   check is made on the filename (if any) that you specify.
+
+
 
 
   1133..2299..  ffoorrwwaarrdd//llaattlloonngg ((88))
@@ -3479,6 +3493,9 @@
   the sysop).
 
 
+
+
+
   1133..3344..  kkiillll ((55))
 
   kkiillll <<mmssggnnoo>> [[<<mmssggnnoo>> ......]] Remove or erase a message from the system
@@ -3495,6 +3512,7 @@
   1133..3355..  kkiillll ffuullll ((55))
 
   kkiillll ffuullll <<mmssggnnoo>> [[<<mmssggnnoo>>]] Delete a message from the whole cluster
+
 
   Delete a message (usually a 'bulletin') from the whole cluster system.
 
@@ -3544,7 +3562,6 @@
   each message.  If any of them match then that message is immediately
   deleted on receipt.
 
-
   1133..4400..  llooaadd//bbaaddwwoorrddss ((99))
 
   llooaadd//bbaaddwwoorrddss Reload the badwords file
@@ -3557,9 +3574,6 @@
   any of these words are used on the announce, dx and talk commands. The
   words can be one or more on a line, lines starting with '#' are
   ignored.
-
-
-
 
 
   1133..4411..  llooaadd//bbaannddss ((99))
@@ -3628,6 +3642,7 @@
   recently been added (the last 2 days for spots and last month for WWV
   data).
 
+
   1133..4477..  mmssgg ((99))
 
   mmssgg <<ccmmdd>> <<mmssggnnoo>> [[ddaattaa ......]] Alter various message parameters
@@ -3679,7 +3694,6 @@
   You can also use in the same way as a talk command to a connected user
   but without any processing, added of "from <blah> to <blah>" or
   whatever.
-
   pc G1TLH Try doing that properly!!!
 
 
@@ -3693,6 +3707,8 @@
   good indication of the quality of the link.  The actual time it takes
   is output to the console in seconds.  Any visible cluster node can be
   PINGed.
+
+
 
   1133..5500..  rrccmmdd ((11))
 
@@ -3743,19 +3759,19 @@
 
 
 
-         info <string>            eg: iota or qsl
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-         wx 1                     filter WX announces
-         dest <prefixes>          eg: 6MUK,WDX      (distros)
 
+    info <string>            eg: iota or qsl
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <numbers>
+    origin_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    channel <prefixes>
+    wx 1                     filter WX announces
+    dest <prefixes>          eg: 6MUK,WDX      (distros)
 
 
 
@@ -3816,29 +3832,19 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-    on <range>             same as 'freq'
-    call <prefixes>        eg: G,PA,HB9
-    info <string>          eg: iota or qsl
-    by <prefixes>
-    call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-    call_itu <numbers>
-    call_zone <numbers>
-    by_dxcc <numbers>
-    by_itu <numbers>
-    by_zone <numbers>
-    origin <prefixes>
-    channel <prefixes>
+         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+         on <range>             same as 'freq'
+         call <prefixes>        eg: G,PA,HB9
+         info <string>          eg: iota or qsl
+         by <prefixes>
+         call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+         call_itu <numbers>
+         call_zone <numbers>
+         by_dxcc <numbers>
+         by_itu <numbers>
+         by_zone <numbers>
+         origin <prefixes>
+         channel <prefixes>
 
 
 
@@ -3882,11 +3888,15 @@
 
 
 
-         reject/spot db0sue-7 1 by_zone 14,15,16
-         reject/spot node_default all
-         set/hops node_default 10
 
-         reject/spot user_default by G,M,2
+
+
+
+    reject/spot db0sue-7 1 by_zone 14,15,16
+    reject/spot node_default all
+    set/hops node_default 10
+
+    reject/spot user_default by G,M,2
 
 
 
@@ -3946,15 +3956,18 @@
 
 
 
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
+
+
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <numbers>
+    origin_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    channel <prefixes>
+
 
 
 
@@ -4008,6 +4021,7 @@
   You can also use all the extra qualifiers such as RR, PRIVATE,
   NOPRIVATE, B that you can use with the SEND command (see SEND for
   further details)
+
 
 
   1133..6622..  sseenndd ((00))
@@ -4075,6 +4089,7 @@
   field of a dx spot being propagated
 
 
+
   Setting a word as 'baddx' will prevent spots with that word in the
   callsign field of a DX spot from going any further. They will not be
   displayed and they will not be sent onto other nodes.
@@ -4089,6 +4104,8 @@
 
 
   To allow a word again, use the following command ...
+
+
 
          unset/baddx VIDEO
 
@@ -4156,6 +4173,8 @@
          unset/badspotter VE2STN
 
 
+
+
   will allow spots from him again.
 
   Use with extreme care. This command may well be superceded by
@@ -4203,8 +4222,6 @@
   Some logging programs do not like the additional information at the
   end of a DX spot.  If this is the case, use the _u_n_s_e_t_/_d_x_g_r_i_d command
   to remove the grid squares.
-
-
   1133..7744..  sseett//ddxxnneett ((55))
 
   sseett//ddxxnneett <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a DXNet
@@ -4271,9 +4288,9 @@
 
 
 
-       eg:
-         set/hops gb7djk ann 10
-         set/hops gb7mbc spots 20
+  eg:
+    set/hops gb7djk ann 10
+    set/hops gb7mbc spots 20
 
 
 
@@ -4285,7 +4302,6 @@
   1133..7799..  sseett//iissoollaattee ((99))
 
   sseett//iissoollaattee <<nnooddee ccaallll>> Isolate a node from the rest of the network
-
 
 
   Connect a node to your system in such a way that you are a full
@@ -4338,7 +4354,6 @@
   example:-
 
 
-
          SET/LOCATION 52 22 N 0 57 E
 
 
@@ -4352,6 +4367,7 @@
 
   Show users and nodes when they log in and out of the local cluster.
   You can stop these messages by using the _u_n_s_e_t_/_l_o_g_i_n_i_n_f_o command.
+
 
 
   1133..8844..  sseett//lloocckkoouutt ((99))
@@ -4401,6 +4417,9 @@
   To see what your nodes are set to, use the _s_h_o_w_/_n_o_d_e_s command.
 
 
+
+
+
   1133..8877..  sseett//oobbssccoouunntt ((99))
 
   sseett//oobbssccoouunntt <<ccoouunntt>> <<nnooddee ccaallll>> Set the 'pump-up' obsolescence
@@ -4420,6 +4439,8 @@
   If a ping is heard then the obscount is reset to the full value. Using
   default values, if a node has not responded to a ping within 15
   minutes, it is disconnected.
+
+
   1133..8888..  sseett//ppaaggee ((00))
 
   sseett//ppaaggee <<nn>> Set the number of lines per page
@@ -4464,6 +4485,7 @@
   in future, to affect routing decisions. The default interval is 300
   secs or 5 minutes.
 
+
   You can use this command to set a different interval. Please don't.
 
   But if you do the value you enter is treated as minutes up 60 and
@@ -4485,14 +4507,13 @@
 
 
 
-
-    0 - normal user
-    1 - allow remote nodes normal user RCMDs
-    5 - various privileged commands (including shutdown, but not disc-
-        connect), the normal level for another node.
-    8 - more privileged commands (including disconnect)
-    9 - local sysop privilege. DO NOT SET ANY REMOTE USER OR NODE TO THIS
-        LEVEL.
+         0 - normal user
+         1 - allow remote nodes normal user RCMDs
+         5 - various privileged commands (including shutdown, but not disc-
+             connect), the normal level for another node.
+         8 - more privileged commands (including disconnect)
+         9 - local sysop privilege. DO NOT SET ANY REMOTE USER OR NODE TO THIS
+             LEVEL.
 
 
 
@@ -4527,7 +4548,6 @@
 
 
          SET/QRA JO02LQ
-
 
 
 
@@ -4597,6 +4617,7 @@
   sshhooww//bbaaddnnooddee Show all the bad nodes in the system
 
 
+
   Display all the bad node callsigns in the system, see SET/BADNODE for
   more information.
 
@@ -4638,35 +4659,60 @@
 
 
 
-       on <band>       - eg 160m 20m 2m 23cm 6mm
-       on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
 
-       <number>        - the number of spots you want
-       <from>-<to>     - <from> spot no <to> spot no in
-                         the selected list
 
-       <prefix>        - for a spotted callsign beginning with <prefix>
-       *<suffix>       - for a spotted callsign ending in <suffix>
-       *<string>*      - for a spotted callsign containing <string>
 
-       day <number>    - starting <number> days ago
-       day <from>-<to> - <from> days <to> days ago
 
-       info <text>     - any spots containing <text> in the info or remarks
 
-       by <call>       - any spots spotted by <call> (spotter <call>
-                               is the same).
 
-       qsl             - this automatically looks for any qsl info on the call
-                         held in the spot database.
 
-       iota [<iota>]   - If the iota island number is missing it will
-                         look for the string iota and anything which looks like
-                         an iota island number. If you specify then it will look
-                         for that island.
 
-       qra [<locator>] - this will look for the specific locator if
-                         you specify one or else anything that looks like a locator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  on <band>       - eg 160m 20m 2m 23cm 6mm
+  on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+
+  <number>        - the number of spots you want
+  <from>-<to>     - <from> spot no <to> spot no in
+                    the selected list
+
+  <prefix>        - for a spotted callsign beginning with <prefix>
+  *<suffix>       - for a spotted callsign ending in <suffix>
+  *<string>*      - for a spotted callsign containing <string>
+
+  day <number>    - starting <number> days ago
+  day <from>-<to> - <from> days <to> days ago
+
+  info <text>     - any spots containing <text> in the info or remarks
+
+  by <call>       - any spots spotted by <call> (spotter <call>
+                          is the same).
+
+  qsl             - this automatically looks for any qsl info on the call
+                    held in the spot database.
+
+  iota [<iota>]   - If the iota island number is missing it will
+                    look for the string iota and anything which looks like
+                    an iota island number. If you specify then it will look
+                    for that island.
+
+  qra [<locator>] - this will look for the specific locator if
+                    you specify one or else anything that looks like a locator.
 
 
 
@@ -4684,6 +4730,10 @@
           SH/DX iota eu-064
           SH/DX qra jn86
 
+
+
+
+
   1133..110055..  sshhooww//ddxxcccc ((00))
 
   sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
@@ -4698,8 +4748,10 @@
 
 
 
-          SH/DXCC G
-          SH/DXCC W on 20m info iota
+
+
+     SH/DXCC G
+     SH/DXCC W on 20m info iota
 
 
 
@@ -4750,6 +4802,7 @@
 
   sshhooww//ffiilltteerr <<ccaallllssiiggnn>> Show the filters set by <callsign>
 
+
   A sysop can look at any filters that have been set.
 
 
@@ -4762,7 +4815,6 @@
   This command shows the hop counts set up for a node. You can specify
   which category you want to see. If you leave the category out then all
   the categories will be listed.
-
 
   1133..111100..  sshhooww//iissoollaattee ((11))
 
@@ -4814,10 +4866,8 @@
 
 
 
-
-
-    SH/MOON
-    SH/MOON G1TLH W5UN
+         SH/MOON
+         SH/MOON G1TLH W5UN
 
 
 
@@ -4877,19 +4927,14 @@
 
 
 
-
-
-
-
-
-    RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
-    Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
-    Location                       Lat / Long           Azim
-    East Dereham, Norfolk          52 41 N 0 57 E         47
-    United-States-W                43 0 N 87 54 W        299
-    UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
-    18 23 11.5 -35  mS0+ mS2   S3
-    19  0 11.2 -41  mS0+ mS2   S3
+         RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
+         Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
+         Location                       Lat / Long           Azim
+         East Dereham, Norfolk          52 41 N 0 57 E         47
+         United-States-W                43 0 N 87 54 W        299
+         UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
+         18 23 11.5 -35  mS0+ mS2   S3
+         19  0 11.2 -41  mS0+ mS2   S3
 
 
 
@@ -4902,9 +4947,6 @@
 
 
          SH/MUF W 24
-
-
-
 
   will get you the above display, but with the next 24 hours worth of
   propagation data.
@@ -4946,8 +4988,6 @@
 
 
 
-
-
   1133..111177..  sshhooww//pprrooggrraamm ((55))
 
   sshhooww//pprrooggrraamm Show the locations of all the included program modules
@@ -4973,9 +5013,6 @@
 
        SH/QRA IO92QL
        SH/QRA JN06 IN73
-
-
-
 
   The first example will show the distance and bearing to the locator
   from yourself, the second example will calculate the distance and
@@ -5014,7 +5051,7 @@
 
 
 
-    sh/route n2tly
+         sh/route n2tly
 
 
 
@@ -5041,6 +5078,7 @@
   limits.
 
   Each pass in a period is separated with a row of '-----' characters
+
 
   So for example:-
 
@@ -5107,6 +5145,7 @@
   sshhooww//wwwwvv <<nn>> Show the last <n> WWV broadcasts
 
 
+
   Display the most recent WWV information that has been received by the
   system
 
@@ -5142,8 +5181,6 @@
   Depending on your privilege level you will see more or less
   information.  This command is unlikely to be of much use to anyone
   other than a sysop.
-
-
 
 
   1133..112299..  ssttaatt//cchhaannnneell ((55))
@@ -5212,6 +5249,9 @@
         or 2 0 5 7 3
         or 20573
 
+
+
+
   They will all match. If there is no password you will still be offered
   numbers but nothing will happen when you input a string. Any match is
   case sensitive.
@@ -5278,6 +5318,7 @@
   enter:-
 
 
+
           TYPE bulletins/arld051
 
 
@@ -5302,6 +5343,7 @@
   wwxx ffuullll <<tteexxtt>>  Send a weather message to all cluster users
 
 
+
   Weather messages can sometimes be useful if you are experiencing an
   extreme that may indicate enhanced conditions
 
@@ -5313,6 +5355,30 @@
 
   Send a weather message only to other cluster nodes and not to general
   users.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.32 February 2001
+<date>Version 1.33 February 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -1928,6 +1928,16 @@ load/keps
 
 That is it!  the kepler data has been updated.
 
+<sect1>The QRZ callbook
+
+<P>
+The command <em>sh/qrz</em> will only work once you have followed a few
+simple steps.  First you need to get a user ID and password from qrz.com.
+Simply go to the site and create one.  Secondly you need to copy the file
+/spider/perl/Internet.pm to /spider/local and alter it to match your user
+ID and password.  You also at this point need to set $allow=1 to complete
+the setup.  Many thanks to Fred Lloyd, the proprieter of
+<htmlurl url="http://www.qrz.com" name="qrz.com"> for allowing this access.
 
 <sect>CVS
 
