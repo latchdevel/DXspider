@@ -8,6 +8,7 @@
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;		      # generate a list of callsigns
 my $l;
+my $call = $self->call;
 my @out;
 
 return (1, "SHOW/CALL <callsign>, e.g. SH/CALL g1tlh") unless @list;
@@ -23,7 +24,7 @@ foreach $l (@list) {
 			 Timeout  =>  5);
 	if ($t) {
 		$t->print(uc $l);
-		Log('call', "show/call $l");
+		Log('call', "$call: show/call $l");
 		while (my $result = $t->getline) {
 			push @out,$result;
 		}

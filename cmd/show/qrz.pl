@@ -1,5 +1,5 @@
 #
-# Query the PineKnot Database server for a callsign
+# Query the QRZ Database server for a callsign
 #
 # from an idea by Steve Franke K9AN and information from Angel EA7WA
 #
@@ -8,6 +8,7 @@
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;		      # generate a list of callsigns
 my $l;
+my $call = $self->call;
 my @out;
 
 return (1, "SHOW/QRZ <callsign>, e.g. SH/QRZ g1tlh") unless @list;
@@ -23,7 +24,7 @@ foreach $l (@list) {
 			 Timeout  =>  5);
 	if ($t) {
 		$t->print("GET /database?callsign=$l HTTP/1.0\n\n");
-		Log('call', "show/qrz $l");
+		Log('call', "$call: show/qrz $l");
 		my $state = "call";
 		while (my $result = $t->getline) {
 #			print "$state: $result";
