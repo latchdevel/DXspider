@@ -23,7 +23,8 @@ if (!$line || $line =~ /^w/i) {
 	push @out, "----------";
 	for (keys %DXMsg::work) {
 		my $r = $DXMsg::work{$_};
-		push @out, "$_ : msgno $r->{msgno}, total lines $r->{linesreq}, count $r->{count}\n";
+		my $n = @{$r->{lines}};
+		push @out, "$_ : msgno $r->{msgno}, total lines $n, count $r->{count}\n";
 		push @out, "$_ : stream $r->{stream}, tonode $r->{tonode}, fromnode $r->{fromnode}\n";
 	}
 }
