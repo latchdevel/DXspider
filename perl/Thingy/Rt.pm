@@ -100,19 +100,18 @@ sub handle_cf
 		push @$add, @$tadd;
 		push @$del, @$tdel;
 	}
-	if (@$add || @$del) {
-		my $call;
-
+	if ($add) {
 		my @pc21;
-		foreach $call (@$del) {
+		foreach my $call (@$del) {
 			RouteDB::delete($call, $chan_call);
 			my $ref = Route::Node::get($call);
 			push @pc21, $ref->del($parent) if $ref;
 		}
 		$thing->{pc21n} = \@pc21 if @pc21;
-		
+	}
+	if ($del) {
 		my @pc19;
-		foreach $call (@$add) {
+		foreach my $call (@$add) {
 			RouteDB::update($call, $chan_call);
 			my $ref = Route::Node::get($call);
 			push @pc19, $parent->add($call, 0, $in{$call}) unless $ref;
