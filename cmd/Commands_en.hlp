@@ -1238,6 +1238,7 @@ eg:-
   SET/HOMENODE gb7djk
 
 === 8^SET/HOPS <call> ann|spots|route|wwv|wcy <n>^Set hop count  
+=== 8^UNSET/HOPS <call> ann|spots|route|wwv|wcy^Unset hop count  
 Set the hop count for a particular type of broadcast for a node.
 
 This command allows you to set up special hop counts for a node 
@@ -1249,6 +1250,12 @@ eg:
 
 Set SHOW/HOPS for information on what is already set. This command
 creates a filter and works in conjunction with the filter system. 
+
+You can unset the hops with command UNSET/HOPS. For example:-
+
+  unset/hops gb7djk ann
+  unset/hops gb7mbc spots
+
 
 === 9^SET/ISOLATE^Isolate a node from the rest of the network
 Connect a node to your system in such a way that you are a full protocol
