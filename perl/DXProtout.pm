@@ -141,6 +141,8 @@ sub pc19
 		my $here = $ref->here;
 		my $conf = $ref->conf;
 		my $version = $ref->version;
+		$version = 5300 * int($version*100) if $version < 2;
+		$version = 5250 * int($version*100) if $version < 3;
 		my $str = "^$here^$call^$conf^$version";
 		if (length($s) + length($str) > $sentencelth) {
 			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
