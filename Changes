@@ -8,7 +8,7 @@ on the 14th minute in the connection time for each channel. This should
 reduce (slightly) the dups that are dumped.
 5. Speed up input queue processing (a lot).
 6. make set/isolate and acc/route mutually exclusive (and issue appropriate
-error messages).
+error messages) and fix set/iso on PC18 input.
 7. Improve stat/route_node and stat/route_user for diagnostics.
 8. strip top bit of comments in ann/spots.
 9. fix the announce filtering problem.

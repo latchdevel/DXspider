@@ -654,7 +654,7 @@ sub normal
 			# first clear out any nodes on this dxchannel
 			my $parent = Route::Node::get($self->{call});
 			my @rout = $parent->del_nodes;
-			$self->route_pc21(@rout, $parent);
+			$self->route_pc21(@rout, $parent) if @rout;
 			$self->send_local_config();
 			$self->send(pc20());
 			return;             # we don't pass these on
@@ -1405,7 +1405,7 @@ sub send_local_config
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
-		my @dxchan = grep { $_->call ne $main::mycall && $_->call ne $self->{call} } DXChannel::get_all_nodes();
+		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
 		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
 		my $ref = Route::Node::get($self->{call});
