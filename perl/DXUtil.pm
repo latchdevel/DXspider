@@ -64,8 +64,10 @@ sub cltounix
 {
 	my $date = shift;
 	my $time = shift;
+	my ($thisyear) = (gmtime)[5] + 1900;
 
 	return 0 unless $date =~ /^\s*(\d+)-(\w\w\w)-([12][90]\d\d)$/;
+	return 0 unless abs($thisyear-$3) <= 1;
 	$date = "$1 $2 $3";
 	return 0 unless $time =~ /^([012]\d)([012345]\d)Z$/;
 	$time = "$1:$2 +0000";
