@@ -48,6 +48,7 @@ $filename = undef;
   lang => '0,Language',
   hmsgno => '0,Highest Msgno',
   group => '0,Access Group,parray',               # used to create a group of users/nodes for some purpose or other
+  isolate => '9,Isolate network,yesno',
 );
 
 no strict;

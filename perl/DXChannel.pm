@@ -37,193 +37,198 @@ use vars qw(%channels %valid);
 %channels = undef;
 
 %valid = (
-  call => '0,Callsign',
-  conn => '9,Msg Conn ref',
-  user => '9,DXUser ref',
-  startt => '0,Start Time,atime',
-  t => '9,Time,atime',
-  pc50_t => '9,Last PC50 Time,atime',
-  priv => '9,Privilege',
-  state => '0,Current State',
-  oldstate => '5,Last State',
-  list => '9,Dep Chan List',
-  name => '0,User Name',
-  consort => '9,Connection Type',
-  sort => '9,Type of Channel',
-  wwv => '0,Want WWV,yesno',
-  talk => '0,Want Talk,yesno',
-  ann => '0,Want Announce,yesno',
-  here => '0,Here?,yesno',
-  confmode => '0,In Conference?,yesno',
-  dx => '0,DX Spots,yesno',
-  redirect => '0,Redirect messages to',
-  lang => '0,Language',
-  func => '9,Function',
-  loc => '9,Local Vars',     # used by func to store local variables in
-  beep => '0,Want Beeps,yesno',
-  lastread => '9,Last Msg Read',
-  outbound => '9,outbound?,yesno',
-  remotecmd => '9,doing rcmd,yesno',
-  pagelth => '0,Page Length',
-  pagedata => '9,Page Data Store',
-  group => '0,Access Group,parray',               # used to create a group of users/nodes for some purpose or other
-);
+		  call => '0,Callsign',
+		  conn => '9,Msg Conn ref',
+		  user => '9,DXUser ref',
+		  startt => '0,Start Time,atime',
+		  t => '9,Time,atime',
+		  pc50_t => '9,Last PC50 Time,atime',
+		  priv => '9,Privilege',
+		  state => '0,Current State',
+		  oldstate => '5,Last State',
+		  list => '9,Dep Chan List',
+		  name => '0,User Name',
+		  consort => '9,Connection Type',
+		  sort => '9,Type of Channel',
+		  wwv => '0,Want WWV,yesno',
+		  talk => '0,Want Talk,yesno',
+		  ann => '0,Want Announce,yesno',
+		  here => '0,Here?,yesno',
+		  confmode => '0,In Conference?,yesno',
+		  dx => '0,DX Spots,yesno',
+		  redirect => '0,Redirect messages to',
+		  lang => '0,Language',
+		  func => '9,Function',
+		  loc => '9,Local Vars', # used by func to store local variables in
+		  beep => '0,Want Beeps,yesno',
+		  lastread => '9,Last Msg Read',
+		  outbound => '9,outbound?,yesno',
+		  remotecmd => '9,doing rcmd,yesno',
+		  pagelth => '0,Page Length',
+		  pagedata => '9,Page Data Store',
+		  group => '0,Access Group,parray',	# used to create a group of users/nodes for some purpose or other
+		  isolate => '9,Isolate network,yesno',
+		 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
 sub alloc
 {
-  my ($pkg, $call, $conn, $user) = @_;
-  my $self = {};
+	my ($pkg, $call, $conn, $user) = @_;
+	my $self = {};
   
-  die "trying to create a duplicate channel for $call" if $channels{$call};
-  $self->{call} = $call;
-  $self->{conn} = $conn if defined $conn;   # if this isn't defined then it must be a list
-  $self->{user} = $user if defined $user; 
-  $self->{startt} = $self->{t} = time;
-  $self->{state} = 0;
-  $self->{oldstate} = 0;
-  $self->{lang} = $user->{lang} if defined $user;
-  $self->{lang} = $main::lang if !$self->{lang};
-  $user->new_group() if !$user->group;
-  $self->{group} = $user->group;
-  bless $self, $pkg; 
-  return $channels{$call} = $self;
+	die "trying to create a duplicate channel for $call" if $channels{$call};
+	$self->{call} = $call;
+	$self->{conn} = $conn if defined $conn;	# if this isn't defined then it must be a list
+	$self->{user} = $user if defined $user; 
+	$self->{startt} = $self->{t} = time;
+	$self->{state} = 0;
+	$self->{oldstate} = 0;
+	$self->{lang} = $user->{lang} if defined $user;
+	$self->{lang} = $main::lang if !$self->{lang};
+	$user->new_group() if !$user->group;
+	$self->{group} = $user->group;
+	bless $self, $pkg; 
+	return $channels{$call} = $self;
 }
 
 # obtain a channel object by callsign [$obj = DXChannel->get($call)]
 sub get
 {
-  my ($pkg, $call) = @_;
-  return $channels{$call};
+	my ($pkg, $call) = @_;
+	return $channels{$call};
 }
 
 # obtain all the channel objects
 sub get_all
 {
-  my ($pkg) = @_;
-  return values(%channels);
+	my ($pkg) = @_;
+	return values(%channels);
 }
 
 # obtain a channel object by searching for its connection reference
 sub get_by_cnum
 {
-  my ($pkg, $conn) = @_;
-  my $self;
+	my ($pkg, $conn) = @_;
+	my $self;
   
-  foreach $self (values(%channels)) {
-    return $self if ($self->{conn} == $conn);
-  }
-  return undef;
+	foreach $self (values(%channels)) {
+		return $self if ($self->{conn} == $conn);
+	}
+	return undef;
 }
 
 # get rid of a channel object [$obj->del()]
 sub del
 {
-  my $self = shift;
-  $self->{group} = undef;      # belt and braces
-  delete $channels{$self->{call}};
+	my $self = shift;
+
+	$self->{group} = undef;		# belt and braces
+	delete $channels{$self->{call}};
 }
 
 # is it an ak1a cluster ?
 sub is_ak1a
 {
-  my $self = shift;
-  return $self->{sort} eq 'A';
+	my $self = shift;
+	return $self->{sort} eq 'A';
 }
 
 # is it a user?
 sub is_user
 {
-  my $self = shift;
-  return $self->{sort} eq 'U';
+	my $self = shift;
+	return $self->{sort} eq 'U';
 }
 
 # is it a connect type
 sub is_connect
 {
-  my $self = shift;
-  return $self->{sort} eq 'C';
+	my $self = shift;
+	return $self->{sort} eq 'C';
 }
 
 # handle out going messages, immediately without waiting for the select to drop
 # this could, in theory, block
 sub send_now
 {
-  my $self = shift;
-  my $conn = $self->{conn};
-  my $sort = shift;
-  my $call = $self->{call};
-  my $line;
+	my $self = shift;
+	my $conn = $self->{conn};
+	my $sort = shift;
+	my $call = $self->{call};
+	my $line;
 	
-  foreach $line (@_) {
-    chomp $line;
-	$conn->send_now("$sort$call|$line") if $conn;
-	dbg('chan', "-> $sort $call $line") if $conn;
-  }
-  $self->{t} = time;
+	foreach $line (@_) {
+		chomp $line;
+		$conn->send_now("$sort$call|$line") if $conn;
+		dbg('chan', "-> $sort $call $line") if $conn;
+	}
+	$self->{t} = time;
 }
 
 #
 # the normal output routine
 #
-sub send              # this is always later and always data
+sub send						# this is always later and always data
 {
-  my $self = shift;
-  my $conn = $self->{conn};
-  my $call = $self->{call};
-  my $line;
+	my $self = shift;
+	my $conn = $self->{conn};
+	my $call = $self->{call};
+	my $line;
 
-  foreach $line (@_) {
-    chomp $line;
-	$conn->send_later("D$call|$line") if $conn;
-	dbg('chan', "-> D $call $line") if $conn;
-  }
-  $self->{t} = time;
+	foreach $line (@_) {
+		chomp $line;
+		$conn->send_later("D$call|$line") if $conn;
+		dbg('chan', "-> D $call $line") if $conn;
+	}
+	$self->{t} = time;
 }
 
 # send a file (always later)
 sub send_file
 {
-  my ($self, $fn) = @_;
-  my $call = $self->{call};
-  my $conn = $self->{conn};
-  my @buf;
+	my ($self, $fn) = @_;
+	my $call = $self->{call};
+	my $conn = $self->{conn};
+	my @buf;
   
-  open(F, $fn) or die "can't open $fn for sending file ($!)";
-  @buf = <F>;
-  close(F);
-  $self->send(@buf);
+	open(F, $fn) or die "can't open $fn for sending file ($!)";
+	@buf = <F>;
+	close(F);
+	$self->send(@buf);
 }
 
 # this will implement language independence (in time)
 sub msg
 {
-  my $self = shift;
-  return DXM::msg($self->{lang}, @_);
+	my $self = shift;
+	return DXM::msg($self->{lang}, @_);
 }
 
 # change the state of the channel - lots of scope for debugging here :-)
 sub state
 {
-  my $self = shift;
-  if (@_) {
-    $self->{oldstate} = $self->{state};
-    $self->{state} = shift;
-    dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
-  }
-  return $self->{state};
+	my $self = shift;
+	if (@_) {
+		$self->{oldstate} = $self->{state};
+		$self->{state} = shift;
+		dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
+	}
+	return $self->{state};
 }
 
 # disconnect this channel
 sub disconnect
 {
-  my $self = shift;
-  my $user = $self->{user};
-  my $conn = $self->{conn};
-  $self->finish();
-  $user->close() if defined $user;
-  $conn->disconnect() if defined $conn;
-  $self->del();
+	my $self = shift;
+	my $user = $self->{user};
+	my $conn = $self->{conn};
+	my $call = $self->{call};
+	
+	$self->finish();
+	$conn->send_now("Z$call|bye") if $conn; # this will cause 'client' to disconnect
+	$user->close() if defined $user;
+	$conn->disconnect() if $conn;
+	$self->del();
 }
 
 # various access routines
@@ -234,7 +239,7 @@ sub disconnect
 
 sub fields
 {
-  return keys(%valid);
+	return keys(%valid);
 }
 
 #
@@ -243,20 +248,20 @@ sub fields
 
 sub field_prompt
 { 
-  my ($self, $ele) = @_;
-  return $valid{$ele};
+	my ($self, $ele) = @_;
+	return $valid{$ele};
 }
 
 no strict;
 sub AUTOLOAD
 {
-  my $self = shift;
-  my $name = $AUTOLOAD;
-  return if $name =~ /::DESTROY$/;
-  $name =~ s/.*:://o;
+	my $self = shift;
+	my $name = $AUTOLOAD;
+	return if $name =~ /::DESTROY$/;
+	$name =~ s/.*:://o;
   
-  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
-  @_ ? $self->{$name} = shift : $self->{$name} ;
+	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+	@_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 1;

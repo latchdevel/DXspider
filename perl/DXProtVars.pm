@@ -21,7 +21,7 @@ $pc19_max_nodes = 5;
 $pc50_interval = 14*60;
 
 # the version of DX cluster (tm) software I am masquerading as
-$myprot_version = "5447";
+$myprot_version = 5300;
 
 # default hopcount to use
 $def_hopcount = 15;

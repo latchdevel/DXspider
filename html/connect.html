@@ -2,25 +2,32 @@
 <html>
   <head>
     <title>Connecting to other Clusters</title>
+	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+	<meta name="Author" content="Dirk Koopman G1TLH">
   </head>
 
-  <body>
-    <h2>Connecting to other Clusters</h2>
-
-    <hr>
-    <address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+  <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF">
+	<FONT COLOR="#606060"> 
+	  <hr>
+	  <h2>Connecting to other Clusters</h2>
+	  <hr>
+	</font>
+	
+	
+	<address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
 	<p>
-<!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
-<!-- hhmts start -->
-Last modified: Mon Dec 14 00:29:00 GMT 1998
+	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+	  <!-- hhmts start -->
+Last modified: Thu Dec 17 00:06:40 GMT 1998
 <!-- hhmts end -->
 	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
 	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
 	  instructions. However, in order to connect outwards, you will need to create <em>connect</em> scripts.
-
+	  
 	<p><em>Connect</em> scripts live in the <tt>/spider/connect</tt> directory and are simple ascii scripts
 	  that are written using a normal editor. There are a couple of examples in the issue directory.
-
+	  
 	<p>Here are a couple of basic types, first a telnet connection:-
 	<pre>
     timeout 15
@@ -28,7 +35,7 @@ Last modified: Mon Dec 14 00:29:00 GMT 1998
     connect telnet dirkl.tobit.co.uk
     'login' 'gb7djk'
     'word' 'gb7djk'
-    client /usr/bin/perl /spider/perl/client.pl gb7djk-1 telnet
+    client gb7djk-1 telnet
 	</pre>
 	<p>and an ax25 example:-
 	<pre>
@@ -40,17 +47,17 @@ Last modified: Mon Dec 14 00:29:00 GMT 1998
     'Connect' 'c np7'
     'Connect' 'c gb7dxm'
     'Connect' ''
-    client /usr/bin/perl /spider/perl/client.pl gb7dxm ax25
+    client gb7dxm ax25
 	</pre>
-
+	
 	<p>A connection is started manually by typing in <tt>connect <scriptname></tt> on a sysop enabled
 	  <tt>client.pl</tt> session. For example:-
 	<pre>
     G1TLH de GB7DJK 13-Dec-1998 2041Z > connect gb7djk-1
     connection to GB7DJK-1 started
     G1TLH de GB7DJK 13-Dec-1998 2043Z > 
-    </pre>
-    
+	</pre>
+	
     <p>You can watch the progress of the connection (if you have the standard debugging enabled) on the
 	  <tt>cluster.pl</tt> screen and you should see something like this:-
 	<pre>
@@ -81,8 +88,8 @@ Last modified: Mon Dec 14 00:29:00 GMT 1998
     &lt;- D GB7DJK-1 PC38^GB7DJK-1^~
     &lt;- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime 0 00:00^5447^~
     etc
-    </pre>
-
+	</pre>
+	
 	<p>The connect scripts consist of lines which start with the following keywords or symbols:-
 	<ul>
 		<p><li><b>#</b> All lines starting with a <b>#</b> are ignored, as are wholly blank lines.
@@ -104,10 +111,19 @@ Last modified: Mon Dec 14 00:29:00 GMT 1998
 		<p>When the left hand string has found what it is looking (if it is) then the right hand string is
 		  sent to the connection. 
 		<p>This process is repeated for every line of <tt>chat</tt> script. 
-		<p><li><b>client</b> starts the client program and should be exactly as you would want it with an incoming
-		connection.
+		<p><li><b>client</b> starts the connection, put the arguments you would want here if you were
+		starting the client program manually. You only need this if the script has a different name to
+		the callsign you are trying to connect to (i.e. you have a script called <tt>other</tt> which actually
+		connects to <tt>GB7DJK-1</tt> [instead of a script called <tt>gb7djk-1</tt>]).
 	</ul>
-    <hr>
-	<h5>$Id$</h5>
+
+<!-- Standard Footer!! -->
+	<p>&nbsp;</p>
+	<p>
+	  <FONT COLOR="#606060"><hr></font>
+	<font color="#FF0000" size=-2>
+	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
+	</font>
+	<font color="#000000" size=-2>$Id$</font>
   </body>
 </html>

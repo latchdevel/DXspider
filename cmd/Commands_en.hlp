@@ -139,6 +139,13 @@ this command. You can remove more than one message at a time.
 === 5^KILL-^
 As a sysop you can kill any message on the system.
 
+=== 8^PC <call> <text>^Send arbitrary text to a connected callsign
+Send any text you like to the callsign requested. This is used mainly to send
+PC protocol to connected nodes either for testing or to unstick things. 
+
+You can also use in the same way as a talk command to a connected user but
+without any processing, added of "from <blah> to <blah" or whatever.
+ 
 === 1^PING <node call>^Find out the delays an a circuit to another node
 This command will enable sysops to determine the speed of an inter-cluster
 node. 
@@ -219,6 +226,16 @@ Tell the cluster system where you normally connect to. Any Messages sent
 to you will normally find their way there should you not be connected.
 eg:-
   SET/HOMENODE gb7djk
+
+=== 9^SET/ISOLATE^Isolate a node from the rest of the network
+Connect a node to your system in such a way that you are a full protocol
+member of its network and can see all spots on it, but nothing either leaks
+out from it nor goes back into from the rest of the nodes connected to you.
+
+You can potentially connect several nodes in this way.
+ 
+=== 9^UNSET/ISOLATE^Stop Isolation of a node from the rest of the network
+Remove isolation from a node - SET/ISOLATE
 
 === 0^SET/LOCATION <lat & long>^Set your latitude and longitude
 In order to get accurate headings and such like you must tell the system
@@ -329,6 +346,18 @@ Display the most recent WWV information that has been received by the system
 === 5^SHUTDOWN^Shutdown the cluster
 Shutdown the cluster and disconnect all the users 
 
+=== 5^STAT/CHANNEL [<callsign>]^Show the status of a channel on the cluster
+Show the internal status of the channel object either for the channel that 
+you are on or else for the callsign that you asked for.
+
+Only the fields that are defined (in perl term) will be displayed.
+
+=== 5^STAT/USER [<callsign>]^Show the full status of a user
+Shows the full contents of a user record including all the secret flags
+and stuff.
+
+Only the fields that are defined (in perl term) will be displayed.
+
 === 0^TALK <call> <text>^Send a text message to another station
 === 0^TALK <call> > <node> <text>^Send a text message to another station via a node
 Send a short message to any other station that is visible on the cluster
@@ -337,9 +366,9 @@ command, they don't have to be connected locally.
 
 The second form of TALK is used when other cluster nodes are connected
 with restricted information. This usually means that they don't send 
-the user information usually associated with loging on and off the cluster.
+the user information usually associated with logging on and off the cluster.
 
-If you know that G3JNB is likly to be present on GB7TLH, but you can only
+If you know that G3JNB is likely to be present on GB7TLH, but you can only
 see GB7TLH in the SH/C list but with no users, then you would use the
 second form of the talk message.
 

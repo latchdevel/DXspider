@@ -477,10 +477,10 @@ sub queue_msg
 {
 	my $sort = shift;
 	my $call = shift;
-	my @nodelist = DXProt::get_all_ak1a();
 	my $ref;
 	my $clref;
 	my $dxchan;
+	my @nodelist = DXProt::get_all_ak1a();
 	
 	# bat down the message list looking for one that needs to go off site and whose
 	# nearest node is not busy.
@@ -491,7 +491,7 @@ sub queue_msg
 		# in my cluster node list offsite?
 		if ($ref->{private}) {
 			if ($ref->{read} == 0) {
-				$clref = DXCluster->get($ref->{to});
+				$clref = DXCluster->get_exact($ref->{to});
 				if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
 					$dxchan = $clref->{dxchan};
 					$ref->start_msg($dxchan) if $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';
@@ -505,6 +505,7 @@ sub queue_msg
 			my $noderef;
 			foreach $noderef (@nodelist) {
 				next if $noderef->call eq $main::mycall;
+				next if $noderef->isolate;               # maybe add code for stuff originated here?
 				next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
 				
 				# if we are here we have a node that doesn't have this message

@@ -30,13 +30,17 @@ sub print
 	my $to = shift;
 	my @date = $self->unixtoj(shift);
 	my $pattern = shift;
+	my $who = uc shift;
 	my $search;
 	my @in;
 	my @out;
 	my $eval;
 	my $count;
 	    
-	$search = $pattern ? "\$ref->[1] =~ /$pattern/" : '1' ;
+	$search = '1' unless $pattern || $who;
+	$search = "\$ref->[1] =~ /$pattern/" if $pattern;
+	$search .= ' && ' if $pattern && $who;
+	$search .= "(\$ref->[2] =~ /$who/ || \$ref->[3] =~ /$who/)" if $who;
 	$eval = qq(
 			   my \$c;
 			   my \$ref;

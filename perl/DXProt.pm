@@ -37,6 +37,7 @@ $last_hour = time;				# last time I did an hourly periodic update
 sub init
 {
 	my $user = DXUser->get($main::mycall);
+	$DXProt::myprot_version += $main::version*100;
 	$me = DXProt->new($main::mycall, undef, $user); 
 	$me->{here} = 1;
 	#  $me->{sort} = 'M';    # M for me
@@ -67,6 +68,7 @@ sub start
 	$self->{outbound} = $sort eq 'O';
 	$self->{priv} = $user->priv;
 	$self->{lang} = $user->lang;
+	$self->{isolate} = $user->{isolate};
 	$self->{consort} = $line;	# save the connection type
 	$self->{here} = 1;
 	
@@ -280,7 +282,7 @@ sub normal
 			}
 			
 			# queue up any messages
-			DXMsg::queue_msg() if $self->state eq 'normal';     
+			DXMsg::queue_msg() if $self->state eq 'normal';
 			last SWITCH;
 		}
 		
@@ -465,8 +467,8 @@ sub normal
 	 #        REBROADCAST!!!!
 	 #
 	 
-	 my $hops;
-	if (($hops) = $line =~ /H(\d+)\^\~?$/o) {
+	my $hops;
+	if (!$self->{isolate} && (($hops) = $line =~ /H(\d+)\^\~?$/o)) {
 		my $newhops = $hops - 1;
 		if ($newhops > 0) {
 			$line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;	# change the hop count
@@ -526,7 +528,7 @@ sub finish
 	
 	foreach $node (@gonenodes) {
 		next if $node->call eq $call; 
-		broadcast_ak1a(pc21($node->call, 'Gone'), $self); # done like this 'cos DXNodes don't have a pc21 method
+		broadcast_ak1a(pc21($node->call, 'Gone'), $self) unless $self->{isolate}; # done like this 'cos DXNodes don't have a pc21 method
 		$node->del();
 	}
 
@@ -548,12 +550,16 @@ sub send_local_config
 {
 	my $self = shift;
 	my $n;
+	my @nodes;
 	
 	# send our nodes
-	my @nodes = DXNode::get_all();
-	
-	# create a list of all the nodes that are not connected to this connection
-	@nodes = grep { $_->dxchan != $self } @nodes;
+	if ($self->{isolate}) {
+		@nodes = (DXCluster->get_exact($main::mycall));
+	} else {
+		# create a list of all the nodes that are not connected to this connection
+		@nodes = DXNode::get_all();
+		@nodes = grep { $_->dxchan != $self } @nodes;
+	}
 	$self->send($me->pc19(@nodes));
 	
 	# get all the users connected on the above nodes and send them out
@@ -597,7 +603,7 @@ sub broadcast_ak1a
 	
 	foreach $chan (@chan) {
 		next if grep $chan == $_, @except;
-		$chan->send($s);		# send it if it isn't the except list
+		$chan->send($s) unless $chan->{isolate};		# send it if it isn't the except list
 	}
 }
 
@@ -612,7 +618,7 @@ sub broadcast_users
 	foreach $chan (@chan) {
 		next if grep $chan == $_, @except;
 		$s =~ s/\a//og if !$chan->{beep};
-		$chan->send($s);		# send it if it isn't the except list
+		$chan->send($s);		# send it if it isn't the except list or hasn't a passout flag
 	}
 }
 

@@ -13,7 +13,7 @@ my $cmdline = shift;
 my @f = split /\s+/, $cmdline;
 my $f;
 my @out;
-my ($from, $to); 
+my ($from, $to, $who); 
 
 $from = 0;
 while ($f = shift @f) {                 # next field
@@ -26,9 +26,12 @@ while ($f = shift @f) {                 # next field
 		($to) = $f =~ /^(\d+)$/o if !$to;              # is it a to count?
 		next if $to;
 	}
+	next if $who;
+	($who) = $f =~ /^(\w+)/o;
 }
 
-$to = 20 if !$to;
+$to = 20 unless $to;
+$from = 0 unless $from;
 
-@out = DXLog::print($from, $to, $main::systime, '^rcmd');
+@out = DXLog::print($from, $to, $main::systime, '^rcmd', $who);
 return (1, @out);

@@ -1,3 +1,12 @@
+19Dec98========================================================================
+1. Fixed problems with sh/rcmd (talk/ann/log) with a callsign as argument and
+also made what G0RDI wanted work as well!
+2. Added isolate flag to allow isolation of different networks at a gateway.
+3. Changed make Makefile.PL to perl Makefile.PL in instructions
+4. Copied latest instructions to html directory
+5. Had another attempt at making clients disconnect without hanging everytime.
+6. Changed msg queuing semantics so that the system routes on exact callsign.
+7. Changed the protocol version so that it increments with the DXSpider version.
 14Dec98========================================================================
 1. Made the telnet thing work a bit better. It still will not work reliably to
 a real telnetd on port 23.
