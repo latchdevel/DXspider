@@ -1,3 +1,6 @@
+27Oct00=======================================================================
+1. alter the code in clean_old of DXMsg system to see if we get some different
+behaviour with random crashing
 26Oct00=======================================================================
 1. if there is a 'connected' file in /spider/data then the client will send
 it out to the user after connection.
