@@ -527,11 +527,6 @@ sub normal
 		
 		if ($pcno == 16) {		# add a user
 
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
-				return;
-			}
-
 			# general checks
 			my $dxchan;
 			my $ncall = $field[1];
@@ -589,6 +584,10 @@ sub normal
 				$user->put;
 			}
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
+				return;
+			}
 			
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
@@ -601,10 +600,6 @@ sub normal
 			my $dxchan;
 			my $ncall = $field[2];
 			my $ucall = $field[1];
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
-				return;
-			}
 
 			eph_del_regex("^PC16.*$ncall.*$ucall");
 			
@@ -627,6 +622,12 @@ sub normal
 			return unless $self->in_filter_route($parent);
 
 			my @rout = $parent->del_user($ucall);
+
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
+				return;
+			}
+
 			$self->route_pc17($parent, @rout) if @rout;
 			return;
 		}
@@ -646,11 +647,6 @@ sub normal
 		if ($pcno == 19) {		# incoming cluster list
 			my $i;
 			my $newline = "PC19^";
-
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC19 detected") if isdbg('chanerr');
-				return;
-			}
 
 			# new routing list
 			my @rout;
@@ -728,6 +724,11 @@ sub normal
 				$user->put;
 			}
 
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC19 detected") if isdbg('chanerr');
+				return;
+			}
+
 			$self->route_pc19(@rout) if @rout;
 			return;
 		}
@@ -740,11 +741,6 @@ sub normal
 		}
 		
 		if ($pcno == 21) {		# delete a cluster from the list
-			if (eph_dup($line)) {
-				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
-				return;
-			}
-
 			my $call = uc $field[1];
 
 			eph_del_regex("^PC1[79].*$call");
@@ -774,6 +770,12 @@ sub normal
 				dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
 				return;
 			}
+
+			if (eph_dup($line)) {
+				dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
+				return;
+			}
+
 			$self->route_pc21(@rout) if @rout;
 			return;
 		}
@@ -985,6 +987,7 @@ sub normal
 			my $to = $field[1];
 			my $from = $field[2];
 			my $flag = $field[3];
+
 			
 			# is it for us?
 			if ($to eq $main::mycall) {
@@ -1020,6 +1023,10 @@ sub normal
 					}
 				}
 			} else {
+				if (eph_dup($line)) {
+					dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
+					return;
+				}
 				# route down an appropriate thingy
 				$self->route($to, $line);
 			}
