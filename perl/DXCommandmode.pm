@@ -241,14 +241,14 @@ sub run_cmd
 				if ($package) {
 					dbg('command', "package: $package");
 					my $c;
-					unless (exists $Cache{$package}->{sub}) {
-						$c = eval $Cache{$package}->{eval};
+					unless (exists $Cache{$package}->{'sub'}) {
+						$c = eval $Cache{$package}->{'eval'};
 						if ($@) {
 							return ("Syserr: Syntax error in $package", $@);
 						}
-						$Cache{$package}->{sub} = $c;
+						$Cache{$package}->{'sub'} = $c;
 					}
-					$c = $Cache{$package}->{sub};
+					$c = $Cache{$package}->{'sub'};
 					eval {
 						@ans = &{$c}($self, $args);
 				    };
