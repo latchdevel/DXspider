@@ -66,7 +66,7 @@ sub gen_DXProt
 		my $sd = $thing->{spotdata};
 		my $hops = $thing->{hops} || DXProt::get_hops(11);
 		my $text = $sd->[3] || ' ';
-		$text =~ s/\^/%5E/g;
+		$text =~ s/\^/\%5E/g;
 		my $t = $sd->[2];
 		$thing->{DXProt} = sprintf "PC11^%.1f^$sd->[1]^%s^%s^$text^$sd->[4]^$sd->[7]^$hops^~", $sd->[0], cldate($t), ztime($t);
 	}

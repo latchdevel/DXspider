@@ -307,7 +307,7 @@ sub tencode
 {
 	my $s = shift;
 	$s =~ s/([\%=|,\'\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-	$s = "'$s'" if $s =~ / /;
+#	$s = "'$s'" if $s =~ / /;
 	return $s;
 }
 
