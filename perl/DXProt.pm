@@ -37,6 +37,9 @@ use Investigate;
 use RouteDB;
 use Thingy;
 use Thingy::Dx;
+use Thingy::Rt;
+use Thingy::Ping;
+use Thingy::T;
 
 use strict;
 
@@ -504,7 +507,7 @@ sub handle_11
 	}
 
 	# is it 'baddx'
-	if ($baddx->in($_[2]) || BadWords::check($_[2]) || $_[2] =~ /COCK/) {
+	if ($baddx->in($_[2]) || BadWords::check($_[2])) {
 		dbg("PCPROT: Bad DX spot, ignored") if isdbg('chanerr');
 		return;
 	}

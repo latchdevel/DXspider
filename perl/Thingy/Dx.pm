@@ -143,10 +143,10 @@ sub out_filter
 	my $dxchan = shift;
 	
 	# global spot filtering on INPUT
-	if ($dxchan->{inspotsfilter}) {
-		my ($filter, $hops) = $dxchan->{inspotsfilter}->it($thing->{spotdata});
+	if ($dxchan->{spotsfilter}) {
+		my ($filter, $hops) = $dxchan->{spotsfilter}->it($thing->{spotdata});
 		unless ($filter) {
-			dbg("PCPROT: Rejected by input spot filter") if isdbg('chanerr');
+			dbg("PCPROT: Rejected by output spot filter") if isdbg('chanerr');
 			return;
 		}
 		$thing->{hops} = $hops if $hops;
