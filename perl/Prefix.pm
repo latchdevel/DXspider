@@ -148,6 +148,7 @@ sub matchprefix
 	my $pref = shift;
 	my @partials;
 
+	$pref =~ s/-\d+$//;
 	for (my $i = length $pref; $i; $i--) {
 		$matchtotal++;
 		my $s = substr($pref, 0, $i);
@@ -169,7 +170,7 @@ sub matchprefix
 				dbg("Partial prefix: $pref $s $part" );
 			} 
 			if (@out && $out[0] eq $s) {
-				$cache{$_} = [ @out ] for @partials;
+				$cache{$_} =  \@out for @partials;
 				return @out;
 			} 
 		}
