@@ -40,9 +40,10 @@ BEGIN {
 use Msg;
 use DXVars;
 use DXDebug;
+use IO::File;
 use IO::Socket;
 use IPC::Open2;
-use FileHandle;
+use Net::Telnet qw(TELOPT_ECHO);
 use Carp;
 
 # cease communications
@@ -181,17 +182,24 @@ sub doconnect
 	dbg('connect', "CONNECT sort: $sort command: $line");
 	if ($sort eq 'telnet') {
 		# this is a straight network connect
-		my ($host) = $line =~ /host\s+(\w+)/o;
-		my ($port) = $line =~ /port\s+(\d+)/o;
+		my ($host, $port) = split /\s+/, $line;
 		$port = 23 if !$port;
 		
-		$sock = IO::Socket::INET->new(PeerAddr => "$host", PeerPort => "$port", Proto => 'tcp')
-			or die "Can't connect to $host port $port $!";
-		
+		if ($port == 23) {
+			$sock = new Net::Telnet (Timeout => $timeout, BinMode => 1);
+			$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
+			#$sock->option_log('option_log');
+			$sock->dump_log('dump');
+			$sock->open($host) or die "Can't connect to $host port $port $!";
+		} else {
+			$sock = IO::Socket::INET->new(PeerAddr => "$host:$port", Proto => 'tcp')
+				or die "Can't connect to $host port $port $!";
+			
+		}
 	} elsif ($sort eq 'ax25') {
 		my @args = split /\s+/, $line;
-		$rfh = new FileHandle;
-		$wfh = new FileHandle;
+		$rfh = new IO::File;
+		$wfh = new IO::File;
 		$pid = open2($rfh, $wfh, "$line") or die "can't do $line $!";
 		dbg('connect', "got pid $pid");
 		$wfh->autoflush(1);
@@ -224,21 +232,24 @@ sub dochat
 	alarm($timeout);
 	
     if ($expect) {
-		if ($csort eq 'telnet') {
-			$line = <$sock>;
-			chomp;
-		} elsif ($csort eq 'ax25') {
-			local $/ = "\r";
-			$line = <$rfh>;
-			$line =~ s/\r//og;
-		}
-		dbg('connect', "received \"$line\"");
-		if ($abort && $line =~ /$abort/i) {
-			dbg('connect', "aborted on /$abort/");
-			cease(11);
+		for (;;) {
+			if ($csort eq 'telnet') {
+				$line = $sock->get();
+				chomp;
+			} elsif ($csort eq 'ax25') {
+				local $/ = "\r";
+				$line = <$rfh>;
+				$line =~ s/\r//og;
+			}
+			dbg('connect', "received \"$line\"");
+			if ($abort && $line =~ /$abort/i) {
+				dbg('connect', "aborted on /$abort/");
+				cease(11);
+			}
+			last if $line =~ /$expect/i;
 		}
 	}
-	if ($send && (!$expect || $line =~ /$expect/i)) {
+	if ($send) {
 		if ($csort eq 'telnet') {
 			$sock->print("$send\n");
 		} elsif ($csort eq 'ax25') {
@@ -270,7 +281,7 @@ $lasttime = time;               # lasttime something happened on the interface
 $outqueue = "";                 # the output queue length
 $buffered = 1;                  # buffer output
 $savenl = "";                   # an NL that has been saved from last time
-$timeout = 30;                  # default timeout for connects
+$timeout = 60;                  # default timeout for connects
 $abort = "";                    # the current abort string
 $cpath = "$root/connect";		# the basic connect directory
 

@@ -1,3 +1,10 @@
+13Dec98========================================================================
+1. Fixed VS6 lat/long in prefix_data and wpxloc.raw
+2. Sorted out last in times for remote users
+3. editted and substitued G0RDI's version of the install instructions over
+mine in spider/html
+4. fixed telnet connections
+5. added connect instructions to html tree.
 12Dec98========================================================================
 1. Incorporated sh/st, (un)set/lockout, forward/opername from Iain G0RDI
 2. Added group handling with (un)set/group, show/group. This allows arbitrary

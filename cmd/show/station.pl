@@ -56,16 +56,16 @@ if (@f == 0) {
 			my $seek = $cref->mynode->call if $cref;
 
 			if ($seek) {
-				push @out, "User         :   $call (at $seek)";
+				push @out, "User         : $call (at $seek)";
 			} else {
-				push @out, "User         :   $call";
+				push @out, "User         : $call";
 			}
-			push @out, "Name         :   $name" if $name;
-			push @out, "Last Connect :   $last" if $last;
-			push @out, "QTH          :   $qth" if $qth;
-			push @out, "Location     :   $latlong ($qra)" if $latlong || $qra ;
-			push @out, sprintf("Heading      :   %.0f Deg %.0f Mi. %.0f Km. $from", $bearing, $miles, $dx) if $latlong;
-			push @out, "Home Node    :   $homenode" if $homenode;
+			push @out, "Name         : $name" if $name;
+			push @out, "Last Connect : $last" if $last;
+			push @out, "QTH          : $qth" if $qth;
+			push @out, "Location     : $latlong ($qra)" if $latlong || $qra ;
+			push @out, sprintf("Heading      : %.0f Deg %.0f Mi. %.0f Km. $from", $bearing, $miles, $dx) if $latlong;
+			push @out, "Home Node    : $homenode" if $homenode;
 		} else {
 			push @out, $self->msg('usernf', $call);
 		}

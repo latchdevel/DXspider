@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Connecting to other Clusters</title>
+  </head>
+
+  <body>
+    <h2>Connecting to other Clusters</h2>
+
+    <hr>
+    <address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+	<p>
+<!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Dec 13 22:31:33 GMT 1998
+<!-- hhmts end -->
+	<p>At the moment, anybody can connect inwards at any time from outside, either by ax25 or by
+	  telnet (assuming you have followed the instructions in <a href="install.html">installation</a>
+	  instructions. However, in order to connect outwards, you will need to create <em>connect</em> scripts.
+
+	<p><em>Connect</em> scripts live in the <tt>/spider/connect</tt> directory and are simple ascii scripts
+	  that are written using a normal editor. There are a couple of examples in the issue directory.
+
+	<p>Here are a couple of basic types, first a telnet connection:-
+	<pre>
+    timeout 15
+    # this is a comment
+    connect telnet dirkl.tobit.co.uk
+    'login' 'gb7djk'
+    'word' 'gb7djk'
+    client /usr/bin/perl /spider/perl/client.pl gb7djk-1 telnet
+	</pre>
+	<p>and an ax25 example:-
+	<pre>
+    timeout 60
+    abort (Busy|Sorry|Fail)
+    # don't forget to chmod 4775 netrom_call!
+    connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+    'Connect' ''
+    'Connect' 'c np7'
+    'Connect' 'c gb7dxm'
+    'Connect' ''
+    client /usr/bin/perl /spider/perl/client.pl gb7dxm ax25
+	</pre>
+
+	<p>A connection is started manually by typing in <tt>connect <scriptname></tt> on a sysop enabled
+	  <tt>client.pl</tt> session. For example:-
+	<pre>
+    G1TLH de GB7DJK 13-Dec-1998 2041Z > connect gb7djk-1
+    connection to GB7DJK-1 started
+    G1TLH de GB7DJK 13-Dec-1998 2043Z > 
+    </pre>
+    
+    <p>You can watch the progress of the connection (if you have the standard debugging enabled) on the
+	  <tt>cluster.pl</tt> screen and you should see something like this:-
+	<pre>
+    &lt;- D G1TLH connect gb7djk-1
+    -> D G1TLH connection to GB7DJK-1 started
+    -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
+    timeout set to 15
+    CONNECT sort: telnet command: dirkl.tobit.co.uk
+    CHAT "login" -> "gb7djk"
+    received "
+    Red Hat Linux release 5.1 (Manhattan)
+    Kernel 2.0.35 on an i586
+    "
+    received "login: "
+    sent "gb7djk"
+    CHAT "word" -> "gb7djk"
+    received "gb7djk
+ 
+    "
+    received "Password: "
+    sent "gb7djk"
+    Connected to GB7DJK-1, starting normal protocol
+    &lt;- O GB7DJK-1 telnet
+    -> B GB7DJK-1 0
+    GB7DJK-1 channel func  state 0 -> init
+    &lt;- D GB7DJK-1 
+    &lt;- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
+    &lt;- D GB7DJK-1 PC38^GB7DJK-1^~
+    &lt;- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime 0 00:00^5447^~
+    etc
+    </pre>
+
+	<p>The connect scripts consist of lines which start with the following keywords or symbols:-
+	<ul>
+		<p><li><b>#</b> All lines starting with a <b>#</b> are ignored, as are wholly blank lines.
+		<p><li><b>timeout</b> followed by a number is the number of seconds to wait for a command
+		to complete. If there is no <b>timeout</b> specified in the script then the default is 60 seconds.
+		<P><li><b>abort</b> is a regular expression containing one or more strings to look for to abort a 
+		connection. This is a perl regular expression and is executed ignoring case.
+		<p><li><b>connect</b> followed by <b>ax25</b> or <b>telnet</b> and some type dependent information. In 
+		the case of a <b>telnet</b> connection, there can be up to two parameters, the first is the ip
+		address or hostname of the computer you wish to connect to and the second is the port number you
+		want to use (this can be left out if it is a normal telnet session).
+		<p>In the case of an <b>ax25</b> session then this would normally be a call to <tt>ax25_call</tt>
+		  or <tt>netrom_call</tt> as in the example above. It is your responsibility to get your node
+		  and other ax25 parameters to work before going down this route!
+		<p><li><b>'</b> or <b>"</b> are the delimiting characters for a <tt>chat</tt> type script. They normally
+		come in pairs, either can be empty. Each line reads input from the connection until it sees the string
+		(or perl regular expression) contained in the left hand string. If the  left hand string is empty then
+		it doesn't read or wait for anything. The comparison is done ignoring case.
+		<p>When the left hand string has found what it is looking (if it is) then the right hand string is
+		  sent to the connection. 
+		<p>This process is repeated for every line of <tt>chat</tt> script. 
+		<p><li><b>client</b> starts the client program and should be exactly as you would want it with an incoming
+		connection.
+	</ul>
+    <hr>
+	<h5>$Id</h5>
+  </body>
+</html>

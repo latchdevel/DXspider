@@ -12,6 +12,8 @@
 #
 # $Id$
 #
+# Modified 13Dec98 Iain Phillips G0RDI
+#
 
 my ($self, $line) = @_;
 my @f = split /\s+/, $line;
@@ -34,8 +36,13 @@ if ($sort eq "FULL") {
   @locals = map { $_->priv >= 5 ? $_ : () } @locals;
   $to = "SYSOP";
   $sysopflag = '*';
-} else {
+} elsif ($sort eq "LOCAL") {
+  $line =~ s/^$f[0]\s+//;     # remove it
   $to = "LOCAL";
+} elsif ($sort eq "") {
+  $to = "LOCAL";
+} else {
+  return (1, $self->msg('e11'));
 }
 
 Log('ann', $to, $from, $line);

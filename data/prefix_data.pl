@@ -3146,7 +3146,7 @@
    459 => bless( { name => 'Australia-VK', dxcc => 198, itu => 59, cq => 30, utcoff => -10.0, lat => -42.9, long => 147.3 }, 'Prefix'),
    460 => bless( { name => 'Australia-VK', dxcc => 198, itu => 55, cq => 30, utcoff => -9.0, lat => -12.5, long => 130.9 }, 'Prefix'),
    461 => bless( { name => 'Cocos-Keeling-VK9/Y', dxcc => 201, itu => 54, cq => 29, utcoff => -6.30, lat => -12.2, long => 96.8 }, 'Prefix'),
-   462 => bless( { name => 'Hong-Kong-VS', dxcc => 218, itu => 44, cq => 24, utcoff => -8.0, lat => 22.5, long => 144 }, 'Prefix'),
+   462 => bless( { name => 'Hong-Kong-VS', dxcc => 218, itu => 44, cq => 24, utcoff => -8.0, lat => 22.25, long => 114.25 }, 'Prefix'),
    463 => bless( { name => 'India-Calcutta-VU', dxcc => 219, itu => 41, cq => 22, utcoff => -5.30, lat => 22.6, long => 88.4 }, 'Prefix'),
    464 => bless( { name => 'India-New-Delhi-VU', dxcc => 219, itu => 41, cq => 22, utcoff => -5.30, lat => 28, long => 77 }, 'Prefix'),
    465 => bless( { name => 'India-VU', dxcc => 219, itu => 41, cq => 22, utcoff => -5.30, lat => 28, long => 77 }, 'Prefix'),

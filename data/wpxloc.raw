@@ -699,7 +699,7 @@ VR6 Pitcairn-Is-VP6                   217 63 32  8.30 25 6 0 S 130 6 0 W
 VP9 Bermuda-VP9                       215 11  5  4.0 32 18 0 N 64 42 0 W @
 VQ9 Chagos-VQ9                        216 41 31 -5.0 7 18 0 S 72 24 0 E @
 VS Hong-Kong-VS                       218 44 24 -8.0 22 30 0 N 114 0 0 E @
-VR2,VS6 Hong-Kong-VS                      218 44 24 -8.0 22 30 0 N 144 0 0 E
+VR2,VS6 Hong-Kong-VS                      218 44 24 -8.0 22 14 0 N 114 14 0 E
 VU India-Bombay-VU                    219 41 22 -5.30 19 0 0 N 72 48 0 E * @
 VU India-Calcutta-VU                  219 41 22 -5.30 22 36 0 N 88 24 0 E *
 VU India-New-Delhi-VU                 219 41 22 -5.30 28 0 0 N 77 0 0 E

@@ -29,9 +29,11 @@ sub load
 	%prefix_loc = ();
   }
   $db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0666, $DB_BTREE) or confess "can't tie \%pre ($!)";  
-  confess $@ if $@;
-  do "$main::data/prefix_data.pl";
+  my $out = $@ if $@;
+  do "$main::data/prefix_data.pl" if !$out;
+  $out = $@ if $@;
 #  print Data::Dumper->Dump([\%pre, \%prefix_loc], [qw(pre prefix_loc)]);
+  return $out;
 }
 
 sub store

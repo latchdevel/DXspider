@@ -205,6 +205,7 @@ sub normal
 			last SWITCH if !$node; # ignore if havn't seen a PC19 for this one yet
 			my $i;
 			
+			
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (-) (\d)/o;
 				next if length $call < 3;
@@ -219,9 +220,9 @@ sub normal
 				$call =~ s/-\d+$//o;        # remove ssid for users
 				my $user = DXUser->get_current($call);
 				$user = DXUser->new($call) if !$user;
+				$user->homenode($node->call) if !$user->homenode;
 				$user->node($node->call);
 				$user->lastin($main::systime);
-				$user->homenode($node->call) if !$user->homenode;
 				$user->put;
 			}
 			
@@ -269,11 +270,11 @@ sub normal
 				if (!$user) {
 					$user = DXUser->new($call);
 					$user->sort('A');
-					$user->node($call);
 					$user->homenode($call);
-					$user->lastin($main::systime);
-					$user->put;
+					$user->node($call);
 				}
+				$user->lastin($main::systime);
+				$user->put;
 			}
 			
 			# queue up any messages
