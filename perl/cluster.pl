@@ -59,6 +59,7 @@ use Geomag;
 use CmdAlias;
 use Filter;
 use Local;
+use DXDb;
 use Fcntl ':flock'; 
 
 use Carp qw(cluck);
@@ -241,9 +242,6 @@ sub process_inqueue
 	# translate any crappy characters into hex characters 
 	if ($line =~ /[\x00-\x06\x08\x0a-\x1f\x7f-\xff]/o) {
 		$line =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-		++$error;
-#		dbg('chan', "<- $sort $call **CRAP**: $line");
-#		return;
 	}
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
@@ -255,13 +253,8 @@ sub process_inqueue
 		$dxchan->start($line, $sort);  
 	} elsif ($sort eq 'I') {
 		die "\$user not defined for $call" if !defined $user;
-
-		if ($error) {
-			dbg('chan', "DROPPED with $error duff characters");
-		} else {
-			# normal input
-			$dxchan->normal($line);
-		}
+		# normal input
+		$dxchan->normal($line);
 		disconnect($dxchan) if ($dxchan->{state} eq 'bye');
 	} elsif ($sort eq 'Z') {
 		disconnect($dxchan);

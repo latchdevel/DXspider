@@ -889,8 +889,11 @@ sub dir
 sub load_forward
 {
 	my @out;
-	do "$forwardfn" if -e "$forwardfn";
-	push @out, $@ if $@;
+	my $s = readfilestr($forwardfn);
+	if ($s) {
+		eval $s;
+		push @out, $@ if $@;
+	}
 	return @out;
 }
 
@@ -898,8 +901,11 @@ sub load_forward
 sub load_badmsg
 {
 	my @out;
-	do "$badmsgfn" if -e "$badmsgfn";
-	push @out, $@ if $@;
+	my $s = readfilestr($badmsgfn);
+	if ($s) {
+		eval $s;
+		push @out, $@ if $@;
+	}
 	return @out;
 }
 

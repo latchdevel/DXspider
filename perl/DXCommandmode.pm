@@ -10,7 +10,6 @@
 package DXCommandmode;
 
 use POSIX;
-use IO::File;
 
 @ISA = qw(DXChannel);
 
@@ -27,14 +26,16 @@ use CmdAlias;
 use Filter;
 use Carp;
 use Minimuf;
+use DXDb;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
 $errstr = ();					# error string from eval
 %aliases = ();					# aliases for (parts of) commands
+$scriptbase = "$main::root/scripts"; # the place where all users start scripts go
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -347,6 +348,14 @@ sub get_all
 	return @out;
 }
 
+# run a script for this user
+sub run_script
+{
+	my $self = shift;
+	my $silent = shift || 0;
+	
+}
+
 #
 # search for the command in the cache of short->long form commands
 #
@@ -487,15 +496,12 @@ sub find_cmd_name {
 		#print STDERR "already compiled $package->handler\n";
 		;
 	} else {
-		
-		my $fh = new IO::File;
-		if (!open $fh, $filename) {
+
+		my $sub = readfilestr($filename);
+		unless ($sub) {
 			$errstr = "Syserr: can't open '$filename' $!";
 			return undef;
 		};
-		local $/ = undef;
-		my $sub = <$fh>;
-		close $fh;
 		
 		#wrap the code into a subroutine inside our unique package
 		my $eval = qq( sub { $sub } );

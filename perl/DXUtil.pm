@@ -9,12 +9,14 @@
 package DXUtil;
 
 use Date::Parse;
+use IO::File;
+
 use Carp;
 
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
-			 parray parraypairs shellregex
+			 parray parraypairs shellregex readfilestr
              print_all_fields cltounix iscallsign
             );
 
@@ -192,4 +194,38 @@ sub iscallsign
 	return 1 if $call =~ /^\w+\d+/;
 	return 1 if $call =~ /^\d+\w+/;
 	return undef;
+}
+
+# read in a file into a string and return it. 
+# the filename can be split into a dir and file and the 
+# file can be in upper or lower case.
+# there can also be a suffix
+sub readfilestr
+{
+	my ($dir, $file, $suffix) = @_;
+	my $fn;
+	
+	if ($suffix) {
+		$fn = "$dir/$file.$suffix";
+		unless (-e $fn) {
+			my $f = uc $file;
+			$fn = "$dir/$file.$suffix";
+		}
+	} elsif ($file) {
+		$fn = "$dir/$file";
+		unless (-e $fn) {
+			my $f = uc $file;
+			$fn = "$dir/$file";
+		}
+	} else {
+		$fn = $dir;
+	}
+	my $fh = new IO::File $fn;
+	my $s = undef;
+	if ($fh) {
+		local $/ = undef;
+		$s = <$fh>;
+		$fh->close;
+	}
+	return $s;
 }
