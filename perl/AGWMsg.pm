@@ -45,7 +45,7 @@ sub init
 	
 	finish();
 	dbg('err', "AGW initialising and connecting to $addr/$port ...");
-	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp');
+	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout => 30);
 	unless ($sock) {
 		dbg('err', "Cannot connect to AGW Engine at $addr/$port $!");
 		return;
@@ -63,6 +63,7 @@ sub init
 	# R frame for the release number
 	# G frame to ask for ports
 	# X frame to say who we are
+	# optional m frame to enable monitoring
 	_sendf('R');
 	_sendf('G');
 	_sendf('X', $main::mycall);
@@ -80,6 +81,7 @@ sub finish
 			$_->disconnect;
 		}
 		# say we are going
+		_sendf('m') if $monitor;
 		_sendf('x', $main::mycall);
 		Msg->sleep(2);
 		Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
