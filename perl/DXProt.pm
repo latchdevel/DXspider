@@ -611,6 +611,12 @@ sub handle_12
 		$self->send_chat($line, @_[1..6]);
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
+		# ignore something that looks like a chat line coming in with sysop
+		# flag - this is a kludge...
+		if ($_[3] =~ /^\#\d+ / && $_[4] eq '*') {
+			dbg('PCPROT: Probable chat rewrite, dropped') if isdbg('chanerr');
+			return;
+		}
 
 		# here's a bit of fun, convert incoming ann with a callsign in the first word
 		# or one saying 'to <call>' to a talk if we can route to the recipient
