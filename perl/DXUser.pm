@@ -93,6 +93,7 @@ $v3 = 0;
 		  version => '1,Version',
 		  build => '1,Build',
 		  believe => '1,Believable nodes,parray',
+		  lastping => '1,Last Ping at,ptimelist',
 		 );
 
 #no strict;
@@ -784,7 +785,7 @@ sub set_believe
 	my $self = shift;
 	my $call = uc shift;
 	$self->{believe} ||= [];
-	push @{$self->{believe}}, $call;
+	push @{$self->{believe}}, $call unless grep $_ eq $call, @{$self->{believe}};
 }
 
 sub unset_believe
@@ -795,6 +796,23 @@ sub unset_believe
 		$self->{believe} = [grep {$_ ne $call} @{$self->{believe}}];
 		delete $self->{believe} unless @{$self->{believe}};
 	}
+}
+
+sub believe
+{
+	my $self = shift;
+	return exists $self->{believe} ? @{$self->{believe}} : ();
+}
+
+sub lastping
+{
+	my $self = shift;
+	my $call = shift;
+	$self->{lastping} ||= {};
+	$self->{lastping} = {} unless ref $self->{lastping};
+	my $b = $self->{lastping};
+	$b->{$call} = shift if @_;
+	return $b->{$call};	
 }
 1;
 __END__

@@ -1,3 +1,6 @@
+28Jul04=======================================================================
+1. backported 'Investigate' from NP branch so that only pingable nodes
+are 'believed'.
 26Jul04=======================================================================
 1. added extra variables to Internet.pm to allow the various internet query
 commands to alter the url that they use. 

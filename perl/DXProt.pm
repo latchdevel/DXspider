@@ -33,6 +33,7 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
+use Investigate;
 
 use strict;
 
@@ -45,6 +46,7 @@ $main::branch += $BRANCH;
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage
+			$investigation_int $pc19_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -71,6 +73,8 @@ $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
 $chatdupeage = 20 * 60 * 60;
+$investigation_int = 7*86400;	# time between checks to see if we can see this node
+$pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
 
 @checklist = 
 (
@@ -671,17 +675,12 @@ sub handle_16
 	my $line = shift;
 	my $origin = shift;
 
-	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
-		return;
-	}
-
 	# general checks
 	my $dxchan;
 	my $ncall = $_[1];
 	my $newline = "PC16^";
 			
-	# do I want users from this channel?
+	# dos I want users from this channel?
 	unless ($self->user->wantpc16) {
 		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
 		return;
@@ -691,6 +690,21 @@ sub handle_16
 		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 		return;
 	}
+
+	# do we believe this call? 
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		}
+		dbg("PCPROT: We don't believe $ncall on $self->{call}");
+		return;
+	}
+
+	if (eph_dup($line)) {
+		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
+		return;
+	}
+
 	my $parent = Route::Node::get($ncall); 
 
 	# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
@@ -830,6 +844,15 @@ sub handle_17
 		return;
 	}
 
+	# do we believe this call? 
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		}
+		dbg("PCPROT: We don't believe $ncall on $self->{call}");
+		return;
+	}
+
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
 		dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
@@ -907,11 +930,6 @@ sub handle_19
 	my $i;
 	my $newline = "PC19^";
 
-	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC19 detected") if isdbg('chanerr');
-		return;
-	}
-
 	# new routing list
 	my @rout;
 
@@ -975,6 +993,26 @@ sub handle_19
 			$user->lockout(1);
 			$user->homenode($call);
 			$user->node($call);
+		}
+
+		# do we believe this call?
+		my $genline = "PC19^$here^$call^$conf^$ver^$_[-1]^"; 
+		unless ($call eq $self->{call} || $self->is_believed($call)) {
+			my $pt = $user->lastping($self->{call}) || 0;
+			if ($pt+$investigation_int < $main::systime && !Investigate::get($call, $self->{call})) {
+				my $ivp  = Investigate->new($call, $self->{call});
+				$ivp->version($ver);
+				$ivp->here($here);
+				$ivp->store_pcxx($pcno,$genline,$origin,'PC19',$here,$call,$conf,$ver,$_[-1]);
+			} else {
+				dbg("PCPROT: We don't believe $call on $self->{call}");
+			}
+			next;
+		}
+
+		if (eph_dup($genline)) {
+			dbg("PCPROT: dup PC19 for $call detected") if isdbg('chanerr');
+			next;
 		}
 
 		my $r = Route::Node::get($call);
@@ -1055,6 +1093,15 @@ sub handle_21
 	# as a PC39: I have gone away
 	if ($call eq $self->call) {
 		$self->disconnect(1);
+		return;
+	}
+
+	# check if we believe this
+	unless ($call eq $self->{call} || $self->is_believed($call)) {
+		if (my $ivp = Investigate::get($call, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		}
+		dbg("PCPROT: We don't believe $call on $self->{call}");
 		return;
 	}
 
@@ -1470,21 +1517,28 @@ sub handle_51
 							my $nopings = $tochan->user->nopings || $obscount;
 							push @{$tochan->{pingtime}}, $t;
 							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-
-								# cope with a missed ping, this means you must set the pingint large enough
+							
+							# cope with a missed ping, this means you must set the pingint large enough
 							if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
 								$t -= $tochan->{pingint};
 							}
-
-								# calc smoothed RTT a la TCP
+							
+							# calc smoothed RTT a la TCP
 							if (@{$tochan->{pingtime}} == 1) {
 								$tochan->{pingave} = $t;
 							} else {
 								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 							}
 							$tochan->{nopings} = $nopings; # pump up the timer
+							if (my $ivp = Investigate::get($from, $self->{call})) {
+								$ivp->handle_ping;
+							}
+						} elsif (my $rref = Route::Node::get($r->{call})) {
+							if (my $ivp = Investigate::get($from, $self->{call})) {
+								$ivp->handle_ping;
+							}
 						}
-					} 
+					}
 				}
 			}
 		}
@@ -1625,6 +1679,8 @@ sub process
 			}
 		}
 	}
+
+	Investigate::process();
 
 	# every ten seconds
 	if ($t - $last10 >= 10) {	
@@ -2058,14 +2114,23 @@ sub load_hops
 # add a ping request to the ping queues
 sub addping
 {
-	my ($from, $to) = @_;
+	my ($from, $to, $via) = @_;
 	my $ref = $pings{$to} || [];
 	my $r = {};
 	$r->{call} = $from;
 	$r->{t} = [ gettimeofday ];
-	route(undef, $to, pc51($to, $main::mycall, 1));
+	if ($via && (my $dxchan = DXChannel->get($via))) {
+		$dxchan->send(pc51($to, $main::mycall, 1));
+	} else {
+		route(undef, $to, pc51($to, $main::mycall, 1));
+	}
 	push @$ref, $r;
 	$pings{$to} = $ref;
+	my $u = DXUser->get_current($to);
+	if ($u) {
+		$u->lastping(($via || $from), $main::systime);
+		$u->put;
+	}
 }
 
 sub process_rcmd
@@ -2389,6 +2454,7 @@ sub eph_dup
 	$s =~ s/\^H\d\d?\^?\~?$//;
 	$r = 1 if exists $eph{$s};    # pump up the dup if it keeps circulating
 	$eph{$s} = $main::systime + $t;
+	dbg("PCPROT: emphemeral duplicate") if $r && isdbg('chan'); 
 	return $r;
 }
 

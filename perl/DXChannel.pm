@@ -113,6 +113,7 @@ $count = 0;
 		  version => '1,Node Version',
 		  build => '1,Node Build',
 		  verified => '9,Verified?,yesno',
+		  newroute => '1,New Style Routing,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);
@@ -300,6 +301,15 @@ sub sort
 {
 	my $self = shift;
 	return @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
+}
+
+# find out whether we are prepared to believe this callsign on this interface
+sub is_believed
+{
+	my $self = shift;
+	my $call = shift;
+	
+	return grep $call eq $_, $self->user->believe;
 }
 
 # handle out going messages, immediately without waiting for the select to drop
@@ -514,7 +524,7 @@ sub rspfcheck
 {
 	my ($self, $flag, $node, $user) = @_;
 	my $nref = Route::Node::get($node);
-	my $dxchan = $nref->dxchan if $nref;
+	my $dxchan = $nref->bestdxchan if $nref;
 	if ($nref && $dxchan) {
 	    if ($dxchan == $self) {
 			return 1 unless $user;
@@ -523,7 +533,7 @@ sub rspfcheck
 			return 1 if @users == 0 || grep $user eq $_, @users;
 			dbg("RSPF: $user not on $node") if isdbg('chanerr');
 		} else {
-			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('chanerr');
+			dbg("RSPF: Shortest path for $node is " . $nref->bestdxchan->{call}) if isdbg('chanerr');
 		}
 	} else {
 		return 1 if $flag;
@@ -637,7 +647,7 @@ sub AUTOLOAD
 	# this clever line of code creates a subroutine which takes over from autoload
 	# from OO Perl - Conway
 	*$AUTOLOAD = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}};
-        goto &$AUTOLOAD;
+	goto &$AUTOLOAD;
 }
 
 

@@ -27,7 +27,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs phex shellregex readfilestr writefilestr
-			 filecopy
+			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
             );
@@ -160,6 +160,19 @@ sub phex
 {
 	my $val = shift;
 	return sprintf '%X', $val;
+}
+
+# take an arg as a hash of call=>time pairs and print it
+sub ptimelist
+{
+	my $ref = shift;
+	my $out;
+	for (sort keys %$ref) {
+		$out .= "$_=$ref->{$_}, ";
+	}
+	chop $out;
+	chop $out;
+	return $out;	
 }
 
 # take an arg as an array list and print it
