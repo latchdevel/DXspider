@@ -912,26 +912,6 @@ sub handle_19
 		return;
 	}
 
-	# if the origin isn't the same as the INTERFACE, then reparent, creating nodes as necessary
-	if ($origin ne $self->call) {
-		my $op = Route::Node::get($origin);
-		unless ($op) {
-			$op = $parent->add($origin, 5000, 1);
-			my $user = DXUser->get_current($origin);
-			if (!$user) {
-				$user = DXUser->new($origin);
-				$user->priv(1);		# I have relented and defaulted nodes
-				$user->lockout(1);
-				$user->homenode($origin);
-				$user->node($origin);
-				$user->wantroutepc19(1);
-			}
-			$user->sort('A') unless $user->is_node;
-			$user->put;
-		}
-		$parent = $op;
-	}
-
 	# parse the PC19
 	for ($i = 1; $i < $#_-1; $i += 4) {
 		my $here = $_[$i];
@@ -944,7 +924,7 @@ sub handle_19
 				
 		# check for sane parameters
 		#				$ver = 5000 if $ver eq '0000';
-		next if $ver < 5000;	# only works with version 5 software
+		next unless $ver > 5000;	# only works with version 5 software that isn't a passive node
 		next if length $call < 3; # min 3 letter callsigns
 		next if $call eq $main::mycall;
 
@@ -968,22 +948,7 @@ sub handle_19
 
 		RouteDB::update($call, $origin);
 
-		# do we believe this call?
 		my $genline = "PC19^$here^$call^$conf^$ver^$_[-1]^"; 
-#		unless ($call eq $origin || $self->is_believed($call)) {
-#			my $pt = $user->lastping($origin) || 0;
-#			if ($pt+$investigation_int < $main::systime && !Investigate::get($call, $origin)) {
-#				my $ivp  = Investigate->new($call, $origin);
-#				$ivp->version($ver);
-#				$ivp->here($here);
-#				$ivp->store_pcxx($pcno,$genline,$origin,'PC19',$here,$call,$conf,$ver,$_[-1]);
-#			} else {
-#				dbg("PCPROT: We don't believe $call on $origin") if isdbg('chanerr');
-#			}
-#			$user->put;
-#			next;
-#		}
-
 		if (eph_dup($genline)) {
 			dbg("PCPROT: dup PC19 for $call detected") if isdbg('chanerr');
 			next;
@@ -992,8 +957,8 @@ sub handle_19
 		my $r = Route::Node::get($call);
 		my $flags = $here;
 
-		# is he under the control of the new protocol?
-		if ($r && $r->np) {
+		# is he under the control of the new protocol and not my interface call?
+		if ($call ne $origin && $r && $r->np) {
 			dbg("PCPROT: $call aranea node, ignored") if isdbg('chanerr');
 			next;
 		}
