@@ -524,7 +524,7 @@ sub rspfcheck
 {
 	my ($self, $flag, $node, $user) = @_;
 	my $nref = Route::Node::get($node);
-	my $dxchan = $nref->bestdxchan if $nref;
+	my $dxchan = $nref->dxchan if $nref;
 	if ($nref && $dxchan) {
 	    if ($dxchan == $self) {
 			return 1 unless $user;
@@ -533,7 +533,7 @@ sub rspfcheck
 			return 1 if @users == 0 || grep $user eq $_, @users;
 			dbg("RSPF: $user not on $node") if isdbg('chanerr');
 		} else {
-			dbg("RSPF: Shortest path for $node is " . $nref->bestdxchan->{call}) if isdbg('chanerr');
+			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('chanerr');
 		}
 	} else {
 		return 1 if $flag;

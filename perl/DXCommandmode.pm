@@ -418,15 +418,14 @@ sub run_cmd
 
 	return () if length $cmdline == 0;
 		
-	# strip out //
-	$cmdline =~ s|//|/|og;
-		
 	# split the command line up into parts, the first part is the command
 	my ($cmd, $args) = split /\s+/, $cmdline, 2;
 	$args = "" unless defined $args;
 		
 	if ($cmd) {
-			
+		# strip out // on command only
+		$cmd =~ s|//|/|g;
+					
 		my ($path, $fcmd);
 			
 		dbg("cmd: $cmd") if isdbg('command');
