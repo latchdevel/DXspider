@@ -151,33 +151,44 @@ sub process
  SWITCH: {
 		if ($pcno == 28) {		# incoming message
 
+			# sort out various extant protocol errors that occur
+			my ($fromnode, $origin);
+			if ($self->is_arcluster && $f[13] eq $self->call) {
+				$fromnode = $f[13];
+				$origin = $f[2];
+			} else {
+				$fromnode = $f[2];
+			    $origin = $f[13];
+			}
+			$origin = $self->call unless $origin && $origin gt ' ';
+
 			# first look for any messages in the busy queue 
 			# and cancel them this should both resolve timed out incoming messages
 			# and crossing of message between nodes, incoming messages have priority
-			if (exists $busy{$f[2]}) {
-				my $ref = $busy{$f[2]};
+
+			if (exists $busy{$fromnode}) {
+				my $ref = $busy{$fromnode};
 				my $tonode = $ref->{tonode};
-				dbg("Busy, stopping msgno: $ref->{msgno} -> $f[2]") if isdbg('msg');
+				dbg("Busy, stopping msgno: $ref->{msgno} -> $fromnode") if isdbg('msg');
 				$ref->stop_msg($self->call);
 			}
 
 			my $t = cltounix($f[5], $f[6]);
-			my $stream = next_transno($f[2]);
-			$f[13] = $self->call unless $f[13] && $f[13] gt ' ';
-			my $ref = DXMsg->alloc($stream, uc $f[3], $f[4], $t, $f[7], $f[8], $f[13], '0', $f[11]);
+			my $stream = next_transno($fromnode);
+			my $ref = DXMsg->alloc($stream, uc $f[3], $f[4], $t, $f[7], $f[8], $origin, '0', $f[11]);
 			
 			# fill in various forwarding state variables
-			$ref->{fromnode} = $f[2];
+			$ref->{fromnode} = $fromnode;
 			$ref->{tonode} = $f[1];
 			$ref->{rrreq} = $f[11];
 			$ref->{linesreq} = $f[10];
 			$ref->{stream} = $stream;
 			$ref->{count} = 0;	# no of lines between PC31s
-			dbg("new message from $f[4] to $f[3] '$f[8]' stream $stream\n") if isdbg('msg');
+			dbg("new message from $f[4] to $f[3] '$f[8]' stream $fromnode/$stream\n") if isdbg('msg');
 			Log('msg', "Incoming message $f[4] to $f[3] '$f[8]'" );
-			$work{"$f[2]$stream"} = $ref; # store in work
-			$busy{$f[2]} = $ref; # set interlock
-			$self->send(DXProt::pc30($f[2], $f[1], $stream)); # send ack
+			$work{"$fromnode$stream"} = $ref; # store in work
+			$busy{$fromnode} = $ref; # set interlock
+			$self->send(DXProt::pc30($fromnode, $f[1], $stream)); # send ack
 			$ref->{lastt} = $main::systime;
 
 			# look to see whether this is a non private message sent to a known callsign
