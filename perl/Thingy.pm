@@ -22,6 +22,7 @@ $main::branch += $BRANCH;
 use DXChannel;
 use DXDebug;
 
+use Thingy::Hi;
 use Thingy::Route;
 
 use vars qw(@queue);
@@ -38,7 +39,6 @@ sub new
 	bless $self, $class;
 	$self->{_tonode} ||= '*';
 	$self->{_fromnode} ||= $main::mycall;
-	$self->{_hoptime} ||= 0;
 	while (my ($k,$v) = each %$self) {
 		delete $self->{$k} unless defined $v;
 	}
@@ -46,7 +46,7 @@ sub new
 }
 
 # add the Thingy to the queue
-sub add
+sub queue
 {
 	push @queue, shift;
 }
@@ -59,7 +59,7 @@ sub process
 	if ($t) {
 
 		# go directly to this class's t= handler if there is one
-		my $type = $t->{t};
+		my $type = lc $t->{t};
 		if ($type) {
 			# remove extraneous characters put there by the ungodly
 			$type =~ s/[^\w]//g;

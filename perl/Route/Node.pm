@@ -29,6 +29,8 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
+		  build => '0,Build',
+		  software => '0,Software',
 		  np => '0,Using New Prot,yesno',
 		  lid => '0,Last Msgid',
 );

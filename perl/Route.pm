@@ -37,6 +37,7 @@ use vars qw(%list %valid $filterdef);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  lastupdate => '0,Last Update,cldatetime', 
 		 );
 
 $filterdef = bless ([

@@ -68,8 +68,7 @@ sub sendinit
 {
 	my $self = shift;
 	
-	my $t = Thingy::Route->new_node_connect($main::mycall, $main::mycall, nextmsgid(), $self->{call});
-	$t->add;
+	$self->node_update;
 }
 
 sub normal
@@ -84,7 +83,7 @@ sub normal
 	# 
 	
 	return unless my ($tonode, $fromnode, $class, $msgid, $hoptime, $rest) = 
-		$_[1] =~ /^([^,]+,){5,5}:(.*)$/;
+		$_[1] =~ /^([^;]+;){5,5}\|(.*)$/;
 
 	my $self = shift;
 	
@@ -96,14 +95,22 @@ sub normal
     # and create a new thingy based on the class passed (if known)
 	# ignore pairs with a leading '_'.
 
-	my @par = map {/^_/ ? split(/=/,$_,2) : ()} split /,/, $rest;
+	my @par;
+
+	for (split /;/, $rest) {
+		next if /^_/;
+		next unless /^\w+=/;
+		s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
+		push @par, split(/=/,$_,2);
+	}
+ 
 	no strict 'refs';
 	my $pkg = 'Thingy::' . lcfirst $class;
 	my $t = $pkg->new(_tonode=>$tonode, _fromnode=>$fromnode,
 					  _msgid=>$msgid, _hoptime=>$newhoptime,
 					  _newdata=>$rest, _inon=>$self->{call},
 					  @par) if defined *$pkg && $pkg->can('new');
-	$t->add if $t;
+	$t->queue if $t;
 	return;
 }
 
@@ -120,8 +127,8 @@ sub process
 sub disconnect
 {
 	my $self = shift;
-	my $t = Thingy::Route->new_node_disconnect($main::mycall, $main::mycall, nextmsgid(), $self->{call});
-	$t->add;
+	my $t = Thingy::Route->new_node_disconnect($main::mycall, $main::mycall, $self->{call});
+	$t->queue;
 	$self->DXProt::disconnect(@_);
 }
 
@@ -136,9 +143,48 @@ sub nextmsgid
 
 sub node_update
 {
-	my $t = Thingy::Route->new_node_update(nextmsgid());
-	$t->add if $t;
+	my $t = Thingy::Route->new_node_update();
+	$t->queue if $t;
 }
 
+sub t_send
+{
+	my $self = shift;
+	my $t = shift;
+	confess('$t is not a Thingy') unless $t->isa('Thingy');
+	
+	# manufacture the protocol line if required
+	unless (exists $t->{_newprot}) {
+		my ($class) = ref $self =~ /::(\w+)$/;
+		unless (exists $t->{_rest}) {
+			$t->{_rest} = "";
+			while (my ($k,$v) = each %$t) {
+				next if $k =~ /^_/;
+				if (ref $v && @$v) {
+					my $val = "";
+					for(@$v) {
+						my $vv = $_;
+						$vv =~ s/([\%;=,\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
+						$val .= $vv . ',';
+					}
+					if (length $val) {
+						chop $val;
+						$t->{_rest} .= "$k=$val;";
+					}
+				} elsif (length $v) {
+					$v =~ s/([\%;=\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
+					$t->{_rest} .= "$k=$v;";
+				}
+			}
+			chop $t->{_rest} if length $t->{_rest};
+		}
+		
+		$t->{_hoptime} ||= 1;
+		$t->{_msgid} = nextmsgid() unless $t->{_msgid};
+		$t->{_newprot} = join(';', $t->{_tonode}, $t->{_fromnode}, uc $class,
+							  $t->{_msgid}, $t->{_hoptime}) . '|' . $t->{_rest};
+	}
+	$self->SUPER::send($t->{_newprot});
+}
 
 1;
