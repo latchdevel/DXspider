@@ -450,7 +450,7 @@ do_initscr();
 
 $SIG{__DIE__} = \&sig_term;
 
-$conn->send_later("A$call|$connsort");
+$conn->send_later("A$call|$connsort width=$COLS");
 $conn->send_later("I$call|set/page $maxshist");
 $conn->send_later("I$call|set/nobeep");
 

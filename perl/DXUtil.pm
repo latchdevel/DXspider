@@ -195,15 +195,17 @@ sub print_all_fields
 	my @out;
 	my @fields = $ref->fields;
 	my $field;
+	my $width = $self->width - 1;
+	$width ||= 80;
 
 	foreach $field (sort {$ref->field_prompt($a) cmp $ref->field_prompt($b)} @fields) {
 		if (defined $ref->{$field}) {
 			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
 			my @tmp;
-			if (length $ans > 79) {
+			if (length $ans > $width) {
 				my ($p, $a) = split /: /, $ans, 2;
 				my $l = (length $p) + 2;
-				my $al = 79 - $l;
+				my $al = ($width - 1) - $l;
 				my $bit;
 				while (length $a > $al ) {
 					($bit, $a) = unpack "A$al A*", $a;

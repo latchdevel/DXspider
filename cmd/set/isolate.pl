@@ -26,11 +26,16 @@ foreach $call (@args) {
 		$user = DXUser->get($call);
 		$create = !$user;
 		$user = DXUser->new($call) if $create;
+		my $f;
+		push(@out, $self->msg('isoari', $call)), $f++ if Filter::getfn('route', $call, 1);
+		push(@out, $self->msg('isoaro', $call)), $f++ if Filter::getfn('route', $call, 0);
 		if ($user) {
-			$user->isolate(1);
-			$user->close();
-			push @out, $self->msg($create ? 'isoc' : 'iso', $call);
-			Log('DXCommand', $self->msg($create ? 'isoc' : 'iso', $call));
+			unless ($f) {
+				$user->isolate(1);
+				$user->close();
+				push @out, $self->msg($create ? 'isoc' : 'iso', $call);
+				Log('DXCommand', $self->msg($create ? 'isoc' : 'iso', $call));
+			}
 		} else {
 			push @out, $self->msg('e3', "Set/Isolate", $call);
 		}

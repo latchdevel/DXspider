@@ -11,4 +11,4 @@ my $type = 'accept';
 my $sort  = 'route';
 
 my ($r, $filter, $fno) = $Route::filterdef->cmd($self, $sort, $type, $line);
-return (0, $r ? $filter : $self->msg('filter1', $fno, $filter->{name})); 
+return (1, $r ? $filter : $self->msg('filter1', $fno, $filter->{name})); 

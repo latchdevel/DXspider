@@ -59,12 +59,21 @@ sub new
 	return $self;
 }
 
+sub get_all
+{
+	return values %list;
+}
+
 sub del
 {
 	my $self = shift;
 	my $pref = shift;
-	my @out = $self->delparent($pref);
-	return @out;
+	$self->delparent($pref);
+	unless (@{$self->{parent}}) {
+		delete $list{$self->{call}};
+		return $self;
+	}
+	return undef;
 }
 
 sub get

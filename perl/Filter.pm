@@ -517,7 +517,9 @@ sub cmd
 	return $dxchan->msg('filter5') unless $line;
 
 	my ($r, $filter, $fno, $user, $s) = $self->parse($dxchan, $sort, $line);
-	return (1,$filter) if $r;
+	my $u = DXUser->get_current($user);
+	return (1, $dxchan->msg('isow', $user)) if $u && $u->isolate;
+	return (1, $filter) if $r;
 
 	my $fn = "filter$fno";
 

@@ -90,12 +90,12 @@ sub del
 
 	# delete parent from this call's parent list
 	$pref->_delnode($self);
-	my @ref = $self->_delparent($pref);
+    $self->_delparent($pref);
 	my @nodes;
 	my $ncall = $self->{call};
 	
 	# is this the last connection, I have no parents anymore?
-	unless (@ref) {
+	unless (@{$self->{parent}}) {
 		foreach my $rcall (@{$self->{nodes}}) {
 			next if grep $rcall eq $_, @_;
 			my $r = Route::Node::get($rcall);

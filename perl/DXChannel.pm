@@ -101,6 +101,7 @@ $count = 0;
 		  cq => '0,CQ Zone',
 		  enhanced => '5,Enhanced Client,yesno',
 		  senddbg => '8,Sending Debug,yesno',
+		  width => '0,Column Width',
 		 );
 
 use vars qw($VERSION $BRANCH);

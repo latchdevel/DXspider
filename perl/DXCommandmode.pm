@@ -83,6 +83,8 @@ sub start
 	$self->{lang} = $user->lang || $main::lang || 'en';
 	$self->{pagelth} = $user->pagelth || 20;
 	$self->{priv} = 0 if $line =~ /^(ax|te)/; # set the connection priv to 0 - can be upgraded later
+	($self->{width}) = $line =~ /width=(\d+)/;
+	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
 	
 	# set some necessary flags on the user if they are connecting

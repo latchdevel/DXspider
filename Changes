@@ -6,6 +6,10 @@ more than one node.
 4. Make PC50s come out in one heap on all channels every 14 mins, instead of
 on the 14th minute in the connection time for each channel. This should 
 reduce (slightly) the dups that are dumped.
+5. Speed up input queue processing (a lot).
+6. make set/isolate and acc/route mutually exclusive (and issue appropriate
+error messages).
+7. Improve stat/route_node and stat/route_user for diagnostics.
 01Sep01=======================================================================
 1. Change build number calc (hopefully for the last time)
 27Aug01=======================================================================
