@@ -654,6 +654,8 @@ sub normal
 						if ($self->in_filter_route($r)) {
 							$ar = $parent->add($call, $ver, $flags);
 							push @rout, $ar if $ar;
+						} else {
+							next;
 						}
 					}
 					if ($r->version ne $ver || $r->flags != $flags) {
@@ -668,6 +670,8 @@ sub normal
 				    if ($self->in_filter_route($new)) {
 						my $r = $parent->add($call, $ver, $flags);
 						push @rout, $r;
+					} else {
+						next;
 					}
 				}
 
