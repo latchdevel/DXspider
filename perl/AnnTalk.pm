@@ -62,6 +62,21 @@ sub listdups
 	return DXDupe::listdups('A', $dupage, @_);
 }
 
-
+# is this text field a likely announce to talk substitution?
+# this may involve all sorts of language dependant heuristics, but 
+# then again, it might not
+sub is_talk_candidate
+{
+	my ($from, $text) = @_;
+	my $call;
+	($call) = $text =~ /^\s*(?:[Xx]|[Tt][Oo]?)\s+([\w-]+)/;
+	($call) = $text =~ /^\s*>\s*([\w-]+)\b/ unless $call;
+	($call) = $text =~ /^\s*([\w-]+):?\b/ unless $call;
+	if ($call) {
+		$call = uc $call;
+		return is_callsign($call);
+	}
+    return undef;
+}
 1; 
 

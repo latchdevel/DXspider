@@ -321,7 +321,8 @@ sub normal
 			}
 
 			# is it for me or one of mine?
-			my ($to, $via, $call, $dxchan);
+			my ($from, $to, $via, $call, $dxchan);
+			$from = $field[1];
 			if ($field[5] gt ' ') {
 				$via = $field[2];
 				$to = $field[5];
@@ -329,12 +330,20 @@ sub normal
 				$to = $field[2];
 			}
 
+			# if we are converting announces to talk is it a dup?
+			if ($ann_to_talk) {
+				if (AnnTalk::is_talk_candidate($$from, $field[3]) && AnnTalk::dup($$from, $to, $field[3])) {
+					dbg("DXPROT: Dupe talk from announce, dropped") if isdbg('chanerr');
+					return;
+				}
+			}
+
 			# it is here and logged on
 			$dxchan = DXChannel->get($main::myalias) if $to eq $main::mycall;
 			$dxchan = DXChannel->get($to) unless $dxchan;
 			if ($dxchan && $dxchan->is_user) {
 				$field[3] =~ s/\%5E/^/g;
-				$dxchan->talk($field[1], $to, $via, $field[3]);
+				$dxchan->talk($$from, $to, $via, $field[3]);
 				return;
 			}
 
@@ -345,17 +354,17 @@ sub normal
 			if ($ref = Route::get($to)) {
 				$vref = Route::Node::get($via) if $via;
 				$vref = undef unless $vref && grep $to eq $_, $vref->users;
-				$ref->dxchan->talk($field[1], $to, $vref ? $via : undef, $field[3], $field[6]);
+				$ref->dxchan->talk($$from, $to, $vref ? $via : undef, $field[3], $field[6]);
 				return;
 			}
 
 			# not visible here, send a message of condolence
 			$vref = undef;
-			$ref = Route::get($field[1]);
+			$ref = Route::get($$from);
 			$vref = $ref = Route::Node::get($field[6]) unless $ref; 
 			if ($ref) {
 				$dxchan = $ref->dxchan;
-				$dxchan->talk($main::mycall, $field[1], $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
+				$dxchan->talk($main::mycall, $$from, $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
 			}
 			return;
 		}
@@ -520,17 +529,13 @@ sub normal
 				# here's a bit of fun, convert incoming ann with a callsign in the first word
 				# or one saying 'to <call>' to a talk if we can route to the recipient
 				if ($ann_to_talk) {
-					my ($to, $call) = $field[3] =~ /^\s*([\w-]+)[\s:]+([\w-]+)/;
-					if ($to && $call) {
-						$to = uc $to;
-						$call = uc $call;
-						if (($to =~ /^TO?$/ && is_callsign($call)) || is_callsign($call = $to)) {
-							my $ref = Route::get($call);
-							if ($ref) {
-								my $dxchan = $ref->dxchan;
-								$dxchan->talk($field[1], $call, undef, $field[3], $field[5]) if $dxchan != $self;
-								return;
-							}
+					my $call = AnnTalk::is_talk_candidate($field[1], $field[3]);
+					if ($call) {
+						my $ref = Route::get($call);
+						if ($ref) {
+							my $dxchan = $ref->dxchan;
+							$dxchan->talk($field[1], $call, undef, $field[3], $field[5]) if $dxchan != $self;
+							return;
 						}
 					}
 				}

@@ -705,10 +705,10 @@ sub announce
 	my $text = shift;
 	my ($filter, $hops);
 
-	if ($suppress_ann_to_talk) {
-		my ($to, $call) = $text =~ /^\s*([\w-]+)[\s:]+([\w-]+)/;
-		return if ($to && $call && ((uc $to =~ /^TO?$/ && is_callsign(uc $call)) || is_callsign($call = uc $to)));
-	}	
+	if ($suppress_ann_to_talk && $to ne $self->{call}) {
+		my $call = AnnTalk::is_talk_candidate($_[0], $text);
+		return if $call && Route::get($call);
+	}
 
 	if ($self->{annfilter}) {
 		($filter, $hops) = $self->{annfilter}->it(@_ );

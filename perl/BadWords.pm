@@ -12,12 +12,13 @@ use strict;
 
 use DXUtil;
 use DXVars;
+use DXHash;
 use IO::File;
 
-use vars qw(%badwords $fn);
+use vars qw($badword);
 
-$fn = "$main::data/badwords";
-%badwords = ();
+my $oldfn = "$main::data/badwords";
+$badword = new DXHash "badword";
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -29,23 +30,24 @@ $main::branch += $BRANCH;
 sub load
 {
 	my @out;
-	return unless -e $fn;
-	my $fh = new IO::File $fn;
+	return unless -e $oldfn;
+	my $fh = new IO::File $oldfn;
 	
 	if ($fh) {
-		%badwords = ();
 		while (<$fh>) {
 			chomp;
 			next if /^\s*\#/;
 			my @list = split " ";
 			for (@list) {
-				$badwords{lc $_}++;
+				$badword->add($_);
 			}
 		}
 		$fh->close;
+		$badword->put;
+		unlink $oldfn;
 	} else {
-		my $l = "can't open $fn $!";
-		dbg('err', $l);
+		my $l = "can't open $oldfn $!";
+		dbg($l);
 		push @out, $l;
 	}
 	return @out;
@@ -54,7 +56,7 @@ sub load
 # check the text against the badwords list
 sub check
 {
-	return grep { $badwords{$_} } split(/\b/, lc shift);
+	return grep { $badword->in($_) } split(/\b/, lc shift);
 }
 
 1;
