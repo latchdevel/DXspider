@@ -226,6 +226,12 @@ sub normal
 				dbg('chan', "Bad DX spot, ignored");
 				return;
 			}
+
+			# are any of the crucial fields invalid?
+            if ($field[2] =~ /[a-z]/ || $field[6] =~ /[a-z]/ || $field[7] =~ /[a-z]/) {
+				dbg('chan', "Spot contains lower case callsigns, rejected");
+				return;
+			}
 			
 			my @spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
 
