@@ -40,9 +40,13 @@ package DXUser;
 
 for $a (@all) {
 	my $ref = DXUser->get($a);
-	my $s = $ref->encode();
+	if (ref $ref) {
+		my $s = $ref->encode();
 	
-	print "'$a' => qq{ $s },\n";
+		print "'$a' => q{ $s },\n";
+	} else {
+		print "# $a has gorn missing\n";
+	}
 	$count++;
 }
 print ");\n
