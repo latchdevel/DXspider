@@ -24,7 +24,7 @@ foreach $l (@list) {
 			 Timeout  =>  5);
 	if ($t) {
 		$t->print("GET /database?callsign=$l HTTP/1.0\n\n");
-		Log('call', "$call: show/qrz $l");
+		Log('call', "$call: show/qrz \U$l");
 		my $state = "call";
 		while (my $result = $t->getline) {
 #			print "$state: $result";

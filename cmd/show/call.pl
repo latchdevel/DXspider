@@ -24,7 +24,7 @@ foreach $l (@list) {
 			 Timeout  =>  5);
 	if ($t) {
 		$t->print(uc $l);
-		Log('call', "$call: show/call $l");
+		Log('call', "$call: show/call \U$l");
 		while (my $result = $t->getline) {
 			push @out,$result;
 		}
