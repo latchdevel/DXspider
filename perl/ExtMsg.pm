@@ -247,7 +247,7 @@ sub _dochat
 	my $conn = shift;
 	my $cmd = shift;
 	my $line = shift;
-	
+		
 	if ($line) {
 		my ($expect, $send) = $cmd =~ /^\s*\'(.*)\'\s+\'(.*)\'/;
 		if ($expect) {
@@ -261,6 +261,7 @@ sub _dochat
 			if ($line =~ /$expect/i) {
 				dbg('connect', "got: \"$expect\" sending: \"$send\"");
 				$conn->send_later($send);
+				delete $conn->{msg}; # get rid any input if a match
 				return;
 			}
 		}
