@@ -15,7 +15,7 @@ package DXProt;
 $pc50_interval = 14*60;
 
 # the version of DX cluster (tm) software I am masquerading as
-$myprot_version = 5300;
+$myprot_version = 5251;
 
 # default hopcount to use
 $def_hopcount = 30;

@@ -121,7 +121,7 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.51";				# the version no of the software
+$version = "2.01";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
@@ -178,7 +178,7 @@ sub new_channel
 			already_conn($conn, $call, DXM::msg($lang, 'concluster', $call, $main::mycall));
 			return;
 		}
-		if ($bumpexisting) {
+		if ($bumpexisting && $call ne $main::mycall) {
 			my $ip = $conn->{peerhost} || 'unknown';
 			$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
 			Log('DXCommand', "$call bumped off by $ip, disconnected");
@@ -448,7 +448,7 @@ DXProt->init();
 Aranea->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
+$routeroot = Route::Node->new($mycall, $version*100+5251, Route::here($main::me->here)|Route::conf($main::me->conf));
 
 # make sure that there is a routing OUTPUT node default file
 #unless (Filter::read_in('route', 'node_default', 0)) {
@@ -491,11 +491,13 @@ for (;;) {
 	my $timenow = time;
 
 	DXChannel::process();
+	Thingy::process();
 	
 #	$DB::trace = 0;
 	
 	# do timed stuff, ongoing processing happens one a second
 	if ($timenow != $systime) {
+		rand();					# keep randomising to reduce (but not eliminate) predictability
 		reap if $zombies;
 		$systime = $timenow;
 		DXCron::process();      # do cron jobs

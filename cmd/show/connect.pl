@@ -18,8 +18,9 @@ foreach my $call (sort keys %Msg::conns) {
 	my $c = $call;
 	my $addr;
 	
-	if ($c =~ /^Server\s+(\S+)$/) {
+	if ($c =~ /^Server\s+(.*)$/) {
 		$addr = $1;
+		$addr =~ s/\s+using.*$//;
 		$c = "Server";
 	} else {
 		$addr = "$r->{peerhost}/$r->{peerport}";

@@ -19,13 +19,13 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	my $type = $dxchan->is_node ? "NODE" : "USER";
 	my $sort = "    ";
 	if ($dxchan->is_node) {
-		$sort = 'ANEA' if $dxchan->is_aranea;
 		$sort = "DXSP" if $dxchan->is_spider;
 		$sort = "CLX " if $dxchan->is_clx;
 		$sort = "DXNT" if $dxchan->is_dxnet;
 		$sort = "AR-C" if $dxchan->is_arcluster;
 		$sort = "AK1A" if $dxchan->is_ak1a;
 	}
+	$type = 'ANEA' if $dxchan->is_aranea;
 	my $name = $dxchan->user->name || " ";
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%5.2f", $dxchan->pingave) : "     ";
 	my $conn = $dxchan->conn;

@@ -159,7 +159,7 @@ sub to_connected
 	delete $conn->{timeout};
 	$conn->nolinger;
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
-	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
+	$conn->_send_file("$main::data/connected") unless $conn->{outbound};
 }
 
 sub new_client {
@@ -212,12 +212,9 @@ sub start_connect
 	my $call = shift;
 	my $fn = shift;
 	my $conn = ExtMsg->new(\&main::new_channel); 
-	$conn->{outgoing} = 1;
+	$conn->{outbound} = 1;
 	$conn->conns($call);
-	
-	my $f = new IO::File $fn;
-	push @{$conn->{cmd}}, <$f>;
-	$f->close;
+	push @{$conn->{cmd}}, @_;
 	$conn->{state} = 'WC';
 	$conn->_dotimeout($deftimeout);
 	$conn->_docmd;
@@ -264,11 +261,17 @@ sub _doconnect
 	dbg("CONNECT $conn->{cnum} sort: $sort command: $line") if isdbg('connect');
 	if ($sort eq 'telnet') {
 		# this is a straight network connect
-		my ($host, $port) = split /\s+/, $line;
+		my ($host, $port, $type) = split /\s+/, $line;
+		if ($type && ref($conn) ne $type) {
+			bless $conn, $type;
+			$conn->set_newchannel_rproc;
+			dbg("$conn->{cnum} to $host $port reblessed as $type") if isdbg('connect');
+		}
 		$port = 23 if !$port;
 		$r = $conn->connect($host, $port);
 		if ($r) {
 			dbg("Connected $conn->{cnum} to $host $port") if isdbg('connect');
+
 		} else {
 			dbg("***Connect $conn->{cnum} Failed to $host $port $!") if isdbg('connect');
 		}

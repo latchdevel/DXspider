@@ -198,6 +198,7 @@ sub it
 	my $key;
 	my $type = 'Dunno';
 	my $asc = '?';
+	my $data = ref $_[0] ? shift : \@_;
 
 	my $r = @keys > 0 ? 0 : 1;
 	foreach $key (@keys) {
@@ -205,7 +206,7 @@ sub it
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
 			$type = 'reject';
 			$asc = $filter->{reject}->{user};
-			if (&{$filter->{reject}->{code}}(\@_)) {
+			if (&{$filter->{reject}->{code}}($data)) {
 				$r = 0;
 				last;
 			} else {
@@ -215,7 +216,7 @@ sub it
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
 			$type = 'accept';
 			$asc = $filter->{accept}->{user};
-			if (&{$filter->{accept}->{code}}(\@_)) {
+			if (&{$filter->{accept}->{code}}($data)) {
 				$r = 1;
 				last;
 			} else {
@@ -228,7 +229,7 @@ sub it
 	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
-		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @_;
+		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @$data;
 		my $true = $r ? "OK " : "REJ";
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";

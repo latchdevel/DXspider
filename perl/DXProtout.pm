@@ -123,7 +123,8 @@ sub pc17
 # Request init string
 sub pc18
 {
-	return "PC18^DXSpider Version: $main::version Build: $main::build^$DXProt::myprot_version^";
+	my $v = $DXProt::myprot_version + $main::version;
+	return "PC18^DXSpider Version: $main::version Build: $main::build^$v^";
 }
 
 #

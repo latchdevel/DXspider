@@ -266,7 +266,7 @@ sub is_bbs
 sub is_node
 {
 	my $self = shift;
-	return $self->{'sort'} =~ /[ACRSXW]/;
+	return $self->{'sort'} =~ /[ACRSX]/;
 }
 # is it an ak1a node ?
 sub is_ak1a

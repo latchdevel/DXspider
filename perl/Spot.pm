@@ -122,7 +122,7 @@ sub prepare
 	$out[4] =~ s/-\d+$//o;
 
 	# remove leading and trailing spaces
-	$_[3] = unpad($_[3]);
+	unpad($out[3]);
 	
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call

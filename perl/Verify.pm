@@ -25,43 +25,29 @@ sub new
 {
 	my $class = shift;
 	my $self = bless {}, ref($class) || $class; 
-	if (@_) {
-		$self->newseed(@_);
-		$self->newsalt;
-	}
+	$self->newsalt(@_);
 	return $self;
-}
-
-sub newseed
-{
-	my $self = shift;
-	return $self->{seed} = sha1_base64('RbG4tST2dYPWnh6bfAaq7pPSL04', @_);
 }
 
 sub newsalt
 {
 	my $self = shift;
-	return $self->{salt} = substr sha1_base64($self->{seed}, rand, rand, rand), 0, 6;
+	return $self->{salt} = sha1_base64('RbG4tST2dYPWnh6bfAaq7pPSL04', @_);
 }
 
 sub challenge
 {
 	my $self = shift;
-	return $self->{salt} . sha1_base64($self->{salt}, $self->{seed}, @_);
+	my $p = substr(sha1_base64($self->{salt}, @_), -6, 6);
+	return $p;
 }
 
 sub verify
 {
 	my $self = shift;
 	my $answer = shift;
-	my $p = sha1_base64($self->{salt}, $self->{seed}, @_);
+	my $p = substr(sha1_base64($self->{salt}, @_), -6, 6);
 	return $p eq $answer;
-}
-
-sub seed
-{
-	my $self = shift;
-	return @_ ? $self->{seed} = shift : $self->{seed};
 }
 
 sub salt

@@ -54,7 +54,7 @@ sub dequeue
 			} 
 		}
 		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
-			$conn->to_connected($conn->{call}, 'O', $conn->{csort});
+			$conn->{state} = 'WH';
 		}
 	} elsif ($conn->{msg} =~ /\cJ/) {
 		my @lines =  $conn->{msg} =~ /([^\cM\cJ]*)\cM?\cJ/g;
@@ -67,40 +67,24 @@ sub dequeue
 			dbg("connect $conn->{cnum}: $msg") if $conn->{state} ne 'C' && isdbg('connect');
 			if ($conn->{state} eq 'C') {
 				&{$conn->{rproc}}($conn, $msg);
-			} elsif ($conn->{state} eq 'WA' ) {
-				my $uref = DXUser->get_current($conn->{call});
+			} elsif ($conn->{state} eq 'WH' ) {
+				# this is the first stage that we have a callsign
+				# do we have a hello?
 				$msg =~ s/[\r\n]+$//;
-				if ($uref && $msg eq $uref->passwd) {
-					my $sort = $conn->{csort};
-					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
-					$conn->{usedpasswd} = 1;
-					$conn->to_connected($conn->{call}, 'A', $sort);
-				} else {
-					$conn->send_now("Sorry");
-					$conn->disconnect;
+				if ($msg =~ m{ROUTE,[0-9A-F,]+|HELLO}) {
+					# a possibly valid HELLO line, process it
+					$conn->new_channel($msg);
 				}
 			} elsif ($conn->{state} eq 'WC') {
 				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
 					$conn->_docmd($msg);
 					if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
-						$conn->to_connected($conn->{call}, 'O', $conn->{csort});
+						$conn->{state} = 'WH';
 					}
 				}
 			}
 		}
 	} 
-}
-
-sub to_connected
-{
-	my ($conn, $call, $dir, $sort) = @_;
-	$conn->{state} = 'C';
-	$conn->conns($call);
-	delete $conn->{cmd};
-	$conn->{timeout}->del if $conn->{timeout};
-	delete $conn->{timeout};
-	$conn->nolinger;
-	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 }
 
 sub login
@@ -141,30 +125,23 @@ sub new_client {
 				$conn->disconnect();
 			}
 			Log('Aranea', "Incoming connection from $conn->{peerhost}");
-			$conn->{outgoing} = 0;
+			$conn->{outbound} = 0;
 			$conn->{state} = 'WH';		# wait for return authorize
 			my $thing = $conn->{lastthing} = Thingy::Hello->new(origin=>$main::mycall, group=>'ROUTE');
+
 			$thing->send($conn, 'Aranea');
+			dbg("-> D $conn->{peerhost} $thing->{Aranea}") if isdbg('chan');
 		}
 	} else {
 		dbg("ExtMsg: error on accept ($!)") if isdbg('err');
 	}
 }
 
-sub start_connect
+sub set_newchannel_rproc
 {
-	my $call = shift;
-	my $fn = shift;
-	my $conn = AMsg->new(\&new_channel); 
-	$conn->{outgoing} = 1;
-	$conn->conns($call);
-	
-	my $f = new IO::File $fn;
-	push @{$conn->{cmd}}, <$f>;
-	$f->close;
-	$conn->{state} = 'WC';
-	$conn->_dotimeout($deftimeout);
-	$conn->_docmd;
+	my $conn = shift;
+	$conn->{rproc} = \&new_channel;
+	$conn->{state} = 'WH';
 }
 
 # 
@@ -174,10 +151,19 @@ sub start_connect
 sub new_channel
 {
 	my ($conn, $msg) = @_;
-	my $thing = Aranea::input($msg);
-	return unless defined $thing;
+	my $call = $conn->{call} || $conn->{peerhost};
 
-	my $call = $thing->{origin};
+	dbg("<- I $call $msg") if isdbg('chan');
+
+	my $thing = Aranea::input($msg);
+	unless ($thing) {
+		dbg("Invalid thingy: $msg from $conn->{peerhost}");
+		$conn->send_now("Sorry");
+		$conn->disconnect;
+		return;
+	}
+
+	$call = $thing->{origin};
 	unless (is_callsign($call)) {
 		main::already_conn($conn, $call, DXM::msg($main::lang, "illcall", $call));
 		return;
@@ -188,7 +174,7 @@ sub new_channel
 	my $user = DXUser->get_current($call);
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
-		if ($main::bumpexisting) {
+		if ($main::bumpexisting && $call ne $main::mycall) {
 			my $ip = $conn->{peerhost} || 'unknown';
 			$dxchan->send_now('D', DXM::msg($main::lang, 'conbump', $call, $ip));
 			Log('DXCommand', "$call bumped off by $ip, disconnected");
@@ -224,12 +210,17 @@ sub new_channel
 	$dxchan = Aranea->new($call, $conn, $user);
 
 	# check that the conn has a callsign
-	$conn->conns($call) if $conn->isa('IntMsg');
+	$conn->conns($call);
 
 	# set callbacks
 	$conn->set_error(sub {main::error_handler($dxchan)});
 	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg)});
-	$dxchan->rec($msg);
+	$conn->{state} = 'C';
+	delete $conn->{cmd};
+	$conn->{timeout}->del if $conn->{timeout};
+	delete $conn->{timeout};
+	$conn->nolinger;
+	$thing->handle($dxchan);
 }
 
 sub send

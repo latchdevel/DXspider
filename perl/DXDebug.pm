@@ -11,7 +11,7 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump dbglog isdbg dbgclose confess croak cluck);
 
 use strict;
 use vars qw(%dbglevel $fp $callback $cleandays $keepdays);
@@ -186,6 +186,13 @@ sub dbgclean
 	}
 }
 
+sub dbglog
+{
+	my $sort = shift;
+	my $l = shift;
+	dbg($l);
+	DXLog::Log($sort, $l);
+}
 1;
 __END__
 

@@ -16,7 +16,16 @@ return (1, $self->msg('lockout', $call)) if $user && $user->lockout;
 
 my @out;
 push @out, $self->msg('constart', $call);
-ExtMsg::start_connect($call, "$main::root/connect/$lccall");
+my $fn = "$main::root/connect/$lccall";
+
+my $f = new IO::File $fn;
+if ($f) {
+	my @f = <$f>;
+	$f->close;
+	ExtMsg::start_connect($call, @f);
+} else {
+	push @out, $self->msg('e3', 'connect', $fn);
+}
 return (1, @out);
 
 

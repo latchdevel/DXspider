@@ -21,27 +21,57 @@ use DXDebug;
 use Verify;
 use Thingy;
 
-use vars qw(@ISA);
+use vars qw(@ISA $verify_on_login);
 @ISA = qw(Thingy);
+
+$verify_on_login = 1;			# make sure that a HELLO coming from
+                                # the dxchan call is authentic
 
 sub gen_Aranea
 {
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
-		my $auth = $thing->{auth} = Verify->new($main::mycall, $main::systime);
-		$thing->{Aranea} = Aranea::genmsg($thing, 'HELLO', sw=>'DXSpider',
+		my $s = sprintf "%X", int(rand() * 100000000);
+		my $auth = Verify->new("DXSp,$main::mycall,$s,$main::version,$main::build");
+		$thing->{Aranea} = Aranea::genmsg($thing, 'HELLO', sw=>'DXSp',
 										  v=>$main::version,
 										  b=>$main::build,
+										  's'=>$s,
 										  auth=>$auth->challenge($main::me->user->passphrase)
 									  );
 	}
 	return $thing->{Aranea};
 }
 
-sub from_Aranea
+sub handle
 {
-	my $line = shift;
-	my $thing = Aranea::input($line);
-	return unless $thing;
+	my $thing = shift;
+	my $dxchan = shift;
+	
+	# verify authenticity
+	if ($dxchan->call eq $thing->{origin}) {
+		if ($verify_on_login) {
+			my $pp = $dxchan->user->passphrase;
+			unless ($pp) {
+				dbglog('err', "Thingy::Hello::handle: verify on and $thing->{origin} has no passphrase");
+				$dxchan->disconnect;
+				return;
+			}
+			my $auth = Verify->new("DXSp,$thing->{origin},$thing->{s},$thing->{v},$thing->{b}");
+			unless ($auth->verify($thing->{auth}, $dxchan->user->passphrase)) {
+				dbglog('err', "Thingy::Hello::handle: verify on and $thing->{origin} failed auth check");
+				$dxchan->disconnect;
+				return;
+			}
+		}
+		if ($dxchan->{state} ne 'normal') {
+			$dxchan->start($dxchan->{conn}->{csort}, $dxchan->{conn}->{outbound} ? 'O' : 'A');
+			if ($dxchan->{outbound}) {
+				my $thing = Thingy::Hello->new(origin=>$main::mycall, group=>'ROUTE');
+				$thing->send($dxchan);
+			}
+		}
+	}
+	$thing->broadcast($dxchan);
 }
 1;

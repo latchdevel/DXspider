@@ -35,6 +35,8 @@ use Net::Telnet;
 use QSL;
 use DB_File;
 use VE7CC;
+use Thingy;
+use Thingy::Dx;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount $msgpolltime);
@@ -847,14 +849,15 @@ sub chat
 sub format_dx_spot
 {
 	my $self = shift;
-
-	my $t = ztime($_[2]);
+	my $spot = ref $_[0] ? shift : \@_;
+	
+	my $t = ztime($spot->[2]);
 	my $loc = '';
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
-	my $comment = substr $_[3], 0, $clth; 
+	my $comment = substr $spot->[3], 0, $clth; 
 	$comment .= ' ' x ($clth - length($comment));
 	if ($self->{user}->wantgrid) { 
-		my $ref = DXUser->get_current($_[4]);
+		my $ref = DXUser->get_current($spot->[4]);
 		if ($ref) {
 			$loc = $ref->qra || '';
 			$loc = ' ' . substr($loc, 0, 4) if $loc;
@@ -862,17 +865,17 @@ sub format_dx_spot
 	}
 
 	if ($self->{user}->wantdxitu) {
-		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[8]) if defined $_[8]; 
+		$loc = ' ' . sprintf("%2d", $spot->[10]) if defined $spot->[10];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[8]) if defined $spot->[8]; 
 	} elsif ($self->{user}->wantdxcq) {
-		$loc = ' ' . sprintf("%2d", $_[11]) if defined $_[11];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[9]) if defined $_[9]; 
+		$loc = ' ' . sprintf("%2d", $spot->[11]) if defined $spot->[11];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[9]) if defined $spot->[9]; 
 	} elsif ($self->{user}->wantusstate) {
-		$loc = ' ' . $_[13] if $_[13];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $_[12] if $_[12]; 
+		$loc = ' ' . $spot->[13] if $spot->[13];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $spot->[12] if $spot->[12]; 
 	}
 
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$spot->[4]:", $spot->[0], $spot->[1], $comment;
 }
 
 # send a dx spot

@@ -35,7 +35,8 @@ use Route::Node;
 use Script;
 use Investigate;
 use RouteDB;
-
+use Thingy;
+use Thingy::Dx;
 
 use strict;
 
@@ -219,7 +220,7 @@ sub init
 	$main::me->{metric} = 0;
 	$main::me->{pingave} = 0;
 	$main::me->{registered} = 1;
-	$main::me->{version} = $main::version;
+	$main::me->{version} = 5251 + $main::version;
 	$main::me->{build} = $main::build;
 }
 
@@ -323,20 +324,6 @@ sub sendinit
 	$self->send(pc18());
 }
 
-sub removepc90
-{
-	$_[0] =~ s/^PC90\^[-A-Z0-9]+\^\d+\^//;
-	$_[0] =~ s/^PC91\^[-A-Z0-9]+\^\d+\^[-A-Z0-9]+\^//;
-}
-
-#sub send
-#{
-#	my $self = shift;
-#	while (@_) {
-#		my $line = shift;
-#		$self->SUPER::send($line);
-#	}
-#}
 
 #
 # This is the normal pcxx despatcher
@@ -345,9 +332,6 @@ sub normal
 {
 	my ($self, $line) = @_;
 
-	# remove any incoming PC90 frames
-	removepc90($line);
-
 	my @field = split /\^/, $line;
 	return unless @field;
 	
@@ -355,7 +339,6 @@ sub normal
 	
 #	print join(',', @field), "\n";
 						
-	
 	# process PC frames, this will fail unless the frame starts PCnn
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
 	unless (defined $pcno && $pcno >= 10 && $pcno <= 99) {
@@ -368,6 +351,16 @@ sub normal
 	if ($n) {
 		dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
 		return;
+	}
+
+	# decrement any hop fields at this point
+	if ($line =~ /\^H(\d\d?)\^?~?$/) {
+		my $hops = $1 - 1;
+		if ($hops < 0) {
+			dbg("PCPROT: zero hop count, dumped") if isdbg('chanerr');
+			return;
+		}
+		$line =~ s/\^H\d\d?(\^?~?)$/^H$hops$1/;
 	}
 
 	my $origin = $self->{call};
@@ -434,7 +427,7 @@ sub handle_10
 	}
 
 	# remember a route to this node and also the node on which this user is
-	RouteDB::update($_[6], $self->{call});
+	RouteDB::update($_[6], $origin);
 #	RouteDB::update($to, $_[6]);
 
 	# it is here and logged on
@@ -536,26 +529,14 @@ sub handle_11
 #	RouteDB::update($_[6], $_[7]);
 	
 	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $_[6], $_[7]);
-	# global spot filtering on INPUT
-	if ($self->{inspotsfilter}) {
-		my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
-		unless ($filter) {
-			dbg("PCPROT: Rejected by input spot filter") if isdbg('chanerr');
-			return;
-		}
-	}
+
+	my $thing = Thingy::Dx->new(origin=>$main::mycall, group=>'DX');
+	$thing->from_DXProt(DXProt=>$line,spotdata=>\@spot);
+	$thing->queue($self);
 
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
-	if (Spot::dup($_[1], $_[2], $d, $_[5], $_[6])) {
-		dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
-		return;
-	}
-
-	# add it 
-	Spot::add(@spot);
-
 	#
 	# @spot at this point contains:-
 	# freq, spotted call, time, text, spotter, spotted cc, spotters cc, orig node
@@ -622,7 +603,7 @@ sub handle_11
 	return if $pcno == 26;
 
 	# send out the filtered spots
-	send_dx_spot($self, $line, @spot) if @spot;
+#	send_dx_spot($self, $line, @spot) if @spot;
 }
 		
 # announces
@@ -714,7 +695,7 @@ sub handle_16
 			
 	# dos I want users from this channel?
 	unless ($self->user->wantpc16) {
-		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
+		dbg("PCPROT: don't send users to $origin") if isdbg('chanerr');
 		return;
 	}
 	# is it me?
@@ -723,14 +704,14 @@ sub handle_16
 		return;
 	}
 
-	RouteDB::update($ncall, $self->{call});
+	RouteDB::update($ncall, $origin);
 
 	# do we believe this call? 
-	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
-		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+	unless ($ncall eq $origin || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $origin)) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
 		} else {
-			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
+			dbg("PCPROT: We don't believe $ncall on $origin") if isdbg('chanerr');
 		}
 		return;
 	}
@@ -770,7 +751,7 @@ sub handle_16
 						$parent = Route::Node::get($_->[0]);
 						$dxchan = $parent->dxchan if $parent;
 						if ($dxchan && $dxchan ne $self) {
-							dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+							dbg("PCPROT: PC19 from $origin trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 							$parent = undef;
 						}
 						if ($parent) {
@@ -802,7 +783,7 @@ sub handle_16
 				
 		$dxchan = $parent->dxchan;
 		if ($dxchan && $dxchan ne $self) {
-			dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+			dbg("PCPROT: PC16 from $origin trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 			return;
 		}
 
@@ -871,7 +852,7 @@ sub handle_17
 			
 	# do I want users from this channel?
 	unless ($self->user->wantpc16) {
-		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
+		dbg("PCPROT: don't send users to $origin") if isdbg('chanerr');
 		return;
 	}
 	if ($ncall eq $main::mycall) {
@@ -879,14 +860,14 @@ sub handle_17
 		return;
 	}
 
-	RouteDB::delete($ncall, $self->{call});
+	RouteDB::delete($ncall, $origin);
 
 	# do we believe this call? 
-	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
-		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+	unless ($ncall eq $origin || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $origin)) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
 		} else {
-			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
+			dbg("PCPROT: We don't believe $ncall on $origin") if isdbg('chanerr');
 		}
 		return;
 	}
@@ -902,7 +883,7 @@ sub handle_17
 
 	$dxchan = $parent->dxchan if $parent;
 	if ($dxchan && $dxchan ne $self) {
-		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+		dbg("PCPROT: PC17 from $origin trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 		return;
 	}
 
@@ -934,8 +915,8 @@ sub handle_18
 
 	# record the type and version offered
 	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+\.\d+)/) {
-		$self->version(53 + $1);
-		$self->user->version(53 + $1);
+		$self->version(52.51 + $1);
+		$self->user->version(52.51 + $1);
 		$self->build(0 + $2);
 		$self->user->build(0 + $2);
 		unless ($self->is_spider) {
@@ -950,7 +931,7 @@ sub handle_18
 	}
 
 	# first clear out any nodes on this dxchannel
-	my $parent = Route::Node::get($self->{call});
+	my $parent = Route::Node::get($origin);
 	my @rout = $parent->del_nodes;
 	$self->route_pc21($origin, $line, @rout, $parent) if @rout;
 	$self->send_local_config();
@@ -972,9 +953,9 @@ sub handle_19
 	my @rout;
 
 	# first get the INTERFACE node
-	my $parent = Route::Node::get($self->{call});
+	my $parent = Route::Node::get($origin);
 	unless ($parent) {
-		dbg("DXPROT: my parent $self->{call} has disappeared");
+		dbg("DXPROT: my parent $origin has disappeared");
 		$self->disconnect;
 		return;
 	}
@@ -1018,7 +999,7 @@ sub handle_19
 		# check that this PC19 isn't trying to alter the wrong dxchan
 		my $dxchan = DXChannel->get($call);
 		if ($dxchan && $dxchan != $self) {
-			dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
+			dbg("PCPROT: PC19 from $origin trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
 			next;
 		}
 
@@ -1033,19 +1014,19 @@ sub handle_19
 		}
 		$user->sort('A') unless $user->is_node;
 
-		RouteDB::update($call, $self->{call});
+		RouteDB::update($call, $origin);
 
 		# do we believe this call?
 		my $genline = "PC19^$here^$call^$conf^$ver^$_[-1]^"; 
-		unless ($call eq $self->{call} || $self->is_believed($call)) {
-			my $pt = $user->lastping($self->{call}) || 0;
-			if ($pt+$investigation_int < $main::systime && !Investigate::get($call, $self->{call})) {
-				my $ivp  = Investigate->new($call, $self->{call});
+		unless ($call eq $origin || $self->is_believed($call)) {
+			my $pt = $user->lastping($origin) || 0;
+			if ($pt+$investigation_int < $main::systime && !Investigate::get($call, $origin)) {
+				my $ivp  = Investigate->new($call, $origin);
 				$ivp->version($ver);
 				$ivp->here($here);
 				$ivp->store_pcxx($pcno,$genline,$origin,'PC19',$here,$call,$conf,$ver,$_[-1]);
 			} else {
-				dbg("PCPROT: We don't believe $call on $self->{call}") if isdbg('chanerr');
+				dbg("PCPROT: We don't believe $call on $origin") if isdbg('chanerr');
 			}
 			$user->put;
 			next;
@@ -1078,7 +1059,7 @@ sub handle_19
 		} else {
 
 			# if he is directly connected or allowed then add him, otherwise store him up for later
-			if ($call eq $self->{call} || $user->wantroutepc19) {
+			if ($call eq $origin || $user->wantroutepc19) {
 				my $new = Route->new($call); # throw away
 				if ($self->in_filter_route($new)) {
 					my $ar = $parent->add($call, $ver, $flags);
@@ -1090,7 +1071,7 @@ sub handle_19
 			} else {
 				$pc19list{$call} = [] unless exists $pc19list{$call};
 				my $nl = $pc19list{$call};
-				push @{$pc19list{$call}}, [$self->{call}, $ver, $flags] unless grep $_->[0] eq $self->{call}, @$nl;
+				push @{$pc19list{$call}}, [$origin, $ver, $flags] unless grep $_->[0] eq $origin, @$nl;
 			}
 		}
 
@@ -1137,14 +1118,14 @@ sub handle_21
 		return;
 	}
 
-	RouteDB::delete($call, $self->{call});
+	RouteDB::delete($call, $origin);
 
 	# check if we believe this
-	unless ($call eq $self->{call} || $self->is_believed($call)) {
-		if (my $ivp = Investigate::get($call, $self->{call})) {
+	unless ($call eq $origin || $self->is_believed($call)) {
+		if (my $ivp = Investigate::get($call, $origin)) {
 			$ivp->store_pcxx($pcno,$line,$origin,@_);
 		} else {
-			dbg("PCPROT: We don't believe $call on $self->{call}") if isdbg('chanerr');
+			dbg("PCPROT: We don't believe $call on $origin") if isdbg('chanerr');
 		}
 		return;
 	}
@@ -1153,13 +1134,13 @@ sub handle_21
 	# this routing table manipulation, just remove it from the list and dump it
 	my @rout;
 	if (my $nl = $pc19list{$call}) {
-		$pc19list{$call} = [ grep {$_->[0] ne $self->{call}} @$nl ];
+		$pc19list{$call} = [ grep {$_->[0] ne $origin} @$nl ];
 		delete $pc19list{$call} unless @{$pc19list{$call}};
 	} else {
 				
-		my $parent = Route::Node::get($self->{call});
+		my $parent = Route::Node::get($origin);
 		unless ($parent) {
-			dbg("DXPROT: my parent $self->{call} has disappeared");
+			dbg("DXPROT: my parent $origin has disappeared");
 			$self->disconnect;
 			return;
 		}
@@ -1169,7 +1150,7 @@ sub handle_21
 						
 				my $dxchan = DXChannel->get($call);
 				if ($dxchan && $dxchan != $self) {
-					dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
+					dbg("PCPROT: PC21 from $origin trying to alter locally connected $call, ignored!") if isdbg('chanerr');
 					return;
 				}
 						
@@ -1399,7 +1380,7 @@ sub handle_39
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	if ($_[1] eq $self->{call}) {
+	if ($_[1] eq $origin) {
 		$self->disconnect(1);
 	} else {
 		dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
@@ -1515,11 +1496,11 @@ sub handle_50
 
 	my $call = $_[1];
 
-	RouteDB::update($call, $self->{call});
+	RouteDB::update($call, $origin);
 
 	my $node = Route::Node::get($call);
 	if ($node) {
-		return unless $node->call eq $self->{call};
+		return unless $node->call eq $origin;
 		$node->usercount($_[2]);
 
 		# input filter if required
@@ -1577,11 +1558,11 @@ sub handle_51
 								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 							}
 							$tochan->{nopings} = $nopings; # pump up the timer
-							if (my $ivp = Investigate::get($from, $self->{call})) {
+							if (my $ivp = Investigate::get($from, $origin)) {
 								$ivp->handle_ping;
 							}
 						} elsif (my $rref = Route::Node::get($r->{call})) {
-							if (my $ivp = Investigate::get($from, $self->{call})) {
+							if (my $ivp = Investigate::get($from, $origin)) {
 								$ivp->handle_ping;
 							}
 						}
@@ -1591,7 +1572,7 @@ sub handle_51
 		}
 	} else {
 
-		RouteDB::update($from, $self->{call});
+		RouteDB::update($from, $origin);
 
 		if (eph_dup($line)) {
 			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
@@ -2160,7 +2141,7 @@ sub adjust_hops
 			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
 		} else {
 			# simply decrement it
-			$hops--;
+#			$hops--;               this is done on receipt now
 			return "" if !$hops;
 			$s =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/ if $hops;
 		}
