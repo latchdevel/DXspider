@@ -1,7 +1,7 @@
 Sov Mil Order of Malta:   15:  28:  EU:   41.90:   -12.40:    -1.0:  1A:
     1A;
 Spratly Is.:              26:  50:  AS:    8.80:  -111.90:    -8.0:  1S:
-    1S,9M0,9M6OO/P,9M6PO,9M6TCR,9M6TPR,BV9S,DU0K;
+    1S,9M0,9M6OO/P,9M6PO,9M6TCR,9M6TPR,BV9S,DU0,DX0;
 Monaco:                   14:  27:  EU:   43.70:    -7.40:    -1.0:  3A:
     3A;
 Agalega & St. Brandon:    39:  53:  AF:  -10.40:   -56.60:    -4.0:  3B6:
@@ -20,7 +20,7 @@ Conway Reef:              32:  56:  OC:  -21.40:  -174.40:   -13.0:  3D2/c:
     3D2AM,3D2CR,3D2CT,3D2CU,3D2HL,3D2VT,3D2WV;
 Rotuma:                   32:  56:  OC:  -12.30:  -177.70:   -12.0:  3D2/r:
     3D2AA,3D2AG/P,3D2AG/R,3D2AP,3D2HI,3D2HK,3D2ID,3D2KZ,3D2MU,3D2OQ,3D2RJ,
-    3D2RW/P,3D2RW/R,3D2SH,3D2XR,3D2XV;
+    3D2RR,3D2RW/P,3D2RW/R,3D2SH,3D2XR,3D2XV;
 Swaziland:                38:  57:  AF:  -26.30:   -31.10:    -2.0:  3DA:
     3DA;
 Tunisia:                  33:  37:  AF:   36.80:   -10.20:    -1.0:  3V:
@@ -32,7 +32,7 @@ Republic of Guinea:       35:  46:  AF:    9.50:    13.70:     0.0:  3X:
 Bouvet:                   38:  67:  AF:  -54.50:    -3.40:     0.0:  3Y/b:
     3Y;
 Peter I I.:               12:  72:  SA:  -68.80:    90.60:     6.0:  3Y/p:
-    3Y0PI,3Y1EE,3X0Y;
+    3Y0PI,3Y0X,3Y1EE;
 Azerbaijan:               21:  29:  AS:   40.40:   -49.90:    -4.0:  4J:
     4J,4K;
 Georgia:                  21:  29:  AS:   41.70:   -44.80:    -4.0:  4L:
@@ -197,11 +197,12 @@ Antarctica:               13:  74:  SA:  -65.00:    64.00:    -4.0:  CE9:
     VK0AQ(29)[70],VK0CK(29)[70],VK0CL(29)[70],VK0DX(39)[69],VK0ERZ(39)[69],
     VK0FPS(39)[69],VK0IC(39)[69],VK0KC(29)[70],VK0KMT(30)[71],VK0LL(29)[70],
     VK0MP(29)[70],VK0NE(39)[69],VK0PD(39)[69],VK0PN(39)[69],VK0WD(29)[70],
-    VP8/GB4MSS(12),VP8/UT1KY[73],VP8BQE[73],VP8CBL[73],VP8CES(38)[73],
-    VP8CMR[73],VP8CQC,VP8CRE[73],VP8CRI(38)[73],VP8CTR,VP8FAR[73],VP8GAV[73],
-    VP8ROT[73],VU2AXA/P(38)[67],VU2MSW/P(38)[67],VU3HKQ(38)[67],
-    W1GWN/KC4(30)[71],W6REC/KC4(30)[71],WB7CHV/KC4,Y88POL(38)[67],
-    Y90ANT(38)[67],ZL0AAF(30)[71],ZL0AIC(30)[71],ZL5(30)[71],ZS7ANT(38)[67];
+    VP8/GB4MSS(12),VP8/UT1KY[73],VP8BF[73],VP8BQE[73],VP8CBL[73],
+    VP8CES(38)[73],VP8CMR[73],VP8CQC,VP8CRE[73],VP8CRI(38)[73],VP8CTR,
+    VP8FAR[73],VP8GAV[73],VP8ROT[73],VU2AXA/P(38)[67],VU2MSW/P(38)[67],
+    VU3HKQ(38)[67],W1GWN/KC4(30)[71],W6REC/KC4(30)[71],WB7CHV/KC4,
+    Y88POL(38)[67],Y90ANT(38)[67],ZL0AAF(30)[71],ZL0AIC(30)[71],ZL5(30)[71],
+    ZS7ANT(38)[67];
 Cuba:                     08:  11:  NA:   23.10:    82.40:     5.0:  CM:
     CL,CM,CO,T4;
 Morocco:                  33:  37:  AF:   33.60:     7.50:     0.0:  CN:
@@ -267,7 +268,7 @@ Turkmenistan:             17:  30:  AS:   38.00:   -58.40:    -5.0:  EZ:
 France:                   14:  27:  EU:   48.80:    -2.30:    -1.0:  F:
     4U1SCO,F,HW,HX,HY,TH,TM,TP,TQ,TV,TW;
 Guadeloupe:               08:  11:  NA:   16.00:    61.70:     4.0:  FG:
-    FG,TO2FG,TO4T,TO5G,TO7T,TO9T;
+    FG,TO2FG,TO4T,TO5G,TO7ACR,TO7DSR,TO7T,TO9T;
 Mayotte:                  39:  53:  AF:  -13.00:   -45.30:    -3.0:  FH:
     FH;
 French St. Martin:        08:  11:  NA:   18.10:    63.10:     4.0:  FJ:
@@ -277,7 +278,8 @@ New Caledonia:            32:  56:  OC:  -22.30:  -166.50:   -11.0:  FK:
 Chesterfield Is.:         30:  56:  OC:  -19.90:  -158.30:   -11.0:  FK/c:
     TX0AT,TX0C,TX0DX,TX9;
 Martinique:               08:  11:  NA:   14.60:    61.00:     4.0:  FM:
-    FM,TO0O,TO0P,TO1A,TO2DX,TO4A,TO5A,TO5AA,TO5MM,TO5T,TO6M,TO7HAM,TO7X,TO8B;
+    FM,TO0O,TO0P,TO1A,TO2DX,TO3M,TO4A,TO5A,TO5AA,TO5MM,TO5T,TO6M,TO7HAM,TO7X,
+    TO8B;
 French Polynesia:         32:  63:  OC:  -17.60:   149.50:    10.0:  FO:
     FO,FO0FRA,TO8K;
 Austral Is.:              32:  63:  OC:  -22.50:   152.00:    10.0:  FO/a:
@@ -293,7 +295,7 @@ St. Pierre & Miquelon:    05:  09:  NA:   46.70:    56.00:     3.0:  FP:
 Reunion:                  39:  53:  AF:  -21.10:   -55.60:    -4.0:  FR:
     FR,TO0FAR,TO0R,TO3R,TO5M;
 Glorioso:                 39:  53:  AF:  -11.50:   -47.30:    -3.0:  FR/g:
-    FR/G,FR5AI,FR5ZQ/G,FR5ZU/G,FR7GL,TO4G;
+    FR/G,FR5AI,FR5ZQ/G,FR5ZU/G,FR7GL;
 Juan de Nova & Europa:    39:  53:  AF:  -19.60:   -41.60:    -3.0:  FR/j:
     FR4FA,TO4E,TO4WW;
 Tromelin:                 39:  53:  AF:  -15.90:   -54.40:    -4.0:  FR/t:
@@ -307,7 +309,7 @@ Amsterdam & St. Paul:     39:  68:  AF:  -37.70:   -77.60:    -5.0:  FT5Z:
 Wallis & Futuna Is.:      32:  62:  OC:  -13.30:   176.30:   -12.0:  FW:
     FW;
 French Guiana:            09:  12:  SA:    4.90:    52.30:     3.0:  FY:
-    FY,TO9IS;
+    FY,TO7C,TO9IS;
 England:                  14:  27:  EU:   51.50:     0.10:     0.0:  G:
     2E,G,M,M/SP3CW;
 Isle of Man:              14:  27:  EU:   54.30:     4.50:     0.0:  GD:
@@ -323,7 +325,7 @@ Shetlands:                14:  27:  EU:   60.40:     1.50:     0.0:  *GM/s:
     GM1ZNR,GM3KLA,GM3STU,GM3WCH,GM3WHT,GM3XPQ,GM3ZET,GM3ZNM,GM3ZXH,GM4AGX,
     GM4CAQ,GM4DQD,GM4ENK,GM4FNA,GM4FNE,GM4GPP,GM4GQD,GM4GQM,GM4IPK,GM4LBE,
     GM4LER,GM4PXG,GM4SRU,GM4SSA,GM4SWU,GM4WXQ,GM4ZHL,GM8LNH,GM8MMA,GM8YEC,GZ,
-    MM0XAU,MZ;
+    MM/DL1CW/P,MM/DL4BQE/P,MM/DL5BUT/P,MM/DM4VDE/P,MM0XAU,MZ;
 Guernsey:                 14:  27:  EU:   49.50:     2.70:     0.0:  GU:
     2P,2U,GP,GU,MP,MU;
 Wales:                    14:  27:  EU:   51.50:     3.20:     0.0:  GW:
@@ -361,7 +363,7 @@ Panama:                   07:  11:  NA:    9.00:    79.50:     5.0:  HP:
 Honduras:                 07:  11:  NA:   14.10:    87.20:     6.0:  HR:
     HQ,HR;
 Thailand:                 26:  49:  AS:   13.80:  -100.50:    -7.0:  HS:
-    E2,HS;
+    E2,E21EIC/8,HS;
 Vatican:                  15:  28:  EU:   41.90:   -12.50:    -1.0:  HV:
     HV;
 Saudi Arabia:             21:  39:  AS:   26.30:   -50.00:    -3.0:  HZ:
@@ -391,7 +393,7 @@ Japan:                    25:  45:  AS:   35.70:  -139.80:    -9.0:  JA:
     JP,JQ,JR,JS,KA2CC,KA2DX,KA2EX;
 Minami Torishima:         27:  90:  OC:   24.30:  -154.00:   -10.0:  JD/m:
     7J1ACH,JD1/JI7BCD,JD1BIE/JD1,JD1BIP,JD1BIU,JD1BIY,JD1BIZ,JD1BJA,JD1BJE,
-    JD1YAA,JD1YBJ,JL1KFR/JD1,JQ8NQJ/JD1;
+    JD1YAA,JD1YBJ,JG8NQJ/JD1,JL1KFR/JD1;
 Ogasawara:                27:  45:  AS:   27.50:  -141.00:   -10.0:  JD/o:
     7J1ATZ,7J1AYK/JD1,8N1OGA,JA4GXS/JD1,JD1,JD1/JQ1SUO,JD1AMA,JD1BIE,JD1BIK,
     JD1BIV,JD1BJC,JD1BJP,JF1LGD/JD1,JH2ENF/JD1,JM1YGG/JD1,JQ1SUO/JD1,
@@ -419,21 +421,22 @@ United States:            05:  08:  NA:   43.00:    87.90:     5.0:  K:
     K8WT(5)[8],K9RB(5)[8],KC7UP(4)[6],KC8PE(5)[8],KD5M(5)[8],KD8G(5)[8],
     KE4JUH(4),KE7X(4)[6],KF4BAR(4),KG6OK(3)[6],KH2D,KH6DX(3)[6],KL0S,
     KL7FDQ(4)[7],KL7GLL(4),KL7HIR/3(5)[8],KL7HLF(3)[6],KL7NA(3)[6],
-    KL7NL(5)[8],KH2TJ(3)[6],KL7IDY(3)[6],KM5DW(5)[8],KO0U(5)[8],KP2N(5)[8],
-    KR5L(4),KS9Z(5)[8],KU1CW(4)[7],KU4LL(4),N,N0AX(3)[6],N0ICI(5)[8],
-    N3BB(4)[7],N3RA(4)[8],N3XT(4)[7],N4AR(4),N4GN(4),N4KG(4),N4NM(4),N4NO(4),
-    N4TZ(4)[7],N4XM(4),N4YO(4),N5KO(3)[6],N6AR(5)[8],N6CQ(5)[8],N6RFM(5)[8],
-    N7DF(4)[7],N7DR(4)[7],N7FLT(4)[7],N7ML(4)[6],N7NG(5)[8],N7TXX(4)[7],
-    N7UN(5)[8],N8WRL(5)[8],N8YYS(5)[8],N9GG(5)[8],N9HZQ(5)[8],NA4W(4),
-    NA8V(5)[8],ND2T(3)[6],NE9Z(4)[7],NE9Z/7(4)[7],NH2K(5)[8],NJ1V(4)[7],
-    NL7AU(5)[8],NM4T(4),NN4T(4),NP3D(5)[8],NP4IW(3)[6],NT4L(4),NY4T(4),
-    NY6DX(5)[8],W,W0AD(5)[8],W0MHK(5)[8],W1XE(4)[7],W2NA(3)[6],W2VJN(3)[6],
-    W4CAT(4),W4KH(4),W4NS(4),W4NTI(4),W4RJ(4),W4SRK(4),W4WNG(4),W4WW(4),
-    W4YGE(4),W6NWS(5)[8],W6TER(4)[7],W6XR(5)[8],W7CA(4)[7],W7KEU(4)[7],
-    W7LR(4)[6],W7SE(4)[7],W7THY(4)[7],W7WK(4)[7],W7ZQ(4)[7],W8AH(5)[8],
-    W8BAR(5)[8],W8JI(5)[8],W8ZA(5)[8],W9PL(3)[6],W9WBA(5)[8],WA3COS(4)[7],
-    WA8KAN(5)[8],WH0AAM(3)[6],WH2AAT(5)[8],WH6FZ(5)[8],WL7LZ(4)[7],
-    WL7WO(5)[8],WL7Y(5)[8],WL7Z(5)[8],WO4O(4),WQ5L(4)[8],WS7W(4)[7];
+    KL7NL(5)[8],KH2TJ(3)[6],KL7IDY(3)[6],KL7JT(5)[8],KL7JT/1(5)[8],
+    KM5DW(5)[8],KO0U(5)[8],KP2N(5)[8],KR5L(4),KS9Z(5)[8],KU1CW(4)[7],KU4LL(4),
+    N,N0AX(3)[6],N0ICI(5)[8],N3BB(4)[7],N3RA(4)[8],N3XT(4)[7],N4AR(4),N4DW(4),
+    N4GN(4),N4KG(4),N4NM(4),N4NO(4),N4TZ(4)[7],N4XM(4),N4YO(4),N5KO(3)[6],
+    N6AR(5)[8],N6CQ(5)[8],N6RFM(5)[8],N7DF(4)[7],N7DR(4)[7],N7FLT(4)[7],
+    N7ML(4)[6],N7NG(5)[8],N7TXX(4)[7],N7UN(5)[8],N8WRL(5)[8],N8YYS(5)[8],
+    N9GG(5)[8],N9HZQ(5)[8],NA4W(4),NA8V(5)[8],ND2T(3)[6],NE9Z(4)[7],
+    NE9Z/7(4)[7],NH2K(5)[8],NJ1V(4)[7],NL7AU(5)[8],NM4T(4),NN4T(4),NP3D(5)[8],
+    NP4IW(3)[6],NT4L(4),NY4T(4),NY6DX(5)[8],W,W0AD(5)[8],W0MHK(5)[8],
+    W1XE(4)[7],W2NA(3)[6],W2OO(4),W2VJN(3)[6],W4CAT(4),W4KH(4),W4NS(4),
+    W4NTI(4),W4RJ(4),W4SRK(4),W4WNG(4),W4WW(4),W4YGE(4),W6NWS(5)[8],
+    W6TER(4)[7],W6XR(5)[8],W7CA(4)[7],W7KEU(4)[7],W7LR(4)[6],W7OT(5)[8],
+    W7SE(4)[7],W7THY(4)[7],W7WK(4)[7],W7ZQ(4)[7],W8AH(5)[8],W8BAR(5)[8],
+    W8JI(5)[8],W8ZA(5)[8],W9PL(3)[6],W9WBA(5)[8],WA3COS(4)[7],WA8KAN(5)[8],
+    WH0AAM(3)[6],WH2AAT(5)[8],WH6FZ(5)[8],WL7LZ(4)[7],WL7WO(5)[8],WL7Y(5)[8],
+    WL7Z(5)[8],WO4O(4),WQ5L(4)[8],WS7W(4)[7];
 Guantanamo Bay:           08:  11:  NA:   19.90:    75.20:     5.0:  KG4:
     KG4;
 Mariana Is.:              27:  64:  OC:   15.20:  -145.80:    10.0:  KH0:
@@ -473,7 +476,7 @@ Desecheo I.:              08:  11:  NA:   18.30:    67.50:     5.0:  KP5:
 Norway:                   14:  18:  EU:   60.00:   -10.70:    -1.0:  LA:
     LA,LB,LC,LD,LE,LF,LG,LH,LI,LJ,LK,LL,LM,LN;
 Argentina:                13:  14:  SA:  -34.60:    58.40:     3.0:  LU:
-    AY,AZ,L;
+    AY,AZ,L,LU2DVI/H;
 Luxembourg:               14:  27:  EU:   49.60:    -6.20:    -1.0:  LX:
     LX;
 Lithuania:                15:  29:  EU:   54.50:   -25.50:    -3.0:  LY:
@@ -731,7 +734,7 @@ South Shetland:           13:  73:  SA:  -62.00:    58.30:     4.0:  VP8/h:
     4K1ADQ,4K1F,CE9/CE2NVH,CE9/CE3LOJ,CE9/CE3MMV,CE9/CE5BYE,CE9A,CE9AP,CE9CMK,
     CE9EVG,CE9GEW,CE9MFJ,CE9MFR,CE9NGV,CE9OHB,CE9PUA,CE9PWE,CE9R,CE9RDS,CX0XY,
     D88S,DP1KGI,ED0BAE,EG0BOD,HF0POL,HF0QF,HL0KSJ,HL5BDS,HL8KSJ,LU1ZC,LZ0A,
-    OA0MP,R1ANF,VP8CQS,ZV0ASN,ZX0ECF;
+    OA0MP,R1ANF,VP8/LZ2UU,VP8CQS,ZV0ASN,ZX0ECF;
 South Orkney:             13:  73:  SA:  -60.00:    45.50:     3.0:  VP8/o:
     AY1ZA,ED0BOD,LU1ZA,LU6Z,LW3DPP,VP8BRT,VP8BXK,VP8CFM,VP8CSE,VP8LU;
 South Sandwich:           13:  73:  SA:  -57.00:    26.70:     2.0:  VP8/s:
