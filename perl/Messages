@@ -85,6 +85,7 @@ package DXM;
 				e29 => 'Need a password',
 				e30 => 'Cannot Open $_[0] $!',
 				e31 => '$_[0] is not a user', 
+				e32 => 'Need a passphrase',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',
@@ -195,6 +196,8 @@ package DXM;
 				page => 'Press Enter to continue, A to abort ($_[0] lines) >',
 				pagelth => 'Page Length is now $_[0]',
 				passerr => 'Please use: SET/PASS <password> <callsign>',
+				passphrase => 'Passphrase set or changed for $_[0]',
+				passphraseu => 'Passphrase removed for $_[0]',
 				password => 'Password set or changed for $_[0]',
 				passwordu => 'Password removed for $_[0]',
 				pc90s => 'PC90 enabled for $_[0]',

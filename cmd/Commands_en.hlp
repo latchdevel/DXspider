@@ -1305,8 +1305,10 @@ The call must be written in full, no wild cards are allowed eg:-
 
   set/badspotter VE2STN 
 
-will stop anything from VE2STN. If you want SSIDs as well then you must
-enter them specifically.
+will stop anything from VE2STN. This command will automatically
+stop spots from this user, regardless of whether or which SSID 
+he uses. DO NOT USE SSIDs in the callsign, just use the callsign
+as above or below.
 
   unset/badspotter VE2STN
 

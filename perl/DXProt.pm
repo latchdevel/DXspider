@@ -185,21 +185,8 @@ sub check
 
 sub init
 {
-	my $user = DXUser->get($main::mycall);
-	$DXProt::myprot_version += $main::version*100;
-	$main::me = DXProt->new($main::mycall, 0, $user); 
-	$main::me->{here} = 1;
-	$main::me->{state} = "indifferent";
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
-	$main::me->{sort} = 'S';    # S for spider
-	$main::me->{priv} = 9;
-	$main::me->{metric} = 0;
-	$main::me->{pingave} = 0;
-	$main::me->{version} = $main::version;
-	$main::me->{build} = $main::build;
-		
-#	$Route::Node::me->adddxchan($main::me);
 }
 
 #
@@ -278,7 +265,7 @@ sub start
 
 	# send initialisation string
 	unless ($self->{outbound}) {
-		$self->send(pc18());
+		$self->sendinit;
 	}
 	
 	$self->state('init');
@@ -290,6 +277,16 @@ sub start
 	# run a script send the output to the debug file
 	my $script = new Script(lc $call) || new Script('node_default');
 	$script->run($self) if $script;
+}
+
+#
+# send outgoing 'challenge'
+#
+
+sub sendinit
+{
+	my $self = shift;
+	$self->send(pc18());
 }
 
 #
@@ -1252,24 +1249,6 @@ sub normal
 			return;
 		}
 		if ($pcno == 90) {		# new style PC16,17,19,21
-			my $node = $field[1];
-
-			# mark this node as wanting PC90s
-			my $parent = Route::Node::get($node);
-			if ($parent) {
-				my $t = hex $field[2];
-				my $last = $parent->lastpc90 || 0;
-				if ($last < $t) {
-					$parent->pc90(1);
-					$parent->lastpc90($t); 
-					my ($updsort, $n) = unpack "AA*", $field[3];
-					for (my $i = 4; $i < $#field; $i++) {
-						my ($sort, $flag, $node, $ping) = $field[$i] =~ m{(\w)(\d)([-\w+])(,\d+)?};
-						$ping /= 10 if (defined $ping); 
-					}
-				}
-			}
-			
 			return;
 		}
 	}
@@ -1314,11 +1293,7 @@ sub process
 		next if $dxchan == $main::me;
 
 		# send the pc50 or PC90
-		if ($pc50s && $dxchan->user->wantpc90) {
-			$dxchan->send_route(\&pc90, 1, $main::me, 'T', @dxchan);
-		} else {
-			$dxchan->send($pc50s) if $pc50s;
-		}
+		$dxchan->send($pc50s) if $pc50s;
 		
 		# send a ping out on this channel
 		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
@@ -1620,7 +1595,6 @@ sub send_local_config
 			dbg("sent a null value") if isdbg('chanerr');
 		}
 	}
-	$self->send_route(\&pc90, 1, $main::me, 'T', DXChannel::get_all()) if $self->user->wantpc90;
 }
 
 #

@@ -1,5 +1,5 @@
 #
-# set the pc90 flag
+# unset the new protocol flag
 #
 # Copyright (c) 1998 - Dirk Koopman
 #
@@ -17,11 +17,11 @@ foreach $call (@args) {
 	$call = uc $call;
 	my $user = DXUser->get_current($call);
 	if ($user) {
-		$user->wantpc90(1);
+		$user->wantnp(0);
 		$user->put;
-		push @out, $self->msg('set', 'PC90', $call);
+		push @out, $self->msg('unset', 'New Protocol', $call);
 	} else {
-		push @out, $self->msg('e3', "Set PC90", $call);
+		push @out, $self->msg('e3', "Unset New Protocol", $call);
 	}
 }
 return (1, @out);

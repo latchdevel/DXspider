@@ -44,6 +44,7 @@ $lasttime = 0;
 		  priv => '9,Privilege Level',
 		  lastin => '0,Last Time in,cldatetime',
 		  passwd => '9,Password,yesno',
+		  passphrase => '9,Pass Phrase,yesno',
 		  addr => '0,Full Address',
 		  'sort' => '0,Type of User', # A - ak1a, U - User, S - spider cluster, B - BBS
 		  xpert => '0,Expert Status,yesno',
@@ -73,6 +74,7 @@ $lasttime = 0;
           wantgrid => '0,DX Grid Info,yesno',
 		  wantann_talk => '0,Talklike Anns,yesno',
 		  wantpc90 => '1,Req PC90,yesno',
+		  wantnp => '1,Req New Protocol,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -200,11 +202,9 @@ sub get_current
   
 	my $dxchan = DXChannel->get($call);
 	return $dxchan->user if $dxchan;
-	my $data;
-	unless ($dbm->get($call, $data)) {
-		return decode($data);
-	}
-	return undef;
+	my $rref = Route::get($call);
+	return $rref->user if $rref && exists $rref->{user};
+	return $pkg->get($call);
 }
 
 #
@@ -595,6 +595,12 @@ sub unset_passwd
 {
 	my $self = shift;
 	delete $self->{passwd};
+}
+
+sub unset_passphrase
+{
+	my $self = shift;
+	delete $self->{passphrase};
 }
 1;
 __END__

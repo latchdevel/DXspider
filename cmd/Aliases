@@ -112,6 +112,7 @@ package CmdAlias;
 	  '^set/nota', 'unset/talk', 'unset/talk',
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
+      '^set/us', 'unset/node', 'unset/node',
 	'^set$', 'apropos set', 'apropos',
 	  '^sho?w?/u$', 'show/user', 'show/user',
 	  '^sho?w?/bu', 'show/files bulletins', 'show/files',

@@ -363,35 +363,6 @@ sub pc85
 # spider route broadcast
 sub pc90
 {
-	my $node = shift;
-	my $sort = shift;
-	my @out;
-	my $dxchan;
-	
-	while (@_) {
-		my $str = '';
-		for (; @_ && length $str <= 230;) {
-			my $ref = shift;
-			my $call = $ref->call;
-			my $flag = 0;
-			
-			$flag += 1 if $ref->here;
-			$flag += 2 if $ref->conf;
-			if ($ref->is_node) {
-				my $ping = int($ref->pingave * 10);
-				$str .= "^N$flag$call,$ping";
-				my $v = $ref->build || $ref->version;
-				$str .= ",$v" if defined $v;
-			} else {
-				$str .= "^U$flag$call";
-			}
-		}
-		push @out, $str if $str;
-	}
-	my $n = @out;
-	my $h = get_hops(90);
-	@out = map { sprintf "PC90^%s^%X^%s%d%s^%s^", $node->call, $main::systime, $sort, --$n, $_, $h } @out;
-	return @out;
 }
 
 1;

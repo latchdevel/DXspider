@@ -29,6 +29,7 @@ use Route;
 use Route::Node;
 use Script;
 use DXProt;
+use Verify;
 
 use strict;
 
@@ -38,16 +39,35 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($last_node_update $node_update_interval);
-
-$node_update_interval = 14*60;
-$last_node_update = time;
-
+sub init
+{
+	my $user = DXUser->get($main::mycall);
+	$DXProt::myprot_version += $main::version*100;
+	$main::me = QXProt->new($main::mycall, 0, $user); 
+	$main::me->{here} = 1;
+	$main::me->{state} = "indifferent";
+	$main::me->{sort} = 'S';    # S for spider
+	$main::me->{priv} = 9;
+	$main::me->{metric} = 0;
+	$main::me->{pingave} = 0;
+	$main::me->{registered} = 1;
+	$main::me->{version} = $main::version;
+	$main::me->{build} = $main::build;
+		
+#	$Route::Node::me->adddxchan($main::me);
+}
 
 sub start
 {
 	my $self = shift;
 	$self->SUPER::start(@_);
+}
+
+sub sendinit
+{
+	my $self = shift;
+	
+	$self->send($self->gen1);
 }
 
 sub normal
@@ -56,24 +76,48 @@ sub normal
 		DXProt::normal(@_);
 		return;
 	}
-	my $pcno;
-	return unless ($pcno) = $_[1] =~ /^QX(\d\d)\^/;
+	my ($id, $fromnode, $msgid, $incs);
+	return unless ($id, $fromnode, $msgid, $incs) = $_[1] =~ /^QX(\d\d)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
 
-	my ($self, $line) = @_;
-	
-	# calc checksum
-	$line =~ s/\^(\d\d)$//;
-	my $incs = hex $1;
-	my $cs = unpack("%32C*", $line) % 255;
-	if ($incs != $cs) {
-		dbg("QXPROT: Checksum fail in: $incs ne calc: $cs" ) if isdbg('qxerr');
+	my $noderef = Route::Node::get($fromnode);
+	$noderef = Route::Node::new($fromnode) unless $noderef;
+	my $user = DXChannel->get_current($fromnode);
+
+	my $il = length $incs; 
+	my $cs = sprintf("%02X", unpack("%32C*", substr($_[1], 0, length($_[1]) - ($il+1))));
+	if ($incs ne $cs) {
+		dbg("QXPROT: Checksum fail in: $incs ne calc: $cs" ) if isdbg('chanerr');
 		return;
 	}
 
-	# split the field for further processing
-	my ($id, $tonode, $fromnode, @field) = split /\^/, $line;
-	
+	return unless $noderef->newid($msgid);
+
+	$_[0]->handle($id, $fromnode, $msgid, $_[1]);
+	return;
 }
+
+sub handle
+{
+	no strict 'subs';
+	my $self = shift;
+	my $id = 0 + shift;
+	my $sub = "handle$id";
+	$self->$sub($self, @_) if $self->can($sub);
+	return;
+}
+
+sub gen
+{
+	no strict 'subs';
+	my $self = shift;
+	my $id = 0 + shift;
+	my $sub = "gen$id";
+	$self->$sub($self, @_) if $self->can($sub);
+	return;
+}
+
+my $last_node_update = 0;
+my $node_update_interval = 60*15;
 
 sub process
 {
@@ -92,9 +136,6 @@ sub disconnect
 
 sub sendallnodes
 {
-	my $nodes = join(',', map {sprintf("%s:%d", $_->{call}, int($_->{pingave} * $_->{metric}))} DXChannel::get_all_nodes());
-	my $users = DXChannel::get_all_users();
-	DXChannel::broadcast_nodes(frame(2, undef, undef, hextime(), $users, 'S', $nodes))
 }
 
 sub sendallusers
@@ -102,21 +143,88 @@ sub sendallusers
 
 }
 
-sub hextime
-{
-	my $t = shift || $main::systime;
-	return sprintf "%X", $t; 
-}
+my $msgid = 1;
 
 sub frame
 {
 	my $pcno = shift;
-	my $to = shift || '';
-	my $from = shift || $main::mycall;
+	my $ht;
 	
-	my $line = join '^', sprintf("QX%02d", $pcno), $to, $from, @_;
-	my $cs = unpack("%32C*", $line) % 255;
-	return $line . sprintf("^%02X", $cs);
+	$ht = sprintf "%X", $msgid;
+	my $line = join '^', sprintf("QX%02d", $pcno), $main::mycall, $ht, @_;
+	my $cs = sprintf "%02X", unpack("%32C*", $line) & 255;
+	$msgid = 1 if ++$msgid > 0xffff;
+	return "$line^$cs";
+}
+
+sub handle1
+{
+	my $self = shift;
+	
+	my @f = split /\^/, $_[2];
+	my $inv = Verify->new($f[5]);
+	unless ($inv->verify($main::me->user->passphrase, $f[6], $main::mycall, $self->call)) {
+		$self->sendnow('D','Sorry...');
+		$self->disconnect;
+	}
+	if ($self->{outbound}) {
+		$self->send($self->gen1);
+	} 
+	if ($self->{sort} ne 'S' && $f[2] eq 'DXSpider') {
+		$self->{user}->{sort} = $self->{sort} = 'S';
+		$self->{user}->{priv} = $self->{priv} = 1 unless $self->{priv};
+	}
+	$self->{version} = $f[3];
+	$self->{build} = $f[4];
+	$self->state('normal');
+	$self->{lastping} = 0;
+}
+
+sub gen1
+{
+	my $self = shift;
+	my $inp = Verify->new;
+	return frame(1, 1, "DXSpider", $main::version + 53, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
+}
+
+sub handle2
+{
+
+}
+
+sub gen2
+{
+	my $self = shift;
+	
+	my $node = shift;
+	my $sort = shift;
+	my @out;
+	my $dxchan;
+	
+	while (@_) {
+		my $str = '';
+		for (; @_ && length $str <= 230;) {
+			my $ref = shift;
+			my $call = $ref->call;
+			my $flag = 0;
+			
+			$flag += 1 if $ref->here;
+			$flag += 2 if $ref->conf;
+			if ($ref->is_node) {
+				my $ping = int($ref->pingave * 10);
+				$str .= "^N$flag$call,$ping";
+				my $v = $ref->build || $ref->version;
+				$str .= ",$v" if defined $v;
+			} else {
+				$str .= "^U$flag$call";
+			}
+		}
+		push @out, $str if $str;
+	}
+	my $n = @out;
+	my $h = get_hops(90);
+	@out = map { sprintf "PC90^%s^%X^%s%d%s^%s^", $node->call, $main::systime, $sort, --$n, $_, $h } @out;
+	return @out;
 }
 
 1;

@@ -122,7 +122,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
-$main::build += 12;				# add an offset to make it bigger than last system
+$main::build += 11;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -160,7 +160,7 @@ sub new_channel
 
 	# set up the basic channel info
 	# is there one already connected to me - locally? 
-	my $user = DXUser->get($call);
+	my $user = DXUser->get_current($call);
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
 		my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
@@ -171,7 +171,7 @@ sub new_channel
 	# is he locked out ?
 	my $basecall = $call;
 	$basecall =~ s/-\d+$//;
-	my $baseuser = DXUser->get($basecall);
+	my $baseuser = DXUser->get_current($basecall);
 	my $lock = $user->lockout if $user;
 	if ($baseuser && $baseuser->lockout || $lock) {
 		if (!$user || !defined $lock || $lock) {
@@ -190,8 +190,21 @@ sub new_channel
 	
 
 	# create the channel
-	if ($user->is_spider) {
-		$dxchan = QXProt->new($call, $conn, $user);
+	if ($user->wantnp) {
+		if ($user->passphrase && $main::me->user->passphrase) {
+			$dxchan = QXProt->new($call, $conn, $user);
+		} else {
+			unless ($user->passphrase) {
+				Log('DXCommand', "$call using NP but has no passphrase");
+				dbg("$call using NP but has no passphrase");
+			}
+			unless ($main::me->user->passphrase) {
+				Log('DXCommand', "$main::mycall using NP but has no passphrase");
+				dbg("$main::mycall using NP but has no passphrase");
+			}
+			already_conn($conn, $call, "Need to exchange passphrases");
+			return;
+		}
 	} elsif ($user->is_node) {
 		$dxchan = DXProt->new($call, $conn, $user);
 	} elsif ($user->is_user) {
@@ -457,6 +470,7 @@ Spot->init();
 # initialise the protocol engine
 dbg("reading in duplicate spot and WWV info ...");
 DXProt->init();
+QXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
 $routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));

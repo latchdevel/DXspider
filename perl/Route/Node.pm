@@ -29,8 +29,8 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
-		  pc90 => '0,Using PC90,yesno',
-		  lastpc90 => '0,Last PC90 time,cldatetime',
+		  np => '0,Using New Prot,yesno',
+		  lid => '0,Last Msgid',
 );
 
 $filterdef = $Route::filterdef;
@@ -224,6 +224,7 @@ sub new
 	$self->{flags} = shift;
 	$self->{users} = [];
 	$self->{nodes} = [];
+	$self->{lid} = 0;
 	
 	$list{$call} = $self;
 	
@@ -242,6 +243,22 @@ sub get
 sub get_all
 {
 	return values %list;
+}
+
+sub newid
+{
+	my $self = shift;
+	my $id = shift;
+	
+	return 0 if $id == $self->{lid};
+	if ($id > $self->{lid}) {
+		$self->{lid} = $id;
+		return 1;
+	} elsif ($self->{lid} - $id > 60000) {
+		$self->{id} = $id;
+		return 1;
+	}
+	return 0;
 }
 
 sub _addparent
