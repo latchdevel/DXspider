@@ -150,10 +150,12 @@ sub extract
 
 	# remove any /0-9 /P /A /M /MM /AM suffixes etc
 	if (@parts > 1) {
+		$p = $parts[0];
+		shift @parts if $p =~ /^(WEB|NET)$/o;
 		$p = $parts[$#parts];
-		pop @parts if $p =~ /^(\d+|[PABM]|AM|MM|BCN|SIX|Q\w+)$/o;
+		pop @parts if $p =~ /^(\d+|[PABM]|AM|MM|BCN|SIX|WEB|NET|Q\w+)$/o;
 		$p = $parts[$#parts];
-		pop @parts if $p =~ /^(\d+|[PABM]|AM|MM|BCN|SIX|Q\w+)$/o;
+		pop @parts if $p =~ /^(\d+|[PABM]|AM|MM|BCN|SIX|WEB|NET|Q\w+)$/o;
   
 		# can we resolve them by direct lookup
 		foreach $p (@parts) {

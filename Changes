@@ -1,5 +1,6 @@
 30Aug99=======================================================================
 1. remove -@ as well as \d from SSIDs for spots
+2. remove WEB and/or NET from the front or rear of callsigns in Prefix.pm
 29Aug99=======================================================================
 1. Added msg command to allow the changing of To, From, Subject and so on the
 messages. This seems particularly important just now as a whole raft of G3's
