@@ -250,7 +250,7 @@ sub ftor
 	while (@b) {
 		my $aa = shift @a;
 		my $bb = shift @b;
-		if (@b < (length $d) - 1) {
+		if (@b < (length $d)) {
 			$out .= '\\d';
 		} elsif ($aa eq $bb) {
 			$out .= $aa;
