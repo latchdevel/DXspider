@@ -655,7 +655,10 @@ sub queue_msg
 				next unless $ref->forward_it($call);           # check the forwarding file
 				
 				# if we are here we have a node that doesn't have this message
-				$ref->start_msg($dxchan) if !get_busy($call)  && $dxchan->state eq 'normal';
+				if (!get_busy($call)  && $dxchan->state eq 'normal') {
+					$ref->start_msg($dxchan);
+					last;
+				}
 			}
 		}
 
