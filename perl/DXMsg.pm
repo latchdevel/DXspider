@@ -458,7 +458,7 @@ sub del_msg
 	my $self = shift;
 	
 	# remove it from the active message list
-	@msg = grep { $ref($_) && $_ != $self } @msg;
+	@msg = grep { ref($_) && $_ != $self } @msg;
 	
 	# belt and braces (one day I will ask someone if this is REALLY necessary)
 	delete $self->{gotit};
