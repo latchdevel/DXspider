@@ -102,9 +102,6 @@ sub init
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
 	$fp = DXLog::new($dirprefix, "dat", 'd');
 	$statp = DXLog::new($dirprefix, "dys", 'd');
-	my $rm = $main::is_win ? 'del' : 'rm -f';
-	system("$rm $main::data/$dirprefix/*/*.bys");
-	system("$rm $main::data/$dirprefix/*/*.cys");
 }
 
 sub prefix

@@ -1,3 +1,6 @@
+10Dec04=======================================================================
+1. Included fixes sent in by David, N9KT for the new DB0SDX site.
+2. removed redundant "rm *bys" and "rm *cys" from Spot::init().
 09Dec04=======================================================================
 1. fix show/mydx properly this time (and test the fix!)
 2. fix the default in show/qrz

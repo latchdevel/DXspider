@@ -60,13 +60,15 @@ $http_proxy = undef;
 $http_proxy_port = undef;
 
 #
-# list of urls that are used in commands, here so that they
+# list of urls and other things that are used in commands, here so that they
 # can be changed if necessary.
 #
 
 $qrz_url = 'www.qrz.com';     # used by show/qrz
 $wm7d_url = 'www.wm7d.net';   # used by show/wm7d
-$db0sdx_url = 'dotnet.grossmann.com';   # used by show/db0sdx
+$db0sdx_url = 'www.qslinfo.de'; # used by show/db0sdx
+$db0sdx_path = '/qslinfo';
+$db0sdx_suffix = '.asmx';
 $dx425_url = 'www.ariscandicci.it';		# used by show/425
 $contest_host = 'www.sk3bg.se';         # used by show/contest
 $contest_url = "http://$contest_host/contest/text";         # used by show/contest
