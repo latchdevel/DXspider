@@ -487,7 +487,7 @@ sub del_msg
 
 		my $call = '';
 		$call = ' by ' . $dxchan->call if $dxchan;
-		Log("Msgno $self->{msgno} expunged$call");
+		Log('msg', "Msgno $self->{msgno} expunged$call");
 		
 		# remove the file
 		unlink filename($self->{msgno});
