@@ -12,9 +12,10 @@
 # $Id$
 # 
 
+# search local then perl directories
 BEGIN {
+  unshift @INC, "/spider/perl";   # this IS the right way round!
   unshift @INC, "/spider/local";
-  unshift @INC, "/spider/perl";
 }
 
 use Msg;
@@ -26,6 +27,10 @@ $call = "";                     # the callsign being used
 $conn = 0;                      # the connection object for the cluster
 $lastbit = "";                  # the last bit of an incomplete input line
 $mynl = "\n";                   # standard terminator
+$lasttime = time;               # lasttime something happened on the interface
+$outqueue = "";                 # the output queue length
+$buffered = 1;                  # buffer output
+$savenl = "";                   # an NL that has been saved from last time
 
 # cease communications
 sub cease
@@ -65,18 +70,39 @@ sub rec_socket
 	
 	if ($sort eq 'D') {
 	   my $snl = $mynl;
+	   my $newsavenl = "";
 	   $snl = "" if $mode == 0;
-	   $snl = ' ' if ($mode && $line =~ />$/);
+	   if ($mode && $line =~ />$/) {
+	     $newsavenl = $snl;
+		 $snl = ' ';
+	   }
 	   $line =~ s/\n/\r/og if $mode == 1;
 	   #my $p = qq($line$snl);
-	   print $line, $snl;
+	   if ($buffered) {
+	     if (length $outqueue >= 128) {
+	       print $outqueue;
+		   $outqueue = "";
+	     }
+	     $outqueue .= "$savenl$line$snl";
+		 $lasttime = time;
+	   } else {
+	     print $savenl, $line, $snl;;
+	   }
+	   $savenl = $newsavenl;
 	} elsif ($sort eq 'M') {
 	  $mode = $line;               # set new mode from cluster
       setmode();
+	} elsif ($sort eq 'B') {
+	  if ($buffered && $outqueue) {
+	    print $outqueue;
+		$outqueue = "";
+	  }
+	  $buffered = $line;           # set buffered or unbuffered
     } elsif ($sort eq 'Z') {       # end, disconnect, go, away .....
 	  cease(0);
     }	  
-  } 
+  }
+  $lasttime = time; 
 }
 
 sub rec_stdin
@@ -105,13 +131,15 @@ sub rec_stdin
 	  foreach $first (@lines) {
 	    $conn->send_now("D$call|$first");
 	  }
-	  $lastbit = $buf;  
+	  $lastbit = $buf;
+	  $savenl = "";     # reset savenl 'cos we will have done a newline on input
 	} else {
 	  $conn->send_now("D$call|$buf");
 	}
   } elsif ($r == 0) {
     cease(1);
   }
+  $lasttime = time;
 }
 
 $call = uc shift @ARGV;
@@ -132,14 +160,15 @@ $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
 $conn->send_now("A$call|$connsort");
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
-$lasttime = time;
 for (;;) {
   my $t;
   Msg->event_loop(1, 0.010);
   $t = time;
-  if (t > $lasttime+660 && $connsort =~ /^ax/o) {            # every e
-    print pack('xx');
-	STDOUT->fflush();
+  if ($t > $lasttime) {
+    if ($outqueue) {
+	  print $outqueue;
+	  $outqueue = "";
+	}
 	$lasttime = $t;
   }
 }

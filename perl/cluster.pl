@@ -1,16 +1,20 @@
 #!/usr/bin/perl
 #
-# A thing that implements dxcluster 'protocol'
+# This is the DX cluster 'daemon'. It sits in the middle of its little
+# web of client routines sucking and blowing data where it may.
 #
-# This is a perl module/program that sits on the end of a dxcluster
-# 'protocol' connection and deals with anything that might come along.
-#
-# this program is called by ax25d and gets raw ax25 text on its input
+# Hence the name of 'spider' (although it may become 'dxspider')
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
 # $Id$
 # 
+
+# make sure that modules are searched in the order local then perl
+BEGIN {
+  unshift @INC, '/spider/perl';  # this IS the right way round!
+  unshift @INC, '/spider/local';
+}
 
 use Msg;
 use DXVars;
@@ -176,13 +180,15 @@ for (;;) {
   my $timenow;
   Msg->event_loop(1, 0.001);
   $timenow = time;
+  process_inqueue();                 # read in lines from the input queue and despatch them
+
+  # do timed stuff, ongoing processing happens one a second
   if ($timenow != $systime) {
     $systime = $timenow;
 	$cldate = &cldate();
 	$ztime = &ztime();
+    DXCommandmode::process();     # process ongoing command mode stuff
+    DXProt::process();              # process ongoing ak1a pcxx stuff
   }
-  process_inqueue();                 # read in lines from the input queue and despatch them
-  DXCommandmode::process();     # process ongoing command mode stuff
-  DXProt::process();              # process ongoing ak1a pcxx stuff
 }
 

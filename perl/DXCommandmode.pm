@@ -42,6 +42,7 @@ sub start
   $self->{priv} = $user->priv;
   $self->{priv} = 0 if $line =~ /^(ax|te)/;     # set the connection priv to 0 - can be upgraded later
   $self->{consort} = $line;                # save the connection type
+  $self->sort('U');                        # set the channel type
 }
 
 #
@@ -92,7 +93,19 @@ sub normal
 #
 sub process
 {
+  my $t = time;
+  my @chan = DXChannel->get_all();
+  my $chan;
+  
+  foreach $chan (@chan) {
+    next if $chan->sort ne 'U';  
 
+    # send a prompt if no activity out on this channel
+    if ($t >= $chan->t + $main::user_interval) {
+      $chan->prompt() if $chan->{state} =~ /^prompt/o;
+	  $chan->t($t);
+	}
+  }
 }
 
 #

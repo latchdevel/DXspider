@@ -36,13 +36,15 @@ use DXDebug;
   call => '0,Callsign',
   conn => '9,Msg Conn ref',
   user => '9,DXUser ref',
-  t => '0,Time,atime',
+  startt => '0,Start Time,atime',
+  t => '9,Time,atime',
   priv => '9,Privilege',
   state => '0,Current State',
   oldstate => '5,Last State',
   list => '9,Dep Chan List',
   name => '0,User Name',
-  consort => '9,Connection Type'
+  consort => '9,Connection Type',
+  sort => '9,Type of Channel',
 );
 
 
@@ -56,7 +58,7 @@ sub new
   $self->{call} = $call;
   $self->{conn} = $conn if defined $conn;   # if this isn't defined then it must be a list
   $self->{user} = $user if defined $user; 
-  $self->{t} = time;
+  $self->{startt} = $self->{t} = time;
   $self->{state} = 0;
   $self->{oldstate} = 0;
   bless $self, $pkg; 
@@ -103,25 +105,16 @@ sub send_now
 {
   my $self = shift;
   my $conn = $self->{conn};
-
-  # is this a list of channels ?
-  if (!defined $conn) {
-    die "tried to send_now to an invalid channel list" if !defined $self->{list};
-	my $lself;
-	foreach $lself (@$self->{list}) {
-	  $lself->send_now(@_);             # it's recursive :-)
-	}
-  } else {
-    my $sort = shift;
-    my $call = $self->{call};
-    my $line;
+  my $sort = shift;
+  my $call = $self->{call};
+  my $line;
 	
-    foreach $line (@_) {
-	  chomp $line;
-      dbg('chan', "-> $sort $call $line\n");
-      $conn->send_now("$sort$call|$line");
-	}
+  foreach $line (@_) {
+    chomp $line;
+	dbg('chan', "-> $sort $call $line\n");
+	$conn->send_now("$sort$call|$line");
   }
+  $self->{t} = time;
 }
 
 #
@@ -131,24 +124,15 @@ sub send              # this is always later and always data
 {
   my $self = shift;
   my $conn = $self->{conn};
- 
-  # is this a list of channels ?
-  if (!defined $conn) {
-    die "tried to send to an invalid channel list" if !defined $self->{list};
-	my $lself;
-	foreach $lself (@$self->{list}) {
-	  $lself->send(@_);                 # here as well :-) :-)
-	}
-  } else {
-    my $call = $self->{call};
-    my $line;
+  my $call = $self->{call};
+  my $line;
 
-    foreach $line (@_) {
-	  chomp $line;
-	  dbg('chan', "-> D $call $line\n");
-	  $conn->send_later("D$call|$line");
-	}
+  foreach $line (@_) {
+    chomp $line;
+	dbg('chan', "-> D $call $line\n");
+	$conn->send_later("D$call|$line");
   }
+  $self->{t} = time;
 }
 
 # send a file (always later)

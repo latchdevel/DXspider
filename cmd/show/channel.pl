@@ -4,9 +4,10 @@
 # $Id$
 #
 
+use strict;
 my ($self, $line) = @_;
-my @list = /\s+/, $line;		  # generate a list of callsigns
-@list = ($self->call) if (!@list || $self->priv < 9);  # my channel if no callsigns
+my @list = split /\s+/, $line;		  # generate a list of callsigns
+@list = ($self->call) if !@list || $self->priv < 9;  # my channel if no callsigns
 
 my $call;
 my @out;

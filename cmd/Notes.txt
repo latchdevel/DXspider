@@ -97,6 +97,11 @@ Programming Notes ($Id$)
                                   locators
     show/locator gb7dxc      - bearing and distance to gb7dxc if poss.  
 
+* It is important that you remember when you have tie hashes using MLDBM
+  et al. If you do a DXUser->get($call) you will get a different (older)
+  thing than the one in $self->$user. This is almost certainly NOT what
+  you want if want to modify a user that is currently connected.
+
 * Anything you output with a > as the last character is taken to mean
   that this is a prompt and will not have a \r or \n appended to it.
 
