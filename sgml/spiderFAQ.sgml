@@ -124,8 +124,7 @@ Remember to make it executable!
 
 This will limit your debug data down to the last 10 days
 
-<sect1>I updated my Linux distribution and now Spider cannot read the users
-file or the dupefile, what is the problem?
+<sect1>I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?
 
 <P>
 Almost certainly this is a change in the db format of perl.  Follow these

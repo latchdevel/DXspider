@@ -160,8 +160,8 @@
   This will limit your debug data down to the last 10 days
 
 
-  22..66..  ffiillee oorr tthhee dduuppeeffiillee,, wwhhaatt iiss tthhee pprroobblleemm??  II uuppddaatteedd mmyy LLiinnuuxx
-  ddiissttrriibbuuttiioonn aanndd nnooww SSppiiddeerr ccaannnnoott rreeaadd tthhee uusseerrss
+  22..66..  II uuppddaatteedd mmyy LLiinnuuxx ddiissttrriibbuuttiioonn aanndd nnooww SSppiiddeerr ccaannnnoott rreeaadd tthhee
+  uusseerrss ffiillee oorr tthhee dduuppeeffiillee,, wwhhaatt iiss tthhee pprroobblleemm??
 
   Almost certainly this is a change in the db format of perl.  Follow
   these few steps to correct the problem.
