@@ -35,7 +35,7 @@ use Route::Node;
 
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
-			$last_hour %pings %rcmds
+			$last_hour $last10 %emph  %pings %rcmds
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
@@ -52,6 +52,7 @@ $censorpc = 1;					# Do a BadWords::check on text fields and reject things
 $baddx = new DXHash "baddx";
 $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
+$last10 = time;
 
 @checklist = 
 (
@@ -1070,9 +1071,13 @@ sub normal
 	# NOTE - don't arrive here UNLESS YOU WANT this lump of protocol to be
 	#        REBROADCAST!!!!
 	#
-	 
-	unless ($self->{isolate}) {
-		broadcast_ak1a($line, $self); # send it to everyone but me
+
+	if (emph_dup($line)) {
+		dbg('chan', "PCPROT: Ephemeral dup, dropped");
+	} else {
+		unless ($self->{isolate}) {
+			broadcast_ak1a($line, $self); # send it to everyone but me
+		}
 	}
 }
 
@@ -1108,14 +1113,17 @@ sub process
 			}
 		}
 	}
+
+	# every ten seconds
+	if ($t - $last10 >= 10) {	
+		# clean out emphemera 
+
+		emph_clean();
+
+		$last10 = $t;
+	}
 	
-	my $key;
-	my $val;
-	my $cutoff;
 	if ($main::systime - 3600 > $last_hour) {
-#		Spot::process;
-#		Geomag::process;
-#		AnnTalk::process;
 		$last_hour = $main::systime;
 	}
 }
@@ -1746,6 +1754,28 @@ sub route_pc21
 {
 	my $self = shift;
 	broadcast_route($self, \&pc21, scalar @_, @_);
+}
+
+sub emph_dup
+{
+	my $s = shift;
+
+	# chop the end off
+	$s =~ s/\^H\d\d?\^?~?@//;
+	return 1 if exists $emph{$s};
+	$emph{$s} = $main::systime;
+	return undef;
+}
+
+sub emph_clean
+{
+	my ($key, $val);
+	
+	while (($key, $val) = each %emph) {
+		if ($main::systime - $val > 90) {
+			delete $emph{$key};
+		}
+	}
 }
 
 1;

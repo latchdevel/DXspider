@@ -78,8 +78,8 @@ sub pc16
 	my $ncall = $node->call;
 	my @out;
 
-	my $str = "PC16^$ncall";
 	while (@_) {
+		my $str = "PC16^$ncall";
 		for ( ; @_ && length $str < 200; ) {
 			my $ref = shift;
 			$str .= sprintf "^%s %s %d", $ref->call, $ref->conf ? '*' : '-', $ref->here;
