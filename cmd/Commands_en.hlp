@@ -1194,6 +1194,21 @@ for more information.
 Display all the bad spotter's callsigns in the system, see SET/BADSPOTTER
 for more information.
 
+=== 0^SHOW/CONFIGURATION [<node>]^Show all the nodes and users visible
+This command allows you to see all the users that can be seen
+and the nodes to which they are connected.
+
+This command is normally abbreviated to: sh/c
+
+BE WARNED: the list that is returned can be VERY long
+
+=== 0^SHOW/CONFIGURATION/NODE^Show all the nodes connected locally
+Show all the nodes connected to this node.
+
+=== 1^SHOW/CONNECT^Show all the active connections
+This command shows information on all the active connections known to
+the node. This command gives slightly more information than WHO.
+
 === 0^SHOW/DATE [<prefix>|<callsign>]^Show the local time 
 This is very nearly the same as SHOW/TIME, the only difference the format
 of the date string if no arguments are given.

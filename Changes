@@ -1,5 +1,6 @@
 15Apr01=======================================================================
 1. made some mods to the sgml documentation for 1.47
+2. added show/connect command
 11Apr01=======================================================================
 1. fixed more of the "xxx disappeared from yyy" messages
 2. altered the build no logic so that it always checksums the same files
