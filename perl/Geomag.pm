@@ -18,7 +18,9 @@ use IO::File;
 use DXDebug;
 
 use strict;
-use vars qw($date $sfi $k $a $r $forecast @allowed @denied $fp $node $from);
+use vars qw($date $sfi $k $a $r $forecast @allowed @denied $fp $node $from 
+            $dirprefix $param
+            %dup $duplth $dupage);
 
 $fp = 0;						# the DXLog fcb
 $date = 0;						# the unix time of the WWV (notional)
@@ -31,8 +33,12 @@ $node = "";						# originating node
 $from = "";						# who this came from
 @allowed = ();					# if present only these callsigns are regarded as valid WWV updators
 @denied = ();					# if present ignore any wwv from these callsigns
-my $dirprefix = "$main::data/wwv";
-my $param = "$dirprefix/param";
+%dup = ();						# the spot duplicates hash
+$duplth = 20;					# the length of text to use in the deduping
+$dupage = 12*3600;				# the length of time to hold spot dups
+
+$dirprefix = "$main::data/wwv";
+$param = "$dirprefix/param";
 
 sub init
 {
@@ -237,6 +243,42 @@ sub readfile
 		}
 	}
 	return @in;
+}
+
+# enter the spot for dup checking and return true if it is already a dup
+sub dup
+{
+	my ($d, $sfi, $k, $a, $text) = @_; 
+
+	# dump if too old
+	return 2 if $d < $main::systime - $dupage;
+ 
+	$d /= 60;                            # to the nearest minute
+	chomp $text;
+	$text = substr($text, 0, $duplth) if length $text > $duplth; 
+	my $dupkey = "$d|$sfi|$k|$a|$text";
+	return 1 if exists $dup{$dupkey};
+	$dup{$dupkey} = $d * 60;         # in seconds (to the nearest minute)
+	return 0; 
+}
+
+# called every hour and cleans out the dup cache
+sub process
+{
+	my $cutoff = $main::systime - $dupage;
+	while (my ($key, $val) = each %dup) {
+		delete $dup{$key} if $val < $cutoff;
+	}
+}
+
+sub listdups
+{
+	my @out;
+	for (sort { $dup{$a} <=> $dup{$b} } keys %dup) {
+		my $val = $dup{$_};
+		push @out, "$_ = $val (" . cldatetime($val) . ")";
+	}
+	return @out;
 }
 1;
 __END__;

@@ -25,27 +25,21 @@ use DXDebug;
 use Filter;
 use Local;
 use DXDb;
+use AnnTalk;
+use Geomag;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 use strict;
-use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
-			%spotdup %wwvdup $last_hour %pings %rcmds $pc11duptext
-			%nodehops @baddx $baddxfn $pc12_dup_age
-			%anndup $allowzero $pc12_dup_lth $decode_dk0wcy);
+use vars qw($me $pc11_max_age $pc23_max_age
+			$last_hour %pings %rcmds
+			%nodehops @baddx $baddxfn 
+			$allowzero $decode_dk0wcy);
 
 $me = undef;					# the channel id for this cluster
 $decode_dk0wcy = undef;			# if set use this callsign to decode announces from the EU WWV data beacon
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
-$pc11_dup_age = 3*3600;			# the maximum time to keep the spot dup list for
-$pc23_dup_age = 3*3600;			# the maximum time to keep the wwv dup list for
-$pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
-$pc12_dup_lth = 60;				# the length of ANN text to save for deduping 
-$pc11duptext = 20;				# maximum lth of the text field in PC11 to use for duduping
 
-%spotdup = ();				    # the pc11 and 26 dup hash 
-%wwvdup = ();				    # the pc23 and 27 dup hash
-%anndup = ();                               # the PC12 dup hash
 $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
@@ -66,22 +60,13 @@ sub init
 	confess $@ if $@;
 	#  $me->{sort} = 'M';    # M for me
 
-	# now prime the spot duplicates file with today's and yesterday's data
+	# now prime the spot and wwv  duplicates file with data
     my @today = Julian::unixtoj(time);
-	my @spots = Spot::readfile(@today);
-	@today = Julian::sub(@today, 1);
-	push @spots, Spot::readfile(@today);
-	for (@spots) {
-		my $duptext = length $_->[3] > $pc11duptext ? substr($_->[3], 0, $pc11duptext) : $_->[3] ;
-		my $dupkey = "$_->[0]$_->[1]$_->[2]$duptext$_->[4]";
-		$spotdup{$dupkey} = $_->[2];
+	for (Spot::readfile(@today), Spot::readfile(Julian::sub(@today, 1))) {
+		Spot::dup(@{$_}[0..3]);
 	}
-
-	# now prime the wwv duplicates file with just this month's data
-	my @wwv = Geomag::readfile(time);
-	for (@wwv) {
-		my $dupkey = "$_->[1].$_->[2]$_->[3]$_->[4]";
-		$wwvdup{$dupkey} = $_->[1];
+	for (Geomag::readfile(time)) {
+		Geomag::dup(@{$_}[1..5]);
 	}
 
 	# load the baddx file
@@ -230,24 +215,6 @@ sub normal
 				return;
 			}
 
-			# strip off the leading & trailing spaces from the comment
-			my $duptext = length $field[5] > $pc11duptext ? substr($field[5], 0, $pc11duptext) : $field[5];
-			my $text = unpad($field[5]);
-			
-			# store it away
-			my $spotter = $field[6];
-			$spotter =~ s/-[\@\d]+$//o;	# strip off the ssid from the spotter
-			
-			# do some de-duping
-			my $freq = $field[1] - 0;
-			my $dupkey = "$freq$field[2]$d$duptext$spotter";
-			if ($spotdup{$dupkey}) {
-				dbg('chan', "Duplicate Spot ignored\n");
-				return;
-			}
-			
-			$spotdup{$dupkey} = $d;
-
 			# is it 'baddx'
 			if (grep $field[2] eq $_, @baddx) {
 				dbg('chan', "Bad DX spot, ignored");
@@ -260,7 +227,13 @@ sub normal
 				return;
 			}
 			
-			my @spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
+			# do some de-duping
+			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
+				dbg('chan', "Duplicate Spot ignored\n");
+				return;
+			}
+			
+			my @spot = Spot::add($field[1], $field[2], $d, $field[5], $field[6], $field[7]);
 
             #
 			# @spot at this point contains:-
@@ -287,13 +260,10 @@ sub normal
 		
 		if ($pcno == 12) {		# announces
 			# announce duplicate checking
-			my $text = substr(uc unpad($field[3]), 0, $pc12_dup_lth);
-			my $dupkey = $field[1].$field[2].$text;
-			if ($anndup{$dupkey}) {
+			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
 				dbg('chan', "Duplicate Announce ignored\n");
 				return;
 			}
-			$anndup{$dupkey} = $main::systime;
 			
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
 				
@@ -531,17 +501,15 @@ sub normal
 			my $i = unpad($field[5]);
 			my ($r) = $field[6] =~ /R=(\d+)/;
 			$r = 0 unless $r;
-			my $dupkey = "$d.$sfi$k$i";
-			if ($wwvdup{$dupkey}) {
-				dbg('chan', "Dup WWV Spot ignored\n");
-				return;
-			}
 			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
 				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}
-			$wwvdup{$dupkey} = $d;
-			$field[6] =~ s/-\d+$//o;            # remove spotter's ssid
+			if (Geomag::dup($d,$sfi,$k,$i,$field[6])) {
+				dbg('chan', "Dup WWV Spot ignored\n");
+				return;
+			}
+			$field[7] =~ s/-\d+$//o;            # remove spotter's ssid
 		
 			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..8], $r);
 
@@ -798,18 +766,9 @@ sub process
 	my $val;
 	my $cutoff;
 	if ($main::systime - 3600 > $last_hour) {
-		$cutoff  = $main::systime - $pc11_dup_age;
-		while (($key, $val) = each %spotdup) {
-			delete $spotdup{$key} if $val < $cutoff;
-		}
-		$cutoff = $main::systime - $pc23_dup_age;
-		while (($key, $val) = each %wwvdup) {
-			delete $wwvdup{$key} if $val < $cutoff;
-		}
-		$cutoff = $main::systime - $pc12_dup_age;
-		while (($key, $val) = each %anndup) {
-			delete $anndup{$key} if $val < $cutoff;
-		}
+		Spot::process;
+		Geomag::process;
+		AnnTalk::process;
 		$last_hour = $main::systime;
 	}
 }
@@ -1218,13 +1177,6 @@ sub load_hops
 	return 0;
 }
 
-# remove leading and trailing spaces from an input string
-sub unpad
-{
-	my $s = shift;
-	$s =~ s/^\s+|\s+$//;
-	return $s;
-}
 
 # add a ping request to the ping queues
 sub addping

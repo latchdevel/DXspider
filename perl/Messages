@@ -36,6 +36,7 @@ package DXM;
 				db9 => 'Database $_[0] removed',
 				db10 => '$_[0] records imported into $_[1]',
 				db11 => 'Sending your request(s) to $_[0], please stand by...',
+				dup => 'Sorry, this is a duplicate',
 				dx1 => 'Frequency $_[0] not in band (see show/band); usage: DX [BY call] freq call comments',
 				dx2 => 'Need a callsign; usage: DX [BY call] freq call comments',
 				dxs => 'DX Spots flag set on $_[0]',

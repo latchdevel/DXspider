@@ -16,7 +16,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs shellregex readfilestr writefilestr
-             print_all_fields cltounix iscallsign
+             print_all_fields cltounix iscallsign unpad
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -279,3 +279,16 @@ sub writefilestr
 		$fh->close;
 	}
 }
+
+# remove leading and trailing spaces from an input string
+sub unpad
+{
+	my $s = shift;
+	$s =~ s/^\s+|\s+$//;
+	return $s;
+}
+
+
+
+
+

@@ -17,13 +17,16 @@ use Julian;
 use Prefix;
 
 use strict;
-use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix);
+use vars qw($fp $maxspots $defaultspots $maxdays $dirprefix %dup $duplth $dupage);
 
 $fp = undef;
 $maxspots = 50;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
 $maxdays = 35;					# normal maximum no of days to go back
 $dirprefix = "spots";
+%dup = ();						# the spot duplicates hash
+$duplth = 20;					# the length of text to use in the deduping
+$dupage = 3*3600;               # the length of time to hold spot dups
 
 sub init
 {
@@ -41,14 +44,16 @@ sub add
 {
 	my @spot = @_;				# $freq, $call, $t, $comment, $spotter = @_
 	my @out = @spot[0..4];      # just up to the spotter
-	
-	# sure that the numeric things are numeric now (saves time later)
-	$spot[0] = 0 + $spot[0];
-	$spot[2] = 0 + $spot[2];
+
+	# normalise frequency
+	$spot[0] = sprintf "%.f", $spot[0];
   
 	# remove ssids if present on spotter
 	$out[4] =~ s/-\d+$//o;
 
+	# remove leading and trailing spaces
+	$spot[3] = unpad($spot[3]);
+	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @dxcc = Prefix::extract($out[1]);
 	my $spotted_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
@@ -194,4 +199,45 @@ sub readfile
 	}
 	return @spots;
 }
+
+# enter the spot for dup checking and return true if it is already a dup
+sub dup
+{
+	my ($freq, $call, $d, $text) = @_; 
+
+	# dump if too old
+	return 2 if $d < $main::systime - $dupage;
+ 
+	$freq = sprintf "%.1f", $freq;       # normalise frequency
+	$d /= 60;                            # to the nearest minute
+	chomp $text;
+	$text = substr($text, 0, $duplth) if length $text > $duplth; 
+	my $dupkey = "$freq|$call|$d|$text";
+	return 1 if exists $dup{$dupkey};
+	$dup{$dupkey} = $d * 60;         # in seconds (to the nearest minute)
+	return 0; 
+}
+
+# called every hour and cleans out the dup cache
+sub process
+{
+	my $cutoff = $main::systime - $dupage;
+	while (my ($key, $val) = each %dup) {
+		delete $dup{$key} if $val < $cutoff;
+	}
+}
+
+sub listdups
+{
+	my @out;
+	for (sort { $dup{$a} <=> $dup{$b} } keys %dup) {
+		my $val = $dup{$_};
+		push @out, "$_ = $val (" . cldatetime($val) . ")";
+	}
+	return @out;
+}
 1;
+
+
+
+

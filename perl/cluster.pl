@@ -58,11 +58,13 @@ use Bands;
 use Geomag;
 use CmdAlias;
 use Filter;
-use Local;
 use DXDb;
-use Data::Dumper;
+use AnnTalk;
 
+use Data::Dumper;
 use Fcntl ':flock'; 
+
+use Local;
 
 package main;
 
@@ -238,7 +240,7 @@ sub process_inqueue
 	
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
-	my ($sort, $call, $line) = $data =~ /^(\w)([A-Z0-9\-]+)\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^(\w)([^\|]+)\|(.*)$/;
 	my $error;
 	
 	# the above regexp must work

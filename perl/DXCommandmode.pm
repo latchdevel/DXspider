@@ -26,6 +26,7 @@ use CmdAlias;
 use Filter;
 use Minimuf;
 use DXDb;
+use AnnTalk;
 use Sun;
 
 use strict;

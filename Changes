@@ -1,5 +1,10 @@
 11Jun00=======================================================================
 1. removed extraneous DXDebug from DXUtil
+2. added help for set/echo
+3. Centralised all spot, wwv and ann dup handling into respective packages.
+4. Created new AnnTalk package (for above and OOing announce and talk 
+handling).
+5. Fixed problem with outputting lines with | in them to console.pl.
 10Jun00=======================================================================
 1. got rid of some more nasty bugs in sh/qra.
 2. fixed 9A3xx to always be Croatia (and not Haiti!).

@@ -214,7 +214,7 @@ sub rec_socket
 		cease(1);
 	}
 	if (defined $msg) {
-		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
+		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		
 		if ($sort && $sort eq 'D') {
 			addtotop($line);

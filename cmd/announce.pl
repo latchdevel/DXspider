@@ -46,6 +46,7 @@ if ($sort eq "FULL") {
 # change ^ into : for transmission
 $line =~ s/\^/:/og;
 
+return (1, $self->msg('dup')) if AnnTalk::dup($from, $to, $line);
 Log('ann', $to, $from, $line);
 DXProt::broadcast_list("To $to de $from <$t>: $line", 'ann', undef, @locals);
 if ($to ne "LOCAL") {
