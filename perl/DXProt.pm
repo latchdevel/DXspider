@@ -210,7 +210,7 @@ sub normal
 			
 			# store it away
 			my $spotter = $field[6];
-			$spotter =~ s/-\d+$//o;	# strip off the ssid from the spotter
+			$spotter =~ s/-[\@\d]+$//o;	# strip off the ssid from the spotter
 			
 			# do some de-duping
 			my $freq = $field[1] - 0;
