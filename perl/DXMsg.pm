@@ -1091,9 +1091,25 @@ sub do_send_stuff
 				Log('msg', "line: $line");
 				$loc->{reject}++;
 			}
+
+			if (@{$loc->{lines}}) {
+				push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
+			} else {
+				# temporarily store any R: lines so that we end up with 
+				# only the first and last ones stored.
+				if ($line =~ m|^R:\d{6}/\d{4}|) {
+					push @{$loc->{tempr}}, $line;
+				} else {
+					if (exists $loc->{tempr}) {
+						push @{$loc->{lines}}, shift @{$loc->{tempr}};
+						push @{$loc->{lines}}, pop @{$loc->{tempr}} if @{$loc->{tempr}};
+						delete $loc->{tempr};
+					}
+					push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
+				} 
+			}
 			
 			# i.e. it ain't and end or abort, therefore store the line
-			push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
 		}
 	}
 	return @out;

@@ -1,6 +1,9 @@
 06Nov01=======================================================================
 1. fix read so that sysop reading doesn't increment the read counter for 
 private mail not addressed to them.
+2. fix console.pl to show blank lines more reliably.
+3. fix msgs so that 2 R: lines are only stored on initial entry (not just
+after forwarding).
 04Nov01=======================================================================
 1. Allow the user to equal the node in RSPF checks (this allows spots and 
 stuff with the origin and spotter to be the same (although it is STRONGLY 

@@ -191,7 +191,7 @@ sub show_screen
 			my $lines = measure($line);
 			last if $i + $lines > $pagel;
 			setattr($line);
-			$top->addstr($i, 0, $line);
+			$top->addstr($i, 0, "$line\n");
 			$top->attrset(COLOR_PAIR(0)) if $has_colors;
 			$i += $lines;
 		}
@@ -236,6 +236,7 @@ sub rec_socket
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		
 		if ($sort && $sort eq 'D') {
+			$line = " " unless $line;
 			addtotop($line);
 		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
@@ -267,39 +268,38 @@ sub rec_stdin
 		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
 			
 			# save the lines
-			if ($inbuf) {
-				# check for a pling and do a search back for a command
-				if ($inbuf =~ /^!/o) {
-					my $i;
-					$inbuf =~ s/^!//o;
-					for ($i = $#khistory; $i >= 0; $i--) {
-						if ($khistory[$i] =~ /^$inbuf/) {
-							$inbuf = $khistory[$i];
-							last;
-						}
-					}
-					if ($i < 0) {
-						beep();
-						return;
+			$inbuf = " " unless $inbuf;
+
+			# check for a pling and do a search back for a command
+			if ($inbuf =~ /^!/o) {
+				my $i;
+				$inbuf =~ s/^!//o;
+				for ($i = $#khistory; $i >= 0; $i--) {
+					if ($khistory[$i] =~ /^$inbuf/) {
+						$inbuf = $khistory[$i];
+						last;
 					}
 				}
-				push @khistory, $inbuf if $inbuf;
-				shift @khistory if @khistory > $maxkhist;
-				$khistpos = @khistory;
-				$bot->move(0,0);
-				$bot->clrtoeol();
-				$bot->addstr(substr($inbuf, 0, $cols));
+				if ($i < 0) {
+					beep();
+					return;
+				}
 			}
+			push @khistory, $inbuf if $inbuf;
+			shift @khistory if @khistory > $maxkhist;
+			$khistpos = @khistory;
+			$bot->move(0,0);
+			$bot->clrtoeol();
+			$bot->addstr(substr($inbuf, 0, $cols));
 
 			# add it to the monitor window
 			unless ($spos == @shistory) {
 				$spos = @shistory;
 				show_screen();
 			};
-			addtotop($inbuf) if $inbuf;
+			addtotop($inbuf);
 		
 			# send it to the cluster
-			$inbuf = " " unless $inbuf;
 			$conn->send_later("I$call|$inbuf");
 			$inbuf = "";
 			$pos = $lth = 0;

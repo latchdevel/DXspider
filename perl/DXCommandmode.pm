@@ -89,7 +89,7 @@ sub start
 	$self->{priv} = $user->priv || 0;
 	$self->{lang} = $user->lang || $main::lang || 'en';
 	$self->{pagelth} = $user->pagelth || 20;
-	($self->{width}) = $line =~ /width=(\d+)/;
+	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
 	
