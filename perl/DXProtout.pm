@@ -117,8 +117,6 @@ sub pc19
 
 	for ($i = 0; @_; ) {
 		my $str = "PC19";
-		my $i;
-    
 		for (; @_ && $i < $DXProt::pc19_max_nodes; $i++) {
 			my $ref = shift;
 			my $here = $ref->{here} ? '1' : '0';
