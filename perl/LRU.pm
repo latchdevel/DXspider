@@ -11,7 +11,7 @@
 #
 # The structure of the base is:-
 #
-#  [next, prev, max objects, count ]
+#  [next, prev, max objects, count, <coderef to function to call on deletion> ]
 #
 #
 
@@ -37,8 +37,9 @@ sub newbase
 	my $pkg = shift;
 	my $name = shift;
 	my $max = shift;
+	my $coderef = shift;
 	confess "LRU->newbase requires a name and maximal count" unless $name && $max;
-	return $pkg->SUPER::new({ }, $max, 0, $name);
+	return $pkg->SUPER::new({ }, $max, 0, $name, $coderef);
 }
 
 sub get
@@ -86,6 +87,7 @@ sub remove
 	my $q = $self->obj->{$call};
 	confess("$call is already removed") unless $q;
 	dbg("LRU $self->[5] cache remove $call now $self->[4]/$self->[3]") if isdbg('lru');
+	&{$self->[5]}($q->obj) if $self->[5];
 	$q->obj(1);
 	$q->SUPER::del;
 	delete $self->obj->{$call};

@@ -38,7 +38,7 @@ sub init
 		dbg("load Storable from CPAN");
 		return undef;
 	}
-	import Storable qw(nfreeze thaw);
+	import Storable qw(nfreeze freeze thaw);
 	my %u;
 	if ($mode) {
 		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open qsl file: $qslfn ($!)";
@@ -68,9 +68,15 @@ sub update
 	my $t = shift;
 	my $by = shift;
 		
-	my @tok = map {/^BUR/ || is_callsign($_) ? $_ : ()} split(/\b/, uc $line);
+	my @tok = map {/^(?:HC|BUR|QRZ|HOME)/ || is_callsign($_) ? $_ : ()} split(/\b/, uc $line);
 	foreach my $man (@tok) {
-		$man = 'BUREAU' if $man =~ /^BUR/;
+		if ($man =~ /^BUR/) {
+			$man = 'BUREAU';
+		} elsif ($man eq 'HC' || $man =~ /^HOM/) {
+			$man = 'HOME CALL';
+		} elsif ($man =~ /^QRZ/) {
+			$man = 'QRZ.com';
+		}
 		my ($r) = grep {$_->[0] eq $man} @{$self->[1]};
 		if ($r) {
 			$r->[1]++;

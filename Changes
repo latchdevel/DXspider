@@ -1,3 +1,7 @@
+12Mar03=======================================================================
+1. added HC and QRZ.com to possible QSL locations, if you want to pick up
+historical info (ie start again), run create_qsl.pl after update and restart
+the node (which you will need to do anyway).
 11Mar03=======================================================================
 1. Changed the name of show/qsl to show/dxqsl.
 2. Alter Commands_en.hlp to match new name and issue manual updates (g0vgs)
