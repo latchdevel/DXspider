@@ -1044,7 +1044,7 @@ sub normal
 									shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
 
 									# cope with a missed ping, this means you must set the pingint large enough
-									if ($tochan->is_arcluster && $t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
+									if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
 										$t -= $tochan->{pingint};
 									}
 
@@ -1052,7 +1052,7 @@ sub normal
 									if (@{$tochan->{pingtime}} == 1) {
 										$tochan->{pingave} = $t;
 									} else {
-										$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 8);
+										$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 									}
 #									my $st;
 #									for (@{$tochan->{pingtime}}) {
