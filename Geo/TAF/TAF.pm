@@ -13,7 +13,7 @@ use 5.005;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 
 my %err = (
@@ -196,7 +196,7 @@ sub decode
 			
 			# next token may be a time if it is a taf
 			my ($from, $to);
-			if (($from, $to) = $tok[0] =~ /^(\d\d)(\d\d)$/) {
+			if (@tok && (($from, $to) = $tok[0] =~ /^(\d\d)(\d\d)$/)) {
 				if ($self->{taf} && $from >= 0 && $from <= 24 && $to >= 0 && $to <= 24) {
 					shift @tok;
 					$from = _time($from * 100);
@@ -247,7 +247,7 @@ sub decode
 
 			# next token may be a time if it is a taf
 			my ($from, $to);
-			if (($from, $to) = $tok[0] =~ /^(\d\d)(\d\d)$/) {
+			if (@tok && (($from, $to) = $tok[0] =~ /^(\d\d)(\d\d)$/)) {
 				if ($self->{taf} && $from >= 0 && $from <= 24 && $to >= 0 && $to <= 24) {
 					shift @tok;
 					$from = _time($from * 100);
@@ -266,15 +266,14 @@ sub decode
 		# a wind group
 		} elsif (my ($wdir, $spd, $gust, $unit) = $t =~ /^(\d\d\d|VRB)(\d\d)(?:G(\d\d))?(KT|MPH|MPS|KMH)$/) {
 			
-			# the next word might be 'AUTO'
-			if ($tok[0] eq 'AUTO') {
+			my ($fromdir, $todir);
+			
+			if	(@tok && (($fromdir, $todir) = $tok[0] =~ /^(\d\d\d)V(\d\d\d)$/)) {
 				shift @tok;
 			}
-
+			
 			# it could be variable so look at the next token
 
-			my ($fromdir, $todir) = $tok[0] =~ /^(\d\d\d)V(\d\d\d)$/;
-			shift @tok if defined $fromdir; 
 			$spd = 0 + $spd;
 			$gust = 0 + $gust if defined $gust;
 			$unit = ucfirst lc $unit;
@@ -315,7 +314,8 @@ sub decode
 
 		# viz group in miles and faction of a mile with space between
 		} elsif (my ($m) = $t =~ m!^(\d)$!) {
-			if (my ($viz) = $tok[0] =~ m!^(\d/\d)SM$!) {
+			my $viz;
+			if (@tok && (($viz) = $tok[0] =~ m!^(\d/\d)SM$!)) {
 				shift @tok;
 				$viz = "$m $viz";
 				$self->{viz_dist} ||= $viz;
@@ -417,18 +417,6 @@ sub as_string
 	my $self = shift;
 	my ($n) = (ref $self) =~ /::(\w+)$/;
 	return join ' ', ucfirst $n, map {defined $_ ? $_ : ()} @$self;
-}
-
-# accessors
-sub AUTOLOAD
-{
-	no strict;
-	my $name = $AUTOLOAD;
-	return if $name =~ /::DESTROY$/;
-	$name =~ s/^.*:://o;
-
-	*$AUTOLOAD = sub { $_[0]->{$name}};
-    goto &$AUTOLOAD;
 }
 
 package Geo::TAF::EN::HEAD;

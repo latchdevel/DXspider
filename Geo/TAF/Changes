@@ -4,3 +4,6 @@ Revision history for Perl extension Geo::TAF.
 	- original version; created by h2xs 1.22 with options
 		--skip-exporter --skip-autoloader -Xb 5.5.0 -n Geo::TAF
 
+1.02  Mon Feb  3 01:28:00 2003
+	- fixed some uninitialised data errors in TAF.pm
+	- included example scgi_weather.pl
