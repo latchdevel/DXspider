@@ -305,8 +305,8 @@ sub normal
 		
 		if ($pcno == 16) {		# add a user
 			my $node = DXCluster->get_exact($field[1]); 
-			last SWITCH if !$node; # ignore if havn't seen a PC19 for this one yet
-			last SWITCH unless $node->isa('DXNode');
+			return unless $node; # ignore if havn't seen a PC19 for this one yet
+			return unless $node->isa('DXNode');
 			if ($node->dxchan != $self) {
 				dbg('chan', "LOOP: come in on wrong channel");
 				return;
@@ -341,7 +341,8 @@ sub normal
 		
 		if ($pcno == 17) {		# remove a user
 			my $node = DXCluster->get_exact($field[2]);
-			last SWITCH unless $node->isa('DXNode');
+			return unless $node;
+			return unless $node->isa('DXNode');
 			if ($node->dxchan != $self) {
 				dbg('chan', "LOOP: come in on wrong channel");
 				return;
@@ -367,12 +368,12 @@ sub normal
 				my $ver = $field[$i+3];
 				
 				# now check the call over
-				my $node = DXCluster->get_exact($call); # we already have this
+				my $node = DXCluster->get_exact($call);
 				if ($node && $node->dxchan != $self) {
 					dbg('chan', "LOOP: come in on wrong channel");
 					return;
 				}
-				next if $node;
+				next if $node; # we already have this
 				
 				# check for sane parameters
 				next if $ver < 5000; # only works with version 5 software
