@@ -108,6 +108,7 @@ sub rec_socket
 			my $snl = $mynl;
 			my $newsavenl = "";
 			$snl = "" if $mode == 0;
+			$snl = "\r\n" if $mode == 2;
 			if ($mode == 2 && $line =~ />$/) {
 				$newsavenl = $snl;
 				$snl = ' ';
@@ -273,16 +274,20 @@ sub dochat
 			if ($csort eq 'telnet') {
 				$line = $sock->get();
 				cease(11) unless $line;          # the socket has gone away?
+				if (length $line == 0) {
+					dbg('connect', "received 0 length line, aborting...");
+					cease(11);
+				}
 				$line =~ s/\r\n/\n/og;
 				chomp;
 			} elsif ($csort eq 'ax25' || $csort eq 'prog') {
 				local $/ = "\r";
 				$line = <$rfh>;
+				if (length $line == 0) {
+					dbg('connect', "received 0 length line, aborting...");
+					cease(11);
+				}
 				$line =~ s/\r//og;
-			}
-			if (length $line == 0) {
-				dbg('connect', "received 0 length line, aborting...");
-				cease(11);
 			}
 			dbg('connect', "received \"$line\"");
 			if ($abort && $line =~ /$abort/i) {
