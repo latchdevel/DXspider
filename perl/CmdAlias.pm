@@ -25,9 +25,10 @@ use Carp;
 
 use strict;
 
-use vars qw(%alias $fn $localfn);
+use vars qw(%alias %newalias $fn $localfn);
 
 %alias = ();
+%newalias = ();
 
 $fn = "$main::cmd/Aliases";
 $localfn = "$main::localcmd/Aliases";
@@ -35,15 +36,28 @@ $localfn = "$main::localcmd/Aliases";
 sub load
 {
 	my $ref = shift;
-	if (-e $localfn) {
-		do $localfn;
-		return ($@) if $@ && ref $ref;
-		confess $@ if $@;
-		return ();
-	}
+	
 	do $fn;
 	return ($@) if $@ && ref $ref;
 	confess $@ if $@;
+	if (-e $localfn) {
+		my %oldalias = %alias;
+		local %alias;    # define a local one
+		
+		do $localfn;
+		return ($@) if $@ && ref $ref;
+		confess $@ if $@;
+		my $let;
+		foreach $let (keys %alias) {
+			# stick any local definitions at the front
+			my @a;
+			push @a, (@{$alias{$let}});
+			push @a, (@{$oldalias{$let}}) if exists $oldalias{$let};
+			$oldalias{$let} = \@a; 
+		}
+		%newalias = %oldalias;
+	}
+	%alias = %newalias if -e $localfn;
 	return ();
 }
 
@@ -57,25 +71,25 @@ sub init
 #
 sub get_cmd
 {
-  my $s = shift;
-  my ($let) = unpack "A1", $s;
-  my ($i, $n, $ref);
-
-  $let = lc $let;
-  
-  $ref = $alias{$let};
-  return undef if !$ref;
-  
-  $n = @{$ref};
-  for ($i = 0; $i < $n; $i += 3) {
-    if ($s =~ /$ref->[$i]/i) {
- 	  my $ri = qq{\$ro = "$ref->[$i+1]"};
-	  my $ro;
-	  eval $ri;
-	  return $ro;
+	my $s = shift;
+	my ($let) = unpack "A1", $s;
+	my ($i, $n, $ref);
+	
+	$let = lc $let;
+	
+	$ref = $alias{$let};
+	return undef if !$ref;
+	
+	$n = @{$ref};
+	for ($i = 0; $i < $n; $i += 3) {
+		if ($s =~ /$ref->[$i]/i) {
+			my $ri = qq{\$ro = "$ref->[$i+1]"};
+			my $ro;
+			eval $ri;
+			return $ro;
+		}
 	}
-  }
-  return undef;
+	return undef;
 }
 
 #
@@ -83,25 +97,25 @@ sub get_cmd
 #
 sub get_hlp
 {
-  my $s = shift;
-  my ($let) = unpack "A1", $s;
-  my ($i, $n, $ref);
-
-  $let = lc $let;
-  
-  $ref = $alias{$let};
-  return undef if !$ref;
-  
-  $n = @{$ref};
-  for ($i = 0; $i < $n; $i += 3) {
-    if ($s =~ /$ref->[$i]/i) {
- 	  my $ri = qq{\$ro = "$ref->[$i+2]"};
-	  my $ro;
-	  eval $ri;
-	  return $ro;
+	my $s = shift;
+	my ($let) = unpack "A1", $s;
+	my ($i, $n, $ref);
+	
+	$let = lc $let;
+	
+	$ref = $alias{$let};
+	return undef if !$ref;
+	
+	$n = @{$ref};
+	for ($i = 0; $i < $n; $i += 3) {
+		if ($s =~ /$ref->[$i]/i) {
+			my $ri = qq{\$ro = "$ref->[$i+2]"};
+			my $ro;
+			eval $ri;
+			return $ro;
+		}
 	}
-  }
-  return undef;
+	return undef;
 }
 
 

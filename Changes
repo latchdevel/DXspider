@@ -9,6 +9,9 @@ This means that when you start forwarding to a node, it doesn't get all the
 messages queued up that are probably old.
 5. added 'uncatchup' which does the opposite of the above.
 6. fixed kill full and PC49 handling so that it actually works.
+7. Fixed local aliases so they add to the front of the standard ones. This
+means you only need to add your specials or override the system ones you need
+to.
 21Jun99=======================================================================
 1. changed regex for cluster->client msgs so that strings like |---| are no
 longer ignored.
