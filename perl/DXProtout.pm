@@ -69,11 +69,11 @@ sub pc16
   my $self = shift;
   my @out;
 
-  while (@_) {
+  foreach (@_) {
     my $str = "PC16^$self->{call}";
     my $i;
     
-    for ($i = 0; @_ && $i < $DXProt::pc16_max_users; $i++) {
+    for ($i = 0; @_ > 0  && $i < $DXProt::pc16_max_users; $i++) {
       my $ref = shift;
 	  $str .= sprintf "^%s %s %d", $ref->call, $ref->confmode ? '*' : '-', $ref->here;
 	}
@@ -86,9 +86,9 @@ sub pc16
 # remove a local user
 sub pc17
 {
-  my $self = shift;
+  my ($self, $ref) = @_;
   my $hops = get_hops(17);
-  return "PC17^$self->{call}^$main::mycall^$hops^";
+  return "PC17^$self->{call}^$ref->{call}^$hops^";
 }
 
 # Request init string
