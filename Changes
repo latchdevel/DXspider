@@ -1,3 +1,6 @@
+05Jul99=======================================================================
+1. added stat/msg and stat/cluster commands to allow me to poke about inside
+the msg and cluster node tables.
 04Jul99=======================================================================
 1. removed silly 'new message has arrived' to connected nodes if message is
 2. added a ! command to the console.pl program; works like the bash shell.

@@ -86,6 +86,7 @@ package DXM;
 				m13 => 'Message no $_[0] missing',
 				m14 => 'Message no $_[0] marked as sent to $_[1]',
 				m15 => 'Message no $_[0] unmarked as sent to $_[1]',
+				m16 => 'Need a Message number',
 				merge1 => 'Merge request for $_[1] spots and $_[2] WWV sent to $_[0]',
 				namee1 => 'Please enter your name, set/name <your name>',
 				namee2 => 'Can\'t find user $_[0]!',

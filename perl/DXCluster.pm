@@ -17,6 +17,7 @@ package DXCluster;
 use Exporter;
 @ISA = qw(Exporter);
 use DXDebug;
+use DXUtil;
 use Carp;
 
 use strict;
@@ -25,13 +26,13 @@ use vars qw(%cluster %valid);
 %cluster = ();					# this is where we store the dxcluster database
 
 %valid = (
-		  mynode => '0,Parent Node,showcall',
+		  mynode => '0,Parent Node,DXCluster::showcall',
 		  call => '0,Callsign',
 		  confmode => '0,Conference Mode,yesno',
 		  here => '0,Here?,yesno',
-		  dxchan => '5,Channel ref',
+		  dxchan => '5,Channel ref,DXCluster::showcall',
 		  pcversion => '5,Node Version',
-		  list => '5,User List,dolist',
+		  list => '5,User List,DXCluster::dolist',
 		  users => '0,No of Users',
 		 );
 
@@ -102,6 +103,14 @@ sub field_prompt
 	my ($self, $ele) = @_;
 	return $valid{$ele};
 }
+#
+# return a list of valid elements 
+# 
+
+sub fields
+{
+	return keys(%valid);
+}
 
 # this expects a reference to a list in a node NOT a ref to a node 
 sub dolist
@@ -110,7 +119,8 @@ sub dolist
 	my $out;
 	my $ref;
   
-	foreach $ref (@{$self}) {
+	foreach my $call (keys %{$self}) {
+		$ref = $$self{$call};
 		my $s = $ref->{call};
 		$s = "($s)" if !$ref->{here};
 		$out .= "$s ";
