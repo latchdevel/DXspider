@@ -1,5 +1,6 @@
 14Jun99=======================================================================
 1. changed IO::File in help and apropos to IO::File
+2. added a check for isa('DXNode') for PC50s
 08Jun99=======================================================================
 1. Started work on the curses based operator console.
 03Jun99=======================================================================
