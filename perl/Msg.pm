@@ -110,9 +110,11 @@ sub _send {
 
     while (@$rq) {
         my $msg            = $rq->[0];
-        my $bytes_to_write = length($msg) - $offset;
+		my $mlth           = length($msg);
+        my $bytes_to_write = $mlth - $offset;
         my $bytes_written  = 0;
-        while ($bytes_to_write) {
+		confess("Negative Length! msg: '$msg' lth: $mlth offset: $offset") if $bytes_to_write < 0;
+        while ($bytes_to_write > 0) {
             $bytes_written = syswrite ($sock, $msg,
                                        $bytes_to_write, $offset);
             if (!defined($bytes_written)) {
@@ -124,6 +126,7 @@ sub _send {
                     # be called back eventually, and will resume sending
                     return 1;
                 } else {    # Uh, oh
+					delete $conn->{send_offset};
                     $conn->handle_send_err($!);
                     return 0; # fail. Message remains in queue ..
                 }

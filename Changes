@@ -1,3 +1,7 @@
+30Apr00=======================================================================
+1. put some extra checks and balances in to message send routine in Msg.pm to
+see if I can prevent the error seen by Arnold (which I think is only likely to
+appear in heavily loaded sites).
 25Apr00=======================================================================
 1. Changed reply so that you can reply to more than one address privately
 31Mar00=======================================================================
