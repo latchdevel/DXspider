@@ -507,6 +507,7 @@ sub read_msg_header
 	$file = new IO::File "$fn";
 	if (!$file) {
 	    dbg('err', "Error reading $fn $!");
+	    Log('err', "Error reading $fn $!");
 		return undef;
 	}
 	$size = -s $fn;
@@ -515,6 +516,7 @@ sub read_msg_header
 	$size -= length $line;
 	if (! $line =~ /^===/o) {
 		dbg('err', "corrupt first line in $fn ($line)");
+		Log('err', "corrupt first line in $fn ($line)");
 		return undef;
 	}
 	$line =~ s/^=== //o;
@@ -526,6 +528,7 @@ sub read_msg_header
 	$size -= length $line;
 	if (! $line =~ /^===/o) {
 	    dbg('err', "corrupt second line in $fn ($line)");
+	    Log('err', "corrupt second line in $fn ($line)");
 		return undef;
 	}
 	$line =~ s/^=== //o;
@@ -552,6 +555,7 @@ sub read_msg_body
 	$file = new IO::File;
 	if (!open($file, $fn)) {
 		dbg('err' ,"Error reading $fn $!");
+		Log('err' ,"Error reading $fn $!");
 		return undef;
 	}
 	@out = map {chomp; $_} <$file>;
