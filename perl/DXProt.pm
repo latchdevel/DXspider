@@ -130,6 +130,8 @@ sub start
 	if (!$self->{outbound}) {
 		$self->send(pc38()) if DXNode->get_all();
 		$self->send(pc18());
+		# remove from outstanding connects queue
+		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
 	}
 	$self->state('init');
 	$self->pc50_t(time);

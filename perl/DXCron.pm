@@ -234,6 +234,11 @@ sub start_connect
 	my $call = uc shift;
 	my $lccall = lc $call;
 
+	if (grep {$_->{call} eq $call} @main::outstanding_connects) {
+		dbg('cron', "Connect not started, outstanding connect to $call");
+		return;
+	}
+	
 	my $prog = "$main::root/local/client.pl";
 	$prog = "$main::root/perl/client.pl" if ! -e $prog;
 	

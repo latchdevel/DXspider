@@ -73,6 +73,7 @@ $systime = 0;					# the time now (in seconds)
 $version = "1.35";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
+@outstanding_connects = ();     # list of outstanding connects
       
 # handle disconnections
 sub disconnect
@@ -229,6 +230,7 @@ sub reap
 {
 	$SIG{'CHLD'} = \&reap;
 	my $cpid = wait;
+	@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
 }
 
 # this is where the input queue is dealt with and things are dispatched off to other parts of

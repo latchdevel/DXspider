@@ -3,6 +3,8 @@
 connect nodes that fail to respond to 3 ping requests (on the 4th attempt). 
 The default time is a ping every 3 mins, therefore a link will be struck out
 after 12 minutes of nil response.
+2. Maintain a table of outstanding connects to other nodes and prevent over-
+laps (special favour to G0RDI).
 17Nov99=======================================================================
 1. Started using Data::Dumper for things again
 2. 'Fixed' DXUser file corruption?

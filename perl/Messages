@@ -111,6 +111,7 @@ package DXM;
 				nodec => '$_[0] created as AK1A style Node',
 				nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
 				ok => 'Operation successful',
+				outconn => 'Outstanding connect to $_[0]',
 				page => 'Press Enter to continue, A to abort ($_[0] lines) >',
 				pagelth => 'Page Length is now $_[0]',
 				passerr => 'Please use: SET/PASS <password> <callsign>',
