@@ -6,6 +6,7 @@ where digits are the 'wrong' way round.
 in grepdbg and watchdbg.
 4. decide that we are using Latin-1 and therefore characters 0x80-0x9f are
 not allowed.
+5. fix the announces so that they are all UPPER CASE for poor old DXTelnet.
 03Dec00=======================================================================
 1. change grepdbg and watchdbg so that you can see a number of lines before
 the condx that you are looking for so:-
