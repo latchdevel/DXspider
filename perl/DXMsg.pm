@@ -143,7 +143,7 @@ sub process
 	my @f = split /\^/, $line;
 	my ($pcno) = $f[0] =~ /^PC(\d\d)/; # just get the number
 	my ($tonode, $fromnode) = @f[1, 2];
-	my $stream = $f[3] if $pcno > 29 && $pcno <= 33;
+	my $stream = $f[3] if ($pcno > 29 && $pcno <= 33) || $pcno == 42;
 
  SWITCH: {
 		if ($pcno == 28) {		# incoming message
