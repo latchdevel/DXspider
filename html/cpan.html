@@ -1,0 +1,785 @@
+<html>
+<head>
+<title>CPAN and perl installation</title>
+</head>
+<body>
+<h2>CPAN and perl installation</h2>
+
+<pre>
+[root@rufus djk]# perl -MCPAN -e shell
+
+We have to reconfigure CPAN.pm due to following uninitialized parameters:
+
+cpan_home, keep_source_where, build_dir, build_cache, index_expire, gzip, tar, unzip, make, pager, makepl_arg, make_arg, make_install_arg, urllist, inhibit_startup_message, ftp_proxy, http_proxy, no_proxy
+
+/usr/lib/perl5/CPAN/Config.pm initialized.
+
+The CPAN module needs a directory of its own to cache important
+index files and maybe keep a temporary mirror of CPAN files. This may
+be a site-wide directory or a personal directory.
+
+
+First of all, I'd like to create this directory. Where?
+
+CPAN build and cache directory? [/root/.cpan] 
+
+
+If you want, I can keep the source files after a build in the cpan
+home directory. If you choose so then future builds will take the
+files from there. If you don't want to keep them, answer 0 to the
+next question.
+
+
+
+How big should the disk cache be for keeping the build directories
+with all the intermediate files?
+
+Cache size for build directory (in MB)? [10] 
+
+
+The CPAN module will need a few external programs to work
+properly. Please correct me, if I guess the wrong path for a program.
+Don't panic if you do not have some of them, just press ENTER for
+those.
+
+Where is your gzip program? [/bin/gzip] 
+Where is your tar program? [/bin/tar] 
+Warning: unzip not found in PATH
+Where is your unzip program? [] 
+Where is your make program? [/usr/bin/make] 
+Warning: lynx not found in PATH
+Where is your lynx program? [] 
+Where is your ncftp program? [/usr/bin/ncftp] 
+Where is your ftp program? [/usr/bin/ftp] 
+What is your favorite pager program? [/usr/bin/less] 
+What is your favorite shell? [/bin/bash] 
+
+
+Every Makefile.PL is run by perl in a separate process. Likewise we
+run 'make' and 'make install' in processes. If you have any parameters
+(e.g. PREFIX, INSTALLPRIVLIB, UNINST or the like) you want to pass to
+the calls, please specify them here.
+
+If you don't understand this question, just press ENTER.
+
+Parameters for the 'perl Makefile.PL' command? [] 
+Parameters for the 'make' command? [] 
+Parameters for the 'make install' command? [] 
+
+
+Sometimes you may wish to leave the processes run by CPAN alone
+without caring about them. As sometimes the Makefile.PL contains
+question you're expected to answer, you can set a timer that will
+kill a 'perl Makefile.PL' process after the specified time in seconds.
+
+If you set this value to 0, these processes will wait forever. This is
+the default and recommended setting.
+
+Timeout for inacivity during Makefile.PL? [0] 
+
+We need to know the URL of your favorite CPAN site.
+Please enter it here:  ftp://sunsite.doc.ic.ac.uk/packages/CPAN
+
+Testing "ftp://sunsite.doc.ic.ac.uk/packages/CPAN" ...
+
+  Please, install Net::FTP as soon as possible. CPAN.pm installs it for you
+  if you just type
+      install Bundle::libnet
+
+
+Trying with "/usr/bin/ncftp -c" to get
+    ftp://sunsite.doc.ic.ac.uk/packages/CPAN/MIRRORED.BY
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources
+GOT /root/.cpan/sources/MIRRORED.BY
+
+"ftp://sunsite.doc.ic.ac.uk/packages/CPAN" seems to work
+
+
+WAIT support is available as a Plugin. You need the CPAN::WAIT module
+to actually use it.  But we need to know your favorite WAIT server. If
+you don't know a WAIT server near you, just press ENTER.
+
+Your favorite WAIT server?
+   [wait://ls6.informatik.uni-dortmund.de:1404] 
+
+
+If you're accessing the net via proxies, you can specify them in the
+CPAN configuration or via environment variables. The variable in
+the $CPAN::Config takes precedence.
+
+Your ftp_proxy?  
+Your http_proxy?  
+Your no_proxy?  
+
+
+commit: wrote /usr/lib/perl5/CPAN/Config.pm
+
+cpan shell -- CPAN exploration and modules installation (v1.3102)
+ReadLine support suppressed
+
+cpan> 
+cpan> install Bundle::CPAN
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors
+GOT /root/.cpan/sources/authors/01mailrc.txt.gz
+Going to read /root/.cpan/sources/authors/01mailrc.txt.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/modules
+GOT /root/.cpan/sources/modules/02packages.details.txt.gz
+Going to read /root/.cpan/sources/modules/02packages.details.txt.gz
+
+  There's a new CPAN.pm version (v1.40) available!
+  You might want to try
+    install CPAN
+    reload cpan
+  without quitting the current session. It should be a seamless upgrade
+  while we are running...
+
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/modules
+GOT /root/.cpan/sources/modules/03modlist.data.gz
+Going to read /root/.cpan/sources/modules/03modlist.data.gz
+Running make for NWINT/MD5-1.7.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/NWINT
+GOT /root/.cpan/sources/authors/id/NWINT/MD5-1.7.tar.gz
+MD5-1.7/
+MD5-1.7/Changes
+MD5-1.7/MANIFEST
+MD5-1.7/MD5.pm
+MD5-1.7/MD5.xs
+MD5-1.7/Makefile.PL
+MD5-1.7/README
+MD5-1.7/global.h
+MD5-1.7/md5.h
+MD5-1.7/md5c.c
+MD5-1.7/test.pl
+MD5-1.7/typemap
+MD5-1.7/examples/
+MD5-1.7/examples/mddriver.pl
+MD5-1.7/examples/twdigest.pl
+
+  CPAN.pm: Going to build NWINT/MD5-1.7.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for MD5
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/MD5
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/MD5
+mkdir ./blib/man3
+cp MD5.pm ./blib/lib/MD5.pm
+AutoSplitting MD5 (./blib/lib/auto/MD5)
+/usr/bin/perl -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 /usr/lib/perl5/ExtUtils/xsubpp  -typemap /usr/lib/perl5/ExtUtils/typemap -typemap typemap MD5.xs >MD5.tc && mv MD5.tc MD5.c
+cc -c  -Dbool=char -DHAS_BOOL -I/usr/local/include -O2    -DVERSION=\"1.7\" -DXS_VERSION=\"1.7\" -fpic -I/usr/lib/perl5/i386-linux/5.00404/CORE -DPERL_BYTEORDER=1234 MD5.c
+cc -c  -Dbool=char -DHAS_BOOL -I/usr/local/include -O2    -DVERSION=\"1.7\" -DXS_VERSION=\"1.7\" -fpic -I/usr/lib/perl5/i386-linux/5.00404/CORE -DPERL_BYTEORDER=1234 md5c.c
+Running Mkbootstrap for MD5 ()
+chmod 644 MD5.bs
+LD_RUN_PATH="" cc -o blib/arch/auto/MD5/MD5.so  -shared -L/usr/local/lib MD5.o md5c.o     
+chmod 755 blib/arch/auto/MD5/MD5.so
+cp MD5.bs ./blib/arch/auto/MD5/MD5.bs
+chmod 644 blib/arch/auto/MD5/MD5.bs
+Manifying ./blib/man3/MD5.3
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 test.pl
+1..14
+ok 1
+ok 2
+ok 3
+ok 4
+ok 5
+ok 6
+ok 7
+ok 8
+ok 9
+ok 10
+ok 11
+ok 12
+ok 13
+ok 14
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/site_perl/i386-linux/./auto/MD5/MD5.so
+Installing /usr/lib/perl5/site_perl/i386-linux/./auto/MD5/MD5.bs
+Installing /usr/lib/perl5/site_perl/./auto/MD5/autosplit.ix
+Installing /usr/lib/perl5/site_perl/./MD5.pm
+Installing /usr/lib/perl5/man/man3/./MD5.3
+Writing /usr/lib/perl5/site_perl/i386-linux/auto/MD5/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+Running make for GSAR/Data-Dumper-2.09.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/GSAR
+GOT /root/.cpan/sources/authors/id/GSAR/Data-Dumper-2.09.tar.gz
+Data-Dumper-2.09/
+Data-Dumper-2.09/Dumper.html
+Data-Dumper-2.09/t/
+Data-Dumper-2.09/t/overload.t
+Data-Dumper-2.09/t/dumper.t
+Data-Dumper-2.09/MANIFEST.NOXSUB
+Data-Dumper-2.09/Dumper.pm.NOXSUB
+Data-Dumper-2.09/Dumper.xs
+Data-Dumper-2.09/Todo
+Data-Dumper-2.09/MANIFEST
+Data-Dumper-2.09/Makefile.PL
+Data-Dumper-2.09/Dumper.pm
+Data-Dumper-2.09/Changes
+Data-Dumper-2.09/README
+
+  CPAN.pm: Going to build GSAR/Data-Dumper-2.09.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Data::Dumper
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/lib/Data
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/Data
+mkdir ./blib/arch/auto/Data/Dumper
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/Data
+mkdir ./blib/lib/auto/Data/Dumper
+cp Dumper.pm ./blib/lib/Data/Dumper.pm
+/usr/bin/perl -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 /usr/lib/perl5/ExtUtils/xsubpp  -typemap /usr/lib/perl5/ExtUtils/typemap Dumper.xs >Dumper.tc && mv Dumper.tc Dumper.c
+cc -c  -Dbool=char -DHAS_BOOL -I/usr/local/include -O2    -DVERSION=\"2.09\" -DXS_VERSION=\"2.09\" -fpic -I/usr/lib/perl5/i386-linux/5.00404/CORE  Dumper.c
+Running Mkbootstrap for Data::Dumper ()
+chmod 644 Dumper.bs
+LD_RUN_PATH="" cc -o blib/arch/auto/Data/Dumper/Dumper.so  -shared -L/usr/local/lib Dumper.o     
+chmod 755 blib/arch/auto/Data/Dumper/Dumper.so
+cp Dumper.bs ./blib/arch/auto/Data/Dumper/Dumper.bs
+chmod 644 blib/arch/auto/Data/Dumper/Dumper.bs
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
+t/dumper............ok
+t/overload..........ok
+All tests successful.
+Files=2,  Tests=139,  0 secs ( 0.55 cusr  0.05 csys =  0.60 cpu)
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/site_perl/i386-linux/./auto/Data/Dumper/Dumper.so
+Installing /usr/lib/perl5/site_perl/i386-linux/./auto/Data/Dumper/Dumper.bs
+Installing /usr/lib/perl5/site_perl/./Data/Dumper.pm
+Writing /usr/lib/perl5/site_perl/i386-linux/auto/Data/Dumper/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/GBARR
+GOT /root/.cpan/sources/authors/id/GBARR/Bundle-libnet-1.00.tar.gz
+Bundle-libnet-1.00/
+Bundle-libnet-1.00/Makefile.PL
+Bundle-libnet-1.00/libnet.pm
+Bundle-libnet-1.00/README
+Bundle-libnet-1.00/MANIFEST
+Data::Dumper is up to date.
+Running make for JROGERS/Net-Telnet-3.01.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/JROGERS
+GOT /root/.cpan/sources/authors/id/JROGERS/Net-Telnet-3.01.tar.gz
+Net-Telnet-3.01/
+Net-Telnet-3.01/Makefile.PL
+Net-Telnet-3.01/ChangeLog
+Net-Telnet-3.01/lib/
+Net-Telnet-3.01/lib/Net/
+Net-Telnet-3.01/lib/Net/Telnet.pm
+Net-Telnet-3.01/t/
+Net-Telnet-3.01/t/select.t
+Net-Telnet-3.01/README
+Net-Telnet-3.01/MANIFEST
+
+  CPAN.pm: Going to build JROGERS/Net-Telnet-3.01.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Net::Telnet
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/lib/Net
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/Net
+mkdir ./blib/arch/auto/Net/Telnet
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/Net
+mkdir ./blib/lib/auto/Net/Telnet
+mkdir ./blib/man3
+cp lib/Net/Telnet.pm ./blib/lib/Net/Telnet.pm
+Manifying ./blib/man3/Net::Telnet.3
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
+t/select............ok
+All tests successful.
+Files=1,  Tests=1,  0 secs ( 0.38 cusr  0.02 csys =  0.40 cpu)
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/site_perl/./Net/Telnet.pm
+Installing /usr/lib/perl5/man/man3/./Net::Telnet.3
+Writing /usr/lib/perl5/site_perl/i386-linux/auto/Net/Telnet/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+Running make for GBARR/libnet-1.0605.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/GBARR
+GOT /root/.cpan/sources/authors/id/GBARR/libnet-1.0605.tar.gz
+libnet-1.0605/
+libnet-1.0605/Net/
+libnet-1.0605/Net/FTP/
+libnet-1.0605/Net/FTP/dataconn.pm
+libnet-1.0605/Net/FTP/L.pm
+libnet-1.0605/Net/FTP/A.pm
+libnet-1.0605/Net/FTP/E.pm
+libnet-1.0605/Net/FTP/I.pm
+libnet-1.0605/Net/POP3.pm
+libnet-1.0605/Net/SMTP.pm
+libnet-1.0605/Net/FTP.pm
+libnet-1.0605/Net/Cmd.pm
+libnet-1.0605/Net/DummyInetd.pm
+libnet-1.0605/Net/NNTP.pm
+libnet-1.0605/Net/SNPP.pm
+libnet-1.0605/Net/Time.pm
+libnet-1.0605/Net/Domain.pm
+libnet-1.0605/Net/PH.pm
+libnet-1.0605/Net/Netrc.pm
+libnet-1.0605/demos/
+libnet-1.0605/demos/smtp.self
+libnet-1.0605/demos/nntp
+libnet-1.0605/demos/pop3
+libnet-1.0605/demos/time
+libnet-1.0605/demos/snpp
+libnet-1.0605/demos/nntp.mirror
+libnet-1.0605/demos/ftp
+libnet-1.0605/demos/inetd
+libnet-1.0605/Hostname.pm.eg
+libnet-1.0605/t/
+libnet-1.0605/t/nntp.t
+libnet-1.0605/t/ph.t
+libnet-1.0605/t/require.t
+libnet-1.0605/t/hostname.t
+libnet-1.0605/t/smtp.t
+libnet-1.0605/t/ftp.t
+libnet-1.0605/FAQ.pod
+libnet-1.0605/README.config
+libnet-1.0605/MANIFEST
+libnet-1.0605/Configure
+libnet-1.0605/Makefile.PL
+libnet-1.0605/ChangeLog
+libnet-1.0605/README
+
+  CPAN.pm: Going to build GBARR/libnet-1.0605.tar.gz
+
+Checking for Socket...ok
+Checking for IO::Socket...ok
+Checking for Data::Dumper...ok
+Checking if your kit is complete...
+Looks good
+
+This script will prompt you to enter hostnames that can be used as
+defaults for some of the modules in the libnet distribution.
+
+To ensure that you do not enter an invalid hostname, I can perform a
+lookup on each hostname you enter. If your internet connection is via
+a dialup line then you may not want me to perform these lookups, as
+it will require you to be on-line.
+
+Do you want me to perform hostname lookups (y|n) ? [yes] no
+
+*** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
+
+OK I will not check if the hostnames you give are valid
+so be very cafeful
+
+*** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
+
+The following questions all require a list of host names, separated
+with spaces. If you do not have a host available for any of the
+services, then enter a single space, followed by <CR>. To accept the
+default, hit <CR>
+
+Enter a list of available NNTP hosts : [news]  
+Enter a list of available SMTP hosts : [mailhost]  
+Enter a list of available POP3 hosts : []  
+Enter a list of available SNPP hosts : []  
+Enter a list of available PH Hosts   : [dirserv]  
+Enter a list of available TIME Hosts   : []  
+Enter a list of available DAYTIME Hosts   : []  
+
+Some companies access the internet via a firewall machine, and all
+FTP access must be dove via this machine.
+
+If to gain FTP access to a machine beyond a firewall, you have to use
+a FTP proxy machine and login as username@remote.host then enter
+the name of that gateway here.
+
+FTP proxy hostname : [] 
+
+Normally when FTP needs a data connection the client tells the server
+a port to connect to, and the server initiates a connection to the client.
+
+Some setups, in particular firewall setups, can/do not work using this
+protocol. In these situations the client must make the connection to the
+server, this is called a passive transfer.
+
+Should all FTP connections via a firewall/proxy be passive (y|n) ? [no] 
+
+Should all other FTP connections be passive (y|n) ? [no] 
+
+What is your local internet domain name : [] tubby.org
+
+If you specified some default hosts above, it is possible for me to
+do some basic tests when you run `make test'
+
+This will cause `make test' to be quite a bit slower and, if your
+internet connection is via dialup, will require you to be on-line
+unless the hosts are local.
+
+Do you want me to run these tests (y|n) ? [yes] 
+
+To allow Net::FTP to be tested I will need a hostname. This host
+should allow anonymous access and have a /pub directory
+
+What host can I use : [] localhost
+
+Writing libnet.cfg
+Writing Makefile for Net
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/Net
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/Net
+mkdir ./blib/man3
+cp Net/DummyInetd.pm ./blib/lib/Net/DummyInetd.pm
+cp Net/NNTP.pm ./blib/lib/Net/NNTP.pm
+cp Net/FTP/dataconn.pm ./blib/lib/Net/FTP/dataconn.pm
+cp Net/SNPP.pm ./blib/lib/Net/SNPP.pm
+cp Net/FTP/I.pm ./blib/lib/Net/FTP/I.pm
+cp Net/POP3.pm ./blib/lib/Net/POP3.pm
+cp Net/SMTP.pm ./blib/lib/Net/SMTP.pm
+cp Net/FTP/L.pm ./blib/lib/Net/FTP/L.pm
+cp FAQ.pod ./blib/lib/FAQ.pod
+cp Net/FTP.pm ./blib/lib/Net/FTP.pm
+cp Net/Time.pm ./blib/lib/Net/Time.pm
+cp Net/Cmd.pm ./blib/lib/Net/Cmd.pm
+cp Net/Domain.pm ./blib/lib/Net/Domain.pm
+cp Net/PH.pm ./blib/lib/Net/PH.pm
+cp Net/FTP/A.pm ./blib/lib/Net/FTP/A.pm
+cp libnet.cfg ./blib/arch/Net/Config.pm
+cp Net/Netrc.pm ./blib/lib/Net/Netrc.pm
+cp Net/FTP/E.pm ./blib/lib/Net/FTP/E.pm
+Manifying ./blib/man3/Net::Time.3
+Manifying ./blib/man3/FAQ.3
+/usr/bin/pod2man: FAQ.pod is missing required section: DESCRIPTION
+Manifying ./blib/man3/Net::Domain.3
+Manifying ./blib/man3/Net::PH.3
+Manifying ./blib/man3/Net::NNTP.3
+Manifying ./blib/man3/Net::DummyInetd.3
+Manifying ./blib/man3/Net::SNPP.3
+Manifying ./blib/man3/Net::FTP.3
+Manifying ./blib/man3/Net::POP3.3
+Manifying ./blib/man3/Net::Netrc.3
+Manifying ./blib/man3/Net::SMTP.3
+Manifying ./blib/man3/Net::Cmd.3
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
+t/ftp...............ok
+t/hostname..........ok
+t/nntp..............skipping test on this platform
+t/ph................skipping test on this platform
+t/require...........ok
+t/smtp..............skipping test on this platform
+All tests successful.
+Files=6,  Tests=16,  3 secs ( 2.12 cusr  0.23 csys =  2.35 cpu)
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/site_perl/i386-linux/./Net/Config.pm
+Installing /usr/lib/perl5/site_perl/./Net/DummyInetd.pm
+Installing /usr/lib/perl5/site_perl/./Net/NNTP.pm
+Installing /usr/lib/perl5/site_perl/./Net/FTP/dataconn.pm
+Installing /usr/lib/perl5/site_perl/./Net/FTP/I.pm
+Installing /usr/lib/perl5/site_perl/./Net/FTP/L.pm
+Installing /usr/lib/perl5/site_perl/./Net/FTP/A.pm
+Installing /usr/lib/perl5/site_perl/./Net/FTP/E.pm
+Installing /usr/lib/perl5/site_perl/./Net/SNPP.pm
+Installing /usr/lib/perl5/site_perl/./Net/POP3.pm
+Installing /usr/lib/perl5/site_perl/./Net/SMTP.pm
+Installing /usr/lib/perl5/site_perl/./Net/FTP.pm
+Installing /usr/lib/perl5/site_perl/./Net/Time.pm
+Installing /usr/lib/perl5/site_perl/./Net/Cmd.pm
+Installing /usr/lib/perl5/site_perl/./Net/Domain.pm
+Installing /usr/lib/perl5/site_perl/./Net/PH.pm
+Installing /usr/lib/perl5/site_perl/./Net/Netrc.pm
+Installing /usr/lib/perl5/site_perl/./FAQ.pod
+Installing /usr/lib/perl5/man/man3/./Net::Time.3
+Installing /usr/lib/perl5/man/man3/./FAQ.3
+Installing /usr/lib/perl5/man/man3/./Net::Domain.3
+Installing /usr/lib/perl5/man/man3/./Net::PH.3
+Installing /usr/lib/perl5/man/man3/./Net::NNTP.3
+Installing /usr/lib/perl5/man/man3/./Net::DummyInetd.3
+Installing /usr/lib/perl5/man/man3/./Net::SNPP.3
+Installing /usr/lib/perl5/man/man3/./Net::FTP.3
+Installing /usr/lib/perl5/man/man3/./Net::POP3.3
+Installing /usr/lib/perl5/man/man3/./Net::Netrc.3
+Installing /usr/lib/perl5/man/man3/./Net::SMTP.3
+Installing /usr/lib/perl5/man/man3/./Net::Cmd.3
+Writing /usr/lib/perl5/site_perl/i386-linux/auto/Net/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+Running make for KJALB/TermReadKey-2.12.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/KJALB
+GOT /root/.cpan/sources/authors/id/KJALB/TermReadKey-2.12.tar.gz
+TermReadKey-2.12/
+TermReadKey-2.12/Makefile.PL
+TermReadKey-2.12/ReadKey.pm
+TermReadKey-2.12/test.pl
+TermReadKey-2.12/Configure.pm
+TermReadKey-2.12/genchars.pl
+TermReadKey-2.12/README
+TermReadKey-2.12/ReadKey.xs
+TermReadKey-2.12/MANIFEST
+
+  CPAN.pm: Going to build KJALB/TermReadKey-2.12.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Term::ReadKey
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/lib/Term
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/Term
+mkdir ./blib/arch/auto/Term/ReadKey
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/Term
+mkdir ./blib/lib/auto/Term/ReadKey
+mkdir ./blib/man3
+cp ReadKey.pm ./blib/lib/Term/ReadKey.pm
+AutoSplitting Term::ReadKey (./blib/lib/auto/Term/ReadKey)
+/usr/bin/perl -I/usr/lib/perl5 genchars.pl
+
+Writing termio/termios section of cchars.h... Done.
+Checking for sgtty...
+        Sgtty NOT found.
+Writing sgtty section of cchars.h... Done.
+/usr/bin/perl -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 /usr/lib/perl5/ExtUtils/xsubpp  -typemap /usr/lib/perl5/ExtUtils/typemap ReadKey.xs >ReadKey.tc && mv ReadKey.tc ReadKey.c
+Please specify prototyping behavior for ReadKey.xs (see perlxs manual)
+cc -c  -Dbool=char -DHAS_BOOL -I/usr/local/include -O2    -DVERSION=\"2.12\" -DXS_VERSION=\"2.12\" -fpic -I/usr/lib/perl5/i386-linux/5.00404/CORE  ReadKey.c
+In file included from /usr/include/sys/select.h:31,
+                 from ReadKey.xs:240:
+/usr/include/selectbits.h:30: warning: `__FD_ZERO' redefined
+/usr/include/asm/posix_types.h:65: warning: this is the location of the previous definition
+/usr/include/selectbits.h:35: warning: `__FD_SET' redefined
+/usr/include/asm/posix_types.h:45: warning: this is the location of the previous definition
+/usr/include/selectbits.h:40: warning: `__FD_CLR' redefined
+/usr/include/asm/posix_types.h:50: warning: this is the location of the previous definition
+/usr/include/selectbits.h:49: warning: `__FD_ISSET' redefined
+/usr/include/asm/posix_types.h:58: warning: this is the location of the previous definition
+In file included from ReadKey.xs:240:
+/usr/include/sys/select.h:60: warning: `FD_SET' redefined
+/usr/include/linux/time.h:59: warning: this is the location of the previous definition
+/usr/include/sys/select.h:61: warning: `FD_CLR' redefined
+/usr/include/linux/time.h:60: warning: this is the location of the previous definition
+/usr/include/sys/select.h:62: warning: `FD_ISSET' redefined
+/usr/include/linux/time.h:61: warning: this is the location of the previous definition
+/usr/include/sys/select.h:63: warning: `FD_ZERO' redefined
+/usr/include/linux/time.h:62: warning: this is the location of the previous definition
+In file included from ReadKey.xs:240:
+/usr/include/sys/select.h:45: syntax error before `fd_mask'
+/usr/include/sys/select.h:45: warning: empty declaration
+/usr/include/sys/select.h:48: conflicting types for `fd_set'
+/usr/include/linux/types.h:9: previous declaration of `fd_set'
+/usr/include/sys/select.h:73: conflicting types for `__select'
+/usr/include/sys/time.h:55: previous declaration of `__select'
+/usr/include/sys/select.h:76: conflicting types for `select'
+/usr/include/sys/time.h:58: previous declaration of `select'
+ReadKey.xs: In function `selectfile':
+ReadKey.xs:1441: `__fd_mask' undeclared (first use this function)
+ReadKey.xs:1441: (Each undeclared identifier is reported only once
+ReadKey.xs:1441: for each function it appears in.)
+make: *** [ReadKey.o] Error 1
+  /usr/bin/make  -- NOT OK
+Running make test
+  Oops, make had returned bad status
+Running make install
+  Oops, make had returned bad status
+Running make for ILYAZ/modules/Term-ReadLine-Perl-0.9904.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/ILYAZ/modules
+GOT /root/.cpan/sources/authors/id/ILYAZ/modules/Term-ReadLine-Perl-0.9904.tar.gz
+Term-ReadLine-Perl-0.9904/
+Term-ReadLine-Perl-0.9904/CHANGES
+Term-ReadLine-Perl-0.9904/Makefile.PL
+Term-ReadLine-Perl-0.9904/MANIFEST
+Term-ReadLine-Perl-0.9904/ReadLine/
+Term-ReadLine-Perl-0.9904/ReadLine/Perl.pm
+Term-ReadLine-Perl-0.9904/ReadLine/readline.pm
+Term-ReadLine-Perl-0.9904/README
+Term-ReadLine-Perl-0.9904/test.pl
+
+  CPAN.pm: Going to build ILYAZ/modules/Term-ReadLine-Perl-0.9904.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Term::ReadLine
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/lib/Term
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/Term
+mkdir ./blib/arch/auto/Term/ReadLine
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/Term
+mkdir ./blib/lib/auto/Term/ReadLine
+cp ReadLine/Perl.pm ./blib/lib/Term/ReadLine/Perl.pm
+cp ReadLine/readline.pm ./blib/lib/Term/ReadLine/readline.pm
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 test.pl
+Features present: preput 1 tkRunning 1 appname 1 getHistory 1 ornaments 1 attribs 1 newTTY 1 autohistory 1 addHistory 1 minline 1 setHistory 1
+Can't ioctl TIOCGETP: Invalid argument
+Consider installing Term::ReadKey from CPAN site nearby
+        at http://www.perl.com/CPAN
+Or use
+        perl -MCPAN -e shell
+to reach CPAN. Falling back to 'stty'.
+        If you do not want to see this warning, set PERL_READLINE_NOWARN
+in your environment.
+Enter arithmetic or Perl expression: exit
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/site_perl/./Term/ReadLine/Perl.pm
+Installing /usr/lib/perl5/site_perl/./Term/ReadLine/readline.pm
+Writing /usr/lib/perl5/site_perl/i386-linux/auto/Term/ReadLine/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+Running make for ULPFR/CPAN-WAIT-0.24.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/ULPFR
+GOT /root/.cpan/sources/authors/id/ULPFR/CPAN-WAIT-0.24.tar.gz
+CPAN-WAIT-0.24/
+CPAN-WAIT-0.24/ChangeLog
+CPAN-WAIT-0.24/Makefile.PL
+CPAN-WAIT-0.24/lib/
+CPAN-WAIT-0.24/lib/WAIT/
+CPAN-WAIT-0.24/lib/WAIT/Client.pm
+CPAN-WAIT-0.24/lib/CPAN/
+CPAN-WAIT-0.24/lib/CPAN/WAIT.pm
+CPAN-WAIT-0.24/README
+CPAN-WAIT-0.24/t/
+CPAN-WAIT-0.24/t/basic.t
+CPAN-WAIT-0.24/MANIFEST
+
+  CPAN.pm: Going to build ULPFR/CPAN-WAIT-0.24.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for CPAN::WAIT
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/lib/CPAN
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/CPAN
+mkdir ./blib/arch/auto/CPAN/WAIT
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/CPAN
+mkdir ./blib/lib/auto/CPAN/WAIT
+mkdir ./blib/man3
+cp lib/WAIT/Client.pm ./blib/lib/WAIT/Client.pm
+cp lib/CPAN/WAIT.pm ./blib/lib/CPAN/WAIT.pm
+Manifying ./blib/man3/CPAN::WAIT.3
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
+t/basic.............ok
+All tests successful.
+Files=1,  Tests=5,  3 secs ( 0.90 cusr  0.08 csys =  0.98 cpu)
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/site_perl/./CPAN/WAIT.pm
+Installing /usr/lib/perl5/site_perl/./WAIT/Client.pm
+Installing /usr/lib/perl5/man/man3/./CPAN::WAIT.3
+Writing /usr/lib/perl5/site_perl/i386-linux/auto/CPAN/WAIT/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+Running make for ANDK/CPAN-1.40.tar.gz
+Issuing "/usr/bin/ftp -n"
+Local directory now /root/.cpan/sources/authors/id/ANDK
+GOT /root/.cpan/sources/authors/id/ANDK/CPAN-1.40.tar.gz
+CPAN-1.40/
+CPAN-1.40/lib/
+CPAN-1.40/lib/CPAN.pm
+CPAN-1.40/lib/CPAN/
+CPAN-1.40/lib/CPAN/Nox.pm
+CPAN-1.40/lib/CPAN/FirstTime.pm
+CPAN-1.40/lib/Bundle/
+CPAN-1.40/lib/Bundle/CPAN.pm
+CPAN-1.40/Todo
+CPAN-1.40/t/
+CPAN-1.40/t/loadme.t
+CPAN-1.40/MANIFEST
+CPAN-1.40/Makefile.PL
+CPAN-1.40/Changes
+CPAN-1.40/README
+
+  CPAN.pm: Going to build ANDK/CPAN-1.40.tar.gz
+
+Checking if your kit is complete...
+Looks good
+Writing Makefile for CPAN
+mkdir ./blib
+mkdir ./blib/lib
+mkdir ./blib/arch
+mkdir ./blib/arch/auto
+mkdir ./blib/arch/auto/CPAN
+mkdir ./blib/lib/auto
+mkdir ./blib/lib/auto/CPAN
+mkdir ./blib/man3
+cp lib/CPAN/FirstTime.pm ./blib/lib/CPAN/FirstTime.pm
+cp lib/CPAN.pm ./blib/lib/./CPAN.pm
+cp lib/Bundle/CPAN.pm ./blib/lib/Bundle/CPAN.pm
+cp lib/CPAN/Nox.pm ./blib/lib/CPAN/Nox.pm
+Manifying ./blib/man3/CPAN::FirstTime.3
+Manifying ./blib/man3/CPAN.3
+Manifying ./blib/man3/Bundle::CPAN.3
+Manifying ./blib/man3/CPAN::Nox.3
+  /usr/bin/make  -- OK
+Running make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -I./blib/arch -I./blib/lib -I/usr/lib/perl5/i386-linux/5.00404 -I/usr/lib/perl5 -e 'use Test::Harness qw(&runtests $verbose); $verbose=0; runtests @ARGV;' t/*.t
+t/loadme............ok
+All tests successful.
+Files=1,  Tests=1,  0 secs ( 0.69 cusr  0.06 csys =  0.75 cpu)
+  /usr/bin/make test -- OK
+Running make install
+Installing /usr/lib/perl5/./CPAN/FirstTime.pm
+Installing /usr/lib/perl5/./CPAN/Nox.pm
+Installing /usr/lib/perl5/./CPAN.pm
+Installing /usr/lib/perl5/./Bundle/CPAN.pm
+Installing /usr/lib/perl5/man/man3/./CPAN::FirstTime.3
+Installing /usr/lib/perl5/man/man3/./CPAN.3
+Installing /usr/lib/perl5/man/man3/./Bundle::CPAN.3
+Installing /usr/lib/perl5/man/man3/./CPAN::Nox.3
+Writing /usr/lib/perl5/i386-linux/5.00404/auto/CPAN/.packlist
+Appending installation info to /usr/lib/perl5/i386-linux/5.00404/perllocal.pod
+  /usr/bin/make install  -- OK
+
+cpan> q
+Lockfile removed.
+</pre>
+<hr>
+<h5>Version: $Id$</h5>
+</body>
+</html>

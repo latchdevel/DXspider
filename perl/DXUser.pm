@@ -45,6 +45,7 @@ $filename = undef;
   annok => '9,Announces?,yesno',            # accept his announces?
   reg => '0,Registered?,yesno',            # is this user registered?
   lang => '0,Language',
+  hmsgno => '0,Highest Msgno',
 );
 
 no strict;
@@ -71,8 +72,8 @@ sub init
 {
   my ($pkg, $fn) = @_;
   
-  die "need a filename in User" if !$fn;
-  $dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or die "can't open user file: $fn ($!)";
+  confess "need a filename in User" if !$fn;
+  $dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or confess "can't open user file: $fn ($!)";
   $filename = $fn;
 }
 
@@ -94,8 +95,11 @@ sub finish
 
 sub new
 {
-  my ($pkg, $call) = @_;
-  die "can't create existing call $call in User\n!" if $u{$call};
+  my $pkg = shift;
+  my $call = uc shift;
+  $call =~ s/-\d+//o;
+  
+  confess "can't create existing call $call in User\n!" if $u{$call};
 
   my $self = {};
   $self->{call} = $call;
@@ -115,7 +119,7 @@ sub get
 {
   my $pkg = shift;
   my $call = uc shift;
-  $call =~ s/-\d+//o;       # strip ssid
+  $call =~ s/-\d+$//o;       # strip ssid
   return $u{$call};
 }
 
@@ -140,7 +144,7 @@ sub get_current
 {
   my $pkg = shift;
   my $call = uc shift;
-  $call =~ s/-\d+//o;       # strip ssid
+  $call =~ s/-\d+$//o;       # strip ssid
   
   my $dxchan = DXChannel->get($call);
   return $dxchan->user if $dxchan;

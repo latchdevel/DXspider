@@ -59,7 +59,8 @@ use vars qw(%channels %valid);
   redirect => '0,Redirect messages to',
   lang => '0,Language',
   func => '9,Function',
-  loc => '9,Local Vars',     # used by func to store local variables in 
+  loc => '9,Local Vars',     # used by func to store local variables in
+  lastread => '9,Last Msg Read',
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]

@@ -13,13 +13,26 @@ my @out;
 my @body;
 my $ref;
 
+# if there are no specified message numbers, try and find a private one
+# that I haven't read yet
+if (@f == 0) {
+  foreach $ref (DXMsg::get_all()) {
+	if ($ref->to eq $self->call && $ref->private && !$ref->read) {
+	  push @f, $ref->msgno;
+	  last;
+	}
+  }
+}
+
+return (1, "Sorry, no new messages for you") if @f == 0;
+
 for $msgno (@f) {
   $ref = DXMsg::get($msgno);
   if (!$ref) {
     push @out, "Msg $msgno not found";
 	next;
   }
-  if ($ref->private && $self->priv < 9 && $ref->to ne $ref->call) {
+  if ($self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call ) {
     push @out, "Msg $msgno not available";
 	next;
   }
@@ -33,6 +46,9 @@ for $msgno (@f) {
     $ref->read(1);
     $ref->store(\@body);    # note call by reference!
   }
+  
+  # remember this one as the last one read
+  $self->lastread($msgno);
 }
 
 return (1, @out);

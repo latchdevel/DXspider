@@ -262,6 +262,7 @@ sub normal
     if ($pcno == 22) {last SWITCH;}
 
     if ($pcno == 23 || $pcno == 27) {  # WWV info
+	  Geomag::update(@field[1..$#field]);
       last SWITCH;
 	}
 
@@ -301,6 +302,7 @@ sub normal
 	
     if ($pcno == 41) {              # user info
       # add this station to the user database, if required
+	  $field[1] =~ s/-\d+$//o;
 	  my $user = DXUser->get_current($field[1]);
 	  $user = DXUser->new($field[1]) if !$user;
 	  

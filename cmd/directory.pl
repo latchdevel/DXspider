@@ -8,15 +8,37 @@
 
 my ($self, $line) = @_;
 my @f = split /\s+/, $line;
-my @ref = DXMsg::get_all();
+my @ref;
 my $ref;
 my @out;
 
+$f[0] = uc $f[0];
+if ($f[0] eq 'ALL') {
+  foreach $ref (DXMsg::get_all()) { 
+    next if $self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call;
+	push @ref, $ref;
+  }
+} elsif ($f[0] =~ /^O/o) {   # dir/own
+  foreach $ref (DXMsg::get_all()) { 
+    push @ref, $ref if $ref->private && ($ref->to eq $self->call || $ref->from eq $self->call);
+  }
+} elsif ($f[0] =~ /^N/o) {   # dir/new
+  foreach $ref (DXMsg::get_all()) { 
+    push @ref, $ref if $ref->private && !$ref->read && $ref->to eq $self->call;
+  }
+} else {
+  my @all = (DXMsg::get_all());
+  my ($i, $count);
+  for ($i = $#all; $i > 0; $i--) {
+    $ref = $all[$i];
+    next if $self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call;
+	unshift @ref, $ref;
+	last if ++$count > 10;
+  }
+}
+
 foreach $ref (@ref) {
-  next if $self->priv < 5 && $ref->private && $ref->to ne $self->call;
-  push @out, sprintf "%6d %s%s%5d %8.8s %8.8s %-6.6s %5.5s %-30.30s", 
-    $ref->msgno, $ref->private ? 'p' : ' ', $ref->read ? '-' : ' ', $ref->size,
-	$ref->to, $ref->from, cldate($ref->t), ztime($ref->t), $ref->subject;
+  push @out, $ref->dir;
 }
 
 return (1, @out);

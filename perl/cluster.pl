@@ -35,13 +35,14 @@ use DXCron;
 use DXConnect;
 use Prefix;
 use Bands;
+use Geomag;
 use Carp;
 
 package main;
 
 @inqueue = ();                # the main input queue, an array of hashes
 $systime = 0;                 # the time now (in seconds)
-$version = 1.1;               # the version no of the software
+$version = 1.2;               # the version no of the software
 
 # handle disconnections
 sub disconnect
@@ -194,6 +195,12 @@ $SIG{'HUP'} = 'IGNORE';
 
 # initialise the protocol engine
 DXProt->init();
+
+# initialise the Geomagnetic data engine
+Geomag->init();
+
+# initial the Spot stuff
+Spot->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
 DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 

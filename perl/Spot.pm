@@ -27,6 +27,11 @@ $defaultspots = 10;    # normal number of spots to return
 $maxdays = 35;        # normal maximum no of days to go back
 $dirprefix = "$main::data/spots";
 
+sub init
+{
+  mkdir "$dirprefix", 0777 if !-e "$dirprefix";
+}
+
 sub prefix
 {
   return $dirprefix;

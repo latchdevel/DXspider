@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+#
+# provide some standard aliases for commands for terminally
+# helpless ak1a user (helpless in the sense that they never
+# read nor understand help files)
+#
+# This file is automagically reloaded if its modification time is 
+# later than the one stored in CmdAlias.pm
+#
+# PLEASE make this file consistant with reality! (the patterns MUST
+# match the filenames!)
+#
+# Don't alter this file, copy it into the local_cmd tree and modify it.
+# This file will be replaced everytime I issue a new release.
+#
+# You only need to put aliases in here for commands that don't work as
+# you desire naturally, e.g sh/dx on its own just works as you expect
+# so you need not add it as an alias.
+#
+
+
+package CmdAlias;
+
+%alias = (
+    a => [
+	  '^ann.*/full', 'announce full', 'announce', 
+	  '^ann.*/sysop', 'announce sysop', 'announce',
+	  '^ann.*/(.*)$', 'announce $1', 'announce',
+	],
+	b => [
+	],
+	c => [
+	],
+	d => [
+	  '^del', 'kill', 'kill',
+	  '^di.*/all', 'directory all', 'directory',
+	  '^di.*/b.*', 'directory bulletins', 'directory',
+	  '^di.*/n.*', 'directory new', 'directory',
+	  '^di.*/o.*', 'directory own', 'directory',
+	  '^di.*/s.*', 'directory subject', 'directory',
+	  '^di.*/(\d+)-(\d+)', 'directory $1-$2', 'directory',
+	  '^di.*/(\d+)', 'directory $1', 'directory',
+	],
+	e => [
+	],
+	f => [
+	],
+	g => [
+	],
+	h => [
+	],
+	i => [
+	],
+	j => [
+	],
+	k => [
+	],
+	l => [
+	],
+	m => [
+	],
+	n => [
+	],
+	o => [
+	],
+	p => [
+	],
+	q => [
+	  '^q', 'bye', 'bye',
+	],
+	r => [
+	],
+	s => [
+	  '^sh/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
+	  '^sh/dx/(\d+)', 'show/dx $1', 'show/dx',
+	  '^sh/dx/d(\d+)', 'show/dx from $1', 'show/dx',
+	  '^sp$', 'send', 'send',
+	  '^sb$', 'send noprivate', 'send',
+	],
+	t => [
+	],
+	u => [
+	],
+	v => [
+	],
+	w => [
+	  '^wx/full', 'wx full', 'wx',
+	  '^wx/sysop', 'wx sysop', 'wx',
+	],
+	x => [
+	],
+	y => [
+	],
+	z => [
+	],
+)

@@ -14,10 +14,11 @@ use DXVars;
 use Carp;
 
 use strict;
-use vars qw(%bands %regions $bandsfn %valid);
+use vars qw(%bands %regions %aliases $bandsfn %valid);
 
 %bands = ();   # the 'raw' band data
 %regions = ();  # list of regions for shortcuts eg vhf ssb
+%aliases = ();  # list of aliases
 $bandsfn = "$main::data/bands.pl";
 
 %valid = (
@@ -47,6 +48,8 @@ sub load
 sub get
 {
   my $call = shift;
+  my $ncall = $aliases{$call};
+  $call = $ncall if $ncall;
   return $bands{$call};
 }
 
@@ -60,6 +63,25 @@ sub get_all
 sub get_keys
 {
   return keys(%bands);
+}
+
+# get all the region keys
+sub get_region_keys
+{
+  return keys(%regions);
+}
+
+# get all the alias keys
+sub get_alias_keys
+{
+  return keys(%aliases);
+}
+
+# get a region 
+sub get_region
+{
+  my $reg = shift;
+  return $regions{$reg};
 }
 
 # get all the frequency pairs associated with the band and sub-band offered

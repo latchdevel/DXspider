@@ -59,6 +59,8 @@ sub cease
   if (defined $conn && $sendz) {
     $conn->send_now("Z$call|bye...\n");
   }
+  STDOUT->flush;
+  sleep(2);
   exit(0);	
 }
 
@@ -201,6 +203,20 @@ $SIG{'HUP'} = \&sig_term;
 $SIG{'CHLD'} = \&sig_chld;
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
+if (! $conn) {
+  if (-r "$data/offline") {
+    open IN, "$data/offline" or die;
+    while (<IN>) {
+	  s/\n/\r/og if $mode == 1;
+	  print;
+	}
+	close IN;
+  } else {
+    print "Sorry, the cluster $mycall is currently off-line", $mynl;
+  }
+  cease(0);
+}
+
 $conn->send_now("A$call|$connsort");
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 

@@ -19,6 +19,10 @@ if ($argv[1] eq '>') {
   $line =~ s/^$argv[0]\s*//;
 }
 
+my $call = $via ? $via : $to;
+my $ref = DXCluster->get($call);
+return (1, "$call not visible on the cluster") if !$ref;
+
 my $dxchan = DXCommandmode->get($to);         # is it for us?
 if ($dxchan && $dxchan->is_user) {
   $dxchan->send("$to de $from $line");

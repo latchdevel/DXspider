@@ -216,9 +216,9 @@ sub pc38
 sub pc39
 {
   my ($call, $reason) = @_;
-  my $hops = get_hops(21);
+  my $hops = get_hops(39);
   $reason = "Gone." if !$reason;
-  return "PC39^$call^$reason^";
+  return "PC39^$call^$reason^$hops^";
 }
 
 # cue up bulletin or file for transfer

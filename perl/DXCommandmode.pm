@@ -17,15 +17,18 @@ use DXUser;
 use DXVars;
 use DXDebug;
 use DXM;
+use CmdAlias;
 use FileHandle;
 use Carp;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr);
+use vars qw(%Cache %cmd_cache $errstr %aliases);
 
 %Cache = ();                  # cache of dynamically loaded routine's mod times
 %cmd_cache = ();            # cache of short names
 $errstr = ();                # error string from eval
+%aliases = ();              # aliases for (parts of) commands
+
 #
 # obtain a new connection this is derived from dxchannel
 #
@@ -109,6 +112,12 @@ sub normal
     if ($cmd) {
     
 	  my ($path, $fcmd);
+	  
+	  # alias it if possible
+	  my $acmd = CmdAlias::get_cmd($cmd);
+	  if ($acmd) {
+	    ($cmd, $args) = "$acmd $args" =~ /^([\w\/]+)\s*(.*)/o;
+	  }
    
       # first expand out the entry to a command
 	  ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
@@ -386,9 +395,8 @@ sub find_cmd_name {
 	if (!open $fh, $filename) {
 	  $errstr = "Syserr: can't open '$filename' $!";
 	};
-	my $old = $fh->input_record_separator(undef);
+	local $/ = undef;
 	my $sub = <$fh>;
-	$fh->input_record_separator($old);
 	close $fh;
 		
     #wrap the code into a subroutine inside our unique package

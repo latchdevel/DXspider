@@ -167,6 +167,8 @@ sub process
 	      push @{$ref->{gotit}}, $f[2];           # mark this up as being received
 		  $ref->store($ref->{lines});
 		  add_dir($ref);
+		  my $dxchan = DXChannel->get($ref->{to});
+		  $dxchan->send("New mail has arrived for you") if $dxchan;
 		}
 		$ref->stop_msg($self);
 		queue_msg();
@@ -633,6 +635,8 @@ sub do_send_stuff
 		  $ref->add_dir();
 		  #push @out, $self->msg('sendsent', $to);
 		  push @out, "msgno $ref->{msgno} sent to $to";
+		  my $dxchan = DXChannel->get(uc $to);
+		  $dxchan->send("New mail has arrived for you") if $dxchan;
 	    }
 	  }
 	  delete $loc->{lines};
@@ -656,6 +660,15 @@ sub do_send_stuff
     }
   }
   return (1, @out);
+}
+
+# return the standard directory line for this ref 
+sub dir
+{
+  my $ref = shift;
+  return sprintf "%6d%s%s%5d %8.8s %8.8s %-6.6s %5.5s %-30.30s", 
+    $ref->msgno, $ref->read ? '-' : ' ', $ref->private ? 'p' : ' ', $ref->size,
+	$ref->to, $ref->from, cldate($ref->t), ztime($ref->t), $ref->subject;
 }
 
 no strict;

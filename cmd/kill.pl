@@ -21,10 +21,12 @@ for $msgno (@f) {
     push @out, "Msg $msgno not found";
 	next;
   }
-  if ($ref->private && $self->priv < 9 && $ref->to ne $ref->call) {
+  if ($self->priv < 5 && 
+      (($ref->private && $ref->to ne $self->call && $ref->from ne $self->call) ||
+      ($ref->private == 0  && $ref->from ne $self->call))) {
     push @out, "Msg $msgno not available";
 	next;
-  }
+  } 
   $ref->del_msg;
   push @out, "Message $msgno deleted";
 }

@@ -7,7 +7,7 @@
 # these pairs attach themselves to the labels you provide, they are
 # independant of any other pair, they can overlap, cross etc. 
 #
-# There MUST be at last a 'band' entry
+# There MUST be at least a 'band' entry
 #
 # It is up to YOU to make sure that it makes sense!
 # 
@@ -55,13 +55,15 @@
   '15m' => bless( { band => [ 21000, 21450 ], 
                     cw => [ 21000, 21150 ], 
                     data => [ 21100, 21120 ], 
+		    beacon => [ 21149, 21151 ],
                     ssb => [ 21151, 21450] 
                   }, 'Bands'),
 
-  '12m' => bless( { band => [ 21000, 21450 ], 
-                    cw => [ 21000, 21150 ], 
-                    data => [ 21100, 21120 ], 
-                    ssb => [ 21151, 21450] 
+  '12m' => bless( { band => [ 24890, 24990 ], 
+                    cw => [ 24890, 24820 ], 
+                    data => [ 24920, 24929 ], 
+		    beacon => [ 24929, 24931 ],
+                    ssb => [ 24931, 24990] 
                   }, 'Bands'),
 
 
@@ -143,3 +145,23 @@
   uhf => [ '70cm', '23cm' ],
   shf => [ '23cm', '13cm', '9cm', '6cm', '3cm' ],
 );  
+
+%aliases = (
+  topband => '160m',
+  160 => '160m',
+  80 => '80m',
+  40 => '40m',
+  30 => '30m',
+  20 => '20m',
+  18 => '18m',
+  15 => '15m',
+  12 => '12m',
+  10 => '10m',
+   6 => '6m',
+   4 => '4m',
+   2 => '2m',
+  70 => '70cm',
+  23 => '23cm',
+  13 => '13cm',
+   3 => '3cm',
+)

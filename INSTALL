@@ -86,10 +86,10 @@ the following modules:-
    
    [ether]                                                                         
    NOCALL   * * * * * *  L                                                         
-   default  * * * * * *  - djk /spider/perl/client.pl client.pl %u ax25
+   default  * * * * * *  - jim /spider/perl/client.pl client.pl %u ax25
    <bbs>
    NOCALL   * * * * * *  L                                                         
-   default  * * * * * *  - djk /spider/perl/client.pl client.pl %u ax25
+   default  * * * * * *  - jim /spider/perl/client.pl client.pl %u ax25
 
    where ether and bbs are appropriate KNOWN WORKING axport and nrport 
    names respectively.
