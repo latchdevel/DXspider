@@ -27,7 +27,7 @@ use vars qw(%cluster %valid);
 		  call => '0,Callsign',
 		  confmode => '0,Conference Mode,yesno',
 		  here => '0,Here?,yesno',
-		  dxchan => '5,Channel Call',
+		  dxchancall => '5,Channel Call',
 		  pcversion => '5,Node Version',
 		  list => '5,User List,DXCluster::dolist',
 		  users => '0,No of Users',
@@ -41,7 +41,7 @@ sub alloc
 	$self->{call} = $call;
 	$self->{confmode} = $confmode;
 	$self->{here} = $here;
-	$self->{dxchan} = $dxchan->call;
+	$self->{dxchancall} = $dxchan->call;
 
 	$cluster{$call} = bless $self, $pkg;
 	return $self;
@@ -167,11 +167,11 @@ sub dxchan
 	my $dxchan = shift;
 
 	if ($dxchan) {
-		$self->{dxchan} = $dxchan->call;
+		$self->{dxchancall} = $dxchan->call;
 	} else {
-		$dxchan = DXChannel->get($self->{dxchan});
+		$dxchan = DXChannel->get($self->{dxchancall});
 		unless ($dxchan) {
-			my $dxcall = $self->{dxchan};
+			my $dxcall = $self->{dxchancall};
 			my $call = $self->{call};
 			dbg('err', "parent dxchan $dxcall has disappeared from $call" );
 		}

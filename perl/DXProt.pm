@@ -500,11 +500,15 @@ sub normal
 				# add it to the node table if it isn't present and it's
 				# connected locally
 				$node = DXNode->new($dxchan, $field[1], 0, 1, 5400);
-				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
+				dbg('chan', "$field[1] no PC19 yet, autovivified as node");
+#				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 				
 			}
 			return unless $node; # ignore if havn't seen a PC19 for this one yet
-			return unless $node->isa('DXNode');
+			unless ($node->isa('DXNode')) {
+				dbg('chan', "$field[1] is not a node");
+				return;
+			}
 			if ($node->dxchan != $self) {
 				dbg('chan', "LOOP: $field[1] came in on wrong channel");
 				return;
@@ -517,10 +521,17 @@ sub normal
 						
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
-				next if !$call || length $call < 3 || length $call > 8;
-				next if !$confmode;
-				$call = uc $call;
-				next if DXCluster->get_exact($call); # we already have this (loop?)
+				next unless $call && $confmode && defined $here && is_callsign($call);
+				my $ref = DXCluster->get_exact($call); 
+				if ($ref) {
+					if ($ref->isa('DXNode')) {
+						dbg('chan', "LOOP: $call is a node");
+						next;
+					}
+					my $rcall = $ref->call;
+					dbg('chan', "LOOP: already have $call on $rcall");
+					next;
+				}
 				
 				$confmode = $confmode eq '*';
 				DXNodeuser->new($self, $node, $call, $confmode, $here);
@@ -547,11 +558,14 @@ sub normal
 				# add it to the node table if it isn't present and it's
 				# connected locally
 				$node = DXNode->new($dxchan, $field[2], 0, 1, 5400);
-				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
-				return;
+				dbg('chan', "$field[2] no PC19 yet, autovivified as node");
+#				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 			}
 			return unless $node;
-			return unless $node->isa('DXNode');
+			unless ($node->isa('DXNode')) {
+				dbg('chan', "LOOP: $field[2] is not a node");
+				return;
+			}
 			if ($node->dxchan != $self) {
 				dbg('chan', "LOOP: $field[2] came in on wrong channel");
 				return;
@@ -561,7 +575,11 @@ sub normal
 				return;
 			}
 			my $ref = DXCluster->get_exact($field[1]);
-			$ref->del() if $ref;
+			if ($ref) {
+				$ref->del;
+			} else {
+				dbg('chan', "$field[1] not known" );
+			}
 			last SWITCH;
 		}
 		
@@ -588,6 +606,7 @@ sub normal
 				my $call = uc $field[$i+1];
 				my $confmode = $field[$i+2];
 				my $ver = $field[$i+3];
+				next unless defined $here && defined $confmode && is_callsign($call);
 
 				$ver = 5400 if !$ver && $allowzero;
 				
@@ -652,6 +671,10 @@ sub normal
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
+					unless ($node->isa('DXNode')) {
+						dbg('chan', "$call is not a node");
+						return;
+					}
 					if ($call eq $self->{call}) {
 						dbg('chan', "LOOP: Trying to disconnect myself with PC21");
 						return;
