@@ -77,6 +77,7 @@ if ($childpid) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
 		if ($sort eq 'Z') {
 			kill 'TERM', $childpid;
+			exit(0);
 		} elsif ($sort eq 'E' || $sort eq 'B') {
 			;
 		} else {
