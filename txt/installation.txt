@@ -142,7 +142,7 @@
 
 
   In addition to the standard Red Hat distribution you will require the
-  following modules from http://www.cpan.org/modules/bymodule/ , please
+  following modules from http://www.cpan.org/modules/by-module/ , please
   note however that with later versions of perl, some of these modules
   may be included with the distribution.  Get the modules anyway and try
   to install as below.  If they complain, they are probably already a
