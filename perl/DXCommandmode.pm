@@ -342,7 +342,7 @@ sub eval_file {
 	}
 	if ($@) {
 	  delete_package($package);
-	  return (0, "Syserr: Eval err $@ on $package");
+	  return (1, "Syserr: Eval err $@ on $package");
 	}
 		
 	#cache it unless we're cleaning out each time

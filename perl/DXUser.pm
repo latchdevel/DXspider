@@ -15,6 +15,9 @@ use MLDBM qw(DB_File);
 use Fcntl;
 use Carp;
 
+use strict;
+use vars qw(%u $dbm $filename %valid);
+
 %u = undef;
 $dbm = undef;
 $filename = undef;
@@ -43,6 +46,7 @@ $filename = undef;
   reg => '0,Registered?,yesno',            # is this user registered? 
 );
 
+no strict;
 sub AUTOLOAD
 {
   my $self = shift;
@@ -67,9 +71,11 @@ sub init
   my ($pkg, $fn) = @_;
   
   die "need a filename in User" if !$fn;
-  $dbm = tie %u, MLDBM, $fn, O_CREAT|O_RDWR, 0666 or die "can't open user file: $fn ($!)";
+  $dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or die "can't open user file: $fn ($!)";
   $filename = $fn;
 }
+
+use strict;
 
 #
 # close the system
@@ -106,8 +112,19 @@ sub new
 
 sub get
 {
-  my ($pkg, $call) = @_;
+  my $pkg = shift;
+  my $call = uc shift;
+  $call =~ s/-\d+//o;       # strip ssid
   return $u{$call};
+}
+
+#
+# get all callsigns in the database 
+#
+
+sub get_all_calls
+{
+  return keys %u;
 }
 
 #
@@ -120,7 +137,10 @@ sub get
 
 sub get_current
 {
-  my ($pkg, $call) = @_;
+  my $pkg = shift;
+  my $call = uc shift;
+  $call =~ s/-\d+//o;       # strip ssid
+  
   my $dxchan = DXChannel->get($call);
   return $dxchan->user if $dxchan;
   return $u{$call};

@@ -15,9 +15,10 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $user = ($call eq $self->call) ? $self->user : DXUser->get($call);
-  if ($user) {
-    $user->here(0);
+  my $ref = DXCluster->get($call);
+  if ($ref) {
+    $ref->here(0);
+	DXProt::broadcast_ak1a(DXProt::pc24($ref));
 	push @out, DXM::msg('hereu', $call);
   } else {
     push @out, DXM::msg('e3', "Unset Here", $call);

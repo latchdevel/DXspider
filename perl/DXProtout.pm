@@ -34,11 +34,10 @@ sub pc10
   return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  
 }
 
-# create a dx message (called $self->pc11(...)
+# create a dx message (call, freq, dxcall, text) 
 sub pc11
 {
-  my ($self, $freq, $dxcall, $text) = @_;
-  my $mycall = $self->call;
+  my ($mycall, $freq, $dxcall, $text) = @_;
   my $hops = get_hops(11);
   my $t = time;
   $text = ' ' if !$text;
@@ -50,7 +49,7 @@ sub pc12
 {
   my ($self, $text, $tonode, $sysop, $wx) = @_;
   my $hops = get_hops(12);
-  $sysop = $sysop ? '*' : ' ';
+  $sysop = ' ' if !$sysop;
   $text = ' ' if !$text;
   $wx = '0' if !$wx;
   $tonode = '*' if !$tonode;
@@ -143,6 +142,17 @@ sub pc22
   return 'PC22^';
 }
 
+# here status
+sub pc24
+{
+  my $self = shift;
+  my $call = $self->call;
+  my $flag = $self->here ? '1' : '0';
+  my $hops = get_hops(24);
+  
+  return "PC24^$call^$flag^$hops^";
+}
+
 # send all the DX clusters I reckon are connected
 sub pc38
 {
@@ -154,6 +164,16 @@ sub pc38
     push @nodes, $list->call;
   }
   return "PC38^" . join(',', @nodes) . "^~";
+}
+
+# tell the local node to discconnect
+sub pc39
+{
+  my ($ref, $reason) = @_;
+  my $call = $ref->call;
+  my $hops = get_hops(21);
+  $reason = "Gone." if !$reason;
+  return "PC39^$call^$reason^";
 }
 
 # periodic update of users, plus keep link alive device (always H99)

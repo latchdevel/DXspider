@@ -1,6 +1,8 @@
 #
 # The talk command
 #
+# Copyright (c) 1998 Dirk Koopman G1TLH
+#
 # $Id$
 #
 
@@ -12,21 +14,17 @@ my $from = $self->call();
 
 if ($argv[1] eq '>') {
   $via = uc $argv[2];
-#  print "argv[0] $argv[0] argv[2] $argv[2]\n";
-  $line =~ s/^$argv[0]\s+>\s+$argv[2]\s*//o;
+  $line =~ s/^$argv[0]\s+>\s+$argv[2]\s*//;
 } else {
-#  print "argv[0] $argv[0]\n";
-  $line =~ s/^$argv[0]\s*//o;
+  $line =~ s/^$argv[0]\s*//;
 }
 
-#print "to=$to via=$via line=$line\n";
 my $dxchan = DXCommandmode->get($to);         # is it for us?
 if ($dxchan && $dxchan->is_user) {
   $dxchan->send("$to de $from $line");
 } else {
+  $line =~ s/\^//og;            # remove any ^ characters
   my $prot = DXProt::pc10($self, $to, $via, $line);
-#  print "prot=$prot\n";
-
   DXProt::route($via?$via:$to, $prot);
 }
 

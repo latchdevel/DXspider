@@ -137,6 +137,7 @@ sub new
   $node->{list}->{$call} = $self;     # add this user to the list on this node
   $users++;
   dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
+  $node->update_users;
   return $self;
 }
 
@@ -145,10 +146,11 @@ sub del
   my $self = shift;
   my $call = $self->{call};
   my $node = $self->{mynode};
- 
+
   delete $node->{list}->{$call};
   delete $DXCluster::cluster{$call};     # remove me from the cluster table
   dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
+  $node->update_users;
   $users-- if $users > 0;
 }
 
@@ -206,6 +208,7 @@ sub del
   foreach $ref (values %{$self->{list}}) {
     $ref->del();      # this also takes them out of this list
   }
+  delete $DXCluster::cluster{$call};     # remove me from the cluster table
   dbg('cluster', "deleting node $call from cluster\n"); 
   $nodes-- if $nodes > 0;
 }

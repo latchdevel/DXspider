@@ -1,9 +1,10 @@
 #
-# do an announce message 
+# do an wx message, this is identical to the announce except that it does WX
+# instead
 #
-# handles announce
-#         announce full
-#         announce sysop
+# handles wx
+#         wx full
+#         wx sysop
 #
 # at the moment these keywords are fixed, but I dare say a file containing valid ones
 # will appear
@@ -35,10 +36,10 @@ if ($sort eq "FULL") {
   $to = "LOCAL";
 }
 
-DXProt::broadcast_list("To $to de $from <$t>: $line", @locals);
+DXProt::broadcast_list("WX de $from <$t>: $line", @locals);
 if ($to ne "LOCAL") {
   $line =~ s/\^//og;    # remove ^ characters!
-  my $pc = DXProt::pc12($self, $line, $tonode, $sysopflag, 0);
+  my $pc = DXProt::pc12($self, $line, $tonode, $sysopflag, 1);
   DXProt::broadcast_ak1a($pc);
 }
 

@@ -119,7 +119,7 @@ sub normal
 	  
 	  # format and broadcast it to users
 	  my $spotter = $field[6];
-	  $spotter =~ s/^(\w+)-\d+/$1/;    # strip off the ssid from the spotter
+	  $spotter =~ s/-\d+$//o;         # strip off the ssid from the spotter
       $spotter .= ':';                # add a colon
 	  
 	  # send orf to the users
@@ -135,10 +135,25 @@ sub normal
 
         # strip leading and trailing stuff
 	    my $text = unpad($field[3]);
-		my $target = "To Sysops" if $field[4] eq '*';
-		$target = "WX" if $field[6];
+		my $target;
+		my @list;
+		
+	    if ($field[4] eq '*') {          # sysops
+		  $target = "To Sysops";
+		  @list = map { $_->priv >= 5 ? $_ : () } get_all_users();
+		} elsif ($field[4] gt ' ') {     # speciality list handling
+		  my ($name) = split /\./, $field[4]; 
+          $target = "To $name";          # put the rest in later (if bothered) 
+        } 
+		
+        $target = "WX" if $field[6] eq '1';
 		$target = "To All" if !$target;
-		broadcast_users("$target de $field[1]: $text"); 
+		
+		if (@list > 0) {
+		  broadcast_list("$target de $field[1]: $text", @list);
+		} else {
+		  broadcast_users("$target de $field[1]: $text");
+		}
 		
 		return if $field[2] eq $main::mycall;   # it's routed to me
 	  } else {
@@ -162,7 +177,8 @@ sub normal
 	    my ($call, $confmode, $here) = $field[$i] =~ /^(\w+) (-) (\d)/o;
 		next if length $call < 3;
 		next if !$confmode;
-        $call =~ s/^(\w+)-\d+/$1/;        # remove ssid
+		$call = uc $call;
+        $call =~ s/-\d+$//o;        # remove ssid
 		next if DXCluster->get($call);    # we already have this (loop?)
 		
 		$confmode = $confmode eq '*';
@@ -194,10 +210,10 @@ sub normal
       my $i;
 	  for ($i = 1; $i < $#field-1; $i += 4) {
 	    my $here = $field[$i];
-	    my $call = $field[$i+1];
+	    my $call = uc $field[$i+1];
 		my $confmode = $field[$i+2] eq '*';
 		my $ver = $field[$i+3];
-		
+
 		# now check the call over
 		next if DXCluster->get($call);   # we already have this
 		
@@ -216,7 +232,8 @@ sub normal
 	}
 	
     if ($pcno == 21) {             # delete a cluster from the list
-	  my $ref = DXCluster->get($field[1]);
+	  my $call = uc $field[1];
+	  my $ref = DXCluster->get($call);
 	  $ref->del() if $ref;
 	  last SWITCH;
 	}
@@ -225,8 +242,10 @@ sub normal
     if ($pcno == 23) {last SWITCH;}
 
     if ($pcno == 24) {             # set here status
-	  my $user = DXCluster->get($field[1]);
-	  $user->here($field[2]);
+	  my $call = uc $field[1];
+	  $call =~ s/-\d+//o;
+	  my $ref = DXCluster->get($call);
+	  $ref->here($field[2]) if $ref;
 	  last SWITCH;
 	}
 	
@@ -349,8 +368,19 @@ sub process
 sub finish
 {
   my $self = shift;
-  broadcast_ak1a($self->pc21('Gone.'));
   my $ref = DXCluster->get($self->call);
+  
+  # broadcast to all other nodes that all the nodes connected to via me are gone
+  my @nodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
+  my $node;
+
+  foreach $node (@nodes) {
+    next if $node->call eq $self->call; 
+    broadcast_ak1a(DXProt::pc21($node, 'Gone'), $self);    # done like this 'cos DXNodes don't have a pc21 method
+  }
+
+  # now broadcast to all other ak1a nodes that I have gone
+  broadcast_ak1a($self->pc21('Gone.'), $self);
   $ref->del() if $ref;
 }
 
@@ -426,6 +456,17 @@ sub broadcast_users
   foreach $chan (@chan) {
     next if grep $chan == $_, @except;
 	$chan->send($s);              # send it if it isn't the except list
+  }
+}
+
+# broadcast to a list of users
+sub broadcast_list
+{
+  my $s = shift;
+  my $chan;
+  
+  foreach $chan (@_) {
+	$chan->send($s);              # send it 
   }
 }
 
