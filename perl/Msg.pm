@@ -119,7 +119,7 @@ sub _send {
     my ($conn, $flush) = @_;
     my $sock = $conn->{sock};
     return unless defined($sock);
-    my ($rq) = $conn->{outqueue};
+    my $rq = $conn->{outqueue};
 
     # If $flush is set, set the socket to blocking, and send all
     # messages in the queue - return only if there's an error
