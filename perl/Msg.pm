@@ -278,6 +278,13 @@ sub _new_client {
     }
 }
 
+sub close_server
+{
+	set_event_handler ($main_socket, "read" => undef);
+	$main_socket->close;
+	$main_socket = 0;
+}
+
 #----------------------------------------------------
 # Event loop routines used by both client and server
 

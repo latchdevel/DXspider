@@ -516,7 +516,7 @@ sub normal
 				dbg('chan', "Dup WWV Spot ignored\n");
 				return;
 			}
-			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 900 || $field[2] < 0 || $field[2] > 23) {
+			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
 				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}

@@ -148,6 +148,7 @@ sub rec
 		# create the channel
 		$dxchan = DXCommandmode->new($call, $conn, $user) if ($user->sort eq 'U');
 		$dxchan = DXProt->new($call, $conn, $user) if ($user->sort eq 'A');
+		$dxchan = BBS->new($call, $conn, $user) if ($user->sort eq 'B');
 		die "Invalid sort of user on $call = $sort" if !$dxchan;
 	}
 	

@@ -216,8 +216,9 @@ sub decode
 	my $s = shift;
 	my $ref;
 	$s = '$ref = ' . $s;
-	eval $s;
-	confess $@ if $@;
+	eval { $s; };
+	Log('DXUser', $@) if $@;
+	$ref = undef if $@;
 	return $ref;
 }
 

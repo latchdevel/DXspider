@@ -165,6 +165,13 @@ sub del
 	delete $channels{$self->{call}};
 }
 
+# is it a bbs
+sub is_bbs
+{
+	my $self = shift;
+	return $self->{sort} eq 'B';
+}
+
 # is it an ak1a cluster ?
 sub is_ak1a
 {

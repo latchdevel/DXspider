@@ -82,7 +82,7 @@ package DXM;
 				lockout => '$_[0] Locked out',
 				lockoutc => '$_[0] Created and Locked out',
 				lockoutun => '$_[0] Unlocked',
-				m1 => 'Enter Subject (30 characters) >',
+				m1 => 'Enter Subject (30 characters):',
 				m2 => 'Copy of msg $_[0] sent to $_[1]',
 				m3 => 'Sorry, $_[0] is an unacceptable TO address',
 				m4 => 'Sorry, can\'t access message $_[0]',
