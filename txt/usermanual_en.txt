@@ -1,6 +1,6 @@
   The DXSpider User Manual v1.50
   Ian Maude, G0VGS, (g0vgs@gb7mbc.net)
-  March 2003 revision 0.3
+  March 2003 revision 0.4
 
   A complete reference for users of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -47,6 +47,7 @@
      10.2 Types of filter
      10.3 Filter options
      10.4 Advanced filtering
+     10.5 A Filtering Tutorial
 
   11. Hints, tips and common questions.
      11.1 accept
@@ -1227,6 +1228,13 @@
   VHF/UHF spots from EU.
 
 
+  10.5.  A Filtering Tutorial
+
+  There is now an excellent primer/tutorial on filtering written by Jim
+  Samuels, W3BG with an introduction by Dave Hawes N3RD that I strongly
+  suggest you read.  You can read it here The DXSpider User Filtering
+  Primer
+
 
   11.  Hints, tips and common questions.
 
@@ -1243,6 +1251,7 @@
   command, just type help followed by the command you want help on.
   Look at the "DXSpider Command Reference" section to see what help can
   be found.
+
 
   Q.How should I use the announce command?
 
@@ -1300,20 +1309,20 @@
 
 
 
-         info <string>            eg: iota or qsl
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <prefixes or numbers>     or: G,GM,GW
-         origin_zone <prefixes or numbers>
-         origin_state <states>                eg: VA,NH,RI,NH
-         by_dxcc <prefixes or numbers>
-         by_itu <prefixes or numbers>
-         by_zone <prefixes or numbers>
-         by_state <states>
-         channel <prefixes>
-         wx 1                     filter WX announces
-         dest <prefixes>          eg: 6MUK,WDX      (distros)
+    info <string>            eg: iota or qsl
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <prefixes or numbers>     or: G,GM,GW
+    origin_zone <prefixes or numbers>
+    origin_state <states>                eg: VA,NH,RI,NH
+    by_dxcc <prefixes or numbers>
+    by_itu <prefixes or numbers>
+    by_zone <prefixes or numbers>
+    by_state <states>
+    channel <prefixes>
+    wx 1                     filter WX announces
+    dest <prefixes>          eg: 6MUK,WDX      (distros)
 
 
 
@@ -1368,21 +1377,21 @@
 
 
 
-    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-    on <range>             same as 'freq'
-    call <prefixes>        eg: G,PA,HB9
-    info <string>          eg: iota or qsl
-    by <prefixes>
-    call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
-    call_itu <prefixes or numbers>     or: G,GM,GW
-    call_zone <prefixes or numbers>
-    call_state <states>                eg: VA,NH,RI,ME
-    by_dxcc <prefixes or numbers>
-    by_itu <prefixes or numbers>
-    by_zone <prefixes or numbers>
-    by_state <states>                eg: VA,NH,RI,ME
-    origin <prefixes>
-    channel <prefixes>
+         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+         on <range>             same as 'freq'
+         call <prefixes>        eg: G,PA,HB9
+         info <string>          eg: iota or qsl
+         by <prefixes>
+         call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+         call_itu <prefixes or numbers>     or: G,GM,GW
+         call_zone <prefixes or numbers>
+         call_state <states>                eg: VA,NH,RI,ME
+         by_dxcc <prefixes or numbers>
+         by_itu <prefixes or numbers>
+         by_zone <prefixes or numbers>
+         by_state <states>                eg: VA,NH,RI,ME
+         origin <prefixes>
+         channel <prefixes>
 
 
 
@@ -1419,6 +1428,8 @@
 
   but this probably for advanced users...
 
+
+
   11.4.  accept/wcy [0-9] <pattern>
 
   accept/wcy [0-9] <pattern> set an 'accept' WCY filter
@@ -1429,15 +1440,15 @@
 
 
 
-    by <prefixes>            eg: G,M,2
-    origin <prefixes>
-    origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
-    origin_itu <prefixes or numbers>     or: G,GM,GW
-    origin_zone <prefixes or numbers>
-    by_dxcc <prefixes or numbers>
-    by_itu <prefixes or numbers>
-    by_zone <prefixes or numbers>
-    channel <prefixes>
+         by <prefixes>            eg: G,M,2
+         origin <prefixes>
+         origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+         origin_itu <prefixes or numbers>     or: G,GM,GW
+         origin_zone <prefixes or numbers>
+         by_dxcc <prefixes or numbers>
+         by_itu <prefixes or numbers>
+         by_zone <prefixes or numbers>
+         channel <prefixes>
 
 
 
@@ -1491,7 +1502,6 @@
 
   <text> is the text of the announcement you wish to broadcast
 
-
   11.7.  announce full <text>
 
   announce full <text> Send an announcement cluster wide
@@ -1542,6 +1552,8 @@
 
   This is really only of any use in a script file and you can print a
   maximum of 9 lines.
+
+
 
   11.10.  bye
 
@@ -1853,6 +1865,8 @@
   The <freq> is compared against the available bands set up in the
   cluster.  See SHOW/BANDS for more information.
 
+
+
   11.29.  echo <line>
 
   echo <line> Echo the line to the output
@@ -1913,6 +1927,7 @@
   on the output.
 
 
+
   11.30.  filtering...
 
   filtering... Filtering things in DXSpider
@@ -1923,6 +1938,9 @@
 
   In general terms you can create a 'reject' or an 'accept' filter which
   can have up to 10 lines in it. You do this using, for example:-
+
+
+
          accept/spots .....
          reject/spots .....
 
@@ -1972,8 +1990,6 @@
 
 
          accept/spots on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
-
 
   then automatically you will ONLY get VHF spots from or to CQ zones 14
   15 and 16.  If you set a reject filter like:
@@ -2094,9 +2110,9 @@
 
 
 
-         rej/spot on hf/cw
-         acc/spot on 0/30000
-         acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+    rej/spot on hf/cw
+    acc/spot on 0/30000
+    acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
 
@@ -2168,8 +2184,6 @@
   You can get rid of any message to or originating from your callsign
   using this command. You can remove more than one message at a time.
 
-
-
   11.36.  kill from <regex>
 
   kill from <regex> Delete messages FROM a callsign or pattern
@@ -2220,6 +2234,7 @@
   You can read any messages that are sent as 'non-personal' and also any
   message either sent by or sent to your callsign.
 
+
   11.42.  reject
 
   reject Set a filter to reject something
@@ -2234,6 +2249,7 @@
 
   reject/announce [0-9] <pattern> Set a 'reject' filter line for
   announce
+
 
   Create an 'reject this announce' line for a filter.
 
@@ -2281,6 +2297,7 @@
 
   but this probably for advanced users...
 
+
   11.44.  reject/spots [0-9] <pattern>
 
   reject/spots [0-9] <pattern> Set a 'reject' filter line for spots
@@ -2297,21 +2314,21 @@
 
 
 
-    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-    on <range>             same as 'freq'
-    call <prefixes>        eg: G,PA,HB9
-    info <string>          eg: iota or qsl
-    by <prefixes>
-    call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
-    call_itu <prefixes or numbers>     or: G,GM,GW
-    call_zone <prefixes or numbers>
-    call_state <states>                eg: VA,NH,RI,ME
-    by_dxcc <prefixes or numbers>
-    by_itu <prefixes or numbers>
-    by_zone <prefixes or numbers>
-    by_state <states>                eg: VA,NH,RI,ME
-    origin <prefixes>
-    channel <prefixes>
+         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+         on <range>             same as 'freq'
+         call <prefixes>        eg: G,PA,HB9
+         info <string>          eg: iota or qsl
+         by <prefixes>
+         call_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+         call_itu <prefixes or numbers>     or: G,GM,GW
+         call_zone <prefixes or numbers>
+         call_state <states>                eg: VA,NH,RI,ME
+         by_dxcc <prefixes or numbers>
+         by_itu <prefixes or numbers>
+         by_zone <prefixes or numbers>
+         by_state <states>                eg: VA,NH,RI,ME
+         origin <prefixes>
+         channel <prefixes>
 
 
 
@@ -2340,6 +2357,8 @@
 
   but this probably for advanced users...
 
+
+
   11.45.  reject/wcy [0-9] <pattern>
 
   reject/wcy [0-9] <pattern> set a 'reject' WCY filter
@@ -2350,15 +2369,15 @@
 
 
 
-    by <prefixes>            eg: G,M,2
-    origin <prefixes>
-    origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
-    origin_itu <prefixes or numbers>     or: G,GM,GW
-    origin_zone <prefixes or numbers>
-    by_dxcc <prefixes or numbers>
-    by_itu <prefixes or numbers>
-    by_zone <prefixes or numbers>
-    channel <prefixes>
+         by <prefixes>            eg: G,M,2
+         origin <prefixes>
+         origin_dxcc <prefixes or numbers>    eg: 61,62 (from eg: sh/pre G)
+         origin_itu <prefixes or numbers>     or: G,GM,GW
+         origin_zone <prefixes or numbers>
+         by_dxcc <prefixes or numbers>
+         by_itu <prefixes or numbers>
+         by_zone <prefixes or numbers>
+         channel <prefixes>
 
 
 
@@ -2657,7 +2676,6 @@
   set/logininfo Inform when a station logs in locally
 
 
-
   11.72.  set/name <your name>
 
   set/name <your name> Set your name
@@ -2667,6 +2685,7 @@
 
 
          SET/NAME Dirk
+
 
 
   11.73.  set/page <lines per page>
@@ -2784,9 +2803,6 @@
 
   Normally, the list returned will be just for the nodes from your
   country (because the list otherwise will be very long).
-
-
-
          SH/C ALL
 
 
@@ -2903,8 +2919,8 @@
 
 
 
-   qsl             - this automatically looks for any qsl info on the call
-                     held in the spot database.
+        qsl             - this automatically looks for any qsl info on the call
+                          held in the spot database.
 
 
 
@@ -2935,15 +2951,15 @@
 
 
 
-          SH/DX 9m0
-          SH/DX on 20m info iota
-          SH/DX 9a on vhf day 30
-          SH/DX rf1p qsl
-          SH/DX iota
-          SH/DX iota eu-064
-          SH/DX qra jn86
-          SH/DX dxcc oq2
-          SH/DX dxcc oq2 by w dxcc
+     SH/DX 9m0
+     SH/DX on 20m info iota
+     SH/DX 9a on vhf day 30
+     SH/DX rf1p qsl
+     SH/DX iota
+     SH/DX iota eu-064
+     SH/DX qra jn86
+     SH/DX dxcc oq2
+     SH/DX dxcc oq2 by w dxcc
 
 
 
@@ -2996,7 +3012,6 @@
          sh/dxqsl 4k9w
 
 
-
   You can check the raw input spots yourself with:-
 
 
@@ -3006,7 +3021,6 @@
 
 
   This gives you more background information.
-
 
   11.92.  show/dxstats [days] [date]
 
@@ -3058,6 +3072,8 @@
 
   Show the HF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a <date> (default: today).
+
+
 
   11.96.  show/hftable [days] [date] [prefix ...]
 
@@ -3120,7 +3136,6 @@
 
   show/moon [ndays] [<prefix>|<callsign>] Show Moon rise and set times
 
-
   Show the Moon rise and set times for a (list of) prefixes or
   callsigns, together with the azimuth and elevation of the sun
   currently at those locations.
@@ -3133,6 +3148,7 @@
 
   If all else fails it will show the Moonrise and set times for the node
   that you are connected to.
+
   For example:-
 
 
@@ -3196,6 +3212,7 @@
   (Zen) and the likely signal strengths. Then for each frequency for
   which the system thinks there is a likelihood of a circuit it prints a
   value.
+
   The value is currently a likely S meter reading based on the
   conventional 6dB / S point scale. If the value has a '+' appended it
   means that it is 1/2 an S point stronger. If the value is preceeded by
@@ -3243,8 +3260,8 @@
 
 
 
-         SH/MUF W L 24
-         SH/MUF W 24 Long
+    SH/MUF W L 24
+    SH/MUF W 24 Long
 
 
 
@@ -3255,7 +3272,6 @@
   11.99.  show/newconfiguration [<node>]
 
   show/newconfiguration [<node>] Show all the nodes and users visible
-
 
 
   This command allows you to see all the users that can be seen and the
@@ -3308,7 +3324,6 @@
   from yourself, the second example will calculate the distance and
   bearing from the first locator to the second. You can use 4 or 6
   character locators.
-
   It is also possible to convert a latitude and longitude to a locator
   by using this command with a latitude and longitude as an argument,
   for example:-
@@ -3432,8 +3447,6 @@
 
   or in three days time:-
 
-
-
          SH/SUN +3 W9
 
 
@@ -3442,6 +3455,7 @@
 
   Please note that the rise and set times are given as the UT times of
   rise and set on the requested UT day.
+
   11.109.  show/time [<prefix>|<callsign>]
 
   show/time [<prefix>|<callsign>] Show the local time
@@ -3504,6 +3518,8 @@
 
 
          sh/vhftable 20 pa
+
+
 
   If you want to start at a different day, simply add the date in some
   recognizable form:-
@@ -3568,6 +3584,7 @@
 
   Display the most recent WWV information that has been received by the
   system
+
   11.118.  sysop
 
   sysop Regain your privileges if you login remotely
@@ -3632,6 +3649,7 @@
 
   All the usual announcements, spots and so on will still come out on
   your terminal.
+
   If you want to do something (such as send a spot) you preceed the
   normal command with a '/' character, eg:-
 
@@ -3680,7 +3698,7 @@
   enter:-
 
 
-          TYPE bulletins/arld051
+     TYPE bulletins/arld051
 
 
 
@@ -3756,7 +3774,6 @@
   cope with this. You can use this command to reset (or set) this
   feature.
 
-
   Conflicts with: SET/DXCQ, SET/DXITU
 
   Do a STAT/USER to see which flags you have set if you are confused.
@@ -3809,8 +3826,6 @@
 
   You can disable forwarding by:-
 
-
-
          UNSET/EMAIL
 
 
@@ -3818,6 +3833,7 @@
   11.131.  unset/here
 
   unset/here Tell the system you are absent from your terminal
+
 
 
   11.132.  unset/logininfo
@@ -3873,7 +3889,6 @@
   and the spotted's State will appear on the LHS of the time field. Any
   information found will override any locator information from
   SET/DXGRID.
-
   Some user programs cannot cope with this. You can use this command to
   reset (or set) this feature.
 
@@ -3884,6 +3899,8 @@
   11.137.  unset/wcy
 
   unset/wcy Stop WCY messages coming out on your terminal
+
+
 
   11.138.  unset/wwv
 

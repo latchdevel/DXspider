@@ -1,7 +1,7 @@
   The DXSpider Administration Manual v1.50
   Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and Charlie Carroll,
   K1XX, (k1xx@ptcnh.net)
-  March 2003 revision 0.5
+  March 2003 revision 0.6
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -23,6 +23,7 @@
      1.10 Basic hop control
      1.11 Hop Control on Specific Nodes
      1.12 Isolating networks
+     1.13 A DXSpider Filtering Tutorial
 
   2. Other filters
      2.1 Filtering Mail
@@ -958,6 +959,14 @@
   an acc/spot >call< all filter to override the isolate.
 
 
+  1.13.  A DXSpider Filtering Tutorial
+
+  There is now an excellent primer/tutorial on filtering written by Jim
+  Samuels, W3BG with an introduction by Dave Hawes N3RD that I strongly
+  suggest you read.  You can read it here The DXSpider User Filtering
+  Primer
+
+
   2.  Other filters
 
   2.1.  Filtering Mail
@@ -1072,7 +1081,6 @@
   You can remove a word using the appropriate unset command
   (unset/baddx, unset/badspotter, unset/badnode) or list them using one
   of show/baddx, show/badspotter and show/badnode.
-
 
 
   3.  Mail

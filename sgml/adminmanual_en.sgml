@@ -7,7 +7,7 @@
 <title>The DXSpider Administration Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
 Charlie Carroll, K1XX, (k1xx@ptcnh.net)</author>
-<date>March 2003 revision 0.5</date>
+<date>March 2003 revision 0.6</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -583,6 +583,14 @@ any information back to the isolated node.  There are times when you
 would like to forward only spots across a link (maybe during a contest
 for example).  To do this, isolate the node in the normal way and use
 an <em>acc/spot &gt;call&lt; all</em> filter to override the isolate. 
+
+<sect1>A DXSpider Filtering Tutorial
+
+<P>
+There is now an excellent primer/tutorial on filtering written by Jim
+Samuels, W3BG with an introduction by Dave Hawes N3RD that I strongly
+suggest you read.  You can read it here 
+<htmlurl url="filtering_en.html" name="The DXSpider User Filtering Primer">
 
 <sect>Other filters
 

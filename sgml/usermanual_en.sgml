@@ -6,7 +6,7 @@
 
 <title>The DXSpider User Manual v1.50</title> 
 <author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
-<date>March 2003 revision 0.3</date>
+<date>March 2003 revision 0.4</date>
 
 <abstract>
 A complete reference for users of the DXSpider DXCluster program.
@@ -962,6 +962,13 @@ In the example what happens is that the reject is executed first, any non
 hf/cw spot is passed to the accept line, which lets through everything 
 else on HF.  The next filter line lets through just VHF/UHF spots from EU.
 
+<sect1>A Filtering Tutorial
+
+<P>
+There is now an excellent primer/tutorial on filtering written by Jim
+Samuels, W3BG with an introduction by Dave Hawes N3RD that I strongly
+suggest you read.  You can read it here
+<htmlurl url="filtering_en.html" name="The DXSpider User Filtering Primer">
 
 <sect>Hints, tips and common questions.
 
