@@ -230,7 +230,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 					++p;
 					break;
 				default:
-					if (nl == '\n' && *p == '\r') {
+					if (nl == '\n' && *p == '\r') {   /* ignore \r in telnet mode (ugh) */
 						p++;
 					} else if (*p == nl) {
 						if (mp->inp == mp->data)
@@ -501,8 +501,6 @@ void process_node()
 			case 'D':
 				if (p) {
 					int l = mp->inp - (unsigned char *) p;
-					if (nl == '\n' && l >= 1 && p[l-1] == '\r')       /* kludge for GB7DXM */
-						l--;
 					send_text(in, p, l);
 				}
 				break;
