@@ -647,8 +647,6 @@ sub normal
 			unless ($parent) {
 				my $nl = $pc19list{$ncall};
 
-				delete $pc19list{$ncall} if $nl;             # whatever happens - it goes 
-					
 				if ($nl && @field > 3) {                     # 3 because of the hop count!
 
 					# this is a new (remembered) node, now attach it to me if it isn't in filtered
@@ -690,6 +688,7 @@ sub normal
 						} else {
 							return;
 						}
+						delete $pc19list{$ncall};
 					}
 				} else {
 					dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
