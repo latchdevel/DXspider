@@ -130,6 +130,9 @@ sub init
 	if ($@) {
 		$ufn = "$fn.v2";
 		$v3 = $convert = 0;
+		dbg("the module Storable appears to be missing!!");
+		dbg("trying to continue in compatibility mode (this may fail)");
+		dbg("please install Storable from CPAN as soon as possible");
 	} else {
 		import Storable qw(nfreeze thaw);
 
