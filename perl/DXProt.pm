@@ -526,24 +526,21 @@ sub normal
 
 			# general checks
 			my $dxchan;
+			my $ncall = $field[1];
 			my $newline = "PC16^";
 			
-			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
+			if ($ncall eq $main::mycall) {
 				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
 			}
-			if ($field[2] eq $main::myalias && DXChannel->get($field[1])) {
-				dbg('chan', "PCPROT: trying to connect sysop from outside!");
+			$dxchan = DXChannel->get($ncall);
+			if ($dxchan ne $self) {
+				dbg('chan', "PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!");
 				return;
 			}
-			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
-				dbg('chan', "PCPROT: $field[1] connected locally");
-				return;
-			}
-
-			my $node = Route::Node::get($field[1]); 
-			unless ($node) {
-				dbg('chan', "PCPROT: Node $field[1] not in config");
+			my $parent = Route::Node::get($ncall); 
+			unless ($parent) {
+				dbg('chan', "PCPROT: Node $ncall not in config");
 				return;
 			}
 			my $i;
@@ -553,14 +550,14 @@ sub normal
 				next unless $call && $conf && defined $here && is_callsign($call);
 				$conf = $conf eq '*';
 
-				push @rout, $node->add_user($call, Route::here($here)|Route::conf($conf));
+				push @rout, $parent->add_user($call, Route::here($here)|Route::conf($conf));
 				
 				# add this station to the user database, if required
 				$call =~ s/-\d+$//o;        # remove ssid for users
 				my $user = DXUser->get_current($call);
 				$user = DXUser->new($call) if !$user;
-				$user->homenode($node->call) if !$user->homenode;
-				$user->node($node->call);
+				$user->homenode($parent->call) if !$user->homenode;
+				$user->node($parent->call);
 				$user->lastin($main::systime) unless DXChannel->get($call);
 				$user->put;
 			}
@@ -569,34 +566,31 @@ sub normal
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
 
-			dbg('route', "B/C PC16 on $field[1] for: " . join(',', map{$_->call} @rout)) if @rout;
-			$self->route_pc16($node, @rout) if @rout;
+			dbg('route', "B/C PC16 on $ncall for: " . join(',', map{$_->call} @rout)) if @rout;
+			$self->route_pc16($parent, @rout) if @rout;
 			return;
 		}
 		
 		if ($pcno == 17) {		# remove a user
 			my $dxchan;
-			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
+			my $ncall = $field[2];
+			if ($ncall eq $main::mycall) {
 				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
 			}
-			if ($field[1] eq $main::myalias && DXChannel->get($field[1])) {
-				dbg('chan', "PCPROT: trying to disconnect sysop from outside!");
+			$dxchan = DXChannel->get($ncall);
+			if ($dxchan ne $self) {
+				dbg('chan', "PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!");
 				return;
 			}
-			if ($dxchan = DXChannel->get($field[1])) {
-				dbg('chan', "PCPROT: $field[1] connected locally");
+			my $parent = Route::Node::get($ncall);
+			unless ($parent) {
+				dbg('chan', "PCPROT: Route::Node $ncall not in config");
 				return;
 			}
-
-			my $node = Route::Node::get($field[2]);
-			unless ($node) {
-				dbg('chan', "PCPROT: Route::Node $field[2] not in config");
-				return;
-			}
-			my @rout = $node->del_user($field[1]);
-			dbg('route', "B/C PC17 on $field[2] for: $field[1]");
-			$self->route_pc17($node, @rout) if @rout;
+			my @rout = $parent->del_user($field[1]);
+			dbg('route', "B/C PC17 on $ncall for: $field[1]");
+			$self->route_pc17($parent, @rout) if @rout;
 			return;
 		}
 		
@@ -604,13 +598,13 @@ sub normal
 			$self->state('init');	
 
 			# first clear out any nodes on this dxchannel
-			my $node = Route::Node::get($self->{call});
+			my $parent = Route::Node::get($self->{call});
 			my @rout;
-			for ($node->nodes) {
+			for ($parent->nodes) {
 				my $r = Route::Node::get($_);
 				push @rout, $r->del_node if $r;
 			}
-			$self->route_pc21(@rout, $node);
+			$self->route_pc21(@rout, $parent);
 			$self->send_local_config();
 			$self->send(pc20());
 			return;             # we don't pass these on
@@ -622,7 +616,7 @@ sub normal
 
 			# new routing list
 			my @rout;
-			my $node = Route::Node::get($self->{call});
+			my $parent = Route::Node::get($self->{call});
 
 			# parse the PC19
 			for ($i = 1; $i < $#field-1; $i += 4) {
@@ -637,14 +631,14 @@ sub normal
 				next if length $call < 3; # min 3 letter callsigns
 
 				# update it if required
-				if ($node->call eq $call && !$node->version) {
-					$node->version($ver);
-					$node->flags(Route::here($here)|Route::conf($conf));
-					push @rout, $node;
-				} elsif ($node->call ne $call) {
+				if ($parent->call eq $call && !$parent->version) {
+					$parent->version($ver);
+					$parent->flags(Route::here($here)|Route::conf($conf));
+					push @rout, $parent;
+				} elsif ($parent->call ne $call) {
 					next if $call eq $main::mycall || $call eq $self->{call};
 
-					my $r = $node->add($call, $ver, Route::here($here)|Route::conf($conf));
+					my $r = $parent->add($call, $ver, Route::here($here)|Route::conf($conf));
 					push @rout, $r if $r;
 				}
 
@@ -682,7 +676,7 @@ sub normal
 		if ($pcno == 21) {		# delete a cluster from the list
 			my $call = uc $field[1];
 			my @rout;
-			my $node = Route::Node::get($call);
+			my $parent = Route::Node::get($self->{call});
 			
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 				if ($call eq $self->{call}) {
@@ -691,8 +685,8 @@ sub normal
 				}
 
 				# routing objects
-				if ($node) {
-					push @rout, $node->del_node($call);
+				if ($parent) {
+					push @rout, $parent->del_node($call);
 				} else {
 					dbg('chan', "PCPROT: Route::Node $call not in config");
 				}
