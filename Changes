@@ -1,6 +1,9 @@
 20Aug02=======================================================================
 1. fix lines containing just the character '0' in messages (and console.pl)
 (K1XX).
+2. remove all newline characters from AGW data, thus treating it like a 
+'normal' ax25 connection where the 'newline' convention is just carriage
+return (K1XX)
 06Aug02=======================================================================
 1. added 5.5Mhz band as '60m'.
 29Jul02=======================================================================

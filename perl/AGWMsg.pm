@@ -266,6 +266,7 @@ sub _decode
 		$data = '' unless defined $data;
 		if ($sort eq 'D') {
 			my $d = unpack "Z*", $data;
+			$d =~ s/\cJ//g;		# remove all new line characters
 			$d =~ s/\cM$//;
 			dbg("AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
@@ -295,6 +296,7 @@ sub _decode
 			}
 		} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
 			my $d = unpack "Z*", $data;
+			$d =~ s/\cJ//g;		# remove all new line characters
 			$d =~ s/\cM$//;
 			my @lines = split /\cM/, $d;
 			
