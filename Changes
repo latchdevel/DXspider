@@ -1,3 +1,5 @@
+20Jun00=======================================================================
+1. fixed decode_input so it accepts callsigns with 0 in them (!)
 19Jun00=======================================================================
 1. move ann_dup, spot_dup etc to dup_ann, dup_spots etc
 2. made mode 3 the default line ending convention for all out going connects

@@ -228,6 +228,7 @@ sub normal
 			}
 			
 			# do some de-duping
+			$field[5] =~ s/^\s+//;      # take any leading blanks off
 			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
 				dbg('chan', "Duplicate Spot ignored\n");
 				return;
@@ -260,6 +261,7 @@ sub normal
 		
 		if ($pcno == 12) {		# announces
 			# announce duplicate checking
+			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
 				dbg('chan', "Duplicate Announce ignored\n");
 				return;
