@@ -607,7 +607,8 @@ sub normal
 			my $node = Route::Node::get($self->{call});
 			my @rout;
 			for ($node->nodes) {
-				push @rout, $_->del_node;
+				my $r = Route::Node::get($_);
+				push @rout, $r->del_node if $r;
 			}
 			$self->route_pc21(@rout, $node);
 			$self->send_local_config();
