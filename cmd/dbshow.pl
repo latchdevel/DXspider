@@ -30,6 +30,7 @@ foreach  $n (@db) {
 		}
 		
 		push @out, $self->msg('db11', $db->remote);
+		push @f, " " unless @f;
 		for (@f) {
 			my $n = DXDb::newstream($self->call);
 			DXProt::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
