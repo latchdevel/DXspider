@@ -3,6 +3,7 @@
 2. Added G0RDI's 'links' command.
 3. added update_sysop.pl which cleans out all previous versions of the sysops
 information from the user database and recreates it with that in DXVars.pm
+4. Added node type to links and who
 14Jun00=======================================================================
 1. fixed sh/node crash
 2. fixed RTT in who.pl
