@@ -1,3 +1,8 @@
+31Oct99=======================================================================
+1. updated Minimuf.pm and show/muf.pl to the fixed versions sent to me by
+Steve Franke K9AN. 
+2. Made set/badnodes work, added show/badnodes. This is an interim fix until
+input spot filtering works.
 24Oct99=======================================================================
 1. fixed announces so that nodes only get one of them (not two).
 2. Altered the select timeouts to prevent apparent excessive CPU usage on

@@ -4,6 +4,8 @@
 #
 # Translated and modified for my own purposes by Dirk Koopman G1TLH
 #
+# as fixed by Steve Franke K9AN
+#
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #
 # The original copyright:-
@@ -253,7 +255,7 @@ sub ion
 		# Calculate the E-layer critical frequency and MUF.
 		 
 		$fcE = 0;
-		$psi = zenith($dist, $lat1, $lon1, $b2, $b1, $lats, $lons);
+		$psi = zenith($dist, $lat1, $lon1, $b1, $b2, $lats, $lons);
 		$ftemp = cos($psi);
 		$fcE = .9 * pow((180. + 1.44 * $ssn) * $ftemp, .25) if ($ftemp > 0);
 		$fcE = .005 * $ssn if ($fcE < .005 * $ssn);

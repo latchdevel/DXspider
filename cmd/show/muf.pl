@@ -4,6 +4,8 @@
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #
+# as fixed by Steve Franke K9AN
+#
 # $Id$
 #
 
@@ -37,8 +39,8 @@ $lon2 = $a->{long};
 # convert stuff into radians
 $lat1 *= $d2r;
 $lat2 *= $d2r;
-$lon1 *= $d2r;
-$lon2 *= $d2r;
+$lon1 *= -$d2r;
+$lon2 *= -$d2r;
 $b1 *= $d2r;
 $b2 *= $d2r;
 $d = ($d / $R);
@@ -49,6 +51,10 @@ my $flux = Geomag::sfi;
 my $ssn = Minimuf::spots($flux);
 
 my $theta;						# path angle (rad) 
+$theta=$lon1-$lon2;
+$theta=$theta+2.*$pi if( $theta <= -$pi);
+$theta=$theta-2.*$pi if( $theta >= $pi);
+
 my ($lats, $lons);				# subsolar coordinates (rad) 
 my $dB1 = 20;					# transmitter output power (dBW) 
 
@@ -93,8 +99,8 @@ $delay = ((2 * $hop * sin($dhop) * ($R + $hF)) / cos($beta1) / $VOFL) * 1e6;
 push @out, sprintf("RxSens: $rsens dBM SFI:%4.0lf   R:%4.0lf   Month: $month   Day: $day", $flux, $ssn);
 push @out, sprintf("Power :  %3.0f dBW    Distance:%6.0f km    Delay:%5.1f ms", $dB1, $d * $R, $delay);
 push @out, sprintf("Location                       Lat / Long           Azim");
-push @out, sprintf("%-30.30s %-18s    %3.0f", $main::myqth, DXBearing::lltos($lat1*$r2d, $lon1*$r2d), $b1 * $r2d);
-push @out, sprintf("%-30.30s %-18s    %3.0f", $a->name, DXBearing::lltos($lat2*$r2d, $lon2*$r2d), $b2 * $r2d);
+push @out, sprintf("%-30.30s %-18s    %3.0f", $main::myqth, DXBearing::lltos($lat1*$r2d, -$lon1*$r2d), $b1 * $r2d);
+push @out, sprintf("%-30.30s %-18s    %3.0f", $a->name, DXBearing::lltos($lat2*$r2d, -$lon2*$r2d), $b2 * $r2d);
 my $head = "UT LT  MUF Zen";
 for ($i = 0; $i < $nfreq; $i++) {
 	$head .= sprintf "%5.1f", $freq[$i];
@@ -138,7 +144,7 @@ for ($hour = $hr1; $hour < $hr2+$hr1; $hour++) {
 		# the day and decreases at night, as determined
 		# at the midpoint of the path.
 		$height = $hF;
-		$psi = Minimuf::zenith($d / 2, $lat1, $lon1, $b2, $b1, $lats, $lons);
+		$psi = Minimuf::zenith($d / 2, $lat1, $lon1, $b1, $theta, $lats, $lons);
 		if ($psi < 0) {
 			$height -= 70.;
 		} else {
@@ -147,7 +153,7 @@ for ($hour = $hr1; $hour < $hr2+$hr1; $hour++) {
 		$dhop = $d / ($h * 2.);
 		$beta[$h] = atan((cos($dhop) - $R / ($R + $height)) / sin($dhop));
 		$path[$h] = 2 * $h * sin($dhop) * ($R + $height) / cos($beta[$h]);
-		Minimuf::ion($h, $d, $fcF, $ssn, $lat1, $lon1, $b2, $b1, $lats, $lons, \@daynight, \@mufE, \@mufF, \@absorp);
+		Minimuf::ion($h, $d, $fcF, $ssn, $lat1, $lon1, $b1, $theta, $lats, $lons, \@daynight, \@mufE, \@mufF, \@absorp);
 	}
 	
 	# Display one line for this hour.
