@@ -481,7 +481,7 @@ sub cty_data
 	
 	my @dxcc = extract($call);
 	if (@dxcc) {
-		return ($dxcc[1]->dxcc, $dxcc[1]->itu, $dxcc[1]->cq, ($dxcc[1]->state||''), ($dxcc[1]->city||''));
+		return ($dxcc[1]->dxcc, $dxcc[1]->itu, $dxcc[1]->cq, ($dxcc[1]->state||''), ($dxcc[1]->city||''), ($dxcc[1]->name||''));
 	}
 	return (666,0,0,'','');		
 }

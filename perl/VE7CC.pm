@@ -34,7 +34,10 @@ sub dx_spot
 	# remove interface callsign;
 	pop;
 	
-	return sprintf("CC11^%0.1f^%s^", $freq, $spotted) . join('^', cldate($t), ztime($t), @_);
+	my $spotted_cc = (Prefix::cty_data($spotted))[5];
+	my $spotter_cc = (Prefix::cty_data($_[1]))[5];
+	
+	return sprintf("CC11^%0.1f^%s^", $freq, $spotted) . join('^', cldate($t), ztime($t), @_, $spotter_cc, $spotted_cc);
 }
 
 1;
