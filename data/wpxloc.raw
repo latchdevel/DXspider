@@ -1,12 +1,13 @@
 !
 ! $Id$
 !
-! highest DXCC number is now 345
+! highest DXCC number is now 346
 !
 ! note the that entries marked with an '@' are the
 ! 'master' entries for a 'country'. It doesn't make
 ! a lot of difference but please observe the convention.
 !
+! changed DXCC no for T8                      041221
 ! added African Italy for IG9                 041220
 ! added Bear Island for JW/B                  041220
 ! added Vienna International Centre for 4U1/V 041220
@@ -404,7 +405,6 @@ KC4 Antarctica-McMurdo-CE9            102 67 12 -11.0 77 30 0 S 167 0 0 E *
 KC4 Antarctica-Bryd-CE9               102 67 12 8.0 80 0 0 S 120 0 0 W *
 KC4 Antarctica-Palmer-CE9             102 67 12  4.0 65 0 0 S 64 0 0 W 
 Y90 Antarctica-CE9                    102 67 12  4.0 65 0 0 S 64 0 0 W
-T88 West-Carolines-T88                104 64 27 -9.0 9 30 0 N 138 6 0 E @
 KG4 Guantanamo-Bay-KG4                105 11  8  5.0 20 0 0 N 75 0 0 W @
 KH1 Amer-Phoenix-KH1                  106 62 31 11.0 0 30 0 N 176 0 0 W @
 AH1,NH1,WH1 Amer-Phoenix-KH1          106 62 31 11.0 0 30 0 N 176 0 0 W
@@ -550,7 +550,8 @@ T33 Banaba-Is-T33                     323 62 31  11.0 0 86 0 N 169 58 0 E @
 T5 Somali-T5                          163 48 37 -3.0 2 0 0 N 46 0 0 E @
 6O Somali-T5                          163 48 37 -3.0 2 0 0 N 46 0 0 E
 T7 San-Marino-T7                      164 28 15 -1.0 44 0 0 N 13 0 0 E @
-T8 Palau-Is-T8                        104 64 27 -10.0 7 30 0 N 134 30 E @
+T8 Palau-Is-T8                        346 64 27 -10.0 7 30 0 N 134 30 E @
+T8 West-Carolines-T8                  346 64 27 -9.0 9 30 0 N 138 6 0 E 
 TA Turkey-TA                          165 39 20 -2.0 39 54 0 N 32 54 0 E @
 TA1 Turkey-Europe-TA1                 165 39 20 -2.0 41 24 0 N 29 0 E 
 TB,TC Turkey-TA                       165 39 20 -2.0 39 54 0 N 32 54 0 E

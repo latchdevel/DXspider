@@ -1,5 +1,9 @@
 21Dec04=======================================================================
 1. added AGW port no after an example by IW5DEZ.
+2. modified links command to suggestions by Charlie K1XX.
+3. added show/groups command to show recently used chat groups by Tommy 
+SM3OSM.
+4. fixed T8 / V6 ambiguity (at least basically).
 20Dec04=======================================================================
 1. updated create_prefix.pl to only use (supplied) wpxloc.raw and cty.dat
 2. Added IG9, GM/S, 4U1V and some other detail changes to make it compatible
