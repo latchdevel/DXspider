@@ -74,6 +74,7 @@ package DXM;
 				e23 => '$_[0] not a range (eg 0/30000)', 
 				e24 => 'Sorry, Internet access is not enabled',
 				e25 => 'Sorry the value must be between $_[0] and $_[1]',
+				e26 => 'Too many concurrent errors, you are being disconnected',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',
