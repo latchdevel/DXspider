@@ -645,7 +645,11 @@ sub normal
 			# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
 			# fix it up in the routing tables and issue it forth before the PC16
 			unless ($parent) {
-				if (my ($nl = $pc19list{$ncall}) && @field > 2) {
+				my $nl = $pc19list{$ncall};
+
+				delete $pc19list{$ncall} if $nl;             # whatever happens - it goes 
+					
+				if ($nl && @field > 3) {                     # 3 because of the hop count!
 
 					# this is a new (remembered) node, now attach it to me if it isn't in filtered
 					# and we haven't disallowed it
@@ -659,8 +663,6 @@ sub normal
 						$user->node($ncall);
 					}
 
-					delete $pc19list{$ncall};             # whatever happens - it goes 
-					
 					my $wantpc19 = $user->wantroutepc19;
 					if ($wantpc19 || !defined $wantpc19) {
 						my $new = Route->new($ncall);          # throw away
