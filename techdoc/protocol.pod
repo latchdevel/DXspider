@@ -1,6 +1,8 @@
 =head1 NAME
 
-DXSpiderWeb Orthogonal Communications Protocol $Revision$
+DXSpiderWeb Orthogonal Communications Protocol 
+
+$Revision$
 
 =head1 SYNOPSIS
 
@@ -9,9 +11,18 @@ DXSpiderWeb Orthogonal Communications Protocol $Revision$
 =head1 ABSTRACT
 
 For many years DX Clusters have used a protocol which was designed 
-for a non-looped tree of nodes. This has probably never, reliably, 
-been achieved in practice; certainly not recently. This document 
-describes a complete replacement for that protocol. It allows a
+for a non-looped tree of nodes. This environment has probably never, reliably, 
+been achieved in practice; certainly not recently.
+
+There have always been loops, sometimes bringing the network to its 
+knees. In modern usage, both in order to get some resilience and also
+to expedite information flow, we use internet based, deliberately
+looped networks with filtering. Whilst this works, after a fashion, there 
+are all sorts of problems that the current PC protocol can never
+address.
+
+This document 
+describes a complete replacement for the PC protocol. It allows a
 fully looped network, is inherently extensible and should be simple
 to implement (especially in perl).
 
@@ -279,10 +290,32 @@ duplicated!
 
 The L</Command Section> of the message contains the actual data being
 passed. It is called the Command Section because all commands
-are identified with a L</Tag> which is implemented by 
-the software using this protocol.
+are identified with a L</Tag> each of which is implemented by 
+the software using this protocol. Each </Tag> (usually) is followed by one
+or more L</Fields>. 
 
-The L</Tag> is separated from its data by a comma ','. All fields
+=head2 Tag
+
+The L</Tag> consists of string of uppercase letters and digits, starting
+with a leading, uppercase, letter. Tags should be as short as is meaningful.
+
+Valid tags would be:
+
+ DX
+ PC23
+ ANN
+
+Invalid tags include:
+
+ 1AAA
+ dx
+ Ann
+
+The L</Tag> is separated from its data L</Fields> by a comma ','. 
+
+=head2 Fields
+
+All fields
 in any subsequent data shall be separated by a comma ','.
 All fields shall
 be HTTP encoded such that reserved characters (comma ',', 
@@ -325,23 +358,6 @@ specified above and can otherwise contain any character.
 There is no maximum size specified for a message. It is up to each
 implimentation to enforce one (if only for their own protection).
 
-=head2 Tag
-
-The L</Tag> consists of string of uppercase letters and digits, starting
-with a leading, uppercase, letter. Tags should be as short as is meaningful.
-
-Valid tags would be:
-
- DX
- PC23
- ANN
-
-Invalid tags include:
-
- 1AAA
- dx
- Ann
-
 =head2 Standard Commands
 
 There are a number of L</Standard Commands> which must be accepted by 
@@ -349,21 +365,27 @@ all implementations.
 
 =over
 
-=item B<HELLO>,<software name>,<version>,<build>,<comments>
+=item B<HELLO>
+
+ HELLO,<software name>,<version>,<build>,<comments>
 
 Command sent on connection to another node. Both sides send their information
 to the other. All the possible arguments are optional, although some of the
 arguments should be sent in order to help diagnose problems. This command is
 broadcast.
 
-=item B<BYE>,<comments>
+=item B<BYE> 
+
+ BYE,<comments>
 
 Command sent to all connections when the software is shutting down. This is sent
 by the node just before shutdown occurs. This is really only used to help the
 network prune its routing tables. It isn't a requirement. The <comment> field
 is optional. 
 
-=item B<DISC>,<node name>,<comments>
+=item B<DISC>
+
+ DISC,<node name>,<comments>
 
 Command sent when a node has disconnected from this node. This message is sent when
 an interface shuts down. It need not be sent if a L<BYE> from an interface for
@@ -372,15 +394,32 @@ that node has just been received. This command should be broadcast.
 The <node name> is mandatory and is the name of the interface that has just 
 disconnected.
 
-=item B<PING>,<ping id>
+=item B<PING>
+
+ PING,<ping id>
 
 Command to send a ping to a node or user. This command is used both by the software
 and users to determine a) whether a node or user exists and b) how good the path is
-between them.
+between them. 
 
-=item B<PONG>,<ping id>,<no of hops on ping>
+The <ping id> is a unique string which is usually the hexadecimal equivalent of an 
+integer that is incremented every time it is used. But it can be anything that
+will identify this ping using the tuple (L<Origin>,<ping id>) as unique.
 
-Command to reply to a successful ping
+=item B<PONG>
+
+ PONG,<ping id>,<no of hops on ping>
+
+Command to reply to a ping. This is sent as a reply to an incoming ping command.
+The <ping id> is the one supplied and the <no of hops on ping> is the number of
+hops it took for the ping to arrive.
+
+=item B<T>
+
+ T,<text>
+
+All implementations must be able to send "text" (encoded as specified in 
+L</Fields>). There would be little point in doing all this otherwise!
 
 =back
 
