@@ -42,6 +42,8 @@ package CmdAlias;
 	  '^di\w*/n\w*', 'directory new', 'directory',
 	  '^di\w*/o\w*', 'directory own', 'directory',
 	  '^di\w*/s\w*', 'directory subject', 'directory',
+	  '^di\w*/t\w*', 'directory to', 'directory',
+	  '^di\w*/f\w*', 'directory from', 'directory',
 	  '^di\w*/(\d+)-(\d+)', 'directory $1-$2', 'directory',
 	  '^di\w*/(\d+)', 'directory $1', 'directory',
 	],

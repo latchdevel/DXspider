@@ -12,61 +12,60 @@ my @ref;
 my $ref;
 my @out;
 my $f;
-my $n = 10;
-
-if (!@f) {
-	my @all = (DXMsg::get_all());
-	my ($i, $count);
-	for ($i = $#all; $i > 0; $i--) {
-		$ref = $all[$i];
-		next if $self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call;
-		unshift @ref, $ref;
-		last if ++$count >= $n;
-	}
-}
+my $n = 0;
+my @all = grep {!($self->priv < 5 && $_->private && $_->to ne $self->call && $_->from ne $self->call)} (DXMsg::get_all());
+my $sel = 0;
+my $from = 0;
+my $to = $all[@all-1]->msgno;
 
 while (@f) {
 	$f = uc shift @f;
 	if ($f eq 'ALL') {
-		foreach $ref (DXMsg::get_all()) { 
-			next if $self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call;
-			push @ref, $ref;
-		}
-		last;
+		@ref = @all;
+		$n = @ref;
+		$sel++;
 	} elsif ($f =~ /^O/o) {		# dir/own
-		foreach $ref (DXMsg::get_all()) { 
-			push @ref, $ref if $ref->private && ($ref->to eq $self->call || $ref->from eq $self->call);
-		}
+		@ref = grep { $_->to eq $self->call || $_->from eq $self->call } @all;
+		$sel++;
 	} elsif ($f =~ /^N/o) {		# dir/new
-		foreach $ref (DXMsg::get_all()) { 
-			push @ref, $ref if $ref->private && !$ref->read && $ref->to eq $self->call;
+		@ref = grep { $_->t > $self->user->lastin } @all;
+		$sel++;
+	} elsif ($f =~ /^S/o) {     # dir/subject
+		$f = shift @f;
+		if ($f) {
+			$f =~ s{(.)}{"\Q$1"}ge;
+			@ref = grep { $_->subject =~ m{$f}i } @all;
+			$sel++;
 		}
-	} elsif ($f eq '>' || $f eq 'TO'){
+	} elsif ($f eq '>' || $f =~ /^T/o){  
 		$f = uc shift @f;
 		if ($f) {
 			$f = shellregex($f);
-			foreach $ref (DXMsg::get_all()) { 
-				next if $self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call;
-				next unless $ref->to =~ m{$f};
-				push @ref, $ref;
-			}
+			@ref = grep { $_->to =~ m{$f} } @all;
+			$sel++;
 		}
-	} elsif ($f eq '<' || $f eq 'FROM'){
+	} elsif ($f eq '<' || $f =~ /^F/o){
 		$f = uc shift @f;
 		if ($f) {
 			$f = shellregex($f);
-			foreach $ref (DXMsg::get_all()) { 
-				next if $self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call;
-				next unless $ref->from =~ m{$f};
-				push @ref, $ref;
-			}
+			@ref = grep { $_->from =~ m{$f} } @all;
+			$sel++;
 		}
+	} elsif ($f =~ /^(\d+)-(\d+)$/) {		# a range of items
+		$from = $1;
+		$to = $2;
 	} elsif ($f =~ /^\d+$/ && $f > 0) {		# a number of items
 		$n = $f;
 	}
 }
 
+$n = 10 unless $n;
+@ref = @all unless $sel || @ref;
+
 if (@ref) {
+	if ($from != 0 || $to != $all[@all-1]->msgno) {
+		@ref = grep {$_->msgno >= $from && $_->msgno <= $to} @ref;
+	}
 	my $i = @ref - $n;
 	$i = 0 unless $i > 0;
 	my $count;

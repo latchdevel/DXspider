@@ -44,14 +44,31 @@ It will interrupt the cluster just after the debug command has finished.
 === 0^DIRECTORY^List messages 
 === 0^DIRECTORY ALL^List all messages
 === 0^DIRECTORY OWN^List your own messages
-=== 0^DIRECTORY NEW^List your own new messages
-List the messages in the messages directory. 
+=== 0^DIRECTORY NEW^List all new messages
+=== 0^DIRECTORY TO <call>^List all messages to <call>
+=== 0^DIRECTORY FROM <call>^List all messages from <call>
+=== 0^DIRECTORY SUBJECT <string>^List all messages with <string> in subject
+=== 0^DIRECTORY <nn>^List last <nn> messages
+=== 0^DIRECTORY <from>-<to>^List messages <from> message <to> message 
+List the messages in the messages directory.
 
 If there is a 'p' one space after the message number then it is a 
-personal message.
+personal message. If there is a '-' between the message number and the
+'p' then this indicates that the message has been read.
 
-If there is a - after the message number then this indicates that the
-message has been read.
+You can use shell escape characters such as '*' and '?' in the <call>
+fields.
+
+You can combine some of the various directory commands together eg:-
+
+   DIR TO G1TLH 5
+or 
+   DIR SUBJECT IOTA 200-250
+
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+
+   DIR/T G1* 10
+   DIR/S QSL 10-100 5
 
 === 5^DIRECTORY-^
 Sysops can see all users' messages.
@@ -355,13 +372,17 @@ e.g.
    SH/DXCC G
    SH/DXCC W on 20m info iota
 
-=== 0^SHOW/FILES [<filearea>]^List the contents of a filearea
+=== 0^SHOW/FILES [<filearea> [<string>]]^List the contents of a filearea
 SHOW/FILES on its own will show you a list of the various fileareas
 available on the system. To see the contents of a particular file
 area type:-
    SH/FILES <filearea>
 where <filearea> is the name of the filearea you want to see the 
 contents of.
+
+You can also use shell globbing characters like '*' and '?' in a
+string to see a selection of files in a filearea eg:-
+   SH/FILES bulletins arld*
 
 See also TYPE - to see the contents of a file.
 

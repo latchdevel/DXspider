@@ -5,7 +5,8 @@
 oldest one is lost for every one added above 20).
 4. Added generalised shell globbing everywhere I think it is useful, including
 sh/dx, dir
-5. Made dir more friendly and give more info, you can do > < and a number now.
+5. Made dir more compatible with ak1a and added 'to' and 'from' call searching
+it should now do everything that ak1a does except counts.
 22May99=======================================================================
 1. added check for -1 from Date::Parse and return undef for out of range dates
 2. added show/files and type commands

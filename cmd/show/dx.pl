@@ -85,7 +85,7 @@ if (@freq) {
 # any info
 if ($info) {
 	$expr .= " && " if $expr;
-	$info = shellregex($info);
+	$info =~ s{(.)}{"\Q$1"}ge;
 	$expr .= "\$f3 =~ m{$info}io";
 }
 

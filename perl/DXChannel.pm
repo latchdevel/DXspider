@@ -84,6 +84,7 @@ sub alloc
   
 	die "trying to create a duplicate channel for $call" if $channels{$call};
 	$self->{call} = $call;
+	$self->{priv} = 0;
 	$self->{conn} = $conn if defined $conn;	# if this isn't defined then it must be a list
 	if (defined $user) {
 		$self->{user} = $user;
