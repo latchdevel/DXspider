@@ -121,6 +121,7 @@ if ($info) {
 # any spotter
 if ($spotter) {
 	$expr .= " && " if $expr;
+	$spotter .= '*' unless $spotter =~ /[\*\?\[]/o;
 	$spotter = shellregex($spotter);
 	$expr .= "\$f4 =~ m{\U$spotter}";
 	$hint .= " && " if $hint;
