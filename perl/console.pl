@@ -33,6 +33,23 @@ use Curses;
 
 use Carp qw{cluck};
 
+use Console;
+
+#
+# initialisation
+#
+
+$call = "";                     # the callsign being used
+$conn = 0;                      # the connection object for the cluster
+$lasttime = time;               # lasttime something happened on the interface
+
+$connsort = "local";
+@khistory = ();
+@shistory = ();
+$khistpos = 0;
+$spos = $pos = $lth = 0;
+$inbuf = "";
+
 # cease communications
 sub cease
 {
@@ -42,15 +59,43 @@ sub cease
 	}
 	endwin();
 	dbgclose();
-#	$SIG{__WARN__} = sub {my $a = shift; cluck($a); };
-	sleep(1);
+	print @_ if @_;
 	exit(0);	
 }
 
 # terminate program from signal
 sub sig_term
 {
-	cease(1);
+	cease(1, @_);
+}
+
+# display the top screen
+sub show_screen
+{
+	my $p = $spos - $pages;
+	my $i;
+	$p = 0 if $p < 0;
+
+	$top->move(0, 0);
+	$top->attrset(COLOR_PAIR(0)) if $has_colors;
+	$top->clrtobot();
+	for ($i = 0; $i < $pages && $p < @shistory; $i++, $p++) {
+		my $line = $shistory[$p];
+		$line = substr($line, 0, COLS()) if length $line > COLS();
+		$top->move($i, 0);
+		if ($has_colors) {
+			foreach my $ref (@colors) {
+				if ($line =~ m{$$ref[0]}) {
+					$top->attrset($$ref[1]);
+					last;
+				}
+			}
+		}
+		$top->addstr($line);
+		$top->attrset(COLOR_PAIR(0)) if $has_colors;
+	}
+	$spos = $p;
+	$top->refresh();
 }
 
 # handle incoming messages
@@ -64,7 +109,10 @@ sub rec_socket
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 		
 		if ($sort eq 'D') {
-			$top->addstr("\n$line");
+			push @shistory, $line;
+			shift @shistory if @shistory > $maxshist;
+			$spos = @shistory if $spos >= @shistory - 1;
+			show_screen();
 		} elsif ($sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
 		}	  
@@ -89,9 +137,9 @@ sub rec_stdin
 			
 			# save the lines
 			if ($inbuf) {
-				push @history, $inbuf if $inbuf;
-				shift @history if @history > $maxhist;
-				$histpos = @history;
+				push @khistory, $inbuf if $inbuf;
+				shift @khistory if @khistory > $maxkhist;
+				$khistpos = @khistory;
 				$bot->move(0,0);
 				$bot->clrtoeol();
 				$bot->addstr(substr($inbuf, 0, COLS));
@@ -102,19 +150,35 @@ sub rec_stdin
 			$conn->send_later("I$call|$inbuf");
 			$inbuf = "";
 			$pos = $lth = 0;
-		} elsif ($r eq KEY_UP || $r eq KEY_PPAGE || $r eq "\020") {
-			if ($histpos > 0) {
-				--$histpos;
-				$inbuf = $history[$histpos];
+		} elsif ($r eq KEY_UP || $r eq "\020") {
+			if ($khistpos > 0) {
+				--$khistpos;
+				$inbuf = $khistory[$khistpos];
 				$pos = $lth = length $inbuf;
 			} else {
 				beep();
 			}
-		} elsif ($r eq KEY_DOWN || $r eq KEY_NPAGE || $r eq "\016") {
-			if ($histpos < @history - 1) {
-				++$histpos;
-				$inbuf = $history[$histpos];
+		} elsif ($r eq KEY_DOWN || $r eq "\016") {
+			if ($khistpos < @khistory - 1) {
+				++$khistpos;
+				$inbuf = $khistory[$khistpos];
 				$pos = $lth = length $inbuf;
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_PPAGE || $r eq "\026") {
+			if ($spos > 0) {
+				$spos -= $pages;
+				$spos = 0 if $spos < 0;
+				show_screen();
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_NPAGE || $r eq "\032") {
+			if ($spos < @shistory - 1) {
+				$spos += $pages;
+				$spos = @shistory if $spos > @shistory;
+				show_screen();
 			} else {
 				beep();
 			}
@@ -184,21 +248,6 @@ sub rec_stdin
 
 
 #
-# initialisation
-#
-
-$call = "";                     # the callsign being used
-$conn = 0;                      # the connection object for the cluster
-$lasttime = time;               # lasttime something happened on the interface
-
-$connsort = "local";
-@history = ();
-$histpos = 0;
-$maxhist = 100;
-$pos = $lth = 0;
-$inbuf = "";
-
-#
 # deal with args
 #
 
@@ -232,6 +281,19 @@ $SIG{'HUP'} = 'IGNORE';
 $scr = new Curses;
 raw();
 noecho();
+$has_colors = has_colors();
+
+if ($has_colors) {
+	start_color();
+	init_pair(0, $foreground, $background);
+	init_pair(1, COLOR_RED, $background);
+	init_pair(2, COLOR_YELLOW, $background);
+	init_pair(3, COLOR_GREEN, $background);
+	init_pair(4, COLOR_CYAN, $background);
+	init_pair(5, COLOR_BLUE, $background);
+	init_pair(6, COLOR_MAGENTA, $background);
+}
+
 $top = $scr->subwin(LINES()-4, COLS, 0, 0);
 $top->intrflush(0);
 $top->scrollok(1);
@@ -245,10 +307,11 @@ $scr->refresh();
 
 $SIG{__DIE__} = \&sig_term;
 
-$pages = LINES()-6;
+$pages = LINES()-4;
+my $dpages = $pages - 2;
 
 $conn->send_now("A$call|$connsort");
-$conn->send_now("I$call|set/page $pages");
+$conn->send_now("I$call|set/page $dpages");
 $conn->send_now("I$call|set/nobeep");
 
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);

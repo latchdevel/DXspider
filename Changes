@@ -1,5 +1,7 @@
 28Jun99=======================================================================
 1. console.pl now works with history and editting.
+2. added scrolling to stuff sent by the cluster.
+3. added colours to things.
 27Jun99=======================================================================
 1. added WWV filtering
 2. added timeouts to for forwarding Messages, also added a waiting time for
