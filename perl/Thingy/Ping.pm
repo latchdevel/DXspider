@@ -99,7 +99,7 @@ sub handle
 
 			# it's a reply, look in the ping list for this one
 			my $ref = $ping{$thing->{id}} if exists $thing->{id};
-			$ref ||= $thing->find;
+			$ref ||= find($thing->{origin}, $thing->{group});
 			if ($ref) {
 				my $t = tv_interval($ref->{t}, [ gettimeofday ]);
 				if (my $dxc = DXChannel::get($ref->{user} || $ref->{origin})) {
@@ -179,10 +179,17 @@ sub forget
 
 sub find
 {
-	my $call = shift;
+	my $to = shift;
+	my $from = shift;
+	my $user = shift;
+	
 	foreach my $thing (values %ping) {
-		if (($thing->{user} || $thing->{origin}) eq $call) {
-			return $thing;
+		if ($thing->{origin} eq $from && $thing->{group} eq $to) {
+			if ($user) {
+				return if $thing->{user} && $thing->{user} eq $user; 
+			} else {
+				return $thing;
+			}
 		}
 	}
 	return undef;

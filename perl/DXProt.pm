@@ -1541,7 +1541,7 @@ sub handle_51
 	my $line = shift;
 	my $origin = shift;
 
-	if (eph_dup($line)) {
+	if (eph_dup($line, 60)) {
 		dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
 		return;
 	}
