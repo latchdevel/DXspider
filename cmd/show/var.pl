@@ -17,9 +17,10 @@ my @out;
 
 foreach $f (@f) {
 #    print "\$f = $f\n";
-	my $var = eval "$f";
-	if (defined $var) {
-        my $dd = Data::Dumper->new([ $var ], [ "$f" ]);
+	my @in;
+	push @in, (eval $f);
+	if (defined @in) {
+        my $dd = Data::Dumper->new([ @in ], [ "$f" ]);
         $dd->Indent(1);
 		$dd->Quotekeys(0);
 		my $s = $dd->Dumpxs;
