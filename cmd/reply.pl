@@ -63,12 +63,11 @@ if ($self->state eq "prompt") {
 		if (!($oref = DXMsg::get($self->lastread))) {
 			delete $self->{loc};
 			return (1, $self->msg('m5'));
-			#return (1, "need a message number");
 		}
 	}
 	
 	# now save all the 'to' callsigns for later
-	my $to = $oref->from;
+	my $to = $loc->{private} ? $oref->from : $oref->to;
 	$loc->{to} = [ $to ];       # to is an array
 	$loc->{subject} = $oref->subject;
 	$loc->{subject} = "Re: " . $loc->{subject} if !($loc->{subject} =~ /^Re:\s/io); 
@@ -77,10 +76,6 @@ if ($self->state eq "prompt") {
 	# keep calling me for every line until I relinquish control
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('sendbody');
-	#push @out, $self->msg('sendsubj');
-#	push @out, "Reply to: $to";
-#	push @out, "Subject : $loc->{subject}";
-#	push @out, "Enter Message /EX (^Z) to send or /ABORT (^Y) to exit";
 	push @out, $self->msg('m6', $to);
 	push @out, $self->msg('m7', $loc->{subject});
 	push @out, $self->msg('m8');

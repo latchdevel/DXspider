@@ -260,15 +260,16 @@ message either sent by or sent to your callsign.
 === 5^READ-^
 As a sysop you may read any message on the system
 
-=== 0^REPLY^Reply to the last message that you have read
-=== 0^REPLY <msgno>^Reply to the specified message
-=== 0^REPLY PRIVATE <msgno>^Reply privately to the specified message
+=== 0^REPLY^Reply (privately) to the last message that you have read
+=== 0^REPLY <msgno>^Reply (privately) to the specified message
+=== 0^REPLY B <msgno>^Reply as a Bulletin to the specified message
+=== 0^REPLY NOPrivate <msgno>^Reply as a Bulletin to the specified message
 === 0^REPLY RR <msgno>^Reply to the specified message with read receipt
 You can reply to a message and the subject will automatically have
 "Re:" inserted in front of it, if it isn't already present.
 
 You can also use all the extra qualifiers such as RR, PRIVATE, 
-NOPRIVATE that you can use with the SEND command (see SEND
+NOPRIVATE, B that you can use with the SEND command (see SEND
 for further details)
 
 === 0^SEND <call> [<call> ...]^Send a message to one or more callsigns

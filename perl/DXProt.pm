@@ -308,8 +308,9 @@ sub normal
 				Log('ann', $target, $field[1], $text);
 				
 				if ($decode_dk0wcy && $field[1] eq $decode_dk0wcy) {
-					my ($hour, $k, $next, $a, $r, $sfi) = $field[3] =~ /^Aurora Beacon\s+(\d+)UTC,\s+Kiel\s+K=(\d+),.*ed\s+K=(\d+),\s+A=(\d+),\s+R=(\d+),\s+SFI=(\d+),/;
-					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next", $decode_dk0wcy, $field[5], $r);
+					my ($hour, $k, $next, $a, $r, $sfi, $alarm) = $field[3] =~ /^Aurora Beacon\s+(\d+)UTC,\s+Kiel\s+K=(\d+),.*ed\s+K=(\d+),\s+A=(\d+),\s+R=(\d+),\s+SFI=(\d+),.*larm:\s+(\w+)/;
+					$alarm = ($alarm =~ /^Y/i) ? ', Aurora in DE' : ''; 
+					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next$alarm", $decode_dk0wcy, $field[5], $r);
 				}
 				
 				return if $field[2] eq $main::mycall; # it's routed to me
