@@ -37,7 +37,7 @@ my $msg = Mail::Internet->new(\*STDIN) or die "Mail::Internet $!";
 my $head = $msg->head->header_hashref;
 
 if ($head) {
-	if ($head->{From}->[0] =~ /wwv/i || $head->{'From '}->[0] =~ /wwv/i) {
+	if ($head->{Subject}->[0] =~ /wwv/i) {
 		process_wwv($msg);
 	} elsif ($head->{From}->[0] =~ /rwc\.boulder/i || $head->{'From '}->[0] =~ /rwc\.boulder/i) {
 		process_solar($msg);
@@ -62,6 +62,7 @@ sub process_wwv
 		}
 		if ($state) {
 			my $l = $_;
+			next if /\bSec\b/i;
 			$l =~ s/\s*\.?\r?\n$//;
 			push @out, $l;
 		}
@@ -87,6 +88,7 @@ sub process_solar
 		}
 		if ($state > 1) {
 			my $l = $_;
+			next if /\bSec\b/i;
 			$l =~ s/\r?\n$//;
 			push @out, $l;
 		}
