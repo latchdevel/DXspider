@@ -50,7 +50,7 @@ if ($want{hfvhf} || $want{all}) {
 
 # wwv stuff
 if ($want{wwv} || $want{all}) {
-	$mc->cfgprint('wwvsfi', $Geomag::r || $WCY::r, $Geomag::sfi || $WCY::sfi, [qw(gauge)], 1000, 'WWV SFI and R',
+	$mc->cfgprint('wwvsfi', ($Geomag::r || $WCY::r), ($Geomag::sfi || $WCY::sfi), [qw(gauge)], 1000, 'WWV SFI and R',
 			 'SFI / R', 'SFI', 'R');
 	$mc->cfgprint('wwvka', $Geomag::a, $Geomag::k, [qw(gauge)], 1000, 'WWV A and K',
 			 'A / K', 'A', 'K');
