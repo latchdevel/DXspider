@@ -41,23 +41,28 @@ sub prefix
 sub add
 {
 	my @spot = @_;				# $freq, $call, $t, $comment, $spotter = @_
-
+	my @out = @spot[0..4];      # just up to the spotter
+	
 	# sure that the numeric things are numeric now (saves time later)
 	$spot[0] = 0 + $spot[0];
 	$spot[2] = 0 + $spot[2];
   
-	# remove ssid if present on spotter
-	$spot[4] =~ s/-\d+$//o;
+	# remove ssids if present on spotter
+	$out[4] =~ s/-\d+$//o;
 
-	# add the 'dxcc' country on the end
-	my @dxcc = Prefix::extract($spot[1]);
-	push @spot, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
+	my @dxcc = Prefix::extract($out[1]);
+	push @out, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	@dxcc = Prefix::extract($out[4]);
+	push @out, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	push @out, $spot[5];
+	
 
-	my $buf = join("\^", @spot);
+	my $buf = join("\^", @out);
 
 	# compare dates to see whether need to open another save file (remember, redefining $fp 
 	# automagically closes the output file (if any)). 
-	$fp->writeunix($spot[2], $buf);
+	$fp->writeunix($out[2], $buf);
   
 	return $buf;
 }
@@ -127,7 +132,6 @@ sub search
 
 	$fp->close;					# close any open files
 
- LOOP:
 	for ($i = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
 		my @now = Julian::sub(@fromdate, $i); # but you can pick which $maxdays worth
 		last if Julian::cmp(@now, @todate) <= 0;         

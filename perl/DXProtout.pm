@@ -153,6 +153,23 @@ sub pc24
 	return "PC24^$call^$flag^$hops^";
 }
 
+
+# create a merged dx message (freq, dxcall, t, text, spotter, orig-node) 
+sub pc26
+{
+	my ($freq, $dxcall, $t, $text, $spotter, $orignode) = @_;
+	$text = ' ' unless $text;
+	$orignode = $main::mycall unless $orignode;
+	return sprintf "PC26^%.1f^$dxcall^%s^%s^$text^$spotter^$orignode^ ^~", $freq, cldate($t), ztime($t);
+}
+
+# create a merged WWV spot (logger, t, sfi, a, k, forecast, orig-node)
+sub pc27
+{
+	my ($logger, $t, $sfi, $a, $k, $forecast, $orignode) = @_;
+	return sprintf "PC27^%s^%-2.2s^$sfi^$a^$k^$forecast^$logger^$orignode^ ^~", cldate($t), ztime($t);
+}
+
 # message start (fromnode, tonode, to, from, t, private, subject, origin)
 sub pc28
 {
@@ -168,7 +185,8 @@ sub pc28
 sub pc29 
 {
 	my ($fromnode, $tonode, $stream, $text) = @_;
-	$text =~ s/\^//og;			# remove ^
+	$text =~ s/\^/:/og;			# remove ^
+	$text =~ s/\~/S/og;
 	return "PC29^$fromnode^$tonode^$stream^$text^~";
 }
 

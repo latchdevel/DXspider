@@ -50,7 +50,7 @@ sub print
 						\$count++;
 						next if \$count < $from;
 						push \@out, print_item(\$ref);
-						last LOOP if \$count >= \$to;                  # stop after n
+						last if \$count >= \$to;                  # stop after n
 					}
 				}
 			  );
@@ -58,8 +58,7 @@ sub print
 	$self->close;                                      # close any open files
 
 	my $fh = $self->open(@date); 
-LOOP:
-	while ($count < $to) {
+	for ($count = 0; $count < $to; ) {
 		my @spots = ();
 		if ($fh) {
 			while (<$fh>) {
@@ -67,13 +66,14 @@ LOOP:
 				push @in, [ split '\^' ];
 			}
 			eval $eval;               # do the search on this file
-			return ("Spot search error", $@) if $@;
+			last if $count >= $to;                  # stop after n
+			return ("Log search error", $@) if $@;
 		}
 		$fh = $self->openprev();      # get the next file
 		last if !$fh;
 	}
-
-	return @out;
+	
+	return @out if defined @out;
 }
 
 #

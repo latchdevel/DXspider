@@ -1,3 +1,10 @@
+27Dec98========================================================================
+1. Various detail changes to remove some more warning with -w on
+2. Added DXCron handling - you can do crontabs now.
+3. Added show/program command so you can see where it is loading your .pm files
+from.
+4. Added pc26/27 replies to locally connected cluster's merge (pc25) requests
+5. Added spotters DXCC and original cluster to Spot data files.
 23Dec98========================================================================
 1. Reindented various things
 2. Added missing $main::mycall on the end of outgoing PC11s (!)

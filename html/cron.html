@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Crontab - doing things periodically</title>
+  </head>
+
+	<meta name="Keywords" content="DX Cluster, DXSpider, Spider, Packet Cluster, DXCluster, Pavillion Software, AK1A, AX25, AX.25, WWV, Packet Radio, Amateur Radio, Propagation, DX, DXing, G1TLH, GB7TLH, Dirk Koopman, Mailing list, Linux, RedHat, PERL">
+	<meta name="Description" content="Software and systems for realtime digital communications between amateur radio stations for the provision of information on propagation conditions and stations operating">
+	<meta name="Author" content="Dirk Koopman G1TLH">
+  </head>
+
+  <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#FFFFFF">
+	<FONT COLOR="#606060"> 
+	  <hr>
+	  <h2>Crontab - doing things periodically</h2>
+	  <hr>
+	</font>
+	
+	
+	<address><a href="mailto:djk@tobit.co.uk">Dirk Koopman G1TLH</a></address>
+	<p>
+	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
+	  <!-- hhmts start -->
+Last modified: Mon Dec 28 01:06:43 GMT 1998
+<!-- hhmts end -->
+	<h4>Introduction</h4>
+
+	There are a number of jobs that need to be done periodically. The
+	principle one being starting <a
+	href="connect.html">connections</a> to other clusters if you are
+	not connected. The <tt>crontab</tt> allows you to do this.
+
+	<h4>Location</h4>
+
+	There two locations for the <tt>crontab</tt> files. The first and standard one (which
+	in common with other 'issue' files should not be changed) lives at <b>/spider/cmd/crontab</b>.
+	The sysop changable one lives at <b>/spider/local_cmd/crontab</b>.
+
+	<p>The files will automatically be re-read whenever you change them.
+
+	<h4>The <tt>Crontab</tt> File </h4>
+
+	The <tt>crontab</tt> file defines what is to be done and
+	when. It consists of lines of text created by your favorite editor. Completely blank
+	lines or lines starting with '#' are ignored.
+
+	<p>Each line of a <tt>crontab</tt> file contains six fields
+	each separated with white space. The first five fields are times when the
+	command is to be executed and the last field is the command
+	itself. The time fields consist of:-
+
+	<p><table border=2>
+	  <tr><td>field</td><td>Allowed Values</td></tr>
+	  <tr><td>minute</td><td>0 - 59</td></tr>
+	  <tr><td>hour</td><td>0 - 23</td></tr>
+	  <tr><td>day of month</td><td>1 - 31</td></tr>
+	  <tr><td>month</td><td>1 - 12</td></tr>
+	  <tr><td>day of week</td><td>0 - 6 (0 is Sunday)</td></tr>
+	</table>
+
+	<p>A field may be '*', which means 'any when' for that field.
+
+    <p>Ranges of numbers are allowed.  Ranges are two numbers
+    separated with a hyphen.  The specified range is inclusive.  For
+    example, 8-11 for an <tt>hours</tt> entry specifies execution at hours
+    8, 9, 10 and 11.
+
+    <p>Lists are allowed.  A list is a set of numbers (or ranges)
+    separated by commas.  Examples: <tt>1,2,5,9</tt> or <tt>0-3,5,8-12</tt>.
+
+	<p>Commands are actually small snippets of perl. They can be anything legal within
+	  perl and the context of the DXSpider <tt>cluster.pl</tt> daemon. The normal use will be connecting
+	  to another cluster and a set of routines are specially provided in the context
+	  of the <tt>DXCron</tt> package to make this easy. For example
+	<pre>
+  start_connect('gb7tlh') if !connected('gb7tlh')
+    </pre>
+	will attempt to start a <a href="connect.html">connection</a>  process to GB7TLH if it isn't
+	already locally connected.
+
+	<p>There is absolutely no reason why you could not do something more complicated using information
+	  contained inside the DXSpider daemon, but this will obviously require a more complex line of code. 
+	  You can also write your own functions, include them within the DXSpider system and call them from
+	  the <tt>crontab</tt>
+
+	<p>A full <tt>crontab</tt> file could like like:-
+	<pre>
+  #
+  # This is a sample crontab file 
+  #
+  #
+  # check every 10 minutes to see if gb7tlh is connected and if not
+  # start a connect job going
+
+  0,10,20,30,40,50 * * * * start_connect('gb7tlh') if !connected('gb7tlh')
+
+  # at 03:15 on Sundays start a job called 'analyse.pl' which does something
+  # or other. This starts a new process and runs to completion, be careful
+  # what you do with stdin and stdout as they are the same as those of
+  # cluster.pl 
+
+  15 3 * * 0 spawn('/spider/local/analyse.pl')
+
+  # this is a pointless command which will echo the string shown
+  # on the same terminal as the cluster.pl program after substituting
+  # the values for mycall and version
+ 
+  15,30 * * * spawn("echo $main::mycall is a DXSpider Version $main::version DX Cluster system")
+	</pre>
+
+	It is important remember that these <tt>crontab</tt> routines execute in line with the main
+	cluster code, so if you create a long, slow <tt>crontab</tt> commands, it will impact on the speed
+	and usability of the cluster as a whole.
+
+	<h4>Standard Routines</h4>
+
+	As mentioned earlier, there are a small number of routines that are declared in <tt>DXCron</tt>
+	context. They are there basically to make the starting of connections and external programs easy.
+	They are:-
+
+	<ul>
+		<p><li><b>connected(&lt;callsign>)</b> - returns true if the &lt;callsign> is directly connected
+		to this cluster node.
+		<p><li><b>start_connect(&lt;script-name>)</b> - starts a <a href="connect.html">connection</a>
+		script just as if you had typed in <tt>connect script-name</tt> on the sysop console client.
+		<p><li><b>spawn(&lt;command>)</b> - start a &lt;command> as a new process. This is used to do
+		various batch jobs that you may wish to happen at certain times of the day or week that operate
+		on your machine but don't require access to the real-time internals of the cluster daemon. You can
+		execute just about any command you like, but <em>be warned</em> <b>stdin</b> and <b>stdout</b> are
+		still connected to the same terminal (if any) as the cluster daemon. Any unix command and arguments
+		can used, see <tt>exec</tt> in the <a href="http://www.perl.com">perl</a> documentation.
+	</ul>
+
+	<h4>Caveats</h4>
+	
+	There seems to be an intermittent problem when running
+	(especially?) with the debugger on. Essentially you will
+	experience random crashes with nonsensical error messages. I
+	believe that this is caused by stack tracing trying to work inside
+	<tt>forked</tt> processes.
+
+<!-- Standard Footer!! -->
+	<p>&nbsp;</p>
+	<p>
+	  <FONT COLOR="#606060"><hr></font>
+	<font color="#FF0000" size=-2>
+	  Copyright &copy; 1998 by Dirk Koopman G1TLH. All Rights Reserved<br>
+	</font>
+	<font color="#000000" size=-2>$Id$</font>
+  </body>
+</html>

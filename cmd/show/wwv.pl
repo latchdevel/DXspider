@@ -29,5 +29,8 @@ while ($f = shift @f) {                 # next field
 $to = 10 if !$to;
 
 push @out, "Date        Hour   SFI   A   K Forecast                               Logger";
-push @out,  Geomag::print($from, $to, $main::systime);
+my @in = Geomag::search($from, $to, $main::systime);
+for (@in) {
+	push @out, Geomag::print_item($_);
+}
 return (1, @out);

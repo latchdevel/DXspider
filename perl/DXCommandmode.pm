@@ -477,12 +477,14 @@ sub find_cmd_name {
 		return undef;
 	}
 	
-	if(defined $Cache{$package}->{mtime} && $Cache{$package}->{mtime } <= $mtime) {
+	if(defined $Cache{$package}{mtime} && $Cache{$package}{mtime } <= $mtime) {
 		#we have compiled this subroutine already,
 		#it has not been updated on disk, nothing left to do
 		#print STDERR "already compiled $package->handler\n";
 		;
 	} else {
+		delete_package($package) if defined $Cache{$package}{mtime};
+		
 		my $fh = new FileHandle;
 		if (!open $fh, $filename) {
 			$errstr = "Syserr: can't open '$filename' $!";
@@ -515,7 +517,7 @@ sub find_cmd_name {
 			delete_package($package);
 		} else {
 			#cache it unless we're cleaning out each time
-			$Cache{$package}->{'mtime'} = $mtime;
+			$Cache{$package}{'mtime'} = $mtime;
 		}
 	}
 	

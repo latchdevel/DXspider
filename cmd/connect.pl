@@ -16,7 +16,11 @@ $prog = "$main::root/perl/client.pl" if ! -e $prog;
 my $pid = fork();
 if (defined $pid) {
 	if (!$pid) {
-		# in child
+		# in child, unset warnings, disable debugging and general clean up from us
+		$^W = 0;
+		eval "{ package DB; sub DB {} }";
+		alarm(0);
+		$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 		exec $prog, $call, 'connect';
 	} else {
 		return(1, $self->msg('constart', $call));

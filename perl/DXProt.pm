@@ -177,7 +177,7 @@ sub normal
 			
 			$spotdup{$dupkey} = $d;
 			
-			my $spot = Spot::add($freq, $field[2], $d, $text, $spotter);
+			my $spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
 			
 			# send orf to the users
 			if ($spot && $pcno == 11) {
@@ -381,8 +381,32 @@ sub normal
 			last SWITCH;
 		}
 		
-		if ($pcno == 25) {
-			last SWITCH;
+		if ($pcno == 25) {      # merge request
+			unless ($field[1] eq $main::mycall) {
+				dbg('chan', "merge request to $field[1] from $field[2] ignored");
+				return;
+			}
+
+			Log('DXProt', "Merge request for $field[3] spots and $field[4] WWV from $field[1]");
+			
+			# spots
+			if ($field[3] > 0) {
+				my @in = reverse Spot::search(1, undef, undef, 0, $field[3]-1);
+				my $in;
+				foreach $in (@in) {
+					$self->send(pc26(@{$in}[0..4], $in->[7]));
+				}
+			}
+
+			# wwv
+			if ($field[4] > 0) {
+				my @in = reverse Geomag::search(0, $field[4], time, 1);
+				my $in;
+				foreach $in (@in) {
+					$self->send(pc27(@{$in}));
+				}
+			}
+			return;
 		}
 		
 		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42 || $pcno == 49) { # mail/file handling

@@ -210,6 +210,7 @@ sub state
 	if (@_) {
 		$self->{oldstate} = $self->{state};
 		$self->{state} = shift;
+		$self->{func} = '' unless defined $self->{func};
 		dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
 	}
 	return $self->{state};

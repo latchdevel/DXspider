@@ -20,8 +20,15 @@ if (@f == 0) {
 		next if !$ref;
 		my $lat = $ref->lat;
 		my $long = $ref->long;
+		my $sort = $ref->sort || "";
+		my $name = $ref->name || "";
+		my $qth = $ref->qth || "";
+		my $homenode = $ref->homenode || "";
+		my $qra = $ref->qra || "";
 		my $latlong = DXBearing::lltos($lat, $long) if $lat && $long;
-		push @out, sprintf "%-9s %s %-12.12s %-27.27s %-9s %s %s", $call, $ref->sort, $ref->name, $ref->qth, $ref->homenode, $latlong, $ref->qra;
+		$latlong = "" unless $latlong;
+		
+		push @out, sprintf "%-9s %s %-12.12s %-27.27s %-9s %s %s", $call, $sort, $name, $qth, $homenode, $latlong, $qra;
 	}
 } else {
 	foreach $call (@f) {
@@ -64,7 +71,7 @@ if (@f == 0) {
 			push @out, "Last Connect : $last" if $last;
 			push @out, "QTH          : $qth" if $qth;
 			push @out, "Location     : $latlong ($qra)" if $latlong || $qra ;
-			push @out, sprintf("Heading      : %.0f Deg %.0f Mi. %.0f Km. $from", $bearing, $miles, $dx) if $latlong;
+			push @out, sprintf("Heading      : %.0f Deg %.0f Mi. %.0f Km.", $bearing, $miles, $dx) if $latlong;
 			push @out, "Home Node    : $homenode" if $homenode;
 		} else {
 			push @out, $self->msg('usernf', $call);

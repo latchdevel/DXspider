@@ -87,4 +87,4 @@ $userfn = "$data/users";
 $motd = "$data/motd";
 
 # are we debugging ?
-@debug = ('chan', 'state', 'msg');
+@debug = ('chan', 'state', 'msg', 'cron');

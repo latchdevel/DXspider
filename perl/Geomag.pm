@@ -140,7 +140,7 @@ sub forecast
 #
 # This command outputs a list of n lines starting from line $from to $to
 #
-sub print
+sub search
 {
 	my $from = shift;
 	my $to = shift;
@@ -160,7 +160,7 @@ sub print
 					if ($search) {
 						\$count++;
 						next if \$count < \$from;
-						push \@out, print_item(\$ref);
+						push \@out, \$ref;
 						last if \$count >= \$to;                  # stop after n
 					}
 				}
@@ -169,8 +169,7 @@ sub print
 	$fp->close;                                      # close any open files
 
 	my $fh = $fp->open(@date); 
-LOOP:
-	while ($count < $to) {
+	for ($count = 0; $count < $to; ) {
 		my @in = ();
 		if ($fh) {
 			while (<$fh>) {
@@ -178,7 +177,7 @@ LOOP:
 				push @in, [ split '\^' ] if length > 2;
 			}
 			eval $eval;               # do the search on this file
-			return ("Spot search error", $@) if $@;
+			return ("Geomag search error", $@) if $@;
 			last if $count >= $to;                  # stop after n
 		}
 		$fh = $fp->openprev();      # get the next file

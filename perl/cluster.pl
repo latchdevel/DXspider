@@ -50,7 +50,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.16";				# the version no of the software
+$version = "1.17";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
  
 # handle disconnections
@@ -151,6 +151,7 @@ sub cease
 # the reaper of children
 sub reap
 {
+	$SIG{'CHLD'} = \&reap;
 	my $cpid = wait;
 }
 
@@ -267,6 +268,9 @@ DXMsg::clean_old();
 # read in any cron jobs
 print "reading cron jobs\n";
 DXCron->init();
+
+# print various flags
+#print "useful info - \$^D: $^D \$^W: $^W \$^S: $^S \$^P: $^P\n";
 
 # this, such as it is, is the main loop!
 print "orft we jolly well go ...\n";

@@ -270,6 +270,10 @@ explicitly to 0 will disable paging.
   SET/PAGE 30
   SET/PAGE 0
 
+=== 0^SHOW/PROGRAM^Show the locations of all the included program modules
+Show the name and location where every program module was load from. This
+is useful for checking where you think you have loaded a .pm file from. 
+ 
 === 9^SET/PRIVILEGE <n> <call> [<call..]^Set privilege level on a call
 Set the privilege level on a callsign. The privilege levels that pertain
 to commands are as default:-
