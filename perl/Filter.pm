@@ -216,7 +216,7 @@ sub it
 	}
 
 	# hops are done differently (simply) 
-	my $hops = "H$self->{hops}" if exists $self->{hops};
+	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
 		my $args = join '\',\'', @_;
@@ -224,8 +224,8 @@ sub it
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
 		
-		$hops ||= "H?";
-		dbg("$true $dir: $type/$sort with $asc on '$args' $hops") if isdbg('filter');
+		my $h = $hops || '';
+		dbg("$true $dir: $type/$sort with $asc on '$args' $h") if isdbg('filter');
 	}
 	return ($r, $hops);
 }
