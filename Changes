@@ -1,5 +1,7 @@
 20Oct99=======================================================================
 1. Translated all the subroutines of minimuf into perl as Minimuf.pm
+2. Limited the length of an ANN that is saved for de-duping to $pc12_dup_lth
+(def 72)
 18Oct99=======================================================================
 1. changed help command so that it works correctly with multiple title lines.
 2. added to address to the list of things a message checks to see whether it

@@ -31,14 +31,15 @@ use strict;
 use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
 			%spotdup %wwvdup $last_hour %pings %rcmds
 			%nodehops @baddx $baddxfn $pc12_dup_age
-			%anndup $allowzero);
+			%anndup $allowzero, $pc12_dup_lth);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 $pc11_dup_age = 24*3600;		# the maximum time to keep the spot dup list for
 $pc23_dup_age = 24*3600;		# the maximum time to keep the wwv dup list for
-$pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
+$pc12_dup_age = 12*3600;		# the maximum time to keep the ann dup list for
+$pc12_dup_lth = 72;				# the length of ANN text to save for deduping 
 %spotdup = ();				    # the pc11 and 26 dup hash 
 %wwvdup = ();				    # the pc23 and 27 dup hash
 %anndup = ();                               # the PC12 dup hash
@@ -260,8 +261,8 @@ sub normal
 		}
 		
 		if ($pcno == 12) {		# announces
-		        # announce duplicate checking
-			my $text = uc unpad($field[3]);
+			# announce duplicate checking
+			my $text = substr(uc unpad($field[3]), 0, $pc12_dup_lth);
 			my $dupkey = $field[1].$field[2].$text.$field[4].$field[6];
 			if ($anndup{$dupkey}) {
 				dbg('chan', "Duplicate Announce ignored\n");
