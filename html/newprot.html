@@ -71,9 +71,8 @@ away completely and start from scratch.</p>
     <dd>The callsign of a user to which this sentence is directed. It is a
       &lt;callsign&gt; or empty.</dd>
   <dt>&lt;fromuser&gt;</dt>
-    <dd><p>The callsign of the user from which this sentence originally come
-      came from. It is a &lt;callsign&gt;.</p>
-    </dd>
+    <dd>The callsign of the user from which this sentence originally come
+      came from. It is a &lt;callsign&gt;.</dd>
   <dt>&lt;serial&gt;</dt>
     <dd>The serial number of this sentence. It is a number between 0 and
     9999.</dd>
@@ -141,8 +140,8 @@ digits&gt; of the checksum itself.  The purpose of the checksum is to check
 that no intermediate node has changed the sentence. It is assumed that the
 underlying transport mechanisms will deal with communications errors.</p>
 
-<p>All sentences shall have an &lt;origin&gt;, a &lt;destination&gt; and a
-&lt;serial&gt; number. The &lt;destination&gt; can be empty which implies
+<p>All sentences shall have an &lt;origin&gt;, a &lt;serial&gt; and a
+&lt;destination&gt; number. The &lt;destination&gt; can be empty which implies
 that this sentence is to be broadcast. The &lt;serial&gt; number is a global
 number, which is used for all sentences originating at a node, that is
 incremented modulo 10000, and is used to determine duplicate or out of date
@@ -153,14 +152,19 @@ sentences.</p>
 <p></p>
 
 <blockquote class="code">
-  DX99|&lt;origin&gt;|&lt;destination&gt;|&lt;serial&gt;|...|&lt;cs&gt;</blockquote>
+  DX99|&lt;origin&gt;|&lt;serial&gt;|&lt;destination&gt;|...|&lt;cs&gt;</blockquote>
 
 <p></p>
 
 <p>Some examples:-</p>
 
-<blockquote>
-  <p class="code">DX01|GB7TLH||0|</p>
+<blockquote class="code">
+  DX01|GB7TLH|0|GB7DJK|DXSpider 1.48/53.287|DE450A30|F4<br>
+  DX01|GB7DJK|345|GB7TLH|DXSpider 1.49/60.45|4532DA56|A1<br>
+  DX11|GB7TLH|1||G1TLH|FR0G|164563|14001.1|Easy|53<br>
+  DX10|GB7TLH|2||G1TLH|SYSOP|GB7TLH rebooting|4A<br>
+  DX02|GB7TLH|3|GB7MBC|1|98012349|5D<br>
+  DX02|GB7MBC|9356|GB7TLH|0|GB7DJK/0.76,GB7BAA/1.2|AE<br>
 </blockquote>
 
 <p></p>

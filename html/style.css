@@ -6,7 +6,7 @@
  h2 { font-size: +120%}
  h3 { font-size: +110%}
  hr { color: gray; }
- blockquote code { font-family: courier; color: gray; }
+ blockquote code { font-family: courier; color: blue; }
  code { color: blue; }
  .copy { font-size: small; color: red; }
  .id { font-size: small; } 
