@@ -2618,10 +2618,12 @@
   What happens next depends on whether you have an existing installation
   that you want to update with the latest and greatest or whether you
   just want to see what is there and/or run it on a new machine for
-  testing.  Either way you will want to change directory to a new place,
-  if you want to update an existing installation then I suggest /tmp,
-  otherwise choose a suitable place according to the normal installation
-  instructions.
+  testing.
+
+  If you are installing Spider from CVS then change directory to
+  /home/sysop
+
+  If you are wanting to update Spider then cd to /tmp
 
 
   The next step will create a brand new 'spider' directory in your
@@ -2633,6 +2635,7 @@
 
 
   This command is all on one line.
+
 
 
   Hopefully your screen should show you downloading files.  The -z3
@@ -2667,7 +2670,7 @@
   Remember to recompile the C client (cd /spider/src; make)
 
 
-  At this point the files have been upgraded.  You can (usually) restrt
+  At this point the files have been upgraded.  You can (usually) restart
   the cluster in your own time.  However, if you attempt to use any new
   commands or features expect it to be fatal!  At least your cluster
   will have been restarted then so it will be too late to worry about
@@ -2701,9 +2704,6 @@
   commands that are useful for a sysop.  These are listed below in
   alphabetical order.  The number in brackets following the command name
   is the permissions level needed to use the command.
-
-
-
   1133..11..  aacccceepptt//aannnnoouunnccee ((00))
 
   aacccceepptt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for announce
