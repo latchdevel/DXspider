@@ -57,7 +57,7 @@ if (@bad = BadWords::check($line)) {
 	return (1, ());
 }
 
-return (1, $self->msg('dup')) if AnnTalk::dup($from, $toflag, $line);
+return (1, $self->msg('dup')) if $self->priv < 5 && AnnTalk::dup($from, $toflag, $line);
 Log('ann', $to, $from, $line);
 DXChannel::broadcast_list("To $to de $from ($t): $line\a", 'ann', undef, @locals);
 if ($to ne "LOCAL") {
