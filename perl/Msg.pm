@@ -375,7 +375,11 @@ sub new_server {
 	return $self;
 }
 
-use Socket qw(IPPROTO_TCP TCP_NODELAY);
+eval "use Socket qw(IPPROTO_TCP TCP_NODELAY)";
+if ($@) {
+	sub IPPROTO_TCP {6;}
+	sub TCP_NODELAY {1;};
+}
 
 sub nolinger
 {
@@ -390,7 +394,7 @@ sub nolinger
 
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt linger: $!";
 	setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
-	setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!";
+	setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!" unless $main::iswin;
 	$conn->{sock}->autoflush(0);
 	
 	if (isdbg('sock')) {
