@@ -385,7 +385,7 @@ sub normal
 				dbg('chan', "Dup WWV Spot ignored\n");
 				return;
 			}
-			if ($d > $main::systime + 900) {
+			if ($d > $main::systime + 900 || $field[2] < 0 || $field[2] > 23) {
 				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}

@@ -1,3 +1,6 @@
+07Jan99========================================================================
+1. Fixed Geomag after emacs reformatted it wrong so sh/wwv works again.
+2. Added more range checking in WWV spots (they really are a heap of ...)
 06Jan99========================================================================
 1. Do some range checking for spots and WWV in the future (got a WWV for Oct 
 2034 whhich caused a bit of confusion!)

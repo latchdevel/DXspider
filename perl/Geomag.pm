@@ -155,7 +155,7 @@ sub search
 	$eval = qq(
 			   my \$c;
 			   my \$ref;
-			   for (\$c = \$	#in; \$c >= 0; \$c--) {
+			   for (\$c = \$#in; \$c >= 0; \$c--) {
 					\$ref = \$in[\$c];
 					if ($search) {
 						\$count++;

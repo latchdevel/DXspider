@@ -81,14 +81,16 @@ sub alloc
 	die "trying to create a duplicate channel for $call" if $channels{$call};
 	$self->{call} = $call;
 	$self->{conn} = $conn if defined $conn;	# if this isn't defined then it must be a list
-	$self->{user} = $user if defined $user; 
+	if (defined $user) {
+		$self->{user} = $user;
+		$self->{lang} = $user->lang;
+		$user->new_group() if !$user->group;
+		$self->{group} = $user->group;
+	}
 	$self->{startt} = $self->{t} = time;
 	$self->{state} = 0;
 	$self->{oldstate} = 0;
-	$self->{lang} = $user->{lang} if defined $user;
 	$self->{lang} = $main::lang if !$self->{lang};
-	$user->new_group() if !$user->group;
-	$self->{group} = $user->group;
 	$self->{func} = "";
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
