@@ -31,6 +31,11 @@ sub enqueue
 	unless ($msg =~ /^[ABZ]/) {
 		if ($msg =~ /^E[-\w]+\|([01])/) {
 			$conn->{echo} = $1;
+			if ($1) {
+				$conn->send_raw("\xFF\xFC\x01");
+			} else {
+				$conn->send_raw("\xFF\xFB\x01");
+			}
 		} else {
 			$msg =~ s/^[-\w]+\|//;
 			push (@{$conn->{outqueue}}, $msg . $conn->{lineend});
@@ -76,7 +81,7 @@ sub dequeue
 		} elsif ($conn->{state} eq 'WC') {
 			if (exists $conn->{cmd} && @{$conn->{cmd}}) {
 				$conn->_docmd($msg);
-				unless ($conn->{state} eq 'WC' && @{$conn->{cmd}}) {
+				if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
 					$conn->{state} = 'C';
 					&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 					delete $conn->{cmd};
@@ -87,7 +92,7 @@ sub dequeue
 	}
 	if ($conn->{msg} && $conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}}) {
 		$conn->_docmd($conn->{msg});
-		unless ($conn->{state} eq 'WC' && @{$conn->{cmd}}) {
+		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
 			$conn->{state} = 'C';
 			&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 			delete $conn->{cmd};
@@ -111,6 +116,7 @@ sub new_client {
 		$conn->{state} = 'WL';
 #		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
 #		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
+		$conn->send_raw("\xFF\xFC\x01");
 		_send_file($conn, "$main::data/issue");
 		$conn->send_raw("Login: ");
     } else { 
