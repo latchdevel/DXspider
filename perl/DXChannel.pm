@@ -58,6 +58,7 @@ use vars qw(%channels %valid);
   dx => '0,DX Spots,yesno',
   redirect => '0,Redirect messages to',
   lang => '0,Language',
+  func => '9,Function',
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
@@ -124,6 +125,13 @@ sub is_user
   return $self->{sort} eq 'U';
 }
 
+# is it a connect type
+sub is_connect
+{
+  my $self = shift;
+  return $self->{sort} eq 'C';
+}
+
 # handle out going messages, immediately without waiting for the select to drop
 # this could, in theory, block
 sub send_now
@@ -187,7 +195,7 @@ sub state
   my $self = shift;
   $self->{oldstate} = $self->{state};
   $self->{state} = shift;
-  dbg('state', "$self->{call} channel state $self->{oldstate} -> $self->{state}\n");
+  dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
 }
 
 # disconnect this channel

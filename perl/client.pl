@@ -5,17 +5,36 @@
 # This is a perl module/program that sits on the end of a dxcluster
 # 'protocol' connection and deals with anything that might come along.
 #
-# this program is called by ax25d and gets raw ax25 text on its input
+# this program is called by ax25d or inetd and gets raw ax25 text on its input
+# It can also be launched into the ether by the cluster program itself for outgoing
+# connections
+#
+# Calling syntax is:-
+#
+# client.pl [callsign] [telnet|ax25|local] [[connect] [program name and args ...]]
+#
+# if the callsign isn't given then the sysop callsign in DXVars.pm is assumed
+#
+# if there is no connection type then 'local' is assumed
+#
+# if there is a 'connect' keyword then it will try to launch the following program
+# and any arguments and connect the stdin & stdout of both the program and the 
+# client together.
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
 # $Id$
 # 
 
+
 # search local then perl directories
 BEGIN {
-  unshift @INC, "/spider/perl";   # this IS the right way round!
-  unshift @INC, "/spider/local";
+  # root of directory tree for this system
+  $root = "/spider"; 
+  $root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+
+  unshift @INC, "$root/perl";   # this IS the right way round!
+  unshift @INC, "$root/local";
 }
 
 use Msg;
@@ -47,6 +66,14 @@ sub sig_term
 {
   cease(1);
 }
+
+# terminate a child
+sub sig_chld
+{
+  $SIG{CHLD} = \&sig_chld;
+  $waitedpid = wait;
+}
+
 
 sub setmode
 {
@@ -147,6 +174,13 @@ $call = uc $myalias if !$call;
 $connsort = lc shift @ARGV;
 $connsort = 'local' if !$connsort;
 $mode = ($connsort =~ /^ax/o) ? 1 : 2;
+
+# is this an out going connection?
+if ($ARGV[0] eq "connect") {
+  shift @ARGV;          # lose the keyword
+  
+}
+
 setmode();
 if ($call eq $mycall) {
   print "You cannot connect as your cluster callsign ($mycall)", $nl;
@@ -159,6 +193,7 @@ STDOUT->autoflush(1);
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
 $SIG{'HUP'} = \&sig_term;
+$SIG{'CHLD'} = \&sig_chld;
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
 $conn->send_now("A$call|$connsort");

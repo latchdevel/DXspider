@@ -31,6 +31,8 @@ use DXProt;
 use DXMsg;
 use DXCluster;
 use DXDebug;
+use DXCron;
+use DXConnect;
 use Prefix;
 use Bands;
 
@@ -140,7 +142,13 @@ sub process_inqueue
     $dxchan->start($line);  
   } elsif ($sort eq 'D') {
     die "\$user not defined for $call" if !defined $user;
-	$dxchan->normal($line);  
+	if ($dxchan->{func}) {   
+	  # call an ongoing routine if there is a function specified
+	  &{$dxchan->{func}} ($dxchan, $line);
+	} else {
+	  # normal input
+	  $dxchan->normal($line);
+	}
     disconnect($dxchan) if ($dxchan->{state} eq 'bye');
   } elsif ($sort eq 'Z') {
     disconnect($dxchan);
@@ -189,6 +197,14 @@ DXProt->init();
 # put in a DXCluster node for us here so we can add users and take them away
 DXNode->new(0, $mycall, 0, 1, $DXProt::myprot_version); 
 
+# read in any existing message headers
+print "reading existing message headers\n";
+DXMsg->init();
+
+# read in any cron jobs
+print "reading cron jobs\n";
+DXCron->init();
+
 # this, such as it is, is the main loop!
 print "orft we jolly well go ...\n";
 for (;;) {
@@ -204,6 +220,8 @@ for (;;) {
 	$ztime = &ztime();
     DXCommandmode::process();     # process ongoing command mode stuff
     DXProt::process();              # process ongoing ak1a pcxx stuff
+	DXCron::process();
+	DXConnect::process();
   }
 }
 
