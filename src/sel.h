@@ -8,7 +8,10 @@
  * $Header$
  * 
  * $Log$
- * Revision 1.4  2002-01-27 15:35:33  minima
+ * Revision 1.5  2002-01-27 15:39:59  minima
+ * get rid of warning
+ *
+ * Revision 1.4  2002/01/27 15:35:33  minima
  * try to fix EOF on standard input problems
  *
  * Revision 1.3  2000/07/20 14:16:00  minima
@@ -44,7 +47,7 @@ typedef struct {
 	void *fcb;						   /* any fcb associated with this thing */
 	reft *msgbase;					   /* any messages for this port */
 	int (*handler)();				   /* the handler for this thingy */
-	int (*closehandler)();		/* special close handler */
+	void (*closehandler)();		/* special close handler */
 } sel_t;
 
 extern sel_t *sel;
