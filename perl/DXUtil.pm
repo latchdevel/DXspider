@@ -313,7 +313,7 @@ sub unpad
 # check that a field only has callsign characters in it
 sub is_callsign
 {
-	return $_[0] =~ /^[A-Z0-9\-]+$/;
+	return $_[0] =~ /^(?:[A-Z]{1,2}\d+|\d[A-Z]\d+)[A-Z0-9\/\-]+$/;
 }
 
 # check that a PC protocol field is valid text
