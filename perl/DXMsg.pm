@@ -30,7 +30,7 @@ use Carp;
 
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
-			@badmsg $badmsgfn);
+			@badmsg $badmsgfn $forwardfn @forward);
 
 %work = ();						# outstanding jobs
 @msg = ();						# messages we have
@@ -38,8 +38,10 @@ use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
 $msgdir = "$main::root/msg";	# directory contain the msgs
 $maxage = 30 * 86400;			# the maximum age that a message shall live for if not marked 
 $last_clean = 0;				# last time we did a clean
+@forward = ();                  # msg forward table
 
-$badmsgfn = "$main::data/badmsg.pl";  # list of TO address we wont store
+$badmsgfn = "$msgdir/badmsg.pl";  # list of TO address we wont store
+$forwardfn = "$msgdir/forward.pl";  # the forwarding table
 
 %valid = (
 		  fromnode => '9,From Node',
@@ -104,7 +106,7 @@ sub workclean
 sub process
 {
 	my ($self, $line) = @_;
-	my @f = split /[\^\~]/, $line;
+	my @f = split /\^/, $line;
 	my ($pcno) = $f[0] =~ /^PC(\d\d)/; # just get the number
 	
  SWITCH: {
@@ -634,8 +636,11 @@ sub init
 	my @dir;
 	my $ref;
 
-	do "$badmsgfn" if -e "$badmsgfn";
-	print "$@\n" if $@;
+	# load various control files
+	my @in = load_badmsg();
+	print "@in\n" if @in;
+	@in = load_forward();
+	print "@in\n" if @in;
 
 	# read in the directory
 	opendir($dir, $msgdir) or confess "can't open $msgdir $!";
@@ -644,7 +649,7 @@ sub init
 
 	@msg = ();
 	for (sort @dir) {
-		next unless /^m\d+/o;
+		next unless /^m\d+$/o;
 		
 		$ref = read_msg_header("$msgdir/$_");
 		next unless $ref;
@@ -791,6 +796,24 @@ sub dir
 	return sprintf "%6d%s%s%5d %8.8s %8.8s %-6.6s %5.5s %-30.30s", 
 		$ref->msgno, $ref->read ? '-' : ' ', $ref->private ? 'p' : ' ', $ref->size,
 			$ref->to, $ref->from, cldate($ref->t), ztime($ref->t), $ref->subject;
+}
+
+# load the forward table
+sub load_forward
+{
+	my @out;
+	do "$forwardfn" if -e "$forwardfn";
+	push @out, $@ if $@;
+	return @out;
+}
+
+# load the bad message table
+sub load_badmsg
+{
+	my @out;
+	do "$badmsgfn" if -e "$badmsgfn";
+	push @out, $@ if $@;
+	return @out;
 }
 
 no strict;

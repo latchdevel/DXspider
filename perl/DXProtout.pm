@@ -186,7 +186,7 @@ sub pc29
 {
 	my ($fromnode, $tonode, $stream, $text) = @_;
 	$text =~ s/\^/:/og;			# remove ^
-	$text =~ s/\~/S/og;
+#	$text =~ s/\~/S/og;
 	return "PC29^$fromnode^$tonode^$stream^$text^~";
 }
 
@@ -235,13 +235,7 @@ sub pc35
 # send all the DX clusters I reckon are connected
 sub pc38
 {
-	my @list = DXNode->get_all();
-	my $list;
-	my @nodes;
-  
-	foreach $list (@list) {
-		push @nodes, $list->call;
-	}
+	my @nodes = map { ($_->dxchan && $_->dxchan->isolate) ? () : $_->call } DXNode->get_all();
 	return "PC38^" . join(',', @nodes) . "^~";
 }
 

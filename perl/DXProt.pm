@@ -425,7 +425,7 @@ sub normal
 			return if $pcno == 27;
 
 			# broadcast to the eager users
-			broadcast_users("WWV de $field[7] <$field[2]>:   SFI=$sfi, K=$k, A=$i, $field[6]", 'wwv', $wwv );
+			broadcast_users("WWV de $field[7] <$field[2]>:   SFI=$sfi, A=$k, K=$i, $field[6]", 'wwv', $wwv );
 			last SWITCH;
 		}
 		
