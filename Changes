@@ -1,3 +1,9 @@
+15Jun99=======================================================================
+1. added grepdbg program (so you can search your debug files and get times
+and dates of incidents).
+2. Moved DXVars.pm to DXVars.pm.issue to force new users to cp it to their
+local directory.
+3. added $allowzero to DXProt to allow thru PC19s with zero protocol versions.
 14Jun99=======================================================================
 1. changed IO::File in help and apropos to IO::File
 2. added a check for isa('DXNode') for PC50s

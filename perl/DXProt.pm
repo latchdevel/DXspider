@@ -31,7 +31,7 @@ use strict;
 use vars qw($me $pc11_max_age $pc11_dup_age $pc23_dup_age 
 			%spotdup %wwvdup $last_hour %pings %rcmds 
 			%nodehops @baddx $baddxfn $pc12_dup_age
-			%anndup);
+			%anndup $allowzero);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -385,6 +385,8 @@ sub normal
 				my $call = uc $field[$i+1];
 				my $confmode = $field[$i+2];
 				my $ver = $field[$i+3];
+
+				$ver = 5400 if !$ver && $allowzero;
 				
 				# now check the call over
 				my $node = DXCluster->get_exact($call);

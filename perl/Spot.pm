@@ -105,7 +105,7 @@ sub search
 	my $ref;
 	my $i;
 	my $count;
-	my @today = Julian::unixtoj(time);
+	my @today = Julian::unixtoj(time());
 	my @fromdate;
 	my @todate;
 

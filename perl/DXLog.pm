@@ -31,7 +31,7 @@ require Exporter;
 
 use IO::File;
 use DXVars;
-use DXDebug ();
+# use DXDebug ();
 use DXUtil;
 use Julian;
 use Carp;
@@ -53,7 +53,7 @@ sub new
 	$ref->{'sort'} = $sort;
 		
 	# make sure the directory exists
-	mkdir($ref->{prefix}, 0777) if ! -e $ref->{prefix};
+	mkdir($ref->{prefix}, 0777) unless -e $ref->{prefix};
 	return bless $ref;
 }
 
@@ -83,7 +83,7 @@ sub open
 	$self->{year} = $year;
 	$self->{thing} = $thing;
 	
-	DXDebug::dbg("dxlog", "opening $self->{fn}\n");
+#	DXDebug::dbg("dxlog", "opening $self->{fn}\n");
 	
 	return $self->{fh};
 }

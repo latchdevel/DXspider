@@ -1,0 +1,66 @@
+#!/usr/bin/perl
+#
+# Program to do a grep with dates and times on the debug
+# files
+#
+# dispdbg [-nnn ...] <string>
+#
+# the -nnn is the day you what to look at -1 is yesterday -0 is today
+# and is optional if there is only one argument
+# <string> is the string, a caseless search is done
+#
+#
+
+require 5.004;
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
+use DXVars;
+use DXUtil;
+use DXLog;
+
+use strict;
+
+use vars qw(@list $fp @today $string);
+
+$fp = DXLog::new('debug', 'dat', 'd');
+@today = Julian::unixtoj(time()); 
+
+for my $arg (@ARGV) {
+	if ($arg =~ /^-/) {
+		$arg =~ s/^-//o;
+		push @list, $arg;
+	} else {
+		$string = $arg;
+		last;
+	}
+}
+die "usage: dispdbg [[-nnn] ..] <string>\n" unless  $string;
+
+push @list, "0" unless @list;
+for my $entry (@list) {
+	my @now = Julian::sub(@today, $entry); 
+	my $fh = $fp->open(@now); 
+	my $line;
+	if ($fh) {
+		while (<$fh>) {
+			my $line = $_;
+			chomp $line;
+			if ($line =~ m{\Q$string}io) {
+				my @line =  split '\^', $line;
+				my $t = shift @line;
+				print atime($t), ' ', join('^', @line), "\n"; 
+			}
+		}
+		$fp->close();
+	}
+}
+exit(0);
