@@ -31,8 +31,8 @@ if (!$lon1 && !$lat1) {
 }
 $lat2 = $a->{lat};
 $lon2 = $a->{long};
-($b2, $d) = DXBearing::bdist($lat1, $lon1, $lat2, $lon2);	
-($b1, undef) = DXBearing::bdist($lat2, $lon2, $lat1, $lon1);
+($b1, $d) = DXBearing::bdist($lat1, $lon1, $lat2, $lon2);	
+($b2, undef) = DXBearing::bdist($lat2, $lon2, $lat1, $lon1);
 
 # convert stuff into radians
 $lat1 *= $d2r;

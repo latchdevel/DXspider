@@ -469,9 +469,23 @@ string to see a selection of files in a filearea eg:-
 See also TYPE - to see the contents of a file.
 
 === 0^SHOW/MUF <prefix> [<hours>]^Show the likely propagation to a prefix
-This command allow you to estimate the likelyhood of you contacting
+This command allow you to estimate the likelihood of you contacting
 a station with the prefix you have specified. The output assumes a modest
 power of 20dBW and receiver sensitivity of -123dBm (about 0.15muV/10dB SINAD)
+
+The result predicts the most likely operating frequencies and signal
+levels for high frequency (shortwave) radio propagation paths on
+specified days of the year and hours of the day. It is most useful for
+paths between 250 km and 6000 km, but can be used with reduced accuracy
+for paths shorter or longer than this.
+
+The command uses a routine MINIMUF 3.5 developed by the U.S. Navy and
+used to predict the MUF given the predicted flux, day of the year,
+hour of the day and geographic coordinates of the transmitter and
+receiver. This routine is reasonably accurate for the purposes here,
+with a claimed RMS error of 3.8 MHz, but much smaller and less complex
+than the programs used by major shortwave broadcasting organizations,
+such as the Voice of America.
 
 The command will display some header information detailing its
 assumptions, together with the locations, latitude and longitudes and

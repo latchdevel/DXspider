@@ -139,7 +139,7 @@ sub show_screen
 	if ($spos == @shistory - 1) {
 
 		# if we really are scrolling thru at the end of the history
-		my $line = $shistory[-1];
+		my $line = $shistory[$spos];
 		$top->addstr("\n") if $spos > 0;
 		setattr($line);
 		$top->addstr($line);
@@ -151,7 +151,7 @@ sub show_screen
 		# anywhere else
 		my ($i, $l);
 		my $p = $spos-1;
-		for ($i = 0; $i <= $pagel && $p >= 0; ) {
+		for ($i = 0; $i < $pagel && $p >= 0; ) {
 			$l = measure($shistory[$p]);
 			$i += $l;
 			$p-- if $i < $pagel;
@@ -161,19 +161,24 @@ sub show_screen
 		$top->move(0, 0);
 		$top->attrset(COLOR_PAIR(0)) if $has_colors;
 		$top->clrtobot();
-		for ($i = 0; $i <= $pagel && $p < @shistory; $p++) {
+		for ($i = 0; $i < $pagel && $p < @shistory; $p++) {
 			my $line = $shistory[$p];
 			my $lines = measure($line);
 			last if $i + $lines > $pagel;
-			$top->move($i, 0);
 			setattr($line);
-			$top->addstr($line);
+			$top->addstr($i, 0, $line);
 			$top->attrset(COLOR_PAIR(0)) if $has_colors;
 			$i += $lines;
 		}
 		$spos = $p;
+		$spos = @shistory if $spos > @shistory;
 	}
-	$top->refresh();
+    my $shl = @shistory;
+	my $add = "$call-$spos-$shl";
+    $scr->addstr(LINES()-4, 0, '-' x (COLS() - length $add));
+    $scr->addstr($add);
+	$scr->refresh();
+#	$top->refresh();
 }
 
 # add a line to the end of the top screen
@@ -246,6 +251,10 @@ sub rec_stdin
 			}
 
 			# add it to the monitor window
+			unless ($spos == @shistory) {
+				$spos = @shistory;
+				show_screen();
+			};
 			addtotop($inbuf) if $inbuf;
 		
 			# send it to the cluster
@@ -290,7 +299,7 @@ sub rec_stdin
 					$i += $l;
 					$spos++ if $i <= $pagel;
 				}
-				$spos = @shistory if $spos > @shistory;
+				$spos = @shistory if $spos >= @shistory - 1;
 				show_screen();
 			} else {
 				beep();
@@ -336,7 +345,7 @@ sub rec_stdin
 			}
 		} elsif ($r ge ' ' && $r le '~') {
 			# move the top screen back to the bottom if you type something
-			if ($spos < @shistory - 1) {
+			if ($spos < @shistory) {
 				$spos = @shistory;
 				show_screen();
 			}
