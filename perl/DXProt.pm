@@ -739,7 +739,7 @@ sub handle_16
 
 		
 		my $i;
-		my @rout;
+		my $rout;
 		for ($i = 2; $i < $#_; $i++) {
 			my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
 			next unless $call && $conf && defined $here && is_callsign($call);
@@ -747,40 +747,20 @@ sub handle_16
 			
 			eph_del_regex("^PC17\\^$call\\^$ncall");
 				
-			$conf = 1;
-				
-			my $r = Route::User::get($call);
-			my $flags = Route::here($here)|Route::conf($conf);
-				
-			if ($r) {
-				my $au = $r->addparent($parent);					
-				if ($r->flags != $flags) {
-					$r->flags($flags);
-					$au = $r;
-				}
-				push @rout, $r if $au;
-			} else {
-				push @rout, $parent->add_user($call, $flags);
-			}
-		
-				
-			# add this station to the user database, if required
-			$call =~ s/-\d+$//o;	# remove ssid for users
-			my $user = DXUser->get_current($call);
-			$user = DXUser->new($call) if !$user;
-			$user->homenode($parent->call) if !$user->homenode;
-			$user->node($parent->call);
-			$user->lastin($main::systime) unless DXChannel->get($call);
-			$user->put;
+			my $flags = $here ? 1 : 0;
+			$rout .= ":U$flags$call";
 		}
+		
 
-		if (@rout) {
-			my $thing = Thingy::Rt->new(origin=>$main::mycall);
-			$thing->from_DXProt(t=>'ea', n=>$ncall, u=>join(':',map {"$_->{flags}$_->{call}"} @rout), DXProt=>$line);
+		if ($rout) {
+			my $thing = Thingy::Rt->new(origin=>$main::mycall, user=>$self->{call});
+			$thing->from_DXProt(t=>'eau', d=>"N1$ncall$rout", DXProt=>$line);
 			$thing->queue($self);
 		} else {
 			dbg("PCPROT: No usable users") if isdbg('chanerr');
 		}
+	} else {
+		dbg("PCPROT: no PC19 seen for $ncall" ) if isdbg('chanerr');
 	}
 }
 		
@@ -840,8 +820,8 @@ sub handle_17
 	}
 
 	$uref = Route->new($ucall) unless $uref; # throw away
-	my $thing = Thingy::Rt->new(origin=>$main::mycall);
-	$thing->from_DXProt(t=>'ed', n=>$ncall, u=>"1$ucall", DXProt=>$line);
+	my $thing = Thingy::Rt->new(origin=>$main::mycall, user=>$self->{call});
+	$thing->from_DXProt(t=>'edu', d=>"N1$ncall:U1$ucall", DXProt=>$line);
 	$thing->queue($self);
 }
 		

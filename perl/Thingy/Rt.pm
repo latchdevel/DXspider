@@ -30,7 +30,7 @@ sub gen_Aranea
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
 		my @items;
-	 	$thing->{Aranea} = Aranea::genmsg($thing, 'Rt', @items);
+	 	$thing->{Aranea} = Aranea::genmsg($thing, 'RT', @items);
 	}
  	return $thing->{Aranea};
 }
@@ -74,7 +74,89 @@ sub handle
 	my $thing = shift;
 	my $dxchan = shift;
 
-	$thing->broadcast($dxchan);
+	if ($thing->{t}) {
+		my $sub = "handle_$thing->{t}";
+		if ($thing->can($sub)) {
+			no strict 'refs';
+			$thing = $thing->$sub($dxchan);
+		}
+
+		$thing->broadcast($dxchan) if $thing;
+	}
+}
+
+sub handle_eau
+{
+	my $thing = shift;
+	my $dxchan = shift;
+
+	if (my $d = $thing->{d}) {
+		for (split /:/, $d) {
+			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
+			my $nref;
+			if ($type eq 'U') {
+				unless ($nref) {
+					dbg("Thingy::Rt::ea need a node before $call");
+					return;
+				}
+				add_user($nref, $call, $here);
+				my $h = $dxchan->{call} eq $nref->{call} ? 3 : ($thing->{hops} || 99);
+				RouteDB::update($call, $dxchan->{call}, $h);
+			} elsif ($type eq 'N') {
+				$nref = Route::Node::get($call);
+				unless ($nref) {
+					dbg("Thingy::Rt::ea need a definition for $call");
+					return;
+				}
+				my $h = $dxchan->{call} eq $nref->{call} ? 2 : ($thing->{hops} || 99);
+				RouteDB::update($nref->{call}, $dxchan->{call}, $h);
+			} else {
+				dbg("Thingy::Rt::ea invalid type $type");
+				return;
+			}
+			unless ($nref) {
+				dbg("Thingy::Rt::ea no node");
+				return;
+			}
+		}
+	}
+	return $thing;
+}
+
+sub handle_edu
+{
+	my $thing = shift;
+	my $dxchan = shift;
+
+	if (my $d = $thing->{d}) {
+		for (split /:/, $d) {
+			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
+			my $nref;
+			if ($type eq 'U') {
+				unless ($nref) {
+					dbg("Thingy::Rt::ed need a node before $call");
+					return;
+				}
+				$nref->del_user($call);
+				RouteDB::delete($call, $dxchan->{call});
+			} elsif ($type eq 'N') {
+				$nref = Route::Node::get($call);
+				unless ($nref) {
+					dbg("Thingy::Rt::ed need a definition for $call");
+					return;
+				}
+				RouteDB::update($nref->{call}, $dxchan->{call}, $dxchan->{call} eq $nref->{call} ? 2 : ($thing->{hops} || 99));
+			} else {
+				dbg("Thingy::Rt::ed invalid type $type");
+				return;
+			}
+			unless ($nref) {
+				dbg("Thingy::Rt::ed no node");
+				return;
+			}
+		}
+	}
+	return $thing;
 }
 
 sub in_filter
@@ -84,8 +166,8 @@ sub in_filter
 	
 	# global route filtering on INPUT
 	if ($dxchan->{inroutefilter}) {
-		my $ref = Route::Node::get($thing->{origin});
-		my ($filter, $hops) = $dxchan->{inroutefilter}->it($ref);
+		my $r = Route::Node::get($thing->{origin});
+		my ($filter, $hops) = $dxchan->{inroutefilter}->it($dxchan->{call}, $dxchan->{dxcc}, $dxchan->{itu}, $dxchan->{cq}, $r->{call}, $r->{dxcc}, $r->{itu}, $r->{cq}, $dxchan->{state}, $r->{state});
 		unless ($filter) {
 			dbg("PCPROT: Rejected by input route filter") if isdbg('chanerr');
 			return;
@@ -101,8 +183,8 @@ sub out_filter
 	
 	# global route filtering on OUTPUT
 	if ($dxchan->{routefilter}) {
-		my $ref = Route::Node::get($thing->{origin});
-		my ($filter, $hops) = $dxchan->{routefilter}->it($ref);
+		my $r = Route::Node::get($thing->{origin});
+		my ($filter, $hops) = $dxchan->{routefilter}->it($dxchan->{call}, $dxchan->{dxcc}, $dxchan->{itu}, $dxchan->{cq}, $r->{call}, $r->{dxcc}, $r->{itu}, $r->{cq}, $dxchan->{state}, $r->{state});		
 		unless ($filter) {
 			dbg("PCPROT: Rejected by output route filter") if isdbg('chanerr');
 			return;
@@ -112,5 +194,30 @@ sub out_filter
 		return;
 	}
 	return 1;
+}
+
+sub add_user
+{
+	my $node = shift;
+	my $user = shift;
+	my $flag = shift;
+	
+	$node->add_user($user, $flag);
+	my $ur = upd_user_rec($user, $node);
+	$ur->put;
+}
+
+sub upd_user_rec
+{
+	my $call = shift;
+	my $parentcall = shift;
+	
+	# add this station to the user database, if required
+	$call =~ s/-\d+$//o;	# remove ssid for users
+	my $user = DXUser->get_current($call);
+	$user = DXUser->new($call) if !$user;
+	$user->homenode($parentcall) if !$user->homenode;
+	$user->node($parentcall);
+	$user->lastin($main::systime) unless DXChannel->get($call);
 }
 1;

@@ -63,7 +63,7 @@ sub send
 
 	# do output filtering
 	if ($thing->can('out_filter')) {
-		return unless $thing->out_filter;
+		return unless $thing->out_filter($dxchan);
 	}
 
 	# generate the line which may (or not) be cached
@@ -112,6 +112,11 @@ sub process
 			if ($thing->can('in_filter')) {
 				next unless $thing->in_filter($dxchan);
 			}
+
+			# remember any useful routes
+			RouteDB::update($thing->{origin}, $dxchan->{call}, $thing->{hopsaway});
+			RouteDB::update($thing->{user}, $dxchan->{call}, $thing->{hopsaway}) if exists $thing->{user};
+		
 			$thing->handle($dxchan);
 		}
 	}

@@ -141,9 +141,11 @@ sub is_empty
 # These can be called in various ways:-
 #
 # Route::here or $ref->here returns 1 or 0 depending on value of the here flag
-# Route::here(1) returns 2 (the bit value of the here flag)
+# Route::here(1) returns 1 (the bit value of the here flag)
 # $ref->here(1) or $ref->here(0) sets the here flag
 #
+# these are now redundant really as we are not interested in conferences
+# and here is back to being '1'.
 
 sub here
 {
@@ -151,7 +153,7 @@ sub here
 	my $r = shift;
 	return $self ? 2 : 0 unless ref $self;
 	return ($self->{flags} & 2) ? 1 : 0 unless defined $r;
-	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
+	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
 	return $r ? 1 : 0;
 }
 
@@ -159,10 +161,10 @@ sub conf
 {
 	my $self = shift;
 	my $r = shift;
-	return $self ? 1 : 0 unless ref $self;
+	return $self ? 2 : 0 unless ref $self;
 	return ($self->{flags} & 1) ? 1 : 0 unless defined $r;
-	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
-	return $r ? 1 : 0;
+	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
+	return $r ? 2 : 0;
 }
 
 sub parents

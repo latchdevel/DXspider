@@ -25,6 +25,7 @@ use Script;
 use Verify;
 use DXDupe;
 use Thingy;
+use RouteDB;
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -325,7 +326,7 @@ sub input
 		$thing->{touser} = $tus if $tus;
 		$thing->{user} = $user if $user;
 		$thing->{hopsaway} = $hop; 
-		
+
 		for (split(/,/, $rdata)) {
 			if (/=/) {
 				my ($k,$v) = split /=/, $_, 2;
