@@ -56,7 +56,29 @@ sub load
 # check the text against the badwords list
 sub check
 {
-	return grep { $badword->in($_) } split(/\b/, lc shift);
+	my $s = uc shift;
+	
+	for (split(/\s+/, $s)) {
+		s/[^\w]//g;
+		return $_ if $badword->in($_);
+		s/\'?S$//;
+		return $_ if $badword->in($_);
+	}
+	
+	# look for a few of the common ones with spaces and stuff
+	if ($s =~ /F[\s\W]*U[\s\W]*C[\s\W]*K/) {
+		return "FUCK";
+	} elsif ($s =~ /C[\s\W]*U[\s\W]*N[\s\W]*T/) {
+		return "CUNT";
+	} elsif ($s =~ /W[\s\W]*A[\s\W]*N[\s\W]*K/) {
+		return "WANK";
+	} elsif ($s =~ /C[\s\W]*[0O][\s\W]*C[\s\W]*K/) {
+		return "COCK";
+	} elsif ($s =~ /S[\s\W]*H[\s\W]*[I1][\s\W]*T/) {
+		return "SHIT";
+	}
+	
+	return undef;
 }
 
 1;
