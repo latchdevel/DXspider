@@ -61,6 +61,7 @@ if ($want{agw}) {
 }
 
 if (!$main::is_win && ($want{proc} || $want{all})) {
+	$ENV{COLUMNS} = 250;
 	my $secs;
 	my $f = new IO::File "ps aux |";
 #	dbg("$f");
@@ -69,7 +70,7 @@ if (!$main::is_win && ($want{proc} || $want{all})) {
 			chomp;
 			my $l = $_;
 #			dbg($l);
-			next unless $l =~ /cluster\.p/;
+			next unless $l =~ m{/spider/perl/cluster\.pl$};
 			my @f = split /\s+/, $l;
 #			dbg("$f[9]");
 			my ($m, $s) = split /:/, $f[9];
