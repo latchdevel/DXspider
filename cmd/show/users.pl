@@ -35,7 +35,7 @@ if (@list) {
 	my @val = sort $node->users;
 	foreach $call (@val) {
 		if ($i >= 5) {
-			push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+			push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
 			@l = ();
 			$i = 0;
 		}
@@ -50,7 +50,7 @@ if (@list) {
 		$i++;
 	}
 	push @l, "" while $i++ < 5;
-	push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+	push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
 }
 
 return (1, @out);
