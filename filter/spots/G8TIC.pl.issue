@@ -31,13 +31,10 @@
 #     a - an alphanumeric regex
 #     d - the default rule
 #
-#   if hops is left out or zero then the existing hop count will be used as normal
-#
-# The spot data (in this case '15') is the used as the hop count
-# if this is missing then the normal default applies
+#  The hop count IS required on all lines. It won't work without!
 #
 
 $in = [
-	[ 1, 0, 'r', [ 50000.0, 3000000.0 ] ],   # no hops required
-	[ 0, 0, 'd' ],                           # don't want anything else
+	[ 1, 0, 'r', [ 50000.0, 3000000.0 ], 1 ],   # hops _ARE_ required
+	[ 0, 0, 'd', 0, 1 ],                        # don't want anything else
 ];

@@ -17,15 +17,19 @@ return (1, $self->msg('e5')) if $self->priv < 9;
 
 foreach $call (@args) {
 	$call = uc $call;
-	if ($ref = DXUser->get_current($call)) {
-		$ref->lockout(1);
-		$ref->put();
-		push @out, $self->msg("lockout", $call);
+	unless ($self->remotecmd) {
+		if ($ref = DXUser->get_current($call)) {
+			$ref->lockout(1);
+			$ref->put();
+			push @out, $self->msg("lockout", $call);
+		} else {
+			$ref = DXUser->new($call);
+			$ref->lockout(1);
+			$ref->put();
+			push @out, $self->msg("lockoutc", $call);
+		}
 	} else {
-		$ref = DXUser->new($call);
-		$ref->lockout(1);
-		$ref->put();
-		push @out, $self->msg("lockoutc", $call);
+		push @out, $self->msg('sorry');
 	}
 }
 return (1, @out);

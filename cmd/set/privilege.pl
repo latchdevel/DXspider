@@ -23,19 +23,23 @@ if ($priv < 0 || $priv > 9) {
 
 foreach $call (@args) {
 	$call = uc $call;
-	if ($ref = DXChannel->get($call)) {
-		$ref->priv($priv);
-		$ref->user->priv($priv);
-		$ref->user->put();
-	}
-	if (!$ref && ($user = DXUser->get($call))) {
-		$user->priv($priv);
-		$user->put();
-	}
-	if ($ref || $user) {
-		push @out, $self->msg('priv', $call);
+	unless ($self->remotecmd) {
+		if ($ref = DXChannel->get($call)) {
+			$ref->priv($priv);
+			$ref->user->priv($priv);
+			$ref->user->put();
+		}
+		if (!$ref && ($user = DXUser->get($call))) {
+			$user->priv($priv);
+			$user->put();
+		}
+		if ($ref || $user) {
+			push @out, $self->msg('priv', $call);
+		} else {
+			push @out, $self->msg('e3', "Set Privilege", $call);
+		}
 	} else {
-		push @out, $self->msg('e3', "Set Privilege", $call);
+		push @out, $self->msg('sorry');
 	}
 }
 return (1, @out);

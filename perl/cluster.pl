@@ -110,7 +110,7 @@ sub rec
 		if ($dxchan = DXChannel->get($call)) {
 			disconnect($dxchan);
 			sleep(1);
-	        }
+		}
 		
 		# is there one already connected elsewhere in the cluster (and not a cluster)
 		my $user = DXUser->get($call);
@@ -213,10 +213,20 @@ sub process_inqueue
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
 	my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
+
+	# the above regexp must work
+	return unless ($sort && $call && $line);
+	
+	# translate any crappy characters into hex characters 
+	if ($line =~ /[\x00-\x06\x08\x0a-\x1f\x7f-\xff]/o) {
+		$line =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
+		dbg('chan', "<- $sort $call **CRAP**: $line");
+		return;
+	}
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 	dbg('chan', "<- $sort $call $line\n") unless $sort eq 'D';
-	
+
 	# handle A records
 	my $user = $dxchan->user;
 	if ($sort eq 'A' || $sort eq 'O') {

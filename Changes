@@ -1,3 +1,13 @@
+08May99=======================================================================
+1. Added a bit more checking to the rcmd thing to make more sure that this
+rcmd isn't coming from an imposter. Not possible to prevent everything 
+ofcourse, just make it a bit harder.
+2. altered set/lockout and set/privilege so that they can't executed remotely.
+3. Added some code to reject rubbish (with invalid binary characters) protocol
+or user lines as input.
+4. prevented PC command being executed remotely :-)
+05May99=======================================================================
+1. change the connection overlap from an abort to a disconnect.
 02May99=======================================================================
 1. Added the mechanism for doing user spot filtering for spots in the cluster 
 (no user control just yet - but sysops can do it).

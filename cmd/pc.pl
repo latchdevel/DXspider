@@ -9,7 +9,7 @@ my $self = shift;
 my $line = shift;
 my @f = split /\s+/, $line;
 
-return (1, $self->msg('e5')) if $self->priv < 8;
+return (1, $self->msg('e5')) if $self->priv < 8 || $self->remotecmd;
 
 my $call = uc shift @f;
 my $dxchan = DXChannel->get($call);

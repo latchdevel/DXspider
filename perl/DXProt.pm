@@ -475,8 +475,9 @@ sub normal
 		if ($pcno == 34 || $pcno == 36) { # remote commands (incoming)
 			if ($field[1] eq $main::mycall) {
 				my $ref = DXUser->get_current($field[2]);
+				my $cref = DXCluster->get($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[3]);
-				unless ($field[3] =~ /rcmd/i) {    # not allowed to relay RCMDS!
+				unless ($field[3] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
 					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
 						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 						my @in = (DXCommandmode::run_cmd($self, $field[3]));
@@ -486,9 +487,11 @@ sub normal
 							Log('rcmd', 'out', $field[2], $_);
 						}
 						delete $self->{remotecmd};
+					} else {
+						$self->send(pc35($main::mycall, $field[2], "$main::mycall:sorry...!"));
 					}
 				} else {
-					$self->send(pc35($main::mycall, $field[2], "$main::mycall:Tut tut tut...!"));
+					$self->send(pc35($main::mycall, $field[2], "$main::mycall:your attempt is logged, Tut tut tut...!"));
 				}
 			} else {
 				route($field[1], $line);
