@@ -375,7 +375,13 @@ understanding or simply convenience. I have one set frequently:-
   reject/spots 1 freq/cw
   reject/spots 2 freq 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
 
-This is an exmaple where you would use the line number (1 and 2 in this case).
+What this does is to ignore all HF CW spots (being a class B I can't read
+any CW and couldn't possibly be interested in HF :-) and also rejects any
+spots on VHF which don't either originate or spot someone in Europe.
+
+This is an exmaple where you would use the line number (1 and 2 in this case),
+if you leave the digit out, the system assumes '1'. Digits '0'-'9' are 
+available.
 
 You can leave the word 'and' out if you want, it is implied. You can use any 
 number of brackets to make the 'expression' as you want it. There are things
