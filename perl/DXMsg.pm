@@ -125,7 +125,8 @@ sub alloc
 	$self->{'read'} = shift;
 	$self->{rrreq} = shift;
 	$self->{delete} = shift;
-	$self->{deletetime} = shift || $self->{delete} ? 0 : ($self->{t} + $maxage);
+	$self->{deletetime} = shift || ($self->{t} + $maxage);
+	$self->{keep} = shift;
 	$self->{gotit} = [];
 #	$self->{lastt} = $main::systime;
 	$self->{lines} = [];
@@ -159,7 +160,7 @@ sub process
 		# actual remove all the 'deleted' messages in one hit.
 		# this has to be delayed until here otherwise it only does one at 
 		# a time because @msg is rewritten everytime del_msg is called.
-		my @del = grep {!$_->{tonode} && $_->{delete} && $_->{deletetime} < $main::systime} @msg;
+		my @del = grep {!$_->{tonode} && $_->{delete} && !$_->{keep} && $_->{deletetime} < $main::systime} @msg;
 		for (@del) {
 			$_->del_msg;
 		}
@@ -521,8 +522,9 @@ sub store
 			my $rr = $ref->{rrreq} ? '1' : '0';
 			my $priv = $ref->{private} ? '1': '0';
 			my $del = $ref->{delete} ? '1' : '0';
-			my $delt = $ref->{deletetime} || $ref->{t} + $maxage;
-			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr^$del^$delt\n";
+			my $delt = $ref->{deletetime} || '0';
+			my $keep = $ref->{keep} || '0';
+			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr^$del^$delt^$keep\n";
 			print $fh "=== ", join('^', @{$ref->{gotit}}), "\n";
 			my $line;
 			$ref->{size} = 0;
@@ -569,6 +571,9 @@ sub mark_delete
 {
 	my $ref = shift;
 	my $t = shift;
+
+	return if $ref->{keep};
+	
 	$t = $main::systime + $residencetime unless defined $t;
 	
 	$ref->{delete}++;
@@ -580,8 +585,8 @@ sub unmark_delete
 {
 	my $ref = shift;
 	my $t = shift;
-	delete $ref->{delete};
-	delete $ref->{deletetime};
+	$ref->{delete} = 0;
+	$ref->{deletetime} = 0;
 }
 
 # clean out old messages from the message queue
@@ -1142,7 +1147,9 @@ sub dir
 {
 	my $ref = shift;
 	my $flag = $ref->{private} && $ref->{read} ? '-' : ' ';
-	if ($ref->{delete}) {
+	if ($ref->{keep}) {
+		$flag = '!';
+	} elsif ($ref->{delete}) {
 		$flag = $ref->{deletetime} > $main::systime ? 'D' : 'E'; 
 	}
 	return sprintf("%6d%s%s%5d %8.8s %8.8s %-6.6s %5.5s %-30.30s", 

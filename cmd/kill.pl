@@ -66,14 +66,18 @@ while (@f) {
 }
 
 foreach $ref ( @refs) {
-	Log('msg', "Message $ref->{msgno} from $ref->{from} to $ref->{to} deleted by $call");
-	if ($full) {
-		DXChannel::broadcast_nodes(DXProt::pc49($ref->{from}, $ref->{subject}), $main::me);
+	if ($ref->keep) {
+		push @out, $self->msg('m18', $ref->msgno);
+		next;
 	}
 	my $tonode = $ref->tonode;
 	$ref->stop_msg($tonode) if $tonode;
 	$ref->mark_delete($expunge ? 0 : undef);
 	push @out, $self->msg('m12', $ref->msgno);
+	Log('msg', "Message $ref->{msgno} from $ref->{from} to $ref->{to} deleted by $call");
+	if ($full) {
+		DXChannel::broadcast_nodes(DXProt::pc49($ref->{from}, $ref->{subject}), $main::me);
+	}
 }
 
 return (1, @out);
