@@ -323,6 +323,11 @@ sub dup
 
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
 	$call = substr($call, 0, 12) if length $call > 12;
+
+	# quick test now for simple case
+	my $sdupkey = "X$freq|$call|$d|$by";
+	return 1 if DXDupe::find($sdupkey);
+	
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
@@ -336,7 +341,7 @@ sub dup
 		return 1 if DXDupe::find($ldupkey) || DXDupe::find($sdupkey);
 	}
 	my $ldupkey = "X$freq|$call|$d|\L$text";
-	my $sdupkey = "X$freq|$call|$d|$by";
+	$sdupkey = "X$freq|$call|$d|$by";
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 	DXDupe::add($sdupkey, $main::systime+$dupage);
 	return 0;
