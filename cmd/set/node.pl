@@ -28,6 +28,7 @@ foreach $call (@args) {
 		$user = DXUser->new($call) if $create;
 		if ($user) {
 			$user->sort('A');
+			$user->homenode($call);
 			$user->close();
 			push @out, $self->msg($create ? 'nodec' : 'node', $call);
 		} else {

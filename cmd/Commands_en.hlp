@@ -296,6 +296,8 @@ out.
   MSG NOKEep <msgno>        - unset the keep flag
   MSG SUbject <msgno> <new> - change the subject to <new>
   MSG WAittime <msgno>      - remove any waitting time for this message
+  MSG NOREad <msgno>        - mark message as unread
+  MSG REad <msgno>          - mark message as read
   MSG QUeue                 - queue any outstanding bulletins
   MSG QUeue 1               - queue any outstanding private messages
 

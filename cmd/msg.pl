@@ -59,6 +59,16 @@ if ($cmd =~ /^to/i) {
 	$old = $ref->private ? 'P' : 'B';
 	$new = 'B';
 	$ref->private(0);
+} elsif ($cmd =~ /^re/i) {
+    $m = 'Msg Type';
+	$old = $ref->read ? 'Read' : 'Unread';
+	$new = 'Read';
+	$ref->read(1);
+} elsif ($cmd =~ /^(nore|unre)/i) {
+    $m = 'Msg Type';
+	$old = $ref->read ? 'Read' : 'Unread';
+	$new = 'Unread';
+	$ref->read(0);
 } elsif ($cmd =~ /^rr/i) {
     $m = 'RR Req';
 	$old = $ref->rrreq ? 'RR Req' : 'No RR Req';
@@ -88,7 +98,9 @@ if ($cmd =~ /^to/i) {
 	$old = cldatetime($ref->waitt) || 'None';
 	$new = 'None'; 
     $ref->waitt(0);
-} 
+} else {
+	return (1, $self->msg('e15', $cmd));
+}
 
 # store changes and return	
 $ref->store( [ $ref->read_msg_body() ] );

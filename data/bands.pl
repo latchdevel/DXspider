@@ -10,6 +10,8 @@
 # There MUST be at last a 'band' entry
 #
 # It is up to YOU to make sure that it makes sense!
+#
+# ALL the labels MUST BE in lower case.
 # 
 
 
@@ -17,7 +19,7 @@
   '73khz' => bless ( { band => [71, 75],
                       }, 'Bands'),
 		      
-  '136Khz' => bless ( { band => [135, 138],
+  '136khz' => bless ( { band => [135, 138],
                       }, 'Bands'),
 
   '160m' => bless( { band => [ 1800, 2000 ], 
@@ -52,7 +54,7 @@
                     data => [ 14070, 14098, 14101, 14111 ],
                   }, 'Bands'),
 
-  '18m' => bless( { band => [ 18068, 18168 ], 
+  '17m' => bless( { band => [ 18068, 18168 ], 
                     cw => [ 18068, 18100 ], 
                     ssb => [ 18111, 18168 ], 
                     data => [ 18101, 18108], 

@@ -32,7 +32,7 @@ while ($f = shift @list) {		# next field
 	}
 	if (lc $f eq 'on' && $list[0]) { # is it freq range?
 		#    print "yup freq\n";
-		my @r = split '/', $list[0];
+		my @r = split '/', lc $list[0];
 			# print "r0: $r[0] r1: $r[1]\n";
 		my @fr = Bands::get_freq($r[0], $r[1]);
 		if (@fr) {			# yup, get rid of extranous param

@@ -1,3 +1,15 @@
+10Dec99=======================================================================
+1. allow msgs to marked as read or unread
+02Dec99=======================================================================
+1. DX command doesn't recognise '6M' as '6m' in SH/DX ON 6M.
+2. set/node now sets the homenode as the callsign.
+3. changed the label for the 18Mhz band from '18m' to '17m' in the bands 
+table. 
+01Dec99=======================================================================
+1. started the callbot which lives at n2tly.dxcluster.net 9000.
+2. added www.qrz.com
+3. added www.buck.com
+4. added k4ute at no4j.com
 28Nov99=======================================================================
 1. fixed all the stupid errors introduced in 1.36 confusing DXUser->get with
 DXCluster->get_exact.

@@ -54,6 +54,7 @@ package DXM;
 				e12 => 'Need a node callsign',
 				e13 => '$_[0] is not a node',
 				e14 => 'First argument must be numeric and > 0',
+				e15 => 'invalid qualifier \"$_[0]\"',
 				
 				emaile1 => 'Please enter your email address, set/email <your e-mail address>',
 				emaila => 'Your E-Mail Address is now \"$_[0]\"',
