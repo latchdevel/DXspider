@@ -533,7 +533,7 @@ sub handle_11
 	
 	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $_[6], $_[7]);
 
-	my $thing = Thingy::Dx->new(origin=>$main::mycall, group=>'DX');
+	my $thing = Thingy::Dx->new(origin=>$main::mycall);
 	$thing->from_DXProt(DXProt=>$line,spotdata=>\@spot);
 	$thing->queue($self);
 
@@ -775,8 +775,8 @@ sub handle_16
 		}
 
 		if (@rout) {
-			my $thing = Thingy::Dx->new(origin=>$main::mycall);
-			$thing->from_DXProt(DXProt=>$line,originref=>$parent);
+			my $thing = Thingy::Rt->new(origin=>$main::mycall);
+			$thing->from_DXProt(t=>'ea', n=>$ncall, u=>join(':',map {"$_->{flags}$_->{call}"} @rout), DXProt=>$line);
 			$thing->queue($self);
 		} else {
 			dbg("PCPROT: No usable users") if isdbg('chanerr');
@@ -834,21 +834,15 @@ sub handle_17
 		return;
 	}
 
-	# input filter if required and then remove user if present
-	if ($parent) {
-#		return unless $self->in_filter_route($parent);	
-		$parent->del_user($uref) if $uref;
-	} else {
-		$parent = Route->new($ncall);  # throw away
-	}
-
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
 		return;
 	}
 
 	$uref = Route->new($ucall) unless $uref; # throw away
-	$self->route_pc17($origin, $line, $parent, $uref);
+	my $thing = Thingy::Rt->new(origin=>$main::mycall);
+	$thing->from_DXProt(t=>'ed', n=>$ncall, u=>"1$ucall", DXProt=>$line);
+	$thing->queue($self);
 }
 		
 # link request
