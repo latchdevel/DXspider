@@ -141,10 +141,10 @@ sub add_user
 	my $uref = Route::User::get($ucall);
 	my @out;
 	if ($uref) {
-		@out = $uref->addparent($self);
+		push @out, $uref->addparent($self);
 	} else {
 		$uref = Route::User->new($ucall, $self->{call}, @_);
-		@out = $uref;
+		push @out, $uref;
 	}
 	$self->_adduser($uref);
 	$self->{usercount} = scalar @{$self->{users}};
