@@ -1,5 +1,9 @@
 28Aug00=======================================================================
 1. changes DXChannel::get_all_ak1a to get_all_nodes.
+2. ignore PC21s coming in on the interface with that callsign (ie nodes 
+trying to disconnect themselves).
+3. output correct PC29 on blank lines and escape ^ characters differently 
+(and transparently for spider nodes).
 26Aug00=======================================================================
 1. make blank origins on messages the node call.
 2. added new version of FAQ from Ian G0VGS

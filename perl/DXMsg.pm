@@ -212,6 +212,7 @@ sub process
 		if ($pcno == 29) {		# incoming text
 			my $ref = $work{"$f[2]$f[3]"};
 			if ($ref) {
+				$f[4] =~ s/\%5E/^/g;
 				push @{$ref->{lines}}, $f[4];
 				$ref->{count}++;
 				if ($ref->{count} >= $ref->{linesreq}) {

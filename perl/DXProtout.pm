@@ -35,10 +35,8 @@ sub pc10
 		$user2 = ' ';
 		$user1 = $to;
 	}
-#	my $user2 = $via ? $to : ' ';
-#	my $user1 = $via ? $via : $to;
 	$text = unpad($text);
-	$text = ' ' if !$text;
+	$text = ' ' unless $text && length $text > 0;
 	return "PC10^$from^$user1^$text^*^$user2^$main::mycall^~";  
 }
 
@@ -193,8 +191,8 @@ sub pc28
 sub pc29 
 {
 	my ($fromnode, $tonode, $stream, $text) = @_;
-	$text =~ s/\^/:/og;			# remove ^
-#	$text =~ s/\~/S/og;
+	$text = ' ' unless $text && length $text > 0;
+	$text =~ s/\^/%5E/og;			# remove ^
 	return "PC29^$fromnode^$tonode^$stream^$text^~";
 }
 

@@ -239,7 +239,7 @@ sub start
 
 	# send initialisation string
 	unless ($self->{outbound}) {
-		$self->send(pc38()) if DXNode->get_all();
+#		$self->send(pc38()) if DXNode->get_all();
 		$self->send(pc18());
 		$self->{lastping} = $main::systime;
 	} else {
@@ -617,12 +617,16 @@ sub normal
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
+					if ($call eq $self->{call}) {
+						dbg('chan', "LOOP: Trying to disconnect myself with PC21");
+						return;
+					} 
 					if ($node->dxchan != $self) {
 						dbg('chan', "LOOP: $call come in on wrong channel");
 						return;
 					}
 					my $dxchan;
-					if (($dxchan = DXChannel->get($call)) && $dxchan != $self) {
+					if ($dxchan = DXChannel->get($call)) {
 						dbg('chan', "LOOP: $call connected locally");
 						return;
 					}
