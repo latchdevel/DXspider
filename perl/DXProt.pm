@@ -389,7 +389,7 @@ sub normal
 				# now check the call over
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
-				        my $dxchan;
+					my $dxchan;
 					if (($dxchan = DXChannel->get($call)) && $dxchan != $self) {
 						dbg('chan', "LOOP: $call connected locally");
 					}
