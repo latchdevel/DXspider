@@ -238,7 +238,7 @@ FINISH:
 	while (@lines){
 		$msg = shift @lines;
 		$msg =~ s/\%([2-9A-F][0-9A-F])/chr(hex($1))/eg;
-		$msg =~ s/[\x00-\x08\x0a-\x1f\x9b\x8e]/./g;         # immutable CSI sequence + control characters
+		$msg =~ s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 		&{$conn->{rcvd_notification_proc}}($conn, $msg, $!);
 		$! = 0;
 	}

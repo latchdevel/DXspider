@@ -4,6 +4,8 @@ where digits are the 'wrong' way round.
 2. made default max days to search for spots 3 months.
 3. added hex decodes for those pesky 'national' characters that aren't really
 in grepdbg and watchdbg.
+4. decide that we are using Latin-1 and therefore characters 0x80-0x9f are
+not allowed.
 03Dec00=======================================================================
 1. change grepdbg and watchdbg so that you can see a number of lines before
 the condx that you are looking for so:-
