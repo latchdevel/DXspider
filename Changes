@@ -1,3 +1,7 @@
+04Jul99=======================================================================
+1. removed silly 'new message has arrived' to connected nodes if message is
+2. added a ! command to the console.pl program; works like the bash shell.
+addressed to the node call.
 01Jul99=======================================================================
 1. Altered priv to 5 for connect.pl to match disconnect for nodes
 29Jun99=======================================================================

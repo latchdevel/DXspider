@@ -163,6 +163,21 @@ sub rec_stdin
 			
 			# save the lines
 			if ($inbuf) {
+				# check for a pling and do a search back for a command
+				if ($inbuf =~ /^!/o) {
+					my $i;
+					$inbuf =~ s/^!//o;
+					for ($i = $#khistory; $i >= 0; $i--) {
+						if ($khistory[$i] =~ /^$inbuf/) {
+							$inbuf = $khistory[$i];
+							last;
+						}
+					}
+					if ($i < 0) {
+						beep();
+						return;
+					}
+				}
 				push @khistory, $inbuf if $inbuf;
 				shift @khistory if @khistory > $maxkhist;
 				$khistpos = @khistory;

@@ -275,7 +275,7 @@ sub process
 						$ref->store($ref->{lines});
 						add_dir($ref);
 						my $dxchan = DXChannel->get($ref->{to});
-						$dxchan->send($dxchan->msg('m9')) if $dxchan;
+						$dxchan->send($dxchan->msg('m9')) if $dxchan && $dxchan->is_user;
 						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
 					}
 				}
