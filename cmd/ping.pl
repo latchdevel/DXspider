@@ -23,7 +23,7 @@ return (1, $self->msg('pinge1')) if $call eq $main::mycall;
 my $noderef = DXCluster->get_exact($call);
 $noderef = DXChannel->get($call) unless $noderef;
 
-return (1, $self->msg('e7', $call)) if !$noderef || !$noderef->pcversion;
+return (1, $self->msg('e7', $call)) unless $noderef;
 
 # ping it
 DXProt::addping($self->call, $call);
