@@ -1192,8 +1192,8 @@ You can show what levels you are logging with SHOW/DEBUG
 === 0^SET/DX^Allow DX messages to come out on your terminal
 === 0^UNSET/DX^Stop DX messages coming out on your terminal
 
-=== 0^SET/DXGRID^Allow Grid Squares on the end of DX announcements
-=== 0^UNSET/DXGRID^Stop Grid Squares on the end of DX announcements
+=== 0^SET/DXGRID^Allow QRA Grid Squares on the end of DX announcements
+=== 0^UNSET/DXGRID^Stop QRA Grid Squares on the end of DX announcements
 A standard feature which is enabled in version 1.43 and above is 
 that if the spotter's grid square is known it is output on the end
 of a DX announcement (there is just enough room). Some user programs
@@ -1397,8 +1397,8 @@ password for a user.
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.
 
-=== 9^SET/SYS_QRA <locator>^Set your cluster QRA locator
-=== 0^SET/QRA <locator>^Set your QRA locator
+=== 9^SET/SYS_QRA <locator>^Set your cluster QRA Grid locator
+=== 0^SET/QRA <locator>^Set your QRA Grid locator
 Tell the system what your QRA (or Maidenhead) locator is. If you have not
 done a SET/LOCATION then your latitude and longitude will be set roughly
 correctly (assuming your locator is correct ;-). For example:-
@@ -1704,8 +1704,8 @@ See also SHOW/DXCC
 Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from. 
 
-=== 0^SHOW/QRA <locator> [<locator>]^Show distance between locators
-=== 0^SHOW/QRA <lat> <long>^Convert latitude and longitude to a locator
+=== 0^SHOW/QRA <locator> [<locator>]^Show distance between QRA Grid locators
+=== 0^SHOW/QRA <lat> <long>^Convert lat/long to a QRA Grid locator
 This is a multipurpose command that allows you either to calculate the
 distance and bearing between two locators or (if only one locator is
 given on the command line) the distance and beraing from your station
