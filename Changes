@@ -1,3 +1,7 @@
+26Nov01=======================================================================
+1. Make changes to the installation manual to show making the client before
+actually trying to use it!  Thanks to oz1lqh.  Also add a line for SuSE
+distros on useradd.
 22Nov01=======================================================================
 1. finally fix DELETE = ^H = Backspace in console.pl
 21Nov01=======================================================================

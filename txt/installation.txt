@@ -1,7 +1,7 @@
-  The DXSpider Installation Manual v1.48
+  The DXSpider Installation Manual v1.49
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (ianmaude@btinternet.com)
-  Version 1.48, September 2001 revision 1.0
+  November 2001 revision 1.0
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -15,8 +15,8 @@
      1.2 Preparation
      1.3 Installing the software
      1.4 Setting callsigns etc
-     1.5 Starting up for the first time
-     1.6 The Client program
+     1.5 The client program
+     1.6 Starting up for the first time
 
   2. Linux quick installation guide
 
@@ -202,6 +202,16 @@
 
 
 
+  For SUSE distributions, the command would be ..
+
+
+
+       # useradd -m sysop
+
+
+
+
+
   Now set a password for the user ...
 
 
@@ -252,9 +262,9 @@
 
 
 
-       # chown -R sysop.spider spider
-       # find . -type d -exec chmod 2775 {} \;
-       # find . -type f -exec chmod 775 {} \;
+  # chown -R sysop.spider spider
+  # find . -type d -exec chmod 2775 {} \;
+  # find . -type f -exec chmod 775 {} \;
 
 
 
@@ -328,6 +338,9 @@
        $ cd ../perl
 
 
+
+
+
   Now type the following command which creates the basic user file with
   you as the sysop.
 
@@ -339,7 +352,19 @@
 
 
 
-  1.5.  Starting up for the first time
+  1.5.  The client program
+
+  In earlier versions of Spider, all the processes were Perl scripts.
+  This was fine but with a lot of users your computer memory would soon
+  be used up.  To combat this a new client was written in "C".  This
+  client only works for incoming connects at the moment.  Before you can
+  use it though it has to be "made".  CD to /spider/src and type make.
+  You should see the output on your screen and hopefully now have a
+  small C program called client.  Leave it in this directory.
+
+
+
+  1.6.  Starting up for the first time
 
   We can now bring spider up for the first time and see if all is well
   or not!  It should look something like this ...
@@ -369,9 +394,6 @@
        $ ./client
 
 
-
-
-
   This should log you into the cluster as the sysop under the alias
   callsign we set earlier.  In this case the callsign is G0VGS.  The
   cluster callsign is set in the DXVars.pm file in /spider/local.  In
@@ -394,18 +416,10 @@
        shutdown
 
 
+
+
+
   and both the cluster and the client should return to Linux prompts.
-
-
-  1.6.  The Client program
-
-  In earlier versions of Spider, all the processes were Perl scripts.
-  This was fine but with a lot of users your computer memory would soon
-  be used up.  To combat this a new client was written in "C".  This
-  client only works for incoming connects at the moment.  Before you can
-  use it though it has to be "made".  CD to /spider/src and type make.
-  You should see the output on your screen and hopefully now have a
-  small C program called client.  Leave it in this directory.
 
 
 
@@ -445,6 +459,7 @@
 
   o  cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
 
+
   o  cd to /spider/local and edit DXVars to set your details (sysop)
 
   o  cd ../perl (sysop)
@@ -458,7 +473,6 @@
 
 
   o  Login as root
-
 
   o  Enter the correct line in ax25d.conf (root)
 
@@ -512,7 +526,6 @@
   ..
 
 
-
        default  * * * * * *  - sysop /spider/src/client client %s ax25
 
 
@@ -525,9 +538,8 @@
 
 
 
-
-  GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
-  default  * * * * * *  - sysop /spider/src/client client %u ax25
+       GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
+       default  * * * * * *  - sysop /spider/src/client client %u ax25
 
 
 
@@ -580,9 +592,6 @@
 
        ./client login telnet
 
-
-
-
   You should get a login prompt and on issuing a callsign, you will be
   given access to the cluster.  Note, you will not get a password login.
   There seems no good reason for a password prompt to be given so it is
@@ -590,6 +599,7 @@
 
 
   Assuming all is well, then try a telnet from your linux console ....
+
 
 
        telnet localhost 8000
@@ -644,10 +654,14 @@
 
 
 
-       @listen = (
-           ["gb7baa.dxcluster.net", 8000],
-           ["44.131.16.2", 6300],
-       );
+
+
+
+
+  @listen = (
+      ["gb7baa.dxcluster.net", 8000],
+      ["44.131.16.2", 6300],
+  );
 
 
 
@@ -710,10 +724,10 @@
 
 
 
-       set/node        (AK1A type)
-       set/spider
-       set/dxnet
-       set/clx
+  set/node        (AK1A type)
+  set/spider
+  set/dxnet
+  set/clx
 
 
 
@@ -721,7 +735,6 @@
 
   For now, we will assume that the cluster we are going to connect to is
   an AK1A type node.
-
 
 
   Start up the cluster as you did before and login as the sysop with
@@ -777,9 +790,6 @@
        unset/node gb7baa
 
 
-
-
-
   3.6.  Connection scripts
 
   Because DXSpider operates under Linux, connections can be made using
@@ -787,7 +797,6 @@
   possible examples.  Connect scripts live in the /spider/connect
   directory and are simple ascii files.  Writing a script for
   connections is therefore relatively simple.
-
 
 
   The connect scripts consist of lines which start with the following
@@ -847,21 +856,12 @@
   There are many possible ways to configure the script but here are
   three examples, one for a NETRom/AX25 connect, one for AGW engines and
   one for tcp/ip.
-
-
-
-
-
-
-
-
-
-  timeout 60
-  abort (Busy|Sorry|Fail)
-  # don't forget to chmod 4775 netrom_call!
-  connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-  # you can leave this out if you call the script 'gb7dxm'
-  client gb7dxm ax25
+       timeout 60
+       abort (Busy|Sorry|Fail)
+       # don't forget to chmod 4775 netrom_call!
+       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+       # you can leave this out if you call the script 'gb7dxm'
+       client gb7dxm ax25
 
 
 

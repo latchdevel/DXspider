@@ -4,10 +4,10 @@
 
 <!-- Title information -->
 
-<title>The DXSpider Installation Manual v1.48</title> 
+<title>The DXSpider Installation Manual v1.49</title> 
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
 Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.48, September 2001 revision 1.0</date>
+<date>November 2001 revision 1.0</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -122,9 +122,15 @@ the name <em>sysop</em>.  You can call it anything you wish.  Depending
 on your security requirements you may wish to use an existing user, 
 however this is your own choice.
 
-<P>
 <tscreen><verb>
 # adduser -m sysop
+</verb></tscreen>
+
+<P>
+For SUSE distributions, the command would be ..
+
+<tscreen><verb>
+# useradd -m sysop
 </verb></tscreen>
 
 <P>
@@ -243,6 +249,18 @@ the sysop.
 $ ./create_sysop.pl
 </verb></tscreen>
 
+<sect1>The client program
+
+<P>
+In earlier versions of Spider, all the processes were Perl scripts.  This
+was fine but with a lot of users your computer memory would soon be used up.
+To combat this a new client was written in "C".  This client only works for
+<em>incoming</em> connects at the moment.  Before you can use it though it
+has to be "made".  CD to /spider/src and type <em>make</em>.  You
+should see the output on your screen and hopefully now have a small C program
+called <em>client</em>.  Leave it in this directory.
+
+
 <sect1>Starting up for the first time
 
 <P>
@@ -290,17 +308,6 @@ shutdown
 
 <P>
 and both the cluster and the client should return to Linux prompts.
-
-<sect1>The Client program
-
-<P>
-In earlier versions of Spider, all the processes were Perl scripts.  This 
-was fine but with a lot of users your computer memory would soon be used up.  
-To combat this a new client was written in "C".  This client only works for
-<em>incoming</em> connects at the moment.  Before you can use it though it 
-has to be "made".  CD to /spider/src and type <em>make</em>.  You 
-should see the output on your screen and hopefully now have a small C program 
-called <em>client</em>.  Leave it in this directory.
 
 
 <sect>Linux quick installation guide
