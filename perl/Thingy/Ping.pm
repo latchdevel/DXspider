@@ -101,15 +101,15 @@ sub handle
 			my $ref = $ping{$thing->{id}} if exists $thing->{id};
 			$ref ||= $thing->find;
 			if ($ref) {
-				my $t = tv_interval($thing->{t}, [ gettimeofday ]);
-				if (my $dxc = DXChannel::get($thing->{user} || $thing->{origin})) {
+				my $t = tv_interval($ref->{t}, [ gettimeofday ]);
+				if (my $dxc = DXChannel::get($ref->{user} || $ref->{origin})) {
 					
-					my $tochan = DXChannel::get($thing->{touser} || $thing->{group});
+					my $tochan = DXChannel::get($ref->{touser} || $ref->{group});
 					
 					if ($dxc->is_user) {
 						my $s = sprintf "%.2f", $t; 
 						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-						$dxc->send($dxc->msg('pingi', ($thing->{touser} || $thing->{group}), $s, $ave))
+						$dxc->send($dxc->msg('pingi', $ref->{user}, $s, $ave))
 					} elsif ($dxc->is_node) {
 						if ($tochan ) {
 							my $nopings = $tochan->user->nopings || $DXProt::obscount;

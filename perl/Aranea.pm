@@ -272,12 +272,14 @@ sub formathead
 	my $hop = shift;
 	my $user = shift;
 	my $group = shift;
+	my $touser = shift;
 	
 	my $s = "$mycall,$dts,$hop";
 	$s .= ",$user" if $user;
 	if ($group) {
 		$s .= "," unless $user;
 		$s .= ",$group" if $group;
+		$s .= ",$touser" if $touser;
 	} 
 	return $s;
 }
@@ -287,9 +289,10 @@ sub genheader
 	my $mycall = shift;
 	my $to = shift;
 	my $from = shift;
+	my $touser = shift;
 	
 	my $date = ((($dayno << 1) | $ntpflag) << 18) |  ($main::systime % 86400);
-	my $r = formathead($mycall, sprintf('%6X%04X', $date, $seqno), 0, $from, $to);
+	my $r = formathead($mycall, sprintf('%6X%04X', $date, $seqno), 0, $from, $to, $touser);
 	$seqno++;
 	$seqno = 0 if $seqno > 0x0ffff;
 	return $r;
@@ -342,9 +345,11 @@ sub genmsg
 	my ($name) = uc ref $thing;
 	$name =~ /::(\w+)$/;
 	$name = $1;
+	my $group = $thing->{group};
 	my $head = genheader($thing->{origin}, 
-						 ($thing->{group} || $thing->{touser} || $thing->{tonode}),
-						 ($thing->{user} || $thing->{fromuser} || $thing->{fromnode})
+						 $group,
+						 ($thing->{user} || $thing->{fromuser} || $thing->{fromnode}),
+						 $thing->{touser}
 						);
 	 
 	my $data = uc $name . ',';
@@ -371,7 +376,7 @@ sub input
 	my ($head, $data) = split /\|/, $line, 2;
 	return unless $head && $data;
 
-	my ($origin, $dts, $hop, $user, $group) = split /,/, $head;
+	my ($origin, $dts, $hop, $user, $group, $tocall) = split /,/, $head;
 	return if DXDupe::check("Ara,$origin,$dts", $dupeage);
 	my $err;
 	$err .= "incomplete header," unless $origin && $dts && defined $hop;
@@ -380,11 +385,10 @@ sub input
 	# validate it further
 	$err .= "missing cmd or data," unless $cmd && $data;
 	$err .= "invalid command ($cmd)," unless $cmd =~ /^[A-Z][A-Z0-9]*$/;
-	my ($gp, $tus) = split /:/, $group, 2 if $group;
 
 	$err .= "from me," if $origin eq $main::mycall;
-	$err .= "invalid group ($gp)," if $gp && $gp !~ /^[-A-Z0-9]{2,}$/;
-	$err .= "invalid tocall ($tus)," if $tus && !is_callsign($tus);
+	$err .= "invalid group ($group)," if $group && $group !~ /^[-A-Z0-9]{2,}$/;
+	$err .= "invalid tocall ($tocall)," if $tocall && !is_callsign($tocall);
 	$err .= "invalid fromcall ($user)," if $user && !is_callsign($user);
 
 	my $class = 'Thingy::' . ucfirst(lc $cmd);
@@ -407,8 +411,8 @@ sub input
 		# store useful data
 		$thing->{origin} = $origin;
 		$thing->{time} = $t;
-		$thing->{group} = $gp if $gp;
-		$thing->{touser} = $tus if $tus;
+		$thing->{group} = $group if $group;
+		$thing->{touser} = $tocall if $tocall;
 		$thing->{user} = $user if $user;
 		$thing->{hopsaway} = $hop; 
 
