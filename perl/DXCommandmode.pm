@@ -425,6 +425,9 @@ sub disconnect
 {
 	my $self = shift;
 	my $call = $self->call;
+
+	return if $self->{disconnecting}++;
+
 	delete $self->{senddbg};
 
 	my $uref = Route::User::get($call);
