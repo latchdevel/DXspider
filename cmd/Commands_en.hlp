@@ -1410,7 +1410,7 @@ of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. The Spotter's CQ is on the RHS of the 
 time, the Spotted's CQ is on the LHS.
 
-Conflicts with: SHOW/DXGRID, SHOW/DXITU, SHOW/USSTATE
+Conflicts with: SET/DXGRID, SET/DXITU, SHOW/USSTATE
 
 Do a STAT/USER to see which flags you have set if you are confused.  
 
@@ -1421,7 +1421,7 @@ of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. The Spotter's ITU is on the RHS of the 
 time, the Spotted's ITU is on the LHS.
 
-Conflicts with: SHOW/DXGRID, SHOW/DXCQ, SHOW/USSTATE
+Conflicts with: SET/DXGRID, SET/DXCQ, SHOW/USSTATE
 
 Do a STAT/USER to see which flags you have set if you are confused.  
 
@@ -1433,7 +1433,7 @@ of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. You can use this command to reset (or set)
 this feature.
 
-Conflicts with: SHOW/DXCQ, SHOW/DXITU
+Conflicts with: SET/DXCQ, SET/DXITU
 
 Do a STAT/USER to see which flags you have set if you are confused.  
 
@@ -1707,7 +1707,7 @@ information from SET/DXGRID.
 Some user programs cannot cope with this. You can use this command 
 to reset (or set) this feature.
 
-Conflicts with: SHOW/DXCQ, SHOW/DXITU
+Conflicts with: SET/DXCQ, SET/DXITU
 
 Do a STAT/USER to see which flags you have set if you are confused.  
 
