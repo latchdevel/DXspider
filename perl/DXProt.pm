@@ -336,7 +336,7 @@ sub normal
 			}
 			
 			# if this is a 'bad spotter' user then ignore it
-			if ($badspotter->in($field[7])) {
+			if ($badspotter->in($field[6])) {
 				dbg('chan', "PCPROT: Bad Spotter, dropped");
 				return;
 			}
