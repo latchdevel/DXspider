@@ -16,7 +16,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs shellregex readfilestr writefilestr
-             print_all_fields cltounix iscallsign unpad
+             print_all_fields cltounix iscallsign unpad is_callsign
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -289,7 +289,20 @@ sub unpad
 	return $s;
 }
 
+# check that a field only has callsign characters in it
+sub is_callsign
+{
+	return $_[0] !~ /[^A-Z0-9\-]/;
+}
 
+# check that a PC protocol field is valid text
+sub is_pctext
+{
+	return $_[0] !~ /[^\x20-\xA8\xE0-\xEF]/;
+}
 
-
-
+# check that a PC prot flag is set correctly
+sub is_pcflag
+{
+	return $_[0] !~ /^[^01\*]$/;
+}

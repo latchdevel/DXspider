@@ -338,6 +338,7 @@ sub pc85
 	my($fromnode, $tonode, $call, $msg) = @_;
 	return "PC85^$tonode^$fromnode^$call^$msg^~";
 }
+
 1;
 __END__
 

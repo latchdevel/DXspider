@@ -1426,11 +1426,6 @@ sub disconnect
 	$self->SUPER::disconnect;
 }
 
-# check that a field only has callsign characters in it
-sub is_callsign
-{
-	return $_[0] !~ /[^A-Z0-9\-]/
-}
 
 # 
 # send a talk message to this thingy

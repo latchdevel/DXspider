@@ -2,6 +2,7 @@
 1. added a couple of changes for perl 5.6.0
 2. removed del_dup from DXUser for earlier versions of DB '1.85' (ie real ones
 not 2.x versions in 1.85 compatibility mode).
+3. Started the OOing of the PC protocol stuff.
 15Aug00=======================================================================
 1. added 1.25 of the admin manual html
 14Aug00=======================================================================
