@@ -285,7 +285,8 @@ sub install
 	my $remove = shift;
 	my $name = uc $self->{name};
 	my $sort = $self->{sort};
-	my $in = "in" if $name =~ s/^IN_//;
+	my $in = "";
+	$in = "in" if $name =~ s/^IN_//;
 	$name =~ s/.PL$//;
 		
 	my $dxchan = DXChannel->get($name);
