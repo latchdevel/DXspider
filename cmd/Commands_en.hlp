@@ -246,6 +246,10 @@ You can potentially connect several nodes in this way.
 === 9^UNSET/ISOLATE^Stop Isolation of a node from the rest of the network
 Remove isolation from a node - SET/ISOLATE
 
+=== 0^SET/LANGUAGE <lang>^Set the language you want to use
+You can select the language that you want the cluster to use. Currently
+the languages available are en (english) and nl (dutch).
+
 === 0^SET/LOCATION <lat & long>^Set your latitude and longitude
 === 9^SET/SYS_LOCATION <lat & long>^Set your cluster latitude and longitude
 In order to get accurate headings and such like you must tell the system

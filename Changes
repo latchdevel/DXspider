@@ -1,3 +1,6 @@
+25Feb99========================================================================
+1. added NL language stuff.
+2. added set/language
 21Feb99========================================================================
 1. Allowed multiple 'on <freq>' for show/dx
 2. Made sure the 'on 20m/ssb' thing worked (also 'on hf/cw').

@@ -28,6 +28,10 @@ sub msg
 	my $m = shift;
 	my $ref = $msgs{$lang};
 	my $s = $ref->{$m} if $ref;
+	if (!$s && $lang ne 'en') {
+		$ref = $msgs{'en'};
+		$s = $ref->{$m};
+	}
 	return "unknown message '$m' in lang '$lang'" if !defined $s;
 	my $ans = eval qq{ "$s" };
 	confess $@ if $@;
