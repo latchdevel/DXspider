@@ -2102,7 +2102,7 @@
   repository.  You do this with the command below ...
 
 
-  cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/dxspider login
 
 
 
@@ -2230,7 +2230,7 @@
   In the top line for CVSROOT, enter:
 
 
-       anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+       anonymous@cvs.sourceforge.net:/cvsroot/dxspider login
 
 
 

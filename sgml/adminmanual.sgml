@@ -1647,7 +1647,7 @@ First login as the user <em>sysop</em>.  Next you need to connect to the CVS
 repository.  You do this with the command below ...
 
 <verb>
-cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/dxspider login
 </verb>
 
 You will get a password prompt.  Simply hit return here and your machine should
@@ -1757,7 +1757,7 @@ should get you:
 
 In the top line for CVSROOT, enter:
 <tscreen><verb>
-anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+anonymous@cvs.sourceforge.net:/cvsroot/dxspider login
 </verb></tscreen>
 
 and select
