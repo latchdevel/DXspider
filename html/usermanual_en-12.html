@@ -267,7 +267,68 @@ of 9 lines.</P>
 <P><CODE><B>bye</B> Exit from the cluster</CODE></P>
 
 <P>This will disconnect you from the cluster</P>
-<H2><A NAME="ss12.11">12.11</A> <A HREF="usermanual_en.html#toc12.11">clear/announce [1|all]</A>
+<H2><A NAME="ss12.11">12.11</A> <A HREF="usermanual_en.html#toc12.11">chat &lt;group&gt; &lt;text&gt;</A>
+</H2>
+
+<P><CODE><B>chat &lt;group&gt; &lt;text&gt;</B> Chat or Conference to a group</CODE></P>
+
+<P>It is now possible to JOIN a group and have network wide conferencing to that
+group. DXSpider does not (and probably will not) implement the AK1A 
+conference mode as this seems very limiting, is hardly used and doesn't seem
+to work too well anyway.</P>
+<P>This system uses the existing ANN system and is compatible with both other
+DXSpider nodes and AK1A clusters (they use ANN/&lt;group&gt;). </P>
+<P>You can be a member of as many "groups" as you want. To join a group type:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  JOIN FOC    (where FOC is the group name)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>To leave a group type:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  LEAVE FOC
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>You can see which groups you are in by typing:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  STAT/USER
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>and you can see whether your mate is in the group, if he connects to the
+same node as you, by typing:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  STAT/USER g1tlh
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>To send a message to a group type:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  CHAT FOC hello everyone
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>or</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  CH #9000 hello I am back
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>See also JOIN, LEAVE, SHOW/CHAT</P>
+<H2><A NAME="ss12.12">12.12</A> <A HREF="usermanual_en.html#toc12.12">clear/announce [1|all]</A>
 </H2>
 
 <P><CODE><B>clear/announce [1|all]</B> Clear a announce filter line</CODE></P>
@@ -275,7 +336,7 @@ of 9 lines.</P>
 <P>This command allows you to clear (remove) a line in a annouce filter or to 
 remove the whole filter.</P>
 <P>see CLEAR/SPOTS for a more detailed explanation.</P>
-<H2><A NAME="ss12.12">12.12</A> <A HREF="usermanual_en.html#toc12.12">clear/route [1|all]</A>
+<H2><A NAME="ss12.13">12.13</A> <A HREF="usermanual_en.html#toc12.13">clear/route [1|all]</A>
 </H2>
 
 <P><CODE><B>clear/route [1|all]</B> Clear a route filter line</CODE></P>
@@ -283,7 +344,7 @@ remove the whole filter.</P>
 <P>This command allows you to clear (remove) a line in a route filter or to 
 remove the whole filter.</P>
 <P>see CLEAR/SPOTS for a more detailed explanation.</P>
-<H2><A NAME="ss12.13">12.13</A> <A HREF="usermanual_en.html#toc12.13">clear/spots [0-9|all]</A>
+<H2><A NAME="ss12.14">12.14</A> <A HREF="usermanual_en.html#toc12.14">clear/spots [0-9|all]</A>
 </H2>
 
 <P><CODE><B>clear/spots [0-9|all]</B> Clear a spot filter line</CODE></P>
@@ -324,7 +385,7 @@ remove the whole filter.</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>the filter will be completely removed.</P>
-<H2><A NAME="ss12.14">12.14</A> <A HREF="usermanual_en.html#toc12.14">clear/wcy [1|all]</A>
+<H2><A NAME="ss12.15">12.15</A> <A HREF="usermanual_en.html#toc12.15">clear/wcy [1|all]</A>
 </H2>
 
 <P><CODE><B>clear/wcy [1|all]</B> Clear a WCY filter line</CODE></P>
@@ -332,7 +393,7 @@ remove the whole filter.</P>
 <P>This command allows you to clear (remove) a line in a WCY filter or to 
 remove the whole filter.</P>
 <P>see CLEAR/SPOTS for a more detailed explanation.</P>
-<H2><A NAME="ss12.15">12.15</A> <A HREF="usermanual_en.html#toc12.15">clear/wwv [1|all]</A>
+<H2><A NAME="ss12.16">12.16</A> <A HREF="usermanual_en.html#toc12.16">clear/wwv [1|all]</A>
 </H2>
 
 <P><CODE><B>clear/wwv [1|all]</B> Clear a WWV filter line</CODE></P>
@@ -340,14 +401,14 @@ remove the whole filter.</P>
 <P>This command allows you to clear (remove) a line in a WWV filter or to 
 remove the whole filter.</P>
 <P>see CLEAR/SPOTS for a more detailed explanation.</P>
-<H2><A NAME="ss12.16">12.16</A> <A HREF="usermanual_en.html#toc12.16">dbavail</A>
+<H2><A NAME="ss12.17">12.17</A> <A HREF="usermanual_en.html#toc12.17">dbavail</A>
 </H2>
 
 <P><CODE><B>dbavail</B> Show a list of all the Databases in the system</CODE></P>
 
 <P>Title says it all really, this command lists all the databases defined
 in the system. It is also aliased to SHOW/COMMAND.</P>
-<H2><A NAME="ss12.17">12.17</A> <A HREF="usermanual_en.html#toc12.17">dbshow &lt;dbname&gt; &lt;key&gt;</A>
+<H2><A NAME="ss12.18">12.18</A> <A HREF="usermanual_en.html#toc12.18">dbshow &lt;dbname&gt; &lt;key&gt;</A>
 </H2>
 
 <P><CODE><B>dbshow &lt;dbname&gt; &lt;key&gt;</B> Display an entry, if it exists, in a database</CODE></P>
@@ -372,13 +433,13 @@ SHOW/COMMAND to find out) you can do the same thing with:</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.18">12.18</A> <A HREF="usermanual_en.html#toc12.18">directory</A>
+<H2><A NAME="ss12.19">12.19</A> <A HREF="usermanual_en.html#toc12.19">directory</A>
 </H2>
 
 <P><CODE><B>directory</B> List messages </CODE></P>
 
 
-<H2><A NAME="ss12.19">12.19</A> <A HREF="usermanual_en.html#toc12.19">directory &lt;from&gt;-&lt;to&gt;</A>
+<H2><A NAME="ss12.20">12.20</A> <A HREF="usermanual_en.html#toc12.20">directory &lt;from&gt;-&lt;to&gt;</A>
 </H2>
 
 <P><CODE><B>directory &lt;from&gt;-&lt;to&gt;</B> List messages &lt;from&gt; message &lt;to&gt; message </CODE></P>
@@ -414,49 +475,49 @@ or
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.20">12.20</A> <A HREF="usermanual_en.html#toc12.20">directory &lt;nn&gt;</A>
+<H2><A NAME="ss12.21">12.21</A> <A HREF="usermanual_en.html#toc12.21">directory &lt;nn&gt;</A>
 </H2>
 
 <P><CODE><B>directory &lt;nn&gt;</B> List last &lt;nn&gt; messages</CODE></P>
 
 
-<H2><A NAME="ss12.21">12.21</A> <A HREF="usermanual_en.html#toc12.21">directory all</A>
+<H2><A NAME="ss12.22">12.22</A> <A HREF="usermanual_en.html#toc12.22">directory all</A>
 </H2>
 
 <P><CODE><B>directory all</B> List all messages</CODE></P>
 
 
-<H2><A NAME="ss12.22">12.22</A> <A HREF="usermanual_en.html#toc12.22">directory from &lt;call&gt;</A>
+<H2><A NAME="ss12.23">12.23</A> <A HREF="usermanual_en.html#toc12.23">directory from &lt;call&gt;</A>
 </H2>
 
 <P><CODE><B>directory from &lt;call&gt;</B> List all messages from &lt;call&gt;</CODE></P>
 
 
-<H2><A NAME="ss12.23">12.23</A> <A HREF="usermanual_en.html#toc12.23">directory new</A>
+<H2><A NAME="ss12.24">12.24</A> <A HREF="usermanual_en.html#toc12.24">directory new</A>
 </H2>
 
 <P><CODE><B>directory new</B> List all new messages</CODE></P>
 
 
-<H2><A NAME="ss12.24">12.24</A> <A HREF="usermanual_en.html#toc12.24">directory own</A>
+<H2><A NAME="ss12.25">12.25</A> <A HREF="usermanual_en.html#toc12.25">directory own</A>
 </H2>
 
 <P><CODE><B>directory own</B> List your own messages</CODE></P>
 
 
-<H2><A NAME="ss12.25">12.25</A> <A HREF="usermanual_en.html#toc12.25">directory subject &lt;string&gt;</A>
+<H2><A NAME="ss12.26">12.26</A> <A HREF="usermanual_en.html#toc12.26">directory subject &lt;string&gt;</A>
 </H2>
 
 <P><CODE><B>directory subject &lt;string&gt;</B> List all messages with &lt;string&gt; in subject</CODE></P>
 
 
-<H2><A NAME="ss12.26">12.26</A> <A HREF="usermanual_en.html#toc12.26">directory to &lt;call&gt;</A>
+<H2><A NAME="ss12.27">12.27</A> <A HREF="usermanual_en.html#toc12.27">directory to &lt;call&gt;</A>
 </H2>
 
 <P><CODE><B>directory to &lt;call&gt;</B> List all messages to &lt;call&gt;</CODE></P>
 
 
-<H2><A NAME="ss12.27">12.27</A> <A HREF="usermanual_en.html#toc12.27">dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt;</A>
+<H2><A NAME="ss12.28">12.28</A> <A HREF="usermanual_en.html#toc12.28">dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt;</A>
 </H2>
 
 <P><CODE><B>dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt;</B> Send a DX spot</CODE></P>
@@ -491,7 +552,7 @@ of the command and they will be added to the spot.</P>
 </P>
 <P>The &lt;freq&gt; is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.</P>
-<H2><A NAME="ss12.28">12.28</A> <A HREF="usermanual_en.html#toc12.28">echo &lt;line&gt;</A>
+<H2><A NAME="ss12.29">12.29</A> <A HREF="usermanual_en.html#toc12.29">echo &lt;line&gt;</A>
 </H2>
 
 <P><CODE><B>echo &lt;line&gt;</B> Echo the line to the output</CODE></P>
@@ -546,7 +607,7 @@ in user_default scripts and the SAVE command for titling and so forth</P>
 </P>
 <P>on the output.</P>
 
-<H2><A NAME="ss12.29">12.29</A> <A HREF="usermanual_en.html#toc12.29">filtering...</A>
+<H2><A NAME="ss12.30">12.30</A> <A HREF="usermanual_en.html#toc12.30">filtering...</A>
 </H2>
 
 <P><CODE><B>filtering...</B> Filtering things in DXSpider</CODE></P>
@@ -733,7 +794,7 @@ the default for following tests is 'accept', the reverse is true for
 first, any non hf/cw spot is passed to the accept line, which lets
 thru everything else on HF.</P>
 <P>The next filter line lets through just VHF/UHF spots from EU.</P>
-<H2><A NAME="ss12.30">12.30</A> <A HREF="usermanual_en.html#toc12.30">help</A>
+<H2><A NAME="ss12.31">12.31</A> <A HREF="usermanual_en.html#toc12.31">help</A>
 </H2>
 
 <P><CODE><B>help</B> The HELP Command</CODE></P>
@@ -752,58 +813,88 @@ to SH/DX, ANNOUNCE can be shortened to AN and so on.</P>
 <P>Look at the APROPOS &lt;string&gt; command which will search the help database
 for the &lt;string&gt; you specify and give you a list of likely commands
 to look at with HELP.</P>
-<H2><A NAME="ss12.31">12.31</A> <A HREF="usermanual_en.html#toc12.31">kill &lt;from msgno&gt;-&lt;to msgno&gt;</A>
+<H2><A NAME="ss12.32">12.32</A> <A HREF="usermanual_en.html#toc12.32">join &lt;group&gt;</A>
+</H2>
+
+<P><CODE><B>join &lt;group&gt;</B> Join a chat or conference group</CODE></P>
+
+<P>JOIN allows you to join a network wide conference group. To join a
+group (called FOC in this case) type:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  JOIN FOC
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>See also CHAT, LEAVE, SHOW/CHAT</P>
+<H2><A NAME="ss12.33">12.33</A> <A HREF="usermanual_en.html#toc12.33">kill &lt;from msgno&gt;-&lt;to msgno&gt;</A>
 </H2>
 
 <P><CODE><B>kill &lt;from msgno&gt;-&lt;to msgno&gt;</B> Delete a range of messages</CODE></P>
 
 
-<H2><A NAME="ss12.32">12.32</A> <A HREF="usermanual_en.html#toc12.32">kill &lt;msgno&gt; [&lt;msgno..]</A>
+<H2><A NAME="ss12.34">12.34</A> <A HREF="usermanual_en.html#toc12.34">kill &lt;msgno&gt; [&lt;msgno..]</A>
 </H2>
 
 <P><CODE><B>kill &lt;msgno&gt; [&lt;msgno..]</B> Delete a message from the local system</CODE></P>
 
 
-<H2><A NAME="ss12.33">12.33</A> <A HREF="usermanual_en.html#toc12.33">kill &lt;msgno&gt; [&lt;msgno&gt; ...]</A>
+<H2><A NAME="ss12.35">12.35</A> <A HREF="usermanual_en.html#toc12.35">kill &lt;msgno&gt; [&lt;msgno&gt; ...]</A>
 </H2>
 
 <P><CODE><B>kill &lt;msgno&gt; [&lt;msgno&gt; ...]</B> Remove or erase a message from the system</CODE></P>
 
 <P>You can get rid of any message to or originating from your callsign using 
 this command. You can remove more than one message at a time.</P>
-<H2><A NAME="ss12.34">12.34</A> <A HREF="usermanual_en.html#toc12.34">kill from &lt;regex&gt;</A>
+<H2><A NAME="ss12.36">12.36</A> <A HREF="usermanual_en.html#toc12.36">kill from &lt;regex&gt;</A>
 </H2>
 
 <P><CODE><B>kill from &lt;regex&gt;</B> Delete messages FROM a callsign or pattern</CODE></P>
 
 
-<H2><A NAME="ss12.35">12.35</A> <A HREF="usermanual_en.html#toc12.35">kill to &lt;regex&gt;</A>
+<H2><A NAME="ss12.37">12.37</A> <A HREF="usermanual_en.html#toc12.37">kill to &lt;regex&gt;</A>
 </H2>
 
 <P><CODE><B>kill to &lt;regex&gt;</B> Delete messages TO a callsign or pattern</CODE></P>
 
 
-<H2><A NAME="ss12.36">12.36</A> <A HREF="usermanual_en.html#toc12.36">links</A>
+<H2><A NAME="ss12.38">12.38</A> <A HREF="usermanual_en.html#toc12.38">leave &lt;group&gt;</A>
+</H2>
+
+<P><CODE><B>leave &lt;group&gt;</B> Leave a chat or conference group</CODE></P>
+
+<P>LEAVE allows you to leave a network wide conference group. To leave a
+group (called FOC in this case) type:-</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+  LEAVE FOC
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>See also CHAT, JOIN, SHOW/CHAT</P>
+<H2><A NAME="ss12.39">12.39</A> <A HREF="usermanual_en.html#toc12.39">links</A>
 </H2>
 
 <P><CODE><B>links</B> Show which nodes is physically connected</CODE></P>
 
 <P>This is a quick listing that shows which links are connected and
 some information about them. See WHO for a list of all connections.</P>
-<H2><A NAME="ss12.37">12.37</A> <A HREF="usermanual_en.html#toc12.37">read</A>
+<H2><A NAME="ss12.40">12.40</A> <A HREF="usermanual_en.html#toc12.40">read</A>
 </H2>
 
 <P><CODE><B>read</B> Read the next unread personal message addressed to you</CODE></P>
 
 
-<H2><A NAME="ss12.38">12.38</A> <A HREF="usermanual_en.html#toc12.38">read &lt;msgno&gt;</A>
+<H2><A NAME="ss12.41">12.41</A> <A HREF="usermanual_en.html#toc12.41">read &lt;msgno&gt;</A>
 </H2>
 
 <P><CODE><B>read &lt;msgno&gt;</B> Read the specified message</CODE></P>
 
 <P>You can read any messages that are sent as 'non-personal' and also any
 message either sent by or sent to your callsign.</P>
-<H2><A NAME="ss12.39">12.39</A> <A HREF="usermanual_en.html#toc12.39">reject</A>
+<H2><A NAME="ss12.42">12.42</A> <A HREF="usermanual_en.html#toc12.42">reject</A>
 </H2>
 
 <P><CODE><B>reject</B> Set a filter to reject something</CODE></P>
@@ -811,7 +902,7 @@ message either sent by or sent to your callsign.</P>
 <P>Create a filter to reject something</P>
 <P>There are 2 types of filter, accept and reject.  See HELP FILTERING for more
 info.</P>
-<H2><A NAME="ss12.40">12.40</A> <A HREF="usermanual_en.html#toc12.40">reject/announce [0-9] &lt;pattern&gt;</A>
+<H2><A NAME="ss12.43">12.43</A> <A HREF="usermanual_en.html#toc12.43">reject/announce [0-9] &lt;pattern&gt;</A>
 </H2>
 
 <P><CODE><B>reject/announce [0-9] &lt;pattern&gt;</B> Set a 'reject' filter line for announce</CODE></P>
@@ -858,7 +949,7 @@ to understand how filters work - it will save a lot of grief later on.</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>but this probably for advanced users...</P>
-<H2><A NAME="ss12.41">12.41</A> <A HREF="usermanual_en.html#toc12.41">reject/spots [0-9] &lt;pattern&gt;</A>
+<H2><A NAME="ss12.44">12.44</A> <A HREF="usermanual_en.html#toc12.44">reject/spots [0-9] &lt;pattern&gt;</A>
 </H2>
 
 <P><CODE><B>reject/spots [0-9] &lt;pattern&gt;</B> Set a 'reject' filter line for spots</CODE></P>
@@ -913,7 +1004,7 @@ too hung up about that)</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>but this probably for advanced users...</P>
-<H2><A NAME="ss12.42">12.42</A> <A HREF="usermanual_en.html#toc12.42">reject/wcy [0-9] &lt;pattern&gt;</A>
+<H2><A NAME="ss12.45">12.45</A> <A HREF="usermanual_en.html#toc12.45">reject/wcy [0-9] &lt;pattern&gt;</A>
 </H2>
 
 <P><CODE><B>reject/wcy [0-9] &lt;pattern&gt;</B> set a 'reject' WCY filter</CODE></P>
@@ -939,7 +1030,7 @@ filter on the following fields:-</P>
 you either want them or not (see UNSET/WCY if you don't want them).</P>
 <P>This command is really provided for future use.</P>
 <P>See HELP FILTER for information.</P>
-<H2><A NAME="ss12.43">12.43</A> <A HREF="usermanual_en.html#toc12.43">reject/wwv [0-9] &lt;pattern&gt;</A>
+<H2><A NAME="ss12.46">12.46</A> <A HREF="usermanual_en.html#toc12.46">reject/wwv [0-9] &lt;pattern&gt;</A>
 </H2>
 
 <P><CODE><B>reject/wwv [0-9] &lt;pattern&gt;</B> set a 'reject' WWV filter</CODE></P>
@@ -972,31 +1063,31 @@ filter on the following fields:-</P>
 <P>is probably the only useful thing to do (which will only show WWV broadcasts
 by stations in the US).</P>
 <P>See HELP FILTER for information.</P>
-<H2><A NAME="ss12.44">12.44</A> <A HREF="usermanual_en.html#toc12.44">reply</A>
+<H2><A NAME="ss12.47">12.47</A> <A HREF="usermanual_en.html#toc12.47">reply</A>
 </H2>
 
 <P><CODE><B>reply</B> Reply (privately) to the last message that you have read</CODE></P>
 
 
-<H2><A NAME="ss12.45">12.45</A> <A HREF="usermanual_en.html#toc12.45">reply &lt;msgno&gt;</A>
+<H2><A NAME="ss12.48">12.48</A> <A HREF="usermanual_en.html#toc12.48">reply &lt;msgno&gt;</A>
 </H2>
 
 <P><CODE><B>reply &lt;msgno&gt;</B> Reply (privately) to the specified message</CODE></P>
 
 
-<H2><A NAME="ss12.46">12.46</A> <A HREF="usermanual_en.html#toc12.46">reply b &lt;msgno&gt;</A>
+<H2><A NAME="ss12.49">12.49</A> <A HREF="usermanual_en.html#toc12.49">reply b &lt;msgno&gt;</A>
 </H2>
 
 <P><CODE><B>reply b &lt;msgno&gt;</B> Reply as a Bulletin to the specified message</CODE></P>
 
 
-<H2><A NAME="ss12.47">12.47</A> <A HREF="usermanual_en.html#toc12.47">reply noprivate &lt;msgno&gt;</A>
+<H2><A NAME="ss12.50">12.50</A> <A HREF="usermanual_en.html#toc12.50">reply noprivate &lt;msgno&gt;</A>
 </H2>
 
 <P><CODE><B>reply noprivate &lt;msgno&gt;</B> Reply as a Bulletin to the specified message</CODE></P>
 
 
-<H2><A NAME="ss12.48">12.48</A> <A HREF="usermanual_en.html#toc12.48">reply rr &lt;msgno&gt;</A>
+<H2><A NAME="ss12.51">12.51</A> <A HREF="usermanual_en.html#toc12.51">reply rr &lt;msgno&gt;</A>
 </H2>
 
 <P><CODE><B>reply rr &lt;msgno&gt;</B> Reply to the specified message with read receipt</CODE></P>
@@ -1006,19 +1097,19 @@ by stations in the US).</P>
 <P>You can also use all the extra qualifiers such as RR, PRIVATE, 
 NOPRIVATE, B that you can use with the SEND command (see SEND
 for further details)</P>
-<H2><A NAME="ss12.49">12.49</A> <A HREF="usermanual_en.html#toc12.49">send &lt;call&gt; [&lt;call&gt; ...]</A>
+<H2><A NAME="ss12.52">12.52</A> <A HREF="usermanual_en.html#toc12.52">send &lt;call&gt; [&lt;call&gt; ...]</A>
 </H2>
 
 <P><CODE><B>send &lt;call&gt; [&lt;call&gt; ...]</B> Send a message to one or more callsigns</CODE></P>
 
 
-<H2><A NAME="ss12.50">12.50</A> <A HREF="usermanual_en.html#toc12.50">send copy &lt;msgno&gt; &lt;call&gt;</A>
+<H2><A NAME="ss12.53">12.53</A> <A HREF="usermanual_en.html#toc12.53">send copy &lt;msgno&gt; &lt;call&gt;</A>
 </H2>
 
 <P><CODE><B>send copy &lt;msgno&gt; &lt;call&gt;</B> Send a copy of a  message to someone</CODE></P>
 
 
-<H2><A NAME="ss12.51">12.51</A> <A HREF="usermanual_en.html#toc12.51">send noprivate &lt;call&gt;</A>
+<H2><A NAME="ss12.54">12.54</A> <A HREF="usermanual_en.html#toc12.54">send noprivate &lt;call&gt;</A>
 </H2>
 
 <P><CODE><B>send noprivate &lt;call&gt;</B> Send a message to all stations</CODE></P>
@@ -1098,85 +1189,85 @@ the command with '//', thus :-</P>
 <P>This will show YOU the output from SH/VHFTABLE and also store it in the
 message. </P>
 <P>You can carry on with the message until you are ready to send it. </P>
-<H2><A NAME="ss12.52">12.52</A> <A HREF="usermanual_en.html#toc12.52">send private &lt;call&gt;</A>
+<H2><A NAME="ss12.55">12.55</A> <A HREF="usermanual_en.html#toc12.55">send private &lt;call&gt;</A>
 </H2>
 
 <P><CODE><B>send private &lt;call&gt;</B> Send a personal message</CODE></P>
 
 
-<H2><A NAME="ss12.53">12.53</A> <A HREF="usermanual_en.html#toc12.53">send rr &lt;call&gt;</A>
+<H2><A NAME="ss12.56">12.56</A> <A HREF="usermanual_en.html#toc12.56">send rr &lt;call&gt;</A>
 </H2>
 
 <P><CODE><B>send rr &lt;call&gt;</B> Send a message and ask for a read receipt</CODE></P>
 
 
-<H2><A NAME="ss12.54">12.54</A> <A HREF="usermanual_en.html#toc12.54">set/address &lt;your address&gt;</A>
+<H2><A NAME="ss12.57">12.57</A> <A HREF="usermanual_en.html#toc12.57">set/address &lt;your address&gt;</A>
 </H2>
 
 <P><CODE><B>set/address &lt;your address&gt;</B> Record your postal address</CODE></P>
 
 
-<H2><A NAME="ss12.55">12.55</A> <A HREF="usermanual_en.html#toc12.55">set/announce</A>
+<H2><A NAME="ss12.58">12.58</A> <A HREF="usermanual_en.html#toc12.58">set/announce</A>
 </H2>
 
 <P><CODE><B>set/announce</B> Allow announce messages to come out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.56">12.56</A> <A HREF="usermanual_en.html#toc12.56">set/anntalk</A>
+<H2><A NAME="ss12.59">12.59</A> <A HREF="usermanual_en.html#toc12.59">set/anntalk</A>
 </H2>
 
 <P><CODE><B>set/anntalk</B> Allow talk like announce messages on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.57">12.57</A> <A HREF="usermanual_en.html#toc12.57">set/beep</A>
+<H2><A NAME="ss12.60">12.60</A> <A HREF="usermanual_en.html#toc12.60">set/beep</A>
 </H2>
 
 <P><CODE><B>set/beep</B> Add a beep to DX and other messages on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.58">12.58</A> <A HREF="usermanual_en.html#toc12.58">set/dx</A>
+<H2><A NAME="ss12.61">12.61</A> <A HREF="usermanual_en.html#toc12.61">set/dx</A>
 </H2>
 
 <P><CODE><B>set/dx</B> Allow DX messages to come out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.59">12.59</A> <A HREF="usermanual_en.html#toc12.59">set/dxcq</A>
+<H2><A NAME="ss12.62">12.62</A> <A HREF="usermanual_en.html#toc12.62">set/dxcq</A>
 </H2>
 
 <P><CODE><B>set/dxcq</B> Show CQ Zones on the end of DX announcements</CODE></P>
 
 
-<H2><A NAME="ss12.60">12.60</A> <A HREF="usermanual_en.html#toc12.60">set/dxgrid</A>
+<H2><A NAME="ss12.63">12.63</A> <A HREF="usermanual_en.html#toc12.63">set/dxgrid</A>
 </H2>
 
 <P><CODE><B>set/dxgrid</B> Allow QRA Grid Squares on the end of DX announcements</CODE></P>
 
 
-<H2><A NAME="ss12.61">12.61</A> <A HREF="usermanual_en.html#toc12.61">set/dxitu</A>
+<H2><A NAME="ss12.64">12.64</A> <A HREF="usermanual_en.html#toc12.64">set/dxitu</A>
 </H2>
 
 <P><CODE><B>set/dxitu</B> Show ITU Zones on the end of DX announcements</CODE></P>
 
 
-<H2><A NAME="ss12.62">12.62</A> <A HREF="usermanual_en.html#toc12.62">set/echo</A>
+<H2><A NAME="ss12.65">12.65</A> <A HREF="usermanual_en.html#toc12.65">set/echo</A>
 </H2>
 
 <P><CODE><B>set/echo</B> Make the cluster echo your input</CODE></P>
 
 
-<H2><A NAME="ss12.63">12.63</A> <A HREF="usermanual_en.html#toc12.63">set/email &lt;email&gt; ...</A>
+<H2><A NAME="ss12.66">12.66</A> <A HREF="usermanual_en.html#toc12.66">set/email &lt;email&gt; ...</A>
 </H2>
 
 <P><CODE><B>set/email &lt;email&gt; ...</B> Set email address(es) and forward your personals</CODE></P>
 
 
-<H2><A NAME="ss12.64">12.64</A> <A HREF="usermanual_en.html#toc12.64">set/here</A>
+<H2><A NAME="ss12.67">12.67</A> <A HREF="usermanual_en.html#toc12.67">set/here</A>
 </H2>
 
 <P><CODE><B>set/here</B> Tell the system you are present at your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.65">12.65</A> <A HREF="usermanual_en.html#toc12.65">set/homenode &lt;node&gt; </A>
+<H2><A NAME="ss12.68">12.68</A> <A HREF="usermanual_en.html#toc12.68">set/homenode &lt;node&gt; </A>
 </H2>
 
 <P><CODE><B>set/homenode &lt;node&gt; </B> Set your normal cluster callsign</CODE></P>
@@ -1191,7 +1282,7 @@ eg:-
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.66">12.66</A> <A HREF="usermanual_en.html#toc12.66">set/language &lt;lang&gt;</A>
+<H2><A NAME="ss12.69">12.69</A> <A HREF="usermanual_en.html#toc12.69">set/language &lt;lang&gt;</A>
 </H2>
 
 <P><CODE><B>set/language &lt;lang&gt;</B> Set the language you want to use</CODE></P>
@@ -1199,19 +1290,19 @@ eg:-
 <P>You can select the language that you want the cluster to use. Currently
 the languages available are en (English), de (German), es (Spanish) 
 and nl (Dutch).</P>
-<H2><A NAME="ss12.67">12.67</A> <A HREF="usermanual_en.html#toc12.67">set/location &lt;lat &amp; long&gt;</A>
+<H2><A NAME="ss12.70">12.70</A> <A HREF="usermanual_en.html#toc12.70">set/location &lt;lat &amp; long&gt;</A>
 </H2>
 
 <P><CODE><B>set/location &lt;lat &amp; long&gt;</B> Set your latitude and longitude</CODE></P>
 
 
-<H2><A NAME="ss12.68">12.68</A> <A HREF="usermanual_en.html#toc12.68">set/logininfo</A>
+<H2><A NAME="ss12.71">12.71</A> <A HREF="usermanual_en.html#toc12.71">set/logininfo</A>
 </H2>
 
 <P><CODE><B>set/logininfo</B> Inform when a station logs in locally</CODE></P>
 
 
-<H2><A NAME="ss12.69">12.69</A> <A HREF="usermanual_en.html#toc12.69">set/name &lt;your name&gt;</A>
+<H2><A NAME="ss12.72">12.72</A> <A HREF="usermanual_en.html#toc12.72">set/name &lt;your name&gt;</A>
 </H2>
 
 <P><CODE><B>set/name &lt;your name&gt;</B> Set your name</CODE></P>
@@ -1224,7 +1315,7 @@ and nl (Dutch).</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.70">12.70</A> <A HREF="usermanual_en.html#toc12.70">set/page &lt;lines per page&gt;</A>
+<H2><A NAME="ss12.73">12.73</A> <A HREF="usermanual_en.html#toc12.73">set/page &lt;lines per page&gt;</A>
 </H2>
 
 <P><CODE><B>set/page &lt;lines per page&gt;</B> Set the lines per page</CODE></P>
@@ -1240,7 +1331,7 @@ explicitly to 0 will disable paging.
 </CODE></BLOCKQUOTE>
 </P>
 <P>The setting is stored in your user profile.</P>
-<H2><A NAME="ss12.71">12.71</A> <A HREF="usermanual_en.html#toc12.71">set/password</A>
+<H2><A NAME="ss12.74">12.74</A> <A HREF="usermanual_en.html#toc12.74">set/password</A>
 </H2>
 
 <P><CODE><B>set/password</B> Set your own password</CODE></P>
@@ -1252,13 +1343,13 @@ can only be set by the sysop.</P>
 then ask you to type in your new password twice (to make sure you
 get it right). You may or may not see the data echoed on the screen
 as you type, depending on the type of telnet client you have.</P>
-<H2><A NAME="ss12.72">12.72</A> <A HREF="usermanual_en.html#toc12.72">set/prompt &lt;string&gt;</A>
+<H2><A NAME="ss12.75">12.75</A> <A HREF="usermanual_en.html#toc12.75">set/prompt &lt;string&gt;</A>
 </H2>
 
 <P><CODE><B>set/prompt &lt;string&gt;</B> Set your prompt to &lt;string&gt;</CODE></P>
 
 
-<H2><A NAME="ss12.73">12.73</A> <A HREF="usermanual_en.html#toc12.73">set/qra &lt;locator&gt;</A>
+<H2><A NAME="ss12.76">12.76</A> <A HREF="usermanual_en.html#toc12.76">set/qra &lt;locator&gt;</A>
 </H2>
 
 <P><CODE><B>set/qra &lt;locator&gt;</B> Set your QRA Grid locator</CODE></P>
@@ -1273,7 +1364,7 @@ correctly (assuming your locator is correct ;-). For example:-
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.74">12.74</A> <A HREF="usermanual_en.html#toc12.74">set/qth &lt;your qth&gt;</A>
+<H2><A NAME="ss12.77">12.77</A> <A HREF="usermanual_en.html#toc12.77">set/qth &lt;your qth&gt;</A>
 </H2>
 
 <P><CODE><B>set/qth &lt;your qth&gt;</B> Set your QTH</CODE></P>
@@ -1286,37 +1377,46 @@ correctly (assuming your locator is correct ;-). For example:-
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.75">12.75</A> <A HREF="usermanual_en.html#toc12.75">set/talk</A>
+<H2><A NAME="ss12.78">12.78</A> <A HREF="usermanual_en.html#toc12.78">set/talk</A>
 </H2>
 
 <P><CODE><B>set/talk</B> Allow TALK messages to come out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.76">12.76</A> <A HREF="usermanual_en.html#toc12.76">set/usstate</A>
+<H2><A NAME="ss12.79">12.79</A> <A HREF="usermanual_en.html#toc12.79">set/usstate</A>
 </H2>
 
 <P><CODE><B>set/usstate</B> Allow US State info on the end of DX announcements</CODE></P>
 
 
-<H2><A NAME="ss12.77">12.77</A> <A HREF="usermanual_en.html#toc12.77">set/wcy</A>
+<H2><A NAME="ss12.80">12.80</A> <A HREF="usermanual_en.html#toc12.80">set/wcy</A>
 </H2>
 
 <P><CODE><B>set/wcy</B> Allow WCY messages to come out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.78">12.78</A> <A HREF="usermanual_en.html#toc12.78">set/wwv</A>
+<H2><A NAME="ss12.81">12.81</A> <A HREF="usermanual_en.html#toc12.81">set/wwv</A>
 </H2>
 
 <P><CODE><B>set/wwv</B> Allow WWV messages to come out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.79">12.79</A> <A HREF="usermanual_en.html#toc12.79">set/wx</A>
+<H2><A NAME="ss12.82">12.82</A> <A HREF="usermanual_en.html#toc12.82">set/wx</A>
 </H2>
 
 <P><CODE><B>set/wx</B> Allow WX messages to come out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.80">12.80</A> <A HREF="usermanual_en.html#toc12.80">show/configuration [&lt;node&gt;]</A>
+<H2><A NAME="ss12.83">12.83</A> <A HREF="usermanual_en.html#toc12.83">show/chat [&lt;group&gt;] [&lt;lines&gt;]</A>
+</H2>
+
+<P><CODE><B>show/chat [&lt;group&gt;] [&lt;lines&gt;]</B> Show any chat or conferencing </CODE></P>
+
+<P>This command allows you to see any chat or conferencing that has  
+occurred whilst you were away. SHOW/CHAT on its own will show data for
+all groups. If you use a group name then it will show only chat for
+that group.</P>
+<H2><A NAME="ss12.84">12.84</A> <A HREF="usermanual_en.html#toc12.84">show/configuration [&lt;node&gt;]</A>
 </H2>
 
 <P><CODE><B>show/configuration [&lt;node&gt;]</B> Show all the nodes and users visible</CODE></P>
@@ -1353,13 +1453,13 @@ that prefix.</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.81">12.81</A> <A HREF="usermanual_en.html#toc12.81">show/configuration/node</A>
+<H2><A NAME="ss12.85">12.85</A> <A HREF="usermanual_en.html#toc12.85">show/configuration/node</A>
 </H2>
 
 <P><CODE><B>show/configuration/node</B> Show all the nodes connected locally</CODE></P>
 
 <P>Show all the nodes connected to this node.</P>
-<H2><A NAME="ss12.82">12.82</A> <A HREF="usermanual_en.html#toc12.82">show/contest &lt;year and month&gt;</A>
+<H2><A NAME="ss12.86">12.86</A> <A HREF="usermanual_en.html#toc12.86">show/contest &lt;year and month&gt;</A>
 </H2>
 
 <P><CODE><B>show/contest &lt;year and month&gt;</B> Show all the contests for a month</CODE></P>
@@ -1376,7 +1476,7 @@ For example:-</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.83">12.83</A> <A HREF="usermanual_en.html#toc12.83">show/date [&lt;prefix&gt;|&lt;callsign&gt;]</A>
+<H2><A NAME="ss12.87">12.87</A> <A HREF="usermanual_en.html#toc12.87">show/date [&lt;prefix&gt;|&lt;callsign&gt;]</A>
 </H2>
 
 <P><CODE><B>show/date [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show the local time </CODE></P>
@@ -1387,7 +1487,7 @@ of the date string if no arguments are given.</P>
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.</P>
-<H2><A NAME="ss12.84">12.84</A> <A HREF="usermanual_en.html#toc12.84">show/db0sdx &lt;callsign&gt;</A>
+<H2><A NAME="ss12.88">12.88</A> <A HREF="usermanual_en.html#toc12.88">show/db0sdx &lt;callsign&gt;</A>
 </H2>
 
 <P><CODE><B>show/db0sdx &lt;callsign&gt;</B> Show QSL infomation from DB0SDX database</CODE></P>
@@ -1396,7 +1496,7 @@ the prefixes or callsigns that you specify.</P>
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qslinfo.de.</P>
 <P>See also SHOW/QRZ, SHOW/WM7D.</P>
-<H2><A NAME="ss12.85">12.85</A> <A HREF="usermanual_en.html#toc12.85">show/dx</A>
+<H2><A NAME="ss12.89">12.89</A> <A HREF="usermanual_en.html#toc12.89">show/dx</A>
 </H2>
 
 <P><CODE><B>show/dx</B> Interrogate the spot database</CODE></P>
@@ -1523,7 +1623,7 @@ any order to the basic SHOW/DX command, they are:-</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.86">12.86</A> <A HREF="usermanual_en.html#toc12.86">show/dxcc &lt;prefix&gt;</A>
+<H2><A NAME="ss12.90">12.90</A> <A HREF="usermanual_en.html#toc12.90">show/dxcc &lt;prefix&gt;</A>
 </H2>
 
 <P><CODE><B>show/dxcc &lt;prefix&gt;</B> Interrogate the spot database by country</CODE></P>
@@ -1552,7 +1652,7 @@ e.g. </P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.87">12.87</A> <A HREF="usermanual_en.html#toc12.87">show/dxqsl &lt;callsign&gt;</A>
+<H2><A NAME="ss12.91">12.91</A> <A HREF="usermanual_en.html#toc12.91">show/dxqsl &lt;callsign&gt;</A>
 </H2>
 
 <P><CODE><B>show/dxqsl &lt;callsign&gt;</B> Show any QSL info gathered from spots</CODE></P>
@@ -1580,14 +1680,14 @@ it is spotted enough times.</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>This gives you more background information.</P>
-<H2><A NAME="ss12.88">12.88</A> <A HREF="usermanual_en.html#toc12.88">show/dxstats [days] [date]</A>
+<H2><A NAME="ss12.92">12.92</A> <A HREF="usermanual_en.html#toc12.92">show/dxstats [days] [date]</A>
 </H2>
 
 <P><CODE><B>show/dxstats [days] [date]</B> Show the DX Statistics</CODE></P>
 
 <P>Show the total DX spots for the last &lt;days&gt; no of days (default is 31), 
 starting from a &lt;date&gt; (default: today).</P>
-<H2><A NAME="ss12.89">12.89</A> <A HREF="usermanual_en.html#toc12.89">show/files [&lt;filearea&gt; [&lt;string&gt;]]</A>
+<H2><A NAME="ss12.93">12.93</A> <A HREF="usermanual_en.html#toc12.93">show/files [&lt;filearea&gt; [&lt;string&gt;]]</A>
 </H2>
 
 <P><CODE><B>show/files [&lt;filearea&gt; [&lt;string&gt;]]</B> List the contents of a filearea</CODE></P>
@@ -1612,21 +1712,21 @@ string to see a selection of files in a filearea eg:-
 </CODE></BLOCKQUOTE>
 </P>
 <P>See also TYPE - to see the contents of a file.</P>
-<H2><A NAME="ss12.90">12.90</A> <A HREF="usermanual_en.html#toc12.90">show/filter</A>
+<H2><A NAME="ss12.94">12.94</A> <A HREF="usermanual_en.html#toc12.94">show/filter</A>
 </H2>
 
 <P><CODE><B>show/filter</B> Show the contents of all the filters you have set</CODE></P>
 
 <P>Show the contents of all the filters that are set. This command displays
 all the filters set - for all the various categories.</P>
-<H2><A NAME="ss12.91">12.91</A> <A HREF="usermanual_en.html#toc12.91">show/hfstats [days] [date]</A>
+<H2><A NAME="ss12.95">12.95</A> <A HREF="usermanual_en.html#toc12.95">show/hfstats [days] [date]</A>
 </H2>
 
 <P><CODE><B>show/hfstats [days] [date]</B> Show the HF DX Statistics </CODE></P>
 
 <P>Show the HF DX spots breakdown by band for the last &lt;days&gt; no of days 
 (default is 31), starting from a &lt;date&gt; (default: today).</P>
-<H2><A NAME="ss12.92">12.92</A> <A HREF="usermanual_en.html#toc12.92">show/hftable [days] [date] [prefix ...]</A>
+<H2><A NAME="ss12.96">12.96</A> <A HREF="usermanual_en.html#toc12.96">show/hftable [days] [date] [prefix ...]</A>
 </H2>
 
 <P><CODE><B>show/hftable [days] [date] [prefix ...]</B> Show the HF DX Spotter Table</CODE></P>
@@ -1679,7 +1779,7 @@ the worldwide statistics.</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.93">12.93</A> <A HREF="usermanual_en.html#toc12.93">show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</A>
+<H2><A NAME="ss12.97">12.97</A> <A HREF="usermanual_en.html#toc12.97">show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</A>
 </H2>
 
 <P><CODE><B>show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show Moon rise and set times</CODE></P>
@@ -1722,7 +1822,7 @@ if you want to see yesterday's times then do:-</P>
 <P>Upto 366 days can be checked both in the past and in the future.</P>
 <P>Please note that the rise and set times are given as the UT times of rise and 
 set on the requested UT day.</P>
-<H2><A NAME="ss12.94">12.94</A> <A HREF="usermanual_en.html#toc12.94">show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</A>
+<H2><A NAME="ss12.98">12.98</A> <A HREF="usermanual_en.html#toc12.98">show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</A>
 </H2>
 
 <P><CODE><B>show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</B> Show the likely propagation to a prefix</CODE></P>
@@ -1801,7 +1901,7 @@ propagation data.</P>
 <P>Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.</P>
-<H2><A NAME="ss12.95">12.95</A> <A HREF="usermanual_en.html#toc12.95">show/newconfiguration [&lt;node&gt;]</A>
+<H2><A NAME="ss12.99">12.99</A> <A HREF="usermanual_en.html#toc12.99">show/newconfiguration [&lt;node&gt;]</A>
 </H2>
 
 <P><CODE><B>show/newconfiguration [&lt;node&gt;]</B> Show all the nodes and users visible</CODE></P>
@@ -1814,13 +1914,13 @@ any routes that might be present It also uses a different format
 which may not take up quite as much space if you don't have any
 loops.</P>
 <P>BE WARNED: the list that is returned can be VERY long</P>
-<H2><A NAME="ss12.96">12.96</A> <A HREF="usermanual_en.html#toc12.96">show/newconfiguration/node</A>
+<H2><A NAME="ss12.100">12.100</A> <A HREF="usermanual_en.html#toc12.100">show/newconfiguration/node</A>
 </H2>
 
 <P><CODE><B>show/newconfiguration/node</B> Show all the nodes connected locally</CODE></P>
 
 <P>Show all the nodes connected to this node in the new format.</P>
-<H2><A NAME="ss12.97">12.97</A> <A HREF="usermanual_en.html#toc12.97">show/prefix &lt;callsign&gt;</A>
+<H2><A NAME="ss12.101">12.101</A> <A HREF="usermanual_en.html#toc12.101">show/prefix &lt;callsign&gt;</A>
 </H2>
 
 <P><CODE><B>show/prefix &lt;callsign&gt;</B> Interrogate the prefix database </CODE></P>
@@ -1830,7 +1930,7 @@ callsign or a prefix), looks up which internal country number
 it is and then displays all the relevant prefixes for that country
 together with the internal country no, the CQ and ITU regions. </P>
 <P>See also SHOW/DXCC</P>
-<H2><A NAME="ss12.98">12.98</A> <A HREF="usermanual_en.html#toc12.98">show/qra &lt;lat&gt; &lt;long&gt;</A>
+<H2><A NAME="ss12.102">12.102</A> <A HREF="usermanual_en.html#toc12.102">show/qra &lt;lat&gt; &lt;long&gt;</A>
 </H2>
 
 <P><CODE><B>show/qra &lt;lat&gt; &lt;long&gt;</B> Convert lat/long to a QRA Grid locator</CODE></P>
@@ -1861,13 +1961,13 @@ example:-</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.99">12.99</A> <A HREF="usermanual_en.html#toc12.99">show/qra &lt;locator&gt; [&lt;locator&gt;]</A>
+<H2><A NAME="ss12.103">12.103</A> <A HREF="usermanual_en.html#toc12.103">show/qra &lt;locator&gt; [&lt;locator&gt;]</A>
 </H2>
 
 <P><CODE><B>show/qra &lt;locator&gt; [&lt;locator&gt;]</B> Show distance between QRA Grid locators</CODE></P>
 
 
-<H2><A NAME="ss12.100">12.100</A> <A HREF="usermanual_en.html#toc12.100">show/qrz &lt;callsign&gt;</A>
+<H2><A NAME="ss12.104">12.104</A> <A HREF="usermanual_en.html#toc12.104">show/qrz &lt;callsign&gt;</A>
 </H2>
 
 <P><CODE><B>show/qrz &lt;callsign&gt;</B> Show any callbook details on a callsign</CODE></P>
@@ -1876,7 +1976,7 @@ example:-</P>
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com </P>
 <P>See also SHOW/WM7D for an alternative.</P>
-<H2><A NAME="ss12.101">12.101</A> <A HREF="usermanual_en.html#toc12.101">show/route &lt;callsign&gt; ...</A>
+<H2><A NAME="ss12.105">12.105</A> <A HREF="usermanual_en.html#toc12.105">show/route &lt;callsign&gt; ...</A>
 </H2>
 
 <P><CODE><B>show/route &lt;callsign&gt; ...</B> Show the route to the callsign</CODE></P>
@@ -1891,7 +1991,7 @@ connected. It is a sort of inverse sh/config.</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.102">12.102</A> <A HREF="usermanual_en.html#toc12.102">show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</A>
+<H2><A NAME="ss12.106">12.106</A> <A HREF="usermanual_en.html#toc12.106">show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</A>
 </H2>
 
 <P><CODE><B>show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</B> Show tracking data</CODE></P>
@@ -1916,7 +2016,7 @@ limits. </P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.103">12.103</A> <A HREF="usermanual_en.html#toc12.103">show/station [&lt;callsign&gt; ..]</A>
+<H2><A NAME="ss12.107">12.107</A> <A HREF="usermanual_en.html#toc12.107">show/station [&lt;callsign&gt; ..]</A>
 </H2>
 
 <P><CODE><B>show/station [&lt;callsign&gt; ..]</B> Show information about a callsign</CODE></P>
@@ -1931,7 +2031,7 @@ that callsign is connected to the cluster.</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>If no callsign is given then show the information for yourself.</P>
-<H2><A NAME="ss12.104">12.104</A> <A HREF="usermanual_en.html#toc12.104">show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</A>
+<H2><A NAME="ss12.108">12.108</A> <A HREF="usermanual_en.html#toc12.108">show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</A>
 </H2>
 
 <P><CODE><B>show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show sun rise and set times</CODE></P>
@@ -1973,7 +2073,7 @@ if you want to see yesterday's times then do:-</P>
 <P>Upto 366 days can be checked both in the past and in the future.</P>
 <P>Please note that the rise and set times are given as the UT times of rise 
 and set on the requested UT day.</P>
-<H2><A NAME="ss12.105">12.105</A> <A HREF="usermanual_en.html#toc12.105">show/time [&lt;prefix&gt;|&lt;callsign&gt;]</A>
+<H2><A NAME="ss12.109">12.109</A> <A HREF="usermanual_en.html#toc12.109">show/time [&lt;prefix&gt;|&lt;callsign&gt;]</A>
 </H2>
 
 <P><CODE><B>show/time [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show the local time </CODE></P>
@@ -1982,7 +2082,7 @@ and set on the requested UT day.</P>
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.</P>
-<H2><A NAME="ss12.106">12.106</A> <A HREF="usermanual_en.html#toc12.106">show/usdb [call ..]</A>
+<H2><A NAME="ss12.110">12.110</A> <A HREF="usermanual_en.html#toc12.110">show/usdb [call ..]</A>
 </H2>
 
 <P><CODE><B>show/usdb [call ..]</B> Show information held on the FCC Call database</CODE></P>
@@ -1997,14 +2097,14 @@ his is being run on this system, eg:-</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.107">12.107</A> <A HREF="usermanual_en.html#toc12.107">show/vhfstats [days] [date]</A>
+<H2><A NAME="ss12.111">12.111</A> <A HREF="usermanual_en.html#toc12.111">show/vhfstats [days] [date]</A>
 </H2>
 
 <P><CODE><B>show/vhfstats [days] [date]</B> Show the VHF DX Statistics</CODE></P>
 
 <P>Show the VHF DX spots breakdown by band for the last 
 &lt;days&gt; no of days (default is 31), starting from a date (default: today).</P>
-<H2><A NAME="ss12.108">12.108</A> <A HREF="usermanual_en.html#toc12.108">show/vhftable [days] [date] [prefix ...]</A>
+<H2><A NAME="ss12.112">12.112</A> <A HREF="usermanual_en.html#toc12.112">show/vhftable [days] [date] [prefix ...]</A>
 </H2>
 
 <P><CODE><B>show/vhftable [days] [date] [prefix ...]</B> Show the VHF DX Spotter Table</CODE></P>
@@ -2057,20 +2157,20 @@ the worldwide statistics.</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.109">12.109</A> <A HREF="usermanual_en.html#toc12.109">show/wcy</A>
+<H2><A NAME="ss12.113">12.113</A> <A HREF="usermanual_en.html#toc12.113">show/wcy</A>
 </H2>
 
 <P><CODE><B>show/wcy</B> Show last 10 WCY broadcasts</CODE></P>
 
 
-<H2><A NAME="ss12.110">12.110</A> <A HREF="usermanual_en.html#toc12.110">show/wcy &lt;n&gt;</A>
+<H2><A NAME="ss12.114">12.114</A> <A HREF="usermanual_en.html#toc12.114">show/wcy &lt;n&gt;</A>
 </H2>
 
 <P><CODE><B>show/wcy &lt;n&gt;</B> Show last &lt;n&gt; WCY broadcasts</CODE></P>
 
 <P>Display the most recent WCY information that has been received by the system</P>
 
-<H2><A NAME="ss12.111">12.111</A> <A HREF="usermanual_en.html#toc12.111">show/wm7d &lt;callsign&gt;</A>
+<H2><A NAME="ss12.115">12.115</A> <A HREF="usermanual_en.html#toc12.115">show/wm7d &lt;callsign&gt;</A>
 </H2>
 
 <P><CODE><B>show/wm7d &lt;callsign&gt;</B> Show callbook details on a US callsigns</CODE></P>
@@ -2079,19 +2179,19 @@ the worldwide statistics.</P>
 and returns any information available for that US callsign. This service
 is provided for users of this software by http://www.wm7d.net.</P>
 <P>See also SHOW/QRZ. </P>
-<H2><A NAME="ss12.112">12.112</A> <A HREF="usermanual_en.html#toc12.112">show/wwv</A>
+<H2><A NAME="ss12.116">12.116</A> <A HREF="usermanual_en.html#toc12.116">show/wwv</A>
 </H2>
 
 <P><CODE><B>show/wwv</B> Show last 10 WWV broadcasts</CODE></P>
 
 
-<H2><A NAME="ss12.113">12.113</A> <A HREF="usermanual_en.html#toc12.113">show/wwv &lt;n&gt;</A>
+<H2><A NAME="ss12.117">12.117</A> <A HREF="usermanual_en.html#toc12.117">show/wwv &lt;n&gt;</A>
 </H2>
 
 <P><CODE><B>show/wwv &lt;n&gt;</B> Show last &lt;n&gt; WWV broadcasts</CODE></P>
 
 <P>Display the most recent WWV information that has been received by the system</P>
-<H2><A NAME="ss12.114">12.114</A> <A HREF="usermanual_en.html#toc12.114">sysop</A>
+<H2><A NAME="ss12.118">12.118</A> <A HREF="usermanual_en.html#toc12.118">sysop</A>
 </H2>
 
 <P><CODE><B>sysop</B> Regain your privileges if you login remotely</CODE></P>
@@ -2127,7 +2227,7 @@ you type:-
 <P>They will all match. If there is no password you will still be offered
 numbers but nothing will happen when you input a string. Any match is
 case sensitive.</P>
-<H2><A NAME="ss12.115">12.115</A> <A HREF="usermanual_en.html#toc12.115">talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;]</A>
+<H2><A NAME="ss12.119">12.119</A> <A HREF="usermanual_en.html#toc12.119">talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;]</A>
 </H2>
 
 <P><CODE><B>talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;]</B> Send a text message to another station via a node</CODE></P>
@@ -2178,13 +2278,13 @@ with the '//' command. For example:-</P>
 </P>
 <P>will send the hftable as you have it to all the people you are currently 
 talking to.</P>
-<H2><A NAME="ss12.116">12.116</A> <A HREF="usermanual_en.html#toc12.116">talk &lt;call&gt; [&lt;text&gt;]</A>
+<H2><A NAME="ss12.120">12.120</A> <A HREF="usermanual_en.html#toc12.120">talk &lt;call&gt; [&lt;text&gt;]</A>
 </H2>
 
 <P><CODE><B>talk &lt;call&gt; [&lt;text&gt;]</B> Send a text message to another station</CODE></P>
 
 
-<H2><A NAME="ss12.117">12.117</A> <A HREF="usermanual_en.html#toc12.117">type &lt;filearea&gt;/&lt;name&gt;</A>
+<H2><A NAME="ss12.121">12.121</A> <A HREF="usermanual_en.html#toc12.121">type &lt;filearea&gt;/&lt;name&gt;</A>
 </H2>
 
 <P><CODE><B>type &lt;filearea&gt;/&lt;name&gt;</B> Look at the contents of a file in one of the fileareas</CODE></P>
@@ -2200,13 +2300,13 @@ enter:-
 </P>
 <P>See also SHOW/FILES to see what fileareas are available and a 
 list of content.</P>
-<H2><A NAME="ss12.118">12.118</A> <A HREF="usermanual_en.html#toc12.118">unset/announce</A>
+<H2><A NAME="ss12.122">12.122</A> <A HREF="usermanual_en.html#toc12.122">unset/announce</A>
 </H2>
 
 <P><CODE><B>unset/announce</B> Stop announce messages coming out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.119">12.119</A> <A HREF="usermanual_en.html#toc12.119">unset/anntalk</A>
+<H2><A NAME="ss12.123">12.123</A> <A HREF="usermanual_en.html#toc12.123">unset/anntalk</A>
 </H2>
 
 <P><CODE><B>unset/anntalk</B> Stop talk like announce messages on your terminal</CODE></P>
@@ -2231,19 +2331,19 @@ welter of useless ones.</P>
 </CODE></BLOCKQUOTE>
 </P>
 <P>allows you to see them again. This is the default.</P>
-<H2><A NAME="ss12.120">12.120</A> <A HREF="usermanual_en.html#toc12.120">unset/beep</A>
+<H2><A NAME="ss12.124">12.124</A> <A HREF="usermanual_en.html#toc12.124">unset/beep</A>
 </H2>
 
 <P><CODE><B>unset/beep</B> Stop beeps for DX and other messages on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.121">12.121</A> <A HREF="usermanual_en.html#toc12.121">unset/dx</A>
+<H2><A NAME="ss12.125">12.125</A> <A HREF="usermanual_en.html#toc12.125">unset/dx</A>
 </H2>
 
 <P><CODE><B>unset/dx</B> Stop DX messages coming out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.122">12.122</A> <A HREF="usermanual_en.html#toc12.122">unset/dxcq</A>
+<H2><A NAME="ss12.126">12.126</A> <A HREF="usermanual_en.html#toc12.126">unset/dxcq</A>
 </H2>
 
 <P><CODE><B>unset/dxcq</B> Stop CQ Zones on the end of DX announcements</CODE></P>
@@ -2254,7 +2354,7 @@ cannot cope with this. The Spotter's CQ is on the RHS of the
 time, the Spotted's CQ is on the LHS.</P>
 <P>Conflicts with: SET/DXGRID, SET/DXITU, SHOW/USSTATE</P>
 <P>Do a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss12.123">12.123</A> <A HREF="usermanual_en.html#toc12.123">unset/dxgrid</A>
+<H2><A NAME="ss12.127">12.127</A> <A HREF="usermanual_en.html#toc12.127">unset/dxgrid</A>
 </H2>
 
 <P><CODE><B>unset/dxgrid</B> Stop QRA Grid Squares on the end of DX announcements</CODE></P>
@@ -2266,7 +2366,7 @@ cannot cope with this. You can use this command to reset (or set)
 this feature.</P>
 <P>Conflicts with: SET/DXCQ, SET/DXITU</P>
 <P>Do a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss12.124">12.124</A> <A HREF="usermanual_en.html#toc12.124">unset/dxitu</A>
+<H2><A NAME="ss12.128">12.128</A> <A HREF="usermanual_en.html#toc12.128">unset/dxitu</A>
 </H2>
 
 <P><CODE><B>unset/dxitu</B> Stop ITU Zones on the end of DX announcements</CODE></P>
@@ -2277,7 +2377,7 @@ cannot cope with this. The Spotter's ITU is on the RHS of the
 time, the Spotted's ITU is on the LHS.</P>
 <P>Conflicts with: SET/DXGRID, SET/DXCQ, SHOW/USSTATE</P>
 <P>Do a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss12.125">12.125</A> <A HREF="usermanual_en.html#toc12.125">unset/echo</A>
+<H2><A NAME="ss12.129">12.129</A> <A HREF="usermanual_en.html#toc12.129">unset/echo</A>
 </H2>
 
 <P><CODE><B>unset/echo</B> Stop the cluster echoing your input</CODE></P>
@@ -2288,7 +2388,7 @@ connected via port 23 or some other port. You can use this command
 to change the setting appropriately. </P>
 <P>The setting is stored in your user profile.</P>
 <P>YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.</P>
-<H2><A NAME="ss12.126">12.126</A> <A HREF="usermanual_en.html#toc12.126">unset/email</A>
+<H2><A NAME="ss12.130">12.130</A> <A HREF="usermanual_en.html#toc12.130">unset/email</A>
 </H2>
 
 <P><CODE><B>unset/email</B> Stop personal msgs being forwarded by email</CODE></P>
@@ -2314,19 +2414,19 @@ Emails are forwarded to all the email addresses you specify.</P>
 </CODE></BLOCKQUOTE>
 </P>
 
-<H2><A NAME="ss12.127">12.127</A> <A HREF="usermanual_en.html#toc12.127">unset/here</A>
+<H2><A NAME="ss12.131">12.131</A> <A HREF="usermanual_en.html#toc12.131">unset/here</A>
 </H2>
 
 <P><CODE><B>unset/here</B> Tell the system you are absent from your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.128">12.128</A> <A HREF="usermanual_en.html#toc12.128">unset/logininfo</A>
+<H2><A NAME="ss12.132">12.132</A> <A HREF="usermanual_en.html#toc12.132">unset/logininfo</A>
 </H2>
 
 <P><CODE><B>unset/logininfo</B> Inform when a station logs out locally</CODE></P>
 
 
-<H2><A NAME="ss12.129">12.129</A> <A HREF="usermanual_en.html#toc12.129">unset/privilege</A>
+<H2><A NAME="ss12.133">12.133</A> <A HREF="usermanual_en.html#toc12.133">unset/privilege</A>
 </H2>
 
 <P><CODE><B>unset/privilege</B> Remove any privilege for this session</CODE></P>
@@ -2335,7 +2435,7 @@ Emails are forwarded to all the email addresses you specify.</P>
 use. If you want to get your normal privilege back you will need to
 either logout and login again (if you are on a console) or use the
 SYSOP command.</P>
-<H2><A NAME="ss12.130">12.130</A> <A HREF="usermanual_en.html#toc12.130">unset/prompt</A>
+<H2><A NAME="ss12.134">12.134</A> <A HREF="usermanual_en.html#toc12.134">unset/prompt</A>
 </H2>
 
 <P><CODE><B>unset/prompt</B> Set your prompt back to default</CODE></P>
@@ -2353,13 +2453,13 @@ fixed prompt).</P>
 </P>
 <P>UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back to
 normal.</P>
-<H2><A NAME="ss12.131">12.131</A> <A HREF="usermanual_en.html#toc12.131">unset/talk</A>
+<H2><A NAME="ss12.135">12.135</A> <A HREF="usermanual_en.html#toc12.135">unset/talk</A>
 </H2>
 
 <P><CODE><B>unset/talk</B> Stop TALK messages coming out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.132">12.132</A> <A HREF="usermanual_en.html#toc12.132">unset/usstate</A>
+<H2><A NAME="ss12.136">12.136</A> <A HREF="usermanual_en.html#toc12.136">unset/usstate</A>
 </H2>
 
 <P><CODE><B>unset/usstate</B> Stop US State info on the end of DX announcements</CODE></P>
@@ -2374,38 +2474,38 @@ information from SET/DXGRID.</P>
 to reset (or set) this feature.</P>
 <P>Conflicts with: SET/DXCQ, SET/DXITU</P>
 <P>Do a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss12.133">12.133</A> <A HREF="usermanual_en.html#toc12.133">unset/wcy</A>
+<H2><A NAME="ss12.137">12.137</A> <A HREF="usermanual_en.html#toc12.137">unset/wcy</A>
 </H2>
 
 <P><CODE><B>unset/wcy</B> Stop WCY messages coming out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.134">12.134</A> <A HREF="usermanual_en.html#toc12.134">unset/wwv</A>
+<H2><A NAME="ss12.138">12.138</A> <A HREF="usermanual_en.html#toc12.138">unset/wwv</A>
 </H2>
 
 <P><CODE><B>unset/wwv</B> Stop WWV messages coming out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.135">12.135</A> <A HREF="usermanual_en.html#toc12.135">unset/wx</A>
+<H2><A NAME="ss12.139">12.139</A> <A HREF="usermanual_en.html#toc12.139">unset/wx</A>
 </H2>
 
 <P><CODE><B>unset/wx</B> Stop WX messages coming out on your terminal</CODE></P>
 
 
-<H2><A NAME="ss12.136">12.136</A> <A HREF="usermanual_en.html#toc12.136">who</A>
+<H2><A NAME="ss12.140">12.140</A> <A HREF="usermanual_en.html#toc12.140">who</A>
 </H2>
 
 <P><CODE><B>who</B> Show who is physically connected</CODE></P>
 
 <P>This is a quick listing that shows which callsigns are connected and
 what sort of connection they have</P>
-<H2><A NAME="ss12.137">12.137</A> <A HREF="usermanual_en.html#toc12.137">wx &lt;text&gt;</A>
+<H2><A NAME="ss12.141">12.141</A> <A HREF="usermanual_en.html#toc12.141">wx &lt;text&gt;</A>
 </H2>
 
 <P><CODE><B>wx &lt;text&gt;</B> Send a weather message to local users</CODE></P>
 
 
-<H2><A NAME="ss12.138">12.138</A> <A HREF="usermanual_en.html#toc12.138">wx full &lt;text&gt;</A>
+<H2><A NAME="ss12.142">12.142</A> <A HREF="usermanual_en.html#toc12.142">wx full &lt;text&gt;</A>
 </H2>
 
 <P><CODE><B>wx full &lt;text&gt;</B> Send a weather message to all cluster users</CODE></P>

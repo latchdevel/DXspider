@@ -2219,6 +2219,60 @@ This will disconnect you from the cluster
 </tt>
 
 <P>
+<sect1>chat &lt;group&gt; &lt;text&gt; (0)
+
+<P>
+<tt>
+<bf>chat &lt;group&gt; &lt;text&gt;</bf> Chat or Conference to a group
+</tt>
+
+<P>
+It is now possible to JOIN a group and have network wide conferencing to that
+group. DXSpider does not (and probably will not) implement the AK1A 
+conference mode as this seems very limiting, is hardly used and doesn't seem
+to work too well anyway.
+
+This system uses the existing ANN system and is compatible with both other
+DXSpider nodes and AK1A clusters (they use ANN/&lt;group&gt;). 
+
+You can be a member of as many "groups" as you want. To join a group type:-
+
+<tscreen><verb>
+  JOIN FOC    (where FOC is the group name)
+</verb></tscreen>
+
+To leave a group type:-
+
+<tscreen><verb>
+  LEAVE FOC
+</verb></tscreen>
+
+You can see which groups you are in by typing:-
+
+<tscreen><verb>
+  STAT/USER
+</verb></tscreen>
+
+and you can see whether your mate is in the group, if he connects to the
+same node as you, by typing:-
+
+<tscreen><verb>
+  STAT/USER g1tlh
+</verb></tscreen>
+
+To send a message to a group type:-
+
+<tscreen><verb>
+  CHAT FOC hello everyone
+</verb></tscreen>
+
+or
+
+<tscreen><verb>
+  CH #9000 hello I am back
+</verb></tscreen>
+
+See also JOIN, LEAVE, SHOW/CHAT
 <sect1>clear/announce &lt;callsign&gt; &lsqb;input&rsqb; &lsqb;0-9|all&rsqb; (8)
 
 <P>
@@ -3098,6 +3152,22 @@ node&gt;).
 
 Best of luck - you will need it.
   
+<sect1>join &lt;group&gt; (0)
+
+<P>
+<tt>
+<bf>join &lt;group&gt;</bf> Join a chat or conference group
+</tt>
+
+<P>
+JOIN allows you to join a network wide conference group. To join a
+group (called FOC in this case) type:-
+
+<tscreen><verb>
+  JOIN FOC
+</verb></tscreen>
+
+See also CHAT, LEAVE, SHOW/CHAT
 <sect1>kill (5)
 
 <P>
@@ -3235,6 +3305,22 @@ Remove this message from the entire cluster system as well as your node.
 </tt>
 
 <P>
+<sect1>leave &lt;group&gt; (0)
+
+<P>
+<tt>
+<bf>leave &lt;group&gt;</bf> Leave a chat or conference group
+</tt>
+
+<P>
+LEAVE allows you to leave a network wide conference group. To leave a
+group (called FOC in this case) type:-
+
+<tscreen><verb>
+  LEAVE FOC
+</verb></tscreen>
+
+See also CHAT, JOIN, SHOW/CHAT
 <sect1>links (0)
 
 <P>
@@ -4586,6 +4672,18 @@ for more information.
 <P>
 Display all the bad words in the system, see SET/BADWORD
 for more information.
+<sect1>show/chat &lsqb;&lt;group&gt;&rsqb; &lsqb;&lt;lines&gt;&rsqb; (0)
+
+<P>
+<tt>
+<bf>show/chat &lsqb;&lt;group&gt;&rsqb; &lsqb;&lt;lines&gt;&rsqb;</bf> Show any chat or conferencing 
+</tt>
+
+<P>
+This command allows you to see any chat or conferencing that has  
+occurred whilst you were away. SHOW/CHAT on its own will show data for
+all groups. If you use a group name then it will show only chat for
+that group.
 <sect1>show/configuration &lsqb;&lt;node&gt;&rsqb; (0)
 
 <P>
