@@ -191,9 +191,9 @@ sub shellregex
 # start an attempt at determining whether this string might be a callsign
 sub iscallsign
 {
-	my $call = shift;
-	return 1 if $call =~ /^\w+\d+/;
-	return 1 if $call =~ /^\d+\w+/;
+	my $call = uc shift;
+	return 1 if $call =~ /^[A-Z]+\d+[A-Z]+/;
+	return 1 if $call =~ /^\d+[A-Z]\d+[A-Z]+/;
 	return undef;
 }
 

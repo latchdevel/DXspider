@@ -41,6 +41,7 @@ BEGIN {
 use Msg;
 use DXVars;
 use DXDebug;
+use DXUtil;
 use Net::Telnet qw(TELOPT_ECHO);
 use IO::File;
 use IO::Socket;
@@ -378,42 +379,22 @@ if ($loginreq) {
 		$stdout->print($issue) if $issue;
 	}
 	
-
-	use DXUser;
-	
-	DXUser->init($userfn);
-	
 	# allow a login from an existing user. I could create a user but
 	# I want to check for valid callsigns and I don't have the 
 	# necessary info / regular expression yet
-	for ($state = 0; $state < 2; ) {
-		alarm($timeout);
+	alarm($timeout);
 		
-		if ($state == 0) {
-			$stdout->print('login: ');
-			$stdout->flush();
-			local $\ = $nl;
-			$s = $stdin->getline();
-			chomp $s;
-			$s =~ s/\s+//og;
-			$s =~ s/-\d+$//o;            # no ssids!
-			cease(0) unless $s gt ' ';
-			$call = uc $s;
-			$user = DXUser->get($call);
-			$state = 1;
-		} elsif ($state == 1) {
-			$stdout->print('password: ');
-			$stdout->flush();
-			local $\ = $nl;
-			$s = $stdin->getline();
-			chomp $s;
-			$state = 2;
-			if (!$user || ($user->passwd && $user->passwd ne $s)) {
-				$stdout->print("sorry...$nl");
-				cease(0);
-			}
-		}
-	}
+	$stdout->print('login: ');
+	$stdout->flush();
+	local $\ = $nl;
+	$s = $stdin->getline();
+	chomp $s;
+	$s =~ s/\s+//og;
+	$s =~ s/-\d+$//o;            # no ssids!
+	cease(0) unless $s gt ' ' && iscallsign($s);
+	$call = uc $s;
+	$connsort = 'telnet' if $connsort eq 'local';
+	alarm(0);
 }
 
 # handle callsign and connection type firtling
