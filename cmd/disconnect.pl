@@ -26,9 +26,9 @@ foreach $call (@calls) {
 	} elsif (my $conn = Msg->conns($call)) {
 		$conn->disconnect;
 		push @out, $self->msg('disc3', $call);
-	} elsif (my $ref = DXCLuster->get_exact($call)) {
-		my $dxchan = $ref->dxchan;
-		if ($dxchan && $dxchan->call eq $main::mycall) {
+	} elsif (my $ref = DXCluster->get_exact($call)) {
+		my $dxchancall = $ref->dxchancall;
+		if ($dxchancall eq $main::mycall || !DXChannel->get($dxchancall)) {
 			$ref->del;
 			push @out, $self->msg('disc4', $call);
 		}

@@ -100,7 +100,7 @@ sub already_conn
 	
 	dbg('chan', "-> D $call $mess\n"); 
 	$conn->send_now("D$call|$mess");
-	Msg->sleep(2);
+	sleep(2);
 	$conn->disconnect;
 }
 

@@ -335,8 +335,6 @@ sub _timedout
 {
 	my $conn = shift;
 	dbg('connect', "timed out after $conn->{timeval} seconds");
-	$conn->{timeout}->del;
-	delete $conn->{timeout};
 	$conn->disconnect;
 }
 

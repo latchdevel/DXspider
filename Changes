@@ -1,6 +1,7 @@
 10Apr01=======================================================================
 1. altered PC21 logic somewhat to eliminate dup PC21s
 2. disconnect should remove dangling local users in the routing table.
+3. fixed nasty recursive timer bug
 09Apr01=======================================================================
 1. changed lockfile name to cluster.lck (from .lock) for MSWin's benefit
 08Apr01=======================================================================

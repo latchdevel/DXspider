@@ -41,17 +41,18 @@ sub handler
 	my $now = time;
 	
 	# handle things on the timer chain
-	for (@timerchain) {
-		if ($now >= $_->{t}) {
-			&{$_->{proc}}();
-			$_->{t} = $now + $_->{interval} if exists $_->{interval};
+	my $t;
+	foreach $t (@timerchain) {
+		if ($now >= $t->{t}) {
+			&{$t->{proc}}();
+			$t->{t} = $now + $t->{interval} if exists $t->{interval};
 		}
 	}
 }
 
 sub DESTROY
 {
-	dbg('connll', "Timer destroyed ($notimers)");
-	$notimers--;
+	dbg('connll', "timer destroyed ($Timer::notimers)");
+	$Timer::notimers--;
 }
 1;
