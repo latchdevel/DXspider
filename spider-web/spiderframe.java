@@ -59,7 +59,8 @@ menubar.add(show);
 		set.add(new MenuItem("Set QTH / City"));
 		set.add(new MenuItem("Set Name"));
 		set.add(new MenuItem("Set Locator"));
-		set.add(new MenuItem("Show Personal Settings"));
+		set.add(new MenuItem("Set HomeNode"));
+        set.add(new MenuItem("Show Personal Settings"));
 menubar.add(set); 
 
 
@@ -70,7 +71,6 @@ menubar.add(dxann);
 		mailbox = new Menu("Mailbox");
 		mailbox.add(new MenuItem("Last 10 Msgs"));
 		mailbox.add(new MenuItem("Last 50 Msgs"));
-		mailbox.add(new MenuItem("List DX Bulletins"));
 		mailbox.add(new MenuItem("New Messages"));
 		mailbox.add(new MenuItem("Own Messages"));
 menubar.add(mailbox); 
@@ -465,10 +465,10 @@ menubar.add(mailbox);
 				beam pp = new beam(this, Prefix, OutFont);
 			        if (Connected) out.println ("sh/pr " + Prefix );
 			
-			// buttom settings
+			// button settings
 
 			} else if (arg.equals("Set Beep")) {
-				if (Connected) out.println("set/Beep");
+				if (Connected) out.println("set/beep");
 			
 			}else if (arg.equals("Set QTH / City")) {
 				beam pp = new beam(this, Prefix, OutFont);
@@ -485,6 +485,10 @@ menubar.add(mailbox);
 			        if (Connected) out.println ("set/qra " + Prefix );
 			
 			}
+			else if (arg.equals("Set HomeNode")) {
+				if (Connected) out.println ("set/homenode " + Prefix );
+
+            }
 			else if (arg.equals("Show Personal Settings")) {
 				if (Connected) out.println ("sh/sta " + Call );
 			
@@ -503,9 +507,6 @@ menubar.add(mailbox);
              }
 			 else if (arg.equals("Last 50 Msgs")) {
 				if (Connected) out.println ("dir/50" );
-			 }
-			 else if (arg.equals("List DX Bulletins")) {
-				if (Connected) out.println ("dir/bul" );
 			 }
 			 else if (arg.equals("New Messages")) {
 			 	if (Connected) out.println ("dir/new" );
