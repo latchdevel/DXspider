@@ -262,6 +262,9 @@ sub _decode
 			}
 		} else {
 			$conn = AGWMsg->new($rproc);
+			$conn->{agwpid} = $pid;
+			$conn->{agwport} = $port;
+			$conn->{lineend} = "\cR";
 			$conn->to_connected($call, 'A', $conn->{csort} = 'ax25');
 		}
 	} elsif ($sort eq 'd') {
@@ -309,9 +312,17 @@ sub in_disconnect
 sub disconnect
 {
 	my $conn = shift;
-	_sendf('d', $main::mycall, $conn->{call});
+	_sendf('d', $main::mycall, $conn->{call}, $conn->{agwport});
 	$conn->SUPER->disconnect;
 }
 
+sub enqueue
+{
+	my ($conn, $msg) = @_;
+	if ($msg =~ /^[D]/) {
+		$msg =~ s/^[-\w]+\|//;
+		_sendf('D', $main::mycall, $conn->{call}, $conn->{agwport}, $conn->{agwpid}, $msg . $conn->{lineend});
+	}
+}
 1;
 
