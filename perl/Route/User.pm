@@ -86,13 +86,19 @@ sub get
 sub addparent
 {
 	my $self = shift;
-    return $self->_addlist('parent', @_);
+    return $self->_addlist('parent', shift);
 }
 
 sub delparent
 {
 	my $self = shift;
-    return $self->_dellist('parent', @_);
+    return $self->_dellist('parent', shift);
+}
+
+sub has_parent
+{
+	my $self = shift;
+	return $self->_haslist('parent', shift);
 }
 
 #

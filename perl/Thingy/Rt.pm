@@ -84,16 +84,17 @@ sub handle_cf
 	my $origin = $thing->{origin};
 	my $chan_call = $dxchan->{call};
 	
-	my $parent = Route::Node::get($origin);
-	unless ($parent) {
-		dbg("Thingy::Rt::cf: received from $origin on $chan_call unknown") if isdbg('chanerr');
-		return;
-	}
-	$parent->np(1);
-	
 	my @pc19;
 	my @pc21;
 
+	my $parent = Route::Node::get($origin);
+	unless ($parent) {
+		dbg("Thingy::Rt::cf: new (unconnected) node $origin arrived") if isdbg('chanerr');
+		$parent = Route::Node::new($origin, 0, 1);
+		push @pc19, $parent;
+	}
+	$parent->np(1);
+	
 	# move the origin over to the user, if required
 	if ($thing->{user}) {
 		$origin = $thing->{user};

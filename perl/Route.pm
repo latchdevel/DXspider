@@ -130,6 +130,16 @@ sub _dellist
 	return @out;
 }
 
+sub _haslist
+{
+	my $self = shift;
+	my $field = shift;
+	my @out;
+	my $call = shift;
+	my $r = grep $_->{call} eq $call, @{$self->{$field}};
+	dbg(ref($self) . " $call is " . $r?'in':'NOT in' . " $self->{call}\->\{$field\}") if isdbg('routelow');
+}
+
 sub is_empty
 {
 	my $self = shift;

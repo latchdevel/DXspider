@@ -204,6 +204,25 @@ sub parents
 	return @{$self->{parent}};
 }
 
+sub has_user
+{
+	my $self = shift;
+	return $self->_haslist('users', shift);
+}
+
+sub has_node
+{
+	my $self = shift;
+	return $self->_haslist('nodes', shift);
+}
+
+sub has_parent
+{
+	my $self = shift;
+	return $self->_haslist('parent', shift);
+}
+
+
 sub rnodes
 {
 	my $self = shift;
