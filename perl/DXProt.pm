@@ -34,6 +34,8 @@ use Route;
 use Route::Node;
 use Script;
 use Investigate;
+use RouteDB;
+
 
 use strict;
 
@@ -415,6 +417,10 @@ sub handle_10
 		}
 	}
 
+	# remember a route to this node and also the node on which this user is
+	RouteDB::update($_[6], $self->{call});
+#	RouteDB::update($to, $_[6]);
+
 	# it is here and logged on
 	$dxchan = DXChannel->get($main::myalias) if $to eq $main::mycall;
 	$dxchan = DXChannel->get($to) unless $dxchan;
@@ -435,6 +441,8 @@ sub handle_10
 		return;
 	}
 
+	# can we see an interface to send it down?
+	
 	# not visible here, send a message of condolence
 	$vref = undef;
 	$ref = Route::get($from);
@@ -507,7 +515,10 @@ sub handle_11
 		}
 	}
 
-
+	# remember a route
+	RouteDB::update($_[7], $self->{call});
+#	RouteDB::update($_[6], $_[7]);
+	
 	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $_[6], $_[7]);
 	# global spot filtering on INPUT
 	if ($self->{inspotsfilter}) {
@@ -633,11 +644,16 @@ sub handle_12
 		return;
 	}
 
+
 	my $dxchan;
 	
 	if ((($dxchan = DXChannel->get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w.]+$/){
 		$self->send_chat($line, @_[1..6]);
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
+
+		# remember a route
+		RouteDB::update($_[5], $self->{call});
+#		RouteDB::update($_[1], $_[5]);
 
 		# ignore something that looks like a chat line coming in with sysop
 		# flag - this is a kludge...
@@ -690,6 +706,8 @@ sub handle_16
 		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 		return;
 	}
+
+	RouteDB::update($ncall, $self->{call});
 
 	# do we believe this call? 
 	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
@@ -845,6 +863,8 @@ sub handle_17
 		return;
 	}
 
+	RouteDB::delete($ncall, $self->{call});
+
 	# do we believe this call? 
 	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
 		if (my $ivp = Investigate::get($ncall, $self->{call})) {
@@ -997,6 +1017,8 @@ sub handle_19
 		}
 		$user->sort('A') unless $user->is_node;
 
+		RouteDB::update($call, $self->{call});
+
 		# do we believe this call?
 		my $genline = "PC19^$here^$call^$conf^$ver^$_[-1]^"; 
 		unless ($call eq $self->{call} || $self->is_believed($call)) {
@@ -1098,6 +1120,8 @@ sub handle_21
 		$self->disconnect(1);
 		return;
 	}
+
+	RouteDB::delete($call, $self->{call});
 
 	# check if we believe this
 	unless ($call eq $self->{call} || $self->is_believed($call)) {
@@ -1474,6 +1498,9 @@ sub handle_50
 	my $origin = shift;
 
 	my $call = $_[1];
+
+	RouteDB::update($call, $self->{call});
+
 	my $node = Route::Node::get($call);
 	if ($node) {
 		return unless $node->call eq $self->{call};
@@ -1547,6 +1574,9 @@ sub handle_51
 			}
 		}
 	} else {
+
+		RouteDB::update($from, $self->{call});
+
 		if (eph_dup($line)) {
 			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
 			return;
@@ -2026,6 +2056,7 @@ sub send_local_config
 #
 # is called route(to, pcline);
 #
+
 sub route
 {
 	my ($self, $call, $line) = @_;
@@ -2037,7 +2068,9 @@ sub route
 
 	# always send it down the local interface if available
 	my $dxchan = DXChannel->get($call);
-	unless ($dxchan) {
+	if ($dxchan) {
+		dbg("route: $call -> $dxchan->{call} direct" ) if isdbg('route');
+	} else {
 		my $cl = Route::get($call);
 		$dxchan = $cl->dxchan if $cl;
 		if (ref $dxchan) {
@@ -2045,8 +2078,23 @@ sub route
 				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
 				return;
 			}
+			dbg("route: $call -> $dxchan->{call} using normal route" ) if isdbg('route');
 		}
 	}
+
+	# try the backstop method
+	unless ($dxchan) {
+		my $rcall = RouteDB::get($call);
+		if ($rcall) {
+			if ($rcall eq $self->{call}) {
+				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
+				return;
+			}
+			$dxchan = DXChannel->get($call);
+			dbg("route: $call -> $dxchan->{call} using RouteDB" ) if isdbg('route') && $dxchan;
+		}
+	}
+
 	if ($dxchan) {
 		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 		if ($routeit) {
