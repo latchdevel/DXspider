@@ -222,7 +222,7 @@ package DXM;
 				rec => '$_[0] records',
 				reg => '$_[0] registered',
 				regc => '$_[0] created and registered',
-				reginac => 'Registration is not active (set/var \$main::regreq = 1 to activate)',
+				reginac => 'Registration is not active (set/var \$main::reqreg = 1 to activate)',
 				regun => '$_[0] unregistered',
 				route => '$_[0] on $_[1] via $_[2]',
 				sat1 => 'Tracking Table for $_[0] for the next $_[1] hours every $_[2] mins',
