@@ -106,7 +106,7 @@ sub start
 	$self->{here} = 1;
 
 	# sort out registration
-	if ($main::reqreq) {
+	if ($main::reqreg) {
 		$self->{registered} = $user->registered;
 	} else {
 		$self->{registered} = 1;
