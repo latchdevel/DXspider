@@ -113,21 +113,31 @@ sub rec
 	# set up the basic channel info - this needs a bit more thought - there is duplication here
 	if (!defined $dxchan) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
-
-                # is there one already connected to me ? 
+		my ($scall, $ssid) = split /-/, $call;
+		
+		# adjust the callsign if it has an SSID, SSID <= 8 are legal > 8 are netrom connections
+        if ($ssid) {
+			$ssid = 15 if $ssid > 15;
+			if ($ssid > 8) {
+				$ssid = 15 - $ssid;
+				$call = "$scall-$ssid";
+			}
+		}
+ 
+		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);
 		if (DXChannel->get($call)) {
-			my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
+			my $mess = DXM::msg($lang, ($user && $user->sort eq 'A') ? 'concluster' : 'conother', $call);
 			already_conn($conn, $call, $mess);
 			return;
 		}
 		
-		# is there one already connected elsewhere in the cluster (and not a cluster)
+		# is there one already connected elsewhere in the cluster?
 		if ($user) {
 			if (($user->sort eq 'A' || $call eq $myalias) && !DXCluster->get_exact($call)) {
 				;
 			} else {
-				if (DXCluster->get($call) || DXChannel->get($call)) {
+				if (DXCluster->get_exact($call)) {
 					my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
 					already_conn($conn, $call, $mess);
 					return;
@@ -135,7 +145,7 @@ sub rec
 			}
 			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 		} else {
-			if (DXCluster->get($call)) {
+			if (DXCluster->get_exact($call)) {
 				my $mess = DXM::msg($lang, 'conother', $call);
 				already_conn($conn, $call, $mess);
 				return;

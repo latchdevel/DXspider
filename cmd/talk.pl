@@ -24,7 +24,9 @@ if ($argv[1] eq '>') {
 }
 
 my $call = $via ? $via : $to;
-my $ref = DXCluster->get($call);
+my $ref = DXCluster->get_exact($call);     # try an exact call
+$ref = DXCluster->get($call) unless $ref;  # try one ignoring SSID
+$ref = DXChannel->get($call) unless $ref;  # is it local?
 
 # if we haven't got an explicit via and we can't see them, try their node
 unless ($ref || $via) {

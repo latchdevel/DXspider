@@ -844,6 +844,9 @@ sub finish
 	# now broadcast to all other ak1a nodes that I have gone
 	broadcast_ak1a(pc21($call, 'Gone.'), $self) unless $self->{isolate};
 
+	# I was the last node visited
+    $self->user->node($main::mycall);
+
 	# send info to all logged in thingies
 	$self->tell_login('logoutn');
 

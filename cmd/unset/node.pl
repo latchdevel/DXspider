@@ -15,19 +15,19 @@ my @out;
 my $user;
 my $create;
 
-return (0) if $self->priv < 5;
+return (1, $self->msg('e5')) if $self->priv < 5;
 
 foreach $call (@args) {
-  $call = uc $call;
-  my $chan = DXChannel->get($call);
-  if ($chan) {
-	push @out, $self->msg('nodee1', $call);
-  } else {
-    $user = DXUser->get($call);
-	return (1, $self->msg('usernf', $call)) if !$user; 
-	$user->sort('U');
-	$user->close();
-    push @out, $self->msg('nodeu', $call);
-  }
+	$call = uc $call;
+	my $chan = DXChannel->get($call);
+	if ($chan) {
+		push @out, $self->msg('nodee1', $call);
+	} else {
+		$user = DXUser->get_exact($call);
+		return (1, $self->msg('usernf', $call)) if !$user; 
+		$user->sort('U');
+		$user->close();
+		push @out, $self->msg('nodeu', $call);
+	}
 }
 return (1, @out);

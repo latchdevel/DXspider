@@ -25,7 +25,7 @@ if ($self->priv < 9) {
 
 my @out;
 $call = uc $call;
-my $user = DXUser->get($call);
+my $user = DXUser->get_exact($call);
 unless ($user) {
 	$user = DXUser->new($call);
 	push @out, $self->msg('spf1', $call);

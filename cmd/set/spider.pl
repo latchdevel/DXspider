@@ -1,5 +1,5 @@
 #
-# set user type BACK TO  'U' (user)
+# set user type to 'S' for Spider node
 #
 # Please note that this is only effective if the user is not on-line
 #
@@ -24,10 +24,15 @@ foreach $call (@args) {
 		push @out, $self->msg('nodee1', $call);
 	} else {
 		$user = DXUser->get_exact($call);
-		return (1, $self->msg('usernf', $call)) if !$user; 
-		$user->isolate(0);
-		$user->close();
-		push @out, $self->msg('isou', $call);
+		$create = !$user;
+		$user = DXUser->new($call) if $create;
+		if ($user) {
+			$user->sort('S');
+			$user->close();
+			push @out, $self->msg($create ? 'nodesc' : 'nodes', $call);
+		} else {
+			push @out, $self->msg('e3', "Set Spider", $call);
+		}
 	}
 }
 return (1, @out);

@@ -84,7 +84,7 @@ sub start
 	my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
 	my $cuser = DXNodeuser->new($self, $node, $call, 0, 1);
 	$node->dxchan($self) if $call eq $main::myalias; # send all output for mycall to myalias
-	
+
 	# issue a pc16 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
 	my @pc16 = DXProt::pc16($nchan, $cuser);
@@ -297,6 +297,9 @@ sub finish
 	my $self = shift;
 	my $call = $self->call;
 
+	# I was the last node visited
+    $self->user->node($main::mycall);
+		
 	# log out text
 	if (-e "$main::data/logout") {
 		open(I, "$main::data/logout") or confess;

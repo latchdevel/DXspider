@@ -15,24 +15,24 @@ my @out;
 my $user;
 my $create;
 
-return (0) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 9;
 
 foreach $call (@args) {
-  $call = uc $call;
-  my $chan = DXChannel->get($call);
-  if ($chan) {
-	push @out, $self->msg('nodee1', $call);
-  } else {
-    $user = DXUser->get($call);
-	$create = !$user;
-	$user = DXUser->new($call) if $create;
-	if ($user) {
-	  $user->isolate(1);
-	  $user->close();
-      push @out, $self->msg($create ? 'isoc' : 'iso', $call);
+	$call = uc $call;
+	my $chan = DXChannel->get($call);
+	if ($chan) {
+		push @out, $self->msg('nodee1', $call);
 	} else {
-      push @out, $self->msg('e3', "Set/Isolate", $call);
+		$user = DXUser->get_exact($call);
+		$create = !$user;
+		$user = DXUser->new($call) if $create;
+		if ($user) {
+			$user->isolate(1);
+			$user->close();
+			push @out, $self->msg($create ? 'isoc' : 'iso', $call);
+		} else {
+			push @out, $self->msg('e3', "Set/Isolate", $call);
+		}
 	}
-  }
 }
 return (1, @out);

@@ -1,3 +1,14 @@
+24Nov99=======================================================================
+1. extended badmsg.pl stuff so that it works like the forward file and allows
+one to reject on to, from, origin and subject fields.
+2. added a swop.pl again in a forward.pl like format that allows simple swop
+for a field or test on a field and set another.
+3. Fixed the problem that read private mail follows you around as well as
+unread private mail does.
+4. Change the logic of connections so that the node will accept callsigns with
+SSIDs to -8 as different entities from each other. SSIDs > 8 are subtracted 
+from 15 and are assumed to be coming in via netrom diddled connections. This
+affects lots of the commands as well. I may not have got them all.
 21Nov99=======================================================================
 1. lose extraneous rubbish after the callsign as sent by BBSes.
 2. Change end label on sh/moon to RGain dB rather than Loss dB.
