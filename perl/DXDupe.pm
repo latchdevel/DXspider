@@ -27,7 +27,7 @@ $main::branch += $BRANCH;
 
 sub init
 {
-	$dbm = tie (%d, 'DB_File', $fn) or confess "can't open dupe file: $fn ($!)";
+	$dbm = tie (%d, 'DB_File', $fn);
 	unless ($dbm) {
 		eval { untie %d };
 		dbg("Dupefile $fn corrupted, removing...");

@@ -25,7 +25,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3);
 
 %u = ();
 $dbm = undef;
@@ -34,6 +34,7 @@ $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 $lrusize = 2000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
+$v3 = 0;
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -116,14 +117,53 @@ sub init
 	my ($pkg, $fn, $mode) = @_;
   
 	confess "need a filename in User" if !$fn;
-	$fn .= ".v2";
-	if ($mode) {
-		$dbm = tie (%u, 'DB_File', $fn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+
+	my $ufn;
+	my $convert;
+	
+	eval {
+		require Storable;
+	};
+
+#	eval "use Storable qw(nfreeze thaw)";
+	
+	if ($@) {
+		$ufn = "$fn.v2";
 	} else {
-		$dbm = tie (%u, 'DB_File', $fn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		import Storable qw(nfreeze thaw);
+
+		$ufn = "$fn.v3";
+		$v3 = 1;
+		$convert = ! -e $ufn;
 	}
 	
-	$filename = $fn;
+	if ($mode) {
+		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+	} else {
+		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+	}
+	
+	# do a conversion if required
+	if ($convert) {
+		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
+		
+		my %oldu;
+		dbg("Converting the User File to V3 (I suggest you go and have cup of strong tea)");
+		my $odbm = tie (%oldu, 'DB_File', "${fn}.v2", O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+        for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
+			my $ref = asc_decode($val);
+			if ($ref) {
+				$ref->put;
+				$count++;
+			} else {
+				$err++
+			}
+		} 
+		undef $odbm;
+		untie %oldu;
+		dbg("Conversion completed $count records $err errors");
+	}
+	$filename = $ufn;
 	$lru = LRU->newbase("DXUser", $lrusize);
 }
 
@@ -132,7 +172,7 @@ sub del_file
 	my ($pkg, $fn) = @_;
   
 	confess "need a filename in User" if !$fn;
-	$fn .= ".v2";
+	$fn .= $v3 ? ".v3" : ".v2";
 	unlink $fn;
 }
 
@@ -250,10 +290,25 @@ sub put
 	$dbm->put($call, $ref);
 }
 
-# 
-# create a string from a user reference
-#
+# freeze the user
 sub encode
+{
+	goto &asc_encode unless $v3;
+	my $self = shift;
+	return nfreeze($self);
+}
+
+# thaw the user
+sub decode
+{
+	goto &asc_decode unless $v3;
+	return thaw(shift);
+}
+
+# 
+# create a string from a user reference (in_ascii)
+#
+sub asc_encode
 {
 	my $self = shift;
 	my $dd = new Data::Dumper([$self]);
@@ -264,9 +319,9 @@ sub encode
 }
 
 #
-# create a hash from a string
+# create a hash from a string (in ascii)
 #
-sub decode
+sub asc_decode
 {
 	my $s = shift;
 	my $ref;
@@ -372,7 +427,7 @@ BEGIN {
 	
 	# try to detect a lockfile (this isn't atomic but 
 	# should do for now
-	$lockfn = "$root/perl/cluster.lck";       # lock file name
+	$lockfn = "$root/local/cluster.lck";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -400,7 +455,7 @@ my $err = 0;
 while (<DATA>) {
 	chomp;
 	my @f = split /\t/;
-	my $ref = decode($f[1]);
+	my $ref = asc_decode($f[1]);
 	if ($ref) {
 		$ref->put();
 		$count++;
@@ -435,7 +490,7 @@ print "There are $count user records and $err errors\n";
 					}
 				}
 				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . $ref->encode . "\n";
+				print $fh "$key\t" . $ref->asc_encode . "\n";
 				++$count;
 			} else {
 				Log('DXCommand', "Export Error3: $key\t$val");

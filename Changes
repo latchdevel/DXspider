@@ -1,3 +1,19 @@
+22Feb03=======================================================================
+1. changed qrz.com address 
+2. added Charlie's [K1XX] new wpxloc.raw data stuff to get WA1, KC3 type 
+callsigns to work better.
+3. Merged in the new (faster) DXUser.pm.
+
+[NOTE] this version will require Storable to be installed. On the
+other hand the code may work without, in a compatible way. This bit hasn't 
+been very well tested (the 'no Storable' condition that is). 
+
+It will take several minutes for the node to restart when it does the 
+conversion from .v2 to .v3 user file. Please go and have a good strong cup
+of tea whilst this is happening.
+21Feb03=======================================================================
+1. moved the export of the users file to Wednesday night (GMT) to avoid 
+possible crashes and/or delays during a contest weekend.
 14Feb03=======================================================================
 1. some major changes to the structure of the manual documentation.  To bring
 the manuals into line, they now have the language tag (like 
