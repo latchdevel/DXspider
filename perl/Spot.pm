@@ -233,7 +233,7 @@ sub search
 			   for (\$c = \$#spots; \$c >= 0; \$c--) {
 					\$ref = \$spots[\$c];
 					if ($expr) {
-	                    if (\$dxchan && \$dxchan->{inspotsfilter}) {
+	                    if (\$dxchan && \$dxchan->{spotsfilter}) {
                             if (\@\$ref < 9) {
                                 my \@dxcc = Prefix::cty_data(\$ref->[1]);
                                 if (\@dxcc) {

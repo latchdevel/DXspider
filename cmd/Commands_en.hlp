@@ -2140,7 +2140,7 @@ that you have set, first.
 This command, together with ACCEPT/SPOT or REJECT/SPOT, will allow
 you to customise the spots that you receive.
 
-So if you have said: ACC/SPOT freq on hf
+So if you have said: ACC/SPOT on hf
 
 Doing a SHOW/MYDX will now only, ever, show HF spots. All the other 
 options on SH/DX can still be used.
