@@ -68,7 +68,7 @@ sub new
 	# routing, this must go out here to prevent race condx
 	my $pkg = shift;
 	my $call = shift;
-	my @rout = $main::routeroot->add_user($call, Route::here(1));
+	my @rout = $main::routeroot->add_user($call, 1);
 
 	
 	my $ref = Route::User::get($call);

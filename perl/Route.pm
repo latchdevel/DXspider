@@ -70,7 +70,7 @@ sub new
 	($self->{dxcc}, $self->{itu}, $self->{cq}, $self->{state}, $self->{city}) =
 		Prefix::cty_data($call);
 
-	$self->{flags} = here(1);
+	$self->{flags} = 1;
 	
 	return $self; 
 }
@@ -134,13 +134,6 @@ sub is_empty
 	return @{$self->{$_[0]}} == 0;
 }
 
-sub is_aranea
-{
-	my $self = shift;
-	$self->{aranea} = shift if @_;
-	return $self->{aranea};
-}
-
 #
 # flag field constructors/enquirers
 #
@@ -156,21 +149,15 @@ sub is_aranea
 sub here
 {
 	my $self = shift;
-	my $r = shift;
-	return $self ? 1 : 0 unless ref $self;
-	return ($self->{flags} & 1) ? 1 : 0 unless defined $r;
-	$self->{flags} = (($self->{flags} & ~1) | ($r ? 1 : 0));
-	return $r ? 1 : 0;
+	$self->{flags} = shift if @_;
+	return $self->{flags};
 }
 
+# conferencing in the ak1a sense is not supported 
 sub conf
 {
 	my $self = shift;
-	my $r = shift;
-	return $self ? 2 : 0 unless ref $self;
-	return ($self->{flags} & 2) ? 2 : 0 unless defined $r;
-	$self->{flags} = (($self->{flags} & ~2) | ($r ? 2 : 0));
-	return $r ? 2 : 0;
+	return 0;
 }
 
 sub parents

@@ -239,7 +239,7 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
+	$main::routeroot->add($call, '5000', 1) if $call ne $main::mycall;
 	return $self;
 }
 
@@ -811,7 +811,7 @@ sub handle_16
 		}
 		
 		$r = Route::User::get($call);
-		my $flags = Route::here($here)|Route::conf($conf);
+		my $flags = $here;
 		
 		if ($r) {
 			my $au = $r->addparent($parent);					
@@ -970,7 +970,7 @@ sub handle_19
 	if ($origin ne $self->call) {
 		my $op = Route::Node::get($origin);
 		unless ($op) {
-			$op = $parent->add($origin, 5000, Route::here(1));
+			$op = $parent->add($origin, 5000, 1);
 			my $user = DXUser->get_current($origin);
 			if (!$user) {
 				$user = DXUser->new($origin);
@@ -1044,7 +1044,7 @@ sub handle_19
 		}
 
 		my $r = Route::Node::get($call);
-		my $flags = Route::here($here)|Route::conf($conf);
+		my $flags = $here;
 
 		# is he under the control of the new protocol?
 		if ($r && $r->np) {
