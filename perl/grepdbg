@@ -3,11 +3,17 @@
 # Program to do a grep with dates and times on the debug
 # files
 #
-# dispdbg [-nnn ...] <string>
+# grepdbg [nn] [-mm] <regular expression>
 #
-# the -nnn is the day you what to look at -1 is yesterday -0 is today
+
+# nn - is the day you what to look at: 1 is yesterday, 0 is today
 # and is optional if there is only one argument
-# <string> is the string, a caseless search is done
+#
+# -mmm - print the mmm lines before the match. So -10 will print
+# ten lines including the line matching the regular expression. 
+#
+# <regexp> is the regular expression you are searching for, 
+# a caseless search is done
 #
 #
 
