@@ -24,8 +24,8 @@ my @out;
 my $count;
 
 # search thru the user for nodes
-unless (@call) {
-	
+if ($call[0] eq 'ALL') {
+	shift @call;
 	my ($action, $key, $data) = (0,0,0);
 	for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
 		if ($data =~ m{sort => '[ACRSX]'}) {
@@ -33,11 +33,13 @@ unless (@call) {
 			++$count;
 		}
 	} 
+} elsif (@call == 0) {
+	@call = map {$_->call} DXChannel::get_all_nodes();  
 }
 
 my $call;
 foreach $call (@call) {
-	my $clref = DXCluster->get_exact($call);
+	my $clref = Route::Node::get($call);
 	my $uref = DXUser->get_current($call);
 	my ($sort, $ver);
 	
@@ -60,7 +62,7 @@ foreach $call (@call) {
 		$sort = "Spider";
 		$ver = $main::version;
 	} else {
-		$ver = $clref->pcversion if $clref && $clref->pcversion;
+		$ver = $clref->version if $clref && $clref->version;
 	}
 	
 	my ($major, $minor, $subs) = unpack("AAA*", $ver) if $ver;

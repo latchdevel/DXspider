@@ -59,9 +59,8 @@ if (@f == 0) {
 				$miles = $dx * 0.62133785;
 			}
 			
-			my $cref = DXCluster->get_exact($call);
-			$cref = DXCluster->get($call) unless $cref;
-			my $seek = $cref->mynode->call if $cref;
+			my $cref = Route::get($call);
+			my $seek = join(',', $cref->parents) if $cref;
 
 			if ($seek) {
 				push @out, "User         : $call (at $seek)";

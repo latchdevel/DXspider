@@ -612,10 +612,17 @@ sub queue_msg
 #				my $hnode =  $uref->homenode if $uref;
 #				$clref = Route::Node::get($hnode) if $hnode;
 #			}
-			if ($clref && !grep { $clref->dxchan == $_ } DXCommandmode::get_all()) {
-				next if $clref->call eq $main::mycall;  # i.e. it lives here
-				$dxchan = $clref->dxchan;
-				$ref->start_msg($dxchan) if $dxchan && !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
+			if ($clref) {
+				my $dxc = $clref->dxchan;
+				if ($dxc) {
+					if (grep {my $dxc=$clref->dxchan; $dxc && $dxc == $_ } DXCommandmode::get_all()) {
+						next if $clref->call eq $main::mycall;  # i.e. it lives here
+						$dxchan = $clref->dxchan;
+						$ref->start_msg($dxchan) if $dxchan && !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
+					}
+				} else {
+					dbg('route', "Route: No dxchan for $ref->{to} " . ref($clref) );
+				}
 			}
 		}
 		

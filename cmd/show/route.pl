@@ -14,9 +14,11 @@ return (1, $self->msg('e6')) unless @list;
 
 my $l;
 foreach $l (@list) {
-	my $ref = DXCluster->get_exact($l);
+	my $ref = Route::get($l);
 	if ($ref) {
-		push @out, $self->msg('route', $l, $ref->mynode->call,  $ref->dxchan->call);
+		my $parents = join ',', $ref->parents;
+		my $dxchan = $ref->dxchan;
+		push @out, $self->msg('route', $l, $parents,  $dxchan->call);
 	} else {
 		push @out, $self->msg('e7', $l);
 	}

@@ -431,11 +431,13 @@ sub normal
 						if ($to ne $field[7]) {
 							$to = $field[7];
 							$node = Route::Node::get($to);
-							$dxchan = $node->dxchan;
-							if ($node->dxchan && $dxchan->is_clx) {
-								route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
-							} else {
-								route(undef, $to, pc34($main::mycall, $to, $cmd));
+							if ($node) {
+								$dxchan = $node->dxchan;
+								if ($dxchan && $dxchan->is_clx) {
+									route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
+								} else {
+									route(undef, $to, pc34($main::mycall, $to, $cmd));
+								}
 							}
 						}
 						$user->lastoper($main::systime);
