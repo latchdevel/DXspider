@@ -56,11 +56,14 @@ menubar.add(show);
 
 		set = new Menu("Settings");
 		set.add(new MenuItem("Set Beep"));
+		set.add(new MenuItem("Set No Beep"));
 		set.add(new MenuItem("Set QTH / City"));
 		set.add(new MenuItem("Set Name"));
 		set.add(new MenuItem("Set Locator"));
 		set.add(new MenuItem("Set HomeNode"));
-        set.add(new MenuItem("Show Personal Settings"));
+	        set.add(new MenuItem("Set DX-Grid"));
+		set.add(new MenuItem("Set No DX-Grid"));
+		set.add(new MenuItem("Show Personal Settings"));
 menubar.add(set); 
 
 
@@ -74,10 +77,6 @@ menubar.add(dxann);
 		mailbox.add(new MenuItem("New Messages"));
 		mailbox.add(new MenuItem("Own Messages"));
 menubar.add(mailbox); 
-
-
-
-
 
 
 
@@ -143,100 +142,90 @@ menubar.add(mailbox);
 		gbc.gridheight = h;
 		gbl.setConstraints(c, gbc);
 		p.add(c);
-	}
+		}
 
 	public void setColors() {
 		output.setBackground(OutBackgroundColor);
 		output.setForeground(OutForegroundColor);
 		input.setBackground(InBackgroundColor);
 		input.setForeground(InForegroundColor);
-	}
+		}
 	
 	public void setFonts() {
 		output.setFont(OutFont);
 		input.setFont(InFont);
-	}
+		}
 	
 	public void initPrintStream(PrintStream out) {
 		this.out = out;
-	}
+		}
 	
 	public void setText(String s) {
 		int i;
 		
-		 for (i=0; i < s.length(); i++) {
+		for (i=0; i < s.length(); i++) {
 			if (s.charAt(i) == '\007')
 				parent.beep();
-		 }
+		}
 		output.appendText(s +'\n');
-		 idle.resetTimer();
-	}
+		idle.resetTimer();
+		}
 	
 	public void setCall(String s) {
 		Call = s;
-	}
+		}
 
-    public void setPassword(String s) {
-        Password = s ;
-    }
+	public void setPassword(String s) {
+	        Password = s ;
+		}
 
 	public void setPrefix(String s) {
 	        Prefix = s;
 		}
-	
-	
-
+		
 	public void setCall2(String s) {
 	        Call2 = s;
 		}
 	
-      public void setFreq(String s) {
+	public void setFreq(String s) {
 	        Freq = s;
 		}
 	
-
-      public void setRemarks(String s) {
+	public void setRemarks(String s) {
 	        Remarks = s;
 		}
 	
-
-
-	
 	public void setTime(String s) {
 		DateLabel.setText(s);
-	}
+		}
 
 	public void setIdle(String s) {
 		IdleLabel.setText(s);
-	}
+		}
 	
 	public String getCall() {
 		return Call;
-	}
+		}
 	
-    public String getPassword() {
-        return Password;
-    }
+        public String getPassword() {
+	        return Password;
+		}
     
 	public String setPrefix(){
-	       return Prefix;
-	       }
+		return Prefix;
+		}
 	
 	public String setCall2(){
-	       return Call2;
-	       }
+		return Call2;
+		}
 	
 	public String setFreq(){
-	       return Freq;
-	       }
+		return Freq;
+		}
 	
 	public String setRemarks(){
-	       return Remarks;
-	       }
-	
-	
-	
-	
+		return Remarks;
+		}
 	
 	public void setFullname(String s) {
 		Fullname = s;
@@ -244,35 +233,35 @@ menubar.add(mailbox);
 			connect_menuitem.disable();
 		else
 			connect_menuitem.enable();
-	}
+		}
 	
 	public String getFullname() {
 		return Fullname;
-	}
+		}
 	
 	public void setHostname(String s) {
 		Hostname = s;
-	}
+		}
 		
 	public String getHostname() {
 		return Hostname;
-	}
+		}
 	
 	public void setPort(String s) {
 		Port = s;
-	}
+		}
 	
 	public String getPort() {
 		return Port;
-	}
+		}
 
 	public void setChannel(String s) {
 		Channel = s;
-	}
+		}
 	
 	public String getChannel() {
 		return Channel;
-	}
+		}
 	
 //	public void login() {
 //		PersonalPreferences pp = new PersonalPreferences(this, Call, Fullname, OutFont);
@@ -280,27 +269,20 @@ menubar.add(mailbox);
 	
 	public void antrichtung () {
 	        beam pp = new beam (this, Prefix,OutFont);
-	}
+		}
 	
-		public void dxannounce () {
-	        dxannounce pp = new dxannounce (this, Call2, Freq, Remarks, OutFont);
-	}
+//		public void dxannounce () {
+//	        dxannounce pp = new dxannounce (this, Call2, Freq, Remarks, OutFont);
+//	}
 	
 
-	
-	
-	
-		
 	public boolean handleEvent(Event evt) {
 		if (evt.id == Event.KEY_PRESS) {
 			if (evt.key == '\n') {
 				
-				
-				
 				idle.resetTimer();
 				output.appendText(input.getText()+'\n');
 				out.println(input.getText());
-						
 
 				if (MaxInputPos < 255) {
 					InputPos++;			
@@ -334,11 +316,9 @@ menubar.add(mailbox);
 				else {
 					input.setText("");	
 				}
-				
 			} 
 			return true;
 		}
-		
 		return super.handleEvent(evt);
 	}
 
@@ -406,6 +386,10 @@ menubar.add(mailbox);
 	}
 	
 	public boolean action(Event evt, Object arg) {
+		Prefix =  "";
+		Call2 = "";
+		Freq = "";
+		Remarks = "";
 		if (evt.target instanceof MenuItem) {
 			if (arg.equals("Quit")) {
 				this.hide();
@@ -441,82 +425,80 @@ menubar.add(mailbox);
 				if (Connected) out.println("sh/wwv");
 			} else if (arg.equals("Show Beam Direction")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/heading " + Prefix );
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/heading " + Prefix );
 			} else if (arg.equals("Search DX")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/dx " + Prefix );
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/dx " + Prefix );
 			
 			} else if (arg.equals("Search QSL Info")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/qsl " + Prefix );
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/qsl " + Prefix );
 			 
 
 			} else if (arg.equals("Search Address")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/qrz " + Prefix );
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/qrz " + Prefix );
 			
 
 			} else if (arg.equals("Search QSL Manager")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/qsl " + Prefix );
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/qsl " + Prefix );
 			
 
 			} else if (arg.equals("Search DXCC")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("sh/pr " + Prefix );
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/pr " + Prefix );
 			
 			// button settings
 
 			} else if (arg.equals("Set Beep")) {
 				if (Connected) out.println("set/beep");
 			
-			}else if (arg.equals("Set QTH / City")) {
-				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("set/qth " + Prefix );
+			} else if (arg.equals("Set No Beep")) {
+				if (Connected) out.println("set/nobeep");
 			
+			} else if (arg.equals("Set QTH / City")) {
+				beam pp = new beam(this, Prefix, OutFont);
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("set/qth " + Prefix );
+				
+			} else if (arg.equals("Set Name")) {
+				beam pp = new beam(this, Prefix, OutFont);
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("set/name " + Prefix );
+			
+			} else if (arg.equals("Set Locator")) {
+				beam pp = new beam(this, Prefix, OutFont);
+			        if ((Connected) && !(Prefix.equals(""))) out.println ("set/qra " + Prefix );
+			
+			} else if (arg.equals("Set HomeNode")) {
+				beam pp = new beam(this, Prefix, OutFont);
+				if ((Connected) && !(Prefix.equals(""))) out.println ("set/homenode " + Prefix );
 
-			}else if (arg.equals("Set Name")) {
-				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("set/name " + Prefix );
+			} else if (arg.equals("Set DX-Grid")) {
+				if (Connected) out.println("set/dxgrid");
 			
-			}
-			else if (arg.equals("Set Locator")) {
-				beam pp = new beam(this, Prefix, OutFont);
-			        if (Connected) out.println ("set/qra " + Prefix );
+			} else if (arg.equals("Set No DX-Grid")) {
+				if (Connected) out.println("set/nodxgrid");
 			
-			}
-			else if (arg.equals("Set HomeNode")) {
-				if (Connected) out.println ("set/homenode " + Prefix );
-
-            }
-			else if (arg.equals("Show Personal Settings")) {
+			} else if (arg.equals("Show Personal Settings")) {
 				if (Connected) out.println ("sh/sta " + Call );
-			
 			}
 
 			// dx announce
 
 			else if (arg.equals("DXannounce")) {
 				dxannounce pp = new dxannounce(this, Call2, Freq, Remarks, OutFont);
-	        		if (Connected) out.println ("dx " + Freq + " " + Call2 + " " + Remarks );
-	
+				if ((Connected) && !(Call2.equals(""))) out.println ("dx " + Freq + " " + Call2 + " " + Remarks );
 			}
 			// mailbox
 			 else if (arg.equals("Last 10 Msgs")) {
 				if (Connected) out.println ("dir" );
-             }
-			 else if (arg.equals("Last 50 Msgs")) {
+	                } else if (arg.equals("Last 50 Msgs")) {
 				if (Connected) out.println ("dir/50" );
-			 }
-			 else if (arg.equals("New Messages")) {
+			} else if (arg.equals("New Messages")) {
 			 	if (Connected) out.println ("dir/new" );
-			 }
-			 else if (arg.equals("Own Messages")) {
+			} else if (arg.equals("Own Messages")) {
 				if (Connected) out.println ("dir/own" );
-			 }
-				
-
-
+			} 			
 			else return false;
 		}
 		else if (evt.target instanceof Button) {
@@ -529,10 +511,8 @@ menubar.add(mailbox);
 					parent.dodisconnect();
 				} else return false;
 			}
-		
 			else return false;
 		}
-		
 		return true;
 	}
 
@@ -566,8 +546,8 @@ menubar.add(mailbox);
 	private Label connectState = new Label("not connected");
 	
  
-	private Color OutBackgroundColor = new Color(0,0,66);
-	private Color OutForegroundColor = new Color(255,255,0);
+	private Color OutBackgroundColor = Color.black;
+	private Color OutForegroundColor = Color.yellow;
 	private Color OutOwnColor = Color.red;
 	private Color InBackgroundColor = new Color(234,199,135);
 	private Color InForegroundColor = Color.red;
@@ -589,11 +569,6 @@ menubar.add(mailbox);
         private String Remarks = new String ("");        
 
 
-
-
-
-
-
 	private PrintStream out = null;
 	
 	private String InputBuffer[] = new String[256];
@@ -605,7 +580,6 @@ menubar.add(mailbox);
 	private boolean Connected;
 	
 	private spiderclient parent;
-
 }
 
 class setDate extends Thread {
@@ -624,11 +598,8 @@ class setDate extends Thread {
 			cf.setTime(today.toLocaleString());
 		}
 	}
-	
 	private Date today = new Date();
-	
 }
-
 
 class idleTime extends Thread {
 
@@ -646,7 +617,6 @@ class idleTime extends Thread {
 	}
 
 	public void run() {
-		
 		for(;;) {
 			try { sleep(1000); } catch (InterruptedException e) {}
 			count++;

@@ -6,7 +6,8 @@ public class beam extends Dialog
 		super(parent, "Call/Prefix/Other", true);
 		this.parent = parent;
 		this.setFont(font);
-		
+//		Prefix=""; // Make sure that the input field is always empty when box displayed.
+								
 		Panel p1 = new Panel();
 		p1.setLayout(new GridLayout(2,2));
 		p1.add(new Label("Enter Your Choice (Call/Prefix/Other) "));
@@ -26,7 +27,6 @@ public class beam extends Dialog
 		if (arg.equals("OK")) {
 			dispose();
 			parent.setPrefix(prefix.getText());
-			
 		}
 		else if (arg.equals("Cancel")) {
 			dispose();

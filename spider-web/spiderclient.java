@@ -15,8 +15,8 @@ public class spiderclient extends Applet {
 		p = getParameter("CALL");
 		if (p != null) cf.setCall(p);
 		
-        p = getParameter("PASSWORD");
-        if (p != null) cf.setPassword(p);
+	        p = getParameter("PASSWORD");
+	        if (p != null) cf.setPassword(p);
         
 		p = getParameter("FULLNAME");
 		if (p != null) cf.setFullname(p);

@@ -7,8 +7,9 @@ public class dxannounce extends Dialog
 		super(parent, "Dx Announce", true);
 		this.parent = parent;
 		this.setFont(font);
-		
-		
+//		Call2 = "";
+//		Freq = "";
+//		Remarks = ""; // Make sure that Call2, Freq and Remarks are empty when box is displayed.
 		
 		Panel p1 = new Panel();
 		p1.setLayout(new GridLayout(3,2));
@@ -25,17 +26,12 @@ public class dxannounce extends Dialog
 		// p3.add(freq = new TextField(Remarks,30));
 	        // add("Center",p3);
 
-
-
-
-
 		Panel p2 = new Panel();
 		p2.add(new Button("OK"));
 		p2.add(new Button("Cancel"));
 		add("South", p2);
 		
 		resize(250,150);
-		
 		
 		show();
 	}
@@ -46,11 +42,7 @@ public class dxannounce extends Dialog
 			parent.setCall2(call2.getText());
 			parent.setFreq(freq.getText());
 			parent.setRemarks(remarks.getText());
-			
-
-
 		}
-
 
 		else if (arg.equals("Cancel")) {
 			dispose();
