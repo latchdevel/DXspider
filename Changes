@@ -1,6 +1,7 @@
 02Jan01=======================================================================
 1. added a help file for forward/latlong and updated the admin manual to
 match. (g0vgs)
+2. Add spot2csv.pl to convert spot files into tab delimited .csv format.
 31Dec00=======================================================================
 1. add lat/long info to show/prefix
 30Dec00=======================================================================
