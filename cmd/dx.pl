@@ -107,7 +107,7 @@ if (grep $_ eq $spotted, @DXProt::baddx) {
 	my @spot = Spot::prepare($freq, $spotted, $main::systime, $line, $spotter, $main::mycall);
 	if (@spot) {
 		# store it 
-		Spot::add(@out);
+		Spot::add(@spot);
 
 		# send orf to the users
 		DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
