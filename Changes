@@ -1,18 +1,25 @@
 22Oct99=======================================================================
-1. allow filter names to be in upper or lower case.
+1. allow filter CALLSIGNS to be in upper or lower case.
 2. create the concept of input and output filters, input filters are of the 
-form "in_$call.pl" eg: "in_g1tlh.pl", output filters are "g1tlh.pl".
+form "in_$call.pl" eg: "in_g1tlh.pl" (or "in_G1TLH.pl"), output filters are 
+"g1tlh.pl" (or "G1TLH.pl").
 3. all users can now filter on spots, ann and wwv (assuming the sysop has set
 the filters up - still no user creatable filters. Nodes can filter on both
-input and output for all of these.
+input for announces and output for all of these. I would recommend setting 
+up a few filters that are likely to be wanted and then symlinking callsigns
+to them as you get requests.
 4. added callsign and length of history/position of screen stats to console.
-DO REMEMBER to copy /spider/perl/Console.pm to /spider/local (doing any changes
-on the way as it has extra data items in it now).
+If you want to change the colour of the callsign you will need to copy the
+Console.pm to your /spider/local directory and change the $mycallcolor equate.
 21Oct99=======================================================================
 1. fixed reply so that reply b or reply nop generate a bulletin with the 
 correct address.
 2. implemented sh/muf command.
-3. reduced privilege of catchup and uncatchup to 5.
+3. reduced privilege of catchup and uncatchup to 5. This so that, suitably
+privileged, nodes that occasionally link can rcmd a "catchup <nodecall> all"
+to the node they are connecting to and thus prevent a large tranche of, 
+potentially duplicate, mail. This isn't an issue for DXSpider, but may be
+an issue for any AK1A clusters you are connected to.
 20Oct99=======================================================================
 1. Translated all the subroutines of minimuf into perl as Minimuf.pm
 2. Limited the length of an ANN that is saved for de-duping to $pc12_dup_lth
