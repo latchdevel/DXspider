@@ -11,6 +11,12 @@
 #
 # Comment lines are indented before printing
 #
+=== 0^ACCEPT^Set a filter to accept something
+Create a filter to accept something
+
+There are 2 types of filter, accept and reject.  See HELP FILTERING for more
+info.
+
 === 0^ACCEPT/ANNOUNCE [0-9] <pattern>^Set an 'accept' filter line for announce
 Create an 'accept this announce' line for a filter. 
 
@@ -913,6 +919,12 @@ message either sent by or sent to your callsign.
 
 === 5^READ-^
 As a sysop you may read any message on the system
+
+=== 0^REJECT^Set a filter to reject something
+Create a filter to reject something
+
+There are 2 types of filter, accept and reject.  See HELP FILTERING for more
+info.
 
 === 0^REJECT/ANNOUNCE [0-9] <pattern>^Set a 'reject' filter line for announce
 Create an 'reject this announce' line for a filter. 

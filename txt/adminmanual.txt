@@ -1378,11 +1378,25 @@
 
 
   As usual, any text behind a # is treated as a comment and not read.
+  To use this file, simply rename it from startup.issue to startup.  In
+  our example above there are three options.  The first option is the
+  amount of spots that a user can request with the sh/dx command.
+  Normally the default is to give 10 spots unless the user specifies
+  more.  Without this line enabled, the maximum a user can request is
+  100 spots.  Depending on your link quality you may wish to enable more
+  or less by specifying the number.  If you simply uncomment the line,
+  the maximum would be 1 spot!
+
+
+  The other 2 options are dealt with more fully in the security section.
+
 
   Secondly, it is used to store the login scripts for users and nodes.
   Currently this can only be done by the sysop but it is envisaged that
   eventually users will be able to set their own.  An example is
   included in the distibution but here is a further example.
+
+
 
        #
        # G0FYD
@@ -1435,9 +1449,6 @@
 
 
        dbcreate <name>
-
-
-
 
   To simply create a database locally, you just tell the command the
   name of the database.  This does not create the actual database, it
@@ -1503,14 +1514,14 @@
 
 
 
-       dbavail
-       DB Name          Location   Chain
-       qsl              Local
-       buck             GB7ADX
-       hftest           GB7DXM
-       G0VGS de GB7MBC  3-Feb-2001 1925Z >
 
 
+  dbavail
+  DB Name          Location   Chain
+  qsl              Local
+  buck             GB7ADX
+  hftest           GB7DXM
+  G0VGS de GB7MBC  3-Feb-2001 1925Z >
 
 
 
@@ -1571,15 +1582,11 @@
   /spider/data called motd and edit it to say whatever you want.  It is
   purely a text file and will be sent automatically to anyone logging in
   to the cluster.
-
-
   6.2.  MOTD_NOR
 
   This message of the day file lives in the same directory as the
   standard motd file but is only sent to non-registered users.  Once
   registered they will receive the same message as any other user.
-
-
 
 
   6.3.  Downtime message
@@ -1641,10 +1648,9 @@
 
   An example would look like this ....
 
-
-
        sh/files
        bulletin      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
+
 
 
 
@@ -1703,6 +1709,7 @@
        Association, Ohio/Penn PacketCluster Network, K1XN & Golist, WB2RAJ/WB2YQH
        & The 59(9) DXReport, W3UR & The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
        Press Enter to continue, A to abort (508 lines) >
+
 
 
 
@@ -1839,8 +1846,7 @@
 
 
 
-       load/keps
-
+  load/keps
 
 
 
@@ -1906,10 +1912,8 @@
   /spider/scripts/startup.  To read more on the startup file, see the
   section on Information, files and useful programs.
 
-
   To unregister a user use unset/register and to show the list of
   registered users, use the command show/register.
-
 
 
   7.2.  Passwords
@@ -1977,6 +1981,7 @@
   Assuming you are connected to the Internet, you need to login to the
   CVS repository and then update your Spider source.  There are several
   steps which are listed below ...
+
 
   First login as the user sysop.  Next you need to connect to the CVS
   repository.  You do this with the command below ...
@@ -2096,18 +2101,29 @@
 
 
 
-         info <string>            eg: iota or qsl
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-         wx 1                     filter WX announces
-         dest <prefixes>          eg: 6MUK,WDX      (distros)
+
+
+
+
+
+
+
+
+
+    info <string>            eg: iota or qsl
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <numbers>
+    origin_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    channel <prefixes>
+    wx 1                     filter WX announces
+    dest <prefixes>          eg: 6MUK,WDX      (distros)
+
+
 
 
   some examples:-
@@ -2160,8 +2176,6 @@
 
 
 
-
-
   9.3.  accept/route (8)
 
   accept/route <call> [0-9] <pattern> Set an 'accept' filter line for
@@ -2175,6 +2189,7 @@
   this filter it is passed thru that interface. See HELP FILTERING for
   more info. Please read this to understand how filters work - it will
   save a lot of grief later on.
+
 
   You can use any of the following things in this line:-
 
@@ -2226,35 +2241,24 @@
   passed onto the user. See HELP FILTERS for more info. Please read this
   to understand how filters work - it will save a lot of grief later on.
 
+
   You can use any of the following things in this line:-
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-    on <range>             same as 'freq'
-    call <prefixes>        eg: G,PA,HB9
-    info <string>          eg: iota or qsl
-    by <prefixes>
-    call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-    call_itu <numbers>
-    call_zone <numbers>
-    by_dxcc <numbers>
-    by_itu <numbers>
-    by_zone <numbers>
-    origin <prefixes>
-    channel <prefixes>
+         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+         on <range>             same as 'freq'
+         call <prefixes>        eg: G,PA,HB9
+         info <string>          eg: iota or qsl
+         by <prefixes>
+         call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+         call_itu <numbers>
+         call_zone <numbers>
+         by_dxcc <numbers>
+         by_itu <numbers>
+         by_zone <numbers>
+         origin <prefixes>
+         channel <prefixes>
 
 
 
@@ -2303,10 +2307,6 @@
          set/hops node_default 10
 
          accept/spot user_default by G,M,2
-
-
-
-
 
   9.6.  accept/wcy (0)
 

@@ -921,8 +921,19 @@ below and is included in the distribution as startup.issue.
 </verb></tscreen>
 
 <P>
-As usual, any text behind a # is treated as a comment and not read.
+As usual, any text behind a # is treated as a comment and not read.  To use
+this file, simply rename it from startup.issue to startup.  In our example
+above there are three options.  The first option is the amount of spots that
+a user can request with the <em>sh/dx</em> command.  Normally the default is
+to give 10 spots unless the user specifies more.  Without this line enabled,
+the maximum a user can request is 100 spots.  Depending on your link quality
+you may wish to enable more or less by specifying the number.  If you simply
+uncomment the line, the maximum would be 1 spot!
 
+<P>
+The other 2 options are dealt with more fully in the security section.
+
+<P>
 Secondly, it is used to store the login scripts for users and nodes.  Currently
 this can only be done by the sysop but it is envisaged that eventually users will 
 be able to set their own.  An example is included in the distibution but here is 
