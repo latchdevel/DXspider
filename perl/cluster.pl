@@ -86,6 +86,7 @@ use Timer;
 use Route;
 use Route::Node;
 use Route::User;
+use Editable;
 
 use Data::Dumper;
 use IO::File;
@@ -112,7 +113,7 @@ $starttime = 0;                 # the starting time of the cluster
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/ ) || 0;
-$main::build += 13;				# add an offset to make it bigger than last system
+$main::build += 12;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
