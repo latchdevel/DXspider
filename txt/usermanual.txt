@@ -1323,9 +1323,6 @@
   AA..Use the SSEETT//BBEEEEPP command.  You can find information on this in the
   "DXSpider Command Reference" section.
 
-  QQ..I keep getting disconnected from the cluster, what is happening and
-  how can I stop it?
-
   QQ..I got disconnected from the cluster and now I can't log back in
   again.  What is wrong?
 
@@ -1383,13 +1380,9 @@
 
 
 
-
-    acc/ann dest 6MUK
-    acc/ann 2 by_zone 14,15,16
-    (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
-
-
-
+         acc/ann dest 6MUK
+         acc/ann 2 by_zone 14,15,16
+         (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
 
   or
 
@@ -1457,8 +1450,8 @@
 
 
 
-         acc/spot 1 on hf/cw
-         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+    acc/spot 1 on hf/cw
+    acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
 
@@ -1516,15 +1509,22 @@
   It is unlikely that you will want to do this, but if you do then you
   can filter on the following fields:-
 
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
+
+
+
+
+
+
+
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <numbers>
+    origin_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    channel <prefixes>
 
 
 

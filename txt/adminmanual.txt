@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.33 February 2001
+  Version 1.33 (Revision 2) February 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
