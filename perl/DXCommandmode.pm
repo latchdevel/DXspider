@@ -196,8 +196,11 @@ sub normal
 			for (@{$self->{talklist}}) {
 				my $ent = $_;
 				my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
-				my $dxchan = DXChannel->get($via);
-				if ($dxchan && DXCluster->get_exact($to)) {
+				$to = $ent unless $to;
+				my $call = $via ? $via : $to;
+				my $clref = DXCluster->get_exact($call);
+				my $dxchan = $clref->dxchan if $clref;
+				if ($dxchan) {
 					$dxchan->talk($self->{call}, $to, $via, $cmdline);
 				} else {
 					$self->send($self->msg('disc2', $via ? $via : $to));
@@ -229,6 +232,7 @@ sub talk_prompt
 	my @call;
 	for (@{$self->{talklist}}) {
 		my ($to, $via) = /(\S+)>(\S+)/;
+		$to = $_ unless $to;
 		push @call, $to;
 	}
 	return $self->msg('talkprompt', join(',', @call));

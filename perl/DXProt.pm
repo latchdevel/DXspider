@@ -221,9 +221,13 @@ sub normal
 				return;
 			}
 
-			# are any of the crucial fields invalid?
-            if ($field[2] =~ /(?:^\s*$|[a-z])/ || $field[6] =~ /(?:^\s*$|[a-z])/ || $field[7] =~ /(?:^\s*$|[a-z])/) {
+			# are any of the callsign fields invalid?
+            if ($field[2] =~ m/[^A-Z0-9\-\/]/ || $field[6] =~ m/[^A-Z0-9\-]/ || $field[7] =~ m/[^A-Z0-9\-]/) {
 				dbg('chan', "Spot contains lower case callsigns or blanks, rejected");
+				return;
+			}
+            if ($field[1] =~ m/[^0-9\.]/) {
+				dbg('chan', "Spot frequency not numeric, rejected");
 				return;
 			}
 			
@@ -619,7 +623,7 @@ sub normal
 				my $ref = DXUser->get_current($field[2]);
 				my $cref = DXCluster->get($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[3]);
-				unless ($field[3] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
+				unless (!$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
 					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
 						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 						my $oldpriv = $self->{priv};

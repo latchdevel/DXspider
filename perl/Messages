@@ -115,6 +115,7 @@ package DXM;
 				m14 => 'Message no $_[0] marked as sent to $_[1]',
 				m15 => 'Message no $_[0] unmarked as sent to $_[1]',
 				m16 => 'Need a Message number',
+				m17 => 'Sorry, cannot send messages in $_[0] mode',
                 msg1 => 'Bulletin Messages Queued',
                 msg2 => 'Private Messages Queued',
 				msg3 => 'Msg $_[0]: $_[1] changed from $_[2] to $_[3]',
