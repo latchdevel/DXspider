@@ -278,7 +278,7 @@ sub rec_stdin
 		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
 			
 			# save the lines
-			$inbuf = " " unless length($inbuf);
+			$inbuf = " " unless length $inbuf;
 
 			# check for a pling and do a search back for a command
 			if ($inbuf =~ /^!/o) {
@@ -295,7 +295,7 @@ sub rec_stdin
 					return;
 				}
 			}
-			push @khistory, $inbuf if $inbuf;
+			push @khistory, $inbuf if length $inbuf;
 			shift @khistory if @khistory > $maxkhist;
 			$khistpos = @khistory;
 			$bot->move(0,0);
@@ -397,7 +397,7 @@ sub rec_stdin
 		} elsif ($r eq KEY_RESIZE || $r eq "\0632") {
 			do_resize();
 			return;
-		} elsif (defined is_pctext($r)) {
+		} elsif (defined $r && is_pctext($r)) {
 			# move the top screen back to the bottom if you type something
 			if ($spos < @shistory) {
 				$spos = @shistory;

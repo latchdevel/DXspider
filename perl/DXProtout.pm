@@ -210,7 +210,7 @@ sub pc28
 sub pc29 
 {
 	my ($fromnode, $tonode, $stream, $text) = @_;
-	$text = ' ' unless $text && length $text > 0;
+	$text = ' ' unless defined $text && length $text > 0;
 	$text =~ s/\^/%5E/og;			# remove ^
 	return "PC29^$fromnode^$tonode^$stream^$text^~";
 }
