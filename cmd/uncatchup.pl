@@ -29,7 +29,7 @@ foreach my $msgno (@f) {
 		@ref = DXMsg::get_all();
 		last;
 	} elsif (my ($f, $t) = $msgno =~ /(\d+)-(\d+)/) {
-		while ($f < $t) {
+		while ($f <= $t) {
 			$ref = DXMsg::get($f++);
 			push @ref, $ref if $ref;
 		}
