@@ -1718,7 +1718,7 @@ sub disconnect
 	my $node = Route::Node::get($call);
 	my @rout;
 	if ($node) {
-		@rout = $node->del_nodes;    # at the next level
+#		@rout = $node->del_nodes;    # at the next level
 		@rout = $node->del($main::routeroot);
 	}
 	
