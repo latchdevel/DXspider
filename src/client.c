@@ -212,6 +212,10 @@ void send_text(fcb_t *f, char *s, int l)
 		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
 	}
 
+	/* ignore trailing spaces  */
+	while (l > 0 &&isspace(s[l-1]))
+		--l;
+
 	for (p = s; p < s+l; ) {
 		if (mp->inp >= mp->data + paclen) {
 			flush_text(f);
