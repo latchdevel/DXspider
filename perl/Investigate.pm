@@ -122,8 +122,8 @@ sub process
 {
 	while (my ($k, $v) = each %list) {
 		if ($v->{state} eq 'start') {
-			my $v = $via{$v->{via}} || 0;
-			if ($main::systime > $v+$pingint) {
+			my $via = $via{$v->{via}} || 0;
+			if ($main::systime > $via+$pingint) {
 				DXProt::addping($main::mycall, $v->{call}, $v->{via});
 				$v->{start} = $lastping = $main::systime;
 				dbg("Investigate: ping sent to $v->{call} via $v->{via}") if isdbg('investigate');
