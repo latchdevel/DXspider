@@ -74,7 +74,7 @@ BEGIN {
 		eval '*F_SETFL     = sub {     0 };';
 		eval '*IPPROTO_TCP     = sub {     6 };';
 		eval '*TCP_NODELAY     = sub {     1 };';
-		$blocking_supported = 1;
+		$blocking_supported = 0;   # it appears that this DOESN'T work :-(
 	} 
 }
 
