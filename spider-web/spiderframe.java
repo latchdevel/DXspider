@@ -409,10 +409,10 @@ menubar.add(mailbox);
 				parent.dodisconnect();
 			} else if (arg.equals("About")) {
 				InfoDialog id = new InfoDialog(this, "About", 
-				"JAVA Spider Webclient 0.6b\nPA4AB\n" +
-				"pa4ab@pa4ab.net \n" +
-				"April 2001\n" +
-				"Based on source of the CLX Client from dl6dbh" );
+				"JAVA Spider Webclient 1.0\n\nModified by PA4AB, M0AZM and OZ1LQH\n" +
+				"\n" +
+				"January 2002\n" +
+				"Based on source of the CLX Client from DL6DBH" );
 				
 			 id.resize(500,300);
 				id.show();
