@@ -140,7 +140,7 @@ sub search
 
 	$fp->close;					# close any open files
 
-	for ($i = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
+	for ($i = $count = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
 		my @now = Julian::sub(@fromdate, $i); # but you can pick which $maxdays worth
 		last if Julian::cmp(@now, @todate) <= 0;         
 	

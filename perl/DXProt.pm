@@ -178,6 +178,14 @@ sub normal
 		}
 		
 		if ($pcno == 11 || $pcno == 26) { # dx spot
+
+			# route 'foreign' pc26s 
+			if ($pcno == 26) {
+				if ($field[7] ne $main::mycall) {
+					route($field[7], $line);
+					return;
+				}
+			}
 			
 			# if this is a 'nodx' node then ignore it
 			last SWITCH if grep $field[7] =~ /^$_/,  @DXProt::nodx_node;
@@ -441,6 +449,15 @@ sub normal
 		}
 		
 		if ($pcno == 23 || $pcno == 27) { # WWV info
+			
+			# route 'foreign' pc27s 
+			if ($pcno == 27) {
+				if ($field[8] ne $main::mycall) {
+					route($field[8], $line);
+					return;
+				}
+			}
+
 			# do some de-duping
 			my $d = cltounix($field[1], sprintf("%02d18Z", $field[2]));
 			my $sfi = unpad($field[3]);
@@ -495,7 +512,7 @@ sub normal
 				my @in = reverse Spot::search(1, undef, undef, 0, $field[3]-1);
 				my $in;
 				foreach $in (@in) {
-					$self->send(pc26(@{$in}[0..4], $in->[7]));
+					$self->send(pc26(@{$in}[0..4], $field[2]));
 				}
 			}
 
@@ -504,12 +521,12 @@ sub normal
 				my @in = reverse Geomag::search(0, $field[4], time, 1);
 				my $in;
 				foreach $in (@in) {
-					$self->send(pc27(@{$in}));
+					$self->send(pc27(@{$in}[0..5], $field[2]));
 				}
 			}
 			return;
 		}
-		
+
 		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42 || $pcno == 49) { # mail/file handling
 			if ($field[1] eq $main::mycall) {
 				DXMsg::process($self, $line);

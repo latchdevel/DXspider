@@ -7,6 +7,7 @@ connecting node's privilege level).
 4. Removed a warning from client.pl
 5. routed external DB commands and drop them (for now) locally
 6. routed external mail commands (ie those addressed elsewhere)
+7. routed external PC26/27 lines 
 25May99=======================================================================
 1. try to make the lastin value correct even for local users
 2. got rid of the stupid bug that failed to print out the offline message
