@@ -2,7 +2,9 @@
 1. A large change has occurred. There is now some (optional) US state recog-
 nition. This is in its early stages but appears to work for me. You will need
 to download the database at http://www.dxcluster.org/download/usdbraw, save it
-in /spider/data and the run /spider/perl/create_usdb.pl. BE WARNED this will
+in /spider/data and run /spider/perl/create_usdb.pl /spider/data/usdbraw 
+
+BE WARNED this will
 take several minutes. You can do this while the node is running. There is a 
 planned method of keeping the US DB up to date with smaller (ie < 5Mb) patch
 files once a week but you will have to wait a bit for the code to bed down 
