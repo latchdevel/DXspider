@@ -266,8 +266,8 @@ sub _decode
 		$data = '' unless defined $data;
 		if ($sort eq 'D') {
 			my $d = unpack "Z*", $data;
-			$d =~ s/\cJ//g;		# remove all new line characters
-			$d =~ s/\cM$//;
+			$d =~ s/\cM\cJ?$//;
+			$d =~ s/^\cJ//;
 			dbg("AGW Data In port: $port pid: $pid '$from'->'$to' length: $len \"$d\"") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			if ($conn) {
@@ -282,13 +282,10 @@ sub _decode
 						$conn->to_connected($conn->{call}, 'O', $conn->{csort});
 					}
 				} else {
-					my @lines = split /\cM/, $data;
-					if (@lines) {
-						for (@lines) {
-							&{$conn->{rproc}}($conn, "I$conn->{call}|$_");
-						}
-					} else {
-						&{$conn->{rproc}}($conn, "I$conn->{call}|");
+					my @lines = split /\cM\cJ?/, $d;
+					push @lines, $d unless @lines;
+					for (@lines) {
+						&{$conn->{rproc}}($conn, "I$conn->{call}|$_");
 					}
 				}
 			} else {
@@ -296,9 +293,9 @@ sub _decode
 			}
 		} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
 			my $d = unpack "Z*", $data;
-			$d =~ s/\cJ//g;		# remove all new line characters
-			$d =~ s/\cM$//;
-			my @lines = split /\cM/, $d;
+			$d =~ s/^\cJ//;
+			$d =~ s/\cM\cJ?$//;
+			my @lines = split /\cM\cJ?/, $d;
 			
 			for (@lines) {
 #				s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
@@ -306,7 +303,7 @@ sub _decode
 			}
 		} elsif ($sort eq 'C') {
 			my $d = unpack "Z*", $data;
-			$d =~ s/\cM$//;
+			$d =~ s/\cM\cJ?$//;
 			dbg("AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"") if isdbg('agw');
 			my $call = $from eq $main::mycall ? $to : $from;
 			my $conn = _find($call);
@@ -341,7 +338,7 @@ sub _decode
 			}
 		} elsif ($sort eq 'd') {
 			my $d = unpack "Z*", $data;
-			$d =~ s/\cM$//;
+			$d =~ s/\cM\cJ?$//;
 			dbg("AGW '$from'->'$to' port: $port Disconnected ($d)") if isdbg('agw');
 			my $conn = _find($from eq $main::mycall ? $to : $from);
 			if ($conn) {
@@ -361,7 +358,7 @@ sub _decode
 		} elsif ($sort eq 'H') {
 			unless ($from =~ /^\s+$/) {
 				my $d = unpack "Z*", $data;
-				$d =~ s/\cM$//;
+				$d =~ s/\cM\cJ?$//;
 				dbg("AGW Heard port: $port \"$d\"") if isdbg('agw');
 			}
 		} elsif ($sort eq 'X') {
