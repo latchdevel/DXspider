@@ -133,12 +133,6 @@ sub alloc
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
 
-	# get the filters
-	$self->{spotfilter} = Filter::read_in('spots', $call, 0);
-	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0);
-	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0);
-	$self->{annfilter} = Filter::read_in('ann', $call, 0);
-
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }

@@ -81,6 +81,12 @@ sub start
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{here} = 1;
 
+	# get the filters
+	$self->{spotfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'user_default', 0);
+	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) || Filter::read_in('wwv', 'user_default', 0);
+	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0) || Filter::read_in('wcy', 'user_default', 0);
+	$self->{annfilter} = Filter::read_in('ann', $call, 0) || Filter::read_in('ann', 'user_default', 0) ;
+
 	# clean up qra locators
 	my $qra = $user->qra;
 	$qra = undef if ($qra && !DXBearing::is_qra($qra));

@@ -110,6 +110,7 @@ sub alloc
 	$self->{rrreq} = shift;
 	$self->{gotit} = [];
 	$self->{lastt} = $main::systime;
+	$self->{lines} = [];
     
 	return $self;
 }
@@ -122,7 +123,6 @@ sub workclean
 	delete $ref->{tonode};
 	delete $ref->{fromnode};
 	delete $ref->{stream};
-	delete $ref->{lines};
 	delete $ref->{file};
 	delete $ref->{count};
 	delete $ref->{lastt} if exists $ref->{lastt};
@@ -238,7 +238,6 @@ sub process
 				$work{"$f[2]$f[3]"} = $ref;	# new ref
 				dbg('msg', "incoming subject ack stream $f[3]\n");
 				$busy{$f[2]} = $ref; # interlock
-				$ref->{lines} = [];
 				push @{$ref->{lines}}, ($ref->read_msg_body);
 				$ref->send_tranche($self);
 				$ref->{lastt} = $main::systime;
@@ -408,12 +407,7 @@ sub store
 {
 	my $ref = shift;
 	my $lines = shift;
-	
-	# we only proceed if there are actually any lines in the file
-#	if (!$lines || @{$lines} == 0) {
-#		return;
-#	}
-	
+
 	if ($ref->{file}) {			# a file
 		dbg('msg', "To be stored in $ref->{to}\n");
 		

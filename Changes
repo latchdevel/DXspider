@@ -1,6 +1,11 @@
 24Oct00=======================================================================
 1. added cty.dat from http://www.k1ea.com/cty/index.htm to the prefix_data.pl
 data file and modified create_prefix.pl accordingly.
+2. the 'no text line' messages should now propagate correctly
+3. added the dxcc, itu and cq zone numbers for announcer and origining node 
+on announce filters - see the /spider/filter/ann/*.issue files for more info.
+4. you can now specify a 'user_default.pl', 'node_default.pl' and 
+'in_node_default.pl' in each of the filter directories
 23Oct00=======================================================================
 1. Added K5K as Kingman Reef
 1. Added K7K as Kure

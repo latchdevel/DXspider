@@ -188,6 +188,7 @@ my %valid = (
 			 itu => '0,ITU',
 			 cq => '0,CQ',
 			 utcoff => '0,UTC offset',
+			 cont => '0,Continent',
 			);
 
 no strict;

@@ -211,11 +211,18 @@ sub start
 	$self->{consort} = $line;	# save the connection type
 	$self->{here} = 1;
 
+	# get the output filters
+	$self->{spotfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'node_default', 0);
+	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) || Filter::read_in('wwv', 'node_default', 0);
+	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0) || Filter::read_in('wcy', 'node_default', 0);
+	$self->{annfilter} = Filter::read_in('ann', $call, 0) || Filter::read_in('ann', 'node_default', 0) ;
+
+
 	# get the INPUT filters (these only pertain to Clusters)
-	$self->{inspotfilter} = Filter::read_in('spots', $call, 1);
-	$self->{inwwvfilter} = Filter::read_in('wwv', $call, 1);
-	$self->{inwcyfilter} = Filter::read_in('wcy', $call, 1);
-	$self->{inannfilter} = Filter::read_in('ann', $call, 1);
+	$self->{inspotfilter} = Filter::read_in('spots', $call, 1) || Filter::read_in('spots', 'node_default', 1);
+	$self->{inwwvfilter} = Filter::read_in('wwv', $call, 1) || Filter::read_in('wwv', 'node_default', 1);
+	$self->{inwcyfilter} = Filter::read_in('wcy', $call, 1) || Filter::read_in('wcy', 'node_default', 1);
+	$self->{inannfilter} = Filter::read_in('ann', $call, 1) || Filter::read_in('ann', 'node_default', 1);
 	
 	# set unbuffered and no echo
 	$self->send_now('B',"0");
@@ -446,7 +453,21 @@ sub normal
 				
 				# global ann filtering on INPUT
 				if ($self->{inannfilter}) {
-					my ($filter, $hops) = Filter::it($self->{inannfilter}, @field[1..6], $self->{call} );
+					my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+					my @dxcc = Prefix::extract($field[1]);
+					if (@dxcc > 0) {
+						$ann_dxcc = $dxcc[1]->dxcc;
+						$ann_itu = $dxcc[1]->itu;
+						$ann_cq = $dxcc[1]->cq();						
+					}
+					@dxcc = Prefix::extract($field[5]);
+					if (@dxcc > 0) {
+						$org_dxcc = $dxcc[1]->dxcc;
+						$org_itu = $dxcc[1]->itu;
+						$org_cq = $dxcc[1]->cq();						
+					}
+					my ($filter, $hops) = Filter::it($self->{inannfilter}, @field[1..6], $self->{call}, 
+													$ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 					unless ($filter) {
 						dbg('chan', "Rejected by filter");
 						return;
@@ -1269,7 +1290,20 @@ sub send_announce
 		my ($filter, $hops);
 
 		if ($dxchan->{annfilter}) {
-			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call} );
+			my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+			my @dxcc = Prefix::extract($_[1]);
+			if (@dxcc > 0) {
+				$ann_dxcc = $dxcc[1]->dxcc;
+				$ann_itu = $dxcc[1]->itu;
+				$ann_cq = $dxcc[1]->cq;						
+			}
+			@dxcc = Prefix::extract($_[5]);
+			if (@dxcc > 0) {
+				$org_dxcc = $dxcc[1]->dxcc;
+				$org_itu = $dxcc[1]->itu;
+				$org_cq = $dxcc[1]->cq;						
+			}
+			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 			next unless $filter;
 		} 
 		if ($dxchan->is_node && $_[1] ne $main::mycall) {  # i.e not specifically routed to me

@@ -9,6 +9,12 @@
 # 4 - origin
 # 5 - 0 - announce, 1 - wx
 # 6 - channel callsign (the interface from which this spot came)
+# 7 - announcer country no (as from sh/prefix)
+# 8 - announcer itu no
+# 9 - announcer cq zone
+# 10 - origin country no (as from sh/prefix)
+# 11 - origin itu no
+# 12 - origin cq zone
 
 $in = [
         [ 1, 0, 'a', '^(P[ABCDE]|G|M|2|EI|F|ON|LX|HB9)' ],
