@@ -49,15 +49,15 @@ $param = "$dirprefix/param";
 
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
-			  ['by', 'c', 7],
-			  ['origin', 'c', 8],
-			  ['channel', 'c', 9],
-			  ['by_dxcc', 'nc', 10],
-			  ['by_itu', 'ni', 11],
-			  ['by_zone', 'nz', 12],
-			  ['origin_dxcc', 'nc', 13],
-			  ['origin_itu', 'ni', 14],
-			  ['origin_zone', 'nz', 15],
+			  ['by', 'c', 0],
+			  ['origin', 'c', 1],
+			  ['channel', 'c', 2],
+			  ['by_dxcc', 'nc', 3],
+			  ['by_itu', 'ni', 4],
+			  ['by_zone', 'nz', 5],
+			  ['origin_dxcc', 'nc', 6],
+			  ['origin_itu', 'ni', 7],
+			  ['origin_zone', 'nz', 8],
 			 ], 'Filter::Cmd');
 
 sub init

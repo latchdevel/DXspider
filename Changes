@@ -3,6 +3,8 @@
 2. merge in latest (2Mar2005) cty.dat 
 3. fix command searching so it does not pick up false positives for commands
 with / in them in directories that don't have that.
+4. Important security change.
+5. add missing input filter for WWV
 16Mar05=======================================================================
 1. make the correct correction to the DL entry in wpxloc.raw (left out the
 'N' of 'North' in the latitude).

@@ -1234,6 +1234,16 @@ sub handle_23
 		dbg("PCPROT: WWV Date ($_[1] $_[2]) out of range") if isdbg('chanerr');
 		return;
 	}
+
+	# global wwv filtering on INPUT
+	my @dxcc = ((Prefix::cty_data($_[6]))[0..2], (Prefix::cty_data($_[7]))[0..2]);
+	if ($self->{inwwvfilter}) {
+		my ($filter, $hops) = $self->{inwwvfilter}->it(@_[7,8], $origin, @dxcc);
+		unless ($filter) {
+			dbg("PCPROT: Rejected by input spot filter") if isdbg('chanerr');
+			return;
+		}
+	}
 	if (Geomag::dup($d,$sfi,$k,$i,$_[6])) {
 		dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chanerr');
 		return;
@@ -1839,7 +1849,7 @@ sub wwv
 	my ($filter, $hops);
 	
 	if ($self->{wwvfilter}) {
-		($filter, $hops) = $self->{wwvfilter}->it(@_);
+		($filter, $hops) = $self->{wwvfilter}->it(@_[7..$#_]);
 		return unless $filter;
 	}
 	send_prot_line($self, $filter, $hops, $isolate, $line)

@@ -435,6 +435,8 @@ sub run_cmd
 	if ($cmd) {
 		# strip out // on command only
 		$cmd =~ s|//|/|g;
+		$cmd =~ s|^/||g;		# no leading / either
+		$cmd =~ s|[^-\w/]||g;		# and no funny characters either
 					
 		my ($path, $fcmd);
 			
@@ -450,7 +452,7 @@ sub run_cmd
 			
 		# first expand out the entry to a command
 		($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-		($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+		($path, $fcmd) = search($main::cmd, $cmd, "pl") unless $path && $fcmd;
 
 		if ($path && $cmd) {
 			dbg("path: $cmd cmd: $fcmd") if isdbg('command');
@@ -918,7 +920,7 @@ sub wwv
 	return unless $self->{wwv};
 	
 	if ($self->{wwvfilter}) {
-		($filter, $hops) = $self->{wwvfilter}->it(@_ );
+		($filter, $hops) = $self->{wwvfilter}->it(@_[7..$#_] );
 		return unless $filter;
 	}
 
