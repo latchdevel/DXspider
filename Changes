@@ -1,3 +1,6 @@
+30Oct00=======================================================================
+1. put in new Filter::it code and tested it. Now all we have to do is write
+the user access routines (oh and the help files!).
 29Oct00=======================================================================
 1. put in echo cancelling measures into the clients. This doesn't mean you
 shouldn't take steps to prevent echoing on node links, but it may help where

@@ -134,7 +134,7 @@ sub promptf
 		my $dd = new Data::Dumper([$value]);
 		$dd->Indent(0);
 		$dd->Terse(1);
-		$dd->Quotekeys($] < 5.005 ? 1 : 0);
+		$dd->Quotekeys(0);
 		$value = $dd->Dumpxs;
 	}
 	$prompt = sprintf "%15s: %s", $prompt, $value;
