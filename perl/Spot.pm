@@ -300,6 +300,7 @@ sub dup
 	chomp $text;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	unpad($text);
+	$text =~ s/[\\\%]\d+//g;
 	$text =~ s/[^a-zA-Z0-9]//g;
 	my $dupkey = "X$freq|$call|$d|\L$text";
 	return DXDupe::check($dupkey, $main::systime+$dupage);
