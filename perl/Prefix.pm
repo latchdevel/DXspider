@@ -24,11 +24,14 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($db  %prefix_loc %pre);
+use vars qw($db  %prefix_loc %pre %cache $lasttime $hits $matchtotal);
 
 $db = undef;					# the DB_File handle
 %prefix_loc = ();				# the meat of the info
 %pre = ();						# the prefix list
+%cache = ();					# a runtime cache of matched prefixes
+$lasttime = 0;					# last time this cache was cleared
+$hits = $matchtotal = 1;		# cache stats
 
 sub load
 {
@@ -97,20 +100,16 @@ sub store
 # This routine will only do what you ask for, if you wish to be intelligent
 # then that is YOUR problem!
 #
+
 sub get
 {
 	my $key = shift;
-	my @out;
-	my @outref;
 	my $ref;
-	my $gotkey;
-  
-	$gotkey = $key;
+	my $gotkey = $key;
 	return () if $db->seq($gotkey, $ref, R_CURSOR);
 	return () if $key ne substr $gotkey, 0, length $key;
 
-	@outref = map { $prefix_loc{$_} } split ',', $ref;
-	return ($gotkey, @outref);
+	return ($gotkey,  map { $prefix_loc{$_} } split ',', $ref);
 }
 
 #
@@ -120,16 +119,13 @@ sub get
 sub next
 {
 	my $key = shift;
-	my @out;
-	my @outref;
 	my $ref;
 	my $gotkey;
   
 	return () if $db->seq($gotkey, $ref, R_NEXT);
 	return () if $key ne substr $gotkey, 0, length $key;
   
-	@outref = map { $prefix_loc{$_} } split ',', $ref;
-	return ($gotkey, @outref);
+	return ($gotkey, map { $prefix_loc{$_} } split ',', $ref);
 }
 
 # 
@@ -170,13 +166,42 @@ sub extract
 	my @parts;
 	my ($call, $sp, $i);
   
+	# clear out the cache periodically to stop it growing for ever.
+	if ($main::systime - $lasttime >= 15*60) {
+		if (isdbg('prefix')) {
+			my $percent = $hits * 100 / $matchtotal;
+			dbg("Prefix Cache Cleared, Hits: $hits of $matchtotal = $percent\%") 
+		}
+		my $percent = $hits * 100 / $matchtotal;
+		dbg("Prefix Cache Cleared, $percent\% hits") if isdbg('prefix');
+		%cache =();
+		$lasttime = $main::systime;
+		$hits = $matchtotal = 0;
+	} 
+
 LM:	foreach $call (split /,/, $calls) {
-		# first check if the whole thing succeeds
-		my @nout = get($call);
-		if (@nout && $nout[0] eq $call) {
-			dbg("got exact prefix: $nout[0]") if isdbg('prefix');
-			push @out, @nout;
+
+		# first check if the whole thing succeeds either because it is cached
+		# or because it simply is a stored prefix as callsign (or even a prefix)
+		$matchtotal++;
+		my $p = $cache{$call};
+		my @nout;
+		if ($p) {
+			$hits++;
+			if (isdbg('prefix')) {
+				my $percent = $hits * 100 / $matchtotal;
+				dbg("Prefix Cache Hit: $call Hits: $hits of $matchtotal = $percent\%") 
+			}
+			push @out, @$p;
 			next;
+		} else {
+			@nout =  get($call);
+			if (@nout && $nout[0] eq $call) {
+				$cache{$call} = \@nout;
+				dbg("got exact prefix: $nout[0]") if isdbg('prefix');
+				push @out, @nout;
+				next;
+			}
 		}
 
 		# now split the call into parts if required
@@ -192,6 +217,7 @@ LM:	foreach $call (split /,/, $calls) {
 			@nout = get($s);
 			if (@nout && $nout[0] eq $s) {
 				dbg("got exact multipart prefix: $call $s") if isdbg('prefix');
+				$cache{$call} = \@nout;
 				push @out, @nout;
 				next;
 			}
@@ -210,6 +236,7 @@ LM:	foreach $call (split /,/, $calls) {
 				my @try = get($s);
 				if (@try && $try[0] eq $s) {
 					dbg("got 3 part prefix: $call $s") if isdbg('prefix');
+					$cache{$call} = \@try;
 					push @out, @try;
 					next;
 				}
@@ -231,6 +258,7 @@ LM:	foreach $call (split /,/, $calls) {
 				my @try = get($s);
 				if (@try && $try[0] eq $s) {
 					dbg("got 2 part prefix: $call $s") if isdbg('prefix');
+					$cache{$call} = \@try;
 					push @out, @try;
 					next;
 				}
@@ -245,6 +273,7 @@ LM:	foreach $call (split /,/, $calls) {
 			@nout = matchprefix($parts[0]);
 			if (@nout) {
 				dbg("got prefix: $call ]") if isdbg('prefix');
+				$cache{$call} = \@nout;
 				push @out, @nout;
 				next;
 			}
@@ -288,11 +317,14 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 						dbg("Compound prefix: $try $part" );
 					}
 					if (@try && $try eq $try[0]) {
+						$cache{$call} = \@try;
 						push @out, @try;
 					} else {
+						$cache{$call} = \@nout;
 						push @out, @nout;
 					}
 				} else {
+					$cache{$call} = \@nout;
 					push @out, @nout;
 				}
 				next LM;
@@ -300,7 +332,9 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 		}
 
 		# we are a pirate!
-		push @out, matchprefix('Q');
+		@nout = matchprefix('Q');
+		$cache{$call} = \@nout;
+		push @out, @nout;
 	}
 	
 	if (isdbg('prefix')) {
