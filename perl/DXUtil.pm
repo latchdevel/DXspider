@@ -30,6 +30,7 @@ require Exporter;
 			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
+			 is_prefix
             );
 
 
@@ -362,6 +363,12 @@ sub is_callsign
 					   (?:-\d{1,2})?                              # - nn possibly
 					 $!x;
 }
+
+sub is_prefix
+{
+	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)!x        # basic prefix
+}
+	
 
 # check that a PC protocol field is valid text
 sub is_pctext

@@ -335,7 +335,7 @@ sub dup
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = uc unpad($text);
 	my ($prefix) = $text =~ /\b(\w{1,4})$/;
-	$text =~ s/\b\w{1,4}$// if $prefix && Prefix::extract($prefix);
+	$text =~ s/\b\w{1,4}$// if $prefix && is_prefix($prefix);
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^\w]//g;
