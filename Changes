@@ -1,3 +1,10 @@
+25Feb05=======================================================================
+1. Changed the way spot deduping is done. This is likely to make deduping much
+stricter. In essence a person cannot spot the same call on the same frequency
+more than once an hour (configurable) unless he makes a (non-duped) comment
+as well. 
+2. Added Swains Island
+3. Added TO4G for Glorioso 
 19Feb05=======================================================================
 1. changed ssb allocation on 40m to add missing 5Khz.
 2. Change sh/425 to Leo, IZ5FSA's requirements.
