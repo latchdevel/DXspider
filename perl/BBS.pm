@@ -16,10 +16,9 @@ use DXUser;
 use DXChannel;
 use DB_File;
 use DXDebug;
+use vars qw (@ISA %bid $bidfn $lastbidclean $bidcleanint %hash $maxbidage);
 
 @ISA = qw(DXChannel);
-
-use vars qw (%bid $bidfn $lastbidclean $bidcleanint);
 
 %bid = ();						# the bid hash
 $bidfn = "$main::root/msg/bid";	# the bid file filename
@@ -115,7 +114,7 @@ sub normal
 		}
     } elsif ($com =~ /^F/) {
 		$self->disconnect;
-	} elsif ($com =~ /^(B|Q)) {
+	} elsif ($com =~ /^(B|Q)/) {
 		$self->disconnect;
 	}
 }

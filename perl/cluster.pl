@@ -41,11 +41,14 @@ BEGIN {
 	$systime = time;
 }
 
+use DXVars;
 use Msg;
 use IntMsg;
+use Internet;
+use Listeners;
 use ExtMsg;
+use AGWConnect;
 use AGWMsg;
-use DXVars;
 use DXDebug;
 use DXLog;
 use DXLogPrint;
@@ -54,21 +57,30 @@ use DXChannel;
 use DXUser;
 use DXM;
 use DXCommandmode;
+use DXProtVars;
+use DXProtout;
 use DXProt;
 use DXMsg;
 use DXCluster;
 use DXCron;
 use DXConnect;
+use DXBearing;
+use DXDb;
+use DXHash;
+use DXDupe;
 use Prefix;
 use Bands;
+use Keps;
+use Minimuf;
+use Sun;
 use Geomag;
 use CmdAlias;
 use Filter;
-use DXDb;
 use AnnTalk;
+use BBS;
 use WCY;
-use DXDupe;
 use BadWords;
+use Timer;
 
 use Data::Dumper;
 use IO::File;
@@ -328,21 +340,22 @@ STDOUT->autoflush(1);
 # calculate build number
 $build = $main::version;
 
-if (opendir(DIR, "$main::root/perl")) {
-	my @d = readdir(DIR);
-	closedir(DIR);
-	foreach my $fn (@d) {
-		if ($fn =~ /^cluster\.pl$/ || $fn =~ /\.pm$/) {
-			my $f = new IO::File "$main::root/perl/$fn" or next;
-			while (<$f>) {
-				if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)/ ) {
-					$build += $1;
-					last;
-				}
-			}
-			$f->close;
+my @fn;
+open(CL, "$main::root/perl/cluster.pl") or die "Cannot open cluster.pl $!";
+while (<CL>) {
+	next unless /^use\s+([\w:_]+)/;
+	push @fn, $1;
+}
+close CL;
+foreach my $fn (@fn) {
+	open(CL, "$main::root/perl/${fn}.pm") or next;
+	while (<CL>) {
+		if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)/ ) {
+			$build += $1;
+			last;
 		}
 	}
+	close CL;
 }
 
 Log('cluster', "DXSpider V$version, build $build started");
@@ -363,8 +376,6 @@ dbg('err', "loading user file system ...");
 DXUser->init($userfn, 1);
 
 # start listening for incoming messages/connects
-use Listeners;
-
 dbg('err', "starting listeners ...");
 my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
 $conn->conns("Server $clusteraddr/$clusterport");
