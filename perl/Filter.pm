@@ -35,10 +35,8 @@ use Prefix;
 use strict;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /^\d+\.\d+(?:\.(\d+)\.(\d+))?$/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 use vars qw ($filterbasefn $in);
 
@@ -304,11 +302,11 @@ sub install
 	my $dxchan;
 	my @dxchan;
 	if ($name eq 'NODE_DEFAULT') {
-		@dxchan = DXChannel::get_all_nodes();
+		@dxchan = grep{$_->is_node || $_->is_aranea} DXChannel::get_all();
 	} elsif ($name eq 'USER_DEFAULT') {
 		@dxchan = DXChannel::get_all_users();
 	} else {
-		$dxchan = DXChannel->get($name);
+		$dxchan = DXChannel::get($name);
 		push @dxchan, $dxchan if $dxchan;
 	}
 	foreach $dxchan (@dxchan) {

@@ -86,7 +86,7 @@ sub upd_user_rec
 	$user = DXUser->new($call) if !$user;
 	$user->homenode($parentcall) if !$user->homenode;
 	$user->node($parentcall);
-	$user->lastin($main::systime) unless DXChannel->get($call);
+	$user->lastin($main::systime) unless DXChannel::get($call);
 	return $user;
 }
 

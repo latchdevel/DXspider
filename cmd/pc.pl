@@ -12,7 +12,7 @@ my @f = split /\s+/, $line;
 return (1, $self->msg('e5')) if $self->priv < 8 || $self->remotecmd || $self->inscript;
 
 my $call = uc shift @f;
-my $dxchan = DXChannel->get($call);
+my $dxchan = DXChannel::get($call);
 return (1, $self->msg('e10', $call)) if !$dxchan;
 return (1, $self->msg('e8')) if @f <= 0;
 

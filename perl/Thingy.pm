@@ -115,7 +115,7 @@ sub process
 	}
 	while (@queue) {
 		$thing = shift @queue;
-		my $dxchan = DXChannel->get($thing->{dxchan});
+		my $dxchan = DXChannel::get($thing->{dxchan});
 		if ($dxchan) {
 			if ($thing->can('in_filter')) {
 				next unless $thing->in_filter($dxchan);

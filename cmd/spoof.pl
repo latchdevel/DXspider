@@ -13,7 +13,7 @@ my $myuser = $self->user;
 my $mylang = $self->lang;
 
 my ($call, $newline) = split /\s+/, $line, 2;
-return (1, $self->msg('nodee1', $call)) if DXChannel->get($call);
+return (1, $self->msg('nodee1', $call)) if DXChannel::get($call);
 
 if ($self->remotecmd || $self->inscript) {
 	Log('DXCommand', "$mycall is trying to spoof $call remotely");

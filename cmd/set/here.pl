@@ -15,7 +15,7 @@ my @out;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		$dxchan->here(1);
 		push @out, $self->msg('heres', $call);

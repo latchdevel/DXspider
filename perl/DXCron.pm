@@ -174,7 +174,7 @@ sub process
 sub connected
 {
 	my $call = uc shift;
-	return DXChannel->get($call);
+	return DXChannel::get($call);
 }
 
 # is it remotely connected anywhere (with exact callsign)?
@@ -224,7 +224,7 @@ sub presentish_on
 sub last_connect
 {
 	my $call = uc shift;
-	return $main::systime if DXChannel->get($call);
+	return $main::systime if DXChannel::get($call);
 	my $user = DXUser->get($call);
 	return $user ? $user->lastin : 0;
 }

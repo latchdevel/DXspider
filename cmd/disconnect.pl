@@ -13,7 +13,7 @@ if ($self->priv < 5) {
 foreach $call (@calls) {
 	$call = uc $call;
 	next if $call eq $main::mycall;
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		if ($dxchan->is_node) {
 #			$dxchan->send_pc39($self->msg('disc1', $self->call));
@@ -28,7 +28,7 @@ foreach $call (@calls) {
 		push @out, $self->msg('disc3', $call);
 #	} elsif (my $ref = DXCluster->get_exact($call)) {
 #		my $dxchancall = $ref->dxchancall;
-#		if ($dxchancall eq $main::mycall || !DXChannel->get($dxchancall)) {
+#		if ($dxchancall eq $main::mycall || !DXChannel::get($dxchancall)) {
 #			$ref->del;
 #			push @out, $self->msg('disc4', $call);
 #		}

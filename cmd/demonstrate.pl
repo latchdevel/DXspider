@@ -11,7 +11,7 @@ my ($self, $line) = @_;
 
 my ($call, $newline) = split /\s+/, $line, 2;
 $call = uc $call;
-my $dxchan = DXChannel->get($call);
+my $dxchan = DXChannel::get($call);
 my $mycall = $self->call;
 
 return (1, $self->msg('e7', $call)) unless $dxchan;

@@ -16,7 +16,7 @@ my @val;
 
 push @out, $self->msg('showconf');
 if ($list[0] && $list[0] =~ /^NOD/) {
-	my @ch = sort {$a->call cmp $b->call} DXChannel::get_all_nodes();
+	my @ch = sort {$a->call cmp $b->call} grep {$_->is_node || $_->is_aranea} DXChannel::get_all();
 	my $dxchan;
 	
 	foreach $dxchan (@ch) {

@@ -277,7 +277,7 @@ sub handle_45
 	# incoming DB Information
 	my $n = getstream($_[3]);
 	if ($n) {
-		my $mchan = DXChannel->get($n->{call});
+		my $mchan = DXChannel::get($n->{call});
 		$mchan->send($_[2] . ":$_[4]") if $mchan;
 	}
 }

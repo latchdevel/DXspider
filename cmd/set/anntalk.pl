@@ -15,7 +15,7 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $chan = DXChannel->get($call);
+  my $chan = DXChannel::get($call);
   if ($chan) {
     $chan->ann_talk(1);
     $chan->user->wantann_talk(1);

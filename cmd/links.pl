@@ -18,7 +18,7 @@ my $nowt = time;
 push @out, "                                      Ave   Obs   Ping   Sec Since";
 push @out, "  Callsign Type Started               RTT  count  Int.   Last Ping";
 
-foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all() ) {
+foreach $dxchan ( sort {$a->call cmp $b->call} grep {$_->is_node || $_->is_aranea} DXChannel::get_all() ) {
 	next if $dxchan->is_user;
 	my $call = $dxchan->call();
 	next if $dxchan == $main::me;

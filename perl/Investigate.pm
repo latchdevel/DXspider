@@ -95,7 +95,7 @@ sub handle_ping
 			$user->set_believe($self->{call});
 			$user->put;
 		}
-		my $dxchan = DXChannel->get($self->{via});
+		my $dxchan = DXChannel::get($self->{via});
 		if ($dxchan) {
 			dbg("Investigate: sending PC19 for $self->{call}") if isdbg('investigate');
 			foreach my $pc (@{$self->{pcxx}}) {

@@ -20,7 +20,7 @@ return (1, $self->msg('e12')) unless @args;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	$user = $dxchan->user if $dxchan;
 	$user = DXUser->get_current($call);
 	if ($user) {

@@ -32,7 +32,7 @@ if ($val =~ /^(\d+)[sS]$/) {
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	$user = $dxchan->user if $dxchan;
 	$user = DXUser->get($call) unless $user;
 	if ($user) {

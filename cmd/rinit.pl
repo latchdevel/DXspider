@@ -15,7 +15,7 @@ return (1, $self->msg('e5')) if $self->priv < 5;
 foreach $call (@calls) {
 	$call = uc $call;
 	next if $call eq $main::mycall;
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		if ($dxchan->is_node) {
 			my $parent = Route::Node::get($call);

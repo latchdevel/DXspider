@@ -377,7 +377,7 @@ sub new_channel
 	# set up the basic channel info
 	# is there one already connected to me - locally? 
 	my $user = DXUser->get_current($call);
-	my $dxchan = DXChannel->get($call);
+	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		if ($user && $user->is_node) {
 			already_conn($conn, $call, DXM::msg($lang, 'concluster', $call, $main::mycall));
@@ -459,13 +459,13 @@ sub cease
 	dbg("Local::finish error $@") if $@;
 
 	# disconnect nodes
-	foreach $dxchan (DXChannel->get_all_nodes) {
+	foreach $dxchan (grep {$_->is_node || $_->is_aranea} DXChannel::get_all()) {
 	    $dxchan->disconnect(2) unless $dxchan == $main::me;
 	}
 	Msg->event_loop(100, 0.01);
 
 	# disconnect users
-	foreach $dxchan (DXChannel->get_all_users) {
+	foreach $dxchan (DXChannel::get_all_users) {
 		$dxchan->disconnect;
 	}
 
