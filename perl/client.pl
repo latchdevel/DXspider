@@ -221,7 +221,7 @@ sub dochat
 	dbg('connect', "CHAT \"$expect\" -> \"$send\"");
     my $line;
 	
-	#	alarm($timeout);
+	alarm($timeout);
 	
     if ($expect) {
 		if ($csort eq 'telnet') {
@@ -243,7 +243,7 @@ sub dochat
 			$sock->print("$send\n");
 		} elsif ($csort eq 'ax25') {
 			local $\ = "\r";
-			$wfh->print("$send\r");
+			$wfh->print("$send");
 		}
 		dbg('connect', "sent \"$send\"");
 	}

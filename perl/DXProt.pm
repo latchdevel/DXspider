@@ -24,13 +24,15 @@ use DXProtout;
 use Carp;
 
 use strict;
-use vars qw($me $pc11_max_age $pc11_dup_age %dup $last_hour);
+use vars qw($me $pc11_max_age $pc11_dup_age %dup $last_hour %pings %rcmds);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc11_dup_age = 24*3600;		# the maximum time to keep the dup list for
 %dup = ();						# the pc11 and 26 dup hash 
 $last_hour = time;				# last time I did an hourly periodic update
+%pings = ();                    # outstanding ping requests outbound
+%rcmds = ();                    # outstanding rcmd requests outbound
 
 sub init
 {
@@ -345,12 +347,11 @@ sub normal
 		
 		if ($pcno == 35) {		# remote command replies
 			if ($field[1] eq $main::mycall) {
-				my $s = DXChannel::get($main::myalias); 
-				my @ref = grep { $_->pc34to eq $field[2] } DXChannel::get_all(); # people that have rcmded someone
-				push @ref, $s if $s;
-				
-				foreach (@ref) {
-					$_->send($field[3]);
+				my $s = $rcmds{$field[2]};
+				if ($s) {
+					my $dxchan = DXChannel->get($s->{call});
+					$dxchan->send($field[3]) if $dxchan;
+					delete $rcmds{$field[2]} if !$dxchan;
 				}
 			} else {
 				route($field[1], $line);
@@ -432,8 +433,18 @@ sub normal
 			# is it for us?
 			if ($field[1] eq $main::mycall) {
 				my $flag = $field[3];
-				$flag ^= 1;
-				$self->send($self->pc51($field[2], $field[1], $flag));
+				if ($flag == 1) {
+					$self->send(pc51($field[2], $field[1], '0'));
+				} else {
+					# it's a reply, look in the ping list for this one
+					my $ref = $pings{$field[2]};
+					if ($ref) {
+						my $r = shift @$ref;
+						my $dxchan = DXChannel->get($r->{call});
+						$dxchan->send($dxchan->msg('pingi', $field[2], atime($main::systime), $main::systime - $r->{t})) if $dxchan;
+					}
+				}
+				
 			} else {
 				# route down an appropriate thingy
 				route($field[1], $line);
@@ -498,10 +509,11 @@ sub process
 sub finish
 {
 	my $self = shift;
-	my $ref = DXCluster->get_exact($self->call);
+	my $call = $self->call;
+	my $ref = DXCluster->get_exact($call);
 	
 	# unbusy and stop and outgoing mail
-	my $mref = DXMsg::get_busy($self->call);
+	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($self) if $mref;
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
@@ -509,14 +521,17 @@ sub finish
 	my $node;
 	
 	foreach $node (@gonenodes) {
-		next if $node->call eq $self->call; 
+		next if $node->call eq $call; 
 		broadcast_ak1a(pc21($node->call, 'Gone'), $self); # done like this 'cos DXNodes don't have a pc21 method
 		$node->del();
 	}
+
+	# remove outstanding pings
+	delete $pings{$call};
 	
 	# now broadcast to all other ak1a nodes that I have gone
-	broadcast_ak1a(pc21($self->call, 'Gone.'), $self);
-	Log('DXProt', $self->call . " Disconnected");
+	broadcast_ak1a(pc21($call, 'Gone.'), $self);
+	Log('DXProt', $call . " Disconnected");
 	$ref->del() if $ref;
 }
 
@@ -662,6 +677,31 @@ sub unpad
 	my $s = shift;
 	$s =~ s/^\s+|\s+$//;
 	return $s;
+}
+
+# add a ping request to the ping queues
+sub addping
+{
+	my ($from, $to) = @_;
+	my $ref = $pings{$to};
+	$ref = $pings{$to} = [] if !$ref;
+	my $r = {};
+	$r->{call} = $from;
+	$r->{t} = $main::systime;
+	route($to, pc51($to, $main::mycall, 1));
+	push @$ref, $r;
+}
+
+# add a rcmd request to the rcmd queues
+sub addrcmd
+{
+	my ($from, $to, $cmd) = @_;
+	my $r = {};
+	$r->{call} = $from;
+	$r->{t} = $main::systime;
+	$r->{cmd} = $cmd;
+	route($to, pc34($main::mycall, $to, $cmd));
+	$rcmds{$to} = $r;
 }
 1;
 __END__ 

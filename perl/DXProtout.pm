@@ -279,7 +279,7 @@ sub pc50
 # generate pings
 sub pc51
 {
-  my ($self, $to, $from, $val) = @_;
+  my ($to, $from, $val) = @_;
   return "PC51^$to^$from^$val^";
 }
 1;

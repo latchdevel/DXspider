@@ -63,9 +63,6 @@ use vars qw(%channels %valid);
   lastread => '9,Last Msg Read',
   outbound => '9,outbound?,yesno',
   remotecmd => '9,doing rcmd,yesno',
-  pc34to => '9,last rcmd call',
-  pc34t => '9,last rcmd time,atime',
-  pings => '9,out/st pings',
   pagelth => '0,Page Length',
   pagedata => '9,Page Data Store',
 );
