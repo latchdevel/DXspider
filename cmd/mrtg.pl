@@ -40,7 +40,7 @@ my $mc = new Mrtg or return (1, "cannot initialise Mrtg $!");
 
 # do Data in / out totals
 my $din = $Msg::total_in;
-my $dout = $Msg::total_in;
+my $dout = $Msg::total_out;
 unless ($want{agw}) {
 	$din += $AGWMsg::total_in;
 	$dout += $AGWMsg::total_out;
@@ -81,7 +81,7 @@ if ($want{totalusers} || $want{all}) {
 # do the total spots
 if ($want{totalspots} || $want{all}) {
 	$mc->cfgprint('totalspots',  [qw(unknaszero gauge noi)], 1000, 'Total Spots',
-			 'Spots', 'Spots', 'Spots') unless $want{dataonly};
+			 'Spots / min', 'Spots', 'Spots') unless $want{dataonly};
 	$mc->data('totalspots', $Spot::totalspots, $Spot::totalspots, 'Total Spots') unless $want{cfgonly};
 	$Spot::totalspots = 0;
 }
@@ -89,7 +89,7 @@ if ($want{totalspots} || $want{all}) {
 # do the HF and VHF spots
 if ($want{hfvhf} || $want{all}) {
 	$mc->cfgprint('hfspots', [qw(unknaszero gauge)], 1000, '<font color=#00cc00>HF</font> and <font color=#0000ff>VHF+</font> Spots',
-			 'Spots', 'HF', 'VHF') unless $want{dataonly};
+			 'Spots / min', 'HF', 'VHF') unless $want{dataonly};
 	$mc->data('hfspots', $Spot::hfspots, $Spot::vhfspots, 'HF and VHF+ Spots') unless $want{cfgonly};
 	$Spot::hfspots = $Spot::vhfspots = 0;
 }
