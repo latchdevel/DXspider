@@ -182,7 +182,7 @@ sub rec_stdin
 	} elsif ($r > 0) {
 		if ($mode) {
 			$buf =~ s/\r/\n/g if $mode == 1;
-			$buf =~ s/[\r\x00]//g if $mode == 2;
+			$buf =~ s/[\r\x00]//g if $mode == 2 || $mode == 3;
 			
 			$dangle = !($buf =~ /\n$/);
 			if ($buf eq "\n") {
