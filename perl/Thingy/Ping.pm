@@ -82,12 +82,13 @@ sub from_DXProt
 	my $thing = ref $_[0] ? shift : $_[0]->SUPER::new(origin=>$main::mycall);
 	my $dxchan = shift;
 	$thing->{DXProt} = shift;
+	shift;						# PC51
 	$thing->{group} = shift;	# to call
 	my $from = shift;
 	$thing->{out} = shift;		# 1 = ping, 0 = pong;
 	$thing->{user} = $dxchan->{call};
 	$thing->{o} = $from unless $from eq $dxchan->{call};
-	$thing->remember if $thing->{out};
+	$thing->remember if $thing->{out} && $thing->{group} ne $main::mycall;
 	return $thing;
 }
 
