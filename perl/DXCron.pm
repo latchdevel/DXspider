@@ -252,7 +252,7 @@ sub spawn
 			for (@main::listeners) {
 				$_->close_server;
 			}
-			unless ($^O =~ /^MS/) {
+			unless ($main::is_win) {
 				$SIG{HUP} = 'IGNORE';
 				$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
 				alarm(0);

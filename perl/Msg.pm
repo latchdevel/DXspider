@@ -32,8 +32,9 @@ BEGIN {
     eval {
         require POSIX; POSIX->import(qw(O_NONBLOCK F_SETFL F_GETFL))
     };
-	if ($@) {
+	if ($@ || $main::is_win) {
 		print STDERR "POSIX Blocking *** NOT *** supported $@\n";
+		$blocking_supported = 0;
 	} else {
 		$blocking_supported = 1;
 		print STDERR "POSIX Blocking enabled\n";
@@ -195,7 +196,7 @@ sub disconnect {
 	$call ||= 'unallocated';
 	dbg('connll', "Connection $call disconnected");
 	
-	unless ($^O =~ /^MS/i) {
+	unless ($main::is_win) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
 	}
 

@@ -115,9 +115,8 @@ sub to_connected
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
-	$conn->_send_file("$main::data/connected");
-	Msg->sleep(1);
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
+	$conn->_send_file("$main::data/connected");
 }
 
 sub new_client {
@@ -253,7 +252,7 @@ sub _doconnect
 					*STDOUT = IO::File->new_from_fd($b, 'w') or die;
 					*STDERR = IO::File->new_from_fd($b, 'w') or die;
 					close $a;
-					unless ($^O =~ /^MS/) {
+					unless ($main::is_win) {
 #						$SIG{HUP} = 'IGNORE';
 						$SIG{HUP} = $SIG{CHLD} = $SIG{TERM} = $SIG{INT} = 'DEFAULT';
 						alarm(0);
@@ -364,6 +363,7 @@ sub _send_file
 		if ($f) {
 			while (<$f>) {
 				chomp;
+				dbg('connll', $_);
 				$conn->send_raw($_ . $conn->{lineend});
 			}
 			$f->close;

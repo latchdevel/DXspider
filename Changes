@@ -1,6 +1,8 @@
 30Mar01=======================================================================
 1. fix errors on accept in ExtMsg and in Msg
 2. fix the non-blocking problems of connects (and other things in general).
+non-blocking only works for unix implementations at the moment.
+3. add rinit command (sends a PC20)
 29Mar01=======================================================================
 1. add better tracking of AGW circuits (possibly)
 2. add set and unset/agwmonitor (ing) [for all the notice it seems to take]

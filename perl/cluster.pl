@@ -79,7 +79,7 @@ package main;
 use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
-			$clusterport $mycall $decease $build
+			$clusterport $mycall $decease $build $is_win
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -89,6 +89,8 @@ $starttime = 0;                 # the starting time of the cluster
 $lockfn = "cluster.lock";       # lock file name
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
+$is_win = $^O =~ /^MS/ || $^O =~ /^OS-2/; # is it Windows?
+
 
       
 # send a message to call on conn and disconnect
@@ -374,7 +376,7 @@ AGWMsg::init(\&new_channel);
 dbg('err', "load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
-unless ($^O =~ /^MS/) {
+unless ($is_win) {
 	unless ($DB::VERSION) {
 		$SIG{INT} = \&cease;
 		$SIG{TERM} = \&cease;

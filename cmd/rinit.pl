@@ -1,5 +1,5 @@
 #
-# init a cluster connection
+# reverse init a cluster connection
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #
@@ -28,7 +28,7 @@ foreach $call (@calls) {
 				$node->del();
 			}
 #			$dxchan->send(DXProt::pc38());
-			$dxchan->send(DXProt::pc18());
+			$dxchan->send(DXProt::pc20());
 			$dxchan->state('init');
 			push @out, $self->msg('init1', $call);
 		} 
