@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.33 (Revision 1.20) February 2001
+  Version 1.33 (Revision 1.21) February 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -292,10 +292,12 @@
 
   11..11..  IInnttrroodduuccttiioonn
 
-  This section describes the installation of DX Spider v1.35 on a RedHat
-  Linux Distribution.  I do not intend to try and cover the installation
-  of Linux or the setup of the AX25 utilities.  If you need help on this
-  then read Iains original HOWTO on the DXSpider website.
+  This section describes the installation of DX Spider v1.46 on a RedHat
+  Linux Distribution.  Wherever possible I will try to include
+  differences for other distributions.  I do not intend to try and cover
+  the installation of Linux or the setup of the AX25 utilities.  If you
+  need help on this then read Iains original installation guide that
+  comes with the Spider distribution.
 
 
   I am assuming a general knowledge of Linux and its commands.  You
@@ -303,10 +305,10 @@
   editor.
 
 
-  The crucial ingredient for all of this is Perl 5.004.  Now I know Perl
-  5.005 is out and this will almost certainly work with it, but RedHat
-  5.1 comes with 5.004.  _B_e _W_a_r_n_e_d, earlier versions of RedHat ddoo nnoott
-  come with 5.004 as standard, you need to upgrade
+  The crucial ingredient for all of this is Perl.  Earlier versions of
+  Spider required perl 5.004, however it is now _S_T_R_O_N_G_L_Y recommended
+  that you use at least version 5.005_03 as this is the version being
+  used in the development of Spider.
 
 
   In addition to the standard Red Hat distribution you will require the
@@ -317,10 +319,6 @@
   +o  MD5-1.7.tar.gz
 
   +o  Data-Dumper-2.10.tar.gz
-
-  +o  FreezeThaw-0.3.tar.gz
-
-  +o  MLDBM-2.00.tar.gz
 
   +o  TimeDate-1.08.tar.gz
 
@@ -342,7 +340,7 @@
 
   I will assume that you have already downloaded the latest tarball of
   the DXSpider software and are ready to install it. I am assuming
-  version 1.35 for this section but of course you would use the latest
+  version 1.46 for this section but of course you would use the latest
   version.
 
 
@@ -382,7 +380,7 @@
 
 
        # cd ~sysop
-       # tar xvfz spider-1.35.tar.gz
+       # tar xvfz spider-1.46.tar.gz
        # ln -s ~sysop/spider /spider
        # groupadd -g 251 spider       (or another number)
 
@@ -394,10 +392,7 @@
 
 
 
-  # vi /etc/group                (or your favorite editor)
-
-
-
+       # vi /etc/group                (or your favorite editor)
 
   You also need to add some others to the group, including your own
   callsign (this will be used as an alias) and root.  The finished line
@@ -464,6 +459,7 @@
   alter the text of any section.  Some of the lines look a little odd.
   Take this line for example ....
 
+
   $myemail = "ianmaude\@btinternet.com";
 
 
@@ -510,7 +506,7 @@
 
 
        $ cluster.pl
-       DXSpider DX Cluster Version 1.35
+       DXSpider DX Cluster Version 1.46
        Copyright (c) 1998 Dirk Koopman G1TLH
        loading prefixes ...
        loading band data ...
@@ -526,7 +522,11 @@
 
   If all is well then login on another term or console as _s_y_s_o_p and cd
   to /spider/perl.  Now issue the following command ...
-       $ client.pl
+
+
+
+
+  $ client.pl
 
 
 
@@ -587,6 +587,12 @@
 
 
 
+
+  or, if you wish your users to be able to use SSID's on their callsigns
+  ..
+
+
+       default  * * * * * *  - sysop /spider/src/client client %s ax25
 
 
 
@@ -652,10 +658,7 @@
 
 
 
-
   You should now get the login prompt and be able to login as before.
-
-
 
 
   33..33..  SSeettttiinngg uupp nnooddee ccoonnnneeccttss
@@ -721,8 +724,11 @@
 
 
 
-       client.pl gb7baa
-       PC38^GB7MBC^~
+  client.pl gb7baa
+  PC38^GB7MBC^~
+
+
+
 
   If the callsign you just set up as a cluster node is for an incoming
   connect, this is all that needs to be done.  If the connection is to
@@ -783,19 +789,18 @@
 
 
 
+
   There are many possible ways to configure the script but here are two
   examples, one for a NETRom/AX25 connect and one for tcp/ip.
 
 
 
-
-
-  timeout 60
-  abort (Busy|Sorry|Fail)
-  # don't forget to chmod 4775 netrom_call!
-  connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-  # you can leave this out if you call the script 'gb7dxm'
-  client gb7dxm ax25
+       timeout 60
+       abort (Busy|Sorry|Fail)
+       # don't forget to chmod 4775 netrom_call!
+       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+       # you can leave this out if you call the script 'gb7dxm'
+       client gb7dxm ax25
 
 
 
@@ -836,11 +841,6 @@
   This will start a connection using the script called _g_b_7_d_j_k_-_1.  You
   can follow the connection by watching the term or console from where
   you started _c_l_u_s_t_e_r_._p_l.  You should see something like this ...
-
-
-
-
-
 
 
 

@@ -18,25 +18,22 @@ Previous
 <H2><A NAME="ss1.1">1.1 Introduction</A>
 </H2>
 
-<P>This section describes the installation of DX Spider v1.35 on a 
-<A HREF="http://www.redhat.com">RedHat</A> Linux Distribution.  
+<P>This section describes the installation of DX Spider v1.46 on a 
+<A HREF="http://www.redhat.com">RedHat</A> Linux Distribution.
+Wherever possible I will try to include differences for other distributions.  
 I do not intend to try and cover the installation of Linux or the setup 
 of the AX25 utilities.  If you need help on this then read Iains original 
-HOWTO on the 
-<A HREF="http://www.dxcluster.org">DXSpider</A> 
-website.
+installation guide that comes with the Spider distribution.
 <P>
 <P>I am assuming a general knowledge of Linux and its commands.  You should 
 know how to use <EM>tar</EM> and how to edit files using your favourite editor.
 <P>
 <P>The crucial ingredient for all of this is 
-<A HREF="http://www.perl.org">Perl 5.004</A>.  Now I know Perl 5.005 
-is out and this will almost certainly work with it, but 
-<A HREF="http://www.redhat.com">RedHat 5.1</A> comes with 5.004. 
-<EM>Be Warned</EM>, earlier versions of 
-<A HREF="http://www.redhat.com">RedHat</A> <B>do not</B> come 
-with 5.004 as standard, you need to 
-<A HREF="ftp://upgrade.redhat.com">upgrade</A><P>
+<A HREF="http://www.perl.org">Perl</A>.  Earlier versions of
+Spider required perl 5.004, however it is now <I>STRONGLY</I> recommended
+that you use at least version 5.005_03 as this is the version being used
+in the development of Spider.
+<P>
 <P>In addition to the standard Red Hat distribution you will require the 
 following 
 <A HREF="http://www.cpan.org/CPAN.html">CPAN</A> modules: -
@@ -45,8 +42,6 @@ following
 <UL>
 <LI>            MD5-1.7.tar.gz</LI>
 <LI>            Data-Dumper-2.10.tar.gz</LI>
-<LI>            FreezeThaw-0.3.tar.gz</LI>
-<LI>            MLDBM-2.00.tar.gz</LI>
 <LI>            TimeDate-1.08.tar.gz</LI>
 <LI>            IO-1.20.tar.gz</LI>
 <LI>            Net-Telnet-3.02.tar.gz</LI>
@@ -64,7 +59,7 @@ but use the above list as the earliest versions usable.
 
 <P>I will assume that you have already downloaded the latest tarball of 
 the DXSpider software and are ready to install it. I am assuming version 
-1.35 for this section but of course you would use the latest version.
+1.46 for this section but of course you would use the latest version.
 <P>
 <P>Login as root and create a user to run the cluster under.  <B><I>UNDER 
 NO CIRCUMSTANCES USE ROOT AS THIS USER!</I></B>.  I am going to use 
@@ -99,7 +94,7 @@ permissions.  Copy the tarball to /home/sysop and do the following.
 <BLOCKQUOTE><CODE>
 <PRE>
 # cd ~sysop
-# tar xvfz spider-1.35.tar.gz
+# tar xvfz spider-1.46.tar.gz
 # ln -s ~sysop/spider /spider
 # groupadd -g 251 spider       (or another number)
 </PRE>
@@ -203,7 +198,7 @@ It should look something like this ...
 <BLOCKQUOTE><CODE>
 <PRE>
 $ cluster.pl
-DXSpider DX Cluster Version 1.35
+DXSpider DX Cluster Version 1.46
 Copyright (c) 1998 Dirk Koopman G1TLH
 loading prefixes ...
 loading band data ...
