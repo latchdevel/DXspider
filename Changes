@@ -6,6 +6,7 @@
 5. removed client.pl
 6. fixed memory leakages in DXMsg
 7. fixed pc39/21 handling
+8. fixed routing table issues and general disconnection tidy up
 10Mar01=======================================================================
 1. minor changes to the admin manual to reflect differences in distibutions
 thanks to pa3ezl (g0vgs)
