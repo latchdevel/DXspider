@@ -15,7 +15,7 @@ foreach $call (@calls) {
 	next if $call eq $main::mycall;
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
-		if ($dxchan->is_ak1a) {
+		if ($dxchan->is_node) {
 #			$dxchan->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', $self->call)));
 		} else {
 			return (1, $self->msg('e5')) if $self->priv < 8;

@@ -27,6 +27,7 @@ use Filter;
 use Minimuf;
 use DXDb;
 use AnnTalk;
+use WCY;
 use Sun;
 
 use strict;
@@ -45,7 +46,6 @@ $scriptbase = "$main::root/scripts"; # the place where all users start scripts g
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
-	$self->{'sort'} = 'U';		# in absence of how to find out what sort of an object I am
 	return $self;
 }
 
@@ -66,7 +66,7 @@ sub start
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv;
 	$self->{lang} = $user->lang;
-	$self->{pagelth} = 20;
+	$self->{pagelth} = $user->pagelth || 20;
 	$self->{priv} = 0 if $line =~ /^(ax|te)/; # set the connection priv to 0 - can be upgraded later
 	$self->{consort} = $line;	# save the connection type
 	
@@ -74,12 +74,14 @@ sub start
 	$self->{beep} = $user->wantbeep;
 	$self->{ann} = $user->wantann;
 	$self->{wwv} = $user->wantwwv;
+	$self->{wcy} = $user->wantwcy;
 	$self->{talk} = $user->wanttalk;
 	$self->{wx} = $user->wantwx;
 	$self->{dx} = $user->wantdx;
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{here} = 1;
 	
+
 	# add yourself to the database
 	my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
 	my $cuser = DXNodeuser->new($self, $node, $call, 0, 1);
@@ -102,6 +104,12 @@ sub start
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
 	$self->send($self->msg('pr', $call));
+
+	# decide on echo
+	if (!$user->wantecho) {
+		$self->send_now('E', "0");
+		$self->send($self->msg('echow'));
+	}
 	
 	$self->tell_login('loginu');
 	

@@ -1,0 +1,22 @@
+#
+# This is an example WWV filter
+# 
+# The element list is:-
+# 0 - nominal unix date of spot (ie the day + hour:13)
+# 1 - the hour
+# 2 - SFI
+# 3 - K
+# 4 - I
+# 5 - text
+# 6 - spotter
+# 7 - origin
+# 8 - incoming interface callsign
+#
+# this one doesn't filter, it just sets the hop count to 6 and is
+# used mainly just to override any isolation from WWV coming from
+# the internet.
+
+$in = [
+        [ 1, 0, 'd', 0, 6 ]
+];
+

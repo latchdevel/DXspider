@@ -207,6 +207,12 @@ sub wwv
 	return 0;
 }
 
+# same for wcy broadcasts
+sub wcy
+{
+	return 0;
+}
+
 # no idea what or when these are called yet
 sub userstart
 {

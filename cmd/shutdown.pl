@@ -10,7 +10,7 @@ my $ref;
 if ($self->priv >= 5) {
 	foreach $ref (DXChannel::get_all()) {
 		$ref->send_now("D", DXProt::pc39($main::mycall, "Shutdown by $call")) 
-			if $ref->is_ak1a  && $ref != $DXProt::me; 
+			if $ref->is_node  && $ref != $DXProt::me; 
 		$ref->send_now("D", $self->msg('shutting')) if $ref->is_user;
 	}
     

@@ -60,6 +60,7 @@ use CmdAlias;
 use Filter;
 use DXDb;
 use AnnTalk;
+use WCY;
 
 use Data::Dumper;
 use Fcntl ':flock'; 
@@ -119,18 +120,18 @@ sub rec
 		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);
 		if (DXChannel->get($call)) {
-			my $mess = DXM::msg($lang, ($user && $user->sort eq 'A') ? 'concluster' : 'conother', $call);
+			my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call);
 			already_conn($conn, $call, $mess);
 			return;
 		}
 		
 		# is there one already connected elsewhere in the cluster?
 		if ($user) {
-			if (($user->sort eq 'A' || $call eq $myalias) && !DXCluster->get_exact($call)) {
+			if (($user->is_node || $call eq $myalias) && !DXCluster->get_exact($call)) {
 				;
 			} else {
 				if (DXCluster->get_exact($call)) {
-					my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
+					my $mess = DXM::msg($lang, $user->is_node ? 'concluster' : 'conother', $call);
 					already_conn($conn, $call, $mess);
 					return;
 				}
@@ -153,9 +154,9 @@ sub rec
 		}
 
 		# create the channel
-		$dxchan = DXCommandmode->new($call, $conn, $user) if ($user->sort eq 'U');
-		$dxchan = DXProt->new($call, $conn, $user) if ($user->sort eq 'A');
-		$dxchan = BBS->new($call, $conn, $user) if ($user->sort eq 'B');
+		$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
+		$dxchan = DXProt->new($call, $conn, $user) if $user->is_node;
+		$dxchan = BBS->new($call, $conn, $user) if $user->is_bbs;
 		die "Invalid sort of user on $call = $sort" if !$dxchan;
 	}
 	
@@ -188,7 +189,7 @@ sub cease
 
 	# disconnect nodes
 	foreach $dxchan (DXChannel->get_all()) {
-		next unless $dxchan->is_ak1a;
+		next unless $dxchan->is_node;
 		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
 	Msg->event_loop(1, 0.05);
@@ -200,7 +201,7 @@ sub cease
 
 	# disconnect users
 	foreach $dxchan (DXChannel->get_all()) {
-		next if $dxchan->is_ak1a;
+		next if $dxchan->is_node;
 		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
 	Msg->event_loop(1, 0.05);
@@ -333,6 +334,7 @@ CmdAlias->init();
 
 # initialise the Geomagnetic data engine
 Geomag->init();
+WCY->init();
 
 # initial the Spot stuff
 Spot->init();

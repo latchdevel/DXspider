@@ -27,6 +27,7 @@ use Local;
 use DXDb;
 use AnnTalk;
 use Geomag;
+use WCY;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 use strict;
@@ -81,7 +82,6 @@ sub init
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
-	$self->{'sort'} = 'A';		# in absence of how to find out what sort of an object I am
 	return $self;
 }
 
@@ -156,7 +156,7 @@ sub normal
 	# process PC frames
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
 	return unless $pcno;
-	return if $pcno < 10 || $pcno > 51;
+	return if $pcno < 10 || $pcno > 99;
 
 	# dump bad protocol messages unless it is a PC29
 	if ($line =~ /\%[0-9A-F][0-9A-F]/o && $pcno != 29) {
@@ -601,7 +601,12 @@ sub normal
 					$self->send(pc35($main::mycall, $field[2], "$main::mycall:your attempt is logged, Tut tut tut...!"));
 				}
 			} else {
-				$self->route($field[1], $line);
+				my $ref = DXUser->get_current($field[1]);
+				if ($ref && $ref->is_clx) {
+					route($field[1], pc84($field[2], $field[1], $field[2], $field[3]));
+				} else {
+					$self->route($field[1], $line);
+				}
 			}
 			return;
 		}
@@ -615,7 +620,12 @@ sub normal
 					delete $rcmds{$field[2]} if !$dxchan;
 				}
 			} else {
-				$self->route($field[1], $line);
+				my $ref = DXUser->get_current($field[1]);
+				if ($ref && $ref->is_clx) {
+					route($field[1], pc85($field[2], $field[1], $field[2], $field[3]));
+				} else {
+					$self->route($field[1], $line);
+				}
 			}
 			return;
 		}
@@ -694,7 +704,7 @@ sub normal
 								my $s = sprintf "%.2f", $t; 
 								my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
 								$dxchan->send($dxchan->msg('pingi', $field[2], $s, $ave))
-							} elsif ($dxchan->is_ak1a) {
+							} elsif ($dxchan->is_node) {
 								if ($tochan) {
 									$tochan->{nopings} = 2; # pump up the timer
 									push @{$tochan->{pingtime}}, $t;
@@ -715,15 +725,102 @@ sub normal
 			}
 			return;
 		}
+
+		if ($pcno == 73) {  # WCY broadcasts
+			
+			# do some de-duping
+			my $d = cltounix($field[1], sprintf("%02d18Z", $field[2]));
+			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
+				dbg('chan', "WCY Date ($field[1] $field[2]) out of range");
+				return;
+			}
+			@field = map { unpad($_) } @field;
+			if (WCY::dup($d,@field[3..7])) {
+				dbg('chan', "Dup WCY Spot ignored\n");
+				return;
+			}
+		
+			my $wcy = WCY::update($d, @field[2..12]);
+
+			my $rep;
+			eval {
+				$rep = Local::wwv($self, @field[1..12]);
+			};
+			# dbg('local', "Local::wcy error $@") if $@;
+			return if $rep;
+
+			# broadcast to the eager world
+			send_wcy_spot($self, $line, $d, @field[2..12]);
+			return;
+		}
+
+		if ($pcno == 84) { # remote commands (incoming)
+			if ($field[1] eq $main::mycall) {
+				my $ref = DXUser->get_current($field[2]);
+				my $cref = DXCluster->get($field[2]);
+				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[4]);
+				unless ($field[3] =~ /rcmd/i || !$cref || !$ref || $cref->mynode->call ne $ref->homenode) {    # not allowed to relay RCMDS!
+					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
+						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
+						my $oldpriv = $self->{priv};
+						$self->{priv} = $ref->{priv};     # assume the user's privilege level
+						my @in = (DXCommandmode::run_cmd($self, $field[4]));
+						$self->{priv} = $oldpriv;
+						for (@in) {
+							s/\s*$//og;
+							$self->send(pc85($main::mycall, $field[2], $field[3], "$main::mycall:$_"));
+							Log('rcmd', 'out', $field[2], $_);
+						}
+						delete $self->{remotecmd};
+					} else {
+						$self->send(pc85($main::mycall, $field[2], $field[3], "$main::mycall:sorry...!"));
+					}
+				} else {
+					$self->send(pc85($main::mycall, $field[2], $field[3],"$main::mycall:your attempt is logged, Tut tut tut...!"));
+				}
+			} else {
+				my $ref = DXUser->get_current($field[1]);
+				if ($ref && $ref->is_clx) {
+					$self->route($field[1], $line);
+				} else {
+					route($field[1], pc34($field[2], $field[1], $field[3]));
+				}
+			}
+			return;
+		}
+
+		if ($pcno == 85) {		# remote command replies
+			if ($field[1] eq $main::mycall) {
+				my $dxchan = DXChannel->get($field[3]);
+				if ($dxchan) {
+					$dxchan->send($field[4]);
+				} else {
+					my $s = $rcmds{$field[2]};
+					if ($s) {
+						$dxchan = DXChannel->get($s->{call});
+						$dxchan->send($field[4]) if $dxchan;
+						delete $rcmds{$field[2]} if !$dxchan;
+					}
+				}
+			} else {
+				my $ref = DXUser->get_current($field[1]);
+				if ($ref && $ref->is_clx) {
+					$self->route($field[1], $line);
+				} else {
+					route($field[1], pc35($field[2], $field[1], $field[3]));
+				}
+			}
+			return;
+		}
 	}
 	 
-	 # if get here then rebroadcast the thing with its Hop count decremented (if
-	 # there is one). If it has a hop count and it decrements to zero then don't
-	 # rebroadcast it.
-	 #
-	 # NOTE - don't arrive here UNLESS YOU WANT this lump of protocol to be
-	 #        REBROADCAST!!!!
-	 #
+	# if get here then rebroadcast the thing with its Hop count decremented (if
+	# there is one). If it has a hop count and it decrements to zero then don't
+	# rebroadcast it.
+	#
+	# NOTE - don't arrive here UNLESS YOU WANT this lump of protocol to be
+	#        REBROADCAST!!!!
+	#
 	 
 	unless ($self->{isolate}) {
 		broadcast_ak1a($line, $self); # send it to everyone but me
@@ -741,7 +838,7 @@ sub process
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
-		next unless $dxchan->is_ak1a();
+		next unless $dxchan->is_node();
 		next if $dxchan == $me;
 		
 		# send a pc50 out on this channel
@@ -836,7 +933,7 @@ sub send_dx_spot
 			next unless $filter;
 		}
 		
-		if ($dxchan->is_ak1a) {
+		if ($dxchan->is_node) {
 			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
@@ -875,11 +972,11 @@ sub send_wwv_spot
 		my $routeit;
 		my ($filter, $hops);
 
-		if ($dxchan->{spotfilter}) {
+		if ($dxchan->{wwvfilter}) {
 			 ($filter, $hops) = Filter::it($dxchan->{wwvfilter}, @_, $self->{call} );
 			 next unless $filter;
 		}
-		if ($dxchan->is_ak1a) {
+		if ($dxchan->is_node) {
 			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
@@ -896,6 +993,49 @@ sub send_wwv_spot
 			}
 		} elsif ($dxchan->is_user && $dxchan->{wwv}) {
 			my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
+			$buf .= "\a\a" if $dxchan->{beep};
+			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
+				$dxchan->send($buf);
+			} else {
+				$dxchan->delay($buf);
+			}
+		}					
+	}
+}
+
+sub send_wcy_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel->get_all();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		my $routeit;
+		my ($filter, $hops);
+
+		if ($dxchan->{wcyfilter}) {
+			 ($filter, $hops) = Filter::it($dxchan->{wcyfilter}, @_, $self->{call} );
+			 next unless $filter;
+		}
+		if ($dxchan->is_clx || $dxchan->is_spider) {
+			next if $dxchan == $self;
+			if ($hops) {
+				$routeit = $line;
+				$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+			} else {
+				$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+				next unless $routeit;
+			}
+			if ($filter) {
+				$dxchan->send($routeit) if $routeit;
+			} else {
+				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
+			}
+		} elsif ($dxchan->is_user && $dxchan->{wcy}) {
+			my $buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
 			$buf .= "\a\a" if $dxchan->{beep};
 			if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
 				$dxchan->send($buf);
@@ -942,7 +1082,7 @@ sub send_announce
 			($filter, $hops) = Filter::it($dxchan->{annfilter}, @_, $self->{call} );
 			next unless $filter;
 		} 
-		if ($dxchan->is_ak1a && $_[1] ne $main::mycall) {  # i.e not specifically routed to me
+		if ($dxchan->is_node && $_[1] ne $main::mycall) {  # i.e not specifically routed to me
 			next if $dxchan == $self;
 			if ($hops) {
 				$routeit = $line;
@@ -1107,6 +1247,7 @@ sub broadcast_list
 		}
 		next if $sort eq 'ann' && !$dxchan->{ann};
 		next if $sort eq 'wwv' && !$dxchan->{wwv};
+		next if $sort eq 'wcy' && !$dxchan->{wcy};
 		next if $sort eq 'wx' && !$dxchan->{wx};
 
 		$s =~ s/\a//og unless $dxchan->{beep};
@@ -1194,13 +1335,20 @@ sub addping
 # add a rcmd request to the rcmd queues
 sub addrcmd
 {
-	my ($from, $to, $cmd) = @_;
+	my ($self, $to, $cmd) = @_;
+
 	my $r = {};
-	$r->{call} = $from;
+	$r->{call} = $self->{call};
 	$r->{t} = $main::systime;
 	$r->{cmd} = $cmd;
-	route(undef, $to, pc34($main::mycall, $to, $cmd));
 	$rcmds{$to} = $r;
+
+	my $ref = DXCluster->get_exact($to);
+    if ($ref && $ref->dxchan && $ref->dxchan->is_clx) {
+		route(undef, $to, pc84($main::mycall, $to, $self->{call}, $cmd));
+	} else {
+		route(undef, $to, pc34($main::mycall, $to, $cmd));
+	}
 }
 1;
 __END__ 

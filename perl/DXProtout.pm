@@ -316,5 +316,22 @@ sub pc51
 	my ($to, $from, $val) = @_;
 	return "PC51^$to^$from^$val^";
 }
+
+# clx remote cmd send
+sub pc84
+{
+	my($fromnode, $tonode, $call, $msg) = @_;
+	return "PC84^$tonode^$fromnode^$call^$msg^~";
+}
+
+# clx remote cmd reply
+sub pc85
+{
+	my($fromnode, $tonode, $call, $msg) = @_;
+	return "PC85^$tonode^$fromnode^$call^$msg^~";
+}
 1;
 __END__
+
+
+

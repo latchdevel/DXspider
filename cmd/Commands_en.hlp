@@ -434,6 +434,8 @@ of telnet handle echo differently depending on whether you are
 connected via port 23 or some other port. You can use this command
 to change the setting appropriately. 
 
+The setting is stored in your user profile.
+
 YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
 === 0^SET/HERE^Tell the system you are present at your terminal
@@ -502,6 +504,8 @@ explicitly to 0 will disable paging.
   SET/PAGE 30
   SET/PAGE 0
 
+The setting is stored in your user profile.
+
 === 9^SET/PINGINTERVAL <time> <nodecall>^Set ping time to neighbouring nodes 
 As from release 1.35 all neighbouring nodes are pinged at regular intervals
 in order to determine the rolling quality of the link and, in future, to
@@ -552,6 +556,9 @@ Tell the system where you are. For example:-
 
 === 0^SET/TALK^Allow TALK messages to come out on your terminal
 === 0^UNSET/TALK^Stop TALK messages coming out on your terminal
+
+=== 0^SET/WCY^Allow WCY messages to come out on your terminal
+=== 0^UNSET/WCY^Stop WCY messages coming out on your terminal
 
 === 0^SET/WWV^Allow WWV messages to come out on your terminal
 === 0^UNSET/WWV^Stop WWV messages coming out on your terminal
@@ -805,6 +812,10 @@ If no prefixes or callsigns are given then this command returns the local
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
+
+=== 0^SHOW/WCY^Show last 10 WCY broadcasts
+=== 0^SHOW/WCY <n>^Show last <n> WCY broadcasts
+Display the most recent WCY information that has been received by the system
 
 === 0^SHOW/WWV^Show last 10 WWV broadcasts
 === 0^SHOW/WWV <n>^Show last <n> WWV broadcasts

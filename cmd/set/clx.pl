@@ -1,5 +1,5 @@
 #
-# set user type to 'A' for AK1A node
+# set user type to 'S' for Spider node
 #
 # Please note that this is only effective if the user is not on-line
 #
@@ -27,13 +27,13 @@ foreach $call (@args) {
 		$create = !$user;
 		$user = DXUser->new($call) if $create;
 		if ($user) {
-			$user->sort('A');
+			$user->sort('C');
 			$user->homenode($call);
 			$user->priv(1) unless $user->priv;
 			$user->close();
-			push @out, $self->msg($create ? 'nodeac' : 'nodea', $call);
+			push @out, $self->msg($create ? 'nodecc' : 'nodec', $call);
 		} else {
-			push @out, $self->msg('e3', "Set Node", $call);
+			push @out, $self->msg('e3', "Set Spider", $call);
 		}
 	}
 }

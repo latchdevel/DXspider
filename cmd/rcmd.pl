@@ -24,11 +24,11 @@ $call = uc $call;
 my $noderef = DXCluster->get_exact($call);
 unless ($noderef) {
 	$noderef = DXChannel->get($call);
-	$noderef = undef unless $noderef && $noderef->is_ak1a;
+	$noderef = undef unless $noderef && $noderef->is_node;
 }
 return (1, $self->msg('e7', $call)) unless $noderef;
 
 # rcmd it
-DXProt::addrcmd($self->call, $call, $line);
+DXProt::addrcmd($self, $call, $line);
 
 return (1, $self->msg('rcmdo', $line, $call));

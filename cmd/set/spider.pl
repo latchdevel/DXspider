@@ -28,6 +28,8 @@ foreach $call (@args) {
 		$user = DXUser->new($call) if $create;
 		if ($user) {
 			$user->sort('S');
+			$user->homenode($call);
+			$user->priv(1) unless $user->priv;
 			$user->close();
 			push @out, $self->msg($create ? 'nodesc' : 'nodes', $call);
 		} else {
@@ -36,3 +38,13 @@ foreach $call (@args) {
 	}
 }
 return (1, @out);
+
+
+
+
+
+
+
+
+
+

@@ -17,7 +17,7 @@ foreach $call (@calls) {
 	next if $call eq $main::mycall;
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
-		if ($dxchan->is_ak1a) {
+		if ($dxchan->is_node) {
 			
 			# first clear out any nodes on this dxchannel
 			my @gonenodes = grep { $_->dxchan == $dxchan } DXNode::get_all();

@@ -51,6 +51,7 @@ use vars qw(%channels %valid);
 		  consort => '5,Connection Type',
 		  'sort' => '5,Type of Channel',
 		  wwv => '0,Want WWV,yesno',
+		  wcy => '0,Want WCY,yesno',
 		  wx => '0,Want WX,yesno',
 		  talk => '0,Want Talk,yesno',
 		  ann => '0,Want Announce,yesno',
@@ -72,6 +73,7 @@ use vars qw(%channels %valid);
 		  delayed => '5,Delayed messages,parray',
 		  annfilter => '5,Announce Filter',
 		  wwvfilter => '5,WWV Filter',
+		  wcyfilter => '5,WCY Filter',
 		  spotfilter => '5,Spot Filter',
 		  inannfilter => '5,Input Ann Filter',
 		  inwwvfilter => '5,Input WWV Filter',
@@ -119,6 +121,7 @@ sub alloc
 		$self->{lang} = $user->lang;
 		$user->new_group() if !$user->group;
 		$self->{group} = $user->group;
+		$self->{sort} = $user->sort;
 	}
 	$self->{startt} = $self->{t} = time;
 	$self->{state} = 0;
@@ -158,7 +161,7 @@ sub get_all_ak1a
 	my $ref;
 	my @out;
 	foreach $ref (@list) {
-		push @out, $ref if $ref->is_ak1a;
+		push @out, $ref if $ref->is_node;
 	}
 	return @out;
 }
@@ -215,7 +218,12 @@ sub is_bbs
 	return $self->{'sort'} eq 'B';
 }
 
-# is it an ak1a cluster ?
+sub is_node
+{
+	my $self = shift;
+	return $self->{'sort'} =~ /[ACRSX]/;
+}
+# is it an ak1a node ?
 sub is_ak1a
 {
 	my $self = shift;
@@ -229,11 +237,32 @@ sub is_user
 	return $self->{'sort'} eq 'U';
 }
 
-# is it a connect type
-sub is_connect
+# is it a clx node
+sub is_clx
 {
 	my $self = shift;
 	return $self->{'sort'} eq 'C';
+}
+
+# is it a spider node
+sub is_spider
+{
+	my $self = shift;
+	return $self->{'sort'} eq 'S';
+}
+
+# is it a DXNet node
+sub is_dxnet
+{
+	my $self = shift;
+	return $self->{'sort'} eq 'X';
+}
+
+# is it a ar-cluster node
+sub is_arcluster
+{
+	my $self = shift;
+	return $self->{'sort'} eq 'R';
 }
 
 # for perl 5.004's benefit

@@ -81,6 +81,7 @@ char *connsort;					/* the type of connection */
 fcb_t *in;						/* the fcb of 'stdin' that I shall use */
 fcb_t *node;					/* the fcb of the msg system */
 char nl = '\n';					/* line end character */
+char mode = 1;                  /* 0 - ax25, 1 - normal telnet, 2 - nlonly telnet */
 char ending = 0;				/* set this to end the program */
 char send_Z = 1;				/* set a Z record to the node on termination */
 char echo = 1;					/* echo characters on stdout from stdin */
@@ -235,7 +236,8 @@ void send_text(fcb_t *f, char *s, int l)
 	if (nl == '\r')
 		*mp->inp++ = nl;
 	else {
-		*mp->inp++ = '\r';
+		if (mode != 2)
+			*mp->inp++ = '\r';
 		*mp->inp++ = '\n';
 	}
 	if (!f->buffer_it)
@@ -500,6 +502,29 @@ lend:;
 	return 0;
 }
 
+/* 
+ * set up the various mode flags, NL endings and things
+ */
+void setmode(char *m)
+{
+	char *connsort = strlower(m);
+	if (eq(connsort, "telnet") || eq(connsort, "local") || eq(connsort, "nlonly") {
+		nl = '\n';
+		echo = 1;
+		mode = eq(connsort, "nlonly") 2 : 1;
+	} else if (eq(connsort, "ax25")) {
+		nl = '\r';
+		echo = 0;
+		mode = 0;
+	} else if (eq(connsort, "connect")) {
+		nl = '\n';
+		echo = 0;
+		mode = 3;
+	} else {
+		die("Connection type must be \"telnet\", \"nlonly\", \"ax25\", \"login\" or \"local\"");
+	}
+}
+
 /*
  * things to do with initialisation
  */
@@ -546,20 +571,9 @@ lerr:
 		die("Must have at least a callsign (for now)");
 
 	if (optind < argc) {
-		connsort = strlower(argv[optind]);
-		if (eq(connsort, "telnet") || eq(connsort, "local")) {
-			nl = '\n';
-			echo = 1;
-		} else if (eq(connsort, "ax25")) {
-			nl = '\r';
-			echo = 0;
-		} else {
-			die("2nd argument must be \"telnet\" or \"ax25\" or \"local\"");
-		}
+		setmode(argv[optind]);		
 	} else {
-		connsort = "local";
-		nl = '\n';
-		echo = 1;
+		setmode("local");
 	}
 
 	/* this is kludgy, but hey so is the rest of this! */
@@ -755,7 +769,10 @@ main(int argc, char *argv[])
 	}
 	
 	/* is this a login? */
-	if (eq(call, "LOGIN")) {
+	if (eq(call, "LOGIN") || eq(call, "login")) {
+		chgstate(LOGIN);
+	} else if (eq(
+	
 		char buf[MAXPACLEN+1];
 		char callsign[MAXCALLSIGN+1];
 		int r, i;

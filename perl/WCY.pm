@@ -1,14 +1,13 @@
 #!/usr/bin/perl
 # 
-# The geomagnetic information and calculation module
-# a chanfe
+# The WCY analog of the WWV geomagnetic information and calculation module
 #
-# Copyright (c) 1998 - Dirk Koopman G1TLH
+# Copyright (c) 2000 - Dirk Koopman G1TLH
 #
 # $Id$
 #
 
-package Geomag;
+package WCY;
 
 use DXVars;
 use DXUtil;
@@ -16,9 +15,10 @@ use DXLog;
 use Julian;
 use IO::File;
 use DXDebug;
+use Data::Dumper;
 
 use strict;
-use vars qw($date $sfi $k $a $r $forecast @allowed @denied $fp $node $from 
+use vars qw($date $sfi $k $expk $a $r $sa $gmf $au  @allowed @denied $fp $node $from 
             $dirprefix $param
             %dup $duplth $dupage);
 
@@ -28,7 +28,9 @@ $sfi = 0;						# the current SFI value
 $k = 0;							# the current K value
 $a = 0;							# the current A value
 $r = 0;							# the current R value
-$forecast = "";					# the current geomagnetic forecast
+$sa = "";						# solar activity
+$gmf = "";						# Geomag activity
+$au = 'no';						# aurora warning
 $node = "";						# originating node
 $from = "";						# who this came from
 @allowed = ();					# if present only these callsigns are regarded as valid WWV updators
@@ -37,12 +39,12 @@ $from = "";						# who this came from
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 12*3600;				# the length of time to hold spot dups
 
-$dirprefix = "$main::data/wwv";
+$dirprefix = "$main::data/wcy";
 $param = "$dirprefix/param";
 
 sub init
 {
-	$fp = DXLog::new('wwv', 'dat', 'm');
+	$fp = DXLog::new('wcy', 'dat', 'm');
 	do "$param" if -e "$param";
 	confess $@ if $@;
 }
@@ -52,26 +54,22 @@ sub store
 {
 	my $fh = new IO::File;
 	open $fh, "> $param" or confess "can't open $param $!";
-	print $fh "# Geomagnetic data parameter file last mod:", scalar gmtime, "\n";
-	print $fh "\$date = $date;\n";
-	print $fh "\$sfi = $sfi;\n";
-	print $fh "\$a = $a;\n";
-	print $fh "\$k = $k;\n";
-	print $fh "\$r = $r;\n";
-	print $fh "\$from = '$from';\n";
-	print $fh "\$node = '$node';\n";
-	print $fh "\@denied = qw(", join(' ', @denied), ");\n" if @denied > 0;
-	print $fh "\@allowed = qw(", join(' ', @allowed), ");\n" if @allowed > 0;
-	close $fh;
+	print $fh "# WCY data parameter file last mod:", scalar gmtime, "\n";
+	my $dd = new Data::Dumper([ $date, $sfi, $a, $k, $expk, $r, $sa, $gmf, $au, $from, $node, \@denied, \@allowed ], [qw(date sfi a k expk r sa gmf au from node *denied *allowed)]);
+	$dd->Indent(1);
+	$dd->Terse(0);
+	$dd->Quotekeys(0);
+	$fh->print($dd->Dumpxs);
+	$fh->close;
 	
 	# log it
-	$fp->writeunix($date, "$from^$date^$sfi^$a^$k^$forecast^$node^$r");
+	$fp->writeunix($date, "$date^$sfi^$a^$k^$expk^$r^$sa^$gmf^$au^$from^$node");
 }
 
 # update WWV info in one go (usually from a PC23)
 sub update
 {
-	my ($mydate, $mytime, $mysfi, $mya, $myk, $myforecast, $myfrom, $mynode, $myr) = @_;
+	my ($mydate, $mytime, $mysfi, $mya, $myk, $myexpk, $myr, $mysa, $mygmf, $myau, $myfrom, $mynode) = @_;
 	if ((@allowed && grep {$_ eq $from} @allowed) || 
 		(@denied && !grep {$_ eq $from} @denied) ||
 		(@allowed == 0 && @denied == 0)) {
@@ -83,10 +81,14 @@ sub update
 			} else {
 				$r = 0 unless abs ($mysfi - $sfi) > 3;
 			}
-			$sfi = 0 + $mysfi;
-			$k = 0 + $myk;
-			$a = 0 + $mya;
-			$forecast = $myforecast;
+			$sfi = $mysfi;
+			$a = $mya;
+			$k = $myk;
+			$expk = $myexpk;
+			$r = $myr;
+			$sa = $mysa;
+			$gmf = $mygmf;
+			$au = $myau;
 			$date = $mydate;
 			$from = $myfrom;
 			$node = $mynode;
@@ -125,33 +127,6 @@ sub denied
 	}
 	store();
 }
-
-# accessor routines (when I work how symbolic refs work I might use one of those!)
-sub sfi
-{
-	@_ ? $sfi = shift : $sfi ;
-}
-
-sub k
-{
-	@_ ? $k = shift : $k ;
-}
-
-sub r
-{
-	@_ ? $r = shift : $r ;
-}
-
-sub a
-{
-	@_ ? $a = shift : $a ;
-}
-
-sub forecast
-{
-	@_ ? $forecast = shift : $forecast ;
-}
-
 
 #
 # print some items from the log backwards in time
@@ -218,11 +193,11 @@ sub search
 sub print_item
 {
 	my $r = shift;
-	my @ref = @$r;
-	my $d = cldate($ref[1]);
-	my ($t) = (gmtime($ref[1]))[2];
-	
-	return sprintf("$d   %02d %5d %3d %3d %-37s <%s>", $t, $ref[2], $ref[3], $ref[4], $ref[5], $ref[0]);
+	my $d = cldate($r->[0]);
+	my $t = (gmtime($r->[0]))[2];
+
+	return sprintf("$d   %02d %5d %3d %3d   %3d %3d %-5s %-5s     %-3s <%s>", 
+				    $t, @$r[1..9]);
 }
 
 #
@@ -247,7 +222,7 @@ sub readfile
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($d, $sfi, $k, $a, $text) = @_; 
+	my ($d, $sfi, $a, $k, $r) = @_; 
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
@@ -255,7 +230,7 @@ sub dup
 	$d /= 60;                            # to the nearest minute
 #	chomp $text;
 #	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $dupkey = "$d|$sfi|$k|$a";
+	my $dupkey = "$d|$sfi|$k|$a|$r";
 	return 1 if exists $dup{$dupkey};
 	$dup{$dupkey} = $d * 60;         # in seconds (to the nearest minute)
 	return 0; 

@@ -26,6 +26,7 @@ foreach $call (@args) {
 		$user = DXUser->get($call);
 		return (1, $self->msg('usernf', $call)) if !$user; 
 		$user->sort('U');
+		$user->priv(0);
 		$user->close();
 		push @out, $self->msg('nodeu', $call);
 	}

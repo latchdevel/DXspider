@@ -54,9 +54,12 @@ $filename = undef;
 		  wantbeep => '0,Rec Beep,yesno',
 		  wantann => '0,Rec Announce,yesno',
 		  wantwwv => '0,Rec WWV,yesno',
+		  wantwcy => '0,Rec WCY,yesno',
+		  wantecho => '0,Rec Echo,yesno',
 		  wanttalk => '0,Rec Talk,yesno',
 		  wantwx => '0,Rec WX,yesno',
 		  wantdx => '0,Rec DX Spots,yesno',
+		  pagelth => '0,Current Pagelth',
 		  pingint => '9,Node Ping interval',
 		  nopings => '9,Ping Obs Count',
 		  wantlogininfo => '9,Login info req,yesno',
@@ -347,6 +350,16 @@ sub wantwwv
 	return _want('wwv', @_);
 }
 
+sub wantwcy
+{
+	return _want('wcy', @_);
+}
+
+sub wantecho
+{
+	return _want('echo', @_);
+}
+
 sub wantwx
 {
 	return _want('wx', @_);
@@ -370,5 +383,52 @@ sub wantlogininfo
 	return exists $self->{wantlogininfo} ? $self->{wantlogininfo} : 0;
 }
 
+sub is_node
+{
+	my $self = shift;
+	return $self->{sort} =~ /[ACRSX]/;
+}
+
+sub is_user
+{
+	my $self = shift;
+	return $self->{sort} eq 'U';
+}
+
+sub is_bbs
+{
+	my $self = shift;
+	return $self->{sort} eq 'B';
+}
+
+sub is_spider
+{
+	my $self = shift;
+	return $self->{sort} eq 'S';
+}
+
+sub is_clx
+{
+	my $self = shift;
+	return $self->{sort} eq 'C';
+}
+
+sub is_dxnet
+{
+	my $self = shift;
+	return $self->{sort} eq 'X';
+}
+
+sub is_arcluster
+{
+	my $self = shift;
+	return $self->{sort} eq 'R';
+}
+
 1;
 __END__
+
+
+
+
+

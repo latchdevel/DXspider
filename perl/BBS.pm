@@ -39,7 +39,6 @@ sub init
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
-	$self->{'sort'} = 'B';	
 	return $self;
 }
 
