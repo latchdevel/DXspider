@@ -15,8 +15,6 @@
 
 package DXMsg;
 
-@ISA = qw(DXProt DXChannel);
-
 use DXUtil;
 use DXChannel;
 use DXUser;
