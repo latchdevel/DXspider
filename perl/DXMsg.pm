@@ -575,7 +575,6 @@ sub queue_msg
 	my $call = shift;
 	my $ref;
 	my $clref;
-	my $dxchan;
 	my @nodelist = DXProt::get_all_ak1a();
 	
 	# bat down the message list looking for one that needs to go off site and whose
@@ -591,39 +590,38 @@ sub queue_msg
 			next if $ref->{waitt} > $main::systime;
 			delete $ref->{waitt};
 		} 
-		
+
+		# deal with routed private messages
+		my $noderef;
 		if ($ref->{private}) {
-			if ($ref->{'read'} == 0) {
-				$clref = DXCluster->get_exact($ref->{to});
-				unless ($clref) {             # otherwise look for a homenode
-					my $uref = DXUser->get($ref->{to});
-					my $hnode =  $uref->homenode if $uref;
-					$clref = DXCluster->get_exact($hnode) if $hnode;
-				}
-				if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
-					$dxchan = $clref->{dxchan};
-					$ref->start_msg($dxchan) if $dxchan && $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';
-				}
+			$clref = DXCluster->get_exact($ref->{to});
+			unless ($clref) {             # otherwise look for a homenode
+				my $uref = DXUser->get($ref->{to});
+				my $hnode =  $uref->homenode if $uref;
+				$clref = DXCluster->get_exact($hnode) if $hnode;
 			}
-		} elsif (!$sort) {
-			# otherwise we are dealing with a bulletin, compare the gotit list with
-			# the nodelist up above, if there are sites that haven't got it yet
-			# then start sending it - what happens when we get loops is anyone's
-			# guess, use (to, from, time, subject) tuple?
-			my $noderef;
-			foreach $noderef (@nodelist) {
-				next if $noderef->call eq $main::mycall;
-				next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
-				next unless $ref->forward_it($noderef->call);           # check the forwarding file
-				# next if $noderef->isolate;               # maybe add code for stuff originated here?
-				# next if DXUser->get( ${$ref->{gotit}}[0] )->isolate;  # is the origin isolated?
-				
-				# if we are here we have a node that doesn't have this message
+			if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
+				next if $clref->call eq $main::mycall;  # i.e. it lives here
+				$noderef = $clref->{dxchan};
 				$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
-				last;
 			}
 		}
 		
+		# otherwise we are dealing with a bulletin or forwarded private message
+		# compare the gotit list with
+		# the nodelist up above, if there are sites that haven't got it yet
+		# then start sending it - what happens when we get loops is anyone's
+		# guess, use (to, from, time, subject) tuple?
+		foreach $noderef (@nodelist) {
+			next if $noderef->call eq $main::mycall;
+			next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
+			next unless $ref->forward_it($noderef->call);           # check the forwarding file
+
+			# if we are here we have a node that doesn't have this message
+			$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
+			last;
+		}
+
 		# if all the available nodes are busy then stop
 		last if @nodelist == scalar grep { get_busy($_->call) } @nodelist;
 	}
@@ -921,11 +919,13 @@ sub forward_it
 		my $tested;
 		
 		# are we interested?
-		last if $ref->{private} && $sort ne 'P';
-		last if !$ref->{private} && $sort ne 'B';
+		next if $ref->{private} && $sort ne 'P';
+		next if !$ref->{private} && $sort ne 'B';
 		
 		# select field
 		$tested = $ref->{to} if $field eq 'T';
+		my $at = $ref->{to} =~ /\@\s*(\S+)/;
+		$tested = $at if $field eq '\@';
 		$tested = $ref->{from} if $field eq 'F';
 		$tested = $ref->{origin} if $field eq 'O';
 		$tested = $ref->{subject} if $field eq 'S';

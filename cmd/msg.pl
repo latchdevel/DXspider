@@ -18,8 +18,8 @@ my $data;
 
 #$DB::single = 1;
 
-$cmd = shift @f if $f[0] =~ /^\w+$/;
-$msgno = shift @f if $f[0] =~ /^\d+$/;
+$cmd = shift @f if @f && $f[0] =~ /^\w+$/;
+$msgno = shift @f if @f && $f[0] =~ /^\d+$/;
 
 # handle queuing
 if ($cmd =~ /^qu/i && !$msgno) {

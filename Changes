@@ -6,11 +6,14 @@
 4. reduced necessary privilege to use 'MSG' command to 6.
 5. Correct the count of spots and wwv for a merge.
 6. Allow decodes of DK0WCY-3 WWV data beacon announces
+7. rewrote send so that an SB doesn't send a buckshee bull to NOPRIVATE!
+8. Changed default colouration on console so that all spots >= 50Mhz are red
 18Oct99=======================================================================
 1. changed help command so that it works correctly with multiple title lines.
 2. added to address to the list of things a message checks to see whether it
 is a duplicate (how on earth did it take _this_ long to find this one?).
-3. Changes S CC so that the callsign it says it has sent to is the real one.
+3. Changes S CC so that the callsign it says it has sent to is the real one
+(request from G8TIC)
 21Sep99=======================================================================
 1. allow zero messages to be stored (request from G4PDQ)
 2. make DX more flexible and change spotter syntax to be consistant with
