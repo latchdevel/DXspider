@@ -129,19 +129,20 @@ sub start
 	# ping neighbour node stuff
 	my $ping = $user->pingint;
 	$ping = 5*60 unless defined $ping;
-	$self->pingint($ping);
-	$self->nopings($user->nopings || 2);
-	$self->pingtime([ ]);
+	$self->{pingint} = $ping;
+	$self->{nopings} = $user->nopings || 2;
+	$self->{pingtime} = [ ];
+	$self->{pingave} = 0;
 
 	# send initialisation string
 	unless ($self->{outbound}) {
 		$self->send(pc38()) if DXNode->get_all();
 		$self->send(pc18());
-		$self->lastping($main::systime);
+		$self->{lastping} = $main::systime;
 	} else {
 		# remove from outstanding connects queue
 		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
-		$self->lastping($main::systime + $self->pingint / 2);
+		$self->{lastping} = $main::systime + $self->pingint / 2;
 	}
 	$self->state('init');
 	$self->pc50_t(time);
@@ -721,18 +722,18 @@ sub normal
 							my $t = tv_interval($r->{t}, [ gettimeofday ]);
 							if ($dxchan->is_user) {
 								my $s = sprintf "%.2f", $t; 
-								my $ave = sprintf "%.2f", $tochan ? ($tochan->pingave || $t) : $t;
+								my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
 								$dxchan->send($dxchan->msg('pingi', $field[2], $s, $ave))
 							} elsif ($dxchan->is_ak1a) {
 								if ($tochan) {
-									$tochan->nopings(3); # pump up the timer
-									push @{$tochan->pingtime}, $t;
-									shift @{$tochan->pingtime} if @{$tochan->pingtime} > 6;
+									$tochan->{nopings} = 2; # pump up the timer
+									push @{$tochan->{pingtime}}, $t;
+									shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
 									my $st;
-									for (@{$tochan->pingtime}) {
+									for (@{$tochan->{pingtime}}) {
 										$st += $_;
 									}
-									$tochan->{pingave} = $st / @{$tochan->pingtime};
+									$tochan->{pingave} = $st / @{$tochan->{pingtime}};
 								}
 							} 
 						}
@@ -780,13 +781,13 @@ sub process
 		} 
 
 		# send a ping out on this channel
-		if ($dxchan->pingint && $t >= $dxchan->pingint + $dxchan->lastping) {
-			if ($dxchan->nopings <= 0) {
+		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
+			if ($dxchan->{nopings} <= 0) {
 				$dxchan->disconnect;
 			} else {
 				addping($main::mycall, $dxchan->call);
-				$dxchan->nopings($dxchan->nopings - 1);
-				$dxchan->lastping($t);
+				$dxchan->{nopings} -= 1;
+				$dxchan->{lastping} = $t;
 			}
 		}
 	}

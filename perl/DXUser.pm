@@ -363,7 +363,10 @@ sub wanttalk
 
 sub wantlogininfo
 {
-	return _want('logininfo', @_);
+	my $self = shift;
+	my $n = shift;
+	$self->{wantlogininfo} = $n if $n;
+	return exists $self->{wantlogininfo} ? $self->{wantlogininfo} : 0;
 }
 
 1;
