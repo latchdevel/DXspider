@@ -33,10 +33,8 @@ eval {
 use strict;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+
+main::mkver($VERSION = q$Revision$);
 
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean $residencetime
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
