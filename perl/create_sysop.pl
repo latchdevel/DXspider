@@ -41,7 +41,7 @@ sub create_it
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
 	$self->{homenode} = $mycall;
-	$self->{sort} = 'A';		# C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
+	$self->{sort} = 'S';		# C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
 	$self->{priv} = 9;			# 0 - 9 - with 9 being the highest
 	$self->{lastin} = 0;
 	$self->{dxok} = 1;
