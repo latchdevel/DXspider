@@ -734,7 +734,7 @@ sub next_transno
 	my $fh = new IO::File;
 	if (sysopen($fh, $fn, O_RDWR|O_CREAT, 0666)) {
 		$fh->autoflush(1);
-		$msgno = $fh->getline;
+		$msgno = $fh->getline || '0';
 		chomp $msgno;
 		$msgno++;
 		seek $fh, 0, 0;
