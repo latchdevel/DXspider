@@ -7,6 +7,7 @@ procedure is (after the update) to run /spider/perl/create_qsl.pl (this may
 take a long time), then immediately it finishes, restart the node. The node 
 will then keep the database up to date automatically. If you are not 
 interested in historical data then you can leave this step out.
+2. added show/contest command from Tommy SM3OSM via Rene OZ1LQH.
 08Mar03=======================================================================
 1. Added chat, join, leave commands to allow general purpose conferencing
 on arbitrary subjects. [Translators: added e34,e35,join,leave]. There is

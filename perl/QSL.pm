@@ -88,8 +88,8 @@ sub update
 
 sub get
 {
-	my $key = uc shift;
 	return undef unless $dbm;
+	my $key = uc shift;
 	my $value;
 	
 	my $r = $dbm->get($key, $value);
