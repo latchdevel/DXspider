@@ -271,6 +271,7 @@ package DXM;
 				statvhf => 'VHF+ DX Spot Stats, last $_[1] days from $_[0]',
 				statvhft => 'VHF+ DX Spot Stats, last $_[2] days from $_[1] for DXCC $_[0]',
 				statdx => 'Total DX Spots for $_[1] days from $_[0]',
+				storable => 'Please load the Storable module from CPAN', 
 				sun => 'Location                              dd/mm/yyyy Rise   Set',
 				sun_with_azel => 'Location                              dd/mm/yyyy Rise   Set      Azim   Elev',
 				susdb1 => 'usage: callsign state city',

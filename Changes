@@ -1,3 +1,6 @@
+27Mar03=======================================================================
+1. play around with sh/reg, sh/iso, sh/node and sh/lock to make them work
+slightly better with the new user format.
 26Mar03=======================================================================
 1. add some ak1a compatibility changes to chat
 2. added help text for chat, join, leave and sh/chat.
