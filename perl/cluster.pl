@@ -25,7 +25,7 @@ BEGIN {
 
 	# try to create and lock a lockfile (this isn't atomic but 
 	# should do for now
-	my $lockfn = "$root/perl/cluster.lock";       # lock file name
+	$lockfn = "$root/perl/cluster.lck";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -89,7 +89,6 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 $systime = 0;					# the time now (in seconds)
 $version = "1.47";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
-$lockfn = "cluster.lock";       # lock file name
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
 

@@ -75,6 +75,15 @@ sub create_it
 
 }
 
+$lockfn = "$root/perl/cluster.lck";       # lock file name
+if (-e $lockfn) {
+	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+	my $pid = <CLLOCK>;
+	chomp $pid;
+	die "Sorry, Lockfile ($lockfn) and process $pid exist, a cluster is running\n" if kill 0, $pid;
+	close CLLOCK;
+}
+
 if (-e "$userfn") {
 	print "Do you wish to destroy your user database (THINK!!!) [y/N]: ";
 	$ans = <STDIN>;

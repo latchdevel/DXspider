@@ -340,7 +340,7 @@ BEGIN {
 	
 	# try to detect a lockfile (this isn't atomic but 
 	# should do for now
-	$lockfn = "$root/perl/cluster.lock";       # lock file name
+	$lockfn = "$root/perl/cluster.lck";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;

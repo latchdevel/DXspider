@@ -1,3 +1,5 @@
+09Apr01=======================================================================
+1. changed lockfile name to cluster.lck (from .lock) for MSWin's benefit
 08Apr01=======================================================================
 1. added a quick installation guide to the admin manual and removed references
 to client.pl (g0vgs)
