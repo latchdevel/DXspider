@@ -1,7 +1,7 @@
   The DXSpider Installation Manual v1.49
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (ianmaude@btinternet.com)
-  November 2001 revision 1.0
+  December 2001 revision 1.1
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -79,7 +79,11 @@
 
 
   In addition to the standard Red Hat distribution you will require the
-  following modules from http://www.cpan.org/CPAN.html ...
+  following modules from http://www.cpan.org/CPAN.html , please note
+  however that with later versions of perl, some of these modules may be
+  included with the distribution.  Get the modules anyway and try to
+  install as below.  If they complain, they are probably already a part
+  of your perl distribution.
 
 
 
@@ -104,10 +108,6 @@
 
   Log in as 'root', and make sure you're at '/root' before you continue.
   Here are exactly the commands you must issue next: -
-
-
-
-
 
 
 
@@ -240,12 +240,14 @@
 
 
 
+
   If you do not have the command groupadd available to you simply add a
   line in /etc/group by hand.
 
 
 
        # vi /etc/group                (or your favorite editor)
+
 
 
 
@@ -260,11 +262,9 @@
   The next step is to set the permissions on the Spider directory tree
   and files ....
 
-
-
-  # chown -R sysop.spider spider
-  # find . -type d -exec chmod 2775 {} \;
-  # find . -type f -exec chmod 775 {} \;
+       # chown -R sysop.spider spider
+       # find . -type d -exec chmod 2775 {} \;
+       # find . -type f -exec chmod 775 {} \;
 
 
 
@@ -309,20 +309,42 @@
 
   Using the distributed DXVars.pm as a a template, set your cluster
   callsign, sysop callsign and other user info to suit your own
-  environment. Note that this a perl file which will be parsed and
-  executed as part of the cluster. If you get it wrong then perl will
-  complain when you start the cluster process.  It is important only to
-  alter the text of any section.  Some of the lines look a little odd.
-  Take this line for example ....
+  environment.
+
+
+
+       $mycall = "GB7DJK";
+
+
+
+
+
+  This is the call sign of your cluster.  If you use an SSID then
+  include it here also.
+
+
+
+       $myalias = "G1TLH";
+
+
+
+  This is the sysop user callsign, normally your own.
+
+
+  PLEASE USE CAPITAL LETTERS FOR CALLSIGNS
+
+
+  Note that this a perl file which will be parsed and executed as part
+  of the cluster. If you get it wrong then perl will complain when you
+  start the cluster process.  It is important only to alter the text of
+  any section.  Some of the lines look a little odd.  Take this line for
+  example ....
 
   $myemail = "ianmaude\@btinternet.com";
 
 
   There appears to be an extra slash in there.  However this has to be
   there for the file to work so leave it in.
-
-
-  PLEASE USE CAPITAL LETTERS FOR CALLSIGNS
 
 
   DON'T alter any file in /spider/perl, they are overwritten with every
@@ -371,16 +393,17 @@
 
 
 
-       $ ./cluster.pl
-       DXSpider DX Cluster Version 1.47
-       Copyright (c) 1998 Dirk Koopman G1TLH
-       loading prefixes ...
-       loading band data ...
-       loading user file system ...
-       starting listener ...
-       reading existing message headers
-       reading cron jobs
-       orft we jolly well go ...
+
+  $ ./cluster.pl
+  DXSpider DX Cluster Version 1.47
+  Copyright (c) 1998 Dirk Koopman G1TLH
+  loading prefixes ...
+  loading band data ...
+  loading user file system ...
+  starting listener ...
+  reading existing message headers
+  reading cron jobs
+  orft we jolly well go ...
 
 
 
@@ -394,6 +417,9 @@
        $ ./client
 
 
+
+
+
   This should log you into the cluster as the sysop under the alias
   callsign we set earlier.  In this case the callsign is G0VGS.  The
   cluster callsign is set in the DXVars.pm file in /spider/local.  In
@@ -403,6 +429,7 @@
 
 
        G0VGS de GB7MBC 19-Nov-1999 2150Z >
+
 
 
 
@@ -459,7 +486,6 @@
 
   o  cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
 
-
   o  cd to /spider/local and edit DXVars to set your details (sysop)
 
   o  cd ../perl (sysop)
@@ -467,6 +493,7 @@
   o  ./create_sysop.pl (sysop)
 
   o  ./cluster.pl (sysop)
+
 
   Spider should now be running and you should be able to login using the
   client program.
@@ -481,6 +508,7 @@
   o  Enter the correct line in /etc/inetd.conf (root)
 
   o  killall -HUP inetd (root)
+
 
   Spider should now be able to accept logins via telnet, netrom and
   ax25.
@@ -522,11 +550,14 @@
 
 
 
+
   or, if you wish your users to be able to use SSID's on their callsigns
   ..
 
 
+
        default  * * * * * *  - sysop /spider/src/client client %s ax25
+
 
 
 
@@ -561,9 +592,6 @@
 
        spdlogin   8000/tcp     # spider anonymous login port
 
-
-
-
   Then add a line in /etc/inetd.conf like this ....
 
 
@@ -584,13 +612,16 @@
 
 
 
-
   Now login as sysop and cd spider/src. You can test that spider is
   accepting telnet logins by issuing the following command ....
 
 
 
        ./client login telnet
+
+
+
+
 
   You should get a login prompt and on issuing a callsign, you will be
   given access to the cluster.  Note, you will not get a password login.
@@ -627,9 +658,6 @@
        killall -HUP inetd
 
 
-
-
-
   to make the change happen...
 
 
@@ -654,14 +682,10 @@
 
 
 
-
-
-
-
-  @listen = (
-      ["gb7baa.dxcluster.net", 8000],
-      ["44.131.16.2", 6300],
-  );
+       @listen = (
+           ["gb7baa.dxcluster.net", 8000],
+           ["44.131.16.2", 6300],
+       );
 
 
 
@@ -699,6 +723,7 @@
      installation.  If you haven't set any there, then you should not
      touch these values.
 
+
   o  You can connect to a remote AGW engine (ie on some other machine)
      by changing $addr and $port appropriately.
 
@@ -724,10 +749,10 @@
 
 
 
-  set/node        (AK1A type)
-  set/spider
-  set/dxnet
-  set/clx
+       set/node        (AK1A type)
+       set/spider
+       set/dxnet
+       set/clx
 
 
 
@@ -765,7 +790,6 @@
 
 
 
-
   You should get an initialisation string from DXSpider like this ...
 
 
@@ -788,6 +812,9 @@
 
 
        unset/node gb7baa
+
+
+
 
 
   3.6.  Connection scripts
@@ -856,6 +883,9 @@
   There are many possible ways to configure the script but here are
   three examples, one for a NETRom/AX25 connect, one for AGW engines and
   one for tcp/ip.
+
+
+
        timeout 60
        abort (Busy|Sorry|Fail)
        # don't forget to chmod 4775 netrom_call!
@@ -892,9 +922,6 @@
        client gb7djk telnet
 
 
-
-
-
   Both these examples assume that everything is set up properly at the
   other end.  You will find other examples in the /spider/examples
   directory.
@@ -914,6 +941,7 @@
 
 
 
+
   This will start a connection using the script called gb7djk-1.  You
   can follow the connection by watching the term or console from where
   you started cluster.pl.  From version 1.47 onwards, you will need to
@@ -921,33 +949,32 @@
 
 
 
-
-  <- D G1TLH connect gb7djk-1
-  -> D G1TLH connection to GB7DJK-1 started
-  -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
-  timeout set to 15
-  CONNECT sort: telnet command: dirkl.tobit.co.uk
-  CHAT "login" -> "gb7djk"
-  received "
-  Red Hat Linux release 5.1 (Manhattan)
-  Kernel 2.0.35 on an i586
-  "
-  received "login: "
-  sent "gb7djk"
-  CHAT "word" -> "gb7djk"
-  received "gb7djk"
-  received "Password: "
-  sent "gb7djk"
-  Connected to GB7DJK-1, starting normal protocol
-  <- O GB7DJK-1 telnet
-  -> B GB7DJK-1 0
-  GB7DJK-1 channel func  state 0 -> init
-  <- D GB7DJK-1
-  <- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
-  <- D GB7DJK-1 PC38^GB7DJK-1^~
-  <- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime
-  0 00:00^5447^~
-      etc
+       <- D G1TLH connect gb7djk-1
+       -> D G1TLH connection to GB7DJK-1 started
+       -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
+       timeout set to 15
+       CONNECT sort: telnet command: dirkl.tobit.co.uk
+       CHAT "login" -> "gb7djk"
+       received "
+       Red Hat Linux release 5.1 (Manhattan)
+       Kernel 2.0.35 on an i586
+       "
+       received "login: "
+       sent "gb7djk"
+       CHAT "word" -> "gb7djk"
+       received "gb7djk"
+       received "Password: "
+       sent "gb7djk"
+       Connected to GB7DJK-1, starting normal protocol
+       <- O GB7DJK-1 telnet
+       -> B GB7DJK-1 0
+       GB7DJK-1 channel func  state 0 -> init
+       <- D GB7DJK-1
+       <- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
+       <- D GB7DJK-1 PC38^GB7DJK-1^~
+       <- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime
+       0 00:00^5447^~
+           etc
 
 
 
@@ -961,14 +988,6 @@
   This means if a node is unreachable, it will continue sending logins
   and logouts to users even though it is not actually connecting.  To
   avoid this use the following line ...
-
-
-
-
-
-
-
-
   In a script, this might look like ...
 
 
@@ -1013,6 +1032,7 @@
 
 
 
+
   So, the first connection is made by Spider.  This is fine as Spider
   uses the Net_Telnet script from within perl.  This actually uses TCP
   rather than TELNET so no negotiation will be done on the first
@@ -1031,6 +1051,7 @@
   by cluster nodes or users.  However, it has to be shutdown and
   restarted manually.  It would be much easier to have it start
   automatically.
+
 
 
   This is not only a way to start the cluster automatically, it also
@@ -1054,6 +1075,9 @@
   This line works fine for RedHat distributions. It is also fine for
   SuSE up to 7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like
   this ...
+
+
+
        DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
 
 
@@ -1118,7 +1142,6 @@
   o  A supported Windows platform with an internet connection so you can
      download the necessary software bits and bobs directly to it. There
      are other ways, but this is preferable.
-
 
   o  Another cup of good, strong tea
 
@@ -1228,6 +1251,7 @@
 
 
 
+
   I'm not going to bother you with exhaustive details of the rest of
   them, but suffice it to say you need to:
 
@@ -1247,9 +1271,6 @@
   awkward to configure via firewalls, and that sometimes the
   repositories don't always work the way we'd hope. I do it that way
   because it suits me.
-
-
-
 
 
   4.6.  Getting Spider
@@ -1297,7 +1318,7 @@
 
 
 
-       cd \spider\local
+  cd \spider\local
 
 
 
@@ -1316,7 +1337,6 @@
 
 
   o  $mycall  - Should hold the callsign of your DX Cluster
-
 
   o  $myname  - The SysOp's first name
 
@@ -1362,6 +1382,8 @@
   o  $passwd - password that matches $login
 
 
+
+
   5.2.  Setting up the initial user files
 
   Next you need to create the initial user files, etc. A tool is
@@ -1383,8 +1405,7 @@
 
 
 
-
-  perl cluster.pl
+       perl cluster.pl
 
 
 
@@ -1428,8 +1449,9 @@
 
 
 
-       cd \spider\perl
-       perl winclient.pl
+
+  cd \spider\perl
+  perl winclient.pl
 
 
 
@@ -1494,7 +1516,6 @@
   connected to anything particularly useful at any given moment. Contact
   me by Email if you want me to set up a connection for you.
 
-
   6.  General Information
 
   The following relates to all versions of DXSpider and is not platform
@@ -1516,6 +1537,8 @@
 
 
 
+
+
   The callsign involved will be the callsign of the cluster node you are
   going to connect to.  This will now check every 10 minutes to see if
   gb7xxx is connected, if it is then nothing will be done.  If it is
@@ -1525,29 +1548,6 @@
   There are probably lots of other things you could use this crontab
   file for.  If you want to know more about it, look at the DXSpider
   website at the cron page where it is explained more fully.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,3 +1,7 @@
+31Dec01=======================================================================
+1. Make a couple of changes to the Installation Manual and add a FAQ on msg
+deletion. (g0vgs)
+2. Fix unset/register so it works (g0vgs)
 30Dec01=======================================================================
 1. make PC21 coming from the channel's node call then treat it as a PC39 and
 disconnect it.

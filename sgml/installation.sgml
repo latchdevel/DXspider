@@ -7,7 +7,7 @@
 <title>The DXSpider Installation Manual v1.49</title> 
 <author>Iain Philipps, G0RDI (g0rdi@77hz.com) and
 Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>November 2001 revision 1.0</date>
+<date>December 2001 revision 1.1</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -41,8 +41,12 @@ Spider required perl 5.004, however it is now <it>STRONGLY</it> recommended
 that you use at least version 5.005_03 as this is the version being used
 in the development of Spider.
 
-<P>In addition to the standard Red Hat distribution you will require the 
-following modules from <htmlurl url="http://www.cpan.org/CPAN.html" name="http://www.cpan.org/CPAN.html"> ...
+<P>
+In addition to the standard Red Hat distribution you will require the 
+following modules from <htmlurl url="http://www.cpan.org/CPAN.html" name="http://www.cpan.org/CPAN.html"> , please note however that with later versions of perl, some of these
+modules may be included with the distribution.  Get the modules anyway and try
+to install as below.  If they complain, they are probably already a part of your
+perl distribution.
 
 <P>
 <itemize>
@@ -55,7 +59,9 @@ following modules from <htmlurl url="http://www.cpan.org/CPAN.html" name="http:/
 </itemize>
 
 <P>
-Copy the CPAN modules listed above to a convenient place on your computer. One good place would be /usr/local/packages, and the instructions which follow will assume that that's where you have put them.
+Copy the CPAN modules listed above to a convenient place on your computer. One good 
+place would be /usr/local/packages, and the instructions which follow will assume that 
+that's where you have put them.
 
 <P>
 Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -
@@ -105,7 +111,8 @@ Log in as 'root', and make sure you're at '/root' before you continue. Here are 
 </verb>
 
 <P>
-Do not fall into the trap of thinking they're all the same, just because they nearly are! Pay particular attention to the instructions of IO, above.
+Do not fall into the trap of thinking they're all the same, just because they 
+nearly are! Pay particular attention to the instructions of <em>IO</em>, above.
 
 
 <sect1>Preparation
@@ -156,6 +163,7 @@ permissions.  Copy the tarball to /home/sysop and do the following.
 # groupadd -g 251 spider       (or another number)
 </verb></tscreen>
 
+<P>
 If you do not have the command <em>groupadd</em> available to you simply 
 add a line in /etc/group by hand.
 
@@ -163,6 +171,7 @@ add a line in /etc/group by hand.
 # vi /etc/group                (or your favorite editor)
 </verb></tscreen>
 
+<P>
 You also need to add some others to the group, including your own callsign 
 (this will be used as an alias) and root.  The finished line in /etc/group 
 should look something like this
@@ -212,11 +221,31 @@ $ vi DXVars.pm (or your favourite editor)
 
 <P>
 Using the distributed DXVars.pm as a a template, set your cluster callsign, 
-sysop callsign and other user info to suit your own environment. Note that 
-this a perl file which will be parsed and executed as part of the cluster. If 
-you get it wrong then perl will complain when you start the cluster process.  
-It is important only to alter the text of any section.  Some of the lines look 
-a little odd.  Take this line for example ....
+sysop callsign and other user info to suit your own environment. 
+
+<tscreen><verb>
+$mycall = "GB7DJK";	
+</verb></tscreen>
+
+<P>
+This is the call sign of your cluster.  If you use an SSID then include it here
+also.
+
+<tscreen><verb>
+$myalias = "G1TLH";
+</verb></tscreen>
+
+<P>
+This is the sysop user callsign, normally your own.
+
+<P>
+<bf>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</bf>
+
+<P>
+Note that this a perl file which will be parsed and executed as part of the 
+cluster. If you get it wrong then perl will complain when you start the cluster 
+process.  It is important only to alter the text of any section.  Some of the 
+lines look a little odd.  Take this line for example ....
 
 <tt>
 $myemail = "ianmaude\@btinternet.com";
@@ -225,8 +254,6 @@ $myemail = "ianmaude\@btinternet.com";
 <P>
 There appears to be an extra slash in there.  However this has to be there 
 for the file to work so leave it in.
-		
-<P><bf>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</bf>
 		
 <P>
 DON'T alter any file in /spider/perl, they are overwritten with every
@@ -298,6 +325,7 @@ was set as GB7MBC.  You should therefore see this when you login ....
 G0VGS de GB7MBC 19-Nov-1999 2150Z >
 </verb></tscreen>
 
+<P>
 If you do, congratulations!  If not, look over the instructions again, you 
 have probably missed something out.  You can shut spider down again with the 
 command ....
@@ -339,6 +367,7 @@ is the user that should be doing that process.
 <item>./cluster.pl (sysop)
 </itemize>
 
+<P>
 Spider should now be running and you should be able to login using the
 client program.
 
@@ -350,6 +379,7 @@ client program.
 <item>killall -HUP inetd (root)
 </itemize>
 
+<P>
 Spider should now be able to accept logins via telnet, netrom and ax25.
 
 <itemize>
@@ -378,12 +408,14 @@ each interface that you wish to allow connections on, use the following format .
 default  * * * * * *  - sysop /spider/src/client client %u ax25
 </verb></tscreen>
 
+<P>
 or, if you wish your users to be able to use SSID's on their callsigns ..
 
 <tscreen><verb>
 default  * * * * * *  - sysop /spider/src/client client %s ax25
 </verb></tscreen>
 
+<P>
 For most purposes this is not desirable. The only time you probably will 
 need this is when you need to allow other cluster nodes that are using SSID's
 in. In this case it would probably be better to use the first example and 
@@ -409,6 +441,7 @@ in /etc/services to allow connections to a port number, like this ....
 spdlogin   8000/tcp     # spider anonymous login port
 </verb></tscreen>
 
+<P>
 Then add a line in /etc/inetd.conf like this ....
 
 <tscreen><verb>
@@ -422,14 +455,15 @@ Once this is done, you need to restart inetd like this ....
 killall -HUP inetd
 </verb></tscreen>
 
-
-<P>Now login as <em>sysop</em> and cd spider/src. You can test that spider 
+<P>
+Now login as <em>sysop</em> and cd spider/src. You can test that spider 
 is accepting telnet logins by issuing the following command ....
 
 <tscreen><verb>
 ./client login telnet
 </verb></tscreen>
 
+<P>
 You should get a login prompt and on issuing a callsign, you will be given 
 access to the cluster.  Note, you will not get a password login.  There seems 
 no good reason for a password prompt to be given so it is not asked for.
@@ -643,7 +677,7 @@ or symbols:-
 		connects to GB7DJK-1 [instead of a script called gb7djk-1]).
 </descrip>
 
-
+<P>
 There are many possible ways to configure the script but here are three examples, 
 one for a NETRom/AX25 connect, one for AGW engines and one for tcp/ip.  
 
@@ -702,6 +736,7 @@ connection to GB7DJK-1 started
 G0VGS de GB7MBC 13-Dec-1998 2043Z >
 </verb></tscreen>
 
+<P>
 This will start a connection using the script called <em>gb7djk-1</em>.  You can
 follow the connection by watching the term or console from where you started
 <em>cluster.pl</em>.  From version 1.47 onwards, you will need to <tt>set/debug connect</tt> first.
@@ -794,6 +829,7 @@ connect telnet mary.lancs.ac.uk
 'connect' ''
 </verb></tscreen>
 
+<P>
 So, the first connection is made by Spider.  This is fine as Spider uses the
 Net_Telnet script from within perl.  This actually uses TCP rather than TELNET 
 so no negotiation will be done on the first connection.  Once connected to
@@ -833,7 +869,7 @@ This line works fine for RedHat distributions. It is also fine for SuSE up to
 DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
 </verb></tscreen>
 
-
+<P>
 The line required for Slackware distributions is slightly different.  My thanks to 
 Aurelio, PA3EZL for this information.
 

@@ -6,7 +6,7 @@
 
 <title>The DXSpider FAQ</title>
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>$Date$ $Revision$</date>
+<date>December 2001 Revision: 1.8</date>
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -146,5 +146,14 @@ What has probably happened is that the dupefile has got corrupted in
 some way.  Simply delete the /spider/data/dupefile and restart the
 cluster.  It may take a little time to become fully functional but
 should solve your problem.
+
+<sect1>I have deleted a message but it is still there, why?
+
+<P>
+This is now the way messages are handled for deletion in Spider.  If you
+look closely you will see a 'D' following the message number.  This 
+message is marked for deletion and will be deleted in 2 days if nothing
+further is done.  Optionally you can use the command <em>delete/expunge</em>
+to delete it immediately.
 
 </article>

@@ -36,7 +36,10 @@ in the development of Spider.
 <P>
 <P>In addition to the standard Red Hat distribution you will require the 
 following modules from 
-<A HREF="http://www.cpan.org/CPAN.html">http://www.cpan.org/CPAN.html</A> ...
+<A HREF="http://www.cpan.org/CPAN.html">http://www.cpan.org/CPAN.html</A> , please note however that with later versions of perl, some of these
+modules may be included with the distribution.  Get the modules anyway and try
+to install as below.  If they complain, they are probably already a part of your
+perl distribution.
 <P>
 <P>
 <UL>
@@ -54,7 +57,9 @@ following modules from
 <A HREF="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time-HiRes-01.20.tar.gz</A></LI>
 </UL>
 <P>
-<P>Copy the CPAN modules listed above to a convenient place on your computer. One good place would be /usr/local/packages, and the instructions which follow will assume that that's where you have put them.
+<P>Copy the CPAN modules listed above to a convenient place on your computer. One good 
+place would be /usr/local/packages, and the instructions which follow will assume that 
+that's where you have put them.
 <P>
 <P>Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -
 <P>
@@ -102,7 +107,8 @@ following modules from
 # cd ..
 </PRE>
 <P>
-<P>Do not fall into the trap of thinking they're all the same, just because they nearly are! Pay particular attention to the instructions of IO, above.
+<P>Do not fall into the trap of thinking they're all the same, just because they 
+nearly are! Pay particular attention to the instructions of <EM>IO</EM>, above.
 <P>
 <P>
 <H2><A NAME="ss1.2">1.2 Preparation</A>
@@ -157,6 +163,7 @@ permissions.  Copy the tarball to /home/sysop and do the following.
 # groupadd -g 251 spider       (or another number)
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>If you do not have the command <EM>groupadd</EM> available to you simply 
 add a line in /etc/group by hand.
 <P>
@@ -165,6 +172,7 @@ add a line in /etc/group by hand.
 # vi /etc/group                (or your favorite editor)
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>You also need to add some others to the group, including your own callsign 
 (this will be used as an alias) and root.  The finished line in /etc/group 
 should look something like this
@@ -213,17 +221,35 @@ $ vi DXVars.pm (or your favourite editor)
 </CODE></BLOCKQUOTE>
 <P>
 <P>Using the distributed DXVars.pm as a a template, set your cluster callsign, 
-sysop callsign and other user info to suit your own environment. Note that 
-this a perl file which will be parsed and executed as part of the cluster. If 
-you get it wrong then perl will complain when you start the cluster process.  
-It is important only to alter the text of any section.  Some of the lines look 
-a little odd.  Take this line for example ....
+sysop callsign and other user info to suit your own environment. 
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$mycall = "GB7DJK";     
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>This is the call sign of your cluster.  If you use an SSID then include it here
+also.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$myalias = "G1TLH";
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>This is the sysop user callsign, normally your own.
+<P>
+<P><B>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</B>
+<P>
+<P>Note that this a perl file which will be parsed and executed as part of the 
+cluster. If you get it wrong then perl will complain when you start the cluster 
+process.  It is important only to alter the text of any section.  Some of the 
+lines look a little odd.  Take this line for example ....
 <P><CODE>$myemail = "ianmaude\@btinternet.com";</CODE>
 <P>
 <P>There appears to be an extra slash in there.  However this has to be there 
 for the file to work so leave it in.
-<P>
-<P><B>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</B>
 <P>
 <P>DON'T alter any file in /spider/perl, they are overwritten with every
 release. Any files or commands you place in /spider/local or /spider/local_cmd 
@@ -299,6 +325,7 @@ was set as GB7MBC.  You should therefore see this when you login ....
 G0VGS de GB7MBC 19-Nov-1999 2150Z >
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>If you do, congratulations!  If not, look over the instructions again, you 
 have probably missed something out.  You can shut spider down again with the 
 command ....

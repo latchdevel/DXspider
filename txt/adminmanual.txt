@@ -1917,6 +1917,7 @@
 
 
 
+
   You can create aliases for commands at will.  Beware though, these may
   not always turn out as you think.  Care is needed and you need to test
   the results once you have set an alias.
@@ -1950,8 +1951,10 @@
 
 
 
+
   would export message number 5467 as a file called keps.in in the
   /spider/perl directory.
+
 
   Now login to a VT as sysop and cd /spider/perl.  There is a command in
   the perl directory called convkeps.pl.  All we need to do now is
@@ -1960,6 +1963,7 @@
 
 
        ./convkeps.pl keps.in
+
 
 
 
@@ -1973,9 +1977,8 @@
 
 
 
+
   That is it!  the kepler data has been updated.
-
-
 
 
   6.8.  The QRZ callbook
@@ -2038,6 +2041,7 @@
 
   To unregister a user use unset/register and to show the list of
   registered users, use the command show/register.
+
 
 
   7.2.  Passwords
@@ -2106,9 +2110,9 @@
   CVS repository and then update your Spider source.  There are several
   steps which are listed below ...
 
-
   First login as the user sysop.  Next you need to connect to the CVS
   repository.  You do this with the command below ...
+
 
   cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
 
@@ -2238,9 +2242,9 @@
          dest <prefixes>          eg: 6MUK,WDX      (distros)
 
 
-
-
   some examples:-
+
+
 
          acc/ann dest 6MUK
          acc/ann 2 by_zone 14,15,16
@@ -2304,8 +2308,8 @@
   more info. Please read this to understand how filters work - it will
   save a lot of grief later on.
 
-
   You can use any of the following things in this line:-
+
 
 
          call <prefixes>        the callsign of the thingy
@@ -2358,19 +2362,33 @@
 
 
 
-         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-         on <range>             same as 'freq'
-         call <prefixes>        eg: G,PA,HB9
-         info <string>          eg: iota or qsl
-         by <prefixes>
-         call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         call_itu <numbers>
-         call_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         origin <prefixes>
-         channel <prefixes>
+
+
+
+
+
+
+
+
+
+
+
+
+    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+    on <range>             same as 'freq'
+    call <prefixes>        eg: G,PA,HB9
+    info <string>          eg: iota or qsl
+    by <prefixes>
+    call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    call_itu <numbers>
+    call_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    origin <prefixes>
+    channel <prefixes>
+
+
 
 
 
@@ -2432,23 +2450,15 @@
 
 
 
-
-
-
-
-
-
-
-
-    by <prefixes>            eg: G,M,2
-    origin <prefixes>
-    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-    origin_itu <numbers>
-    origin_zone <numbers>
-    by_dxcc <numbers>
-    by_itu <numbers>
-    by_zone <numbers>
-    channel <prefixes>
+         by <prefixes>            eg: G,M,2
+         origin <prefixes>
+         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+         origin_itu <numbers>
+         origin_zone <numbers>
+         by_dxcc <numbers>
+         by_itu <numbers>
+         by_zone <numbers>
+         channel <prefixes>
 
 
 
@@ -2490,20 +2500,27 @@
 
 
 
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
+
+
+
+
+
+
+    by <prefixes>            eg: G,M,2
+    origin <prefixes>
+    origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+    origin_itu <numbers>
+    origin_zone <numbers>
+    by_dxcc <numbers>
+    by_itu <numbers>
+    by_zone <numbers>
+    channel <prefixes>
 
 
 
 
   for example
+
 
 
          accept/wwv by_zone 4
@@ -2555,9 +2572,6 @@
 
   This command will send your announcement across the whole cluster
   network.
-
-
-
   9.12.  announce sysop (5)
 
   announce sysop <text>
@@ -2569,7 +2583,6 @@
   9.13.  apropos (0)
 
   apropos <string> Search the help database
-
 
 
   Search the help database for <string> (it isn't case sensitive), and
@@ -2637,7 +2650,6 @@
   This command allows you to clear (remove) a line in a route filter or
   to remove the whole filter.
 
-
   see CLEAR/SPOTS for a more detailed explanation.
 
   A sysop can clear an input or normal output filter for a user or the
@@ -2699,9 +2711,6 @@
 
   A sysop can clear an input or normal output filter for a user or the
   node_default or user_default.
-
-
-
 
 
   9.20.  clear/wcy (0)
@@ -2826,14 +2835,13 @@
 
   to allow
 
+
   SH/BUCK g1tlh
 
   to work as they may be used to.
 
   See DBIMPORT for the importing of existing AK1A format data to
   databases.  See DBSHOW for generic database enquiry
-
-
 
 
   9.27.  dbimport (9)
@@ -2894,10 +2902,9 @@
 
   but if he hasn't and the database really does exist (use DBAVAIL or
   SHOW/COMMAND to find out) you can do the same thing with:
-
-
-
          DBSHOW buck G1TLH
+
+
 
 
 
@@ -2959,15 +2966,20 @@
 
 
 
-          DIR TO G1TLH 5
-       or
-          DIR SUBJECT IOTA 200-250
+
+
+     DIR TO G1TLH 5
+  or
+     DIR SUBJECT IOTA 200-250
 
 
 
 
   You can abbreviate all the commands to one letter and use ak1a
   syntax:-
+
+
+
           DIR/T G1* 10
           DIR/S QSL 10-100 5
 
@@ -3021,7 +3033,8 @@
 
 
 
-          DX by G1TLH FR0G 144.600 he isn't on the cluster
+
+     DX by G1TLH FR0G 144.600 he isn't on the cluster
 
 
 
@@ -3033,6 +3046,7 @@
   9.36.  export (9)
 
   export <msgno> <filename> Export a message to a file
+
 
   Export a message to a file. This command can only be executed on a
   local console with a fully privileged user. The file produced will be
@@ -3165,7 +3179,6 @@
 
   clear/spots 1
 
-
   To remove the filter in its entirty:-
 
   clear/spots all
@@ -3283,6 +3296,8 @@
   same subject will be deleted. Beware!
 
 
+
+
   9.46.  kill/expunge (6)
 
   kill/expunge <msgno> [<msgno>..]Expunge a message
@@ -3296,6 +3311,7 @@
   or less immediately.
 
   It otherwise is used in the same way as the KILL command.
+
 
 
   9.47.  links (0)
@@ -3348,7 +3364,6 @@
 
   load/bands Reload the band limits table
 
-
   Reload the /spider/data/bands.pl file if you have changed it manually
   whilst the cluster is running.
 
@@ -3364,6 +3379,8 @@
   delete a command in the local_cmd tree and want to use the normal one
   again. Execute this command to reset everything back to the state it
   was just after a cluster restart.
+
+
   9.53.  load/forward (9)
 
   load/forward Reload the msg forwarding routing table
@@ -3413,37 +3430,26 @@
 
   msg <cmd> <msgno> [data ...] Alter various message parameters
 
-
   Alter message parameters like To, From, Subject, whether private or
   bulletin or return receipt (RR) is required or whether to keep this
   message from timing out.
 
 
 
-
-
-
-
-
-
-
-
-
-
-    MSG TO <msgno> <call>     - change TO callsign to <call>
-    MSG FRom <msgno> <call>   - change FROM callsign to <call>
-    MSG PRrivate <msgno>      - set private flag
-    MSG NOPRrivate <msgno>    - unset private flag
-    MSG RR <msgno>            - set RR flag
-    MSG NORR <msgno>          - unset RR flag
-    MSG KEep <msgno>          - set the keep flag (message won't be deleted ever)
-    MSG NOKEep <msgno>        - unset the keep flag
-    MSG SUbject <msgno> <new> - change the subject to <new>
-    MSG WAittime <msgno>      - remove any waitting time for this message
-    MSG NOREad <msgno>        - mark message as unread
-    MSG REad <msgno>          - mark message as read
-    MSG QUeue                 - queue any outstanding bulletins
-    MSG QUeue 1               - queue any outstanding private messages
+         MSG TO <msgno> <call>     - change TO callsign to <call>
+         MSG FRom <msgno> <call>   - change FROM callsign to <call>
+         MSG PRrivate <msgno>      - set private flag
+         MSG NOPRrivate <msgno>    - unset private flag
+         MSG RR <msgno>            - set RR flag
+         MSG NORR <msgno>          - unset RR flag
+         MSG KEep <msgno>          - set the keep flag (message won't be deleted ever)
+         MSG NOKEep <msgno>        - unset the keep flag
+         MSG SUbject <msgno> <new> - change the subject to <new>
+         MSG WAittime <msgno>      - remove any waitting time for this message
+         MSG NOREad <msgno>        - mark message as unread
+         MSG REad <msgno>          - mark message as read
+         MSG QUeue                 - queue any outstanding bulletins
+         MSG QUeue 1               - queue any outstanding private messages
 
 
 
@@ -3487,6 +3493,9 @@
 
 
 
+
+
+
   9.60.  rcmd (1)
 
   rcmd <node call> <cmd> Send a command to another DX cluster
@@ -3494,7 +3503,6 @@
 
   This command allows you to send nearly any command to another DX
   Cluster node that is connected to the system.
-
 
   Whether you get any output is dependant on a) whether the other system
   knows that the node callsign of this cluster is in fact a node b)
@@ -3549,6 +3557,7 @@
          channel <prefixes>
          wx 1                     filter WX announces
          dest <prefixes>          eg: 6MUK,WDX      (distros)
+
 
 
 
@@ -3619,16 +3628,11 @@
          origin_itu <numbers>
          origin_zone <numbers>
 
-
-
-
-
   some examples:-
 
 
 
-
-    rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
+         rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
 
 
 
@@ -3689,10 +3693,6 @@
 
          rej/spot 1 on hf
          rej/spot 2 on vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
-
-
-
-
 
   You can use the tag 'all' to reject everything eg:
 

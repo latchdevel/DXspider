@@ -28,6 +28,7 @@ each interface that you wish to allow connections on, use the following format .
 default  * * * * * *  - sysop /spider/src/client client %u ax25
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>or, if you wish your users to be able to use SSID's on their callsigns ..
 <P>
 <BLOCKQUOTE><CODE>
@@ -35,6 +36,7 @@ default  * * * * * *  - sysop /spider/src/client client %u ax25
 default  * * * * * *  - sysop /spider/src/client client %s ax25
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>For most purposes this is not desirable. The only time you probably will 
 need this is when you need to allow other cluster nodes that are using SSID's
 in. In this case it would probably be better to use the first example and 
@@ -63,6 +65,7 @@ in /etc/services to allow connections to a port number, like this ....
 spdlogin   8000/tcp     # spider anonymous login port
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>Then add a line in /etc/inetd.conf like this ....
 <P>
 <BLOCKQUOTE><CODE>
@@ -79,7 +82,6 @@ killall -HUP inetd
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>
 <P>Now login as <EM>sysop</EM> and cd spider/src. You can test that spider 
 is accepting telnet logins by issuing the following command ....
 <P>
@@ -88,6 +90,7 @@ is accepting telnet logins by issuing the following command ....
 ./client login telnet
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>You should get a login prompt and on issuing a callsign, you will be given 
 access to the cluster.  Note, you will not get a password login.  There seems 
 no good reason for a password prompt to be given so it is not asked for.
@@ -365,6 +368,7 @@ connection to GB7DJK-1 started
 G0VGS de GB7MBC 13-Dec-1998 2043Z >
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>This will start a connection using the script called <EM>gb7djk-1</EM>.  You can
 follow the connection by watching the term or console from where you started
 <EM>cluster.pl</EM>.  From version 1.47 onwards, you will need to <CODE>set/debug connect</CODE> first.
@@ -459,6 +463,7 @@ connect telnet mary.lancs.ac.uk
 'connect' ''
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>
 <P>So, the first connection is made by Spider.  This is fine as Spider uses the
 Net_Telnet script from within perl.  This actually uses TCP rather than TELNET 
 so no negotiation will be done on the first connection.  Once connected to

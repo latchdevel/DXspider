@@ -1340,6 +1340,7 @@ package CmdAlias;
 )
 </verb></tscreen>
 
+<P>
 You can create aliases for commands at will.  Beware though, these may not 
 always turn out as you think.  Care is needed and you need to test the 
 results once you have set an alias.
@@ -1369,9 +1370,11 @@ as the sysop.  For example ...
 export 5467 /spider/perl/keps.in
 </verb></tscreen>
 
+<P>
 would export message number 5467 as a file called keps.in in the
 /spider/perl directory.
 
+<P>
 Now login to a VT as sysop and cd /spider/perl.  There is a command in
 the perl directory called <em>convkeps.pl</em>.  All we need to do now is
 convert the file like so ...
@@ -1380,12 +1383,14 @@ convert the file like so ...
 ./convkeps.pl keps.in
 </verb></tscreen>
 
+<P>
 Now go back to the cluster and issue the command ...
 
 <tscreen><verb>
 load/keps
 </verb></tscreen>
 
+<P>
 That is it!  the kepler data has been updated.
 
 <sect1>The QRZ callbook
