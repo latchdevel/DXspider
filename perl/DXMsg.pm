@@ -458,7 +458,7 @@ sub del_msg
 	my $self = shift;
 	
 	# remove it from the active message list
-	@msg = map { $_ != $self ? $_ : () } @msg;
+	@msg = grep { $ref($_) && $_ != $self } @msg;
 	
 	# belt and braces (one day I will ask someone if this is REALLY necessary)
 	delete $self->{gotit};
@@ -476,7 +476,7 @@ sub clean_old
 	
 	# mark old messages for deletion
 	foreach $ref (@msg) {
-		if (!$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
+		if (ref($ref) && !$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
 			$ref->{deleteme} = 1;
 			delete $ref->{gotit};
 			delete $ref->{list};
@@ -486,7 +486,7 @@ sub clean_old
 	}
 	
 	# remove them all from the active message list
-	@msg = map { $_->{deleteme} ? () : $_ } @msg;
+	@msg = grep { ref($_) && !$_->{deleteme} } @msg;
 	$last_clean = $main::systime;
 }
 
