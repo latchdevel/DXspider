@@ -5,7 +5,6 @@ README
 TAF.pm
 example/cmd_chunks.pl
 example/cmd_taf.pl
-example/fetch_metar.pl
-example/fetch_taf.pl
-example/fetch_staf.pl
+example/fetch_weather.pl
+example/cgi_weather.pl
 t/1.t
