@@ -104,6 +104,10 @@ sub broadcast
 	foreach my $dxchan (DXChannel::get_all()) {
 		next if $dxchan == $main::me;
 		next if grep $dxchan == $_, @_;
+		next if $dxchan->{call} eq $thing->{origin};
+		next if $thing->{user} && !dxchan->is_user && $dxchan->{call} eq $thing->{user};
+		
+		dbg("Thingy::broadcast: sending to $dxchan->{call}") if isdbg('thing');
 		$thing->send($dxchan); 
 	}
 }
