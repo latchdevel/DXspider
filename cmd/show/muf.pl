@@ -46,7 +46,7 @@ $d = ($d / $R);
 my ($hr1, $day, $month) = (gmtime($main::systime))[2,3,4];
 $month++;
 my $flux = Geomag::sfi;
-my $ssn = Geomag::r || Minimuf::spots($flux);
+my $ssn = Minimuf::spots($flux);
 
 my $theta;						# path angle (rad) 
 my ($lats, $lons);				# subsolar coordinates (rad) 
