@@ -646,7 +646,7 @@ sub clear_cmd_cache
 	no strict 'refs';
 	
 	for (keys %Cache) {
-		undef *{$_};
+		undef *{$_} unless /cmd_cache/;
 		dbg("Undefining cmd $_") if isdbg('command');
 	}
 	%cmd_cache = ();

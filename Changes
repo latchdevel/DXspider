@@ -8,6 +8,7 @@ to doubt this).
 have to make the C client again) and you will need to restart.
 5. It appears that it IS possible to set non blocking on M$ you just need to
 know how.
+6. Fix problem with load/cmd_cache core dumping the system
 08Jan02=======================================================================
 1. altered sh/qrz to point to the new server
 2. alter the character set handling a bit to make it better for spanish
