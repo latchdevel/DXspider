@@ -67,8 +67,8 @@ sub printit
 	my $line = shift;
 	my @line =  split '\^', $line;
 	my $t = shift @line;
-        my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
-        my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
+	my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
+	my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
 
 	print $buf, ' ', join('^', @line); 
 }

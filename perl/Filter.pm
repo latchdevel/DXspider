@@ -225,7 +225,7 @@ sub write
 	
 	mkdir $dir, 0775 unless -e $dir; 
     rename $fn, "$fn.o" if -e $fn;
-	$fh = new IO::File ">$fn";
+	my $fh = new IO::File ">$fn";
 	if ($fh) {
 		my $dd = new Data::Dumper([ $self ]);
 		$dd->Indent(1);
