@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.30 January 2001
+<date>Version 1.31 January 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -17,9 +17,6 @@ A reference for SysOps of the DXSpider DXCluster program.
 <!-- Begin the document -->
 
 <sect>Installation (Original version by Iain Phillips, G0RDI)
-
-<P>
-Last modified: 26 January 2001 by Ian Maude, G0VGS
 
 <sect1>Introduction
 
@@ -1312,6 +1309,199 @@ are just examples :-)
 <P>
 You can reload the file from the cluster prompt as sysop with load/badwords.
 
+<sect>Mail
+
+<P>
+DXSpider deals seamlessly with standard AK1A type mail.  It supports both
+personal and bulletin mail and the sysop has additional commands to ensure
+that mail gets to where it is meant.  DXSpider will send mail almost
+immediately, assuming that the target is on line.  However, only one
+mail message is dealt with at any one time.  If a mail message is already
+being sent or recieved, then the new message will be queued until it has
+finished.
+
+The cluster mail is automatically deleted after 30 days unless the sysop
+sets the "keep" flag using the <em>msg</em> command.
+
+<sect1>Personal mail
+
+<P>
+Personal mail is sent using the <em>sp</em> command.  This is actually the
+default method of sending mail and so a simple <em>s</em> for send will do.
+A full list of the send commands and options is in the <em>command set</em>
+section, so I will not duplicate them here.
+
+<sect1>Bulletin mail
+
+<P>
+Bulletin mail is sent by using the <em>sb</em> command.  This is one of the
+most common mistakes users make when sending mail.  They send a bulletin
+mail with <em>s</em> or <em>sp</em> instead of <em>sb</em> and of course
+the message never leaves the cluster.  This can be rectified by the sysop
+by using the <em>msg</em> command.
+
+<P>Bulletin addresses can be set using the Forward.pl file.
+
+<sect1>Forward.pl
+
+<P>
+DXSpider receives all and any mail sent to it without any alterations needed
+in files.  Because personal and bulletin mail are treated differently, there
+is no need for a list of accepted bulletin addresses.  It is necessary, however,
+to tell the program which links accept which bulletins.  For example, it is
+pointless sending bulletins addresses to "UK" to any links other than UK
+ones.  The file that does this is called forward.pl and lives in /spider/msg.
+At default, like other spider files it is named forward.pl.issue.  Rename it
+to forward.pl and edit the file to match your requirements.
+The format is below ...
+
+<tscreen><verb>
+#
+# this is an example message forwarding file for the system
+#
+# The format of each line is as follows
+#
+#     type    to/from/at pattern action  destinations
+#     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
+#
+# type: P - private, B - bulletin (msg), F - file (ak1a bull)
+# to/from/at: T - to field, F - from field, A - home bbs, O - origin 
+# pattern: a perl regex on the field requested
+# action: I - ignore, F - forward
+# destinations: a reference to an array containing node callsigns
+#
+# if it is non-private and isn't in here then it won't get forwarded 
+#
+# Currently only type B msgs are affected by this code.
+# 
+# The list is read from the top down, the first pattern that matches
+# causes the action to be taken.
+#
+# The pattern can be undef or 0 in which case it will always be selected
+# for the action specified
+#
+# If the BBS list is undef or 0 and the action is 'F' (and it matches the
+# pattern) then it will always be forwarded to every node that doesn't have 
+# it (I strongly recommend you don't use this unless you REALLY mean it, if
+# you allow a new link with this on EVERY bull will be forwarded immediately
+# on first connection)
+#
+
+package DXMsg;
+
+@forward = (
+'B',    'T',    'LOCAL',        'F',    [ qw(GB7MBC) ],
+'B',    'T',    'ALL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'UK',           'F',    [ qw(GB7BAA GB7ADX) ],
+'B',    'T',    'QSL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'QSLINF',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DX',           'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DXINFO',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DXNEWS',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'DXQSL',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+'B',    'T',    'SYSOP',        'F',    [ qw(GB7BAA GB7ADX) ],
+'B',    'T',    '50MHZ',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
+);
+</verb></tscreen>
+
+Simply insert a bulletin address and state in the brackets where you wish
+that mail to go.  For example, you can see here that mail sent to "UK" will
+only be sent to the UK links and not to PA4AB-14.
+
+<P>
+To force the cluster to reread the file use load/forward
+
+
+<sect1>The msg command
+
+<P>
+The <em>msg</em> command is a very powerful and flexible tool for the
+sysop.  It allows the sysop to alter to and from fields and make other
+changes to manage the cluster mail.
+
+Here is a full list of the various options ...
+
+<tscreen><verb>
+  MSG TO <msgno> <call>     - change TO callsign to <call>
+  MSG FRom <msgno> <call>   - change FROM callsign to <call>
+  MSG PRrivate <msgno>      - set private flag
+  MSG NOPRrivate <msgno>    - unset private flag
+  MSG RR <msgno>            - set RR flag
+  MSG NORR <msgno>          - unset RR flag
+  MSG KEep <msgno>          - set the keep flag (message won't be deleted ever)
+  MSG NOKEep <msgno>        - unset the keep flag
+  MSG SUbject <msgno> <new> - change the subject to <new>
+  MSG WAittime <msgno>      - remove any waiting time for this message
+  MSG NOREad <msgno>        - mark message as unread
+  MSG REad <msgno>          - mark message as read
+  MSG QUeue                 - queue any outstanding bulletins
+  MSG QUeue 1               - queue any outstanding private messages
+</verb></tscreen>
+
+These commands are simply typed from within the cluster as the sysop user.
+
+<sect1>Message status
+
+<P>
+You can check on a message from within the cluster by using the command
+<em>stat/msg</em>.  This will give you additional information on the
+message number including which nodes have received it, which node it
+was received from and when etc.  Here is an example of the output of
+the command ...
+
+<tscreen><verb>
+G0VGS de GB7MBC 28-Jan-2001 1308Z >
+stat/msg 6869
+        From: GB7DJK
+    Msg Time: 26-Jan-2001 1302Z
+       Msgno: 6869
+      Origin: GB7DJK
+        Size: 8012
+     Subject: AMSAT 2line KEPS 01025.AMSAT
+          To: UK
+Got it Nodes: GB7BAA, GB7ADX
+     Private: 0
+Read Confirm: 0
+  Times read: 0
+G0VGS de GB7MBC 28-Jan-2001 1308Z >
+</verb></tscreen>
+
+<sect1>Filtering mail
+
+<P>
+This is described in the section on <em>Other filters</em> so I will not
+duplicate it here.
+
+<sect1>Distribution lists
+
+<P>
+Distribution lists are simply a list of users to send certain types of
+mail to.  An example of this is mail you only wish to send to other
+sysops.  In /spider/msg there is a directory called <em>distro</em>.  You
+put any distibution lists in here.  For example, here is a file called
+SYSOP.pl that caters for the UK sysops.
+
+<tscreen><verb>
+qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
+   GB7NDX GB7SDX GB7TDX GB7UDX GB7YDX GB7ADX GB7BAA GB7DXA GB7DXH 
+   GB7DXK GB7DXI GB7DXS)
+</verb></tscreen>
+
+Any mail sent to "sysop" would only be sent to the callsigns in this list.
+
+<sect1>BBS interface
+
+<P>
+Spider provides a simple BBS interface.  No input is required from the sysop
+of the cluster at all.  The BBS simply sets the cluster as a BBS and pushes
+any required mail to the cluster.  No mail can flow from Spider to the BBS,
+the interface is one-way.
+
+<P>
+Please be careful not to flood the cluster network with unnecessary mail.
+Make sure you only send mail to the clusters that want it by using the
+Forward.pl file very carefully.
+
 <sect>Information, files and useful programs
 
 <sect1>MOTD
@@ -1577,92 +1767,6 @@ You can create aliases for commands at will.  Beware though, these may not
 always turn out as you think.  Care is needed and you need to test the 
 results once you have set an alias.
 
-<sect1>Forward.pl
-
-<P>
-DXSpider receives all and any mail sent to it without any alterations needed
-in files.  Because personal and bulletin mail are treated differently, there
-is no need for a list of accepted bulletin addresses.  It is necessary, however,
-to tell the program which links accept which bulletins.  For example, it is
-pointless sending bulletins addresses to "UK" to any links other than UK
-ones.  The file that does this is called forward.pl and lives in /spider/msg.
-At default, like other spider files it is named forward.pl.issue.  Rename it
-to forward.pl and edit the file to match your requirements.
-The format is below ...
-
-<tscreen><verb>
-#
-# this is an example message forwarding file for the system
-#
-# The format of each line is as follows
-#
-#     type    to/from/at pattern action  destinations
-#     P/B/F     T/F/A     regex   I/F    [ call [, call ...] ]
-#
-# type: P - private, B - bulletin (msg), F - file (ak1a bull)
-# to/from/at: T - to field, F - from field, A - home bbs, O - origin 
-# pattern: a perl regex on the field requested
-# action: I - ignore, F - forward
-# destinations: a reference to an array containing node callsigns
-#
-# if it is non-private and isn't in here then it won't get forwarded 
-#
-# Currently only type B msgs are affected by this code.
-# 
-# The list is read from the top down, the first pattern that matches
-# causes the action to be taken.
-#
-# The pattern can be undef or 0 in which case it will always be selected
-# for the action specified
-#
-# If the BBS list is undef or 0 and the action is 'F' (and it matches the
-# pattern) then it will always be forwarded to every node that doesn't have 
-# it (I strongly recommend you don't use this unless you REALLY mean it, if
-# you allow a new link with this on EVERY bull will be forwarded immediately
-# on first connection)
-#
-
-package DXMsg;
-
-@forward = (
-'B',    'T',    'LOCAL',        'F',    [ qw(GB7MBC) ],
-'B',    'T',    'ALL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'UK',           'F',    [ qw(GB7BAA GB7ADX) ],
-'B',    'T',    'QSL',          'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'QSLINF',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DX',           'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXINFO',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXNEWS',       'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'DXQSL',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-'B',    'T',    'SYSOP',        'F',    [ qw(GB7BAA GB7ADX) ],
-'B',    'T',    '50MHZ',        'F',    [ qw(GB7BAA GB7ADX PA4AB-14) ],
-);
-</verb></tscreen>
-
-Simply insert a bulletin address and state in the brackets where you wish
-that mail to go.  For example, you can see here that mail sent to "UK" will
-only be sent to the UK links and not to PA4AB-14.
-
-<P>
-To force the cluster to reread the file use load/forward
-
-<sect1>Distribution lists
-
-<P>
-Distribution lists are simply a list of users to send certain types of
-mail to.  An example of this is mail you only wish to send to other
-sysops.  In /spider/msg there is a directory called <em>distro</em>.  You
-put any distibution lists in here.  For example, here is a file called
-SYSOP.pl that caters for the UK sysops.
-
-<tscreen><verb>
-qw(GB7TLH GB7DJK GB7DXM GB7CDX GB7BPQ GB7DXN GB7MBC GB7MBC-6 GB7MDX
-   GB7NDX GB7SDX GB7TDX GB7UDX GB7YDX GB7ADX GB7BAA GB7DXA GB7DXH 
-   GB7DXK GB7DXI GB7DXS)
-</verb></tscreen>
-
-Any mail sent to "sysop" would only be sent to the callsigns in this list.
- 
 <sect1>Console.pl
 
 <P>
@@ -1673,19 +1777,6 @@ announces etc.  To use this program, simply use console.pl instead of client.pl.
 <P>
 To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
 file with your favourite editor.
-
-<sect1>BBS interface
-
-<P>
-Spider provides a simple BBS interface.  No input is required from the sysop
-of the cluster at all.  The BBS simply sets the cluster as a BBS and pushes
-any required mail to the cluster.  No mail can flow from Spider to the BBS,
-the interface is one-way.
-
-<P>
-Please be careful not to flood the cluster network with unnecessary mail.
-Make sure you only send mail to the clusters that want it by using the
-Forward.pl file very carefully.
 
 <sect1>Updating kepler data
 
