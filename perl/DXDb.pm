@@ -274,22 +274,8 @@ sub process
 		}
 
 		if ($pcno == 44) {		# incoming DB Request
-			my $db = getdesc($f[4]);
-			if ($db) {
-				if ($db->{remote}) {
-					sendremote($dxchan, $f[2], $f[3], $dxchan->msg('db1', $db->{remote}));
-				} else {
-					my $value = $db->getkey($f[5]);
-					if ($value) {
-						my @out = split /\n/, $value;
-						sendremote($dxchan, $f[2], $f[3], @out);
-					} else {
-						sendremote($dxchan, $f[2], $f[3], $dxchan->msg('db2', $f[5], $db->{name}));
-					}
-				}
-			} else {
-				sendremote($dxchan, $f[2], $f[3], $dxchan->msg('db3', $f[4]));
-			}
+			my @in = DXCommandmode::run_cmd($dxchan, "dbshow $f[4] $f[5]");
+			sendremote($dxchan, $f[2], $f[3], @in);
 			last SWITCH;
 		}
 
