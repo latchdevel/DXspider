@@ -179,6 +179,7 @@ sub init
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
 	$me->{sort} = 'S';    # S for spider
+	$me->{priv} = 9;
 }
 
 #

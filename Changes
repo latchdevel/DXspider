@@ -3,6 +3,8 @@
 localhost (or everything) and they telnet to localhost and login with their
 callsign. This means that they don't need a client anymore (for local access)
 2. added input spot filtering. 
+3. Added run_cmd to DXCron which allows you to run any command on the system
+from the crontab. (Dunno why I didn't do this before). 
 18Apr01=======================================================================
 1. added Ian M0AZM's Java Client (SpiderConsole)
 17Apr01=======================================================================

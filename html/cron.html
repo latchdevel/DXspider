@@ -22,7 +22,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Fri Jan 19 14:25:13 GMT 2001
+Last modified: Mon Apr 23 00:42:50 BST 2001
 <!-- hhmts end -->
 	<h4>Introduction</h4>
 
@@ -74,9 +74,14 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 	  to another cluster and a set of routines are specially provided in the context
 	  of the <tt>DXCron</tt> package to make this easy. For example
 	<pre>
+  start_connect('gb7tlh') unless connected('gb7tlh')
+    </pre>
+	this could have also been written:
+	<pre>
   start_connect('gb7tlh') if !connected('gb7tlh')
     </pre>
-	will attempt to start a <a href="connect.html">connection</a>  process to GB7TLH if it isn't
+	but the first method is more 'perlish',
+	<p>Either of these commands will attempt to start a <a href="connect.html">connection</a>  process to GB7TLH if it isn't
 	already locally connected.
 
 	<p>There is absolutely no reason why you could not do something more complicated using information
@@ -93,7 +98,7 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
   # check every 10 minutes to see if gb7tlh is connected and if not
   # start a connect job going
 
-  0,10,20,30,40,50 * * * * start_connect('gb7tlh') if !connected('gb7tlh')
+  0,10,20,30,40,50 * * * * start_connect('gb7tlh') unless connected('gb7tlh')
 
   # at 03:15 on Sundays start a job called 'analyse.pl' which does something
   # or other. This starts a new process and runs to completion, be careful
@@ -114,12 +119,25 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
   
   23 * * * * rcmd('rcmd/gb7dxm disc/noinform G9TLH') if present_on('G9TLH', 'GB7DXM')
 
+  # some people like to do an hourly announce to say who they are. There is a 
+  # slight complication about this because of the announce duplicate checking
+  # so you need to make each announce unique. I do this by adding a date and time
+  # stamp on the end
+
+  0 * * * * run_cmd('ann CLUSTER: GB7DJK JO02LQ at ' . cldate . ' ' . ztime)
+ 
 	</pre>
 
 	It is important remember that these <tt>crontab</tt> routines execute in line with the main
 	cluster code, so if you create a long, slow <tt>crontab</tt> command, it will impact on the speed
 	and usability of the cluster as a whole.
 
+	<p>If you want to see what commands are being run and/or the syntax errors in the 
+	  crontab, then run: <em>set/debug cron</em> on the console and monitor the 
+	  debuging output (I use <em>watchdbg</em> in another window). 
+
+	<P> To set the debugging back to normal do: <em>unset/debug cron</em>.
+ 
 	<h4>Standard Routines</h4>
 
 	As mentioned earlier, there are a small number of routines that are declared in <tt>DXCron</tt>
@@ -127,39 +145,33 @@ Last modified: Fri Jan 19 14:25:13 GMT 2001
 	They are:-
 
 	<ul>
-		<p><li><b>connected(&lt;callsign>)</b> - returns true if the &lt;callsign> is directly connected
+	  <li><b>run_cmd(&lt;cluster command string>)</b> - run any cluster command as 
+		the node callsign. Any output is sent to the 'cron' debug channel 
+		(<tt>set/debug cron</tt> to see this).
+		<br><br><li><b>connected(&lt;callsign>)</b> - returns true if the &lt;callsign> is directly connected
 		to this cluster node.
-		<p><li><b>start_connect(&lt;script-name>)</b> - starts a <a href="connect.html">connection</a>
+		<br><br><li><b>start_connect(&lt;script-name>)</b> - starts a <a href="connect.html">connection</a>
 		script just as if you had typed in <tt>connect script-name</tt> on the sysop console client.
-		<p><li><b>spawn(&lt;command>)</b> - start a &lt;command> as a new process. This is used to do
+		<br><br><li><b>spawn(&lt;command>)</b> - start a &lt;command> as a new process. This is used to do
 		various batch jobs that you may wish to happen at certain times of the day or week that operate
 		on your machine but don't require access to the real-time internals of the cluster daemon. You can
 		execute just about any command you like, but <em>be warned</em> <b>stdin</b> and <b>stdout</b> are
 		still connected to the same terminal (if any) as the cluster daemon. Any unix command and arguments
 		can used, see <tt>exec</tt> in the <a href="http://www.perl.com">perl</a> documentation.
-		<p><li><b>disconnect(&lt;callsign>)</b> - disconnects a locally connected station from your node.
-		<p><li><b>rcmd(&lt;node-call>, &lt;command>)</b> - send a command to another node in exactly the 
+		<br><br><li><b>disconnect(&lt;callsign>)</b> - disconnects a locally connected station from your node.
+		<br><br><li><b>rcmd(&lt;node-call>, &lt;command>)</b> - send a command to another node in exactly the 
 		same way as, for example, <tt>RCMD/GB7TLH disc GB7DJK</tt> typed on a sysop console.
-		<p><li><b>present(&lt;exact-callsign>)</b> and <b>presentish(&lt;callsign-no-ssid>)</b> - returns 
+		<br><br><li><b>present(&lt;exact-callsign>)</b> and <b>presentish(&lt;callsign-no-ssid>)</b> - returns 
 		true if the
 		callsign is connected anywhere on the cluster either with the exact callsign or with the callsign
 		minus its ssid respectively.
-		<p><li><b>present_on(&lt;exact-callsign>, &lt;node>)</b> and <b>presentish_on(&lt;callsign-no-ssid>, &lt;node>)</b> - returns 
+		<br><br><li><b>present_on(&lt;exact-callsign>, &lt;node>)</b> and <b>presentish_on(&lt;callsign-no-ssid>, &lt;node>)</b> - returns 
 		true if the
 		callsign is connected on the node specified either with the exact callsign or with the callsign
 		minus its ssid respectively.
-		<p><li><b>last_connect(&lt;callsign>)</b> - Returns the last connect time of the callsign or the
+		<br><br><li><b>last_connect(&lt;callsign>)</b> - Returns the last connect time of the callsign or the
 		current time if it is currently connected locally.
 	</ul>
-
-	<h4>Caveats</h4>
-	
-	There was an intermittent problem when running
-	(especially?) with the debugger on. Essentially you would
-	experience random crashes with nonsensical error messages returning from funny places on the stack (if 
-	the debugger was on) or just core dumping (if it wasn't).
-
-	<p>I believe this now to be fixed. YMMV, if so tell me about it!
 
 <!-- Standard Footer!! -->
 	<p>&nbsp;</p>

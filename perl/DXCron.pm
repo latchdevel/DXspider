@@ -215,26 +215,16 @@ sub last_connect
 # disconnect a locally connected thing
 sub disconnect
 {
-	my $call = uc shift;
-	my $dxchan = DXChannel->get($call);
-	$dxchan->disconnect if $dxchan;
+	my $call =  shift;
+	run_cmd("disconnect $call");
 }
 
 # start a connect process off
 sub start_connect
 {
-	my $call = uc shift;
-	my $lccall = lc $call;
-
-	if (Msg->conns($call)) {
-		dbg('cron', "Connect not started, outstanding connect to $call");
-		return;
-	}
-	if (-e "$main::root/connect/$lccall") {
-		ExtMsg::start_connect($call, "$main::root/connect/$lccall");	
-	} else {
-		dbg('err', "Cannot find connect script for $lccall");
-	}
+	my $call = shift;
+	# connecting is now done in one place - Yeah!
+	run_cmd("connect $call");
 }
 
 # spawn any old job off
@@ -280,6 +270,17 @@ sub rcmd
 
 	# send it 
 	DXProt::addrcmd($DXProt::me, $call, $line);
+}
+
+sub run_cmd
+{
+	my $line = shift;
+	my @in = DXCommandmode::run_cmd($DXProt::me, $line);
+	dbg('cron', "cmd run: $line");
+	for (@in) {
+		s/\s*$//og;
+		dbg('cron', "cmd out: $_");
+	}
 }
 1;
 __END__
