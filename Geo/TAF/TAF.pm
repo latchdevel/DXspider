@@ -74,14 +74,7 @@ sub taf
 sub as_string
 {
 	my $self = shift;
-	my $out;
-	
-	for (@{$self->{chunks}}) {
-		$out .= $_->as_string . ' ' if $_->can('as_string');
-	}
-	chop $out;
-	chop $out;
-	return $out;
+	return join ' ', $self->as_strings;
 }
 
 sub as_strings
@@ -496,7 +489,7 @@ sub as_string
 {
 	my $self = shift;
 	my $out = "temperature $self->[0]C";
-	$out .= ", dewpoint $self->[1]C" if defined $self->[1];
+	$out .= " dewpoint $self->[1]C" if defined $self->[1];
 
 	return $out;
 }
@@ -508,21 +501,21 @@ use vars qw(@ISA);
 my %st = (
 		  VV => 'vertical visibility',
 		  SKC => "no cloud",
-		  CLR => "no cloud, no significant weather",
+		  CLR => "no cloud no significant weather",
 		  SCT => "5-7 oktas",
 		  BKN => "3-4 oktas",
 		  FEW => "0-2 oktas",
-		  OVC => "8 oktas, overcast",
-		  CAVOK => "no cloud below 5000ft, >10Km visibility, no significant weather (CAVOK)",
+		  OVC => "8 oktas overcast",
+		  CAVOK => "no cloud below 5000ft >10Km visibility no significant weather (CAVOK)",
 		  CB => 'thunderstorms',
           TCU => 'towering cumulus',
 		  NSC => 'no significant cloud',
-		  BLU => '3 oktas at 2500ft, 8Km visibility',
-		  WHT => '3 oktas at 1500ft, 5Km visibility',
-		  GRN => '3 oktas at 700ft, 3700m visibility',
-		  YLO => '3 oktas at 300ft, 1600m visibility',
-		  AMB => '3 oktas at 200ft, 800m visibility',
-		  RED => '3 oktas at <200ft, <800m visibility',
+		  BLU => '3 oktas at 2500ft 8Km visibility',
+		  WHT => '3 oktas at 1500ft 5Km visibility',
+		  GRN => '3 oktas at 700ft 3700m visibility',
+		  YLO => '3 oktas at 300ft 1600m visibility',
+		  AMB => '3 oktas at 200ft 800m visibility',
+		  RED => '3 oktas at <200ft <800m visibility',
 		  NIL => 'no weather',
 		  '///' => 'some',
 		 );
