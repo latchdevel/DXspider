@@ -61,7 +61,7 @@ $baddx = new DXHash "baddx";
 $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
-$ann_to_talk = 0;
+$ann_to_talk = 1;
 
 @checklist = 
 (
