@@ -15,7 +15,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs shellregex
-             print_all_fields cltounix 
+             print_all_fields cltounix iscallsign
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -182,5 +182,14 @@ sub shellregex
 {
 	my $in = shift;
 	$in =~ s{(.)} { $patmap{$1} || "\Q$1" }ge;
-	return '^' . $in . '$';
+	return '^' . $in . "\$";
+}
+
+# start an attempt at determining whether this string might be a callsign
+sub iscallsign
+{
+	my $call = shift;
+	return 1 if $call =~ /^\w+\s+/;
+	return 1 if $call =~ /^\d+\w+/;
+	return undef;
 }

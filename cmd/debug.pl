@@ -9,7 +9,7 @@
 #
 
 my $self = shift;
-return (0) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 9;
 
 $DB::single = 1;
 

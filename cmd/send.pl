@@ -20,7 +20,7 @@ my ($self, $line) = @_;
 my @out;
 my $loc;
 
-#$DB::single = 1;
+# $DB::single = 1;
 
 if ($self->state eq "prompt") {
 
@@ -100,13 +100,32 @@ if ($self->state eq "prompt") {
 		delete $self->{loc};
 		return (1, $self->msg('e6'));
 	}
-  
+
 	# now save all the 'to' callsigns for later
 	# first check the 'to' addresses for 'badness'
     my $t;
 	my @to;
-	foreach  $t (@f[ $i..$#f ]) {
+	splice @f, 0, $i-1 if $i > 0;
+	foreach  $t (@f) {
 		$t = uc $t;
+
+        # is this callsign a distro?
+		my $fn = "/spider/msg/distro/$t.pl";
+		if (-e $fn) {
+			my $fh = new IO::File $fn;
+			if ($fh) {
+				local $/ = undef;
+				my $s = <$fh>;
+				$fh->close;
+				my @call;
+                @call = eval $s;
+				return (1, "Error in Distro $t.pl:", $@) if $@;
+				if (@call > 0) {
+					push @f, @call;
+					next;
+				}
+			}
+		}
 		if (grep $_ eq $t, @DXMsg::badmsg) {
 #			push @out, "Sorry, $t is an unacceptable TO address";
 			push @out, $self->msg('m3', $t);

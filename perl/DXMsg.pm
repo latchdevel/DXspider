@@ -186,6 +186,13 @@ sub process
 			$busy{$f[2]} = $ref; # set interlock
 			$self->send(DXProt::pc30($f[2], $f[1], $stream)); # send ack
 			$ref->{lastt} = $main::systime;
+
+			# look to see whether this is a non private message sent to a known callsign
+			my $uref = DXUser->get_current($ref->{to});
+			if (iscallsign($ref->{to}) && !$ref->{private} && $uref && $uref->homenode) {
+				$ref->{private} = 1;
+				dbg('msg', "set bull to $ref->{to} to private");
+			}
 			last SWITCH;
 		}
 		
@@ -581,7 +588,7 @@ sub queue_msg
 
 		# ignore 'delayed' messages until their waiting time has expired
 		if (exists $ref->{waitt}) {
-			next if $ref->{waitt} < $main::systime;
+			next if $ref->{waitt} > $main::systime;
 			delete $ref->{waitt};
 		} 
 		

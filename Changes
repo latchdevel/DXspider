@@ -1,3 +1,12 @@
+29Aug99=======================================================================
+1. Added msg command to allow the changing of To, From, Subject and so on the
+messages. This seems particularly important just now as a whole raft of G3's
+seem to be putting out non private bulls to callsigns.
+2. While I am at set messages to TO fields that appear to be users to private
+if they have been sent as bulls.
+3. Add DISTROs, if a callsign field appears in /spider/msg/distro in upper
+use that as a list of callsigns to send further. Note this is potentially
+recursive as callsigns in a distro can be distros.
 25Aug99=======================================================================
 1. check the date of a WWV much more carefully.
 24Aug99=======================================================================
