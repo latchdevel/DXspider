@@ -387,6 +387,8 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 				default:
 					if (nl == '\n' && *p == '\r') {   /* ignore \r in telnet mode (ugh) */
 						p++;
+					} else if (nl == '\r' && *p == '\n') {  /* and ignore \n in ax25 mode (double ugh) */
+						p++;
 					} else if (*p == nl) {
 						if (mp->inp == mp->data)
 							*mp->inp++ = ' ';

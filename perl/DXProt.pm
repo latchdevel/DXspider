@@ -247,7 +247,7 @@ sub normal
 			my $user = DXUser->get_current($spot[4]);
 			if ($user) {
 				my $qra = $user->qra;
-				if (!DXBearing::is_qra) {
+				unless ($qra && DXBearing::is_qra($qra)) {
 					my $lat = $user->lat;
 					my $long = $user->long;
 					if (defined $lat && defined $long) {
