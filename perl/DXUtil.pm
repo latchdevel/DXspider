@@ -268,11 +268,13 @@ sub writefilestr
 	}
 
 	my $fh = new IO::File ">$fn";
-	my $dd = new Data::Dumper([ $obj ]);
-	$dd->Indent(1);
-	$dd->Terse(1);
-    $dd->Quotekeys(0);
-#	$fh->print(@_) if @_ > 0;     # any header comments, lines etc
-	$fh->print($dd->Dumpxs);
-	$fh->close;
+	if ($fh) {
+		my $dd = new Data::Dumper([ $obj ]);
+		$dd->Indent(1);
+		$dd->Terse(1);
+		$dd->Quotekeys(0);
+		#	$fh->print(@_) if @_ > 0;     # any header comments, lines etc
+		$fh->print($dd->Dumpxs);
+		$fh->close;
+	}
 }

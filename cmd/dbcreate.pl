@@ -5,12 +5,28 @@
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #
 my ($self, $line) = @_;
-my ($name, $remote) = split /\s+/, $line;
+my @f = split /\s+/, $line;
+my $name = shift @f if @f;
 my @out;
 
 return (1, $self->msg('e5')) if $self->priv < 9;
-
 return (1, $self->msg('db6', $name)) if DXDb::getdesc($name);
-DXDb::new($name, $remote);
+
+my $remote;
+my $chain;
+while (@f) {
+	my $f = lc shift @f;
+	if ($f eq 'remote') {
+		$remote = uc shift @f if @f;
+		next;
+	}
+	if ($f eq 'chain') {
+		if (@f) {
+			$chain = [ @f ];
+			last;
+		}
+	}
+}
+DXDb::new($name, $remote, $chain);
 push @out, $self->msg($remote ? 'db7' : 'db8', $name, $remote);
 return (1, @out);

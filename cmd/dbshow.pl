@@ -12,19 +12,49 @@ my $name = shift @f if @f;
 my $db = DXDb::getdesc($name);
 return (1, $self->msg('db3', $name)) unless $db;
 
-if ($db->remote) {
-	push @out, $self->msg('db11', $db->remote);
-	for (@f) {
-		my $n = DXDb::newstream($self->call);
-		DXProt::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
-	}
-} else {
-	for (@f) {
-		my $value = $db->getkey($_);
-		if ($value) {
-			push @out, split /\n/, $value;
-		} else {
-			push @out, $self->msg('db2', $_, $db->{name});
+my @db; 
+push @db, $name;
+push @db, @{$db->chain} if $db->chain;
+
+my $n;
+foreach  $n (@db) {
+	$db = DXDb::getdesc($n);
+	return (1, $self->msg('db3', $n)) unless $db;
+	
+	if ($db->remote) {
+
+		# remote databases
+		unless (DXCluster->get_exact($db->remote) || DXChannel->get($db->remote)) {
+			push @out, $self->msg('db4', uc $name, $db->remote);
+			last;
+		}
+		
+		push @out, $self->msg('db11', $db->remote);
+		for (@f) {
+			my $n = DXDb::newstream($self->call);
+			DXProt::route(undef, $db->remote, DXProt::pc44($main::mycall, $db->remote, $n, uc $db->name,uc $_, $self->call));
+		}
+		last;
+	} else {
+
+		# local databases can chain to remote ones
+		my $count;
+		push @out, $db->print('pre');
+		push @out, "@f";
+		for (@f) {
+			push @out, $db->name . " $_";
+			my $value = $db->getkey($_);
+			push @out, $db->name . ": $_ : $value";
+			if ($value) {
+				push @out, split /\n/, $value;
+				$count++;
+			} else {
+				push @out, $self->msg('db2', uc $_, uc $db->{name});
+			}
+		}
+		if ($count) {
+			push @out, $db->print('post');
+			last;
 		}
 	}
 }

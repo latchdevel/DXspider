@@ -168,8 +168,7 @@ sub normal
 			$self->send($self->msg('page', scalar @ans));
 		} else {
 			for (@ans) {
-				s/\s+$//o;		# why ?????????
-				$self->send($_);
+				$self->send($_) if $_;
 			}
 		} 
 	} 

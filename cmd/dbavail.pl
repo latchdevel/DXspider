@@ -10,7 +10,7 @@ my @out;
 my $f;
 
 foreach $f (values %DXDb::avail) {
-	push @out, "DB Name          Location" unless @out;
-	push @out, sprintf "%-15s  %-s", $f->name, $f->remote ? $f->remote : "Local"; 
+	push @out, "DB Name          Location   Chain" unless @out;
+	push @out, sprintf "%-15s  %-10s %s", $f->name, $f->remote ? $f->remote : "Local", $f->chain ? parray($f->chain) : ""; 
 }
 return (1, @out);

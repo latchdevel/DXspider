@@ -178,9 +178,6 @@ sub cease
 	};
 	dbg('local', "Local::finish error $@") if $@;
 
-	# close all databases
-	DXDb::closeall;
-	
 	# disconnect users
 	foreach $dxchan (DXChannel->get_all()) {
 		next if $dxchan->is_ak1a;
@@ -211,6 +208,10 @@ sub cease
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	DXUser::finish();
+
+	# close all databases
+	DXDb::closeall;
+	
 	dbg('chan', "DXSpider version $version ended");
 	Log('cluster', "DXSpider V$version stopped");
 	dbgclose();

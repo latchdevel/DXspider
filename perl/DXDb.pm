@@ -27,6 +27,19 @@ $dbbase = "$main::root/db";		# where all the databases are kept;
 		  name => '0,Name',
 		  db => '9,DB Tied hash',
 		  remote => '0,Remote Database',
+		  pre => '0,Heading text',
+		  post => '0,Tail text',
+		  chain => '0,Search these,parray',
+		  disable => '0,Disabled?,yesno',
+		  nf => '0,Not Found text',
+		  cal => '0,No Key text',
+		  allowread => '9,Allowed to read,parray',
+		  denyread => '9,Deny to read,parray',
+		  allowupd => '9,Allow to update,parray',
+		  denyupd => '9,Deny to update,parray',
+		  fwdupd => '9,Forward updates to,parray',
+		  template => '9,Upd Templates,parray',
+		  help => '0,Help txt,parray',
 		 );
 
 $lastprocesstime = time;
@@ -70,9 +83,8 @@ sub load
 # save all the database descriptors
 sub save
 {
-	my $date = cldatetime($main::systime);
-	
-	writefilestr($dbbase, "dbs", "pl", \%avail, "#\n# database descriptor file\n# Don't alter this by hand unless you know what you are doing\n# last modified $date\n#\n");
+	closeall();
+	writefilestr($dbbase, "dbs", "pl", \%avail);
 }
 
 # get the descriptor of the database you want.
@@ -112,7 +124,8 @@ sub close
 {
 	my $self = shift;
 	if ($self->{db}) {
-		untie $self->{db};
+		undef $self->{db};
+		delete $self->{db};
 	}
 }
 
@@ -164,8 +177,10 @@ sub new
 	my $self = bless {};
 	my $name = shift;
 	my $remote = shift;
+	my $chain = shift;
 	$self->{name} = lc $name;
 	$self->{remote} = uc $remote if $remote;
+	$self->{chain} = $chain if $chain && ref $chain;
 	$self->{accesst} = $self->{createt} = $self->{lastt} = $main::systime;
 	$avail{$self->{name}} = $self;
 	mkdir $dbbase, 02775 unless -e $dbbase;
@@ -291,6 +306,14 @@ sub sendremote
 	}
 	$dxchan->send(DXProt::pc46($main::mycall, $tonode, $stream));
 }
+
+# print a value from the db reference
+sub print
+{
+	my $self = shift;
+	my $s = shift;
+	return $self->{$s} ? $self->{$s} : undef; 
+} 
 
 # various access routines
 
