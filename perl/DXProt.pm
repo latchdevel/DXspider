@@ -236,13 +236,10 @@ sub start
 
 	# send initialisation string
 	unless ($self->{outbound}) {
-#		$self->send(pc38()) if DXNode->get_all();
 		$self->send(pc18());
 		$self->{lastping} = $main::systime;
 	} else {
-		# remove from outstanding connects queue
-		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
-		$self->{lastping} = $main::systime + $self->pingint / 2;
+		$self->{lastping} = $main::systime + ($self->pingint / 2);
 	}
 	$self->state('init');
 	$self->pc50_t(time);

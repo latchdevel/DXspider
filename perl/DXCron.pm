@@ -225,13 +225,6 @@ sub disconnect
 		} 
 		$dxchan->disconnect;
 	}
-	my $out = grep {$_->{call} eq $call} @main::outstanding_connects;
-	if ($out) {
-		unless ($^O =~ /^MS/i) {
-			kill 'TERM', $out->{pid};
-		}
-		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
-	}
 }
 
 # start a connect process off
@@ -240,7 +233,7 @@ sub start_connect
 	my $call = uc shift;
 	my $lccall = lc $call;
 
-	if (grep {$_->{call} eq $call} @main::outstanding_connects) {
+	if (Msg->conns($call)) {
 		dbg('cron', "Connect not started, outstanding connect to $call");
 		return;
 	}

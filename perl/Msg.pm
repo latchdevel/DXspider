@@ -13,9 +13,9 @@ package Msg;
 use strict;
 use IO::Select;
 use IO::Socket;
-#use DXDebug;
+use Carp;
 
-use vars qw(%rd_callbacks %wt_callbacks $rd_handles $wt_handles $now @timerchain);
+use vars qw(%rd_callbacks %wt_callbacks $rd_handles $wt_handles $now @timerchain %conns);
 
 %rd_callbacks = ();
 %wt_callbacks = ();
@@ -57,6 +57,40 @@ sub new
 	return bless $conn, $class;
 }
 
+# save it
+sub conns
+{
+	my $pkg = shift;
+	my $call = shift;
+	my $ref;
+	
+	if (ref $pkg) {
+		$call = $pkg->{call} unless $call;
+		return undef unless $call;
+		confess "changing $pkg->{call} to $call" if exists $pkg->{call} && $call ne $pkg->{call};
+		$pkg->{call} = $call;
+		$ref = $conns{$call} = $pkg;
+	} else {
+		$ref = $conns{$call};
+	}
+	return $ref;
+}
+
+# this is only called by any dependent processes going away unexpectedly
+sub pid_gone
+{
+	my ($pkg, $pid) = @_;
+	
+	my @pid = grep {$_->{pid} == $pid} values %conns;
+	for (@pid) {
+		if ($_->{rproc}) {
+			&{$_->{rproc}}($_, undef, "$pid has gorn");
+		} else {
+			$_->disconnect;
+		}
+	}
+}
+
 #-----------------------------------------------------------------
 # Send side routines
 sub connect {
@@ -93,8 +127,18 @@ sub disconnect {
 	$conn->{state} = 'E';
 	delete $conn->{cmd};
 	$conn->{timeout}->del_timer if $conn->{timeout};
-	return unless defined($sock);
+
+	# be careful to delete the correct one
+	if (my $call = $conn->{call}) {
+		my $ref = $conns{$call};
+		delete $conns{$call} if $ref && $ref == $conn;
+	}
+	
     set_event_handler ($sock, "read" => undef, "write" => undef);
+	unless ($^O =~ /^MS/i) {
+		kill 'TERM', $conn->{pid} if exists $conn->{pid};
+	}
+	return unless defined($sock);
     shutdown($sock, 3);
 	close($sock);
 }

@@ -83,7 +83,7 @@ $systime = 0;					# the time now (in seconds)
 $version = "1.47";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 $lockfn = "cluster.lock";       # lock file name
-@outstanding_connects = ();     # list of outstanding connects
+#@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
 
       
@@ -128,7 +128,7 @@ sub rec
  
 		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);
-		if (DXChannel->get($call)) {
+		if ($sort ne 'O' && Msg->conns($call)) {
 			my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
 			already_conn($conn, $call, $mess);
 			return;
@@ -163,6 +163,9 @@ sub rec
 			return;
 		}
 
+		# mark him up
+		$conn->conns($call) unless $sort eq 'O';
+		
 		# create the channel
 		$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
 		$dxchan = DXProt->new($call, $conn, $user) if $user->is_node;
@@ -244,7 +247,7 @@ sub reap
 	my $cpid;
 	while (($cpid = waitpid(-1, WNOHANG)) > 0) {
 		dbg('reap', "cpid: $cpid");
-		@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
+#		Msg->pid_gone($cpid);
 		$zombies-- if $zombies > 0;
 	}
 	dbg('reap', "cpid: $cpid");

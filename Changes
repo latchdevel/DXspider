@@ -1,3 +1,6 @@
+05Mar01=======================================================================
+1. do some major surgery on the connect logic to shorten the possibility of 
+duplicate connects happening
 04Mar01=======================================================================
 1. allow fallback to english for help
 03Mar01=======================================================================

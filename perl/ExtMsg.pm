@@ -71,9 +71,8 @@ sub dequeue
 		} elsif ($conn->{state} eq 'WL' ) {
 			$msg = uc $msg;
 			if (is_callsign($msg)) {
+				&{$conn->{rproc}}($conn, "A$msg|telnet");
 				_send_file($conn, "$main::data/connected");
-				$conn->{call} = $msg;
-				&{$conn->{rproc}}($conn, "A$conn->{call}|telnet");
 				$conn->{state} = 'C';
 			} else {
 				$conn->send_now("Sorry $msg is an invalid callsign");
@@ -131,12 +130,11 @@ sub start_connect
 	my $call = shift;
 	my $fn = shift;
 	my $conn = ExtMsg->new(\&main::rec); 
-	$conn->{call} = $call;
+	$conn->conns($call);
 	
 	my $f = new IO::File $fn;
 	push @{$conn->{cmd}}, <$f>;
 	$f->close;
-	push @main::outstanding_connects, {call => $call, conn => $conn};
 	$conn->_dotimeout($deftimeout);
 	$conn->_docmd;
 }
@@ -170,9 +168,6 @@ sub _docmd
 			last;
 		}
 		last if $conn->{state} eq 'E';
-	}
-	unless (exists $conn->{cmd} && @{$conn->{cmd}}) {
-		@main::outstanding_connects = grep {$_->{call} ne $conn->{call}} @main::outstanding_connects;
 	}
 }
 
@@ -261,7 +256,6 @@ sub _timeout
 	my $conn = shift;
 	dbg('connect', "timed out after $conn->{timeval} seconds");
 	$conn->disconnect;
-	@main::outstanding_connects = grep {$_->{call} ne $conn->{call}} @main::outstanding_connects;
 }
 
 # handle callsign and connection type firtling

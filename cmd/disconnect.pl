@@ -23,12 +23,8 @@ foreach $call (@calls) {
 		} 
 		$dxchan->disconnect;
 		push @out, $self->msg('disc2', $call);
-	} elsif (my $out = grep {$_->{call} eq $call} @main::outstanding_connects) {
-		unless ($^O =~ /^MS/i) {
-			kill 'TERM', $out->{pid};
-		}
-		@main::outstanding_connects = grep {$_->{call} ne $call} @main::outstanding_connects;
-		push @out, $self->msg('disc2', $call);
+	} elsif (my $conn = Msg->call($call)) {
+		$conn->disconnect;
 	} else {
 		push @out, $self->msg('e10', $call);
 	}
