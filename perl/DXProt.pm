@@ -570,7 +570,15 @@ sub normal
 				
 				$conf = $conf eq '*';
 
-				my $r = Route::User::get($call);
+				# reject this if we think it is a node already
+				my $r = Route::Node::get($call);
+				my $u = DXUser->get_current($call) unless $r;
+				if ($r || ($u && $u->is_node)) {
+					dbg("PCPROT: $call is a node") if isdbg('chanerr');
+					next;
+				}
+				
+				$r = Route::User::get($call);
 				my $flags = Route::here($here)|Route::conf($conf);
 				
 				if ($r) {
@@ -621,17 +629,17 @@ sub normal
 				dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 				return;
 			}
-			my $parent = Route::Node::get($ncall);
-			unless ($parent) {
-				dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
-				return;
-			}
+
 			my $uref = Route::User::get($ucall);
 			unless ($uref) {
 				dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
 				return;
 			}
-			
+			my $parent = Route::Node::get($ncall);
+			unless ($parent) {
+				dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
+				return;
+			}			
 
 			# input filter if required
 			return unless $self->in_filter_route($parent);
