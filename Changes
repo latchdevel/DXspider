@@ -1,6 +1,8 @@
 30Apr99=======================================================================
 1. Try to make it even more AK1A friendly by putting the node list out in the
 'correct' order.
+2. added code so that local users and commands go to all connected nodes 
+INCLUDING the isolated ones.
 26Apr99=======================================================================
 1. added set/user command as a hack, please use this with care, there is
 very little checking.
