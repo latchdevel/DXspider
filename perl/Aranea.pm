@@ -206,6 +206,7 @@ sub genheader
 	my $date = ((($dayno << 1) | $ntpflag) << 18) |  ($main::systime % 86400);
 	my $r = "$mycall," . sprintf('%6X%04X,0', $date, $seqno);
 	$r .= ",$to" if $to;
+	$r .= "," if $from && !$to;
 	$r .= ",$from" if $from;
 	$seqno++;
 	$seqno = 0 if $seqno > 0x0ffff;

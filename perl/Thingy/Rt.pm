@@ -28,7 +28,9 @@ sub gen_Aranea
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
 		my @items;
-	 	$thing->{Aranea} = Aranea::genmsg($thing, 'RT', @items);
+		push @items, 't', $thing->{t} if $thing->{t};
+		push @items, 'd', $thing->{d} if $thing->{d};
+	 	$thing->{Aranea} = Aranea::genmsg($thing, 'RT');
 	}
  	return $thing->{Aranea};
 }
