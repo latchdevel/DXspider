@@ -145,12 +145,12 @@ sub init
 	
 	# do a conversion if required
 	if ($convert) {
-		my ($key, $val, $action, $count, $err);
+		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
 		
 		my %oldu;
 		dbg("Converting the User File to V3");
 		my $odbm = tie (%oldu, 'DB_File', "${fn}.v2", O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
-        for ($count = $err = 0, $action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
+        for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
 			my $ref = asc_decode($val);
 			if ($ref) {
 				$u{$key} = $ref->encode;

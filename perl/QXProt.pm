@@ -163,7 +163,7 @@ sub handleI
 	my $self = shift;
 	
 	my @f = split /\^/, $_[3];
-	if ($self->passphrase && $f[7] && $f[8]) {
+	if ($self->user->passphrase && $f[7] && $f[8]) {
 		my $inv = Verify->new($f[7]);
 		unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
 			$self->sendnow('D','Sorry...');
