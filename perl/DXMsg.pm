@@ -528,6 +528,7 @@ sub queue_msg
 				next if $noderef->call eq $main::mycall;
 				next if $noderef->isolate;               # maybe add code for stuff originated here?
 				next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
+				next if DXUser->get( ${$ref->{gotit}}[0] )->isolate;  # is the origin isolated?
 				
 				# if we are here we have a node that doesn't have this message
 				$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';

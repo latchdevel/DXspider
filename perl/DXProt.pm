@@ -695,7 +695,7 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
 		@nodes = DXNode::get_all(); 
-		@nodes = grep { $_->dxchan != $self && !$_->{isolate} } @nodes;
+		@nodes = grep { $_->dxchan != $self && !$_->dxchan->{isolate} } @nodes;
 	}
 
 	my @s = $me->pc19(@nodes);
