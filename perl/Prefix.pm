@@ -31,9 +31,7 @@ $db = undef;					# the DB_File handle
 %prefix_loc = ();				# the meat of the info
 %pre = ();						# the prefix list
 $hits = $misses = $matchtotal = 1;		# cache stats
-$lrusize = 2000;				# size of prefix LRU cache
-
-$lru = LRU->newbase('Prefix', $lrusize);
+$lrusize = 1000;				# size of prefix LRU cache
 
 sub load
 {
@@ -43,6 +41,8 @@ sub load
 		untie %pre;
 		%pre = ();
 		%prefix_loc = ();
+		$lru->close if $lru;
+		undef $lru;
 	}
 
 	# tie the main prefix database
@@ -50,6 +50,7 @@ sub load
 	my $out = $@ if $@;
 	do "$main::data/prefix_data.pl" if !$out;
 	$out = $@ if $@;
+	$lru = LRU->newbase('Prefix', $lrusize);
 
  	return $out;
 }

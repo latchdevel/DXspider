@@ -156,6 +156,13 @@ sub count
 	return $count;
 }
 
+sub close
+{
+	my $base = shift;
+	$base->flush;
+	$base->[PREV] = $base->[NEXT] = undef;
+}
+
 1;
 __END__
 # Below is the stub of documentation for your module. You better edit it!
