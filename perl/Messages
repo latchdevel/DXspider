@@ -147,7 +147,7 @@ package DXM;
 				pingi => 'Ping Returned from $_[0] $_[1] (Ave $_[2]) secs',
 				pinge1 => 'Cannot ping yourself!',
 				pingint => 'Ping interval on $_[0] set to $_[1] secs',
-				pos => 'From Callsign: $_[0] Lat: $_[1] Long: $_[2]',
+				'pos' => 'From Callsign: $_[0] Lat: $_[1] Long: $_[2]',
 				pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
 				pr2 => '($_[0]) de $main::mycall $main::cldate $main::ztime >',
 				priv => 'Privilege level changed on $_[0]',
