@@ -17,7 +17,11 @@ my $step = shift @f;				# tracking table resolution in minutes
 
 # default hours and step size
 $numhours = 3 unless $numhours && $numhours =~ /^\d+$/;
+$numhours = 3 if $numhours < 0;
+$numhours = 24 if $numhours > 24;
 $step = 5 unless $step && $step =~ /^\d+$/;
+$step = 5 if $step < 0;
+$step = 30 if $step > 30;
 
 # get nearest lat and long (I can see we will need the altitude here soon as well :-)
 my $lat = $self->user->lat;

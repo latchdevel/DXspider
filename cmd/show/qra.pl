@@ -23,7 +23,7 @@ if (!$long && !$lat) {
 
 my $fqra = DXBearing::is_qra($list[0]);
 my $sqra = $list[0] =~ /^[A-Za-z][A-Za-z]\d\d$/;
-my $ll = $line =~ /^\d+\s+\d+\s*[NSns]\s+\d+\s+\d+\s*[EWew]/;
+my $ll = $line =~ /^\d+\s+\d+\s+[NSns]\s+\d+\s+\d+\s+[EWew]/;
 return (1, $self->msg('qrae2', $list[0])) unless $fqra || $sqra || $ll;
 
 # convert a lat/long into a qra locator
