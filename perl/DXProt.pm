@@ -525,7 +525,8 @@ sub normal
 						if ((uc $to eq 'TO' && is_callsign(uc $call)) || is_callsign($call = uc $to)) {
 							my $ref = Route::get($call);
 							if ($ref) {
-								$ref->dxchan->talk($field[1], $call, undef, $field[3], $field[5]);
+								my $dxchan = $ref->dxchan;
+								$dxchan->talk($field[1], $call, undef, $field[3], $field[5]) if $dxchan != $self;
 								return;
 							}
 						}
