@@ -70,7 +70,7 @@ sub dequeue
 			} 
 		}
 		if ($conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}} == 0) {
-			$conn->to_connected($conn->{call}, 'O', $conn->{sort});
+			$conn->to_connected($conn->{call}, 'O', $conn->{csort});
 		}
 	} elsif ($conn->{msg} =~ /\cJ/) {
 		my @lines =  $conn->{msg} =~ /([^\cM\cJ]*)\cM?\cJ/g;
@@ -90,7 +90,7 @@ sub dequeue
 			} elsif ($conn->{state} eq 'WL' ) {
 				$msg = uc $msg;
 				if (is_callsign($msg)) {
-					$conn->to_connected($msg, 'A', 'telnet');
+					$conn->to_connected($msg, 'A', $conn->{csort});
 				} else {
 					$conn->send_now("Sorry $msg is an invalid callsign");
 					$conn->disconnect;
@@ -99,7 +99,7 @@ sub dequeue
 				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
 					$conn->_docmd($msg);
 					if ($conn->{state} eq 'WC' && exists $conn->{cmd} &&  @{$conn->{cmd}} == 0) {
-						$conn->to_connected($conn->{call}, 'O', $conn->{sort});
+						$conn->to_connected($conn->{call}, 'O', $conn->{csort});
 					}
 				}
 			}

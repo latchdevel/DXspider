@@ -565,6 +565,8 @@ sub normal
 			
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
+#			broadcast_route($line, $self, $field[1]);
+#			return;
 			last SWITCH;
 		}
 		
@@ -613,6 +615,8 @@ sub normal
 				dbg('chan', "PCPROT: $field[1] not known" );
 				return;
 			}
+#			broadcast_route($line, $self, $field[2]);
+#			return;
 			last SWITCH;
 		}
 		
@@ -731,6 +735,8 @@ sub normal
 				dbg('chan', "PCPROT: I WILL _NOT_ be disconnected!");
 				return;
 			}
+#			broadcast_route($line, $self, $call);
+#			return;
 			last SWITCH;
 		}
 		
@@ -1148,6 +1154,39 @@ sub process
 #
 # some active measures
 #
+sub send_route
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel::get_all_nodes();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		my $routeit;
+		my ($filter, $hops);
+
+		if ($dxchan->{routefilter}) {
+			($filter, $hops) = $dxchan->{routefilter}->it($self->{call}, @_);
+			 next unless $filter;
+		}
+		next if $dxchan == $self;
+		if ($hops) {
+			$routeit = $line;
+			$routeit =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+		} else {
+			$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+			next unless $routeit;
+		}
+		if ($filter) {
+			$dxchan->send($routeit) if $routeit;
+		} else {
+			$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
+		}
+	}
+}
+
 sub send_dx_spot
 {
 	my $self = shift;

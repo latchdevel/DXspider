@@ -1,6 +1,9 @@
 22Mar01=======================================================================
 1. edit the helpfile for set/debug and add help for show/debug
 2. Allow ^Z again on messages
+3. Added back onboard support for ax25 OUTBOUND connections. You will need
+exactly the same facilities as before (ie netrom_call, ax25_call suid root 
+etc) but it is called direct from the cluster.pl - client.pl is DEAD!
 19Mar01=======================================================================
 1. Add 'not allowed' messages into sh/filter with callsign and reduce priv
 2. decode %xx characters in winclient.pl
