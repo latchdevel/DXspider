@@ -1,3 +1,9 @@
+08Jan00=======================================================================
+1. really removed the restriction on 0 length messages.
+2. added a periodic msg file import system a la FBB. Stick one or more files
+into /spider/msg/import with a suitable SEND line, subject and the text and 
+it will import it. The importer will accept some BBS syntax (eg < GB7TLH) to
+allow you to customise the 'from' callsign.
 03Jan00=======================================================================
 1. changed the copyright statement in sh/version!
 2. added sh/date with special "be compatible with ak1a" syntax for the output

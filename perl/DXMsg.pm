@@ -33,7 +33,7 @@ use Carp;
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
-		    $queueinterval $lastq);
+		    $queueinterval $lastq $importfn);
 
 %work = ();						# outstanding jobs
 @msg = ();						# messages we have
@@ -50,9 +50,11 @@ $queueinterval = 1*60;          # run the queue every 1 minute
 $lastq = 0;
 
 
-$badmsgfn = "$msgdir/badmsg.pl";  # list of TO address we wont store
+$badmsgfn = "$msgdir/badmsg.pl";    # list of TO address we wont store
 $forwardfn = "$msgdir/forward.pl";  # the forwarding table
-$swopfn = "$msgdir/swop.pl";  # the swopping table
+$swopfn = "$msgdir/swop.pl";        # the swopping table
+$importfn = "$msgdir/import";       # import directory
+
 
 %valid = (
 		  fromnode => '5,From Node',
@@ -150,6 +152,10 @@ sub process
 
 			# queue some message if the interval timer has gone off
 			queue_msg(0);
+
+			# import any messages in the import directory
+			import_msgs();
+			
 			$lastq = $main::systime;
 		}
 
@@ -263,7 +269,7 @@ sub process
 				# remove extraneous rubbish from the hash
 				# remove it from the work in progress vector
 				# stuff it on the msg queue
-				if ($ref->{lines} && @{$ref->{lines}} > 0) { # ignore messages with 0 lines
+				if ($ref->{lines}) {
 					if ($ref->{file}) {
 						$ref->store($ref->{lines});
 					} else {
@@ -834,32 +840,31 @@ sub do_send_stuff
 		if ($line eq "\032" || $line eq '%1A' || uc $line eq "/EX") {
 			my $to;
 			
-			if (@{$loc->{lines}} > 0) {
-				foreach $to (@{$loc->{to}}) {
-					my $ref;
-					my $systime = $main::systime;
-					my $mycall = $main::mycall;
-					$ref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
-										uc $to,
-										$self->call, 
-										$systime,
-										$loc->{private}, 
-										$loc->{subject}, 
-										$mycall,
-										'0',
-										$loc->{rrreq});
-					$ref->store($loc->{lines});
-					$ref->add_dir();
-					push @out, $self->msg('m11', $ref->{msgno}, $to);
-					#push @out, "msgno $ref->{msgno} sent to $to";
-					my $dxchan = DXChannel->get(uc $to);
-					if ($dxchan) {
-						if ($dxchan->is_user()) {
-							$dxchan->send($dxchan->msg('m9'));
-						}
+			foreach $to (@{$loc->{to}}) {
+				my $ref;
+				my $systime = $main::systime;
+				my $mycall = $main::mycall;
+				$ref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
+									uc $to,
+									$self->call, 
+									$systime,
+									$loc->{private}, 
+									$loc->{subject}, 
+									$mycall,
+									'0',
+									$loc->{rrreq});
+				$ref->store($loc->{lines});
+				$ref->add_dir();
+				push @out, $self->msg('m11', $ref->{msgno}, $to);
+				#push @out, "msgno $ref->{msgno} sent to $to";
+				my $dxchan = DXChannel->get(uc $to);
+				if ($dxchan) {
+					if ($dxchan->is_user()) {
+						$dxchan->send($dxchan->msg('m9'));
 					}
 				}
 			}
+
 			delete $loc->{lines};
 			delete $loc->{to};
 			delete $self->{loc};
@@ -1033,6 +1038,145 @@ sub swop_it
 		}
 	}
 	return $count;
+}
+
+# import any msgs in the import directory
+# the messages are in BBS format (but may have cluster extentions
+# so SB UK < GB7TLH is legal
+sub import_msgs
+{
+	# are there any to do in this directory?
+	return unless -d $importfn;
+	unless (opendir(DIR, $importfn)) {
+		dbg('msg', "can't open $importfn $!");
+		Log('msg', "can't open $importfn $!");
+		return;
+	} 
+
+	my @names = readdir(DIR);
+	closedir(DIR);
+	my $name;
+	foreach $name (@names) {
+		next if $name =~ /^./;
+		my $fn = "$importfn/$name";
+		next unless -f $fn;
+		unless (open(MSG, $fn)) {
+			dbg('msg', "can't open import file $fn $!");
+			Log('msg', "can't open import file $fn $!");
+			unlink($fn);
+			next;
+		}
+		my @msg = map { chomp } <MSG>;
+		close(MSG);
+		unlink($fn);
+		my @out = import_one($DXProt::me, \@msg);
+		Log('msg', @out);
+	}
+}
+
+# import one message as a list in bbs (as extended) mode
+# takes a reference to an array containing the whole message
+sub import_one
+{
+	my $dxchan = shift;
+	my $ref = shift;
+	my $private = '1';
+	my $rr = '0';
+	my $notincalls = 1;
+	my $from = $dxchan->call;
+	my $origin = $main::mycall;
+	my @to;
+	my @out;
+				
+	# first line;
+	my @f = split /\s+/, shift @$ref;
+	while (@f) {
+		my $f = uc shift @f;
+		next if $f eq 'SEND';
+
+		# private / noprivate / rr
+		if ($notincalls && ($f eq 'B' || $f eq 'SB' || $f =~ /^NOP/oi)) {
+			$private = '0';
+		} elsif ($notincalls && ($f eq 'P' || $f eq 'SP' || $f =~ /^PRI/oi)) {
+			;
+		} elsif ($notincalls && ($f eq 'RR')) {
+			$rr = '1';
+		} elsif ($f eq '@' && @f) {       # this is bbs syntax, for origin
+			$origin = uc shift @f;
+		} elsif ($f =~ /^\$/) {     # this is bbs syntax  for a bid
+			next;
+		} elsif ($f =~ /^</) {     # this is bbs syntax  for from call
+			($from) = $f =~ /^<(\S+)$/;
+		} elsif ($f eq '<' && @f) {     # this is bbs syntax  for from call
+			$from = uc shift @f;
+		} else {
+
+			# callsign ?
+			$notincalls = 0;
+
+			# is this callsign a distro?
+			my $fn = "$msgdir/distro/$f.pl";
+			if (-e $fn) {
+				my $fh = new IO::File $fn;
+				if ($fh) {
+					local $/ = undef;
+					my $s = <$fh>;
+					$fh->close;
+					my @call;
+					@call = eval $s;
+					return (1, "Error in Distro $f.pl:", $@) if $@;
+					if (@call > 0) {
+						push @f, @call;
+						next;
+					}
+				}
+			}
+
+			if (grep $_ eq $f, @DXMsg::badmsg) {
+				push @out, $dxchan->msg('m3', $f);
+			} else {
+				push @to, $f;
+			}
+		}
+	}
+
+	# subject is the next line
+	my $subject = shift @$ref;
+	
+	# strip off trailing lines 
+	pop @$ref while (@$ref && ($$ref[-1] eq '' || $$ref[-1] =~ /^\s+$/));
+
+	# strip off /EX or /ABORT
+	return () if (@$ref && $$ref[-1] =~ m{^/ABORT$}i); 
+	pop @$ref if (@$ref && $$ref[-1] =~ m{^/EX$}i);									 
+
+    # write all the messages away
+	my $to;
+	foreach $to (@to) {
+		my $systime = $main::systime;
+		my $mycall = $main::mycall;
+		my $mref = DXMsg->alloc(DXMsg::next_transno('Msgno'),
+							$to,
+							$from, 
+							$systime,
+							$private, 
+							$subject, 
+							$origin,
+							'0',
+							$rr);
+		$mref->store($ref);
+		$mref->add_dir();
+		push @out, $dxchan->msg('m11', $ref->{msgno}, $to);
+		#push @out, "msgno $ref->{msgno} sent to $to";
+		my $todxchan = DXChannel->get(uc $to);
+		if ($todxchan) {
+			if ($todxchan->is_user()) {
+				$todxchan->send($dxchan->msg('m9'));
+			}
+		}
+	}
+
+	return @out;
 }
 
 no strict;

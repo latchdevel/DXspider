@@ -166,6 +166,7 @@ sub set_blocking {
         fcntl ($_[0], F_SETFL(), $flags);
     }
 }
+
 sub handle_send_err {
    # For more meaningful handling of send errors, subclass Msg and
    # rebless $conn.  
