@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.28 January 2001
+<date>Version 1.29 January 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -19,7 +19,7 @@ A reference for SysOps of the DXSpider DXCluster program.
 <sect>Installation (Original version by Iain Phillips, G0RDI)
 
 <P>
-Last modified: 03 January 2001 by Ian Maude, G0VGS
+Last modified: 13 January 2001 by Ian Maude, G0VGS
 
 <sect1>Introduction
 
@@ -1253,7 +1253,10 @@ headers that we do not want to pass on to either the users of the cluster or
 the other cluster nodes that we are linked to.  This is usually because of 
 rules and regulations pertaining to items for sale etc in a particular country.
 
-<sect1>Filtering DX callouts
+<sect1>Filtering DX callouts (Depricated)
+
+<P>
+<bf><it>From version 1.47, this method is replaced by the command set/baddx</it></bf>
 
 <P>
 In the same way as mail, there are some types of spot we do not wish to pass on 
@@ -2893,9 +2896,9 @@ line for spots
 </tt>
 
 <P>
-Create an 'reject this spot' line for a filter. 
+Create a 'reject this spot' line for a filter. 
 
-An reject filter line means that if the spot matches this filter it is
+A reject filter line means that if the spot matches this filter it is
 dumped (not passed on). See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 
@@ -3141,6 +3144,31 @@ the node_call an AR-Cluster type node
 <P>
 Set the node_call as an AR-Cluster type node
 
+<sect1>set/baddx (8)
+
+<P>
+<tt>
+<bf>set/baddx &lt;call&gt;</bf> Stop words we do not wish to see in the callsign field
+of a dx spot being propagated
+</tt>
+
+<P>
+Setting a word as 'baddx' will prevent spots with that word in the callsign 
+field of a DX spot from going any further. They will not be displayed and they 
+will not be sent onto other nodes.
+
+The word must be wriiten in full, no wild cards are allowed eg:-
+
+<verb>
+  set/baddx FORSALE VIDEO FR0G 
+</verb>
+
+To allow a word again, use the following command ...
+
+<verb>
+  unset/baddx VIDEO
+</verb>
+
 <sect1>set/badnode (6)
 
 <P>
@@ -3164,6 +3192,35 @@ will stop anything from K1TTT (including any SSID's)
 
 <verb>
   unset/badnode K1TTT
+</verb>
+
+will allow spots from him again.
+
+Use with extreme care. This command may well be superceded by FILTERing.
+
+<sect1>set/badspotter (8)
+
+<P>
+<tt>
+<bf>set/badspotter &lt;call&gt;</bf> Stop spots from this callsign being propagated
+</tt>
+
+<P>
+Setting a callsign as a 'badspotter' will prevent spots from this callsign 
+going any further. They will not be displayed and they will not be 
+sent onto other nodes.
+
+The call must be written in full, no wild cards are allowed eg:-
+
+<verb>
+  set/badspotter VE2STN 
+</verb>
+
+will stop anything from VE2STN. If you want SSIDs as well then you must
+enter them specifically.
+
+<verb>
+  unset/badspotter VE2STN
 </verb>
 
 will allow spots from him again.
@@ -3621,6 +3678,17 @@ WWV messages with the <em>unset/wwv</em> command.
 Allow WX information to be seen at your console.  You can switch off
 WX messages with the <em>unset/wx</em> command.
 
+<sect1>show/baddx (1)
+
+<P>
+<tt>
+<bf>show/baddx</bf>Show all the bad dx calls in the system
+</tt>
+
+<P>
+Display all the bad dx callsigns in the system, see SET/BADDX
+for more information.
+
 <sect1>show/badnode (6)
 
 <P>
@@ -3630,6 +3698,17 @@ WX messages with the <em>unset/wx</em> command.
 
 <P>
 Display all the bad node callsigns in the system, see SET/BADNODE
+for more information.
+
+<sect1>show/badspotter (1)
+
+<P>
+<tt>
+<bf>show/badspotter</bf>Show all the bad spotters in the system
+</tt>
+
+<P>
+Display all the bad spotter's callsigns in the system, see SET/BADSPOTTER
 for more information.
 
 <sect1>show/date (0)

@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.28 January 2001
+  Version 1.29 January 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -110,7 +110,7 @@
   8. Other filters
 
      8.1 Filtering Mail
-     8.2 Filtering DX callouts
+     8.2 Filtering DX callouts (Depricated)
      8.3 Filtering words from text fields in Announce, Talk and DX spots
 
   9. Information, files and useful programs
@@ -192,81 +192,84 @@
      11.63 set/address (0)
      11.64 set/announce (0)
      11.65 set/arcluster (5)
-     11.66 set/badnode (6)
-     11.67 set/beep (0)
-     11.68 set/clx (5)
-     11.69 set/debug (9)
-     11.70 set/dx (0)
-     11.71 set/dxgrid (0)
-     11.72 set/dxnet (5)
-     11.73 set/echo (0)
-     11.74 set/here (0)
-     11.75 set/homenode (0)
-     11.76 set/hops (8)
-     11.77 set/isolate (9)
-     11.78 set/language (0)
-     11.79 set/location (0)
-     11.80 set/sys_location (9)
-     11.81 set/logininfo (0)
-     11.82 set/lockout (9)
-     11.83 set/name (0)
-     11.84 set/node (9)
-     11.85 set/obscount (9)
-     11.86 set/page (0)
-     11.87 set/password (9)
-     11.88 set/pinginterval (9)
-     11.89 set/privilege (9)
-     11.90 set/spider (5)
-     11.91 set/sys_qra (9)
-     11.92 set/qra (0)
-     11.93 set/qth (0)
-     11.94 set/talk (0)
-     11.95 set/wcy (0)
-     11.96 set/wwv (0)
-     11.97 set/wx (0)
-     11.98 show/badnode (6)
-     11.99 show/date (0)
-     11.100 show/dx (0)
-     11.101 show/dxcc (0)
-     11.102 show/files (0)
-     11.103 show/filter (0)
-     11.104 show/filter (extended for sysops) (5)
-     11.105 show/hops (8)
-     11.106 show/isolate (1)
-     11.107 show/lockout (9)
-     11.108 show/moon (0)
-     11.109 show/muf (0)
-     11.110 show/node (1)
-     11.111 show/prefix (0)
-     11.112 show/program (5)
-     11.113 show/qra (0)
-     11.114 show/qrz (0)
-     11.115 show/route (0)
-     11.116 show/satellite (0)
-     11.117 show/sun (0)
-     11.118 show/time (0)
-     11.119 show/wcy (0)
-     11.120 show/wwv (0)
-     11.121 shutdown (5)
-     11.122 spoof (9)
-     11.123 stat/db (5)
-     11.124 stat/channel (5)
-     11.125 stat/msg (5)
-     11.126 stat/user (5)
-     11.127 sysop (0)
-     11.128 talk (0)
-     11.129 type (0)
-     11.130 who (0)
-     11.131 wx (0)
-     11.132 wx (enhanced for sysops) (5)
-
+     11.66 set/baddx (8)
+     11.67 set/badnode (6)
+     11.68 set/badspotter (8)
+     11.69 set/beep (0)
+     11.70 set/clx (5)
+     11.71 set/debug (9)
+     11.72 set/dx (0)
+     11.73 set/dxgrid (0)
+     11.74 set/dxnet (5)
+     11.75 set/echo (0)
+     11.76 set/here (0)
+     11.77 set/homenode (0)
+     11.78 set/hops (8)
+     11.79 set/isolate (9)
+     11.80 set/language (0)
+     11.81 set/location (0)
+     11.82 set/sys_location (9)
+     11.83 set/logininfo (0)
+     11.84 set/lockout (9)
+     11.85 set/name (0)
+     11.86 set/node (9)
+     11.87 set/obscount (9)
+     11.88 set/page (0)
+     11.89 set/password (9)
+     11.90 set/pinginterval (9)
+     11.91 set/privilege (9)
+     11.92 set/spider (5)
+     11.93 set/sys_qra (9)
+     11.94 set/qra (0)
+     11.95 set/qth (0)
+     11.96 set/talk (0)
+     11.97 set/wcy (0)
+     11.98 set/wwv (0)
+     11.99 set/wx (0)
+     11.100 show/baddx (1)
+     11.101 show/badnode (6)
+     11.102 show/badspotter (1)
+     11.103 show/date (0)
+     11.104 show/dx (0)
+     11.105 show/dxcc (0)
+     11.106 show/files (0)
+     11.107 show/filter (0)
+     11.108 show/filter (extended for sysops) (5)
+     11.109 show/hops (8)
+     11.110 show/isolate (1)
+     11.111 show/lockout (9)
+     11.112 show/moon (0)
+     11.113 show/muf (0)
+     11.114 show/node (1)
+     11.115 show/prefix (0)
+     11.116 show/program (5)
+     11.117 show/qra (0)
+     11.118 show/qrz (0)
+     11.119 show/route (0)
+     11.120 show/satellite (0)
+     11.121 show/sun (0)
+     11.122 show/time (0)
+     11.123 show/wcy (0)
+     11.124 show/wwv (0)
+     11.125 shutdown (5)
+     11.126 spoof (9)
+     11.127 stat/db (5)
+     11.128 stat/channel (5)
+     11.129 stat/msg (5)
+     11.130 stat/user (5)
+     11.131 sysop (0)
+     11.132 talk (0)
+     11.133 type (0)
+     11.134 who (0)
+     11.135 wx (0)
+     11.136 wx (enhanced for sysops) (5)
 
 
   ______________________________________________________________________
 
   11..  IInnssttaallllaattiioonn ((OOrriiggiinnaall vveerrssiioonn bbyy IIaaiinn PPhhiilllliippss,, GG00RRDDII))
 
-  Last modified: 03 January 2001 by Ian Maude, G0VGS
+  Last modified: 13 January 2001 by Ian Maude, G0VGS
 
 
   11..11..  IInnttrroodduuccttiioonn
@@ -390,9 +393,14 @@
 
 
 
-       # chown -R sysop.spider spider
-       # find . -type d -exec chmod 2775 {} \;
-       # find . -type f -exec chmod 775 {} \;
+
+  # chown -R sysop.spider spider
+  # find . -type d -exec chmod 2775 {} \;
+  # find . -type f -exec chmod 775 {} \;
+
+
+
+
 
   This last step allows various users of the group _s_p_i_d_e_r to have write
   access to all the directories.  This is not really needed just yet but
@@ -460,7 +468,7 @@
 
 
 
-  $ cd ../perl
+       $ cd ../perl
 
 
 
@@ -518,7 +526,7 @@
 
 
 
-       G0VGS de GB7MBC 19-Nov-1999 2150Z >
+  G0VGS de GB7MBC 19-Nov-1999 2150Z >
 
 
 
@@ -526,6 +534,9 @@
   If you do, congratulations!  If not, look over the instructions again,
   you have probably missed something out.  You can shut spider down
   again with the command ....
+
+
+
        shutdown
 
 
@@ -581,7 +592,7 @@
 
 
 
-       spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/src/client login telnet
+  spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/src/client login telnet
 
 
 
@@ -592,7 +603,7 @@
 
 
 
-  killall -HUP inetd
+       killall -HUP inetd
 
 
 
@@ -645,10 +656,12 @@
 
 
 
-       set/node        (AK1A type)
-       set/spider
-       set/dxnet
-       set/clx
+
+
+  set/node        (AK1A type)
+  set/spider
+  set/dxnet
+  set/clx
 
 
 
@@ -716,14 +729,6 @@
 
 
 
-
-
-
-
-
-
-
-
   #               All lines starting with a # are ignored, as are completely
                   blank lines.
 
@@ -783,11 +788,16 @@
 
 
 
-       timeout 15
-       connect telnet dirkl.tobit.co.uk
-       # tell GB7DJK-1 that it is connected to GB7DJK
-       # you can leave this out if you call this script 'gb7djk'
-       client gb7djk telnet
+
+
+  timeout 15
+  connect telnet dirkl.tobit.co.uk
+  # tell GB7DJK-1 that it is connected to GB7DJK
+  # you can leave this out if you call this script 'gb7djk'
+  client gb7djk telnet
+
+
+
 
 
   Both these examples assume that everything is set up properly at the
@@ -854,6 +864,12 @@
   This means if a node is unreachable, it will continue sending logins
   and logouts to users even though it is not actually connecting.  To
   avoid this use the following line ...
+
+
+
+
+
+
 
 
   In a script, this might look like ...
@@ -971,6 +987,7 @@
 
 
 
+
   The callsign involved will be the callsign of the cluster node you are
   going to connect to.  This will now check every 10 minutes to see if
   gb7xxx is connected, if it is then nothing will be done.  If it is
@@ -1002,55 +1019,92 @@
 
 
 
-       #
-       # hop table construction
-       #
-
-       package DXProt;
-
-       # default hopcount to use
-       $def_hopcount = 5;
-
-       # some variable hop counts based on message type
-       %hopcount =
-       (
-        11 => 10,
-        16 => 10,
-        17 => 10,
-        19 => 10,
-        21 => 10,
-       );
 
 
-       # the per node hop control thingy
 
 
-       %nodehops =
 
-        GB7ADX => {            11 => 8,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
 
-        GB7UDX => {            11 => 8,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
-        GB7BAA => {
-                               11 => 5,
-                               12 => 8,
-                               16 => 8,
-                               17 => 8,
-                               19 => 8,
-                               21 => 8,
-                          },
-       };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #
+  # hop table construction
+  #
+
+  package DXProt;
+
+  # default hopcount to use
+  $def_hopcount = 5;
+
+  # some variable hop counts based on message type
+  %hopcount =
+  (
+   11 => 10,
+   16 => 10,
+   17 => 10,
+   19 => 10,
+   21 => 10,
+  );
+
+
+  # the per node hop control thingy
+
+
+  %nodehops =
+
+   GB7ADX => {            11 => 8,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+
+   GB7UDX => {            11 => 8,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+   GB7BAA => {
+                          11 => 5,
+                          12 => 8,
+                          16 => 8,
+                          17 => 8,
+                          19 => 8,
+                          21 => 8,
+                     },
+  };
+
+
 
 
 
@@ -1063,6 +1117,7 @@
   You can alter this file at any time, including whilst the cluster is
   running.  If you alter the file during runtime, the command _l_o_a_d_/_h_o_p_s
   will bring your changes into effect.
+
 
 
   55..22..  IIssoollaattiinngg nneettwwoorrkkss
@@ -1186,24 +1241,30 @@
   This is very simple and only 2 possible states exist, accept (1) or
   drop (0).
 
+
   The second element is the field_no.  There are 13 possiblities to
   choose from here ....
 
 
 
-             0 = frequency
-             1 = call
-             2 = date in unix format
-             3 = comment
-             4 = spotter
-             5 = spotted dxcc country
-             6 = spotter's dxcc country
-             7 = origin
-             8 = spotted itu
-             9 = spotted cq
-             10 = spotter's itu
-             11 = spotter's cq
-             12 = callsign of the channel on which the spot has appeared
+
+
+
+
+
+        0 = frequency
+        1 = call
+        2 = date in unix format
+        3 = comment
+        4 = spotter
+        5 = spotted dxcc country
+        6 = spotter's dxcc country
+        7 = origin
+        8 = spotted itu
+        9 = spotted cq
+        10 = spotter's itu
+        11 = spotter's cq
+        12 = callsign of the channel on which the spot has appeared
 
 
 
@@ -1254,6 +1315,7 @@
   element is the letter "a" which tells the program to expect an
   alphanumeric expression in the fourth element.  The fourth element is
   a list of letters separated by the pipe symbol.
+
 
 
   What this line does is tell the program to drop any spots posted by
@@ -1317,6 +1379,10 @@
                [ 1, 0, 'a', '^(P[ABCDE]|DK0WCY|G|M|2|EI|F|ON)' ],
                [ 0, 0, 'd', 0 ]
        ];
+
+
+
+
 
   In this example, only the prefixes listed will be allowed.  It is
   possible to be quite specific.  The Dutch prefix "P" is followed by
@@ -1688,15 +1754,15 @@
   etc in a particular country.
 
 
-  88..22..  FFiilltteerriinngg DDXX ccaalllloouuttss
+  88..22..  FFiilltteerriinngg DDXX ccaalllloouuttss ((DDeepprriiccaatteedd))
+
+  _F_r_o_m _v_e_r_s_i_o_n _1_._4_7_, _t_h_i_s _m_e_t_h_o_d _i_s _r_e_p_l_a_c_e_d _b_y _t_h_e _c_o_m_m_a_n_d _s_e_t_/_b_a_d_d_x
+
 
   In the same way as mail, there are some types of spot we do not wish
   to pass on to users or linked cluster nodes.  In the /spider/data
   directory you will find a file called baddx.pl.issue.  Rename this to
   baddx.pl and edit the file.  The original looks like this ....
-
-
-
 
 
 
@@ -3393,9 +3459,9 @@
   rreejjeecctt//ssppoottss [[00--99]] <<ppaatttteerrnn>> Set a reject filter line for spots
 
 
-  Create an 'reject this spot' line for a filter.
+  Create a 'reject this spot' line for a filter.
 
-  An reject filter line means that if the spot matches this filter it is
+  A reject filter line means that if the spot matches this filter it is
   dumped (not passed on). See HELP FILTERS for more info. Please read
   this to understand how filters work - it will save a lot of grief
   later on.
@@ -3637,7 +3703,32 @@
   Set the node_call as an AR-Cluster type node
 
 
-  1111..6666..  sseett//bbaaddnnooddee ((66))
+  1111..6666..  sseett//bbaaddddxx ((88))
+
+  sseett//bbaaddddxx <<ccaallll>> Stop words we do not wish to see in the callsign
+  field of a dx spot being propagated
+
+
+  Setting a word as 'baddx' will prevent spots with that word in the
+  callsign field of a DX spot from going any further. They will not be
+  displayed and they will not be sent onto other nodes.
+
+  The word must be wriiten in full, no wild cards are allowed eg:-
+
+
+    set/baddx FORSALE VIDEO FR0G
+
+
+
+  To allow a word again, use the following command ...
+
+
+    unset/baddx VIDEO
+
+
+
+
+  1111..6677..  sseett//bbaaddnnooddee ((66))
 
   sseett//bbaaddnnooddee <<nnooddee__ccaallll>> Stop spots from this node_call being
   propagated
@@ -3667,7 +3758,39 @@
   FILTERing.
 
 
-  1111..6677..  sseett//bbeeeepp ((00))
+
+
+  1111..6688..  sseett//bbaaddssppootttteerr ((88))
+
+  sseett//bbaaddssppootttteerr <<ccaallll>> Stop spots from this callsign being propagated
+
+
+  Setting a callsign as a 'badspotter' will prevent spots from this
+  callsign going any further. They will not be displayed and they will
+  not be sent onto other nodes.
+
+  The call must be written in full, no wild cards are allowed eg:-
+
+
+    set/badspotter VE2STN
+
+
+
+  will stop anything from VE2STN. If you want SSIDs as well then you
+  must enter them specifically.
+
+
+    unset/badspotter VE2STN
+
+
+
+  will allow spots from him again.
+
+  Use with extreme care. This command may well be superceded by
+  FILTERing.
+
+
+  1111..6699..  sseett//bbeeeepp ((00))
 
   sseett//bbeeeepp Add beeps to terminal messages
 
@@ -3675,7 +3798,7 @@
   Add a beep to DX and other terminal messages.
 
 
-  1111..6688..  sseett//ccllxx ((55))
+  1111..7700..  sseett//ccllxx ((55))
 
   sseett//ccllxx <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a CLX type
   node
@@ -3684,7 +3807,7 @@
   Set the node_call as a CLX type node
 
 
-  1111..6699..  sseett//ddeebbuugg ((99))
+  1111..7711..  sseett//ddeebbuugg ((99))
 
   sseett//ddeebbuugg <<nnaammee>> Add a debug level to the debug set
 
@@ -3692,9 +3815,7 @@
   You can remove this level with unset/debug <name>
 
 
-
-
-  1111..7700..  sseett//ddxx ((00))
+  1111..7722..  sseett//ddxx ((00))
 
   sseett//ddxxAllow DX messages to arrive at your terminal
 
@@ -3702,7 +3823,10 @@
   You can stop DX messages with the _u_n_s_e_t_/_d_x command
 
 
-  1111..7711..  sseett//ddxxggrriidd ((00))
+
+
+
+  1111..7733..  sseett//ddxxggrriidd ((00))
 
   sseett//ddxxggrriiddAllow grid squares on the end of DX messages
 
@@ -3712,7 +3836,7 @@
   to remove the grid squares.
 
 
-  1111..7722..  sseett//ddxxnneett ((55))
+  1111..7744..  sseett//ddxxnneett ((55))
 
   sseett//ddxxnneett <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a DXNet
   type node
@@ -3721,7 +3845,7 @@
   Set the node_call as a DXNet type node
 
 
-  1111..7733..  sseett//eecchhoo ((00))
+  1111..7755..  sseett//eecchhoo ((00))
 
   sseett//eecchhoo Make the cluster echo your input
 
@@ -3738,7 +3862,7 @@
   YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
 
-  1111..7744..  sseett//hheerree ((00))
+  1111..7766..  sseett//hheerree ((00))
 
   sseett//hheerree Set the here flag
 
@@ -3749,7 +3873,7 @@
   brackets around your callsign to indicate you are not available.
 
 
-  1111..7755..  sseett//hhoommeennooddee ((00))
+  1111..7777..  sseett//hhoommeennooddee ((00))
 
   sseett//hhoommeennooddee <<nnooddee__ccaallll>> Set your home cluster
 
@@ -3759,16 +3883,14 @@
   connected.  eg:-
 
 
-
     SET/HOMENODE gb7djk
 
 
 
 
-  1111..7766..  sseett//hhooppss ((88))
+  1111..7788..  sseett//hhooppss ((88))
 
   sseett//hhooppss <<nnooddee__ccaallll>> aannnn||ssppoottss||wwwwvv||wwccyy <<nn>> Set hop count
-
 
   Set the hop count for a particular type of broadcast for a node.
 
@@ -3786,7 +3908,7 @@
   creates a filter and works in conjunction with the filter system.
 
 
-  1111..7777..  sseett//iissoollaattee ((99))
+  1111..7799..  sseett//iissoollaattee ((99))
 
   sseett//iissoollaattee <<nnooddee ccaallll>> Isolate a node from the rest of the network
 
@@ -3804,7 +3926,7 @@
   You can remove the isolation with the command unset/isolate.
 
 
-  1111..7788..  sseett//llaanngguuaaggee ((00))
+  1111..8800..  sseett//llaanngguuaaggee ((00))
 
   sseett//llaanngguuaaggee <<llaanngguuaaggee>> Set the language you wish to use
 
@@ -3813,7 +3935,7 @@
   Currently the languages available are _e_n (English) and _n_l (Dutch).
 
 
-  1111..7799..  sseett//llooccaattiioonn ((00))
+  1111..8811..  sseett//llooccaattiioonn ((00))
 
   sseett//llooccaattiioonn <<llaatt aanndd lloonngg>> Set your latitude and longitude
 
@@ -3826,7 +3948,9 @@
 
 
 
-  1111..8800..  sseett//ssyyss__llooccaattiioonn ((99))
+
+
+  1111..8822..  sseett//ssyyss__llooccaattiioonn ((99))
 
   sseett//ssyyss__llooccaattiioonn <<llaatt && lloonngg>> Set your cluster latitude and longitude
 
@@ -3842,7 +3966,7 @@
 
 
 
-  1111..8811..  sseett//llooggiinniinnffoo ((00))
+  1111..8833..  sseett//llooggiinniinnffoo ((00))
 
   sseett//llooggiinniinnffoo Show logins and logouts of nodes and users
 
@@ -3852,7 +3976,7 @@
 
 
 
-  1111..8822..  sseett//lloocckkoouutt ((99))
+  1111..8844..  sseett//lloocckkoouutt ((99))
 
   sseett//lloocckkoouutt <<ccaallll>> Stop a callsign connecting to the cluster
 
@@ -3861,7 +3985,7 @@
   allow the user to connect again, use the _u_n_s_e_t_/_l_o_c_k_o_u_t command.
 
 
-  1111..8833..  sseett//nnaammee ((00))
+  1111..8855..  sseett//nnaammee ((00))
 
   sseett//nnaammee <<yyoouurr__nnaammee>> Set your name
 
@@ -3874,7 +3998,7 @@
 
 
 
-  1111..8844..  sseett//nnooddee ((99))
+  1111..8866..  sseett//nnooddee ((99))
 
   sseett//nnooddee <<ccaallll>> [[<<ccaallll>> ......]] Make the callsign an AK1A cluster
 
@@ -3895,11 +4019,10 @@
   To see what your nodes are set to, use the _s_h_o_w_/_n_o_d_e_s command.
 
 
-  1111..8855..  sseett//oobbssccoouunntt ((99))
+  1111..8877..  sseett//oobbssccoouunntt ((99))
 
   sseett//oobbssccoouunntt <<ccoouunntt>> <<nnooddee ccaallll>> Set the 'pump-up' obsolescence
   counter
-
 
   From version 1.35 onwards neighbouring nodes are pinged at regular
   intervals (see SET/PINGINTERVAL), usually 300 seconds or 5 minutes.
@@ -3916,7 +4039,7 @@
   minutes, it is disconnected.
 
 
-  1111..8866..  sseett//ppaaggee ((00))
+  1111..8888..  sseett//ppaaggee ((00))
 
   sseett//ppaaggee <<nn>> Set the number of lines per page
 
@@ -3935,7 +4058,7 @@
 
 
 
-  1111..8877..  sseett//ppaasssswwoorrdd ((99))
+  1111..8899..  sseett//ppaasssswwoorrdd ((99))
 
   sseett//ppaasssswwoorrdd <<ccaallllssiiggnn>> <<ssttrriinngg>> Set a users password
 
@@ -3947,7 +4070,7 @@
   type password.
 
 
-  1111..8888..  sseett//ppiinnggiinntteerrvvaall ((99))
+  1111..9900..  sseett//ppiinnggiinntteerrvvaall ((99))
 
   sseett//ppiinnggiinntteerrvvaall <<ttiimmee>> <<nnooddee ccaallll>> Set the ping time to neighbouring
   nodes
@@ -3967,8 +4090,7 @@
   (as certain cluster software doesn't always notice), see SET/OBSCOUNT
   for more information.
 
-
-  1111..8899..  sseett//pprriivviilleeggee ((99))
+  1111..9911..  sseett//pprriivviilleeggee ((99))
 
   sseett//pprriivviilleeggee <<nn>> <<ccaallll>> [[<<ccaallll>> ......]] Set the privilege level on a
   call
@@ -3994,7 +4116,7 @@
   connection your privilege will automatically be set to 0.
 
 
-  1111..9900..  sseett//ssppiiddeerr ((55))
+  1111..9922..  sseett//ssppiiddeerr ((55))
 
   sseett//ssppiiddeerr <<nnooddee__ccaallll>> [[<<nnooddee__ccaallll>> ......]] Make the node_call a DXSpider
   type node
@@ -4003,12 +4125,12 @@
   Set the node_call as a DXSpider type node
 
 
-  1111..9911..  sseett//ssyyss__qqrraa ((99))
+  1111..9933..  sseett//ssyyss__qqrraa ((99))
 
   sseett//ssyyss__qqrraa <<llooccaattoorr>> Set your cluster QRA locator
 
 
-  1111..9922..  sseett//qqrraa ((00))
+  1111..9944..  sseett//qqrraa ((00))
 
   sseett//qqrraa <<llooccaattoorr>> Set your QRA locator
 
@@ -4023,8 +4145,7 @@
 
 
 
-
-  1111..9933..  sseett//qqtthh ((00))
+  1111..9955..  sseett//qqtthh ((00))
 
   sseett//qqtthh <<yyoouurr QQTTHH>> Set your QTH
 
@@ -4035,9 +4156,7 @@
     set/qth East Dereham, Norfolk
 
 
-
-
-  1111..9944..  sseett//ttaallkk ((00))
+  1111..9966..  sseett//ttaallkk ((00))
 
   sseett//ttaallkk Allow talk messages to be seen at your console
 
@@ -4046,7 +4165,7 @@
   talks with the _u_n_s_e_t_/_t_a_l_k command.
 
 
-  1111..9955..  sseett//wwccyy ((00))
+  1111..9977..  sseett//wwccyy ((00))
 
   sseett//wwccyy Allow WCY messages to be seen at your console
 
@@ -4055,7 +4174,7 @@
   WCY messages with the _u_n_s_e_t_/_w_c_y command.
 
 
-  1111..9966..  sseett//wwwwvv ((00))
+  1111..9988..  sseett//wwwwvv ((00))
 
   sseett//wwwwvv Allow WWV messages to be seen at your console
 
@@ -4064,7 +4183,7 @@
   WWV messages with the _u_n_s_e_t_/_w_w_v command.
 
 
-  1111..9977..  sseett//wwxx ((00))
+  1111..9999..  sseett//wwxx ((00))
 
   sseett//wwxx Allow WX messages to be seen at your console
 
@@ -4073,7 +4192,16 @@
   WX messages with the _u_n_s_e_t_/_w_x command.
 
 
-  1111..9988..  sshhooww//bbaaddnnooddee ((66))
+  1111..110000..  sshhooww//bbaaddddxx ((11))
+
+  sshhooww//bbaaddddxxShow all the bad dx calls in the system
+
+
+  Display all the bad dx callsigns in the system, see SET/BADDX for more
+  information.
+
+
+  1111..110011..  sshhooww//bbaaddnnooddee ((66))
 
   sshhooww//bbaaddnnooddee Show all the bad nodes in the system
 
@@ -4082,7 +4210,19 @@
   more information.
 
 
-  1111..9999..  sshhooww//ddaattee ((00))
+  1111..110022..  sshhooww//bbaaddssppootttteerr ((11))
+
+  sshhooww//bbaaddssppootttteerrShow all the bad spotters in the system
+
+
+  Display all the bad spotter's callsigns in the system, see
+  SET/BADSPOTTER for more information.
+
+
+
+
+
+  1111..110033..  sshhooww//ddaattee ((00))
 
   sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -4096,7 +4236,7 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1111..110000..  sshhooww//ddxx ((00))
+  1111..110044..  sshhooww//ddxx ((00))
 
   sshhooww//ddxx [[ooppttiioonnss]] interrogate the spot database
 
@@ -4145,6 +4285,9 @@
 
 
 
+
+
+
      SH/DX 9m0
      SH/DX on 20m info iota
      SH/DX 9a on vhf day 30
@@ -4156,7 +4299,7 @@
 
 
 
-  1111..110011..  sshhooww//ddxxcccc ((00))
+  1111..110055..  sshhooww//ddxxcccc ((00))
 
   sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
 
@@ -4175,7 +4318,7 @@
 
 
 
-  1111..110022..  sshhooww//ffiilleess ((00))
+  1111..110066..  sshhooww//ffiilleess ((00))
 
   sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]] List the contents of a filearea
 
@@ -4203,7 +4346,7 @@
   See also TYPE - to see the contents of a file.
 
 
-  1111..110033..  sshhooww//ffiilltteerr ((00))
+  1111..110077..  sshhooww//ffiilltteerr ((00))
 
   sshhooww//ffiilltteerr Show the filters you have set
 
@@ -4211,8 +4354,7 @@
   Show the contents of all the filters that are set by you. This command
   displays all the filters set - for all the various categories.
 
-
-  1111..110044..  sshhooww//ffiilltteerr ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
+  1111..110088..  sshhooww//ffiilltteerr ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
 
   sshhooww//ffiilltteerr <<ccaallllssiiggnn>> Show the filters set by <callsign>
 
@@ -4220,9 +4362,7 @@
   A sysop can look at any filters that have been set.
 
 
-
-
-  1111..110055..  sshhooww//hhooppss ((88))
+  1111..110099..  sshhooww//hhooppss ((88))
 
   sshhooww//hhooppss <<nnooddee__ccaallll>> [[aannnn||ssppoottss||wwccyy||wwwwvv||]] Show the hop counts for a
   node
@@ -4233,7 +4373,7 @@
   the categories will be listed.
 
 
-  1111..110066..  sshhooww//iissoollaattee ((11))
+  1111..111100..  sshhooww//iissoollaattee ((11))
 
   sshhooww//iissoollaattee Show a list of isolated nodes
 
@@ -4241,7 +4381,7 @@
   Show which nodes are currently set to be isolated.
 
 
-  1111..110077..  sshhooww//lloocckkoouutt ((99))
+  1111..111111..  sshhooww//lloocckkoouutt ((99))
 
   sshhooww//lloocckkoouutt Show a list of excluded callsigns
 
@@ -4250,7 +4390,7 @@
   cluster locally with the _s_e_t_/_l_o_c_k_o_u_t command
 
 
-  1111..110088..  sshhooww//mmoooonn ((00))
+  1111..111122..  sshhooww//mmoooonn ((00))
 
   sshhooww//mmoooonn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show moon rise and set times
 
@@ -4278,7 +4418,9 @@
 
 
 
-  1111..110099..  sshhooww//mmuuff ((00))
+
+
+  1111..111133..  sshhooww//mmuuff ((00))
 
   sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]] Show the likely propagation to
   <prefix>
@@ -4288,6 +4430,7 @@
   station with the prefix you have specified. The output assumes a
   modest power of 20dBW and receiver sensitivity of -123dBm (about
   0.15muV/10dB SINAD)
+
   The result predicts the most likely operating frequencies and signal
   levels for high frequency (shortwave) radio propagation paths on
   specified days of the year and hours of the day. It is most useful for
@@ -4342,6 +4485,7 @@
   indicating that you will have weak, fading circuits on top band and
   80m but usable signals on 40m (about S3).
 
+
   inputing:-
 
 
@@ -4351,7 +4495,6 @@
 
   will get you the above display, but with the next 24 hours worth of
   propagation data.
-
 
 
     SH/MUF W L 24
@@ -4364,7 +4507,7 @@
   terrible accurate, but it is included for completeness.
 
 
-  1111..111100..  sshhooww//nnooddee ((11))
+  1111..111144..  sshhooww//nnooddee ((11))
 
   sshhooww//nnooddee [[<<nnooddee__ccaallll>> ......]] Show the type and version number of nodes
 
@@ -4374,7 +4517,7 @@
   the non-user callsigns known to the system will be displayed.
 
 
-  1111..111111..  sshhooww//pprreeffiixx ((00))
+  1111..111155..  sshhooww//pprreeffiixx ((00))
 
   sshhooww//pprreeffiixx <<ccaallllssiiggnn>> Interrogate the prefix database
 
@@ -4388,7 +4531,7 @@
 
 
 
-  1111..111122..  sshhooww//pprrooggrraamm ((55))
+  1111..111166..  sshhooww//pprrooggrraamm ((55))
 
   sshhooww//pprrooggrraamm Show the locations of all the included program modules
 
@@ -4398,7 +4541,7 @@
   from.
 
 
-  1111..111133..  sshhooww//qqrraa ((00))
+  1111..111177..  sshhooww//qqrraa ((00))
 
   sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]] Show the distance between locators
   sshhooww//qqrraa <<llaatt>> <<lloonngg>> Convert latitude and longitude to a locator
@@ -4408,7 +4551,6 @@
   distance and bearing between two locators or (if only one locator is
   given on the command line) the distance and beraing from your station
   to the locator. For example:-
-
 
   SH/QRA IO92QL
   SH/QRA JN06 IN73
@@ -4430,7 +4572,7 @@
 
 
 
-  1111..111144..  sshhooww//qqrrzz ((00))
+  1111..111188..  sshhooww//qqrrzz ((00))
 
   sshhooww//qqrrzz <<ccaallllssiiggnn>> Show any callbook details on a callsign
 
@@ -4440,7 +4582,7 @@
   provided for users of this software by http://www.qrz.com
 
 
-  1111..111155..  sshhooww//rroouuttee ((00))
+  1111..111199..  sshhooww//rroouuttee ((00))
 
   sshhooww//rroouuttee <<ccaallllssiiggnn>> Show the route to <callsign>
 
@@ -4454,7 +4596,7 @@
 
 
 
-  1111..111166..  sshhooww//ssaatteelllliittee ((00))
+  1111..112200..  sshhooww//ssaatteelllliittee ((00))
 
   sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]] Show satellite tracking
   data
@@ -4485,8 +4627,7 @@
 
 
 
-
-  1111..111177..  sshhooww//ssuunn ((00))
+  1111..112211..  sshhooww//ssuunn ((00))
 
   sshhooww//ssuunn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
 
@@ -4511,7 +4652,7 @@
 
 
 
-  1111..111188..  sshhooww//ttiimmee ((00))
+  1111..112222..  sshhooww//ttiimmee ((00))
 
   sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -4522,7 +4663,7 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1111..111199..  sshhooww//wwccyy ((00))
+  1111..112233..  sshhooww//wwccyy ((00))
 
   sshhooww//wwccyy Show the last 10 WCY broadcasts
   sshhooww//wwccyy <<nn>> Show the last <n> WCY broadcasts
@@ -4532,7 +4673,7 @@
   system
 
 
-  1111..112200..  sshhooww//wwwwvv ((00))
+  1111..112244..  sshhooww//wwwwvv ((00))
 
   sshhooww//wwwwvv Show the last 10 WWV broadcasts
   sshhooww//wwwwvv <<nn>> Show the last <n> WWV broadcasts
@@ -4543,7 +4684,7 @@
 
 
 
-  1111..112211..  sshhuuttddoowwnn ((55))
+  1111..112255..  sshhuuttddoowwnn ((55))
 
   sshhuuttddoowwnn Shutdown the cluster
 
@@ -4552,7 +4693,7 @@
   set to respawn in /etc/inittab it will of course restart.
 
 
-  1111..112222..  ssppooooff ((99))
+  1111..112266..  ssppooooff ((99))
 
   ssppooooff <<ccaallllssiiggnn>> <<ccoommmmaanndd>> Run commands as another user
 
@@ -4563,7 +4704,7 @@
   like home_node for example.
 
 
-  1111..112233..  ssttaatt//ddbb ((55))
+  1111..112277..  ssttaatt//ddbb ((55))
 
   ssttaatt//ddbb <<ddbbnnaammee>> Show the status of a database
 
@@ -4575,7 +4716,7 @@
   other than a sysop.
 
 
-  1111..112244..  ssttaatt//cchhaannnneell ((55))
+  1111..112288..  ssttaatt//cchhaannnneell ((55))
 
   ssttaatt//cchhaannnneell <<ccaallllssiiggnn>> Show the status of a channel on the cluster
 
@@ -4586,7 +4727,7 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  1111..112255..  ssttaatt//mmssgg ((55))
+  1111..112299..  ssttaatt//mmssgg ((55))
 
   ssttaatt//mmssgg <<mmssggnnoo>> Show the status of a message
 
@@ -4596,7 +4737,7 @@
   etc etc.
 
 
-  1111..112266..  ssttaatt//uusseerr ((55))
+  1111..113300..  ssttaatt//uusseerr ((55))
 
   ssttaatt//uusseerr <<ccaallllssiiggnn>> Show the full status of a user
 
@@ -4607,7 +4748,9 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  1111..112277..  ssyyssoopp ((00))
+
+
+  1111..113311..  ssyyssoopp ((00))
 
   ssyyssoopp Regain your privileges if you login remotely
 
@@ -4618,6 +4761,7 @@
   numbers are returned that are indexes into the character array that is
   your assigned password (see SET/PASSWORD). The indexes start from
   zero.
+
   You are expected to return a string which contains the characters
   required in the correct order. You may intersperse those characters
   with others to obscure your reply for any watchers. For example (and
@@ -4644,7 +4788,7 @@
   case sensitive.
 
 
-  1111..112288..  ttaallkk ((00))
+  1111..113322..  ttaallkk ((00))
 
   ttaallkk <<ccaallllssiiggnn>> Enter talk mode with <callsign>
   ttaallkk <<ccaallllssiiggnn>> <<tteexxtt>> Send a text message to <callsign>
@@ -4671,6 +4815,7 @@
   are in a 'Talking' frame of mind and then you just type - everything
   you send will go to the station that you asked for.
 
+
   All the usual announcements, spots and so on will still come out on
   your terminal.
 
@@ -4683,7 +4828,6 @@
 
 
 
-
   To leave talk mode type:
 
 
@@ -4692,7 +4836,7 @@
 
 
 
-  1111..112299..  ttyyppee ((00))
+  1111..113333..  ttyyppee ((00))
 
   ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>> Look at a file in one of the fileareas
 
@@ -4710,7 +4854,7 @@
   content.
 
 
-  1111..113300..  wwhhoo ((00))
+  1111..113344..  wwhhoo ((00))
 
   wwhhoo Show who is physically connected locally
 
@@ -4719,7 +4863,7 @@
   what sort of connection they have
 
 
-  1111..113311..  wwxx ((00))
+  1111..113355..  wwxx ((00))
 
   wwxx <<tteexxtt>> Send a weather message to local users
   wwxx ffuullll <<tteexxtt>>  Send a weather message to all cluster users
@@ -4729,13 +4873,67 @@
   extreme that may indicate enhanced conditions
 
 
-  1111..113322..  wwxx ((eennhhaanncceedd ffoorr ssyyssooppss)) ((55))
+  1111..113366..  wwxx ((eennhhaanncceedd ffoorr ssyyssooppss)) ((55))
 
   wwxx ssyyssoopp <<tteexxtt>> Send a weather message to other clusters only
 
 
   Send a weather message only to other cluster nodes and not to general
   users.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

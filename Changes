@@ -1,3 +1,5 @@
+13Jan01=======================================================================
+1. Documentation alterations to match new commands etc (g0vgs)
 08Jan01=======================================================================
 1. Changed the way that badnodes, baddx etc work. There is a new general way
 implemented (dunno why I didn't do this before - hey ho...) as a consequence

@@ -926,19 +926,20 @@ SP is an alias for SEND PRIVATE
 
 === 5^SET/ARCLUSTER <call> [<call>..]^Make the callsign an AR-Cluster node
 
-=== 8^SET/BADDX <call>..^Stop spots for this callsign being propagated
-=== 8^UNSET/BADDX <call>..^Allow spots for this callsign again
-Setting a callsign as a 'baddx' will prevent spots of this callsign 
-going any further. They will not be displayed and they will not be 
-sent onto other nodes.
+=== 8^SET/BADDX <call>..^Stop words we do not wish to see in the callsign field
+of a dx spot being propagated
+=== 8^UNSET/BADDX <call>..^Allow a word to be seen again in a DX spot
+Setting a word as 'baddx' will prevent spots with that word in the 
+callsign field of a DX spot from going any further. They will not be 
+displayed and they will not be sent onto other nodes.
 
-The call must be a full eg:-
+The word must be wriiten in full, no wild cards are allowed eg:-
 
-  set/baddx FORSALE VIDEO FR0G 
+  set/baddx FORSALE VIDEO FR0G
+
+To allow a word again, use the following command ...
 
   unset/baddx VIDEO
-
-will allow spots to that callsign again.
 
 === 8^SET/BADNODE <call>..^Stop spots from this node being propagated
 === 8^UNSET/BADNODE <call>..^Allow spots from this node again
@@ -965,7 +966,7 @@ Setting a callsign as a 'badspotter' will prevent spots from this callsign
 going any further. They will not be displayed and they will not be 
 sent onto other nodes.
 
-The call must be a full eg:-
+The call must be written in full, no wild cards are allowed eg:-
 
   set/badspotter VE2STN 
 
@@ -976,7 +977,7 @@ enter them specifically.
 
 will allow spots from him again.
 
-Use with extreme care. This command may well be superceeded by FILTERing.
+Use with extreme care. This command may well be superceded by FILTERing.
 
 === 0^SET/BEEP^Add a beep to DX and other messages on your terminal
 === 0^UNSET/BEEP^Stop beeps for DX and other messages on your terminal

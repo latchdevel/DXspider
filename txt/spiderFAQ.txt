@@ -1,6 +1,6 @@
   The DXSpider FAQ
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 0.2 July 2000
+  Version 0.3 January 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -135,8 +135,8 @@
 
   There is a file in /spider/msg called forward.pl.issue.  Rename this
   to forward.pl and edit it to meet your requirements.  You will need to
-  restart Spider for the changes to take effect.
-
+  issue the command _l_o_a_d_/_f_o_r_w_a_r_d or restart Spider for the changes to
+  take effect.
 
 
 

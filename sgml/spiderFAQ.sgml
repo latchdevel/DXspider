@@ -6,7 +6,7 @@
 
 <title>The DXSpider FAQ 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 0.2 July 2000
+<date>Version 0.3 January 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -107,7 +107,9 @@ Assuming that the node_call you are changing is gb7adx.
 
 <P>
 There is a file in /spider/msg called forward.pl.issue.  Rename this to
-forward.pl and edit it to meet your requirements.  You will need to restart
-Spider for the changes to take effect.
+forward.pl and edit it to meet your requirements.  You will need to issue
+the command <em>load/forward</em> or restart Spider for the changes to 
+take effect.
+
 
 </article>
