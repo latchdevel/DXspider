@@ -51,6 +51,7 @@ sub new
 		state => 0,
 		lineend => "\r\n",
 		csort => 'telnet',
+		timeval => 60,
     };
 
 	return bless $conn, $class;
@@ -61,20 +62,22 @@ sub new
 sub connect {
     my ($pkg, $to_host, $to_port, $rproc) = @_;
 
-    # Create a new internet socket
-    my $sock = IO::Socket::INET->new (
-                                      PeerAddr => $to_host,
-                                      PeerPort => $to_port,
-                                      Proto    => 'tcp',
-                                      Reuse    => 1);
-
-    return undef unless $sock;
-
     # Create a connection end-point object
     my $conn = $pkg;
 	unless (ref $pkg) {
 		$conn = $pkg->new($rproc);
 	}
+	
+    # Create a new internet socket
+    my $sock = IO::Socket::INET->new (
+                                      PeerAddr => $to_host,
+                                      PeerPort => $to_port,
+                                      Proto    => 'tcp',
+                                      Reuse    => 1,
+									  Timeout  => $conn->{timeval} / 2);
+
+    return undef unless $sock;
+
 	$conn->{sock} = $sock;
     
     if ($conn->{rproc}) {
