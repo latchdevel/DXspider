@@ -167,8 +167,6 @@ sub disconnect {
 	$call ||= 'unallocated';
 	dbg('connll', "Connection $call disconnected");
 	
-    set_event_handler ($sock, read => undef, write => undef, error => undef);
-
 	unless ($^O =~ /^MS/i) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
 	}
@@ -181,6 +179,7 @@ sub disconnect {
 	}
 
 	return unless defined($sock);
+    set_event_handler ($sock, read => undef, write => undef, error => undef);
     shutdown($sock, 3);
 	close($sock);
 }

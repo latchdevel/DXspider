@@ -58,6 +58,9 @@ sub dequeue
 	my $conn = shift;
 	my $msg;
 
+	if ($conn->{sort} eq 'ax25' && exists $conn->{msg}) {
+		$conn->{msg} =~ s/\cM/\cJ/g;
+	}
 	if ($conn->{state} eq 'WC') {
 		if (exists $conn->{cmd}) {
 			if (@{$conn->{cmd}}) {
@@ -193,7 +196,8 @@ sub _doconnect
 {
 	my ($conn, $sort, $line) = @_;
 	my $r;
-	
+
+	$sort = lc $sort;
 	dbg('connect', "CONNECT sort: $sort command: $line");
 	if ($sort eq 'telnet') {
 		# this is a straight network connect
@@ -206,7 +210,30 @@ sub _doconnect
 			dbg('connect', "***Connect Failed to $host $port $!");
 		}
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
-		;
+		my $pid = fork();
+		if (defined $pid) {
+			if (!$pid) {
+				# in child, unset warnings, disable debugging and general clean up from us
+				$^W = 0;
+				eval "{ package DB; sub DB {} }";
+				DXChannel::closeall();
+				for (@main::listeners) {
+					$_->close_server;
+				}
+				unless ($^O =~ /^MS/) {
+					$SIG{HUP} = 'IGNORE';
+					$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
+					alarm(0);
+				}
+				exec "$line" or dbg('cron', "exec '$line' failed $!");
+			}
+			dbg('connect', "program $sort $line started");
+			$conn->{pid} = $pid;
+			$conn->{sort} = $sort;
+			$conn->{lineend} = "\cM" if $sort eq 'ax25';
+		} else {
+			dbg('connect', "can't $sort fork for $line $!");
+		}
 	} else {
 		dbg('err', "invalid type of connection ($sort)");
 		$conn->disconnect;

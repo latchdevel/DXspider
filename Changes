@@ -1,3 +1,5 @@
+14Mar01=======================================================================
+1. first cut at outgoing ax25 /external program connects
 13Mar01=======================================================================
 1. implemented first cut at non blocking connect
 2. removed memory leakage in connects

@@ -217,14 +217,7 @@ sub disconnect
 {
 	my $call = uc shift;
 	my $dxchan = DXChannel->get($call);
-	if ($dxchan) {
-		if ($dxchan->is_ak1a) {
-			$dxchan->send_now("D", DXProt::pc39($main::mycall, "$main::mycall DXCron"));
-		} else {
-			$dxchan->send_now('D', "");
-		} 
-		$dxchan->disconnect;
-	}
+	$dxchan->disconnect if $dxchan;
 }
 
 # start a connect process off
@@ -255,7 +248,6 @@ sub spawn
 			# in child, unset warnings, disable debugging and general clean up from us
 			$^W = 0;
 			eval "{ package DB; sub DB {} }";
-			alarm(0);
 			DXChannel::closeall();
 			for (@main::listeners) {
 				$_->close_server;
@@ -263,6 +255,7 @@ sub spawn
 			unless ($^O =~ /^MS/) {
 				$SIG{HUP} = 'IGNORE';
 				$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
+				alarm(0);
 			}
 			exec "$line" or dbg('cron', "exec '$line' failed $!");
 		}
