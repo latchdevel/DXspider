@@ -319,7 +319,8 @@ sub normal
 				dbg('chan', "LOOP: $field[1] came in on wrong channel");
 				return;
 			}
-			if (DXChannel->get($field[1])) {
+			my $dxchan;
+			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
 				dbg('chan', "LOOP: $field[1] connected locally");
 				return;
 			}
@@ -359,7 +360,8 @@ sub normal
 				dbg('chan', "LOOP: $field[2] came in on wrong channel");
 				return;
 			}
-			if (DXChannel->get($field[2])) {
+			my $dxchan;
+			if (($dxchan = DXChannel->get($field[2])) && $dxchan != $self) {
 				dbg('chan', "LOOP: $field[2] connected locally");
 				return;
 			}
@@ -387,7 +389,8 @@ sub normal
 				# now check the call over
 				my $node = DXCluster->get_exact($call);
 				if ($node) {
-					if (DXChannel->get($call)) {
+				        my $dxchan;
+					if (($dxchan = DXChannel->get($call)) && $dxchan != $self) {
 						dbg('chan', "LOOP: $call connected locally");
 					}
 				    if ($node->dxchan != $self) {
@@ -454,7 +457,8 @@ sub normal
 						dbg('chan', "LOOP: $call come in on wrong channel");
 						return;
 					}
-					if (DXChannel->get($call)) {
+					my $dxchan;
+					if (($dxchan = DXChannel->get($call)) && $dxchan != $self) {
 						dbg('chan', "LOOP: $call connected locally");
 						return;
 					}
