@@ -4,9 +4,9 @@
 
 <!-- Title information -->
 
-<title>The DXSpider Installation and Administration Manual 
-<author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>$Date$ $Revision$
+<title>The DXSpider Installation and Administration Manual</title> 
+<author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
+<date>$Date$ $Revision$</date>
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
