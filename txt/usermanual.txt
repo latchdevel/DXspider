@@ -545,7 +545,8 @@
 
 
 
-       sh/sun                                                                          Location                              Rise   Set      Azim   Elev
+       sh/sun
+       Location                              Rise   Set      Azim   Elev
        G0VGS  Morecambe, Lancashire          07:08Z 17:39Z  205.3   24.1
 
 
@@ -562,7 +563,9 @@
 
 
 
-       sh/sun 5b4                                                                      Location                              Rise   Set      Azim   Elev               5B     Cyprus-5B                      04:23Z 15:40Z  244.0   18.8
+       sh/sun 5b4
+       Location                              Rise   Set      Azim   Elev
+       5B     Cyprus-5B                      04:23Z 15:40Z  244.0   18.8
 
 
 
@@ -582,14 +585,11 @@
 
        sh/sun gw4veq 5b4ab zs
        Location                              Rise   Set      Azim   Elev
-       GW4VEQ Brungwran, Isle of Anglesey IO 07:14Z 17:48Z  204.9   24.9               5B     Cyprus-5B                      04:23Z 15:40Z  244.5   18.3
+       GW4VEQ Brungwran, Isle of Anglesey IO 07:14Z 17:48Z  204.9   24.9
+       5B     Cyprus-5B                      04:23Z 15:40Z  244.5   18.3
        ZS     So-Africa-ZS1-ZS               04:31Z 17:28Z  289.9   41.3
        ZS     So-Africa-ZS5-ZS               03:44Z 16:34Z  278.5   32.0
        ZS     So-Africa-ZS6-ZS               03:59Z 16:42Z  277.6   35.0
-
-
-
-
 
 
   55..22..  MMoooonn
@@ -613,7 +613,7 @@
 
 
        sh/moon ea
-       Location                              Rise   Set      Azim   Elev RGain dB
+       Location                              Rise   Set      Azim   Elev  RGain dB
        EA     Spain-EA                       08:15Z 20:09Z  257.2    9.5      -0.6
 
 
@@ -735,26 +735,28 @@
   The first of our three examples would output something like this,
 
 
-  sh/c
-  Node         Callsigns
-  EI5TCR       (7 users)
-  GB7ADX
-  GB7BAA       G4FPV        G8TIC
-  GB7BIG       (GD0TEP)     GD3UMW
-  GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
-  (GB7CDX)     G3JNB        G4ALR
-  GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
-               G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
-               ON7WP
-  GB7DXA       G0RDI        G8SJP
-  GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
-               G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
-  GB7DXE       G1NNB
-  (GB7DXG)     GU6EFB       GU7DHI
-  GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
-               G4XQY        G7GAN
-  GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
-               M0BCT        M1EMF
+
+       sh/c
+       Node         Callsigns
+       EI5TCR       (7 users)
+       GB7ADX
+       GB7BAA       G4FPV        G8TIC
+       GB7BIG       (GD0TEP)     GD3UMW
+       GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
+       (GB7CDX)     G3JNB        G4ALR
+       GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
+                    G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
+                    ON7WP
+       GB7DXA       G0RDI        G8SJP
+       GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
+                    G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
+       GB7DXE       G1NNB
+       (GB7DXG)     GU6EFB       GU7DHI
+       GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
+                    G4XQY        G7GAN
+       GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
+                    M0BCT        M1EMF
+
 
 
 
@@ -768,25 +770,23 @@
   like this,
 
 
-  sh/c/n
-  Node         Callsigns
-  GB7BAA       GB7BAA       GB7BPQ       (GB7CDX)     GB7DJK       GB7DXA
-               GB7DXC       GB7DXE       (GB7DXG)     GB7DXK       GB7DXL
-               GB7DXM       GB7DXS       GB7IPT       GB7MRS       GB7UJS
-               GB7YDX       KL7G         N2TLY        (ON0DXK)
-  GB7BIG       EI5TCR       GB7ADX       GB7BIG       GB7UDX
-  GB7MBC
-  PA4AB-14     PA4AB-14
-  PI4TUE-8     PI4TUE-8
+
+       sh/c/n
+       Node         Callsigns
+       GB7BAA       GB7BAA       GB7BPQ       (GB7CDX)     GB7DJK       GB7DXA
+                    GB7DXC       GB7DXE       (GB7DXG)     GB7DXK       GB7DXL
+                    GB7DXM       GB7DXS       GB7IPT       GB7MRS       GB7UJS
+                    GB7YDX       KL7G         N2TLY        (ON0DXK)
+       GB7BIG       EI5TCR       GB7ADX       GB7BIG       GB7UDX
+       GB7MBC
+       PA4AB-14     PA4AB-14
+       PI4TUE-8     PI4TUE-8
+
 
 
 
   If we insert the node_call pi4tue-8 into the third example, then this
   would be the output,
-
-
-
-
 
 
 
@@ -796,6 +796,7 @@
                ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
                PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
                YT1XX
+
 
 
 
@@ -824,9 +825,11 @@
   The output of this command would look like this,
 
 
-  Callsigns connected to GB7MBC
-  G0JHC        G0NEI        G0VGS        G0VGS-2      G0YLM
-  G3JAG        G3OWO        G3UEU
+
+       Callsigns connected to GB7MBC
+       G0JHC        G0NEI        G0VGS        G0VGS-2      G0YLM
+       G3JAG        G3OWO        G3UEU
+
 
 
 
@@ -851,9 +854,6 @@
 
 
        talk g0rdi Having a good day Iain?
-
-
-
 
 
   This example would send the line "Having a good day Iain?" to the user
