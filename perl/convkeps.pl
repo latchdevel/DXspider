@@ -107,8 +107,8 @@ while (<$f>) {
 			$ref->{mm2} = genenum($mm2);
 			$ref->{bstar} = genenum($bstar);
 			$ref->{elset} = $elset - 0;
-#			print "$id $number $epoch $decay $mm2 $bstar $elset\n"; 
-#			print "mm2: $ref->{mm2} bstar: $ref->{bstar}\n";
+			#print "$id $number $epoch $decay $mm2 $bstar $elset\n"; 
+			#print "mm2: $ref->{mm2} bstar: $ref->{bstar}\n";
 			
 			$state = 3;
 		} else {
@@ -152,6 +152,7 @@ close(OUT);
 sub genenum
 {
 	my ($sign, $frac, $esign, $exp) = unpack "aa5aa", shift;
+	$esign = '+' if $esign eq ' ';
 	my $n = $sign . "." . $frac . 'e' . $esign . $exp;
 	return $n - 0;
 }
