@@ -1,3 +1,7 @@
+31Jul00=======================================================================
+1. try to fix paging problem.
+2. added help for spoof and set/forward
+3. fixed bogus callsign check for field 2 of a PC12
 30Jul00=======================================================================
 1. Added talk mode so that I don't have to keep typing T <call> all the time.
 2. fiddled around with storing of Debug messages a bit more.

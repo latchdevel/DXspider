@@ -315,7 +315,7 @@ sub normal
 		}
 		
 		if ($pcno == 12) {		# announces
-			unless (is_callsign($field[1]) && is_callsign($field[2]) && is_callsign($field[5])) {
+			unless (is_callsign($field[1]) && is_callsign($field[5])) {
 				dbg('chan', "Corrupt announce, rejected");
 				return;
 			}

@@ -8,9 +8,6 @@
 
 package DXUser;
 
-require Exporter;
-@ISA = qw(Exporter);
-
 use DXLog;
 use DB_File;
 use Data::Dumper;
@@ -102,6 +99,15 @@ sub init
 	}
 	
 	$filename = $fn;
+}
+
+sub del_file
+{
+	my ($pkg, $fn, $mode) = @_;
+  
+	confess "need a filename in User" if !$fn;
+	$fn .= ".v2";
+	unlink $fn;
 }
 
 use strict;

@@ -19,17 +19,18 @@ return (1, $self->msg('e5')) unless $self->priv >= 1;
 
 my @call = map {uc $_} split /\s+/, $line; 
 my @out;
+my $count;
 
 # search thru the user for nodes
 unless (@call) {
 	use DB_File;
 	
-	my ($action, $count, $key, $data);
+	my ($action, $key, $data);
 	for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = R_NEXT) {
 		if ($data =~ m{sort => '[ACRSX]'}) {
 		    push @call, $key;
+			++$count;
 		}
-		++$count;
 	} 
 }
 
@@ -67,6 +68,7 @@ foreach $call (@call) {
 	} else {
 		push @out, $self->msg('snode2', $pcall, $sort, $ver ? "$major\-$minor.$subs" : "      ");
 	}
+    ++$count;
 }
 
 return (1, @out, $self->msg('rec', $count));

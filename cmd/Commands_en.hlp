@@ -300,6 +300,10 @@ delete a command in the local_cmd tree and want to use the normal one
 again. Execute this command to reset everything back to the state it
 was just after a cluster restart.
 
+=== 9^LOAD/FORWARD^Reload the msg forwarding routing table
+Reload the /spider/msg/forward.pl file if you have changed it
+manually whilst the cluster is running.
+
 === 9^LOAD/MESSAGES^Reload the system messages file
 If you change the /spider/perl/Messages file (usually whilst
 fiddling/writing new commands) you can have them take effect during a
@@ -869,6 +873,16 @@ Display the most recent WWV information that has been received by the system
 
 === 5^SHUTDOWN^Shutdown the cluster
 Shutdown the cluster and disconnect all the users 
+
+=== 9^SPOOF <call> <command>^Do a command as though you are another user
+This command is provided so that sysops can set a user's parameters without
+me having to write a special 'sysop' version for every user command. It
+allows you to pretend that you are doing the command as the user you specify.
+
+eg:-
+
+   SPOOF G1TLH set/name Dirk
+   SPOOF G1TLH set/qra JO02LQ
 
 === 5^STAT/DB <dbname>^Show the status of a database
 Show the internal status of a database descriptor.

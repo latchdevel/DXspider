@@ -258,7 +258,7 @@ sub send_ans
 			$line =~ s/\s+$//o;	# why am having to do this? 
 			$self->send($line);
 		}
-		$self->{pagedata} =  \@_;
+		$self->{pagedata} =  [ @_ ];
 		$self->state('page');
 		$self->send($self->msg('page', scalar @_));
 	} else {

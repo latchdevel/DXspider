@@ -23,7 +23,7 @@ use DXUser;
 
 sub delete_it
 {
-	system("rm -f $userfn*");
+	DXUser->del_file($userfn);
 }
 
 sub create_it

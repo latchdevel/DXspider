@@ -20,14 +20,17 @@ BEGIN {
 
 use DXVars;
 use DXUser;
+use DXUtil;
 use Carp;
 
 $inpfn = $ARGV[0] if @ARGV;
 croak "need a input filename" unless $inpfn;
 
+DXUser->del_file($userfn);
 DXUser->init($userfn, 1);
 
-do "$inpfn";
+my $s = readfilestr "$inpfn";
+eval $s;
 print $@ if $@;
 
 DXUser->finish();
