@@ -368,7 +368,7 @@ sub parse
 	my $user;
 	
 	# check the line for non legal characters
-	return ('ill', $dxchan->msg('e19')) if $line =~ /[^\s\w,_\-\*\/\(\)]/;
+	return ('ill', $dxchan->msg('e19')) if $line =~ /[^\s\w,_\-\*\/\(\)!]/;
 	
 	# add some spaces for ease of parsing
 	$line =~ s/([\(\)])/ $1 /g;
@@ -444,12 +444,16 @@ sub parse
 
 				if ($s) {
 					$s .= $conj ;
-					$s .= $not;
 					$user .= $conj;
-					$user .= $not;
 					$conj = ' && ';
-					$not = "";
 				}
+
+				if ($not) {
+					$s .= $not;
+					$user .= $not;
+					$not = '';
+				}
+
 				$user .= "$tok $val";
 				
 				my $fref;
