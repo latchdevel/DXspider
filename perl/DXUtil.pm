@@ -10,6 +10,7 @@ package DXUtil;
 
 use Date::Parse;
 use IO::File;
+use File::Copy;
 use Data::Dumper;
 
 use strict;
@@ -26,6 +27,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs phex shellregex readfilestr writefilestr
+			 filecopy
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
             );
@@ -319,6 +321,11 @@ sub writefilestr
 		$fh->print($dd->Dumpxs);
 		$fh->close;
 	}
+}
+
+sub filecopy
+{
+	copy(@_) or return $!;
 }
 
 # remove leading and trailing spaces from an input string
