@@ -352,7 +352,7 @@ sub readfile($)
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($freq, $call, $d, $text, $by) = @_; 
+	my ($freq, $call, $d, $text, $by, $cty) = @_; 
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
@@ -369,8 +369,12 @@ sub dup
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = uc unpad($text);
-	my ($prefix) = $text =~ /\b(\w{1,4})$/;
-	$text =~ s/\b\w{1,4}$// if $prefix && is_prefix($prefix);
+	if ($cty && $text && length $text <= 4) {
+		unless ($text =~ /^CQ/ || $text =~ /^\d+$/) {
+			my @try = Prefix::cty_data($text);
+			$text = "" if $cty == $try[0];
+		}
+	}
 	$text = substr($text, 0, $duplth) if length $text > $duplth;
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^\w]//g;

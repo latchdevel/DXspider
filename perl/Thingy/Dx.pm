@@ -110,7 +110,7 @@ sub handle
 	my $dxchan = shift;
 
 	my $spot = $thing->{spotdata};
-	if (Spot::dup(@$spot[0..4])) {
+	if (Spot::dup(@$spot[0..4,5])) {
 		dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
 		return;
 	}

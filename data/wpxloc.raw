@@ -1,12 +1,13 @@
 !
 ! $Id$
 !
-! highest DXCC number is now 346
+! highest DXCC number is now 347
 !
 ! note the that entries marked with an '@' are the
 ! 'master' entries for a 'country'. It doesn't make
 ! a lot of difference but please observe the convention.
 !
+! Added Swains Island KH8/S                   050225
 ! changed DXCC no for T8                      041221
 ! added African Italy for IG9                 041220
 ! added Bear Island for JW/B                  041220
@@ -220,9 +221,9 @@ D2 Angola-D2                           29 52 36 -1.0 8 48 0 S 13 12 0 E @
 D3 Angola-D2                           29 52 36 -1.0 8 48 0 S 13 12 0 E
 D4 Cape-Verde-D4                       30 46 35  1.0 16 0 0 N 24 0 0 W @
 D6 Comoros-D6                          31 53 39 -3.0 11 48 0 S 43 42 0 E @
-DA,DB,DC,DE,DD,DE,DF,DG,DH,DI,DJ,DK Germany-DL 32 28 14 -1.0 51 0 0 N 6 0 0 E
-DM,DN,DO,DP,DQ,DR Germany-DL           32 28 14 -1.0 51 0 0 N 6 0 0 E
-DL Germany-DL                          32 28 14 -1.0 51 0 0 N 6 0 0 E @
+DA,DB,DC,DE,DD,DE,DF,DG,DH,DI,DJ,DK Germany-DL 32 28 14 -1.0 51 10 0 N 10 27 0 E
+DM,DN,DO,DP,DQ,DR Germany-DL           32 28 14 -1.0 51 10 0 N 10 27 0 E
+DL Germany-DL                          32 28 14 -1.0 51 10 0 N 10 27 0 E @
 DU Phillippines-DU                     33 50 27 -8.0 14 36 0 N 121 0 0 E @
 DV,DW,DX,DY,DZ,4D,4E,4F,4G,4H,4I Phillippines-DU   33 50 27 -8.0 14 36 0 N 121 0 0 E
 AM,AN,AO,EB,EC,ED,EF,EG,EH Spain-EA    34 37 14 -1.0 40 24 0 N 3 42 0 W
@@ -426,6 +427,7 @@ AH6,NH6,WH6,AH7,NH7,WH7,KH7 HI-Hawaii-Honolulu-KH6       112 61 31 10.0 21 18 0 
 KH7K Kure-Is-KH7K                     113 61 31 11.0 28 30 0 N 178 30 0 W @
 KH8 AS-Amer-Samoa-KH8                    114 62 32 11.0 14 0 0 S 171 0 0 W @
 AH8,NH8,WH8 AS-Amer-Samoa-KH8            114 62 32 11.0 14 0 0 S 171 0 0 W
+KH8/S,KH8S Swains-Island-KH8/S                347 63 32 11.0 11 3 0 S 171 3 0 W @
 KH9 Wake-Is-KH9                       115 65 31 11.0 19 30 0 N 166 62 0 E @
 AH9,NH9,WH9 Wake-Is-KH9               115 65 31 11.0 19 30 0 N 166 62 0 E
 KH0 MP-Mariana-Is-KH0                    116 64 27 10.0 16 0 0 N 146 0 0 E @
