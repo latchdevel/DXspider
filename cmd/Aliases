@@ -129,7 +129,7 @@ package CmdAlias;
 	  '^sho?w?/ww?v?/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
 	  '^sho?w?/ww?v?/(\d+)', 'show/wwv $1', 'show/wwv',
 	'^sho?w?$', 'apropos show', 'apropos',
-	'^shut?d?\w*$', 'shutdown', 'shutdown',
+	'^shutd?\w*$', 'shutdown', 'shutdown',
 	  '^sp$', 'send', 'send',
 	'^sta?t?$', 'apropos stat', 'apropos',
       	

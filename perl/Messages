@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+# -*- perl -*-
 # 
 # this file contains the system messages. Don't forget to reload them
 # if you change them (load/messages)
@@ -246,6 +246,7 @@ package DXM;
 				sethop1 => 'usage: set/hops <call> ann|spots|wwv|wcy <no of hops>',
 				sethop2 => '$_[0] hops set on $_[1]$_[2] for $_[3]', 
 				sethop3 => 'No hops set for $_[0]', 
+				shu => '\"SHU\" is not enough! you need to type at least \"SHUT\" to shutdown the node',
 				shutting => '$main::mycall shutting down...',
 				sloc => 'Cluster lat $_[0] long $_[1], DON\'T FORGET TO CHANGE YOUR DXVars.pm',
 				snode1 => 'Node Call   Sort    Version',

@@ -1,3 +1,9 @@
+17Sep02=======================================================================
+1. Added shu command for Charlie's (K1XX) benefit (together with the rest of
+our butterfingered sysops) who miss the '/' out of sh/u frequently enough 
+to curse. 'shu' simply types out a message saying 'type SHUT' to shutdown the
+node. Added 'shu' to /spider/perl/Messages. No need to restart, just 
+load/mess after doing a CVS.
 21Aug02=======================================================================
 1. added 'warc' and 'contesthf' to the regions in bands.pl (K1XX).
 20Aug02=======================================================================
