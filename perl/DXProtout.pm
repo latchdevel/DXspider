@@ -140,7 +140,7 @@ sub pc19
 		my $call = $ref->call;
 		my $here = $ref->here;
 		my $conf = $ref->conf;
-		my $version = $ref->version;
+		my $version = $ref->version || 5401;
 		$version = 5300 + int($version*100) if $version < 2;
 		$version = 5252 + int($version*100) if $version < 3;
 		my $str = "^$here^$call^$conf^$version";
