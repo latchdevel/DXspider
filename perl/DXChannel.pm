@@ -89,6 +89,7 @@ use vars qw(%channels %valid);
 		  logininfo => '9,Login info req,yesno',
 		  talklist => '0,Talk List,parray',
 		  cluster => '5,Cluster data',
+		  isbasic => '9,Internal Connection', 
 		 );
 
 # object destruction

@@ -94,6 +94,7 @@ sub setmode
 		$out_lineend = "\r\n";
 	}
 	$/ = $mynl;
+	$out_lineend = $mynl;
 }
 
 # handle incoming messages
@@ -235,6 +236,12 @@ sub doconnect
 		$sock->output_record_separator('');
 		$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
 		$sock->open($host) or die "Can't connect to $host port $port $!";
+		if ($port == 23) {
+			$sock->telnetmode(1);
+			$sock->option_send(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO) if $port == 23;
+		} else {
+			$sock->telnetmode(0);
+		}
 		$sock->binmode(0);
 		$mode = 3;
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {

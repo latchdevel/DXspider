@@ -338,21 +338,23 @@ Msg->new_server("$clusteraddr", $clusterport, \&login);
 dbg('err', "load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
-$SIG{INT} = \&cease;
-$SIG{TERM} = \&cease;
-$SIG{HUP} = 'IGNORE';
-$SIG{CHLD} = sub { $zombies++ };
+unless ($^O =~ /^MS/) {
+	$SIG{INT} = \&cease;
+	$SIG{TERM} = \&cease;
+	$SIG{HUP} = 'IGNORE';
+	$SIG{CHLD} = sub { $zombies++ };
+	
+	$SIG{PIPE} = sub { 	dbg('err', "Broken PIPE signal received"); };
+	$SIG{IO} = sub { 	dbg('err', "SIGIO received"); };
+	$SIG{WINCH} = $SIG{STOP} = $SIG{CONT} = 'IGNORE';
+	$SIG{KILL} = 'DEFAULT';     # as if it matters....
 
-$SIG{PIPE} = sub { 	dbg('err', "Broken PIPE signal received"); };
-$SIG{IO} = sub { 	dbg('err', "SIGIO received"); };
-$SIG{WINCH} = $SIG{STOP} = $SIG{CONT} = 'IGNORE';
-$SIG{KILL} = 'DEFAULT';     # as if it matters....
-
-# catch the rest with a hopeful message
-for (keys %SIG) {
-	if (!$SIG{$_}) {
-#		dbg('chan', "Catching SIG $_");
-		$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  }; 
+	# catch the rest with a hopeful message
+	for (keys %SIG) {
+		if (!$SIG{$_}) {
+			#		dbg('chan', "Catching SIG $_");
+			$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  }; 
+		}
 	}
 }
 

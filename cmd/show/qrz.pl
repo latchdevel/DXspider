@@ -39,6 +39,7 @@ foreach $l (@list) {
 			}
 		}
 		$t->close;
+		push @out, $self->msg('e3', 'qrz.com', $call) unless @out;
 	} else {
 		push @out, $self->msg('e18', 'QRZ.com');
 	}
