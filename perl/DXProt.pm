@@ -403,6 +403,7 @@ sub normal
 			
 			# queue mail
 			DXMsg::queue_msg(0);
+
 			return;
 		}
 		

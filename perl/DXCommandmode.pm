@@ -144,6 +144,8 @@ sub normal
 			} else {
 				$self->send($self->msg('sorry'));
 			}
+		} else {
+			$self->send($self->msg('sorry'));
 		}
 		delete $self->{passwd};
 		$self->state('prompt');

@@ -289,9 +289,10 @@ If you are a sysop and you come in as a normal user on a remote connection
 your privilege will automatically be set to 0.
 
 === 9^SET/PASSWORD <callsign> <string>^Set a users password
-The password for a user can only be set by a full sysop. The string can contain
-any characters but any spaces are removed (you can type in spaces - but they
-won't appear in the password). You can see the result with STAT/USER.
+The password for a user can only be set by a full sysop. The string
+can contain any characters but any spaces are removed (you can type in
+spaces - but they won't appear in the password). You can see the
+result with STAT/USER.
  
 === 0^SET/QRA <locator>^Set your QRA locator
 === 9^SET/SYS_QRA <locator>^Set your cluster QRA locator
@@ -386,15 +387,17 @@ and stuff.
 Only the fields that are defined (in perl term) will be displayed.
 
 === 0^SYSOP^Regain your privileges if you login remotely
-The system automatically reduces your privilege level to that of a normal user 
-if you login in remotely. This command allows you to regain your normal privilege
-level. It uses the normal system: five numbers are returned that are indexes into 
-the character array that is your assigned password (see set/password). The indexes
-start from zero. 
+The system automatically reduces your privilege level to that of a
+normal user if you login in remotely. This command allows you to
+regain your normal privilege level. It uses the normal system: five
+numbers are returned that are indexes into the character array that is
+your assigned password (see SET/PASSWORD). The indexes start from
+zero.
 
-You are expected to return a string which contains the characters required in the
-correct order. You may intersperse those characters with others to obscure your 
-reply for any watchers. For example (and these values are for explanation :-):
+You are expected to return a string which contains the characters
+required in the correct order. You may intersperse those characters
+with others to obscure your reply for any watchers. For example (and
+these values are for explanation :-):
 
 password = 012345678901234567890123456789
  > sysop
@@ -404,8 +407,9 @@ aa2bbbb0ccc5ddd7xxx3n
 or 2 0 5 7 3
 or 20573
 
-They will all match. If there is no password you will still be offered numbers but
-nothing will happen when you input a string. Any match is case sensitive.
+They will all match. If there is no password you will still be offered
+numbers but nothing will happen when you input a string. Any match is
+case sensitive.
 
 === 0^TALK <call> <text>^Send a text message to another station
 === 0^TALK <call> > <node> <text>^Send a text message to another station via a node
