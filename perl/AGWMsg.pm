@@ -299,7 +299,7 @@ sub _decode
 			my @lines = split /\cM/, $d;
 			
 			for (@lines) {
-				s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+#				s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
 				dbg("AGW Monitor port: $port \"$_\"") if isdbg('agw');
 			}
 		} elsif ($sort eq 'C') {

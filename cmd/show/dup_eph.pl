@@ -9,4 +9,15 @@
 my $self = shift;
 my $line = shift;
 return (1, $self->msg('e5')) unless $self->priv >= 9; 
-return (1, DXProt::eph_list $line);
+my $regex = $line;
+my @out;
+my %list = DXProt::eph_list();
+
+for (keys %list ) {
+	if ($regex) {
+		next unless /$regex/i;
+	}
+	push @out, ztime($list{$_}) . ": $_";
+}
+return (1, sort @out);
+

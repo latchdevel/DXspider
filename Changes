@@ -1,3 +1,6 @@
+19Mar02=======================================================================
+1. fix problems with ephemeral dup checking on PC16,17,19,21
+2. perturb the problem with national character sets.
 15Mar02=======================================================================
 1. add help for 'accept' and 'reject'. (g0vgs)
 2. adjustments to the manuals (g0vgs)

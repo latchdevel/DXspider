@@ -621,7 +621,7 @@ sub normal
 				next unless $call && $conf && defined $here && is_callsign($call);
 				next if $call eq $main::mycall;
 
-				eph_del_regex("^PC17\^$call\^$ncall");
+				eph_del_regex("^PC17\\^$call\\^$ncall");
 				
 				$conf = $conf eq '*';
 
@@ -673,7 +673,7 @@ sub normal
 				return;
 			}
 
-			eph_del_regex("^PC16.*$ncall.*$ucall");
+			eph_del_regex("^PC16\\^$ncall.*$ucall");
 			
 			if ($ncall eq $main::mycall) {
 				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
@@ -743,7 +743,7 @@ sub normal
 				my $ver = $field[$i+3];
 				next unless defined $here && defined $conf && is_callsign($call);
 
-				eph_del_regex("^PC(?:21\^$call|17\^[^\^]+\^$call)");
+				eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
 				
 				# check for sane parameters
 #				$ver = 5000 if $ver eq '0000';
@@ -834,7 +834,6 @@ sub normal
 			# as a PC39: I have gone away
 			if ($call eq $self->call) {
 				$self->disconnect(1);
-				eph_del_regex("^PC(?:1[679]|21).*$field[1]");
 				return;
 			}
 
@@ -993,7 +992,7 @@ sub normal
 		}
 		
 		if ($pcno == 35) {		# remote command replies
-			eph_del_regex("^PC35\^$field[2]\^$field[1]\^");
+			eph_del_regex("^PC35\\^$field[2]\\^$field[1]\\^");
 			$self->process_rcmd_reply($field[1], $field[2], $field[1], $field[3]);
 			return;
 		}
@@ -1007,7 +1006,6 @@ sub normal
 		if ($pcno == 39) {		# incoming disconnect
 			if ($field[1] eq $self->{call}) {
 				$self->disconnect(1);
-				eph_del_regex("^PC(?:1[679]|21).*$field[1]");
 			} else {
 				dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
 			}
@@ -1765,6 +1763,10 @@ sub disconnect
 	unless ($pc39flag && $pc39flag == 1) {
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
+
+	# get rid of any PC16 and 19s
+	eph_del_regex("^PC16\\^$call");
+	eph_del_regex("^PC19\\^.*$call");
 
 	# do routing stuff
 	my $node = Route::Node::get($call);
