@@ -47,14 +47,14 @@ unless ($want{agw}) {
 }
 
 $mc->cfgprint('msg', [], 64000, 
-		 "Data in and out of $main::mycall",
+		 "Data <font color=#00cc00>in</font> and <font color=#0000ff>out</font> of $main::mycall",
 		 'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
 $mc->data('msg', $din, $dout, "Data in and out of $main::mycall") unless $want{cfgonly};
 
 # do AGW stats if they apply
 if ($want{agw}) {
 	$mc->cfgprint('agw', [], 64000, 
-				  "AGW Data in and out of $main::mycall",
+				  "AGW Data <font color=#00cc00>in</font> and <font color=#0000ff>out</font> of $main::mycall",
 				  'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
 	$mc->data('agw', $AGWMsg::total_in, $AGWMsg::total_out, "AGW Data in and out of $main::mycall") unless $want{cfgonly};
 }
@@ -64,7 +64,7 @@ my $users = DXChannel::get_all_users();
 my $nodes = DXChannel::get_all_nodes();
 
 $mc->cfgprint('users', [qw(unknaszero gauge)], 500, 
-		 "Users and Nodes on $main::mycall",
+		 "<font color=#00cc00>Users</font> and <font color=#0000ff>Nodes</font> on $main::mycall",
 		 'Users / Nodes', 'Users', 'Nodes') unless $want{dataonly};
 $mc->data('users', $users, $nodes, 'Users / Nodes') unless $want{cfgonly};
 
@@ -73,7 +73,7 @@ if ($want{totalusers} || $want{all}) {
 	$nodes = Route::Node::count();
 	$users = Route::User::count();
 	$mc->cfgprint('totalusers', [qw(unknaszero gauge)], 10000, 
-			'Total Users and Nodes in the Visible Cluster Network',
+			'Total <font color=#00cc00>Users</font> and <font color=#0000ff>Nodes</font> in the Visible Cluster Network',
 			 'Users / Nodes', 'Users', 'Nodes') unless $want{dataonly};
 	$mc->data('totalusers', $users, $nodes, 'Total Users and Nodes in the Visible Cluster Network') unless $want{cfgonly};
 }
@@ -88,7 +88,7 @@ if ($want{totalspots} || $want{all}) {
 
 # do the HF and VHF spots
 if ($want{hfvhf} || $want{all}) {
-	$mc->cfgprint('hfspots', [qw(unknaszero gauge)], 1000, 'HF and VHF+ Spots',
+	$mc->cfgprint('hfspots', [qw(unknaszero gauge)], 1000, '<font color=#00cc00>HF</font> and <font color=#0000ff>VHF+</font> Spots',
 			 'Spots', 'HF', 'VHF') unless $want{dataonly};
 	$mc->data('hfspots', $Spot::hfspots, $Spot::vhfspots, 'HF and VHF+ Spots') unless $want{cfgonly};
 	$Spot::hfspots = $Spot::vhfspots = 0;
@@ -96,17 +96,16 @@ if ($want{hfvhf} || $want{all}) {
 
 # wwv stuff
 if ($want{wwv} || $want{all}) {
-	$mc->cfgprint('wwvsfi', [qw(gauge)], 1000, 'WWV SFI and R',
-			 'SFI / R', 'SFI', 'R') unless $want{dataonly};
+	$mc->cfgprint('wwvsfi', [qw(gauge)], 1000, 'WWV <font color=#00cc00>SFI</font> and <font color=#0000ff>R</font>', 'SFI / R', 'SFI', 'R') unless $want{dataonly};
 	$mc->data('wwvsfi', ($Geomag::r || $WCY::r), ($Geomag::sfi || $WCY::sfi), 'WWV SFI and R') unless $want{cfgonly};
-	$mc->cfgprint('wwvka', [qw(gauge)], 1000, 'WWV A and K',
+	$mc->cfgprint('wwvka', [qw(gauge)], 1000, 'WWV <font color=#00cc00>A</font> and <font color=#0000ff>K</font>',
 			 'A / K', 'A', 'K') unless $want{dataonly};
 	$mc->data('wwvka', $Geomag::a, $Geomag::k, 'WWV A and K') unless $want{cfgonly};
 }
 
 # WCY stuff
 if ($want{wcy} || $want{all}) {
-	$mc->cfgprint('wcyka', [qw(gauge)], 1000, 'WCY A and K',
+	$mc->cfgprint('wcyka', [qw(gauge)], 1000, 'WCY <font color=#00cc00>A</font> and <font color=#0000ff>K</font>',
 			 'A / K', 'A', 'K') unless $want{dataonly};
 	$mc->data('wcyka', $WCY::a, $WCY::k, 'WCY A and K') unless $want{cfgonly};
 }
