@@ -1,3 +1,6 @@
+14Nov01=======================================================================
+1. make the number of characters of the dx comment dependant on the type of
+connection. This should mean that 'legacy' user programs can cope.
 07Nov01=======================================================================
 1. fix is_pctext so that it actually catches corrupt spots and announces.
 2. fix console.pl so that you can type in '0' again

@@ -786,7 +786,13 @@ sub dx_spot
 		return unless $filter;
 	}
 
-	my $buf = Spot::formatb($self->{user}->wantgrid, $_[0], $_[1], $_[2], $_[3], $_[4]);
+
+	my $t = ztime($_[2]);
+	my $ref = DXUser->get_current($_[4]);
+	my $loc = $ref->qra if $ref && $ref->qra && $self->{user}->wantgrid;
+	$loc = ' ' . substr($loc, 0, 4) if $loc;
+	$loc = "" unless $loc;
+	my $buf = sprintf "DX de %-7.7s%11.1f  %-12.12s %-*s $t$loc", "$_[4]:", $_[0], $_[1], $self->{consort} eq 'local' ? 29 : 30, $_[3];
 	$buf .= "\a\a" if $self->{beep};
 	$buf =~ s/\%5E/^/g;
 	$self->local_send('X', $buf);

@@ -264,18 +264,6 @@ sub ftor
 	return $out;
 }
 
-# format a spot for user output in 'broadcast' mode
-sub formatb
-{
-	my $wantgrid = shift;
-	my $t = ztime($_[2]);
-	my $ref = DXUser->get_current($_[4]);
-	my $loc = $ref->qra if $ref && $ref->qra && $wantgrid;
-	$loc = ' ' . substr($ref->qra, 0, 4) if $loc;
-	$loc = "" unless $loc;
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-29s %s$loc", "$_[4]:", $_[0], $_[1], $_[3], $t ;
-}
-
 # format a spot for user output in list mode
 sub formatl
 {

@@ -52,7 +52,6 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 	return (1, $self->msg('dx3'));
 }
 
-
 # make line the rest of the line
 $line = $f[2] || " ";
 @f = split /\s+/, $line;
@@ -97,14 +96,16 @@ push @out, $self->msg('dx1', $freq) unless $valid;
 # check we have a callsign :-)
 if ($spotted le ' ') {
 	push @out, $self->msg('dx2');
-	
 	$valid = 0;
 }
 
 return (1, @out) unless $valid;
 
-
 # Store it here (but only if it isn't baddx)
+my $t = (int ($main::systime/60)) * 60;
+return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line);
+my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
+
 if ($DXProt::baddx->in($spotted) || $freq =~ /^69/ || $localonly) {
 
 	# heaven forfend that we get a 69Mhz band :-)
@@ -112,12 +113,9 @@ if ($DXProt::baddx->in($spotted) || $freq =~ /^69/ || $localonly) {
 		$self->badcount(($self->badcount||0) + 1);
 	}
 
-	my $buf = Spot::formatb($self->user->wantgrid, $freq, $spotted, $main::systime, $line, $spotter);
-	push @out, $buf;
+	$self->dx_spot(undef, undef, @spot);
+	return (1);
 } else {
-	my $t = (int ($main::systime/60)) * 60;
-	return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line);
-	my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
 	if (@spot) {
 		# store it 
 		Spot::add(@spot);
