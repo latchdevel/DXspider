@@ -36,7 +36,7 @@ package CmdAlias;
 	],
 	'd' => [
 	  '^del', 'kill', 'kill',
-	  '^del.*/fu', 'kill full', 'kill',
+	  '^del\w*/fu', 'kill full', 'kill',
 	  '^di\w*/a\w*', 'directory all', 'directory',
 	  '^di\w*/b\w*', 'directory bulletins', 'directory',
 	  '^di\w*/n\w*', 'directory new', 'directory',
@@ -91,6 +91,7 @@ package CmdAlias;
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
 	  '^sh$', 'show', 'show',
+	  '^sh\w*/bu', 'show/files bulletins', 'show/files',
 	  '^sh\w*/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sh\w*/c$', 'show/configuration', 'show/configuration',
 	  '^sh\w*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
