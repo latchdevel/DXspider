@@ -558,7 +558,7 @@ sub normal
 				my $flags = Route::here($here)|Route::conf($conf);
 				
 				if ($r && $r->flags != $flags) {
-					$r->$flags($flags);
+					$r->flags($flags);
 					push @rout, $r;
 				} elsif (!$r) {
 					push @rout, $parent->add_user($call, $flags);
@@ -600,8 +600,7 @@ sub normal
 				dbg('chan', "PCPROT: Route::Node $ncall not in config");
 				return;
 			}
-			my $r = Route::User::get($ucall);
-			my @rout = $parent->del_user($ucall) if $r;
+			my @rout = $parent->del_user($ucall);
 			$self->route_pc17($parent, @rout) if @rout;
 			return;
 		}
@@ -696,6 +695,11 @@ sub normal
 			my $call = uc $field[1];
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
+			unless ($parent) {
+				dbg('chan', "PCPROT: Route::Node $call not in config");
+				return;
+			}
+			my $node = Route::Node::get($call);
 			
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 				if ($call eq $self->{call}) {
@@ -704,11 +708,7 @@ sub normal
 				}
 
 				# routing objects
-				if ($parent) {
-					push @rout, $parent->del_node($call);
-				} else {
-					dbg('chan', "PCPROT: Route::Node $call not in config");
-				}
+				push @rout, $node->del($parent) if $node;
 			} else {
 				dbg('chan', "PCPROT: I WILL _NOT_ be disconnected!");
 				return;
@@ -772,7 +772,9 @@ sub normal
 			$ref->here($field[2]) if $ref;
 			$ref = Route::User::get($call);
 			$ref->here($field[2]) if $ref;
-			last SWITCH;
+			
+			$self->route_pc24($ref, $field[3]) if $ref && !eph_dup($line);
+			return;
 		}
 		
 		if ($pcno == 25) {      # merge request
@@ -891,8 +893,9 @@ sub normal
 		
 		if ($pcno == 41) {		# user info
 			# add this station to the user database, if required
-			my $user = DXUser->get_current($field[1]);
-			$user = DXUser->new($field[1]) if !$user;
+			my $call = $field[1];
+			my $user = DXUser->get_current($call);
+			$user = DXUser->new($call) if !$user;
 			
 			if ($field[2] == 1) {
 				$user->name($field[3]);
@@ -908,7 +911,8 @@ sub normal
 			}
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
-			last SWITCH;
+			my $ref = Route::get($call);
+			$self->route_pc41($ref, $field[2], $field[3], $field[4]) if $ref && !eph_dup($line);
 		}
 		if ($pcno == 43) {
 			last SWITCH;
@@ -919,26 +923,30 @@ sub normal
 		}
 		
 		if ($pcno == 50) {		# keep alive/user list
-			my $node = Route::Node::get($field[1]);
+			my $call = $field[1];
+			my $node = Route::Node::get($call);
 			if ($node) {
 				return unless $node->call eq $self->{call};
 				$node->usercount($field[2]);
+				$self->route_pc50($node, $field[2], $field[3]) unless eph_dup($line);
 			}
-			last SWITCH;
+			return;
 		}
 		
 		if ($pcno == 51) {		# incoming ping requests/answers
+			my $to = $field[1];
+			my $from = $field[2];
+			my $flag = $field[3];
 			
 			# is it for us?
-			if ($field[1] eq $main::mycall) {
-				my $flag = $field[3];
+			if ($to eq $main::mycall) {
 				if ($flag == 1) {
-					$self->send(pc51($field[2], $field[1], '0'));
+					$self->send(pc51($from, $to, '0'));
 				} else {
 					# it's a reply, look in the ping list for this one
-					my $ref = $pings{$field[2]};
+					my $ref = $pings{$from};
 					if ($ref) {
-						my $tochan =  DXChannel->get($field[2]);
+						my $tochan =  DXChannel->get($from);
 						while (@$ref) {
 							my $r = shift @$ref;
 							my $dxchan = DXChannel->get($r->{call});
@@ -947,7 +955,7 @@ sub normal
 							if ($dxchan->is_user) {
 								my $s = sprintf "%.2f", $t; 
 								my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-								$dxchan->send($dxchan->msg('pingi', $field[2], $s, $ave))
+								$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
 							} elsif ($dxchan->is_node) {
 								if ($tochan) {
 									$tochan->{nopings} = $tochan->user->nopings || 2; # pump up the timer
@@ -965,24 +973,26 @@ sub normal
 				}
 			} else {
 				# route down an appropriate thingy
-				$self->route($field[1], $line);
+				$self->route($to, $line);
 			}
 			return;
 		}
 
 		if ($pcno == 75) {		# dunno but route it
-			if ($field[1] ne $main::mycall) {
-				$self->route($field[1], $line);
+			my $call = $field[1];
+			if ($call ne $main::mycall) {
+				$self->route($call, $line);
 			}
 			return;
 		}
 
 		if ($pcno == 73) {  # WCY broadcasts
+			my $call = $field[1];
 			
 			# do some de-duping
-			my $d = cltounix($field[1], sprintf("%02d18Z", $field[2]));
+			my $d = cltounix($call, sprintf("%02d18Z", $field[2]));
 			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
-				dbg('chan', "PCPROT: WCY Date ($field[1] $field[2]) out of range");
+				dbg('chan', "PCPROT: WCY Date ($call $field[2]) out of range");
 				return;
 			}
 			@field = map { unpad($_) } @field;
@@ -1006,7 +1016,8 @@ sub normal
 		}
 
 		if ($pcno == 84) { # remote commands (incoming)
-			if ($field[1] eq $main::mycall) {
+			my $call = $field[1];
+			if ($call eq $main::mycall) {
 				my $ref = DXUser->get_current($field[2]);
 				my $cref = Route::Node::get($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[4]);
@@ -1030,18 +1041,19 @@ sub normal
 					$self->send(pc85($main::mycall, $field[2], $field[3],"$main::mycall:your attempt is logged, Tut tut tut...!"));
 				}
 			} else {
-				my $ref = DXUser->get_current($field[1]);
+				my $ref = DXUser->get_current($call);
 				if ($ref && $ref->is_clx) {
-					$self->route($field[1], $line);
+					$self->route($call, $line);
 				} else {
-					$self->route($field[1], pc34($field[2], $field[1], $field[4]));
+					$self->route($call, pc34($field[2], $call, $field[4]));
 				}
 			}
 			return;
 		}
 
 		if ($pcno == 85) {		# remote command replies
-			if ($field[1] eq $main::mycall) {
+			my $call = $field[1];
+			if ($call eq $main::mycall) {
 				my $dxchan = DXChannel->get($field[3]);
 				if ($dxchan) {
 					$dxchan->send($field[4]);
@@ -1058,11 +1070,11 @@ sub normal
 					}
 				}
 			} else {
-				my $ref = DXUser->get_current($field[1]);
+				my $ref = DXUser->get_current($call);
 				if ($ref && $ref->is_clx) {
-					$self->route($field[1], $line);
+					$self->route($call, $line);
 				} else {
-					$self->route($field[1], pc35($field[2], $field[1], $field[4]));
+					$self->route($call, pc35($field[2], $call, $field[4]));
 				}
 			}
 			return;
@@ -1103,7 +1115,7 @@ sub process
 		# send a pc50 out on this channel
 		$dxchan->{pc50_t} = $main::systime unless exists $dxchan->{pc50_t};
 		if ($t >= $dxchan->{pc50_t} + $DXProt::pc50_interval) {
-			my $s = pc50(scalar DXChannel::get_all_users);
+			my $s = pc50($me, scalar DXChannel::get_all_users);
 			eph_dup($s);
 			$dxchan->send($s);
 			$dxchan->{pc50_t} = $t;
@@ -1533,7 +1545,7 @@ sub broadcast_list
 			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
 			next unless $filter;
 		}
-		next if $sort eq 'ann' && !$dxchan->{ann};
+		next if $sort eq 'ann' && !$dxchan->{ann} && $s !~ /^To\s+LOCAL\s+de\s+(?:$main::myalias|$main::mycall)/i;
 		next if $sort eq 'wwv' && !$dxchan->{wwv};
 		next if $sort eq 'wcy' && !$dxchan->{wcy};
 		next if $sort eq 'wx' && !$dxchan->{wx};
@@ -1651,10 +1663,10 @@ sub disconnect
 	}
 
 	# do routing stuff
-#	my $node = Route::Node::get($self->{call});
-#	my @rout = $node->del_nodes if $node;
-	my @rout = $main::routeroot->del_node($call);
-	dbg('route', "B/C PC21 (from PC39) for: " . join(',', (map{ $_->call } @rout))) if @rout;
+	my $node = Route::Node::get($call);
+	my @rout = $node->del_nodes;    # at the next level
+
+	@rout = $node->del($main::routeroot) if $node;
 	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
@@ -1762,6 +1774,26 @@ sub route_pc21
 	my $self = shift;
 	broadcast_route($self, \&pc21, scalar @_, @_);
 }
+
+sub route_pc24
+{
+	my $self = shift;
+	broadcast_route($self, \&pc24, 1, @_);
+}
+
+sub route_pc41
+{
+	my $self = shift;
+	broadcast_route($self, \&pc41, 1, @_);
+}
+
+sub route_pc50
+{
+	my $self = shift;
+	broadcast_route($self, \&pc50, 1, @_);
+}
+
+
 
 sub eph_dup
 {

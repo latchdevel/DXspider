@@ -86,16 +86,31 @@ sub del
 	my $ref = $self->_delparent($pcall);
 	my @nodes;
 	
-	# is this the last connection?
-	$self->_del_users;
+	# is this the last connection, I have no parents anymore?
 	unless (@$ref) {
-		push @nodes, $self->del_nodes;
+		my $ncall = $self->{call};
+		foreach my $rcall (@{$self->{nodes}}) {
+			next if grep $rcall eq $_, @_;
+			my $r = Route::Node::get($rcall);
+			push @nodes, $r->del($self, $ncall, @_) if $r;
+		}
+		$self->_del_users;
 		delete $list{$self->{call}};
 		push @nodes, $self;
 	}
 	return @nodes;
 }
 
+sub del_nodes
+{
+	my $parent = shift;
+	my @out;
+	foreach my $rcall (@{$parent->{nodes}}) {
+		my $r = get($rcall);
+		push @out, $r->del($parent, $parent->{call}, @_) if $r;
+	}
+	return @out;
+}
 
 sub _del_users
 {
@@ -105,36 +120,6 @@ sub _del_users
 		$ref->del($self) if $ref;
 	}
 	$self->{users} = [];
-}
-
-# remove all sub nodes from this parent
-sub del_nodes
-{
-	my $self = shift;
-	my @nodes;
-	
-	for (@{$self->{nodes}}) {
-		next if $self->{call} eq $_;
-		push @nodes, $self->del_node($_);
-	}
-	return @nodes;
-}
-
-# delete a node from this node (ie I am a parent) 
-sub del_node
-{
-	my $self = shift;
-	my $ncall = shift;
-	my @out;
-    $self->_delnode($ncall);
-	if (my $ref = get($ncall)) {
-		foreach my $rcall (@{$ref->{nodes}}) {
-			next if $rcall eq $ncall || $rcall eq $self->{call};
-			push @out, $ref->del_node($rcall);
-		}
-		push @out, $ref->del($self);
-	}
-	return @out;
 }
 
 # add a user to this node
@@ -190,7 +175,7 @@ sub rnodes
 		next if grep $call eq $_, @_;
 		push @out, $call;
 		my $r = get($call);
-		push @out, $r->rnodes(@_, @out) if $r;
+		push @out, $r->rnodes($call, @_) if $r;
 	}
 	return @out;
 }

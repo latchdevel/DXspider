@@ -7,6 +7,7 @@
 (this confuses db0fhf amongst other things)
 5. catch deep recursion bugs before you run out of memory.
 6. Make sure that PC16|17|19|21 update as well as add and delete
+7. local announces by the sysop will always be displayed
 08Jun01=======================================================================
 1. first cut with new routing code. Created NEW_ROUTE branch
 2. added acc/route and rej/route commands

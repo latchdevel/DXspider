@@ -165,7 +165,7 @@ sub pc24
 	my $self = shift;
 	my $call = $self->call;
 	my $flag = $self->here ? '1' : '0';
-	my $hops = get_hops(24);
+	my $hops = shift || get_hops(24);
   
 	return "PC24^$call^$flag^$hops^";
 }
@@ -275,9 +275,13 @@ sub pc40
 # user info
 sub pc41
 {
-	my ($call, $sort, $info) = @_;
-	my $hops = get_hops(41);
-	$sort = $sort ? "$sort" : '0';
+	my $call = shift;
+	$call = shift if ref $call;
+	
+	my ($sort, $info) = @_;
+	$sort ||= '0';
+	$info ||= ' ';
+	my $hops = shift || get_hops(41);
 	return "PC41^$call^$sort^$info^$hops^~";
 }
 
@@ -321,9 +325,11 @@ sub pc49
 # periodic update of users, plus keep link alive device (always H99)
 sub pc50
 {
-	my $n = shift;
-	$n = 0 unless $n >= 0;
-	return "PC50^$main::mycall^$n^H99^";
+	my $self = shift;
+	my $call = $self->call;
+	my $n = shift || '0';
+	my $hops = shift || 'H99';
+	return "PC50^$call^$n^$hops^";
 }
 
 # generate pings
