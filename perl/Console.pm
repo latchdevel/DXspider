@@ -23,7 +23,7 @@ package main;
 
 $maxkhist = 100;
 $maxshist = 500;
-if ($ENV{'TERM'} =~ /xterm/) {
+if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 	$ENV{'TERM'} = 'color_xterm';
 	$foreground = COLOR_BLACK();
 	$background = A_BOLD|COLOR_WHITE();
