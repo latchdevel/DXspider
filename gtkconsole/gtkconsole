@@ -20,16 +20,18 @@ BEGIN {
 
 use strict;
 
-use vars qw(@modules);                    
+use Gtk qw(-init);
+
+use vars qw(@modules $font);                    
 
 @modules = ();					# is the list of modules that need init calling
 								# on them. It is set up by each  'use'ed module
 								# that has Gtk stuff in it
+$font = Gtk::Gdk::Font->load("-misc-fixed-medium-r-normal-*-*-130-*-*-c-*-koi8-r");
 
 use DXVars;
 use DXUtil;
 use IO::Socket::INET;
-use Gtk qw(-init);
 use Text;
 use DebugHandler;
 
@@ -92,24 +94,27 @@ $menu->show;
 my $top = new Text(1);
 my $toplist = $top->text;
 $toplist->set_editable(0);
+$toplist->sensitive(0);
 
 # add the handler for incoming messages from the node
 my $tophandler = Gtk::Gdk->input_add($sock->fileno, ['read'], \&tophandler, $sock);
 my $rbuf = "";						# used in handler
 
-$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
+#$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
 #$bot->{signalid} = $bot->signal_connect(insert_text => \&botinsert, $bot); 
 $vbox->pack_start($top, 1, 1, 0);
 $vbox->show;
 
 # the bottom handler
 my $bot = new Gtk::Entry;
+my $style = $toplist->style;
+$style->font($main::font);
+$bot->set_style($style);
 $bot->set_editable(1);
 $bot->signal_connect('activate', \&bothandler);
-$bot->can_focus(1);
 $bot->can_default(1);
-$bot->grab_focus;
 $bot->grab_default;
+$bot->grab_focus;
 $bot->show;
 
 # a horizontal box
@@ -160,15 +165,6 @@ sub doinsert {
 	# we already inserted the text if it was valid: no need
 	# for the self to process this signal emission
 	$self->signal_emit_stop_by_name('insert-text');
-	1;
-}
-
-sub botinsert
-{
-	my ($self, $text) = @_;
-
-	printf "%s\n", $text;
-	
 	1;
 }
 

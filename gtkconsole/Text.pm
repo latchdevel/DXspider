@@ -21,6 +21,9 @@ sub new
 	
 	my $font = Gtk::Gdk::Font->load("-misc-fixed-medium-r-normal-*-*-130-*-*-c-*-koi8-r");
 	my $text = new Gtk::Text(undef,undef);
+	my $style = $text->style;
+	$style->font($font);
+	$text->set_style($style);
 	$text->show;
 	my $vscroll = new Gtk::VScrollbar($text->vadj);
 	$vscroll->show;
