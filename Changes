@@ -4,6 +4,8 @@
 is the minimum granularity available.
 3. add some separation between cfg file making, data generation and mrtg 
 running. See /spider/cmd/mrtg.pl for some instructions...
+4. Added data in and out to the MRTG stats, you need to do an indexmaker
+to get them onto the index page
 28Sep02=======================================================================
 1. Put some transparent caching into Prefix.pm to see if this has a 
 performance impact.

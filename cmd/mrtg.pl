@@ -7,6 +7,7 @@
 # The arguments (keywords) to the mrtg command are these
 #
 # a) content          (you always get the node users and nodes)
+#    agw              - include the AGW stats separately 
 #    totalspots       - all spots
 #    hfvhf            - all spots split into HF and VHF
 #    wwv              - two graphs of WWV, one SFI and R other A and K
@@ -37,11 +38,18 @@ return (1, "MRTG not installed") unless $want{nomrtg} || -e '/usr/bin/mrtg' || -
 
 my $mc = new Mrtg or return (1, "cannot initialise Mrtg $!");
 
-# do Msg totals
+# do Data in / out totals
+my $din = $Msg::total_in;
+my $dout = $Msg::total_in;
+unless ($want{agw}) {
+	$din += $AGWMsg::total_in;
+	$dout += $AGWMsg::total_out;
+}
+
 $mc->cfgprint('msg', [], 64000, 
 		 "Data in and out of $main::mycall",
 		 'Bits / Sec', 'Bytes In', 'Bytes Out') unless $want{dataonly};
-$mc->data('msg', $Msg::total_in, $Msg::total_out, "Data in and out of $main::mycall") unless $want{cfgonly};
+$mc->data('msg', $din, $dout, "Data in and out of $main::mycall") unless $want{cfgonly};
 
 # do AGW stats if they apply
 if ($want{agw}) {
