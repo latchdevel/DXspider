@@ -65,12 +65,12 @@ killall -HUP inetd
 </CODE></BLOCKQUOTE>
 <P>
 <P>
-<P>Now login as <EM>sysop</EM> and cd spider/perl. You can test that spider 
+<P>Now login as <EM>sysop</EM> and cd spider/src. You can test that spider 
 is accepting telnet logins by issuing the following command ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-./client.pl login telnet
+./client login telnet
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>You should get a login prompt and on issuing a callsign, you will be given 
@@ -113,7 +113,7 @@ set/clx
 <P>For now, we will assume that the cluster we are going to connect to is an
 AK1A type node.
 <P>
-<P>Start up the cluster as you did before and login as the sysop with client.pl.
+<P>Start up the cluster as you did before and login as the sysop with client.
 The cluster node I am wanting to make a connection to is GB7BAA but you would
 obviously use whatever callsign you required.  At the prompt type ...
 <P>
@@ -127,11 +127,11 @@ set/node gb7baa
 1.33.  Earlier versions required the callsign to be in upper case.
 <P>
 <P>That is now set, it is as simple as that.  To prove it, login on yet another 
-console as sysop, cd to spider/perl and issue the command ...
+console as sysop, cd to spider/src and issue the command ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-./client.pl gb7baa (using the callsign you set as a node)
+./client gb7baa (using the callsign you set as a node)
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
@@ -139,7 +139,7 @@ console as sysop, cd to spider/perl and issue the command ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-./client.pl gb7baa
+./client gb7baa
 PC38^GB7MBC^~
 </PRE>
 </CODE></BLOCKQUOTE>

@@ -64,14 +64,14 @@ an alias for this in the Alias file to allow them just to type <EM>news</EM>
 nested under directories.  One use for this would be to store DX bulletins 
 such as the OPDX bulletins.  These can be listed and read by the user.  
 To keep things tidy, make a directory under /spider/packclus called
-<EM>bulletins</EM>.  Now copy any OPDX or similar bulletins into it.  These 
+<EM>bulletin</EM>.  Now copy any OPDX or similar bulletins into it.  These 
 can be listed by the user in the same way as above using the <EM>show/files</EM>
-command with an extension for the bulletins directory you have just created, 
+command with an extension for the bulletin directory you have just created, 
 like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-show/files bulletins
+show/files bulletin
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
@@ -80,11 +80,11 @@ show/files bulletins
 <BLOCKQUOTE><CODE>
 <PRE>
 sh/files
-bulletins      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
+bulletin      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>You can see that in the files area (basically the packclus directory) there is a 
-file called <EM>news</EM> and a directory called <EM>bulletins</EM>.  You can 
+file called <EM>news</EM> and a directory called <EM>bulletin</EM>.  You can 
 also see that dates they were created.  In the case of the file <EM>news</EM>, 
 you can also see the time it was last modified, a good clue as to whether the 
 file has been updated since you last read it.  To read the file called 
@@ -95,11 +95,11 @@ file has been updated since you last read it.  To read the file called
 type news
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>To look what is in the bulletins directory you issue the command ....
+<P>To look what is in the bulletin directory you issue the command ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-show/files bulletins
+show/files bulletin
 opdx390      21381 29-Nov-1999 1621Z opdx390.1     1670 29-Nov-1999 1621Z
 opdx390.2     2193 29-Nov-1999 1621Z opdx391      25045 29-Nov-1999 1621Z  
 opdx392      35969 29-Nov-1999 1621Z opdx393      15023 29-Nov-1999 1621Z  
@@ -120,7 +120,7 @@ Press Enter to continue, A to abort (16 lines) >
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-type bulletins/opdx391
+type bulletin/opdx391
 Ohio/Penn DX Bulletin No. 391
 The Ohio/Penn Dx PacketCluster
 DX Bulletin No. 391
@@ -290,7 +290,7 @@ results once you have set an alias.
 
 <P>In later versions of Spider a simple console program is provided for the sysop.  
 This has a type ahead buffer with line editing facilities and colour for spots,
-announces etc.  To use this program, simply use console.pl instead of client.pl.
+announces etc.  To use this program, simply use console.pl instead of client.
 <P>
 <P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
 file with your favourite editor.

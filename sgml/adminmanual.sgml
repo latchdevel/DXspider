@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.33 (Revision 1.22) March 2001
+<date>Version 1.34 (Revision 1.0) April 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -216,10 +216,10 @@ orft we jolly well go ...
 
 <P>
 If all is well then login on another term or console as <em>sysop</em> and 
-cd to /spider/perl.  Now issue the following command ...
+cd to /spider/src.  Now issue the following command ...
 
 <tscreen><verb>
-$ ./client.pl
+$ ./client
 </verb></tscreen>
 
 <P>
@@ -243,7 +243,7 @@ shutdown
 <P>
 and both the cluster and the client should return to Linux prompts.
 
-<sect>The Client program
+<sect1>The Client program
 
 <P>
 In earlier versions of Spider, all the processes were Perl scripts.  This 
@@ -253,6 +253,61 @@ To combat this a new client was written in "C".  This client only works for
 has to be "made".  CD to /spider/src and type <em>make</em>.  You 
 should see the output on your screen and hopefully now have a small C program 
 called <em>client</em>.  Leave it in this directory.
+
+
+<sect>Quick installation guide
+
+<P>
+This section is designed for experienced Spider sysops who want to install
+Spider from scratch.  It is simply a check list of things that need to be
+done without any explanations.  The name in brackets at the end of each line
+is the user that should be doing that process.
+
+<itemize>
+<item>Login as root
+<item>Get the additional CPAN modules and install them (root)
+<item>Create the "sysop" user and set a password (root)
+<item>Put the Spider tarball in ~sysop and untar it (root)
+<item>ln -s ~sysop/spider /spider (root)
+<item>groupadd -g 251 spider (root)
+<item>Add any more users you need to the group entry in /etc/group (root)
+<item>Set the permissions on the spider tree (root)
+<item>Fix permissions on ax25_call and netrom_call (root)
+<item>Login as the sysop user
+<item>cd to /spider (sysop)
+<item>mkdir local (sysop
+<item>mkdir local_cmd (sysop)
+<item>cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
+<item>cd to /spider/local and edit DXVars to set your details (sysop)
+<item>cd ../perl (sysop)
+<item>./create_sysop.pl (sysop)
+<item>./cluster.pl (sysop)
+</itemize>
+
+Spider should now be running and you should be able to login using the
+client program.
+
+<itemize>
+<item>Login as root
+<item>Enter the correct line in ax25d.conf (root)
+<item>Enter the correct line in /etc/services (root)
+<item>Enter the correct line in /etc/inetd.conf (root)
+<item>killall -HUP inetd (root)
+</itemize>
+
+Spider should now be able to accept logins via telnet, netrom and ax25.
+
+<itemize>
+<item>Login as sysop
+<item>Start the cluster (sysop)
+<item>set/node and type for links (sysop)
+<item>Write any connect scripts (sysop)
+<item>Edit /spider/crontab as required (sysop)
+<item>Edit any other files as necessary (sysop)
+<item>Set filters, hops and forwarding files (sysop)
+<item>Login as root
+<item>Enter the correct line in /etc/inittab (root)
+</itemize>
 
 <sect>Configuration
 
@@ -299,11 +354,11 @@ killall -HUP inetd
 </verb></tscreen>
 
 
-<P>Now login as <em>sysop</em> and cd spider/perl. You can test that spider 
+<P>Now login as <em>sysop</em> and cd spider/src. You can test that spider 
 is accepting telnet logins by issuing the following command ....
 
 <tscreen><verb>
-./client.pl login telnet
+./client login telnet
 </verb></tscreen>
 
 You should get a login prompt and on issuing a callsign, you will be given 
@@ -347,7 +402,7 @@ For now, we will assume that the cluster we are going to connect to is an
 AK1A type node.
 
 <P>
-Start up the cluster as you did before and login as the sysop with client.pl.
+Start up the cluster as you did before and login as the sysop with client.
 The cluster node I am wanting to make a connection to is GB7BAA but you would
 obviously use whatever callsign you required.  At the prompt type ...
 
@@ -361,17 +416,17 @@ The case does not matter as long as you have a version of DXSpider later than
 
 <P>
 That is now set, it is as simple as that.  To prove it, login on yet another 
-console as sysop, cd to spider/perl and issue the command ...
+console as sysop, cd to spider/src and issue the command ...
 
 <tscreen><verb>
-./client.pl gb7baa (using the callsign you set as a node)
+./client gb7baa (using the callsign you set as a node)
 </verb></tscreen>
 
 <P>
 You should get an initialisation string from DXSpider like this ...
 
 <tscreen><verb>
-./client.pl gb7baa
+./client gb7baa
 PC38^GB7MBC^~
 </verb></tscreen>
 
@@ -1686,13 +1741,13 @@ You can also store other information in this directory, either directly or
 nested under directories.  One use for this would be to store DX bulletins 
 such as the OPDX bulletins.  These can be listed and read by the user.  
 To keep things tidy, make a directory under /spider/packclus called
-<em>bulletins</em>.  Now copy any OPDX or similar bulletins into it.  These 
+<em>bulletin</em>.  Now copy any OPDX or similar bulletins into it.  These 
 can be listed by the user in the same way as above using the <em>show/files</em>
-command with an extension for the bulletins directory you have just created, 
+command with an extension for the bulletin directory you have just created, 
 like this ....
 
 <tscreen><verb>
-show/files bulletins
+show/files bulletin
 </verb></tscreen>
 
 <P>
@@ -1700,11 +1755,11 @@ An example would look like this ....
 
 <tscreen><verb>
 sh/files
-bulletins      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
+bulletin      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
 </verb></tscreen>
 
 You can see that in the files area (basically the packclus directory) there is a 
-file called <em>news</em> and a directory called <em>bulletins</em>.  You can 
+file called <em>news</em> and a directory called <em>bulletin</em>.  You can 
 also see that dates they were created.  In the case of the file <em>news</em>, 
 you can also see the time it was last modified, a good clue as to whether the 
 file has been updated since you last read it.  To read the file called 
@@ -1714,10 +1769,10 @@ file has been updated since you last read it.  To read the file called
 type news
 </verb></tscreen>
 
-To look what is in the bulletins directory you issue the command ....
+To look what is in the bulletin directory you issue the command ....
 
 <tscreen><verb>
-show/files bulletins
+show/files bulletin
 opdx390      21381 29-Nov-1999 1621Z opdx390.1     1670 29-Nov-1999 1621Z
 opdx390.2     2193 29-Nov-1999 1621Z opdx391      25045 29-Nov-1999 1621Z  
 opdx392      35969 29-Nov-1999 1621Z opdx393      15023 29-Nov-1999 1621Z  
@@ -1737,7 +1792,7 @@ Press Enter to continue, A to abort (16 lines) >
 You can now read any file in this directory using the type command, like this ....
 
 <tscreen><verb>
-type bulletins/opdx391
+type bulletin/opdx391
 Ohio/Penn DX Bulletin No. 391
 The Ohio/Penn Dx PacketCluster
 DX Bulletin No. 391
@@ -1906,7 +1961,7 @@ results once you have set an alias.
 <P>
 In later versions of Spider a simple console program is provided for the sysop.  
 This has a type ahead buffer with line editing facilities and colour for spots,
-announces etc.  To use this program, simply use console.pl instead of client.pl.
+announces etc.  To use this program, simply use console.pl instead of client.
 
 <P>
 To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 

@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.33 (Revision 1.22) March 2001
+  Version 1.34 (Revision 1.0) April 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -71,8 +71,9 @@
      1.3 Installing the software
      1.4 Setting callsigns etc
      1.5 Starting up for the first time
+     1.6 The Client program
 
-  2. The Client program
+  2. Quick installation guide
 
   3. Configuration
 
@@ -326,6 +327,7 @@
 
   +o  Net-Telnet-3.02.tar.gz
 
+
   +o  Curses-1.05.tar.gz
 
   +o  Time-HiRes-01.20.tar.gz
@@ -392,7 +394,10 @@
 
 
 
-       # vi /etc/group                (or your favorite editor)
+  # vi /etc/group                (or your favorite editor)
+
+
+
 
   You also need to add some others to the group, including your own
   callsign (this will be used as an alias) and root.  The finished line
@@ -459,7 +464,6 @@
   alter the text of any section.  Some of the lines look a little odd.
   Take this line for example ....
 
-
   $myemail = "ianmaude\@btinternet.com";
 
 
@@ -520,11 +524,13 @@
 
 
   If all is well then login on another term or console as _s_y_s_o_p and cd
-  to /spider/perl.  Now issue the following command ...
+  to /spider/src.  Now issue the following command ...
+
+       $ ./client
 
 
 
-       $ ./client.pl
+
 
   This should log you into the cluster as the sysop under the alias
   callsign we set earlier.  In this case the callsign is G0VGS.  The
@@ -554,7 +560,7 @@
   and both the cluster and the client should return to Linux prompts.
 
 
-  22..  TThhee CClliieenntt pprrooggrraamm
+  11..66..  TThhee CClliieenntt pprrooggrraamm
 
   In earlier versions of Spider, all the processes were Perl scripts.
   This was fine but with a lot of users your computer memory would soon
@@ -565,7 +571,92 @@
   small C program called _c_l_i_e_n_t.  Leave it in this directory.
 
 
+
+  22..  QQuuiicckk iinnssttaallllaattiioonn gguuiiddee
+
+  This section is designed for experienced Spider sysops who want to
+  install Spider from scratch.  It is simply a check list of things that
+  need to be done without any explanations.  The name in brackets at the
+  end of each line is the user that should be doing that process.
+
+
+  +o  Login as root
+
+  +o  Get the additional CPAN modules and install them (root)
+
+  +o  Create the "sysop" user and set a password (root)
+
+  +o  Put the Spider tarball in  sysop and untar it (root)
+
+  +o  ln -s  sysop/spider /spider (root)
+
+  +o  groupadd -g 251 spider (root)
+
+  +o  Add any more users you need to the group entry in /etc/group (root)
+
+  +o  Set the permissions on the spider tree (root)
+
+  +o  Fix permissions on ax25_call and netrom_call (root)
+
+  +o  Login as the sysop user
+
+  +o  cd to /spider (sysop)
+
+  +o  mkdir local (sysop
+
+  +o  mkdir local_cmd (sysop)
+
+  +o  cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
+
+  +o  cd to /spider/local and edit DXVars to set your details (sysop)
+
+  +o  cd ../perl (sysop)
+
+  +o  ./create_sysop.pl (sysop)
+
+  +o  ./cluster.pl (sysop)
+
+  Spider should now be running and you should be able to login using the
+  client program.
+
+
+  +o  Login as root
+
+  +o  Enter the correct line in ax25d.conf (root)
+
+  +o  Enter the correct line in /etc/services (root)
+
+  +o  Enter the correct line in /etc/inetd.conf (root)
+
+  +o  killall -HUP inetd (root)
+
+  Spider should now be able to accept logins via telnet, netrom and
+  ax25.
+
+
+  +o  Login as sysop
+
+  +o  Start the cluster (sysop)
+
+  +o  set/node and type for links (sysop)
+
+  +o  Write any connect scripts (sysop)
+
+  +o  Edit /spider/crontab as required (sysop)
+
+  +o  Edit any other files as necessary (sysop)
+
+  +o  Set filters, hops and forwarding files (sysop)
+
+  +o  Login as root
+
+  +o  Enter the correct line in /etc/inittab (root)
+
+
   33..  CCoonnffiigguurraattiioonn
+
+
+
 
   33..11..  AAlllloowwiinngg aaxx2255 ccoonnnneeccttss ffrroomm uusseerrss
 
@@ -588,6 +679,7 @@
 
 
        default  * * * * * *  - sysop /spider/src/client client %s ax25
+
 
 
 
@@ -627,12 +719,12 @@
 
 
 
-  Now login as _s_y_s_o_p and cd spider/perl. You can test that spider is
+  Now login as _s_y_s_o_p and cd spider/src. You can test that spider is
   accepting telnet logins by issuing the following command ....
 
 
 
-       ./client.pl login telnet
+  ./client login telnet
 
 
 
@@ -654,8 +746,6 @@
 
 
   You should now get the login prompt and be able to login as before.
-
-
 
 
   33..33..  SSeettttiinngg uupp nnooddee ccoonnnneeccttss
@@ -689,7 +779,7 @@
 
 
   Start up the cluster as you did before and login as the sysop with
-  client.pl.  The cluster node I am wanting to make a connection to is
+  client.  The cluster node I am wanting to make a connection to is
   GB7BAA but you would obviously use whatever callsign you required.  At
   the prompt type ...
 
@@ -700,18 +790,17 @@
 
 
 
-
   The case does not matter as long as you have a version of DXSpider
   later than 1.33.  Earlier versions required the callsign to be in
   upper case.
 
 
   That is now set, it is as simple as that.  To prove it, login on yet
-  another console as sysop, cd to spider/perl and issue the command ...
+  another console as sysop, cd to spider/src and issue the command ...
 
 
 
-       ./client.pl gb7baa (using the callsign you set as a node)
+       ./client gb7baa (using the callsign you set as a node)
 
 
 
@@ -721,8 +810,11 @@
 
 
 
-       ./client.pl gb7baa
+       ./client gb7baa
        PC38^GB7MBC^~
+
+
+
 
   If the callsign you just set up as a cluster node is for an incoming
   connect, this is all that needs to be done.  If the connection is to
@@ -740,6 +832,27 @@
 
   The connect scripts consist of lines which start with the following
   keywords or symbols:-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -788,14 +901,12 @@
 
 
 
-
-
-  timeout 60
-  abort (Busy|Sorry|Fail)
-  # don't forget to chmod 4775 netrom_call!
-  connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-  # you can leave this out if you call the script 'gb7dxm'
-  client gb7dxm ax25
+       timeout 60
+       abort (Busy|Sorry|Fail)
+       # don't forget to chmod 4775 netrom_call!
+       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+       # you can leave this out if you call the script 'gb7dxm'
+       client gb7dxm ax25
 
 
 
@@ -809,9 +920,6 @@
        # tell GB7DJK-1 that it is connected to GB7DJK
        # you can leave this out if you call this script 'gb7djk'
        client gb7djk telnet
-
-
-
 
 
   Both these examples assume that everything is set up properly at the
@@ -839,49 +947,32 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <- D G1TLH connect gb7djk-1
-  -> D G1TLH connection to GB7DJK-1 started
-  -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
-  timeout set to 15
-  CONNECT sort: telnet command: dirkl.tobit.co.uk
-  CHAT "login" -> "gb7djk"
-  received "
-  Red Hat Linux release 5.1 (Manhattan)
-  Kernel 2.0.35 on an i586
-  "
-  received "login: "
-  sent "gb7djk"
-  CHAT "word" -> "gb7djk"
-  received "gb7djk"
-  received "Password: "
-  sent "gb7djk"
-  Connected to GB7DJK-1, starting normal protocol
-  <- O GB7DJK-1 telnet
-  -> B GB7DJK-1 0
-  GB7DJK-1 channel func  state 0 -> init
-  <- D GB7DJK-1
-  <- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
-  <- D GB7DJK-1 PC38^GB7DJK-1^~
-  <- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime
-  0 00:00^5447^~
-      etc
+       <- D G1TLH connect gb7djk-1
+       -> D G1TLH connection to GB7DJK-1 started
+       -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
+       timeout set to 15
+       CONNECT sort: telnet command: dirkl.tobit.co.uk
+       CHAT "login" -> "gb7djk"
+       received "
+       Red Hat Linux release 5.1 (Manhattan)
+       Kernel 2.0.35 on an i586
+       "
+       received "login: "
+       sent "gb7djk"
+       CHAT "word" -> "gb7djk"
+       received "gb7djk"
+       received "Password: "
+       sent "gb7djk"
+       Connected to GB7DJK-1, starting normal protocol
+       <- O GB7DJK-1 telnet
+       -> B GB7DJK-1 0
+       GB7DJK-1 channel func  state 0 -> init
+       <- D GB7DJK-1
+       <- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
+       <- D GB7DJK-1 PC38^GB7DJK-1^~
+       <- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime
+       0 00:00^5447^~
+           etc
 
 
 
@@ -895,12 +986,6 @@
   This means if a node is unreachable, it will continue sending logins
   and logouts to users even though it is not actually connecting.  To
   avoid this use the following line ...
-
-
-
-
-
-
 
 
   In a script, this might look like ...
@@ -988,6 +1073,7 @@
 
 
 
+
   This line works fine for RedHat distributions. It is also fine for
   SuSE up to 7.0.  From Suse 7.1 you need to add runlevels 2 and 5 like
   this ...
@@ -1031,10 +1117,13 @@
 
 
 
-       # check every 10 minutes to see if gb7xxx is connected and if not
-       # start a connect job going
 
-       0,10,20,30,40,50 * * * * start_connect('gb7xxx') if !connected('gb7xxx')
+
+
+  # check every 10 minutes to see if gb7xxx is connected and if not
+  # start a connect job going
+
+  0,10,20,30,40,50 * * * * start_connect('gb7xxx') if !connected('gb7xxx')
 
 
 
@@ -1049,9 +1138,6 @@
   There are probably lots of other things you could use this crontab
   file for.  If you want to know more about it, look at the DXSpider
   website at the cron page where it is explained more fully.
-
-
-
 
 
   55..  HHoopp ccoonnttrrooll
@@ -1071,26 +1157,6 @@
   alter the hops for.  You may be happy with the default settings of
   course, but this powerful tool can help to protect and improve the
   network.  The file will look something like this ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2330,14 +2396,14 @@
   directly or nested under directories.  One use for this would be to
   store DX bulletins such as the OPDX bulletins.  These can be listed
   and read by the user.  To keep things tidy, make a directory under
-  /spider/packclus called _b_u_l_l_e_t_i_n_s.  Now copy any OPDX or similar
+  /spider/packclus called _b_u_l_l_e_t_i_n.  Now copy any OPDX or similar
   bulletins into it.  These can be listed by the user in the same way as
-  above using the _s_h_o_w_/_f_i_l_e_s command with an extension for the bulletins
+  above using the _s_h_o_w_/_f_i_l_e_s command with an extension for the bulletin
   directory you have just created, like this ....
 
 
 
-       show/files bulletins
+       show/files bulletin
 
 
 
@@ -2348,13 +2414,13 @@
 
 
        sh/files
-       bulletins      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
+       bulletin      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
 
 
 
 
   You can see that in the files area (basically the packclus directory)
-  there is a file called _n_e_w_s and a directory called _b_u_l_l_e_t_i_n_s.  You can
+  there is a file called _n_e_w_s and a directory called _b_u_l_l_e_t_i_n.  You can
   also see that dates they were created.  In the case of the file _n_e_w_s,
   you can also see the time it was last modified, a good clue as to
   whether the file has been updated since you last read it.  To read the
@@ -2367,14 +2433,14 @@
 
 
 
-  To look what is in the bulletins directory you issue the command ....
+  To look what is in the bulletin directory you issue the command ....
 
 
 
 
 
 
-  show/files bulletins
+  show/files bulletin
   opdx390      21381 29-Nov-1999 1621Z opdx390.1     1670 29-Nov-1999 1621Z
   opdx390.2     2193 29-Nov-1999 1621Z opdx391      25045 29-Nov-1999 1621Z
   opdx392      35969 29-Nov-1999 1621Z opdx393      15023 29-Nov-1999 1621Z
@@ -2398,7 +2464,7 @@
 
 
 
-       type bulletins/opdx391
+       type bulletin/opdx391
        Ohio/Penn DX Bulletin No. 391
        The Ohio/Penn Dx PacketCluster
        DX Bulletin No. 391
@@ -2587,7 +2653,7 @@
   In later versions of Spider a simple console program is provided for
   the sysop.  This has a type ahead buffer with line editing facilities
   and colour for spots, announces etc.  To use this program, simply use
-  console.pl instead of client.pl.
+  console.pl instead of client.
 
 
   To edit the colours, copy /spider/perl/Console.pl to /spider/local and

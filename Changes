@@ -1,3 +1,6 @@
+08Apr01=======================================================================
+1. added a quick installation guide to the admin manual and removed references
+to client.pl (g0vgs)
 01Apr01=======================================================================
 1. changed agwrestart semantics. You need to use main::agwrestart() in your
 crontabs rather than AGWMsg::init();
