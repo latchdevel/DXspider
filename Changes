@@ -1,3 +1,9 @@
+17Aug01=======================================================================
+1. Sort out PC41 handling to include type 5 records for QRA locators and also
+remove all filtering (but retain ephemeral dup checking).
+2. Improve format checking in latlong and qra locators.
+3. Sort sh/st so that sh/st by itself displays only the local call not the
+whole lot (all 17000+ users records in my case). SH/ST ALL does this.
 16Aug01=======================================================================
 1. send a forward/opernam for a logged in user once a month (when they next
 login).

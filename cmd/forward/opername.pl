@@ -29,6 +29,7 @@ foreach $call (@f) {
 		my $lat = $ref->lat;
 		my $long = $ref->long;
 		my $node = $ref->homenode;
+		my $qra = $ref->qra;
 		my $latlong = DXBearing::lltos($lat, $long) if $lat && $long;
 		if ($name) {
 			my $l = DXProt::pc41($DXProt::me, $call, 1, $name);
@@ -47,6 +48,11 @@ foreach $call (@f) {
 		}
 		if ($node) {
 			my $l = DXProt::pc41($call, 4, $node);
+			DXProt::eph_dup($l);
+			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
+		}
+		if ($qra) {
+			my $l = DXProt::pc41($call, 5, $qra);
 			DXProt::eph_dup($l);
 			DXProt::broadcast_all_ak1a($l, $DXProt::me) ;
 		}

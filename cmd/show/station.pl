@@ -11,9 +11,10 @@ my @f = split /\s+/, uc $line;
 my @out;
 my $call;
 my $seek;
+push @f, $self->call unless @f;
 
-if (@f == 0) {
-	return (1, $self->msg('e6')) if ($self->priv < 5); 
+if (@f == 1 && uc $f[0] eq 'ALL') {
+	return (1, $self->msg('e6')) if ($self->priv < 6); 
 	my @calls = DXUser::get_all_calls();
 	foreach $call (@calls) {
 		my $ref = DXUser->get_current($call);

@@ -1527,6 +1527,15 @@ So for example:-
 SH/SAT AO-10 
 SH/SAT FENGYUN1 12 2
 
+=== 6^SHOW/STATION ALL [<regex>]^Show list of users in the system
+=== 0^SHOW/STATION [<callsign> ..]^Show information about a callsign
+Show the information known about a callsign and whether (and where)
+that callsign is connected to the cluster.
+
+  SH/ST G1TLH
+
+If no callsign is given then show the information for yourself.
+
 === 0^SHOW/SUN [<prefix>|<callsign>]^Show sun rise and set times
 Show the sun rise and set times for a (list of) prefixes or callsigns, 
 together with the azimuth and elevation of the sun currently at those

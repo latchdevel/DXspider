@@ -406,7 +406,7 @@ sub normal
 			my $user = DXUser->get_current($spot[4]);
 			if ($user) {
 				my $qra = $user->qra;
-				unless ($qra && DXBearing::is_qra($qra)) {
+				unless ($qra && is_qra($qra)) {
 					my $lat = $user->lat;
 					my $long = $user->long;
 					if (defined $lat && defined $long) {
@@ -884,8 +884,8 @@ sub normal
 			my $call = $field[1];
 
 			# input filter if required
-			my $ref = Route::get($call) || Route->new($call);
-			return unless $self->in_filter_route($ref);
+#			my $ref = Route::get($call) || Route->new($call);
+#			return unless $self->in_filter_route($ref);
 
 			# add this station to the user database, if required
 			my $user = DXUser->get_current($call);
@@ -896,12 +896,27 @@ sub normal
 			} elsif ($field[2] == 2) {
 				$user->qth($field[3]);
 			} elsif ($field[2] == 3) {
-				my ($lat, $long) = DXBearing::stoll($field[3]);
-				$user->lat($lat);
-				$user->long($long);
-				$user->qra(DXBearing::lltoqra($lat, $long)) unless $user->qra && DXBearing::is_qra($user->qra);
+				if (is_latlong($field[3])) {
+					my ($lat, $long) = DXBearing::stoll($field[3]);
+					$user->lat($lat);
+					$user->long($long);
+					$user->qra(DXBearing::lltoqra($lat, $long));
+				} else {
+					dbg('PCPROT: not a valid lat/long') if isdbg('chanerr');
+					return;
+				}
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
+			} elsif ($field[2] == 5) {
+				if (is_qra($field[3])) {
+					my ($lat, $long) = DXBearing::qratoll($field[3]);
+					$user->lat($lat);
+					$user->long($long);
+					$user->qra($field[3]);
+				} else {
+					dbg('PCPROT: not a valid QRA locator') if isdbg('chanerr');
+					return;
+				}
 			}
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;

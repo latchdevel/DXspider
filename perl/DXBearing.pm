@@ -78,13 +78,6 @@ sub dr
 	return ($n / 180) * $pi;
 }
 
-# does it look like a qra locator?
-sub is_qra
-{
-	my $qra = shift;
-	return $qra =~ /^[A-Za-z][A-Za-z]\d\d[A-Za-z][A-Za-z]$/o;
-}
-
 # calc bearing and distance, with arguments in DEGREES
 # home lat/long -> lat/long
 # returns bearing (in DEGREES) & distance in KM
@@ -111,7 +104,7 @@ sub bdist
 # turn a lat long string into floating point lat and long
 sub stoll
 {
-	my ($latd, $latm, $latl, $longd, $longm, $longl) = split /\s+/, shift;
+	my ($latd, $latm, $latl, $longd, $longm, $longl) = $_[0] =~ /(\d{1,2})\s+(\d{1,2})\s*([NnSs])\s+(\d{1,2})\s+(\d{1,2})\s*([EeWw])/;
 	
 	$longd += ($longm/60);
 	$longd = 0-$longd if (uc $longl) eq 'W'; 

@@ -16,8 +16,8 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs phex shellregex readfilestr writefilestr
-             print_all_fields cltounix unpad is_callsign
-			 is_freq is_digits is_pctext is_pcflag insertitem deleteitem
+             print_all_fields cltounix unpad is_callsign is_latlong
+			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
@@ -312,7 +312,7 @@ sub unpad
 # check that a field only has callsign characters in it
 sub is_callsign
 {
-	return $_[0] =~ /^(?:[A-Z]{1,2}\d+|\d[A-Z]\d+)[A-Z0-9\/\-]+$/;
+	return $_[0] =~ /^(?:[A-Z]{1,2}\d+|\d[A-Z]\d+)[A-Z]+(?:-\d{1,2}|\/[A-Z0-9]+)?$/;
 }
 
 # check that a PC protocol field is valid text
@@ -337,6 +337,18 @@ sub is_freq
 sub is_digits
 {
 	return $_[0] =~ /^[\d]+$/;
+}
+
+# does it look like a qra locator?
+sub is_qra
+{
+	return $_[0] =~ /^[A-Za-z][A-Za-z]\d\d[A-Za-z][A-Za-z]$/o;
+}
+
+# does it look like a valid lat/long
+sub is_latlong
+{
+	return $_[0] =~ /^\s*\d{1,2}\s+\d{1,2}\s*[NnSs]\s+\d{1,2}\s+\d{1,2}\s*[EeWw]\s*$/;
 }
 
 # insert an item into a list if it isn't already there returns 1 if there 0 if not

@@ -16,8 +16,7 @@ my @out;
 $line = uc $line;
 
 # convert a lat/long into a qra locator if we see a pattern looking like a lat/long
-if ($line =~ /^\d+\s+\d+\s*[NS]\s+\d+\s+\d+\s*[EW]/) {
-	$line =~ s/(\d)([NSEW])/$1 $2/g;
+if (is_latlong($line)) {
 	my ($llat, $llong) = DXBearing::stoll(uc $line);
 	return (1, "QRA $line = " . DXBearing::lltoqra($llat, $llong)); 
 }
@@ -37,13 +36,13 @@ unshift @list, DXBearing::lltoqra($lat, $long) unless @list > 1;
 # check from qra
 my $f = uc $list[0];
 $f .= 'MM' if $f =~ /^[A-Z][A-Z]\d\d$/;
-return (1, $self->msg('qrae2', $f)) unless DXBearing::is_qra($f);
+return (1, $self->msg('qrae2', $f)) unless is_qra($f);
 ($lat, $long) = DXBearing::qratoll($f);
 
 # check to qra
 my $l = uc $list[1];
 $l .= 'MM' if $l =~ /^[A-Z][A-Z]\d\d$/;
-return (1, $self->msg('qrae2', $l)) unless DXBearing::is_qra($l);
+return (1, $self->msg('qrae2', $l)) unless is_qra($l);
 my ($qlat, $qlong) = DXBearing::qratoll($l);
 
 # generate alpha lat/long

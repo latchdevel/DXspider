@@ -33,7 +33,8 @@ my $fp = DXLog::new('debug', 'dat', 'd');
 my @today = Julian::unixtoj(time()); 
 my $fh = $fp->open(@today) or die $!; 
 my $nolines = 1;
-$nolines = shift if $ARGV[0] =~ /^\d+$/;
+$nolines = shift if $ARGV[0] =~ /^-?\d+$/;
+$nolines = abs $nolines if $nolines < 0;  
 my $exp = join '|', @ARGV;
 my @prev;
 
