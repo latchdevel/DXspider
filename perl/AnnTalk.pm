@@ -28,7 +28,7 @@ sub dup
 	unpad($text);
 	$text =~ s/[^a-zA-Z0-9]//g;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $dupkey = "A$to|$text";
+	my $dupkey = "A$to|\L$text";
 	return DXDupe::check($dupkey, $main::systime + $dupage);
 }
 
