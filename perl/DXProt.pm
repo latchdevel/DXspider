@@ -28,13 +28,14 @@ use Local;
 use Carp;
 
 use strict;
-use vars qw($me $pc11_max_age $pc11_dup_age $pc23_dup_age 
-			%spotdup %wwvdup $last_hour %pings %rcmds 
+use vars qw($me $pc11_max_age $pc23_max_age $pc11_dup_age $pc23_dup_age
+			%spotdup %wwvdup $last_hour %pings %rcmds
 			%nodehops @baddx $baddxfn $pc12_dup_age
 			%anndup $allowzero);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
+$pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 $pc11_dup_age = 24*3600;		# the maximum time to keep the spot dup list for
 $pc23_dup_age = 24*3600;		# the maximum time to keep the wwv dup list for
 $pc12_dup_age = 24*3600;		# the maximum time to keep the ann dup list for
@@ -512,7 +513,7 @@ sub normal
 				dbg('chan', "Dup WWV Spot ignored\n");
 				return;
 			}
-			if ($d > $main::systime + 900 || $field[2] < 0 || $field[2] > 23) {
+			if ($d < $main::systime - $pc23_max_age || $d > $main::systime + 900 || $field[2] < 0 || $field[2] > 23) {
 				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}

@@ -1,3 +1,8 @@
+25Aug99=======================================================================
+1. check the date of a WWV much more carefully.
+24Aug99=======================================================================
+1. Prevented spots with lowercase callsigns being forwarded. This opens a
+much bigger can of worms which I shall have to address later.
 17Aug99=======================================================================
 1. all protocol except PC29 containing %XX characters will be dumped.
 2. Changed console.pl so that if you start typing it moves the top window
