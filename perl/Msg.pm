@@ -119,6 +119,7 @@ sub conns
 		$call = $pkg->{call} unless $call;
 		return undef unless $call;
 		dbg('connll', "changing $pkg->{call} to $call") if exists $pkg->{call} && $call ne $pkg->{call};
+		delete $conns{$pkg->{call}} if $pkg->{call} ne $call; 
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
 		dbg('connll', "Connection $pkg->{cnum} $call stored");
