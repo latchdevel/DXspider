@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider Installation Manual v1.50: Linux Installation </TITLE>
+ <LINK HREF="installation_en-2.html" REL=next>
+
+ <LINK HREF="installation_en.html#toc1" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="installation_en-2.html">Next</A>
+Previous
+<A HREF="installation_en.html#toc1">Contents</A>
+<HR>
+<H2><A NAME="s1">1.</A> <A HREF="installation_en.html#toc1">Linux Installation </A></H2>
+
+<H2><A NAME="ss1.1">1.1</A> <A HREF="installation_en.html#toc1.1">Introduction</A>
+</H2>
+
+<P>This section describes the installation of DX Spider v1.50 on a 
+<A HREF="http://www.redhat.com">RedHat</A> Linux Distribution.
+Wherever possible I will try to include differences for other distributions.  </P>
+
+<P>I am assuming a general knowledge of Linux and its commands.  You should 
+know how to use <EM>tar</EM> and how to edit files using your favourite editor.</P>
+
+<P>The crucial ingredient for all of this is 
+<A HREF="http://www.perl.org">Perl</A>.  Earlier versions of
+Spider required perl 5.004, however it is now <I>STRONGLY</I> recommended
+that you use at least version 5.005_03 as this is the version being used
+in the development of Spider.</P>
+
+<P>In addition to the standard Red Hat distribution you will require the 
+following modules from 
+<A HREF="http://www.cpan.org/modules/by-module/">http://www.cpan.org/modules/by-module/</A> , please note however that with later versions of perl, some of these
+modules may be included with the distribution.  Get the modules anyway and try
+to install as below.  If they complain, they are probably already a part of your
+perl distribution.</P>
+
+<P>
+<UL>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.10.tar.gz">Data-Dumper-2.101.tar.gz</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Date/TimeDate-1.10.tar.gz">TimeDate-1.10.tar.gz</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz">IO-1.20.tar.gz (for perl 5.00403 and lower)</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Net/Net-Telnet-3.02.tar.gz">Net-Telnet-3.03.tar.gz</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Curses/Curses-1.06.tar.gz">Curses-1.06.tar.gz</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time-HiRes-01.20.tar.gz</A></LI>
+<LI> 
+<A HREF="http://www.cpan.org/modules/by-module/Digest/Digest-SHA1-2.01.tar.gz">Digest-SHA1-2.01.tar.gz</A></LI>
+</UL>
+</P>
+
+<P>Copy the CPAN modules listed above to a convenient place on your computer. One good 
+place would be /usr/local/packages, and the instructions which follow will assume that 
+that's where you have put them.</P>
+
+<P>Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -</P>
+<P>
+<PRE>
+# tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
+# cd Data-Dumper-2.101
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
+# cd TimeDate-1.10
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/IO-1.20.tar.gz
+# cd IO-1.20
+# perl Makefile.PL
+# make test
+# make install UNINST=1
+# cd ..
+#
+# tar xvfz /usr/local/packages/Net-Telnet-3.03.tar.gz
+# cd Net-Telnet-3.02
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Curses-1.06.tar.gz
+# cd Curses-1.06
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Time-HiRes-01.20.tar.gz 
+# cd Time-HiRes-01.20
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Digest-SHA1-2.01.tar.gz
+# cd Digest-SHA1-2.01
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+</PRE>
+</P>
+
+<P>Do not fall into the trap of thinking they're all the same, just because they 
+nearly are! Pay particular attention to the instructions of <EM>IO</EM>, above.</P>
+
+
+<H2><A NAME="ss1.2">1.2</A> <A HREF="installation_en.html#toc1.2">Preparation</A>
+</H2>
+
+<P>I will assume that you have already downloaded the latest tarball of 
+the DXSpider software and are ready to install it. I am assuming version 
+1.50 for this section but of course you would use the latest version.</P>
+
+<P>Login as root and create a user to run the cluster under.  <B><I>UNDER 
+NO CIRCUMSTANCES USE ROOT AS THIS USER!</I></B>.  I am going to use 
+the name <EM>sysop</EM>.  You can call it anything you wish.  Depending 
+on your security requirements you may wish to use an existing user, 
+however this is your own choice.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# adduser -m sysop
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>For SuSE distributions, the command would be ..</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# useradd -m sysop
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Now set a password for the user ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# passwd sysop
+# New UNIX password:
+# Retype new UNIX password:
+passwd: all authentication tokens updated successfully
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss1.3">1.3</A> <A HREF="installation_en.html#toc1.3">Installing the software</A>
+</H2>
+
+<P>Now to unpack the DX Spider distribution, set symbolic links and group 
+permissions.  Copy the tarball to /home/sysop and do the following.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# cd ~sysop
+# tar xvfz spider-1.50.tar.gz
+# ln -s ~sysop/spider /spider
+# groupadd -g 251 spider       (or another number)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>If you do not have the command <EM>groupadd</EM> available to you simply 
+add a line in /etc/group by hand.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# vi /etc/group                (or your favorite editor)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>You also need to add some others to the group, including your own callsign 
+(this will be used as an alias) and root.  The finished line in /etc/group 
+should look something like this</P>
+<P><CODE>spider:x:251:sysop,g0vgs,root</CODE></P>
+
+<P>The next step is to set the permissions on the Spider directory tree and files ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# chown -R sysop.spider spider
+# find . -type d -exec chmod 2775 {} \;
+# find . -type f -exec chmod 775 {} \;
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>This last step allows various users of the group <EM>spider</EM> to have 
+write access to all the directories.  This is not really needed just yet 
+but will be useful when web interfaces start to appear.</P>
+
+<P>Finally, you need to fix the permissions on the ax25_call and netrom_call 
+programs.  Check where they are with the <EM>locate</EM> command and alter 
+the permissions with the <EM>chmod</EM> command like this ..</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+# chown root ax25_call netrom_call
+# chmod 4775 ax25_call netrom_call
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss1.4">1.4</A> <A HREF="installation_en.html#toc1.4">Setting callsigns etc</A>
+</H2>
+
+<P>Now login to your machine as the user you created earlier.  In my case that 
+user is called <EM>sysop</EM>.  Once logged in, issue the following commands ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$ cd /spider
+$ mkdir local
+$ mkdir local_cmd
+$ cp perl/DXVars.pm.issue local/DXVars.pm
+$ cd local
+$ vi DXVars.pm (or your favourite editor)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Using the distributed DXVars.pm as a a template, set your cluster callsign, 
+sysop callsign and other user info to suit your own environment. </P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$mycall = "GB7DJK";     
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>This is the call sign of your cluster.  If you use an SSID then include it here
+also.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$myalias = "G1TLH";
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>This is the sysop user callsign, normally your own.</P>
+
+<P><B>PLEASE USE CAPITAL LETTERS FOR CALLSIGNS</B></P>
+
+<P>Note that this a perl file which will be parsed and executed as part of the 
+cluster. If you get it wrong then perl will complain when you start the cluster 
+process.  It is important only to alter the text of any section.  Some of the 
+lines look a little odd.  Take this line for example ....</P>
+<P><CODE>$myemail = "ianmaude\@btinternet.com";</CODE></P>
+
+<P>There appears to be an extra slash in there.  However this has to be there 
+for the file to work so leave it in.</P>
+
+<P>DON'T alter any file in /spider/perl, they are overwritten with every
+release. Any files or commands you place in /spider/local or /spider/local_cmd 
+will automagically be used in preference to the ones in /spider/perl EVEN 
+while the cluster is running!</P>
+
+<P>Save the new file and change directory to ../perl ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$ cd ../perl
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Now type the following command which creates the basic user file with you as 
+the sysop.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$ ./create_sysop.pl
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss1.5">1.5</A> <A HREF="installation_en.html#toc1.5">The client program</A>
+</H2>
+
+<P>In earlier versions of Spider, all the processes were Perl scripts.  This
+was fine but with a lot of users your computer memory would soon be used up.
+To combat this a new client was written in "C".  This client only works for
+<EM>incoming</EM> connects at the moment.  Before you can use it though it
+has to be "made".  CD to /spider/src and type <EM>make</EM>.  You
+should see the output on your screen and hopefully now have a small C program
+called <EM>client</EM>.  Leave it in this directory.</P>
+
+
+<H2><A NAME="ss1.6">1.6</A> <A HREF="installation_en.html#toc1.6">Starting up for the first time</A>
+</H2>
+
+<P>We can now bring spider up for the first time and see if all is well or not!  
+It should look something like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$ ./cluster.pl
+DXSpider DX Cluster Version 1.50
+Copyright (c) 1998 Dirk Koopman G1TLH
+loading prefixes ...
+loading band data ...
+loading user file system ...
+starting listener ...
+reading existing message headers
+reading cron jobs
+orft we jolly well go ...
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>If all is well then login on another term or console as <EM>sysop</EM> and 
+cd to /spider/src.  Now issue the following command ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+$ ./client
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>This should log you into the cluster as the sysop under the alias callsign we 
+set earlier.  In this case the callsign is G0VGS.  The cluster callsign is set 
+in the DXVars.pm file in /spider/local.  In this case we will assume that this 
+was set as GB7MBC.  You should therefore see this when you login ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+G0VGS de GB7MBC 19-Nov-1999 2150Z >
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>If you do, congratulations!  If not, look over the instructions again, you 
+have probably missed something out.  You can shut spider down again with the 
+command ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+shutdown
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>and both the cluster and the client should return to Linux prompts.</P>
+
+
+<HR>
+<A HREF="installation_en-2.html">Next</A>
+Previous
+<A HREF="installation_en.html#toc1">Contents</A>
+</BODY>
+</HTML>

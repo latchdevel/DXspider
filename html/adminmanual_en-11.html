@@ -1,0 +1,1990 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider Administration Manual v1.50: The DXSpider command set</TITLE>
+ <LINK HREF="adminmanual_en-10.html" REL=previous>
+ <LINK HREF="adminmanual_en.html#toc11" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+Next
+<A HREF="adminmanual_en-10.html">Previous</A>
+<A HREF="adminmanual_en.html#toc11">Contents</A>
+<HR>
+<H2><A NAME="s11">11.</A> <A HREF="adminmanual_en.html#toc11">The DXSpider command set</A></H2>
+
+<H2><A NAME="ss11.1">11.1</A> <A HREF="adminmanual_en.html#toc11.1">accept (0)</A>
+</H2>
+
+<P><CODE><B>accept</B> Set a filter to accept something</CODE></P>
+<P>Create a filter to accept somethingThere are 2 types of filter, accept and reject.  See HELP FILTERING for moreinfo.</P>
+<H2><A NAME="ss11.2">11.2</A> <A HREF="adminmanual_en.html#toc11.2">accept/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>accept/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> Announce filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/ann by G,M,2  accept/ann input node_default by G,M,2  accept/ann user_default by G,M,2
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.3">11.3</A> <A HREF="adminmanual_en.html#toc11.3">accept/announce [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>accept/announce [0-9] &lt;pattern&gt;</B> Set an 'accept' filter line for announce</CODE></P>
+<P>Create an 'accept this announce' line for a filter. An accept filter line means that if the announce matches this filter it ispassed onto the user. See HELP FILTERING for more info. Please read thisto understand how filters work - it will save a lot of grief later on.You can use any of the following things in this line:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  info &lt;string&gt;            eg: iota or qsl  by &lt;prefixes&gt;            eg: G,M,2           origin &lt;prefixes&gt;  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  origin_state &lt;states&gt;                eg: VA,NH,RI,NH  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  by_state &lt;states&gt;  channel &lt;prefixes&gt;  wx 1                     filter WX announces  dest &lt;prefixes&gt;          eg: 6MUK,WDX      (distros)
+</PRE>
+</CODE></BLOCKQUOTE>
+some examples:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/ann dest 6MUK  acc/ann 2 by_zone 14,15,16  (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+or
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/ann by G,M,2 
+</PRE>
+</CODE></BLOCKQUOTE>
+for american states
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/ann by_state va,nh,ri,nh
+</PRE>
+</CODE></BLOCKQUOTE>
+You can use the tag 'all' to accept everything eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/ann all
+</PRE>
+</CODE></BLOCKQUOTE>
+but this probably for advanced users...</P>
+<H2><A NAME="ss11.4">11.4</A> <A HREF="adminmanual_en.html#toc11.4">accept/route &lt;call&gt; [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>accept/route &lt;call&gt; [0-9] &lt;pattern&gt;</B> Set an 'accept' filter line for routing</CODE></P>
+<P>Create an 'accept this routing PC Protocol' line for a filter. An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter it is passed thru that interface. See HELP FILTERING for more info. Please read thisto understand how filters work - it will save a lot of grief later on.You can use any of the following things in this line:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  call &lt;prefixes&gt;        the callsign of the thingy  call_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  call_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  call_zone &lt;prefixes or numbers&gt;  call_state &lt;states&gt;                eg: VA,NH,RI,NH  origin &lt;prefixes&gt;      really the interface it came in on  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  origin_state &lt;states&gt;                eg: VA,NH,RI,NH
+</PRE>
+</CODE></BLOCKQUOTE>
+some examples:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)  acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+</PRE>
+</CODE></BLOCKQUOTE>
+you can now use 'by' as a synonym for 'call' so:
+<BLOCKQUOTE><CODE>
+<PRE>
+  by = call  by_dxcc = call_dxcc 
+</PRE>
+</CODE></BLOCKQUOTE>
+and so onYou can use the tag 'all' to accept everything eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/route all
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.5">11.5</A> <A HREF="adminmanual_en.html#toc11.5">accept/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>accept/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> Spot filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/spot db0sue-7 1 by_zone 14,15,16  accept/spot node_default all  set/hops node_default 10
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/spot user_default by G,M,2
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.6">11.6</A> <A HREF="adminmanual_en.html#toc11.6">accept/spots [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>accept/spots [0-9] &lt;pattern&gt;</B> Set an 'accept' filter line for spots</CODE></P>
+<P>Create an 'accept this spot' line for a filter. An accept filter line means that if the spot matches this filter it ispassed onto the user. See HELP FILTERING for more info. Please read thisto understand how filters work - it will save a lot of grief later on.You can use any of the following things in this line:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  freq &lt;range&gt;           eg: 0/30000 or hf or hf/cw or 6m,4m,2m  on &lt;range&gt;             same as 'freq'  call &lt;prefixes&gt;        eg: G,PA,HB9  info &lt;string&gt;          eg: iota or qsl  by &lt;prefixes&gt;              call_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  call_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  call_zone &lt;prefixes or numbers&gt;  call_state &lt;states&gt;                eg: VA,NH,RI,ME  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  by_state &lt;states&gt;                eg: VA,NH,RI,ME  origin &lt;prefixes&gt;  channel &lt;prefixes&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+'call' means the callsign that has spotted 'by' whoever.For frequencies, you can use any of the band names defined inSHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -thus: hf/ssb. You can also just have a simple range like: 0/30000 -this is more efficient than saying simply: freq HF (but don't gettoo hung up about that)some examples:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/spot 1 on hf/cw  acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+You can use the tag 'all' to accept everything, eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/spot 3 all
+</PRE>
+</CODE></BLOCKQUOTE>
+for US states 
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/spots by_state VA,NH,RI,MA,ME
+</PRE>
+</CODE></BLOCKQUOTE>
+but this probably for advanced users...</P>
+<H2><A NAME="ss11.7">11.7</A> <A HREF="adminmanual_en.html#toc11.7">accept/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>accept/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> WCY filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/wcy node_default all  set/hops node_default 10
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.8">11.8</A> <A HREF="adminmanual_en.html#toc11.8">accept/wcy [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>accept/wcy [0-9] &lt;pattern&gt;</B> set an 'accept' WCY filter</CODE></P>
+<P>It is unlikely that you will want to do this, but if you do then you canfilter on the following fields:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  by &lt;prefixes&gt;            eg: G,M,2           origin &lt;prefixes&gt;  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  channel &lt;prefixes&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+There are no examples because WCY Broadcasts only come from one place andyou either want them or not (see UNSET/WCY if you don't want them).This command is really provided for future use.See HELP FILTER for information.</P>
+<H2><A NAME="ss11.9">11.9</A> <A HREF="adminmanual_en.html#toc11.9">accept/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>accept/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> WWV filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/wwv db0sue-7 1 by_zone 4  accept/wwv node_default all  set/hops node_default 10
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/wwv user_default by W,K
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.10">11.10</A> <A HREF="adminmanual_en.html#toc11.10">accept/wwv [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>accept/wwv [0-9] &lt;pattern&gt;</B> set an 'accept' WWV filter</CODE></P>
+<P>It is unlikely that you will want to do this, but if you do then you canfilter on the following fields:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  by &lt;prefixes&gt;            eg: G,M,2           origin &lt;prefixes&gt;  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  channel &lt;prefixes&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+for example 
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/wwv by_zone 4
+</PRE>
+</CODE></BLOCKQUOTE>
+is probably the only useful thing to do (which will only show WWV broadcastsby stations in the US).See HELP FILTER for information.</P>
+<H2><A NAME="ss11.11">11.11</A> <A HREF="adminmanual_en.html#toc11.11">announce &lt;text&gt; (0)</A>
+</H2>
+
+<P><CODE><B>announce &lt;text&gt;</B> Send an announcement to LOCAL users only</CODE></P>
+<P>&lt;text&gt; is the text of the announcement you wish to broadcast </P>
+<H2><A NAME="ss11.12">11.12</A> <A HREF="adminmanual_en.html#toc11.12">announce full &lt;text&gt; (0)</A>
+</H2>
+
+<P><CODE><B>announce full &lt;text&gt;</B> Send an announcement cluster wide</CODE></P>
+<P>This will send your announcement cluster wide</P>
+<H2><A NAME="ss11.13">11.13</A> <A HREF="adminmanual_en.html#toc11.13">announce sysop &lt;text&gt; (5)</A>
+</H2>
+
+<P><CODE><B>announce sysop &lt;text&gt;</B> Send an announcement to Sysops only</CODE></P>
+
+<H2><A NAME="ss11.14">11.14</A> <A HREF="adminmanual_en.html#toc11.14">apropos &lt;string&gt; (0)</A>
+</H2>
+
+<P><CODE><B>apropos &lt;string&gt;</B> Search help database for &lt;string&gt;</CODE></P>
+<P>Search the help database for &lt;string&gt; (it isn't case sensitive), and printthe names of all the commands that may be relevant.</P>
+<H2><A NAME="ss11.15">11.15</A> <A HREF="adminmanual_en.html#toc11.15">blank [&lt;string&gt;] [&lt;nn&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>blank [&lt;string&gt;] [&lt;nn&gt;]</B> Print nn (default 1) blank lines (or strings)</CODE></P>
+<P>In its basic form this command prints one or more blank lines. However ifyou pass it a string it will replicate the string for the width of the screen (default 80) and then print that one or more times, so:
+<BLOCKQUOTE><CODE>
+<PRE>
+  blank 2
+</PRE>
+</CODE></BLOCKQUOTE>
+prints two blank lines
+<BLOCKQUOTE><CODE>
+<PRE>
+  blank - 
+</PRE>
+</CODE></BLOCKQUOTE>
+prints a row of - characters once.
+<BLOCKQUOTE><CODE>
+<PRE>
+  blank abc
+</PRE>
+</CODE></BLOCKQUOTE>
+prints 'abcabcabcabcabcabc....'This is really only of any use in a script file and you can print a maximumof 9 lines.</P>
+<H2><A NAME="ss11.16">11.16</A> <A HREF="adminmanual_en.html#toc11.16">bye (0)</A>
+</H2>
+
+<P><CODE><B>bye</B> Exit from the cluster</CODE></P>
+<P>This will disconnect you from the cluster</P>
+<H2><A NAME="ss11.17">11.17</A> <A HREF="adminmanual_en.html#toc11.17">catchup &lt;node call&gt; all|[&lt;msgno&gt; ...] (5)</A>
+</H2>
+
+<P><CODE><B>catchup &lt;node call&gt; all|[&lt;msgno&gt; ...]</B> Mark a message as sent</CODE></P>
+
+<H2><A NAME="ss11.18">11.18</A> <A HREF="adminmanual_en.html#toc11.18">clear/announce &lt;callsign&gt; [input] [0-9|all] (8)</A>
+</H2>
+
+<P><CODE><B>clear/announce &lt;callsign&gt; [input] [0-9|all]</B> Clear a announce filter line</CODE></P>
+<P>A sysop can clear an input or normal output filter for a user or thenode_default or user_default. </P>
+<H2><A NAME="ss11.19">11.19</A> <A HREF="adminmanual_en.html#toc11.19">clear/announce [1|all] (0)</A>
+</H2>
+
+<P><CODE><B>clear/announce [1|all]</B> Clear a announce filter line</CODE></P>
+<P>This command allows you to clear (remove) a line in a annouce filter or to remove the whole filter.see CLEAR/SPOTS for a more detailed explanation.</P>
+<H2><A NAME="ss11.20">11.20</A> <A HREF="adminmanual_en.html#toc11.20">clear/route &lt;callsign&gt; [input] [0-9|all] (8)</A>
+</H2>
+
+<P><CODE><B>clear/route &lt;callsign&gt; [input] [0-9|all]</B> Clear a route filter line</CODE></P>
+<P>A sysop can clear an input or normal output filter for a user or thenode_default or user_default. </P>
+<H2><A NAME="ss11.21">11.21</A> <A HREF="adminmanual_en.html#toc11.21">clear/route [1|all] (0)</A>
+</H2>
+
+<P><CODE><B>clear/route [1|all]</B> Clear a route filter line</CODE></P>
+<P>This command allows you to clear (remove) a line in a route filter or to remove the whole filter.see CLEAR/SPOTS for a more detailed explanation.</P>
+<H2><A NAME="ss11.22">11.22</A> <A HREF="adminmanual_en.html#toc11.22">clear/spots &lt;callsign&gt; [input] [0-9|all] (8)</A>
+</H2>
+
+<P><CODE><B>clear/spots &lt;callsign&gt; [input] [0-9|all]</B> Clear a spot filter line</CODE></P>
+<P>A sysop can clear an input or normal output filter for a user or thenode_default or user_default. </P>
+<H2><A NAME="ss11.23">11.23</A> <A HREF="adminmanual_en.html#toc11.23">clear/spots [0-9|all] (0)</A>
+</H2>
+
+<P><CODE><B>clear/spots [0-9|all]</B> Clear a spot filter line</CODE></P>
+<P>This command allows you to clear (remove) a line in a spot filter or to remove the whole filter.If you have a filter:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/spot 1 on hf/cw  acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+and you say:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  clear/spot 1
+</PRE>
+</CODE></BLOCKQUOTE>
+you will be left with:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+If you do:
+<BLOCKQUOTE><CODE>
+<PRE>
+  clear/spot all
+</PRE>
+</CODE></BLOCKQUOTE>
+the filter will be completely removed.</P>
+<H2><A NAME="ss11.24">11.24</A> <A HREF="adminmanual_en.html#toc11.24">clear/wcy &lt;callsign&gt; [input] [0-9|all] (8)</A>
+</H2>
+
+<P><CODE><B>clear/wcy &lt;callsign&gt; [input] [0-9|all]</B> Clear a WCY filter line</CODE></P>
+<P>A sysop can clear an input or normal output filter for a user or thenode_default or user_default. </P>
+<H2><A NAME="ss11.25">11.25</A> <A HREF="adminmanual_en.html#toc11.25">clear/wcy [1|all] (0)</A>
+</H2>
+
+<P><CODE><B>clear/wcy [1|all]</B> Clear a WCY filter line</CODE></P>
+<P>This command allows you to clear (remove) a line in a WCY filter or to remove the whole filter.see CLEAR/SPOTS for a more detailed explanation.</P>
+<H2><A NAME="ss11.26">11.26</A> <A HREF="adminmanual_en.html#toc11.26">clear/wwv &lt;callsign&gt; [input] [0-9|all] (8)</A>
+</H2>
+
+<P><CODE><B>clear/wwv &lt;callsign&gt; [input] [0-9|all]</B> Clear a WWV filter line</CODE></P>
+<P>A sysop can clear an input or normal output filter for a user or thenode_default or user_default. </P>
+<H2><A NAME="ss11.27">11.27</A> <A HREF="adminmanual_en.html#toc11.27">clear/wwv [1|all] (0)</A>
+</H2>
+
+<P><CODE><B>clear/wwv [1|all]</B> Clear a WWV filter line</CODE></P>
+<P>This command allows you to clear (remove) a line in a WWV filter or to remove the whole filter.see CLEAR/SPOTS for a more detailed explanation.</P>
+<H2><A NAME="ss11.28">11.28</A> <A HREF="adminmanual_en.html#toc11.28">connect &lt;callsign&gt; (5)</A>
+</H2>
+
+<P><CODE><B>connect &lt;callsign&gt;</B> Start a connection to another DX Cluster</CODE></P>
+<P>Start a connection process that will culminate in a new connection to theDX cluster &lt;callsign&gt;. This process creates a new 'client' process which willuse the script in /spider/connect/&lt;callsign&gt; to effect the 'chat' exchangenecessary to traverse the network(s) to logon to the cluster &lt;callsign&gt;.</P>
+<H2><A NAME="ss11.29">11.29</A> <A HREF="adminmanual_en.html#toc11.29">dbavail (0)</A>
+</H2>
+
+<P><CODE><B>dbavail</B> Show a list of all the Databases in the system</CODE></P>
+<P>Title says it all really, this command lists all the databases definedin the system. It is also aliased to SHOW/COMMAND.</P>
+<H2><A NAME="ss11.30">11.30</A> <A HREF="adminmanual_en.html#toc11.30">dbshow &lt;dbname&gt; &lt;key&gt; (0)</A>
+</H2>
+
+<P><CODE><B>dbshow &lt;dbname&gt; &lt;key&gt;</B> Display an entry, if it exists, in a database</CODE></P>
+<P>This is the generic user interface to the database to the database system.It is expected that the sysop will add an entry to the local Aliases fileso that users can use the more familiar AK1A style of enquiry such as:
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/BUCK G1TLH
+</PRE>
+</CODE></BLOCKQUOTE>
+but if he hasn't and the database really does exist (use DBAVAIL orSHOW/COMMAND to find out) you can do the same thing with:
+<BLOCKQUOTE><CODE>
+<PRE>
+  DBSHOW buck G1TLH
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.31">11.31</A> <A HREF="adminmanual_en.html#toc11.31">directory (0)</A>
+</H2>
+
+<P><CODE><B>directory</B> List messages </CODE></P>
+
+<H2><A NAME="ss11.32">11.32</A> <A HREF="adminmanual_en.html#toc11.32">directory &lt;from&gt;-&lt;to&gt; (0)</A>
+</H2>
+
+<P><CODE><B>directory &lt;from&gt;-&lt;to&gt;</B> List messages &lt;from&gt; message &lt;to&gt; message </CODE></P>
+<P>List the messages in the messages directory.If there is a 'p' one space after the message number then it is a personal message. If there is a '-' between the message number and the'p' then this indicates that the message has been read.You can use shell escape characters such as '*' and '?' in the &lt;call&gt;fields.You can combine some of the various directory commands together eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   DIR TO G1TLH 5
+</PRE>
+</CODE></BLOCKQUOTE>
+or 
+<BLOCKQUOTE><CODE>
+<PRE>
+   DIR SUBJECT IOTA 200-250
+</PRE>
+</CODE></BLOCKQUOTE>
+You can abbreviate all the commands to one letter and use ak1a syntax:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   DIR/T G1* 10   DIR/S QSL 10-100 5
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.33">11.33</A> <A HREF="adminmanual_en.html#toc11.33">directory &lt;nn&gt; (0)</A>
+</H2>
+
+<P><CODE><B>directory &lt;nn&gt;</B> List last &lt;nn&gt; messages</CODE></P>
+
+<H2><A NAME="ss11.34">11.34</A> <A HREF="adminmanual_en.html#toc11.34">directory all (0)</A>
+</H2>
+
+<P><CODE><B>directory all</B> List all messages</CODE></P>
+
+<H2><A NAME="ss11.35">11.35</A> <A HREF="adminmanual_en.html#toc11.35">directory from &lt;call&gt; (0)</A>
+</H2>
+
+<P><CODE><B>directory from &lt;call&gt;</B> List all messages from &lt;call&gt;</CODE></P>
+
+<H2><A NAME="ss11.36">11.36</A> <A HREF="adminmanual_en.html#toc11.36">directory new (0)</A>
+</H2>
+
+<P><CODE><B>directory new</B> List all new messages</CODE></P>
+
+<H2><A NAME="ss11.37">11.37</A> <A HREF="adminmanual_en.html#toc11.37">directory own (0)</A>
+</H2>
+
+<P><CODE><B>directory own</B> List your own messages</CODE></P>
+
+<H2><A NAME="ss11.38">11.38</A> <A HREF="adminmanual_en.html#toc11.38">directory subject &lt;string&gt; (0)</A>
+</H2>
+
+<P><CODE><B>directory subject &lt;string&gt;</B> List all messages with &lt;string&gt; in subject</CODE></P>
+
+<H2><A NAME="ss11.39">11.39</A> <A HREF="adminmanual_en.html#toc11.39">directory to &lt;call&gt; (0)</A>
+</H2>
+
+<P><CODE><B>directory to &lt;call&gt;</B> List all messages to &lt;call&gt;</CODE></P>
+
+<H2><A NAME="ss11.40">11.40</A> <A HREF="adminmanual_en.html#toc11.40">directory- (5)</A>
+</H2>
+
+<P><CODE><B>directory-</B> </CODE></P>
+<P>Sysops can see all users' messages.</P>
+<H2><A NAME="ss11.41">11.41</A> <A HREF="adminmanual_en.html#toc11.41">disconnect &lt;call&gt; [&lt;call&gt; ...] (8)</A>
+</H2>
+
+<P><CODE><B>disconnect &lt;call&gt; [&lt;call&gt; ...]</B> Disconnect a user or cluster</CODE></P>
+<P>Disconnect any &lt;call&gt; connected locally</P>
+<H2><A NAME="ss11.42">11.42</A> <A HREF="adminmanual_en.html#toc11.42">dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt; (0)</A>
+</H2>
+
+<P><CODE><B>dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt;</B> Send a DX spot</CODE></P>
+<P>This is how you send a DX Spot to other users. You can, in fact, nowenter the &lt;freq&gt; and the &lt;call&gt; either way round. 
+<BLOCKQUOTE><CODE>
+<PRE>
+   DX FR0G 144.600   DX 144.600 FR0G   DX 144600 FR0G 
+</PRE>
+</CODE></BLOCKQUOTE>
+will all give the same result. You can add some remarks to the endof the command and they will be added to the spot.
+<BLOCKQUOTE><CODE>
+<PRE>
+   DX FR0G 144600 this is a test
+</PRE>
+</CODE></BLOCKQUOTE>
+You can credit someone else by saying:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   DX by G1TLH FR0G 144.600 he isn't on the cluster
+</PRE>
+</CODE></BLOCKQUOTE>
+The &lt;freq&gt; is compared against the available bands set up in the cluster.  See SHOW/BANDS for more information.</P>
+<H2><A NAME="ss11.43">11.43</A> <A HREF="adminmanual_en.html#toc11.43">echo &lt;line&gt; (0)</A>
+</H2>
+
+<P><CODE><B>echo &lt;line&gt;</B> Echo the line to the output</CODE></P>
+<P>This command is useful in scripts and so forth for printing theline that you give to the command to the output. You can use thisin user_default scripts and the SAVE command for titling and so forthThe script will interpret certain standard "escape" sequences as follows:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  \t - becomes a TAB character (0x09 in ascii)  \a - becomes a BEEP character (0x07 in ascii)  \n - prints a new line
+</PRE>
+</CODE></BLOCKQUOTE>
+So the following example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  echo GB7DJK is a dxcluster
+</PRE>
+</CODE></BLOCKQUOTE>
+produces:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  GB7DJK is a dxcluster
+</PRE>
+</CODE></BLOCKQUOTE>
+on the output. You don't need a \n on the end of the line you want to send.A more complex example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  echo GB7DJK\n\tg1tlh\tDirk\n\tg3xvf\tRichard
+</PRE>
+</CODE></BLOCKQUOTE>
+produces:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  GB7DJK          g1tlh   Dirk          g3xvf   Richard
+</PRE>
+</CODE></BLOCKQUOTE>
+on the output.</P>
+<H2><A NAME="ss11.44">11.44</A> <A HREF="adminmanual_en.html#toc11.44">filtering... (0)</A>
+</H2>
+
+<P><CODE><B>filtering...</B> Filtering things in DXSpider</CODE></P>
+<P>There are a number of things you can filter in the DXSpider system. Theyall use the same general mechanism.In general terms you can create a 'reject' or an 'accept' filter whichcan have up to 10 lines in it. You do this using, for example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/spots .....  reject/spots .....
+</PRE>
+</CODE></BLOCKQUOTE>
+where ..... are the specific commands for that type of filter. Thereare filters for spots, wwv, announce, wcy and (for sysops)connects. See each different accept or reject command reference formore details.There is also a command to clear out one or more lines in a filter andone to show you what you have set. They are:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  clear/spots 1  clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+and 
+<BLOCKQUOTE><CODE>
+<PRE>
+  show/filter
+</PRE>
+</CODE></BLOCKQUOTE>
+There is clear/xxxx command for each type of filter.For now we are going to use spots for the examples, but you can applythe principles to all types of filter.There are two main types of filter 'accept' or 'reject'; which you usedepends entirely on how you look at the world and what is leastwriting to achieve what you want. Each filter has 10 lines (of anylength) which are tried in order. If a line matches then the actionyou have specified is taken (ie reject means ignore it and acceptmeans gimme it).The important thing to remember is that if you specify a 'reject'filter (all the lines in it say 'reject/spots' (for instance)) then ifa spot comes in that doesn't match any of the lines then you will getit BUT if you specify an 'accept' filter then any spots that don'tmatch are dumped. For example if I have a one line accept filter:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/spots on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+then automatically you will ONLY get VHF spots from or to CQ zones 1415 and 16.  If you set a reject filter like:
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/spots on hf/cw
+</PRE>
+</CODE></BLOCKQUOTE>
+Then you will get everything EXCEPT HF CW spots, If you am interested in IOTAand will work it even on CW then you could say:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/spots on hf/cw and not info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+But in that case you might only be interested in iota and say:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/spots not on hf/cw or info iota
+</PRE>
+</CODE></BLOCKQUOTE>
+which is exactly the same. You should choose one or the other untilyou are confortable with the way it works. Yes, you can mix them(actually you can have an accept AND a reject on the same line) butdon't try this at home until you can analyse the results that you getwithout ringing up the sysop for help.Another useful addition now is filtering by US state
+<BLOCKQUOTE><CODE>
+<PRE>
+  accept/spots by_state VA,NH,RI,ME
+</PRE>
+</CODE></BLOCKQUOTE>
+You can arrange your filter lines into logical units, either for yourown understanding or simply convenience. I have one set frequently:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/spots 1 on hf/cw  reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
+</PRE>
+</CODE></BLOCKQUOTE>
+What this does is to ignore all HF CW spots (being a class B I can'tread any CW and couldn't possibly be interested in HF :-) and alsorejects any spots on VHF which don't either originate or spot someonein Europe.This is an exmaple where you would use the line number (1 and 2 inthis case), if you leave the digit out, the system assumes '1'. Digits'0'-'9' are available.You can leave the word 'and' out if you want, it is implied. You canuse any number of brackets to make the 'expression' as you wantit. There are things called precedence rules working here which meanthat you will NEED brackets in a situation like line 2 because,without it, will assume:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  (on 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
+</PRE>
+</CODE></BLOCKQUOTE>
+annoying, but that is the way it is. If you use OR - usebrackets. Whilst we are here CASE is not important. 'And BY_Zone' isjust 'and by_zone'.If you want to alter your filter you can just redefine one or morelines of it or clear out one line. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/spots 1 on hf/ssb
+</PRE>
+</CODE></BLOCKQUOTE>
+or 
+<BLOCKQUOTE><CODE>
+<PRE>
+  clear/spots 1
+</PRE>
+</CODE></BLOCKQUOTE>
+To remove the filter in its entirty:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  clear/spots all
+</PRE>
+</CODE></BLOCKQUOTE>
+There are similar CLEAR commands for the other filters:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  clear/announce  clear/wcy  clear/wwv
+</PRE>
+</CODE></BLOCKQUOTE>
+ADVANCED USERS:-Once you are happy with the results you get, you may like to experiment. my example that filters hf/cw spots and accepts vhf/uhf spots from EUcan be written with a mixed filter, eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/spot on hf/cw  acc/spot on 0/30000  acc/spot 2 on 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+each filter slot actually has a 'reject' slot and an 'accept'slot. The reject slot is executed BEFORE the accept slot.It was mentioned earlier that after a reject test that doesn't match,the default for following tests is 'accept', the reverse is true for'accept'. In the example what happens is that the reject is executedfirst, any non hf/cw spot is passed to the accept line, which letsthru everything else on HF.The next filter line lets through just VHF/UHF spots from EU.</P>
+<H2><A NAME="ss11.45">11.45</A> <A HREF="adminmanual_en.html#toc11.45">forward/latlong &lt;node_call&gt; (8)</A>
+</H2>
+
+<P><CODE><B>forward/latlong &lt;node_call&gt;</B> Send latitude and longitude information to another cluster</CODE></P>
+<P>This command sends all the latitude and longitude information that yourcluster is holding against callsigns.  One advantage of recieving thisinformation is that more locator information is held by you.  Thismeans that more locators are given on the DX line assuming you haveSET/DXGRID enabled.  This could be a LOT of information though, soit is not recommended on slow links.</P>
+<H2><A NAME="ss11.46">11.46</A> <A HREF="adminmanual_en.html#toc11.46">forward/opernam &lt;call&gt; (1)</A>
+</H2>
+
+<P><CODE><B>forward/opernam &lt;call&gt;</B> Send out information on this &lt;call&gt; to all clusters</CODE></P>
+<P>This command sends out any information held in the user file which can be broadcast in PC41 protocol packets. This information is Name, QTH, Locationand Homenode. PC41s are only sent for the information that is available.</P>
+<H2><A NAME="ss11.47">11.47</A> <A HREF="adminmanual_en.html#toc11.47">help (0)</A>
+</H2>
+
+<P><CODE><B>help</B> The HELP Command</CODE></P>
+<P>HELP is available for a number of commands. The syntax is:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  HELP &lt;cmd&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+Where &lt;cmd&gt; is the name of the command you want help on.All commands can be abbreviated, so SHOW/DX can be abbreviatedto SH/DX, ANNOUNCE can be shortened to AN and so on.Look at the APROPOS &lt;string&gt; command which will search the help databasefor the &lt;string&gt; you specify and give you a list of likely commandsto look at with HELP.</P>
+<H2><A NAME="ss11.48">11.48</A> <A HREF="adminmanual_en.html#toc11.48">init &lt;node&gt; (5)</A>
+</H2>
+
+<P><CODE><B>init &lt;node&gt;</B> Re-initialise a link to an AK1A compatible node</CODE></P>
+<P>This command attempts to re-initialise a link to a (usually) AK1A nodethat has got confused, usually by a protocol loop of some kind. It maywork - but you usually will be better off simply disconnecting it (orbetter, if it is a real AK1A node, doing an RCMD &lt;node&gt; DISC/F &lt;yournode&gt;).Best of luck - you will need it.</P>
+<H2><A NAME="ss11.49">11.49</A> <A HREF="adminmanual_en.html#toc11.49">kill (5)</A>
+</H2>
+
+<P><CODE><B>kill</B> </CODE></P>
+<P>As a sysop you can kill any message on the system.</P>
+<H2><A NAME="ss11.50">11.50</A> <A HREF="adminmanual_en.html#toc11.50">kill &lt;from msgno&gt;-&lt;to msgno&gt; (0)</A>
+</H2>
+
+<P><CODE><B>kill &lt;from msgno&gt;-&lt;to msgno&gt;</B> Delete a range of messages</CODE></P>
+
+<H2><A NAME="ss11.51">11.51</A> <A HREF="adminmanual_en.html#toc11.51">kill &lt;from&gt;-&lt;to&gt; (5)</A>
+</H2>
+
+<P><CODE><B>kill &lt;from&gt;-&lt;to&gt;</B> Remove a range of messages from the system</CODE></P>
+
+<H2><A NAME="ss11.52">11.52</A> <A HREF="adminmanual_en.html#toc11.52">kill &lt;msgno&gt; [&lt;msgno..] (0)</A>
+</H2>
+
+<P><CODE><B>kill &lt;msgno&gt; [&lt;msgno..]</B> Delete a message from the local system</CODE></P>
+
+<H2><A NAME="ss11.53">11.53</A> <A HREF="adminmanual_en.html#toc11.53">kill &lt;msgno&gt; [&lt;msgno&gt; ...] (0)</A>
+</H2>
+
+<P><CODE><B>kill &lt;msgno&gt; [&lt;msgno&gt; ...]</B> Remove or erase a message from the system</CODE></P>
+<P>You can get rid of any message to or originating from your callsign using this command. You can remove more than one message at a time.</P>
+<H2><A NAME="ss11.54">11.54</A> <A HREF="adminmanual_en.html#toc11.54">kill expunge &lt;msgno&gt; [&lt;msgno..] (6)</A>
+</H2>
+
+<P><CODE><B>kill expunge &lt;msgno&gt; [&lt;msgno..]</B> Expunge a message</CODE></P>
+<P>Deleting a message using the normal KILL commands only marks that messagefor deletion. The actual deletion only happens later (usually two days later).The KILL EXPUNGE command causes the message to be truly deleted more or lessimmediately.It otherwise is used in the same way as the KILL command.</P>
+<H2><A NAME="ss11.55">11.55</A> <A HREF="adminmanual_en.html#toc11.55">kill from &lt;call&gt; (5)</A>
+</H2>
+
+<P><CODE><B>kill from &lt;call&gt;</B> Remove all messages from a callsign</CODE></P>
+
+<H2><A NAME="ss11.56">11.56</A> <A HREF="adminmanual_en.html#toc11.56">kill full &lt;msgno&gt; [&lt;msgno..] (5)</A>
+</H2>
+
+<P><CODE><B>kill full &lt;msgno&gt; [&lt;msgno..]</B> Delete a message from the whole cluster</CODE></P>
+<P>Delete a message from the local system. You will only be able todelete messages that you have originated or been sent (unless you arethe sysop). 
+<BLOCKQUOTE><CODE>
+<PRE>
+  KILL 1234-1255
+</PRE>
+</CODE></BLOCKQUOTE>
+Will delete all the messages that you own between msgnos 1234 and 1255.
+<BLOCKQUOTE><CODE>
+<PRE>
+  KILL from g1tlh
+</PRE>
+</CODE></BLOCKQUOTE>
+will delete all the messages from g1tlh (if you are g1tlh). Similarly:
+<BLOCKQUOTE><CODE>
+<PRE>
+  KILL to g1tlh
+</PRE>
+</CODE></BLOCKQUOTE>
+will delete all messages to g1tlh.
+<BLOCKQUOTE><CODE>
+<PRE>
+  KILL FULL 1234
+</PRE>
+</CODE></BLOCKQUOTE>
+will delete a message (usually a 'bulletin') from the whole cluster system. This uses the subject field, so any messages that have exactly thesame subject will be deleted. Beware!</P>
+<H2><A NAME="ss11.57">11.57</A> <A HREF="adminmanual_en.html#toc11.57">kill full &lt;msgno&gt; [&lt;msgno] (5)</A>
+</H2>
+
+<P><CODE><B>kill full &lt;msgno&gt; [&lt;msgno]</B> Remove a message from the entire cluster</CODE></P>
+<P>Remove this message from the entire cluster system as well as your node.</P>
+<H2><A NAME="ss11.58">11.58</A> <A HREF="adminmanual_en.html#toc11.58">kill to &lt;call&gt; (5)</A>
+</H2>
+
+<P><CODE><B>kill to &lt;call&gt;</B> Remove all messages to a callsign</CODE></P>
+
+<H2><A NAME="ss11.59">11.59</A> <A HREF="adminmanual_en.html#toc11.59">kill from &lt;regex&gt; (0)</A>
+</H2>
+
+<P><CODE><B>kill from &lt;regex&gt;</B> Delete messages FROM a callsign or pattern</CODE></P>
+
+<H2><A NAME="ss11.60">11.60</A> <A HREF="adminmanual_en.html#toc11.60">kill to &lt;regex&gt; (0)</A>
+</H2>
+
+<P><CODE><B>kill to &lt;regex&gt;</B> Delete messages TO a callsign or pattern</CODE></P>
+
+<H2><A NAME="ss11.61">11.61</A> <A HREF="adminmanual_en.html#toc11.61">links (0)</A>
+</H2>
+
+<P><CODE><B>links</B> Show which nodes is physically connected</CODE></P>
+<P>This is a quick listing that shows which links are connected andsome information about them. See WHO for a list of all connections.</P>
+<H2><A NAME="ss11.62">11.62</A> <A HREF="adminmanual_en.html#toc11.62">load/keps (5)</A>
+</H2>
+
+<P><CODE><B>load/keps</B> Load new keps data</CODE></P>
+
+<H2><A NAME="ss11.63">11.63</A> <A HREF="adminmanual_en.html#toc11.63">load/keps [nn] (5)</A>
+</H2>
+
+<P><CODE><B>load/keps [nn]</B> Load new keps data from message</CODE></P>
+<P>If there is no message number then reload the current Keps data fromthe Keps.pm data file. You create this file by running 
+<BLOCKQUOTE><CODE>
+<PRE>
+ /spider/perl/convkeps.pl &lt;filename&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+on a file containing NASA 2 line keps as a message issued by AMSAT. If there is a message number, then it will take the message, runconvkeps.pl on it and then load the data, all in one step.These messages are sent to ALL by GB7DJK (and others) from time to time. </P>
+<H2><A NAME="ss11.64">11.64</A> <A HREF="adminmanual_en.html#toc11.64">merge &lt;node&gt; [&lt;no spots&gt;/&lt;no wwv&gt;] (5)</A>
+</H2>
+
+<P><CODE><B>merge &lt;node&gt; [&lt;no spots&gt;/&lt;no wwv&gt;]</B> Ask for the latest spots and WWV </CODE></P>
+<P>MERGE allows you to bring your spot and wwv database up to date. By defaultit will request the last 10 spots and 5 WWVs from the node you select. The node must be connected locally.You can request any number of spots or wwv and although they will be appendedto your databases they will not duplicate any that have recently been added (the last 2 days for spots and last month for WWV data).</P>
+<H2><A NAME="ss11.65">11.65</A> <A HREF="adminmanual_en.html#toc11.65">pc &lt;call&gt; &lt;text&gt; (8)</A>
+</H2>
+
+<P><CODE><B>pc &lt;call&gt; &lt;text&gt;</B> Send arbitrary text to a connected callsign</CODE></P>
+<P>Send some arbitrary text to a locally connected callsign. Noprocessing is done on the text. This command allows you to send PCProtocol to unstick things if problems arise (messages get stucketc). eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   pc gb7djk PC33^GB7TLH^GB7DJK^400^
+</PRE>
+</CODE></BLOCKQUOTE>
+or 
+<BLOCKQUOTE><CODE>
+<PRE>
+   pc G1TLH Try doing that properly!!!
+</PRE>
+</CODE></BLOCKQUOTE>
+Send any text you like to the callsign requested. This is used mainly to sendPC protocol to connected nodes either for testing or to unstick things. You can also use in the same way as a talk command to a connected user butwithout any processing, added of "from &lt;blah&gt; to &lt;blah" or whatever.</P>
+<H2><A NAME="ss11.66">11.66</A> <A HREF="adminmanual_en.html#toc11.66">ping &lt;node call&gt; (1)</A>
+</H2>
+
+<P><CODE><B>ping &lt;node call&gt;</B> Check the link quality between nodes</CODE></P>
+<P>This command allows you to send a frame to another cluster node onthe network and get a return frame.  The time it takes to do thisis a good indication of the quality of the link.  The actual timeit takes is output to the console in seconds.Any visible cluster node can be PINGed.</P>
+<H2><A NAME="ss11.67">11.67</A> <A HREF="adminmanual_en.html#toc11.67">rcmd &lt;node call&gt; &lt;cmd&gt; (1)</A>
+</H2>
+
+<P><CODE><B>rcmd &lt;node call&gt; &lt;cmd&gt;</B> Send a command to another DX Cluster</CODE></P>
+<P>This command allows you to send nearly any command to another DX Clusternode that is connected to the system. Whether you get any output is dependant on a) whether the other system knowsthat the node callsign of this cluster is in fact a node b) whether theother system is allowing RCMDs from this node and c) whether you havepermission to send this command at all.</P>
+<H2><A NAME="ss11.68">11.68</A> <A HREF="adminmanual_en.html#toc11.68">read (0)</A>
+</H2>
+
+<P><CODE><B>read</B> Read the next unread personal message addressed to you</CODE></P>
+
+<H2><A NAME="ss11.69">11.69</A> <A HREF="adminmanual_en.html#toc11.69">read &lt;msgno&gt; (0)</A>
+</H2>
+
+<P><CODE><B>read &lt;msgno&gt;</B> Read the specified message</CODE></P>
+<P>You can read any messages that are sent as 'non-personal' and also anymessage either sent by or sent to your callsign.</P>
+<H2><A NAME="ss11.70">11.70</A> <A HREF="adminmanual_en.html#toc11.70">read- (5)</A>
+</H2>
+
+<P><CODE><B>read-</B> </CODE></P>
+<P>As a sysop you may read any message on the system</P>
+<H2><A NAME="ss11.71">11.71</A> <A HREF="adminmanual_en.html#toc11.71">reject (0)</A>
+</H2>
+
+<P><CODE><B>reject</B> Set a filter to reject something</CODE></P>
+<P>Create a filter to reject somethingThere are 2 types of filter, accept and reject.  See HELP FILTERING for moreinfo.</P>
+<H2><A NAME="ss11.72">11.72</A> <A HREF="adminmanual_en.html#toc11.72">reject/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>reject/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> Announce filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/ann by G,M,2  reject/ann input node_default by G,M,2  reject/ann user_default by G,M,2
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.73">11.73</A> <A HREF="adminmanual_en.html#toc11.73">reject/announce [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reject/announce [0-9] &lt;pattern&gt;</B> Set a 'reject' filter line for announce</CODE></P>
+<P>Create an 'reject this announce' line for a filter. A reject filter line means that if the announce matches this filter it ispassed onto the user. See HELP FILTERING for more info. Please read thisto understand how filters work - it will save a lot of grief later on.You can use any of the following things in this line:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  info &lt;string&gt;            eg: iota or qsl  by &lt;prefixes&gt;            eg: G,M,2           origin &lt;prefixes&gt;  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  origin_state &lt;states&gt;                eg: VA,NH,RI,ME  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  by_state &lt;states&gt;                eg: VA,NH,RI,ME  channel &lt;prefixes&gt;  wx 1                     filter WX announces  dest &lt;prefixes&gt;          eg: 6MUK,WDX      (distros)
+</PRE>
+</CODE></BLOCKQUOTE>
+some examples:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/ann by_zone 14,15,16 and not by G,M,2
+</PRE>
+</CODE></BLOCKQUOTE>
+You can use the tag 'all' to reject everything eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/ann all
+</PRE>
+</CODE></BLOCKQUOTE>
+but this probably for advanced users...</P>
+<H2><A NAME="ss11.74">11.74</A> <A HREF="adminmanual_en.html#toc11.74">reject/route &lt;call&gt; [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>reject/route &lt;call&gt; [0-9] &lt;pattern&gt;</B> Set an 'reject' filter line for routing</CODE></P>
+<P>Create an 'reject this routing PC Protocol' line for a filter. An reject filter line means that if a PC16/17/19/21/24/41/50 matches this filter it is NOT passed thru that interface. See HELP FILTERING for more info. Please read this to understand how filters work - it will save a lot of grief later on.You can use any of the following things in this line:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  call &lt;prefixes&gt;        the callsign of the thingy  call_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  call_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  call_zone &lt;prefixes or numbers&gt;  call_state &lt;states&gt;                eg: VA,NH,RI,ME  origin &lt;prefixes&gt;      really the interface it came in on  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  origin_state &lt;states&gt;                eg: VA,NH,RI,ME
+</PRE>
+</CODE></BLOCKQUOTE>
+some examples:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
+</PRE>
+</CODE></BLOCKQUOTE>
+You can use the tag 'all' to reject everything eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/route all     (equiv to [very] restricted mode)
+</PRE>
+</CODE></BLOCKQUOTE>
+as with ACCEPT/ROUTE 'by' is now a synonym for 'call'.</P>
+<H2><A NAME="ss11.75">11.75</A> <A HREF="adminmanual_en.html#toc11.75">reject/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>reject/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> Spot filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/spot db0sue-7 1 by_zone 14,15,16  reject/spot node_default all  set/hops node_default 10
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/spot user_default by G,M,2
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.76">11.76</A> <A HREF="adminmanual_en.html#toc11.76">reject/spots [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reject/spots [0-9] &lt;pattern&gt;</B> Set a 'reject' filter line for spots</CODE></P>
+<P>Create a 'reject this spot' line for a filter. A reject filter line means that if the spot matches this filter it isdumped (not passed on). See HELP FILTERING for more info. Please read thisto understand how filters work - it will save a lot of grief later on.You can use any of the following things in this line:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  freq &lt;range&gt;           eg: 0/30000 or hf or hf/cw or 6m,4m,2m  on &lt;range&gt;             same as 'freq'  call &lt;prefixes&gt;        eg: G,PA,HB9  info &lt;string&gt;          eg: iota or qsl  by &lt;prefixes&gt;              call_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  call_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  call_zone &lt;prefixes or numbers&gt;  call_state &lt;states&gt;                eg: VA,NH,RI,ME  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  by_state &lt;states&gt;                eg: VA,NH,RI,ME  origin &lt;prefixes&gt;  channel &lt;prefixes&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+'call' means the callsign that has spotted 'by' whoever.For frequencies, you can use any of the band names defined inSHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -thus: hf/ssb. You can also just have a simple range like: 0/30000 -this is more efficient than saying simply: on HF (but don't gettoo hung up about that)some examples:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/spot 1 on hf  rej/spot 2 on vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
+</PRE>
+</CODE></BLOCKQUOTE>
+You can use the tag 'all' to reject everything eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  rej/spot 3 all
+</PRE>
+</CODE></BLOCKQUOTE>
+but this probably for advanced users...</P>
+<H2><A NAME="ss11.77">11.77</A> <A HREF="adminmanual_en.html#toc11.77">reject/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>reject/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> WCY filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/wcy gb7djk all
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.78">11.78</A> <A HREF="adminmanual_en.html#toc11.78">reject/wcy [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reject/wcy [0-9] &lt;pattern&gt;</B> set a 'reject' WCY filter</CODE></P>
+<P>It is unlikely that you will want to do this, but if you do then you canfilter on the following fields:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  by &lt;prefixes&gt;            eg: G,M,2           origin &lt;prefixes&gt;  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  channel &lt;prefixes&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+There are no examples because WCY Broadcasts only come from one place andyou either want them or not (see UNSET/WCY if you don't want them).This command is really provided for future use.See HELP FILTER for information.</P>
+<H2><A NAME="ss11.79">11.79</A> <A HREF="adminmanual_en.html#toc11.79">reject/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+</H2>
+
+<P><CODE><B>reject/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt;</B> WWV filter sysop version</CODE></P>
+<P>This version allows a sysop to set a filter for a callsign as well as thedefault for nodes and users eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/wwv db0sue-7 1 by_zone 4  reject/wwv node_default all
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/wwv user_default by W
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.80">11.80</A> <A HREF="adminmanual_en.html#toc11.80">reject/wwv [0-9] &lt;pattern&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reject/wwv [0-9] &lt;pattern&gt;</B> set a 'reject' WWV filter</CODE></P>
+<P>It is unlikely that you will want to do this, but if you do then you canfilter on the following fields:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  by &lt;prefixes&gt;            eg: G,M,2           origin &lt;prefixes&gt;  origin_dxcc &lt;prefixes or numbers&gt;    eg: 61,62 (from eg: sh/pre G)  origin_itu &lt;prefixes or numbers&gt;     or: G,GM,GW  origin_zone &lt;prefixes or numbers&gt;  by_dxcc &lt;prefixes or numbers&gt;  by_itu &lt;prefixes or numbers&gt;  by_zone &lt;prefixes or numbers&gt;  channel &lt;prefixes&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+for example 
+<BLOCKQUOTE><CODE>
+<PRE>
+  reject/wwv by_zone 14,15,16
+</PRE>
+</CODE></BLOCKQUOTE>
+is probably the only useful thing to do (which will only show WWV broadcastsby stations in the US).See HELP FILTER for information.</P>
+<H2><A NAME="ss11.81">11.81</A> <A HREF="adminmanual_en.html#toc11.81">reply (0)</A>
+</H2>
+
+<P><CODE><B>reply</B> Reply (privately) to the last message that you have read</CODE></P>
+
+<H2><A NAME="ss11.82">11.82</A> <A HREF="adminmanual_en.html#toc11.82">reply &lt;msgno&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reply &lt;msgno&gt;</B> Reply (privately) to the specified message</CODE></P>
+
+<H2><A NAME="ss11.83">11.83</A> <A HREF="adminmanual_en.html#toc11.83">reply b &lt;msgno&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reply b &lt;msgno&gt;</B> Reply as a Bulletin to the specified message</CODE></P>
+
+<H2><A NAME="ss11.84">11.84</A> <A HREF="adminmanual_en.html#toc11.84">reply noprivate &lt;msgno&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reply noprivate &lt;msgno&gt;</B> Reply as a Bulletin to the specified message</CODE></P>
+
+<H2><A NAME="ss11.85">11.85</A> <A HREF="adminmanual_en.html#toc11.85">reply rr &lt;msgno&gt; (0)</A>
+</H2>
+
+<P><CODE><B>reply rr &lt;msgno&gt;</B> Reply to the specified message with read receipt</CODE></P>
+<P>You can reply to a message and the subject will automatically have"Re:" inserted in front of it, if it isn't already present.You can also use all the extra qualifiers such as RR, PRIVATE, NOPRIVATE, B that you can use with the SEND command (see SENDfor further details)</P>
+<H2><A NAME="ss11.86">11.86</A> <A HREF="adminmanual_en.html#toc11.86">send &lt;call&gt; [&lt;call&gt; ...] (0)</A>
+</H2>
+
+<P><CODE><B>send &lt;call&gt; [&lt;call&gt; ...]</B> Send a message to one or more callsigns</CODE></P>
+
+<H2><A NAME="ss11.87">11.87</A> <A HREF="adminmanual_en.html#toc11.87">send copy &lt;msgno&gt; &lt;call&gt; (0)</A>
+</H2>
+
+<P><CODE><B>send copy &lt;msgno&gt; &lt;call&gt;</B> Send a copy of a  message to someone</CODE></P>
+
+<H2><A NAME="ss11.88">11.88</A> <A HREF="adminmanual_en.html#toc11.88">send noprivate &lt;call&gt; (0)</A>
+</H2>
+
+<P><CODE><B>send noprivate &lt;call&gt;</B> Send a message to all stations</CODE></P>
+<P>All the SEND commands will create a message which will be sent either toan individual callsign or to one of the 'bulletin' addresses. SEND &lt;call&gt; on its own acts as though you had typed SEND PRIVATE, that isit will mark the message as personal and send it to the cluster node thatthat callsign is connected to. If the &lt;call&gt; you have specified is in facta known bulletin category on your node (eg: ALL) then the message shouldautomatically become a bulletin.You can have more than one callsign in all of the SEND commands.You can have multiple qualifiers so that you can have for example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SEND RR COPY 123 PRIVATE G1TLH G0RDI
+</PRE>
+</CODE></BLOCKQUOTE>
+which should send a copy of message 123 to G1TLH and G0RDI and you willreceive a read receipt when they have read the message.SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)SP is an alias for SEND PRIVATEThe system will ask you for a subject. Conventionally this should be no longer than 29 characters for compatibility. Most modern clustersoftware should accept more.You will now be prompted to start entering your text. You finish the message by entering '/EX' on a new line. For instance:
+<BLOCKQUOTE><CODE>
+<PRE>
+  ...  bye then Jim  73 Dirk  /ex
+</PRE>
+</CODE></BLOCKQUOTE>
+If you have started a message and you don't want to keep it then youcan abandon the message with '/ABORT' on a new line, like:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  line 1  line 2  oh I just can't be bothered with this  /abort
+</PRE>
+</CODE></BLOCKQUOTE>
+If you abort the message it will NOT be sent.When you are entering the text of your message, most normal output (suchas DX announcements and so on are suppressed and stored for latter display(upto 20 such lines are stored, as new ones come along, so the oldestlines are dropped).Also, you can enter normal commands commands (and get the output immediately) whilst in the middle of a message. You do this by typingthe command preceeded by a '/' character on a new line, so:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  /dx g1tlh 144010 strong signal
+</PRE>
+</CODE></BLOCKQUOTE>
+Will issue a dx annoucement to the rest of the cluster. Also, you can add the output of a command to your message by preceeding the command with '//', thus :-
+<BLOCKQUOTE><CODE>
+<PRE>
+  //sh/vhftable
+</PRE>
+</CODE></BLOCKQUOTE>
+This will show YOU the output from SH/VHFTABLE and also store it in themessage. You can carry on with the message until you are ready to send it. </P>
+<H2><A NAME="ss11.89">11.89</A> <A HREF="adminmanual_en.html#toc11.89">send private &lt;call&gt; (0)</A>
+</H2>
+
+<P><CODE><B>send private &lt;call&gt;</B> Send a personal message</CODE></P>
+
+<H2><A NAME="ss11.90">11.90</A> <A HREF="adminmanual_en.html#toc11.90">send rr &lt;call&gt; (0)</A>
+</H2>
+
+<P><CODE><B>send rr &lt;call&gt;</B> Send a message and ask for a read receipt</CODE></P>
+
+<H2><A NAME="ss11.91">11.91</A> <A HREF="adminmanual_en.html#toc11.91">set/address &lt;your address&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/address &lt;your address&gt;</B> Record your postal address</CODE></P>
+
+<H2><A NAME="ss11.92">11.92</A> <A HREF="adminmanual_en.html#toc11.92">set/announce (0)</A>
+</H2>
+
+<P><CODE><B>set/announce</B> Allow announce messages to come out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.93">11.93</A> <A HREF="adminmanual_en.html#toc11.93">set/anntalk (0)</A>
+</H2>
+
+<P><CODE><B>set/anntalk</B> Allow talk like announce messages on your terminal</CODE></P>
+
+<H2><A NAME="ss11.94">11.94</A> <A HREF="adminmanual_en.html#toc11.94">set/arcluster &lt;call&gt; [&lt;call&gt;..] (5)</A>
+</H2>
+
+<P><CODE><B>set/arcluster &lt;call&gt; [&lt;call&gt;..]</B> Make the callsign an AR-Cluster node</CODE></P>
+
+<H2><A NAME="ss11.95">11.95</A> <A HREF="adminmanual_en.html#toc11.95">set/baddx &lt;call&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>set/baddx &lt;call&gt;..</B> Stop callsigns in a dx spot being propagated</CODE></P>
+
+<H2><A NAME="ss11.96">11.96</A> <A HREF="adminmanual_en.html#toc11.96">set/badnode &lt;call&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>set/badnode &lt;call&gt;..</B> Stop spots from this node being propagated</CODE></P>
+
+<H2><A NAME="ss11.97">11.97</A> <A HREF="adminmanual_en.html#toc11.97">set/badspotter &lt;call&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>set/badspotter &lt;call&gt;..</B> Stop spots from this callsign being propagated</CODE></P>
+
+<H2><A NAME="ss11.98">11.98</A> <A HREF="adminmanual_en.html#toc11.98">set/badword &lt;word&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>set/badword &lt;word&gt;..</B> Stop things with this word being propagated</CODE></P>
+
+<H2><A NAME="ss11.99">11.99</A> <A HREF="adminmanual_en.html#toc11.99">set/bbs &lt;call&gt; [&lt;call&gt;..] (5)</A>
+</H2>
+
+<P><CODE><B>set/bbs &lt;call&gt; [&lt;call&gt;..]</B> Make the callsign a BBS</CODE></P>
+
+<H2><A NAME="ss11.100">11.100</A> <A HREF="adminmanual_en.html#toc11.100">set/beep (0)</A>
+</H2>
+
+<P><CODE><B>set/beep</B> Add a beep to DX and other messages on your terminal</CODE></P>
+
+<H2><A NAME="ss11.101">11.101</A> <A HREF="adminmanual_en.html#toc11.101">set/clx &lt;call&gt; [&lt;call&gt;..] (5)</A>
+</H2>
+
+<P><CODE><B>set/clx &lt;call&gt; [&lt;call&gt;..]</B> Make the callsign an CLX node</CODE></P>
+
+<H2><A NAME="ss11.102">11.102</A> <A HREF="adminmanual_en.html#toc11.102">set/dx (0)</A>
+</H2>
+
+<P><CODE><B>set/dx</B> Allow DX messages to come out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.103">11.103</A> <A HREF="adminmanual_en.html#toc11.103">set/dxgrid (0)</A>
+</H2>
+
+<P><CODE><B>set/dxgrid</B> Allow QRA Grid Squares on the end of DX announcements</CODE></P>
+
+<H2><A NAME="ss11.104">11.104</A> <A HREF="adminmanual_en.html#toc11.104">set/dxnet &lt;call&gt; [&lt;call&gt;..] (5)</A>
+</H2>
+
+<P><CODE><B>set/dxnet &lt;call&gt; [&lt;call&gt;..]</B> Make the callsign an DXNet node</CODE></P>
+
+<H2><A NAME="ss11.105">11.105</A> <A HREF="adminmanual_en.html#toc11.105">set/echo (0)</A>
+</H2>
+
+<P><CODE><B>set/echo</B> Make the cluster echo your input</CODE></P>
+
+<H2><A NAME="ss11.106">11.106</A> <A HREF="adminmanual_en.html#toc11.106">set/email &lt;email&gt; ... (0)</A>
+</H2>
+
+<P><CODE><B>set/email &lt;email&gt; ...</B> Set email address(es) and forward your personals</CODE></P>
+
+<H2><A NAME="ss11.107">11.107</A> <A HREF="adminmanual_en.html#toc11.107">set/here (0)</A>
+</H2>
+
+<P><CODE><B>set/here</B> Tell the system you are present at your terminal</CODE></P>
+
+<H2><A NAME="ss11.108">11.108</A> <A HREF="adminmanual_en.html#toc11.108">set/homenode &lt;node&gt;  (0)</A>
+</H2>
+
+<P><CODE><B>set/homenode &lt;node&gt; </B> Set your normal cluster callsign</CODE></P>
+<P>Tell the cluster system where you normally connect to. Any Messages sentto you will normally find their way there should you not be connected.eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/HOMENODE gb7djk
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.109">11.109</A> <A HREF="adminmanual_en.html#toc11.109">set/hops &lt;call&gt; ann|spots|route|wwv|wcy &lt;n&gt; (8)</A>
+</H2>
+
+<P><CODE><B>set/hops &lt;call&gt; ann|spots|route|wwv|wcy &lt;n&gt;</B> Set hop count  </CODE></P>
+
+<H2><A NAME="ss11.110">11.110</A> <A HREF="adminmanual_en.html#toc11.110">set/language &lt;lang&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/language &lt;lang&gt;</B> Set the language you want to use</CODE></P>
+<P>You can select the language that you want the cluster to use. Currentlythe languages available are en (English), de (German), es (Spanish) and nl (Dutch).</P>
+<H2><A NAME="ss11.111">11.111</A> <A HREF="adminmanual_en.html#toc11.111">set/location &lt;lat &amp; long&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/location &lt;lat &amp; long&gt;</B> Set your latitude and longitude</CODE></P>
+
+<H2><A NAME="ss11.112">11.112</A> <A HREF="adminmanual_en.html#toc11.112">set/logininfo (0)</A>
+</H2>
+
+<P><CODE><B>set/logininfo</B> Inform when a station logs in locally</CODE></P>
+
+<H2><A NAME="ss11.113">11.113</A> <A HREF="adminmanual_en.html#toc11.113">set/name &lt;your name&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/name &lt;your name&gt;</B> Set your name</CODE></P>
+<P>Tell the system what your name is eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/NAME Dirk
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.114">11.114</A> <A HREF="adminmanual_en.html#toc11.114">set/node &lt;call&gt; [&lt;call&gt;..] (5)</A>
+</H2>
+
+<P><CODE><B>set/node &lt;call&gt; [&lt;call&gt;..]</B> Make the callsign an AK1A cluster</CODE></P>
+<P>Tell the system that the call(s) are to be treated as AK1A cluster andfed PC Protocol rather normal user commands.</P>
+<H2><A NAME="ss11.115">11.115</A> <A HREF="adminmanual_en.html#toc11.115">set/obscount &lt;count&gt; &lt;call&gt; (8)</A>
+</H2>
+
+<P><CODE><B>set/obscount &lt;count&gt; &lt;call&gt;</B> Set the 'pump-up' obscelence PING counter </CODE></P>
+<P>From 1.35 onwards neighbouring nodes are pinged at regular intervals (seeSET/PINGINTERVAL), usually 300 seconds or 5 minutes. There is a 'pump-up'counter which is decremented on every outgoing ping and then reset tothe 'obscount' value on every incoming ping. The default value of thisparameter is 2. What this means is that a neighbouring node will be pinged twice at (default) 300 second intervals and if no reply has been heard just beforewhat would be the third attempt, that node is disconnected.If a ping is heard then the obscount is reset to the full value. Usingdefault values, if a node has not responded to a ping within 15 minutes,it is disconnected.You can set this parameter between 1 and 9.It is STRONGLY recommended that you don't change the default.</P>
+<H2><A NAME="ss11.116">11.116</A> <A HREF="adminmanual_en.html#toc11.116">set/page &lt;lines per page&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/page &lt;lines per page&gt;</B> Set the lines per page</CODE></P>
+<P>Tell the system how many lines you wish on a page when the number of lineof output from a command is more than this. The default is 20. Setting itexplicitly to 0 will disable paging. 
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/PAGE 30  SET/PAGE 0
+</PRE>
+</CODE></BLOCKQUOTE>
+The setting is stored in your user profile.</P>
+<H2><A NAME="ss11.117">11.117</A> <A HREF="adminmanual_en.html#toc11.117">set/password (0)</A>
+</H2>
+
+<P><CODE><B>set/password</B> Set your own password</CODE></P>
+<P>This command only works for a 'telnet' user (currently). It willonly work if you have a password already set. This initial passwordcan only be set by the sysop.When you execute this command it will ask you for your old password,then ask you to type in your new password twice (to make sure youget it right). You may or may not see the data echoed on the screenas you type, depending on the type of telnet client you have.</P>
+<H2><A NAME="ss11.118">11.118</A> <A HREF="adminmanual_en.html#toc11.118">set/prompt &lt;string&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/prompt &lt;string&gt;</B> Set your prompt to &lt;string&gt;</CODE></P>
+
+<H2><A NAME="ss11.119">11.119</A> <A HREF="adminmanual_en.html#toc11.119">set/qra &lt;locator&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/qra &lt;locator&gt;</B> Set your QRA Grid locator</CODE></P>
+<P>Tell the system what your QRA (or Maidenhead) locator is. If you have notdone a SET/LOCATION then your latitude and longitude will be set roughlycorrectly (assuming your locator is correct ;-). For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/QRA JO02LQ
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.120">11.120</A> <A HREF="adminmanual_en.html#toc11.120">set/qth &lt;your qth&gt; (0)</A>
+</H2>
+
+<P><CODE><B>set/qth &lt;your qth&gt;</B> Set your QTH</CODE></P>
+<P>Tell the system where you are. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/QTH East Dereham, Norfolk
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.121">11.121</A> <A HREF="adminmanual_en.html#toc11.121">set/spider &lt;call&gt; [&lt;call&gt;..] (5)</A>
+</H2>
+
+<P><CODE><B>set/spider &lt;call&gt; [&lt;call&gt;..]</B> Make the callsign an DXSpider node</CODE></P>
+<P>Tell the system that the call(s) are to be treated as DXSpider node andfed new style DX Protocol rather normal user commands.</P>
+<H2><A NAME="ss11.122">11.122</A> <A HREF="adminmanual_en.html#toc11.122">set/talk (0)</A>
+</H2>
+
+<P><CODE><B>set/talk</B> Allow TALK messages to come out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.123">11.123</A> <A HREF="adminmanual_en.html#toc11.123">set/wcy (0)</A>
+</H2>
+
+<P><CODE><B>set/wcy</B> Allow WCY messages to come out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.124">11.124</A> <A HREF="adminmanual_en.html#toc11.124">set/wwv (0)</A>
+</H2>
+
+<P><CODE><B>set/wwv</B> Allow WWV messages to come out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.125">11.125</A> <A HREF="adminmanual_en.html#toc11.125">set/wx (0)</A>
+</H2>
+
+<P><CODE><B>set/wx</B> Allow WX messages to come out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.126">11.126</A> <A HREF="adminmanual_en.html#toc11.126">show/baddx (1)</A>
+</H2>
+
+<P><CODE><B>show/baddx</B> Show all the bad dx calls in the system</CODE></P>
+<P>Display all the bad dx callsigns in the system, see SET/BADDXfor more information.</P>
+<H2><A NAME="ss11.127">11.127</A> <A HREF="adminmanual_en.html#toc11.127">show/badnode (1)</A>
+</H2>
+
+<P><CODE><B>show/badnode</B> Show all the bad nodes in the system</CODE></P>
+<P>Display all the bad node callsigns in the system, see SET/BADNODEfor more information.</P>
+<H2><A NAME="ss11.128">11.128</A> <A HREF="adminmanual_en.html#toc11.128">show/badspotter (1)</A>
+</H2>
+
+<P><CODE><B>show/badspotter</B> Show all the bad spotters in the system</CODE></P>
+<P>Display all the bad spotter's callsigns in the system, see SET/BADSPOTTERfor more information.</P>
+<H2><A NAME="ss11.129">11.129</A> <A HREF="adminmanual_en.html#toc11.129">show/badword (1)</A>
+</H2>
+
+<P><CODE><B>show/badword</B> Show all the bad words in the system</CODE></P>
+<P>Display all the bad words in the system, see SET/BADWORDfor more information.</P>
+<H2><A NAME="ss11.130">11.130</A> <A HREF="adminmanual_en.html#toc11.130">show/configuration [&lt;node&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/configuration [&lt;node&gt;]</B> Show all the nodes and users visible</CODE></P>
+<P>This command allows you to see all the users that can be seenand the nodes to which they are connected.This command is normally abbreviated to: sh/cNormally, the list returned will be just for the nodes from your country (because the list otherwise will be very long).
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/C ALL 
+</PRE>
+</CODE></BLOCKQUOTE>
+will produce a complete list of all nodes. BE WARNED: the list that is returned can be VERY longIt is possible to supply a node or part of a prefix and you will get a list of the users for that node or list of nodes starting withthat prefix.
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/C GB7DJK
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/C SK
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.131">11.131</A> <A HREF="adminmanual_en.html#toc11.131">show/configuration/node (0)</A>
+</H2>
+
+<P><CODE><B>show/configuration/node</B> Show all the nodes connected locally</CODE></P>
+<P>Show all the nodes connected to this node.</P>
+<H2><A NAME="ss11.132">11.132</A> <A HREF="adminmanual_en.html#toc11.132">show/connect (1)</A>
+</H2>
+
+<P><CODE><B>show/connect</B> Show all the active connections</CODE></P>
+<P>This command shows information on all the active connections known tothe node. This command gives slightly more information than WHO.</P>
+<H2><A NAME="ss11.133">11.133</A> <A HREF="adminmanual_en.html#toc11.133">show/date [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/date [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show the local time </CODE></P>
+<P>This is very nearly the same as SHOW/TIME, the only difference the formatof the date string if no arguments are given.If no prefixes or callsigns are given then this command returns the localtime and UTC as the computer has it right now. If you give some prefixesthen it will show UTC and UTC + the local offset (not including DST) atthe prefixes or callsigns that you specify.</P>
+<H2><A NAME="ss11.134">11.134</A> <A HREF="adminmanual_en.html#toc11.134">show/dx (0)</A>
+</H2>
+
+<P><CODE><B>show/dx</B> Interrogate the spot database</CODE></P>
+<P>If you just type SHOW/DX you will get the last so many spots(sysop configurable, but usually 10).In addition you can add any number of these commands in very nearlyany order to the basic SHOW/DX command, they are:-
+<BLOCKQUOTE><CODE>
+<PRE>
+ on &lt;band&gt;       - eg 160m 20m 2m 23cm 6mm on &lt;region&gt;     - eg hf vhf uhf shf      (see SHOW/BANDS) on &lt;from&gt;/&lt;to&gt;  - eg 1000/4000 14000-30000  (in Khz)    &lt;from&gt;-&lt;to&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ &lt;number&gt;        - the number of spots you want &lt;from&gt;-&lt;to&gt;     - &lt;from&gt; spot no &lt;to&gt; spot no in the selected list &lt;from&gt;/&lt;to&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ &lt;prefix&gt;        - for a spotted callsign beginning with &lt;prefix&gt; *&lt;suffix&gt;       - for a spotted callsign ending in &lt;suffix&gt; *&lt;string&gt;*      - for a spotted callsign containing &lt;string&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ day &lt;number&gt;    - starting &lt;number&gt; days ago day &lt;from&gt;-&lt;to&gt; - &lt;from&gt; days &lt;to&gt; days ago     &lt;from&gt;/&lt;to&gt;   
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ info &lt;text&gt;     - any spots containing &lt;text&gt; in the info or remarks
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ by &lt;call&gt;       - any spots spotted by &lt;call&gt; (spotter &lt;call&gt; is the                    same).
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ qsl             - this automatically looks for any qsl info on the call                   held in the spot database.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ iota [&lt;iota&gt;]   - If the iota island number is missing it will look for                  the string iota and anything which looks like an iota                  island number. If you specify then it will look for                    that island.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ qra [&lt;locator&gt;] - this will look for the specific locator if you specify                   one or else anything that looks like a locator.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ dxcc            - treat the prefix as a 'country' and look for spots                   from that country regardless of actual prefix.                   eg dxcc oq2 
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+                   You can also use this with the 'by' keyword so                    eg by W dxcc  
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ e.g. 
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+   SH/DX 9m0   SH/DX on 20m info iota   SH/DX 9a on vhf day 30   SH/DX rf1p qsl   SH/DX iota    SH/DX iota eu-064   SH/DX qra jn86   SH/DX dxcc oq2   SH/DX dxcc oq2 by w dxcc
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.135">11.135</A> <A HREF="adminmanual_en.html#toc11.135">show/dxcc &lt;prefix&gt; (0)</A>
+</H2>
+
+<P><CODE><B>show/dxcc &lt;prefix&gt;</B> Interrogate the spot database by country</CODE></P>
+<P>This command takes the &lt;prefix&gt; (which can be a full or partial callsign if desired), looks up which internal country number it isand then displays all the spots as per SH/DX for that country.This is now an alias for 'SHOW/DX DXCC' The options for SHOW/DX also apply to this command.   e.g. 
+<BLOCKQUOTE><CODE>
+<PRE>
+   SH/DXCC G   SH/DXCC W on 20m iota
+</PRE>
+</CODE></BLOCKQUOTE>
+This can be done with the SHOW/DX command like this:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   SH/DX dxcc g   SH/DX dxcc w on 20m iota
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.136">11.136</A> <A HREF="adminmanual_en.html#toc11.136">show/dxstats [days] [date] (0)</A>
+</H2>
+
+<P><CODE><B>show/dxstats [days] [date]</B> Show the DX Statistics</CODE></P>
+<P>Show the total DX spots for the last &lt;days&gt; no of days (default is 31), starting from a &lt;date&gt; (default: today).</P>
+<H2><A NAME="ss11.137">11.137</A> <A HREF="adminmanual_en.html#toc11.137">show/files [&lt;filearea&gt; [&lt;string&gt;]] (0)</A>
+</H2>
+
+<P><CODE><B>show/files [&lt;filearea&gt; [&lt;string&gt;]]</B> List the contents of a filearea</CODE></P>
+<P>SHOW/FILES on its own will show you a list of the various fileareasavailable on the system. To see the contents of a particular filearea type:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   SH/FILES &lt;filearea&gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+where &lt;filearea&gt; is the name of the filearea you want to see the contents of.You can also use shell globbing characters like '*' and '?' in astring to see a selection of files in a filearea eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   SH/FILES bulletins arld*
+</PRE>
+</CODE></BLOCKQUOTE>
+See also TYPE - to see the contents of a file.</P>
+<H2><A NAME="ss11.138">11.138</A> <A HREF="adminmanual_en.html#toc11.138">show/filter (0)</A>
+</H2>
+
+<P><CODE><B>show/filter</B> Show the contents of all the filters you have set</CODE></P>
+<P>Show the contents of all the filters that are set. This command displaysall the filters set - for all the various categories.</P>
+<H2><A NAME="ss11.139">11.139</A> <A HREF="adminmanual_en.html#toc11.139">show/hfstats [days] [date] (0)</A>
+</H2>
+
+<P><CODE><B>show/hfstats [days] [date]</B> Show the HF DX Statistics </CODE></P>
+<P>Show the HF DX spots breakdown by band for the last &lt;days&gt; no of days (default is 31), starting from a &lt;date&gt; (default: today).</P>
+<H2><A NAME="ss11.140">11.140</A> <A HREF="adminmanual_en.html#toc11.140">show/hftable [days] [date] [prefix ...] (0)</A>
+</H2>
+
+<P><CODE><B>show/hftable [days] [date] [prefix ...]</B> Show the HF DX Spotter Table</CODE></P>
+<P>Show the HF DX Spotter table for the list of prefixes for the last &lt;days&gt; no of days (default is 31), starting from a &lt;date&gt; (default: today).If there are no prefixes then it will show the table for your country.Remember that some countries have more than one "DXCC country" in them(eg G :-), to show them (assuming you are not in G already which isspecially treated in the code) you must list all the relevant prefixes
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/hftable g gm gd gi gj gw gu 
+</PRE>
+</CODE></BLOCKQUOTE>
+Note that the prefixes are converted into country codes so you don't haveto list all possible prefixes for each country.If you want more or less days than the default simply include thenumber you require:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/hftable 20 pa
+</PRE>
+</CODE></BLOCKQUOTE>
+If you want to start at a different day, simply add the date in some recognizable form:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/hftable 2 25nov02  sh/hftable 2 25-nov-02   sh/hftable 2 021125   sh/hftable 2 25/11/02
+</PRE>
+</CODE></BLOCKQUOTE>
+This will show the stats for your DXCC for that CQWW contest weekend. You can specify either prefixes or full callsigns (so you can see how youdid against all your mates). You can also say 'all' which will then printthe worldwide statistics.
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/hftable all 
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.141">11.141</A> <A HREF="adminmanual_en.html#toc11.141">show/hops &lt;call&gt; [ann|spots|route|wcy|wwv] (8)</A>
+</H2>
+
+<P><CODE><B>show/hops &lt;call&gt; [ann|spots|route|wcy|wwv]</B> Show the hop counts for a node</CODE></P>
+<P>This command shows the hop counts set up for a node. You can specifywhich category you want to see. If you leave the category out then all the categories will be listed.</P>
+<H2><A NAME="ss11.142">11.142</A> <A HREF="adminmanual_en.html#toc11.142">show/isolate (1)</A>
+</H2>
+
+<P><CODE><B>show/isolate</B> Show list of ISOLATED nodes</CODE></P>
+
+<H2><A NAME="ss11.143">11.143</A> <A HREF="adminmanual_en.html#toc11.143">show/log [&lt;callsign&gt;] (8)</A>
+</H2>
+
+<P><CODE><B>show/log [&lt;callsign&gt;]</B> Show excerpts from the system log</CODE></P>
+<P>This command outputs a short section of the system log.  On its ownit will output a general logfile.  With the optional callsign it willshow output from the log associated with that callsign.</P>
+<H2><A NAME="ss11.144">11.144</A> <A HREF="adminmanual_en.html#toc11.144">show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show Moon rise and set times</CODE></P>
+<P>Show the Moon rise and set times for a (list of) prefixes or callsigns, together with the azimuth and elevation of the sun currently at thoselocations.If you don't specify any prefixes or callsigns, it will show the times foryour QTH (assuming you have set it with either SET/LOCATION or SET/QRA),together with the current azimuth and elevation.In addition, it will show the illuminated fraction of the moons disk.If all else fails it will show the Moonrise and set times for the nodethat you are connected to. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/MOON  SH/MOON G1TLH W5UN
+</PRE>
+</CODE></BLOCKQUOTE>
+You can also use this command to see into the past or the future, soif you want to see yesterday's times then do:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/MOON -1 
+</PRE>
+</CODE></BLOCKQUOTE>
+or in three days time:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/MOON +3 W9
+</PRE>
+</CODE></BLOCKQUOTE>
+Upto 366 days can be checked both in the past and in the future.Please note that the rise and set times are given as the UT times of rise and set on the requested UT day.</P>
+<H2><A NAME="ss11.145">11.145</A> <A HREF="adminmanual_en.html#toc11.145">show/muf &lt;prefix&gt; [&lt;hours&gt;][long] (0)</A>
+</H2>
+
+<P><CODE><B>show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</B> Show the likely propagation to a prefix</CODE></P>
+<P>This command allow you to estimate the likelihood of you contactinga station with the prefix you have specified. The output assumes a modestpower of 20dBW and receiver sensitivity of -123dBm (about 0.15muV/10dB SINAD)The result predicts the most likely operating frequencies and signallevels for high frequency (shortwave) radio propagation paths onspecified days of the year and hours of the day. It is most useful forpaths between 250 km and 6000 km, but can be used with reduced accuracyfor paths shorter or longer than this.The command uses a routine MINIMUF 3.5 developed by the U.S. Navy andused to predict the MUF given the predicted flux, day of the year,hour of the day and geographic coordinates of the transmitter andreceiver. This routine is reasonably accurate for the purposes here,with a claimed RMS error of 3.8 MHz, but much smaller and less complexthan the programs used by major shortwave broadcasting organizations,such as the Voice of America.The command will display some header information detailing itsassumptions, together with the locations, latitude and longitudes andbearings. It will then show UTC (UT), local time at the other end(LT), calculate the MUFs, Sun zenith angle at the midpoint of the path(Zen) and the likely signal strengths. Then for each frequency for whichthe system thinks there is a likelihood of a circuit it prints a value.The value is currently a likely S meter reading based on the conventional6dB / S point scale. If the value has a '+' appended it means that it is1/2 an S point stronger. If the value is preceeded by an 'm' it means thatthere is likely to be much fading and by an 's' that the signal is likelyto be noisy.  By default SHOW/MUF will show the next two hours worth of data. Youcan specify anything up to 24 hours worth of data by appending the no ofhours required after the prefix. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/MUF W
+</PRE>
+</CODE></BLOCKQUOTE>
+produces:
+<BLOCKQUOTE><CODE>
+<PRE>
+  RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21  Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms  Location                       Lat / Long           Azim  East Dereham, Norfolk          52 41 N 0 57 E         47  United-States-W                43 0 N 87 54 W        299  UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0  18 23 11.5 -35  mS0+ mS2   S3  19  0 11.2 -41  mS0+ mS2   S3
+</PRE>
+</CODE></BLOCKQUOTE>
+indicating that you will have weak, fading circuits on top band and 80m but usable signals on 40m (about S3).inputing:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/MUF W 24
+</PRE>
+</CODE></BLOCKQUOTE>
+will get you the above display, but with the next 24 hours worth ofpropagation data.
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/MUF W L 24  SH/MUF W 24 Long
+</PRE>
+</CODE></BLOCKQUOTE>
+Gives you an estimate of the long path propagation characterics. Itshould be noted that the figures will probably not be very useful, norterrible accurate, but it is included for completeness.</P>
+<H2><A NAME="ss11.146">11.146</A> <A HREF="adminmanual_en.html#toc11.146">show/newconfiguration [&lt;node&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/newconfiguration [&lt;node&gt;]</B> Show all the nodes and users visible</CODE></P>
+<P>This command allows you to see all the users that can be seenand the nodes to which they are connected. This command produces essentially the same information as SHOW/CONFIGURATION except that it shows all the duplication ofany routes that might be present It also uses a different formatwhich may not take up quite as much space if you don't have anyloops.BE WARNED: the list that is returned can be VERY long</P>
+<H2><A NAME="ss11.147">11.147</A> <A HREF="adminmanual_en.html#toc11.147">show/newconfiguration/node (0)</A>
+</H2>
+
+<P><CODE><B>show/newconfiguration/node</B> Show all the nodes connected locally</CODE></P>
+<P>Show all the nodes connected to this node in the new format.</P>
+<H2><A NAME="ss11.148">11.148</A> <A HREF="adminmanual_en.html#toc11.148">show/node [&lt;callsign&gt; ...] (1)</A>
+</H2>
+
+<P><CODE><B>show/node [&lt;callsign&gt; ...]</B> Show the type and version number of nodes</CODE></P>
+<P>Show the type and version (if connected) of the nodes specified on thecommand line. If no callsigns are specified then a sorted list of allthe non-user callsigns known to the system will be displayed.</P>
+<H2><A NAME="ss11.149">11.149</A> <A HREF="adminmanual_en.html#toc11.149">show/prefix &lt;callsign&gt; (0)</A>
+</H2>
+
+<P><CODE><B>show/prefix &lt;callsign&gt;</B> Interrogate the prefix database </CODE></P>
+<P>This command takes the &lt;callsign&gt; (which can be a full or partial callsign or a prefix), looks up which internal country number it is and then displays all the relevant prefixes for that countrytogether with the internal country no, the CQ and ITU regions. See also SHOW/DXCC</P>
+<H2><A NAME="ss11.150">11.150</A> <A HREF="adminmanual_en.html#toc11.150">show/program (5)</A>
+</H2>
+
+<P><CODE><B>show/program</B> Show the locations of all the included program modules</CODE></P>
+<P>Show the name and location where every program module was load from. Thisis useful for checking where you think you have loaded a .pm file from. </P>
+<H2><A NAME="ss11.151">11.151</A> <A HREF="adminmanual_en.html#toc11.151">show/qra &lt;lat&gt; &lt;long&gt; (0)</A>
+</H2>
+
+<P><CODE><B>show/qra &lt;lat&gt; &lt;long&gt;</B> Convert lat/long to a QRA Grid locator</CODE></P>
+<P>This is a multipurpose command that allows you either to calculate thedistance and bearing between two locators or (if only one locator isgiven on the command line) the distance and beraing from your stationto the locator. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+ SH/QRA IO92QL  SH/QRA JN06 IN73
+</PRE>
+</CODE></BLOCKQUOTE>
+The first example will show the distance and bearing to the locator fromyourself, the second example will calculate the distance and bearing fromthe first locator to the second. You can use 4 or 6 character locators.It is also possible to convert a latitude and longitude to a locator by using this command with a latitude and longitude as an argument, forexample:-
+<BLOCKQUOTE><CODE>
+<PRE>
+ SH/QRA 52 41 N 0 58 E
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.152">11.152</A> <A HREF="adminmanual_en.html#toc11.152">show/qra &lt;locator&gt; [&lt;locator&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/qra &lt;locator&gt; [&lt;locator&gt;]</B> Show distance between QRA Grid locators</CODE></P>
+
+<H2><A NAME="ss11.153">11.153</A> <A HREF="adminmanual_en.html#toc11.153">show/qrz &lt;callsign&gt; (0)</A>
+</H2>
+
+<P><CODE><B>show/qrz &lt;callsign&gt;</B> Show any callbook details on a callsign</CODE></P>
+<P>This command queries the QRZ callbook server on the internetand returns any information available for that callsign. This serviceis provided for users of this software by http://www.qrz.com </P>
+<H2><A NAME="ss11.154">11.154</A> <A HREF="adminmanual_en.html#toc11.154">show/route &lt;callsign&gt; ... (0)</A>
+</H2>
+
+<P><CODE><B>show/route &lt;callsign&gt; ...</B> Show the route to the callsign</CODE></P>
+<P>This command allows you to see to which node the callsigns specified areconnected. It is a sort of inverse sh/config.
+<BLOCKQUOTE><CODE>
+<PRE>
+ sh/route n2tly
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.155">11.155</A> <A HREF="adminmanual_en.html#toc11.155">show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</B> Show tracking data</CODE></P>
+<P>Show the tracking data from your location to the satellite of your choicefrom now on for the next few hours.If you use this command without a satellite name it will display a listof all the satellites known currently to the system. If you give a name then you can obtain tracking data of all the passesthat start and finish 5 degrees below the horizon. As default it willgive information for the next three hours for every five minute period.You can alter the number of hours and the step size, within certain limits. Each pass in a period is separated with a row of '-----' charactersSo for example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+ SH/SAT AO-10  SH/SAT FENGYUN1 12 2
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.156">11.156</A> <A HREF="adminmanual_en.html#toc11.156">show/station all [&lt;regex&gt;] (6)</A>
+</H2>
+
+<P><CODE><B>show/station all [&lt;regex&gt;]</B> Show list of users in the system</CODE></P>
+
+<H2><A NAME="ss11.157">11.157</A> <A HREF="adminmanual_en.html#toc11.157">show/station [&lt;callsign&gt; ..] (0)</A>
+</H2>
+
+<P><CODE><B>show/station [&lt;callsign&gt; ..]</B> Show information about a callsign</CODE></P>
+<P>Show the information known about a callsign and whether (and where)that callsign is connected to the cluster.
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/ST G1TLH
+</PRE>
+</CODE></BLOCKQUOTE>
+If no callsign is given then show the information for yourself.</P>
+<H2><A NAME="ss11.158">11.158</A> <A HREF="adminmanual_en.html#toc11.158">show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show sun rise and set times</CODE></P>
+<P>Show the sun rise and set times for a (list of) prefixes or callsigns, together with the azimuth and elevation of the sun currently at thoselocations.If you don't specify any prefixes or callsigns, it will show the times foryour QTH (assuming you have set it with either SET/LOCATION or SET/QRA),together with the current azimuth and elevation.If all else fails it will show the sunrise and set times for the nodethat you are connected to. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/SUN  SH/SUN G1TLH K9CW ZS
+</PRE>
+</CODE></BLOCKQUOTE>
+You can also use this command to see into the past or the future, soif you want to see yesterday's times then do:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/SUN -1 
+</PRE>
+</CODE></BLOCKQUOTE>
+or in three days time:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SH/SUN +3 W9
+</PRE>
+</CODE></BLOCKQUOTE>
+Upto 366 days can be checked both in the past and in the future.Please note that the rise and set times are given as the UT times of rise and set on the requested UT day.</P>
+<H2><A NAME="ss11.159">11.159</A> <A HREF="adminmanual_en.html#toc11.159">show/time [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>show/time [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show the local time </CODE></P>
+<P>If no prefixes or callsigns are given then this command returns the localtime and UTC as the computer has it right now. If you give some prefixesthen it will show UTC and UTC + the local offset (not including DST) atthe prefixes or callsigns that you specify.</P>
+<H2><A NAME="ss11.160">11.160</A> <A HREF="adminmanual_en.html#toc11.160">show/usdb [call ..] (0)</A>
+</H2>
+
+<P><CODE><B>show/usdb [call ..]</B> Show information held on the FCC Call database</CODE></P>
+<P>Show the City and State of a Callsign held on the FCC database ifhis is being run on this system, eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/usdb k1xx
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.161">11.161</A> <A HREF="adminmanual_en.html#toc11.161">show/vhfstats [days] [date] (0)</A>
+</H2>
+
+<P><CODE><B>show/vhfstats [days] [date]</B> Show the VHF DX Statistics</CODE></P>
+<P>Show the VHF DX spots breakdown by band for the last &lt;days&gt; no of days (default is 31), starting from a date (default: today).</P>
+<H2><A NAME="ss11.162">11.162</A> <A HREF="adminmanual_en.html#toc11.162">show/vhftable [days] [date] [prefix ...] (0)</A>
+</H2>
+
+<P><CODE><B>show/vhftable [days] [date] [prefix ...]</B> Show the VHF DX Spotter Table</CODE></P>
+<P>Show the VHF DX Spotter table for the list of prefixes for the last &lt;days&gt; no of days (default is 31), starting from a date (default: today).If there are no prefixes then it will show the table for your country.Remember that some countries have more than one "DXCC country" in them(eg G :-), to show them (assuming you are not in G already which isspecially treated in the code) you must list all the relevant prefixes
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/vhftable g gm gd gi gj gw gu 
+</PRE>
+</CODE></BLOCKQUOTE>
+Note that the prefixes are converted into country codes so you don't haveto list all possible prefixes for each country.If you want more or less days than the default simply include thenumber you require:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/vhftable 20 pa
+</PRE>
+</CODE></BLOCKQUOTE>
+If you want to start at a different day, simply add the date in some recognizable form:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/vhftable 2 25nov02  sh/vhftable 2 25-nov-02   sh/vhftable 2 021125   sh/vhftable 2 25/11/02
+</PRE>
+</CODE></BLOCKQUOTE>
+This will show the stats for your DXCC for that CQWW contest weekend. You can specify either prefixes or full callsigns (so you can see how youdid against all your mates). You can also say 'all' which will then printthe worldwide statistics.
+<BLOCKQUOTE><CODE>
+<PRE>
+  sh/vhftable all 
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.163">11.163</A> <A HREF="adminmanual_en.html#toc11.163">show/wcy (0)</A>
+</H2>
+
+<P><CODE><B>show/wcy</B> Show last 10 WCY broadcasts</CODE></P>
+
+<H2><A NAME="ss11.164">11.164</A> <A HREF="adminmanual_en.html#toc11.164">show/wcy &lt;n&gt; (0)</A>
+</H2>
+
+<P><CODE><B>show/wcy &lt;n&gt;</B> Show last &lt;n&gt; WCY broadcasts</CODE></P>
+<P>Display the most recent WCY information that has been received by the system</P>
+<H2><A NAME="ss11.165">11.165</A> <A HREF="adminmanual_en.html#toc11.165">show/wwv (0)</A>
+</H2>
+
+<P><CODE><B>show/wwv</B> Show last 10 WWV broadcasts</CODE></P>
+
+<H2><A NAME="ss11.166">11.166</A> <A HREF="adminmanual_en.html#toc11.166">show/wwv &lt;n&gt; (0)</A>
+</H2>
+
+<P><CODE><B>show/wwv &lt;n&gt;</B> Show last &lt;n&gt; WWV broadcasts</CODE></P>
+<P>Display the most recent WWV information that has been received by the system</P>
+<H2><A NAME="ss11.167">11.167</A> <A HREF="adminmanual_en.html#toc11.167">shutdown (5)</A>
+</H2>
+
+<P><CODE><B>shutdown</B> Shutdown the cluster</CODE></P>
+<P>Shutdown the cluster and disconnect all the users </P>
+<H2><A NAME="ss11.168">11.168</A> <A HREF="adminmanual_en.html#toc11.168">stat/channel [&lt;callsign&gt;] (5)</A>
+</H2>
+
+<P><CODE><B>stat/channel [&lt;callsign&gt;]</B> Show the status of a channel on the cluster</CODE></P>
+<P>Show the internal status of the channel object either for the channel that you are on or else for the callsign that you asked for.Only the fields that are defined (in perl term) will be displayed.</P>
+<H2><A NAME="ss11.169">11.169</A> <A HREF="adminmanual_en.html#toc11.169">stat/db &lt;dbname&gt; (5)</A>
+</H2>
+
+<P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE></P>
+<P>Show the internal status of a database descriptor.Depending on your privilege level you will see more or less information. This command is unlikely to be of much use to anyone other than a sysop.</P>
+<H2><A NAME="ss11.170">11.170</A> <A HREF="adminmanual_en.html#toc11.170">stat/msg (1)</A>
+</H2>
+
+<P><CODE><B>stat/msg</B> Show the status of the message system</CODE></P>
+
+<H2><A NAME="ss11.171">11.171</A> <A HREF="adminmanual_en.html#toc11.171">stat/msg &lt;msgno&gt; (1)</A>
+</H2>
+
+<P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE></P>
+<P>This command shows the internal status of a message and includes informationsuch as to whom it has been forwarded, its size, origin etc etc.If no message number is given then the status of the message system is displayed.</P>
+<H2><A NAME="ss11.172">11.172</A> <A HREF="adminmanual_en.html#toc11.172">stat/route_node &lt;callsign&gt; (5)</A>
+</H2>
+
+<P><CODE><B>stat/route_node &lt;callsign&gt;</B> Show the data in a Route::Node object</CODE></P>
+
+<H2><A NAME="ss11.173">11.173</A> <A HREF="adminmanual_en.html#toc11.173">stat/route_node all (5)</A>
+</H2>
+
+<P><CODE><B>stat/route_node all</B> Show list of all Route::Node objects</CODE></P>
+
+<H2><A NAME="ss11.174">11.174</A> <A HREF="adminmanual_en.html#toc11.174">stat/route_user &lt;callsign&gt; (5)</A>
+</H2>
+
+<P><CODE><B>stat/route_user &lt;callsign&gt;</B> Show the data in a Route::User object</CODE></P>
+
+<H2><A NAME="ss11.175">11.175</A> <A HREF="adminmanual_en.html#toc11.175">stat/route_user all (5)</A>
+</H2>
+
+<P><CODE><B>stat/route_user all</B> Show list of all Route::User objects</CODE></P>
+
+<H2><A NAME="ss11.176">11.176</A> <A HREF="adminmanual_en.html#toc11.176">stat/user [&lt;callsign&gt;] (5)</A>
+</H2>
+
+<P><CODE><B>stat/user [&lt;callsign&gt;]</B> Show the full status of a user</CODE></P>
+<P>Shows the full contents of a user record including all the secret flagsand stuff.Only the fields that are defined (in perl term) will be displayed.</P>
+<H2><A NAME="ss11.177">11.177</A> <A HREF="adminmanual_en.html#toc11.177">sysop (0)</A>
+</H2>
+
+<P><CODE><B>sysop</B> Regain your privileges if you login remotely</CODE></P>
+<P>The system automatically reduces your privilege level to that of anormal user if you login in remotely. This command allows you toregain your normal privilege level. It uses the normal system: fivenumbers are returned that are indexes into the character array that isyour assigned password (see SET/PASSWORD). The indexes start fromzero.You are expected to return a string which contains the charactersrequired in the correct order. You may intersperse those characterswith others to obscure your reply for any watchers. For example (andthese values are for explanation :-):
+<BLOCKQUOTE><CODE>
+<PRE>
+  password = 012345678901234567890123456789  &gt; sysop  22 10 15 17 3
+</PRE>
+</CODE></BLOCKQUOTE>
+you type:-
+<BLOCKQUOTE><CODE>
+<PRE>
+ aa2bbbb0ccc5ddd7xxx3n or 2 0 5 7 3 or 20573
+</PRE>
+</CODE></BLOCKQUOTE>
+They will all match. If there is no password you will still be offerednumbers but nothing will happen when you input a string. Any match iscase sensitive.</P>
+<H2><A NAME="ss11.178">11.178</A> <A HREF="adminmanual_en.html#toc11.178">talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;]</B> Send a text message to another station via a node</CODE></P>
+<P>Send a short message to any other station that is visible on the clustersystem. You can send it to anyone you can see with a SHOW/CONFIGURATION command, they don't have to be connected locally.The second form of TALK is used when other cluster nodes are connectedwith restricted information. This usually means that they don't send the user information usually associated with logging on and off the cluster.If you know that G3JNB is likely to be present on GB7TLH, but you can onlysee GB7TLH in the SH/C list but with no users, then you would use thesecond form of the talk message.If you want to have a ragchew with someone you can leave the text messageout and the system will go into 'Talk' mode. What this means is that ashort message is sent to the recipient telling them that you are in a'Talking' frame of mind and then you just type - everything you send willgo to the station that you asked for. All the usual announcements, spots and so on will still come out on yourterminal.If you want to do something (such as send a spot) you preceed the normal command with a '/' character, eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   /DX 14001 G1TLH What's a B class licensee doing on 20m CW?   /HELP talk
+</PRE>
+</CODE></BLOCKQUOTE>
+To leave talk mode type:
+<BLOCKQUOTE><CODE>
+<PRE>
+   /EX
+</PRE>
+</CODE></BLOCKQUOTE>
+If you are in 'Talk' mode, there is an extention to the '/' command whichallows you to send the output to all the people you are talking to. You do with the '//' command. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  //sh/hftable
+</PRE>
+</CODE></BLOCKQUOTE>
+will send the hftable as you have it to all the people you are currently talking to.</P>
+<H2><A NAME="ss11.179">11.179</A> <A HREF="adminmanual_en.html#toc11.179">talk &lt;call&gt; [&lt;text&gt;] (0)</A>
+</H2>
+
+<P><CODE><B>talk &lt;call&gt; [&lt;text&gt;]</B> Send a text message to another station</CODE></P>
+
+<H2><A NAME="ss11.180">11.180</A> <A HREF="adminmanual_en.html#toc11.180">type &lt;filearea&gt;/&lt;name&gt; (0)</A>
+</H2>
+
+<P><CODE><B>type &lt;filearea&gt;/&lt;name&gt;</B> Look at the contents of a file in one of the fileareas</CODE></P>
+<P>Type out the contents of a file in a filearea. So, for example, in filearea 'bulletins' you want to look at file 'arld051' you would enter:-
+<BLOCKQUOTE><CODE>
+<PRE>
+   TYPE bulletins/arld051
+</PRE>
+</CODE></BLOCKQUOTE>
+See also SHOW/FILES to see what fileareas are available and a list of content.</P>
+<H2><A NAME="ss11.181">11.181</A> <A HREF="adminmanual_en.html#toc11.181">uncatchup &lt;node call&gt; all|[msgno&gt; ...] (5)</A>
+</H2>
+
+<P><CODE><B>uncatchup &lt;node call&gt; all|[msgno&gt; ...]</B> Unmark a message as sent</CODE></P>
+<P>When you send messages the fact that you have forwarded it to another node is remembered so that it isn't sent again. When you have a new partnernode and you add their callsign to your /spider/msg/forward.pl file, alloutstanding non-private messages will be forwarded to them. This may wellbe ALL the non-private messages. You can prevent this by using these commmands:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  catchup GB7DJK all  catchup GB7DJK 300 301 302 303 500-510
+</PRE>
+</CODE></BLOCKQUOTE>
+and to undo what you have just done:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  uncatchup GB7DJK all  uncatchup GB7DJK 300 301 302 303 500-510
+</PRE>
+</CODE></BLOCKQUOTE>
+which will arrange for them to be forward candidates again.Order is not important.</P>
+<H2><A NAME="ss11.182">11.182</A> <A HREF="adminmanual_en.html#toc11.182">unset/announce (0)</A>
+</H2>
+
+<P><CODE><B>unset/announce</B> Stop announce messages coming out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.183">11.183</A> <A HREF="adminmanual_en.html#toc11.183">unset/anntalk (0)</A>
+</H2>
+
+<P><CODE><B>unset/anntalk</B> Stop talk like announce messages on your terminal</CODE></P>
+<P>The announce system on legacy cluster nodes is used as a talk substitute because the network is so poorly connected. If you:
+<BLOCKQUOTE><CODE>
+<PRE>
+  unset/anntalk
+</PRE>
+</CODE></BLOCKQUOTE>
+you will suppress several of these announces, you may miss the odd useful one as well, but you would probably miss them anyway in thewelter of useless ones.
+<BLOCKQUOTE><CODE>
+<PRE>
+  set/anntalk 
+</PRE>
+</CODE></BLOCKQUOTE>
+allows you to see them again. This is the default.</P>
+<H2><A NAME="ss11.184">11.184</A> <A HREF="adminmanual_en.html#toc11.184">unset/baddx &lt;call&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>unset/baddx &lt;call&gt;..</B> Propagate a dx spot with this callsign again</CODE></P>
+<P>Setting a word as 'baddx' will prevent spots with that word in the'spotted' field (as in: DX 14001.1 FR0G)of a DX spot from going anyfurther. They will not be displayed and they will not be sent ontoother nodes.The word must be written in full, no wild cards are allowed eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  set/baddx FORSALE VIDEO FR0G
+</PRE>
+</CODE></BLOCKQUOTE>
+To allow a word again, use the following command ...
+<BLOCKQUOTE><CODE>
+<PRE>
+  unset/baddx VIDEO
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.185">11.185</A> <A HREF="adminmanual_en.html#toc11.185">unset/badnode &lt;call&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>unset/badnode &lt;call&gt;..</B> Allow spots from this node again</CODE></P>
+<P>Setting a callsign as a 'badnode' will prevent spots from that node going any further. They will not be displayed and they will not be sent onto other nodes.The call must be a full eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  set/badnode K1TTT 
+</PRE>
+</CODE></BLOCKQUOTE>
+will stop anything from K1TTT. If you want SSIDs as well then you mustenter them specifically.
+<BLOCKQUOTE><CODE>
+<PRE>
+  unset/badnode K1TTT
+</PRE>
+</CODE></BLOCKQUOTE>
+will allow spots from him again.Use with extreme care. This command may well be superceeded by FILTERing.</P>
+<H2><A NAME="ss11.186">11.186</A> <A HREF="adminmanual_en.html#toc11.186">unset/badspotter &lt;call&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>unset/badspotter &lt;call&gt;..</B> Allow spots from this callsign again</CODE></P>
+<P>Setting a callsign as a 'badspotter' will prevent spots from this callsign going any further. They will not be displayed and they will not be sent onto other nodes.The call must be written in full, no wild cards are allowed eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  set/badspotter VE2STN 
+</PRE>
+</CODE></BLOCKQUOTE>
+will stop anything from VE2STN. This command will automaticallystop spots from this user, regardless of whether or which SSID he uses. DO NOT USE SSIDs in the callsign, just use the callsignas above or below.
+<BLOCKQUOTE><CODE>
+<PRE>
+  unset/badspotter VE2STN
+</PRE>
+</CODE></BLOCKQUOTE>
+will allow spots from him again.Use with extreme care. This command may well be superceded by FILTERing.</P>
+<H2><A NAME="ss11.187">11.187</A> <A HREF="adminmanual_en.html#toc11.187">unset/badword &lt;word&gt;.. (8)</A>
+</H2>
+
+<P><CODE><B>unset/badword &lt;word&gt;..</B> Propagate things with this word again</CODE></P>
+<P>Setting a word as a 'badword' will prevent things like spots,announces or talks with this word in the the text part from going anyfurther. They will not be displayed and they will not be sent ontoother nodes.The word must be written in full, no wild cards are allowed eg:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  set/badword annihilate annihilated annihilation 
+</PRE>
+</CODE></BLOCKQUOTE>
+will stop anything with these words in the text.
+<BLOCKQUOTE><CODE>
+<PRE>
+  unset/badword annihilated
+</PRE>
+</CODE></BLOCKQUOTE>
+will allow text with this word again.</P>
+<H2><A NAME="ss11.188">11.188</A> <A HREF="adminmanual_en.html#toc11.188">unset/beep (0)</A>
+</H2>
+
+<P><CODE><B>unset/beep</B> Stop beeps for DX and other messages on your terminal</CODE></P>
+
+<H2><A NAME="ss11.189">11.189</A> <A HREF="adminmanual_en.html#toc11.189">unset/dx (0)</A>
+</H2>
+
+<P><CODE><B>unset/dx</B> Stop DX messages coming out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.190">11.190</A> <A HREF="adminmanual_en.html#toc11.190">unset/dxgrid (0)</A>
+</H2>
+
+<P><CODE><B>unset/dxgrid</B> Stop QRA Grid Squares on the end of DX announcements</CODE></P>
+<P>A standard feature which is enabled in version 1.43 and above is that if the spotter's grid square is known it is output on the endof a DX announcement (there is just enough room). Some user programscannot cope with this. You can use this command to reset (or set)this feature.</P>
+<H2><A NAME="ss11.191">11.191</A> <A HREF="adminmanual_en.html#toc11.191">unset/echo (0)</A>
+</H2>
+
+<P><CODE><B>unset/echo</B> Stop the cluster echoing your input</CODE></P>
+<P>If you are connected via a telnet session, different implimentationsof telnet handle echo differently depending on whether you are connected via port 23 or some other port. You can use this commandto change the setting appropriately. The setting is stored in your user profile.YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.</P>
+<H2><A NAME="ss11.192">11.192</A> <A HREF="adminmanual_en.html#toc11.192">unset/email (0)</A>
+</H2>
+
+<P><CODE><B>unset/email</B> Stop personal msgs being forwarded by email</CODE></P>
+<P>If any personal messages come in for your callsign then you can usethese commands to control whether they are forwarded onto your emailaddress. To enable the forwarding do something like:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/EMAIL mike.tubby@somewhere.com
+</PRE>
+</CODE></BLOCKQUOTE>
+You can have more than one email address (each one separated by a space).Emails are forwarded to all the email addresses you specify.You can disable forwarding by:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  UNSET/EMAIL
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.193">11.193</A> <A HREF="adminmanual_en.html#toc11.193">unset/here (0)</A>
+</H2>
+
+<P><CODE><B>unset/here</B> Tell the system you are absent from your terminal</CODE></P>
+
+<H2><A NAME="ss11.194">11.194</A> <A HREF="adminmanual_en.html#toc11.194">unset/hops &lt;call&gt; ann|spots|route|wwv|wcy (8)</A>
+</H2>
+
+<P><CODE><B>unset/hops &lt;call&gt; ann|spots|route|wwv|wcy</B> Unset hop count  </CODE></P>
+<P>Set the hop count for a particular type of broadcast for a node.This command allows you to set up special hop counts for a node for currently: announce, spots, wwv and wcy broadcasts.eg:
+<BLOCKQUOTE><CODE>
+<PRE>
+  set/hops gb7djk ann 10  set/hops gb7mbc spots 20
+</PRE>
+</CODE></BLOCKQUOTE>
+Set SHOW/HOPS for information on what is already set. This commandcreates a filter and works in conjunction with the filter system. You can unset the hops with command UNSET/HOPS. For example:-
+<BLOCKQUOTE><CODE>
+<PRE>
+  unset/hops gb7djk ann  unset/hops gb7mbc spots
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<H2><A NAME="ss11.195">11.195</A> <A HREF="adminmanual_en.html#toc11.195">unset/logininfo (0)</A>
+</H2>
+
+<P><CODE><B>unset/logininfo</B> Inform when a station logs out locally</CODE></P>
+
+<H2><A NAME="ss11.196">11.196</A> <A HREF="adminmanual_en.html#toc11.196">unset/privilege (0)</A>
+</H2>
+
+<P><CODE><B>unset/privilege</B> Remove any privilege for this session</CODE></P>
+<P>You can use this command to 'protect' this session from unauthoriseduse. If you want to get your normal privilege back you will need toeither logout and login again (if you are on a console) or use theSYSOP command.</P>
+<H2><A NAME="ss11.197">11.197</A> <A HREF="adminmanual_en.html#toc11.197">unset/prompt (0)</A>
+</H2>
+
+<P><CODE><B>unset/prompt</B> Set your prompt back to default</CODE></P>
+<P>This command will set your user prompt to exactly the string that you say. The point of this command to enable a user to interface to programsthat are looking for a specific prompt (or else you just want a differentfixed prompt).
+<BLOCKQUOTE><CODE>
+<PRE>
+  SET/PROMPT clx &gt;
+</PRE>
+</CODE></BLOCKQUOTE>
+UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back tonormal.</P>
+<H2><A NAME="ss11.198">11.198</A> <A HREF="adminmanual_en.html#toc11.198">unset/talk (0)</A>
+</H2>
+
+<P><CODE><B>unset/talk</B> Stop TALK messages coming out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.199">11.199</A> <A HREF="adminmanual_en.html#toc11.199">unset/wcy (0)</A>
+</H2>
+
+<P><CODE><B>unset/wcy</B> Stop WCY messages coming out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.200">11.200</A> <A HREF="adminmanual_en.html#toc11.200">unset/wwv (0)</A>
+</H2>
+
+<P><CODE><B>unset/wwv</B> Stop WWV messages coming out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.201">11.201</A> <A HREF="adminmanual_en.html#toc11.201">unset/wx (0)</A>
+</H2>
+
+<P><CODE><B>unset/wx</B> Stop WX messages coming out on your terminal</CODE></P>
+
+<H2><A NAME="ss11.202">11.202</A> <A HREF="adminmanual_en.html#toc11.202">who (0)</A>
+</H2>
+
+<P><CODE><B>who</B> Show who is physically connected</CODE></P>
+<P>This is a quick listing that shows which callsigns are connected andwhat sort of connection they have</P>
+<H2><A NAME="ss11.203">11.203</A> <A HREF="adminmanual_en.html#toc11.203">wx &lt;text&gt; (0)</A>
+</H2>
+
+<P><CODE><B>wx &lt;text&gt;</B> Send a weather message to local users</CODE></P>
+
+<H2><A NAME="ss11.204">11.204</A> <A HREF="adminmanual_en.html#toc11.204">wx full &lt;text&gt; (0)</A>
+</H2>
+
+<P><CODE><B>wx full &lt;text&gt;</B> Send a weather message to all cluster users</CODE></P>
+
+<H2><A NAME="ss11.205">11.205</A> <A HREF="adminmanual_en.html#toc11.205">wx sysop &lt;text&gt; (5)</A>
+</H2>
+
+<P><CODE><B>wx sysop &lt;text&gt;</B> Send a weather message to other clusters only</CODE></P>
+<P>Weather messages can sometimes be useful if you are experiencing an extremethat may indicate enhanced conditions</P>
+<HR>
+Next
+<A HREF="adminmanual_en-10.html">Previous</A>
+<A HREF="adminmanual_en.html#toc11">Contents</A>
+</BODY>
+</HTML>

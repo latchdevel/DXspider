@@ -8,7 +8,6 @@
   Table of Contents
 
 
-
   1. Introduction
      1.1 What is a DX Cluster?
      1.2 So what is DXSpider?
@@ -50,71 +49,6 @@
 
   11. Hints, tips and common questions.
   12. The DXSpider command reference
-     12.1 accept/announce
-     12.2 accept/spots
-     12.3 accept/wcy
-     12.4 accept/wwv
-     12.5 announce
-     12.6 announce full
-     12.7 apropos
-     12.8 bye
-     12.9 clear/spots
-     12.10 dbavail
-     12.11 dbshow
-     12.12 directory
-     12.13 dx
-     12.14 help
-     12.15 kill
-     12.16 links
-     12.17 read
-     12.18 reject/announce
-     12.19 reject/spots
-     12.20 reject/wcy
-     12.21 reject/wwv
-     12.22 reply
-     12.23 send
-     12.24 set/address
-     12.25 set/announce
-     12.26 set/beep
-     12.27 set/dx
-     12.28 set/dxgrid
-     12.29 set/echo
-     12.30 set/here
-     12.31 set/homenode
-     12.32 set/language
-     12.33 set/location
-     12.34 set/logininfo
-     12.35 set/name
-     12.36 set/page
-     12.37 set/qra
-     12.38 set/qth
-     12.39 set/talk
-     12.40 set/wcy
-     12.41 set/wwv
-     12.42 set/wx
-     12.43 show/configuration
-     12.44 show/configuration/node
-     12.45 show/date
-     12.46 show/dx
-     12.47 show/dxcc
-     12.48 show/files
-     12.49 show/filter
-     12.50 show/moon
-     12.51 show/muf
-     12.52 show/prefix
-     12.53 show/qra
-     12.54 show/qrz
-     12.55 show/route
-     12.56 show/satellite
-     12.57 show/sun
-     12.58 show/time
-     12.59 show/wcy
-     12.60 show/wwv
-     12.61 sysop
-     12.62 talk
-     12.63 type
-     12.64 who
-     12.65 wx
 
 
   ______________________________________________________________________
@@ -195,8 +129,8 @@
 
 
 
-       connect GB7MBC
-       connect GB7MBC-1
+  connect GB7MBC
+  connect GB7MBC-1
 
 
 
@@ -254,7 +188,6 @@
   reconnect by adding a number to the end of your call, for example
   G0YLM-2.  This can be done by either altering your MYCALL setting in
   the TNC or by altering your program configuration.
-
 
 
   33..  SSeettttiinngg yyoouurr ppeerrssoonnaall ddeettaaiillss..
@@ -331,6 +264,7 @@
        show/dx 20 on 20m
 
 
+
   will show the last 5, 10 or 20 spots on 20 metres only.
 
   It is also possible to check for certain callsigns, or fragments of
@@ -380,8 +314,6 @@
 
   EExxaammppllee::
 
-
-
        show/dx 20 prefix 9a on vhf day 30
 
 
@@ -392,6 +324,7 @@
   As you can see the SSHHOOWW//DDXX command is very flexible, so if you are not
   sure whether something will work or not, try it and see!  More
   information can be found in the Command Set section.
+
 
   44..22..  PPoossttiinngg DDXX..
 
@@ -443,8 +376,6 @@
   details.  They use your entered location as a reference, so if you
   have not entered it or have entered it incorrectly they will not
   return the correct information.
-
-
   55..11..  SSuunn
 
   The SSHHOOWW//SSUUNN command can be used in three different ways.  It can be
@@ -455,7 +386,7 @@
 
 
 
-  show/sun
+       show/sun
 
 
 
@@ -502,7 +433,6 @@
        ZS     So-Africa-ZS1-ZS               04:31Z 17:28Z  289.9   41.3
        ZS     So-Africa-ZS5-ZS               03:44Z 16:34Z  278.5   32.0
        ZS     So-Africa-ZS6-ZS               03:59Z 16:42Z  277.6   35.0
-
 
 
   55..22..  MMoooonn
@@ -573,6 +503,7 @@
   EExxaammppllee::
 
 
+
        announce 10 FM is open in IO84NB to europe.
 
 
@@ -623,10 +554,10 @@
 
 
 
-       show/configuration
-       show/configuration/nodes
-       show/configuration (node_call)
-       show/configuration (prefix)
+  show/configuration
+  show/configuration/nodes
+  show/configuration (node_call)
+  show/configuration (prefix)
 
 
 
@@ -634,26 +565,26 @@
 
 
 
-  sh/c
-  Node         Callsigns
-  EI5TCR       (7 users)
-  GB7ADX
-  GB7BAA       G4FPV        G8TIC
-  GB7BIG       (GD0TEP)     GD3UMW
-  GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
-  (GB7CDX)     G3JNB        G4ALR
-  GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
-               G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
-               ON7WP
-  GB7DXA       G0RDI        G8SJP
-  GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
-               G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
-  GB7DXE       G1NNB
-  (GB7DXG)     GU6EFB       GU7DHI
-  GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
-               G4XQY        G7GAN
-  GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
-               M0BCT        M1EMF
+       sh/c
+       Node         Callsigns
+       EI5TCR       (7 users)
+       GB7ADX
+       GB7BAA       G4FPV        G8TIC
+       GB7BIG       (GD0TEP)     GD3UMW
+       GB7BPQ       (G0INA)      G0RCI        G3AKU        G3OCA
+       (GB7CDX)     G3JNB        G4ALR
+       GB7DJK       G0FYD        G0REK        G1TLH        G4PEL        G4SOZ
+                    G4TVR        G7SQW        K8AZ         M0CTQ-1      MM1CXE-10
+                    ON7WP
+       GB7DXA       G0RDI        G8SJP
+       GB7DXC       (G0HDB)      G0WFK        (G1FYC)      G3KWK        G3LME
+                    G3OIL        G4BGW        G4FUJ        (G4PDQ)      GW7SMV
+       GB7DXE       G1NNB
+       (GB7DXG)     GU6EFB       GU7DHI
+       GB7DXK       G1NTW        G3IBI        G3NSM        G3XAQ        G4CUS
+                    G4XQY        G7GAN
+       GB7DXM       G1EUC        G3GAF        G3LAS        G4ZTR        G8WXU
+                    M0BCT        M1EMF
 
 
 
@@ -686,12 +617,12 @@
 
 
 
-       Node         Callsigns
-       PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
-                    F5NOD-2      F5PAC        IZ0CSR       N6CR         OH2BLD
-                    ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
-                    PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
-                    YT1XX
+  Node         Callsigns
+  PI4TUE-8     9A1CMA-6     DF6PW        DL4FAY       DL4KAK       DL4WF-2
+               F5NOD-2      F5PAC        IZ0CSR       N6CR         OH2BLD
+               ON1LVL-13    ON4CBT       ON4CJP       ON5DXL-14    ON7NQ
+               PA0RCT       PA3DYS       PA3FDO       PA5KW-4      PI4TUE-9
+               YT1XX
 
 
 
@@ -747,7 +678,6 @@
        talk g0rdi Having a good day Iain?
 
 
-
   This example would send the line "Having a good day Iain?" to the user
   g0rdi but would leave you in normal mode.
 
@@ -756,6 +686,7 @@
        talk g0rdi
        Entering Talkmode, /EX to end, /<cmd> to run a command
        Talk (G0RDI)>
+
 
 
   As you can see, you can still run commands whilst in talk mode.
@@ -872,7 +803,6 @@
   it's entirety unless you specify a page length. You can set your page
   length to any number you like and when the message reaches that number
   of lines you will get a prompt giving you options.
-
   EExxaammppllee::
 
 
@@ -933,8 +863,6 @@
   To delete a message, you use the _d_e_l_e_t_e command.  You can only delete
   messages sent to or received by yourself.  Bulletins are dealt with
   automatically or by the sysop.
-
-
   1100..  FFiilltteerriinngg ((FFrroomm vveerrssiioonn 11..4455))
 
   1100..11..  GGeenneerraall ffiilltteerr rruulleess
@@ -991,6 +919,7 @@
 
   For now we are going to use spots for the examples, but you can apply
   the same principles to all types of filter.
+
 
 
   1100..22..  TTyyppeess ooff ffiilltteerr
@@ -1055,9 +984,6 @@
 
   You can arrange your filter lines into logical units, either for your
   own understanding or simply convenience. Here is an example ...
-
-
-
        reject/spots 1 on hf/cw
        reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)
 
@@ -1065,6 +991,8 @@
 
   What this does is to ignore all HF CW spots and also rejects any spots
   on VHF which don't either originate or spot someone in Europe.
+
+
   This is an example where you would use a line number (1 and 2 in this
   case), if you leave the digit out, the system assumes '1'. Digits
   '0'-'9' are available.  This make it easier to see just what filters
@@ -1121,7 +1049,6 @@
 
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
-
 
 
   1100..44..  AAddvvaanncceedd ffiilltteerriinngg
@@ -1188,7 +1115,6 @@
   AA..Use the SSEETT//BBEEEEPP command.  You can find information on this in the
   "DXSpider Command Reference" section.
 
-
   QQ..I got disconnected from the cluster and now I can't log back in
   again.  What is wrong?
 
@@ -1205,1420 +1131,6 @@
 
 
   1122..  TThhee DDXXSSppiiddeerr ccoommmmaanndd rreeffeerreennccee
-
-  Below is a complete list of commands available from the cluster
-  prompt.  These are listed below in alphabetical order.
-
-
-  1122..11..  aacccceepptt//aannnnoouunnccee
-
-  aacccceepptt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for announce
-
-
-  Create an 'accept this announce' line for a filter.
-
-  An accept filter line means that if the announce matches this filter
-  it is passed onto the user. See HELP FILTERS for more info. Please
-  read this to understand how filters work - it will save a lot of grief
-  later on.
-
-  You can use any of the following things in this line:-
-
-
-
-         info <string>            eg: iota or qsl
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-         wx 1                     filter WX announces
-         dest <prefixes>          eg: 6MUK,WDX      (distros)
-
-
-
-  some examples:-
-
-
-
-         acc/ann dest 6MUK
-         acc/ann 2 by_zone 14,15,16
-         (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
-
-
-
-  or
-
-         acc/ann by G,M,2
-
-
-
-  This filter would only allow announces that were posted buy UK
-  stations.  You can use the tag 'all' to accept everything eg:
-
-
-
-         acc/ann all
-
-
-
-  but this probably for advanced users...
-
-
-  1122..22..  aacccceepptt//ssppoottss
-
-  aacccceepptt//ssppoottss [[00--99]] <<ppaatttteerrnn>> Set an accept filter line for spots
-
-
-  Create an 'accept this spot' line for a filter.
-
-
-  An accept filter line means that if the spot matches this filter it is
-  passed onto the user. See HELP FILTERS for more info. Please read this
-  to understand how filters work - it will save a lot of grief later on.
-
-  You can use any of the following things in this line:-
-
-
-
-         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-         on <range>             same as 'freq'
-         call <prefixes>        eg: G,PA,HB9
-         info <string>          eg: iota or qsl
-         by <prefixes>
-         call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         call_itu <numbers>
-         call_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         origin <prefixes>
-         channel <prefixes>
-
-
-
-  For frequencies, you can use any of the band names defined in
-  SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
-  thus: hf/ssb. You can also just have a simple range like: 0/30000 -
-  this is more efficient than saying simply: freq HF (but don't get too
-  hung up about that)
-
-  some examples:-
-
-
-
-         acc/spot 1 on hf/cw
-         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
-
-  You can use the tag 'all' to accept everything, eg:
-
-
-
-         acc/spot 3 all
-
-
-
-  but this probably for advanced users...
-
-
-  1122..33..  aacccceepptt//wwccyy
-
-  aacccceepptt//wwccyy [[00--99]] <<ppaatttteerrnn>> set an accept WCY filter
-
-
-  It is unlikely that you will want to do this, but if you do then you
-  can filter on the following fields:-
-
-
-
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-
-
-
-  There are no examples because WCY Broadcasts only come from one place
-  and you either want them or not (see UNSET/WCY if you don't want
-  them).
-
-  This command is really provided for future use.
-
-  See HELP FILTER for information.
-
-
-  1122..44..  aacccceepptt//wwwwvv
-
-  aacccceepptt//wwwwvv [[00--99]] <<ppaatttteerrnn>> Set an accept WWV filter
-
-
-  It is unlikely that you will want to do this, but if you do then you
-  can filter on the following fields:-
-
-
-
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-
-
-  for example
-
-
-
-         accept/wwv by_zone 4
-
-
-
-  is probably the only useful thing to do (which will only show WWV
-  broadcasts by stations in the US).
-
-  See HELP FILTER for information.
-
-
-  1122..55..  aannnnoouunnccee
-
-  aannnnoouunnccee <<tteexxtt>> Send an announcement to local users
-
-
-  Send an announcement to LOCAL users only, where <text> is the text of
-  the announcement you wish to broadcast
-
-
-  1122..66..  aannnnoouunnccee ffuullll
-
-  aannnnoouunnccee ffuullll <<tteexxtt>> Send an announcement cluster wide
-
-
-  This command will send your announcement across the whole cluster
-  network.
-
-
-  1122..77..  aapprrooppooss
-
-  aapprrooppooss <<ssttrriinngg>> Search the help database
-
-
-  Search the help database for <string> (it isn't case sensitive), and
-  print the names of all the commands that may be relevant.
-
-
-  1122..88..  bbyyee
-
-  bbyyee Exit from the cluster
-
-
-  This will disconnect you from the cluster
-
-
-  1122..99..  cclleeaarr//ssppoottss
-
-  cclleeaarr//ssppoottss [[11||aallll]] Clear a spot filter line
-
-
-  This command allows you to clear (remove) a line in a spot filter or
-  to remove the whole filter.
-
-  If you have a filter:-
-
-
-
-         acc/spot 1 on hf/cw
-         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
-
-  and you say:-
-
-
-
-         clear/spot 1
-
-
-
-  you will be left with:-
-
-
-
-         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
-
-
-  If you do:
-
-
-
-         clear/spot all
-
-
-
-  the filter will be completely removed.
-
-
-  1122..1100..  ddbbaavvaaiill
-
-  ddbbaavvaaiill Show a list of all the databases in the system
-
-
-  The title says it all really, this command lists all the databases
-  defined in the system. It is also aliased to SHOW/COMMAND.
-
-
-  1122..1111..  ddbbsshhooww
-
-  ddbbsshhooww <<ddbbnnaammee>> <<kkeeyy>> Display an entry, if it exists, in a database
-
-
-  This is the generic user interface to the database to the database
-  system.  It is expected that the sysop will add an entry to the local
-  Aliases file so that users can use the more familiar AK1A style of
-  enquiry such as:
-
-
-
-         SH/BUCK G1TLH
-
-
-
-  but if he hasn't and the database really does exist (use DBAVAIL or
-  SHOW/COMMAND to find out) you can do the same thing with:
-
-
-
-         DBSHOW buck G1TLH
-
-
-
-  1122..1122..  ddiirreeccttoorryy
-
-  ddiirreeccttoorryy List messages
-  ddiirreeccttoorryy oowwnn List your own messages
-  ddiirreeccttoorryy nneeww List all new messages
-  ddiirreeccttoorryy ttoo <<ccaallll>> List all messages to <call>
-  ddiirreeccttoorryy ffrroomm <<ccaallll>> List all messages from <call>
-  ddiirreeccttoorryy ssuubbjjeecctt <<ssttrriinngg>> List all messages with <string> in subject
-  ddiirreeccttoorryy <<nnnn>> List last <nn> messages
-  ddiirreeccttoorryy <<ffrroomm>>--<<ttoo>> List messages <from> message <to> message
-
-
-  List the messages in the messages directory.
-
-  If there is a 'p' one space after the message number then it is a
-  personal message. If there is a '-' between the message number and the
-
-  You can use shell escape characters such as '*' and '?' in the <call>
-  fields.
-
-  You can combine some of the various directory commands together eg:-
-
-
-
-          DIR TO G1TLH 5
-       or
-          DIR SUBJECT IOTA 200-250
-
-
-
-  You can abbreviate all the commands to one letter and use ak1a
-  syntax:-
-
-
-
-          DIR/T G1* 10
-          DIR/S QSL 10-100 5
-
-
-
-  1122..1133..  ddxx
-
-  ddxx [[bbyy <<ccaallll>>]] <<ffrreeqq>> <<ccaallll>> <<rreemmaarrkkss>> Send a DX spot
-
-
-  This is how you send a DX Spot to other users. You can, in fact, now
-  enter the <freq> and the <call> either way round.
-
-
-
-          DX FR0G 144.600
-          DX 144.600 FR0G
-          DX 144600 FR0G
-
-
-
-  will all give the same result. You can add some remarks to the end of
-  the command and they will be added to the spot.
-
-
-
-     DX FR0G 144600 this is a test
-
-
-
-  You can credit someone else by saying:-
-
-
-
-          DX by G1TLH FR0G 144.600 he isn't on the cluster
-
-
-
-  The <freq> is compared against the available bands set up in the
-  cluster.  See SHOW/BANDS for more information.
-
-
-  1122..1144..  hheellpp
-
-  hheellpp <<ccmmdd>> Get help on a command
-
-
-  All commands can be abbreviated, so SHOW/DX can be abbreviated to
-  SH/DX, ANNOUNCE can be shortened to AN and so on.
-
-  Look at the APROPOS <string> command which will search the help
-  database for the <string> you specify and give you a list of likely
-  commands to look at with HELP.
-
-
-  1122..1155..  kkiillll
-
-  kkiillll <<mmssggnnoo>> [[<<mmssggnnoo>> ....]] Delete a message from the local system
-
-
-  Delete a message from the local system. You will only be able to
-  delete messages that you have originated or been sent (unless you are
-  the sysop).
-
-
-  1122..1166..  lliinnkkss
-
-  lliinnkkss Show which nodes are physically connected
-
-
-  This is a quick listing that shows which links are connected and some
-  information about them. See WHO for a list of all connections.
-
-
-  1122..1177..  rreeaadd
-
-  rreeaadd Read the next unread personal message addressed to you
-  rreeaadd <<mmssggnnoo>> Read the specified message
-
-
-  You can read any messages that are sent as 'non-personal' and also any
-  message either sent by or sent to your callsign.
-
-
-  1122..1188..  rreejjeecctt//aannnnoouunnccee
-
-  rreejjeecctt//aannnnoouunnccee [[00--99]] <<ppaatttteerrnn>> Set a reject filter for announce
-
-
-
-  Create an 'reject this announce' line for a filter.
-
-  An reject filter line means that if the announce matches this filter
-  it is passed onto the user. See HELP FILTERS for more info. Please
-  read this to understand how filters work - it will save a lot of grief
-  later on.
-
-  You can use any of the following things in this line:-
-
-
-
-         info <string>            eg: iota or qsl
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-         wx 1                     filter WX announces
-         dest <prefixes>          eg: 6MUK,WDX      (distros)
-
-
-
-  some examples:-
-
-
-
-         rej/ann by_zone 14,15,16 and not by G,M,2
-
-
-
-  You can use the tag 'all' to reject everything eg:
-
-
-
-         rej/ann all
-
-
-
-  but this probably for advanced users...
-
-
-  1122..1199..  rreejjeecctt//ssppoottss
-
-  rreejjeecctt//ssppoottss [[00--99]] <<ppaatttteerrnn>> Set a reject filter line for spots
-
-
-  Create a 'reject this spot' line for a filter.
-
-  A reject filter line means that if the spot matches this filter it is
-  dumped (not passed on). See HELP FILTERS for more info. Please read
-  this to understand how filters work - it will save a lot of grief
-  later on.
-
-  You can use any of the following things in this line:-
-
-
-
-    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-    on <range>             same as 'freq'
-    call <prefixes>        eg: G,PA,HB9
-    info <string>          eg: iota or qsl
-    by <prefixes>
-    call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-    call_itu <numbers>
-    call_zone <numbers>
-    by_dxcc <numbers>
-    by_itu <numbers>
-    by_zone <numbers>
-    origin <prefixes>
-    channel <prefixes>
-
-
-
-  For frequencies, you can use any of the band names defined in
-  SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
-  thus: hf/ssb. You can also just have a simple range like: 0/30000 -
-  this is more efficient than saying simply: on HF (but don't get too
-  hung up about that)
-
-  some examples:-
-
-
-
-         rej/spot 1 on hf
-         rej/spot 2 on vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
-
-
-
-  You can use the tag 'all' to reject everything eg:
-
-
-
-         rej/spot 3 all
-
-
-
-  but this probably for advanced users...
-
-
-  1122..2200..  rreejjeecctt//wwccyy
-
-  rreejjeecctt//wwccyy [[00--99]] <<ppaatttteerrnn>> Set a reject WCY filter
-
-
-  It is unlikely that you will want to do this, but if you do then you
-  can filter on the following fields:-
-
-
-
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-
-
-  There are no examples because WCY Broadcasts only come from one place
-  and you either want them or not (see UNSET/WCY if you don't want
-  them).
-
-  This command is really provided for future use.
-
-  See HELP FILTER for information.
-
-
-  1122..2211..  rreejjeecctt//wwwwvv
-
-  rreejjeecctt//wwwwvv [[00--99]] <<ppaatttteerrnn>> Set a reject WWV filter
-
-
-  It is unlikely that you will want to do this, but if you do then you
-  can filter on the following fields:-
-
-
-
-         by <prefixes>            eg: G,M,2
-         origin <prefixes>
-         origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         origin_itu <numbers>
-         origin_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         channel <prefixes>
-
-
-
-  for example
-
-
-
-         reject/wwv by_zone 14,15,16
-
-
-
-  is probably the only useful thing to do (which will only show WWV
-  broadcasts by stations in the US).
-
-  See HELP FILTER for information.
-
-
-  1122..2222..  rreeppllyy
-
-  rreeppllyy Reply (privately) to the last message that you have read
-  rreeppllyy <<mmssggnnoo>> Reply (privately) to the specified message
-  rreeppllyy BB <<mmssggnnoo>> Reply as a Bulletin to the specified message
-  rreeppllyy NNOOPPrriivvaattee <<mmssggnnoo>> Reply as a Bulletin to the specified message
-  rreeppllyy RRRR <<mmssggnnoo>> Reply to the specified message with read receipt
-
-
-  You can reply to a message and the subject will automatically have
-  "Re:" inserted in front of it, if it isn't already present.
-
-  You can also use all the extra qualifiers such as RR, PRIVATE,
-  NOPRIVATE, B that you can use with the SEND command (see SEND for
-  further details)
-
-
-
-  1122..2233..  sseenndd
-
-  sseenndd <<ccaallll>> [[<<ccaallll>> ......]] Send a message to one or more callsigns
-  sseenndd RRRR <<ccaallll>> Send a message and ask for a read receipt
-  sseenndd CCOOPPYY <<mmssggnnoo>> <<ccaallll>> Send a copy of a  message to someone
-  sseenndd PPRRIIVVAATTEE <<ccaallll>> Send a personal message
-  sseenndd NNOOPPRRIIVVAATTEE <<ccaallll>> Send a message to all stations
-
-
-  All the SEND commands will create a message which will be sent either
-  to an individual callsign or to one of the 'bulletin' addresses.
-
-  SEND <call> on its own acts as though you had typed SEND PRIVATE, that
-  is it will mark the message as personal and send it to the cluster
-  node that that callsign is connected to.
-
-  You can have more than one callsign in all of the SEND commands.
-
-  You can have multiple qualifiers so that you can have for example:-
-
-
-
-         SEND RR COPY 123 PRIVATE G1TLH G0RDI
-
-
-
-  which should send a copy of message 123 to G1TLH and G0RDI and you
-  will receive a read receipt when they have read the message.
-
-  SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak) SP
-  is an alias for SEND PRIVATE
-
-
-  1122..2244..  sseett//aaddddrreessss
-
-  sseett//aaddddrreessss <<yyoouurr__aaddddrreessss>> Record your postal address
-
-
-  Literally, record your address details on the cluster.
-
-
-  1122..2255..  sseett//aannnnoouunnccee
-
-  sseett//aannnnoouunnccee Allow announce messages
-
-
-  Allow announce messages to arrive at your terminal.
-
-
-  1122..2266..  sseett//bbeeeepp
-
-  sseett//bbeeeepp Add beeps to terminal messages
-
-
-  Add a beep to DX and other terminal messages.
-
-
-  1122..2277..  sseett//ddxx
-
-  sseett//ddxxAllow DX messages to arrive at your terminal
-
-
-  You can stop DX messages with the _u_n_s_e_t_/_d_x command
-
-
-  1122..2288..  sseett//ddxxggrriidd
-
-  sseett//ddxxggrriiddAllow grid squares on the end of DX messages
-
-
-  Some logging programs do not like the additional information at the
-  end of a DX spot.  If this is the case, use the _u_n_s_e_t_/_d_x_g_r_i_d command
-  to remove the grid squares.
-
-
-  1122..2299..  sseett//eecchhoo
-
-  sseett//eecchhoo Make the cluster echo your input
-
-
-  If you are connected via a telnet session, different implimentations
-  of telnet handle echo differently depending on whether you are
-  connected via port 23 or some other port. You can use this command to
-  change the setting appropriately.
-
-  You can remove the echo with the _u_n_s_e_t_/_e_c_h_o command
-
-  The setting is stored in your user profile.
-
-  YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
-
-
-  1122..3300..  sseett//hheerree
-
-  sseett//hheerree Set the here flag
-
-
-  Let others on the cluster know you are here by only displaying your
-  callsign.  If you are away from your terminal you can use the
-  _u_n_s_e_t_/_h_e_r_e command to let people know you are away.  This simply puts
-  brackets around your callsign to indicate you are not available.
-
-
-  1122..3311..  sseett//hhoommeennooddee
-
-  sseett//hhoommeennooddee <<nnooddee__ccaallll>> Set your home cluster
-
-
-  Tell the cluster system where you normally connect to. Any Messages
-  sent to you will normally find their way there should you not be
-  connected.  eg:-
-
-
-
-         SET/HOMENODE gb7djk
-
-
-
-  1122..3322..  sseett//llaanngguuaaggee
-
-  sseett//llaanngguuaaggee <<llaanngguuaaggee>> Set the language you wish to use
-
-
-  You can select the language that you want the cluster to use.
-  Currently the languages available are _e_n (English) _s_p (Spanish) and _n_l
-  (Dutch).
-
-
-
-  1122..3333..  sseett//llooccaattiioonn
-
-  sseett//llooccaattiioonn <<llaatt aanndd lloonngg>> Set your latitude and longitude
-
-
-  You can set your latitude and longitude manually or alternatively use
-  the _s_e_t_/_q_r_a command which will do the conversion for you.
-
-
-
-         set/location 54 04 N 2 02 E
-
-
-
-  1122..3344..  sseett//llooggiinniinnffoo
-
-  sseett//llooggiinniinnffoo Show logins and logouts of nodes and users
-
-
-  Show users and nodes when they log in and out of the local cluster.
-  You can stop these messages by using the _u_n_s_e_t_/_l_o_g_i_n_i_n_f_o command.
-
-
-  1122..3355..  sseett//nnaammee
-
-  sseett//nnaammee <<yyoouurr__nnaammee>> Set your name
-
-
-  Tell the cluster what your name is, eg:-
-
-
-
-         set/name Dirk
-
-
-
-  1122..3366..  sseett//ppaaggee
-
-  sseett//ppaaggee <<nn>> Set the number of lines per page
-
-
-  Tell the system how many lines you wish on a page when the number of
-  lines of output from a command is more than this. The default is 20.
-  Setting it explicitly to 0 will disable paging.
-
-
-
-         SET/PAGE 30
-         SET/PAGE 0
-
-
-
-  The setting is stored in your user profile.
-
-
-  1122..3377..  sseett//qqrraa
-
-  sseett//qqrraa <<llooccaattoorr>> Set your QRA locator
-
-
-
-  Tell the system what your QRA (or Maidenhead) locator is. If you have
-  not done a SET/LOCATION then your latitude and longitude will be set
-  roughly correctly (assuming your locator is correct ;-). For example:-
-
-
-
-         SET/QRA JO02LQ
-
-
-
-  1122..3388..  sseett//qqtthh
-
-  sseett//qqtthh <<yyoouurr QQTTHH>> Set your QTH
-
-
-  Tell the system where your are.  For example:-
-
-
-
-         set/qth East Dereham, Norfolk
-
-
-
-  1122..3399..  sseett//ttaallkk
-
-  sseett//ttaallkk Allow talk messages to be seen at your console
-
-
-  Allow talk messages to arrive at your console.  You can switch off
-  talks with the _u_n_s_e_t_/_t_a_l_k command.
-
-
-  1122..4400..  sseett//wwccyy
-
-  sseett//wwccyy Allow WCY messages to be seen at your console
-
-
-  Allow WCY information to be seen at your console.  You can switch off
-  WCY messages with the _u_n_s_e_t_/_w_c_y command.
-
-
-  1122..4411..  sseett//wwwwvv
-
-  sseett//wwwwvv Allow WWV messages to be seen at your console
-
-
-  Allow WWV information to be seen at your console.  You can switch off
-  WWV messages with the _u_n_s_e_t_/_w_w_v command.
-
-
-  1122..4422..  sseett//wwxx
-
-  sseett//wwxx Allow WX messages to be seen at your console
-
-
-  Allow WX information to be seen at your console.  You can switch off
-  WX messages with the _u_n_s_e_t_/_w_x command.
-
-
-
-  1122..4433..  sshhooww//ccoonnffiigguurraattiioonn
-
-  sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]] Show all visible nodes and their users
-
-
-  This command allows you to see all the users that can be seen and the
-  nodes to which they are connected.  With the optional _n_o_d_e, you can
-  specify a particular node to look at.
-
-  This command is normally abbreviated to: sh/c
-
-  BE WARNED: the list that is returned can be VERY long
-
-
-  1122..4444..  sshhooww//ccoonnffiigguurraattiioonn//nnooddee
-
-  sshhooww//ccoonnffiigguurraattiioonn//nnooddee Show all the nodes connected
-
-
-  Show all the nodes connected locally and the nodes they have
-  connected.
-
-
-
-  1122..4455..  sshhooww//ddaattee
-
-  sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
-
-
-  This is very nearly the same as SHOW/TIME, the only difference the
-  format of the date string if no arguments are given.
-
-  If no prefixes or callsigns are given then this command returns the
-  local time and UTC as the computer has it right now. If you give some
-  prefixes then it will show UTC and UTC + the local offset (not
-  including DST) at the prefixes or callsigns that you specify.
-
-
-  1122..4466..  sshhooww//ddxx
-
-  sshhooww//ddxx [[ooppttiioonnss]] interrogate the spot database
-
-
-  If you just type SHOW/DX you will get the last so many spots (sysop
-  configurable, but usually 10).
-
-  In addition you can add any number of these options in very nearly any
-  order to the basic SHOW/DX command, they are:-
-
-
-
-  on <band>       - eg 160m 20m 2m 23cm 6mm
-  on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
-
-  <number>        - the number of spots you want
-  <from>-<to>     - <from> spot no <to> spot no in
-                    the selected list
-
-  <prefix>        - for a spotted callsign beginning with <prefix>
-  *<suffix>       - for a spotted callsign ending in <suffix>
-  *<string>*      - for a spotted callsign containing <string>
-
-  day <number>    - starting <number> days ago
-  day <from>-<to> - <from> days <to> days ago
-
-  info <text>     - any spots containing <text> in the info or remarks
-
-  by <call>       - any spots spotted by <call> (spotter <call>
-                          is the same).
-
-  qsl             - this automatically looks for any qsl info on the call
-                    held in the spot database.
-
-  iota [<iota>]   - If the iota island number is missing it will
-                    look for the string iota and anything which looks like
-                    an iota island number. If you specify then it will look
-                    for that island.
-
-  qra [<locator>] - this will look for the specific locator if
-                    you specify one or else anything that looks like a locator.
-
-
-
-  e.g.
-
-
-
-          SH/DX 9m0
-          SH/DX on 20m info iota
-          SH/DX 9a on vhf day 30
-          SH/DX rf1p qsl
-          SH/DX iota
-          SH/DX iota eu-064
-          SH/DX qra jn86
-
-
-
-  1122..4477..  sshhooww//ddxxcccc
-
-  sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
-
-
-  This command takes the <prefix> (which can be a full or partial
-  callsign if desired), looks up which internal country number it is and
-  then displays all the spots as per SH/DX for that country.
-
-  The options for SHOW/DX also apply to this command.  e.g.
-
-
-
-     SH/DXCC G
-     SH/DXCC W on 20m info iota
-
-
-
-  1122..4488..  sshhooww//ffiilleess
-
-  sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]] List the contents of a filearea
-
-
-  SHOW/FILES on its own will show you a list of the various fileareas
-  available on the system. To see the contents of a particular file area
-  type:-
-
-
-
-          SH/FILES <filearea>
-
-
-
-  where <filearea> is the name of the filearea you want to see the
-  contents of.
-
-  You can also use shell globbing characters like '*' and '?' in a
-  string to see a selection of files in a filearea eg:-
-
-
-
-          SH/FILES bulletins arld*
-
-
-
-  See also TYPE - to see the contents of a file.
-
-
-  1122..4499..  sshhooww//ffiilltteerr
-
-  sshhooww//ffiilltteerr Show the filters you have set
-
-
-  Show the contents of all the filters that are set by you. This command
-  displays all the filters set - for all the various categories.
-
-
-  1122..5500..  sshhooww//mmoooonn
-
-  sshhooww//mmoooonn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show moon rise and set times
-
-
-  Show the Moon rise and set times for a (list of) prefixes or
-  callsigns, together with the azimuth and elevation of the sun
-  currently at those locations.
-
-  If you don't specify any prefixes or callsigns, it will show the times
-  for your QTH (assuming you have set it with either SET/LOCATION or
-  SET/QRA), together with the current azimuth and elevation.
-
-  In addition, it will show the gain or loss dB relative to the nominal
-  distance of 385,000Km due to the ellipsoidal nature of the orbit.
-
-  If all else fails it will show the Moonrise and set times for the node
-  that you are connected to.
-  For example:-
-
-
-
-         SH/MOON
-         SH/MOON G1TLH W5UN
-
-
-
-  1122..5511..  sshhooww//mmuuff
-
-  sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]] Show the likely propagation to
-  <prefix>
-
-
-  This command allow you to estimate the likelihood of you contacting a
-  station with the prefix you have specified. The output assumes a
-  modest power of 20dBW and receiver sensitivity of -123dBm (about
-  0.15muV/10dB SINAD)
-
-  The result predicts the most likely operating frequencies and signal
-  levels for high frequency (shortwave) radio propagation paths on
-  specified days of the year and hours of the day. It is most useful for
-  paths between 250 km and 6000 km, but can be used with reduced
-  accuracy for paths shorter or longer than this.
-
-  The command uses a routine MINIMUF 3.5 developed by the U.S. Navy and
-  used to predict the MUF given the predicted flux, day of the year,
-  hour of the day and geographic coordinates of the transmitter and
-  receiver. This routine is reasonably accurate for the purposes here,
-  with a claimed RMS error of 3.8 MHz, but much smaller and less complex
-  than the programs used by major shortwave broadcasting organizations,
-  such as the Voice of America.
-
-  The command will display some header information detailing its
-  assumptions, together with the locations, latitude and longitudes and
-  bearings. It will then show UTC (UT), local time at the other end
-  (LT), calculate the MUFs, Sun zenith angle at the midpoint of the path
-  (Zen) and the likely signal strengths. Then for each frequency for
-  which the system thinks there is a likelihood of a circuit it prints a
-  value.
-
-  The value is currently a likely S meter reading based on the
-  conventional 6dB / S point scale. If the value has a '+' appended it
-  means that it is 1/2 an S point stronger. If the value is preceeded by
-  an 'm' it means that there is likely to be much fading and by an 's'
-  that the signal is likely to be noisy.
-
-  By default SHOW/MUF will show the next two hours worth of data. You
-  can specify anything up to 24 hours worth of data by appending the no
-  of hours required after the prefix. For example:-
-
-
-
-         SH/MUF W
-
-
-
-  produces:
-
-
-
-    RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
-    Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
-    Location                       Lat / Long           Azim
-    East Dereham, Norfolk          52 41 N 0 57 E         47
-    United-States-W                43 0 N 87 54 W        299
-    UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
-    18 23 11.5 -35  mS0+ mS2   S3
-    19  0 11.2 -41  mS0+ mS2   S3
-
-
-
-  indicating that you will have weak, fading circuits on top band and
-  80m but usable signals on 40m (about S3).
-
-  inputing:-
-
-
-
-         SH/MUF W 24
-
-
-
-  will get you the above display, but with the next 24 hours worth of
-  propagation data.
-
-
-
-         SH/MUF W L 24
-         SH/MUF W 24 Long
-
-
-
-  Gives you an estimate of the long path propagation characterics. It
-  should be noted that the figures will probably not be very useful, nor
-  terrible accurate, but it is included for completeness.
-
-
-  1122..5522..  sshhooww//pprreeffiixx
-
-  sshhooww//pprreeffiixx <<ccaallllssiiggnn>> Interrogate the prefix database
-
-
-  This command takes the <callsign> (which can be a full or partial
-  callsign or a prefix), looks up which internal country number it is
-  and then displays all the relevant prefixes for that country together
-  with the internal country no, the CQ and ITU regions.
-
-  See also SHOW/DXCC
-
-
-  1122..5533..  sshhooww//qqrraa
-
-  sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]] Show the distance between locators
-  sshhooww//qqrraa <<llaatt>> <<lloonngg>> Convert latitude and longitude to a locator
-
-
-  This is a multipurpose command that allows you either to calculate the
-  distance and bearing between two locators or (if only one locator is
-  given on the command line) the distance and beraing from your station
-  to the locator. For example:-
-
-
-
-  SH/QRA IO92QL
-  SH/QRA JN06 IN73
-
-
-
-  The first example will show the distance and bearing to the locator
-  from yourself, the second example will calculate the distance and
-  bearing from the first locator to the second. You can use 4 or 6
-  character locators.
-
-  It is also possible to convert a latitude and longitude to a locator
-  by using this command with a latitude and longitude as an argument,
-  for example:-
-
-
-
-       SH/QRA 52 41 N 0 58 E
-
-
-
-  1122..5544..  sshhooww//qqrrzz
-
-  sshhooww//qqrrzz <<ccaallllssiiggnn>> Show any callbook details on a callsign
-
-
-  This command queries the QRZ callbook server on the internet and
-  returns any information available for that callsign. This service is
-  provided for users of this software by http://www.qrz.com
-
-
-  1122..5555..  sshhooww//rroouuttee
-
-  sshhooww//rroouuttee <<ccaallllssiiggnn>> Show the route to <callsign>
-
-
-  This command allows you to see to which node the callsigns specified
-  are connected. It is a sort of inverse sh/config.
-
-
-
-         sh/route n2tly
-
-
-
-  1122..5566..  sshhooww//ssaatteelllliittee
-
-  sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]] Show satellite tracking
-  data
-
-
-  Show the tracking data from your location to the satellite of your
-  choice from now on for the next few hours.
-
-  If you use this command without a satellite name it will display a
-  list of all the satellites known currently to the system.
-
-  If you give a name then you can obtain tracking data of all the passes
-  that start and finish 5 degrees below the horizon. As default it will
-  give information for the next three hours for every five minute
-  period.
-
-  You can alter the number of hours and the step size, within certain
-  limits.
-
-  Each pass in a period is separated with a row of '-----' characters
-
-  So for example:-
-
-
-
-       SH/SAT AO-10
-       SH/SAT FENGYUN1 12 2
-
-
-
-  1122..5577..  sshhooww//ssuunn
-
-  sshhooww//ssuunn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
-
-
-  Show the sun rise and set times for a (list of) prefixes or callsigns,
-  together with the azimuth and elevation of the sun currently at those
-  locations.
-
-  If you don't specify any prefixes or callsigns, it will show the times
-  for your QTH (assuming you have set it with either SET/LOCATION or
-  SET/QRA), together with the current azimuth and elevation.
-
-  If all else fails it will show the sunrise and set times for the node
-  that you are connected to.
-
-  For example:-
-
-
-
-         SH/SUN
-         SH/SUN G1TLH K9CW ZS
-
-
-
-  1122..5588..  sshhooww//ttiimmee
-
-  sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
-
-
-  If no prefixes or callsigns are given then this command returns the
-  local time and UTC as the computer has it right now. If you give some
-  prefixes then it will show UTC and UTC + the local offset (not
-  including DST) at the prefixes or callsigns that you specify.
-
-
-  1122..5599..  sshhooww//wwccyy
-
-  sshhooww//wwccyy Show the last 10 WCY broadcasts
-  sshhooww//wwccyy <<nn>> Show the last <n> WCY broadcasts
-
-
-  Display the most recent WCY information that has been received by the
-  system
-
-
-
-  1122..6600..  sshhooww//wwwwvv
-
-  sshhooww//wwwwvv Show the last 10 WWV broadcasts
-  sshhooww//wwwwvv <<nn>> Show the last <n> WWV broadcasts
-
-
-  Display the most recent WWV information that has been received by the
-  system
-
-
-  1122..6611..  ssyyssoopp
-
-  ssyyssoopp Regain your privileges if you login remotely
-
-
-  The system automatically reduces your privilege level to that of a
-  normal user if you login in remotely. This command allows you to
-  regain your normal privilege level. It uses the normal system: five
-  numbers are returned that are indexes into the character array that is
-  your assigned password (see SET/PASSWORD). The indexes start from
-  zero.
-
-  You are expected to return a string which contains the characters
-  required in the correct order. You may intersperse those characters
-  with others to obscure your reply for any watchers. For example (and
-  these values are for explanation :-):
-
-
-
-         password = 012345678901234567890123456789
-         > sysop
-         22 10 15 17 3
-
-
-
-  you type:-
-
-
-
-        aa2bbbb0ccc5ddd7xxx3n
-        or 2 0 5 7 3
-        or 20573
-
-
-
-  They will all match. If there is no password you will still be offered
-  numbers but nothing will happen when you input a string. Any match is
-  case sensitive.
-
-
-  1122..6622..  ttaallkk
-
-  ttaallkk <<ccaallllssiiggnn>> Enter talk mode with <callsign>
-  ttaallkk <<ccaallllssiiggnn>> <<tteexxtt>> Send a text message to <callsign>
-  ttaallkk <<ccaallllssiiggnn>> >> <<nnooddee__ccaallll>> [[<<tteexxtt>>]] Send a text message to
-  <callsign> via <node_call>
-
-
-  Send a short message to any other station that is visible on the
-  cluster system. You can send it to anyone you can see with a
-  SHOW/CONFIGURATION command, they don't have to be connected locally.
-
-  The second form of TALK is used when other cluster nodes are connected
-  with restricted information. This usually means that they don't send
-  the user information usually associated with logging on and off the
-  cluster.
-
-  If you know that G3JNB is likely to be present on GB7TLH, but you can
-  only see GB7TLH in the SH/C list but with no users, then you would use
-  the second form of the talk message.
-
-  If you want to have a ragchew with someone you can leave the text
-  message out and the system will go into 'Talk' mode. What this means
-  is that a short message is sent to the recipient telling them that you
-  are in a 'Talking' frame of mind and then you just type - everything
-  you send will go to the station that you asked for.
-
-  All the usual announcements, spots and so on will still come out on
-  your terminal.
-
-  If you want to do something (such as send a spot) you precede the
-  normal command with a '/' character, eg:-
-
-
-
-          /DX 14001 G1TLH What's a B class licensee doing on 20m CW?
-          /HELP talk
-
-
-
-  To leave talk mode type:
-
-
-
-          /EX
-
-
-
-  1122..6633..  ttyyppee
-
-  ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>> Look at a file in one of the fileareas
-
-
-  Type out the contents of a file in a filearea. So, for example, in
-  filearea 'bulletins' you want to look at file 'arld051' you would
-  enter:-
-
-
-
-          TYPE bulletins/arld051
-
-
-
-  See also SHOW/FILES to see what fileareas are available and a list of
-  content.
-
-
-  1122..6644..  wwhhoo
-
-  wwhhoo Show who is physically connected locally
-
-
-  This is a quick listing that shows which callsigns are connected and
-  what sort of connection they have
-
-
-  1122..6655..  wwxx
-
-  wwxx <<tteexxtt>> Send a weather message to local users
-  wwxx ffuullll <<tteexxtt>>  Send a weather message to all cluster users
-
-
-  Weather messages can sometimes be useful if you are experiencing an
-  extreme that may indicate enhanced conditions
 
 
 

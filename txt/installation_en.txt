@@ -1,0 +1,2024 @@
+  The DXSpider Installation Manual v1.50
+  Iain Philipps, G0RDI (g0rdi@77hz.com), Ian Maude, G0VGS,
+  (g0vgs@gb7mbc.net) and Charlie Carroll, K1XX,
+  (k1xx@ptcnh.net)
+  February 2003 revision 0.5
+
+  A reference for SysOps of the DXSpider DXCluster program.
+  ______________________________________________________________________
+
+  Table of Contents
+
+
+  1. Linux Installation
+     1.1 Introduction
+     1.2 Preparation
+     1.3 Installing the software
+     1.4 Setting callsigns etc
+     1.5 The client program
+     1.6 Starting up for the first time
+
+  2. Linux quick installation guide
+  3. Setting up the AX25 Utilities
+     3.1 Getting Started
+     3.2 The kernel
+     3.3 Installing the RPM's
+     3.4 Configuration
+     3.5 axports
+     3.6 nrports
+     3.7 nrbroadcast
+     3.8 ax25d.conf
+     3.9 node.conf
+     3.10 Getting it all running
+
+  4. Configuration
+     4.1 Allowing ax25 connects from users
+     4.2 Allowing telnet connects from users
+     4.3 Setting up telnet connects (from 1.47 onwards)
+     4.4 Setting up for AGW Engine (1.47 onwards)
+     4.5 Setting up node connects
+     4.6 Connection scripts
+     4.7 Starting the connection
+     4.8 Telnet echo
+     4.9 Autostarting the cluster
+
+  5. Microsoft Windows Installation
+     5.1 Introduction
+     5.2 The requirements
+     5.3 The system
+     5.4 Perl
+     5.5 Additional packages
+     5.6 Getting Spider
+
+  6. Installing the software
+     6.1 Incoming telnets
+     6.2 The AGW packet engine
+     6.3 Setting up the initial user files
+     6.4 Connecting to other clusters
+
+  7. General Information
+     7.1 The crontab file
+
+
+  ______________________________________________________________________
+
+
+
+  1.  Linux Installation
+
+  1.1.  Introduction
+
+  This section describes the installation of DX Spider v1.50 on a RedHat
+  Linux Distribution.  Wherever possible I will try to include
+  differences for other distributions.
+
+
+  I am assuming a general knowledge of Linux and its commands.  You
+  should know how to use tar and how to edit files using your favourite
+  editor.
+
+
+  The crucial ingredient for all of this is Perl.  Earlier versions of
+  Spider required perl 5.004, however it is now STRONGLY recommended
+  that you use at least version 5.005_03 as this is the version being
+  used in the development of Spider.
+
+
+  In addition to the standard Red Hat distribution you will require the
+  following modules from http://www.cpan.org/modules/by-module/ , please
+  note however that with later versions of perl, some of these modules
+  may be included with the distribution.  Get the modules anyway and try
+  to install as below.  If they complain, they are probably already a
+  part of your perl distribution.
+
+
+
+  o  Data-Dumper-2.101.tar.gz
+
+  o  TimeDate-1.10.tar.gz
+
+  o  IO-1.20.tar.gz (for perl 5.00403 and lower)
+
+  o  Net-Telnet-3.03.tar.gz
+
+  o  Curses-1.06.tar.gz
+
+  o  Time-HiRes-01.20.tar.gz
+
+  o  Digest-SHA1-2.01.tar.gz
+
+
+  Copy the CPAN modules listed above to a convenient place on your
+  computer. One good place would be /usr/local/packages, and the
+  instructions which follow will assume that that's where you have put
+  them.
+
+
+  Log in as 'root', and make sure you're at '/root' before you continue.
+  Here are exactly the commands you must issue next: -
+
+
+
+  # tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
+  # cd Data-Dumper-2.101
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
+  # cd TimeDate-1.10
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/IO-1.20.tar.gz
+  # cd IO-1.20
+  # perl Makefile.PL
+  # make test
+  # make install UNINST=1
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Net-Telnet-3.03.tar.gz
+  # cd Net-Telnet-3.02
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Curses-1.06.tar.gz
+  # cd Curses-1.06
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Time-HiRes-01.20.tar.gz
+  # cd Time-HiRes-01.20
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Digest-SHA1-2.01.tar.gz
+  # cd Digest-SHA1-2.01
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+
+
+
+  Do not fall into the trap of thinking they're all the same, just
+  because they nearly are! Pay particular attention to the instructions
+  of IO, above.
+
+
+
+  1.2.  Preparation
+
+  I will assume that you have already downloaded the latest tarball of
+  the DXSpider software and are ready to install it. I am assuming
+  version 1.50 for this section but of course you would use the latest
+  version.
+
+
+  Login as root and create a user to run the cluster under.  UNDER NO
+  CIRCUMSTANCES USE ROOT AS THIS USER!.  I am going to use the name
+  sysop.  You can call it anything you wish.  Depending on your security
+  requirements you may wish to use an existing user, however this is
+  your own choice.
+
+
+
+       # adduser -m sysop
+
+
+
+  For SuSE distributions, the command would be ..
+
+
+
+       # useradd -m sysop
+
+
+
+  Now set a password for the user ...
+
+
+
+       # passwd sysop
+       # New UNIX password:
+       # Retype new UNIX password:
+       passwd: all authentication tokens updated successfully
+
+
+
+  1.3.  Installing the software
+
+  Now to unpack the DX Spider distribution, set symbolic links and group
+  permissions.  Copy the tarball to /home/sysop and do the following.
+
+
+
+       # cd ~sysop
+       # tar xvfz spider-1.50.tar.gz
+       # ln -s ~sysop/spider /spider
+       # groupadd -g 251 spider       (or another number)
+
+
+
+  If you do not have the command groupadd available to you simply add a
+  line in /etc/group by hand.
+
+
+
+       # vi /etc/group                (or your favorite editor)
+
+
+
+  You also need to add some others to the group, including your own
+  callsign (this will be used as an alias) and root.  The finished line
+  in /etc/group should look something like this
+
+  spider:x:251:sysop,g0vgs,root
+
+
+  The next step is to set the permissions on the Spider directory tree
+  and files ....
+
+
+
+       # chown -R sysop.spider spider
+       # find . -type d -exec chmod 2775 {} \;
+       # find . -type f -exec chmod 775 {} \;
+
+
+
+  This last step allows various users of the group spider to have write
+  access to all the directories.  This is not really needed just yet but
+  will be useful when web interfaces start to appear.
+
+
+  Finally, you need to fix the permissions on the ax25_call and
+  netrom_call programs.  Check where they are with the locate command
+  and alter the permissions with the chmod command like this ..
+
+
+
+       # chown root ax25_call netrom_call
+       # chmod 4775 ax25_call netrom_call
+
+
+
+  1.4.  Setting callsigns etc
+
+  Now login to your machine as the user you created earlier.  In my case
+  that user is called sysop.  Once logged in, issue the following
+  commands ....
+
+
+
+       $ cd /spider
+       $ mkdir local
+       $ mkdir local_cmd
+       $ cp perl/DXVars.pm.issue local/DXVars.pm
+       $ cd local
+       $ vi DXVars.pm (or your favourite editor)
+
+
+
+  Using the distributed DXVars.pm as a a template, set your cluster
+  callsign, sysop callsign and other user info to suit your own
+  environment.
+
+
+
+       $mycall = "GB7DJK";
+
+
+
+  This is the call sign of your cluster.  If you use an SSID then
+  include it here also.
+
+
+
+       $myalias = "G1TLH";
+
+
+
+  This is the sysop user callsign, normally your own.
+
+
+  PLEASE USE CAPITAL LETTERS FOR CALLSIGNS
+
+
+  Note that this a perl file which will be parsed and executed as part
+  of the cluster. If you get it wrong then perl will complain when you
+  start the cluster process.  It is important only to alter the text of
+  any section.  Some of the lines look a little odd.  Take this line for
+  example ....
+
+  $myemail = "ianmaude\@btinternet.com";
+
+
+  There appears to be an extra slash in there.  However this has to be
+  there for the file to work so leave it in.
+
+
+  DON'T alter any file in /spider/perl, they are overwritten with every
+  release. Any files or commands you place in /spider/local or
+  /spider/local_cmd will automagically be used in preference to the ones
+  in /spider/perl EVEN while the cluster is running!
+
+
+  Save the new file and change directory to ../perl ....
+
+
+
+       $ cd ../perl
+
+
+
+  Now type the following command which creates the basic user file with
+  you as the sysop.
+
+
+
+       $ ./create_sysop.pl
+
+
+
+  1.5.  The client program
+
+  In earlier versions of Spider, all the processes were Perl scripts.
+  This was fine but with a lot of users your computer memory would soon
+  be used up.  To combat this a new client was written in "C".  This
+  client only works for incoming connects at the moment.  Before you can
+  use it though it has to be "made".  CD to /spider/src and type make.
+  You should see the output on your screen and hopefully now have a
+  small C program called client.  Leave it in this directory.
+  1.6.  Starting up for the first time
+
+  We can now bring spider up for the first time and see if all is well
+  or not!  It should look something like this ...
+
+
+
+       $ ./cluster.pl
+       DXSpider DX Cluster Version 1.50
+       Copyright (c) 1998 Dirk Koopman G1TLH
+       loading prefixes ...
+       loading band data ...
+       loading user file system ...
+       starting listener ...
+       reading existing message headers
+       reading cron jobs
+       orft we jolly well go ...
+
+
+
+  If all is well then login on another term or console as sysop and cd
+  to /spider/src.  Now issue the following command ...
+
+
+
+       $ ./client
+
+
+
+  This should log you into the cluster as the sysop under the alias
+  callsign we set earlier.  In this case the callsign is G0VGS.  The
+  cluster callsign is set in the DXVars.pm file in /spider/local.  In
+  this case we will assume that this was set as GB7MBC.  You should
+  therefore see this when you login ....
+
+
+
+       G0VGS de GB7MBC 19-Nov-1999 2150Z >
+
+
+
+  If you do, congratulations!  If not, look over the instructions again,
+  you have probably missed something out.  You can shut spider down
+  again with the command ....
+
+
+
+       shutdown
+
+
+
+  and both the cluster and the client should return to Linux prompts.
+
+
+
+  2.  Linux quick installation guide
+
+  This section is designed for experienced Spider sysops who want to
+  install Spider from scratch.  It is simply a check list of things that
+  need to be done without any explanations.  The name in brackets at the
+  end of each line is the user that should be doing that process.
+
+
+  o  Login as root
+
+  o  Get the additional CPAN modules and install them (root)
+
+  o  Create the "sysop" user and set a password (root)
+
+  o  Put the Spider tarball in  sysop and untar it (root)
+
+  o  ln -s  sysop/spider /spider (root)
+
+  o  groupadd -g 251 spider (root)
+
+  o  Add any more users you need to the group entry in /etc/group (root)
+
+  o  Set the permissions on the spider tree (root)
+
+  o  Fix permissions on ax25_call and netrom_call (root)
+
+  o  Login as the sysop user
+
+  o  cd to /spider (sysop)
+
+  o  mkdir local (sysop)
+
+  o  mkdir local_cmd (sysop)
+
+  o  cp perl/DXVars.pm.issue local/DXVars.pm (sysop)
+
+  o  cd to /spider/local and edit DXVars to set your details (sysop)
+
+  o  cd ../perl (sysop)
+
+  o  ./create_sysop.pl (sysop)
+
+  o  ./cluster.pl (sysop)
+
+
+  Spider should now be running and you should be able to login using the
+  client program.
+
+
+  o  Login as root
+
+  o  Enter the correct line in ax25d.conf (root)
+
+  o  Enter the correct line in /etc/services (root)
+
+  o  Enter the correct line in /etc/inetd.conf (root)
+
+  o  killall -HUP inetd (root)
+
+
+  Spider should now be able to accept logins via telnet, netrom and
+  ax25.
+
+
+  o  Login as sysop
+
+  o  Start the cluster (sysop)
+
+  o  set/node and type for links (sysop)
+
+  o  Write any connect scripts (sysop)
+
+  o  Edit /spider/crontab as required (sysop)
+
+  o  Edit any other files as necessary (sysop)
+
+  o  Set filters, hops and forwarding files (sysop)
+
+  o  Login as root
+
+  o  Enter the correct line in /etc/inittab (root)
+
+
+  3.  Setting up the AX25 Utilities
+
+  The aim of this section is not to fully cover the installation and
+  configuration of all the possible ax25 modules.  I will attempt to
+  cover a simple installation and configure 2 serial ports as if they
+  had TNC's on them.  I will also show what additional configuration the
+  DXSpider program requires.
+
+
+  Please bear in mind that I am basing this section on a RedHat 7.1
+  distribution, if you are using SuSe or any other distibution then your
+  mileage may vary.  I will be happy to make any changes and additions
+  if you email me any errors or distribution specific requirements.
+
+
+  You would probably benefit from reading the AX25-HOWTO which is much
+  more comprehensive and an interesting configuration program is also
+  available called ax25-config which may help you to configure things.
+
+
+  The following files are extracts from the working files at GB7MBC and
+  are in daily use.  However, there are many ways that you can configure
+  the ax25 utils, this is just the one I use, it does not mean it is
+  necessarily the best or for that matter, the right way!
+
+
+  3.1.  Getting Started
+
+  There are 2 things you need to do initially.  You need to get the 3
+  files required for the ax25 installation and you need to make some
+  changes to the kernel configuration.
+
+
+  The first thing is to get the versions of the ax25 utils that match
+  your kernel.  You may also wish to get a node package of some kind.
+  There are 2 main node packages in use of which I shall keep to the
+  original by Tomi Manninen, OH2BNS as this is included in the ax25 rpms
+  as standard.  The other is AWZNode by IZ5AWZ.
+
+
+  NB: The AX25 stuff in 2.4 kernels appears to have been broken until
+  2.4.18.  I strongly suggest you get at least this kernel.
+
+
+  For 2.4 kernels you need these files...
+
+
+
+  o  libax25-0.0.7-7.i386.rpm
+
+  o  ax25-tools-0.0.6-13.i386.rpm
+
+  o  ax25-apps-0.0.4-9.i386.rpm
+
+
+  3.2.  The kernel
+
+  First you need to add Amateur Radio Support to your kernel.  This is a
+  main menu item and should be easily found.  Within this header you
+  will find lots of options.  For our purposes you need to enable
+  Amateur Radio AX.25 Level 2 Protocol, NET/ROM and the Serial Port KISS
+  Driver.  For the purposes of this document I will work under the
+  assumption that you include them in the kernel fully, ie not as
+  modules.  If you need to look at compiling your kernel for ax25 more
+  fully, I would refer to the excellent AX25-HOWTO
+
+
+  I should say at this stage that NET/ROM is not mandatory.  If you do
+  not use it simply ignore any instruction concerning it.
+
+
+  Now recompile your kernel in the normal way and reboot your system.
+
+
+  3.3.  Installing the RPM's
+
+  Now install the RPM's you downloaded, libax25 first, then ax25-tools,
+  then ax25-apps.
+
+
+
+       rpm -ivh libax25-0.0.7-7.i386.rpm
+       rpm -ivh ax25-tool-0.0.6-13.i386.rpm
+       rpm -ivh ax25-apps-0.0.4-9.i386.rpm
+
+
+
+  3.4.  Configuration
+
+  You will find the configuration files in /etc/ax25.  These consist of
+  several files ...
+
+
+  o  axports
+
+  o  nrports
+
+  o  nrbroadcast
+
+  o  ax25d.conf
+
+  o  node.conf
+
+
+  These are the main files. You will find other files but they do not
+  have any use unless you are wanting to use that particular protocol,
+  Rose or axip for example.
+
+
+  NOTE:- before we start it is important to realise that every interface
+  requires a different SSID.  You should be able to follow this in the
+  following examples.
+  3.5.  axports
+
+  This file sets up the ax25 ports you want to use.  An example is below
+  for a standard TNC2 ...
+
+
+
+       #portname   callsign   baudrate   paclen   window   description
+        2m         gb7mbc-2   19200      256      2        2m port on 144.900MHz
+        4m         gb7mbc-4   19200      256      2        4m port on 70.325MHz
+
+
+
+  Note that the portnames have to be unique.
+
+
+  The file headings are as follows ...
+
+
+  portname        -       The name you will refer to the port by
+  callsign        -       The ax25 callsign you want to assign to the port
+  baudrate        -       The speed you communicate between TNC and computer
+  paclen          -       The maximum packet length for ax25 connections
+  window          -       The ax25 window parameter.  This is like 'maxframe'
+  description     -       A textual description of the port
+
+
+
+  3.6.  nrports
+
+  This file sets up the netrom ports you want to use.  An example is
+  below and includes a port for both cluster and node.  You will see why
+  we need 2 ports later ...
+
+
+
+       #portname   callsign   alias   paclen   description
+        netrom     gb7mbc-8   BARE    236      Node Netrom Port
+        netrom2    gb7mbc-9   MBCDX   236      Cluster Netrom Port
+
+
+
+  Note that the portnames have to be unique.
+
+
+  The file headings are as follows ...
+
+
+  portname        -       The name you will refer to the port by
+  callsign        -       This is the callsign that NET/ROM traffic from this
+                          port will use
+  alias           -       The NET/ROM alias this port will be assigned
+  paclen          -       The maximum size of NET/ROM frames transmitted
+  description     -       A textual description of the port
+
+
+
+  3.7.  nrbroadcast
+
+  This file sets up the netrom broadcast qualities.  An example is below
+  ...
+
+
+
+       #axport   min_obs   def_qual   worst_qual   verbose
+        4m       5         10         100          1
+
+
+
+  The file headings are as follows ...
+
+
+  axport          -       The port name in axports that you wish to broadcast
+                          NET/ROM on.
+  min_obs         -       The minimum obsolescence value for the port
+  def_qual        -       The default quality for the port
+  worst_qual      -       The worst quality for the port.  Any routes under
+                          this quality will be ignored
+  verbose         -       This flag determines whether you will only broadcast
+                          your own node (0) or all known nodes (1)
+
+
+
+  3.8.  ax25d.conf
+
+  This file controls any incoming ax25 and NET/ROM connections and
+  steers them to the relevant program.  There are lots of configuration
+  options you can set here, however they are well covered in the
+  AX25-HOWTO.  For our purposes I will show a typical set of parameters.
+  An example is below ...
+
+
+
+  [gb7mbc-0 via 2m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  [gb7mbc-1 via 2m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+  [gb7mbc-0 via 4m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  [gb7mbc-1 via 4m]
+  parameters    2 1   6  900 *  15  0
+  NOCALL *  *  *  *  *  *  L
+  default *  *  *  *  *  *  0  root /usr/sbin/node  node
+
+  <netrom2>
+  parameters 1    10 * * * 3 *
+  NOCALL *  *  *  *  *  *  L
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  <netrom>
+  parameters 1    10 * * * 3 *
+  NOCALL *  *  *  *  *  *  L
+  default *  *  *  *  *  *  0  root  /usr/sbin/node  node
+
+
+
+  There are a few things to take note of here.  Firstly, all ax25
+  sections are wrapped in [ ] and all NET/ROM sections are wrapped in <
+  >.  Secondly you should be able to see that anyone who forgets to set
+  their callsign in a TNC and tries to connect with the standard NOCALL
+  set into their TNC will not connect, the 'L' means 'lockout'.  Lastly
+  and importantly, notice the order of the sections.  They are all done
+  in interface order.
+
+
+  You should be able to see that the normal line for access to the
+  cluster is like this ..
+
+
+
+       default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+
+
+  however, if you wish your users to be able to use SSID's on their
+  callsigns ..
+
+
+
+       default  * * * * * *  - sysop /spider/src/client client %s ax25
+
+
+
+  For most purposes this is not desirable. The only time you probably
+  will need this is when you need to allow other cluster nodes that are
+  using SSID's in. In this case it would probably be better to use the
+  first example and then add a specific line for that node like this:
+
+
+
+       GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
+       default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+
+
+  3.9.  node.conf
+
+  For those of you that wish to run the node, you need to set up the
+  node.conf file.  There are a couple of additional files, node.perms is
+  very similar to the way ftp permissions are set up in NOS systems and
+  node.motd is the message anyone logging into the node will get.  The
+  node.conf file sets all the parameters of the node as you would
+  expect.  An example is below ...
+
+
+
+  # /etc/ax25/node.conf - LinuxNode configuration file
+  #
+  # see node.conf(5)
+
+  # Idle timeout (seconds).
+  #
+  IdleTimeout     1800
+
+  # Timeout when gatewaying (seconds).
+  #
+  ConnTimeout     40000
+
+  # Visible hostname. Will be shown at telnet login.
+  #
+  HostName        gb7mbc.ampr.org
+
+  # ReConnect flag.
+  #
+  ReConnect       off
+
+  # "Local" network.
+  #
+  #LocalNet       44.139.8.48/32
+
+  # Command aliases. See node.conf(5) for the meaning of the uppercase
+  # letters in the name of the alias.
+  #
+  ##Alias         CAllbook 'telnet %{2:44.17.0.53} 1235 %1 s'
+  #Alias          CONVers  'telnet %{2:oh2ti} 3600 "/n %u %{1:139}\n/w *"'
+  #Alias          CLuster  'c hkiclh'
+  Alias           CONV    "telnet lurpac 3600"
+  Alias           BBS     "c 70cm gb7crv"
+  Alias           DXC     "telnet localhost 9000"
+  Alias           MUD     "telnet homer 4000"
+  ##Alias           TEMP    "finger temp@mary.g6phf"
+  ##Alias           TNOS    "c ip1 gb7mbc-5"
+  ##Alias           TUtor   "telnet gb7mbc 3599"
+
+  # Hidden ports.
+  #
+  #HiddenPorts    2
+
+  # External commands. See node.conf(5) for the meaning of the uppercase
+  # letters in the name of the extcmd.
+  #
+  # Flags:        1       Run command through pipe
+  #               2       Reconnected flag
+  #
+  #ExtCmd         TPM     3       nobody  /usr/bin/finger finger tpm
+  #ExtCmd         ECho    1       nobody  /bin/echo echo \%U \%u \%S \%s \%P \%p \%R \%r \%T \%t \%\% \%0 \%{1:foobar} \%{2} \%3 \%4 \%5
+
+  # Node ID.
+  #
+  NodeId          "\nBARE:GB7MBC-1"
+  #NodeId         \033[01;31m***\033[0m
+
+  # Netrom port name. This port is used for outgoing netrom connects.
+  #
+  NrPort          netrom
+
+  # Logging level
+  #
+  LogLevel        3
+
+  # The escape character (CTRL-T)
+  #
+  EscapeChar      ^T
+
+  # Resolve ip numbers to addresses?
+  #
+  ResolveAddrs    off
+
+  # Node prompt.
+  #
+  #NodePrompt     "\n"
+  #NodePrompt     "%s@%h \%i> "
+  NodePrompt      "\nBARE:GB7MBC-1 \%i > "
+  #NodePrompt     "\a\033[36m%U\033[0m de \033[01;32m#LNODE\033[0m:\033[01;33mOH2BNS-10\033[0m> "
+
+
+
+  This should be fairly obvious I hope.
+
+
+  3.10.  Getting it all running
+
+  Ok, now we have all the relevant files configured, the next step is to
+  get it all running.
+
+
+  The first thing to do is attach the TNC's.  Your TNC's should be in
+  KISS mode and connected to the serial ports involved.
+
+
+  You now use the 'kissattach' command to connect the TNC's to the
+  system like this ...
+
+
+
+       kissattach /dev/ttyS0 2m 44.131.96.199
+       kissattach /dev/ttyS1 4m 44.131.96.199
+
+
+
+  Assuming that 44.131.96.199 is your IP address.  The devices ttyS0 and
+  ttyS1 are com1 and com2 respectively.  Now we can set some parameters
+  ...
+
+
+
+       kissparms -p 2m -t 150 -l 150 -s 50 -r 50
+       kissparms -p 4m -t 150 -l 150 -s 50 -r 50
+
+
+
+  The command 'man kissparms' will give you the explanation of the
+  switches.
+
+
+  Now we need to attach the NET/ROM ports in the same way ...
+
+
+
+       nrattach netrom
+       nrattach netrom2
+
+  All of the above can be put in a file and called from
+  /etc/rc.d/rc.local.  Put all the above commands in a file called
+  rc.ax25 and put a line in rc.local to call it.
+
+
+  Now you can start the daemons that set everything in motion ...
+
+
+
+       ax25d
+       netromd -i
+
+
+
+  All should now be running.  All that remains is to get the node
+  working for telnet connections.  If nothing else, this will allow you
+  to connect to the node yourself to check on connection status etc.
+  There are 2 files that need to be edited.
+
+
+  First edit /etc/services and add
+
+
+
+       node    3000/tcp     #OH2BNS's Node Software
+
+
+
+  Assuming you want it to run on port 3000
+
+
+  Now cd /etc/xinetd.d and edit a new file called node.  It should look
+  like this ...
+
+
+
+       # default: on
+       #       unencrypted username/password pairs for authentication.
+       service node
+       {
+               socket_type     = stream
+               wait            = no
+               user            = root
+               server          = /usr/sbin/node
+               log_on_failure  += USERID
+               disable         = no
+       }
+
+
+
+  You now need to restart the xinetd daemon.  First find out what the
+  PID is like so ..
+
+
+
+       ps auxw |grep xinetd
+
+
+
+  You will get a reply something like this ...
+
+
+
+       root       592  0.0  0.1  2256  620 ?        S    Feb07   0:00 xinetd -stayalive -reuse -pidfile /var/run/xinetd.pid
+
+
+
+  The PID or Process ID is 592 in this case so now we can issue the
+  command ...
+
+
+
+       kill -HUP 592
+
+
+
+  All should now be operational and you should be able to log into the
+  node by using a telnet session to the relevant port, like so ...
+
+
+
+       telnet localhost 3000
+
+
+
+  If that works, you are just about there.  you should (assuming you
+  have radios connected to the TNC's) be able to connect out to other
+  stations and receive incoming ax25 and netrom connections.
+
+
+  4.  Configuration
+
+  4.1.  Allowing ax25 connects from users
+
+  This is dealt with in the previous section
+
+
+  4.2.  Allowing telnet connects from users
+
+
+  >From version 1.47 there is a new (more efficient) way of doing this
+  (see next section) but, if you prefer, the method of doing it
+  described here will continue to work just fine.
+
+
+  Allowing telnet connections is quite simple.  Firstly you need to add
+  a line in /etc/services to allow connections to a port number, like
+  this ....
+
+
+
+       spdlogin   8000/tcp     # spider anonymous login port
+
+
+
+  Then add a line in /etc/inetd.conf like this ....
+
+       spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/src/client login telnet
+
+
+
+  Once this is done, you need to restart inetd like this ....
+
+
+
+       killall -HUP inetd
+
+
+
+  Now login as sysop and cd spider/src. You can test that spider is
+  accepting telnet logins by issuing the following command ....
+
+
+
+       ./client login telnet
+
+
+
+  You should get a login prompt and on issuing a callsign, you will be
+  given access to the cluster.  Note, you will not get a password login.
+  There seems no good reason for a password prompt to be given so it is
+  not asked for.
+
+
+  Assuming all is well, then try a telnet from your linux console ....
+
+
+
+       telnet localhost 8000
+
+
+
+  You should now get the login prompt and be able to login as before.
+
+
+  4.3.  Setting up telnet connects (from 1.47 onwards)
+
+  >From version 1.47 you can choose to allow the perl cluster.pl program
+  to allow connections directly (i.e. not via the /spider/src/client
+  interface program). If you are using Windows then this is the only
+  method available of allowing incoming telnet connections.
+
+
+  To do this you need first to remove any line that you may previously
+  have set up in /etc/inetd.conf. Remember to:-
+
+
+
+       killall -HUP inetd
+
+
+
+  to make the change happen...
+
+
+  Having done that, you need to copy the file /spider/perl/Listeners.pm
+  to /spider/local and then edit it. You will need to uncomment the line
+  containing "0.0.0.0" and select the correct port to listen on. So that
+  it looks like this:-
+
+
+
+       @listen = (
+           ["0.0.0.0", 8000],
+       );
+
+
+
+  As standard, the listener will listen on all interfaces
+  simultaneously.  If you require more control than this, you can
+  specify each interface individually:-
+
+
+
+       @listen = (
+           ["gb7baa.dxcluster.net", 8000],
+           ["44.131.16.2", 6300],
+       );
+
+
+
+  This will only be successful if the IP addresses on each interface are
+  static.  If you are using some kind of dynamic IP addressing then the
+  'default' method is the only one that will work.
+
+
+  Restart the cluster.pl program to enable the listener.
+
+
+  One important difference with the internal listener is that no echoing
+  is done by the cluster program. Users will need to set 'local-echo' on
+  in their telnet clients if it isn't set automatically (as per the
+  standards).  Needless to say this will probably only apply to Windows
+  users.
+
+
+  4.4.  Setting up for AGW Engine (1.47 onwards)
+
+  AGW Engine is a Windows based ax25 stack. You can connect to an AGW
+  engine from Linux as well as Windows based machines.
+
+
+  In order to enable access to an AGW Engine you need to copy
+  /spider/perl/AGWConnect.pm to /spider/local and edit it.  Specifically
+  you must:-
+
+
+  o  set $enable to 1.
+
+  o  set $login and $passwd to the values set up in your AGW
+     installation.  If you haven't set any there, then you should not
+     touch these values.
+
+
+  o  You can connect to a remote AGW engine (ie on some other machine)
+     by changing $addr and $port appropriately.
+
+  o  Restart the cluster.pl program
+
+
+
+  4.5.  Setting up node connects
+
+  In order to allow cluster node connections, spider needs to know that
+  the connecting callsign is a cluster node.  This is the case whether
+  the connect is incoming or outgoing.  In spider this is a simple task
+  and can be done in runtime.
+
+
+  Later versions of Spider can distinguish different software and treat
+  them differently.  For example, the WCY beacon cannot be handles by
+  AK1A type nodes as AK1A does not know what to do with PC73.  There are
+  4 different types of node at present and although they may not have
+  any major differences at the moment, it allows for compatibility.  The
+  4 types are ...
+
+
+
+       set/node        (AK1A type)
+       set/spider
+       set/dxnet
+       set/clx
+
+
+
+  For now, we will assume that the cluster we are going to connect to is
+  an AK1A type node.
+
+
+  Start up the cluster as you did before and login as the sysop with
+  client.  The cluster node I am wanting to make a connection to is
+  GB7BAA but you would obviously use whatever callsign you required.  At
+  the prompt type ...
+
+
+
+       set/node gb7baa
+
+
+
+  The case does not matter as long as you have a version of DXSpider
+  later than 1.33.  Earlier versions required the callsign to be in
+  upper case.
+
+
+  That is now set, it is as simple as that.  To prove it, login on yet
+  another console as sysop, cd to spider/src and issue the command ...
+
+
+
+       ./client gb7baa (using the callsign you set as a node)
+
+
+
+  You should get an initialisation string from DXSpider like this ...
+
+
+
+       ./client gb7baa
+       PC38^GB7MBC^~
+
+
+
+  If the callsign you just set up as a cluster node is for an incoming
+  connect, this is all that needs to be done.  If the connection is to
+  be outgoing then a connection script needs to be written.
+
+
+  Sometimes you make a mistake... Honest, it does happen.  If you want
+  to make a node back to being a normal user, regardless of what type it
+  is, do:
+
+
+
+       unset/node gb7baa
+
+
+
+  4.6.  Connection scripts
+
+  Because DXSpider operates under Linux, connections can be made using
+  just about any protocol;  AX25, NETRom, tcp/ip, ROSE etc are all
+  possible examples.  Connect scripts live in the /spider/connect
+  directory and are simple ascii files.  Writing a script for
+  connections is therefore relatively simple.
+
+
+  The connect scripts consist of lines which start with the following
+  keywords or symbols:-
+
+
+
+     #  All lines starting with a # are ignored, as are completely blank
+        lines.
+
+
+     timeout
+        timeout followed by a number is the number of seconds to wait
+        for a command to complete. If there is no timeout specified in
+        the script then the default is 60 seconds.
+
+
+     abort
+        abort is a regular expression containing one or more strings to
+        look for to abort a connection. This is a perl regular
+        expression and is executed ignoring case.
+
+
+     connect
+        connect followed by ax25, agw (for Windows users) or telnet and
+        some type dependent information. In the case of a telnet
+        connection, there can be up to two parameters.  The first is the
+        ip address or hostname of the computer you wish to connect to
+        and the second is the port number you want to use (this can be
+        left out if it is a normal telnet session).  In the case of an
+        ax25 session then this would normally be a call to ax25_call or
+        netrom_call as in the example above. It is your responsibility
+        to get your node and other ax25 parameters to work before going
+        down this route!
+
+
+     '  line in a chat type script. The words/phrases normally come in
+        pairs, either can be empty. Each line reads input from the
+        connection until it sees the string (or perl regular expression)
+        contained in the left hand string. If the left hand string is
+        empty then it doesn't read or wait for anything. The comparison
+        is done ignoring case.  When the left hand string has found what
+        it is looking for (if it is) then the right hand string is sent
+        to the connection.  This process is repeated for every line of
+        chat script.
+
+
+     client
+        client starts the connection, put the arguments you would want
+        here if you were starting the client program manually. You only
+        need this if the script has a different name to the callsign you
+        are trying to connect to (i.e. you have a script called other
+        which actually connects to GB7DJK-1 [instead of a script called
+        gb7djk-1]).
+
+
+  There are many possible ways to configure the script but here are
+  three examples, one for a NETRom/AX25 connect, one for AGW engines and
+  one for tcp/ip.
+
+
+
+       timeout 60
+       abort (Busy|Sorry|Fail)
+       # don't forget to chmod 4775 netrom_call!
+       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+       # you can leave this out if you call the script 'gb7dxm'
+       client gb7dxm ax25
+
+
+
+       timeout 60
+       abort (Busy|Sorry|Fail)
+       # this does exactly the same as the previous example
+       # the '1' is the AGW port number to connect thru for g1tlh
+       connect agw 1 g1tlh
+       # you can leave this out if you call the script 'gb7dxm'
+       client gb7dxm ax25
+
+
+
+       timeout 15
+       connect telnet dirkl.tobit.co.uk
+       # tell GB7DJK-1 that it is connected to GB7DJK
+       # you can leave this out if you call this script 'gb7djk'
+       client gb7djk telnet
+
+
+  Both these examples assume that everything is set up properly at the
+  other end.  You will find other examples in the /spider/examples
+  directory.
+
+
+  4.7.  Starting the connection
+
+  You start the connection, from within a sysop enabled cluster login,
+  by typing in the word connect followed by a script name like this ....
+
+
+
+       G0VGS de GB7MBC 13-Dec-1998 2041Z >connect gb7djk-1
+       connection to GB7DJK-1 started
+       G0VGS de GB7MBC 13-Dec-1998 2043Z >
+
+
+
+  This will start a connection using the script called gb7djk-1.  You
+  can follow the connection by watching the term or console from where
+  you started cluster.pl.  From version 1.47 onwards, you will need to
+  set/debug connect first.  You should see something like this ...
+
+
+
+       <- D G1TLH connect gb7djk-1
+       -> D G1TLH connection to GB7DJK-1 started
+       -> D G1TLH G1TLH de GB7DJK 13-Dec-1998 2046Z >
+       timeout set to 15
+       CONNECT sort: telnet command: dirkl.tobit.co.uk
+       CHAT "login" -> "gb7djk"
+       received "
+       Red Hat Linux release 5.1 (Manhattan)
+       Kernel 2.0.35 on an i586
+       "
+       received "login: "
+       sent "gb7djk"
+       CHAT "word" -> "gb7djk"
+       received "gb7djk"
+       received "Password: "
+       sent "gb7djk"
+       Connected to GB7DJK-1, starting normal protocol
+       <- O GB7DJK-1 telnet
+       -> B GB7DJK-1 0
+       GB7DJK-1 channel func  state 0 -> init
+       <- D GB7DJK-1
+       <- D GB7DJK-1 Last login: Sun Dec 13 17:59:56 from dirk1
+       <- D GB7DJK-1 PC38^GB7DJK-1^~
+       <- D GB7DJK-1 PC18^ 1 nodes, 0 local / 1 total users  Max users 0  Uptime
+       0 00:00^5447^~
+           etc
+
+
+
+  With later versions of Spider there is a set/login command for users.
+  This tells them when a user or node logs in or out.  If you do not add
+  a line to your scripts after the final line (or before the client line
+  which should always be last if needed) then the login/logout
+  information will be sent to users before the login actually completes.
+  This means if a node is unreachable, it will continue sending logins
+  and logouts to users even though it is not actually connecting.  To
+  avoid this use the following line ...
+  In a script, this might look like ...
+
+
+
+       timeout 35
+       abort (Busy|Sorry|Fail)
+       connect telnet mary 3000
+
+
+
+  4.8.  Telnet echo
+
+  Cluster links in particular suffer greatly from the presence of telnet
+  echo.  This is caused by the telnet negotiation itself and can create
+  at worst severe loops.  At best it creates unnecessary bandwidth and
+  large logfiles!  There are things that can be done to limit this
+  problem but will not always work dependent on the route taken to
+  connect.
+
+
+  Telnet echo itself should only be a problem if the connection is being
+  made to the telnet port (23).  This port uses special rules that
+  include echo negotiation.  If the connection is to a different port,
+  such as 7300, this negotiation does not happen and therefore no echo
+  should be present.
+
+
+  Sometimes it is not possible to make a direct connection to another
+  node and this can cause problems.  There is a way of trying to
+  suppress the telnet echo but this will not always work, unfortunately
+  it is difficult to be more specific.  Here is an example of what I
+  mean ...
+
+
+
+       timeout 35
+       abort (Busy|Sorry|Fail)
+       connect telnet mary.lancs.ac.uk
+
+
+
+  So, the first connection is made by Spider.  This is fine as Spider
+  uses the Net_Telnet script from within perl.  This actually uses TCP
+  rather than TELNET so no negotiation will be done on the first
+  connection.  Once connected to mary.lancs.ac.uk, the command is sent
+  to suppress echo.  Now a telnet is made to a cluster node that is
+  accepting connections on port 23.  The problem with this link is that
+  the negotiation is made by the remote machine, therefore you have no
+  control over it.  The chances are that this link will create echo and
+  there will be no way you can stop it.
+
+
+
+  4.9.  Autostarting the cluster
+
+  Ok, you should now have DXSpider running nicely and allowing connects
+  by cluster nodes or users.  However, it has to be shutdown and
+  restarted manually.  It would be much easier to have it start
+  automatically.
+
+
+
+  This is not only a way to start the cluster automatically, it also
+  works as a watchdog, checking the sanity of DXSpider and respawning it
+  should it crash for any reason.  Before doing the following, shutdown
+  the cluster as you did earlier.
+
+
+  Login as root and bring up the /etc/inittab file in your favourite
+  editor.  Add the following lines to the file near the end ...
+
+
+
+       ##Start DXSpider on bootup and respawn it should it crash
+       DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
+
+
+
+  This line works fine for RedHat distributions. It is also fine for
+  SuSE up to 7.0.  From SuSE 7.1 you need to add runlevels 2 and 5 like
+  this ...
+
+
+
+       DX:235:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop >/dev/tty7
+
+
+
+  The line required for Slackware distributions is slightly different.
+  My thanks to Aurelio, PA3EZL for this information.
+
+
+
+       DX:23:respawn:/bin/su - sysop -c "/usr/bin/perl -w /spider/perl/cluster.pl" >/dev/tty7
+
+
+
+  This will automatically start DXSpider on tty7 (ALT-F7) on bootup and
+  restart it should it crash for any reason.
+
+
+  NB: It should be noted that /dev/tty7 is only an example.  Some SuSE
+  systems will only accept upto tty6.  It really does not matter which
+  tty you run it on.
+
+
+  As root type the command telinit q.  DXSpider should start up
+  immediately.  You will see the output on tty7 and if you login as
+  sysop you should find everything running nicely.
+
+
+  5.  Microsoft Windows Installation
+
+  5.1.  Introduction
+
+  IMPORTANT:
+
+  What you'll be left with once you've followed these instructions is
+  (hopefully) a working DX Spider v1.50 system that is capable of
+  accepting or originating "internet" connections, plus inbound and
+  outbound AX.25 and TCP/IP radio connections.
+
+  On the other hand, you may have an enquiring mind, or better yet, may
+  be looking for a useful way of connecting your current (perhaps) AK1A
+  cluster "to the internet" via some networking mechanism (BPQEther,
+  etc) or other. I won't be producing instructions for the latter case,
+  because I don't have an AK1A to play with. But someone might ...
+
+  Whatever, this document is intended to get you started with DX Spider
+  in a Microsoft Windows (TM) environment. It's not intended to teach
+  you anything other than how to perform a minimum configuration of a DX
+  Spider installation and have it able to connect across "the internet"
+  to other DX Clusters, while accepting inbound TELNET and radio
+  connections.
+
+
+  5.2.  The requirements
+
+  The very first things you're going to need are (in order of
+  importance):-
+
+
+  o  A cup of good, strong tea
+
+  o  A supported Windows platform with an internet connection so you can
+     download the necessary software bits and bobs directly to it. There
+     are other ways, but this is preferable.
+
+  o  Another cup of good, strong tea
+
+  o  If all goes according to plan, about an hour to spare
+
+  o  Plenty of good, strong tea
+
+
+  5.3.  The system
+
+  The platform I used to generate these instructions was a "vanilla"
+  Microsoft Windows Me 4.90.3000 system, with a 700MHz AMD Athlon
+  processor and 96 Mb memory. I've also personally verified that it runs
+  on my laptop (Pentium 266MHz, 32 Mb memory, Windows 98 SE v4.10.2222
+  A) and a computer that I assembled from a random pile of junk (AMD
+  K6-2 333MHz, 64 Mb memory, Windows 98 v4.10.1998). As a result, I have
+  reason to believe that what I'm about to describe will perform equally
+  on any 32-bit MS Windows environment with 32 Mb of memory.
+
+  Because of the changes that have recently been made to the core
+  "cluster.pl" module and the introduction of a very lightweight
+  "winclient.pl", I have a sneaking suspicion that this will now run on
+  any platform that has reasonably complete support for Perl. Is there
+  someone out there with both an enquiring mind and (say) a Macintosh,
+  for instance?
+
+  Please bear in mind, though, that my instructions relate solely to how
+  to get this going under a Microsoft Windows environment, and I have
+  zero intention of trying to make them say otherwise.
+
+
+  5.4.  Perl
+
+  Install your chosen Perl environment. Unless you have a very good
+  reason for not doing so, I strongly suggest that you use ActivePerl
+  v5.6. For my testing & development, I used build 623.  (A recent
+  installation used the newer ActivePerl v5.6.1, build 633 without any
+  noticable difficulty.)  You can get this from:
+  http://www.activestate.com/Products/ActivePerl/Download.html
+
+
+  The link takes you to an initial page of System Requirements and
+  Software Prerequisites.  If you do not have it already installed, you
+  can download and install the Windows Installer 2.0 for a Win98
+  installation.  Be forewarned, you will have to reboot your PC at the
+  completion of the installer's installation.
+
+  If you already have the installer on your PC, simply click on the Next
+  arrow at the bottom of the page.  Two clicks will finally get you to
+  the actual download page.  The MSI version of Build 633 is now 8.6MB
+  in size, so make that a big cup of tea or coffee if you're on a slow
+  dial-up connection.
+
+  During installation, please ensure that you do choose the options to
+  "Add Perl to the PATH environment variable" and "Create Perl file
+  extension association"; it will make your life so much easier. Once
+  the installation is finished, be sure to reboot your PC. You probably
+  won't be told anywhere else that this needs to be done now, but it
+  does. Really.
+
+  Once you've rebooted, open a "DOS box" (Start > Run > command might do
+  it, if you can't find it elsewhere) and from wherever it lands, type
+  PERL -v <ENTER> (it's better if that's a lower-case be rewarded with
+  some interesting information about your Perl installation. If you're
+  not, you must go back to the beginning and discover what went wrong
+  and fix it. It's pointless to proceed unless this simple check is
+  passed. Assuming it did work, you may now move on.
+
+
+  5.5.  Additional packages
+
+  Some extensions ("packages") need to be added to the base Perl
+  distribution, and we'll do this next. If you're using the Perl I
+  recommended, and don't know any better for yourself, then just blindly
+  following these instructions will work just fine. If that didn't
+  describe you, then you're on your own.
+
+  Visit the following URL:
+
+  http://www.activestate.com/PPMPackages/zips/6xx-builds-only/
+
+  and download the following files:-
+
+
+
+       Data-Dumper.zip
+       Net-Telnet.zip
+       TimeDate.zip
+       Time-HiRes.zip
+       DB_File.zip
+
+
+
+  If this is a new installation, now would also be a good time to
+  install a copy of WinZip on your PC.  Make yourself a convenient
+  directory to unpack all of these zip files into (I put mine in
+  "D:\ppm>" but "C:\ppm" works just as well.) and do the following (the
+  bits you type in are blue ).  You can upzip all of the files into the
+  same directory.  When prompted, simply overwrite the Readme file from
+  each zip package.  Note that where these files land will be directly
+  related to where you chose to install your ActivePerl (mine, as you
+  can probably guess from what follows, went into "D:\Perl"):-
+
+
+
+  D:\ppm>ppm install Data-Dumper.ppd
+  Installing package 'Data-Dumper.ppd'
+  Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.bs
+  Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.dll
+  Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.exp
+  Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.lib
+  Installing D:\Perl\html\site\lib\auto\Data\Dumper\Dumper.html
+  Installing D:\Perl\site\lib\Data\Dumper\Dumper.pm
+  Writing D:\Perl\site\lib\auto\Data\Dumper\Dumper.packlist
+  D:\ppm>
+
+
+
+  I'm not going to bother you with exhaustive details of the rest of
+  them, but suffice it to say you need to:
+
+
+
+       ppm install DB_File.ppd
+       ppm install Net-Telnet.ppd
+       ppm install TimeDate.ppd
+       ppm install Time-HiRes.ppd
+
+
+
+  If all that seemed to work OK, time to move along. Before anyone who
+  is familiar with PPM tells me that we didn't need to download and keep
+  those files locally, I knew that. I also knew that PPM is sometimes
+  awkward to configure via firewalls, and that sometimes the
+  repositories don't always work the way we'd hope. I do it that way
+  because it suits me.
+
+
+  5.6.  Getting Spider
+
+  Get the current version of the DX Spider distribution. This needs to
+  be v1.50 or later. You've got two ways (currently) of getting this;
+  either get a CVS update from sourceforge (if you don't know what this
+  is, then it isn't for you) or get the latest "official" release from:
+
+  http://www.dxcluster.org/download/index.html
+
+  or if you want the lastest snapshot of CVS version (which is produced
+  every night):-
+
+  http://www.dxcluster.org/download/CVSlatest.tgz
+
+  This is generally the best one to go for as it is completely up to
+  date. However, there is always the very slight chance that it might
+  unstable. Generally, there will be a note on the website if this is
+  the case.
+
+
+  The only difference between "CVSlatest.tgz" and the latest "official"
+  release version is that it is more up to date. Do not confuse the
+  "CVSlatest.tgz" file with "Downloading from Sourceforge with CVS" -
+  they are two quite different things.  "Downloading from Sourceforge
+  with CVS" is explained in a section within the Admin manual.
+
+
+  If you go down the CVS route (ie installing WinCVS as explained in the
+  Admin manual and downloaded from sourceforge), then everything will be
+  nicely installed on your local disk. If you got the CVSlatest.tgz
+  file, unzip (winzip) it to "C:\".  This is an important point since
+  paths are included within the .tgz file.  Make sure you unzip to the
+  root directory of whichever drive you use...  "C:\" or "D:\" or ..,
+  not "C:\spider."  If you double click on CVSlatest.tgz, WinZip should
+  open with a dialogue box that says the Archive contains a single file
+  (CVSlatest.tar) and asks whether WinZip should decompress it to a
+  temporary fold and then open it.  Say "Yes" and then you will get the
+  typical Classical WinZip listing of files ready for extraction.
+  Remember, extract them to your desired root directory ("C:\" or "D:\"
+  or ...).  The following examples assume that you put it on drive
+  "C:\", for convenience.
+
+
+  6.  Installing the software
+
+  At this point you will need to create 2 additional directories under
+  "C:\Spider."  Make directories "C:\spider\local" and
+  "C:\spider\local_cmd".  If "C:\spider" is missing, go back and figure
+  out why, because it shouldn't be.
+
+  Now create your own local copy of the DXVars.pm file by:-
+
+
+
+       copy c:\spider\perl\DXVars.pm.issue
+       c:\spider\local\DXVars.pm
+
+
+
+  Now you'll need to edit this file using a text editor like Notepad. If
+  nothing else, you can simply
+
+
+
+       cd \spider\local
+
+
+
+  and then
+
+
+
+       notepad DXVars.pm
+
+
+
+  to bring up an editor window containing the file. As an absolute
+  minimum you must adjust the following items in DXVars.pm:-
+
+
+  o  $mycall  - Should hold the callsign of your DX Cluster
+
+  o  $myname  - The SysOp's first name
+
+  o  $myalias - the SysOp's callsign. Cannot be the same as $mycall!
+
+  o  $myqth - The station's geographical location (QTH).
+
+  o  $mylatitude - The station latitude in degrees and decimal fractions
+
+  o  $mylongitude - The station longitude in degrees and decimal
+     fractions
+
+
+  o  $mylocator - The Maidenhead (or QRA) locator of the station
+
+  You really also ought to update the $myqth and $myemail variables. And
+  unless you are absolutely certain you know what you're doing, you
+  should change nothing else in this file. Note that if you use an "@"
+  or a "$" character in one of the above strings (typically in $myemail)
+  you must write them as "\@" or "\$".
+
+
+  6.1.  Incoming telnets
+
+  If you want to enable inbound "TELNET" connections (or you are running
+  Windows 98, NT, 2000 or XP), you've got a little more work to do. From
+  a handy "DOS box" that's not doing anything else, do the following:-
+
+
+
+       copy \spider\perl\Listeners.pm \spider\local
+       cd \spider\local
+       notepad listeners.pm
+
+
+
+  The following line need attention:-
+
+
+
+       #               ["0.0.0.0", 7300],
+
+
+
+  On my machine, I've simply uncommented the "0.0.0.0" entry by removing
+  the '#' from the front of the line.
+
+  You MUST carry out this step if you are running on a Windows 98, NT,
+  2000 or XP based system
+
+  If you don't have a static hostname for your machine, and you intend
+  to allow folk to connect to your machine across the internet, then I'd
+  suggest you pay a visit to www.dyndns.org and create one for yourself.
+  While it's free, it will take a modest amount of effort on your part
+  to read, understand and implement what needs to be done to set this
+  up.
+
+
+  If your machine is connected to the internet and you don't want to
+  allow your machine to be visible to the outside world you should
+  change the "0.0.0.0" to "127.0.0.1" [which is "localhost"]. This will
+  then only allow connections from inside your machine. As was said
+  earlier: if you aren't running Win9x (or you want to use DXTelnet or
+  somesuch), then you need to have the machine listening at least to
+  "127.0.0.1" ("0.0.0.0" means all IP addresses).
+
+
+  6.2.  The AGW packet engine
+
+  On the assumption that you'll be using the SV2AGW Packet Engine to
+  interface your radios to the cluster, it would be a good idea to
+  download the Packet Engine software!  You can get this software from:
+
+  http://www.raag.org/sv2agw/agwpe.zip
+
+  Depending upon your TNCs, you may also need to get:
+
+  http://www.raag.org/sv2agw/drivers.zip
+
+  A couple of the tools:
+
+  http://www.raag.org/sv2agw/agwterm.zip
+
+  http://www.raag.org/sv2agw/agwmonitor.zip
+
+  will also help with troubleshooting of the RF links themselves.
+
+  Install and configure AGWPE.  You should now create your own local
+  copy of AGWConnect.pm by:-
+
+
+
+       copy c:\spider\perl\AGWConnect.pm
+       c:\spider\local\AGWConnect.pm
+
+
+
+  and then
+
+
+
+       notepad AGWConnect.pm
+
+
+
+  to bring up an editor window containing the file. You must consider
+  adjusting the following items in AGWConnect.pm:-
+
+
+  o  $enable - set to '1' to enable AGWPE interface
+
+  o  $login  - the login ID you chose when you set up the SV2AGW
+     security :-)
+
+  o  $passwd - password that matches $login
+
+  The login ID and passwd only need to be set if you are accessing AGW
+  separately via its web interface.  This interface is normally not
+  needed for use with DXSpider.
+
+
+  6.3.  Setting up the initial user files
+
+  Next you need to create the initial user files, etc. A tool is
+  supplied which will do this for you. To run the tool:-
+
+
+
+       cd \spider\perl
+       perl create_sysop.pl
+
+
+
+  If all goes according to plan, you will see no output from this
+  program, and after a brief wait, your DOS prompt will be returned.
+
+  Depending on how brave you are, you might now care to try the
+  following:-
+
+
+       perl cluster.pl
+
+
+
+  If you did everything you were told, your DOS window will now hold a
+  display which looks something like:-
+
+
+
+       DXSpider DX Cluster Version 1.50
+       Copyright (c) 1998-2002 Dirk Koopman G1TLH
+       loading prefixes ...
+       loading band data ...
+       loading user file system ...
+       starting listeners ...
+       Internal port: localhost 27754
+       load badwords: Ok
+       reading in duplicate spot and WWV info ...
+       reading existing message headers ...
+       load badmsg: Ok
+       load forward: Ok
+       load swop: Ok
+       @msg = 0 before delete
+       @msg = 0 after delete
+       reading cron jobs ...v cron: reading /spider/cmd/crontab
+       cron: adding 1 0 * * 0
+       DXUser::export("$main::data/user_asc")
+       reading database descriptors ...
+       doing local initialisation ...
+       orft we jolly well go ...
+       queue msg (0)
+
+
+
+  Now, if that's what you've got, you are very nearly home and dry (in
+  as far as these particular experiments are concerned, anyhow)
+
+  If you are running Windows 9x you can access your new cluster (from
+  the local machine) by finding yourself another "DOS box" and doing the
+  following:-
+
+
+
+       cd \spider\perl
+       perl winclient.pl
+
+
+
+  If you are running Windows NT, 2000 or XP then winclient.pl does not
+  work. We don't know why other than this seems to be some kind of
+  incomaptibility in perl. You can achieve the same thing by telnetting
+  to the port you defined in Listeners.pm (7300 as default), thus:-
+
+
+
+       Menu->Start->Run
+       telnet localhost 7300
+
+
+
+  On getting the login: prompt, enter your sysop callsign (the one you
+  put in DXVars.pm as $myalias).
+  I would recommend strongly that you obtain a better telnet client than
+  that which comes with windows (I use PuTTY).
+
+
+  Anyway, if you are rewarded with a display which looks something
+  like:-
+
+
+
+       Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.50
+       Cluster: 1 nodes, 1 local / 1 total users Max users 2 Uptime 0 00:00
+       M0ADI de GB7SJP 4-Mar-2001 1511Z >
+
+
+
+  You've arrived. Try some commands, and see how they feel. (In case you
+  were wondering, "Iain", "M0ADI" and "GB7SJP" all came from the version
+  of DXVars.pm that was on the machine when I started the winclient.pl)
+
+
+  The interface is very basic. It is a simple command line. There are
+  better looking interfaces. Most of the "standard" logging and DX
+  Cluster access programs that are capable of connecting via a TCP or
+  telnet connection will work as a "Sysop Console" client. You connect
+  to "localhost" on the port that you defined in Listeners.pm (usually
+  7300). I recommend packages like DXTelnet.
+
+
+  6.4.  Connecting to other clusters
+
+  If you want to connect this to another cluster, then you'll want to
+  negotiate a link with someone. For experimental purposes, I'm happy to
+  allow folk to connect to GB7DXA (spud.ath.cx), on the understanding
+  that the system may or may not be there and may or may not be
+  connected to anything particularly useful at any given moment. Contact
+  me by Email if you want me to set up a connection for you.
+
+
+  7.  General Information
+
+  The following relates to all versions of DXSpider and is not platform
+  related.
+
+
+  7.1.  The crontab file
+
+  Login as sysop and create a file in /spider/local_cmd called crontab.
+  Edit it with your favourite editor and add a line like this (I have
+  included a comment)
+
+
+
+       # check every 10 minutes to see if gb7xxx is connected and if not
+       # start a connect job going
+
+       0,10,20,30,40,50 * * * * start_connect('gb7xxx') unless connected('gb7xxx')
+
+
+
+  The callsign involved will be the callsign of the cluster node you are
+  going to connect to.  This will now check every 10 minutes to see if
+  gb7xxx is connected, if it is then nothing will be done.  If it is
+  not, then a connect attempt will be started.
+  There are probably lots of other things you could use this crontab
+  file for.  If you want to know more about it, look at the DXSpider
+  website at the cron page where it is explained more fully.
+
+
+

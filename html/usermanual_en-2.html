@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Manual v1.50: Logins and logouts.</TITLE>
+ <LINK HREF="usermanual_en-3.html" REL=next>
+ <LINK HREF="usermanual_en-1.html" REL=previous>
+ <LINK HREF="usermanual_en.html#toc2" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="usermanual_en-3.html">Next</A>
+<A HREF="usermanual_en-1.html">Previous</A>
+<A HREF="usermanual_en.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2.</A> <A HREF="usermanual_en.html#toc2">Logins and logouts.</A></H2>
+
+<P>You might not think that there is a lot of point of including a 
+section on how to log in and out of DXSpider.  However, you would be 
+suprised at the difficulties some people have in simply getting in 
+and out of the cluster!</P>
+<P>There are several ways a login might be achieved, dependant on how 
+the sysop has DXSpider configured.  It is impossible for me to cover all 
+variations but here are the basic ones.</P>
+
+<H2><A NAME="ss2.1">2.1</A> <A HREF="usermanual_en.html#toc2.1">AX25 logins.</A>
+</H2>
+
+<P>Simplicity itself.  The usual <B>CONNECT</B> command will log you straight
+into the cluster and you will not have to do anything else.  
+Obviously, you will have to connect to the correct callsign.  Some 
+nodes use an SSID with their call so you would have to add that.</P>
+<P><B>Examples:</B></P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+connect GB7MBC
+connect GB7MBC-1
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss2.2">2.2</A> <A HREF="usermanual_en.html#toc2.2">Netrom logins.</A>
+</H2>
+
+<P>There are several possibilities here, dependant on how the sysop has
+configured his system.  If you are connecting via netrom then you are
+most probably connecting from another station.  Listing the nodes in
+that station with the <B>NODES</B> command will tell you what callsign 
+or netrom alias to connect to. Then just issue the connect command 
+from there.  It is possible that the netrom alias may connect you to 
+a node with an alias for the cluster, such as DXC.  Just type this 
+and you will be connected.</P>
+<P><B>Example:</B>
+<BLOCKQUOTE><CODE>
+<PRE>
+connect MBCDX
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss2.3">2.3</A> <A HREF="usermanual_en.html#toc2.3">Telnet logins.</A>
+</H2>
+
+<P>With telnet connections, the source callsign is not seen by DXSpider, so 
+you will be asked to login with your callsign.  
+To telnet to DXSpider, you would connect to a specific port.  There is no 
+standard at the moment for a cluster telnet port but ask the sysop if 
+you are unsure.</P>
+<P><B>Example:</B></P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+telnet gb7mbc 8000
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>All the above are possible ways of connecting to a DXSpider cluster.  You
+may have some or all of these available to you.  There may be one or 
+two additional ways to connect dependant on the network local to you.
+However I am sure you get the idea.</P>
+
+<H2><A NAME="ss2.4">2.4</A> <A HREF="usermanual_en.html#toc2.4">Logouts.</A>
+</H2>
+
+<P>Logging out can be done by simply issuing the standard <B>BYE</B>
+command.</P>
+<P>You could also send a disconnect if you are using AX25, or a <B>CLOSE</B>
+command if you are connected via telnet.
+If you do not log out gracefully using one of the above commands, 
+you may find you are unable to get a full connect next time.  This
+may also happen if a netrom connection drops.  You may get connected, 
+but nothing else will happen because the program thinks you are still 
+connected and will not let you connect twice under the same call.  
+However you could reconnect by adding a number to the end of your call,
+for example G0YLM-2.  
+This can be done by either altering your MYCALL setting in the TNC or 
+by altering your program configuration.  </P>
+
+
+<HR>
+<A HREF="usermanual_en-3.html">Next</A>
+<A HREF="usermanual_en-1.html">Previous</A>
+<A HREF="usermanual_en.html#toc2">Contents</A>
+</BODY>
+</HTML>

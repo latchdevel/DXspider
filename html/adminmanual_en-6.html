@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider Administration Manual v1.50: Information, files and useful programs</TITLE>
+ <LINK HREF="adminmanual_en-7.html" REL=next>
+ <LINK HREF="adminmanual_en-5.html" REL=previous>
+ <LINK HREF="adminmanual_en.html#toc6" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="adminmanual_en-7.html">Next</A>
+<A HREF="adminmanual_en-5.html">Previous</A>
+<A HREF="adminmanual_en.html#toc6">Contents</A>
+<HR>
+<H2><A NAME="s6">6.</A> <A HREF="adminmanual_en.html#toc6">Information, files and useful programs</A></H2>
+
+<H2><A NAME="ss6.1">6.1</A> <A HREF="adminmanual_en.html#toc6.1">MOTD</A>
+</H2>
+
+<P>One of the more important things a cluster sysop needs to do is to get 
+information to his users.  The simplest way to do this is to have a banner 
+that is sent to the user on login.  This is know as a "message of the day" 
+or "motd".  To set this up, simply create a file in /spider/data called motd 
+and edit it to say whatever you want.  It is purely a text file and will be 
+sent automatically to anyone logging in to the cluster.</P>
+
+<H2><A NAME="ss6.2">6.2</A> <A HREF="adminmanual_en.html#toc6.2">MOTD_NOR</A>
+</H2>
+
+<P>This message of the day file lives in the same directory as the standard
+motd file but is only sent to non-registered users.  Once registered they
+will receive the same message as any other user.</P>
+
+<H2><A NAME="ss6.3">6.3</A> <A HREF="adminmanual_en.html#toc6.3">Downtime message</A>
+</H2>
+
+<P>If for any reason the cluster is down, maybe for upgrade or maintenance but 
+the machine is still running, a message can be sent to the user advising them 
+of the fact.  This message lives in the /spider/data directory and is called
+"offline".  Simply create the file and edit it to say whatever you wish.  
+This file will be sent to a user attempting to log into the cluster when
+DXSpider is not actually running.</P>
+
+<H2><A NAME="ss6.4">6.4</A> <A HREF="adminmanual_en.html#toc6.4">Other text messages</A>
+</H2>
+
+<P>You can set other text messages to be read by the user if they input the file 
+name.  This could be for news items or maybe information for new users.  
+To set this up, make a directory under /spider called <EM>packclus</EM>.  
+Under this directory you can create files called <EM>news</EM> or <EM>newuser</EM>
+for example.  In fact you can create files with any names you like.  These can 
+be listed by the user with the command ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/files
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>They can be read by the user by typing the command ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+type news
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>If the file they want to read is called <EM>news</EM>.  You could also set 
+an alias for this in the Alias file to allow them just to type <EM>news</EM></P>
+
+<P>You can also store other information in this directory, either directly or 
+nested under directories.  One use for this would be to store DX bulletins 
+such as the OPDX bulletins.  These can be listed and read by the user.  
+To keep things tidy, make a directory under /spider/packclus called
+<EM>bulletin</EM>.  Now copy any OPDX or similar bulletins into it.  These 
+can be listed by the user in the same way as above using the <EM>show/files</EM>
+command with an extension for the bulletin directory you have just created, 
+like this ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/files bulletin
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>An example would look like this ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/files
+bulletin      DIR 20-Dec-1999 1715Z news          1602 14-Dec-1999 1330Z
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>You can see that in the files area (basically the packclus directory) there is a 
+file called <EM>news</EM> and a directory called <EM>bulletin</EM>.  You can 
+also see that dates they were created.  In the case of the file <EM>news</EM>, 
+you can also see the time it was last modified, a good clue as to whether the 
+file has been updated since you last read it.  To read the file called 
+<EM>news</EM> you would simply issue the command ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+type news
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>To look what is in the bulletin directory you issue the command ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/files bulletin
+opdx390      21381 29-Nov-1999 1621Z opdx390.1     1670 29-Nov-1999 1621Z
+opdx390.2     2193 29-Nov-1999 1621Z opdx391      25045 29-Nov-1999 1621Z  
+opdx392      35969 29-Nov-1999 1621Z opdx393      15023 29-Nov-1999 1621Z  
+opdx394      33429 29-Nov-1999 1621Z opdx394.1     3116 29-Nov-1999 1621Z  
+opdx395      24319 29-Nov-1999 1621Z opdx396      32647 29-Nov-1999 1621Z
+opdx396.1     5537 29-Nov-1999 1621Z opdx396.2     6242 29-Nov-1999 1621Z
+opdx397      18433 29-Nov-1999 1621Z opdx398      19961 29-Nov-1999 1621Z  
+opdx399      17719 29-Nov-1999 1621Z opdx400      19600 29-Nov-1999 1621Z
+opdx401      27738 29-Nov-1999 1621Z opdx402      18698 29-Nov-1999 1621Z
+opdx403      24994 29-Nov-1999 1621Z opdx404      15685 29-Nov-1999 1621Z
+opdx405      13984 29-Nov-1999 1621Z opdx405.1     4166 29-Nov-1999 1621Z
+opdx406      28934 29-Nov-1999 1621Z opdx407      24153 29-Nov-1999 1621Z
+opdx408      15081 29-Nov-1999 1621Z opdx409      23234 29-Nov-1999 1621Z
+Press Enter to continue, A to abort (16 lines) >
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>You can now read any file in this directory using the type command, like this ....</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+type bulletin/opdx391
+Ohio/Penn DX Bulletin No. 391
+The Ohio/Penn Dx PacketCluster
+DX Bulletin No. 391
+BID: $OPDX.391
+January 11, 1999
+Editor Tedd Mirgliotta, KB8NW
+Provided by BARF-80 BBS Cleveland, Ohio
+Online at 440-237-8208 28.8k-1200 Baud 8/N/1 (New Area Code!)
+Thanks to the Northern Ohio Amateur Radio Society, Northern Ohio DX
+Association, Ohio/Penn PacketCluster Network, K1XN &amp; Golist, WB2RAJ/WB2YQH
+&amp; The 59(9) DXReport, W3UR &amp; The Daily DX, K3TEJ, KN4UG, W4DC, NC6J, N6HR,
+Press Enter to continue, A to abort (508 lines) >
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>The page length will of course depend on what you have it set to!</P>
+
+<H2><A NAME="ss6.5">6.5</A> <A HREF="adminmanual_en.html#toc6.5">The Aliases file</A>
+</H2>
+
+<P>You will find a file in /spider/cmd/ called Aliases.  This is the file that
+controls what a user gets when issuing a command.  It is also possible to
+create your own aliases for databases and files you create locally.</P>
+
+<P>You should not alter the original file in /spider/cmd/ but create a new file
+with the same name in /spider/local_cmd.  This means that any new Aliases files
+that is downloaded will not overwrite your self created Aliases and also that
+you do not override any new Aliases with your copy in /spider/local_cmd/.  You
+must remember that any files you store in /spider/local/ or /spider/local_cmd
+override the originals if the same lines are used in both files.</P>
+
+<P>The best way of dealing with all this then is to only put your own locally
+created Aliases in the copy in /spider/local_cmd.  The example below is
+currently in use at GB7MBC.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+#
+# Local Aliases File
+#
+
+package CmdAlias;
+
+%alias = (
+    'n' => [
+      '^news$', 'type news', 'type',
+    ],
+    's' => [
+      '^sh\w*/buck$', 'show/qrz', 'show',
+      '^sh\w*/hftest$', 'dbshow hftest', 'dbshow',
+      '^sh\w*/qsl$', 'dbshow qsl', 'dbshow',
+      '^sh\w*/vhf$', 'dbshow vhf', 'dbshow',
+      '^sh\w*/vhftest$', 'dbshow vhftest', 'dbshow',
+        ],
+)
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Each alphabetical section should be preceded by the initial letter and the section
+should be wrapped in square brackets as you can see.  The syntax is straightforward.
+The first section on each line is the new command that will be allowed once the
+alias is included.  The second section is the command it is replacing and the last
+section is the actual command that is being used.</P>
+
+<P>The eagle-eyed amongst you will have noticed that in the first section, the new
+alias command has a '^' at the start and a '$' at the end.  Basically these force
+a perfect match on the alias.  The '^' says match the beginning exactly and the
+'$' says match the end exactly.  This prevents unwanted and unintentional matches
+with similar commands.</P>
+
+<P>I have 3 different types of alias in this file.  At the top is an alias for 'news'.  
+This is a file I have created in the /spider/packclus/ directory where I can inform 
+users of new developments or points of interest.  In it's initial form a user would 
+have to use the command <EM>type news</EM>.  The alias allows them to simply type 
+<EM>news</EM> to get the info.  Second is an alias for the <EM>show/qrz</EM>
+command so that those users used to the original <EM>show/buck</EM> command in
+AK1A will not get an error, and the rest of the lines are for locally created
+databases so that a user can type <EM>show/hftest</EM> instead of having to use
+the command <EM>dbshow hftest</EM> which is not as intuitive.</P>
+
+<P>This file is just an example and you should edit it to your own requirements.
+Once created, simply issue the command <EM>load/alias</EM> at the cluster
+prompt as the sysop user and the aliases should be available.</P>
+
+
+<H2><A NAME="ss6.6">6.6</A> <A HREF="adminmanual_en.html#toc6.6">Console.pl</A>
+</H2>
+
+<P>In later versions of Spider a simple console program is provided for the sysop.  
+This has a type ahead buffer with line editing facilities and colour for spots,
+announces etc.  To use this program, simply use console.pl instead of client.</P>
+
+<P>To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
+file with your favourite editor.</P>
+
+<H2><A NAME="ss6.7">6.7</A> <A HREF="adminmanual_en.html#toc6.7">Updating kepler data</A>
+</H2>
+
+<P>Spider has a powerful and flexible show/satellite command.  In order for
+this to be accurate, the kepler data has to be updated regularly.  In
+general, this data is available as an email or via cluster mail.
+Updating it is simple.  First you need to export the mail message as a
+file.  You do this with the <EM>export</EM> command from the cluster prompt
+as the sysop.  For example ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+export 5467 /spider/perl/keps.in
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>would export message number 5467 as a file called keps.in in the
+/spider/perl directory.</P>
+
+<P>Now login to a VT as sysop and cd /spider/perl.  There is a command in
+the perl directory called <EM>convkeps.pl</EM>.  All we need to do now is
+convert the file like so ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+./convkeps.pl keps.in
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Now go back to the cluster and issue the command ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+load/keps
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>That is it!  the kepler data has been updated.</P>
+
+<H2><A NAME="ss6.8">6.8</A> <A HREF="adminmanual_en.html#toc6.8">The QRZ callbook</A>
+</H2>
+
+<P>The command <EM>sh/qrz</EM> will only work once you have followed a few
+simple steps.  First you need to get a user ID and password from qrz.com.
+Simply go to the site and create one.  Secondly you need to copy the file
+/spider/perl/Internet.pm to /spider/local and alter it to match your user
+ID and password.  You also at this point need to set $allow=1 to complete
+the setup.  Many thanks to Fred Lloyd, the proprieter of
+<A HREF="http://www.qrz.com">qrz.com</A> for allowing this access.</P>
+
+<H2><A NAME="ss6.9">6.9</A> <A HREF="adminmanual_en.html#toc6.9">Connecting logging programs</A>
+</H2>
+
+<P>There appear to be very few logging programs out there that support telnet
+especially the popular ones like LogEQF, Turbolog etc.  This can make it
+difficult to connect to your own cluster!
+The way to do it is to make the logging program think it has a TNC attached
+to a com port on the logging PC and 'push' a linux login out to it.
+This is achieved very simply by the use of <EM>agetty</EM>.</P>
+
+<P>All that is required is to add a line in /etc/inittab to have the client
+ready for a connection on the com port of your choice.  Remember that in
+Linux, the com ports start at ttyS0 for com1, ttyS1 for com2 etc.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+c4:2345:respawn:/sbin/agetty -L 9600 ttyS1
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<P>Add this after the standard runlevel lines in /etc/inittab.  The above
+line works on ttyS1 (com2).  Now as root, issue the command <EM>telinit q</EM>
+and it should be ready for connection.  All that is required is a 3 wire
+serial lead (tx, rx and signal ground).  Tell you logging program to use
+8n1 at 9600 baud and you should see a Linux login prompt.  Login as normal
+and then telnet from there to the cluster.</P>
+
+<HR>
+<A HREF="adminmanual_en-7.html">Next</A>
+<A HREF="adminmanual_en-5.html">Previous</A>
+<A HREF="adminmanual_en.html#toc6">Contents</A>
+</BODY>
+</HTML>

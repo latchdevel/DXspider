@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Manual v1.50: Headings and propagation</TITLE>
+ <LINK HREF="usermanual_en-6.html" REL=next>
+ <LINK HREF="usermanual_en-4.html" REL=previous>
+ <LINK HREF="usermanual_en.html#toc5" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="usermanual_en-6.html">Next</A>
+<A HREF="usermanual_en-4.html">Previous</A>
+<A HREF="usermanual_en.html#toc5">Contents</A>
+<HR>
+<H2><A NAME="s5">5.</A> <A HREF="usermanual_en.html#toc5">Headings and propagation</A></H2>
+
+<P>There are three commands in DXSpider to help you get the best DX possible.
+These are <B>SHOW/SUN</B>, <B>SHOW/MOON</B> and
+<B>SHOW/HEADING</B>.  These commands will only work for you if you
+have entered your personal details.  They use your entered location as
+a reference, so if you have not entered it or have entered it incorrectly
+they will not return the correct information.</P>
+
+<H2><A NAME="ss5.1">5.1</A> <A HREF="usermanual_en.html#toc5.1">Sun</A>
+</H2>
+
+<P>The <B>SHOW/SUN</B> command can be used in three different ways.  It
+can be used to show sunrise and sunset times for your own station, a 
+particular callsign or a prefix.  </P>
+<P><B>Example:</B></P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/sun
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>The output from this would look something like this ..</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/sun
+Location                              Rise   Set      Azim   Elev
+G0VGS  Morecambe, Lancashire          07:08Z 17:39Z  205.3   24.1
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/sun 5b4
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>would look like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/sun 5b4
+Location                              Rise   Set      Azim   Elev
+5B     Cyprus-5B                      04:23Z 15:40Z  244.0   18.8  
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>You can also specify multiple arguments like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/sun gw4veq 5b4ab zs
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>and then the output would look like this ...</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/sun gw4veq 5b4ab zs
+Location                              Rise   Set      Azim   Elev
+GW4VEQ Brungwran, Isle of Anglesey IO 07:14Z 17:48Z  204.9   24.9
+5B     Cyprus-5B                      04:23Z 15:40Z  244.5   18.3
+ZS     So-Africa-ZS1-ZS               04:31Z 17:28Z  289.9   41.3
+ZS     So-Africa-ZS5-ZS               03:44Z 16:34Z  278.5   32.0
+ZS     So-Africa-ZS6-ZS               03:59Z 16:42Z  277.6   35.0 
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<H2><A NAME="ss5.2">5.2</A> <A HREF="usermanual_en.html#toc5.2">Moon</A>
+</H2>
+
+<P>The <B>SHOW/MOON</B> command works in the same way as the 
+<B>SHOW/SUN</B> command.  This program however, calculates the
+rise and set times of the moon for a prefix or callsign, together
+with the current azimuth and elevation of the sun at these
+locations.</P>
+<P><B>Example:</B></P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/moon ea
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>The output from this command would look like this ..</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/moon ea
+Location                              Rise   Set      Azim   Elev  RGain dB
+EA     Spain-EA                       08:15Z 20:09Z  257.2    9.5      -0.6  
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>You can see that the output is similar to the <B>SHOW/SUN</B>
+command, with slightly different fields.</P>
+
+<H2><A NAME="ss5.3">5.3</A> <A HREF="usermanual_en.html#toc5.3">Heading</A>
+</H2>
+
+<P>The <B>SHOW/HEADING</B> command works in the same way as the 
+<B>SHOW/SUN</B> and <B>SHOW/MOON</B> commands but outputs beam 
+headings for a specified callsign or prefix.  Reciprocal beam headings 
+are also calculated.</P>
+<P><B>Example</B></P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+show/heading zl
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>The output from this command would look like this ..</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+sh/heading zl
+ZL New-Zealand-ZL1-ZL: 7 degs - dist: 11238 mi, 18087 km Reciprocal heading: 355 degs
+ZL New-Zealand-ZL2-ZL: 9 degs - dist: 11540 mi, 18574 km Reciprocal heading: 353 degs
+ZL New-Zealand-ZL3-ZL: 19 degs - dist: 11634 mi, 18724 km Reciprocal heading: 345 degs
+ZL New-Zealand-ZL4-ZL: 34 degs - dist: 11783 mi, 18963 km Reciprocal heading: 332 degs
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+
+<HR>
+<A HREF="usermanual_en-6.html">Next</A>
+<A HREF="usermanual_en-4.html">Previous</A>
+<A HREF="usermanual_en.html#toc5">Contents</A>
+</BODY>
+</HTML>

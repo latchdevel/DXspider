@@ -1161,11 +1161,11 @@ macht dieses setting rueckgaengig.
 === 9^UNSET/DEBUG <name>^Entfernt den debug level von <name>
 Folgende <name> sind gueltig :-
 
-chan
-state
-msg
-cron
-connect
+ chan
+ state
+ msg
+ cron
+ connect
 
 Mit SHOW/DEBUG kann man sehen wofuer debug gerade eingeschaltet ist.
 
@@ -1249,7 +1249,7 @@ und de (deutsch) unterstuetzt.
 === 0^SET/LOCATION <lat & long>^Setzt Breiten- und Laengengrad der eigenen Station
 Beispiel:-
 
-SET/LOCATION 52 22 N 0 57 E
+ SET/LOCATION 52 22 N 0 57 E
 
 === 9^SET/SYS_LOCATION <lat & long>^Setzt Breiten- und Laengengrad des Clusters
 Diese Eingabe ist notwendig um genaue Angaben von einigen Tools des
@@ -1257,7 +1257,7 @@ Systems zu erhalten (z.B. SHOW/SUN).
 Wenn noch nicht SET/QRA gesetzt wurde, sollte man dies jetzt nachholen
 mit dem Kommando Beispiel :-
   
-SET/LOCATION 52 22 N 0 57 E
+ SET/LOCATION 52 22 N 0 57 E
 
 === 0^SET/LOGININFO^Informiert wenn eine Station lokal einloggt
 === 0^UNSET/LOGININFO^Informiert wenn eine Station lokal ausloggt
@@ -1268,7 +1268,7 @@ SET/LOCATION 52 22 N 0 57 E
 === 0^SET/NAME <your name>^Setzt den eigenen Namen
 Beispiel :-
   
-SET/NAME Dirk
+ SET/NAME Dirk
 
 === 5^SET/NODE <rufzeichen> [<rufzeichen>..]^Setzt ein Rufzeichen als AK1A Cluster
 Auf diese Weise weiss das System das <rufzeichen> ein AK1A Cluster ist und
@@ -1455,33 +1455,33 @@ Zusaetzlich kann jedes dieser Schluesselwoerter hinzugefuegt
 werden um die Ausgabe besser auf seine Beduerfnisse zu
 erzeigen, dies sind :-
    
-on <band>       - z.B. 160m 20m 2m 23cm 6mm (!)
-on <region>     - z.B. hf vhf uhf shf      (siehe SHOW/BANDS)
+ on <band>       - z.B. 160m 20m 2m 23cm 6mm (!)
+ on <region>     - z.B. hf vhf uhf shf      (siehe SHOW/BANDS)
    
-<number>        - die Anzahl von Spots
-<from>-<to>     - <from> Spot Nummer <to>
+ <number>        - die Anzahl von Spots
+ <from>-<to>     - <from> Spot Nummer <to>
    
-<prefix>        - fuer ein gespottetes Rufzeichen beginnend mit <prefix>
-*<suffix>       - fuer ein gespottetes Rufzeichen endend mit <suffix>
-*<string>*      - fuer ein gespottetes Rufzeichen welches <string> enthaelt
+ <prefix>        - fuer ein gespottetes Rufzeichen beginnend mit <prefix>
+ *<suffix>       - fuer ein gespottetes Rufzeichen endend mit <suffix>
+ *<string>*      - fuer ein gespottetes Rufzeichen welches <string> enthaelt
    
-day <number>    - startend mit <number> Tage zurueck
-day <from>-<to> - <from> Tag <to> Tag zurueck
+ day <number>    - startend mit <number> Tage zurueck
+ day <from>-<to> - <from> Tag <to> Tag zurueck
    
-info <text>     - jeder Spot der <text> im Info Feld enthaelt
+ info <text>     - jeder Spot der <text> im Info Feld enthaelt
    
-by <rufzeichen>       - jeder Spots gespottet von <rufzeichen> (spotter <call>
-ist das gleiche).
+ by <rufzeichen>       - jeder Spots gespottet von <rufzeichen> (spotter <call>
+ ist das gleiche).
 
-qsl             - schaut automatisch nach jeder QSL Info fuer das Rufzeichen
-		  in der Spot Datenbank nach.
+ qsl             - schaut automatisch nach jeder QSL Info fuer das Rufzeichen
+    	           in der Spot Datenbank nach.
 
-iota [<iota>]   - Sollte die Iota Nummer fehlen, wird nach dem String Iota
-		  geschaut und alles was aussieht wie eine IOTA Insel Nummer
-		  wird ausgegeben. Es kann auch die IOTA Nummer eingegeben
-		  werden, dann wird nach jedem passenden Spot gesucht.
+ iota [<iota>]   - Sollte die Iota Nummer fehlen, wird nach dem String Iota
+	           geschaut und alles was aussieht wie eine IOTA Insel Nummer
+		   wird ausgegeben. Es kann auch die IOTA Nummer eingegeben
+		   werden, dann wird nach jedem passenden Spot gesucht.
 
-qra [<locator>] - Hier wird nach einem Locator gesucht.
+ qra [<locator>] - Hier wird nach einem Locator gesucht.
    
 Beispiele:-
    

@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider Administration Manual v1.50</TITLE>
+ <LINK HREF="adminmanual_en-1.html" REL=next>
+
+
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="adminmanual_en-1.html">Next</A>
+Previous
+Contents
+<HR>
+<H1>The DXSpider Administration Manual v1.50</H1>
+
+<H2>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
+Charlie Carroll, K1XX, (k1xx@ptcnh.net)</H2>February 2003 revision 0.3
+<HR>
+<EM>A reference for SysOps of the DXSpider DXCluster program.</EM>
+<HR>
+<P>
+<H2><A NAME="toc1">1.</A> <A HREF="adminmanual_en-1.html">Routing and Filtering</A></H2>
+
+<UL>
+<LI><A NAME="toc1.1">1.1</A> <A HREF="adminmanual_en-1.html#ss1.1">Introduction</A>
+<LI><A NAME="toc1.2">1.2</A> <A HREF="adminmanual_en-1.html#ss1.2">Route Filters</A>
+<LI><A NAME="toc1.3">1.3</A> <A HREF="adminmanual_en-1.html#ss1.3">The node_default filter</A>
+<LI><A NAME="toc1.4">1.4</A> <A HREF="adminmanual_en-1.html#ss1.4">General route filtering</A>
+<LI><A NAME="toc1.5">1.5</A> <A HREF="adminmanual_en-1.html#ss1.5">General filter rules</A>
+<LI><A NAME="toc1.6">1.6</A> <A HREF="adminmanual_en-1.html#ss1.6">Types of filter</A>
+<LI><A NAME="toc1.7">1.7</A> <A HREF="adminmanual_en-1.html#ss1.7">Filter options</A>
+<LI><A NAME="toc1.8">1.8</A> <A HREF="adminmanual_en-1.html#ss1.8">Default filters</A>
+<LI><A NAME="toc1.9">1.9</A> <A HREF="adminmanual_en-1.html#ss1.9">Advanced filtering</A>
+<LI><A NAME="toc1.10">1.10</A> <A HREF="adminmanual_en-1.html#ss1.10">Basic hop control</A>
+<LI><A NAME="toc1.11">1.11</A> <A HREF="adminmanual_en-1.html#ss1.11">Hop Control on Specific Nodes</A>
+<LI><A NAME="toc1.12">1.12</A> <A HREF="adminmanual_en-1.html#ss1.12">Isolating networks</A>
+</UL>
+<P>
+<H2><A NAME="toc2">2.</A> <A HREF="adminmanual_en-2.html">Other filters</A></H2>
+
+<UL>
+<LI><A NAME="toc2.1">2.1</A> <A HREF="adminmanual_en-2.html#ss2.1">Filtering Mail</A>
+<LI><A NAME="toc2.2">2.2</A> <A HREF="adminmanual_en-2.html#ss2.2">Filtering words from text fields in Announce, Talk and DX spots</A>
+<LI><A NAME="toc2.3">2.3</A> <A HREF="adminmanual_en-2.html#ss2.3">Stopping (possibly bad) DX Spots from Nodes or Spotters</A>
+</UL>
+<P>
+<H2><A NAME="toc3">3.</A> <A HREF="adminmanual_en-3.html">Mail</A></H2>
+
+<UL>
+<LI><A NAME="toc3.1">3.1</A> <A HREF="adminmanual_en-3.html#ss3.1">Personal mail</A>
+<LI><A NAME="toc3.2">3.2</A> <A HREF="adminmanual_en-3.html#ss3.2">Bulletin mail</A>
+<LI><A NAME="toc3.3">3.3</A> <A HREF="adminmanual_en-3.html#ss3.3">Forward.pl</A>
+<LI><A NAME="toc3.4">3.4</A> <A HREF="adminmanual_en-3.html#ss3.4">The msg command</A>
+<LI><A NAME="toc3.5">3.5</A> <A HREF="adminmanual_en-3.html#ss3.5">Message status</A>
+<LI><A NAME="toc3.6">3.6</A> <A HREF="adminmanual_en-3.html#ss3.6">Filtering mail</A>
+<LI><A NAME="toc3.7">3.7</A> <A HREF="adminmanual_en-3.html#ss3.7">Distribution lists</A>
+<LI><A NAME="toc3.8">3.8</A> <A HREF="adminmanual_en-3.html#ss3.8">BBS interface</A>
+</UL>
+<P>
+<H2><A NAME="toc4">4.</A> <A HREF="adminmanual_en-4.html">Scripts</A></H2>
+
+<P>
+<H2><A NAME="toc5">5.</A> <A HREF="adminmanual_en-5.html">Databases</A></H2>
+
+<UL>
+<LI><A NAME="toc5.1">5.1</A> <A HREF="adminmanual_en-5.html#ss5.1">Creating databases</A>
+<LI><A NAME="toc5.2">5.2</A> <A HREF="adminmanual_en-5.html#ss5.2">Importing databases</A>
+<LI><A NAME="toc5.3">5.3</A> <A HREF="adminmanual_en-5.html#ss5.3">Checking available databases</A>
+<LI><A NAME="toc5.4">5.4</A> <A HREF="adminmanual_en-5.html#ss5.4">Looking up databases</A>
+<LI><A NAME="toc5.5">5.5</A> <A HREF="adminmanual_en-5.html#ss5.5">Removing databases</A>
+</UL>
+<P>
+<H2><A NAME="toc6">6.</A> <A HREF="adminmanual_en-6.html">Information, files and useful programs</A></H2>
+
+<UL>
+<LI><A NAME="toc6.1">6.1</A> <A HREF="adminmanual_en-6.html#ss6.1">MOTD</A>
+<LI><A NAME="toc6.2">6.2</A> <A HREF="adminmanual_en-6.html#ss6.2">MOTD_NOR</A>
+<LI><A NAME="toc6.3">6.3</A> <A HREF="adminmanual_en-6.html#ss6.3">Downtime message</A>
+<LI><A NAME="toc6.4">6.4</A> <A HREF="adminmanual_en-6.html#ss6.4">Other text messages</A>
+<LI><A NAME="toc6.5">6.5</A> <A HREF="adminmanual_en-6.html#ss6.5">The Aliases file</A>
+<LI><A NAME="toc6.6">6.6</A> <A HREF="adminmanual_en-6.html#ss6.6">Console.pl</A>
+<LI><A NAME="toc6.7">6.7</A> <A HREF="adminmanual_en-6.html#ss6.7">Updating kepler data</A>
+<LI><A NAME="toc6.8">6.8</A> <A HREF="adminmanual_en-6.html#ss6.8">The QRZ callbook</A>
+<LI><A NAME="toc6.9">6.9</A> <A HREF="adminmanual_en-6.html#ss6.9">Connecting logging programs</A>
+</UL>
+<P>
+<H2><A NAME="toc7">7.</A> <A HREF="adminmanual_en-7.html">Java Web applet</A></H2>
+
+<P>
+<H2><A NAME="toc8">8.</A> <A HREF="adminmanual_en-8.html">Web based statistics</A></H2>
+
+<P>
+<H2><A NAME="toc9">9.</A> <A HREF="adminmanual_en-9.html">Security</A></H2>
+
+<UL>
+<LI><A NAME="toc9.1">9.1</A> <A HREF="adminmanual_en-9.html#ss9.1">Registration</A>
+<LI><A NAME="toc9.2">9.2</A> <A HREF="adminmanual_en-9.html#ss9.2">Passwords</A>
+</UL>
+<P>
+<H2><A NAME="toc10">10.</A> <A HREF="adminmanual_en-10.html">CVS</A></H2>
+
+<UL>
+<LI><A NAME="toc10.1">10.1</A> <A HREF="adminmanual_en-10.html#ss10.1">CVS from a Linux platform</A>
+<LI><A NAME="toc10.2">10.2</A> <A HREF="adminmanual_en-10.html#ss10.2">CVS from a Windows platform</A>
+</UL>
+<P>
+<H2><A NAME="toc11">11.</A> <A HREF="adminmanual_en-11.html">The DXSpider command set</A></H2>
+
+<UL>
+<LI><A NAME="toc11.1">11.1</A> <A HREF="adminmanual_en-11.html#ss11.1">accept (0)</A>
+<LI><A NAME="toc11.2">11.2</A> <A HREF="adminmanual_en-11.html#ss11.2">accept/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.3">11.3</A> <A HREF="adminmanual_en-11.html#ss11.3">accept/announce [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.4">11.4</A> <A HREF="adminmanual_en-11.html#ss11.4">accept/route &lt;call&gt; [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.5">11.5</A> <A HREF="adminmanual_en-11.html#ss11.5">accept/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.6">11.6</A> <A HREF="adminmanual_en-11.html#ss11.6">accept/spots [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.7">11.7</A> <A HREF="adminmanual_en-11.html#ss11.7">accept/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.8">11.8</A> <A HREF="adminmanual_en-11.html#ss11.8">accept/wcy [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.9">11.9</A> <A HREF="adminmanual_en-11.html#ss11.9">accept/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.10">11.10</A> <A HREF="adminmanual_en-11.html#ss11.10">accept/wwv [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.11">11.11</A> <A HREF="adminmanual_en-11.html#ss11.11">announce &lt;text&gt; (0)</A>
+<LI><A NAME="toc11.12">11.12</A> <A HREF="adminmanual_en-11.html#ss11.12">announce full &lt;text&gt; (0)</A>
+<LI><A NAME="toc11.13">11.13</A> <A HREF="adminmanual_en-11.html#ss11.13">announce sysop &lt;text&gt; (5)</A>
+<LI><A NAME="toc11.14">11.14</A> <A HREF="adminmanual_en-11.html#ss11.14">apropos &lt;string&gt; (0)</A>
+<LI><A NAME="toc11.15">11.15</A> <A HREF="adminmanual_en-11.html#ss11.15">blank [&lt;string&gt;] [&lt;nn&gt;] (0)</A>
+<LI><A NAME="toc11.16">11.16</A> <A HREF="adminmanual_en-11.html#ss11.16">bye (0)</A>
+<LI><A NAME="toc11.17">11.17</A> <A HREF="adminmanual_en-11.html#ss11.17">catchup &lt;node call&gt; all|[&lt;msgno&gt; ...] (5)</A>
+<LI><A NAME="toc11.18">11.18</A> <A HREF="adminmanual_en-11.html#ss11.18">clear/announce &lt;callsign&gt; [input] [0-9|all] (8)</A>
+<LI><A NAME="toc11.19">11.19</A> <A HREF="adminmanual_en-11.html#ss11.19">clear/announce [1|all] (0)</A>
+<LI><A NAME="toc11.20">11.20</A> <A HREF="adminmanual_en-11.html#ss11.20">clear/route &lt;callsign&gt; [input] [0-9|all] (8)</A>
+<LI><A NAME="toc11.21">11.21</A> <A HREF="adminmanual_en-11.html#ss11.21">clear/route [1|all] (0)</A>
+<LI><A NAME="toc11.22">11.22</A> <A HREF="adminmanual_en-11.html#ss11.22">clear/spots &lt;callsign&gt; [input] [0-9|all] (8)</A>
+<LI><A NAME="toc11.23">11.23</A> <A HREF="adminmanual_en-11.html#ss11.23">clear/spots [0-9|all] (0)</A>
+<LI><A NAME="toc11.24">11.24</A> <A HREF="adminmanual_en-11.html#ss11.24">clear/wcy &lt;callsign&gt; [input] [0-9|all] (8)</A>
+<LI><A NAME="toc11.25">11.25</A> <A HREF="adminmanual_en-11.html#ss11.25">clear/wcy [1|all] (0)</A>
+<LI><A NAME="toc11.26">11.26</A> <A HREF="adminmanual_en-11.html#ss11.26">clear/wwv &lt;callsign&gt; [input] [0-9|all] (8)</A>
+<LI><A NAME="toc11.27">11.27</A> <A HREF="adminmanual_en-11.html#ss11.27">clear/wwv [1|all] (0)</A>
+<LI><A NAME="toc11.28">11.28</A> <A HREF="adminmanual_en-11.html#ss11.28">connect &lt;callsign&gt; (5)</A>
+<LI><A NAME="toc11.29">11.29</A> <A HREF="adminmanual_en-11.html#ss11.29">dbavail (0)</A>
+<LI><A NAME="toc11.30">11.30</A> <A HREF="adminmanual_en-11.html#ss11.30">dbshow &lt;dbname&gt; &lt;key&gt; (0)</A>
+<LI><A NAME="toc11.31">11.31</A> <A HREF="adminmanual_en-11.html#ss11.31">directory (0)</A>
+<LI><A NAME="toc11.32">11.32</A> <A HREF="adminmanual_en-11.html#ss11.32">directory &lt;from&gt;-&lt;to&gt; (0)</A>
+<LI><A NAME="toc11.33">11.33</A> <A HREF="adminmanual_en-11.html#ss11.33">directory &lt;nn&gt; (0)</A>
+<LI><A NAME="toc11.34">11.34</A> <A HREF="adminmanual_en-11.html#ss11.34">directory all (0)</A>
+<LI><A NAME="toc11.35">11.35</A> <A HREF="adminmanual_en-11.html#ss11.35">directory from &lt;call&gt; (0)</A>
+<LI><A NAME="toc11.36">11.36</A> <A HREF="adminmanual_en-11.html#ss11.36">directory new (0)</A>
+<LI><A NAME="toc11.37">11.37</A> <A HREF="adminmanual_en-11.html#ss11.37">directory own (0)</A>
+<LI><A NAME="toc11.38">11.38</A> <A HREF="adminmanual_en-11.html#ss11.38">directory subject &lt;string&gt; (0)</A>
+<LI><A NAME="toc11.39">11.39</A> <A HREF="adminmanual_en-11.html#ss11.39">directory to &lt;call&gt; (0)</A>
+<LI><A NAME="toc11.40">11.40</A> <A HREF="adminmanual_en-11.html#ss11.40">directory- (5)</A>
+<LI><A NAME="toc11.41">11.41</A> <A HREF="adminmanual_en-11.html#ss11.41">disconnect &lt;call&gt; [&lt;call&gt; ...] (8)</A>
+<LI><A NAME="toc11.42">11.42</A> <A HREF="adminmanual_en-11.html#ss11.42">dx [by &lt;call&gt;] &lt;freq&gt; &lt;call&gt; &lt;remarks&gt; (0)</A>
+<LI><A NAME="toc11.43">11.43</A> <A HREF="adminmanual_en-11.html#ss11.43">echo &lt;line&gt; (0)</A>
+<LI><A NAME="toc11.44">11.44</A> <A HREF="adminmanual_en-11.html#ss11.44">filtering... (0)</A>
+<LI><A NAME="toc11.45">11.45</A> <A HREF="adminmanual_en-11.html#ss11.45">forward/latlong &lt;node_call&gt; (8)</A>
+<LI><A NAME="toc11.46">11.46</A> <A HREF="adminmanual_en-11.html#ss11.46">forward/opernam &lt;call&gt; (1)</A>
+<LI><A NAME="toc11.47">11.47</A> <A HREF="adminmanual_en-11.html#ss11.47">help (0)</A>
+<LI><A NAME="toc11.48">11.48</A> <A HREF="adminmanual_en-11.html#ss11.48">init &lt;node&gt; (5)</A>
+<LI><A NAME="toc11.49">11.49</A> <A HREF="adminmanual_en-11.html#ss11.49">kill (5)</A>
+<LI><A NAME="toc11.50">11.50</A> <A HREF="adminmanual_en-11.html#ss11.50">kill &lt;from msgno&gt;-&lt;to msgno&gt; (0)</A>
+<LI><A NAME="toc11.51">11.51</A> <A HREF="adminmanual_en-11.html#ss11.51">kill &lt;from&gt;-&lt;to&gt; (5)</A>
+<LI><A NAME="toc11.52">11.52</A> <A HREF="adminmanual_en-11.html#ss11.52">kill &lt;msgno&gt; [&lt;msgno..] (0)</A>
+<LI><A NAME="toc11.53">11.53</A> <A HREF="adminmanual_en-11.html#ss11.53">kill &lt;msgno&gt; [&lt;msgno&gt; ...] (0)</A>
+<LI><A NAME="toc11.54">11.54</A> <A HREF="adminmanual_en-11.html#ss11.54">kill expunge &lt;msgno&gt; [&lt;msgno..] (6)</A>
+<LI><A NAME="toc11.55">11.55</A> <A HREF="adminmanual_en-11.html#ss11.55">kill from &lt;call&gt; (5)</A>
+<LI><A NAME="toc11.56">11.56</A> <A HREF="adminmanual_en-11.html#ss11.56">kill full &lt;msgno&gt; [&lt;msgno..] (5)</A>
+<LI><A NAME="toc11.57">11.57</A> <A HREF="adminmanual_en-11.html#ss11.57">kill full &lt;msgno&gt; [&lt;msgno] (5)</A>
+<LI><A NAME="toc11.58">11.58</A> <A HREF="adminmanual_en-11.html#ss11.58">kill to &lt;call&gt; (5)</A>
+<LI><A NAME="toc11.59">11.59</A> <A HREF="adminmanual_en-11.html#ss11.59">kill from &lt;regex&gt; (0)</A>
+<LI><A NAME="toc11.60">11.60</A> <A HREF="adminmanual_en-11.html#ss11.60">kill to &lt;regex&gt; (0)</A>
+<LI><A NAME="toc11.61">11.61</A> <A HREF="adminmanual_en-11.html#ss11.61">links (0)</A>
+<LI><A NAME="toc11.62">11.62</A> <A HREF="adminmanual_en-11.html#ss11.62">load/keps (5)</A>
+<LI><A NAME="toc11.63">11.63</A> <A HREF="adminmanual_en-11.html#ss11.63">load/keps [nn] (5)</A>
+<LI><A NAME="toc11.64">11.64</A> <A HREF="adminmanual_en-11.html#ss11.64">merge &lt;node&gt; [&lt;no spots&gt;/&lt;no wwv&gt;] (5)</A>
+<LI><A NAME="toc11.65">11.65</A> <A HREF="adminmanual_en-11.html#ss11.65">pc &lt;call&gt; &lt;text&gt; (8)</A>
+<LI><A NAME="toc11.66">11.66</A> <A HREF="adminmanual_en-11.html#ss11.66">ping &lt;node call&gt; (1)</A>
+<LI><A NAME="toc11.67">11.67</A> <A HREF="adminmanual_en-11.html#ss11.67">rcmd &lt;node call&gt; &lt;cmd&gt; (1)</A>
+<LI><A NAME="toc11.68">11.68</A> <A HREF="adminmanual_en-11.html#ss11.68">read (0)</A>
+<LI><A NAME="toc11.69">11.69</A> <A HREF="adminmanual_en-11.html#ss11.69">read &lt;msgno&gt; (0)</A>
+<LI><A NAME="toc11.70">11.70</A> <A HREF="adminmanual_en-11.html#ss11.70">read- (5)</A>
+<LI><A NAME="toc11.71">11.71</A> <A HREF="adminmanual_en-11.html#ss11.71">reject (0)</A>
+<LI><A NAME="toc11.72">11.72</A> <A HREF="adminmanual_en-11.html#ss11.72">reject/announce &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.73">11.73</A> <A HREF="adminmanual_en-11.html#ss11.73">reject/announce [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.74">11.74</A> <A HREF="adminmanual_en-11.html#ss11.74">reject/route &lt;call&gt; [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.75">11.75</A> <A HREF="adminmanual_en-11.html#ss11.75">reject/spots &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.76">11.76</A> <A HREF="adminmanual_en-11.html#ss11.76">reject/spots [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.77">11.77</A> <A HREF="adminmanual_en-11.html#ss11.77">reject/wcy &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.78">11.78</A> <A HREF="adminmanual_en-11.html#ss11.78">reject/wcy [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.79">11.79</A> <A HREF="adminmanual_en-11.html#ss11.79">reject/wwv &lt;call&gt; [input] [0-9] &lt;pattern&gt; (8)</A>
+<LI><A NAME="toc11.80">11.80</A> <A HREF="adminmanual_en-11.html#ss11.80">reject/wwv [0-9] &lt;pattern&gt; (0)</A>
+<LI><A NAME="toc11.81">11.81</A> <A HREF="adminmanual_en-11.html#ss11.81">reply (0)</A>
+<LI><A NAME="toc11.82">11.82</A> <A HREF="adminmanual_en-11.html#ss11.82">reply &lt;msgno&gt; (0)</A>
+<LI><A NAME="toc11.83">11.83</A> <A HREF="adminmanual_en-11.html#ss11.83">reply b &lt;msgno&gt; (0)</A>
+<LI><A NAME="toc11.84">11.84</A> <A HREF="adminmanual_en-11.html#ss11.84">reply noprivate &lt;msgno&gt; (0)</A>
+<LI><A NAME="toc11.85">11.85</A> <A HREF="adminmanual_en-11.html#ss11.85">reply rr &lt;msgno&gt; (0)</A>
+<LI><A NAME="toc11.86">11.86</A> <A HREF="adminmanual_en-11.html#ss11.86">send &lt;call&gt; [&lt;call&gt; ...] (0)</A>
+<LI><A NAME="toc11.87">11.87</A> <A HREF="adminmanual_en-11.html#ss11.87">send copy &lt;msgno&gt; &lt;call&gt; (0)</A>
+<LI><A NAME="toc11.88">11.88</A> <A HREF="adminmanual_en-11.html#ss11.88">send noprivate &lt;call&gt; (0)</A>
+<LI><A NAME="toc11.89">11.89</A> <A HREF="adminmanual_en-11.html#ss11.89">send private &lt;call&gt; (0)</A>
+<LI><A NAME="toc11.90">11.90</A> <A HREF="adminmanual_en-11.html#ss11.90">send rr &lt;call&gt; (0)</A>
+<LI><A NAME="toc11.91">11.91</A> <A HREF="adminmanual_en-11.html#ss11.91">set/address &lt;your address&gt; (0)</A>
+<LI><A NAME="toc11.92">11.92</A> <A HREF="adminmanual_en-11.html#ss11.92">set/announce (0)</A>
+<LI><A NAME="toc11.93">11.93</A> <A HREF="adminmanual_en-11.html#ss11.93">set/anntalk (0)</A>
+<LI><A NAME="toc11.94">11.94</A> <A HREF="adminmanual_en-11.html#ss11.94">set/arcluster &lt;call&gt; [&lt;call&gt;..] (5)</A>
+<LI><A NAME="toc11.95">11.95</A> <A HREF="adminmanual_en-11.html#ss11.95">set/baddx &lt;call&gt;.. (8)</A>
+<LI><A NAME="toc11.96">11.96</A> <A HREF="adminmanual_en-11.html#ss11.96">set/badnode &lt;call&gt;.. (8)</A>
+<LI><A NAME="toc11.97">11.97</A> <A HREF="adminmanual_en-11.html#ss11.97">set/badspotter &lt;call&gt;.. (8)</A>
+<LI><A NAME="toc11.98">11.98</A> <A HREF="adminmanual_en-11.html#ss11.98">set/badword &lt;word&gt;.. (8)</A>
+<LI><A NAME="toc11.99">11.99</A> <A HREF="adminmanual_en-11.html#ss11.99">set/bbs &lt;call&gt; [&lt;call&gt;..] (5)</A>
+<LI><A NAME="toc11.100">11.100</A> <A HREF="adminmanual_en-11.html#ss11.100">set/beep (0)</A>
+<LI><A NAME="toc11.101">11.101</A> <A HREF="adminmanual_en-11.html#ss11.101">set/clx &lt;call&gt; [&lt;call&gt;..] (5)</A>
+<LI><A NAME="toc11.102">11.102</A> <A HREF="adminmanual_en-11.html#ss11.102">set/dx (0)</A>
+<LI><A NAME="toc11.103">11.103</A> <A HREF="adminmanual_en-11.html#ss11.103">set/dxgrid (0)</A>
+<LI><A NAME="toc11.104">11.104</A> <A HREF="adminmanual_en-11.html#ss11.104">set/dxnet &lt;call&gt; [&lt;call&gt;..] (5)</A>
+<LI><A NAME="toc11.105">11.105</A> <A HREF="adminmanual_en-11.html#ss11.105">set/echo (0)</A>
+<LI><A NAME="toc11.106">11.106</A> <A HREF="adminmanual_en-11.html#ss11.106">set/email &lt;email&gt; ... (0)</A>
+<LI><A NAME="toc11.107">11.107</A> <A HREF="adminmanual_en-11.html#ss11.107">set/here (0)</A>
+<LI><A NAME="toc11.108">11.108</A> <A HREF="adminmanual_en-11.html#ss11.108">set/homenode &lt;node&gt;  (0)</A>
+<LI><A NAME="toc11.109">11.109</A> <A HREF="adminmanual_en-11.html#ss11.109">set/hops &lt;call&gt; ann|spots|route|wwv|wcy &lt;n&gt; (8)</A>
+<LI><A NAME="toc11.110">11.110</A> <A HREF="adminmanual_en-11.html#ss11.110">set/language &lt;lang&gt; (0)</A>
+<LI><A NAME="toc11.111">11.111</A> <A HREF="adminmanual_en-11.html#ss11.111">set/location &lt;lat &amp; long&gt; (0)</A>
+<LI><A NAME="toc11.112">11.112</A> <A HREF="adminmanual_en-11.html#ss11.112">set/logininfo (0)</A>
+<LI><A NAME="toc11.113">11.113</A> <A HREF="adminmanual_en-11.html#ss11.113">set/name &lt;your name&gt; (0)</A>
+<LI><A NAME="toc11.114">11.114</A> <A HREF="adminmanual_en-11.html#ss11.114">set/node &lt;call&gt; [&lt;call&gt;..] (5)</A>
+<LI><A NAME="toc11.115">11.115</A> <A HREF="adminmanual_en-11.html#ss11.115">set/obscount &lt;count&gt; &lt;call&gt; (8)</A>
+<LI><A NAME="toc11.116">11.116</A> <A HREF="adminmanual_en-11.html#ss11.116">set/page &lt;lines per page&gt; (0)</A>
+<LI><A NAME="toc11.117">11.117</A> <A HREF="adminmanual_en-11.html#ss11.117">set/password (0)</A>
+<LI><A NAME="toc11.118">11.118</A> <A HREF="adminmanual_en-11.html#ss11.118">set/prompt &lt;string&gt; (0)</A>
+<LI><A NAME="toc11.119">11.119</A> <A HREF="adminmanual_en-11.html#ss11.119">set/qra &lt;locator&gt; (0)</A>
+<LI><A NAME="toc11.120">11.120</A> <A HREF="adminmanual_en-11.html#ss11.120">set/qth &lt;your qth&gt; (0)</A>
+<LI><A NAME="toc11.121">11.121</A> <A HREF="adminmanual_en-11.html#ss11.121">set/spider &lt;call&gt; [&lt;call&gt;..] (5)</A>
+<LI><A NAME="toc11.122">11.122</A> <A HREF="adminmanual_en-11.html#ss11.122">set/talk (0)</A>
+<LI><A NAME="toc11.123">11.123</A> <A HREF="adminmanual_en-11.html#ss11.123">set/wcy (0)</A>
+<LI><A NAME="toc11.124">11.124</A> <A HREF="adminmanual_en-11.html#ss11.124">set/wwv (0)</A>
+<LI><A NAME="toc11.125">11.125</A> <A HREF="adminmanual_en-11.html#ss11.125">set/wx (0)</A>
+<LI><A NAME="toc11.126">11.126</A> <A HREF="adminmanual_en-11.html#ss11.126">show/baddx (1)</A>
+<LI><A NAME="toc11.127">11.127</A> <A HREF="adminmanual_en-11.html#ss11.127">show/badnode (1)</A>
+<LI><A NAME="toc11.128">11.128</A> <A HREF="adminmanual_en-11.html#ss11.128">show/badspotter (1)</A>
+<LI><A NAME="toc11.129">11.129</A> <A HREF="adminmanual_en-11.html#ss11.129">show/badword (1)</A>
+<LI><A NAME="toc11.130">11.130</A> <A HREF="adminmanual_en-11.html#ss11.130">show/configuration [&lt;node&gt;] (0)</A>
+<LI><A NAME="toc11.131">11.131</A> <A HREF="adminmanual_en-11.html#ss11.131">show/configuration/node (0)</A>
+<LI><A NAME="toc11.132">11.132</A> <A HREF="adminmanual_en-11.html#ss11.132">show/connect (1)</A>
+<LI><A NAME="toc11.133">11.133</A> <A HREF="adminmanual_en-11.html#ss11.133">show/date [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<LI><A NAME="toc11.134">11.134</A> <A HREF="adminmanual_en-11.html#ss11.134">show/dx (0)</A>
+<LI><A NAME="toc11.135">11.135</A> <A HREF="adminmanual_en-11.html#ss11.135">show/dxcc &lt;prefix&gt; (0)</A>
+<LI><A NAME="toc11.136">11.136</A> <A HREF="adminmanual_en-11.html#ss11.136">show/dxstats [days] [date] (0)</A>
+<LI><A NAME="toc11.137">11.137</A> <A HREF="adminmanual_en-11.html#ss11.137">show/files [&lt;filearea&gt; [&lt;string&gt;]] (0)</A>
+<LI><A NAME="toc11.138">11.138</A> <A HREF="adminmanual_en-11.html#ss11.138">show/filter (0)</A>
+<LI><A NAME="toc11.139">11.139</A> <A HREF="adminmanual_en-11.html#ss11.139">show/hfstats [days] [date] (0)</A>
+<LI><A NAME="toc11.140">11.140</A> <A HREF="adminmanual_en-11.html#ss11.140">show/hftable [days] [date] [prefix ...] (0)</A>
+<LI><A NAME="toc11.141">11.141</A> <A HREF="adminmanual_en-11.html#ss11.141">show/hops &lt;call&gt; [ann|spots|route|wcy|wwv] (8)</A>
+<LI><A NAME="toc11.142">11.142</A> <A HREF="adminmanual_en-11.html#ss11.142">show/isolate (1)</A>
+<LI><A NAME="toc11.143">11.143</A> <A HREF="adminmanual_en-11.html#ss11.143">show/log [&lt;callsign&gt;] (8)</A>
+<LI><A NAME="toc11.144">11.144</A> <A HREF="adminmanual_en-11.html#ss11.144">show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<LI><A NAME="toc11.145">11.145</A> <A HREF="adminmanual_en-11.html#ss11.145">show/muf &lt;prefix&gt; [&lt;hours&gt;][long] (0)</A>
+<LI><A NAME="toc11.146">11.146</A> <A HREF="adminmanual_en-11.html#ss11.146">show/newconfiguration [&lt;node&gt;] (0)</A>
+<LI><A NAME="toc11.147">11.147</A> <A HREF="adminmanual_en-11.html#ss11.147">show/newconfiguration/node (0)</A>
+<LI><A NAME="toc11.148">11.148</A> <A HREF="adminmanual_en-11.html#ss11.148">show/node [&lt;callsign&gt; ...] (1)</A>
+<LI><A NAME="toc11.149">11.149</A> <A HREF="adminmanual_en-11.html#ss11.149">show/prefix &lt;callsign&gt; (0)</A>
+<LI><A NAME="toc11.150">11.150</A> <A HREF="adminmanual_en-11.html#ss11.150">show/program (5)</A>
+<LI><A NAME="toc11.151">11.151</A> <A HREF="adminmanual_en-11.html#ss11.151">show/qra &lt;lat&gt; &lt;long&gt; (0)</A>
+<LI><A NAME="toc11.152">11.152</A> <A HREF="adminmanual_en-11.html#ss11.152">show/qra &lt;locator&gt; [&lt;locator&gt;] (0)</A>
+<LI><A NAME="toc11.153">11.153</A> <A HREF="adminmanual_en-11.html#ss11.153">show/qrz &lt;callsign&gt; (0)</A>
+<LI><A NAME="toc11.154">11.154</A> <A HREF="adminmanual_en-11.html#ss11.154">show/route &lt;callsign&gt; ... (0)</A>
+<LI><A NAME="toc11.155">11.155</A> <A HREF="adminmanual_en-11.html#ss11.155">show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;] (0)</A>
+<LI><A NAME="toc11.156">11.156</A> <A HREF="adminmanual_en-11.html#ss11.156">show/station all [&lt;regex&gt;] (6)</A>
+<LI><A NAME="toc11.157">11.157</A> <A HREF="adminmanual_en-11.html#ss11.157">show/station [&lt;callsign&gt; ..] (0)</A>
+<LI><A NAME="toc11.158">11.158</A> <A HREF="adminmanual_en-11.html#ss11.158">show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<LI><A NAME="toc11.159">11.159</A> <A HREF="adminmanual_en-11.html#ss11.159">show/time [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<LI><A NAME="toc11.160">11.160</A> <A HREF="adminmanual_en-11.html#ss11.160">show/usdb [call ..] (0)</A>
+<LI><A NAME="toc11.161">11.161</A> <A HREF="adminmanual_en-11.html#ss11.161">show/vhfstats [days] [date] (0)</A>
+<LI><A NAME="toc11.162">11.162</A> <A HREF="adminmanual_en-11.html#ss11.162">show/vhftable [days] [date] [prefix ...] (0)</A>
+<LI><A NAME="toc11.163">11.163</A> <A HREF="adminmanual_en-11.html#ss11.163">show/wcy (0)</A>
+<LI><A NAME="toc11.164">11.164</A> <A HREF="adminmanual_en-11.html#ss11.164">show/wcy &lt;n&gt; (0)</A>
+<LI><A NAME="toc11.165">11.165</A> <A HREF="adminmanual_en-11.html#ss11.165">show/wwv (0)</A>
+<LI><A NAME="toc11.166">11.166</A> <A HREF="adminmanual_en-11.html#ss11.166">show/wwv &lt;n&gt; (0)</A>
+<LI><A NAME="toc11.167">11.167</A> <A HREF="adminmanual_en-11.html#ss11.167">shutdown (5)</A>
+<LI><A NAME="toc11.168">11.168</A> <A HREF="adminmanual_en-11.html#ss11.168">stat/channel [&lt;callsign&gt;] (5)</A>
+<LI><A NAME="toc11.169">11.169</A> <A HREF="adminmanual_en-11.html#ss11.169">stat/db &lt;dbname&gt; (5)</A>
+<LI><A NAME="toc11.170">11.170</A> <A HREF="adminmanual_en-11.html#ss11.170">stat/msg (1)</A>
+<LI><A NAME="toc11.171">11.171</A> <A HREF="adminmanual_en-11.html#ss11.171">stat/msg &lt;msgno&gt; (1)</A>
+<LI><A NAME="toc11.172">11.172</A> <A HREF="adminmanual_en-11.html#ss11.172">stat/route_node &lt;callsign&gt; (5)</A>
+<LI><A NAME="toc11.173">11.173</A> <A HREF="adminmanual_en-11.html#ss11.173">stat/route_node all (5)</A>
+<LI><A NAME="toc11.174">11.174</A> <A HREF="adminmanual_en-11.html#ss11.174">stat/route_user &lt;callsign&gt; (5)</A>
+<LI><A NAME="toc11.175">11.175</A> <A HREF="adminmanual_en-11.html#ss11.175">stat/route_user all (5)</A>
+<LI><A NAME="toc11.176">11.176</A> <A HREF="adminmanual_en-11.html#ss11.176">stat/user [&lt;callsign&gt;] (5)</A>
+<LI><A NAME="toc11.177">11.177</A> <A HREF="adminmanual_en-11.html#ss11.177">sysop (0)</A>
+<LI><A NAME="toc11.178">11.178</A> <A HREF="adminmanual_en-11.html#ss11.178">talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;] (0)</A>
+<LI><A NAME="toc11.179">11.179</A> <A HREF="adminmanual_en-11.html#ss11.179">talk &lt;call&gt; [&lt;text&gt;] (0)</A>
+<LI><A NAME="toc11.180">11.180</A> <A HREF="adminmanual_en-11.html#ss11.180">type &lt;filearea&gt;/&lt;name&gt; (0)</A>
+<LI><A NAME="toc11.181">11.181</A> <A HREF="adminmanual_en-11.html#ss11.181">uncatchup &lt;node call&gt; all|[msgno&gt; ...] (5)</A>
+<LI><A NAME="toc11.182">11.182</A> <A HREF="adminmanual_en-11.html#ss11.182">unset/announce (0)</A>
+<LI><A NAME="toc11.183">11.183</A> <A HREF="adminmanual_en-11.html#ss11.183">unset/anntalk (0)</A>
+<LI><A NAME="toc11.184">11.184</A> <A HREF="adminmanual_en-11.html#ss11.184">unset/baddx &lt;call&gt;.. (8)</A>
+<LI><A NAME="toc11.185">11.185</A> <A HREF="adminmanual_en-11.html#ss11.185">unset/badnode &lt;call&gt;.. (8)</A>
+<LI><A NAME="toc11.186">11.186</A> <A HREF="adminmanual_en-11.html#ss11.186">unset/badspotter &lt;call&gt;.. (8)</A>
+<LI><A NAME="toc11.187">11.187</A> <A HREF="adminmanual_en-11.html#ss11.187">unset/badword &lt;word&gt;.. (8)</A>
+<LI><A NAME="toc11.188">11.188</A> <A HREF="adminmanual_en-11.html#ss11.188">unset/beep (0)</A>
+<LI><A NAME="toc11.189">11.189</A> <A HREF="adminmanual_en-11.html#ss11.189">unset/dx (0)</A>
+<LI><A NAME="toc11.190">11.190</A> <A HREF="adminmanual_en-11.html#ss11.190">unset/dxgrid (0)</A>
+<LI><A NAME="toc11.191">11.191</A> <A HREF="adminmanual_en-11.html#ss11.191">unset/echo (0)</A>
+<LI><A NAME="toc11.192">11.192</A> <A HREF="adminmanual_en-11.html#ss11.192">unset/email (0)</A>
+<LI><A NAME="toc11.193">11.193</A> <A HREF="adminmanual_en-11.html#ss11.193">unset/here (0)</A>
+<LI><A NAME="toc11.194">11.194</A> <A HREF="adminmanual_en-11.html#ss11.194">unset/hops &lt;call&gt; ann|spots|route|wwv|wcy (8)</A>
+<LI><A NAME="toc11.195">11.195</A> <A HREF="adminmanual_en-11.html#ss11.195">unset/logininfo (0)</A>
+<LI><A NAME="toc11.196">11.196</A> <A HREF="adminmanual_en-11.html#ss11.196">unset/privilege (0)</A>
+<LI><A NAME="toc11.197">11.197</A> <A HREF="adminmanual_en-11.html#ss11.197">unset/prompt (0)</A>
+<LI><A NAME="toc11.198">11.198</A> <A HREF="adminmanual_en-11.html#ss11.198">unset/talk (0)</A>
+<LI><A NAME="toc11.199">11.199</A> <A HREF="adminmanual_en-11.html#ss11.199">unset/wcy (0)</A>
+<LI><A NAME="toc11.200">11.200</A> <A HREF="adminmanual_en-11.html#ss11.200">unset/wwv (0)</A>
+<LI><A NAME="toc11.201">11.201</A> <A HREF="adminmanual_en-11.html#ss11.201">unset/wx (0)</A>
+<LI><A NAME="toc11.202">11.202</A> <A HREF="adminmanual_en-11.html#ss11.202">who (0)</A>
+<LI><A NAME="toc11.203">11.203</A> <A HREF="adminmanual_en-11.html#ss11.203">wx &lt;text&gt; (0)</A>
+<LI><A NAME="toc11.204">11.204</A> <A HREF="adminmanual_en-11.html#ss11.204">wx full &lt;text&gt; (0)</A>
+<LI><A NAME="toc11.205">11.205</A> <A HREF="adminmanual_en-11.html#ss11.205">wx sysop &lt;text&gt; (5)</A>
+</UL>
+<HR>
+<A HREF="adminmanual_en-1.html">Next</A>
+Previous
+Contents
+</BODY>
+</HTML>

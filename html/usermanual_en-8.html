@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>The DXSpider User Manual v1.50: Talk mode.</TITLE>
+ <LINK HREF="usermanual_en-9.html" REL=next>
+ <LINK HREF="usermanual_en-7.html" REL=previous>
+ <LINK HREF="usermanual_en.html#toc8" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="usermanual_en-9.html">Next</A>
+<A HREF="usermanual_en-7.html">Previous</A>
+<A HREF="usermanual_en.html#toc8">Contents</A>
+<HR>
+<H2><A NAME="s8">8.</A> <A HREF="usermanual_en.html#toc8">Talk mode.</A></H2>
+
+<P>You can send a single comment or start a dedicated talk session to 
+another user by using the <B>TALK</B> command. </P>
+
+<P>Talk mode is used to send a one line comment or greeting to a 
+specific user connected either at your node or another in the 
+network.  You can also enter into a dedicated talk session with 
+another user.  Talks will be automatically forwarded to other nodes 
+if the station you are talking to is not connected locally. 
+You can find out who is connected by using the 
+<B>SHOW/CONFIGURATION</B> command, (described earlier).</P>
+<P><B>Examples:</B></P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+ 
+talk g0rdi Having a good day Iain?
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>This example would send the line "Having a good day Iain?" to the
+user g0rdi but would leave you in normal mode.  </P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+talk g0rdi
+Entering Talkmode, /EX to end, /&lt;cmd> to run a command
+Talk (G0RDI)>
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>As you can see, you can still run commands whilst in talk mode.
+Simply prefix the command with a / like /sh/dx and you will get
+the expected output.
+If the user is connected to another node, you may have to use a 
+slightly extended version of the <B>TALK</B> command.</P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+talk g0rdi > gb7djk
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>To exit talk mode, you issue the command <B>/ex</B>. </P>
+<P>Whilst in talk mode you will still receive DX spots.  This means that
+you can chat to a friend whilst working DX.  </P>
+
+<HR>
+<A HREF="usermanual_en-9.html">Next</A>
+<A HREF="usermanual_en-7.html">Previous</A>
+<A HREF="usermanual_en.html#toc8">Contents</A>
+</BODY>
+</HTML>

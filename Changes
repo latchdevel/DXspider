@@ -1,3 +1,15 @@
+14Feb03=======================================================================
+1. some major changes to the structure of the manual documentation.  To bring
+the manuals into line, they now have the language tag (like 
+installation_en.html).  Hopefully someone will translate the manuals 
+eventually :-) I have left the old files in CVS for now to allow
+everyone to change any symlinks etc to the new filenames.  I will remove the
+old files shortly, please update your links! (g0vgs)
+2. docs makefile updated and commands2sgml.pl added from M0AZM.  This script
+inserts the helpfiles automagically from Commands_en.hlp into the relevant
+manuals. (g0vgs)
+3. Commands_en.hlp adjusted slightly to ensure at least one space before
+examples for the purposes of the above script. (g0vgs)
 09Feb03=======================================================================
 1. Correct some typos in the manuals and update perl modules etc.  Also
 amend some help files to show correct syntax, around the 'clear' commands

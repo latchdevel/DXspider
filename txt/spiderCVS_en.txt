@@ -1,0 +1,25 @@
+  The DXSpider CVS Changes Addendum v1.50
+  Ian Maude, G0VGS, (g0vgs@gb7mbc.net)
+  February 2003 revision 0.1
+
+  A reference for CVS users of the DXSpider DXCluster program.
+
+  If you have any problems with a new CVS version please mail the
+  support list.
+
+
+  The latest CVS is version 1.50 build 57.191.  There are major changes
+  going on currently as the code is being prepared for New Protocol.
+
+
+  To run the latest CVS you need to additional perl modules.  The links
+  are below...
+
+
+
+  +o  Storable-2.06.tar.gz
+
+  +o  Log-Agent-0.303.tar.gz
+
+
+

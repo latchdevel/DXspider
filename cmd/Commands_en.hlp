@@ -1392,11 +1392,11 @@ will allow text with this word again.
 === 9^UNSET/DEBUG <name>^Remove a debug level from the debug set
 You can choose to log several different levels.  The levels are
 
-chan
-state
-msg
-cron
-connect
+ chan
+ state
+ msg
+ cron
+ connect
 
 You can show what levels you are logging with SHOW/DEBUG
 
@@ -1741,47 +1741,47 @@ If you just type SHOW/DX you will get the last so many spots
 In addition you can add any number of these commands in very nearly
 any order to the basic SHOW/DX command, they are:-
    
-on <band>       - eg 160m 20m 2m 23cm 6mm
-on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
-on <from>/<to>  - eg 1000/4000 14000-30000  (in Khz)
-   <from>-<to>
+ on <band>       - eg 160m 20m 2m 23cm 6mm
+ on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+ on <from>/<to>  - eg 1000/4000 14000-30000  (in Khz)
+    <from>-<to>
    
-<number>        - the number of spots you want
-<from>-<to>     - <from> spot no <to> spot no in the selected list
-<from>/<to>
+ <number>        - the number of spots you want
+ <from>-<to>     - <from> spot no <to> spot no in the selected list
+ <from>/<to>
    
-<prefix>        - for a spotted callsign beginning with <prefix>
-*<suffix>       - for a spotted callsign ending in <suffix>
-*<string>*      - for a spotted callsign containing <string>
+ <prefix>        - for a spotted callsign beginning with <prefix>
+ *<suffix>       - for a spotted callsign ending in <suffix>
+ *<string>*      - for a spotted callsign containing <string>
    
-day <number>    - starting <number> days ago
-day <from>-<to> - <from> days <to> days ago
-    <from>/<to>   
+ day <number>    - starting <number> days ago
+ day <from>-<to> - <from> days <to> days ago
+     <from>/<to>   
 
-info <text>     - any spots containing <text> in the info or remarks
-   
-by <call>       - any spots spotted by <call> (spotter <call> is the 
-                  same).
+ info <text>     - any spots containing <text> in the info or remarks
+    
+ by <call>       - any spots spotted by <call> (spotter <call> is the 
+                   same).
 
-qsl             - this automatically looks for any qsl info on the call
-                  held in the spot database.
+ qsl             - this automatically looks for any qsl info on the call
+                   held in the spot database.
 
-iota [<iota>]   - If the iota island number is missing it will look for
+ iota [<iota>]   - If the iota island number is missing it will look for
                   the string iota and anything which looks like an iota
                   island number. If you specify then it will look for  
                   that island.
 
-qra [<locator>] - this will look for the specific locator if you specify
-                  one or else anything that looks like a locator.
+ qra [<locator>] - this will look for the specific locator if you specify
+                   one or else anything that looks like a locator.
 
-dxcc            - treat the prefix as a 'country' and look for spots
-                  from that country regardless of actual prefix.
-                  eg dxcc oq2 
+ dxcc            - treat the prefix as a 'country' and look for spots
+                   from that country regardless of actual prefix.
+                   eg dxcc oq2 
                   
-                  You can also use this with the 'by' keyword so 
-                  eg by W dxcc  
+                   You can also use this with the 'by' keyword so 
+                   eg by W dxcc  
    
-e.g. 
+ e.g. 
    
    SH/DX 9m0
    SH/DX on 20m info iota
@@ -2025,8 +2025,8 @@ distance and bearing between two locators or (if only one locator is
 given on the command line) the distance and beraing from your station
 to the locator. For example:-
 
-SH/QRA IO92QL 
-SH/QRA JN06 IN73
+ SH/QRA IO92QL 
+ SH/QRA JN06 IN73
 
 The first example will show the distance and bearing to the locator from
 yourself, the second example will calculate the distance and bearing from
@@ -2036,7 +2036,7 @@ It is also possible to convert a latitude and longitude to a locator by
 using this command with a latitude and longitude as an argument, for
 example:-
 
-SH/QRA 52 41 N 0 58 E
+ SH/QRA 52 41 N 0 58 E
 
 === 0^SHOW/QRZ <callsign>^Show any callbook details on a callsign
 This command queries the QRZ callbook server on the internet
@@ -2049,7 +2049,7 @@ is provided for users of this software by http://www.qrz.com
 This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 
-sh/route n2tly
+ sh/route n2tly
 
 === 0^SHOW/SATELLITE <name> [<hours> <interval>]^Show tracking data
 Show the tracking data from your location to the satellite of your choice
@@ -2069,8 +2069,8 @@ Each pass in a period is separated with a row of '-----' characters
 
 So for example:-
 
-SH/SAT AO-10 
-SH/SAT FENGYUN1 12 2
+ SH/SAT AO-10 
+ SH/SAT FENGYUN1 12 2
 
 === 6^SHOW/STATION ALL [<regex>]^Show list of users in the system
 === 0^SHOW/STATION [<callsign> ..]^Show information about a callsign
