@@ -16,14 +16,16 @@ package Route;
 
 use DXDebug;
 use DXChannel;
+use DXUtil;
+
 use Prefix;
 
 use strict;
 
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /:\s+(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /:\s+\d+\.\d+\.(\d+)\.(\d+)/ || (0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -66,7 +68,7 @@ sub new
 	$pkg = ref $pkg if ref $pkg;
 
 	my $self = bless {call => $call}, $pkg;
-	dbg("create $pkg with $call") if isdbg('routelow');
+	dbg("Create $pkg with $call") if isdbg('routelow');
 
 	# add in all the dxcc, itu, zone info
 	($self->{dxcc}, $self->{itu}, $self->{cq}, $self->{state}, $self->{city}) =
@@ -204,7 +206,8 @@ sub dec_pc59
 	} elsif ($sort eq 'U') {
 		$node = Route::User::get($call) || Route::User->new($call);
 	}
-	$node->flags = $here;
+	$node->{flags} = $here;
+	$node->{lastseen} = $main::systime;
 	return $node;
 }
 

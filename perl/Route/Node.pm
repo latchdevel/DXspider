@@ -15,8 +15,8 @@ use Route::User;
 use strict;
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /:\s+(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /:\s+\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -81,6 +81,39 @@ sub unlink_node
 	return $neighbour->is_empty('dxchan') ? ($neighbour) : ();
 }
 
+sub add_route
+{
+	my ($self, $neighbour, $dxchan) = @_;
+
+	# add the dxchan link
+	# add the node link
+	my @rout;
+	push @rout, $self->link_node($neighbour, $dxchan);
+	dbg("Adding $neighbour->{call}") if isdbg('routelow');
+	
+	# then run down the tree removing this dxchan link from
+	# all the referenced nodes that use this interface
+	my %visited;
+	my @in = map { Route::Node::get($_) } $neighbour->nodes;
+	foreach my $r (@in) {
+		next unless $r;
+		next if $visited{$r->call};
+		next if $r->{call} eq $main::mycall;
+		next if $r->{call} eq $self->{call};
+		my ($o) = $r->add_dxchan($dxchan);
+		if ($o) {
+			dbg("Connecting new node $o->{call}") if isdbg('routelow');
+			push @rout, $o;
+		}
+		push @in, map{ Route::Node::get($_) } $r->nodes;
+		$visited{$r->call} = $r;
+	}
+
+	# @rout should contain any nodes that have now been de-orphaned
+	# ie have had their first dxchan added.
+	return @rout;
+}
+
 sub remove_route
 {
 	my ($self, $neighbour, $dxchan) = @_;
@@ -98,6 +131,8 @@ sub remove_route
 	foreach my $r (@in) {
 		next unless $r;
 		next if $visited{$r->call};
+		next if $r->{call} eq $main::mycall;
+		next if $r->{call} eq $self->{call};
 		my ($o) = $r->del_dxchan($dxchan);
 		if ($o) {
 			dbg("Orphanning $o->{call}") if isdbg('routelow');
@@ -207,7 +242,6 @@ sub new
 	$self->{nodes} = [];
 	
 	$list{$call} = $self;
-	dbg("creating Route::Node $self->{call}") if isdbg('routelow');
 	
 	return $self;
 }

@@ -25,9 +25,10 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($sentencelth);
+use vars qw($sentencelth $use_newroute);
 
 $sentencelth = 180;
+$use_newroute = 1;
  
 #
 # All the PCxx generation routines
@@ -123,7 +124,8 @@ sub pc17
 # Request init string
 sub pc18
 {
-	return "PC18^DXSpider Version: $main::version Build: $main::build NewRoute^$DXProt::myprot_version^";
+	my $nr = $use_newroute ? ' !NRt' : '';
+	return "PC18^DXSpider Version: $main::version Build: $main::build$nr^$DXProt::myprot_version^";
 }
 
 #
