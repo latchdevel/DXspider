@@ -1,3 +1,6 @@
+16Jun01=======================================================================
+1. fix talk
+2. fix stat/msg 
 14Jun01=======================================================================
 1. changed debug api to (potentially) use less cpu time
 2. changed the spider.cgi in Arnold's borrowed java client to Ian's perl 
