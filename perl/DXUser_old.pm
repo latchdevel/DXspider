@@ -11,7 +11,7 @@ package DXUser;
 require Exporter;
 @ISA = qw(Exporter);
 
-use DB_File;
+use MLDBM qw(DB_File);
 use Fcntl;
 use Carp;
 
@@ -76,11 +76,10 @@ sub init
 	my ($pkg, $fn, $mode) = @_;
   
 	confess "need a filename in User" if !$fn;
-	$fn .= ".new";
 	if ($mode) {
-		$dbm = tie (%u, 'DB_File', $fn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!)";
+		$dbm = tie (%u, MLDBM, $fn, O_CREAT|O_RDWR, 0666) or confess "can't open user file: $fn ($!)";
 	} else {
-		$dbm = tie (%u, 'DB_File', $fn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!)";
+		$dbm = tie (%u, MLDBM, $fn, O_RDONLY) or confess "can't open user file: $fn ($!)";
 	}
 	
 	$filename = $fn;
@@ -115,7 +114,7 @@ sub new
 	$self->{dxok} = 1;
 	$self->{annok} = 1;
 	$self->{lang} = $main::lang;
-	$u{call} = $self->encode();
+	$u{call} = $self;
 	return $self;
 }
 
@@ -129,8 +128,7 @@ sub get
 	my $pkg = shift;
 	my $call = uc shift;
 	#  $call =~ s/-\d+$//o;       # strip ssid
-	my $s = $u{$call};
-	return $s ?  decode($s) : undef;
+	return $u{$call};
 }
 
 #
@@ -158,8 +156,7 @@ sub get_current
   
 	my $dxchan = DXChannel->get($call);
 	return $dxchan->user if $dxchan;
-	my $s = $u{$call};
-	return $s ? decode($s) : undef;
+	return $u{$call};
 }
 
 #
@@ -170,7 +167,7 @@ sub put
 {
 	my $self = shift;
 	my $call = $self->{call};
-	$u{$call} = $self->encode();
+	$u{$call} = $self;
 }
 
 # 
@@ -194,8 +191,7 @@ sub encode
 			$out .= " ],";
 	    } else {
 			$val =~ s/'/\\'/og;
-			$val =~ s/\@/\\@/og;
-			$out .= "'$f'=>q{$val},";
+			$out .= "'$f'=>'$val',";
 		}
 	}
 	$out .= " }, 'DXUser')";

@@ -8,6 +8,8 @@ require 5.004;
 
 # search local then perl directories
 BEGIN {
+	umask 002;
+	
 	# root of directory tree for this system
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
@@ -18,35 +20,16 @@ BEGIN {
 
 use DXVars;
 use DXUser;
+use Carp;
 
 $userfn = $ARGV[0] if @ARGV;
-
-DXUser->init($userfn);
-
-@all = DXUser::get_all_calls();
-$t = scalar localtime;
-print "#!/usr/bin/perl
-#
-# The exported userfile for a DXSpider System
-# 
-# Input file: $userfn
-#       Time: $t
-#
-
-package DXUser;
-
-%u = (
-";
-
-for $a (@all) {
-	my $ref = DXUser->get($a);
-	my $s = $ref->encode();
-	
-	print "'$a' => qq{ $s },\n";
-	$count++;
+unless ($userfn) {
+	croak "need a filename";
 }
-print ");\n
-#
-# there were $count records
-#\n";
 
+DXUser->init($userfn, 1);
+
+do "$userfn.asc";
+print $@ if $@;
+
+DXUser->finish();

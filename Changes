@@ -1,3 +1,7 @@
+02Mar99========================================================================
+1. Changed DXUser so that it uses a homemade import/export hash routine 
+2. DXUser now uses a DB_BTREE file
+3. Added export_users.pl, import_users.pl and convert_users.pl
 25Feb99========================================================================
 1. added NL language stuff.
 2. added set/language

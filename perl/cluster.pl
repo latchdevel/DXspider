@@ -14,6 +14,8 @@ require 5.004;
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
+	umask 002;
+	
 	# root of directory tree for this system
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
@@ -171,6 +173,7 @@ sub cease
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Log('cluster', "DXSpider V$version stopped");
+	DXUser::finish();
 	unlink $lockfn;
 	exit(0);
 }
