@@ -199,20 +199,25 @@ sub run_cmd
 			($path, $fcmd) = search($main::localcmd, $cmd, "pl");
 			($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
-			dbg('command', "path: $cmd cmd: $fcmd");
+			if ($path && $cmd) {
+				dbg('command', "path: $cmd cmd: $fcmd");
 			
-			my $package = find_cmd_name($path, $fcmd);
-			@ans = (0) if !$package ;
-			
-			if ($package) {
-				dbg('command', "package: $package");
+				my $package = find_cmd_name($path, $fcmd);
+				@ans = (0) if !$package ;
 				
-				my $c = qq{ \@ans = $package(\$self, \$args) };
-				dbg('eval', "cluster cmd = $c\n");
-				eval  $c;
-				if ($@) {
-					@ans = (0, "Syserr: Eval err cached $package\n$@");
+				if ($package) {
+					dbg('command', "package: $package");
+					
+					my $c = qq{ \@ans = $package(\$self, \$args) };
+					dbg('eval', "cluster cmd = $c\n");
+					eval  $c;
+					if ($@) {
+						@ans = (0, "Syserr: Eval err cached $package\n$@");
+					}
 				}
+			} else {
+				dbg('command', "cmd: $cmd not found");
+				@ans = (0);
 			}
 		}
 	}
@@ -467,12 +472,12 @@ sub find_cmd_name {
 	
 	# return if we can't find it
 	$errstr = undef;
-	if (undef $mtime) {
+	unless (defined $mtime) {
 		$errstr = DXM::msg('e1');
 		return undef;
 	}
 	
-	if(defined $Cache{$package}{mtime} && $Cache{$package}{mtime } <= $mtime) {
+	if(defined $Cache{$package}->{mtime} && $Cache{$package}->{mtime } <= $mtime) {
 		#we have compiled this subroutine already,
 		#it has not been updated on disk, nothing left to do
 		#print STDERR "already compiled $package->handler\n";
@@ -510,7 +515,7 @@ sub find_cmd_name {
 			delete_package($package);
 		} else {
 			#cache it unless we're cleaning out each time
-			$Cache{$package}{mtime} = $mtime;
+			$Cache{$package}->{'mtime'} = $mtime;
 		}
 	}
 	

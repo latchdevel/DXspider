@@ -161,7 +161,7 @@ sub print
 						\$count++;
 						next if \$count < \$from;
 						push \@out, print_item(\$ref);
-						last LOOP if \$count >= \$to;                  # stop after n
+						last if \$count >= \$to;                  # stop after n
 					}
 				}
 			  );
@@ -179,6 +179,7 @@ LOOP:
 			}
 			eval $eval;               # do the search on this file
 			return ("Spot search error", $@) if $@;
+			last if $count >= $to;                  # stop after n
 		}
 		$fh = $fp->openprev();      # get the next file
 		last if !$fh;

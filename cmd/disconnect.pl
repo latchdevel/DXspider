@@ -16,7 +16,7 @@ foreach $call (@calls) {
   my $dxchan = DXChannel->get($call);
   if ($dxchan) {
     if ($dxchan->is_ak1a) {
-      $dxchan->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1')));
+      $dxchan->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', $self->call)));
     } else {
 	  $dxchan->send_now('D', $self->msg('disc1', $self->call));
 	} 

@@ -261,7 +261,9 @@ sub update_users
 {
   my $self = shift;
   my $count = shift;
-  $users -= $self->{users};
+  $count = 0 unless $count;
+  
+  $users -= $self->{users} if $self->{users};
   if ((keys %{$self->{list}})) {
     $self->{users} = (keys %{$self->{list}});
   } else {

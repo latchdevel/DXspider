@@ -41,7 +41,7 @@ sub pc11
 	my $hops = get_hops(11);
 	my $t = time;
 	$text = ' ' if !$text;
-	return sprintf "PC11^%.1f^$dxcall^%s^%s^$text^$mycall^$hops^~", $freq, cldate($t), ztime($t);
+	return sprintf "PC11^%.1f^$dxcall^%s^%s^$text^$mycall^$main::mycall^$hops^~", $freq, cldate($t), ztime($t);
 }
 
 # create an announce message

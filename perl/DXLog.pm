@@ -66,9 +66,6 @@ sub open
 	if (defined $mode) {
 		my $dir = "$self->{prefix}/$year";
 		mkdir($dir, 0777) if ! -e $dir;
-		$self->{mode} = $mode;
-	} else {
-		delete $self->{mode};
 	}
 	
 	$self->{fn} = sprintf "$self->{prefix}/$year/%02d", $thing if $self->{'sort'} eq 'm';
@@ -76,6 +73,8 @@ sub open
 	$self->{fn} .= ".$self->{suffix}" if $self->{suffix};
 	
 	$mode = 'r' if !$mode;
+	$self->{mode} = $mode;
+	
 	my $fh = new FileHandle $self->{fn}, $mode;
 	return undef if !$fh;
 	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
@@ -163,7 +162,6 @@ sub close
 	my $self = shift;
 	undef $self->{fh};			# close the filehandle
 	delete $self->{fh};
-	delete $self->{mode};
 }
 
 # log something in the system log 
