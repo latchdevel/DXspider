@@ -20,7 +20,8 @@ $main::branch += $BRANCH;
 use DXChannel;
 use DXDebug;
 
-our @queue;
+use vars qw(@queue);
+@queue = ();					# the thingy queue
 
 # we expect all thingies to be subclassed
 sub new
