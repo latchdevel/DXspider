@@ -13,17 +13,21 @@ my @out;
 
 return (1, $self->msg('e24')) unless $Internet::allow;
 return (1, "SHOW/QRZ <callsign>, e.g. SH/QRZ g1tlh") unless @list;
+my $target = $Internet::http_proxy || 'qrz.com';
+my $port = $Internet::http_proxy_port || 80;
+my $url = '';
+$url = 'http://qrz.com' if $Internet::http_proxy; 
 
 use Net::Telnet;
 
 my $t = new Net::Telnet;
 
 foreach $l (@list) {
-	$t->open(Host     =>  "qrz.com",
-			 Port     =>  80,
+	$t->open(Host     =>  $target,
+			 Port     =>  $port,
 			 Timeout  =>  15);
 	if ($t) {
-		my $s = "GET /dxcluster.cgi?callsign=$l\&uid=$Internet::qrz_uid\&pw=$Internet::qrz_pw HTTP/1.0\n\n";
+		my $s = "GET $url/dxcluster.cgi?callsign=$l\&uid=$Internet::qrz_uid\&pw=$Internet::qrz_pw HTTP/1.0\n\n";
 #		print $s;
 		$t->print($s);
 		Log('call', "$call: show/qrz \U$l");

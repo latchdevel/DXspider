@@ -4,7 +4,9 @@
 script
 3. Added input route filtering
 4. put back the set/isolate logic into routing which is now overridable with
-filters whcih means a default filter is no longer generated.
+filters whcih means a default filter is no longer generated. If you want the
+OLD behaviour, do rm /spider/filter/route/*.pl*, restart and try again. 
+5. Add http_proxy to Internet.pm and allow sh/qrz to use an HTTP Proxy
 13Jun01=======================================================================
 1. fix init cnd rinit cmds
 2. add missing clear/route cmd

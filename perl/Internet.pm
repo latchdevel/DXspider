@@ -41,6 +41,21 @@ $qrz_uid = undef;
 $qrz_pw = undef;
 
 #
+# the address of any HTTP proxy you might be using
+#
+# leave as is unless you need one
+#
+
+$http_proxy = undef;
+
+#
+# HTTP proxy port - again leave alone unless you need this
+#
+
+$http_proxy_port = undef;
+
+
+#
 # end
 #
 
