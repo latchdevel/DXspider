@@ -74,7 +74,7 @@ sub create_regex
 				# create a closure for each word so that it matches stuff with spaces/punctuation
 				# and repeated characters in it
 				my $w = uc $_;
-				my @l = map { $_ eq 'I' ? '[I1]' : ($_ eq 'O' ? '[O0]' : $_) }split //, $w;
+				my @l = split //, $w;
 				my $e = join '+[\s\W]+', @l;
 				my $s = eval qq{sub { return \$_[0] =~ /$e+/ ? '$w' : () } };
 				push @regex, $s unless $@;
