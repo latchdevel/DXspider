@@ -98,7 +98,9 @@ sub handle_cf
 	if ($thing->{user}) {
 		$origin = $thing->{user};
 		my $ref = Route::Node::get($origin);
-		unless ($ref) {
+		if ($ref) {
+			$parent = $ref;
+		} else {
 			# auto vivify a node that has come that we don't know about
 			push @pc19, $parent->add($origin, 0, 1);
 			$parent = Route::Node::get($origin); # reparent to me now.
