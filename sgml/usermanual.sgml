@@ -6,7 +6,7 @@
 
 <title>The DXSpider User Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.0 (Revision 3), March 2001
+<date>Version 1.0 (Revision 4), March 2001
 <abstract>
 A complete reference for users of the DXSpider DXCluster program.
 </abstract>
@@ -1896,6 +1896,33 @@ WWV messages with the <em>unset/wwv</em> command.
 <P>
 Allow WX information to be seen at your console.  You can switch off
 WX messages with the <em>unset/wx</em> command.
+
+<sect1>show/configuration
+
+<P>
+<tt>
+<bf>show/configuration &lsqb;&lt;node&gt;&rsqb;</bf> Show all visible nodes and their users
+</tt>
+
+<P>
+This command allows you to see all the users that can be seen
+and the nodes to which they are connected.  With the optional <em>node</em>,
+you can specify a particular node to look at.
+
+This command is normally abbreviated to: sh/c
+
+BE WARNED: the list that is returned can be VERY long
+
+<sect1>show/configuration/node
+
+<P>
+<tt>
+<bf>show/configuration/node</bf> Show all the nodes connected
+</tt>
+
+<P>
+Show all the nodes connected locally and the nodes they have connected.
+
 
 <sect1>show/date 
 

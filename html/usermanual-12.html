@@ -779,7 +779,26 @@ WWV messages with the <EM>unset/wwv</EM> command.
 <P>Allow WX information to be seen at your console.  You can switch off
 WX messages with the <EM>unset/wx</EM> command.
 <P>
-<H2><A NAME="ss12.43">12.43 show/date </A>
+<H2><A NAME="ss12.43">12.43 show/configuration</A>
+</H2>
+
+<P><CODE><B>show/configuration [&lt;node&gt;]</B> Show all visible nodes and their users</CODE>
+<P>
+<P>This command allows you to see all the users that can be seen
+and the nodes to which they are connected.  With the optional <EM>node</EM>,
+you can specify a particular node to look at.
+<P>This command is normally abbreviated to: sh/c
+<P>BE WARNED: the list that is returned can be VERY long
+<P>
+<H2><A NAME="ss12.44">12.44 show/configuration/node</A>
+</H2>
+
+<P><CODE><B>show/configuration/node</B> Show all the nodes connected</CODE>
+<P>
+<P>Show all the nodes connected locally and the nodes they have connected.
+<P>
+<P>
+<H2><A NAME="ss12.45">12.45 show/date </A>
 </H2>
 
 <P><CODE><B>show/date [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -792,7 +811,7 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 <P>
-<H2><A NAME="ss12.44">12.44 show/dx </A>
+<H2><A NAME="ss12.46">12.46 show/dx </A>
 </H2>
 
 <P><CODE><B>show/dx [options]</B> interrogate the spot database</CODE>
@@ -851,7 +870,7 @@ qra [&lt;locator&gt;] - this will look for the specific locator if
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.45">12.45 show/dxcc </A>
+<H2><A NAME="ss12.47">12.47 show/dxcc </A>
 </H2>
 
 <P><CODE><B>show/dxcc &lt;prefix&gt;</B> Interrogate the spot database by country</CODE>
@@ -870,7 +889,7 @@ e.g.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.46">12.46 show/files </A>
+<H2><A NAME="ss12.48">12.48 show/files </A>
 </H2>
 
 <P><CODE><B>show/files [&lt;filearea&gt; [&lt;string&gt;]]</B> List
@@ -897,7 +916,7 @@ string to see a selection of files in a filearea eg:-
 </CODE></BLOCKQUOTE>
 <P>See also TYPE - to see the contents of a file.
 <P>
-<H2><A NAME="ss12.47">12.47 show/filter </A>
+<H2><A NAME="ss12.49">12.49 show/filter </A>
 </H2>
 
 <P><CODE><B>show/filter</B> Show the filters you have set</CODE>
@@ -905,7 +924,7 @@ string to see a selection of files in a filearea eg:-
 <P>Show the contents of all the filters that are set by you. This command 
 displays all the filters set - for all the various categories.
 <P>
-<H2><A NAME="ss12.48">12.48 show/moon </A>
+<H2><A NAME="ss12.50">12.50 show/moon </A>
 </H2>
 
 <P><CODE><B>show/moon [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show moon
@@ -930,7 +949,7 @@ that you are connected to.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.49">12.49 show/muf </A>
+<H2><A NAME="ss12.51">12.51 show/muf </A>
 </H2>
 
 <P><CODE><B>show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</B> Show
@@ -1007,7 +1026,7 @@ propagation data.
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
 <P>
-<H2><A NAME="ss12.50">12.50 show/prefix </A>
+<H2><A NAME="ss12.52">12.52 show/prefix </A>
 </H2>
 
 <P><CODE><B>show/prefix &lt;callsign&gt;</B> Interrogate the prefix database</CODE>
@@ -1018,7 +1037,7 @@ it is and then displays all the relevant prefixes for that country
 together with the internal country no, the CQ and ITU regions. 
 <P>See also SHOW/DXCC
 <P>
-<H2><A NAME="ss12.51">12.51 show/qra </A>
+<H2><A NAME="ss12.53">12.53 show/qra </A>
 </H2>
 
 <P><CODE><B>show/qra &lt;locator&gt; [&lt;locator&gt;]</B> Show the distance
@@ -1049,7 +1068,7 @@ SH/QRA 52 41 N 0 58 E
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.52">12.52 show/qrz</A>
+<H2><A NAME="ss12.54">12.54 show/qrz</A>
 </H2>
 
 <P><CODE><B>show/qrz &lt;callsign&gt;</B> Show any callbook details on a callsign</CODE>
@@ -1058,7 +1077,7 @@ SH/QRA 52 41 N 0 58 E
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 <P>
-<H2><A NAME="ss12.53">12.53 show/route </A>
+<H2><A NAME="ss12.55">12.55 show/route </A>
 </H2>
 
 <P><CODE><B>show/route &lt;callsign&gt;</B> Show the route to &lt;callsign&gt;</CODE>
@@ -1072,7 +1091,7 @@ connected. It is a sort of inverse sh/config.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.54">12.54 show/satellite </A>
+<H2><A NAME="ss12.56">12.56 show/satellite </A>
 </H2>
 
 <P><CODE><B>show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</B>
@@ -1097,7 +1116,7 @@ SH/SAT FENGYUN1 12 2
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.55">12.55 show/sun </A>
+<H2><A NAME="ss12.57">12.57 show/sun </A>
 </H2>
 
 <P><CODE><B>show/sun [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -1120,7 +1139,7 @@ that you are connected to.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.56">12.56 show/time </A>
+<H2><A NAME="ss12.58">12.58 show/time </A>
 </H2>
 
 <P><CODE><B>show/time [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -1131,7 +1150,7 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 <P>
-<H2><A NAME="ss12.57">12.57 show/wcy </A>
+<H2><A NAME="ss12.59">12.59 show/wcy </A>
 </H2>
 
 <P><CODE><B>show/wcy</B> Show the last 10 WCY broadcasts<BR>
@@ -1139,7 +1158,7 @@ the prefixes or callsigns that you specify.
 <P>
 <P>Display the most recent WCY information that has been received by the system
 <P>
-<H2><A NAME="ss12.58">12.58 show/wwv</A>
+<H2><A NAME="ss12.60">12.60 show/wwv</A>
 </H2>
 
 <P><CODE><B>show/wwv</B> Show the last 10 WWV broadcasts<BR>
@@ -1147,7 +1166,7 @@ the prefixes or callsigns that you specify.
 <P>
 <P>Display the most recent WWV information that has been received by the system
 <P>
-<H2><A NAME="ss12.59">12.59 sysop </A>
+<H2><A NAME="ss12.61">12.61 sysop </A>
 </H2>
 
 <P><CODE><B>sysop</B> Regain your privileges if you login remotely</CODE>
@@ -1183,7 +1202,7 @@ these values are for explanation :-):
 numbers but nothing will happen when you input a string. Any match is
 case sensitive.
 <P>
-<H2><A NAME="ss12.60">12.60 talk </A>
+<H2><A NAME="ss12.62">12.62 talk </A>
 </H2>
 
 <P><CODE><B>talk &lt;callsign&gt;</B> Enter talk mode with &lt;callsign&gt;<BR>
@@ -1224,7 +1243,7 @@ command with a '/' character, eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss12.61">12.61 type </A>
+<H2><A NAME="ss12.63">12.63 type </A>
 </H2>
 
 <P><CODE><B>type &lt;filearea&gt;/&lt;name&gt;</B> Look at a file in one of the fileareas</CODE>
@@ -1241,7 +1260,7 @@ enter:-
 <P>See also SHOW/FILES to see what fileareas are available and a 
 list of content.
 <P>
-<H2><A NAME="ss12.62">12.62 who </A>
+<H2><A NAME="ss12.64">12.64 who </A>
 </H2>
 
 <P><CODE><B>who</B> Show who is physically connected locally</CODE>
@@ -1249,7 +1268,7 @@ list of content.
 <P>This is a quick listing that shows which callsigns are connected and
 what sort of connection they have
 <P>
-<H2><A NAME="ss12.63">12.63 wx </A>
+<H2><A NAME="ss12.65">12.65 wx </A>
 </H2>
 
 <P><CODE><B>wx &lt;text&gt;</B> Send a weather message to local users<BR>

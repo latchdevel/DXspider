@@ -1,6 +1,6 @@
   The DXSpider Installation and Administration Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  $Date$ $Revision$
+  Version 1.47 (Revision 1.30), April 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -73,7 +73,7 @@
      1.5 Starting up for the first time
      1.6 The Client program
 
-  2. Quick installation guide
+  2. Quick installation guide (Linux version)
 
   3. Configuration
 
@@ -251,42 +251,45 @@
      13.100 show/baddx (1)
      13.101 show/badnode (6)
      13.102 show/badspotter (1)
-     13.103 show/date (0)
-     13.104 show/debug (9)
-     13.105 show/dx (0)
-     13.106 show/dxcc (0)
-     13.107 show/files (0)
-     13.108 show/filter (0)
-     13.109 show/filter (extended for sysops) (5)
-     13.110 show/hops (8)
-     13.111 show/isolate (1)
-     13.112 show/lockout (9)
-     13.113 show/log (8)
-     13.114 show/moon (0)
-     13.115 show/muf (0)
-     13.116 show/node (1)
-     13.117 show/prefix (0)
-     13.118 show/program (5)
-     13.119 show/qra (0)
-     13.120 show/qrz (0)
-     13.121 show/route (0)
-     13.122 show/satellite (0)
-     13.123 show/sun (0)
-     13.124 show/time (0)
-     13.125 show/wcy (0)
-     13.126 show/wwv (0)
-     13.127 shutdown (5)
-     13.128 spoof (9)
-     13.129 stat/db (5)
-     13.130 stat/channel (5)
-     13.131 stat/msg (5)
-     13.132 stat/user (5)
-     13.133 sysop (0)
-     13.134 talk (0)
-     13.135 type (0)
-     13.136 who (0)
-     13.137 wx (0)
-     13.138 wx (enhanced for sysops) (5)
+     13.103 show/configuration (0)
+     13.104 show/configuration/node (0)
+     13.105 show/connect (1)
+     13.106 show/date (0)
+     13.107 show/debug (9)
+     13.108 show/dx (0)
+     13.109 show/dxcc (0)
+     13.110 show/files (0)
+     13.111 show/filter (0)
+     13.112 show/filter (extended for sysops) (5)
+     13.113 show/hops (8)
+     13.114 show/isolate (1)
+     13.115 show/lockout (9)
+     13.116 show/log (8)
+     13.117 show/moon (0)
+     13.118 show/muf (0)
+     13.119 show/node (1)
+     13.120 show/prefix (0)
+     13.121 show/program (5)
+     13.122 show/qra (0)
+     13.123 show/qrz (0)
+     13.124 show/route (0)
+     13.125 show/satellite (0)
+     13.126 show/sun (0)
+     13.127 show/time (0)
+     13.128 show/wcy (0)
+     13.129 show/wwv (0)
+     13.130 shutdown (5)
+     13.131 spoof (9)
+     13.132 stat/db (5)
+     13.133 stat/channel (5)
+     13.134 stat/msg (5)
+     13.135 stat/user (5)
+     13.136 sysop (0)
+     13.137 talk (0)
+     13.138 type (0)
+     13.139 who (0)
+     13.140 wx (0)
+     13.141 wx (enhanced for sysops) (5)
 
 
   ______________________________________________________________________
@@ -326,7 +329,6 @@
   +o  IO-1.20.tar.gz (for perl 5.00403 and lower)
 
   +o  Net-Telnet-3.02.tar.gz
-
 
   +o  Curses-1.05.tar.gz
 
@@ -392,9 +394,7 @@
   If you do not have the command _g_r_o_u_p_a_d_d available to you simply add a
   line in /etc/group by hand.
 
-
-
-  # vi /etc/group                (or your favorite editor)
+       # vi /etc/group                (or your favorite editor)
 
 
 
@@ -572,7 +572,7 @@
 
 
 
-  22..  QQuuiicckk iinnssttaallllaattiioonn gguuiiddee
+  22..  QQuuiicckk iinnssttaallllaattiioonn gguuiiddee ((LLiinnuuxx vveerrssiioonn))
 
   This section is designed for experienced Spider sysops who want to
   install Spider from scratch.  It is simply a check list of things that
@@ -685,7 +685,7 @@
 
   For most purposes this is not desirable. The only time you probably
   will need this is when you need to allow other cluster nodes that are
-  using SSID's in. In this case it owuld probably be better to use the
+  using SSID's in. In this case it would probably be better to use the
   first example and then add a specific line for that node like this:
 
 
@@ -711,7 +711,7 @@
 
 
 
-       spdlogin   7300/tcp     # spider anonymous login port
+       spdlogin   8000/tcp     # spider anonymous login port
 
 
 
@@ -755,7 +755,7 @@
 
 
 
-       telnet localhost 7300
+       telnet localhost 8000
 
 
 
@@ -766,8 +766,8 @@
 
   33..33..  SSeettttiinngg uupp tteellnneett ccoonnnneeccttss ((ffrroomm 11..4477 oonnwwaarrddss))
 
-  From version 1.47 you can chose to allow the perl cluster.pl program
-  to allow connections direct (i.e. not via the /spider/src/client
+  From version 1.47 you can choose to allow the perl cluster.pl program
+  to allow connections directly (i.e. not via the /spider/src/client
   interface program). If you are using Windows then this is the only
   method available of allowing incoming telnet connections.
 
@@ -786,12 +786,12 @@
   to make the change happen...
 
 
-  Having done that then you need to copy the file
-  /spider/perl/Listeners.pm to /spider/local and then edit it. You will
-  need to uncomment the line containing "0.0.0.0" and select the correct
-  port to listen on. So that it looks like this:-
+  Having done that, you need to copy the file _/_s_p_i_d_e_r_/_p_e_r_l_/_L_i_s_t_e_n_e_r_s_._p_m
+  to _/_s_p_i_d_e_r_/_l_o_c_a_l and then edit it. You will need to uncomment the line
+  containing "0.0.0.0" and select the correct port to listen on. So that
+  it looks like this:-
        @listen = (
-           ["0.0.0.0", 7300],
+           ["0.0.0.0", 8000],
        );
 
 
@@ -799,13 +799,13 @@
 
 
   As standard, the listener will listen on all interfaces
-  simultaniously. If you require more control than this, you can specify
-  each interface individually:-
+  simultaneously.  If you require more control than this, you can
+  specify each interface individually:-
 
 
 
        @listen = (
-           ["gb7baa.dxcluster.net", 7300],
+           ["gb7baa.dxcluster.net", 8000],
            ["44.131.16.2", 6300],
        );
 
@@ -815,7 +815,7 @@
 
   This will only be successful if the IP addresses on each interface are
   static.  If you are using some kind of dynamic IP addressing then the
-  'default' method is the only one which will work.
+  'default' method is the only one that will work.
 
 
   Restart the cluster.pl program to enable the listener.
@@ -824,7 +824,7 @@
   One important difference with the internal listener is that no echoing
   is done by the cluster program. Users will need to set 'local-echo' on
   in their telnet clients if it isn't set automatically (as per the
-  standards). Needless to say this will probably only apply to Windows
+  standards).  Needless to say this will probably only apply to Windows
   users.
 
 
@@ -835,7 +835,7 @@
 
 
   In order to enable access to an AGW Engine you need to copy
-  /spider/perl/AGWConnect.pm to /spider/local and edit it. Specifically
+  _/_s_p_i_d_e_r_/_p_e_r_l_/_A_G_W_C_o_n_n_e_c_t_._p_m to _/_s_p_i_d_e_r_/_l_o_c_a_l and edit it.  Specifically
   you must:-
 
 
@@ -4909,21 +4909,52 @@
   SET/BADSPOTTER for more information.
 
 
-  1133..110033..  sshhooww//ddaattee ((00))
+  1133..110033..  sshhooww//ccoonnffiigguurraattiioonn ((00))
+
+  sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]] Show all visible nodes and their users
+
+
+  This command allows you to see all the users that can be seen and the
+  nodes to which they are connected.  With the optional _n_o_d_e, you can
+  specify a particular node to look at.
+
+  This command is normally abbreviated to: sh/c
+
+  BE WARNED: the list that is returned can be VERY long
+
+
+  1133..110044..  sshhooww//ccoonnffiigguurraattiioonn//nnooddee ((00))
+
+  sshhooww//ccoonnffiigguurraattiioonn//nnooddee Show all the nodes connected
+
+
+  Show all the nodes connected locally and the nodes they have
+  connected.
+
+
+  1133..110055..  sshhooww//ccoonnnneecctt ((11))
+
+  sshhooww//ccoonnnneecctt Show all the active connections
+
+
+  This command shows information on all the active connections known to
+  the node. This command gives slightly more information than WHO.
+
+
+  1133..110066..  sshhooww//ddaattee ((00))
 
   sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
 
   This is very nearly the same as SHOW/TIME, the only difference the
   format of the date string if no arguments are given.
-
   If no prefixes or callsigns are given then this command returns the
   local time and UTC as the computer has it right now. If you give some
   prefixes then it will show UTC and UTC + the local offset (not
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1133..110044..  sshhooww//ddeebbuugg ((99))
+  1133..110077..  sshhooww//ddeebbuugg ((99))
 
   sshhooww//ddeebbuugg Show what levels of debug you are logging
 
@@ -4931,7 +4962,7 @@
   The levels can be set with _s_e_t_/_d_e_b_u_g
 
 
-  1133..110055..  sshhooww//ddxx ((00))
+  1133..110088..  sshhooww//ddxx ((00))
 
   sshhooww//ddxx [[ooppttiioonnss]] interrogate the spot database
 
@@ -4945,38 +4976,35 @@
 
 
 
+       on <band>       - eg 160m 20m 2m 23cm 6mm
+       on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
 
+       <number>        - the number of spots you want
+       <from>-<to>     - <from> spot no <to> spot no in
+                         the selected list
 
+       <prefix>        - for a spotted callsign beginning with <prefix>
+       *<suffix>       - for a spotted callsign ending in <suffix>
+       *<string>*      - for a spotted callsign containing <string>
 
-  on <band>       - eg 160m 20m 2m 23cm 6mm
-  on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+       day <number>    - starting <number> days ago
+       day <from>-<to> - <from> days <to> days ago
 
-  <number>        - the number of spots you want
-  <from>-<to>     - <from> spot no <to> spot no in
-                    the selected list
+       info <text>     - any spots containing <text> in the info or remarks
 
-  <prefix>        - for a spotted callsign beginning with <prefix>
-  *<suffix>       - for a spotted callsign ending in <suffix>
-  *<string>*      - for a spotted callsign containing <string>
+       by <call>       - any spots spotted by <call> (spotter <call>
+                               is the same).
 
-  day <number>    - starting <number> days ago
-  day <from>-<to> - <from> days <to> days ago
+       qsl             - this automatically looks for any qsl info on the call
+                         held in the spot database.
 
-  info <text>     - any spots containing <text> in the info or remarks
+       iota [<iota>]   - If the iota island number is missing it will
+                         look for the string iota and anything which looks like
+                         an iota island number. If you specify then it will look
+                         for that island.
 
-  by <call>       - any spots spotted by <call> (spotter <call>
-                          is the same).
-
-  qsl             - this automatically looks for any qsl info on the call
-                    held in the spot database.
-
-  iota [<iota>]   - If the iota island number is missing it will
-                    look for the string iota and anything which looks like
-                    an iota island number. If you specify then it will look
-                    for that island.
-
-  qra [<locator>] - this will look for the specific locator if
-                    you specify one or else anything that looks like a locator.
+       qra [<locator>] - this will look for the specific locator if
+                         you specify one or else anything that looks like a locator.
 
 
 
@@ -4986,19 +5014,19 @@
 
 
 
-          SH/DX 9m0
-          SH/DX on 20m info iota
-          SH/DX 9a on vhf day 30
-          SH/DX rf1p qsl
-          SH/DX iota
-          SH/DX iota eu-064
-          SH/DX qra jn86
+     SH/DX 9m0
+     SH/DX on 20m info iota
+     SH/DX 9a on vhf day 30
+     SH/DX rf1p qsl
+     SH/DX iota
+     SH/DX iota eu-064
+     SH/DX qra jn86
 
 
 
 
 
-  1133..110066..  sshhooww//ddxxcccc ((00))
+  1133..110099..  sshhooww//ddxxcccc ((00))
 
   sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
 
@@ -5012,16 +5040,14 @@
 
 
 
-
-
-     SH/DXCC G
-     SH/DXCC W on 20m info iota
+          SH/DXCC G
+          SH/DXCC W on 20m info iota
 
 
 
 
 
-  1133..110077..  sshhooww//ffiilleess ((00))
+  1133..111100..  sshhooww//ffiilleess ((00))
 
   sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]] List the contents of a filearea
 
@@ -5053,7 +5079,8 @@
   See also TYPE - to see the contents of a file.
 
 
-  1133..110088..  sshhooww//ffiilltteerr ((00))
+
+  1133..111111..  sshhooww//ffiilltteerr ((00))
 
   sshhooww//ffiilltteerr Show the filters you have set
 
@@ -5062,7 +5089,7 @@
   displays all the filters set - for all the various categories.
 
 
-  1133..110099..  sshhooww//ffiilltteerr ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
+  1133..111122..  sshhooww//ffiilltteerr ((eexxtteennddeedd ffoorr ssyyssooppss)) ((55))
 
   sshhooww//ffiilltteerr <<ccaallllssiiggnn>> Show the filters set by <callsign>
 
@@ -5070,7 +5097,7 @@
   A sysop can look at any filters that have been set.
 
 
-  1133..111100..  sshhooww//hhooppss ((88))
+  1133..111133..  sshhooww//hhooppss ((88))
 
   sshhooww//hhooppss <<nnooddee__ccaallll>> [[aannnn||ssppoottss||wwccyy||wwwwvv||]] Show the hop counts for a
   node
@@ -5080,7 +5107,8 @@
   which category you want to see. If you leave the category out then all
   the categories will be listed.
 
-  1133..111111..  sshhooww//iissoollaattee ((11))
+
+  1133..111144..  sshhooww//iissoollaattee ((11))
 
   sshhooww//iissoollaattee Show a list of isolated nodes
 
@@ -5088,7 +5116,7 @@
   Show which nodes are currently set to be isolated.
 
 
-  1133..111122..  sshhooww//lloocckkoouutt ((99))
+  1133..111155..  sshhooww//lloocckkoouutt ((99))
 
   sshhooww//lloocckkoouutt Show a list of excluded callsigns
 
@@ -5097,7 +5125,7 @@
   cluster locally with the _s_e_t_/_l_o_c_k_o_u_t command
 
 
-  1133..111133..  sshhooww//lloogg ((88))
+  1133..111166..  sshhooww//lloogg ((88))
 
   sshhooww//lloogg [[<<ccaallllssiiggnn>>]] Show excerpts from the system log
 
@@ -5107,7 +5135,7 @@
   show output from the log associated with that callsign.
 
 
-  1133..111144..  sshhooww//mmoooonn ((00))
+  1133..111177..  sshhooww//mmoooonn ((00))
 
   sshhooww//mmoooonn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show moon rise and set times
 
@@ -5137,7 +5165,7 @@
 
 
 
-  1133..111155..  sshhooww//mmuuff ((00))
+  1133..111188..  sshhooww//mmuuff ((00))
 
   sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]] Show the likely propagation to
   <prefix>
@@ -5184,9 +5212,6 @@
 
          SH/MUF W
 
-
-
-
   produces:
 
 
@@ -5212,6 +5237,9 @@
 
          SH/MUF W 24
 
+
+
+
   will get you the above display, but with the next 24 hours worth of
   propagation data.
 
@@ -5228,7 +5256,7 @@
   terrible accurate, but it is included for completeness.
 
 
-  1133..111166..  sshhooww//nnooddee ((11))
+  1133..111199..  sshhooww//nnooddee ((11))
 
   sshhooww//nnooddee [[<<nnooddee__ccaallll>> ......]] Show the type and version number of nodes
 
@@ -5238,7 +5266,7 @@
   the non-user callsigns known to the system will be displayed.
 
 
-  1133..111177..  sshhooww//pprreeffiixx ((00))
+  1133..112200..  sshhooww//pprreeffiixx ((00))
 
   sshhooww//pprreeffiixx <<ccaallllssiiggnn>> Interrogate the prefix database
 
@@ -5250,9 +5278,7 @@
 
   See also SHOW/DXCC
 
-
-
-  1133..111188..  sshhooww//pprrooggrraamm ((55))
+  1133..112211..  sshhooww//pprrooggrraamm ((55))
 
   sshhooww//pprrooggrraamm Show the locations of all the included program modules
 
@@ -5262,7 +5288,7 @@
   from.
 
 
-  1133..111199..  sshhooww//qqrraa ((00))
+  1133..112222..  sshhooww//qqrraa ((00))
 
   sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]] Show the distance between locators
   sshhooww//qqrraa <<llaatt>> <<lloonngg>> Convert latitude and longitude to a locator
@@ -5277,6 +5303,9 @@
 
        SH/QRA IO92QL
        SH/QRA JN06 IN73
+
+
+
 
   The first example will show the distance and bearing to the locator
   from yourself, the second example will calculate the distance and
@@ -5295,7 +5324,7 @@
 
 
 
-  1133..112200..  sshhooww//qqrrzz ((00))
+  1133..112233..  sshhooww//qqrrzz ((00))
 
   sshhooww//qqrrzz <<ccaallllssiiggnn>> Show any callbook details on a callsign
 
@@ -5305,7 +5334,7 @@
   provided for users of this software by http://www.qrz.com
 
 
-  1133..112211..  sshhooww//rroouuttee ((00))
+  1133..112244..  sshhooww//rroouuttee ((00))
 
   sshhooww//rroouuttee <<ccaallllssiiggnn>> Show the route to <callsign>
 
@@ -5315,13 +5344,13 @@
 
 
 
-         sh/route n2tly
+    sh/route n2tly
 
 
 
 
 
-  1133..112222..  sshhooww//ssaatteelllliittee ((00))
+  1133..112255..  sshhooww//ssaatteelllliittee ((00))
 
   sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]] Show satellite tracking
   data
@@ -5343,7 +5372,6 @@
 
   Each pass in a period is separated with a row of '-----' characters
 
-
   So for example:-
 
 
@@ -5355,7 +5383,7 @@
 
 
 
-  1133..112233..  sshhooww//ssuunn ((00))
+  1133..112266..  sshhooww//ssuunn ((00))
 
   sshhooww//ssuunn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
 
@@ -5382,7 +5410,7 @@
 
 
 
-  1133..112244..  sshhooww//ttiimmee ((00))
+  1133..112277..  sshhooww//ttiimmee ((00))
 
   sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -5393,7 +5421,7 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1133..112255..  sshhooww//wwccyy ((00))
+  1133..112288..  sshhooww//wwccyy ((00))
 
   sshhooww//wwccyy Show the last 10 WCY broadcasts
   sshhooww//wwccyy <<nn>> Show the last <n> WCY broadcasts
@@ -5403,11 +5431,10 @@
   system
 
 
-  1133..112266..  sshhooww//wwwwvv ((00))
+  1133..112299..  sshhooww//wwwwvv ((00))
 
   sshhooww//wwwwvv Show the last 10 WWV broadcasts
   sshhooww//wwwwvv <<nn>> Show the last <n> WWV broadcasts
-
 
 
   Display the most recent WWV information that has been received by the
@@ -5415,7 +5442,7 @@
 
 
 
-  1133..112277..  sshhuuttddoowwnn ((55))
+  1133..113300..  sshhuuttddoowwnn ((55))
 
   sshhuuttddoowwnn Shutdown the cluster
 
@@ -5424,7 +5451,7 @@
   set to respawn in /etc/inittab it will of course restart.
 
 
-  1133..112288..  ssppooooff ((99))
+  1133..113311..  ssppooooff ((99))
 
   ssppooooff <<ccaallllssiiggnn>> <<ccoommmmaanndd>> Run commands as another user
 
@@ -5435,7 +5462,7 @@
   like home_node for example.
 
 
-  1133..112299..  ssttaatt//ddbb ((55))
+  1133..113322..  ssttaatt//ddbb ((55))
 
   ssttaatt//ddbb <<ddbbnnaammee>> Show the status of a database
 
@@ -5447,7 +5474,9 @@
   other than a sysop.
 
 
-  1133..113300..  ssttaatt//cchhaannnneell ((55))
+
+
+  1133..113333..  ssttaatt//cchhaannnneell ((55))
 
   ssttaatt//cchhaannnneell <<ccaallllssiiggnn>> Show the status of a channel on the cluster
 
@@ -5458,7 +5487,7 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  1133..113311..  ssttaatt//mmssgg ((55))
+  1133..113344..  ssttaatt//mmssgg ((55))
 
   ssttaatt//mmssgg <<mmssggnnoo>> Show the status of a message
 
@@ -5468,7 +5497,7 @@
   etc etc.
 
 
-  1133..113322..  ssttaatt//uusseerr ((55))
+  1133..113355..  ssttaatt//uusseerr ((55))
 
   ssttaatt//uusseerr <<ccaallllssiiggnn>> Show the full status of a user
 
@@ -5479,7 +5508,7 @@
   Only the fields that are defined (in perl term) will be displayed.
 
 
-  1133..113333..  ssyyssoopp ((00))
+  1133..113366..  ssyyssoopp ((00))
 
   ssyyssoopp Regain your privileges if you login remotely
 
@@ -5513,15 +5542,12 @@
         or 2 0 5 7 3
         or 20573
 
-
-
-
   They will all match. If there is no password you will still be offered
   numbers but nothing will happen when you input a string. Any match is
   case sensitive.
 
 
-  1133..113344..  ttaallkk ((00))
+  1133..113377..  ttaallkk ((00))
 
   ttaallkk <<ccaallllssiiggnn>> Enter talk mode with <callsign>
   ttaallkk <<ccaallllssiiggnn>> <<tteexxtt>> Send a text message to <callsign>
@@ -5572,7 +5598,7 @@
 
 
 
-  1133..113355..  ttyyppee ((00))
+  1133..113388..  ttyyppee ((00))
 
   ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>> Look at a file in one of the fileareas
 
@@ -5580,7 +5606,6 @@
   Type out the contents of a file in a filearea. So, for example, in
   filearea 'bulletins' you want to look at file 'arld051' you would
   enter:-
-
 
 
           TYPE bulletins/arld051
@@ -5592,7 +5617,7 @@
   content.
 
 
-  1133..113366..  wwhhoo ((00))
+  1133..113399..  wwhhoo ((00))
 
   wwhhoo Show who is physically connected locally
 
@@ -5601,48 +5626,23 @@
   what sort of connection they have
 
 
-  1133..113377..  wwxx ((00))
+  1133..114400..  wwxx ((00))
 
   wwxx <<tteexxtt>> Send a weather message to local users
   wwxx ffuullll <<tteexxtt>>  Send a weather message to all cluster users
-
 
 
   Weather messages can sometimes be useful if you are experiencing an
   extreme that may indicate enhanced conditions
 
 
-  1133..113388..  wwxx ((eennhhaanncceedd ffoorr ssyyssooppss)) ((55))
+  1133..114411..  wwxx ((eennhhaanncceedd ffoorr ssyyssooppss)) ((55))
 
   wwxx ssyyssoopp <<tteexxtt>> Send a weather message to other clusters only
 
 
   Send a weather message only to other cluster nodes and not to general
   users.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

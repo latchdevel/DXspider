@@ -35,10 +35,10 @@ default  * * * * * *  - sysop /spider/src/client client %u ax25
 default  * * * * * *  - sysop /spider/src/client client %s ax25
 </PRE>
 </CODE></BLOCKQUOTE>
-<P>For most purposes this is not desirable. The only time you probably will need this is
-when you need to allow other cluster nodes that are using SSID's in. In this case it
-owuld probably be better to use the first example and then add a specific line for that
-node like this:
+<P>For most purposes this is not desirable. The only time you probably will 
+need this is when you need to allow other cluster nodes that are using SSID's
+in. In this case it would probably be better to use the first example and 
+then add a specific line for that node like this:
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -51,15 +51,16 @@ default  * * * * * *  - sysop /spider/src/client client %u ax25
 </H2>
 
 <P> 
-From version 1.47 there is a new (more efficient) way of doing this (see next section) but, 
-if you prefer, the method of doing it described here will continue to work just fine.
+From version 1.47 there is a new (more efficient) way of doing this
+(see next section) but, if you prefer, the method of doing it described 
+here will continue to work just fine.
 <P>
 <P>Allowing telnet connections is quite simple.  Firstly you need to add a line 
 in /etc/services to allow connections to a port number, like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-spdlogin   7300/tcp     # spider anonymous login port
+spdlogin   8000/tcp     # spider anonymous login port
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>Then add a line in /etc/inetd.conf like this ....
@@ -95,7 +96,7 @@ no good reason for a password prompt to be given so it is not asked for.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-telnet localhost 7300
+telnet localhost 8000
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
@@ -104,8 +105,8 @@ telnet localhost 7300
 <H2><A NAME="ss3.3">3.3 Setting up telnet connects (from 1.47 onwards)</A>
 </H2>
 
-<P>From version 1.47 you can chose to allow the perl cluster.pl program to 
-allow connections direct (i.e. not via the <CODE>/spider/src/client</CODE>
+<P>From version 1.47 you can choose to allow the perl cluster.pl program to 
+allow connections directly (i.e. not via the <CODE>/spider/src/client</CODE>
 interface program). If you are using Windows then this is the only method
 available of allowing incoming telnet connections.
 <P>
@@ -120,50 +121,52 @@ killall -HUP inetd
 <P>
 <P>to make the change happen...
 <P>
-<P>Having done that then you need to copy the file 
-<CODE>/spider/perl/Listeners.pm</CODE> to <CODE>/spider/local</CODE> and 
+<P>Having done that, you need to copy the file 
+<EM>/spider/perl/Listeners.pm</EM> to <EM>/spider/local</EM> and 
 then edit it. You will need to uncomment the line containing &quot;0.0.0.0&quot; 
 and select the correct port to listen on. So that it looks like this:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 @listen = (
-    ["0.0.0.0", 7300],
+    ["0.0.0.0", 8000],
 );
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>As standard, the listener will listen on all interfaces simultaniously. If you require more
-control than this, you can specify each interface individually:-
+<P>As standard, the listener will listen on all interfaces simultaneously. 
+If you require more control than this, you can specify each interface 
+individually:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 @listen = (
-    ["gb7baa.dxcluster.net", 7300],
+    ["gb7baa.dxcluster.net", 8000],
     ["44.131.16.2", 6300],
 );
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
 <P>This will only be successful if the IP addresses on each interface are static. 
-If you are using some kind of dynamic IP addressing then the 'default' method is the
-only one which will work.
+If you are using some kind of dynamic IP addressing then the 'default' method 
+is the only one that will work.
 <P>
 <P>Restart the cluster.pl program to enable the listener.
 <P>
-<P>One important difference with the internal listener is that no echoing is done by the
-cluster program. Users will need to set 'local-echo' on in their telnet clients if 
-it isn't set automatically (as per the standards). Needless to say this will probably
-only apply to Windows users. 
+<P>One important difference with the internal listener is that no echoing 
+is done by the cluster program. Users will need to set 'local-echo' on in 
+their telnet clients if it isn't set automatically (as per the standards). 
+Needless to say this will probably only apply to Windows users. 
 <P>
 <H2><A NAME="ss3.4">3.4 Setting up for AGW Engine (1.47 onwards)</A>
 </H2>
 
-<P>AGW Engine is a Windows based ax25 stack. You can connect to an AGW engine from Linux
-as well as Windows based machines.
+<P>AGW Engine is a Windows based ax25 stack. You can connect to an AGW engine 
+from Linux as well as Windows based machines.
 <P>
-<P>In order to enable access to an AGW Engine you need to copy <CODE>/spider/perl/AGWConnect.pm</CODE>
-to <CODE>/spider/local</CODE> and edit it. Specifically you must:-
+<P>In order to enable access to an AGW Engine you need to copy 
+<EM>/spider/perl/AGWConnect.pm</EM> to <EM>/spider/local</EM> and edit it. 
+Specifically you must:-
 <P>
 <UL>
 <LI> set <CODE>$enable</CODE> to 1.</LI>

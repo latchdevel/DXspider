@@ -1,6 +1,6 @@
   The DXSpider User Manual
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.0 (Revision 3), March 2001
+  Version 1.0 (Revision 4), March 2001
 
   A complete reference for users of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -159,27 +159,29 @@
      12.40 set/wcy
      12.41 set/wwv
      12.42 set/wx
-     12.43 show/date
-     12.44 show/dx
-     12.45 show/dxcc
-     12.46 show/files
-     12.47 show/filter
-     12.48 show/moon
-     12.49 show/muf
-     12.50 show/prefix
-     12.51 show/qra
-     12.52 show/qrz
-     12.53 show/route
-     12.54 show/satellite
-     12.55 show/sun
-     12.56 show/time
-     12.57 show/wcy
-     12.58 show/wwv
-     12.59 sysop
-     12.60 talk
-     12.61 type
-     12.62 who
-     12.63 wx
+     12.43 show/configuration
+     12.44 show/configuration/node
+     12.45 show/date
+     12.46 show/dx
+     12.47 show/dxcc
+     12.48 show/files
+     12.49 show/filter
+     12.50 show/moon
+     12.51 show/muf
+     12.52 show/prefix
+     12.53 show/qra
+     12.54 show/qrz
+     12.55 show/route
+     12.56 show/satellite
+     12.57 show/sun
+     12.58 show/time
+     12.59 show/wcy
+     12.60 show/wwv
+     12.61 sysop
+     12.62 talk
+     12.63 type
+     12.64 who
+     12.65 wx
 
 
   ______________________________________________________________________
@@ -259,8 +261,13 @@
 
 
 
-       connect GB7MBC
-       connect GB7MBC-1
+
+  connect GB7MBC
+  connect GB7MBC-1
+
+
+
+
 
   22..22..  NNeettrroomm llooggiinnss..
 
@@ -320,8 +327,6 @@
   reconnect by adding a number to the end of your call, for example
   G0YLM2.  This can be done by either altering your MYCALL setting in
   the TNC or by altering your program configuration.
-
-
 
   33..  SSeettttiinngg yyoouurr ppeerrssoonnaall ddeettaaiillss..
 
@@ -388,10 +393,12 @@
 
 
 
+
   will show the last 10, 5 and 20 spots received by the cluster
   respectively.
 
   EExxaammpplleess
+
 
 
        show/dx on 20m
@@ -452,8 +459,6 @@
   It is of course possible to specify multiple arguments.
 
   EExxaammppllee::
-
-
 
        show/dx 20 prefix 9a on vhf day 30
 
@@ -521,11 +526,6 @@
   details.  They use your entered location as a reference, so if you
   have not entered it or have entered it incorrectly they will not
   return the correct information.
-
-
-
-
-
   55..11..  SSuunn
 
   The SSHHOOWW//SSUUNN command can be used in three different ways.  It can be
@@ -2246,7 +2246,31 @@
   WX messages with the _u_n_s_e_t_/_w_x command.
 
 
-  1122..4433..  sshhooww//ddaattee
+  1122..4433..  sshhooww//ccoonnffiigguurraattiioonn
+
+  sshhooww//ccoonnffiigguurraattiioonn [[<<nnooddee>>]] Show all visible nodes and their users
+
+
+  This command allows you to see all the users that can be seen and the
+  nodes to which they are connected.  With the optional _n_o_d_e, you can
+  specify a particular node to look at.
+
+  This command is normally abbreviated to: sh/c
+
+  BE WARNED: the list that is returned can be VERY long
+
+
+  1122..4444..  sshhooww//ccoonnffiigguurraattiioonn//nnooddee
+
+  sshhooww//ccoonnffiigguurraattiioonn//nnooddee Show all the nodes connected
+
+
+  Show all the nodes connected locally and the nodes they have
+  connected.
+
+
+
+  1122..4455..  sshhooww//ddaattee
 
   sshhooww//ddaattee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -2260,7 +2284,7 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1122..4444..  sshhooww//ddxx
+  1122..4466..  sshhooww//ddxx
 
   sshhooww//ddxx [[ooppttiioonnss]] interrogate the spot database
 
@@ -2274,36 +2298,45 @@
 
 
 
-       on <band>       - eg 160m 20m 2m 23cm 6mm
-       on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
 
-       <number>        - the number of spots you want
-       <from>-<to>     - <from> spot no <to> spot no in
-                         the selected list
 
-       <prefix>        - for a spotted callsign beginning with <prefix>
-       *<suffix>       - for a spotted callsign ending in <suffix>
-       *<string>*      - for a spotted callsign containing <string>
 
-       day <number>    - starting <number> days ago
-       day <from>-<to> - <from> days <to> days ago
 
-       info <text>     - any spots containing <text> in the info or remarks
 
-       by <call>       - any spots spotted by <call> (spotter <call>
-                               is the same).
 
-       qsl             - this automatically looks for any qsl info on the call
-                         held in the spot database.
 
-       iota [<iota>]   - If the iota island number is missing it will
-                         look for the string iota and anything which looks like
-                         an iota island number. If you specify then it will look
-                         for that island.
 
-       qra [<locator>] - this will look for the specific locator if
-                         you specify one or else anything that looks like a locator.
 
+
+  on <band>       - eg 160m 20m 2m 23cm 6mm
+  on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+
+  <number>        - the number of spots you want
+  <from>-<to>     - <from> spot no <to> spot no in
+                    the selected list
+
+  <prefix>        - for a spotted callsign beginning with <prefix>
+  *<suffix>       - for a spotted callsign ending in <suffix>
+  *<string>*      - for a spotted callsign containing <string>
+
+  day <number>    - starting <number> days ago
+  day <from>-<to> - <from> days <to> days ago
+
+  info <text>     - any spots containing <text> in the info or remarks
+
+  by <call>       - any spots spotted by <call> (spotter <call>
+                          is the same).
+
+  qsl             - this automatically looks for any qsl info on the call
+                    held in the spot database.
+
+  iota [<iota>]   - If the iota island number is missing it will
+                    look for the string iota and anything which looks like
+                    an iota island number. If you specify then it will look
+                    for that island.
+
+  qra [<locator>] - this will look for the specific locator if
+                    you specify one or else anything that looks like a locator.
 
 
 
@@ -2325,7 +2358,7 @@
 
 
 
-  1122..4455..  sshhooww//ddxxcccc
+  1122..4477..  sshhooww//ddxxcccc
 
   sshhooww//ddxxcccc <<pprreeffiixx>> Interrogate the spot database by country
 
@@ -2339,14 +2372,16 @@
 
 
 
-          SH/DXCC G
-          SH/DXCC W on 20m info iota
+
+
+     SH/DXCC G
+     SH/DXCC W on 20m info iota
 
 
 
 
 
-  1122..4466..  sshhooww//ffiilleess
+  1122..4488..  sshhooww//ffiilleess
 
   sshhooww//ffiilleess [[<<ffiilleeaarreeaa>> [[<<ssttrriinngg>>]]]] List the contents of a filearea
 
@@ -2374,10 +2409,11 @@
 
 
 
+
   See also TYPE - to see the contents of a file.
 
 
-  1122..4477..  sshhooww//ffiilltteerr
+  1122..4499..  sshhooww//ffiilltteerr
 
   sshhooww//ffiilltteerr Show the filters you have set
 
@@ -2386,7 +2422,7 @@
   displays all the filters set - for all the various categories.
 
 
-  1122..4488..  sshhooww//mmoooonn
+  1122..5500..  sshhooww//mmoooonn
 
   sshhooww//mmoooonn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show moon rise and set times
 
@@ -2404,7 +2440,6 @@
 
   If all else fails it will show the Moonrise and set times for the node
   that you are connected to.
-
   For example:-
 
 
@@ -2416,7 +2451,7 @@
 
 
 
-  1122..4499..  sshhooww//mmuuff
+  1122..5511..  sshhooww//mmuuff
 
   sshhooww//mmuuff <<pprreeffiixx>> [[<<hhoouurrss>>]][[lloonngg]] Show the likely propagation to
   <prefix>
@@ -2440,6 +2475,7 @@
   with a claimed RMS error of 3.8 MHz, but much smaller and less complex
   than the programs used by major shortwave broadcasting organizations,
   such as the Voice of America.
+
   The command will display some header information detailing its
   assumptions, together with the locations, latitude and longitudes and
   bearings. It will then show UTC (UT), local time at the other end
@@ -2469,14 +2505,15 @@
 
 
 
-         RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
-         Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
-         Location                       Lat / Long           Azim
-         East Dereham, Norfolk          52 41 N 0 57 E         47
-         United-States-W                43 0 N 87 54 W        299
-         UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
-         18 23 11.5 -35  mS0+ mS2   S3
-         19  0 11.2 -41  mS0+ mS2   S3
+
+    RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
+    Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
+    Location                       Lat / Long           Azim
+    East Dereham, Norfolk          52 41 N 0 57 E         47
+    United-States-W                43 0 N 87 54 W        299
+    UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
+    18 23 11.5 -35  mS0+ mS2   S3
+    19  0 11.2 -41  mS0+ mS2   S3
 
 
 
@@ -2509,7 +2546,7 @@
   terrible accurate, but it is included for completeness.
 
 
-  1122..5500..  sshhooww//pprreeffiixx
+  1122..5522..  sshhooww//pprreeffiixx
 
   sshhooww//pprreeffiixx <<ccaallllssiiggnn>> Interrogate the prefix database
 
@@ -2522,7 +2559,7 @@
   See also SHOW/DXCC
 
 
-  1122..5511..  sshhooww//qqrraa
+  1122..5533..  sshhooww//qqrraa
 
   sshhooww//qqrraa <<llooccaattoorr>> [[<<llooccaattoorr>>]] Show the distance between locators
   sshhooww//qqrraa <<llaatt>> <<lloonngg>> Convert latitude and longitude to a locator
@@ -2535,8 +2572,8 @@
 
 
 
-       SH/QRA IO92QL
-       SH/QRA JN06 IN73
+  SH/QRA IO92QL
+  SH/QRA JN06 IN73
 
 
 
@@ -2558,7 +2595,7 @@
 
 
 
-  1122..5522..  sshhooww//qqrrzz
+  1122..5544..  sshhooww//qqrrzz
 
   sshhooww//qqrrzz <<ccaallllssiiggnn>> Show any callbook details on a callsign
 
@@ -2568,9 +2605,10 @@
   provided for users of this software by http://www.qrz.com
 
 
-  1122..5533..  sshhooww//rroouuttee
+  1122..5555..  sshhooww//rroouuttee
 
   sshhooww//rroouuttee <<ccaallllssiiggnn>> Show the route to <callsign>
+
 
   This command allows you to see to which node the callsigns specified
   are connected. It is a sort of inverse sh/config.
@@ -2583,7 +2621,7 @@
 
 
 
-  1122..5544..  sshhooww//ssaatteelllliittee
+  1122..5566..  sshhooww//ssaatteelllliittee
 
   sshhooww//ssaatteelllliittee <<nnaammee>> [[<<hhoouurrss>> <<iinntteerrvvaall>>]] Show satellite tracking
   data
@@ -2616,7 +2654,7 @@
 
 
 
-  1122..5555..  sshhooww//ssuunn
+  1122..5577..  sshhooww//ssuunn
 
   sshhooww//ssuunn [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show sun rise and set times
 
@@ -2636,16 +2674,14 @@
 
 
 
-
-
-    SH/SUN
-    SH/SUN G1TLH K9CW ZS
+         SH/SUN
+         SH/SUN G1TLH K9CW ZS
 
 
 
 
 
-  1122..5566..  sshhooww//ttiimmee
+  1122..5588..  sshhooww//ttiimmee
 
   sshhooww//ttiimmee [[<<pprreeffiixx>>||<<ccaallllssiiggnn>>]] Show the local time
 
@@ -2656,7 +2692,7 @@
   including DST) at the prefixes or callsigns that you specify.
 
 
-  1122..5577..  sshhooww//wwccyy
+  1122..5599..  sshhooww//wwccyy
 
   sshhooww//wwccyy Show the last 10 WCY broadcasts
   sshhooww//wwccyy <<nn>> Show the last <n> WCY broadcasts
@@ -2666,7 +2702,9 @@
   system
 
 
-  1122..5588..  sshhooww//wwwwvv
+
+
+  1122..6600..  sshhooww//wwwwvv
 
   sshhooww//wwwwvv Show the last 10 WWV broadcasts
   sshhooww//wwwwvv <<nn>> Show the last <n> WWV broadcasts
@@ -2676,7 +2714,7 @@
   system
 
 
-  1122..5599..  ssyyssoopp
+  1122..6611..  ssyyssoopp
 
   ssyyssoopp Regain your privileges if you login remotely
 
@@ -2704,6 +2742,8 @@
 
   you type:-
 
+
+
         aa2bbbb0ccc5ddd7xxx3n
         or 2 0 5 7 3
         or 20573
@@ -2716,7 +2756,7 @@
   case sensitive.
 
 
-  1122..6600..  ttaallkk
+  1122..6622..  ttaallkk
 
   ttaallkk <<ccaallllssiiggnn>> Enter talk mode with <callsign>
   ttaallkk <<ccaallllssiiggnn>> <<tteexxtt>> Send a text message to <callsign>
@@ -2767,10 +2807,7 @@
 
 
 
-
-
-
-  1122..6611..  ttyyppee
+  1122..6633..  ttyyppee
 
   ttyyppee <<ffiilleeaarreeaa>>//<<nnaammee>> Look at a file in one of the fileareas
 
@@ -2790,7 +2827,7 @@
   content.
 
 
-  1122..6622..  wwhhoo
+  1122..6644..  wwhhoo
 
   wwhhoo Show who is physically connected locally
 
@@ -2799,7 +2836,7 @@
   what sort of connection they have
 
 
-  1122..6633..  wwxx
+  1122..6655..  wwxx
 
   wwxx <<tteexxtt>> Send a weather message to local users
   wwxx ffuullll <<tteexxtt>>  Send a weather message to all cluster users
@@ -2807,6 +2844,35 @@
 
   Weather messages can sometimes be useful if you are experiencing an
   extreme that may indicate enhanced conditions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
