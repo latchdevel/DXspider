@@ -146,7 +146,7 @@ void send_msg(fcb_t *f, char let, char *s, int l)
 	int ln;
 	int myl = strlen(call)+2+l;
 
-	mp = cmsg_new(myl+4, f->sort, f);
+	mp = cmsg_new(myl+4+1, f->sort, f);
 	ln = htonl(myl);
 	memcpy(mp->inp, &ln, 4);
 	mp->inp += 4;
@@ -154,7 +154,7 @@ void send_msg(fcb_t *f, char let, char *s, int l)
 	strcpy(mp->inp, call);
 	mp->inp += strlen(call);
 	*mp->inp++ = '|';
-	if (l) {
+	if (l > 0) {
 		memcpy(mp->inp, s, l);
 		mp->inp += l;
 	}
@@ -162,6 +162,10 @@ void send_msg(fcb_t *f, char let, char *s, int l)
 	cmsg_send(f->outq, mp, 0);
 	f->sp->flags |= SEL_OUTPUT;
 }
+
+/*
+ * the callback (called by sel_run) that handles all the inputs and outputs
+ */
 
 int fcb_handler(sel_t *sp, int in, int out, int err)
 {
@@ -198,14 +202,14 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 		
 		/* create a new message buffer if required */
 		if (!f->in)
-			f->in = cmsg_new(MAXBUFL, f->sort, f);
+			f->in = cmsg_new(MAXBUFL+1, f->sort, f);
 		mp = f->in;
 
 		switch (f->sort) {
 		case TEXT:
 			p = buf;
 			if (f->echo)
-				omp = cmsg_new(3*r, f->sort, f);
+				omp = cmsg_new(3*r+1, f->sort, f);
 			while (r > 0 && p < &buf[r]) {
 
 				/* echo processing */
@@ -238,7 +242,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 						*mp->inp = 0;              /* zero terminate it, but don't include it in the length */
 						dbgdump(DMSG, "QUEUE TEXT", mp->data, mp->inp-mp->data);
 						cmsg_send(f->inq, mp, 0);
-						f->in = mp = cmsg_new(MAXBUFL, f->sort, f);
+						f->in = mp = cmsg_new(MAXBUFL+1, f->sort, f);
 						++p;
 					} else {
 						if (mp->inp < &mp->data[MAXBUFL])
@@ -284,7 +288,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 						/* kick it upstairs */
 						dbgdump(DMSG, "QUEUE MSG", mp->data, mp->inp - mp->data);
 						cmsg_send(f->inq, mp, 0);
-						mp = f->in = cmsg_new(MAXBUFL, f->sort, f);
+						mp = f->in = cmsg_new(MAXBUFL+1, f->sort, f);
 					}
 				}
 			}
@@ -334,8 +338,6 @@ lout:;
 		if (mp->inp - mp->data >= mp->size) {
 			cmsg_callback(mp, 0);
 			f->out = 0;
-/*			if (is_chain_empty(f->outq))
-			sp->flags &= ~SEL_OUTPUT; */
 		}
 	}
 lend:;
@@ -370,7 +372,7 @@ void initargs(int argc, char *argv[])
 
 lerr:
 	if (err) {
-		die("usage: client [-x nn] <call>|login [local|telnet|ax25]");
+		die("usage: client [-x n|-h<host>|-p<port>] <call>|login [local|telnet|ax25]");
 	}
 	
 	if (optind < argc) {
