@@ -1,3 +1,9 @@
+06Jan03=======================================================================
+1. add the latest changes to the spider-web java interface from Rene, OZ1LQH.
+Please note that there is a change to the spider.cgi file this time so that
+the client show 'Connected to Node_Call' instead of the hostname.  You will
+need to update your cgi file when you update the changes.  Please make sure
+that you back up your old files first! (g0vgs)
 05Jan03=======================================================================
 1. fix some irritating messages caused by protocol loops in sh/c
 2. update copyright

@@ -42,7 +42,7 @@ print <<'EOF';
         <META NAME="Author" CONTENT="Ian Norton.">
         <META NAME="DESCRIPTION" CONTENT="DX Cluster web interface">
     </HEAD>
- 
+     
 <BODY BGCOLOR="#FFFFFF" LINK="#008080" ALINK="#000099" VLINK="#000099">         
 
     <H1>
@@ -74,6 +74,7 @@ if($ENV{CONTENT_LENGTH} > 0)
     print("        <PARAM NAME=\"PASSWORD\" VALUE=\"$password\">\n") ;
     print("        <PARAM NAME=\"HOSTNAME\" VALUE=\"$HOSTNAME\">\n") ;
     print("        <PARAM NAME=\"PORT\" VALUE=\"$PORT\">\n") ;
+    print("        <PARAM NAME=\"NODECALL\" VALUE=\"$NODECALL\">\n") ;
     print("    </APPLET>\n") ;
     print("</CENTER>\n") ;
     }

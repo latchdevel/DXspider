@@ -30,6 +30,9 @@ public class spiderclient extends Applet {
 		p = getParameter("CHANNEL");
 		if (p != null) cf.setChannel(p);
 
+		p = getParameter("NODECALL");
+		if (p != null) cf.setNodecall(p);
+		
 		Beep = getAudioClip(getCodeBase(), "ding.au");
 		// cf.login();
 		cf.resize(655, 380);
@@ -49,9 +52,8 @@ public class spiderclient extends Applet {
 			out.println(cf.getCall());
 
 			if(cf.getPassword().length() > 0) {
-                out.println(cf.getPassword());
-            }
-
+	            	out.println(cf.getPassword());
+        		}
 			// out.println(cf.getFullname());
 		}
 		catch (IOException e) { 
@@ -106,10 +108,6 @@ class StreamListener extends Thread {
 			// schrieb nur jede 2te zeile , deswegen //
 			// line = in.readLine();
 			
-		        
-			
-			
-			
 			if (line == null) break;
 				cf.setText(line);
 			}
@@ -119,7 +117,6 @@ class StreamListener extends Thread {
 			cf.setText(e.toString());
 			cf.disconnected();
 		}
-		
 		finally { cf.setText("Connection closed by server."); }
 	}
 }

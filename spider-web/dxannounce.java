@@ -7,9 +7,6 @@ public class dxannounce extends Dialog
 		super(parent, "Dx Announce", true);
 		this.parent = parent;
 		this.setFont(font);
-//		Call2 = "";
-//		Freq = "";
-//		Remarks = ""; // Make sure that Call2, Freq and Remarks are empty when box is displayed.
 		
 		Panel p1 = new Panel();
 		p1.setLayout(new GridLayout(3,2));

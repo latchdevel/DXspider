@@ -44,10 +44,11 @@ menubar.add(commands);
 		show = new Menu("Show");
 		show.add(new MenuItem("Show Last DX"));
 		show.add(new MenuItem("Show Beam Direction"));
-                            show.add(new MenuItem("Show WWV"));
-                            show.add(new MenuItem("Search DX"));
+                show.add(new MenuItem("Show WWV"));
+                show.add(new MenuItem("Show WCY"));
+                show.add(new MenuItem("Search DX"));
 		show.add(new MenuItem("Search Address"));
-                            show.add(new MenuItem("Search QSL Manager"));
+                show.add(new MenuItem("Search QSL Manager"));
 		show.add(new MenuItem("Search QSL Info"));
 		show.add(new MenuItem("Search DXCC"));
 		show.add(new MenuItem("Status"));
@@ -175,6 +176,10 @@ menubar.add(mailbox);
 		Call = s;
 		}
 
+	public void setNodecall(String s) {
+		Nodecall = s ;
+		}
+		
 	public void setPassword(String s) {
 	        Password = s ;
 		}
@@ -348,7 +353,7 @@ menubar.add(mailbox);
 	
 	public void connected() {
 		connect_menuitem.setLabel("Disconnect");
-		connectState.setText("Connected to "+Hostname+":"+Port);
+		connectState.setText("Connected to " + Nodecall);
 		input.setEditable(true);
 		copy_menuitem.enable();
 		Connected = true;
@@ -359,7 +364,7 @@ menubar.add(mailbox);
 	public void disconnected() {
 		Connected = false;
 		connect_menuitem.setLabel("Connect");
-		connectState.setText("Disconnected from "+Hostname);
+		connectState.setText("Disconnected from " + Nodecall);
 		input.setEditable(false);
 		copy_menuitem.disable();
 		paste_menuitem.disable();
@@ -386,10 +391,12 @@ menubar.add(mailbox);
 	}
 	
 	public boolean action(Event evt, Object arg) {
-		Prefix =  "";
+		
+		Prefix =  ""; // Make sure that the following variables are empty !
 		Call2 = "";
 		Freq = "";
 		Remarks = "";
+		
 		if (evt.target instanceof MenuItem) {
 			if (arg.equals("Quit")) {
 				this.hide();
@@ -423,6 +430,8 @@ menubar.add(mailbox);
 				if (Connected) out.println("sh/c");
 			} else if (arg.equals("Show WWV")) {
 				if (Connected) out.println("sh/wwv");
+			} else if (arg.equals("Show WCY")) {
+				if (Connected) out.println("sh/wcy");
 			} else if (arg.equals("Show Beam Direction")) {
 				beam pp = new beam(this, Prefix, OutFont);
 			        if ((Connected) && !(Prefix.equals(""))) out.println ("sh/heading " + Prefix );
@@ -467,7 +476,7 @@ menubar.add(mailbox);
 			
 			} else if (arg.equals("Set Locator")) {
 				beam pp = new beam(this, Prefix, OutFont);
-			        if ((Connected) && !(Prefix.equals(""))) out.println ("set/qra " + Prefix );
+				if ((Connected) && !(Prefix.equals(""))) out.println ("set/qra " + Prefix );
 			
 			} else if (arg.equals("Set HomeNode")) {
 				beam pp = new beam(this, Prefix, OutFont);
@@ -489,7 +498,9 @@ menubar.add(mailbox);
 				dxannounce pp = new dxannounce(this, Call2, Freq, Remarks, OutFont);
 				if ((Connected) && !(Call2.equals(""))) out.println ("dx " + Freq + " " + Call2 + " " + Remarks );
 			}
+			
 			// mailbox
+			
 			 else if (arg.equals("Last 10 Msgs")) {
 				if (Connected) out.println ("dir" );
 	                } else if (arg.equals("Last 50 Msgs")) {
@@ -561,7 +572,7 @@ menubar.add(mailbox);
 	private String Hostname = new String("localhost");
 	private String Port = new String("3600");
 	private String Channel = new String("0");
-
+	private String Nodecall = new String("nodecall");
 
         private String Prefix = new String ("");        
         private String Call2 = new String ("");        
