@@ -190,4 +190,5 @@
   uhftv => [ 'band4', 'band5' ],
   shf => [ '23cm', '13cm', '9cm', '6cm', '3cm' ],
   pmr => [ 'pmrlow', 'pmrmid', 'pmrhigh', 'pmruhf' ],
+  spe => [ '10m', '6m', '4m', '2m' ],
 );  
