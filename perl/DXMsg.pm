@@ -19,6 +19,7 @@ use DXCluster;
 use DXProtVars;
 use DXProtout;
 use DXDebug;
+use DXLog;
 use FileHandle;
 use Carp;
 
@@ -268,6 +269,7 @@ sub store
 	  }
 	  $fh->close;
 	  dbg('msg', "file $ref->{to} stored\n");
+	  Log('msg', "file $ref->{to} from $ref->{from} stored" );
     } else {
       confess "can't open file $ref->{to} $!";  
     }
@@ -294,6 +296,7 @@ sub store
 	  }
 	  $fh->close;
 	  dbg('msg', "msg $ref->{msgno} stored\n");
+	  Log('msg', "msg $ref->{msgno} from $ref->{from} to $ref->{to} stored" );
     } else {
       confess "can't open msg file $fn $!";  
     }

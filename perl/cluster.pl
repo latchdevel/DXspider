@@ -47,7 +47,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = 1.3;					# the version no of the software
+$version = 1.4;					# the version no of the software
 
 # handle disconnections
 sub disconnect
@@ -129,6 +129,7 @@ sub cease
 	foreach $dxchan (DXChannel->get_all()) {
 		disconnect($dxchan);
 	}
+	Log('cluster', "DXSpider V$version stopped");
 	exit(0);
 }
 
@@ -175,6 +176,8 @@ foreach (@debug) {
 	dbgadd($_);
 }
 STDOUT->autoflush(1);
+
+Log('cluster', "DXSpider V$version started");
 
 # banner
 print "DXSpider DX Cluster Version $version\nCopyright (c) 1998 Dirk Koopman G1TLH\n";

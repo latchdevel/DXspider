@@ -72,7 +72,8 @@ sub open
 		delete $self->{mode};
 	}
 	
-	$self->{fn} = sprintf "$self->{prefix}/$year/%03d", $thing;
+	$self->{fn} = sprintf "$self->{prefix}/$year/%02d", $thing if $self->{sort} eq 'm';
+	$self->{fn} = sprintf "$self->{prefix}/$year/%03d", $thing if $self->{sort} eq 'd';
 	$self->{fn} .= ".$self->{suffix}" if $self->{suffix};
 	
 	$mode = 'r' if !$mode;
@@ -144,7 +145,8 @@ sub write
 sub writenow
 {
 	my ($self, $line) = @_;
-	my @date = $self->unixtoj(time);
+	my $t = time;
+	my @date = $self->unixtoj($t);
 	return $self->write(@date, $line);
 }
 
@@ -171,7 +173,8 @@ sub close
 # The user is responsible for making sense of this!
 sub Log
 {
-	$log->writeunix($main::systime, join('^', $main::systime, @_) );
+	my $t = time;
+	$log->writeunix($t, join('^', $t, @_) );
 }
 
 sub DESTROY						# catch undefs and do what is required further do the tree

@@ -17,6 +17,7 @@ use DXUser;
 use DXVars;
 use DXDebug;
 use DXM;
+use DXLog;
 use CmdAlias;
 use FileHandle;
 use Carp;
@@ -74,6 +75,7 @@ sub start
   my $nchan = DXChannel->get($main::mycall);
   my @pc16 = DXProt::pc16($nchan, $cuser);
   DXProt::broadcast_ak1a(@pc16);
+  Log('DXCommand', "$call connected");
 }
 
 #
@@ -192,7 +194,8 @@ sub finish
   my $nchan = DXChannel->get($main::mycall);
   my $pc17 = $nchan->pc17($self);
   DXProt::broadcast_ak1a($pc17);
-  
+
+  Log('DXCommand', "$call disconnected");
   $ref->del() if $ref;
 }
 

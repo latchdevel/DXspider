@@ -18,6 +18,7 @@ use DXM;
 use DXCluster;
 use DXProtVars;
 use DXCommandmode;
+use DXLog;
 use Spot;
 use DXProtout;
 use Carp;
@@ -68,6 +69,7 @@ sub start
   $self->send(pc18());
   $self->state('init');
   $self->pc50_t(time);
+  Log('DXProt', "$call connected");
 }
 
 #
@@ -427,6 +429,7 @@ sub finish
 
   # now broadcast to all other ak1a nodes that I have gone
   broadcast_ak1a(pc21($self->call, 'Gone.'), $self);
+  Log('DXProt', $self->call . " Disconnected");
   $ref->del() if $ref;
 }
 

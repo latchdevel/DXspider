@@ -102,7 +102,7 @@ sub rec_socket
 	   my $snl = $mynl;
 	   my $newsavenl = "";
 	   $snl = "" if $mode == 0;
-	   if ($mode && $line =~ />$/) {
+	   if ($mode == 2 && $line =~ />$/) {
 	     $newsavenl = $snl;
 		 $snl = ' ';
 	   }
