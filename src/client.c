@@ -375,12 +375,12 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 			default:
 				dbg(DBUF,"got errno %d in input", errno);
 				ending++;
-				return 0;
+				return 1;
 			}
 		} else if (r == 0) {
 			dbg(DBUF, "ending normally");
 			ending++;
-			return 0;
+			return 1;
 		}
 
 		dbgdump(DBUF, "in ->", buf, r);
@@ -723,7 +723,8 @@ void process_node()
 void term_timeout(int i)
 {
 	/* none of this is going to be reused so don't bother cleaning up properly */
-	tcflush(0, TCIOFLUSH);
+	if (isatty(0))
+		tcflush(0, TCIOFLUSH);
 	kill(getpid(), 9);			/* commit suicide */
 }
 
@@ -732,16 +733,23 @@ void terminate(int i)
 	signal(SIGALRM, term_timeout);
 	alarm(10);
 	
-	while ((in && !is_chain_empty(in->outq)) ||
-		   (node && !is_chain_empty(node->outq))) {
-		sel_run();
-	}
-	if (in && in->t_set)
-		tcsetattr(0, TCSADRAIN, &in->t);
-	if (node) {
-		shutdown(node->cnum, 3);
+	if (node && node->sp->sort) {
+		sel_close(node->sp);
 		close(node->cnum);
 	}
+	while (in && in->sp->sort && !is_chain_empty(in->outq)) {
+		sel_run();
+	}
+	sel_run();
+	sel_run();
+	sel_run();
+	sel_run();
+	sel_run();
+	sel_run();
+	sel_run();
+	sel_run();
+	if (in && in->t_set)
+		tcsetattr(0, TCSADRAIN, &in->t);
 	exit(i);
 }
 
@@ -749,10 +757,7 @@ void login_timeout(int i)
 {
 	write(0, "Timed Out", 10);
 	write(0, &nl, 1);
-	sel_run();					/* force a coordination */
-	if (in && in->t_set)
-		tcsetattr(0, TCSANOW, &in->t);
-	exit(i);
+	terminate(0);
 }
 
 /*

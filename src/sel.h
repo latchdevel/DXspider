@@ -8,7 +8,10 @@
  * $Header$
  * 
  * $Log$
- * Revision 1.3  2000-07-20 14:16:00  minima
+ * Revision 1.4  2002-01-27 15:35:33  minima
+ * try to fix EOF on standard input problems
+ *
+ * Revision 1.3  2000/07/20 14:16:00  minima
  * can use Sourceforge now!
  * added user->qra cleaning
  * added 4 digit qra to user broadcast dxspots if available
@@ -41,6 +44,7 @@ typedef struct {
 	void *fcb;						   /* any fcb associated with this thing */
 	reft *msgbase;					   /* any messages for this port */
 	int (*handler)();				   /* the handler for this thingy */
+	int (*closehandler)();		/* special close handler */
 } sel_t;
 
 extern sel_t *sel;
@@ -58,6 +62,8 @@ extern struct timeval sel_tv;
 void sel_init(int, long, long);					   /* initialise the select thing */
 void sel_run();						   /* run the select multiplexor */
 sel_t *sel_open(int, void *, char *, int (*)(), int, int);/*  initialise a slot */
+void sel_closehandler(sel_t *, void (*)());	/* post a closehandler for this cnum */
+
 void sel_close(sel_t *);
 int sel_error(sel_t *, int);		   /* set/clear error flag */
 

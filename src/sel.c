@@ -81,6 +81,16 @@ sel_t *sel_open(int cnum, void *fcb, char *name, int (*handler)(), int sort, int
 	return sp;
 }
 
+/* 
+ * post a close handler for this connection, to do special things
+ * in the event of this cnum closing, the default is just to close
+ */
+
+void sel_closehandler(sel_t *sp, void (*handler)())
+{
+	sp->closehandler = handler;
+}
+
 /*
  * close (and thus clear down) a slot, it is assumed that you have done whatever
  * you need to do to close the actual device already
@@ -89,6 +99,11 @@ sel_t *sel_open(int cnum, void *fcb, char *name, int (*handler)(), int sort, int
 void sel_close(sel_t *sp)
 {
 	if (sp->sort) {
+		if (sp->closehandler) {
+			(sp->closehandler)(sp);
+		} else {
+			close(sp->cnum);
+		}
 		chain_flush(sp->msgbase);
 		free(sp->msgbase);
 		free(sp->name);
@@ -188,7 +203,10 @@ int sel_error(sel_t *sp, int err)
 
 /*
  * $Log$
- * Revision 1.4  2000-07-20 14:16:00  minima
+ * Revision 1.5  2002-01-27 15:35:33  minima
+ * try to fix EOF on standard input problems
+ *
+ * Revision 1.4  2000/07/20 14:16:00  minima
  * can use Sourceforge now!
  * added user->qra cleaning
  * added 4 digit qra to user broadcast dxspots if available

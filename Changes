@@ -1,5 +1,7 @@
 27Jan02=======================================================================
 1. make save work in cron context
+2. try to get the C client to handle closes on its standard input better
+handled.
 22Jan02=======================================================================
 1. limit spot dupe checking to first 12 characters
 13Jan02=======================================================================

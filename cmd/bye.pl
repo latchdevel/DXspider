@@ -15,7 +15,7 @@ if ($self->is_user && -e "$main::data/logout") {
 	sleep(1);
 }
 
-$self->send_now('Z', "");
+#$self->send_now('Z', "");
 
 $self->disconnect;
 
