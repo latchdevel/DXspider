@@ -527,7 +527,10 @@ sub wantann_talk
 
 sub wantlogininfo
 {
-	return _want('logininfo', @_);
+	my $self = shift;
+	my $val = shift;
+	$self->{wantlogininfo} = $val if defined $val;
+	return $self->{wantlogininfo};
 }
 
 sub is_node
