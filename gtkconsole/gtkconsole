@@ -70,7 +70,6 @@ $main->set_title("gtkconsole - The DXSpider Console - $call");
 my $vbox = new Gtk::VBox(0, 1);
 $vbox->border_width(1);
 $main->add($vbox);
-$vbox->show;
 
 # the menu bar
 my @menu = ( 
@@ -87,31 +86,28 @@ my $menu = $itemf->get_widget('<main>');
 $vbox->pack_start($menu, 0, 1, 0);
 $menu->show;
 
-# create a vertically paned window and stick it in the bottom of the screen
-my $paned = new Gtk::VPaned;
-$vbox->pack_end($paned, 1, 1, 0);
 
 my $top = new Text(1);
 my $toplist = $top->text;
 $toplist->set_editable(0);
-$paned->pack1($top, 1, 1);
 
 # add the handler for incoming messages from the node
 my $tophandler = Gtk::Gdk->input_add($sock->fileno, ['read'], \&tophandler, $sock);
 my $rbuf = "";						# used in handler
 
 # the bottom handler
-my $bot = new Text(1);
-my $botlist = $bot->text;
-$botlist->set_editable(1);
-$botlist->signal_connect('activate', \&bothandler);
-$botlist->can_focus(1);
-$botlist->can_default(1);
-$botlist->grab_focus;
-$botlist->grab_default;
-$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert); 
-$paned->pack2($bot, 0, 1);
-$paned->show;
+my $bot = new Gtk::Entry;
+$bot->set_editable(1);
+$bot->signal_connect('activate', \&bothandler);
+$bot->can_focus(1);
+$bot->can_default(1);
+$bot->grab_focus;
+$bot->grab_default;
+$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
+#$bot->{signalid} = $bot->signal_connect(insert_text => \&doinsert, $bot); 
+$vbox->pack_end($bot, 0, 1, 0);
+$vbox->pack_end($top, 1, 1, 0);
+$vbox->show;
 
 # the main loop
 $main->show_all;
@@ -126,21 +122,30 @@ sub doinsert {
 
 	# we temporarily block this handler to avoid recursion
 	$self->signal_handler_block($self->{signalid});
-	my $pos = $self->insert($self->{font}, undef, undef, $text);
+	my $pos = $self->insert($self->{font}, $toplist->style->black, $toplist->style->white, $text);
 	$self->signal_handler_unblock($self->{signalid});
 
 	# we already inserted the text if it was valid: no need
 	# for the self to process this signal emission
 	$self->signal_emit_stop_by_name('insert-text');
-	$self->signal_emit('activate') if $text eq "\n";
+	1;
+}
+
+sub botinsert
+{
+	my ($self, $text) = @_;
+
+	printf "%s\n", $text;
+	
 	1;
 }
 
 sub bothandler
 {
 	my ($self, $data) = @_;
-	my ($msg) = $self->get_chars =~ /([^\n]*)\r?\n$/;
-	$msg ||= '';
+	my $msg = $self->get_text;
+	$msg =~ s/\r?\n$//;
+	$self->set_text('');
 	senddata($msg);
 }
 
