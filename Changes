@@ -1,3 +1,13 @@
+12Dec98========================================================================
+1. Incorporated sh/st, (un)set/lockout, forward/opername from Iain G0RDI
+2. Added group handling with (un)set/group, show/group. This allows arbitrary
+groups to be formed (for ann/<group> for example) and is also used to 'filter' 
+spots, announces, wwvs etc into groups of cluster nodes (useful for creating 
+disjoint cluster networks)
+3. **** CHANGE mylongtitude to mylongitude in DXVars.pm ****
+4. Altered QRA locator routines so they work correctly!
+5. Fixed all commands that had the wrong mylat(itude) and mylong(itude) names
+in.
 07Dec98========================================================================
 1. Added set/name, set/qra, set/location, set/qth, set/homenode, set/bbs, 
 set/email

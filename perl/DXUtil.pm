@@ -77,7 +77,7 @@ sub slat
   $let = $n >= 0 ? 'N' : 'S';
   $n = abs $n;
   $deg = int $n;
-  $min = int (($n - $deg) * 60);
+  $min = int ((($n - $deg) * 60) + 0.5);
   return "$deg $min $let";
 }
 
@@ -89,7 +89,7 @@ sub slong
   $let = $n >= 0 ? 'E' : 'W';
   $n = abs $n;
   $deg = int $n;
-  $min = int (($n - $deg) * 60);
+  $min = int ((($n - $deg) * 60) + 0.5);
   return "$deg $min $let";
 }
 
@@ -118,7 +118,8 @@ sub promptf
 # take an arg as an array list and print it
 sub parray
 {
-  return join(', ', @{shift});
+	my $ref = shift;
+	return join(', ', @{$ref});
 }
 
 # take the arg as an array reference and print as a list of pairs

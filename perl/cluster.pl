@@ -48,7 +48,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = 1.9;					# the version no of the software
+$version = "1.10";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
  
 # handle disconnections
@@ -108,7 +108,13 @@ sub rec
 			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 		}
 		
-		
+		# is he locked out ?
+		if ($user->lockout) {
+			Log('DXCommand', "$call is locked out, disconnected");
+			$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
+			return;
+		}
+
 		# create the channel
 		$dxchan = DXCommandmode->new($call, $conn, $user) if ($user->sort eq 'U');
 		$dxchan = DXProt->new($call, $conn, $user) if ($user->sort eq 'A');

@@ -224,6 +224,7 @@ sub new
   my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
   $self->{pcversion} = $pcversion;
   $self->{list} = { } ;
+  $self->{mynode} = $self;   # for sh/station
   $nodes++;
   dbg('cluster', "allocating node $call to cluster\n");
   return $self;

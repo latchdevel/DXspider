@@ -80,6 +80,7 @@ sub start
 	}
 	$self->state('init');
 	$self->pc50_t(time);
+
 	Log('DXProt', "$call connected");
 }
 
@@ -219,6 +220,7 @@ sub normal
 				my $user = DXUser->get_current($call);
 				$user = DXUser->new($call) if !$user;
 				$user->node($node->call);
+				$user->lastin($main::systime);
 				$user->homenode($node->call) if !$user->homenode;
 				$user->put;
 			}
@@ -269,6 +271,7 @@ sub normal
 					$user->sort('A');
 					$user->node($call);
 					$user->homenode($call);
+					$user->lastin($main::systime);
 					$user->put;
 				}
 			}
@@ -528,6 +531,7 @@ sub finish
 	
 	# now broadcast to all other ak1a nodes that I have gone
 	broadcast_ak1a(pc21($call, 'Gone.'), $self);
+	
 	Log('DXProt', $call . " Disconnected");
 	$ref->del() if $ref;
 }

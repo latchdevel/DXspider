@@ -86,7 +86,7 @@ sub start
 	$self->send($self->msg('qthe1')) if !$user->qth;
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
-	
+
 	
 	$self->send($self->msg('pr', $call));
 }

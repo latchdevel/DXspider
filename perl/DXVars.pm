@@ -35,7 +35,7 @@ $myalias = "G1TLH";
 $mylatitude = +52.68584579;
 
 # Your Longtitude (+)ve = East, (-)ve = West in degrees and decimal degrees
-$mylongtitude = +0.94518260;
+$mylongitude = +0.94518260;
 
 # Your locator (yes I know I can calculate it - eventually)
 $mylocator = "JO02LQ";

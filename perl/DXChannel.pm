@@ -66,6 +66,7 @@ use vars qw(%channels %valid);
   remotecmd => '9,doing rcmd,yesno',
   pagelth => '0,Page Length',
   pagedata => '9,Page Data Store',
+  group => '0,Access Group,parray',               # used to create a group of users/nodes for some purpose or other
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
@@ -83,6 +84,8 @@ sub alloc
   $self->{oldstate} = 0;
   $self->{lang} = $user->{lang} if defined $user;
   $self->{lang} = $main::lang if !$self->{lang};
+  $user->new_group() if !$user->group;
+  $self->{group} = $user->group;
   bless $self, $pkg; 
   return $channels{$call} = $self;
 }
@@ -117,6 +120,7 @@ sub get_by_cnum
 sub del
 {
   my $self = shift;
+  $self->{group} = undef;      # belt and braces
   delete $channels{$self->{call}};
 }
 

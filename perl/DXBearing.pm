@@ -14,60 +14,54 @@
 package DXBearing;
 
 use POSIX;
+use DXUtil;
 
 use strict;
 use vars qw($pi);
 
 $pi = 3.14159265358979;
 
-# half a qra to lat long translation
-sub _half_qratoll
-{
-	my ($l, $n, $m) = @_;
-	my $lat = ord($l) - ord('A');
-	$lat = $lat * 10 + (ord($n) - ord('0'));
-	$lat = $lat * 24 + (ord($m) - ord('A'));
-	$lat -= (2160 + 0.5);
-	$lat = $lat * ($pi/4320);
-	
-} 
 # convert a qra locator into lat/long in DEGREES
 sub qratoll
 {
 	my $qra = uc shift;
-	my $long = _half_qratoll((unpack 'AAAAAA', $qra)[0,2,4]) * 2;
-	my $lat = _half_qratoll((unpack 'AAAAAA', $qra)[1,3,5]);
-	return (rd($lat), rd($long));
-}
-
-sub _part_lltoqra
-{
-	my ($t, $f, $n, $e) = @_;
-	$n = $f * ($n - int($n));
-	$e = $f * ($e - int($e));
-	my $q = chr($t+$e) . chr($t+$n);
-	return ($q, $n, $e);
+	my ($p1, $p2, $p3, $p4, $p5, $p6) = unpack 'AAAAAA', $qra;
+	($p1, $p2, $p3, $p4, $p5, $p6) = (ord($p1)-ord('A'), ord($p2)-ord('A'), ord($p3)-ord('0'), ord($p4)-ord('0'), ord($p5)-ord('A'), ord($p6)-ord('A') );
+	
+	my $long = ($p1*20) + ($p3*2) + (($p5+0.5)/12) - 180;
+    my $lat = ($p2*10) + $p4 + (($p6+0.5)/24) - 90;
+	return ($lat, $long);
 }
 
 # convert a lat, long in DEGREES to a qra locator 
 sub lltoqra
 {
-	my $lat = dr(shift);
-	my $long = dr(shift);
-	my $t = 1/6.283185;
+	my $lat = shift;
+	my $long = shift;
 
-	$long = $long * $t +.5 ;
-	$lat = $lat * $t * 2 + .5 ;
+	my $v;
+	my ($p1, $p2, $p3, $p4, $p5, $p6);
+	
+	$lat += 90;
+	$long += 180;
+	$v = int($long / 20); 
+	$long -= ($v * 20);
+	$p1 = chr(ord('A') + $v);
+	$v = int($lat / 10);			   
+	$lat -= ($v * 10);
+	$p2 = chr(ord('A') + $v);
+	$p3 = int($long/2);
+	$p4 = int($lat);
+	$long -= $p3*2;
+	$lat -= $p4;
+	$p3 = chr(ord('0')+$p3);
+	$p4 = chr(ord('0')+$p4);
+	$p5 = int((12 * $long) );
+	$p6 = int((24 * $lat) );
+	$p5 = chr(ord('A')+$p5);
+	$p6 = chr(ord('A')+$p6);
 
-	my $q;
-	my $qq;
-	($q, $lat, $long) = _part_lltoqra(ord('A'), 18, $lat, $long);
-	$qq = $q;
-	($q, $lat, $long) = _part_lltoqra(ord('0'), 10, $lat, $long);
-	$qq .= $q;
-	($q, $lat, $long) = _part_lltoqra(ord('A'), 24, $lat, $long);
-	$qq .= $q;
-	return $qq;
+	return "$p1$p2$p3$p4$p5$p6";
 }
 
 # radians to degrees
@@ -100,6 +94,7 @@ sub bdist
 	my $he = dr(shift);
 	my $n = dr(shift);
 	my $e = dr(shift);
+	return (0, 0) if $hn == $n && $he == $e;
 	my $co = cos($he-$e)*cos($hn)*cos($n)+sin($hn)*sin($n);
 	my $ca = atan(abs(sqrt(1-$co*$co)/$co));
 	$ca = $pi-$ca if $co < 0;
@@ -129,19 +124,8 @@ sub stoll
 sub lltos
 {
 	my ($lat, $long) = @_;
-	my ($latd, $latm, $longd, $longm);
-	my $latl = $lat > 0 ? 'N' : 'S';
-	my $longl = $long > 0 ? 'E' : 'W';
-	
-	$lat = abs $lat;
-	$latd = int $lat;
-	$lat -= $latd;
-	$latm = int (60 * $lat);
-	
-	$long = abs $long;
-	$longd = int $long;
-	$long -= $longd;
-	$longm = int (60 * $long);
-	return "$latd $latm $latl $longd $longm $longl";
+	my $slat = slat($lat);
+	my $slong = slong($long);
+	return "$slat $slong";
 }
 1;

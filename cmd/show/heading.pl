@@ -13,8 +13,8 @@ my $lat = $self->user->lat;
 my $long = $self->user->long;
 if (!$long && !$lat) {
 	push @out, $self->msg('heade1');
-	$lat = $main::mylat;
-	$long = $main::mylong;
+	$lat = $main::mylatitude;
+	$long = $main::mylongitude;
 }
 
 foreach $l (@list) {
