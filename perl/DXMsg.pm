@@ -110,6 +110,8 @@ sub alloc
 	$self->{origin} = shift;
 	$self->{'read'} = shift;
 	$self->{rrreq} = shift;
+	$self->{delete} = shift;
+	$self->{deletetime} = shift;
 	$self->{gotit} = [];
 #	$self->{lastt} = $main::systime;
 	$self->{lines} = [];
@@ -340,8 +342,7 @@ sub process
 			if ($ref) {
 				if ($ref->{private}) { # remove it if it private and gone off site#
 					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $fromnode and deleted");
-					$ref->{delete}++;
-					$ref->{deletetime} = $main::systime + $residencetime;
+					$ref->mark_delete;
 				} else {
 					Log('msg', "Message $ref->{msgno} from $ref->{from} sent to $fromnode");
 					push @{$ref->{gotit}}, $fromnode; # mark this up as being received
@@ -407,8 +408,7 @@ sub process
 		if ($pcno == 49) {      # global delete on subject
 			for (@msg) {
 				if ($_->{from} eq $f[1] && $_->{subject} eq $f[2]) {
-					$_->{delete}++;
-					$_->{deletetime} = $main::systime + $residencetime;
+					$_->mark_delete;
 					Log('msg', "Message $_->{msgno} from $_->{from} ($_->{subject}) fully deleted");
 					DXChannel::broadcast_nodes($line, $self);
 				}
@@ -453,7 +453,9 @@ sub store
 		if (defined $fh) {
 			my $rr = $ref->{rrreq} ? '1' : '0';
 			my $priv = $ref->{private} ? '1': '0';
-			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr\n";
+			my $del = $ref->{delete} ? '1' : '0';
+			my $delt = $ref->{deletetime} || '0';
+			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr^$del^$delt\n";
 			print $fh "=== ", join('^', @{$ref->{gotit}}), "\n";
 			my $line;
 			$ref->{size} = 0;
@@ -495,6 +497,17 @@ sub del_msg
 	}
 }
 
+sub mark_delete
+{
+	my $ref = shift;
+	my $t = shift;
+	$t = $main::systime + $residencetime unless defined $t;
+	
+	$ref->{delete}++;
+	$ref->{deletetime} = $t;
+	$ref->store( [$ref->read_msg_body] );
+}
+
 # clean out old messages from the message queue
 sub clean_old
 {
@@ -503,7 +516,9 @@ sub clean_old
 	# mark old messages for deletion
 	foreach $ref (@msg) {
 		if (ref($ref) && !$ref->{keep} && $ref->{t} < $main::systime - $maxage) {
-			$ref->{delete} = 1;
+
+			# this is for IMMEDIATE destruction
+			$ref->{delete}++;
 			$ref->{deletetime} = 0;
 		}
 	}
