@@ -402,6 +402,12 @@ sub rec_stdin
 
 $call = uc shift @ARGV if @ARGV;
 $call = uc $myalias if !$call;
+my ($scall, $ssid) = split /-/, $call;
+$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
+if ($ssid) {
+	$ssid = 15 if $ssid > 15;
+	$call = "$scall-$ssid";
+}
 
 if ($call eq $mycall) {
 	print "You cannot connect as your cluster callsign ($mycall)\n";

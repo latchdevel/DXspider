@@ -113,16 +113,6 @@ sub rec
 	# set up the basic channel info - this needs a bit more thought - there is duplication here
 	if (!defined $dxchan) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
-		my ($scall, $ssid) = split /-/, $call;
-		
-		# adjust the callsign if it has an SSID, SSID <= 8 are legal > 8 are netrom connections
-        if ($ssid) {
-			$ssid = 15 if $ssid > 15;
-			if ($ssid > 8) {
-				$ssid = 15 - $ssid;
-				$call = "$scall-$ssid";
-			}
-		}
  
 		# is there one already connected to me - locally? 
 		my $user = DXUser->get($call);

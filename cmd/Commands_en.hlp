@@ -452,13 +452,42 @@ Tell the system what your name is eg:-
 Tell the system that the call(s) are to be treated as AK1A cluster and
 fed PC Protocol rather normal user commands.
 
+=== 9^SET/OBSCOUNT <count> <nodecall>^Set the 'pump-up' obscelence counter 
+From 1.35 onwards neighbouring nodes are pinged at regular intervals (see
+SET/PINGINTERVAL), usually 300 seconds or 5 minutes. There is a 'pump-up'
+counter which is decremented on every outgoing ping and then reset to
+the 'obscount' value on every incoming ping. The default value of this
+parameter is 2. 
+
+What this means is that a neighbouring node will be pinged twice at 
+(default) 300 second intervals and if no reply has been heard just before
+what would be the third attempt, that node is disconnected.
+
+If a ping is heard then the obscount is reset to the full value. Using
+default values, if a node has not responded to a ping within 15 minutes,
+it is disconnected.
+
 === 0^SET/PAGE <lines per page>^Set the lines per page
 Tell the system how many lines you wish on a page when the number of line
 of output from a command is more than this. The default is 20. Setting it
 explicitly to 0 will disable paging. 
   SET/PAGE 30
   SET/PAGE 0
- 
+
+=== 9^SET/PINGINTERVAL <time> <nodecall>^Set ping time to neighbouring nodes 
+As from release 1.35 all neighbouring nodes are pinged at regular intervals
+in order to determine the rolling quality of the link and, in future, to
+affect routing decisions. The default interval is 300 secs or 5 minutes.
+
+You can use this command to set a different interval. Please don't. 
+
+But if you do the value you enter is treated as minutes up 60 and seconds
+for numbers greater than that.
+
+This is used also to help determine when a link is down at the far end
+(as certain cluster software doesn't always notice), see SET/OBSCOUNT
+for more information.
+
 === 9^SET/PRIVILEGE <n> <call> [<call..]^Set privilege level on a call
 Set the privilege level on a callsign. The privilege levels that pertain
 to commands are as default:-
@@ -477,7 +506,11 @@ The password for a user can only be set by a full sysop. The string
 can contain any characters but any spaces are removed (you can type in
 spaces - but they won't appear in the password). You can see the
 result with STAT/USER.
- 
+
+=== 9^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
+Tell the system that the call(s) are to be treated as DXSpider node and
+fed new style DX Protocol rather normal user commands.
+
 === 9^SET/SYS_QRA <locator>^Set your cluster QRA locator
 === 0^SET/QRA <locator>^Set your QRA locator
 Tell the system what your QRA (or Maidenhead) locator is. If you have not
@@ -569,6 +602,26 @@ string to see a selection of files in a filearea eg:-
 
 See also TYPE - to see the contents of a file.
 
+=== 0^SHOW/MOON [<prefix>|<callsign>]^Show Moon rise and set times
+Show the Moon rise and set times for a (list of) prefixes or callsigns, 
+together with the azimuth and elevation of the sun currently at those
+locations.
+
+If you don't specify any prefixes or callsigns, it will show the times for
+your QTH (assuming you have set it with either SET/LOCATION or SET/QRA),
+together with the current azimuth and elevation.
+
+In addition, it will show the gain or loss dB relative to the nominal 
+distance of 385,000Km due to the ellipsoidal nature of the orbit.
+
+If all else fails it will show the Moonrise and set times for the node
+that you are connected to. 
+
+For example:-
+
+  SH/MOON
+  SH/MOON G1TLH W5UN
+
 === 0^SHOW/MUF <prefix> [<hours>][long]^Show the likely propagation to a prefix
 This command allow you to estimate the likelihood of you contacting
 a station with the prefix you have specified. The output assumes a modest
@@ -643,20 +696,32 @@ together with the internal country no, the CQ and ITU regions.
 
 See also SHOW/DXCC
 
-=== 0^SHOW/SUN [<callsign>|<prefix>]^Display sunrise and sunset times
-Show the sunrise and sunset times for a callsign (if it is known to the
-cluster), a prefix or, if nothing is specified, at your QTH (if you have
-remembered to set your location using SET/LOCATION or SET/QRA). If all else
-fails it will show the sunrise and set times for the node that you are 
-connected to.
-
-You can enter more than one prefix or callsign:-
-
-  SH/SUN G1TLH G8TIC W9
-
 === 5^SHOW/PROGRAM^Show the locations of all the included program modules
 Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from. 
+
+=== 0^SHOW/SUN [<prefix>|<callsign>]^Show sun rise and set times
+Show the sun rise and set times for a (list of) prefixes or callsigns, 
+together with the azimuth and elevation of the sun currently at those
+locations.
+
+If you don't specify any prefixes or callsigns, it will show the times for
+your QTH (assuming you have set it with either SET/LOCATION or SET/QRA),
+together with the current azimuth and elevation.
+
+If all else fails it will show the sunrise and set times for the node
+that you are connected to. 
+
+For example:-
+
+  SH/SUN
+  SH/SUN G1TLH K9CW ZS
+
+=== 0^SHOW/TIME [<prefix>|<callsign>]^Show the local time 
+If no prefixes or callsigns are given then this command returns the local
+time and UTC as the computer has it right now. If you give some prefixes
+then it will show UTC and UTC + the local offset (not including DST) at
+the prefixes or callsigns that you specify.
 
 === 0^SHOW/WWV^Show last 10 WWV broadcasts
 === 0^SHOW/WWV <n>^Show last <n> WWV broadcasts

@@ -304,6 +304,14 @@ sub timeout
 	cease(0);
 }
 
+# handle callsign and connection type firtling
+sub doclient
+{
+	my $line = shift;
+	my @f = split /\s+/, $line;
+	$call = uc $f[0] if $f[0];
+	$csort = $f[1] if $f[1];
+}
 
 #
 # initialisation
@@ -403,15 +411,6 @@ if ($loginreq) {
 	alarm(0);
 }
 
-# handle callsign and connection type firtling
-sub doclient
-{
-	my $line = shift;
-	my @f = split /\s+/, $line;
-	$call = uc $f[0] if $f[0];
-	$csort = $f[1] if $f[1];
-}
-
 # is this an out going connection?
 if ($connsort eq "connect") {
 	my $mcall = lc $call;
@@ -466,6 +465,20 @@ if ($connsort eq "connect") {
 
 $mode = ($connsort eq 'ax25') ? 1 : 2;
 setmode();
+
+# adjust the callsign if it has an SSID, SSID <= 8 are legal > 8 are netrom connections
+my ($scall, $ssid) = split /-/, $call;
+$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
+if ($ssid) {
+	$ssid = 15 if $ssid > 15;
+	if ($connsort eq 'ax25') {
+		if ($ssid > 8) {
+			$ssid = 15 - $ssid;
+		}
+	}
+	$call = "$scall-$ssid";
+}
+
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
 if (! $conn) {

@@ -43,18 +43,20 @@ sub atime
 sub ztime
 {
 	my $t = shift;
-	my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
-	$year += 1900;
-	my $buf = sprintf "%02d%02dZ", $hour, $min;
+	$t = defined $t ? $t : time;
+	my $dst = shift;
+	my ($sec,$min,$hour) = $dst ? localtime($t): gmtime($t);
+	my $buf = sprintf "%02d%02d%s", $hour, $min, ($dst) ? '' : 'Z';
 	return $buf;
-
 }
 
 # get a cluster format date (23-Jun-1998)
 sub cldate
 {
 	my $t = shift;
-	my ($sec,$min,$hour,$mday,$mon,$year) = gmtime((defined $t) ? $t : time);
+	$t = defined $t ? $t : time;
+	my $dst = shift;
+	my ($sec,$min,$hour,$mday,$mon,$year) = $dst ? localtime($t) : gmtime($t);
 	$year += 1900;
 	my $buf = sprintf "%2d-%s-%04d", $mday, $month[$mon], $year;
 	return $buf;
@@ -64,8 +66,9 @@ sub cldate
 sub cldatetime
 {
 	my $t = shift;
-	my $date = cldate($t);
-	my $time = ztime($t);
+	my $dst = shift;
+	my $date = cldate($t, $dst);
+	my $time = ztime($t, $dst);
 	return "$date $time";
 }
 
