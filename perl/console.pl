@@ -64,11 +64,12 @@ sub rec_socket
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 		
 		if ($sort eq 'D') {
-			$top->addstr("$line\n");
+			$top->addstr("\n$line");
 		} elsif ($sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
 		}	  
 	}
+	$top->refresh();
 	$lasttime = time; 
 }
 
@@ -84,14 +85,99 @@ sub rec_stdin
 	#  $prbuf =~ s/\n/\\n/;
 	#  print "sys: $r ($prbuf)\n";
 	if (defined $r) {
-		if ($r eq "\n" || $r eq "\r") {
+		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
+			
+			# save the lines
+			if ($inbuf) {
+				push @history, $inbuf if $inbuf;
+				shift @history if @history > $maxhist;
+				$histpos = @history;
+				$bot->move(0,0);
+				$bot->addstr(substr($inbuf, 0, COLS));
+			}
+		
+			# send it to the cluster
 			$inbuf = " " unless $inbuf;
-			$conn->send_later("I|$call|$inbuf");
+			$conn->send_later("I$call|$inbuf");
 			$inbuf = "";
+			$pos = $lth = 0;
+		} elsif ($r eq KEY_UP || $r eq KEY_PPAGE || $r eq "\020") {
+			if ($histpos > 0) {
+				--$histpos;
+				$inbuf = $history[$histpos];
+				$pos = $lth = length $inbuf;
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_DOWN || $r eq KEY_NPAGE || $r eq "\016") {
+			if ($histpos < @history - 1) {
+				++$histpos;
+				$inbuf = $history[$histpos];
+				$pos = $lth = length $inbuf;
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_LEFT || $r eq "\002") {
+			if ($pos > 0) {
+				--$pos;
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_RIGHT || $r eq "\006") {
+			if ($pos < $lth) {
+				++$pos;
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_HOME) {
+			$pos = 0;
+		} elsif ($r eq KEY_BACKSPACE || $r eq "\010") {
+			if ($pos > 0) {
+				my $a = substr($inbuf, 0, $pos-1);
+				my $b = substr($inbuf, $pos) if $pos < $lth;
+				$b = "" unless $b;
+				
+				$inbuf = $a . $b;
+				--$lth;
+				--$pos;
+			} else {
+				beep();
+			}
+		} elsif ($r eq KEY_DC || $r eq "\004") {
+			if ($pos < $lth) {
+				my $a = substr($inbuf, 0, $pos);
+				my $b = substr($inbuf, $pos+1) if $pos < $lth;
+				$b = "" unless $b;
+				
+				$inbuf = $a . $b;
+				--$lth;
+			} else {
+				beep();
+			}
+		} elsif ($r ge ' ' && $r le '~') {
+			if ($pos < $lth) {
+				my $a = substr($inbuf, 0, $pos);
+				my $b = substr($inbuf, $pos);
+				$inbuf = $a . $r . $b;
+			} else {
+				$inbuf .= $r;
+			}
+			$pos++;
+			$lth++;
+		} elsif ($r eq "\014" || $r eq "\022") {
+			$scr->touchwin();
+			$scr->refresh();
+		} elsif ($r eq "\013") {
+			$inbuf = "";
+			$pos = $lth = 0;
 		} else {
-			$inbuf .= $r;
+			beep();
 		}
+		$bot->move(1, 0);
+		$bot->clrtobot();
+		$bot->addstr($inbuf);
 	} 
+	$bot->move(1, $pos);
 	$bot->refresh();
 }
 
@@ -105,6 +191,11 @@ $conn = 0;                      # the connection object for the cluster
 $lasttime = time;               # lasttime something happened on the interface
 
 $connsort = "local";
+@history = ();
+$histpos = 0;
+$maxhist = 100;
+$pos = $lth = 0;
+$inbuf = "";
 
 #
 # deal with args
@@ -138,7 +229,8 @@ $SIG{'TERM'} = \&sig_term;
 $SIG{'HUP'} = 'IGNORE';
 
 $scr = new Curses;
-cbreak();
+raw();
+noecho();
 $top = $scr->subwin(LINES()-4, COLS, 0, 0);
 $top->intrflush(0);
 $top->scrollok(1);
@@ -147,13 +239,16 @@ $bot = $scr->subwin(3, COLS, LINES()-3, 0);
 $bot->intrflush(0);
 $bot->scrollok(1);
 $bot->keypad(1);
+$bot->move(1,0);
 $scr->refresh();
+
+$SIG{__DIE__} = \&sig_term;
 
 $pages = LINES()-6;
 
 $conn->send_now("A$call|$connsort");
-$conn->send_now("I|$call|set/page $pages");
-$conn->send_now("I|$call|set/nobeep");
+$conn->send_now("I$call|set/page $pages");
+$conn->send_now("I$call|set/nobeep");
 
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 

@@ -1,3 +1,5 @@
+28Jun99=======================================================================
+1. console.pl now works with history and editting.
 27Jun99=======================================================================
 1. added WWV filtering
 2. added timeouts to for forwarding Messages, also added a waiting time for
