@@ -139,6 +139,9 @@ sub AUTOLOAD
 	return if $name =~ /::DESTROY$/;
 	$name =~ s/.*:://o;
   
+	# this clever line of code creates a subroutine which takes over from autoload
+	# from OO Perl - Conway
+	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
 	@_ ? $self->{$name} = shift : $self->{$name} ;
 }
 

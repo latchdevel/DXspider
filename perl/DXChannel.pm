@@ -466,8 +466,13 @@ sub AUTOLOAD
 	$name =~ s/.*:://o;
   
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
-	@_ ? $self->{$name} = shift : $self->{$name} ;
+
+	# this clever line of code creates a subroutine which takes over from autoload
+	# from OO Perl - Conway
+	*{$AUTOLOAD} = sub {@_ > 1 ? $_[0]->{$name} = $_[1] : $_[0]->{$name}} ;
+    @_ ? $self->{$name} = shift : $self->{$name} ;
 }
+
 
 1;
 __END__;

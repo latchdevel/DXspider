@@ -340,7 +340,7 @@ $SIG{KILL} = 'DEFAULT';     # as if it matters....
 # catch the rest with a hopeful message
 for (keys %SIG) {
 	if (!$SIG{$_}) {
-		dbg('chan', "Catching SIG $_");
+#		dbg('chan', "Catching SIG $_");
 		$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  }; 
 	}
 }

@@ -1,3 +1,6 @@
+19Aug00=======================================================================
+1. Added an efficiency thing for AUTOLOADed accessors from OO Perl by Conway.
+2. Fiddled with the rtty and digital bandplan frequencies.
 18Aug00=======================================================================
 1. added a couple of changes for perl 5.6.0
 2. removed del_dup from DXUser for earlier versions of DB '1.85' (ie real ones
@@ -12,7 +15,7 @@ not 2.x versions in 1.85 compatibility mode).
 1. removed extra /60 in AnnTalk to make deduping of announces work a bit
 better for longer...
 05Aug00=======================================================================
-1. Fixed hax character problem put in somewhen in the C Client
+1. Fixed hex character problem put in somewhen in the C Client
 03Aug00=======================================================================
 1. caught some more signals (are any of these causing the random stopping
 of the code?
