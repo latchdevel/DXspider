@@ -231,6 +231,7 @@ package DXM;
 				pinge1 => 'Cannot ping yourself!',
 				pingint => 'Ping interval on $_[0] set to $_[1] secs',
 				'pos' => 'From Callsign: $_[0] Lat: $_[1] Long: $_[2]',
+                                pr => '%C de %M %D %T dxspider >',
 				prs => 'Prompt is changed',
 				pru => 'Prompt now set back to default',
 				priv => 'Privilege level changed on $_[0]',
