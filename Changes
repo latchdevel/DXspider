@@ -1,10 +1,13 @@
+19Jun02=======================================================================
+1. make set/badspotter and set/badnode apply to announces and talks as well
+as spots. 
 12Jun02=======================================================================
 1. fixed (un)set/wwv and (un)set/wcy so they don't issue spurious messages.
 Thanks Rene (oz1lqh)
 07Jun02=======================================================================
 1. fix messages in DXDb.pm to point to the correct ones. Thanks Rene (oz1lqh)
 2. add missing wcys and wcyu messages to Messages. Thanks Rene (again)
-2. upissue version number to 1.50 (finally)
+3. upissue version number to 1.50 (finally)
 16Apr02=======================================================================
 1. allow the rest of PC19 to continue if it contains a reference to a locally
 connected node. Thank you Tommy SM3OSM.

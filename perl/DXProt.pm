@@ -349,6 +349,18 @@ sub normal
 				$to = $field[2];
 			}
 
+			# if this is a 'nodx' node then ignore it
+			if ($badnode->in($field[6]) || ($via && $badnode->in($via))) {
+				dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
+				return;
+			}
+
+			# if this is a 'bad spotter' user then ignore it
+			if ($badspotter->in($from)) {
+				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
+				return;
+			}
+
 			# if we are converting announces to talk is it a dup?
 			if ($ann_to_talk) {
 				if (AnnTalk::is_talk_candidate($from, $field[3]) && AnnTalk::dup($from, $to, $field[3])) {
@@ -547,6 +559,18 @@ sub normal
 					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 					return;
 				}
+			}
+
+			# if this is a 'nodx' node then ignore it
+			if ($badnode->in($field[5])) {
+				dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
+				return;
+			}
+
+			# if this is a 'bad spotter' user then ignore it
+			if ($badspotter->in($field[1])) {
+				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
+				return;
 			}
 
 			if ($field[2] eq '*' || $field[2] eq $main::mycall) {
