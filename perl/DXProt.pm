@@ -197,7 +197,10 @@ sub normal
 			}
 			
 			# if this is a 'nodx' node then ignore it
-			last SWITCH if grep $field[7] =~ /^$_/,  @DXProt::nodx_node;
+			if (grep $field[7] =~ /^$_/,  @DXProt::nodx_node) {
+				dbg('chan', "Bad DXNode, dropped");
+				return;
+			}
 			
 			# convert the date to a unix date
 			my $d = cltounix($field[3], $field[4]);
