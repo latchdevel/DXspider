@@ -140,51 +140,52 @@ sub next
 
 sub extract
 {
-	my $call = uc shift;
+	my $calls = uc shift;
 	my @out;
-	my @nout;
 	my $p;
 	my @parts;
-	my ($sp, $i);
+	my ($call, $sp, $i);
   
-	# first check if the whole thing succeeds
-	@out = get($call);
-	return @out if @out > 0 && $out[0] eq $call;
-  
-	# now split the call into parts if required
-	@parts = ($call =~ '/') ? split('/', $call) : ($call);
+	foreach $call (split /,/, $calls) {
+		# first check if the whole thing succeeds
+		my @nout = get($call);
+		push @out, @nout if @nout;
+		next if @nout > 0 && $nout[0] eq $call;
+	  
+		# now split the call into parts if required
+		@parts = ($call =~ '/') ? split('/', $call) : ($call);
 
-	# remove any /0-9 /P /A /M /MM /AM suffixes etc
-	if (@parts > 1) {
-		$p = $parts[0];
-		shift @parts if $p =~ /^(WEB|NET)$/o;
-		$p = $parts[$#parts];
-		pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
-		$p = $parts[$#parts];
-		pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
+		# remove any /0-9 /P /A /M /MM /AM suffixes etc
+		if (@parts > 1) {
+			$p = $parts[0];
+			shift @parts if $p =~ /^(WEB|NET)$/o;
+			$p = $parts[$#parts];
+			pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
+			$p = $parts[$#parts];
+			pop @parts if $p =~ /^(\d+|[JPABM]|AM|MM|BCN|JOTA|SIX|WEB|NET|Q\w+)$/o;
+	  
+			# can we resolve them by direct lookup
+			foreach $p (@parts) {
+				@nout = get($p);
+				push @out, @nout if @nout;
+				next if @nout > 0 && $nout[0] eq $call;
+			}
+		}
   
-		# can we resolve them by direct lookup
+		# which is the shortest part (first if equal)?
+		$sp = $parts[0];
 		foreach $p (@parts) {
-			@out = get($p);
-			return @out if @out > 0 && $out[0] eq $call;
+			$sp = $p if length $sp > length $p;
+		}
+		# now start to resolve it from the left hand end
+		for ($i = 1; $i <= length $sp; ++$i) {
+			my @wout = get(substr($sp, 0, $i));
+			last if @wout > 0 && $wout[0] gt $sp;
+			last if @wout == 0;
+			push @out, @wout;
 		}
 	}
-  
-	# which is the shortest part (first if equal)?
-	$sp = $parts[0];
-	foreach $p (@parts) {
-		$sp = $p if length $sp > length $p;
-	}
-	# now start to resolve it from the left hand end
-	for (@out = (), $i = 1; $i <= length $sp; ++$i) {
-		@nout = get(substr($sp, 0, $i));
-		last if @nout > 0 && $nout[0] gt $sp;
-		last if @nout == 0;
-		@out = @nout;
-	}
-  
-	# not found
-	return (@out > 0) ? @out : ();
+	return @out;
 }
 
 my %valid = (

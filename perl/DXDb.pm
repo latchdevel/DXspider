@@ -262,18 +262,18 @@ sub process
 			my $db = getdesc($f[4]);
 			if ($db) {
 				if ($db->{remote}) {
-					sendremote($dxchan, $f[2], $f[3], $dxchan->msg('dx1', $db->{remote}));
+					sendremote($dxchan, $f[2], $f[3], $dxchan->msg('db1', $db->{remote}));
 				} else {
 					my $value = $db->getkey($f[5]);
 					if ($value) {
 						my @out = split /\n/, $value;
 						sendremote($dxchan, $f[2], $f[3], @out);
 					} else {
-						sendremote($dxchan, $f[2], $f[3], $dxchan->msg('dx2', $f[5], $db->{name}));
+						sendremote($dxchan, $f[2], $f[3], $dxchan->msg('db2', $f[5], $db->{name}));
 					}
 				}
 			} else {
-				sendremote($dxchan, $f[2], $f[3], $dxchan->msg('dx3', $f[4]));
+				sendremote($dxchan, $f[2], $f[3], $dxchan->msg('db3', $f[4]));
 			}
 			last SWITCH;
 		}

@@ -17,7 +17,7 @@ foreach $call (@args) {
   $call = uc $call;
   my $chan = DXChannel->get($call);
   if ($chan) {
-    $chan->wcy(0);
+    DXChannel::wcy($chan, 0);
     $chan->user->wantwcy(0);
 	push @out, $self->msg('wcyu', $call);
   } else {
