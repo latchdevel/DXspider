@@ -14,7 +14,7 @@ my $user;
 my $val = int shift @args if @args;
 
 
-return (1, $self->msg('e5')) if $self->priv < 9;
+return (1, $self->msg('e5')) if $self->priv < 8;
 return (1, $self->msg('e14')) unless defined $val;
 return (1, $self->msg('e12')) unless @args;
 

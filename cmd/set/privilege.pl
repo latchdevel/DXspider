@@ -15,7 +15,7 @@ my @out;
 my $user;
 my $ref;
 
-if ($self->priv < 9) {
+if ($self->priv < 9 || $self->remotecmd) {
 	Log('DXCommand', $self->call . " attempted to set privilege $priv for @args");
 	return (1, $self->msg('e5'));
 }
