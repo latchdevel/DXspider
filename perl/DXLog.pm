@@ -75,7 +75,7 @@ sub open
 	$mode = 'r' if !$mode;
 	$self->{mode} = $mode;
 	
-	my $fh = new FileHandle $self->{fn}, $mode;
+	my $fh = new FileHandle $self->{fn}, $mode, 0666;
 	return undef if !$fh;
 	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
 	$self->{fh} = $fh;

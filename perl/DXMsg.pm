@@ -504,7 +504,7 @@ sub queue_msg
 				}
 				if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
 					$dxchan = $clref->{dxchan};
-					$ref->start_msg($dxchan) if $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';
+					$ref->start_msg($dxchan) if $dxchan && $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';
 				}
 			}
 		} elsif (!$sort) {
