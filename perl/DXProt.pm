@@ -912,7 +912,7 @@ sub normal
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
 			my $ref = Route::get($call);
-			$self->route_pc41($ref, $field[2], $field[3], $field[4]) if $ref && !eph_dup($line);
+			$self->route_pc41($ref, $call, $field[2], $field[3], $field[4]) if $ref && !eph_dup($line);
 		}
 		if ($pcno == 43) {
 			last SWITCH;
