@@ -305,8 +305,8 @@ sub pc49
 # periodic update of users, plus keep link alive device (always H99)
 sub pc50
 {
-	my $me = DXCluster->get_exact($main::mycall);
-	my $n = $me->users ? $me->users : '0';
+	my $n = shift;
+	$n = 0 unless $n >= 0;
 	return "PC50^$main::mycall^$n^H99^";
 }
 

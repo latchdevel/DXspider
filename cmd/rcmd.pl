@@ -14,7 +14,7 @@ my ($call) = $line =~ /^\s*(\S+)/;
 return (1, $self->msg('e5')) if $self->priv < 6;
 
 # is there a call?
-return (1, $self->msg('e6')) if !$call;
+return (1, $self->msg('e6')) unless $call;
 
 # remove the callsign from the line
 $line =~ s/^\s*$call\s+//;
@@ -22,9 +22,13 @@ $line =~ s/^\s*$call\s+//;
 # can we see it? Is it a node?
 $call = uc $call;
 my $noderef = DXCluster->get_exact($call);
-return (1, $self->msg('e7', $call)) if !$noderef || !$noderef->pcversion;
+unless ($noderef) {
+	$noderef = DXChannel->get($call);
+	$noderef = undef unless $noderef && $noderef->is_ak1a;
+}
+return (1, $self->msg('e7', $call)) unless $noderef;
 
-# ping it
+# rcmd it
 DXProt::addrcmd($self->call, $call, $line);
 
 return (1, $self->msg('rcmdo', $line, $call));

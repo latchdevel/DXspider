@@ -48,7 +48,7 @@ push @out, $self->msg('moon');
 foreach $l (@in) {
 	my ($rise, $set, $az, $dec, $loss )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],1);
 	$l->[3] =~ s{(-\d+|/\w+)$}{};
-	push @out,sprintf("%-6.6s %-30.30s %s %s %6.1f %6.1f       %3.1f", $l->[3], $l->[0], $rise, $set, $az, $dec, $loss);
+	push @out,sprintf("%-6.6s %-30.30s %s %s %6.1f %6.1f      %3.1f", $l->[3], $l->[0], $rise, $set, $az, $dec, $loss);
 }
 
 			

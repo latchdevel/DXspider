@@ -776,7 +776,7 @@ sub process
 		
 		# send a pc50 out on this channel
 		if ($t >= $dxchan->pc50_t + $DXProt::pc50_interval) {
-			$dxchan->send(pc50());
+			$dxchan->send(pc50(scalar DXChannel::get_all_users));
 			$dxchan->pc50_t($t);
 		} 
 

@@ -1,5 +1,8 @@
 21Nov99=======================================================================
 1. lose extraneous rubbish after the callsign as sent by BBSes.
+2. Change end label on sh/moon to RGain dB rather than Loss dB.
+3. Remove spurious call to DXCluster->get_exact in pc50.
+4. Allow rcmd to locally connected nodes that are not in the nodes table.
 20Nov99=======================================================================
 1. Added set/unset logininfo which will tell anybody that has this set when
 someone has either logged in or out of this node.
