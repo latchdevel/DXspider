@@ -287,13 +287,11 @@ sub _send {
         delete $conn->{send_offset};
         $offset = 0;
         shift @$rq;
-        last unless $flush; # Go back to select and wait
+        #last unless $flush; # Go back to select and wait
                             # for it to fire again.
     }
     # Call me back if queue has not been drained.
-    if (@$rq) {
-        set_event_handler ($sock, write => sub {$conn->_send(0)});
-    } else {
+    unless (@$rq) {
         set_event_handler ($sock, write => undef);
 		if (exists $conn->{close_on_empty}) {
 			&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
