@@ -175,7 +175,7 @@ sub del
 sub is_bbs
 {
 	my $self = shift;
-	return $self->{sort} eq 'B';
+	return $self->{'sort'} eq 'B';
 }
 
 # is it an ak1a cluster ?
@@ -197,6 +197,13 @@ sub is_connect
 {
 	my $self = shift;
 	return $self->{'sort'} eq 'C';
+}
+
+# for perl 5.004's benefit
+sub sort
+{
+	my $self = shift;
+	return @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
 }
 
 # handle out going messages, immediately without waiting for the select to drop
