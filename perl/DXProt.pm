@@ -858,7 +858,7 @@ sub normal
 				return;
 			}
 
-			Log('DXProt', "Merge request for $field[3] spots and $field[4] WWV from $field[1]");
+			Log('DXProt', "Merge request for $field[3] spots and $field[4] WWV from $field[2]");
 			
 			# spots
 			if ($field[3] > 0) {
