@@ -228,6 +228,15 @@ sub normal
 			# for safety
 			$self->state('prompt');
 		}
+	} elsif (my $func = $self->{func}) {
+		no strict 'refs';
+		my @ans;
+		if (ref $self->{edit}) {
+			eval { @ans = $self->{edit}->$func($self, $cmdline)};
+		} else {
+			eval {	@ans = &{$self->{func}}($self, $cmdline) };
+		}
+		$self->send_ans("Syserr: on stored func $self->{func}", $@) if $@;
 	} else {
 		$self->send_ans(run_cmd($self, $cmdline));
 	} 
@@ -314,77 +323,54 @@ sub run_cmd
 	my $cmdline = shift;
 	my @ans;
 	
-	if ($self->{func}) {
-		my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
-		dbg("stored func cmd = $c\n") if isdbg('eval');
-		eval  $c;
-		if ($@) {
-			return ("Syserr: Eval err $errstr on stored func $self->{func}", $@);
+
+	return () if length $cmdline == 0;
+		
+	# strip out //
+	$cmdline =~ s|//|/|og;
+		
+	# split the command line up into parts, the first part is the command
+	my ($cmd, $args) = split /\s+/, $cmdline, 2;
+	$args = "" unless defined $args;
+		
+	if ($cmd) {
+			
+		my ($path, $fcmd);
+			
+		dbg("cmd: $cmd") if isdbg('command');
+			
+		# alias it if possible
+		my $acmd = CmdAlias::get_cmd($cmd);
+		if ($acmd) {
+			($cmd, $args) = split /\s+/, "$acmd $args", 2;
+			$args = "" unless defined $args;
+			dbg("aliased cmd: $cmd $args") if isdbg('command');
 		}
-	} else {
+			
+		# first expand out the entry to a command
+		($path, $fcmd) = search($main::localcmd, $cmd, "pl");
+		($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
-		return () if length $cmdline == 0;
-		
-		# strip out //
-		$cmdline =~ s|//|/|og;
-		
-		# split the command line up into parts, the first part is the command
-		my ($cmd, $args) = split /\s+/, $cmdline, 2;
-		$args = "" unless defined $args;
-		
-		if ($cmd) {
+		if ($path && $cmd) {
+			dbg("path: $cmd cmd: $fcmd") if isdbg('command');
 			
-			my ($path, $fcmd);
-			
-			dbg("cmd: $cmd") if isdbg('command');
-			
-			# alias it if possible
-			my $acmd = CmdAlias::get_cmd($cmd);
-			if ($acmd) {
-				($cmd, $args) = split /\s+/, "$acmd $args", 2;
-				$args = "" unless defined $args;
-				dbg("aliased cmd: $cmd $args") if isdbg('command');
-			}
-			
-			# first expand out the entry to a command
-			($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-			($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
-
-			if ($path && $cmd) {
-				dbg("path: $cmd cmd: $fcmd") if isdbg('command');
-			
-				my $package = find_cmd_name($path, $fcmd);
-				@ans = (0) if !$package ;
+			my $package = find_cmd_name($path, $fcmd);
+			return ($@) if $@;
 				
-				if ($package) {
-					dbg("package: $package") if isdbg('command');
-					my $c;
-					unless (exists $Cache{$package}->{'sub'}) {
-						$c = eval $Cache{$package}->{'eval'};
-						if ($@) {
-							return DXDebug::shortmess($@);
-						}
-						$Cache{$package}->{'sub'} = $c;
-					}
-					$c = $Cache{$package}->{'sub'};
-					eval {
-						@ans = &{$c}($self, $args);
-				    };
-					
-					if ($@) {
-						#cluck($@);
-						return (DXDebug::shortmess($@));
-					};
-				}
+			if ($package) {
+				no strict 'refs';
+				dbg("package: $package") if isdbg('command');
+				eval { @ans = &$package($self, $args) };
+				return (DXDebug::shortmess($@)) if $@;
+			}
+		} else {
+			dbg("cmd: $cmd not found") if isdbg('command');
+			if (++$self->{errors} > $maxerrors) {
+				$self->send($self->msg('e26'));
+				$self->disconnect;
+				return ();
 			} else {
-				dbg("cmd: $cmd not found") if isdbg('command');
-				if (++$self->{errors} > $maxerrors) {
-					$self->send($self->msg('e26'));
-					$self->disconnect;
-					return ();
-				} else {
-					return ($self->msg('e1'));
-				}
+				return ($self->msg('e1'));
 			}
 		}
 	}
@@ -555,7 +541,7 @@ sub search
 					$l = join '.', @lparts;
 					#		  chop $dirfn;               # remove trailing /
 					$dirfn = "" unless $dirfn;
-					$cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn$l")); # cache it
+					$cmd_cache{$short_cmd} = join(',', ($path, "$dirfn$l")); # cache it
 					dbg("got path: $path cmd: $dirfn$l\n") if isdbg('command');
 					return ($path, "$dirfn$l"); 
 				}
@@ -568,7 +554,13 @@ sub search
 # clear the command name cache
 sub clear_cmd_cache
 {
+	no strict 'refs';
+	
+	for (keys %Cache) {
+		undef *{$_};
+	}
 	%cmd_cache = ();
+	%Cache = ();
 }
 
 #
@@ -584,39 +576,10 @@ sub clear_cmd_cache
 
 sub valid_package_name {
 	my($string) = @_;
-	$string =~ s/([^A-Za-z0-9\/])/sprintf("_%2x",unpack("C",$1))/eg;
+	$string =~ s|([^A-Za-z0-9_/])|sprintf("_%2x",unpack("C",$1))|eg;
 	
-	#second pass only for words starting with a digit
-	$string =~ s|/(\d)|sprintf("/_%2x",unpack("C",$1))|eg;
-	
-	#Dress it up as a real package name
-	$string =~ s/\//_/og;
-	return $string;
-}
-
-# find a cmd reference
-# this is really for use in user written stubs
-#
-# use the result as a symbolic reference:-
-#
-# no strict 'refs';
-# @out = &$r($self, $line);
-#
-sub find_cmd_ref
-{
-	my $cmd = shift;
-	my $r;
-	
-	if ($cmd) {
-		
-		# first expand out the entry to a command
-		my ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-		($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
-		
-		# make sure it is loaded
-		$r = find_cmd_name($path, $fcmd);
-	}
-	return $r;
+	$string =~ s|/|_|g;
+	return "cmd_$string";
 }
 
 # 
@@ -649,7 +612,7 @@ sub find_cmd_name {
 		};
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq( sub { $sub } );
+		my $eval = qq( sub $package { $sub } );
 		
 		if (isdbg('eval')) {
 			my @list = split /\n/, $eval;
@@ -659,7 +622,15 @@ sub find_cmd_name {
 			}
 		}
 		
-		$Cache{$package} = {mtime => $mtime, 'eval' => $eval };
+		# get rid of any existing sub and try to compile the new one
+		no strict 'refs';
+
+		dbg("[Re]defining $package") if isdbg('command');
+		undef *$package;
+		eval $eval;
+		
+		$Cache{$package} = {mtime => $mtime };
+	    
 	}
 
 	return $package;

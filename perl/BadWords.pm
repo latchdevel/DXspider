@@ -78,7 +78,7 @@ sub check
 		return "SHIT";
 	}
 	
-	return undef;
+	return ();
 }
 
 1;

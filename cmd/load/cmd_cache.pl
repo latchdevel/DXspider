@@ -10,6 +10,7 @@
 # $Id$
 #
 my $self = shift;
+$DB::single = 1;
 return (1, $self->msg('e5')) if $self->priv < 9;
 DXCommandmode::clear_cmd_cache();
 return (1, $self->msg('ok'));
