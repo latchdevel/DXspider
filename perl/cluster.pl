@@ -377,7 +377,6 @@ Spot->init();
 dbg('err', "reading in duplicate spot and WWV info ...");
 DXProt->init();
 
-
 # put in a DXCluster node for us here so we can add users and take them away
 DXNode->new($DXProt::me, $mycall, 0, 1, $DXProt::myprot_version); 
 

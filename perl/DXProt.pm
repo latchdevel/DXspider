@@ -504,7 +504,14 @@ sub normal
 #				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 				
 			}
-			return unless $node; # ignore if havn't seen a PC19 for this one yet
+			if ($field[2] eq $main::mycall || $field[2] eq $main::myalias || $field[1] eq $main::myalias || $field[1] eq $main::mycall) {
+				dbg('chan', "LOOP: trying to connect myself!");
+				return;
+			}
+			unless ($node) {
+				dbg('chan', "Node $field[1] not in config");
+				return;
+			}
 			unless ($node->isa('DXNode')) {
 				dbg('chan', "$field[1] is not a node");
 				return;
@@ -561,7 +568,14 @@ sub normal
 				dbg('chan', "$field[2] no PC19 yet, autovivified as node");
 #				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 			}
-			return unless $node;
+			if ($field[2] eq $main::mycall || $field[2] eq $main::myalias || $field[1] eq $main::myalias || $field[1] eq $main::mycall) {
+				dbg('chan', "LOOP: trying to disconnect me!");
+				return;
+			}
+			unless ($node) {
+				dbg('chan', "Node $field[2] not in config");
+				return;
+			}
 			unless ($node->isa('DXNode')) {
 				dbg('chan', "LOOP: $field[2] is not a node");
 				return;
@@ -579,6 +593,7 @@ sub normal
 				$ref->del;
 			} else {
 				dbg('chan', "$field[1] not known" );
+				return;
 			}
 			last SWITCH;
 		}
@@ -693,6 +708,9 @@ sub normal
 					dbg('chan', "$call not in table, dropped");
 					return;
 				}
+			} else {
+				dbg('chan', "I WILL NOT be disconnected!");
+				return;
 			}
 			last SWITCH;
 		}
@@ -859,7 +877,11 @@ sub normal
 		}
 		
 		if ($pcno == 39) {		# incoming disconnect
-			$self->disconnect(1);
+			if ($field[1] eq $self->{call}) {
+				$self->disconnect(1);
+			} else {
+				dbg('chan', "LOOP: came in on wrong channel");
+			}
 			return;
 		}
 		
