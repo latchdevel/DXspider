@@ -196,7 +196,7 @@
 
 %regions = (
 			vlf => [qw( 73khz 136khz )],
-			hf => [qw( 160m 80m 40m 30m 20m 17m 15m 12m 10m )],
+			hf => [qw( 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m )],
 			vhf => [qw( 6m 4m 2m 220 )],
 			vhfradio => [qw( band1 band2 )],
 			vhftv => [qw( band1 band3 )],
@@ -205,6 +205,6 @@
 			shf => [qw( 23cm 13cm 9cm 6cm 3cm )],
 			pmr => [qw( pmrlow pmrmid pmrhigh pmruhf )],
 			spe => [qw( 10m 6m 4m 2m )],
-			all => [qw( 73khz 136khz 160m 80m 40m 30m 20m 17m 15m 12m 10m 6m 4m 2m 220 70cm 23cm 9cm 6cm 3cm 12mm 6mm )],
+			all => [qw( 73khz 136khz 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m 6m 4m 2m 220 70cm 23cm 9cm 6cm 3cm 12mm 6mm )],
 		   );  
 
