@@ -32,7 +32,7 @@ $loc->{rrreq} = '0';
 
 if ($self->state eq "prompt") {
 
-	my @f = split /\b/, $line;
+	my @f = split /([\s\@\$])/, $line;
 	@f = map {s/\s+//g; length $_ ? $_ : ()} @f;
 	
 	# any thing after send?

@@ -1237,7 +1237,7 @@ sub import_one
 				
 	# first line;
 	my $line = shift @$ref;
-	my @f = split /\b/, $line;
+	my @f = split /([\s\@\$])/, $line;
 	@f = map {s/\s+//g; length $_ ? $_ : ()} @f;
 
  	unless (@f && $f[0] =~ /^(:?S|SP|SB|SEND)$/ ) {

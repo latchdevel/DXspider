@@ -16,6 +16,7 @@ the standard alias "expunge". This will cause the message to be deleted at
 the next queue message cycle.
 5. Put in prototype echo handling for direct connections using ExtMsg and
 Listeners.pm.
+6. fix msgs to g1tlh-2 (as opposed to g1tlh)
 04Oct01=======================================================================
 1. allow a residence time of (default) 2 days before actually deleting a msg.
 2. reduce the number R: lines on a bull from a bbs to 2 (the origin and the
