@@ -5,7 +5,6 @@
 #
 
 my ($self, $line) = @_;
-return (1, $self->msg('e5')) if $self->priv < 1;
 my @list = split /\s+/, $line;	# generate a list of callsigns
 @list = ($self->call) if !@list; # my channel if no callsigns
 
