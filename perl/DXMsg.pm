@@ -27,7 +27,7 @@ use IO::File;
 use Fcntl;
 
 eval {
-	require Mail::Send;
+	require Net::SMTP;
 };
 
 use strict;
@@ -40,6 +40,7 @@ $main::branch += $BRANCH;
 
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean $residencetime
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
+			$email_server $email_prog $email_from
 		    $queueinterval $lastq $importfn $minchunk $maxchunk $bulltopriv);
 
 %work = ();						# outstanding jobs
@@ -60,7 +61,9 @@ $minchunk = 4800;               # minimum chunk size for a split message
 $maxchunk = 6000;               # maximum chunk size
 $bulltopriv = 1;				# convert msgs with callsigns to private if they are bulls
 $residencetime = 2*86400;       # keep deleted messages for this amount of time
-
+$email_server = undef;			# DNS address of smtp server if 'smtp'
+$email_prog = undef;			# program name + args for sending mail
+$email_from = undef;			# the from address the email will appear to be from
 
 $badmsgfn = "$msgdir/badmsg.pl";    # list of TO address we wont store
 $forwardfn = "$msgdir/forward.pl";  # the forwarding table
@@ -95,6 +98,14 @@ $importfn = "$msgdir/import";       # import directory
 		  deletetime => '5,Deletion Time,cldatetime',
 		 );
 
+# fix up the default sendmail if available
+for (qw(/usr/sbin/sendmail /usr/lib/sendmail /usr/sbin/sendmail)) {
+	if (-e $_) {
+		$email_prog = $_;
+		last;
+	}
+}
+
 # allocate a new object
 # called fromnode, tonode, from, to, datetime, private?, subject, nolinesper  
 sub alloc                  
@@ -106,7 +117,6 @@ sub alloc
 	#  $to =~ s/-\d+$//o;
 	$self->{to} = ($to eq $main::mycall) ? $main::myalias : $to;
 	my $from = shift;
-	$from =~ s/-\d+$//o;
 	$self->{from} = uc $from;
 	$self->{t} = shift;
 	$self->{private} = shift;
@@ -427,23 +437,40 @@ sub notify
 	my $to = $ref->{to};
 	my $uref = DXUser->get($to);
 	my $dxchan = DXChannel->get($to);
-	if (*Mail::Send && $uref && $uref->wantemail) {
+	if (((*Net::SMTP && $email_server) || $email_prog) && $uref && $uref->wantemail) {
 		my $email = $uref->email;
 		if ($email) {
-			my @list = ref $email ? @{$email} : $email;
-			my $msg = new Mail::Send Subject=>"[DXSpider: $ref->{from}] $ref->{subject}";
-			$msg->to(@list);
-			my $fh = $msg->open;
-			if ($fh) {
-				print $fh "From: $ref->{from} To: $to On Node: $main::mycall Origin: $ref->{origin} Msgno: $ref->{msgno}\r\n\r\n";
-				print $fh map {"$_\r\n"} $ref->read_msg_body;
-				$fh->close;
-				for (@list) {
-					Log('msg', "Msgno $ref->{msgno} from $ref->{from} emailed to $_");
+			my @rcpt = ref $email ? @{$email} : $email;
+			my $fromaddr = $email_from || $main::myemail;
+			my @headers = ("To: $ref->{to}", 
+						   "From: $fromaddr",
+						   "Subject: [DXSpider: $ref->{from}] $ref->{subject}", 
+						   "X-DXSpider-To: $ref->{to}",
+						   "X-DXSpider-From: $ref->{from}\@$ref->{origin}", 
+						   "X-DXSpider-Gateway: $main::mycall"
+						  );
+			my @data = ("Msgno: $ref->{msgno} To: $to From: $ref->{from}\@$ref->{origin} Gateway: $main::mycall", 
+						"", 
+						$ref->read_msg_body
+					   );
+			my $msg;
+			undef $!;
+			if (*Net::SMTP && $email_server) {
+				$msg = Net::SMTP->new($email_server);
+				if ($msg) {
+					$msg->mail($fromaddr);
+					$msg->to(@rcpt);
+					$msg->data(map {"$_\n"} @headers, '', @data);
+					$msg->quit;
 				}
-			} else {
-				dbg("email forwarding error $!") if isdbg('msg'); 
+			} elsif ($email_prog) {
+				$msg = new IO::File "|$email_prog " . join(' ', @rcpt);
+				if ($msg) {
+					print $msg map {"$_\r\n"} @headers, '', @data, '.';
+					$msg->close;
+				}
 			}
+			dbg("email forwarding error $!") if isdbg('msg') && !$msg && defined $!; 
 		}
 	}
 	$dxchan->send($dxchan->msg('m9')) if $dxchan && $dxchan->is_user;
@@ -501,6 +528,14 @@ sub store
 			confess "can't open msg file $fn $!";  
 		}
 	}
+
+	# actual remove all the 'deleted' messages in one hit.
+	# this has to me delayed until here otherwise it only does one at 
+	# a time because @msg is rewritten everytime del_msg is called.
+	my @del = grep {!$_->{tonode} && $_->{delete} && $_->{deletetime} < $main::systime} @msg;
+	for (@del) {
+		$_->del_msg;
+	}
 }
 
 # delete a message
@@ -508,17 +543,19 @@ sub del_msg
 {
 	my $self = shift;
 	my $dxchan = shift;
+	my $call = '';
+	$call = ' by ' . $dxchan->call if $dxchan;
 	
 	if ($self->{tonode}) {
 		$self->{delete}++;
 		$self->{deletetime} = 0;
+		dbg("Msgno $self->{msgno} but marked as expunged$call") if isdbg('msg');
 	} else {
 		# remove it from the active message list
 		@msg = grep { $_ != $self } @msg;
 
-		my $call = '';
-		$call = ' by ' . $dxchan->call if $dxchan;
 		Log('msg', "Msgno $self->{msgno} expunged$call");
+		dbg("Msgno $self->{msgno} expunged$call") if isdbg('msg');
 		
 		# remove the file
 		unlink filename($self->{msgno});
@@ -534,6 +571,14 @@ sub mark_delete
 	$ref->{delete}++;
 	$ref->{deletetime} = $t;
 	$ref->store( [$ref->read_msg_body] );
+}
+
+sub unmark_delete
+{
+	my $ref = shift;
+	my $t = shift;
+	delete $ref->{delete};
+	delete $ref->{deletetime};
 }
 
 # clean out old messages from the message queue
@@ -687,10 +732,6 @@ sub queue_msg
 		next if $ref->{tonode};	          # ignore it if it already being processed
 		
 		# is it awaiting deletion?
-		if ($ref->{delete} && $main::systime >= $ref->{deletetime}) {
-			$ref->del_msg;
-			next;
-		}
 		next if $ref->{delete};
 		
 		# firstly, is it private and unread? if so can I find the recipient
@@ -738,6 +779,8 @@ sub queue_msg
 		# if all the available nodes are busy then stop
 		last if @nodelist == scalar grep { get_busy($_->call) } @nodelist;
 	}
+
+	
 }
 
 # is there a message for me?
@@ -1060,11 +1103,14 @@ sub do_send_stuff
 sub dir
 {
 	my $ref = shift;
-	my $flag = $ref->read ? '-' : ' ';
-	$flag = 'D' if $ref->delete;
-	return sprintf "%6d%s%s%5d %8.8s %8.8s %-6.6s %5.5s %-30.30s", 
-		$ref->msgno, $flag, $ref->private ? 'p' : ' ', $ref->size,
-			$ref->to, $ref->from, cldate($ref->t), ztime($ref->t), $ref->subject;
+	my $flag = $ref->{private} && $ref->{read} ? '-' : ' ';
+	if ($ref->{delete}) {
+		$flag = $ref->{deletetime} > $main::systime ? 'D' : 'E'; 
+	}
+	return sprintf("%6d%s%s%5d %8.8s %8.8s %-6.6s %5.5s %-30.30s", 
+				   $ref->{msgno}, $flag, $ref->{private} ? 'p' : ' ', 
+				   $ref->{size}, $ref->{to}, $ref->{from}, cldate($ref->{t}), 
+				   ztime($ref->{t}), $ref->{subject});
 }
 
 # load the forward table

@@ -27,9 +27,9 @@ package CmdAlias;
 	],
     'a' => [
 	'^acc?e?p?t?$', 'apropos accept', 'apropos',
-	  '^ann\w*/full', 'announce full', 'announce', 
-	  '^ann\w*/sysop', 'announce sysop', 'announce',
-	  '^ann\w*/(.*)$', 'announce $1', 'announce',
+	  '^ann?o?u?n?c?e?/full', 'announce full', 'announce', 
+	  '^ann?o?u?n?c?e?/sysop', 'announce sysop', 'announce',
+	  '^ann?o?u?n?c?e?/(.*)$', 'announce $1', 'announce',
 	],
 	'b' => [
 	  '^b$', 'bye', 'bye',
@@ -39,22 +39,24 @@ package CmdAlias;
 	'^cre?a?t?e?$', 'apropos create', 'apropos',
 	],
 	'd' => [
-	  '^del\w*/u', 'delete/user', 'delete/user',
-	  '^del\w*/fu', 'kill full', 'kill',
-	  '^del', 'kill', 'kill',
-	  '^di\w*/a\w*', 'directory all', 'directory',
-	  '^di\w*/b\w*', 'directory bulletins', 'directory',
-	  '^di\w*/n\w*', 'directory new', 'directory',
-	  '^di\w*/o\w*', 'directory own', 'directory',
-	  '^di\w*/s\w*', 'directory subject', 'directory',
-	  '^di\w*/t\w*', 'directory to', 'directory',
-	  '^di\w*/f\w*', 'directory from', 'directory',
-	  '^di\w*/(\d+)-(\d+)', 'directory $1-$2', 'directory',
-	  '^di\w*/(\d+)', 'directory $1', 'directory',
+	  '^dele?t?e?/u', 'delete/user', 'delete/user',
+	  '^dele?t?e?/fu', 'kill full', 'kill',
+	  '^dele?t?e?$', 'kill', 'kill',
+	  '^dir?e?c?t?o?r?y?/a\w*', 'directory all', 'directory',
+	  '^dir?e?c?t?o?r?y?/b\w*', 'directory bulletins', 'directory',
+	  '^dir?e?c?t?o?r?y?/n\w*', 'directory new', 'directory',
+	  '^dir?e?c?t?o?r?y?/o\w*', 'directory own', 'directory',
+	  '^dir?e?c?t?o?r?y?/s\w*', 'directory subject', 'directory',
+	  '^dir?e?c?t?o?r?y?/t\w*', 'directory to', 'directory',
+	  '^dir?e?c?t?o?r?y?/f\w*', 'directory from', 'directory',
+	  '^dir?e?c?t?o?r?y?/(\d+)-(\d+)', 'directory $1-$2', 'directory',
+	  '^dir?e?c?t?o?r?y?/(\d+)', 'directory $1', 'directory',
 	],
 	'e' => [
 	  '^exi?t?$', 'bye', 'bye',
-	  '^exp?u?\w+$', 'kill expunge', 'kill expunge',
+	  '^export_u', 'export_users', 'export_users',
+	  '^expor?', 'export', 'export',
+	  '^expun?g?e?$', 'kill expunge', 'kill expunge',
 	],
 	'f' => [
 	'^fo\w*$', 'apropos forward', 'apropos',
@@ -68,6 +70,7 @@ package CmdAlias;
 	'j' => [
 	],
 	'k' => [
+			'^ki?l?l?/ex', 'kill expunge', 'kill',
 	],
 	'l' => [
 	'^loa?d?$', 'apropos load', 'apropos',
@@ -119,8 +122,8 @@ package CmdAlias;
       '^sho?w?/up', 'show/cluster', 'show/cluster',
 	  '^sho?w?/ww?v?/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
 	  '^sho?w?/ww?v?/(\d+)', 'show/wwv $1', 'show/wwv',
-	'^shut?d?\w*$', 'shutdown', 'shutdown',
 	'^sho?w?$', 'apropos show', 'apropos',
+	'^shut?d?\w*$', 'shutdown', 'shutdown',
 	  '^sp$', 'send', 'send',
 	'^sta?t?$', 'apropos stat', 'apropos',
       	

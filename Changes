@@ -1,6 +1,27 @@
+02Nov01=======================================================================
+1. fixed some Aliasing problems, but this whole area will have to be addressed
+more comprehensively.
+2. Changed talk logging so that it hopefully is more consistant and maybe even
+useful.
+3. Altered the mechanism of the personal emailing so that it uses lower level
+components and should be therefore available on M$ platforms. You will need
+to install a version of libnet (perl -MCPAN -eshell, then install Net::SMTP).
+I believe all 5.6.x perls have this built in (ie M$ should have this). If you
+are on M$ or you want to use an MTA via SMTP in linux then you need to declare
+the dns name of the MTA by: set/var $DXMsg::email_server = 'post.fred.net' 
+(or whatever the MTA is called). You can also use local programs other than
+sendmail by: set/var $DXMsg::email_prog = '/usr/bin/postfix ..' or whatever.
+Finally you can alter the 'from' address using: set/var $DXMsg::email_from
+= 'FBloggs@msn.com' (\@ if you use " and ") - bewarned that you may be 
+prevented from using just any old address. You can place these commands in
+/spider/scripts/startup for permanent use.
 01Nov01=======================================================================
 1. added information on registration, login scripts and passwords to the
-administration manual
+26Oct01=======================================================================
+1. If $main::reqreg = 1 then set/register will allow 'registered' users 
+full access, if $main::reqreg = 2 then registered users will be 'read-only'
+(ie the opposite). If $main::reqreg = 0 then registration and its effects
+are disabled.
 25Oct01=======================================================================
 1. added unset/password command to allow sysops (only) to completely delete
 and remove a user's password.
@@ -8,10 +29,7 @@ and remove a user's password.
 3. give a read receipt for everybody that reads a message so marked.
 4. enhance set/email so that if you set email address(es) with this command
 it will send any messages to your callsign as they come in. unset/email
-will disable forwarding. This probably only works for unix systems. To enable
-this feature you need to download Mail::Send from CPAN and install it.
-(http://www.cpan.org/modules/by-module/Mail/MailTools-1.40.tar.gz). If you
-don't want this then it should work without.
+will disable forwarding. 
 24Oct01=======================================================================
 1. added (un)set/register, show/registered commands which when a 'set/var
 $main::reqreg = 1' is done in the startup script will require users to 

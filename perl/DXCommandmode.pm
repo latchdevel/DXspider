@@ -106,8 +106,10 @@ sub start
 	$self->{here} = 1;
 
 	# sort out registration
-	if ($main::reqreg) {
+	if ($main::reqreg == 1) {
 		$self->{registered} = $user->registered;
+	} elsif ($main::reqreg == 2) {
+		$self->{registered} = !$user->registered;
 	} else {
 		$self->{registered} = 1;
 	}
@@ -284,7 +286,11 @@ sub normal
 		} else {
 			eval {	@ans = &{$self->{func}}($self, $cmdline) };
 		}
-		$self->send_ans("Syserr: on stored func $self->{func}", $@) if $@;
+		if ($@) {
+			$self->send_ans("Syserr: on stored func $self->{func}", $@);
+			$self->state('prompt');
+			undef $@;
+		}
 		$self->send_ans(@ans);
 	} else {
 		$self->send_ans(run_cmd($self, $cmdline));
@@ -717,7 +723,7 @@ sub talk
 	my ($self, $from, $to, $via, $line) = @_;
 	$line =~ s/\\5E/\^/g;
 	$self->local_send('T', "$to de $from: $line") if $self->{talk};
-	Log('talk', $to, $from, $main::mycall, $line);
+	Log('talk', $to, $from, $via?$via:$main::mycall, $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
 		my $key = "$to$from";

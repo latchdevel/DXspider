@@ -17,7 +17,7 @@ my $ref;
 # that I haven't read yet
 if (@f == 0) {
 	foreach $ref (DXMsg::get_all()) {
-		if ($ref->to eq $self->call && $ref->private && !$ref->read) {
+		if ($ref->to eq $self->call && $ref->private && !$ref->read && !$ref->delete) {
 			push @f, $ref->msgno;
 			last;
 		}

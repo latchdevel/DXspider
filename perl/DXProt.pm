@@ -1774,7 +1774,7 @@ sub talk
 	
 	$line =~ s/\^/\\5E/g;			# remove any ^ characters
 	$self->send(DXProt::pc10($from, $to, $via, $line, $origin));
-	Log('talk', $self->call, $from, $via?$via:$main::mycall, $line) unless $origin && $origin ne $main::mycall;
+	Log('talk', $to, $from, $via?$via:$self->call, $line) unless $origin && $origin ne $main::mycall;
 }
 
 # send it if it isn't the except list and isn't isolated and still has a hop count

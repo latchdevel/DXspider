@@ -47,7 +47,7 @@ if ($fh) {
 	$m = $self->msg('export2', $msgno, $fn, $!, $self->call);
 } 
 Log('msg', $m);
-dbg('msg', $m);
+dbg($m) if isdbg('msg');
 push @out, $m;
 
 return (1, @out);

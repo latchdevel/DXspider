@@ -89,6 +89,11 @@ if ($cmd =~ /^to/i) {
 	$old = $ref->keep ? 'Keep' : 'No Keep';
     $new = 'No Keep';
     $ref->keep(0);
+} elsif ($cmd =~ /^node/i) {
+    $m = 'Delete';
+	$old = $ref->delete ? 'Delete' : 'Not Delete';
+    $new = 'Not Delete';
+    $ref->unmark_delete;
 } elsif ($cmd =~ /^su/i) {
     $m = 'Subject';
     $old = $ref->subject;
