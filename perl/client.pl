@@ -51,10 +51,10 @@ use IPC::Open2;
 sub cease
 {
 	my $sendz = shift;
-	if ($conn && $sendz) {
-		$conn->send_now("Z$call|bye...");
-		sleep(1);
-	}
+#	if ($conn && $sendz) {
+#		$conn->send_now("Z$call|bye...");
+#		sleep(1);
+#	}
 	$stdout->flush if $stdout;
 	if ($pid) {
 		dbg('connect', "killing $pid");
@@ -99,7 +99,7 @@ sub rec_socket
 {
 	my ($con, $msg, $err) = @_;
 	if (defined $err && $err) {
-		cease(1);
+		cease(0);
 	}
 	if (defined $msg) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
@@ -155,6 +155,8 @@ sub rec_socket
 		# any other sorts that might happen are silently ignored.
 		# ******************************************************
 		# ******************************************************
+	} else {
+		cease(0);
 	}
 	$lasttime = time; 
 }

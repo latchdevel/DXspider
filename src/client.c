@@ -629,9 +629,11 @@ void term_timeout(int i)
 
 void terminate(int i)
 {
+#if 0
 	if (node && send_Z && call) {
 		send_msg(node, 'Z', "bye", 3);
 	}
+#endif
 	
 	signal(SIGALRM, term_timeout);
 	alarm(10);

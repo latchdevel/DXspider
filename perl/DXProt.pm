@@ -878,10 +878,8 @@ sub finish
 {
 	my $self = shift;
 	my $call = $self->call;
-	my $nopc39 = shift;
+	my $conn = shift;
 	my $ref = DXCluster->get_exact($call);
-	
-	$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op"))) unless $nopc39;
 	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
@@ -1350,6 +1348,18 @@ sub addrcmd
 	} else {
 		route(undef, $to, pc34($main::mycall, $to, $cmd));
 	}
+}
+
+sub disconnect
+{
+	my $self = shift;
+	my $nopc39 = shift;
+
+	if ($self->{conn} && !$nopc39) {
+		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
+	}
+
+	$self->SUPER::disconnect;
 }
 1;
 __END__ 

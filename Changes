@@ -1,3 +1,6 @@
+17Jun00=======================================================================
+1. I believe I have fixed all the login/logout 'broken pipe' errors
+2. Added G0RDI's 'links' command.
 14Jun00=======================================================================
 1. fixed sh/node crash
 2. fixed RTT in who.pl

@@ -101,9 +101,9 @@ sub do_resize
 sub cease
 {
 	my $sendz = shift;
-	if ($conn && $sendz) {
-		$conn->send_now("Z$call|bye...");
-	}
+#	if ($conn && $sendz) {
+#		$conn->send_now("Z$call|bye...");
+#	}
 	endwin();
 	dbgclose();
 	print @_ if @_;
@@ -226,6 +226,8 @@ sub rec_socket
 		# any other sorts that might happen are silently ignored.
 		# ******************************************************
 		# ******************************************************
+	} else {
+		cease(0);
 	}
 	$top->refresh();
 	$lasttime = time; 

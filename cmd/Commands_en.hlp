@@ -259,6 +259,10 @@ Delete a message (usually a 'bulletin') from the whole cluster system.
 This uses the subject field, so any messages that have exactly the same subject
 will be deleted. Beware!
 
+=== 0^LINKS^Show which nodes is physically connected
+This is a quick listing that shows which links are connected and
+some information about them. See WHO for a list of all connections.
+
 === 9^LOAD/ALIASES^Reload the command alias table
 Reload the /spider/cmd/Aliases file after you have editted it. You will need to
 do this if you change this file whilst the cluster is running in order for the

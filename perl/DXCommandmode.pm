@@ -306,13 +306,14 @@ sub process
 sub finish
 {
 	my $self = shift;
+	my $conn = shift;
 	my $call = $self->call;
 
 	# I was the last node visited
     $self->user->node($main::mycall);
 		
 	# log out text
-	if (-e "$main::data/logout") {
+	if ($conn && -e "$main::data/logout") {
 		open(I, "$main::data/logout") or confess;
 		my @in = <I>;
 		close(I);

@@ -106,6 +106,11 @@ sub rec
 	
 	if (!defined $msg || (defined $err && $err)) {
 		if ($dxchan) {
+			if (defined $err) {
+				$conn->disconnect;
+				undef $conn;
+				$dxchan->conn(undef);
+			}
 			$dxchan->disconnect;
 		} elsif ($conn) {
 			$conn->disconnect;
@@ -374,6 +379,11 @@ dbg('local', "Local::init error $@") if $@;
 dbg('err', "orft we jolly well go ...");
 
 #open(DB::OUT, "|tee /tmp/aa");
+
+$SIG{PIPE} = sub { 
+	#$DB::single = 1;  
+	dbg('err', "Broken PIPE signal received"); 
+};
 
 for (;;) {
 	my $timenow;
