@@ -64,10 +64,10 @@ while (@f) {
 foreach $ref ( @refs) {
 	Log('msg', "Message $ref->{msgno} from $ref->{from} to $ref->{to} deleted by $call");
 	if ($full) {
-		DXProt::broadcast_all_ak1a(DXProt::pc49($self->call, $ref->{subject}), $DXProt::me);
+		DXProt::broadcast_ak1a(DXProt::pc49($ref->{from}, $ref->{subject}), $DXProt::me);
 	}
 	$ref->del_msg;
-	push @out, "Message $ref->{msgno} deleted";
+	push @out, $self->msg('m12', $ref->msgno);
 }
 
 return (1, @out);

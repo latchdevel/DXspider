@@ -573,7 +573,7 @@ sub normal
 		}
 
 		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42 || $pcno == 49) { # mail/file handling
-			if ($field[1] eq $main::mycall) {
+			if ($pcno == 49 || $field[1] eq $main::mycall) {
 				DXMsg::process($self, $line);
 			} else {
 				route($field[1], $line);
@@ -663,7 +663,7 @@ sub normal
 		if ($pcno == 43) {
 			last SWITCH;
 		}
-		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47 || $pcno == 49) {
+		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47) {
 			if ($field[1] eq $main::mycall) {
 				;
 			} else {

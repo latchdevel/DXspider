@@ -34,6 +34,25 @@ DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
+=== 9^CATCH <node call> All|[<msgno> ...]^Mark a message as sent
+=== 9^UNCATCH <node call> All|[msgno> ...]^Unmark a message as sent
+When you send messages the fact that you have forwarded it to another node 
+is remembered so that it isn't sent again. When you have a new partner
+node and you add their callsign to your /spider/msg/forward.pl file, all
+outstanding non-private messages will be forwarded to them. This may well
+be ALL the non-private messages. You can prevent this by using these 
+commmands:-
+
+    catch GB7DJK all
+    catch GB7DJK 300 301 302 303
+	
+and to undo what you have just done:-
+
+	uncatch GB7DJK all
+	uncatch GB7DJK 300 301 302 303
+
+which will arrange for them to be forward candidates again.
+
 === 9^DEBUG^Set the cluster program into debug mode
 Executing this command will only have an effect if you are running the cluster
 in debug mode i.e.
