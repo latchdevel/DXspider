@@ -597,7 +597,7 @@ sub normal
 				dbg('chan', "PCPROT: $field[2] came in on wrong channel");
 				return;
 			}
-			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
+			if ($dxchan = DXChannel->get($field[1])) {
 				dbg('chan', "PCPROT: $field[1] connected locally");
 				return;
 			}
