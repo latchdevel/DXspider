@@ -33,17 +33,21 @@ use vars qw(@list $fp @today $string);
 
 $fp = DXLog::new('debug', 'dat', 'd');
 @today = Julian::unixtoj(time()); 
+my $nolines = 1;
+my @prev;
 
 for my $arg (@ARGV) {
 	if ($arg =~ /^-/) {
 		$arg =~ s/^-//o;
 		push @list, $arg;
+	} elsif ($arg =~ /^\d+$/) {
+		$nolines = $arg;
 	} else {
 		$string = $arg;
 		last;
 	}
 }
-die "usage: grepdbg [[-nnn] ..] <regexp>\n" unless  $string;
+die "usage: grepdbg [nn] [[-nnn] ..] <regexp>\n" unless  $string;
 
 push @list, "0" unless @list;
 for my $entry (@list) {
@@ -54,10 +58,14 @@ for my $entry (@list) {
 		while (<$fh>) {
 			my $line = $_;
 			chomp $line;
+			push @prev, $line;
+			shift @prev while @prev > $nolines;
 			if ($line =~ m{$string}io) {
-				my @line =  split '\^', $line;
-				my $t = shift @line;
-				print atime($t), ' ', join('^', @line), "\n"; 
+				for (@prev) {
+					my @line =  split '\^';
+					my $t = shift @line;
+					print atime($t), ' ', join('^', @line), "\n"; 
+				}
 			}
 		}
 		$fp->close();

@@ -1002,10 +1002,6 @@ Tell the system where you are. For example:-
 Display all the bad node callsigns in the system, see SET/BADNODE
 for more information.
 
-=== 0^SHOW/CALL <callsign>^Show any callbook details on a callsign
-This command queries an international callbook server on the internet
-and returns any information available for that callsign. 
-
 === 0^SHOW/DATE [<prefix>|<callsign>]^Show the local time 
 This is very nearly the same as SHOW/TIME, the only difference the format
 of the date string if no arguments are given.
@@ -1221,6 +1217,11 @@ using this command with a latitude and longitude as an argument, for
 example:-
 
 SH/QRA 52 41 N 0 58 E
+
+=== 0^SHOW/QRZ <callsign>^Show any callbook details on a callsign
+This command queries the QRZ callbook server on the internet
+and returns any information available for that callsign. This service
+is provided for users of this software by http://www.qrz.com 
 
 === 0^SHOW/SATELLITE <name> [<hours> <interval>]^Show tracking data
 Show the tracking data from your location to the satellite of your choice

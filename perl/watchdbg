@@ -31,7 +31,9 @@ use strict;
 my $fp = DXLog::new('debug', 'dat', 'd');
 my @today = Julian::unixtoj(time()); 
 my $fh = $fp->open(@today) or die $!; 
+my $nolines = shift if $ARGV[0] =~ /^\d+$/ || 1;
 my $exp = join '|', @ARGV;
+my @prev;
 
 # seek to end of file
 $fh->seek(0, 2);
@@ -39,13 +41,15 @@ for (;;) {
 	my $line = <$fh>;
 	if ($line) {
 		if ($exp) {
-			printit($line) if $line =~ m{(?:$exp)}oi;
+			push @prev, $line;
+			shift @prev while @prev > $nolines; 
+			printit(@prev) if $line =~ m{(?:$exp)}oi;
 		} else {
-	            printit($line);
-        	}
+			printit($line);
+		}
 	} else {
 		sleep(1);
-
+		
 		# check that the debug hasn't rolled over to next day
 		# open it if it has
 		my @now = Julian::unixtoj(time()); 
@@ -64,12 +68,14 @@ for (;;) {
 
 sub printit
 {
-	my $line = shift;
-	my @line =  split '\^', $line;
-	my $t = shift @line;
-	my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
-	my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
-
-	print $buf, ' ', join('^', @line); 
+	while (@_) {
+		my $line = shift;
+		my @line =  split '\^', $line;
+		my $t = shift @line;
+		my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
+		my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
+		
+		print $buf, ' ', join('^', @line); 
+	}
 }
 exit(0);

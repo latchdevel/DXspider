@@ -38,7 +38,6 @@ BEGIN {
 	close CLLOCK;
 }
 
-
 use Msg;
 use DXVars;
 use DXDebug;
