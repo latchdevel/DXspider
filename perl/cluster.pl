@@ -89,6 +89,8 @@ sub already_conn
 	sleep(1);
 	dbg('chan', "-> Z $call bye\n");
 	$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
+	sleep(1);
+	$conn->disconnect;
 }
 
 # handle incoming messages
@@ -109,7 +111,7 @@ sub rec
                 # is there one already connected to me ? 
 		my $user = DXUser->get($call);
 		if (DXChannel->get($call)) {
-		        my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
+			my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
 			already_conn($conn, $call, $mess);
 			return;
 		}

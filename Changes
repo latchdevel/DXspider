@@ -1,3 +1,8 @@
+10Jul99=======================================================================
+1. added an explicit disconnect from my side for already connected calls. This
+appears to have fixed a problem where if two consoles connect at the same time
+with the same (sysop?) callsign the cluster would stop.
+2. added some debugging in the Message handler to allow more state to be seen.
 05Jul99=======================================================================
 1. added stat/msg and stat/cluster commands to allow me to poke about inside
 the msg and cluster node tables.

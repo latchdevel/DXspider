@@ -135,6 +135,7 @@ sub process
 			my $node = $_;
 			my $ref = $busy{$_};
 			if (exists $ref->{lastt} && $main::systime > $ref->{lastt} + $timeout) {
+				dbg('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
 				$ref->stop_msg($node);
 
 				# delay any outgoing messages that fail
@@ -165,6 +166,7 @@ sub process
 			if (exists $busy{$f[2]}) {
 				my $ref = $busy{$f[2]};
 				my $tonode = $ref->{tonode};
+				dbg('msg', "Busy, stopping msgno: $ref->{msgno} -> $f[2]");
 				$ref->stop_msg($self->call);
 			}
 
@@ -198,6 +200,9 @@ sub process
 					$ref->{count} = 0;
 				}
 				$ref->{lastt} = $main::systime;
+			} else {
+				dbg('msg', "PC29 from unknown stream $f[3] from $f[2]" );
+				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			}
 			last SWITCH;
 		}
@@ -217,6 +222,7 @@ sub process
 				$ref->send_tranche($self);
 				$ref->{lastt} = $main::systime;
 			} else {
+				dbg('msg', "PC30 from unknown stream $f[3] from $f[2]" );
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			} 
 			last SWITCH;
@@ -229,6 +235,7 @@ sub process
 				$ref->send_tranche($self);
 				$ref->{lastt} = $main::systime;
 			} else {
+				dbg('msg', "PC31 from unknown stream $f[3] from $f[2]" );
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			} 
 			last SWITCH;
@@ -281,6 +288,7 @@ sub process
 				}
 				$ref->stop_msg($self->call);
 			} else {
+				dbg('msg', "PC32 from unknown stream $f[3] from $f[2]" );
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			}
 			# queue_msg(0);
@@ -300,6 +308,7 @@ sub process
 				}
 				$ref->stop_msg($self->call);
 			} else {
+				dbg('msg', "PC33 from unknown stream $f[3] from $f[2]" );
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			} 
 
