@@ -1,3 +1,5 @@
+24Aug01=======================================================================
+1. Allow badmsg to reject on interface callsign ('I')
 20Aug01=======================================================================
 1. protect against PC41s with field[3] == field[2]
 2. Redo Julian stuff as proper objects

@@ -284,7 +284,7 @@ sub process
 						$ref->swop_it($self->call);
 						
 						# look for 'bad' to addresses 
-						if ($ref->dump_it) {
+						if ($ref->dump_it($self->call)) {
 							$ref->stop_msg($self->call);
 							dbg("'Bad' message $ref->{to}") if isdbg('msg');
 							Log('msg', "'Bad' message $ref->{to}");
@@ -777,7 +777,7 @@ sub init
 		}
 		
 		# delete any messages to 'badmsg.pl' places
-		if ($ref->dump_it) {
+		if ($ref->dump_it('')) {
 			dbg("'Bad' TO address $ref->{to}") if isdbg('msg');
 			Log('msg', "'Bad' TO address $ref->{to}");
 			$ref->del_msg;
@@ -992,6 +992,7 @@ sub forward_it
 sub dump_it
 {
 	my $ref = shift;
+	my $call = shift;
 	my $i;
 	
 	for ($i = 0; $i < @badmsg; $i += 3) {
@@ -1007,6 +1008,7 @@ sub dump_it
 		$tested = $ref->{from} if $field eq 'F';
 		$tested = $ref->{origin} if $field eq 'O';
 		$tested = $ref->{subject} if $field eq 'S';
+		$tested = $call if $field eq 'I';
 
 		if (!$pattern || $tested =~ m{$pattern}i) {
 			return 1;
