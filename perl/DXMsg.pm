@@ -613,12 +613,11 @@ sub queue_msg
 #				$clref = Route::Node::get($hnode) if $hnode;
 #			}
 			if ($clref) {
-				my $dxc = $clref->dxchan;
-				if ($dxc) {
-					if (!grep $dxc == $_, DXCommandmode::get_all()) {
+				$dxchan = $clref->dxchan;
+				if ($dxchan) {
+					if ($dxchan->is_node) {
 						next if $clref->call eq $main::mycall;  # i.e. it lives here
-						$dxchan = $dxc;
-						$ref->start_msg($dxchan) if $dxchan && !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
+						$ref->start_msg($dxchan) if !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
 					}
 				} else {
 					dbg('route', "Route: No dxchan for $ref->{to} " . ref($clref) );

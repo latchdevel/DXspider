@@ -241,7 +241,7 @@ sub alldxchan
 	foreach my $p (@{$self->{parent}}) {
 		my $dxchan = DXChannel->get($p);
 		if ($dxchan) {
-			push @dxchan, $dxchan if grep $dxchan ne $_, @dxchan;
+			push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
 		} else {
 			next if $p eq $main::mycall; # the root
 			my $ref = $self->get($p);
@@ -255,7 +255,7 @@ sub dxchan
 {
 	my $self = shift;
 	my $dxchan = DXChannel->get($self->{call});
-	return $dxchan = $dxchan;
+	return $dxchan if $dxchan;
 	
 	my @dxchan = $self->alldxchan;
 	return undef unless @dxchan;
