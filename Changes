@@ -1,3 +1,14 @@
+14Sep01=======================================================================
+1. added the start of script files on login/startup. You can now add 
+commands (for example to set variables) to a file called 
+/spider/scripts/startup. You can also put in scripts for a callsign which
+will be executed when that callsign logs on. A sample script is in the
+directory (you did remember to do cvs update -d?). User settable versions
+of this will happen when the general mechanism for doing that is available.
+2. Added set/unset/anntalk commands. If you unset/anntalk then you will
+no longer see many of the of talk like announces. Unfortunately you may
+miss the odd useful one as well (but since everything is repeated many times
+you probably won't :-)
 13Sep01=======================================================================
 1. did some work on making talk more intelligent and fixed a>b problem.
 2. fixed a nasty problem on input when being hit with full buffers of 

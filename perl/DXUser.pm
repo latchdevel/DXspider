@@ -71,6 +71,7 @@ $lasttime = 0;
 		  nopings => '9,Ping Obs Count',
 		  wantlogininfo => '9,Login info req,yesno',
           wantgrid => '0,DX Grid Info,yesno',
+		  wantann_talk => '0,Talklike Anns,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		 );
@@ -517,6 +518,11 @@ sub wanttalk
 sub wantgrid
 {
 	return _want('grid', @_);
+}
+
+sub wantann_talk
+{
+	return _want('ann_talk', @_);
 }
 
 sub wantlogininfo

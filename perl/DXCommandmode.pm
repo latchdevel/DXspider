@@ -30,9 +30,11 @@ use AnnTalk;
 use WCY;
 use Sun;
 use Internet;
+use Script;
+
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $suppress_ann_to_talk);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -40,8 +42,6 @@ $errstr = ();					# error string from eval
 %aliases = ();					# aliases for (parts of) commands
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
-$suppress_ann_to_talk = 1;		# don't announce 'to <call> ' or '<call> ' type announcements
-
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -102,6 +102,7 @@ sub start
 	$self->{wx} = $user->wantwx;
 	$self->{dx} = $user->wantdx;
 	$self->{logininfo} = $user->wantlogininfo;
+	$self->{ann_talk} = $user->wantann_talk;
 	$self->{here} = 1;
 
 	# get the filters
@@ -144,6 +145,10 @@ sub start
 		run_cmd($DXProt::me, "forward/opernam $call");
 		$user->lastoper($main::systime);
 	}
+
+	# run a script send the output to the punter
+	my $script = new Script(lc $call);
+	$script->run($self) if $script;
 }
 
 #
@@ -705,9 +710,9 @@ sub announce
 	my $text = shift;
 	my ($filter, $hops);
 
-	if ($suppress_ann_to_talk && $to ne $self->{call}) {
+	if (!$self->{ann_talk} && $to ne $self->{call}) {
 		my $call = AnnTalk::is_talk_candidate($_[0], $text);
-		return if $call && Route::get($call);
+		return if $call;
 	}
 
 	if ($self->{annfilter}) {

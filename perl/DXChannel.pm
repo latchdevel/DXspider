@@ -103,6 +103,7 @@ $count = 0;
 		  senddbg => '8,Sending Debug,yesno',
 		  width => '0,Column Width',
 		  disconnecting => '9,Disconnecting,yesno',
+		  ann_talk => '0,Suppress Talk Anns,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);

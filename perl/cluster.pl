@@ -67,6 +67,7 @@ use DXBearing;
 use DXDb;
 use DXHash;
 use DXDupe;
+use Script;
 use Prefix;
 use Spot;
 use Bands;
@@ -452,6 +453,8 @@ DXDebug::dbgclean();
 
 # this, such as it is, is the main loop!
 dbg("orft we jolly well go ...");
+my $script = new Script "startup";
+$script->run($DXProt::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 

@@ -1037,16 +1037,31 @@ SP is an alias for SEND PRIVATE
 === 0^SET/ANNOUNCE^Allow announce messages to come out on your terminal
 === 0^UNSET/ANNOUNCE^Stop announce messages coming out on your terminal
 
+=== 0^SET/ANNTALK^Allow talk like announce messages on your terminal
+=== 0^UNSET/ANNTALK^Stop talk like announce messages on your terminal
+The announce system on legacy cluster nodes is used as a talk 
+substitute because the network is so poorly connected. If you:
+
+  unset/anntalk
+
+you will suppress several of these announces, you may miss the odd 
+useful one as well, but you would probably miss them anyway in the
+welter of useless ones.
+
+  set/anntalk 
+
+allows you to see them again. This is the default.
+
 === 5^SET/ARCLUSTER <call> [<call>..]^Make the callsign an AR-Cluster node
 
-=== 8^SET/BADDX <call>..^Stop words we do not wish to see in the callsign field
-of a dx spot being propagated
-=== 8^UNSET/BADDX <call>..^Allow a word to be seen again in a DX spot
-Setting a word as 'baddx' will prevent spots with that word in the 
-callsign field of a DX spot from going any further. They will not be 
-displayed and they will not be sent onto other nodes.
+=== 8^SET/BADDX <call>..^Stop callsigns in a dx spot being propagated
+=== 8^UNSET/BADDX <call>..^Propagate a dx spot with this callsign again
+Setting a word as 'baddx' will prevent spots with that word in the
+'spotted' field (as in: DX 14001.1 FR0G)of a DX spot from going any
+further. They will not be displayed and they will not be sent onto
+other nodes.
 
-The word must be wriiten in full, no wild cards are allowed eg:-
+The word must be written in full, no wild cards are allowed eg:-
 
   set/baddx FORSALE VIDEO FR0G
 
@@ -1091,6 +1106,23 @@ enter them specifically.
 will allow spots from him again.
 
 Use with extreme care. This command may well be superceded by FILTERing.
+
+=== 8^SET/BADWORD <word>..^Stop things with this word being propagated
+=== 8^UNSET/BADWORD <word>..^Propagate things with this word again
+Setting a word as a 'badword' will prevent things like spots,
+announces or talks with this word in the the text part from going any
+further. They will not be displayed and they will not be sent onto
+other nodes.
+
+The word must be written in full, no wild cards are allowed eg:-
+
+  set/badword annihilate annihilated annihilation 
+
+will stop anything with these words in the text.
+
+  unset/badspotter annihilated
+
+will allow text with this word again.
 
 === 0^SET/BEEP^Add a beep to DX and other messages on your terminal
 === 0^UNSET/BEEP^Stop beeps for DX and other messages on your terminal
@@ -1312,6 +1344,10 @@ for more information.
 
 === 1^SHOW/BADSPOTTER^Show all the bad spotters in the system
 Display all the bad spotter's callsigns in the system, see SET/BADSPOTTER
+for more information.
+
+=== 1^SHOW/BADWORD^Show all the bad words in the system
+Display all the bad words in the system, see SET/BADWORD
 for more information.
 
 === 0^SHOW/CONFIGURATION [<node>]^Show all the nodes and users visible

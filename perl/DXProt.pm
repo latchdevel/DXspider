@@ -32,6 +32,7 @@ use BadWords;
 use DXHash;
 use Route;
 use Route::Node;
+use Script;
 
 use strict;
 
@@ -60,7 +61,7 @@ $baddx = new DXHash "baddx";
 $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
-$ann_to_talk = 1;
+$ann_to_talk = 0;
 
 @checklist = 
 (
@@ -272,6 +273,10 @@ sub start
 
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
+
+	# run a script send the output to the debug file
+	my $script = new Script(lc $call);
+	$script->run($self) if $script;
 }
 
 #
