@@ -230,7 +230,9 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 					++p;
 					break;
 				default:
-					if (*p == nl) {
+					if (nl == '\n' && *p == '\r') {
+						p++;
+					} else if (*p == nl) {
 						if (mp->inp == mp->data)
 							*mp->inp++ = ' ';
 						*mp->inp = 0;              /* zero terminate it, but don't include it in the length */
