@@ -368,7 +368,7 @@ sub rec_stdin
 			} else {
 				beep();
 			}
-		} elsif ($r ge ' ' && $r le '~') {
+		} elsif (is_pctext($r)) {
 			# move the top screen back to the bottom if you type something
 			if ($spos < @shistory) {
 				$spos = @shistory;

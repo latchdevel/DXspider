@@ -51,47 +51,48 @@ $baddxfn = "$main::data/baddx.pl";
 
 @checklist = 
 (
- qw(c c m p bc c),				# pc10
- qw(f c m d t c c h),			# pc11
- qw(c bc m p c p h),			# pc12
- qw(c h),
- qw(c h),
- qw(c m h),
- undef,							# pc16 has to be validated manually
- qw(c c h),						# pc17
- qw(c m n),						# pc18
- undef,							# pc19 has to be validated manually
- undef,							# pc20 no validation
- qw(c m h),						# pc21
- undef,							# pc22 no validation
- qw(d t n n n m c c h),			# pc23
- qw(c p h),						# pc24
- qw(c c n n),					# pc25
- qw(f c m d t c c),				# pc26
- qw(d t n n n m c c),			# pc27
- qw(c c c c d t p m bp n p bp c), # pc28
- qw(c c n m),					# pc29
- qw(c c n),						# pc30
- qw(c c n),						# pc31
- qw(c c n),						# pc32
- qw(c c n),						# pc33
- qw(c c m),						# pc34
- qw(c c m),						# pc35
- qw(c c m),						# pc36
- qw(c c n m),					# pc37
- qw(c m),						# pc39
- qw(c c m p n),					# pc40
- qw(c n m h),					# pc41
- qw(c c n),						# pc42
+ [ qw(c c m p bc c) ],			# pc10
+ [ qw(f m d t m c c h) ],		# pc11
+ [ qw(c bc m p c p h) ],		# pc12
+ [ qw(c h) ],					# 
+ [ qw(c h) ],					# 
+ [ qw(c m h) ],					# 
+ undef ,						# pc16 has to be validated manually
+ [ qw(c c h) ],					# pc17
+ [ qw(m n) ],					# pc18
+ undef ,						# pc19 has to be validated manually
+ undef ,						# pc20 no validation
+ [ qw(c m h) ],					# pc21
+ undef ,						# pc22 no validation
+ [ qw(d t n n n m c c h) ],		# pc23
+ [ qw(c p h) ],					# pc24
+ [ qw(c c n n) ],				# pc25
+ [ qw(f c m d t c c) ],			# pc26
+ [ qw(d t n n n m c c) ],		# pc27
+ [ qw(c c c c d t p m bp n p bp c) ], # pc28
+ [ qw(c c n m) ],				# pc29
+ [ qw(c c n) ],					# pc30
+ [ qw(c c n) ],					# pc31
+ [ qw(c c n) ],					# pc32
+ [ qw(c c n) ],					# pc33
+ [ qw(c c m) ],					# pc34
+ [ qw(c c m) ],					# pc35
+ [ qw(c c m) ],					# pc36
+ [ qw(c c n m) ],				# pc37
+ undef,							# pc38 not interested
+ [ qw(c m) ],					# pc39
+ [ qw(c c m p n) ],				# pc40
+ [ qw(c n m h) ],				# pc41
+ [ qw(c c n) ],					# pc42
  undef,							# pc43 don't handle it
- qw(c c n m m c),				# pc44
- qw(c c n m),					# pc45
- qw(c c n),						# pc46
+ [ qw(c c n m m c) ],			# pc44
+ [ qw(c c n m) ],				# pc45
+ [ qw(c c n) ],					# pc46
  undef,							# pc47
  undef,							# pc48
- qw(c m h),						# pc49
- qw(c n h),						# pc50
- qw(c c n),						# pc51
+ [ qw(c m h) ],					# pc49
+ [ qw(c n h) ],					# pc50
+ [ qw(c c n) ],					# pc51
  undef,
  undef,
  undef,
@@ -113,7 +114,7 @@ $baddxfn = "$main::data/baddx.pl";
  undef,							# pc70
  undef,
  undef,
- qw(d t n n n n n n m m m c c),	# pc73
+ [ qw(d n n n n n n n m m m c c) ],	# pc73
  undef,
  undef,
  undef,
@@ -124,8 +125,8 @@ $baddxfn = "$main::data/baddx.pl";
  undef,
  undef,
  undef,
- qw(c c c m),					# pc84
- qw(c c c m),					# pc85
+ [ qw(c c c m) ],				# pc84
+ [ qw(c c c m) ],				# pc85
 );
 
 # use the entry in the check list to check the field list presented
@@ -134,7 +135,7 @@ sub check
 {
 	my $n = shift;
 	$n -= 10;
-	return 0 if $n < 10 || $n > @checklist; 
+	return 0 if $n < 0 || $n > @checklist; 
 	my $ref = $checklist[$n];
 	return 0 unless ref $ref;
 	
@@ -152,7 +153,7 @@ sub check
 		} elsif ($act eq 'f') {
 			return $i+1 unless is_freq($_[$i]);
 		} elsif ($act eq 'n') {
-			return $i+1 if $_[$i] !~ /^[^\d ]$/;
+			return $i+1 unless $_[$i] =~ /^[\d ]+$/;
 		} elsif ($act eq 'h') {
 			return $i+1 unless $_[$i] =~ /^H\d\d?$/;
 		} elsif ($act eq 'd') {
