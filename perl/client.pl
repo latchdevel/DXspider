@@ -477,6 +477,7 @@ if ($connsort eq "connect") {
 setmode();
 
 # adjust the callsign if it has an SSID, SSID <= 8 are legal > 8 are netrom connections
+$call =~ s/-0$//;     # strip off -0 as this is equiv to just call on its own
 my ($scall, $ssid) = split /-/, $call;
 $ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
 if ($ssid) {

@@ -112,10 +112,10 @@ myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable 
 		"^[0-9]+[A-Z]+[0-9]+[A-Z]+[1-9]?$", 0          /* 2E0AAA 2E0AAA1 */
 	},
 	{
-		"^[A-Z]+[0-9]+[A-Z]+-[1-9]$", 0                /* G1TLH-2 */
+		"^[A-Z]+[0-9]+[A-Z]+-[0-9]$", 0                /* G1TLH-2 */
 	},
 	{
-		"^[0-9]+[A-Z]+[0-9]+[A-Z]+-[1-9]$", 0          /* 2E0AAA-2 */
+		"^[0-9]+[A-Z]+[0-9]+[A-Z]+-[0-9]$", 0          /* 2E0AAA-2 */
 	},
 	{
 		"^[A-Z]+[0-9]+[A-Z]+-1[0-5]$", 0               /* G1TLH-11 */
@@ -613,6 +613,11 @@ void process_stdin()
 			if (!iscallsign(call)) {
 				die("Sorry, %s isn't a valid callsign", call);
 			}
+			
+			/* strip off a '-0' at the end */
+			i = strlen(call);
+			if (call[i-1] == '0' && call[i-2] == '-')
+				call[i-2] = 0;
 
 			alarm(0);
 			signal(SIGALRM, SIG_IGN);
@@ -879,12 +884,18 @@ main(int argc, char *argv[])
 		send_text(in, "login: ", 7, 0);
 		chgstate(WAITLOGIN);
 	} else {
-
+		int i;
+		
 		/* check the callsign against the regexes */
 		if (!iscallsign(call)) {
 			die("Sorry, %s isn't a valid callsign", call);
 		}
 
+		/* strip off a '-0' at the end */
+		i = strlen(call);
+		if (call[i-1] == '0' && call[i-2] == '-')
+			call[i-2] = 0;
+		
 		/* tell the cluster who I am */
 		send_msg(node, 'A', connsort, strlen(connsort));
 	
