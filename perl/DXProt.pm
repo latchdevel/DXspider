@@ -916,7 +916,8 @@ sub normal
 						}
 					} else {
 						$pc19list{$call} = [] unless exists $pc19list{$call};
-						push @{$pc19list{$call}}, [$self->{call}, $ver, $flags];						
+						my $nl = $pc19list{$call};
+						push @{$pc19list{$call}}, [$self->{call}, $ver, $flags] unless grep $_->[0] eq $self->{call}, @$nl;
 					}
 				}
 

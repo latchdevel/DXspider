@@ -9,6 +9,8 @@ users, then you can do a set/routepc19 <node> to enable PC19 propagation. In
 the even more rare case of you wanting to prevent PC19s being routed thru 
 your node, you can use unset/routepc19. THIS IS NOT A SUBSTITUTE FOR ROUTE
 FILTERING!!!!! [translators: I have added wpc16s, wpc16u, wpc19s, wpc19u]
+2. Alter the export_user command to remove users that have no useful info
+and have not been seen for more than (default) 1 year.
 17Jan03=======================================================================
 1. Fix problem with lines being left in the main input queue for a 
 disconnected/ing node.

@@ -25,7 +25,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold);
 
 %u = ();
 $dbm = undef;
@@ -33,6 +33,7 @@ $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 $lrusize = 2000;
+$tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -341,6 +342,7 @@ sub export
 
 	my $count = 0;
 	my $err = 0;
+	my $del = 0;
 	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
 	if ($fh) {
 		my $key = 0;
@@ -422,18 +424,29 @@ print "There are $count user records and $err errors\n";
 			}
 			my $ref = decode($val);
 			if ($ref) {
+				my $t = $ref->{lastin} || 0;
+				if ($main::systime > $t + $tooold) {
+					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
+						eval {$dbm->del($key)};
+						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+						Log('DXCommand', "$ref->{call} deleted, too old");
+						$del++;
+						next;
+					}
+				}
+				# only store users that are reasonably active or have useful information
 				print $fh "$key\t" . $ref->encode . "\n";
 				++$count;
 			} else {
-				Log('DXCommand', "Export Error2: $key\t$val");
+				Log('DXCommand', "Export Error3: $key\t$val");
 				eval {$dbm->del($key)};
-				dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
 				++$err;
 			}
 		} 
         $fh->close;
     } 
-	return "$count Users $err Errors ('sh/log Export' for details)";
+	return "$count Users $del Deleted $err Errors ('sh/log Export' for details)";
 }
 
 #
