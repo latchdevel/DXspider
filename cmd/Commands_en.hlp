@@ -468,7 +468,7 @@ string to see a selection of files in a filearea eg:-
 
 See also TYPE - to see the contents of a file.
 
-=== 0^SHOW/MUF <prefix> [<hours>]^Show the likely propagation to a prefix
+=== 0^SHOW/MUF <prefix> [<hours>][long]^Show the likely propagation to a prefix
 This command allow you to estimate the likelihood of you contacting
 a station with the prefix you have specified. The output assumes a modest
 power of 20dBW and receiver sensitivity of -123dBm (about 0.15muV/10dB SINAD)
@@ -526,6 +526,13 @@ inputing:-
 
 will get you the above display, but with the next 24 hours worth of
 propagation data.
+
+  SH/MUF W L 24
+  SH/MUF W 24 Long
+
+Gives you an estimate of the long path propagation characterics. It
+should be noted that the figures will probably not be very useful, nor
+terrible accurate, but it is included for completeness.
 
 === 0^SHOW/PREFIX <callsign>^Interrogate the prefix database 
 This command takes the <callsign> (which can be a full or partial 

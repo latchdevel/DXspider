@@ -10,8 +10,18 @@
 #
 
 my ($self, $line) = @_;
-my ($prefix, $hr2) = split /\s+/, $line;
+my @f = split /\s+/, $line;
+
+my $prefix = uc shift @f;
 return (1, $self->msg('e4')) unless $prefix;
+my $lp;
+my $hr2;
+
+while (@f) {
+	my $f = shift @f;
+	$lp++ if $f =~ /^l/;
+	$hr2 = $f if $f =~ /^\d+$/;
+}
 
 $hr2 = 2 if !$hr2 || $hr2 < 2;
 $hr2 = 24 if $hr2 > 24;
@@ -44,6 +54,16 @@ $lon2 *= -$d2r;
 $b1 *= $d2r;
 $b2 *= $d2r;
 $d = ($d / $R);
+
+# handle long path
+if ($lp) {
+	$d = $pi2 - $d;
+	$b1 += $pi;
+	$b1 -= $pi2 if ($b1 >= $pi2);
+	$b2 += $pi;
+	$b2 -= $pi2 if ($b2 >= $pi2);
+}
+
 
 my ($hr1, $day, $month) = (gmtime($main::systime))[2,3,4];
 $month++;
