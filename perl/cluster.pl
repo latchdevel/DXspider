@@ -129,7 +129,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += 2;				# add an offset to make it bigger than last system
+$main::build += 1;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
