@@ -77,6 +77,9 @@ if ($spotted le ' ') {
 
 return (1, @out) if !$valid;
 
+# change ^ into : for transmission
+$line =~ s/\^/:/og;
+
 # Store it here
 if (Spot::add($freq, $spotted, $main::systime, $line, $spotter)) {
 	# send orf to the users

@@ -130,7 +130,7 @@ sub normal
 			$self->state('prompt');
 		}
 	} else {
-		@ans = run_cmd($self, $cmdline) if length $cmdline;
+		@ans = run_cmd($self, $cmdline);           # if length $cmdline;
 		
 		if ($self->{pagelth} && @ans > $self->{pagelth}) {
 			my $i;
@@ -175,6 +175,8 @@ sub run_cmd
 			return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
 		}
 	} else {
+
+		return () if length $cmdline == 0;
 		
 		# strip out //
 		$cmdline =~ s|//|/|og;

@@ -120,8 +120,11 @@ sub start
 sub normal
 {
 	my ($self, $line) = @_;
-	my @field = split /[\^\~]/, $line;
+	my @field = split /\^/, $line;
+	pop @field if $field[-1] eq '~';
 	
+#	print join(',', @field), "\n";
+						
 	# ignore any lines that don't start with PC
 	return if !$field[0] =~ /^PC/;
 	

@@ -43,6 +43,9 @@ if ($sort eq "FULL") {
   $to = "LOCAL";
 }
 
+# change ^ into : for transmission
+$line =~ s/\^/:/og;
+
 Log('ann', $to, $from, $line);
 DXProt::broadcast_list("To $to de $from <$t>: $line", @locals);
 if ($to ne "LOCAL") {

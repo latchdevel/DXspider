@@ -20,7 +20,7 @@ return (1, $self->msg('e10', $call)) unless $ref;
 return (1, $self->msg('e13', $call)) unless $ref->isa('DXNode');
 
 
-my ($spots, $wwv) = $f[1] =~ m{(\d+/\d+)} if $f[1];
+my ($spots, $wwv) = $f[1] =~ m{(\d+)/(\d+)} if $f[1];
 $spots = 10 unless $spots;
 $wwv = 5 unless $wwv;
 

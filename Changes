@@ -1,3 +1,9 @@
+03Jan99========================================================================
+1. Upped the version no !!!!
+2. made the DXProtocol routines much less sensitive to '~' characters (JE1SGH)
+3. added '^' -> ':' conversions on ann, talk and dx commands
+4. You can now send messages containing blank lines.
+5. Fixed merge command problem reported by G0RDI
 28Dec98========================================================================
 1. Crossed fingers, got rid of the instabilities caused by execing programs
 at vast speed (reduced it significantly anyway).

@@ -37,6 +37,9 @@ unless ($ref || $via) {
 }
 return (1, "$call not visible on the cluster") if !$ref;
 
+# change ^ into : for transmission
+$line =~ s/\^/:/og;
+
 my $dxchan = DXCommandmode->get($to); # is it for us?
 if ($dxchan && $dxchan->is_user) {
 	$dxchan->send("$to de $from $line");
