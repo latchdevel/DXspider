@@ -70,7 +70,7 @@ die "can't fork: $!" unless defined($childpid = fork());
 
 # the communication .....
 if ($childpid) {
-	my ($lastend, $end);
+	my ($lastend, $end) = ("\n", "\n");
 	
 	STDOUT->autoflush(1);
     while (defined (my $msg = <$handle>)) {
