@@ -1,0 +1,15 @@
+This is the master list of things that I think that I am doing. If your
+requirement is not on this list, it won't get done. So if you want it done
+then tell me on the dxspider-support mailing list.
+
+Maintenance and Enhancements
+----------------------------
+
+* add a retry count for messages
+
+New Protocol Stuff
+------------------
+
+* split out all protocol elements into objects
+* move all routing and broadcasting into a separate modules
+
