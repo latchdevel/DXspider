@@ -46,14 +46,16 @@ sub from_Aranea
 	return unless $thing;
 	my $t = hex($thing->{t}) if exists $thing->{t};
 	$t ||= int($thing->{time} / 60);	# if it is an aranea generated
+	my $by = $thing->{b} || $thing->{fromuser} || $thing->{user} || $thing->{origin};
 	my @spot = Spot::prepare(
 							 $thing->{f},
 							 $thing->{c},
 							 $t*60,
 							 ($thing->{i} || ''),
-							 ($thing->{b} || $thing->{fromuser} || $thing->{user} || $thing->{origin}),
+							 $by,
 							 ($thing->{o} || $thing->{origin}),
 							);
+	$spot[4] = $by;				# don't modify the spotter SSID
 	$thing->{spotdata} = \@spot;
 	return $thing;
 }

@@ -39,11 +39,11 @@ sub gen_Aranea
 		if ($thing->{user}) {
 			$thing->{h} ||= $dxchan->here;
 		} else {
-			$thing->add_auth;
 			$thing->{sw} ||= 'DXSp';
-			$thing->{v} ||= $main::version;
-			$thing->{b} ||= $main::build;
+			$thing->{v} ||= $main::me->version;
+			$thing->{b} ||= $main::me->build;
 			$thing->{h} ||= $main::me->here;
+			$thing->add_auth;
 		}
 		
 		$thing->{Aranea} = Aranea::genmsg($thing, [qw(sw h v b s auth)]);

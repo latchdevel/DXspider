@@ -361,6 +361,8 @@ sub dup
 	$d = int ($d / 60);
 	$d *= 60;
 
+	$by =~ s/-\d+$//g;
+	
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
 	$call = substr($call, 0, $maxcalllth) if length $call > $maxcalllth;
 

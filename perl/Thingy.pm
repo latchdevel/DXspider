@@ -201,7 +201,7 @@ sub add_auth
 {
 	my $thing = shift;
 	my $s = $thing->{'s'} = sprintf "%X", int(rand() * 100000000);
-	my $auth = Verify->new("DXSp,$main::mycall,$s,$main::version,$main::build");
+	my $auth = Verify->new("DXSp,$main::mycall,$s,$thing->{v},$thing->{b}");
 	$thing->{auth} = $auth->challenge($main::me->user->passphrase);
 }
 
