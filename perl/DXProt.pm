@@ -886,6 +886,13 @@ sub normal
 			return;
 		}
 
+		if ($pcno == 75) {		# dunno but route it
+			if ($field[1] ne $main::mycall) {
+				$self->route($field[1], $line);
+			}
+			return;
+		}
+
 		if ($pcno == 73) {  # WCY broadcasts
 			
 			# do some de-duping

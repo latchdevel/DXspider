@@ -761,7 +761,7 @@ sub init
 
 	@msg = ();
 	for (sort @dir) {
-		next unless /^m\d+$/o;
+		next unless /^m\d\d\d\d\d\d$/;
 		
 		$ref = read_msg_header("$msgdir/$_");
 		unless ($ref) {
