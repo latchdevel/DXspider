@@ -116,6 +116,7 @@ $count = 0;
 		  newroute => '1,New Style Routing,yesno',
 		  ve7cc => '0,VE7CC program special,yesno',
 		  lastmsgpoll => '0,Last Msg Poll,atime',
+		  inscript => '9,In a script,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);

@@ -10,7 +10,7 @@
 
 my ($self, $line) = @_;
 my @f = split /\s+/, $line, 2;
-return (1, $self->msg('e5')) if $self->remotecmd;
+return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e34')) unless @f == 2;
 return (1, $self->msg('e28')) unless $self->registered;
 

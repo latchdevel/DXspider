@@ -6,7 +6,7 @@
 # $Id$
 #
 my ($self, $line) = @_;
-return (1, $self->msg('e5')) if $self->remotecmd;
+return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e5')) if $line && $self->priv < 5;
 
 my @out;

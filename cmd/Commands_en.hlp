@@ -1754,8 +1754,6 @@ SEND messages to the sysop.
 
 === 6^SET/STARTUP <call>^Create a user startup script
 === 0^SET/STARTUP^Create your own startup script
-=== 6^UNSET/STARTUP <call>^Remove a user startup script
-=== 0^UNSET/STARTUP^Remove your own startup script
 Create a startup script of DXSpider commands which will be executed
 everytime that you login into this node. You can only input the whole
 script afresh, it is not possible to 'edit' it. Inputting a new script is
@@ -1766,6 +1764,10 @@ You may find the (curiously named) command BLANK useful to break
 up the output. If you simply want a blank line, it is easier to 
 input one or more spaces and press the <return> key.
 
+See UNSET/STARTUP to remove a script.
+
+=== 6^UNSET/STARTUP <call>^Remove a user startup script
+=== 0^UNSET/STARTUP^Remove your own startup script
 You can remove your startup script with UNSET/STARTUP.  
 
 === 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node

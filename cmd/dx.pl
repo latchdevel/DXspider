@@ -16,7 +16,7 @@ my $freq;
 my @out;
 my $valid = 0;
 my $localonly;
-return (1, $self->msg('e5')) if $self->remotecmd;
+return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e28')) unless $self->registered;
 
 my @bad;

@@ -13,7 +13,7 @@ my @out;
 my $user;
 my $ref;
 
-if ($self->remotecmd) {
+if ($self->remotecmd || $self->inscript) {
 	$call ||= $self->call;
 	Log('DXCommand', $self->call . " attempted to change passphrase for $call remotely");
 	return (1, $self->msg('e5'));

@@ -14,7 +14,7 @@ my @body;
 my $ref;
 my $fn;
 
-return (1, $self->msg("e5")) if $self->priv < 9 || $self->consort ne 'local' || $self->remotecmd;
+return (1, $self->msg("e5")) if $self->priv < 9 || $self->consort ne 'local' || $self->remotecmd || $self->inscript;
 
 return (1, $self->msg("export1")) unless @f == 2 && $f[0] =~ /^\d+$/;
 $msgno = $f[0];

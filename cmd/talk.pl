@@ -12,7 +12,7 @@ my $via;
 my $line;
 my $from = $self->call;
 my @out;
-return (1, $self->msg('e5')) if $self->remotecmd;
+return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 
 # analyse the line there are four situations...
 # 1) talk call

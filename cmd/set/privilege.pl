@@ -15,7 +15,7 @@ my @out;
 my $user;
 my $ref;
 
-if ($self->priv < 9 || $self->remotecmd) {
+if ($self->priv < 9 || $self->remotecmd || $self->inscript) {
 	Log('DXCommand', $self->call . " attempted to set privilege $priv for @args");
 	return (1, $self->msg('e5'));
 }
@@ -26,7 +26,7 @@ if ($priv < 0 || $priv > 9) {
 
 foreach $call (@args) {
 	$call = uc $call;
-	unless ($self->remotecmd) {
+	unless ($self->remotecmd || $self->inscript) {
 		if ($ref = DXChannel->get($call)) {
 			$ref->priv($priv);
 			$ref->user->priv($priv);

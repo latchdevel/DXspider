@@ -57,7 +57,9 @@ sub run
 	my $dxchan = shift;
 	foreach my $l (@{$self->{lines}}) {
 		unless ($l =~ /^\s*\#/ || $l =~ /^\s*$/) {
+			$dxchan->inscript(1);
 			my @out = DXCommandmode::run_cmd($dxchan, $l);
+			$dxchan->inscript(0);
 			if ($dxchan->can('send_ans')) {
 				$dxchan->send_ans(@out);
 			} else {

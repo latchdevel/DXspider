@@ -958,7 +958,7 @@ sub do_entry_stuff
 		my $loc = $self->{loc} || confess "local var gone missing" ;
 		if ($line eq "\032" || $line eq '%1A' || uc $line eq "/EX") {
 			no strict 'refs';
-			push @out, $loc->{endaction}($self);
+			push @out, &{$loc->{endaction}}($self);          # like this for < 5.8.0
 			$self->func(undef);
 			$self->state('prompt');
 		} elsif ($line eq "\031" || uc $line eq "/ABORT" || uc $line eq "/QUIT") {

@@ -9,7 +9,7 @@
 #
 
 my ($self, $line) = @_;
-return (1, $self->msg('e5')) if $self->priv < 9 || $self->remotecmd;
+return (1, $self->msg('e5')) if $self->priv < 9 || $self->remotecmd || $self->inscript;
 
 my ($date_req, $time_req);
 my $app_req = '>';

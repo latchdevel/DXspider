@@ -1739,6 +1739,30 @@ en modo de SOLO-RECIBIR no pudiendo usar los comandos DX, ANN, etc.
 La única excepción que se le hace a un usuario no registrado es la
 de poder enviar un TALK o un mensaje al sysop.
  
+=== 6^SET/STARTUP <Indicativo> Crea un fichero de inicio de conexión para un usuario.
+=== 0^SET/STARTUP  Crea tu propio fichero de inicio de conexión.
+Crea un fichero de conexión con los comandos del cluster que se
+ejecutarán cada vez que conectes. Sólo se puede crear el fichero
+completo, no pudiéndolo editar parcialmente. Hacer un fichero
+personal de inicio de conexión es como hacer un mensaje con el
+comando SEND. Para terminar el fichero escribe: /EX en la última
+línea, para abandonar la creación de este fichero escribe: /ABORT.
+
+Puedes encontrar útil el comando "BLANK" para que la salida de datos
+que pedimos en el fichero de conexión la tengamos en líneas separadas.
+Si sólo quieres una línea en blanco, puedes hacer una línea con uno o
+más espacios en blanco y darle ENTER.
+
+Puedes borrar tu fichero de conexión con el comando UNSET/STARTUP.
+
+SHOW/STARTUP <Indicativo> Ver el fichero de inicio de conexión de un usuario.
+SHOW/STARTUP Ver tu propio fichero de inicio de conexión
+ Para ver el contenido del fichero de conexión creado con SET/STARTUP.
+
+=== 6^UNSET/STARTUP <Indicativo> Borra el fichero de inicio de conexión de un usuario
+=== 0^UNSET/STARTUP Borra tu fichero de inicio de conexión.
+Puedes borrar tu fichero de conexión con el comando UNSET/STARTUP.
+
 === 0^SET/TALK^Acepta mensajes TALK
 === 0^UNSET/TALK^Deshabilita la recepción de mensajes TALK
 
@@ -2117,6 +2141,10 @@ Este comando permite ver a que nodo esta conectado el indicativo que
 especifiques. podríamos decir que es el comando inverso a sh/config.
 
 sh/route n2tly
+
+=== 6^SHOW/STARTUP <Indicativo> Ver el fichero de inicio de conexión de un usuario.
+=== 0^SHOW/STARTUP Ver tu propio fichero de inicio de conexión
+Para ver el contenido del fichero de conexión creado con SET/STARTUP.
 
 === 0^SHOW/SATELLITE <nombre> [<horas> <intervalo>]^Muestra datos de seguimiento
 Muestra los datos para el seguimiento desde tu situación para un satélite

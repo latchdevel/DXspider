@@ -12,7 +12,7 @@ my @out;
 my $user;
 my $ref;
 
-if ($self->remotecmd) {
+if ($self->remotecmd || $self->inscript) {
 	Log('DXCommand', $self->call . " attempted to unset password for @args remotely");
 	return (1, $self->msg('e5'));
 }

@@ -5,6 +5,7 @@
 #
 
 my $self = shift;
+return (1, $self->msg('e5')) if $self->inscript;
 
 # log out text
 if ($self->is_user && -e "$main::data/logout") {

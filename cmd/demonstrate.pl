@@ -16,7 +16,7 @@ my $mycall = $self->call;
 
 return (1, $self->msg('e7', $call)) unless $dxchan;
 return (1, $self->msg('e31', $call)) unless $dxchan->is_user;
-if ($self->remotecmd) {
+if ($self->remotecmd || $self->inscript) {
 	Log('DXCommand', "$mycall is trying to 'demo' to $call remotely");
 	return (1, $self->msg('e5'));
 }

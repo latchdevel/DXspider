@@ -1,3 +1,9 @@
+15Jan05=======================================================================
+1. knocked over a few possible ways of people annoying other people thru
+the use of scripts
+2. Fixed problem in DXCommandmode with an indirect call that did not work
+in perl < 5.8.0.
+3. Add Spanish translations of new scripting commands in help. 
 13Jan05=======================================================================
 1. Fixed prompting in languages other than English.
 2. Fixed language problem with spoof, but that simply hides a whole can of
