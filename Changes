@@ -1,3 +1,5 @@
+07Nov02=======================================================================
+1. allow three digit longitudes
 29Oct02=======================================================================
 1. make sh/log et al a bit more efficient.
 2. fix dupe message in dx.

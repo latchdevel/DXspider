@@ -134,15 +134,6 @@ sub disconnect
 	$self->DXProt::disconnect(@_);
 }
 
-sub sendallnodes
-{
-}
-
-sub sendallusers
-{
-
-}
-
 my $msgid = 1;
 
 sub frame
@@ -162,21 +153,21 @@ sub handleI
 {
 	my $self = shift;
 	
-	my @f = split /\^/, $_[2];
-	my $inv = Verify->new($f[8]);
-	unless ($inv->verify($f[9], $main::me->user->passphrase, $main::mycall, $self->call)) {
+	my @f = split /\^/, $_[3];
+	my $inv = Verify->new($f[7]);
+	unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
 		$self->sendnow('D','Sorry...');
 		$self->disconnect;
 	}
 	if ($self->{outbound}) {
 		$self->send($self->genI);
 	} 
-	if ($self->{sort} ne 'S' && $f[5] eq 'DXSpider') {
+	if ($self->{sort} ne 'S' && $f[4] eq 'DXSpider') {
 		$self->{user}->{sort} = $self->{sort} = 'S';
 		$self->{user}->{priv} = $self->{priv} = 1 unless $self->{priv};
 	}
-	$self->{version} = $f[6];
-	$self->{build} = $f[7];
+	$self->{version} = $f[5];
+	$self->{build} = $f[6];
 	$self->state('init1');
 	$self->{lastping} = 0;
 }
@@ -185,15 +176,15 @@ sub genI
 {
 	my $self = shift;
 	my $inp = Verify->new;
-	return frame('I', $self->call, 1, "DXSpider", ($main::version + 53) * 100, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
+	return frame('I', $self->call, "DXSpider", ($main::version + 53) * 100, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
 }
 
-sub handleB
+sub handleR
 {
 
 }
 
-sub genB
+sub genR
 {
 
 }
