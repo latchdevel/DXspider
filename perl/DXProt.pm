@@ -734,8 +734,9 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
 		@nodes = DXNode::get_all();
-		@nodes = grep { $_->dxchan != $self && !$_->dxchan->{isolate} } @nodes;
 		@nodes = grep { $_->{call} ne $main::mycall } @nodes;
+		@nodes = grep { $_->dxchan != $self } @nodes if @nodes;
+		@nodes = grep { !$_->dxchan->{isolate} } @nodes if @nodes;
 		@localnodes = grep { $_->dxchan->{call} eq $_->{call} } @nodes if @nodes;
 		unshift @localnodes, DXCluster->get_exact($main::mycall);
 		@remotenodes = grep { $_->dxchan->{call} ne $_->{call} } @nodes if @nodes;
