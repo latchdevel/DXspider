@@ -39,7 +39,7 @@ sub handle
 
 	# fix the interface routing
 	my $intcall = $thing->{user} || $thing->{origin};
-	if ($dxchan->{call} eq $thing->{origin}) {
+	if ($dxchan->{call} eq $thing->{origin} && !$thing->{user}) {
 		RouteDB::delete_interface($intcall);
 	} else {
 		RouteDB::delete($intcall, $dxchan->{call});
@@ -48,7 +48,7 @@ sub handle
 	# pc prot generation
 	my @pc21;
 	if (my $user = $thing->{user}) {
-		my $parent = Route::Node->get($thing->{origin});
+		my $parent = Route::Node::get($thing->{origin});
 		my $uref = Route::get($user);
 		if ($parent && $uref) {
 			if ($uref->isa('Route::Node')) {

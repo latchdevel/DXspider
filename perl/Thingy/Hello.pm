@@ -50,28 +50,34 @@ sub handle
 	my $thing = shift;
 	my $dxchan = shift;
 	
+	my $origin = $thing->{origin};
+	my $node = $dxchan->{call};
+	
 	my $nref;
+
 	$thing->{pc19n} ||= [];
 	
 	# verify authenticity
-	if ($dxchan->{call} eq $thing->{origin}) {
+	if ($node eq $origin) {
 
 		# for directly connected calls
 		if ($verify_on_login) {
 			my $pp = $dxchan->user->passphrase;
 			unless ($pp) {
-				dbglog('err', "Thingy::Hello::handle: verify on and $thing->{origin} has no passphrase");
+				dbglog('err', "Thingy::Hello::handle: verify on and $origin has no passphrase");
 				$dxchan->disconnect;
 				return;
 			}
-			my $auth = Verify->new("DXSp,$thing->{origin},$thing->{s},$thing->{v},$thing->{b}");
+			my $auth = Verify->new("DXSp,$origin,$thing->{s},$thing->{v},$thing->{b}");
 			unless ($auth->verify($thing->{auth}, $dxchan->user->passphrase)) {
-				dbglog('err', "Thingy::Hello::handle: verify on and $thing->{origin} failed auth check");
+				dbglog('err', "Thingy::Hello::handle: verify on and $origin failed auth check");
 				$dxchan->disconnect;
 				return;
 			}
 		}
 		if ($dxchan->{state} ne 'normal') {
+			$nref = $main::routeroot->add($origin, $thing->{v}, 1);
+			push @{$thing->{pc19n}}, $nref if $nref;
 			$dxchan->start($dxchan->{conn}->{csort}, $dxchan->{conn}->{outbound} ? 'O' : 'A');
 			if ($dxchan->{outbound}) {
 				my $thing = Thingy::Hello->new();
@@ -82,17 +88,15 @@ sub handle
 				$thing->broadcast;
 			}
 		}
-		my $origin = $thing->{origin};
-		$nref = $main::routeroot->add($origin, $thing->{v}, 1);
-		push @{$thing->{pc19n}}, $nref if $nref;
+		$nref = Route::Node::get($origin);
 	} else {
 		
 		# for otherwise connected calls, that come in relayed from other nodes
 		# note that we cannot do any connections at this point
-		$nref = Route::Node::get($thing->{origin});
+		$nref = Route::Node::get($origin);
 		unless ($nref) {
 			my $v = $thing->{user} ? undef : $thing->{v};
-			$nref = Route::Node->new($thing->{origin}, $v, 1);
+			$nref = Route::Node->new($origin, $v, 1);
 			push @{$thing->{pc19n}}, $nref;
 		}
 	}
@@ -111,8 +115,8 @@ sub handle
 			}
 		}
 	}
-	RouteDB::update($thing->{origin}, $dxchan->{call}, $thing->{hopsaway});
-	RouteDB::update($thing->{user}, $dxchan->{call}, $thing->{hopsaway}) if $thing->{user};
+	RouteDB::update($origin, $node, $thing->{hopsaway});
+	RouteDB::update($thing->{user}, $node, $thing->{hopsaway}) if $thing->{user};
 	
 	delete $thing->{pc19n} unless @{$thing->{pc19n}};
 	

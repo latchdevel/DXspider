@@ -59,7 +59,6 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call, '5251', Route::here(1)) if $call ne $main::mycall;
 	$self->{'sort'} = 'W';
 	return $self;
 }
@@ -73,7 +72,7 @@ sub start
 	# log it
 	my $host = $self->{conn}->{peerhost} || "unknown";
 	Log('Aranea', "$call connected from $host");
-	
+
 	# remember type of connection
 	$self->{consort} = $line;
 	$self->{outbound} = $sort eq 'O';
