@@ -28,6 +28,7 @@ sub finish
 {
 	undef $dbm;
 	untie %d;
+	undef %d;
 }
 
 sub check

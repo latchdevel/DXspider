@@ -85,7 +85,7 @@ package DXM;
 				export2 => '$_[3] has error exporting msg $_[0] to $_[1] ($_[2])',
 				export3 => '$_[2 ] exported msg $_[0] to $_[1]',
 				filter1 => 'Filter $_[0] updated for $_[1]',
-				filter2 => 'Need a value for $_[0]',
+				filter2 => 'Unknown filter keyword $_[0]',
 				filter3 => 'No filters defined for $_[0]',
 				filter4 => '$_[0]$_[1] Filter $_[2] deleted for $_[3]',
 				filter5 => 'need some filter commands...',
