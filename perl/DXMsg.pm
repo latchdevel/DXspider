@@ -136,7 +136,7 @@ sub process
 	# this is periodic processing
 	if (!$self || !$line) {
 
-		if ($main::systime > $lastq + $queueinterval) {
+		if ($main::systime >= $lastq + $queueinterval) {
 
 			# wander down the work queue stopping any messages that have timed out
 			for (keys %busy) {

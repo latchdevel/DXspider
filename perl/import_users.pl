@@ -22,13 +22,12 @@ use DXVars;
 use DXUser;
 use Carp;
 
-$userfn = $ARGV[0] if @ARGV;
-croak "need a filename" unless $userfn;
-croak "$userfn.asc doesn't exist" unless -e "$userfn.asc";
+$inpfn = $ARGV[0] if @ARGV;
+croak "need a input filename" unless $inpfn;
 
 DXUser->init($userfn, 1);
 
-do "$userfn.asc";
+do "$inpfn";
 print $@ if $@;
 
 DXUser->finish();

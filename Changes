@@ -12,6 +12,9 @@ export the user data in ascii from cron.
 8. added export_users command to allow arbitary exporting of user files
 9. added set and unset/dxgrid command to allow control over the grid squares 
 on DX announcements
+10. Removed export_user.pl (no longer needed)
+11. made import_users.pl accept a non related input filename and always
+update the current user file.
 25Jul00=======================================================================
 1. ignore \n in ax25 mode for C client.
 2. remove extra space at the end of a DX spot announce when no grid square
