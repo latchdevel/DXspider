@@ -789,16 +789,11 @@ sub normal
 			return unless $nref || $uref;	# if we don't know where they are, it's pointless sending it on
 			
 			unless (eph_dup($line)) {
-				if ($nref) {
-					$nref->here($field[2]);
-					return unless $self->in_filter_route($nref);
-					$self->route_pc24($nref, $field[3])
-				}
-				if ($uref) {
-					$uref->here($field[2]);
-					return unless $self->in_filter_route($uref);
-					$self->route_pc24($uref, $field[3]);
-				}
+				$nref->here($field[2]) if $nref;
+				$uref->here($field[2]) if $uref;
+				my $ref = $nref || $uref;
+				return unless $self->in_filter_route($ref);
+				$self->route_pc24($ref, $field[3]);
 			}
 			return;
 		}
