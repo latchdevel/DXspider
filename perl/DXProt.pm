@@ -136,8 +136,7 @@ sub start
 	$self->pingint($user->pingint || 3*60);
 	$self->nopings(3);
 	$self->lastping($main::systime);
-	$self->pingtime(0);
-	$self->pingrec(0);
+	$self->pingtime([ ]);
 
 	Log('DXProt', "$call connected");
 }
@@ -711,14 +710,18 @@ sub normal
 							my $t = tv_interval($r->{t}, [ gettimeofday ]);
 							if ($dxchan->is_user) {
 								my $s = sprintf "%.2f", $t; 
-								my $ave = $tochan->pingave if $tochan;
+								my $ave = sprintf "%.2f", $tochan ? ($tochan->pingave || $t) : $t;
 								$dxchan->send($dxchan->msg('pingi', $field[2], $s, $ave))
 							} elsif ($dxchan->is_ak1a) {
 								if ($tochan) {
 									$tochan->nopings(3); # pump up the timer
-									$tochan->{pingtime} += $t;
-									$tochan->{pingrec} += 1;
-									$tochan->{pingave} = $tochan->{pingtime} / $tochan->{pingrec};
+									push @{$tochan->pingtime}, $t;
+									shift @{$tochan->pingtime} if @{$tochan->pingtime} > 10;
+									my $st;
+									for (@{$tochan->pingtime}) {
+										$st += $_;
+									}
+									$tochan->{pingave} = $st / @{$tochan->pingtime};
 								}
 							} 
 						}
@@ -806,6 +809,8 @@ sub finish
 	my $call = $self->call;
 	my $ref = DXCluster->get_exact($call);
 	
+	$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
+
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;

@@ -81,8 +81,7 @@ use vars qw(%channels %valid);
 		  pingint => '9,Ping Interval ',
 		  nopings => '9,Ping Obs Count',
 		  lastping => '9,Ping last sent,atime',
-          pingrec => '9,Pings no rec',
-		  pingtime => '9,Ping totaltime',
+		  pingtime => '9,Ping totaltime,parray',
 		  pingave => '0,Ping ave time',
 		 );
 
