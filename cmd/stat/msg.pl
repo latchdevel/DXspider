@@ -18,12 +18,15 @@ if (@list == 0) {
 	foreach $ref (sort {$a->to cmp $b->to} DXMsg::get_all_busy) {
 		my $msgno = $ref->msgno;
 		my $stream = $ref->stream;
-		my $lines = scalar $ref->lines;
+		my $lref = $ref->lines;
+		my $lines = 0;
+		$lines = @$lref if $lref;
 		my $count = $ref->count;
+		my $to = $ref->to;
 		my $lastt = $ref->lastt ? " Last Processed: " . cldatetime($ref->lastt) : "";
 		my $waitt = $ref->waitt ? " Waiting since: " . cldatetime($ref->waitt) : "";
 		
-		push @out, " $call -> msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
+		push @out, " $call -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
 	}
 } else {
 	foreach my $msgno (@list) {

@@ -195,6 +195,7 @@ sub pc28
 	my $time = ztime($t);
 	$private = $private ? '1' : '0';
 	$rr = $rr ? '1' : '0';
+	$subject ||= ' ';
 	return "PC28^$tonode^$fromnode^$to^$from^$date^$time^$private^$subject^ ^5^$rr^ ^$origin^~";
 }
 

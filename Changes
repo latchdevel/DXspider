@@ -1,5 +1,8 @@
 21Jun01=======================================================================
 1. fix (some) problems with 'init'
+2. fix stat/msg a bit more
+3. small change to PC28 generation to make sure that the subject always 
+contains at least a blank
 16Jun01=======================================================================
 1. fix talk
 2. fix stat/msg 
