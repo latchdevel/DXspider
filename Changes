@@ -1,5 +1,6 @@
 08Nov02=======================================================================
 1. made some small mods to grepdbg and spot2csv.pl
+2. fix a possible DOS in dx command
 07Nov02=======================================================================
 1. allow three digit longitudes
 2. make a small change to see if messages now stay in place.
