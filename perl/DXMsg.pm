@@ -135,16 +135,20 @@ sub process
 		
 		if ($pcno == 30) {		# this is a incoming subject ack
 			my $ref = $work{$f[2]};	# note no stream at this stage
-			delete $work{$f[2]};
-			$ref->{stream} = $f[3];
-			$ref->{count} = 0;
-			$ref->{linesreq} = 5;
-			$work{"$f[2]$f[3]"} = $ref;	# new ref
-			dbg('msg', "incoming subject ack stream $f[3]\n");
-			$busy{$f[2]} = $ref; # interlock
-			$ref->{lines} = [];
-			push @{$ref->{lines}}, ($ref->read_msg_body);
-			$ref->send_tranche($self);
+			if ($ref) {
+				delete $work{$f[2]};
+				$ref->{stream} = $f[3];
+				$ref->{count} = 0;
+				$ref->{linesreq} = 5;
+				$work{"$f[2]$f[3]"} = $ref;	# new ref
+				dbg('msg', "incoming subject ack stream $f[3]\n");
+				$busy{$f[2]} = $ref; # interlock
+				$ref->{lines} = [];
+				push @{$ref->{lines}}, ($ref->read_msg_body);
+				$ref->send_tranche($self);
+			} else {
+				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
+			} 
 			last SWITCH;
 		}
 		
@@ -174,6 +178,19 @@ sub process
 					if ($ref->{file}) {
 						$ref->store($ref->{lines});
 					} else {
+
+						# does an identical message already exist?
+						my $m;
+						for $m (@msg) {
+							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from}) {
+								$ref->stop_msg($self);
+								my $msgno = $m->{msgno};
+								dbg('msg', "duplicate message to $msgno\n");
+								Log('msg', "duplicate message to $msgno");
+								return;
+							}
+						}
+
 						$ref->{msgno} = next_transno("Msgno");
 						push @{$ref->{gotit}}, $f[2]; # mark this up as being received
 						$ref->store($ref->{lines});
@@ -256,9 +273,18 @@ sub process
 			
 			last SWITCH;
 		}
+
+		if ($pcno == 49) {      # global delete on subject
+			for (@msg) {
+				if ($_->{subject} eq $f[2]) {
+					$_->del_msg();
+					Log('msg', "Message $_->{msgno} fully deleted by $f[1]");
+				}
+			}
+		}
 	}
-	 
-	 clean_old() if $main::systime - $last_clean > 3600 ; # clean the message queue
+	
+	clean_old() if $main::systime - $last_clean > 3600 ; # clean the message queue
 }
 
 
@@ -291,7 +317,7 @@ sub store
 			confess "can't open file $ref->{to} $!";  
 		}
 	} else {					# a normal message
-		
+
 		# attempt to open the message file
 		my $fn = filename($ref->{msgno});
 		
@@ -433,20 +459,24 @@ sub send_tranche
 	my $to = $self->{tonode};
 	my $from = $self->{fromnode};
 	my $stream = $self->{stream};
-	my $i;
+	my $lines = $self->{lines};
+	my ($c, $i);
 	
-	for ($i = 0; $i < $self->{linesreq} && $self->{count} < @{$self->{lines}}; $i++, $self->{count}++) {
-		push @out, DXProt::pc29($to, $from, $stream, ${$self->{lines}}[$self->{count}]);
-}
-push @out, DXProt::pc32($to, $from, $stream) if $i < $self->{linesreq};
-$dxchan->send(@out);
+	for ($i = 0, $c = $self->{count}; $i < $self->{linesreq} && $c < @$lines; $i++, $c++) {
+		push @out, DXProt::pc29($to, $from, $stream, $lines->[$c]);
+    }
+    $self->{count} = $c;
+
+    push @out, DXProt::pc32($to, $from, $stream) if $i < $self->{linesreq};
+	$dxchan->send(@out);
 }
 
 	
-	# find a message to send out and start the ball rolling
-	sub queue_msg
+# find a message to send out and start the ball rolling
+sub queue_msg
 {
 	my $sort = shift;
+	my $call = shift;
 	my @nodelist = DXProt::get_all_ak1a();
 	my $ref;
 	my $clref;
@@ -464,7 +494,7 @@ $dxchan->send(@out);
 				$clref = DXCluster->get($ref->{to});
 				if ($clref && !grep { $clref->{dxchan} == $_ } DXCommandmode::get_all) {
 					$dxchan = $clref->{dxchan};
-					$ref->start_msg($dxchan) if $clref && !get_busy($dxchan->call);
+					$ref->start_msg($dxchan) if $clref && !get_busy($dxchan->call) && $dxchan->state eq 'normal';
 				}
 			}
 		} elsif ($sort == undef) {
@@ -478,9 +508,9 @@ $dxchan->send(@out);
 				next if grep { $_ eq $noderef->call } @{$ref->{gotit}};
 				
 				# if we are here we have a node that doesn't have this message
-				$ref->start_msg($noderef) if !get_busy($noderef->call);
+				$ref->start_msg($noderef) if !get_busy($noderef->call)  && $noderef->state eq 'normal';
 				last;
-			} 
+			}
 		}
 		
 		# if all the available nodes are busy then stop
@@ -700,7 +730,7 @@ sub do_send_stuff
 		} else {
 			
 			# i.e. it ain't and end or abort, therefore store the line
-			push @{$loc->{lines}}, $line;
+			push @{$loc->{lines}}, length($line) > 0 ? $line : " ";
 		}
 	}
 	return (1, @out);

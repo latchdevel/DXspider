@@ -1,3 +1,14 @@
+14Dec98========================================================================
+1. Made the telnet thing work a bit better. It still will not work reliably to
+a real telnetd on port 23.
+2. Allowed network logins on client by specifying login instead of call.
+3. made msg handling more robust (PC30 with unknown streams cause PC42), queueing
+is only done on channels that are in state 'normal'.
+4. Added pc command which takes a callsign and some text and sends it without
+mods to the callsign, useful for sending manual PC protocol to unstick things.
+Also for sending anonymous messages to online users.
+5. Stopped duplicate messages being stored (it receives them and then bins them)
+6. Implemented PC49 delete/full from outside
 13Dec98========================================================================
 1. Fixed VS6 lat/long in prefix_data and wpxloc.raw
 2. Sorted out last in times for remote users

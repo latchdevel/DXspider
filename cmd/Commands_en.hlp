@@ -109,6 +109,14 @@ unknown message 'xxxx' in lang 'en'
 Reload the /spider/data/prefix_data.pl file if you have changed it manually whilst
 the cluster is running. 
 
+=== 8^PC <call> <text>^Send text (eg PC Protocol) to <call>
+Send some arbitrary text to a locally connected callsign. No processing is done on
+the text. This command allows you to send PC Protocol to unstick things if problems
+arise (messages get stuck etc). eg:-
+   pc gb7djk PC33^GB7TLH^GB7DJK^400^
+or 
+   pc G1TLH Try doing that properly!!!
+
 === 1^PING <node>^Send a ping command to another cluster
 This command is used to estimate the quality of the link to another cluster. 
 The time returned is the length of time taken for a PC51 to go to another 

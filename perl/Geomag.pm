@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 # 
 # The geomagnetic information and calculation module
+# a chanfe
 #
 # Copyright (c) 1998 - Dirk Koopman G1TLH
 #
@@ -57,7 +58,7 @@ sub store
   close $fh;
 
   # log it
-  $fp->writeunix($date, "$from^$date^$sfi^$a^$k^$forecast^$node\n");
+  $fp->writeunix($date, "$from^$date^$sfi^$a^$k^$forecast^$node");
 }
 
 # update WWV info in one go (usually from a PC23)

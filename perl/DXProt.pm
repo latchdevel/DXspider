@@ -325,7 +325,7 @@ sub normal
 			last SWITCH;
 		}
 		
-		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42) { # mail/file handling
+		if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42 || $pcno == 49) { # mail/file handling
 			DXMsg::process($self, $line);
 			return;
 		}
@@ -417,9 +417,6 @@ sub normal
 			last SWITCH;
 		}
 		if ($pcno == 48) {
-			last SWITCH;
-		}
-		if ($pcno == 49) {
 			last SWITCH;
 		}
 		

@@ -48,7 +48,7 @@ package main;
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.11";				# the version no of the software
+$version = "1.12";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
  
 # handle disconnections
@@ -57,6 +57,18 @@ sub disconnect
 	my $dxchan = shift;
 	return if !defined $dxchan;
 	$dxchan->disconnect();
+}
+
+# send a message to call on conn and disconnect
+sub already_conn
+{
+	my ($conn, $call, $mess) = @_;
+	
+	dbg('chan', "-> D $call $mess\n"); 
+	$conn->send_now("D$call|$mess");
+	sleep(1);
+	dbg('chan', "-> Z $call bye\n");
+	$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
 }
 
 # handle incoming messages
@@ -74,31 +86,28 @@ sub rec
 	if (!defined $dxchan) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 		
-		# is there one already connected?
-		if (DXChannel->get($call)) {
-			my $mess = DXM::msg($lang, 'conother', $call);
-			dbg('chan', "-> D $call $mess\n"); 
-			$conn->send_now("D$call|$mess");
-			sleep(1);
-			dbg('chan', "-> Z $call bye\n");
-			$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
-			return;
-		}
-		
 		# is there one already connected elsewhere in the cluster (and not a cluster)
 		my $user = DXUser->get($call);
-		if ($user && $user->sort eq 'A' && !DXCluster->get_exact($call)) {
-			;
-		} elsif (($call eq $main::myalias && DXCluster->get_exact($call)) ||
-		    DXCluster->get($call)) {
-			my $mess = DXM::msg($lang, 'concluster', $call);
-			dbg('chan', "-> D $call $mess\n"); 
-			$conn->send_now("D$call|$mess");
-			sleep(1);
-			dbg('chan', "-> Z $call bye\n");
-			$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
-			return;
+		if ($user) {
+			if ($user->sort eq 'A' && !DXCluster->get_exact($call)) {
+				;
+			} elsif ($user->sort eq 'U' && $call eq $main::myalias && !DXCluster->get_exact($call)) {
+				;
+			} else {
+				if (DXChannel->get($call)) {
+					my $mess = DXM::msg($lang, $user->sort eq 'A' ? 'concluster' : 'conother', $call);
+					already_conn($conn, $call, $mess);
+					return;
+				}
+			}
+		} else {
+			if (DXChannel->get($call)) {
+				my $mess = DXM::msg($lang, 'conother', $call);
+				already_conn($conn, $call, $mess);
+				return;
+			}
 		}
+
 		
 		# the user MAY have an SSID if local, but otherwise doesn't
 		my $user = DXUser->get($call);

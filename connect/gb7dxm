@@ -1,8 +1,0 @@
-timeout 60
-# don't forget to chmod 4775 netrom_call!
-connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-'Connect' ''
-'Connect' 'c np7'
-'Connect' 'c gb7dxm'
-'Connect' ''
-client /usr/bin/perl /spider/perl/client.pl gb7dxm ax25

@@ -40,6 +40,7 @@ BEGIN {
 use Msg;
 use DXVars;
 use DXDebug;
+use DXUser;
 use IO::File;
 use IO::Socket;
 use IPC::Open2;
@@ -158,6 +159,7 @@ sub rec_stdin
 	if ($r > 0) {
 		if ($mode) {
 			$buf =~ s/\r/\n/og if $mode == 1;
+			$buf =~ s/\r\n/\n/og if $mode == 2;
 			$dangle = !($buf =~ /\n$/);
 			if ($buf eq "\n") {
 				@lines = (" ");
@@ -173,17 +175,21 @@ sub rec_stdin
 			unshift @lines, ($lastbit . $first) if ($first);
 			foreach $first (@lines) {
 				#		  print "send_now $call $first\n";
-				$conn->send_now("I$call|$first");
+				$conn->send_later("I$call|$first");
 			}
 			$lastbit = $buf;
 			$savenl = "";		# reset savenl 'cos we will have done a newline on input
 		} else {
-			$conn->send_now("I$call|$buf");
+			$conn->send_later("I$call|$buf");
 		}
 	} elsif ($r == 0) {
 		cease(1);
 	}
 	$lasttime = time;
+}
+
+sub optioncb
+{
 }
 
 sub doconnect
@@ -196,17 +202,19 @@ sub doconnect
 		$port = 23 if !$port;
 		
 		if ($port == 23) {
-			$sock = new Net::Telnet (Timeout => $timeout, BinMode => 1);
-			$sock->option_accept(Dont => TELOPT_ECHO, Wont => TELOPT_ECHO);
+			$sock = new Net::Telnet (Timeout => $timeout);
+			$sock->option_callback(\&optioncb);
+			$sock->output_record_separator('');
 			$sock->option_log('option_log');
 			$sock->dump_log('dump');
+			$sock->option_accept(Wont => TELOPT_ECHO);
 			$sock->open($host) or die "Can't connect to $host port $port $!";
 		} else {
 			$sock = IO::Socket::INET->new(PeerAddr => "$host:$port", Proto => 'tcp')
 				or die "Can't connect to $host port $port $!";
 			
 		}
-	} elsif ($sort eq 'ax25') {
+	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		my @args = split /\s+/, $line;
 		$rfh = new IO::File;
 		$wfh = new IO::File;
@@ -245,8 +253,9 @@ sub dochat
 		for (;;) {
 			if ($csort eq 'telnet') {
 				$line = $sock->get();
+				$line =~ s/\r\n/\n/og;
 				chomp;
-			} elsif ($csort eq 'ax25') {
+			} elsif ($csort eq 'ax25' || $csort eq 'prog') {
 				local $/ = "\r";
 				$line = <$rfh>;
 				$line =~ s/\r//og;
@@ -310,19 +319,13 @@ $wfh = 0;
 #
 
 $call = uc shift @ARGV;
-$call = uc $myalias if !$call; 
+$call = uc $myalias if !$call;
 $connsort = lc shift @ARGV;
 $connsort = 'local' if !$connsort;
 
-#
-# strip off any SSID if it is a telnet connection 
-#
-# SSID's are a problem, basically we don't allow them EXCEPT for the special case
-# of local users. i.e. you can have a cluster call with an SSID and a usercall with
-# an SSID and they are different to the system to those without SSIDs
-#
+$loginreq = $call eq 'LOGIN';
 
-$call =~ s/-\d+$//o if $mode eq 'telnet';
+# we will do this again later 'cos things may have changed
 $mode = ($connsort eq 'ax25') ? 1 : 2;
 setmode();
 
@@ -339,6 +342,37 @@ $SIG{'HUP'} = 'IGNORE';
 $SIG{'CHLD'} = \&sig_chld;
 
 dbgadd('connect');
+
+# do we need to do a login and password job?
+if ($loginreq) {
+	my $user;
+	my $s;
+
+	DXUser->init($userfn);
+	
+	for ($state = 0; $state < 2; ) {
+		alarm($timeout);
+		
+		if ($state == 0) {
+			$stdout->print('login: ');
+			$stdout->flush();
+			local $/ = $mode == 1 ? "\r" : "\n";
+			$s = $stdin->getline();
+			chomp $s;
+			$call = uc $s;
+			$user = DXUser->get($call);
+			$state = 1;
+		} elsif ($state == 1) {
+			$stdout->print('password: ');
+			$stdout->flush();
+			local $/ = $mode == 1 ? "\r" : "\n";
+			$s = $stdin->getline();
+			chomp $s;
+			$state = 2;
+			cease(0) if !$user || ($user->passwd && $user->passwd ne $s);
+		}
+	}
+}
 
 # is this an out going connection?
 if ($connsort eq "connect") {
@@ -364,13 +398,14 @@ if ($connsort eq "connect") {
 	dbgsub('connect');
 	
 	# if we get here we are connected
-	if ($csort eq 'ax25') {
+	if ($csort eq 'ax25' || $csort eq 'prog') {
 		#		open(STDIN, "<&R"); 
 		#		open(STDOUT, ">&W"); 
 		#		close R;
 		#		close W;
         $stdin = $rfh;
 		$stdout = $wfh;
+		$csort = 'telnet' if $sort eq 'prog';
 	} elsif ($csort eq 'telnet') {
 		#		open(STDIN, "<&$sock"); 
 		#		open(STDOUT, ">&$sock"); 
@@ -385,12 +420,9 @@ if ($connsort eq "connect") {
 	close STDIN;
 	close STDOUT;
 	close STDERR;
-	
-	
-	$mode = ($connsort =~ /^ax/o) ? 1 : 2;
-	setmode();
 }
 
+$mode = ($connsort eq 'ax25') ? 1 : 2;
 setmode();
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
