@@ -105,6 +105,67 @@ default for nodes and users eg:-
 
   accept/spot user_default by G,M,2
 
+=== 0^ACCEPT/WCY [0-9] <pattern>^set an 'accept' WCY filter
+It is unlikely that you will want to do this, but if you do then you can
+filter on the following fields:-
+
+  by <prefixes>            eg: G,M,2         
+  origin <prefixes>
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  channel <prefixes>
+
+There are no examples because WCY Broadcasts only come from one place and
+you either want them or not (see UNSET/WCY if you don't want them).
+
+This command is really provided for future use.
+
+See HELP FILTER for information.
+
+=== 8^ACCEPT/WCY <call> [input] [0-9] <pattern>^WCY filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  accept/wcy node_default all
+  set/hops node_default 10
+
+=== 0^ACCEPT/WWV [0-9] <pattern>^set an 'accept' WWV filter
+It is unlikely that you will want to do this, but if you do then you can
+filter on the following fields:-
+
+  by <prefixes>            eg: G,M,2         
+  origin <prefixes>
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  channel <prefixes>
+
+for example 
+
+  accept/wwv by_zone 4
+
+is probably the only useful thing to do (which will only show WWV broadcasts
+by stations in the US).
+
+See HELP FILTER for information.
+
+=== 8^ACCEPT/WWV <call> [input] [0-9] <pattern>^WWV filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  accept/wwv db0sue-7 1 by_zone 4
+  accept/wwv node_default all
+  set/hops node_default 10
+
+  accept/wwv user_default by W,K
+
 === 0^ANNOUNCE <text>^Send an announcement to LOCAL users only
 <text> is the text of the announcement you wish to broadcast 
 
@@ -763,6 +824,65 @@ default for nodes and users eg:-
   set/hops node_default 10
 
   reject/spot user_default by G,M,2
+
+=== 0^REJECT/WCY [0-9] <pattern>^set an 'reject' WCY filter
+It is unlikely that you will want to do this, but if you do then you can
+filter on the following fields:-
+
+  by <prefixes>            eg: G,M,2         
+  origin <prefixes>
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  channel <prefixes>
+
+There are no examples because WCY Broadcasts only come from one place and
+you either want them or not (see UNSET/WCY if you don't want them).
+
+This command is really provided for future use.
+
+See HELP FILTER for information.
+
+=== 8^REJECT/WCY <call> [input] [0-9] <pattern>^WCY filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  reject/wcy gb7djk all
+
+=== 0^REJECT/WWV [0-9] <pattern>^set an 'reject' WWV filter
+It is unlikely that you will want to do this, but if you do then you can
+filter on the following fields:-
+
+  by <prefixes>            eg: G,M,2         
+  origin <prefixes>
+  origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  origin_itu <numbers>
+  origin_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  channel <prefixes>
+
+for example 
+
+  reject/wwv by_zone 14,15,16
+
+is probably the only useful thing to do (which will only show WWV broadcasts
+by stations in the US).
+
+See HELP FILTER for information.
+
+=== 8^REJECT/WWV <call> [input] [0-9] <pattern>^WWV filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  reject/wwv db0sue-7 1 by_zone 4
+  reject/wwv node_default all
+
+  reject/wwv user_default by W
 
 === 0^REPLY^Reply (privately) to the last message that you have read
 === 0^REPLY <msgno>^Reply (privately) to the specified message
