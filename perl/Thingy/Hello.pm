@@ -78,7 +78,7 @@ sub handle
 sub new
 {
 	my $pkg = shift;
-	my $thing = $pkg->SUPER::new(origin=>$main::mycall, group=>'RT');
+	my $thing = $pkg->SUPER::new(origin=>$main::mycall);
 	return $thing;
 }
 1;

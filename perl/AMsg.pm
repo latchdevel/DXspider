@@ -71,7 +71,7 @@ sub dequeue
 				# this is the first stage that we have a callsign
 				# do we have a hello?
 				$msg =~ s/[\r\n]+$//;
-				if ($msg =~ m{RT,[0-9A-F,]+|HELLO}) {
+				if ($msg =~ m{|HELLO,}) {
 					# a possibly valid HELLO line, process it
 					$conn->new_channel($msg);
 				}

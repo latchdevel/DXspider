@@ -313,7 +313,8 @@ sub input
 		$thing = $class->new();
 
 		# reconstitute the header but wth hop increased by one
-		$head = join(',', $origin, $group, $dts, ++$hop);
+		$head = join(',', $origin, $dts, ++$hop);
+		$head .= ",$group" if $group;
 		$head .= ",$user" if $user;
 		$thing->{Aranea} = "$head|$data";
 
