@@ -1,6 +1,8 @@
 16Apr01=======================================================================
 1. make the correct error messages come out on reject/accept when people
 leave out keywords like 'on'.
+2. Fairly major changes to the documentation tree.  Split the admin manual
+into 2 sections, Installation and Admin and merge the Windows stuff.
 15Apr01=======================================================================
 1. made some mods to the sgml documentation for 1.47
 2. added show/connect command
