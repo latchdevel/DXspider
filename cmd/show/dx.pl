@@ -246,7 +246,7 @@ if ($doqra) {
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
   
 # now do the search
-my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter);
+my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);
 my $ref;
 my @dx;
 foreach $ref (@res) {

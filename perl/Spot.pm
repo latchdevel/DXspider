@@ -194,7 +194,7 @@ sub add
 
 sub search
 {
-	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dofilter) = @_;
+	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dxchan) = @_;
 	my $eval;
 	my @out;
 	my $ref;
@@ -233,20 +233,20 @@ sub search
 			   for (\$c = \$#spots; \$c >= 0; \$c--) {
 					\$ref = \$spots[\$c];
 					if ($expr) {
-	                    if (\$dofilter && \$self->{inspotsfilter}) {
-                            if (\@\$spot < 9) {
-                                my i\@dxcc = Prefix::cty_data(\$spot->[1]);
+	                    if (\$dxchan && \$dxchan->{inspotsfilter}) {
+                            if (\@\$ref < 9) {
+                                my \@dxcc = Prefix::cty_data(\$ref->[1]);
                                 if (\@dxcc) {
                                     pop \@dxcc;
-                                    push \@\$spot, \@dxcc;
+                                    push \@\$ref, \@dxcc;
                                 }
-                                \@dxcc = Prefix::cty_data(\$spot->[4]);
+                                \@dxcc = Prefix::cty_data(\$ref->[4]);
                                 if (\@dxcc) {
                                     pop \@dxcc;
-                                    push \@\$spot, \@dxcc;
+                                    push \@\$ref, \@dxcc;
                                 }
                             }
-		                    my (\$filter, \$hops) = \$self->{inspotsfilter}->it(\@\$spot);
+		                    my (\$filter, \$hops) = \$dxchan->{inspotsfilter}->it(\@\$ref);
 		                    next unless (\$filter);
                         }
 						\$count++;
