@@ -65,7 +65,7 @@ sub alloc
 	$self->{msgno} = shift;
 	my $to = shift;
 	#  $to =~ s/-\d+$//o;
-	$self->{to} = uc $to;
+	$self->{to} = $to;
 	my $from = shift;
 	$from =~ s/-\d+$//o;
 	$self->{from} = uc $from;
@@ -103,7 +103,7 @@ sub process
 		if ($pcno == 28) {		# incoming message
 			my $t = cltounix($f[5], $f[6]);
 			my $stream = next_transno($f[2]);
-			my $ref = DXMsg->alloc($stream, $f[3], $f[4], $t, $f[7], $f[8], $f[13], '0', $f[11]);
+			my $ref = DXMsg->alloc($stream, uc $f[3], $f[4], $t, $f[7], $f[8], $f[13], '0', $f[11]);
 			
 			# fill in various forwarding state variables
 			$ref->{fromnode} = $f[2];
@@ -126,7 +126,7 @@ sub process
 				$ref->{count}++;
 				if ($ref->{count} >= $ref->{linesreq}) {
 					$self->send(DXProt::pc31($f[2], $f[1], $f[3]));
-					dbg('msg', "stream $f[3]: $ref->{linereq} lines received\n");
+					dbg('msg', "stream $f[3]: $ref->{count} lines received\n");
 					$ref->{count} = 0;
 				}
 			}
@@ -210,9 +210,10 @@ sub process
 		if ($pcno == 40) {		# this is a file request
 			$f[3] =~ s/\\/\//og; # change the slashes
 			$f[3] =~ s/\.//og;	# remove dots
+			$f[3] =~ s/^\///o;   # remove the leading /
 			$f[3] = lc $f[3];	# to lower case;
 			dbg('msg', "incoming file $f[3]\n");
-			last SWITCH if $f[3] =~ /^\/(perl|cmd|local_cmd|src|lib|include|sys|msg)\//; # prevent access to executables
+			last SWITCH if $f[3] =~ /^(perl|cmd|local|src|lib|include|sys|msg|connect)/; # prevent access to executables
 			
 			# create any directories
 			my @part = split /\//, $f[3];
