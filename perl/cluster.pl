@@ -159,7 +159,7 @@ sub rec
 		if ($user->lockout) {
 			Log('DXCommand', "$call is locked out, disconnected");
 			$conn->send_now("Z$call|bye"); # this will cause 'client' to disconnect
-			$conn->disconect;
+			$conn->disconnect;
 			return;
 		}
 
