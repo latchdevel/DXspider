@@ -115,6 +115,8 @@ package DXM;
 				filter4 => '$_[0]$_[1] Filter $_[2] deleted for $_[3]',
 				filter5 => 'need some filter commands...',
 				filter6 => '$_[0]$_[1] Filter for $[2] not found',
+				grayline1 => '                                                 Beg of               End of',
+				grayline2 => 'Location                              dd/mm/yyyy Dawn   Rise   Set    Dusk',
 				grids => 'DX Grid enabled for $_[0]',
 				gridu => 'DX Grid disabled for $_[0]',
 				illcall => 'Sorry, $_[0] is an invalid callsign',

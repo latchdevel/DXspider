@@ -1,14 +1,8 @@
 #!/usr/bin/perl
 #
-# show sunrise and sunset times for each callsign or prefix entered
+# show dawn, sunrise, sunset, and dusk times for each callsign or prefix entered
 #
-# 1999/11/9 Steve Franke K9AN
-# 2000/10/27 fixed bug involving degree to radian conversion.
-# 2001/09/15 accept prefix/call and number of days from today (+ or -).
-#            e.g. sh/moon 2 w0 w9      shows rise/set 2 days hence for w0, w9
-#                 sh/moon w0 w9 2      same thing
-#            az and el are shown only when day offset is zero (i.e. today).
-
+# 
 my ($self, $line) = @_;
 my @f = split /\s+/, $line;
 
@@ -63,21 +57,13 @@ if (@list) {
 	}
 }
 
-if( !$n_offset ) {
-        push @out, $self->msg('sun_with_azel');
-} else {
-        push @out, $self->msg('sun');
-}
+push @out, $self->msg('grayline1');
+push @out, $self->msg('grayline2');
 
 foreach $l (@in) {
-	my ($dawn, $rise, $set, $dusk, $az, $dec )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],0);
-		
+        my ($dawn, $rise, $set, $dusk, $az, $dec )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],0);
         $l->[3] =~ s{(-\d+|/\w+)$}{};
-        if( !$n_offset ) {
-        push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s %6.1f %6.1f", $l->[3], $l->[0], $day, $month, $yr, $rise, $set, $az, $dec);
-        } else {
-        push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s", $l->[3], $l->[0], $day, $month, $yr, $rise, $set);
-        }
+        push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s %s %s", $l->[3], $l->[0], $day, $month, $yr, $dawn, $rise, $set, $dusk);
 }
 
 

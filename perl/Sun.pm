@@ -18,6 +18,8 @@
 #
 # $Id$
 # 
+# 2005/02/25 add calculation of civil dawn and dusk, defined to be times
+#            when solar zenith angle is 96 degrees.
 # 2001/12/16 Fixed Julian_Date_of_Epoch and now I actually use it...
 # 2001/09/15 some changes to take care of cases where the object 
 #            doesn't rise or set on a given day... 
@@ -167,14 +169,12 @@ sub rise_set
 	my $lat = shift;
 	my $lon = shift;
 	my $sun0_moon1=shift;		# 0 for sun, 1 for moon, 2 for venus...
+	my ($alpha1,$delta1,$alpha2,$delta2,$alpha3,$delta3);
+	my ($aznow,$hnow,$alphanow,$deltanow,$distance,$distancenow);
+	my ($h0,$H);
+	my ($risetime,$settime);
+	my ($dawntime,$dusktime);
 
-	my $norise = 0;
-	my $noset = 0;
-	my ($risehr,$risemin,$risetime,$sethr,$setmin,$settime);
-
-	my ($alpha1,$alpha2,$alpha3,$delta1,$delta2,$delta3);
-	my ($m0,$m1,$m2,$theta,$alpha,$delta,$H,$az,$h,$h0,$aznow,$hnow,$corr);
-	my ($i,$arg,$argtest,$H0,$alphanow,$deltanow,$distance,$distancenow);
 	my ($ifrac,$ifracnow);
 	
 	my $julianday=Julian_Day($year,$month,$day);
@@ -196,12 +196,27 @@ sub rise_set
 		($alpha2, $delta2)=get_sun_alpha_delta($tt2);
 		($alpha3, $delta3)=get_sun_alpha_delta($tt3);
 		($alphanow, $deltanow)=get_sun_alpha_delta($ttnow);
-		$h0=-0.8333;
 		$H=$thetanow-$lon-$alphanow;
 		$H=reduce_angle_to_360($H);
 		($aznow,$hnow)=get_az_el($H,$deltanow,$lat);
 		$hnow=$hnow +
 			1.02/(tandeg($hnow+10.3/($hnow+5.11)))/60;
+		$h0=-0.8333;      # this is for sun rise and sun set
+		($risetime,$settime)=
+			do_rise_set_calculations($h0,$theta0,$lat,$lon,$alpha1,$delta1,
+				$alpha2,$delta2,$alpha3,$delta3);
+		$h0=-6.0;         # this is for civil dawn and dusk
+		($dawntime,$dusktime)=
+			do_rise_set_calculations($h0,$theta0,$lat,$lon,$alpha1,$delta1,
+				$alpha2,$delta2,$alpha3,$delta3);
+		$dawntime = "------" if( $dawntime eq "NoRise" );
+		$dusktime = "------" if( $dusktime eq "NoSet " );
+
+		return (
+			sprintf("%s", $dawntime), sprintf("%s",$risetime),
+			sprintf("%s", $settime), sprintf("%s",$dusktime),
+			$aznow+180,$hnow
+			);
 	}
 
 	if ( $sun0_moon1 == 1 ) {
@@ -209,14 +224,41 @@ sub rise_set
 		($alpha2, $delta2, $distance, $ifrac)=get_moon_alpha_delta($tt2);
 		($alpha3, $delta3, $distance, $ifrac)=get_moon_alpha_delta($tt3);
 		($alphanow, $deltanow, $distancenow, $ifracnow)=get_moon_alpha_delta($ttnow);
-		$h0=0.7275*$r2d*asin(6378.14/$distancenow)-34./60.;
+		$h0=0.7275*$r2d*asin(6378.14/$distancenow)-34.0/60.;
 		$H=$thetanow-$lon-$alphanow;
 		$H=reduce_angle_to_360($H);
 		($aznow,$hnow)=get_az_el($H,$deltanow,$lat);
 		$hnow=$hnow-$r2d*asin(sin(6378.14/$distancenow)*cosdeg($hnow))+
 			1.02/(tandeg($hnow+10.3/($hnow+5.11)))/60;
+		($risetime,$settime)=
+			do_rise_set_calculations($h0,$theta0,$lat,$lon,$alpha1,$delta1,
+					$alpha2,$delta2,$alpha3,$delta3);
+		return (sprintf("%s", $risetime), sprintf("%s",$settime), 
+			$aznow+180,$hnow, -40*log10($distance/385000), $ifracnow );
+
 	}
 
+}
+
+sub do_rise_set_calculations
+{
+	my $norise = 0;
+	my $noset = 0;
+	my ($risehr,$risemin,$risetime,$sethr,$setmin,$settime);
+	my ($m0,$m1,$m2,$theta,$alpha,$delta,$H,$az,$h,$corr);
+	my ($i,$arg,$argtest,$H0);
+
+    my $h0=shift;
+    my $theta0=shift;
+    my $lat=shift;
+    my $lon=shift;
+    my $alpha1=shift;
+    my $delta1=shift;
+    my $alpha2=shift;
+    my $delta2=shift;
+    my $alpha3=shift;
+    my $delta3=shift;
+    
 	$arg = (sindeg($h0)-sindeg($lat)*sindeg($delta2))/(cosdeg($lat)*cosdeg($delta2));
 	if ( abs($arg) > 1. ) {    # either up all day or down all day 
 		$norise = 1;       # leave it to the user to examine 
@@ -254,7 +296,7 @@ sub rise_set
 		$corr=-$H/360;
 		$m0=$m0+$corr;
 		$m0=$m0+1 if( $m0 < 0 );
-		$m0=$m0-1 if( $m0 > 1 );
+		$m0=$m0-1 if( $m0 >= 1 );
 	}
 
 
@@ -271,7 +313,9 @@ sub rise_set
 			($az,$h)=get_az_el($H,$delta,$lat);
 			$corr=($h-$h0)/(360*(cosdeg($delta)*cosdeg($lat)*sindeg($H)));
 			$m1=$m1+$corr;
-			$norise=1 if( $m1 < 0 || $m1 > 1); 
+#			$norise=1 if( $m1 < 0 || $m1 > 1);
+            $m1=$m1-1 if( $m1 >= 1);
+            $m1=$m1+1 if( $m1 < 0); 
 		}
 	}
 
@@ -282,6 +326,7 @@ sub rise_set
 			$risemin=$risemin-60;
 			$risehr=$risehr+1;
 		}
+		$risehr=0 if($risehr==24);
 		$risetime=sprintf("%02d:%02dZ",$risehr,$risemin);
 	} else {
 		$risetime="NoRise";
@@ -290,7 +335,7 @@ sub rise_set
 	if( !$noset ){
 		$m2 = $m0 + $H0/360.;
 		$m2=$m2+1 if( $m2 < 0 );
-		$m2=$m2-1 if( $m2 > 1 );
+		$m2=$m2-1 if( $m2 >= 1 );
 		for ($i=1; $i<=2; $i++) {
 			$theta = $theta0+360.985647*$m2;
 			$alpha=$alpha2+$m2*($aa+$ba+$m2*$ca)/2;
@@ -300,7 +345,9 @@ sub rise_set
 			($az,$h)=get_az_el($H,$delta,$lat);
 			$corr=($h-$h0)/(360*(cosdeg($delta)*cosdeg($lat)*sindeg($H)));
 			$m2 = $m2 + $corr;
-			$noset=1 if( $m2 < 0 || $m2 > 1); 
+#			$noset=1 if( $m2 < 0 || $m2 > 1); 
+            $m2=$m2-1 if( $m2 >= 1);
+            $m2=$m2+1 if( $m2 < 0);
 		}
 	}
 
@@ -311,20 +358,16 @@ sub rise_set
 			$setmin=$setmin-60;
 			$sethr=$sethr+1;
 		}
+		$sethr=0 if($sethr==24);
 		$settime=sprintf("%02d:%02dZ",$sethr,$setmin);
 	} else {
 		$settime="NoSet ";
 	}			
-
-
-	if ( $sun0_moon1 == 0 ) {
-		return (sprintf("%s", $risetime), sprintf("%s",$settime),$aznow+180,$hnow);
-	}
-	if ( $sun0_moon1 == 1 ) {
-		return (sprintf("%s", $risetime), sprintf("%s",$settime), 
-			$aznow+180,$hnow, -40*log10($distance/385000), $ifracnow );
-	}
+	return $risetime,$settime;
 }
+
+
+
 sub get_moon_alpha_delta 
 {
 	#

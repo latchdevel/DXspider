@@ -1,3 +1,6 @@
+26Feb05=======================================================================
+1. Added show/grayline command from Steve K9AN. This is also aliased to
+show/greyline :-)
 25Feb05=======================================================================
 1. Changed the way spot deduping is done. This is likely to make deduping much
 stricter. In essence a person cannot spot the same call on the same frequency

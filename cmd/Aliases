@@ -127,6 +127,7 @@ package CmdAlias;
 	  '^sho?w?/fdx/(\d+)', 'show/dx real $1', 'show/fdx',
 	  '^sho?w?/fdx/d(\d+)', 'show/dx real from $1', 'show/fdx',
 	  '^sho?w?/fdx', 'show/dx real', 'show/fdx',
+	  '^sho?w?/gre?y?l?i?n?e?', 'show/grayline', 'show/grayline',
 	  '^sho?w?/myd?x?/(\d+)-(\d+)', 'show/dx filter $1-$2', 'show/mydx',
 	  '^sho?w?/myd?x?/(\d+)', 'show/dx filter $1', 'show/mydx',
 	  '^sho?w?/myd?x?/d(\d+)', 'show/dx filter from $1', 'show/mydx',

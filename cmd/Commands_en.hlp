@@ -2032,6 +2032,37 @@ See also TYPE - to see the contents of a file.
 Show the contents of all the filters that are set. This command displays
 all the filters set - for all the various categories.
 
+=== 0^SHOW/GRAYLINE [ndays] [<prefix>|<callsign>]^Show Civil dawn/dusk times
+This command is very similar to SHOW/SUN except that it shows the 
+start and end of "Official" or "Civil" Dawn and Dusk. This is defined 
+as when the Sun is 6 degrees below the horizon.
+
+If you don't specify any prefixes or callsigns, it will show the 
+times for your QTH (assuming you have set it with either SET/LOCATION 
+or SET/QRA), together with the current azimuth and elevation.
+
+If all else fails it will show the civil dawn and dusk times for 
+the node that you are connected to.
+
+For example:-
+
+  SH/GRAYLINE
+  SH/GRAYLINE G1TLH W5UN
+
+You can also use this command to see into the past or the future, so
+if you want to see yesterday's times then do:-
+
+  SH/GRAYLINE -1
+
+or in three days time:-
+
+  SH/GRAYLINE +3 W9
+
+Upto 366 days can be checked both in the past and in the future.
+
+Please note that the times are given as the UT times of the requested
+UT day.
+	
 === 0^SHOW/HFSTATS [days] [date]^Show the HF DX Statistics 
 Show the HF DX spots breakdown by band for the last <days> no of days 
 (default is 31), starting from a <date> (default: today).
