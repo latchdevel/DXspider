@@ -1,8 +1,10 @@
 06Dec98========================================================================
 1. Fixed DXBearing::is_qra so that it correctly detects full QRA locators
-2. Added a QRA locator thing to sh/heading so that if the 'prefix' looks like
-a locator it will print the bearing and distance to it (as well as doing the 
-normal sh/heading on a prefix thing).
+2. Added sh/qra for doing locator distances and bearings
+3. Added some stuff to Notes.txt on hints for command writers
+4. Changed help system to use just one file per language
+5. Started adding more help
+6. Fixed 24Mhz band limits
 05Dec98========================================================================
 1. Added sh/heading and QRA locator calculation stuff
 04Dec98========================================================================

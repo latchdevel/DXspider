@@ -1,0 +1,88 @@
+#
+# please put your help in in alphabetical order
+#
+# a string search is done in the command field (case is ignored)
+# and all commands matching the asked for command are printed out
+#
+# the order of the fields in each header is 
+#   privilege, command, Description 
+# if the command ends in a - then that line isn't printed, but any
+# subsequent lines are
+#
+# Comment lines are indented before printing
+#
+=== 0^ANNOUNCE <text>^Send an announcement to LOCAL users only
+
+=== 0^ANNOUNCE FULL <text>^Send an announcement cluster wide
+This will send your announcement cluster wide
+
+=== 5^ANNOUNCE SYSOP <text>^Send an announcement to Sysops only
+
+=== 0^ANNOUNCE-
+<text> is the text of the announcement you wish to broadcast 
+
+=== 0^BYE^Exit from the cluster
+This will disconnect you from the cluster
+   
+=== 0^DX <freq> <callsign> <remarks>^Send a DX spot throughout the cluster
+<freq> is compared against the available bands set up in the cluster.
+see show/bands for more information.
+
+=== 0^HELP^The HELP Command
+HELP is available for a number of commands. The syntax is:-
+
+  HELP <cmd>
+  
+Where <cmd> is the name of the command you want help on.
+
+All commands can be abbreviated, so SHOW/DX can be abbreviated
+to SH/DX, ANNOUNCE can be shorted to AN and so on.
+
+=== 0^SHOW/DX^Interrogate the spot database
+If you just type SHOW/DX you will get the last so many spots
+(sysop configurable, but usually 10).
+   
+In addition you can add any number of these commands in very nearly
+any order to the basic SHOW/DX command, they are:-
+   
+on <band>       - eg 160m 20m 2m 23cm 6mm
+on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+   
+<number>        - the number of spots you want
+<from>-<to>     - <from> spot no <to> spot no in the selected list
+   
+<prefix>        - for a spotted callsign beginning with <prefix>
+*<suffix>       - for a spotted callsign ending in <suffix>
+*<string>*      - for a spotted callsign containing <string>
+   
+day <number>    - starting <number> days ago
+day <from>-<to> - <from> days <to> days ago
+   
+info <text>     - any spots containing <text> in the info or remarks
+   
+spotter <call>  - any spots spotted by <call>
+   
+e.g. 
+   
+   SH/DX 9m0
+   SH/DX on 20m info iota
+   SH/DX 9a on vhf day 30
+
+=== 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
+This command takes the <prefix> (which can be a full or partial 
+callsign if desired), looks up which internal country number it is
+and then displays all the spots as per SH/DX for that country.
+   
+The options for SHOW/DX also apply to this command.   
+e.g. 
+   
+   SH/DXCC G
+   SH/DXCC W on 20m info iota
+
+=== 0^SHOW/PREFIX <callsign>^Interrogate the spot database by country
+This command takes the <callsign> (which can be a full or partial 
+callsign or a prefix if desired), looks up which internal country number 
+it is and then displays all the relevant prefixes for that country
+together with the internal country no, the CQ and ITU regions. 
+
+See also SHOW/DXCC

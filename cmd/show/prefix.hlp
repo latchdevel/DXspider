@@ -1,7 +1,0 @@
-=== 0^EN^SHOW/PREFIX^Interrogate the spot database by country
-   SHOW/PREFIX <prefix> or <callsign>
-   
-   This command takes the <prefix> (which can be a full or partial 
-   callsign if desired), looks up which internal country number it is
-   and then displays all the relevant prefixes for that country
-   together with the internal country no, the CQ and ITU regions. 

@@ -62,7 +62,9 @@ Programming Notes ($Id$)
 
 * The normal privilege levels are:-
     0 - user privilege.
+    1 - remote user user privilege
     5 - sysop privilege.
+    8 - maximum recommended remote sysop privilege
     9 - console privilege.
 
   The sysop privilege is for things that you are prepared for remote
@@ -85,22 +87,36 @@ Programming Notes ($Id$)
   you can have one callsign, you can have several. Interpret your
   arguments; so for example:-
 
-    set/locator jo02lq       - sets your own locator to JO02LQ
-    set/locator g1tlh jo02lq - sets G1TLH's locator (if you are allowed)
+    set/qra jo02lq       - sets your own locator to JO02LQ
+    set/qra g1tlh jo02lq - sets G1TLH's locator (if you are allowed)
 
   or
 
-    show/locator             - displays your locator (and other info?)
-    show/locator in92jo      - displays the bearing and distance to 
-                               IN92JO using your lat/long or locator
-    show/locator jn56in in92jo  - bearing and distance between two
-                                  locators
-    show/locator gb7dxc      - bearing and distance to gb7dxc if poss.  
+    show/qra in92jo      - displays the bearing and distance to 
+                           IN92JO using your lat/long or locator
+    show/qra jn56in in92jo  - bearing and distance between two
+                              locators
 
 * It is important that you remember when you have tie hashes using MLDBM
   et al. If you do a DXUser->get($call) you will get a different (older)
   thing than the one in $self->$user. This is almost certainly NOT what
   you want if want to modify a user that is currently connected.
+
+* If you want to debug something, start the cluster.pl up thus:-
+    
+    perl -d cluster.pl
+    dbg> r
+
+  Then you can go into debug mode at anytime by using the command :-
+ 
+    debug
+
+  or you can put the line:-
+
+    $DB::single = 1;
+
+  in an appropriate place in a command. This will only have an effect
+  if you are running in perl debug mode.
 
 * Anything you output with a > as the last character is taken to mean
   that this is a prompt and will not have a \r or \n appended to it.
@@ -110,3 +126,6 @@ Programming Notes ($Id$)
   have a '.hlp' appended to the command name rather than a '.pl'. All 
   in the help file are sent to the user except those starting with a '#'
   character.
+
+* PLEASE add your new commands to the Commands_*.hlp file so that 
+  people know about and how to use them!

@@ -35,6 +35,8 @@ package DXM;
 				e8 => 'Need a callsign and some text',
 				e9 => 'Need at least some text',
 				email => 'E-mail address set to: $_[0]',
+				helpe1 => 'Help system unavailable, tell sysop',
+				helpe2 => 'No help available on $_[0]',
 				heres => 'Here set on $_[0]',
 				heade1 => 'Using $main::mycall Coords, consider doing a set/location or set/qra',
 				hereu => 'Here unset on $_[0]',

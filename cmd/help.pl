@@ -2,10 +2,8 @@
 # the help subsystem
 #
 # It is a very simple system in that you type in 'help <cmd>' and it
-# looks for a file called <cmd>.hlp in either the local_cmd directory
+# looks for a file called command.hlp in either the local_cmd directory
 # or the cmd directory (in that order). 
-#
-# if you just type in 'help' by itself you get what is in 'help.hlp'.
 #
 # Copyright (c) 1998 - Dirk Koopman G1TLH
 #
@@ -14,18 +12,19 @@
 
 my ($self, $line) = @_;
 my @out;
-my ($path, $fcmd) = ($main::cmd, "help");;
-my @out;
-my @inpaths = ($main::localcmd, $main::cmd);
-my @helpfiles;
 
 # this is naff but it will work for now
 $line = "help" if !$line;
-$fcmd = lc $line;
+my $lang = $self->lang;
+$lang = 'en' if !$lang;
 
-# each help file starts with a line that looks like:-
+# each help file contains lines that looks like:-
 #
-# === 0^EN^HELP^Description
+# === 0^EN^*^Description
+# text
+# text
+#
+# === 0^EN^help^Description
 # text
 # text
 # text 
@@ -33,31 +32,38 @@ $fcmd = lc $line;
 # The fields are:- privilege level, Language, full command name, short description
 #
 
-if (!open(H, "$path/$fcmd.hlp")) {
-  return (1, "no help on $line available");
+my $h = new FileHandle;
+
+if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
+	if (!open($h, "$main::cmd/Commands_$lang.hlp")) {
+		return (1, $self->msg('helpe1'));
+	}
 }
 my $in;
-my $include = 0;
-my @in = <H>;
-close(H);
 
-foreach $in (@in) {
-  next if $in =~ /^\s*\#/;
-  chomp $in;
-  if ($in =~ /^===/) {
-    $include = 0;
-    $in =~ s/=== //;
-	my ($priv, $lang, $cmd, $desc) = split /\^/, $in;
-	next if $priv > $self->priv;             # ignore subcommands that are of no concern
-	next if $self->lang && $self->lang ne $lang;
-	push @out, "$cmd - $desc";
-	$include = 1;
-	next;
-  }
-  push @out, $in if $include;
+$line =~ s/![\w\/]//og;
+$line =~ s/\//\.\*\//og;
+
+my $include;
+foreach $in (<$h>) {
+	next if $in =~ /^\#/;
+	chomp $in;
+	if ($in =~ /^===/) {
+		$include = 0;
+		$in =~ s/=== //;
+		my ($priv, $cmd, $desc) = split /\^/, $in;
+		next if $priv > $self->priv;             # ignore subcommands that are of no concern
+		next unless $cmd =~ /$line/i;
+		push @out, "$cmd $desc" unless $cmd =~ /-$/o;
+		$include = 1;
+		next;
+	}
+	push @out, "   $in" if $include;
 }
 
-push @out, "No help available for $line" if @out == 0;
+close($h);
+
+push @out, $self->msg('helpe2', $line) if @out == 0;
 
 return (1, @out);
 
