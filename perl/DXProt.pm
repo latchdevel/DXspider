@@ -669,7 +669,7 @@ sub normal
 				my $ver = $field[$i+3];
 				next unless defined $here && defined $conf && is_callsign($call);
 
-				eph_del_regex("^PC21\^$call");
+				eph_del_regex("^PC(?:21\^$call|17\^[^\^]+\^$call)");
 				
 				# check for sane parameters
 				$ver = 5000 if $ver eq '0000';
@@ -747,7 +747,7 @@ sub normal
 
 			my $call = uc $field[1];
 
-			eph_del_regex("^PC19.*$call");
+			eph_del_regex("^PC1[79].*$call");
 			
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
@@ -904,6 +904,7 @@ sub normal
 		if ($pcno == 39) {		# incoming disconnect
 			if ($field[1] eq $self->{call}) {
 				$self->disconnect(1);
+				eph_dup_regex("^PC(?:1[679]|21).*$field[1]");
 			} else {
 				dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
 			}
