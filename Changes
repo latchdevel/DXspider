@@ -4,6 +4,7 @@
 3. Added set/dxcq and set/dxitu zone commands [Translators: I have added
 dxcqu, dxcqs, dxitus and dxituu to Messages].
 4. Add new Commands to manuals (g0vgs)
+5. make sure that none of the above set/dx... commands are defaulted on
 22Feb03=======================================================================
 1. changed qrz.com address 
 2. added Charlie's [K1XX] new wpxloc.raw data stuff to get WA1, KC3 type 

@@ -109,6 +109,11 @@ sub start
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
 
+	# sort out new dx spot stuff
+	$user->wantdxcq(0) unless defined $user->{wantdxcq};
+	$user->wantdxitu(0) unless defined $user->{wantdxitu};	
+	$user->wantusstate(0) unless defined $user->{wantusstate};
+
 	# sort out registration
 	if ($main::reqreg == 1) {
 		$self->{registered} = $user->registered;

@@ -15,6 +15,9 @@
 # Taiwanese suicide squirrels attacking your rabbit are also not my fault.
 #
 # Ian (M0AZM) 20030210.
+#
+# $Id$
+#
 
 print STDERR localtime() ." ($$) $0 Starting\n";
 
@@ -31,146 +34,123 @@ my $count = 0 ;
 my ($cmd, $line) ;
 my %help ;
 
-# Default output level
-my $level = 0 ;
-
-# Command line parameters
-if(my $var = shift(@ARGV))
-    {
-    $level = $var ;
-    }
+# Default output level, take $ARGV[0] as being a level
+my $level = shift || 0 ;
 
 # Disable line buffering
 $| = 1 ;
 
 # SGML headers
-if($HEADERS)
-    {
+if ($HEADERS) {
     print("<!doctype linuxdoc system>\n") ;
     print("<article>\n") ;
     print("<sect>\n") ;
-    }
+}
 
 # Loop until EOF
-while(<>) 
-    {
+while (<>) {
+
     # Ignore comments
-    if(m/^#/)
-        {
-        next;
-        }
+    next if /^\s*\#/;
+
+	chomp $_;
     
-    chomp $_;
-    
-    # Is this a command definition line?
-    # if(m/^=== ([\d])\^([\w,\W]*)\^([\w,\W]*)/)
-    if(m/^=== ([\d])\^(.*)\^(.*)/)
-        {
-        $count++ ;
+	# Is this a command definition line?
+	# if(m/^=== ([\d])\^([\w,\W]*)\^([\w,\W]*)/)
+	if (/^=== ([\d])\^(.*)\^(.*)/) {
+		$count++ ;
         
-        if($DEBUG)
-            {
-            print("Level       $1\n") ;
-            print("Command     $2\n") ;
-            print("Description $3\n") ;
-            next;
-            }
+		if ($DEBUG) {
+			print("Level       $1\n") ;
+			print("Command     $2\n") ;
+			print("Description $3\n") ;
+			next;
+		}
 
-        $cmd = $2 ;
+		$cmd = $2 ;
 
-        $help{$cmd}{level} = $1 ;
-        $help{$cmd}{command} = $2 ;
-        $help{$cmd}{description} = $3 ;
-        }
-    # Not a command definition line - Carry On Appending(tm)....
-    else
-        {
-        $help{$cmd}{comment} .= $_ . "\n" ;
-        }
-    # print("$_\n") ;
-    }
+		$help{$cmd}{level} = $1 ;
+		$help{$cmd}{command} = $2 ;
+		$help{$cmd}{description} = $3 ;
+	} else {
+		# Not a command definition line - Carry On Appending(tm)....
+		$help{$cmd}{comment} .= $_ . "\n" ;
+	}
+	# print("$_\n") ;
+}
 
 # Go through all of the records in the hash in order
-foreach $cmd (sort(keys %help))
-    {
-    # Level checking goes here.
-    if($help{$cmd}{level} > $level) { next ; }
+foreach $cmd (sort(keys %help)) {
+
+	# Level checking goes here.
+	next if $help{$cmd}{level} > $level;
     
-    # Need to change characters that SGML doesn't like at this point.
-    # Perhaps we should use a function for each of these variables?
-    # Deal with < and >
-    $help{$cmd}{command} =~ s/</&lt;/g ;
-    $help{$cmd}{command} =~ s/>/&gt;/g ;
-    # Deal with [ and ]
-    $help{$cmd}{command} =~ s/\[/&lsqb;/g ;
-    $help{$cmd}{command} =~ s/\]/&rsqb;/g ;
-    # Change to lower case
-    $help{$cmd}{command} = lc($help{$cmd}{command}) ;
+	# Need to change characters that SGML doesn't like at this point.
+	# Perhaps we should use a function for each of these variables?
+	# Deal with < and >
+	$help{$cmd}{command} =~ s/</&lt;/g ;
+	$help{$cmd}{command} =~ s/>/&gt;/g ;
 
-    # Deal with < and >
-    $help{$cmd}{description} =~ s/</&lt;/g ;
-    $help{$cmd}{description} =~ s/>/&gt;/g ;
+	# Deal with [ and ]
+	$help{$cmd}{command} =~ s/\[/&lsqb;/g ;
+	$help{$cmd}{command} =~ s/\]/&rsqb;/g ;
 
-    # Deal with < and >
-    if($help{$cmd}{comment})
-        {
-        $help{$cmd}{comment} =~ s/</&lt;/g ;
-        $help{$cmd}{comment} =~ s/>/&gt;/g ;
-        }
+	# Change to lower case
+	$help{$cmd}{command} = lc($help{$cmd}{command}) ;
 
-    # Output the section details and command summary.
-    print("<sect1>$help{$cmd}{command}") ;
-    if($level > 0) { print(" ($help{$cmd}{level})") ; }
-    print("\n\n") ;
-    print("<P>\n") ;
-    print("<tt>\n") ;
-    print("<bf>$help{$cmd}{command}</bf> $help{$cmd}{description}\n") ;
-    print("</tt>\n") ;
-    print("\n") ;
+	# Deal with < and >
+	$help{$cmd}{description} =~ s/</&lt;/g ;
+	$help{$cmd}{description} =~ s/>/&gt;/g ;
 
-    # Output the command comments.
-    print("<P>\n") ;
+	# Deal with < and >
+	if ($help{$cmd}{comment}) {
+		$help{$cmd}{comment} =~ s/</&lt;/g ;
+		$help{$cmd}{comment} =~ s/>/&gt;/g ;
+	}
 
-    # Loop through each line of the command comments.
-    # If the first character of the line is whitespace, then use tscreen
-    # Once a tscreen block has started, continue until the next blank line.
-    my $block = 0 ;
+	# Output the section details and command summary.
+	print("<sect1>$help{$cmd}{command}") ;
+	print(" ($help{$cmd}{level})") if $level > 0;
+	print("\n\n") ;
+	print("<P>\n") ;
+	print("<tt>\n") ;
+	print("<bf>$help{$cmd}{command}</bf> $help{$cmd}{description}\n") ;
+	print("</tt>\n") ;
+	print("\n") ;
 
-    # Is the comment field blank?  Then trying to split will error - lets not.
-    if(!$help{$cmd}{comment})
-        {
-        next;
-        }
+	# Output the command comments.
+	print("<P>\n") ;
 
-    # Work through the comments line by line
-    foreach $line (split('\n', $help{$cmd}{comment}))
-        {
-        # Leading whitespace or not?
-        if($line =~ m/^\s+\S+/)
-            {
-            if(!$block) 
-                {
-                $block = 1 ;
-                print("<tscreen><verb>\n") ; 
-                }
-            }
-        else
-            {
-            if($block)
-                {
-                $block = 0 ;
-                print("</verb></tscreen>\n") ;
-                }
-            }
-        print("$line\n") ;
-        }
+	# Loop through each line of the command comments.
+	# If the first character of the line is whitespace, then use tscreen
+	# Once a tscreen block has started, continue until the next blank line.
+	my $block = 0 ;
+
+	# Is the comment field blank?  Then trying to split will error - lets not.
+	next unless $help{$cmd}{comment};
+
+	# Work through the comments line by line
+	foreach $line (split('\n', $help{$cmd}{comment})) {
+		# Leading whitespace or not?
+		if ($line =~ /^\s+\S+/) {
+			if (!$block) {
+				$block = 1 ;
+				print("<tscreen><verb>\n") ; 
+			}
+		} else {
+			if ($block) {
+				$block = 0 ;
+				print("</verb></tscreen>\n") ;
+			}
+		}
+		print("$line\n") ;
+	}
     
-    # We fell out of the command comments still in a block - Ouch....
-    if($block)
-        {
-        print("</verb></tscreen>\n\n") ;
-        }
-    }
+	# We fell out of the command comments still in a block - Ouch....
+	if ($block) {
+		print("</verb></tscreen>\n\n") ;
+	}
+}
 
 print("</article>\n") ;
 
