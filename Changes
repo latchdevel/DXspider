@@ -1,3 +1,12 @@
+11Mar03=======================================================================
+1. added show/qsl command. This command basically takes the normal output of
+sh/dx qsl and stores it in a database. In order to enable this command you 
+will require the Storable module to be loaded (you will already have done
+this with a bit of luck for the new DXUser interface). The suggested 
+procedure is (after the update) to run /spider/perl/create_qsl.pl (this may
+take a long time), then immediately it finishes, restart the node. The node 
+will then keep the database up to date automatically. If you are not 
+interested in historical data then you can leave this step out.
 08Mar03=======================================================================
 1. Added chat, join, leave commands to allow general purpose conferencing
 on arbitrary subjects. [Translators: added e34,e35,join,leave]. There is
