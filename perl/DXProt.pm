@@ -1062,11 +1062,6 @@ sub handle_19
 					next;
 				}
 			}
-			if ($r->version ne $ver || $r->flags != $flags) {
-				$r->version($ver);
-				$r->flags($flags);
-				push @rout, $r unless $ar;
-			}
 		} else {
 
 			# if he is directly connected or allowed then add him, otherwise store him up for later

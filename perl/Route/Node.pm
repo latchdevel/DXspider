@@ -58,7 +58,7 @@ sub max
 # object with that callsign. The upper layers are expected to do something
 # sensible with this!
 #
-# called as $parent->add(call, dxchan, version, flags) 
+# called as $parent->add(call, version, flags) 
 #
 
 sub add
@@ -66,13 +66,21 @@ sub add
 	my $parent = shift;
 	my $call = uc shift;
 	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
+	my $version = shift;
+	my $here = shift;
+	
 	my $self = get($call);
 	if ($self) {
 		$self->_addparent($parent);
 		$parent->_addnode($self);
+		if ($self->{version} != $version || $self->{flags} != $here) {
+			$self->{version} = $version;
+			$self->{flags} = $here;
+			return $self;
+		}
 		return undef;
 	}
-	$self = $parent->new($call, @_);
+	$self = $parent->new($call, $version, $here);
 	$parent->_addnode($self);
 	return $self;
 }

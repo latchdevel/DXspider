@@ -60,7 +60,9 @@ $filterdef = bless ([
 
 sub new
 {
-	my ($pkg, $call) = @_;
+	my $pkg = shift;
+	my $call = shift;
+
 	$pkg = ref $pkg if ref $pkg;
 
 	my $self = bless {call => $call}, $pkg;

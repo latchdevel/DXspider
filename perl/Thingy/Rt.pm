@@ -52,7 +52,9 @@ sub gen_Aranea
 sub from_Aranea
 {
 	my $thing = shift;
-	return unless $thing;
+	$thing->{u} ||= '';
+	$thing->{n} ||= '';
+	$thing->{a} ||= '';
 	return $thing;
 }
 
@@ -89,20 +91,20 @@ sub handle_cf
 	}
 
 	# do nodes
-	my ($del, $add);
 	my %in;
 	if ($thing->{n}) {
-		%in = (map {my ($here, $call) = unpack("A1 A*", $_); ($call, $here)} split /:/, $thing->{n});
-		my ($tdel, $tadd) = $parent->diff_nodes(keys %in);
-		$add = $tadd;
-		$del = $tdel;
+		for (split(/:/, $thing->{n})) {
+			my ($here, $call) = unpack("A1 A*", $_); 
+			$in{$call} = $here;
+		}
 	}
 	if ($thing->{a}) {
-		%in = (map {my ($here, $call) = unpack("A1 A*", $_); ($call, $here)} split /:/, $thing->{a});
-		my ($tdel, $tadd) = $parent->diff_nodes(keys %in);
-		push @$add, @$tadd;
-		push @$del, @$tdel;
+		for (split(/:/, $thing->{a})) {
+			my ($here, $call) = unpack("A1 A*", $_); 
+			$in{$call} = $here;
+		} 
 	}
+	my ($del, $add) = $parent->diff_nodes(keys %in);
 	if ($add) {
 		my @pc21;
 		foreach my $call (@$del) {
@@ -116,8 +118,8 @@ sub handle_cf
 		my @pc19;
 		foreach my $call (@$add) {
 			RouteDB::update($call, $chan_call);
-			my $ref = Route::Node::get($call);
-			push @pc19, $parent->add($call, 0, $in{$call}) unless $ref;
+			my $here = $in{$call};
+			push @pc19, $parent->add($call, 0, $here);
 		}
 		$thing->{pc19n} = \@pc19 if @pc19;
 	}
@@ -237,7 +239,7 @@ sub copy_pc16_data
 	$thing->{'s'} = 'cf';
 
 	my @u = map {Route::User::get($_)} $uref->users;
-	$thing->{ausers} = \@u;
+	$thing->{ausers} = \@u if @u;
 	return @u;
 }
 
