@@ -26,6 +26,7 @@ use DXCommandmode;
 use DXProt;
 use DXCluster;
 use DXDebug;
+use Prefix;
 
 package main;
 
@@ -158,6 +159,9 @@ foreach(@debug) {
   dbgadd($_);
 }
 STDOUT->autoflush(1);
+
+# load Prefixes
+Prefix::load();
 
 # initialise User file system
 DXUser->init($userfn);

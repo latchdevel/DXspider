@@ -18,10 +18,11 @@ if ($self->priv >= 5) {             # allow a callsign as first arg
   shift @args if $user;
   $line = join ' ', @args;
 } else {
+  $call = $self->call;
   $user = $self->user;
 }
 
 $user->addr($line);
-push @out, DXM::msg('addr', $call);
+push @out, DXM::msg('addr', $call, $line);
 
 return (1, @out);
