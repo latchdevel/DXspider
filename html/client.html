@@ -20,15 +20,15 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Wed Mar 14 14:09:09 GMT 2001
+Last modified: Sun Apr  1 18:18:19 BST 2001
 <!-- hhmts end -->
 
 	<h4>Introduction</h4>
 
-	The standard client program is written in perl and lives in <tt>/spider/perl/client.pl</tt>.
+	The standard client program is written in C and lives in <tt>/spider/src</tt>.
 	It performs the interface function
 	between the cluster daemon (<tt>/spider/perl/cluster.pl</tt>) and 
-	AX25 or Telnet connections, both incoming and outgoing.
+	AX25 or Telnet connections for incoming connections.
 	
 	<p>There is a related program called <tt>/spider/perl/console.pl</tt> which,
 	as of version 1.30, is the standard sysop or full duplex telnet user
@@ -38,13 +38,12 @@ Last modified: Wed Mar 14 14:09:09 GMT 2001
 	interest (such as DX spots, Announces etc).
 
 
-	<h4>client.pl</h4>
+	<h4>client</h4>
 
-	The client itself is a rather rudimentary program which really only deals with 
-	things like line end conventions and noticing when a connection goes away. It is
-	envisaged that at some time in the nearish future this program will be written in
-	C and thus become considerably smaller. But, for the moment and whilst this area
-	is under some development, it will remain in perl for ease of change.
+	The client itself is a rather rudimentary program which really
+	only deals with things like line end conventions and noticing when
+	a connection goes away. It is written in C and thus become
+	considerably smaller.
 
 	<P>The client can take up two arguments: a "callsign" and a connection type. 
 
@@ -52,25 +51,16 @@ Last modified: Wed Mar 14 14:09:09 GMT 2001
 	<ol>
 		<p><li>A real callsign (!).
 
-		<P>For incoming connections it is important to make sure that
+		<P>For normal incoming ax25 connections it is important to make sure that
 		the callsign passed <b>DOES NOT</b> have an SSID (use the %u
 		or %U in <tt>ax25d.conf</tt>). The DXSpider system largely
 		ignores what it regards as 'duplicate' callsigns (and that
 		includes those with SSIDs) except in certain <a
 		href="#special">special</a> cases. 
 
-		<P><li>The name of a <a href="connect.html">connect</a> script.
-
-		<p><li><b>login</b> This will cause a unix like <tt>login:</tt> and
-		<tt>password:</tt> phase to be run. With version 1.13 the password isn't
-		checked unless there is a password recorded in the user file - but you have
-		no means of recording a password! (unless you have created a local <tt>set/password</tt>
-		command - please donate a copy it you have)
+		<p><li><b>login</b> This will cause a unix like
+		<tt>login:</tt> phase to be run. 
 		
-		<p>Also in 1.13 only existing users can enter via this means. This will probably
-		  change, but please discuss this in the <a href="../lists/dxspider-support/index.html">support</a>
-		  mailing list.
-
 	</ol>
 
 	<p>The connection type can be:-
@@ -78,9 +68,6 @@ Last modified: Wed Mar 14 14:09:09 GMT 2001
 		<p><li><b>ax25</b> This tells the client to use ax25 line conventions.
 
 		<p><li><b>telnet</b> This tells the client to use normal unix line conventions.
-
-		<p><li><b>connect</b> Start an outgoing <a href="connect.html">connect</a> script.
-		Use the line conventions in that script.
 	</ol>
 
 	<p>The connection type can be missing in which case the default is unix line conventions.
@@ -111,8 +98,8 @@ Last modified: Wed Mar 14 14:09:09 GMT 2001
 	The client only uses files when in the <b>login</b> phase.  It
 	prints the <tt>/spider/data/issue</tt> file, if it is present, to
 	the user before issuing the <tt>login:</tt> prompt. After a callsign
-	and password is entered it uses
-	the standard cluster user file to check them.
+	is entered it uses
+	the standard cluster user file to check it.
 
 	<p>Having said all of that the client <em>appears</em> to use the following files and
 	  sends them to the user if they are present:-
