@@ -1,6 +1,7 @@
 28Mar01=======================================================================
 1. AGW engine stuff now accepts incoming calls and at least attempts to do
 outgoing ones. YMMV.
+2. fixed 'always' telnet on a client line in a connect script
 27Mar01=======================================================================
 1. add first cut at an AGW Engine. Copy /spider/perl/AGWConnect.pm to 
 /spider/local and edit it appropriately. You shouldn't need a login and passwd

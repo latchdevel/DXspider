@@ -341,7 +341,7 @@ sub _doclient
 	$conn->conns($call);
 	$conn->{csort} = $f[1] if $f[1];
 	$conn->{state} = 'C';
-	&{$conn->{rproc}}($conn, "O$call|telnet");
+	&{$conn->{rproc}}($conn, "O$call|$conn->{csort}");
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 }
