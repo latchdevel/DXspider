@@ -1,3 +1,6 @@
+02Nov00=======================================================================
+1. updated filtering logic. You will need to RECREATE your filters (clear/spot
+all, then start again) for testing.
 01Nov00=======================================================================
 1. put PC11 field 2 check back to m for pc text.
 2. improve 'simple' callsign checking

@@ -144,6 +144,7 @@ sub process
 				my $ref = $busy{$_};
 				if (exists $ref->{lastt} && $main::systime >= $ref->{lastt} + $timeout) {
 					dbg('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
+					Log('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
 					$ref->stop_msg($node);
 					
 					# delay any outgoing messages that fail

@@ -178,19 +178,29 @@ sub it
 	my $self = shift;
 	
 	my $hops = undef;
-	my $r = 1;
 		
 	my $filter;
-	foreach $filter ($self->getfilters) {
-		$r = 0;
+	my @keys = sort $self->getfilkeys;
+	my $key;
+	my $r = @keys > 0 ? 0 : 1;
+	foreach $key (@keys) {
+		$filter = $self->{$key};
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
-			next if &{$filter->{reject}->{code}}(\@_);				
+			if (&{$filter->{reject}->{code}}(\@_)) {
+				$r = 0;
+				last;
+			} else {
+				$r = 1;
+			}		
 		}
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
-			next unless &{$filter->{accept}->{code}}(\@_);				
+			if (&{$filter->{accept}->{code}}(\@_)) {
+				$r = 1;
+				last;
+			} else {
+				$r = 0;
+			}			
 		} 
-		$r = 1;
-		last;
 	}
 
 	# hops are done differently 
@@ -379,6 +389,10 @@ sub parse
 				$s .= $tok;
 				$user .= $tok;
 				next;
+			} elsif ($tok eq 'all') {
+				$s .= '1';
+				$user .= $tok;
+				last;
 			} elsif ($tok eq 'or') {
 				$conj = ' || ' if $conj ne ' || ';
 				next;
@@ -464,7 +478,7 @@ sub parse
 	$user =~ s/\!/ not /g;
 	$user =~ s/\s+/ /g;
 	
-	return (0, $filter, $fno, $user, "sub { my \$r = shift; return $s }");
+	return (0, $filter, $fno, $user, "sub { my \$r = shift; return ($s) ? 1 : 0 }");
 }
 
 package Filter::Old;
