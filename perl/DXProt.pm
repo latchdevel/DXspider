@@ -717,27 +717,32 @@ sub send_local_config
 	my $self = shift;
 	my $n;
 	my @nodes;
-	
+	my @localnodes;
+	my @remotenodes;
+		
 	# send our nodes
 	if ($self->{isolate}) {
-		@nodes = (DXCluster->get_exact($main::mycall));
+		@localnodes = (DXCluster->get_exact($main::mycall));
 	} else {
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
-		@nodes = DXNode::get_all(); 
+		@nodes = DXNode::get_all();
 		@nodes = grep { $_->dxchan != $self } @nodes;
-		@nodes = grep { !($_->dxchan && $_->dxchan->isolate) } @nodes;
+		@nodes = grep { $_->{call} ne $main::mycall } @nodes;
+		@localnodes = grep { $_->dxchan->{call} eq $_->{call} && !$_->dxchan->{isolate} } @nodes if @nodes;
+		unshift @localnodes, DXCluster->get_exact($main::mycall);
+		@remotenodes = grep { $_->dxchan->{call} ne $_->{call} } @nodes if @nodes;
 	}
 
-	my @s = $me->pc19(@nodes);
+	my @s = $me->pc19(@localnodes, @remotenodes);
 	for (@s) {
 		my $routeit = adjust_hops($self, $_);
 		$self->send($routeit) if $routeit;
 	}
 	
 	# get all the users connected on the above nodes and send them out
-	foreach $n (@nodes) {
+	foreach $n (@localnodes, @remotenodes) {
 		my @users = values %{$n->list};
 		my @s = pc16($n, @users);
 		for (@s) {

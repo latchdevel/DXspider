@@ -42,6 +42,6 @@
 
 $in = [
 	   [ 1, 5, 'n', [ 226 ], 15 ],         # dxcc country 226 is the US
-	   [ 1, 6, 'a', [ 226 ], 15 ],
+	   [ 1, 6, 'n', [ 226 ], 15 ],
        [ 0, 0, 'd' ],                  # default action (don't forward)
 ];
