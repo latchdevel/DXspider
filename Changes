@@ -1,3 +1,6 @@
+24Feb03=======================================================================
+1. add the 'run' command and the 'privilege' command to allow sysops to 
+create scripts for people.
 23Feb03=======================================================================
 1. Added show/wm7d command (a US only callbook server) [by K1XX].
 2. Added a prototype show/db0sdx command (w.i.p).

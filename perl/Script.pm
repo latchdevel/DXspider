@@ -56,6 +56,7 @@ sub run
 			} else {
 				dbg($_) for @out;
 			}
+			last if @out && $l =~ /^pri?v?/;
 		}
 	}
 }

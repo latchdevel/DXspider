@@ -32,6 +32,7 @@ use DXDebug;
 use DXUtil;
 use DXDebug;
 use IO::File;
+use Time::HiRes qw(gettimeofday tv_interval);
 use Curses 1.06;
 
 use Console;
@@ -50,6 +51,9 @@ $connsort = "local";
 $khistpos = 0;
 $spos = $pos = $lth = 0;
 $inbuf = "";
+@time = ();
+
+$SIG{WINCH} = sub {@time = gettimeofday};
 
 sub mydbg
 {
@@ -114,8 +118,6 @@ sub do_resize
 	$has_colors = has_colors();
 	do_initscr();
 
-	$winch = 0;
-	$SIG{'WINCH'} = sub {$winch = 1};
 	show_screen();
 }
 
@@ -504,7 +506,7 @@ for (;;) {
 		$lasttime = $t;
 	}
 	my $ch = $bot->getch();
-	if ($winch) {
+	if (@time && tv_interval(\@time, [gettimeofday]) >= 1) {
 #		mydbg("Got Resize");
 #		do_resize();
 		next;
