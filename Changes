@@ -1,3 +1,5 @@
+26Sep02=======================================================================
+1. added WWV and WCY to the Mrtg stats. Don't forget to do an indexmaker!
 25Sep02=======================================================================
 1. added mrtg stuff to the system as a template. In order to use this you
 must install mrtg onto your system and copy all the mrtg files (or at least
