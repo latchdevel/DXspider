@@ -33,10 +33,10 @@ if ($f[0] =~ /^by$/i) {
 }
 
 # get the freq and callsign either way round
-if ($f[0] =~ /[A-Za-z]/) {
+if (is_freq($f[1])) {
 	$spotted = uc $f[0];
 	$freq = $f[1];
-} elsif ($f[0] =~ /^[0-9\.\,]+$/) {
+} elsif (is_freq($f[0])) {
     $freq = $f[0];
 	$spotted = uc $f[1];
 } else {

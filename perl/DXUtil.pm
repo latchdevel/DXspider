@@ -351,7 +351,7 @@ sub is_pcflag
 # check that a thing is a frequency
 sub is_freq
 {
-	return $_[0] =~ /^[\d\.]+$/;
+	return $_[0] =~ /^\d+(?:\.\d+)?$/;
 }
 
 # check that a thing is just digits
