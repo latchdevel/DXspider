@@ -1,6 +1,6 @@
   The DXSpider Administration Manual v1.48
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 1.48 August 2001 revision 1.1
+  Version 1.48 September 2001 revision 1.2
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -287,21 +287,21 @@
 
 
   In fact DXSpider has had a simple system for some time which is called
-  isolation. This is similar to what, in other systems such as clx, is
+  isolation. This is similar to what in other systems such as clx, is
   called passive mode. A more detailed explanation of isolation is given
   further below. This system is still available and, for simple
   networks, is probably all that you need.
 
 
-  The new functionality introduced in version 1.48 is filtering the node
-  and user protocol frames on a "per interface" basis. We call this
+  The new functionality introduced in version 1.48 allows filtering the
+  node and user protocol frames on a "per interface" basis. We call this
   route filtering. This is used instead of isolation.
 
 
   What this really means is that you can control more or less completely
-  which PC protocol frames, to do with user and node management, pass to
-  each of your partner nodes. You can also limit what comes into your
-  node from your partners. You can even control the settings that your
+  which user and node management PC protocol frames pass to each of your
+  partner nodes. You can also limit what comes into your node from your
+  partners. It is even possible to control the settings that your
   partner node has for the routing information that it sends to you
   (using the rcmd command).
 
@@ -315,12 +315,20 @@
   explained further on.
 
 
-  The first thing that you must do is determine whether you need to do
+  The first thing that you must do is determine whether you need to use
   route filtering at all. If you are a "normal" node with two or three
   partners and you arranged in an "official" non-looping tree type
   network, then you do not need to do route filtering and you will feel
   a lot better for not getting involved. If you are successfully using
   isolation then you also probably don't need to use route filtering.
+
+
+  To put it simply, you should not mix Isolation and Route Filtering.
+  It will work, of sorts, but you will not get the expected results.  If
+  you are using Isolation sucessfully at the moment, do not get involved
+  in Route Filtering unless you have a good supply of aspirin!  Once you
+  have started down the road of Route Filtering, do not use Isolation
+  either.  Use one or the other, not both.
 
 
   You will only require this functionality if you are "well-connected".
@@ -384,18 +392,16 @@
 
 
   Please be careful if you alter this setting, it will affect ALL your
-  links!
-
-
+  links!  Remember, this is a default filter for node connections, not a
+  per link default.
   For the default routing filter then you have two real choices: either
   a "national" view or the "safe" option of only your own callsign.
   Examples of each (for my node: GB7DJK) are:-
 
 
 
-
-  acc/route node_default call_dxcc 61,38
-  acc/route node_default call gb7djk
+       acc/route node_default call_dxcc 61,38
+       acc/route node_default call gb7djk
 
 
 
@@ -454,17 +460,11 @@
 
   Exactly the same rules apply for general route filtering.  You would
   use either an accept filter or a reject filter like this ...
+       reject/route <node_call> <filter_option>
 
+       or
 
-
-
-
-
-  reject/route <node_call> <filter_option>
-
-  or
-
-  accept/route <node_call> <filter_option>
+       accept/route <node_call> <filter_option>
 
 
 
@@ -474,8 +474,8 @@
 
 
 
-       rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
-       rej/route all     (equiv to [very] restricted mode)
+       rej/route gb7djk call_dxcc 61,38 (send everything except UK+EIRE nodes)
+       rej/route all                    (equiv to [very] restricted mode)
        acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
        acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
 
@@ -509,7 +509,7 @@
   PC16s for my local users).
 
 
-  It is possible to do much more complex rules, there are up to 10
+  It is possible to write much more complex rules, there are up to 10
   accept/reject pairs per callsign per filter. For more information see
   the next section.
 
@@ -909,7 +909,7 @@
   any information back to the isolated node.  There are times when you
   would like to forward only spots across a link (maybe during a contest
   for example).  To do this, isolate the node in the normal way and use
-  an acc/spot >call< allilter in the to override the isolate.
+  an acc/spot >call< all filter to override the isolate.
 
 
   2.  Other filters
@@ -983,9 +983,9 @@
   any further by regarding it as "bad" in some way.
 
 
-  A DX Spot has a number of fields which can checked to see whether they
-  contain "bad" values, they are: the DX callsign itself, the Spotter
-  and the Originating Node.
+  A DX Spot has a number of fields which can be checked to see whether
+  they contain "bad" values, they are: the DX callsign itself, the
+  Spotter and the Originating Node.
 
 
   There are a set of commands which allow the sysop to control whether a
@@ -1239,7 +1239,7 @@
 
 
 
-  The filename are the callsign of the connection that you want the
+  The filename is the callsign of the connection that you want the
   script to operate on, eg: /spider/scripts/g1tlh. The filenames are
   always in lower case on those architectures where this makes a
   difference.
@@ -1799,14 +1799,9 @@
   commands.
 
 
-  THIS IS NOT FOR THE FAINT HEARTED!!!  ONLY DO THIS IF YOU HAVE A TEST
-  INSTALLATION OR ARE WILLING TO HAVE YOUR CLUSTER CRASH ON YOU!!!  THIS
-  MUST BE CONSIDERED AT LEAST BETA TESTING AND MAYBE EVEN ALPHA!!  YOU
-  HAVE BEEN WARNED!!!
-
-
-  DID I MENTION..... ONLY DO THIS IF YOU ARE WILLING TO ACCEPT THE
-  CONSEQUENCES!!!
+  Please be aware that if you update your system using CVS, it is
+  possible that you could be running code that is very beta and not
+  fully tested.  There is a possibility that it could be unstable.
 
 
   I am of course assuming that you have a machine with both DXSpider and
@@ -1845,14 +1840,11 @@
   If you are wanting to update Spider then cd to /tmp
 
 
-
   The next step will create a brand new 'spider' directory in your
   current directory.
 
 
   cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider co spider
-
-
 
   This command is all on one line.
 
@@ -1911,6 +1903,7 @@
   "C" client if it has been updated (CVS will tell you) and restart if
   any of the perl scripts have been altered or added, again, CVS will
   tell you.
+
 
   You will find any changes documented in the /spider/Changes file.
 
@@ -1978,8 +1971,10 @@
 
   This filter would only allow announces that were posted buy UK
   stations.  You can use the tag 'all' to accept everything eg:
-         acc/ann all
 
+
+
+         acc/ann all
 
 
 
@@ -2043,6 +2038,11 @@
 
          acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
          acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
+
+
+
+
+
 
   You can use the tag 'all' to accept everything eg:
 
