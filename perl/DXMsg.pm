@@ -724,7 +724,7 @@ sub queue_msg
 			$ref->stop_msg($node);
 			
 			# delay any outgoing messages that fail
-			$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
+			$ref->{waitt} = $main::systime + $waittime + int rand(120) if $node ne $main::mycall;
 			delete $ref->{lastt};
 			next;
 		}

@@ -155,9 +155,9 @@ sub start
 	# do we need to send a forward/opernam?
 	my $lastoper = $user->lastoper || 0;
 	my $homenode = $user->homenode || ""; 
-	if ($homenode eq $main::mycall && $lastoper + $DXUser::lastoperinterval < $main::systime) {
+	if ($homenode eq $main::mycall && $main::systime >= $lastoper + $DXUser::lastoperinterval) {
 		run_cmd($main::me, "forward/opernam $call");
-		$user->lastoper($main::systime);
+		$user->lastoper($main::systime + ((int rand(10)) * 86400));
 	}
 
 	# run a script send the output to the punter

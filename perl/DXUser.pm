@@ -28,7 +28,7 @@ use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime);
 %u = ();
 $dbm = undef;
 $filename = undef;
-$lastoperinterval = 30*24*60*60;
+$lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 
 # hash of valid elements and a simple prompt
