@@ -79,9 +79,9 @@ sub sub($$)
 	my $diny = _isleap($self->[0]) ? 366 : 365;
 	$self->[1] -= $amount;
 	while ($self->[1] <= 0) {
-		$self->[1] += $diny;
 		$self->[0] -= 1;
 		$diny = _isleap($self->[0]) ? 366 : 365;
+		$self->[1] += $diny;
 	}
 	return $self;
 }

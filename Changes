@@ -13,6 +13,8 @@ is for sysops who don't want to bump privilege to allow it. That still works
 as before.
 5. Fix the bug in 'dx by <call>' that causes only the first word of the 
 comment to be recorded.
+6. Fix bug counting backwards over a leap year in Julian.pm which meant that
+sh/dxstats doesn't start at 'yesterday' anymore.
 27Dec04=======================================================================
 1. add improved VE data from Charlie K1XX. You should update usdb as well.
 22Dec04=======================================================================
