@@ -76,7 +76,7 @@ sub dequeue
 		} elsif ($conn->{state} eq 'WC') {
 			if (exists $conn->{cmd} && @{$conn->{cmd}}) {
 				$conn->_docmd($msg);
-				unless (exists $conn->{cmd} && @{$conn->{cmd}}) {
+				unless ($conn->{state} eq 'WC' && @{$conn->{cmd}}) {
 					$conn->{state} = 'C';
 					&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 					delete $conn->{cmd};
@@ -87,7 +87,7 @@ sub dequeue
 	}
 	if ($conn->{msg} && $conn->{state} eq 'WC' && exists $conn->{cmd} && @{$conn->{cmd}}) {
 		$conn->_docmd($conn->{msg});
-		unless (@{$conn->{cmd}}) {
+		unless ($conn->{state} eq 'WC' && @{$conn->{cmd}}) {
 			$conn->{state} = 'C';
 			&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
 			delete $conn->{cmd};
@@ -234,6 +234,7 @@ sub _dochat
 			if ($conn->{abort} && $line =~ /$conn->{abort}/i) {
 				dbg('connect', "aborted on /$conn->{abort}/");
 				$conn->disconnect;
+				delete $conn->{cmd};
 				return;
 			}
 			if ($line =~ /$expect/i) {
