@@ -1,6 +1,6 @@
 28Mar03=======================================================================
 1. Added an excellent document on filtering to the manuals from Jim, W3BG
-2. started to remove old documents
+2. started to remove old documents (g0vgs)
 27Mar03=======================================================================
 1. play around with sh/reg, sh/iso, sh/node and sh/lock to make them work
 slightly better with the new user format.
