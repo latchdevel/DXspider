@@ -129,7 +129,12 @@ sub start
 
 
 	# decide which motd to send
-	my $motd = "${main::motd}_nor" unless $self->{registered};
+	my $motd;
+	unless ($self->{registered}) {
+		$motd = "${main::motd}_nor_$self->{lang}";
+		$motd = "${main::motd}_nor" unless -e $motd;
+	}
+	$motd = "${main::motd}_$self->{lang}" unless $motd && -e $motd;
 	$motd = $main::motd unless $motd && -e $motd;
 	$self->send_file($motd) if -e $motd;
 

@@ -1,5 +1,9 @@
 19Jan05=======================================================================
 1. More Spanish changes by Angel, EA7WA.
+2. add language dependant motd files. You can now have motd_{lang} and 
+motd_nor_{lang} (eg for Spanish: motd_es and motd_nor_es) for normal and
+non-registered (if you use registration) users respectively. Based on an idea
+from Angel, EA7WA.
 18Jan05=======================================================================
 1. Added missing Spanish translation courtesy of Angel EA7WA.
 2. Really incorporate latest cty.dat (11Dec04) as opposed to merely thinking 
