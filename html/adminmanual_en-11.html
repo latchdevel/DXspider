@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.21">
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.20">
  <TITLE>The DXSpider Administration Manual v1.50: The DXSpider Command Reference</TITLE>
  <LINK HREF="adminmanual_en-10.html" REL=previous>
  <LINK HREF="adminmanual_en.html#toc11" REL=contents>
@@ -1726,12 +1726,52 @@ will produce a complete list of all nodes. BE WARNED: the list that is returned 
 </CODE></BLOCKQUOTE>
 <BLOCKQUOTE><CODE>
 <PRE>
+ real or rt      - Format the output the same as for real time spots. The                   formats are deliberately different (so you can tell                   one sort from the other). This is useful for some                    logging programs that can't cope with normal sh/dx                    output. An alias of SHOW/FDX is available.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ filter          - Filter the spots, before output, with the user's                    spot filter. An alias of SHOW/MYDX is available.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ zone &lt;zones&gt;    - look for spots in the cq zone (or zones) specified.                   zones are numbers separated by commas.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ by_zone &lt;zones&gt; - look for spots spotted by people in the cq zone                   specified.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ itu &lt;itus&gt;      - look for spots in the itu zone (or zones) specified                   itu zones are numbers separated by commas.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ by_itu &lt;itus&gt;   - look for spots spotted by people in the itu zone                   specified.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ state &lt;list&gt;    - look for spots in the US state (or states) specified                   The list is two letter state codes separated by commas.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
+ by_state &lt;list&gt; - look for spots spotted by people in the US state                   specified.
+</PRE>
+</CODE></BLOCKQUOTE>
+<BLOCKQUOTE><CODE>
+<PRE>
  e.g. 
 </PRE>
 </CODE></BLOCKQUOTE>
 <BLOCKQUOTE><CODE>
 <PRE>
-   SH/DX 9m0   SH/DX on 20m info iota   SH/DX 9a on vhf day 30   SH/DX rf1p qsl   SH/DX iota    SH/DX iota eu-064   SH/DX qra jn86   SH/DX dxcc oq2   SH/DX dxcc oq2 by w dxcc
+   SH/DX 9m0   SH/DX on 20m info iota   SH/DX 9a on vhf day 30   SH/DX rf1p qsl   SH/DX iota    SH/DX iota eu-064   SH/DX qra jn86   SH/DX dxcc oq2   SH/DX dxcc oq2 by w dxcc   SH/DX zone 4,5,6   SH/DX by_zone 4,5,6   SH/DX state in,oh   SH/DX by_state in,oh
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
@@ -1751,7 +1791,7 @@ This can be done with the SHOW/DX command like this:-
    SH/DX dxcc g   SH/DX dxcc w on 20m iota
 </PRE>
 </CODE></BLOCKQUOTE>
-</P>
+This is an alias for: SH/DX dxcc</P>
 <H2><A NAME="ss11.178">11.178</A> <A HREF="adminmanual_en.html#toc11.178">show/dxqsl &lt;callsign&gt; (0)</A>
 </H2>
 
@@ -1774,7 +1814,12 @@ This gives you more background information.</P>
 
 <P><CODE><B>show/dxstats [days] [date]</B> Show the DX Statistics</CODE></P>
 <P>Show the total DX spots for the last &lt;days&gt; no of days (default is 31), starting from a &lt;date&gt; (default: today).</P>
-<H2><A NAME="ss11.180">11.180</A> <A HREF="adminmanual_en.html#toc11.180">show/files [&lt;filearea&gt; [&lt;string&gt;]] (0)</A>
+<H2><A NAME="ss11.180">11.180</A> <A HREF="adminmanual_en.html#toc11.180">show/fdx (0)</A>
+</H2>
+
+<P><CODE><B>show/fdx</B> Show the DX data in realtime format.</CODE></P>
+<P>Normally SHOW/DX outputs spot data in a different format to therealtime data. This is a deliberate policy (so you can tell the difference between the two). Some logging programs cannot handlethis so SHOW/FDX outputs historical data in real time format.This is an alias for: SHOW/DX real</P>
+<H2><A NAME="ss11.181">11.181</A> <A HREF="adminmanual_en.html#toc11.181">show/files [&lt;filearea&gt; [&lt;string&gt;]] (0)</A>
 </H2>
 
 <P><CODE><B>show/files [&lt;filearea&gt; [&lt;string&gt;]]</B> List the contents of a filearea</CODE></P>
@@ -1791,17 +1836,17 @@ where &lt;filearea&gt; is the name of the filearea you want to see the contents 
 </PRE>
 </CODE></BLOCKQUOTE>
 See also TYPE - to see the contents of a file.</P>
-<H2><A NAME="ss11.181">11.181</A> <A HREF="adminmanual_en.html#toc11.181">show/filter (0)</A>
+<H2><A NAME="ss11.182">11.182</A> <A HREF="adminmanual_en.html#toc11.182">show/filter (0)</A>
 </H2>
 
 <P><CODE><B>show/filter</B> Show the contents of all the filters you have set</CODE></P>
 <P>Show the contents of all the filters that are set. This command displaysall the filters set - for all the various categories.</P>
-<H2><A NAME="ss11.182">11.182</A> <A HREF="adminmanual_en.html#toc11.182">show/hfstats [days] [date] (0)</A>
+<H2><A NAME="ss11.183">11.183</A> <A HREF="adminmanual_en.html#toc11.183">show/hfstats [days] [date] (0)</A>
 </H2>
 
 <P><CODE><B>show/hfstats [days] [date]</B> Show the HF DX Statistics </CODE></P>
 <P>Show the HF DX spots breakdown by band for the last &lt;days&gt; no of days (default is 31), starting from a &lt;date&gt; (default: today).</P>
-<H2><A NAME="ss11.183">11.183</A> <A HREF="adminmanual_en.html#toc11.183">show/hftable [days] [date] [prefix ...] (0)</A>
+<H2><A NAME="ss11.184">11.184</A> <A HREF="adminmanual_en.html#toc11.184">show/hftable [days] [date] [prefix ...] (0)</A>
 </H2>
 
 <P><CODE><B>show/hftable [days] [date] [prefix ...]</B> Show the HF DX Spotter Table</CODE></P>
@@ -1830,27 +1875,27 @@ This will show the stats for your DXCC for that CQWW contest weekend. You can sp
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.184">11.184</A> <A HREF="adminmanual_en.html#toc11.184">show/hops &lt;call&gt; [ann|spots|route|wcy|wwv] (8)</A>
+<H2><A NAME="ss11.185">11.185</A> <A HREF="adminmanual_en.html#toc11.185">show/hops &lt;call&gt; [ann|spots|route|wcy|wwv] (8)</A>
 </H2>
 
 <P><CODE><B>show/hops &lt;call&gt; [ann|spots|route|wcy|wwv]</B> Show the hop counts for a node</CODE></P>
 <P>This command shows the hop counts set up for a node. You can specifywhich category you want to see. If you leave the category out then all the categories will be listed.</P>
-<H2><A NAME="ss11.185">11.185</A> <A HREF="adminmanual_en.html#toc11.185">show/isolate (1)</A>
+<H2><A NAME="ss11.186">11.186</A> <A HREF="adminmanual_en.html#toc11.186">show/isolate (1)</A>
 </H2>
 
 <P><CODE><B>show/isolate</B> Show list of ISOLATED nodes</CODE></P>
 
-<H2><A NAME="ss11.186">11.186</A> <A HREF="adminmanual_en.html#toc11.186">show/lockout &lt;prefix&gt;|all (9)</A>
+<H2><A NAME="ss11.187">11.187</A> <A HREF="adminmanual_en.html#toc11.187">show/lockout &lt;prefix&gt;|all (9)</A>
 </H2>
 
 <P><CODE><B>show/lockout &lt;prefix&gt;|all</B> Show the list of locked out or excluded callsigns</CODE></P>
 
-<H2><A NAME="ss11.187">11.187</A> <A HREF="adminmanual_en.html#toc11.187">show/log [&lt;callsign&gt;] (8)</A>
+<H2><A NAME="ss11.188">11.188</A> <A HREF="adminmanual_en.html#toc11.188">show/log [&lt;callsign&gt;] (8)</A>
 </H2>
 
 <P><CODE><B>show/log [&lt;callsign&gt;]</B> Show excerpts from the system log</CODE></P>
 <P>This command outputs a short section of the system log.  On its ownit will output a general logfile.  With the optional callsign it willshow output from the log associated with that callsign.</P>
-<H2><A NAME="ss11.188">11.188</A> <A HREF="adminmanual_en.html#toc11.188">show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<H2><A NAME="ss11.189">11.189</A> <A HREF="adminmanual_en.html#toc11.189">show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>show/moon [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show Moon rise and set times</CODE></P>
@@ -1873,7 +1918,7 @@ or in three days time:-
 </PRE>
 </CODE></BLOCKQUOTE>
 Upto 366 days can be checked both in the past and in the future.Please note that the rise and set times are given as the UT times of rise and set on the requested UT day.</P>
-<H2><A NAME="ss11.189">11.189</A> <A HREF="adminmanual_en.html#toc11.189">show/muf &lt;prefix&gt; [&lt;hours&gt;][long] (0)</A>
+<H2><A NAME="ss11.190">11.190</A> <A HREF="adminmanual_en.html#toc11.190">show/muf &lt;prefix&gt; [&lt;hours&gt;][long] (0)</A>
 </H2>
 
 <P><CODE><B>show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</B> Show the likely propagation to a prefix</CODE></P>
@@ -1902,32 +1947,37 @@ will get you the above display, but with the next 24 hours worth ofpropagation d
 </PRE>
 </CODE></BLOCKQUOTE>
 Gives you an estimate of the long path propagation characterics. Itshould be noted that the figures will probably not be very useful, norterrible accurate, but it is included for completeness.</P>
-<H2><A NAME="ss11.190">11.190</A> <A HREF="adminmanual_en.html#toc11.190">show/newconfiguration [&lt;node&gt;] (0)</A>
+<H2><A NAME="ss11.191">11.191</A> <A HREF="adminmanual_en.html#toc11.191">show/mydx (0)</A>
+</H2>
+
+<P><CODE><B>show/mydx</B> Show the DX data filtered with your spot filter.</CODE></P>
+<P>SHOW/DX potentially shows all the spots available in the system. UsingSHOW/MYDX will, instead, filter the availble spots using any spot filter that you have set, first. This command, together with ACCEPT/SPOT or REJECT/SPOT, will allowyou to customise the spots that you receive.So if you have said: ACC/SPOT on hfDoing a SHOW/MYDX will now only, ever, show HF spots. All the other options on SH/DX can still be used.</P>
+<H2><A NAME="ss11.192">11.192</A> <A HREF="adminmanual_en.html#toc11.192">show/newconfiguration [&lt;node&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>show/newconfiguration [&lt;node&gt;]</B> Show all the nodes and users visible</CODE></P>
 <P>This command allows you to see all the users that can be seenand the nodes to which they are connected. This command produces essentially the same information as SHOW/CONFIGURATION except that it shows all the duplication ofany routes that might be present It also uses a different formatwhich may not take up quite as much space if you don't have anyloops.BE WARNED: the list that is returned can be VERY long</P>
-<H2><A NAME="ss11.191">11.191</A> <A HREF="adminmanual_en.html#toc11.191">show/newconfiguration/node (0)</A>
+<H2><A NAME="ss11.193">11.193</A> <A HREF="adminmanual_en.html#toc11.193">show/newconfiguration/node (0)</A>
 </H2>
 
 <P><CODE><B>show/newconfiguration/node</B> Show all the nodes connected locally</CODE></P>
 <P>Show all the nodes connected to this node in the new format.</P>
-<H2><A NAME="ss11.192">11.192</A> <A HREF="adminmanual_en.html#toc11.192">show/node [&lt;callsign&gt; ...] (1)</A>
+<H2><A NAME="ss11.194">11.194</A> <A HREF="adminmanual_en.html#toc11.194">show/node [&lt;callsign&gt; ...] (1)</A>
 </H2>
 
 <P><CODE><B>show/node [&lt;callsign&gt; ...]</B> Show the type and version number of nodes</CODE></P>
 <P>Show the type and version (if connected) of the nodes specified on thecommand line. If no callsigns are specified then a sorted list of allthe non-user callsigns known to the system will be displayed.</P>
-<H2><A NAME="ss11.193">11.193</A> <A HREF="adminmanual_en.html#toc11.193">show/prefix &lt;callsign&gt; (0)</A>
+<H2><A NAME="ss11.195">11.195</A> <A HREF="adminmanual_en.html#toc11.195">show/prefix &lt;callsign&gt; (0)</A>
 </H2>
 
 <P><CODE><B>show/prefix &lt;callsign&gt;</B> Interrogate the prefix database </CODE></P>
 <P>This command takes the &lt;callsign&gt; (which can be a full or partial callsign or a prefix), looks up which internal country number it is and then displays all the relevant prefixes for that countrytogether with the internal country no, the CQ and ITU regions. See also SHOW/DXCC</P>
-<H2><A NAME="ss11.194">11.194</A> <A HREF="adminmanual_en.html#toc11.194">show/program (5)</A>
+<H2><A NAME="ss11.196">11.196</A> <A HREF="adminmanual_en.html#toc11.196">show/program (5)</A>
 </H2>
 
 <P><CODE><B>show/program</B> Show the locations of all the included program modules</CODE></P>
 <P>Show the name and location where every program module was load from. Thisis useful for checking where you think you have loaded a .pm file from. </P>
-<H2><A NAME="ss11.195">11.195</A> <A HREF="adminmanual_en.html#toc11.195">show/qra &lt;lat&gt; &lt;long&gt; (0)</A>
+<H2><A NAME="ss11.197">11.197</A> <A HREF="adminmanual_en.html#toc11.197">show/qra &lt;lat&gt; &lt;long&gt; (0)</A>
 </H2>
 
 <P><CODE><B>show/qra &lt;lat&gt; &lt;long&gt;</B> Convert lat/long to a QRA Grid locator</CODE></P>
@@ -1944,22 +1994,22 @@ The first example will show the distance and bearing to the locator fromyourself
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.196">11.196</A> <A HREF="adminmanual_en.html#toc11.196">show/qra &lt;locator&gt; [&lt;locator&gt;] (0)</A>
+<H2><A NAME="ss11.198">11.198</A> <A HREF="adminmanual_en.html#toc11.198">show/qra &lt;locator&gt; [&lt;locator&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>show/qra &lt;locator&gt; [&lt;locator&gt;]</B> Show distance between QRA Grid locators</CODE></P>
 
-<H2><A NAME="ss11.197">11.197</A> <A HREF="adminmanual_en.html#toc11.197">show/qrz &lt;callsign&gt; (0)</A>
+<H2><A NAME="ss11.199">11.199</A> <A HREF="adminmanual_en.html#toc11.199">show/qrz &lt;callsign&gt; (0)</A>
 </H2>
 
 <P><CODE><B>show/qrz &lt;callsign&gt;</B> Show any callbook details on a callsign</CODE></P>
 <P>This command queries the QRZ callbook server on the internetand returns any information available for that callsign. This serviceis provided for users of this software by http://www.qrz.com See also SHOW/WM7D for an alternative.</P>
-<H2><A NAME="ss11.198">11.198</A> <A HREF="adminmanual_en.html#toc11.198">show/registered [&lt;prefix&gt;] (9)</A>
+<H2><A NAME="ss11.200">11.200</A> <A HREF="adminmanual_en.html#toc11.200">show/registered [&lt;prefix&gt;] (9)</A>
 </H2>
 
 <P><CODE><B>show/registered [&lt;prefix&gt;]</B> Show the registered users</CODE></P>
 
-<H2><A NAME="ss11.199">11.199</A> <A HREF="adminmanual_en.html#toc11.199">show/route &lt;callsign&gt; ... (0)</A>
+<H2><A NAME="ss11.201">11.201</A> <A HREF="adminmanual_en.html#toc11.201">show/route &lt;callsign&gt; ... (0)</A>
 </H2>
 
 <P><CODE><B>show/route &lt;callsign&gt; ...</B> Show the route to the callsign</CODE></P>
@@ -1970,7 +2020,7 @@ The first example will show the distance and bearing to the locator fromyourself
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.200">11.200</A> <A HREF="adminmanual_en.html#toc11.200">show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;] (0)</A>
+<H2><A NAME="ss11.202">11.202</A> <A HREF="adminmanual_en.html#toc11.202">show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</B> Show tracking data</CODE></P>
@@ -1981,12 +2031,12 @@ The first example will show the distance and bearing to the locator fromyourself
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.201">11.201</A> <A HREF="adminmanual_en.html#toc11.201">show/station all [&lt;regex&gt;] (6)</A>
+<H2><A NAME="ss11.203">11.203</A> <A HREF="adminmanual_en.html#toc11.203">show/station all [&lt;regex&gt;] (6)</A>
 </H2>
 
 <P><CODE><B>show/station all [&lt;regex&gt;]</B> Show list of users in the system</CODE></P>
 
-<H2><A NAME="ss11.202">11.202</A> <A HREF="adminmanual_en.html#toc11.202">show/station [&lt;callsign&gt; ..] (0)</A>
+<H2><A NAME="ss11.204">11.204</A> <A HREF="adminmanual_en.html#toc11.204">show/station [&lt;callsign&gt; ..] (0)</A>
 </H2>
 
 <P><CODE><B>show/station [&lt;callsign&gt; ..]</B> Show information about a callsign</CODE></P>
@@ -1997,7 +2047,7 @@ The first example will show the distance and bearing to the locator fromyourself
 </PRE>
 </CODE></BLOCKQUOTE>
 If no callsign is given then show the information for yourself.</P>
-<H2><A NAME="ss11.203">11.203</A> <A HREF="adminmanual_en.html#toc11.203">show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<H2><A NAME="ss11.205">11.205</A> <A HREF="adminmanual_en.html#toc11.205">show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>show/sun [ndays] [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show sun rise and set times</CODE></P>
@@ -2020,12 +2070,12 @@ or in three days time:-
 </PRE>
 </CODE></BLOCKQUOTE>
 Upto 366 days can be checked both in the past and in the future.Please note that the rise and set times are given as the UT times of rise and set on the requested UT day.</P>
-<H2><A NAME="ss11.204">11.204</A> <A HREF="adminmanual_en.html#toc11.204">show/time [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
+<H2><A NAME="ss11.206">11.206</A> <A HREF="adminmanual_en.html#toc11.206">show/time [&lt;prefix&gt;|&lt;callsign&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>show/time [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show the local time </CODE></P>
 <P>If no prefixes or callsigns are given then this command returns the localtime and UTC as the computer has it right now. If you give some prefixesthen it will show UTC and UTC + the local offset (not including DST) atthe prefixes or callsigns that you specify.</P>
-<H2><A NAME="ss11.205">11.205</A> <A HREF="adminmanual_en.html#toc11.205">show/usdb [call ..] (0)</A>
+<H2><A NAME="ss11.207">11.207</A> <A HREF="adminmanual_en.html#toc11.207">show/usdb [call ..] (0)</A>
 </H2>
 
 <P><CODE><B>show/usdb [call ..]</B> Show information held on the FCC Call database</CODE></P>
@@ -2036,12 +2086,12 @@ Upto 366 days can be checked both in the past and in the future.Please note that
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.206">11.206</A> <A HREF="adminmanual_en.html#toc11.206">show/vhfstats [days] [date] (0)</A>
+<H2><A NAME="ss11.208">11.208</A> <A HREF="adminmanual_en.html#toc11.208">show/vhfstats [days] [date] (0)</A>
 </H2>
 
 <P><CODE><B>show/vhfstats [days] [date]</B> Show the VHF DX Statistics</CODE></P>
 <P>Show the VHF DX spots breakdown by band for the last &lt;days&gt; no of days (default is 31), starting from a date (default: today).</P>
-<H2><A NAME="ss11.207">11.207</A> <A HREF="adminmanual_en.html#toc11.207">show/vhftable [days] [date] [prefix ...] (0)</A>
+<H2><A NAME="ss11.209">11.209</A> <A HREF="adminmanual_en.html#toc11.209">show/vhftable [days] [date] [prefix ...] (0)</A>
 </H2>
 
 <P><CODE><B>show/vhftable [days] [date] [prefix ...]</B> Show the VHF DX Spotter Table</CODE></P>
@@ -2070,37 +2120,37 @@ This will show the stats for your DXCC for that CQWW contest weekend. You can sp
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.208">11.208</A> <A HREF="adminmanual_en.html#toc11.208">show/wcy (0)</A>
+<H2><A NAME="ss11.210">11.210</A> <A HREF="adminmanual_en.html#toc11.210">show/wcy (0)</A>
 </H2>
 
 <P><CODE><B>show/wcy</B> Show last 10 WCY broadcasts</CODE></P>
 
-<H2><A NAME="ss11.209">11.209</A> <A HREF="adminmanual_en.html#toc11.209">show/wcy &lt;n&gt; (0)</A>
+<H2><A NAME="ss11.211">11.211</A> <A HREF="adminmanual_en.html#toc11.211">show/wcy &lt;n&gt; (0)</A>
 </H2>
 
 <P><CODE><B>show/wcy &lt;n&gt;</B> Show last &lt;n&gt; WCY broadcasts</CODE></P>
 <P>Display the most recent WCY information that has been received by the system</P>
-<H2><A NAME="ss11.210">11.210</A> <A HREF="adminmanual_en.html#toc11.210">show/wm7d &lt;callsign&gt; (0)</A>
+<H2><A NAME="ss11.212">11.212</A> <A HREF="adminmanual_en.html#toc11.212">show/wm7d &lt;callsign&gt; (0)</A>
 </H2>
 
 <P><CODE><B>show/wm7d &lt;callsign&gt;</B> Show callbook details on a US callsigns</CODE></P>
 <P>This command queries the WM7D callbook server on the internetand returns any information available for that US callsign. This serviceis provided for users of this software by http://www.wm7d.net.See also SHOW/QRZ. </P>
-<H2><A NAME="ss11.211">11.211</A> <A HREF="adminmanual_en.html#toc11.211">show/wwv (0)</A>
+<H2><A NAME="ss11.213">11.213</A> <A HREF="adminmanual_en.html#toc11.213">show/wwv (0)</A>
 </H2>
 
 <P><CODE><B>show/wwv</B> Show last 10 WWV broadcasts</CODE></P>
 
-<H2><A NAME="ss11.212">11.212</A> <A HREF="adminmanual_en.html#toc11.212">show/wwv &lt;n&gt; (0)</A>
+<H2><A NAME="ss11.214">11.214</A> <A HREF="adminmanual_en.html#toc11.214">show/wwv &lt;n&gt; (0)</A>
 </H2>
 
 <P><CODE><B>show/wwv &lt;n&gt;</B> Show last &lt;n&gt; WWV broadcasts</CODE></P>
 <P>Display the most recent WWV information that has been received by the system</P>
-<H2><A NAME="ss11.213">11.213</A> <A HREF="adminmanual_en.html#toc11.213">shutdown (5)</A>
+<H2><A NAME="ss11.215">11.215</A> <A HREF="adminmanual_en.html#toc11.215">shutdown (5)</A>
 </H2>
 
 <P><CODE><B>shutdown</B> Shutdown the cluster</CODE></P>
 <P>Shutdown the cluster and disconnect all the users </P>
-<H2><A NAME="ss11.214">11.214</A> <A HREF="adminmanual_en.html#toc11.214">spoof &lt;call&gt; &lt;command&gt; (9)</A>
+<H2><A NAME="ss11.216">11.216</A> <A HREF="adminmanual_en.html#toc11.216">spoof &lt;call&gt; &lt;command&gt; (9)</A>
 </H2>
 
 <P><CODE><B>spoof &lt;call&gt; &lt;command&gt;</B> Do a command as though you are another user</CODE></P>
@@ -2111,52 +2161,52 @@ This will show the stats for your DXCC for that CQWW contest weekend. You can sp
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.215">11.215</A> <A HREF="adminmanual_en.html#toc11.215">stat/channel [&lt;callsign&gt;] (5)</A>
+<H2><A NAME="ss11.217">11.217</A> <A HREF="adminmanual_en.html#toc11.217">stat/channel [&lt;callsign&gt;] (5)</A>
 </H2>
 
 <P><CODE><B>stat/channel [&lt;callsign&gt;]</B> Show the status of a channel on the cluster</CODE></P>
 <P>Show the internal status of the channel object either for the channel that you are on or else for the callsign that you asked for.Only the fields that are defined (in perl term) will be displayed.</P>
-<H2><A NAME="ss11.216">11.216</A> <A HREF="adminmanual_en.html#toc11.216">stat/db &lt;dbname&gt; (5)</A>
+<H2><A NAME="ss11.218">11.218</A> <A HREF="adminmanual_en.html#toc11.218">stat/db &lt;dbname&gt; (5)</A>
 </H2>
 
 <P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE></P>
 <P>Show the internal status of a database descriptor.Depending on your privilege level you will see more or less information. This command is unlikely to be of much use to anyone other than a sysop.</P>
-<H2><A NAME="ss11.217">11.217</A> <A HREF="adminmanual_en.html#toc11.217">stat/msg (1)</A>
+<H2><A NAME="ss11.219">11.219</A> <A HREF="adminmanual_en.html#toc11.219">stat/msg (1)</A>
 </H2>
 
 <P><CODE><B>stat/msg</B> Show the status of the message system</CODE></P>
 
-<H2><A NAME="ss11.218">11.218</A> <A HREF="adminmanual_en.html#toc11.218">stat/msg &lt;msgno&gt; (1)</A>
+<H2><A NAME="ss11.220">11.220</A> <A HREF="adminmanual_en.html#toc11.220">stat/msg &lt;msgno&gt; (1)</A>
 </H2>
 
 <P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE></P>
 <P>This command shows the internal status of a message and includes informationsuch as to whom it has been forwarded, its size, origin etc etc.If no message number is given then the status of the message system is displayed.</P>
-<H2><A NAME="ss11.219">11.219</A> <A HREF="adminmanual_en.html#toc11.219">stat/route_node &lt;callsign&gt; (5)</A>
+<H2><A NAME="ss11.221">11.221</A> <A HREF="adminmanual_en.html#toc11.221">stat/route_node &lt;callsign&gt; (5)</A>
 </H2>
 
 <P><CODE><B>stat/route_node &lt;callsign&gt;</B> Show the data in a Route::Node object</CODE></P>
 
-<H2><A NAME="ss11.220">11.220</A> <A HREF="adminmanual_en.html#toc11.220">stat/route_node all (5)</A>
+<H2><A NAME="ss11.222">11.222</A> <A HREF="adminmanual_en.html#toc11.222">stat/route_node all (5)</A>
 </H2>
 
 <P><CODE><B>stat/route_node all</B> Show list of all Route::Node objects</CODE></P>
 
-<H2><A NAME="ss11.221">11.221</A> <A HREF="adminmanual_en.html#toc11.221">stat/route_user &lt;callsign&gt; (5)</A>
+<H2><A NAME="ss11.223">11.223</A> <A HREF="adminmanual_en.html#toc11.223">stat/route_user &lt;callsign&gt; (5)</A>
 </H2>
 
 <P><CODE><B>stat/route_user &lt;callsign&gt;</B> Show the data in a Route::User object</CODE></P>
 
-<H2><A NAME="ss11.222">11.222</A> <A HREF="adminmanual_en.html#toc11.222">stat/route_user all (5)</A>
+<H2><A NAME="ss11.224">11.224</A> <A HREF="adminmanual_en.html#toc11.224">stat/route_user all (5)</A>
 </H2>
 
 <P><CODE><B>stat/route_user all</B> Show list of all Route::User objects</CODE></P>
 
-<H2><A NAME="ss11.223">11.223</A> <A HREF="adminmanual_en.html#toc11.223">stat/user [&lt;callsign&gt;] (5)</A>
+<H2><A NAME="ss11.225">11.225</A> <A HREF="adminmanual_en.html#toc11.225">stat/user [&lt;callsign&gt;] (5)</A>
 </H2>
 
 <P><CODE><B>stat/user [&lt;callsign&gt;]</B> Show the full status of a user</CODE></P>
 <P>Shows the full contents of a user record including all the secret flagsand stuff.Only the fields that are defined (in perl term) will be displayed.</P>
-<H2><A NAME="ss11.224">11.224</A> <A HREF="adminmanual_en.html#toc11.224">sysop (0)</A>
+<H2><A NAME="ss11.226">11.226</A> <A HREF="adminmanual_en.html#toc11.226">sysop (0)</A>
 </H2>
 
 <P><CODE><B>sysop</B> Regain your privileges if you login remotely</CODE></P>
@@ -2173,7 +2223,7 @@ you type:-
 </PRE>
 </CODE></BLOCKQUOTE>
 They will all match. If there is no password you will still be offerednumbers but nothing will happen when you input a string. Any match iscase sensitive.</P>
-<H2><A NAME="ss11.225">11.225</A> <A HREF="adminmanual_en.html#toc11.225">talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;] (0)</A>
+<H2><A NAME="ss11.227">11.227</A> <A HREF="adminmanual_en.html#toc11.227">talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>talk &lt;call&gt; &gt; &lt;node&gt; [&lt;text&gt;]</B> Send a text message to another station via a node</CODE></P>
@@ -2196,12 +2246,12 @@ If you are in 'Talk' mode, there is an extention to the '/' command whichallows 
 </PRE>
 </CODE></BLOCKQUOTE>
 will send the hftable as you have it to all the people you are currently talking to.</P>
-<H2><A NAME="ss11.226">11.226</A> <A HREF="adminmanual_en.html#toc11.226">talk &lt;call&gt; [&lt;text&gt;] (0)</A>
+<H2><A NAME="ss11.228">11.228</A> <A HREF="adminmanual_en.html#toc11.228">talk &lt;call&gt; [&lt;text&gt;] (0)</A>
 </H2>
 
 <P><CODE><B>talk &lt;call&gt; [&lt;text&gt;]</B> Send a text message to another station</CODE></P>
 
-<H2><A NAME="ss11.227">11.227</A> <A HREF="adminmanual_en.html#toc11.227">type &lt;filearea&gt;/&lt;name&gt; (0)</A>
+<H2><A NAME="ss11.229">11.229</A> <A HREF="adminmanual_en.html#toc11.229">type &lt;filearea&gt;/&lt;name&gt; (0)</A>
 </H2>
 
 <P><CODE><B>type &lt;filearea&gt;/&lt;name&gt;</B> Look at the contents of a file in one of the fileareas</CODE></P>
@@ -2212,7 +2262,7 @@ will send the hftable as you have it to all the people you are currently talking
 </PRE>
 </CODE></BLOCKQUOTE>
 See also SHOW/FILES to see what fileareas are available and a list of content.</P>
-<H2><A NAME="ss11.228">11.228</A> <A HREF="adminmanual_en.html#toc11.228">uncatchup &lt;node call&gt; all|[msgno&gt; ...] (5)</A>
+<H2><A NAME="ss11.230">11.230</A> <A HREF="adminmanual_en.html#toc11.230">uncatchup &lt;node call&gt; all|[msgno&gt; ...] (5)</A>
 </H2>
 
 <P><CODE><B>uncatchup &lt;node call&gt; all|[msgno&gt; ...]</B> Unmark a message as sent</CODE></P>
@@ -2229,12 +2279,12 @@ and to undo what you have just done:-
 </PRE>
 </CODE></BLOCKQUOTE>
 which will arrange for them to be forward candidates again.Order is not important.</P>
-<H2><A NAME="ss11.229">11.229</A> <A HREF="adminmanual_en.html#toc11.229">unset/announce (0)</A>
+<H2><A NAME="ss11.231">11.231</A> <A HREF="adminmanual_en.html#toc11.231">unset/announce (0)</A>
 </H2>
 
 <P><CODE><B>unset/announce</B> Stop announce messages coming out on your terminal</CODE></P>
 
-<H2><A NAME="ss11.230">11.230</A> <A HREF="adminmanual_en.html#toc11.230">unset/anntalk (0)</A>
+<H2><A NAME="ss11.232">11.232</A> <A HREF="adminmanual_en.html#toc11.232">unset/anntalk (0)</A>
 </H2>
 
 <P><CODE><B>unset/anntalk</B> Stop talk like announce messages on your terminal</CODE></P>
@@ -2251,7 +2301,7 @@ you will suppress several of these announces, you may miss the odd useful one as
 </PRE>
 </CODE></BLOCKQUOTE>
 allows you to see them again. This is the default.</P>
-<H2><A NAME="ss11.231">11.231</A> <A HREF="adminmanual_en.html#toc11.231">unset/baddx &lt;call&gt;.. (8)</A>
+<H2><A NAME="ss11.233">11.233</A> <A HREF="adminmanual_en.html#toc11.233">unset/baddx &lt;call&gt;.. (8)</A>
 </H2>
 
 <P><CODE><B>unset/baddx &lt;call&gt;..</B> Propagate a dx spot with this callsign again</CODE></P>
@@ -2268,7 +2318,7 @@ To allow a word again, use the following command ...
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.232">11.232</A> <A HREF="adminmanual_en.html#toc11.232">unset/badnode &lt;call&gt;.. (8)</A>
+<H2><A NAME="ss11.234">11.234</A> <A HREF="adminmanual_en.html#toc11.234">unset/badnode &lt;call&gt;.. (8)</A>
 </H2>
 
 <P><CODE><B>unset/badnode &lt;call&gt;..</B> Allow spots from this node again</CODE></P>
@@ -2285,7 +2335,7 @@ will stop anything from K1TTT. If you want SSIDs as well then you mustenter them
 </PRE>
 </CODE></BLOCKQUOTE>
 will allow spots from him again.Use with extreme care. This command may well be superceeded by FILTERing.</P>
-<H2><A NAME="ss11.233">11.233</A> <A HREF="adminmanual_en.html#toc11.233">unset/badspotter &lt;call&gt;.. (8)</A>
+<H2><A NAME="ss11.235">11.235</A> <A HREF="adminmanual_en.html#toc11.235">unset/badspotter &lt;call&gt;.. (8)</A>
 </H2>
 
 <P><CODE><B>unset/badspotter &lt;call&gt;..</B> Allow spots from this callsign again</CODE></P>
@@ -2302,7 +2352,7 @@ will stop anything from VE2STN. This command will automaticallystop spots from t
 </PRE>
 </CODE></BLOCKQUOTE>
 will allow spots from him again.Use with extreme care. This command may well be superceded by FILTERing.</P>
-<H2><A NAME="ss11.234">11.234</A> <A HREF="adminmanual_en.html#toc11.234">unset/badword &lt;word&gt;.. (8)</A>
+<H2><A NAME="ss11.236">11.236</A> <A HREF="adminmanual_en.html#toc11.236">unset/badword &lt;word&gt;.. (8)</A>
 </H2>
 
 <P><CODE><B>unset/badword &lt;word&gt;..</B> Propagate things with this word again</CODE></P>
@@ -2319,12 +2369,12 @@ will stop anything with these words in the text.
 </PRE>
 </CODE></BLOCKQUOTE>
 will allow text with this word again.</P>
-<H2><A NAME="ss11.235">11.235</A> <A HREF="adminmanual_en.html#toc11.235">unset/beep (0)</A>
+<H2><A NAME="ss11.237">11.237</A> <A HREF="adminmanual_en.html#toc11.237">unset/beep (0)</A>
 </H2>
 
 <P><CODE><B>unset/beep</B> Stop beeps for DX and other messages on your terminal</CODE></P>
 
-<H2><A NAME="ss11.236">11.236</A> <A HREF="adminmanual_en.html#toc11.236">unset/debug &lt;name&gt; (9)</A>
+<H2><A NAME="ss11.238">11.238</A> <A HREF="adminmanual_en.html#toc11.238">unset/debug &lt;name&gt; (9)</A>
 </H2>
 
 <P><CODE><B>unset/debug &lt;name&gt;</B> Remove a debug level from the debug set</CODE></P>
@@ -2335,32 +2385,32 @@ will allow text with this word again.</P>
 </PRE>
 </CODE></BLOCKQUOTE>
 You can show what levels you are logging with SHOW/DEBUG</P>
-<H2><A NAME="ss11.237">11.237</A> <A HREF="adminmanual_en.html#toc11.237">unset/dx (0)</A>
+<H2><A NAME="ss11.239">11.239</A> <A HREF="adminmanual_en.html#toc11.239">unset/dx (0)</A>
 </H2>
 
 <P><CODE><B>unset/dx</B> Stop DX messages coming out on your terminal</CODE></P>
 
-<H2><A NAME="ss11.238">11.238</A> <A HREF="adminmanual_en.html#toc11.238">unset/dxcq (0)</A>
+<H2><A NAME="ss11.240">11.240</A> <A HREF="adminmanual_en.html#toc11.240">unset/dxcq (0)</A>
 </H2>
 
 <P><CODE><B>unset/dxcq</B> Stop CQ Zones on the end of DX announcements</CODE></P>
 <P>Display both the Spotter's and the Spotted's CQ Zone on the endof a DX announcement (there is just enough room). Some user programscannot cope with this. The Spotter's CQ is on the RHS of the time, the Spotted's CQ is on the LHS.Conflicts with: SET/DXGRID, SET/DXITU, SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss11.239">11.239</A> <A HREF="adminmanual_en.html#toc11.239">unset/dxgrid (0)</A>
+<H2><A NAME="ss11.241">11.241</A> <A HREF="adminmanual_en.html#toc11.241">unset/dxgrid (0)</A>
 </H2>
 
 <P><CODE><B>unset/dxgrid</B> Stop QRA Grid Squares on the end of DX announcements</CODE></P>
 <P>A standard feature which is enabled in version 1.43 and above is that if the spotter's grid square is known it is output on the endof a DX announcement (there is just enough room). Some user programscannot cope with this. You can use this command to reset (or set)this feature.Conflicts with: SET/DXCQ, SET/DXITUDo a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss11.240">11.240</A> <A HREF="adminmanual_en.html#toc11.240">unset/dxitu (0)</A>
+<H2><A NAME="ss11.242">11.242</A> <A HREF="adminmanual_en.html#toc11.242">unset/dxitu (0)</A>
 </H2>
 
 <P><CODE><B>unset/dxitu</B> Stop ITU Zones on the end of DX announcements</CODE></P>
 <P>Display both the Spotter's and the Spotted's ITU Zone on the endof a DX announcement (there is just enough room). Some user programscannot cope with this. The Spotter's ITU is on the RHS of the time, the Spotted's ITU is on the LHS.Conflicts with: SET/DXGRID, SET/DXCQ, SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss11.241">11.241</A> <A HREF="adminmanual_en.html#toc11.241">unset/echo (0)</A>
+<H2><A NAME="ss11.243">11.243</A> <A HREF="adminmanual_en.html#toc11.243">unset/echo (0)</A>
 </H2>
 
 <P><CODE><B>unset/echo</B> Stop the cluster echoing your input</CODE></P>
 <P>If you are connected via a telnet session, different implimentationsof telnet handle echo differently depending on whether you are connected via port 23 or some other port. You can use this commandto change the setting appropriately. The setting is stored in your user profile.YOU DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.</P>
-<H2><A NAME="ss11.242">11.242</A> <A HREF="adminmanual_en.html#toc11.242">unset/email (0)</A>
+<H2><A NAME="ss11.244">11.244</A> <A HREF="adminmanual_en.html#toc11.244">unset/email (0)</A>
 </H2>
 
 <P><CODE><B>unset/email</B> Stop personal msgs being forwarded by email</CODE></P>
@@ -2377,12 +2427,12 @@ You can have more than one email address (each one separated by a space).Emails 
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.243">11.243</A> <A HREF="adminmanual_en.html#toc11.243">unset/here (0)</A>
+<H2><A NAME="ss11.245">11.245</A> <A HREF="adminmanual_en.html#toc11.245">unset/here (0)</A>
 </H2>
 
 <P><CODE><B>unset/here</B> Tell the system you are absent from your terminal</CODE></P>
 
-<H2><A NAME="ss11.244">11.244</A> <A HREF="adminmanual_en.html#toc11.244">unset/hops &lt;call&gt; ann|spots|route|wwv|wcy (8)</A>
+<H2><A NAME="ss11.246">11.246</A> <A HREF="adminmanual_en.html#toc11.246">unset/hops &lt;call&gt; ann|spots|route|wwv|wcy (8)</A>
 </H2>
 
 <P><CODE><B>unset/hops &lt;call&gt; ann|spots|route|wwv|wcy</B> Unset hop count  </CODE></P>
@@ -2399,32 +2449,32 @@ Set SHOW/HOPS for information on what is already set. This commandcreates a filt
 </PRE>
 </CODE></BLOCKQUOTE>
 </P>
-<H2><A NAME="ss11.245">11.245</A> <A HREF="adminmanual_en.html#toc11.245">unset/isolate (9)</A>
+<H2><A NAME="ss11.247">11.247</A> <A HREF="adminmanual_en.html#toc11.247">unset/isolate (9)</A>
 </H2>
 
 <P><CODE><B>unset/isolate</B> Stop Isolation of a node from the rest of the network</CODE></P>
 <P>Remove isolation from a node - SET/ISOLATE</P>
-<H2><A NAME="ss11.246">11.246</A> <A HREF="adminmanual_en.html#toc11.246">unset/lockout &lt;call&gt; (9)</A>
+<H2><A NAME="ss11.248">11.248</A> <A HREF="adminmanual_en.html#toc11.248">unset/lockout &lt;call&gt; (9)</A>
 </H2>
 
 <P><CODE><B>unset/lockout &lt;call&gt;</B> Allow a callsign to connect to the cluster</CODE></P>
 
-<H2><A NAME="ss11.247">11.247</A> <A HREF="adminmanual_en.html#toc11.247">unset/logininfo (0)</A>
+<H2><A NAME="ss11.249">11.249</A> <A HREF="adminmanual_en.html#toc11.249">unset/logininfo (0)</A>
 </H2>
 
 <P><CODE><B>unset/logininfo</B> Inform when a station logs out locally</CODE></P>
 
-<H2><A NAME="ss11.248">11.248</A> <A HREF="adminmanual_en.html#toc11.248">unset/password &lt;call&gt; ... (9)</A>
+<H2><A NAME="ss11.250">11.250</A> <A HREF="adminmanual_en.html#toc11.250">unset/password &lt;call&gt; ... (9)</A>
 </H2>
 
 <P><CODE><B>unset/password &lt;call&gt; ...</B> Delete (remove) a user's password</CODE></P>
 <P>This command allows the sysop to completely delete and remove a password for a user. </P>
-<H2><A NAME="ss11.249">11.249</A> <A HREF="adminmanual_en.html#toc11.249">unset/privilege (0)</A>
+<H2><A NAME="ss11.251">11.251</A> <A HREF="adminmanual_en.html#toc11.251">unset/privilege (0)</A>
 </H2>
 
 <P><CODE><B>unset/privilege</B> Remove any privilege for this session</CODE></P>
 <P>You can use this command to 'protect' this session from unauthoriseduse. If you want to get your normal privilege back you will need toeither logout and login again (if you are on a console) or use theSYSOP command.</P>
-<H2><A NAME="ss11.250">11.250</A> <A HREF="adminmanual_en.html#toc11.250">unset/prompt (0)</A>
+<H2><A NAME="ss11.252">11.252</A> <A HREF="adminmanual_en.html#toc11.252">unset/prompt (0)</A>
 </H2>
 
 <P><CODE><B>unset/prompt</B> Set your prompt back to default</CODE></P>
@@ -2435,7 +2485,7 @@ Set SHOW/HOPS for information on what is already set. This commandcreates a filt
 </PRE>
 </CODE></BLOCKQUOTE>
 UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back tonormal.</P>
-<H2><A NAME="ss11.251">11.251</A> <A HREF="adminmanual_en.html#toc11.251">unset/register &lt;call&gt; ... (9)</A>
+<H2><A NAME="ss11.253">11.253</A> <A HREF="adminmanual_en.html#toc11.253">unset/register &lt;call&gt; ... (9)</A>
 </H2>
 
 <P><CODE><B>unset/register &lt;call&gt; ...</B> Mark a user as not registered</CODE></P>
@@ -2446,47 +2496,47 @@ UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back tonormal.<
 </PRE>
 </CODE></BLOCKQUOTE>
 command (usually in your startup file)If a user is NOT registered then, firstly, instead of the normalmotd file (/spider/data/motd) being sent to the user at startup, theuser is sent the motd_nor file instead. Secondly, the non registereduser only has READ-ONLY access to the node. The non-registered usercannot use DX, ANN etc. The only exception to this is that a non-registered user can TALK orSEND messages to the sysop.</P>
-<H2><A NAME="ss11.252">11.252</A> <A HREF="adminmanual_en.html#toc11.252">unset/talk (0)</A>
+<H2><A NAME="ss11.254">11.254</A> <A HREF="adminmanual_en.html#toc11.254">unset/talk (0)</A>
 </H2>
 
 <P><CODE><B>unset/talk</B> Stop TALK messages coming out on your terminal</CODE></P>
 
-<H2><A NAME="ss11.253">11.253</A> <A HREF="adminmanual_en.html#toc11.253">unset/usstate (0)</A>
+<H2><A NAME="ss11.255">11.255</A> <A HREF="adminmanual_en.html#toc11.255">unset/usstate (0)</A>
 </H2>
 
 <P><CODE><B>unset/usstate</B> Stop US State info on the end of DX announcements</CODE></P>
 <P>If the spotter's or spotted's US State is known it is output on the end of a DX announcement (there is just enough room). A spotter's state will appear on the RHS of the time (like SET/DXGRID) and the spotted's State will appear on the LHS of thetime field. Any information found will override any locator information from SET/DXGRID.Some user programs cannot cope with this. You can use this command to reset (or set) this feature.Conflicts with: SET/DXCQ, SET/DXITUDo a STAT/USER to see which flags you have set if you are confused.  </P>
-<H2><A NAME="ss11.254">11.254</A> <A HREF="adminmanual_en.html#toc11.254">unset/wcy (0)</A>
+<H2><A NAME="ss11.256">11.256</A> <A HREF="adminmanual_en.html#toc11.256">unset/wcy (0)</A>
 </H2>
 
 <P><CODE><B>unset/wcy</B> Stop WCY messages coming out on your terminal</CODE></P>
 
-<H2><A NAME="ss11.255">11.255</A> <A HREF="adminmanual_en.html#toc11.255">unset/wwv (0)</A>
+<H2><A NAME="ss11.257">11.257</A> <A HREF="adminmanual_en.html#toc11.257">unset/wwv (0)</A>
 </H2>
 
 <P><CODE><B>unset/wwv</B> Stop WWV messages coming out on your terminal</CODE></P>
 
-<H2><A NAME="ss11.256">11.256</A> <A HREF="adminmanual_en.html#toc11.256">unset/wx (0)</A>
+<H2><A NAME="ss11.258">11.258</A> <A HREF="adminmanual_en.html#toc11.258">unset/wx (0)</A>
 </H2>
 
 <P><CODE><B>unset/wx</B> Stop WX messages coming out on your terminal</CODE></P>
 
-<H2><A NAME="ss11.257">11.257</A> <A HREF="adminmanual_en.html#toc11.257">who (0)</A>
+<H2><A NAME="ss11.259">11.259</A> <A HREF="adminmanual_en.html#toc11.259">who (0)</A>
 </H2>
 
 <P><CODE><B>who</B> Show who is physically connected</CODE></P>
 <P>This is a quick listing that shows which callsigns are connected andwhat sort of connection they have</P>
-<H2><A NAME="ss11.258">11.258</A> <A HREF="adminmanual_en.html#toc11.258">wx &lt;text&gt; (0)</A>
+<H2><A NAME="ss11.260">11.260</A> <A HREF="adminmanual_en.html#toc11.260">wx &lt;text&gt; (0)</A>
 </H2>
 
 <P><CODE><B>wx &lt;text&gt;</B> Send a weather message to local users</CODE></P>
 
-<H2><A NAME="ss11.259">11.259</A> <A HREF="adminmanual_en.html#toc11.259">wx full &lt;text&gt; (0)</A>
+<H2><A NAME="ss11.261">11.261</A> <A HREF="adminmanual_en.html#toc11.261">wx full &lt;text&gt; (0)</A>
 </H2>
 
 <P><CODE><B>wx full &lt;text&gt;</B> Send a weather message to all cluster users</CODE></P>
 
-<H2><A NAME="ss11.260">11.260</A> <A HREF="adminmanual_en.html#toc11.260">wx sysop &lt;text&gt; (5)</A>
+<H2><A NAME="ss11.262">11.262</A> <A HREF="adminmanual_en.html#toc11.262">wx sysop &lt;text&gt; (5)</A>
 </H2>
 
 <P><CODE><B>wx sysop &lt;text&gt;</B> Send a weather message to other clusters only</CODE></P>

@@ -4874,7 +4874,50 @@ any order to the basic SHOW/DX command, they are:-
                    You can also use this with the 'by' keyword so 
                    eg by W dxcc  
 </verb></tscreen>
-   
+ 
+<tscreen><verb>
+ real or rt      - Format the output the same as for real time spots. The
+                   formats are deliberately different (so you can tell
+                   one sort from the other). This is useful for some 
+                   logging programs that can't cope with normal sh/dx 
+                   output. An alias of SHOW/FDX is available.
+</verb></tscreen>
+       
+<tscreen><verb>
+ filter          - Filter the spots, before output, with the user's 
+                   spot filter. An alias of SHOW/MYDX is available.
+</verb></tscreen>
+
+<tscreen><verb>
+ zone &lt;zones&gt;    - look for spots in the cq zone (or zones) specified.
+                   zones are numbers separated by commas.
+</verb></tscreen>
+
+<tscreen><verb>
+ by_zone &lt;zones&gt; - look for spots spotted by people in the cq zone
+                   specified.
+</verb></tscreen>
+
+<tscreen><verb>
+ itu &lt;itus&gt;      - look for spots in the itu zone (or zones) specified
+                   itu zones are numbers separated by commas.
+</verb></tscreen>
+
+<tscreen><verb>
+ by_itu &lt;itus&gt;   - look for spots spotted by people in the itu zone
+                   specified.
+</verb></tscreen>
+  
+<tscreen><verb>
+ state &lt;list&gt;    - look for spots in the US state (or states) specified
+                   The list is two letter state codes separated by commas.
+</verb></tscreen>
+
+<tscreen><verb>
+ by_state &lt;list&gt; - look for spots spotted by people in the US state
+                   specified.
+</verb></tscreen>
+ 
 <tscreen><verb>
  e.g. 
 </verb></tscreen>
@@ -4889,6 +4932,10 @@ any order to the basic SHOW/DX command, they are:-
    SH/DX qra jn86
    SH/DX dxcc oq2
    SH/DX dxcc oq2 by w dxcc
+   SH/DX zone 4,5,6
+   SH/DX by_zone 4,5,6
+   SH/DX state in,oh
+   SH/DX by_state in,oh
 </verb></tscreen>
   
 <sect1>show/dxcc &lt;prefix&gt; (0)
@@ -4920,6 +4967,7 @@ This can be done with the SHOW/DX command like this:-
    SH/DX dxcc w on 20m iota
 </verb></tscreen>
 
+This is an alias for: SH/DX dxcc
 <sect1>show/dxqsl &lt;callsign&gt; (0)
 
 <P>
@@ -4959,6 +5007,20 @@ This gives you more background information.
 <P>
 Show the total DX spots for the last &lt;days&gt; no of days (default is 31), 
 starting from a &lt;date&gt; (default: today).
+<sect1>show/fdx (0)
+
+<P>
+<tt>
+<bf>show/fdx</bf> Show the DX data in realtime format.
+</tt>
+
+<P>
+Normally SHOW/DX outputs spot data in a different format to the
+realtime data. This is a deliberate policy (so you can tell the 
+difference between the two). Some logging programs cannot handle
+this so SHOW/FDX outputs historical data in real time format.
+
+This is an alias for: SHOW/DX real
 <sect1>show/files &lsqb;&lt;filearea&gt; &lsqb;&lt;string&gt;&rsqb;&rsqb; (0)
 
 <P>
@@ -5218,6 +5280,25 @@ propagation data.
 Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
+<sect1>show/mydx (0)
+
+<P>
+<tt>
+<bf>show/mydx</bf> Show the DX data filtered with your spot filter.
+</tt>
+
+<P>
+SHOW/DX potentially shows all the spots available in the system. Using
+SHOW/MYDX will, instead, filter the availble spots using any spot filter 
+that you have set, first. 
+
+This command, together with ACCEPT/SPOT or REJECT/SPOT, will allow
+you to customise the spots that you receive.
+
+So if you have said: ACC/SPOT on hf
+
+Doing a SHOW/MYDX will now only, ever, show HF spots. All the other 
+options on SH/DX can still be used.
 <sect1>show/newconfiguration &lsqb;&lt;node&gt;&rsqb; (0)
 
 <P>

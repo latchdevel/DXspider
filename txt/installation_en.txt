@@ -1282,16 +1282,15 @@
         down this route!
 
 
-     [1m'  [22m' is the delimiting character for a word or phrase of an
-        expect/send line in a chat type script. The words/phrases
-        normally come in pairs, either can be empty. Each line reads
-        input from the connection until it sees the string (or perl
-        regular expression) contained in the left hand string. If the
-        left hand string is empty then it doesn't read or wait for
-        anything. The comparison is done ignoring case.  When the left
-        hand string has found what it is looking for (if it is) then the
-        right hand string is sent to the connection.  This process is
-        repeated for every line of chat script.
+     [1m'  [22mline in a chat type script. The words/phrases normally come in
+        pairs, either can be empty. Each line reads input from the
+        connection until it sees the string (or perl regular expression)
+        contained in the left hand string. If the left hand string is
+        empty then it doesn't read or wait for anything. The comparison
+        is done ignoring case.  When the left hand string has found what
+        it is looking for (if it is) then the right hand string is sent
+        to the connection.  This process is repeated for every line of
+        chat script.
 
 
      [1mclient[0m
@@ -1333,6 +1332,7 @@
        # tell GB7DJK-1 that it is connected to GB7DJK
        # you can leave this out if you call this script 'gb7djk'
        client gb7djk telnet
+
 
   Both these examples assume that everything is set up properly at the
   other end.  You will find other examples in the /spider/examples
