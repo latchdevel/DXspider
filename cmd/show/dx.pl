@@ -63,14 +63,9 @@ while ($f = shift @list) {		# next field
 
 # first deal with the prefix
 if ($pre) {
-	$expr = "\$f1 =~ /";
-	$pre =~ s|/|\\/|;			# change the slashes to \/ 
-	if ($pre =~ /^\*/o) {
-		$pre =~ s/^\*//;;
-		$expr .= "$pre\$/o";
-	} else {
-		$expr .= "^$pre/o";
-	}
+	$pre .= '*' unless $pre =~ /[\*\?\[]/o;
+	$pre = shellregex($pre);
+	$expr = "\$f1 =~ m{$pre}o";
 } else {
 	$expr = "1";				# match anything
 }
@@ -90,15 +85,15 @@ if (@freq) {
 # any info
 if ($info) {
 	$expr .= " && " if $expr;
-	$info =~ s|/|\\/|;
-	$expr .= "\$f3 =~ /$info/io";
+	$info = shellregex($info);
+	$expr .= "\$f3 =~ m{$info}io";
 }
 
 # any spotter
 if ($spotter) {
 	$expr .= " && " if $expr;
-	$spotter =~ s|/|\\/|;
-	$expr .= "\$f4 =~ /$spotter/o";
+	$spotter = shellregex($spotter);
+	$expr .= "\$f4 =~ m{$spotter}o";
 }
 
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";

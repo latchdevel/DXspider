@@ -13,11 +13,18 @@ use Carp;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf parray parraypairs
+@EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
+			 parray parraypairs shellregex
              print_all_fields cltounix 
             );
 
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+%patmap = (
+		   '*' => '.*',
+		   '?' => '.',
+		   '[' => '[',
+		   ']' => ']'
+);
 
 # a full time for logging and other purposes
 sub atime
@@ -168,3 +175,11 @@ sub print_all_fields
 	return @out;
 }
 
+# generate a regex from a shell type expression 
+# see 'perl cookbook' 6.9
+sub shellregex
+{
+	my $in = shift;
+	$in =~ s{(.)} { $patmap{$1} || "\Q$1" }ge;
+	return '^' . $in . '$';
+}

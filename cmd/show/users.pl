@@ -16,7 +16,7 @@ my $call;
 my $i = 0;
 my @l;
 my $nlist = $node->list;
-my @val = values %{$nlist};
+my @val = sort {$a->call cmp $b->call} values %{$nlist};
 foreach $call (@val) {
   if (@list) {
     next if !grep $call->call eq $_, @list;

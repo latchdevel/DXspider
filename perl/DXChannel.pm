@@ -211,7 +211,7 @@ sub msg
 	return DXM::msg($self->{lang}, @_);
 }
 
-# stick a broadcast on the delayed queue
+# stick a broadcast on the delayed queue (but only up to 20 items)
 sub delay
 {
 	my $self = shift;
@@ -219,6 +219,9 @@ sub delay
 	
 	$self->{delayed} = [] unless $self->{delayed};
 	push @{$self->{delayed}}, $s;
+	if (@{$self->{delayed}} >= 20) {
+		shift @{$self->{delayed}};   # lose oldest one
+	}
 }
 
 # change the state of the channel - lots of scope for debugging here :-)
@@ -233,9 +236,7 @@ sub state
 
 		# if there is any queued up broadcasts then splurge them out here
 		if ($self->{delayed} && ($self->{state} eq 'prompt' || $self->{state} eq 'convers')) {
-			for (@{$self->{delayed}}) {
-				$self->send($_);
-			}
+			$self->send (@{$self->{delayed}});
 			delete $self->{delayed};
 		}
 	}

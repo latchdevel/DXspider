@@ -9,18 +9,18 @@
 my ($self, $line) = @_;
 my @list = map { uc } split /\s+/, $line;           # list of callsigns of nodes
 my @out;
-my @nodes = (DXNode::get_all());
+my @nodes = sort {$a->call cmp $b->call} (DXNode::get_all());
 my $node;
 my @l;
 my @val;
 
 push @out, "Node         Callsigns";
 if ($list[0] && $list[0] =~ /^NOD/) {
-	my @ch = DXProt::get_all_ak1a();
+	my @ch = sort {$a->call cmp $b->call} DXProt::get_all_ak1a();
 	my $dxchan;
 	
 	foreach $dxchan (@ch) {
-		@val = grep { $_->dxchan == $dxchan } @nodes;
+		@val = sort {$a->call cmp $b->call} grep { $_->dxchan == $dxchan } @nodes;
 		my $call = $dxchan->call;
 		$call = "($call)" if $dxchan->here == 0;
 		@l = ();
@@ -50,7 +50,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 		@l = ();
 		push @l, $call;
 		my $nlist = $node->list;
-		@val = values %{$nlist};
+		@val = sort {$a->call cmp $b->call} values %{$nlist};
 
 		my $i = 0;
 		if (@val == 0 && $node->users) {
