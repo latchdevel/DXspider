@@ -1238,6 +1238,24 @@ sub normal
 			return;
 		}
 		if ($pcno == 90) {		# new style PC16,17,19,21
+			my $node = $field[1];
+
+			# mark this node as wanting PC90s
+			my $parent = Route::Node::get($node);
+			if ($parent) {
+				my $t = hex $field[2];
+				my $last = $parent->lastpc90 || 0;
+				if ($last < $t) {
+					$parent->pc90(1);
+					$parent->lastpc90($t); 
+					my ($updsort, $n) = unpack "AA*", $field[3];
+					for (my $i = 4; $i < $#field; $i++) {
+						my ($sort, $flag, $node, $ping) = $field[$i] =~ m{(\w)(\d)([-\w+])(,\d+)?};
+						$ping /= 10 if (defined $ping); 
+					}
+				}
+			}
+			
 			return;
 		}
 	}
@@ -1282,8 +1300,8 @@ sub process
 		next if $dxchan == $main::me;
 
 		# send the pc50 or PC90
-		if ($pc50s && $dxchan->is_spider) {
-#			$dxchan->send_route(\&pc90, 1, $main::me, 'T', @dxchan);
+		if ($pc50s && $dxchan->user->wantpc90) {
+			$dxchan->send_route(\&pc90, 1, $main::me, 'T', @dxchan);
 		} else {
 			$dxchan->send($pc50s) if $pc50s;
 		}
@@ -1567,7 +1585,7 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
 		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
-		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
+		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan && !$self->user->wantpc90;
 		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
 		my $ref = Route::Node::get($self->{call});
 		my @rnodes = $ref->nodes;
@@ -1577,6 +1595,7 @@ sub send_local_config
 		unshift @localnodes, $main::routeroot;
 	}
 	
+
 	send_route($self, \&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
 	
 	# get all the users connected on the above nodes and send them out
@@ -1587,7 +1606,7 @@ sub send_local_config
 			dbg("sent a null value") if isdbg('chanerr');
 		}
 	}
-#	$self->send_route(\&pc90, 1, $main::me, 'T', DXChannel::get_all());
+	$self->send_route(\&pc90, 1, $main::me, 'T', DXChannel::get_all()) if $self->user->wantpc90;
 }
 
 #

@@ -1,5 +1,5 @@
 #
-# set the wwv flag
+# set the pc90 flag
 #
 # Copyright (c) 1998 - Dirk Koopman
 #
@@ -15,13 +15,13 @@ my @out;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $chan = DXChannel->get($call);
-	if ($chan) {
-		DXChannel::wwv($chan, 1);
-		$chan->user->wantwwv(1);
-		push @out, $self->msg('wwvs', $call);
+	my $user = DXUser->get_current($call);
+	if ($user) {
+		$user->wantpc90(1);
+		$user->put;
+		push @out, $self->msg('pc90s', $call);
 	} else {
-		push @out, $self->msg('e3', "Set WWV", $call);
+		push @out, $self->msg('e3', "Set PC90", $call);
 	}
 }
 return (1, @out);

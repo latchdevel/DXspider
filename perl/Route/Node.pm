@@ -29,6 +29,8 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
+		  pc90 => '0,Using PC90,yesno',
+		  lastpc90 => '0,Last PC90 time,cldatetime',
 );
 
 $filterdef = $Route::filterdef;
