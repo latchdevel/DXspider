@@ -756,7 +756,7 @@ sub normal
 				my $dxchan = DXChannel->get($call);
 				if ($dxchan && $dxchan != $self) {
 					dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
-					return;
+					next;
 				}
 
 				# update it if required
