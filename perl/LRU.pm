@@ -55,7 +55,7 @@ sub get
 sub put
 {
 	my ($self, $call, $ref) = @_;
-	confess("need a call and a reference") unless $call && $ref;
+	confess("need a call and a reference") unless defined $call && $ref;
 	my $p = $self->obj->{$call};
 	if ($p) {
 		# update the reference and rechain it

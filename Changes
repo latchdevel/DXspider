@@ -1,3 +1,5 @@
+07Oct02=======================================================================
+1. fix problem with (invalid) callsigns starting with '0' (zero) eg 0f6ira.
 03Oct02=======================================================================
 1. only sysop (priv=5+) can now send to distro SYSOP, ordinary users will have 
 their message routed to the $main::myalias callsign as a private message. 
