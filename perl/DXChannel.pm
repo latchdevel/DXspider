@@ -102,6 +102,7 @@ $count = 0;
 		  enhanced => '5,Enhanced Client,yesno',
 		  senddbg => '8,Sending Debug,yesno',
 		  width => '0,Column Width',
+		  disconnecting => '9,Disconnecting,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);

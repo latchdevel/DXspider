@@ -1,3 +1,5 @@
+04Sep01=======================================================================
+1. add delete/user command
 03Sep01=======================================================================
 1. make spot dups look back 5 mins.
 2. strip the top off each character in any text field of a Spot for duping.

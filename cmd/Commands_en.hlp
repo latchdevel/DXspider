@@ -260,6 +260,10 @@ DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
+=== 9^DELELE/USER <callsign> ...^Delete this user from the User Database
+This command will completely remove a one or more users from the database.
+It goes without saying that you should use this command CAREFULLY!
+
 === 0^DBAVAIL^Show a list of all the Databases in the system
 Title says it all really, this command lists all the databases defined
 in the system. It is also aliased to SHOW/COMMAND.

@@ -35,8 +35,9 @@ package CmdAlias;
 	'c' => [
 	],
 	'd' => [
-	  '^del', 'kill', 'kill',
+	  '^del\w*/u', 'delete/user', 'delete/user',
 	  '^del\w*/fu', 'kill full', 'kill',
+	  '^del', 'kill', 'kill',
 	  '^di\w*/a\w*', 'directory all', 'directory',
 	  '^di\w*/b\w*', 'directory bulletins', 'directory',
 	  '^di\w*/n\w*', 'directory new', 'directory',
