@@ -1,5 +1,6 @@
 23Dec00=======================================================================
 1. don't route anything back down the channel it came from.
+2. and, in the process, fix some silly errors in routing converted rcmd PCs
 18Dec00=======================================================================
 1. fix double printing of DB results
 2. add new style filtering for WWV and WCY to complete the set

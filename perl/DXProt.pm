@@ -848,7 +848,7 @@ sub normal
 			} else {
 				my $ref = DXUser->get_current($field[1]);
 				if ($ref && $ref->is_clx) {
-					route($field[1], pc84($field[2], $field[1], $field[2], $field[3]));
+					$self->route($field[1], pc84($field[2], $field[1], $field[2], $field[3]));
 				} else {
 					$self->route($field[1], $line);
 				}
@@ -871,7 +871,7 @@ sub normal
 			} else {
 				my $ref = DXUser->get_current($field[1]);
 				if ($ref && $ref->is_clx) {
-					route($field[1], pc85($field[2], $field[1], $field[2], $field[3]));
+					$self->route($field[1], pc85($field[2], $field[1], $field[2], $field[3]));
 				} else {
 					$self->route($field[1], $line);
 				}
@@ -1040,7 +1040,7 @@ sub normal
 				if ($ref && $ref->is_clx) {
 					$self->route($field[1], $line);
 				} else {
-					route($field[1], pc34($field[2], $field[1], $field[4]));
+					$self->route($field[1], pc34($field[2], $field[1], $field[4]));
 				}
 			}
 			return;
@@ -1068,7 +1068,7 @@ sub normal
 				if ($ref && $ref->is_clx) {
 					$self->route($field[1], $line);
 				} else {
-					route($field[1], pc35($field[2], $field[1], $field[4]));
+					$self->route($field[1], pc35($field[2], $field[1], $field[4]));
 				}
 			}
 			return;
@@ -1475,9 +1475,11 @@ sub route
 	unless ($dxchan) {
 		my $cl = DXCluster->get_exact($call);
 		$dxchan = $cl->dxchan if $cl;
-		if ($dxchan eq $self) {
-			dbg('chan', "PCPROT: Trying to route back to source, dropped");
-			return;
+		if (ref $dxchan) {
+			if (ref $self && $dxchan eq $self) {
+				dbg('chan', "PCPROT: Trying to route back to source, dropped");
+				return;
+			}
 		}
 	}
 	if ($dxchan) {
