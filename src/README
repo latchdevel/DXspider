@@ -1,0 +1,31 @@
+The C client
+
+Eventually this client will do everything that the standard C client does
+but, for the moment, it does the following:-
+
+  * replaces client.pl on INCOMING connections for ax25 and telnet
+  * provides a LOCAL connection on a console or xterm
+
+In order to use this client you must:-
+  
+  1. Compile it (type 'make').
+  2. Change the entries in /etc/ax25/ax25d.conf referencing client.pl
+     from:
+
+[ether]
+NOCALL   * * * * * *  L
+default  * * * * * *  - spider /spider/perl/client.pl client.pl %u ax25
+
+     to:
+
+[ether]
+NOCALL   * * * * * *  L
+default  * * * * * *  - spider /spider/src/client client %u ax25
+
+  3. Send ax25d a HUP signal ('killall -HUP ax25d').
+
+Please let me know how it performs:-
+
+Dirk Koopman (mailto:dxspider-support@dxcluster.org)
+
+Last modified: $Id$
