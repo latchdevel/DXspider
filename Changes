@@ -1,3 +1,8 @@
+07Nov99=======================================================================
+1. reduced the amount of stuff compared against for dup announces.
+2. Check the regex for DK0WCY announces produces results before storing it as
+a WWV.
+3. Added some logging for set/priv (un)set/lockout.
 04Nov99=======================================================================
 1. Removed ~ from the end of the PC18.
 2. Removed a hangover from duff character checking in cluster.pl

@@ -13,7 +13,10 @@ my @out;
 my $user;
 my $ref;
 
-return (1, $self->msg('e5')) if $self->priv < 9;
+if ($self->priv < 9) {
+	Log('DXCommand', $self->call . " attempted to un-lockout @args");
+	return (1, $self->msg('e5'));
+}
 
 foreach $call (@args) {
 	$call = uc $call;
@@ -22,10 +25,12 @@ foreach $call (@args) {
 			$ref->lockout(0);
 			$ref->put();
 			push @out, $self->msg("lockoutun", $call);
+			Log('DXCommand', $self->call . " un-locked out $call");
 		} else {
 			push @out, $self->msg('e3', 'unset/lockout', $call);
 		}
 	} else {
+		Log('DXCommand', $self->call . " attempted to un-lockout $call remotely");
 		push @out, $self->msg('sorry');
 	}
 }

@@ -267,7 +267,7 @@ sub normal
 		if ($pcno == 12) {		# announces
 			# announce duplicate checking
 			my $text = substr(uc unpad($field[3]), 0, $pc12_dup_lth);
-			my $dupkey = $field[1].$field[2].$text.$field[4].$field[6];
+			my $dupkey = $field[1].$field[2].$text;
 			if ($anndup{$dupkey}) {
 				dbg('chan', "Duplicate Announce ignored\n");
 				return;
@@ -291,7 +291,7 @@ sub normal
 				if ($decode_dk0wcy && $field[1] eq $decode_dk0wcy) {
 					my ($hour, $k, $next, $a, $r, $sfi, $alarm) = $field[3] =~ /^Aurora Beacon\s+(\d+)UTC,\s+Kiel\s+K=(\d+),.*ed\s+K=(\d+),\s+A=(\d+),\s+R=(\d+),\s+SFI=(\d+),.*larm:\s+(\w+)/;
 					$alarm = ($alarm =~ /^Y/i) ? ', Aurora in DE' : ''; 
-					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next$alarm", $decode_dk0wcy, $field[5], $r);
+					my $wwv = Geomag::update($main::systime, $hour, $sfi, $a, $k, "R=$r, Next K=$next$alarm", $decode_dk0wcy, $field[5], $r) if $sfi && $r;
 				}
 				
 			} else {
