@@ -389,8 +389,9 @@ sub normal
 				dbg('chan', "WWV Date ($field[1] $field[2]) out of range");
 				return;
 			}
-			
 			$wwvdup{$dupkey} = $d;
+			$field[6] =~ s/-\d+$//o            # remove spotter's ssid
+		
 			my $wwv = Geomag::update($d, $field[2], $sfi, $k, $i, @field[6..$#field]);
 
 			my $r;
