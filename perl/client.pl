@@ -98,7 +98,7 @@ sub rec_socket
 		cease(1);
 	}
 	if (defined $msg) {
-		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
+		my ($sort, $call, $line) = $msg =~ /^(\w)([A-Z0-9\-]+)\|(.*)$/;
 		
 		if ($sort eq 'D') {
 			my $snl = $mynl;

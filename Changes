@@ -1,3 +1,6 @@
+21Jun99=======================================================================
+1. changed regex for cluster->client msgs so that strings like |---| are no
+longer ignored.
 20Jun99=======================================================================
 1. prevented a merge to myself (causes a loop)
 18Jun99=======================================================================

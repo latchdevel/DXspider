@@ -230,7 +230,7 @@ sub process_inqueue
 	
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
-	my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^(\w)([A-Z0-9\-]+)\|(.*)$/;
 
 	# the above regexp must work
 	return unless ($sort && $call && $line);
