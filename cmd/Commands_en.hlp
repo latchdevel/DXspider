@@ -1135,7 +1135,7 @@ need to create any directories you want to put stuff in beforehand as well.
 It is likely that you will want to run these commands in a crontab type 
 situation. You would do that something like:-
 
-  0 0 * * * run_cmd('save /tmp/dxstats echo "DXStat Table", "sh/dxstats"')
+  0 0 * * * run_cmd('save /tmp/dxstats "echo DXStat Table", "sh/dxstats"')
 
 Note that you still enclose each command with (") characters but you must
 enclose the entire save command in (') characters. 

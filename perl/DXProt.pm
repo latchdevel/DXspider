@@ -1966,5 +1966,10 @@ sub eph_list
 	}
 	return @out;
 }
+
+sub run_cmd
+{
+	goto &DXCommandmode::run_cmd;
+}
 1;
 __END__ 
