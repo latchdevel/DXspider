@@ -391,22 +391,26 @@ FINISH:
 sub new_client {
 	my $server_conn = shift;
     my $sock = $server_conn->{sock}->accept();
-    my $conn = $server_conn->new($server_conn->{rproc});
-	$conn->{sock} = $sock;
-    my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
-	$conn->{sort} = 'Incoming';
-	if ($eproc) {
-		$conn->{eproc} = $eproc;
-        set_event_handler ($sock, error => $eproc);
+	if ($sock) {
+		my $conn = $server_conn->new($server_conn->{rproc});
+		$conn->{sock} = $sock;
+		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $sock->peerhost(), $conn->{peerport} = $sock->peerport());
+		$conn->{sort} = 'Incoming';
+		if ($eproc) {
+			$conn->{eproc} = $eproc;
+			set_event_handler ($sock, error => $eproc);
+		}
+		if ($rproc) {
+			$conn->{rproc} = $rproc;
+			my $callback = sub {$conn->_rcv};
+			set_event_handler ($sock, read => $callback);
+		} else {  # Login failed
+			&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
+			$conn->disconnect();
+		}
+	} else {
+		dbg('err', "Msg: error on accept ($!)");
 	}
-    if ($rproc) {
-        $conn->{rproc} = $rproc;
-        my $callback = sub {$conn->_rcv};
-        set_event_handler ($sock, read => $callback);
-    } else {  # Login failed
-		&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
-        $conn->disconnect();
-    }
 }
 
 sub close_server
