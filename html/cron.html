@@ -21,7 +21,7 @@
 	<p>
 	  <!-- Created: Sun Dec 13 20:25:14 GMT 1998 -->
 	  <!-- hhmts start -->
-Last modified: Mon Dec 28 23:19:21 GMT 1998
+Last modified: Sun Jan 24 15:30:56 GMT 1999
 <!-- hhmts end -->
 	<h4>Introduction</h4>
 
@@ -106,10 +106,17 @@ Last modified: Mon Dec 28 23:19:21 GMT 1998
   # the values for mycall and version
  
   15,30 * * * spawn("echo $main::mycall is a DXSpider Version $main::version DX Cluster system")
+
+  # then there is always the highly contentious one like this little jem which
+  # checks every hour to see if a certain callsign is connected to another cluster
+  # and silently disconnects him. This is an example only (of course...)
+  
+  23 * * * * rcmd('rcmd/gb7dxm disc/noinform G9TLH') if present_on('G9TLH', 'GB7DXM')
+
 	</pre>
 
 	It is important remember that these <tt>crontab</tt> routines execute in line with the main
-	cluster code, so if you create a long, slow <tt>crontab</tt> commands, it will impact on the speed
+	cluster code, so if you create a long, slow <tt>crontab</tt> command, it will impact on the speed
 	and usability of the cluster as a whole.
 
 	<h4>Standard Routines</h4>
@@ -129,6 +136,19 @@ Last modified: Mon Dec 28 23:19:21 GMT 1998
 		execute just about any command you like, but <em>be warned</em> <b>stdin</b> and <b>stdout</b> are
 		still connected to the same terminal (if any) as the cluster daemon. Any unix command and arguments
 		can used, see <tt>exec</tt> in the <a href="http://www.perl.com">perl</a> documentation.
+		<p><li><b>disconnect(&lt;callsign>)</b> - disconnects a locally connected station from your node.
+		<p><li><b>rcmd(&lt;node-call>, &lt;command>)</b> - send a command to another node in exactly the 
+		same way as, for example, <tt>RCMD/GB7TLH disc GB7DJK</tt> typed on a sysop console.
+		<p><li><b>present(&lt;exact-callsign>)</b> and <b>presentish(&lt;callsign-no-ssid>)</b> - returns 
+		true if the
+		callsign is connected anywhere on the cluster either with the exact callsign or with the callsign
+		minus its ssid respectively.
+		<p><li><b>present_on(&lt;exact-callsign>, &lt;node>)</b> and <b>presentish_on(&lt;callsign-no-ssid>, &lt;node>)</b> - returns 
+		true if the
+		callsign is connected on the node specified either with the exact callsign or with the callsign
+		minus its ssid respectively.
+		<p><li><b>last_connect(&lt;callsign>)</b> - Returns the last connect time of the callsign or the
+		current time if it is currently connected locally.
 	</ul>
 
 	<h4>Caveats</h4>

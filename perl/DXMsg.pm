@@ -626,7 +626,8 @@ sub init
 	opendir($dir, $msgdir) or confess "can't open $msgdir $!";
 	@dir = readdir($dir);
 	closedir($dir);
-	
+
+	@msg = ();
 	for (sort @dir) {
 		next if /^\./o;
 		next if ! /^m\d+/o;
