@@ -63,7 +63,10 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 	my @rout = $main::routeroot->add_user($call, Route::here(1));
-	DXProt::route_pc16($main::me, $main::routeroot, @rout) if @rout;
+
+	# ALWAYS output the user
+	my $ref = Route::User::get($call);
+	DXProt::route_pc16($main::me, $main::routeroot, $ref) if $ref;
 
 	return $self;
 }
@@ -495,12 +498,12 @@ sub disconnect
 	if ($uref) {
 		@rout = $main::routeroot->del_user($uref);
 		dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
+
+		# issue a pc17 to everybody interested
+		DXProt::route_pc17($main::me, $main::routeroot, $uref);
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}
-
-	# issue a pc17 to everybody interested
-	DXProt::route_pc17($main::me, $main::routeroot, @rout) if @rout;
 
 	# I was the last node visited
     $self->user->node($main::mycall);
