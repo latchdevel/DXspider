@@ -1205,6 +1205,12 @@ to commands are as default:-
 If you are a sysop and you come in as a normal user on a remote connection
 your privilege will automatically be set to 0.
 
+=== 0^UNSET/PRIVILEGE^Remove any privilege for this session
+You can use this command to 'protect' this session from unauthorised
+use. If you want to get your normal privilege back you will need to
+either logout and login again (if you are on a console) or use the
+SYSOP command.
+
 === 9^SET/PASSWORD <callsign> <string>^Set a users password
 The password for a user can only be set by a full sysop. The string
 can contain any characters but any spaces are removed (you can type in
