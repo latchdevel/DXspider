@@ -63,6 +63,7 @@ package DXM;
 				loce2 => 'Don\'t recognise \"$_[0]\" as a Lat/Long (eg 52 20 N 0 16 E)',
 				loc => 'Your Lat/Long is now \"$_[0]\"',
 				lockout => '$_[0] Locked out',
+				lockoutc => '$_[0] Created and Locked out',
 				lockoutun => '$_[0] Unlocked',
 				m2 => '$_[0] Information: $_[1]',
 				merge1 => 'Merge request for $_[1] spots and $_[2] WWV sent to $_[0]',

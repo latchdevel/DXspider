@@ -22,7 +22,10 @@ foreach $call (@args) {
 		$ref->put();
 		push @out, $self->msg("lockout", $call);
 	} else {
-		push @out, $self->msg('e3', 'set/lockout', $call);
+		$ref = DXUser->new($call);
+		$ref->lockout(1);
+		$ref->put();
+		push @out, $self->msg("lockoutc", $call);
 	}
 }
 return (1, @out);

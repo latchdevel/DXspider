@@ -1,3 +1,6 @@
+08Feb99========================================================================
+1. added a $SIG{ALRM} in the client to actually catch the alarm when it goes 
+off which means that the netrom/ax25 call programs terminate properly!
 30Jan99========================================================================
 1. Some of the dates we get can cause crashes, tried to make it more robust (oh
 and Y2K compliant)

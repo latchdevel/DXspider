@@ -345,6 +345,7 @@ $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
 $SIG{'HUP'} = 'IGNORE';
 $SIG{'CHLD'} = \&sig_chld;
+$SIG{'ALRM'} = \&timeout;
 
 dbgadd('connect');
 
@@ -415,7 +416,7 @@ if ($connsort eq "connect") {
 	open(IN, "$cpath/$mcall") or cease(2);
 	@in = <IN>;
 	close IN;
-	
+
 	alarm($timeout);
 	
 	for (@in) {
