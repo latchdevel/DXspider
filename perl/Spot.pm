@@ -123,7 +123,6 @@ sub prepare
   
 	# remove ssids and /xxx if present on spotter
 	$out[4] =~ s/-\d+$//o;
-	$out[4] =~ s|/\w+$||o;
 
 	# remove leading and trailing spaces
 	$_[3] = unpad($_[3]);

@@ -1908,15 +1908,33 @@ any order to the basic SHOW/DX command, they are:-
                    You can also use this with the 'by' keyword so 
                    eg by W dxcc  
  
- real or rt        Format the output the same as for real time spots. The
+ real or rt      - Format the output the same as for real time spots. The
                    formats are deliberately different (so you can tell
                    one sort from the other). This is useful for some 
                    logging programs that can't cope with normal sh/dx 
                    output. An alias of SHOW/FDX is available.
        
- filter            Filter the spots, before output, with the user's 
+ filter          - Filter the spots, before output, with the user's 
                    spot filter. An alias of SHOW/MYDX is available.
 
+ zone <zones>    - look for spots in the cq zone (or zones) specified.
+                   zones are numbers separated by commas.
+
+ by_zone <zones> - look for spots spotted by people in the cq zone
+                   specified.
+
+ itu <itus>      - look for spots in the itu zone (or zones) specified
+                   itu zones are numbers separated by commas.
+
+ by_itu <itus>   - look for spots spotted by people in the itu zone
+                   specified.
+  
+ state <list>    - look for spots in the US state (or states) specified
+                   The list is two letter state codes separated by commas.
+
+ by_state <list> - look for spots spotted by people in the US state
+                   specified.
+ 
  e.g. 
    
    SH/DX 9m0
@@ -1928,6 +1946,10 @@ any order to the basic SHOW/DX command, they are:-
    SH/DX qra jn86
    SH/DX dxcc oq2
    SH/DX dxcc oq2 by w dxcc
+   SH/DX zone 4,5,6
+   SH/DX by_zone 4,5,6
+   SH/DX state in,oh
+   SH/DX by_state in,oh
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 
