@@ -221,8 +221,8 @@ sub process_inqueue
 	# translate any crappy characters into hex characters 
 	if ($line =~ /[\x00-\x06\x08\x0a-\x1f\x7f-\xff]/o) {
 		$line =~ s/([\x00-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-		dbg('chan', "<- $sort $call **CRAP**: $line");
-		return;
+#		dbg('chan', "<- $sort $call **CRAP**: $line");
+#		return;
 	}
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
