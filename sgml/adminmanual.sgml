@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.33 (Revision 2) February 2001
+<date>Version 1.33 (Revision 3) February 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -3534,7 +3534,18 @@ Set the node_call as a CLX type node
 </tt>
 
 <P>
-You can remove this level with unset/debug &lt;name&gt;
+You can choose to log several different levels.  The levels are
+
+chan
+state
+msg
+cron
+connect
+
+You can show what levels you are logging with the <em>show/debug</em>
+command.
+
+You can remove a debug level with unset/debug &lt;name&gt;
 
 <sect1>set/dx (0)
 
@@ -4005,6 +4016,16 @@ If no prefixes or callsigns are given then this command returns the local
 time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
+
+<sect1>show/debug (9)
+
+<P>
+<tt>
+<bf>show/debug</bf> Show what levels of debug you are logging
+</tt>
+
+<P>
+The levels can be set with <em>set/debug</em>
 
 <sect1>show/dx (0)
 

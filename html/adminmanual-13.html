@@ -1246,7 +1246,15 @@ the node_call a CLX type node</CODE>
 
 <P><CODE><B>set/debug &lt;name&gt;</B> Add a debug level to the debug set</CODE>
 <P>
-<P>You can remove this level with unset/debug &lt;name&gt;
+<P>You can choose to log several different levels.  The levels are
+<P>chan
+state
+msg
+cron
+connect
+<P>You can show what levels you are logging with the <EM>show/debug</EM>
+command.
+<P>You can remove a debug level with unset/debug &lt;name&gt;
 <P>
 <H2><A NAME="ss13.72">13.72 set/dx (0)</A>
 </H2>
@@ -1622,7 +1630,14 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 <P>
-<H2><A NAME="ss13.104">13.104 show/dx (0)</A>
+<H2><A NAME="ss13.104">13.104 show/debug (9)</A>
+</H2>
+
+<P><CODE><B>show/debug</B> Show what levels of debug you are logging</CODE>
+<P>
+<P>The levels can be set with <EM>set/debug</EM>
+<P>
+<H2><A NAME="ss13.105">13.105 show/dx (0)</A>
 </H2>
 
 <P><CODE><B>show/dx [options]</B> interrogate the spot database</CODE>
@@ -1681,7 +1696,7 @@ qra [&lt;locator&gt;] - this will look for the specific locator if
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.105">13.105 show/dxcc (0)</A>
+<H2><A NAME="ss13.106">13.106 show/dxcc (0)</A>
 </H2>
 
 <P><CODE><B>show/dxcc &lt;prefix&gt;</B> Interrogate the spot database by country</CODE>
@@ -1700,7 +1715,7 @@ e.g.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.106">13.106 show/files (0)</A>
+<H2><A NAME="ss13.107">13.107 show/files (0)</A>
 </H2>
 
 <P><CODE><B>show/files [&lt;filearea&gt; [&lt;string&gt;]]</B> List
@@ -1727,7 +1742,7 @@ string to see a selection of files in a filearea eg:-
 </CODE></BLOCKQUOTE>
 <P>See also TYPE - to see the contents of a file.
 <P>
-<H2><A NAME="ss13.107">13.107 show/filter (0)</A>
+<H2><A NAME="ss13.108">13.108 show/filter (0)</A>
 </H2>
 
 <P><CODE><B>show/filter</B> Show the filters you have set</CODE>
@@ -1735,14 +1750,14 @@ string to see a selection of files in a filearea eg:-
 <P>Show the contents of all the filters that are set by you. This command 
 displays all the filters set - for all the various categories.
 <P>
-<H2><A NAME="ss13.108">13.108 show/filter (extended for sysops) (5)</A>
+<H2><A NAME="ss13.109">13.109 show/filter (extended for sysops) (5)</A>
 </H2>
 
 <P><CODE><B>show/filter &lt;callsign&gt;</B> Show the filters set by &lt;callsign&gt;</CODE>
 <P>
 <P>A sysop can look at any filters that have been set.
 <P>
-<H2><A NAME="ss13.109">13.109 show/hops (8)</A>
+<H2><A NAME="ss13.110">13.110 show/hops (8)</A>
 </H2>
 
 <P><CODE><B>show/hops &lt;node_call&gt; [ann|spots|wcy|wwv|]</B> Show the hop counts for a node</CODE>
@@ -1751,14 +1766,14 @@ displays all the filters set - for all the various categories.
 which category you want to see. If you leave the category out then 
 all the categories will be listed.
 <P>
-<H2><A NAME="ss13.110">13.110 show/isolate (1)</A>
+<H2><A NAME="ss13.111">13.111 show/isolate (1)</A>
 </H2>
 
 <P><CODE><B>show/isolate</B> Show a list of isolated nodes</CODE>
 <P>
 <P>Show which nodes are currently set to be isolated.
 <P>
-<H2><A NAME="ss13.111">13.111 show/lockout (9)</A>
+<H2><A NAME="ss13.112">13.112 show/lockout (9)</A>
 </H2>
 
 <P><CODE><B>show/lockout</B> Show a list of excluded callsigns</CODE>
@@ -1766,7 +1781,7 @@ all the categories will be listed.
 <P>Show a list of callsigns that have been excluded (locked out) of the
 cluster locally with the <EM>set/lockout</EM> command
 <P>
-<H2><A NAME="ss13.112">13.112 show/log (8)</A>
+<H2><A NAME="ss13.113">13.113 show/log (8)</A>
 </H2>
 
 <P><CODE><B>show/log [&lt;callsign&gt;]</B> Show excerpts from the system log</CODE>
@@ -1775,7 +1790,7 @@ cluster locally with the <EM>set/lockout</EM> command
 it will output a general logfile.  With the optional callsign it will
 show output from the log associated with that callsign.
 <P>
-<H2><A NAME="ss13.113">13.113 show/moon (0)</A>
+<H2><A NAME="ss13.114">13.114 show/moon (0)</A>
 </H2>
 
 <P><CODE><B>show/moon [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show moon
@@ -1800,7 +1815,7 @@ that you are connected to.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.114">13.114 show/muf (0)</A>
+<H2><A NAME="ss13.115">13.115 show/muf (0)</A>
 </H2>
 
 <P><CODE><B>show/muf &lt;prefix&gt; [&lt;hours&gt;][long]</B> Show
@@ -1877,7 +1892,7 @@ propagation data.
 should be noted that the figures will probably not be very useful, nor
 terrible accurate, but it is included for completeness.
 <P>
-<H2><A NAME="ss13.115">13.115 show/node (1)</A>
+<H2><A NAME="ss13.116">13.116 show/node (1)</A>
 </H2>
 
 <P><CODE><B>show/node [&lt;node_call&gt; ...]</B> Show the type and version
@@ -1887,7 +1902,7 @@ number of nodes</CODE>
 command line. If no callsigns are specified then a sorted list of all
 the non-user callsigns known to the system will be displayed.
 <P>
-<H2><A NAME="ss13.116">13.116 show/prefix (0)</A>
+<H2><A NAME="ss13.117">13.117 show/prefix (0)</A>
 </H2>
 
 <P><CODE><B>show/prefix &lt;callsign&gt;</B> Interrogate the prefix database</CODE>
@@ -1899,7 +1914,7 @@ together with the internal country no, the CQ and ITU regions.
 <P>See also SHOW/DXCC
 <P>
 <P>
-<H2><A NAME="ss13.117">13.117 show/program (5)</A>
+<H2><A NAME="ss13.118">13.118 show/program (5)</A>
 </H2>
 
 <P><CODE><B>show/program</B> Show the locations of all the included program modules</CODE>
@@ -1907,7 +1922,7 @@ together with the internal country no, the CQ and ITU regions.
 <P>Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from.
 <P>
-<H2><A NAME="ss13.118">13.118 show/qra (0)</A>
+<H2><A NAME="ss13.119">13.119 show/qra (0)</A>
 </H2>
 
 <P><CODE><B>show/qra &lt;locator&gt; [&lt;locator&gt;]</B> Show the distance
@@ -1938,7 +1953,7 @@ SH/QRA 52 41 N 0 58 E
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.119">13.119 show/qrz (0)</A>
+<H2><A NAME="ss13.120">13.120 show/qrz (0)</A>
 </H2>
 
 <P><CODE><B>show/qrz &lt;callsign&gt;</B> Show any callbook details on a callsign</CODE>
@@ -1947,7 +1962,7 @@ SH/QRA 52 41 N 0 58 E
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 <P>
-<H2><A NAME="ss13.120">13.120 show/route (0)</A>
+<H2><A NAME="ss13.121">13.121 show/route (0)</A>
 </H2>
 
 <P><CODE><B>show/route &lt;callsign&gt;</B> Show the route to &lt;callsign&gt;</CODE>
@@ -1961,7 +1976,7 @@ connected. It is a sort of inverse sh/config.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.121">13.121 show/satellite (0)</A>
+<H2><A NAME="ss13.122">13.122 show/satellite (0)</A>
 </H2>
 
 <P><CODE><B>show/satellite &lt;name&gt; [&lt;hours&gt; &lt;interval&gt;]</B>
@@ -1986,7 +2001,7 @@ SH/SAT FENGYUN1 12 2
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.122">13.122 show/sun (0)</A>
+<H2><A NAME="ss13.123">13.123 show/sun (0)</A>
 </H2>
 
 <P><CODE><B>show/sun [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -2009,7 +2024,7 @@ that you are connected to.
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.123">13.123 show/time (0)</A>
+<H2><A NAME="ss13.124">13.124 show/time (0)</A>
 </H2>
 
 <P><CODE><B>show/time [&lt;prefix&gt;|&lt;callsign&gt;]</B> Show
@@ -2020,7 +2035,7 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 <P>
-<H2><A NAME="ss13.124">13.124 show/wcy (0)</A>
+<H2><A NAME="ss13.125">13.125 show/wcy (0)</A>
 </H2>
 
 <P><CODE><B>show/wcy</B> Show the last 10 WCY broadcasts<BR>
@@ -2028,7 +2043,7 @@ the prefixes or callsigns that you specify.
 <P>
 <P>Display the most recent WCY information that has been received by the system
 <P>
-<H2><A NAME="ss13.125">13.125 show/wwv (0)</A>
+<H2><A NAME="ss13.126">13.126 show/wwv (0)</A>
 </H2>
 
 <P><CODE><B>show/wwv</B> Show the last 10 WWV broadcasts<BR>
@@ -2037,7 +2052,7 @@ the prefixes or callsigns that you specify.
 <P>Display the most recent WWV information that has been received by the system
 <P>
 <P>
-<H2><A NAME="ss13.126">13.126 shutdown (5)</A>
+<H2><A NAME="ss13.127">13.127 shutdown (5)</A>
 </H2>
 
 <P><CODE><B>shutdown</B> Shutdown the cluster</CODE>
@@ -2045,7 +2060,7 @@ the prefixes or callsigns that you specify.
 <P>Shutdown the cluster and disconnect all the users.  If you have Spider
 set to respawn in /etc/inittab it will of course restart.
 <P>
-<H2><A NAME="ss13.127">13.127 spoof (9)</A>
+<H2><A NAME="ss13.128">13.128 spoof (9)</A>
 </H2>
 
 <P><CODE><B>spoof &lt;callsign&gt; &lt;command&gt;</B> Run commands as another user</CODE>
@@ -2055,7 +2070,7 @@ issue commands as if you were a different user.  This is very useful for the
 kind of things that users seem to always get wrong.. like home_node for
 example.
 <P>
-<H2><A NAME="ss13.128">13.128 stat/db (5)</A>
+<H2><A NAME="ss13.129">13.129 stat/db (5)</A>
 </H2>
 
 <P><CODE><B>stat/db &lt;dbname&gt;</B> Show the status of a database</CODE>
@@ -2064,7 +2079,7 @@ example.
 <P>Depending on your privilege level you will see more or less information. 
 This command is unlikely to be of much use to anyone other than a sysop.
 <P>
-<H2><A NAME="ss13.129">13.129 stat/channel (5)</A>
+<H2><A NAME="ss13.130">13.130 stat/channel (5)</A>
 </H2>
 
 <P><CODE><B>stat/channel &lt;callsign&gt;</B> Show the status of a channel on the cluster</CODE>
@@ -2073,7 +2088,7 @@ This command is unlikely to be of much use to anyone other than a sysop.
 you are on or else for the callsign that you asked for.
 <P>Only the fields that are defined (in perl term) will be displayed.
 <P>
-<H2><A NAME="ss13.130">13.130 stat/msg (5)</A>
+<H2><A NAME="ss13.131">13.131 stat/msg (5)</A>
 </H2>
 
 <P><CODE><B>stat/msg &lt;msgno&gt;</B> Show the status of a message</CODE>
@@ -2081,7 +2096,7 @@ you are on or else for the callsign that you asked for.
 <P>This command shows the internal status of a message and includes information
 such as to whom it has been forwarded, its size, origin etc etc.
 <P>
-<H2><A NAME="ss13.131">13.131 stat/user (5)</A>
+<H2><A NAME="ss13.132">13.132 stat/user (5)</A>
 </H2>
 
 <P><CODE><B>stat/user &lt;callsign&gt;</B> Show the full status of a user</CODE>
@@ -2090,7 +2105,7 @@ such as to whom it has been forwarded, its size, origin etc etc.
 and stuff.
 <P>Only the fields that are defined (in perl term) will be displayed.
 <P>
-<H2><A NAME="ss13.132">13.132 sysop (0)</A>
+<H2><A NAME="ss13.133">13.133 sysop (0)</A>
 </H2>
 
 <P><CODE><B>sysop</B> Regain your privileges if you login remotely</CODE>
@@ -2126,7 +2141,7 @@ these values are for explanation :-):
 numbers but nothing will happen when you input a string. Any match is
 case sensitive.
 <P>
-<H2><A NAME="ss13.133">13.133 talk (0)</A>
+<H2><A NAME="ss13.134">13.134 talk (0)</A>
 </H2>
 
 <P><CODE><B>talk &lt;callsign&gt;</B> Enter talk mode with &lt;callsign&gt;<BR>
@@ -2167,7 +2182,7 @@ command with a '/' character, eg:-
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss13.134">13.134 type (0)</A>
+<H2><A NAME="ss13.135">13.135 type (0)</A>
 </H2>
 
 <P><CODE><B>type &lt;filearea&gt;/&lt;name&gt;</B> Look at a file in one of the fileareas</CODE>
@@ -2184,7 +2199,7 @@ enter:-
 <P>See also SHOW/FILES to see what fileareas are available and a 
 list of content.
 <P>
-<H2><A NAME="ss13.135">13.135 who (0)</A>
+<H2><A NAME="ss13.136">13.136 who (0)</A>
 </H2>
 
 <P><CODE><B>who</B> Show who is physically connected locally</CODE>
@@ -2192,7 +2207,7 @@ list of content.
 <P>This is a quick listing that shows which callsigns are connected and
 what sort of connection they have
 <P>
-<H2><A NAME="ss13.136">13.136 wx (0)</A>
+<H2><A NAME="ss13.137">13.137 wx (0)</A>
 </H2>
 
 <P><CODE><B>wx &lt;text&gt;</B> Send a weather message to local users<BR>
@@ -2201,7 +2216,7 @@ what sort of connection they have
 <P>Weather messages can sometimes be useful if you are experiencing an extreme
 that may indicate enhanced conditions
 <P>
-<H2><A NAME="ss13.137">13.137 wx (enhanced for sysops) (5)</A>
+<H2><A NAME="ss13.138">13.138 wx (enhanced for sysops) (5)</A>
 </H2>
 
 <P><CODE><B>wx sysop &lt;text&gt;</B> Send a weather message to other clusters only</CODE>

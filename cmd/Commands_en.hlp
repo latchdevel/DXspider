@@ -995,7 +995,7 @@ msg
 cron
 connect
 
-You can show what levels your are logging with SHOW/DEBUG
+You can show what levels you are logging with SHOW/DEBUG
 
 === 0^SET/DX^Allow DX messages to come out on your terminal
 === 0^UNSET/DX^Stop DX messages coming out on your terminal
