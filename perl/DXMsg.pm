@@ -886,6 +886,7 @@ sub do_send_stuff
 		confess "local var gone missing" if !ref $self->{loc};
 		my $loc = $self->{loc};
 		if (my @ans = BadWords::check($line)) {
+			$self->{badcount} += @ans;
 			Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} in msg");
 			return ($self->msg('e17', @ans), $self->msg('m1'));
 		}
@@ -942,6 +943,7 @@ sub do_send_stuff
 			$self->state('prompt');
 		} else {
 			if (my @ans = BadWords::check($line)) {
+				$self->{badcount} += @ans;
 				Log('msg', $self->call . " used badwords: @ans to @{$loc->{to}} subject: '$loc->{subject}' in msg");
 				Log('msg', "line: $line");
 				return ($self->msg('e17', @ans));

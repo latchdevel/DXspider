@@ -40,6 +40,7 @@ return (1, $self->msg('e7', $call)) unless $dxchan;
 if ($line) {
 	my @bad;
 	if (@bad = BadWords::check($line)) {
+		$self->badcount(($self->badcount||0) + @bad);
 		return (1, $self->msg('e17', @bad));
 	}
 	$dxchan->talk($self->call, $to, $via, $line) if $dxchan;

@@ -49,6 +49,7 @@ $line =~ s/\^/:/og;
 
 my @bad;
 if (@bad = BadWords::check($line)) {
+	$self->badcount(($self->badcount||0) + @bad);
 	return (1, $self->msg('e17', @bad));
 }
 

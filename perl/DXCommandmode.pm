@@ -34,7 +34,7 @@ use Script;
 
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -42,6 +42,8 @@ $errstr = ();					# error string from eval
 %aliases = ();					# aliases for (parts of) commands
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
+$maxbadcount = 3;				# no of bad words allowed before disconnection
+
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -241,7 +243,14 @@ sub normal
 	} else {
 		$self->send_ans(run_cmd($self, $cmdline));
 	} 
-	
+
+	# check for excessive swearing
+	if ($self->{badcount} && $self->{badcount} >= $maxbadcount) {
+		Log('DXCommand', "$self->{call} logged out for excessive swearing");
+		$self->disconnect;
+		return;
+	}
+
 	# send a prompt only if we are in a prompt state
 	$self->prompt() if $self->{state} =~ /^prompt/o;
 }

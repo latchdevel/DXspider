@@ -11,6 +11,7 @@ of commands again without coredumps. Hurrah!
 6. Add badword handling for messages. Users will get rude messages back if
 they try to send naughty words in msgs. Incoming messages with badwords will
 be dropped on receipt and their contents logged.
+7. and if you swear 3 or more times you are unceremoniously logged out.
 30Sep01=======================================================================
 1. made some small bug fixes in rspf checking and also messages. 
 23Sep01=======================================================================

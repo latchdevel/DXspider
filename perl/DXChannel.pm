@@ -106,6 +106,8 @@ $count = 0;
 		  disconnecting => '9,Disconnecting,yesno',
 		  ann_talk => '0,Suppress Talk Anns,yesno',
 		  metric => '1,Route metric',
+		  badcount => '1,Bad Word Count',
+		  edit => '7,Edit Function',
 		 );
 
 use vars qw($VERSION $BRANCH);
