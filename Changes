@@ -3,6 +3,7 @@
 wot Charlie said...).
 2. made the changes to the German Messages that Thomas DL3SBB sent me a 
 loooong time ago.
+3. made 'dx by' require at least privilege 1.
 29Dec03=======================================================================
 1. updated dxoldtonew.pl so that it takes an AK1A DX.DAT file (argument on
 command line or a default of /spider/data/DX.DAT and outputs the standard

@@ -34,6 +34,7 @@ return (1, $self->msg('dx2')) unless @f >= 2;
 # can be in any order
 
 if ($f[0] =~ /^by$/i) {
+	return (1, $self->msg('e5')) unless $self->priv;
     $spotter = uc $f[1];
     $line =~ s/^\s*\Q$f[0]\s+\Q$f[1]\s+//;
 	$line = $f[2];
