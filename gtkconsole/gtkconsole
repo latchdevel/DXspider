@@ -1,0 +1,200 @@
+#!/usr/bin/perl -w
+#
+# A GTK based console program
+#
+# Copyright (c) 2001 Dirk Koopman G1TLH
+#
+# $Id$
+#
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
+use strict;
+
+use vars qw(@modules);                    
+
+@modules = ();					# is the list of modules that need init calling
+								# on them. It is set up by each  'use'ed module
+								# that has Gtk stuff in it
+
+use DXVars;
+use IO::Socket::INET;
+use Gtk qw(-init);
+use Text;
+use DebugHandler;
+
+#
+# main initialisation
+#
+my $call = uc shift @ARGV if @ARGV;
+$call = uc $main::myalias unless $call;
+my ($scall, $ssid) = split /-/, $call;
+$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
+if ($ssid) {
+	$ssid = 15 if $ssid > 15;
+	$call = "$scall-$ssid";
+}
+
+die "You cannot connect as your cluster callsign ($main::mycall)\n" if $call eq $main::mycall;
+
+
+my $sock = IO::Socket::INET->new(PeerAddr=>$main::clusteraddr, PeerPort=>$main::clusterport);
+die "Cannot connect to $main::clusteraddr/$main::clusterport ($!)\n" unless $sock;
+sendmsg('A', 'local');
+
+#
+# start of GTK stuff
+#
+
+
+# main window
+my $main = new Gtk::Window('toplevel');
+$main->set_default_size(600, 600);
+$main->set_policy(0, 1, 0);
+$main->signal_connect('destroy', sub { Gtk->exit(0); });
+$main->signal_connect('delete_event', sub { Gtk->exit(0); });
+$main->set_title("gtkconsole - The DXSpider Console - $call");
+
+# the main vbox
+my $vbox = new Gtk::VBox(0, 1);
+$vbox->border_width(1);
+$main->add($vbox);
+$vbox->show;
+
+# the menu bar
+my @menu = ( 
+			{path => '/_File', type => '<Branch>'},
+			{path => '/_File/Quit', callback => sub {Gtk->exit(0)}},
+			{path => '/_Help', type => '<LastBranch>'},
+			{path => '/_Help/About'},
+		   );
+my $accel = new Gtk::AccelGroup();
+my $itemf = new Gtk::ItemFactory('Gtk::MenuBar', '<main>', $accel);
+$itemf->create_items(@menu);
+$main->add_accel_group($accel);
+my $menu = $itemf->get_widget('<main>');
+$vbox->pack_start($menu, 0, 1, 0);
+$menu->show;
+
+# create a vertically paned window and stick it in the bottom of the screen
+my $paned = new Gtk::VPaned;
+$vbox->pack_end($paned, 1, 1, 0);
+
+my $top = new Text(1);
+my $toplist = $top->text;
+$toplist->set_editable(0);
+$paned->pack1($top, 1, 1);
+
+# add the handler for incoming messages from the node
+my $tophandler = Gtk::Gdk->input_add($sock->fileno, ['read'], \&tophandler, $sock);
+my $rbuf = "";						# used in handler
+
+# the bottom handler
+my $bot = new Text(1);
+my $botlist = $bot->text;
+$botlist->set_editable(1);
+$botlist->signal_connect('activate', \&bothandler);
+$botlist->can_focus(1);
+$botlist->can_default(1);
+$botlist->grab_focus;
+$botlist->grab_default;
+$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert); 
+$paned->pack2($bot, 0, 1);
+$paned->show;
+
+# the main loop
+$main->show_all;
+Gtk->main;
+
+#
+# handlers
+#
+
+sub doinsert {
+	my ($self, $text) = @_;
+
+	# we temporarily block this handler to avoid recursion
+	$self->signal_handler_block($self->{signalid});
+	my $pos = $self->insert($self->{font}, undef, undef, $text);
+	$self->signal_handler_unblock($self->{signalid});
+
+	# we already inserted the text if it was valid: no need
+	# for the self to process this signal emission
+	$self->signal_emit_stop_by_name('insert-text');
+	$self->signal_emit('activate') if $text eq "\n";
+	1;
+}
+
+sub bothandler
+{
+	my ($self, $data) = @_;
+	my ($msg) = $self->get_chars =~ /([^\n]*)\r?\n$/;
+	$msg ||= '';
+	senddata($msg);
+}
+
+sub tophandler
+{
+	my ($socket, $fd, $flags) = @_;
+	if ($flags->{read}) {
+		my $offset = length $rbuf;
+		my $l = sysread($socket, $rbuf, 1024, $offset);
+		if (defined $l) {
+			my $freeze;
+			if ($l) {
+				while ($rbuf =~ s/^([^\015\012]*)\015?\012//) {
+					my $msg = $1;
+					$msg =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
+					$msg =~ s/[\x00-\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
+					$toplist->freeze unless $freeze++;
+					handlemsg($msg);
+				}
+				if ($freeze) {
+					$toplist->thaw;
+					$toplist->vadj->set_value($toplist->vadj->upper);
+					$toplist->vadj->value_changed;
+				}
+			} else {
+				Gtk->exit(0);
+			}
+		} else {
+			Gtk->exit(0);
+		}
+	}
+}
+
+sub handlemsg
+{
+	my $msg = shift;
+	my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+	if ($sort eq 'D') {
+		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
+	} elsif ($sort eq 'Z') {
+		Gtk->exit(0);
+	}
+}
+
+#
+# subroutine
+#
+
+sub senddata
+{
+	my $msg = shift;
+	sendmsg('I', $msg);
+}
+
+sub sendmsg
+{
+	my ($let, $msg) = @_;
+	$msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+	$sock->print("$let$call|$msg\n");
+}

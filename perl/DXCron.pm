@@ -16,9 +16,8 @@ use IO::File;
 
 use strict;
 
-use vars qw{@crontab $mtime $lasttime $lastmin};
+use vars qw{@crontab @lcrontab @scrontab $mtime $lasttime $lastmin};
 
-@crontab = ();
 $mtime = 0;
 $lasttime = 0;
 $lastmin = 0;
@@ -33,13 +32,11 @@ sub init
 	if ((-e $localfn && -M $localfn < $mtime) || (-e $fn && -M $fn < $mtime) || $mtime == 0) {
 		my $t;
 		
-		@crontab = ();
-		
 		# first read in the standard one
 		if (-e $fn) {
 			$t = -M $fn;
 			
-			cread($fn);
+			@scrontab = cread($fn);
 			$mtime = $t if  !$mtime || $t <= $mtime;
 		}
 
@@ -47,9 +44,10 @@ sub init
 		if (-e $localfn) {
 			$t = -M $localfn;
 			
-			cread($localfn);
+			@lcrontab = cread($localfn);
 			$mtime = $t if $t <= $mtime;
 		}
+		@crontab = (@scrontab, @lcrontab);
 	}
 }
 
@@ -59,6 +57,7 @@ sub cread
 	my $fn = shift;
 	my $fh = new IO::File;
 	my $line = 0;
+	my @out;
 
 	dbg("cron: reading $fn\n") if isdbg('cron');
 	open($fh, $fn) or confess("cron: can't open $fn $!");
@@ -67,7 +66,7 @@ sub cread
 		chomp;
 		next if /^\s*#/o or /^\s*$/o;
 		my ($min, $hour, $mday, $month, $wday, $cmd) = /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/o;
-		next if !$min;
+		next unless defined $min;
 		my $ref = bless {};
 		my $err;
 		
@@ -78,13 +77,14 @@ sub cread
 		$err |= parse($ref, 'wday', $wday, 0, 6, "sun", "mon", "tue", "wed", "thu", "fri", "sat");
 		if (!$err) {
 			$ref->{cmd} = $cmd;
-			push @crontab, $ref;
+			push @out, $ref;
 			dbg("cron: adding $_\n") if isdbg('cron');
 		} else {
 			dbg("cron: error on line $line '$_'\n") if isdbg('cron');
 		}
 	}
 	close($fh);
+	return @out;
 }
 
 sub parse

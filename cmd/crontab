@@ -6,3 +6,5 @@
 # for doing connections and things
 #
 1 0 * * 0 DXUser::export("$main::data/user_asc")
+0 3 * * * Spot::daily()
+

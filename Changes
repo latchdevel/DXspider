@@ -1,6 +1,11 @@
+21Jul01=======================================================================
+1. started a gtkconsole program. It appears to sort of work. Requires Gtk-
+Perl-0.7007.
 19Jul01=======================================================================
 1. changes to Admin Manual to reflect route filtering.  Some alterations to
 the help files (g0vgs)
+09Jul01=======================================================================
+1. fix cron so that it allows stuff to be executed on the hour (ie min=0)
 06Jul01=======================================================================
 1. fix talk and routing problems to mycall
 2. add unset/privilege command to relinquish any sysop privileges you might 
