@@ -725,7 +725,7 @@ sub normal
 			if ($pcno == 49 || $field[1] eq $main::mycall) {
 				DXMsg::process($self, $line);
 			} else {
-				$self->route($field[1], $line);
+				$self->route($field[1], $line) unless $self->is_clx;
 			}
 			return;
 		}
