@@ -97,6 +97,11 @@ sub finish
 	}
 }
 
+sub active
+{
+	return $sock;
+}
+
 sub _sendf
 {
 	my $sort = shift || confess "need a valid AGW command letter";
@@ -158,7 +163,7 @@ sub _send
                 }
             }
 			if (isdbg('raw')) {
-				dbgdump('raw', "send $bytes_written: ", $msg);
+				dbgdump('raw', "AGW send $bytes_written: ", $msg);
 			}
             $offset         += $bytes_written;
             $bytes_to_write -= $bytes_written;
@@ -187,7 +192,7 @@ sub _rcv {                     # Complement to _send
 		if ($bytes_read > 0) {
 			$inmsg .= $msg;
 			if (isdbg('raw')) {
-				dbgdump('raw', "read $bytes_read: ", $msg);
+				dbgdump('raw', "AGW read $bytes_read: ", $msg);
 			}
 		} 
 	} else {

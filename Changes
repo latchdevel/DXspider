@@ -1,3 +1,5 @@
+31Mar01=======================================================================
+1. added agwrestart command
 30Mar01=======================================================================
 1. fix errors on accept in ExtMsg and in Msg
 2. fix the non-blocking problems of connects (and other things in general).
