@@ -18,6 +18,7 @@ use DXVars;
 use DXDebug;
 use DXM;
 use DXLog;
+use DXLogPrint;
 use CmdAlias;
 use FileHandle;
 use Carp;
@@ -51,13 +52,10 @@ sub start
   my $user = $self->{user};
   my $call = $self->{call};
   my $name = $user->{name};
-  my $info = DXCluster::cluster();
   
   $self->{name} = $name ? $name : $call;
   $self->send($self->msg('l2',$self->{name}));
   $self->send_file($main::motd) if (-e $main::motd);
-  $self->send("Cluster:$info");
-  $self->send($self->msg('pr', $call));
   $self->state('prompt');                  # a bit of room for further expansion, passwords etc
   $self->{priv} = $user->priv;
   $self->{lang} = $user->lang;
@@ -79,6 +77,11 @@ sub start
   my @pc16 = DXProt::pc16($nchan, $cuser);
   DXProt::broadcast_ak1a(@pc16);
   Log('DXCommand', "$call connected");
+
+  # send prompts and things
+  my $info = DXCluster::cluster();
+  $self->send("Cluster:$info");
+  $self->send($self->msg('pr', $call));
 }
 
 #

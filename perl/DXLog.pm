@@ -176,7 +176,7 @@ sub Log
 	$log->writeunix($t, join('^', $t, @_) );
 }
 
-sub DESTROY						# catch undefs and do what is required further do the tree
+sub DESTROY						# catch undefs and do what is required further down the tree
 {
 	my $self = shift;
 	DXDebug::dbg("dxlog", "closing $self->{fn}\n");

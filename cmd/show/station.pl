@@ -20,19 +20,19 @@ if (@f == 0) {
 	my $sort = $ref->sort;
 	my $qth = $ref->qth;
 	my $home = $ref->node;
-    push @out, "$call $sort $home $qth";
+    push @out, "$call $sort $qth $node";
   }
 } else {
   foreach $call (@f) {
-    my $ref = DXUser::get_current($call);
+    my $ref = DXUser->get_current($call);
 	if ($ref) {
-	  my $name;
-      my $qth;
-	  my $lat;
-	  my $long;
-	  my $node;
-	  my $homenode;
-	  push @out, "$call $qth";
+	  my $name = $ref->name;  
+      my $qth = $ref->qth;
+	  my $lat = $ref->lat;
+	  my $long = $ref->long;
+	  my $node = $ref->node;
+#	  my $homenode = $ref->homenode;
+	  push @out, "$call $qth $lat $long $node";
 	} else {
 	  push @out, "$call not known";
 	}

@@ -97,8 +97,9 @@ sub cluster
 {
 	my $users = DXCommandmode::get_all();
 	my $uptime = main::uptime();
-	
-	return " $DXNode::nodes nodes, $users local / $DXNode::users total users  Max users $DXNode::maxusers  Uptime $uptime";
+	my $tot = $DXNode::users + 1;
+		
+	return " $DXNode::nodes nodes, $users local / $tot total users  Max users $DXNode::maxusers  Uptime $uptime";
 }
 
 sub DESTROY

@@ -27,6 +27,7 @@ use Msg;
 use DXVars;
 use DXDebug;
 use DXLog;
+use DXLogPrint;
 use DXUtil;
 use DXChannel;
 use DXUser;
@@ -149,7 +150,7 @@ sub process_inqueue
 	
 	my $data = $self->{data};
 	my $dxchan = $self->{dxchan};
-	my ($sort, $call, $line) = $data =~ /^(\w)(\w+)\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
 	
 	# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 	dbg('chan', "<- $sort $call $line\n");

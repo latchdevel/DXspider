@@ -58,7 +58,8 @@ sub create_it
   $self->{lastin} = 0;
   $self->{dxok} = 1;
   $self->{annok} = 1;
-
+  $self->{lang} = 'en';
+  
   # write it away
   $self->close();
 
