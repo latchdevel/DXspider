@@ -316,7 +316,7 @@ STDOUT->autoflush(1);
 Log('cluster', "DXSpider V$version started");
 
 # banner
-dbg('err', "DXSpider DX Cluster Version $version", "Copyright (c) 1998-2000 Dirk Koopman G1TLH");
+dbg('err', "DXSpider DX Cluster Version $version", "Copyright (c) 1998-2001 Dirk Koopman G1TLH");
 
 # load Prefixes
 dbg('err', "loading prefixes ...");
