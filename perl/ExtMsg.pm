@@ -270,6 +270,10 @@ sub _doclient
 	my @f = split /\s+/, $line;
 	$conn->{call} = uc $f[0] if $f[0];
 	$conn->{csort} = $f[1] if $f[1];
+	$conn->{state} = 'C';
+	&{$conn->{rproc}}($conn, "O$conn->{call}|telnet");
+	delete $conn->{cmd};
+	$conn->{timeout}->del_timer if $conn->{timeout};
 }
 
 sub _send_file

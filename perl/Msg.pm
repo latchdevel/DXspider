@@ -47,6 +47,7 @@ sub new
     my $conn = {
         rproc => $rproc,
 		inqueue => [],
+		outqueue => [],
 		state => 0,
 		lineend => "\r\n",
 		csort => 'telnet',
