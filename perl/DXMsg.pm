@@ -636,12 +636,8 @@ sub queue_msg
 		my $dxchan;
 		if ($ref->{private}) {
 			next if $ref->{'read'};           # if it is read, it is stuck here
+			next if $ref->{tonode};	          # ignore it if it already being processed
 			$clref = Route::get($ref->{to});
-#			unless ($clref) {             # otherwise look for a homenode
-#				my $uref = DXUser->get_current($ref->{to});
-#				my $hnode =  $uref->homenode if $uref;
-#				$clref = Route::Node::get($hnode) if $hnode;
-#			}
 			if ($clref) {
 				$dxchan = $clref->dxchan;
 				if ($dxchan) {
@@ -666,6 +662,7 @@ sub queue_msg
 				next if $call eq $main::mycall;
 				next if ref $ref->{gotit} && grep $_ eq $call, @{$ref->{gotit}};
 				next unless $ref->forward_it($call);           # check the forwarding file
+				next if $ref->{tonode};	          # ignore it if it already being processed
 				
 				# if we are here we have a node that doesn't have this message
 				if (!get_busy($call)  && $dxchan->state eq 'normal') {
@@ -700,6 +697,7 @@ sub start_msg
 {
 	my ($self, $dxchan) = @_;
 	
+	confess("trying to start started msg $self->{msgno} nodes: $self->{fromnode} -> $self->{tonode}") if $self->{tonode};
 	dbg("start msg $self->{msgno}\n") if isdbg('msg');
 	$self->{linesreq} = 10;
 	$self->{count} = 0;
@@ -724,13 +722,37 @@ sub get_busy
 # get the busy queue
 sub get_all_busy
 {
-	return values %busy;
+	return keys %busy;
 }
 
-# get the forwarding queue
+# get a forwarding queue entry
 sub get_fwq
 {
-	return values %work;
+	my $call = shift;
+	my $stream = shift || '0';
+	return $work{"$call,$stream"};
+}
+
+# delete a forwarding queue entry
+sub del_fwq
+{
+	my $call = shift;
+	my $stream = shift || '0';
+	return delete $work{"$call,$stream"};
+}
+
+# set a fwq entry
+sub set_fwq
+{
+	my $call = shift;
+	my $stream = shift || '0';
+	return $work{"$call,$stream"} = shift;
+}
+
+# get the whole forwarding queue
+sub get_all_fwq
+{
+	return keys %work;
 }
 
 # stop a message from continuing, clean it out, unlock interlocks etc

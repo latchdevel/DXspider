@@ -13,7 +13,7 @@ return (1, $self->msg('e5')) if $self->priv < 1;
 if (@list == 0) {
 	my $ref;
 	push @out, "Work Queue Keys";
-	push @out, map { " $_" } sort keys %DXMsg::work;
+	push @out, map { " $_" } sort DXMsg::get_all_fwq();
 	push @out, "Busy Queue Data";
 	foreach $ref (sort {$a->to cmp $b->to} DXMsg::get_all_busy) {
 		my $msgno = $ref->msgno;
@@ -24,10 +24,11 @@ if (@list == 0) {
 		my $count = $ref->count;
 		my $to = $ref->to;
 		my $from = $ref->from;
+		my $tonode = $ref->tonode;
 		my $lastt = $ref->lastt ? " Last Processed: " . cldatetime($ref->lastt) : "";
 		my $waitt = $ref->waitt ? " Waiting since: " . cldatetime($ref->waitt) : "";
 		
-		push @out, "$from -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
+		push @out, " $tonode: $from -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
 	}
 } else {
 	foreach my $msgno (@list) {
