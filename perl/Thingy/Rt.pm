@@ -37,7 +37,7 @@ sub gen_Aranea
 		if ($ref = $thing->{anodes}) {
 			$thing->{a} = join(':', map {"$_->{flags}$_->{call}"} @$ref) || '';
 		}
-		if ($ref = $thing->{anodes}) {
+		if ($ref = $thing->{pnodes}) {
 			$thing->{n} = join(':', map {"$_->{flags}$_->{call}"} @$ref) || '';
 		}
 		if ($ref = $thing->{ausers}) {
