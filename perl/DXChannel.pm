@@ -10,6 +10,8 @@ package DXChannel;
 require Exporter;
 @ISA = qw(Exporter);
 
+use Msg;
+
 %connects = undef;
 
 # create a new connection object [$obj = Connect->new($call, $msg_conn_obj, $user_obj)]
@@ -59,6 +61,52 @@ sub del
 {
   my $self = shift;
   delete $connects{$self->{call}};
+}
+
+
+# handle out going messages
+sub send_now
+{
+  my $self = shift;
+  my $sort = shift;
+  my $call = $self->{call};
+  my $conn = $self->{conn};
+  my $line;
+
+  foreach $line (@_) {
+    print DEBUG "$t > $sort $call $line\n" if defined DEBUG;
+	print "> $sort $call $line\n";
+    $conn->send_now("$sort$call|$line");
+  }
+}
+
+sub send_later
+{
+  my $self = shift;
+  my $sort = shift;
+  my $call = $self->{call};
+  my $conn = $self->{conn};
+  my $line;
+
+  foreach $line (@_) {
+    print DEBUG "$t > $sort $call $line\n" if defined DEBUG;
+    print "> $sort $call $line\n";
+    $conn->send_later("$sort$call|$line");
+  }
+}
+
+# send a file (always later)
+sub send_file
+{
+  my ($self, $fn) = @_;
+  my $call = $self->{call};
+  my $conn = $self->{conn};
+  my @buf;
+  
+  open(F, $fn) or die "can't open $fn for sending file ($!)";
+  @buf = <F>;
+  close(F);
+  $self->send_later('D', @buf);
 }
 
 1;

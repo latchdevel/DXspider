@@ -12,11 +12,11 @@ package main;
 require Exporter;
 @ISA = qw(Exporter);
 
-@EXPORT_OK = qw($mycall $myname $mynormalcall $mylatitude $mylongtitude $mylocator
+@EXPORT_OK = qw($mycall $myname $myalias $mylatitude $mylongtitude $mylocator
                 $myqth $myemail $myprot 
                 $clusterport $clusteraddr $debugfn 
                 $def_hopcount $root $data $system $cmd
-				$userfn
+				$userfn $motd
                );
 			   
 			   
@@ -27,7 +27,7 @@ $mycall = "GB7TLH";
 $myname = "Dirk";
 
 # Your 'normal' callsign 
-$mynormalcall = "G1TLH";
+$myalias = "G1TLH";
 
 # Your latitude (+)ve = North (-)ve = South in degrees and decimal degrees
 $mylatitude = +52.68584579;
@@ -42,7 +42,7 @@ $mylocator = "JO02LQ";
 $myqth = "East Dereham, Norfolk";
 
 # Your e-mail address
-$myemail = "djk@tobit.co.uk";
+$myemail = "djk\@tobit.co.uk";
 
 # the tcp address of the cluster and so does this !!!
 $clusteraddr = "dirk1.tobit.co.uk";
@@ -73,3 +73,6 @@ $cmd = "$root/cmd";
 
 # where the user data lives
 $userfn = "$data/users";
+
+# the "message of the day" file
+$motd = "$data/motd";

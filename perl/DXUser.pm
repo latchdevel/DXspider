@@ -11,12 +11,29 @@ package DXUser;
 require Exporter;
 @ISA = qw(Exporter);
 
-use MLDBM;
+use MLDBM qw(DB_File);
 use Fcntl;
 
 %u = undef;
 $dbm = undef;
 $filename = undef;
+
+# hash of valid elements and a simple prompt
+%valid = (
+  call => 'Callsign',
+  alias => 'Real Callsign',
+  name => 'Name',
+  qth => 'Home QTH',
+  lat => 'Latitude',
+  long => 'Longtitude',
+  qra => 'Locator',
+  email => 'E-mail Address',
+  priv => 'Privilege Level',
+  sort => 'Type of User',
+  lastin => 'Last Time in',
+  passwd => 'Password',
+  addr => 'Full Address'
+);
 
 #
 # initialise the system
@@ -46,12 +63,12 @@ sub finish
 
 sub new
 {
-  my ($call) = @_;
+  my ($pkg, $call) = @_;
   die "can't create existing call $call in User\n!" if $u{$call};
 
   my $self = {};
   $self->{call} = $call;
-  bless $self;
+  bless $self, $pkg;
   $u{call} = $self;
 }
 
@@ -61,7 +78,7 @@ sub new
 
 sub get
 {
-  my ($call) = @_;
+  my $call = shift;
   return $u{$call};
 }
 
@@ -98,5 +115,57 @@ sub close
   $self->put();
 }
 
+#
+# return a list of valid elements 
+# 
+
+sub elements
+{
+  return keys(%valid);
+}
+
+#
+# return a prompt together with the existing value
+#
+
+sub prompt
+{ 
+  my ($self, $ele) = @_;
+  return "$valid{$ele} [$self->{$ele}]";
+}
+
+#
+# enter an element from input, returns 1 for success
+#
+
+sub enter
+{
+  my ($self, $ele, $value) = @_;
+  return 0 if (!defined $valid{$ele});
+  chomp $value;
+  return 0 if $value eq "";
+  if ($ele eq 'long') {
+    my ($longd, $longm, $longl) = $value =~ /(\d+) (\d+) ([EWew])/;
+	return 0 if (!$longl || $longd < 0 || $longd > 180 || $longm < 0 || $longm > 59);
+	$longd += ($longm/60);
+	$longd = 0-$longd if (uc $longl) eq 'W'; 
+	$self->{'long'} = $longd;
+	return 1;
+  } elsif ($ele eq 'lat') {
+    my ($latd, $latm, $latl) = $value =~ /(\d+) (\d+) ([NSns])/;
+	return 0 if (!$latl || $latd < 0 || $latd > 90 || $latm < 0 || $latm > 59);
+	$latd += ($latm/60);
+	$latd = 0-$latd if (uc $latl) eq 'S';
+	$self->{'lat'} = $latd;
+	return 1;
+  } elsif ($ele eq 'qra') {
+    $self->{'qra'} = UC $value;
+	return 1;
+  } else {
+    $self->{$ele} = $value;               # default action
+	return 1;
+  }
+  return 0;
+}
 1;
 __END__

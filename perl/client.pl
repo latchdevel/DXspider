@@ -12,6 +12,11 @@
 # $Id$
 # 
 
+BEGIN {
+  unshift @INC, "/spider/local";
+  unshift @INC, "/spider/perl";
+}
+
 use Msg;
 use DXVars;
 
@@ -20,6 +25,7 @@ $call = "";                     # the callsign being used
 @stdoutq = ();                  # the queue of stuff to send out to the user
 $conn = 0;                      # the connection object for the cluster
 $lastbit = "";                  # the last bit of an incomplete input line
+$nl = "\r";
 
 # cease communications
 sub cease
@@ -48,7 +54,6 @@ sub rec_socket
     my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)|(.*)$/;
 	
 	if ($sort eq 'D') {
-	   my $nl = ($mode == 1) ? "\r" : "\n";
 	   $nl = "" if $mode == 0;
 	   $line =~ s/\n/\r/o if $mode == 1;
 	   print $line, $nl;
@@ -99,11 +104,16 @@ $call = uc $ARGV[0];
 die "client.pl <call> [<mode>]\r\n" if (!$call);
 $mode = $ARGV[1] if (@ARGV > 1);
 
+if ($mode != 1) {
+  $nl = "\n";
+  $\ = $nl;
+}
+
 select STDOUT; $| = 1;
 
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
-$SIG{'HUP'} = \&sig_term;
+#$SIG{'HUP'} = \&sig_term;
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
 $conn->send_now("A$call|start");

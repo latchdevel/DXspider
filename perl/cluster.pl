@@ -17,54 +17,46 @@ use DXVars;
 use DXUtil;
 use DXChannel;
 use DXUser;
+use DXM;
 
 package main;
 
-@inqueue = undef;                # the main input queue, an array of hashes 
-
-# handle out going messages
-sub send_now
-{
-  my ($conn, $sort, $call, $line) = @_;
-
-  print DEBUG "$t > $sort $call $line\n" if defined DEBUG;
-  print "> $sort $call $line\n";
-  $conn->send_now("$sort$call|$line");
-}
-
-sub send_later
-{
-  my ($conn, $sort, $call, $line) = @_;
-
-  print DEBUG "$t > $sort $call $line\n" if defined DEBUG;
-  print "> $sort $call $line\n";
-  $conn->send_later("$sort$call|$line");
-}
+@inqueue = ();                # the main input queue, an array of hashes 
 
 # handle disconnections
 sub disconnect
 {
-  my $dxconn = shift;
-  my ($user) = $dxconn->{user};
-  my ($conn) = $dxconn->{conn};
+  my $dxchan = shift;
+  return if !defined $dxchan;
+  my ($user) = $dxchan->{user};
+  my ($conn) = $dxchan->{conn};
   $user->close() if defined $user;
-  $conn->disconnect();
-  $dxconn->del();
+  $conn->disconnect() if defined $conn;
+  $dxchan->del();
 }
 
 # handle incoming messages
 sub rec
 {
   my ($conn, $msg, $err) = @_;
-  my $dxconn = DXChannel->get_by_cnum($conn);      # get the dxconnnect object for this message
+  my $dxchan = DXChannel->get_by_cnum($conn);      # get the dxconnnect object for this message
   
   if (defined $err && $err) {
-    disconnect($dxconn);
+    disconnect($dxchan) if defined $dxchan;
 	return;
-  } 
+  }
+  
+  # set up the basic channel info
+  if (!defined $dxchan) {
+     my $user = DXUser->get($call);
+	 $user = DXUser->new($call) if !defined $user;
+     $dxchan = DXChannel->new($call, $conn, $user);  
+  }
+  
+  # queue the message and the channel object for later processing
   if (defined $msg) {
     my $self = bless {}, "inqueue";
-    $self->{dxconn} = $dxconn;
+    $self->{dxchan} = $dxchan;
     $self->{data} = $msg;
 	push @inqueue, $self;
   }
@@ -78,9 +70,9 @@ sub login
 # cease running this program, close down all the connections nicely
 sub cease
 {
-  my $dxconn;
-  foreach $dxconn (DXChannel->get_all()) {
-    disconnect($dxconn);
+  my $dxchan;
+  foreach $dxchan (DXChannel->get_all()) {
+    disconnect($dxchan);
   }
 }
 
@@ -92,7 +84,7 @@ sub process_inqueue
   return if !$self;
   
   my $data = $self->{data};
-  my $dxconn = $self->{dxconn};
+  my $dxchan = $self->{dxchan};
   my ($sort, $call, $line) = $data =~ /^(\w)(\S+)|(.*)$/;
   
   # do the really sexy console interface bit! (Who is going to do the TK interface then?)
@@ -101,12 +93,17 @@ sub process_inqueue
   
   # handle A records
   if ($sort eq 'A') {
-    if ($dxconn) {                         # there should not be one of these, disconnect
-
+    my $user = $dxchan->{user};
+	$user->{sort} = 'U' if !defined $user->{sort};
+    if ($user->{sort} eq 'U') {
+	  $dxchan->send_later('D', m('l2', $call, $mycall, $myqth));
+	  $dxchan->send_file($motd) if (-e $motd);
 	}
-    my $user = DXUser->get($call);         # see if we have one of these
+  } elsif (sort eq 'D') {
+    ;
+  } elsif ($sort eq 'Z') {
+    disconnect($dxchan);
   }
-  
 }
 
 #############################################################
