@@ -43,3 +43,5 @@ $qrz_pw = undef;
 #
 # end
 #
+
+1;
