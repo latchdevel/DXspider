@@ -222,7 +222,7 @@ sub it
 		my $args = join '\',\'', @_;
 		my $true = $r ? "OK" : "REJ";
 		my $sort = $self->{sort};
-		my $dir = $self->{name} ~= /^in_/i ? "IN " : "OUT";
+		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
 		
 		$hops ||= "none";
 		dbg("$dir: $type/$sort with $asc on '$args': $true hops: $hops") if isdbg('filter');
