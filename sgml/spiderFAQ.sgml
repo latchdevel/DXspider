@@ -139,4 +139,12 @@ few steps to correct the problem.
 
 That should solve the problem.
 
+<sect1>Since I last updated I seem to be getting duplicate spots appearing.
+
+<P>
+What has probably happened is that the dupefile has got corrupted in
+some way.  Simply delete the /spider/data/dupefile and restart the
+cluster.  It may take a little time to become fully functional but
+should solve your problem.
+
 </article>

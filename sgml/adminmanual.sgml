@@ -6,7 +6,7 @@
 
 <title>The DXSpider Administration Manual v1.48</title> 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)</author>
-<date>Version 1.48 August 2001 revision 1.1</date>
+<date>Version 1.48 September 2001 revision 1.2</date>
 
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
@@ -37,23 +37,23 @@ of protection for these nodes.
 
 <P>
 In fact DXSpider has had a simple system for some time which is called
-<it>isolation</it>. This is similar to what, in other systems such as 
+<it>isolation</it>. This is similar to what in other systems such as 
 <bf>clx</bf>, is called <it>passive mode</it>. A more detailed explanation
 of <it>isolation</it> is given further below. This system is still available
 and, for simple networks, is probably all that you need.
 
 <P>
-The new functionality introduced in version 1.48 is filtering the node
+The new functionality introduced in version 1.48 allows filtering the node
 and user protocol frames on a "per interface" basis. We call this
 <it>route filtering</it>. This is used <bf>instead of</bf>
 <it>isolation</it>. 
 
 <p>
 What this really means is that you can control more or less completely
-which PC protocol frames, to do with user and node management, pass to
-each of your partner nodes. You can also limit what comes into your
-node from your partners. You can even control the settings that your
-partner node has for the routing information that it sends to you
+which user and node management PC protocol frames pass to each of your 
+partner nodes. You can also limit what comes into your node from your 
+partners. It is even possible to control the settings that your partner 
+node has for the routing information that it sends to you 
 (using the <it>rcmd</it> command).
 
 <sect1>Route Filters
@@ -66,19 +66,27 @@ However using a default filter is an appropriate thing to do. How, is
 explained further on.
 
 <p>
-The first thing that you must do is determine whether you need to do route filtering <bf>at all</bf>. If you are a "normal" node with two or three partners
-and you arranged in an "official" non-looping tree type network, then <bf>you do 
-not need to do route filtering</bf> and you will feel a lot better for not 
-getting involved. If you are successfully using <it>isolation</it> then you
-also probably don't need to use route filtering.
+The first thing that you must do is determine whether you need to use 
+route filtering <bf>at all</bf>. If you are a "normal" node with two or 
+three partners and you arranged in an "official" non-looping tree type 
+network, then <bf>you do not need to do route filtering</bf> and you will 
+feel a lot better for not getting involved. If you are successfully using 
+<it>isolation</it> then you also probably don't need to use route filtering.
 
 <p>
-You will only require this functionality if you are
-"well-connected". What that means is that you are connected to several
-different parts of (say) the EU cluster and, at the same time, also
-connected to two or three places in the US which, in turn are
-connected back to the EU. This is called a "loop" and if you are
-seriously looped then you need filtering.
+To put it simply, you should not mix Isolation and Route Filtering.  It 
+will work, of sorts, but you will not get the expected results.  If you 
+are using Isolation sucessfully at the moment, do not get involved in 
+Route Filtering unless you have a good supply of aspirin!  Once you have 
+started down the road of Route Filtering, do not use Isolation either.
+Use one or the other, not both.
+
+<p>
+You will only require this functionality if you are "well-connected". What 
+that means is that you are connected to several different parts of (say) 
+the EU cluster and, at the same time, also connected to two or three places 
+in the US which, in turn are connected back to the EU. This is called a 
+"loop" and if you are seriously looped then you need filtering.
 
 <P>
 I should at this stage give a little bit of background on filters.  All
@@ -125,7 +133,8 @@ channel_zone &lt;numbers&gt;
 </verb></tscreen>
 
 Please be careful if you alter this setting, it will affect 
-<bf><it>ALL</it></bf> your links!
+<bf><it>ALL</it></bf> your links!  Remember, this is a <it>default</it>
+filter for node connections, not a <it>per link</it> default.
 
 <p>
 For the default routing filter then you have two real choices: either
@@ -164,9 +173,9 @@ by implication, any other node information (not from the UK and Eire)
 is accepted.
 
 <p>
-As I imagine it will take a little while to get one's head around all of this you
-can study the effect of any rules that you try by watching the debug output
-after having done:-
+As I imagine it will take a little while to get one's head around all of 
+this you can study the effect of any rules that you try by watching the 
+debug output after having done:-
 
 <tscreen><verb>
 set/debug filter
@@ -196,8 +205,8 @@ accept/route &lt;node_call&gt; &lt;filter_option&gt;
 Here are some examples of route filters ...
 
 <tscreen><verb>
-rej/route gb7djk call_dxcc 61,38 (everything except  UK+EIRE nodes)
-rej/route all     (equiv to [very] restricted mode)
+rej/route gb7djk call_dxcc 61,38 (send everything except UK+EIRE nodes)
+rej/route all                    (equiv to [very] restricted mode)
 acc/route gb7djk call_dxcc 61,38 (send only UK+EIRE nodes)
 acc/route gb7djk call gb7djk     (equiv to SET/ISOLATE)
 </verb></tscreen>
@@ -210,7 +219,8 @@ acc/route gb7baa all
 acc/route gb7baa input all
 </verb></tscreen>
 
-or restricting it quite a lot, in fact making it very nearly like an <it>isolated</it> node, like this:-
+or restricting it quite a lot, in fact making it very nearly like an 
+<it>isolated</it> node, like this:-
 
 <tscreen><verb>
 acc/route pi4ehv-8 call gb7djk
@@ -222,9 +232,9 @@ but only sends him my local configuration (just a PC19 for GB7DJK and
 PC16s for my local users).
 
 <p>
-It is possible to do <bf>much</bf> more complex rules, there are up to 10
-accept/reject pairs per callsign per filter. For more information see the 
-next section. 
+It is possible to write <bf>much</bf> more complex rules, there are up 
+to 10 accept/reject pairs per callsign per filter. For more information 
+see the next section. 
 
 
 <sect1>General filter rules
@@ -553,8 +563,7 @@ all information from the isolated partner, however you will not pass
 any information back to the isolated node.  There are times when you
 would like to forward only spots across a link (maybe during a contest
 for example).  To do this, isolate the node in the normal way and use
-an <em>acc/spot &gt;call&lt; all</em filter in the
-to override the isolate. 
+an <em>acc/spot &gt;call&lt; all</em> filter to override the isolate. 
 
 <sect>Other filters
 
@@ -630,7 +639,7 @@ There are a number of commands that control whether a spot progresses
 any further by regarding it as "bad" in some way.
 
 <p>
-A DX Spot has a number of fields which can checked to see whether they
+A DX Spot has a number of fields which can be checked to see whether they
 contain "bad" values, they are: the DX callsign itself, the Spotter and
 the Originating Node.
 
@@ -875,7 +884,7 @@ any legal command for a callsign or class of connection which will be executed
 at logon.
 
 <p> 
-The filename are the callsign of the connection that you want the script to 
+The filename is the callsign of the connection that you want the script to 
 operate on, eg: <em>/spider/scripts/g1tlh</em>. The filenames are always in 
 lower case on those architectures where this makes a difference.
 
@@ -1349,14 +1358,9 @@ that it is possible to update your DXSpider installation to the latest
 sources by using a few simple commands.
 
 <P>
-THIS IS NOT FOR THE FAINT HEARTED!!!  ONLY DO THIS IF YOU HAVE A TEST
-INSTALLATION OR ARE WILLING TO HAVE YOUR CLUSTER CRASH ON YOU!!!
-THIS MUST BE CONSIDERED AT LEAST BETA TESTING AND MAYBE EVEN ALPHA!!
-YOU HAVE BEEN WARNED!!!
-
-<P>
-DID I MENTION..... ONLY DO THIS IF YOU ARE WILLING TO ACCEPT THE
-CONSEQUENCES!!!
+Please be aware that if you update your system using CVS, it is possible that
+you could be running code that is very beta and not fully tested.  There is
+a possibility that it could be unstable.
 
 <P>
 I am of course assuming that you have a machine with both DXSpider and
