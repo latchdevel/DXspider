@@ -28,19 +28,19 @@ sub delete_it
 
 sub create_it
 {
-	my $ref = DXUser->get($mycall);
+	my $ref = DXUser->get(uc $mycall);
 	$ref->del() if $ref;
 	
-	my $self = DXUser->new($mycall);
-	$self->{alias} = $myalias;
+	my $self = DXUser->new(uc $mycall);
+	$self->{alias} = uc $myalias;
 	$self->{name} = $myname;
 	$self->{qth} = $myqth;
-	$self->{qra} = $mylocator;
+	$self->{qra} = uc $mylocator;
 	$self->{lat} = $mylatitude;
 	$self->{long} = $mylongitude;
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
-	$self->{homenode} = $mycall;
+	$self->{homenode} = uc $mycall;
 	$self->{sort} = 'S';		# C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
 	$self->{priv} = 9;			# 0 - 9 - with 9 being the highest
 	$self->{lastin} = 0;
@@ -51,18 +51,18 @@ sub create_it
 	$self->close();
 
 	# now do one for the alias
-	$ref = DXUser->get($myalias);
+	$ref = DXUser->get(uc $myalias);
 	$ref->del() if $ref;
 
-	$self = DXUser->new($myalias);
+	$self = DXUser->new(uc $myalias);
 	$self->{name} = $myname;
 	$self->{qth} = $myqth;
-	$self->{qra} = $mylocator;
+	$self->{qra} = uc $mylocator;
 	$self->{lat} = $mylatitude;
 	$self->{long} = $mylongitude;
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
-	$self->{homenode} = $mycall;
+	$self->{homenode} = uc $mycall;
 	$self->{sort} = 'U';		# C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
 	$self->{priv} = 9;			# 0 - 9 - with 9 being the highest
 	$self->{lastin} = 0;

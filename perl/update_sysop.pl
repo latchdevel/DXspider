@@ -29,21 +29,21 @@ sub create_it
 {
 	my $ref;
 	
-	while ($ref = DXUser->get($mycall)) {
+	while ($ref = DXUser->get(uc $mycall)) {
 		print "old call $mycall deleted\n";
 		$ref->del();
 	}
 	
-	my $self = DXUser->new($mycall);
-	$self->{alias} = $myalias;
+	my $self = DXUser->new(uc $mycall);
+	$self->{alias} = uc $myalias;
 	$self->{name} = $myname;
 	$self->{qth} = $myqth;
-	$self->{qra} = $mylocator;
+	$self->{qra} = uc $mylocator;
 	$self->{lat} = $mylatitude;
 	$self->{long} = $mylongitude;
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
-	$self->{homenode} = $mycall;
+	$self->{homenode} = uc $mycall;
 	$self->{sort} = 'S';		# C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
 	$self->{priv} = 9;			# 0 - 9 - with 9 being the highest
 	$self->{lastin} = 0;
@@ -60,15 +60,15 @@ sub create_it
 		$ref->del();
 	}
 
-	$self = DXUser->new($myalias);
+	$self = DXUser->new(uc $myalias);
 	$self->{name} = $myname;
 	$self->{qth} = $myqth;
-	$self->{qra} = $mylocator;
+	$self->{qra} = uc $mylocator;
 	$self->{lat} = $mylatitude;
 	$self->{long} = $mylongitude;
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
-	$self->{homenode} = $mycall;
+	$self->{homenode} = uc $mycall;
 	$self->{sort} = 'U';		# C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
 	$self->{priv} = 9;			# 0 - 9 - with 9 being the highest
 	$self->{lastin} = 0;
