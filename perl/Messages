@@ -223,6 +223,8 @@ package DXM;
 				talkprompt => 'Talk ($_[0])>',
 				talkstart => 'Starting talking to you',
 				usernf => '*** User record for $_[0] not found ***',
+				wcys => 'WCY flag set on $_[0]',
+				wcyu => 'WCY flag unset on $_[0]',
 				wwvs => 'WWV flag set on $_[0]',
 				wwvu => 'WWV flag unset on $_[0]',
 				wxs => 'WX flag set on $_[0]',
