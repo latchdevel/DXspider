@@ -8,7 +8,12 @@
  * $Header$
  * 
  * $Log$
- * Revision 1.2  2000-03-26 14:22:59  djk
+ * Revision 1.3  2000-07-20 14:16:00  minima
+ * can use Sourceforge now!
+ * added user->qra cleaning
+ * added 4 digit qra to user broadcast dxspots if available
+ *
+ * Revision 1.2  2000/03/26 14:22:59  djk
  * removed some irrelevant log info
  *
  * Revision 1.1  2000/03/26 00:03:30  djk

@@ -177,7 +177,12 @@ void cmsg_flush(reft *base, int reply)
 /*
  * 
  * $Log$
- * Revision 1.1  2000-03-26 00:03:30  djk
+ * Revision 1.2  2000-07-20 14:16:00  minima
+ * can use Sourceforge now!
+ * added user->qra cleaning
+ * added 4 digit qra to user broadcast dxspots if available
+ *
+ * Revision 1.1  2000/03/26 00:03:30  djk
  * first cut of client
  *
  * Revision 1.12  1998/05/05 14:01:27  djk

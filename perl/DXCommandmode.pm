@@ -80,7 +80,15 @@ sub start
 	$self->{dx} = $user->wantdx;
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{here} = 1;
-	
+
+	# clean up qra locators
+	my $qra = $user->qra;
+	$qra = undef if ($qra && !DXBearing::is_qra($qra));
+	unless ($qra) {
+		my $lat = $user->lat;
+		my $long = $user->long;
+		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
+	}
 
 	# add yourself to the database
 	my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";

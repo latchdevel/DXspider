@@ -222,8 +222,8 @@ sub normal
 			}
 
 			# are any of the crucial fields invalid?
-            if ($field[2] =~ /[a-z]/ || $field[6] =~ /[a-z]/ || $field[7] =~ /[a-z]/) {
-				dbg('chan', "Spot contains lower case callsigns, rejected");
+            if ($field[2] =~ /(?:^\s*$|[a-z])/ || $field[6] =~ /(?:^\s*$|[a-z])/ || $field[7] =~ /(?:^\s*$|[a-z])/) {
+				dbg('chan', "Spot contains lower case callsigns or blanks, rejected");
 				return;
 			}
 			
@@ -243,6 +243,20 @@ sub normal
 			# you should be able to route on any of these
             #
 			
+			# fix up qra locators of known users 
+			my $user = DXUser->get_current($spot[4]);
+			if ($user) {
+				my $qra = $user->qra;
+				if (!DXBearing::is_qra) {
+					my $lat = $user->lat;
+					my $long = $user->long;
+					if (defined $lat && defined $long) {
+						$user->qra(DXBearing::lltoqra($lat, $long)); 
+						$user->put;
+					}
+				}
+			}
+				
 			# local processing 
 			my $r;
 			eval {
@@ -654,6 +668,8 @@ sub normal
 				my ($lat, $long) = DXBearing::stoll($field[3]);
 				$user->lat($lat);
 				$user->long($long);
+				my $qra = $user->qra || DXBearing::lltoqra($lat, $long);
+				$qra = DXBearing::lltoqra($lat, $long) unless DXBearing::is_qra($qra);
 			} elsif ($field[2] == 4) {
 				$user->homenode($field[3]);
 			}

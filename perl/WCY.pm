@@ -227,7 +227,6 @@ sub dup
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
  
-	$d /= 60;                            # to the nearest minute
 #	chomp $text;
 #	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $dupkey = "$d|$sfi|$k|$a|$r";

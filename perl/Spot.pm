@@ -170,7 +170,11 @@ sub formatb
 {
 	my @dx = @_;
 	my $t = ztime($dx[2]);
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s", "$dx[4]:", $dx[0], $dx[1], $dx[3], $t ;
+	my $ref = DXUser->get_current($dx[4]);
+	my $loc = $ref->qra if $ref && $ref->qra;
+	$loc = substr($ref->qra, 0, 4) if $loc;
+	$loc = "" unless $loc;
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-30s %s $loc", "$dx[4]:", $dx[0], $dx[1], $dx[3], $t ;
 }
 
 # format a spot for user output in list mode
@@ -209,9 +213,9 @@ sub dup
 	return 2 if $d < $main::systime - $dupage;
  
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
-	$d /= 60;                            # to the nearest minute
 	chomp $text;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
+	unpad($text);
 	my $dupkey = "$freq|$call|$d|$text";
 	return 1 if exists $dup{$dupkey};
 	$dup{$dupkey} = $d * 60;         # in seconds (to the nearest minute)

@@ -1,5 +1,12 @@
-20Jun00=======================================================================
-1. fixed decode_input so it accepts callsigns with 0 in them (!)
+20Jul00=======================================================================
+1. Finally managed to update my source with the sourceforge one
+2. added user->qra cleaning in various places
+3. added four digit locator strings to broadcast DX spots (for users).
+25Jun00=======================================================================
+1. added 0 to the regex that checks for valid data on the cluster.pl->client
+channel - this will allow G0VGS and G0RDI to connect....
+2. removed technically unnecessary /= 60 from the dup routines to see if 
+Arnold's Sparcs don't then crash.
 19Jun00=======================================================================
 1. move ann_dup, spot_dup etc to dup_ann, dup_spots etc
 2. made mode 3 the default line ending convention for all out going connects

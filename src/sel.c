@@ -188,7 +188,12 @@ int sel_error(sel_t *sp, int err)
 
 /*
  * $Log$
- * Revision 1.3  2000-03-30 22:51:14  djk
+ * Revision 1.4  2000-07-20 14:16:00  minima
+ * can use Sourceforge now!
+ * added user->qra cleaning
+ * added 4 digit qra to user broadcast dxspots if available
+ *
+ * Revision 1.3  2000/03/30 22:51:14  djk
  * fixed connect code in client.pl so it doesn't falsely recognise /spider
  * /src/client as a 'client' directive.
  * Tidied up the C client a bit
