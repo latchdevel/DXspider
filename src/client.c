@@ -300,6 +300,26 @@ void send_msg(fcb_t *f, char let, UC *s, int l)
 	f->sp->flags |= SEL_OUTPUT;
 }
 
+/* 
+ * send a file out to the user
+ */
+void send_file(char *name)
+{
+	int i;
+	char buf[MAXPACLEN+1];
+	
+	FILE *f = xopen("data", name, "r");
+	if (f) {
+		while (fgets(buf, paclen, f)) {
+			i = strlen(buf);
+			if (i && buf[i-1] == '\n') 
+				buf[--i] = 0;
+			send_text(in, buf, i, 1);
+		}
+		fclose(f);
+	}
+}
+
 /*
  * the callback (called by sel_run) that handles all the inputs and outputs
  */
@@ -852,19 +872,7 @@ main(int argc, char *argv[])
 
 	/* is this a login? */
 	if (eq(call, "LOGIN") || eq(call, "login")) {
-	
-		char buf[MAXPACLEN+1];
-		int r, i;
-		FILE *f = xopen("data", "issue", "r");
-		if (f) {
-			while (fgets(buf, paclen, f)) {
-				i = strlen(buf);
-				if (i && buf[i-1] == '\n') 
-					buf[--i] = 0;
-				send_text(in, buf, i, 1);
-			}
-			fclose(f);
-		}
+		send_file("issue");
 		signal(SIGALRM, login_timeout);
 		alarm(timeout);
 		send_text(in, "login: ", 7, 0);
@@ -880,6 +888,8 @@ main(int argc, char *argv[])
 		send_msg(node, 'A', connsort, strlen(connsort));
 	
 		chgstate(CONNECTED);
+
+		send_file("connected");
 	}
 	
 

@@ -1,3 +1,6 @@
+26Oct00=======================================================================
+1. if there is a 'connected' file in /spider/data then the client will send
+it out to the user after connection.
 25Oct00=======================================================================
 1. fix catchup and uncatchup commands so that they accept ranges
 24Oct00=======================================================================
