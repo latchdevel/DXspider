@@ -46,7 +46,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 	foreach $node (@nodes) {
 		next if scalar @list && !grep $node->call =~ /^$_/, @list;
 		my $call = $node->call;
-		$call = "($call)" if $node->here == 0;
+		$call = "($call)" unless $node->here;
 		@l = ();
 		push @l, $call;
 		@val = sort $node->users;

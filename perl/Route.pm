@@ -58,6 +58,7 @@ sub new
 		$self->{itu} = $dxcc[1]->itu;
 		$self->{cq} = $dxcc[1]->cq;						
 	}
+	$self->{flags} = here(1);
 	
 	return $self; 
 }
