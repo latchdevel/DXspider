@@ -188,24 +188,11 @@ int sel_error(sel_t *sp, int err)
 
 /*
  * $Log$
- * Revision 1.1  2000-03-26 00:03:30  djk
+ * Revision 1.2  2000-03-26 14:22:59  djk
+ * removed some irrelevant log info
+ *
+ * Revision 1.1  2000/03/26 00:03:30  djk
  * first cut of client
- *
- * Revision 1.3  1998/01/02 19:39:59  djk
- * made various changes to cope with glibc
- * fixed problem with extended status in etsi_router
- *
- * Revision 1.2  1997/06/18 18:44:31  djk
- * A working hayes implementation!
- *
- * Revision 1.1  1997/01/28 16:14:38  djk
- * moved these into lib as general routines to use with sel
- *
- * Revision 1.3  1997/01/15 21:23:26  djk
- * fixed a few minor svlp problems and added the router logging system
- *
- * Revision 1.2  1997/01/13 23:34:56  djk
- * The first working test version of smsd
  *
  * Revision 1.1  1997/01/03 23:44:31  djk
  * initial workings

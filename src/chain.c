@@ -13,7 +13,10 @@
  * $Header$
  *
  * $Log$
- * Revision 1.1  2000-03-26 00:03:30  djk
+ * Revision 1.2  2000-03-26 14:22:59  djk
+ * removed some irrelevant log info
+ *
+ * Revision 1.1  2000/03/26 00:03:30  djk
  * first cut of client
  *
  * Revision 1.4  1998/01/02 19:39:58  djk
@@ -219,4 +222,11 @@ reft *chain_new()
 	chain_init(p);
 	return p;
 }
+
+
+
+
+
+
+
 
