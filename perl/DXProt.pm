@@ -421,7 +421,7 @@ sub normal
 				
 				# unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
 				my $mref = DXMsg::get_busy($call);
-				$mref->stop_msg($self) if $mref;
+				$mref->stop_msg($call) if $mref;
 				
 				# add this station to the user database, if required (don't remove SSID from nodes)
 				my $user = DXUser->get_current($call);
@@ -772,7 +772,7 @@ sub finish
 	
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
-	$mref->stop_msg($self) if $mref;
+	$mref->stop_msg($call) if $mref;
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	my @gonenodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();
