@@ -34,6 +34,7 @@ unless ($lon || $lat) {
 	$call = $main::mycall;
 }
 
+#$DB::single=1;
 if ($satname && $Sun::keps{$satname}) {
 	my $jtime; # lats and longs in radians
 	my ($sec, $min, $hr, $day, $mon, $yr) = (gmtime($main::systime))[0,1,2,3,4,5];
