@@ -1789,7 +1789,7 @@ sub send_route
 	for (; @_ && $no; $no--) {
 		my $r = shift;
 		
-		if ($self->{routefilter}) {
+		if (!$self->{isolate} && $self->{routefilter}) {
 			$filter = undef;
 			if ($r) {
 				($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
@@ -1802,7 +1802,7 @@ sub send_route
 				dbg("was sent a null value") if isdbg('chanerr');
 			}
 		} else {
-			push @rin, $r;
+			push @rin, $r unless $self->{isolate} && $r->call ne $main::mycall;
 		}
 	}
 	if (@rin) {
@@ -1833,7 +1833,7 @@ sub broadcast_route
 		if ($dxchan->{routefilter}) {
 			$dxchan->send_route($generate, @_);
 		} else {
-			$dxchan->send_route($generate, @_) unless $self->{isolate} || $dxchan->{isolate};
+			$dxchan->send_route($generate, @_) unless $self->{isolate};
 		}
 	}
 }
