@@ -1449,7 +1449,7 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
         # don't appear outside of this node
 		my @dxchan = grep { $_->call ne $main::mycall && $_->call ne $self->{call} } DXChannel::get_all_nodes();
-		@localnodes = map { Route::Node::get($_->{call}) or die "connot find node $_->{call}" } @dxchan if @dxchan;
+		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
 		my @intcalls = map { $_->nodes } @localnodes if @localnodes;
 		my $ref = Route::Node::get($self->{call});
 		my @rnodes = $ref->nodes;
