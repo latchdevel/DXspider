@@ -823,6 +823,14 @@ sub normal
 				return;
 			}
 
+			# if I get a PC21 from the same callsign as self then treat it
+			# as a PC39: I have gone away
+			if ($call eq $self->call) {
+				$self->disconnect(1);
+				eph_del_regex("^PC(?:1[679]|21).*$field[1]");
+				return;
+			}
+
 			eph_del_regex("^PC1[79].*$call");
 			
 			my @rout;
@@ -833,11 +841,6 @@ sub normal
 				return;
 			}
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
-				if ($call eq $self->{call}) {
-					dbg("PCPROT: Trying to disconnect myself with PC21") if isdbg('chanerr');
-					return;
-				}
-
 				my $node = Route::Node::get($call);
 				if ($node) {
 

@@ -1,3 +1,8 @@
+30Dec01=======================================================================
+1. make PC21 coming from the channel's node call then treat it as a PC39 and
+disconnect it.
+2. Send the client a 'Z' command (shutdown) to see if this has any effect on
+the hangs.
 26Dec01=======================================================================
 1. make some detail changes to help texts
 2. Added 'all' to the Band's region table to allow 'acc/spot on all/cw'
