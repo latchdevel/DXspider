@@ -812,7 +812,13 @@ sub send_dx_spot
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		my $routeit;
-		my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @_, $self->{call} ) if $dxchan->{spotfilter};
+		my ($filter, $hops);
+
+		if ($dxchan->{spotfilter}) {
+		    ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @_, $self->{call} );
+			next unless $filter;
+		}
+		
 		if ($dxchan->is_ak1a) {
 			next if $dxchan == $self;
 			if ($hops) {
