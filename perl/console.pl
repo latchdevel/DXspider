@@ -68,6 +68,14 @@ sub do_initscr
 		init_pair(4, COLOR_CYAN, $background);
 		init_pair(5, COLOR_BLUE, $background);
 		init_pair(6, COLOR_MAGENTA, $background);
+		init_pair(7, COLOR_RED, COLOR_BLUE);
+		init_pair(8, COLOR_YELLOW, COLOR_BLUE);
+		init_pair(9, COLOR_GREEN, COLOR_BLUE);
+		init_pair(10, COLOR_CYAN, COLOR_BLUE);
+		init_pair(11, COLOR_BLUE, COLOR_RED);
+		init_pair(12, COLOR_MAGENTA, COLOR_BLUE);
+		init_pair(13, COLOR_YELLOW, COLOR_GREEN);
+		init_pair(14, COLOR_RED, COLOR_GREEN);
 	}
 	
 	$top = $scr->subwin(LINES()-4, COLS, 0, 0);

@@ -17,7 +17,15 @@
 # 4 - CYAN, $background
 # 5 - BLUE, $background
 # 6 - MAGENTA, $background
-#
+# 7 - RED, BLUE
+# 8 - BROWN, BLUE
+# 9 - GREEN, BLUE
+# 10 - CYAN, BLUE
+# 11 - BLUE, RED
+# 12 - MAGENTA, BLUE
+# 13 - BROWN, GREEN
+# 14 - RED, GREEN
+# 
 # You can or these with A_BOLD and or A_REVERSE for a different effect
 #
 
@@ -38,7 +46,9 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
 		   [ '^WX', COLOR_PAIR(3) ],
+		   [ '^(User|Node)\b', COLOR_PAIR(8) ],
 		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
+		    
 		   );
 }
 if ($ENV{'TERM'} =~ /(console|linux)/) {
@@ -53,6 +63,7 @@ if ($ENV{'TERM'} =~ /(console|linux)/) {
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
 		   [ '^WX', COLOR_PAIR(3) ],
+		   [ '^(User|Node)\b', A_BOLD|COLOR_PAIR(8) ],
 		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
 		   );
 }
