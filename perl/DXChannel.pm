@@ -76,6 +76,8 @@ sub alloc
   $self->{startt} = $self->{t} = time;
   $self->{state} = 0;
   $self->{oldstate} = 0;
+  $self->{lang} = $user->{lang} if defined $user;
+  $self->{lang} = $main::lang if !$self->{lang};
   bless $self, $pkg; 
   return $channels{$call} = $self;
 }
@@ -188,7 +190,7 @@ sub send_file
 sub msg
 {
   my $self = shift;
-  return DXM::msg(@_);
+  return DXM::msg($self->{lang}, @_);
 }
 
 # change the state of the channel - lots of scope for debugging here :-)

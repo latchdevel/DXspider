@@ -41,34 +41,31 @@ use Carp;
 
 use strict;
 
-use vars qw(%alias $cmd_mtime $localcmd_mtime $fn $localfn);
+use vars qw(%alias $fn $localfn);
 
 %alias = ();
-
-$cmd_mtime = 1;
-$localcmd_mtime = 1;
 
 $fn = "$main::cmd/Aliases";
 $localfn = "$main::localcmd/Aliases";
 
-sub checkfiles
+sub load
 {
-  my $m = -M $fn;
-#  print "m: $m oldmtime: $cmd_mtime\n";
-  if ($m < $cmd_mtime) {
-    do $fn;
+	my $ref = shift;
+	if (-e $localfn) {
+		do $localfn;
+		return ($@) if $@ && ref $ref;
+		confess $@ if $@;
+		return ();
+	}
+	do $fn;
+	return ($@) if $@ && ref $ref;
 	confess $@ if $@;
-	$cmd_mtime = $m;
-	$localcmd_mtime = 0;
-  } 
-  if (-e $localfn) {
-    $m = -M $localfn;
-	if ($m < $localcmd_mtime) {
-      do $localfn;
-	  confess $@ if $@;
-	  $localcmd_mtime = $m;
-    } 
-  }
+	return ();
+}
+
+sub init
+{
+	load();
 }
 
 #
@@ -81,8 +78,6 @@ sub get_cmd
   my ($i, $n, $ref);
 
   $let = lc $let;
-  
-  checkfiles();
   
   $ref = $alias{$let};
   return undef if !$ref;

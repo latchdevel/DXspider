@@ -17,6 +17,7 @@ require Exporter;
                 $clusterport $clusteraddr $debugfn 
                 $def_hopcount $data $system $cmd
 				$userfn $motd $local_cmd $mybbsaddr
+                $lang
 				$pc50_interval, $user_interval
                );
 			   
@@ -47,6 +48,9 @@ $myemail = "djk\@tobit.co.uk";
 
 # Your BBS addr
 $mybbsaddr = "G1TLH\@GB7TLH.#35.GBR.EU";
+
+# the default language (the key used must match the one in the Messages file)
+$lang = 'en';
 
 # the tcp address of the cluster this can be an address of an ethernet port
 # but this is more secure. For normal use this will be fine. 

@@ -106,6 +106,7 @@ sub new
   $self->{sort} = 'U';
   $self->{dxok} = 1;
   $self->{annok} = 1;
+  $self->{lang} = $main::lang;
   bless $self, $pkg;
   $u{call} = $self;
 }
