@@ -1810,7 +1810,7 @@ to understand how filters work - it will save a lot of grief later on.
 
 You can use any of the following things in this line:-
 
-<verb>
+<tscreen><verb>
   info <string>            eg: iota or qsl
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
@@ -1823,28 +1823,28 @@ You can use any of the following things in this line:-
   channel <prefixes>
   wx 1                     filter WX announces
   dest <prefixes>          eg: 6MUK,WDX      (distros)
-</verb>
+</verb></tscreen>
 
 some examples:-
 
-<verb>
+<tscreen><verb>
   acc/ann dest 6MUK
   acc/ann 2 by_zone 14,15,16
   (this could be all on one line: acc/ann dest 6MUK or by_zone 14,15,16)
-</verb>
+</verb></tscreen>
 
 or
 
-<verb>
+<tscreen><verb>
   acc/ann by G,M,2 
-</verb>
+</verb></tscreen>
 
 This filter would only allow announces that were posted buy UK stations.  
 You can use the tag 'all' to accept everything eg:
 
-<verb>
+<tscreen><verb>
   acc/ann all
-</verb>
+</verb></tscreen>
 
 but this probably for advanced users...
 
@@ -1859,11 +1859,11 @@ but this probably for advanced users...
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   accept/ann by G,M,2
   accept/ann input node_default by G,M,2
   accept/ann user_default by G,M,2
-</verb>
+</verb></tscreen>
 
 <sect1>accept/spots (0)
 
@@ -1883,7 +1883,7 @@ to understand how filters work - it will save a lot of grief later on.
 
 You can use any of the following things in this line:-
 
-<verb>
+<tscreen><verb>
   freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
   on <range>             same as 'freq'
   call <prefixes>        eg: G,PA,HB9
@@ -1897,7 +1897,7 @@ You can use any of the following things in this line:-
   by_zone <numbers>
   origin <prefixes>
   channel <prefixes>
-</verb>
+</verb></tscreen>
 
 <P>
 For frequencies, you can use any of the band names defined in
@@ -1908,16 +1908,16 @@ too hung up about that)
 
 some examples:-
 
-<verb>
+<tscreen><verb>
   acc/spot 1 on hf/cw
   acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-</verb>
+</verb></tscreen>
 
 You can use the tag 'all' to accept everything, eg:
 
-<verb>
+<tscreen><verb>
   acc/spot 3 all
-</verb>
+</verb></tscreen>
 
 but this probably for advanced users...
 
@@ -1932,13 +1932,13 @@ but this probably for advanced users...
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   accept/spot db0sue-7 1 by_zone 14,15,16
   accept/spot node_default all
   set/hops node_default 10
 
   accept/spot user_default by G,M,2
-</verb>
+</verb></tscreen>
 
 <sect1>accept/wcy (0)
 
@@ -1951,7 +1951,7 @@ default for nodes and users eg:-
 It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 
-<verb>
+<tscreen><verb>
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
   origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
@@ -1961,7 +1961,7 @@ filter on the following fields:-
   by_itu <numbers>
   by_zone <numbers>
   channel <prefixes>
-</verb>
+</verb></tscreen>
 
 <P>
 There are no examples because WCY Broadcasts only come from one place and
@@ -1983,10 +1983,10 @@ WCY filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   accept/wcy node_default all
   set/hops node_default 10
-</verb>
+</verb></tscreen>
 
 <sect1>accept/wwv (0)
 
@@ -1999,7 +1999,7 @@ default for nodes and users eg:-
 It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 
-<verb>
+<tscreen><verb>
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
   origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
@@ -2009,13 +2009,13 @@ filter on the following fields:-
   by_itu <numbers>
   by_zone <numbers>
   channel <prefixes>
-</verb>
+</verb></tscreen>
 
 for example 
 
-<verb>
+<tscreen><verb>
   accept/wwv by_zone 4
-</verb>
+</verb></tscreen>
 
 is probably the only useful thing to do (which will only show WWV broadcasts
 by stations in the US).
@@ -2034,13 +2034,13 @@ WWV filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   accept/wwv db0sue-7 1 by_zone 4
   accept/wwv node_default all
   set/hops node_default 10
 
   accept/wwv user_default by W,K
-</verb>
+</verb></tscreen>
 
 <sect1>announce (0)
 
@@ -2112,17 +2112,17 @@ outstanding non-private messages will be forwarded to them. This may well
 be ALL the non-private messages. You can prevent this by using these 
 commmands:-
 
-<verb>
+<tscreen><verb>
   catchup GB7DJK all
   catchup GB7DJK 300 301 302 303 500-510
-</verb>
+</verb></tscreen>
         
 and to undo what you have just done:-
   
-<verb>
+<tscreen><verb>
   uncatchup GB7DJK all
   uncatchup GB7DJK 300 301 302 303 500-510
-</verb>
+</verb></tscreen>
 
 which will arrange for them to be forward candidates again.
 
@@ -2141,28 +2141,28 @@ remove the whole filter.
 
 If you have a filter:-
 
-<verb>
+<tscreen><verb>
   acc/spot 1 on hf/cw
   acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-</verb>
+</verb></tscreen>
 
 and you say:-
 
-<verb>
+<tscreen><verb>
   clear/spot 1
-</verb>
+</verb></tscreen>
 
 you will be left with:-
 
-<verb>
+<tscreen><verb>
   acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-</verb>
+</verb></tscreen>
 
 If you do:
 
-<verb>
+<tscreen><verb>
   clear/spot all
-</verb>
+</verb></tscreen>
 
 the filter will be completely removed.
 
@@ -2316,16 +2316,16 @@ This is the generic user interface to the database to the database system.
 It is expected that the sysop will add an entry to the local Aliases file
 so that users can use the more familiar AK1A style of enquiry such as:
 
-<verb>
+<tscreen><verb>
   SH/BUCK G1TLH
-</verb>
+</verb></tscreen>
 
 but if he hasn't and the database really does exist (use DBAVAIL or
 SHOW/COMMAND to find out) you can do the same thing with:
 
-<verb>
+<tscreen><verb>
   DBSHOW buck G1TLH
-</verb>
+</verb></tscreen>
 
 
 <sect1>debug (9)
@@ -2373,18 +2373,18 @@ fields.
 
 You can combine some of the various directory commands together eg:-
 
-<verb>
+<tscreen><verb>
    DIR TO G1TLH 5
 or 
    DIR SUBJECT IOTA 200-250
-</verb>
+</verb></tscreen>
 
 You can abbreviate all the commands to one letter and use ak1a syntax:-
 
-<verb>
+<tscreen><verb>
    DIR/T G1* 10
    DIR/S QSL 10-100 5
-</verb>
+</verb></tscreen>
 
 
 <sect1>directory (extended for sysops) (5)
@@ -2413,24 +2413,24 @@ Disconnect any &lt;call&gt; connected locally
 This is how you send a DX Spot to other users. You can, in fact, now
 enter the &lt;freq&gt; and the &lt;call&gt; either way round. 
 
-<verb>
+<tscreen><verb>
    DX FR0G 144.600
    DX 144.600 FR0G
    DX 144600 FR0G 
-</verb>
+</verb></tscreen>
 
 will all give the same result. You can add some remarks to the end
 of the command and they will be added to the spot.
 
-<verb>
+<tscreen><verb>
    DX FR0G 144600 this is a test
-</verb>
+</verb></tscreen>
 
 You can credit someone else by saying:-
 
-<verb>
+<tscreen><verb>
    DX by G1TLH FR0G 144.600 he isn't on the cluster
-</verb>
+</verb></tscreen>
 
 The &lt;freq&gt; is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
@@ -2841,7 +2841,7 @@ to understand how filters work - it will save a lot of grief later on.
 
 You can use any of the following things in this line:-
 
-<verb>
+<tscreen><verb>
   info <string>            eg: iota or qsl
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
@@ -2854,19 +2854,19 @@ You can use any of the following things in this line:-
   channel <prefixes>
   wx 1                     filter WX announces
   dest <prefixes>          eg: 6MUK,WDX      (distros)
-</verb>
+</verb></tscreen>
 
 some examples:-
 
-<verb>
+<tscreen><verb>
   rej/ann by_zone 14,15,16 and not by G,M,2
-</verb>
+</verb></tscreen>
  
 You can use the tag 'all' to reject everything eg:
 
-<verb>
+<tscreen><verb>
   rej/ann all
-</verb>
+</verb></tscreen>
 
 but this probably for advanced users...
 
@@ -2881,11 +2881,11 @@ but this probably for advanced users...
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   reject/ann by G,M,2
   reject/ann input node_default by G,M,2
   reject/ann user_default by G,M,2
-</verb>
+</verb></tscreen>
 
 <sect1>reject/spots (0)
 
@@ -2904,7 +2904,7 @@ to understand how filters work - it will save a lot of grief later on.
 
 You can use any of the following things in this line:-
 
-<verb>
+<tscreen><verb>
   freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
   on <range>             same as 'freq'
   call <prefixes>        eg: G,PA,HB9
@@ -2918,7 +2918,7 @@ You can use any of the following things in this line:-
   by_zone <numbers>
   origin <prefixes>
   channel <prefixes>
-</verb>
+</verb></tscreen>
 
 For frequencies, you can use any of the band names defined in
 SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
@@ -2928,16 +2928,16 @@ too hung up about that)
 
 some examples:-
 
-<verb>
+<tscreen><verb>
   rej/spot 1 on hf
   rej/spot 2 on vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
-</verb>
+</verb></tscreen>
 
 You can use the tag 'all' to reject everything eg:
 
-<verb>
+<tscreen><verb>
   rej/spot 3 all
-</verb>
+</verb></tscreen>
 
 but this probably for advanced users...
 
@@ -2953,13 +2953,13 @@ but this probably for advanced users...
 This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   reject/spot db0sue-7 1 by_zone 14,15,16
   reject/spot node_default all
   set/hops node_default 10
 
   reject/spot user_default by G,M,2
-</verb>
+</verb></tscreen>
 
 <sect1>reject/wcy (0)
 
@@ -2972,7 +2972,7 @@ default for nodes and users eg:-
 It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 
-<verb>
+<tscreen><verb>
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
   origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
@@ -2982,7 +2982,7 @@ filter on the following fields:-
   by_itu <numbers>
   by_zone <numbers>
   channel <prefixes>
-</verb>
+</verb></tscreen>
 
 There are no examples because WCY Broadcasts only come from one place and
 you either want them or not (see UNSET/WCY if you don't want them).
@@ -3016,7 +3016,7 @@ default for nodes and users eg:-
 It is unlikely that you will want to do this, but if you do then you can
 filter on the following fields:-
 
-<verb>
+<tscreen><verb>
   by <prefixes>            eg: G,M,2         
   origin <prefixes>
   origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
@@ -3026,13 +3026,13 @@ filter on the following fields:-
   by_itu <numbers>
   by_zone <numbers>
   channel <prefixes>
-</verb>
+</verb></tscreen>
 
 for example 
 
-<verb>
+<tscreen><verb>
   reject/wwv by_zone 14,15,16
-</verb>
+</verb></tscreen>
 
 is probably the only useful thing to do (which will only show WWV broadcasts
 by stations in the US).
@@ -3050,12 +3050,12 @@ See HELP FILTER for information.
 <P>This version allows a sysop to set a filter for a callsign as well as the
 default for nodes and users eg:-
 
-<verb>
+<tscreen><verb>
   reject/wwv db0sue-7 1 by_zone 4
   reject/wwv node_default all
 
   reject/wwv user_default by W
-</verb>
+</verb></tscreen>
 
 <sect1>reply (0)
 
@@ -3103,9 +3103,9 @@ You can have more than one callsign in all of the SEND commands.
 
 You can have multiple qualifiers so that you can have for example:-
 
-<verb>
+<tscreen><verb>
   SEND RR COPY 123 PRIVATE G1TLH G0RDI
-</verb>
+</verb></tscreen>
 
 which should send a copy of message 123 to G1TLH and G0RDI and you will
 receive a read receipt when they have read the message.
@@ -3159,15 +3159,15 @@ will not be sent onto other nodes.
 
 The word must be wriiten in full, no wild cards are allowed eg:-
 
-<verb>
+<tscreen><verb>
   set/baddx FORSALE VIDEO FR0G 
-</verb>
+</verb></tscreen>
 
 To allow a word again, use the following command ...
 
-<verb>
+<tscreen><verb>
   unset/baddx VIDEO
-</verb>
+</verb></tscreen>
 
 <sect1>set/badnode (6)
 
@@ -3184,15 +3184,15 @@ sent onto other nodes.
 
 The call can be a full or partial call (or a prefix), eg:-
 
-<verb>
+<tscreen><verb>
   set/badnode K1TTT 
-</verb>
+</verb></tscreen>
 
 will stop anything from K1TTT (including any SSID's)
 
-<verb>
+<tscreen><verb>
   unset/badnode K1TTT
-</verb>
+</verb></tscreen>
 
 will allow spots from him again.
 
@@ -3212,16 +3212,16 @@ sent onto other nodes.
 
 The call must be written in full, no wild cards are allowed eg:-
 
-<verb>
+<tscreen><verb>
   set/badspotter VE2STN 
-</verb>
+</verb></tscreen>
 
 will stop anything from VE2STN. If you want SSIDs as well then you must
 enter them specifically.
 
-<verb>
+<tscreen><verb>
   unset/badspotter VE2STN
-</verb>
+</verb></tscreen>
 
 will allow spots from him again.
 
@@ -3335,9 +3335,9 @@ Tell the cluster system where you normally connect to. Any Messages sent
 to you will normally find their way there should you not be connected.
 eg:-
 
-<verb>
+<tscreen><verb>
   SET/HOMENODE gb7djk
-</verb>
+</verb></tscreen>
 
 <sect1>set/hops (8)
 
@@ -3353,11 +3353,11 @@ Set the hop count for a particular type of broadcast for a node.
 This command allows you to set up special hop counts for a node 
 for currently: announce, spots, wwv and wcy broadcasts.
 
-<verb>
+<tscreen><verb>
 eg:
   set/hops gb7djk ann 10
   set/hops gb7mbc spots 20
-</verb>
+</verb></tscreen>
 
 Set SHOW/HOPS for information on what is already set. This command
 creates a filter and works in conjunction with the filter system. 
@@ -3402,9 +3402,9 @@ the languages available are <em>en</em> (English) and <em>nl</em> (Dutch).
 You can set your latitude and longitude manually or alternatively use the
 <em>set/qra</em> command which will do the conversion for you.
 
-<verb>
+<tscreen><verb>
   set/location 54 04 N 2 02 E
-</verb>
+</verb></tscreen>
 
 
 <sect1>set/sys_location (9)
@@ -3419,9 +3419,9 @@ In order to get accurate headings and such like you must tell the system
 what your latitude and longitude is. If you have not yet done a SET/QRA
 then this command will set your QRA locator for you. For example:-
 
-<verb>
+<tscreen><verb>
   SET/LOCATION 52 22 N 0 57 E
-</verb>
+</verb></tscreen>
 
 <sect1>set/logininfo (0)
 
@@ -3456,9 +3456,9 @@ To allow the user to connect again, use the <em>unset/lockout</em> command.
 <P>
 Tell the cluster what your name is, eg:-
 
-<verb>
+<tscreen><verb>
   set/name Dirk
-</verb>
+</verb></tscreen>
 
 <sect1>set/node (9)
 
@@ -3473,12 +3473,12 @@ fed PC Protocol rather normal user commands.
 
 From version 1.41 you can also set the following types of cluster
 
-<verb>
+<tscreen><verb>
   set/spider
   set/dxnet
   set/clx
   set/arcluster
-</verb>
+</verb></tscreen>
 
 To see what your nodes are set to, use the <em>show/nodes</em> command.
 
@@ -3517,10 +3517,10 @@ Tell the system how many lines you wish on a page when the number of lines
 of output from a command is more than this. The default is 20. Setting it
 explicitly to 0 will disable paging. 
 
-<verb>
+<tscreen><verb>
   SET/PAGE 30
   SET/PAGE 0
-</verb>
+</verb></tscreen>
 
 The setting is stored in your user profile.
 
@@ -3616,9 +3616,9 @@ Tell the system what your QRA (or Maidenhead) locator is. If you have not
 done a SET/LOCATION then your latitude and longitude will be set roughly
 correctly (assuming your locator is correct ;-). For example:-
 
-<verb>
+<tscreen><verb>
   SET/QRA JO02LQ
-</verb>
+</verb></tscreen>
 
 <sect1>set/qth (0)
 
@@ -3630,9 +3630,9 @@ correctly (assuming your locator is correct ;-). For example:-
 <P>
 Tell the system where your are.  For example:-
 
-<verb>
+<tscreen><verb>
   set/qth East Dereham, Norfolk
-</verb>
+</verb></tscreen>
 
 <sect1>set/talk (0)
 
@@ -3742,7 +3742,7 @@ If you just type SHOW/DX you will get the last so many spots
 In addition you can add any number of these options in very nearly
 any order to the basic SHOW/DX command, they are:-
 
-<verb>   
+<tscreen><verb>   
 on &lt;band&gt;       - eg 160m 20m 2m 23cm 6mm
 on &lt;region&gt;     - eg hf vhf uhf shf      (see SHOW/BANDS)
    
@@ -3772,11 +3772,11 @@ iota &lsqb;&lt;iota&gt;&rsqb;   - If the iota island number is missing it will
 
 qra &lsqb;&lt;locator&gt;&rsqb; - this will look for the specific locator if 
                   you specify one or else anything that looks like a locator.
-</verb>
+</verb></tscreen>
    
 e.g. 
 
-<verb>   
+<tscreen><verb>   
    SH/DX 9m0
    SH/DX on 20m info iota
    SH/DX 9a on vhf day 30
@@ -3784,7 +3784,7 @@ e.g.
    SH/DX iota 
    SH/DX iota eu-064
    SH/DX qra jn86
-</verb>
+</verb></tscreen>
 
 <sect1>show/dxcc (0)
 
@@ -3801,10 +3801,10 @@ and then displays all the spots as per SH/DX for that country.
 The options for SHOW/DX also apply to this command.   
 e.g. 
 
-<verb>   
+<tscreen><verb>   
    SH/DXCC G
    SH/DXCC W on 20m info iota
-</verb>
+</verb></tscreen>
 
 <sect1>show/files (0)
 
@@ -3819,9 +3819,9 @@ SHOW/FILES on its own will show you a list of the various fileareas
 available on the system. To see the contents of a particular file
 area type:-
 
-<verb>
+<tscreen><verb>
    SH/FILES &lt;filearea&gt;
-</verb>
+</verb></tscreen>
 
 where &lt;filearea&gt; is the name of the filearea you want to see the 
 contents of.
@@ -3829,9 +3829,9 @@ contents of.
 You can also use shell globbing characters like '*' and '?' in a
 string to see a selection of files in a filearea eg:-
 
-<verb>
+<tscreen><verb>
    SH/FILES bulletins arld*
-</verb>
+</verb></tscreen>
 
 See also TYPE - to see the contents of a file.
 
@@ -3915,10 +3915,10 @@ that you are connected to.
 
 For example:-
 
-<verb>
+<tscreen><verb>
   SH/MOON
   SH/MOON G1TLH W5UN
-</verb>
+</verb></tscreen>
 
 <sect1>show/muf (0)
 
@@ -3964,13 +3964,13 @@ By default SHOW/MUF will show the next two hours worth of data. You
 can specify anything up to 24 hours worth of data by appending the no of
 hours required after the prefix. For example:-
 
-<verb>
+<tscreen><verb>
   SH/MUF W
-</verb>
+</verb></tscreen>
 
 produces:
 
-<verb>
+<tscreen><verb>
   RxSens: -123 dBM SFI: 159   R: 193   Month: 10   Day: 21
   Power :   20 dBW    Distance:  6283 km    Delay: 22.4 ms
   Location                       Lat / Long           Azim
@@ -3979,24 +3979,24 @@ produces:
   UT LT  MUF Zen  1.8  3.5  7.0 10.1 14.0 18.1 21.0 24.9 28.0 50.0
   18 23 11.5 -35  mS0+ mS2   S3
   19  0 11.2 -41  mS0+ mS2   S3
-</verb>
+</verb></tscreen>
 
 indicating that you will have weak, fading circuits on top band and 
 80m but usable signals on 40m (about S3).
 
 inputing:-
 
-<verb>
+<tscreen><verb>
   SH/MUF W 24
-</verb>
+</verb></tscreen>
 
 will get you the above display, but with the next 24 hours worth of
 propagation data.
 
-<verb>
+<tscreen><verb>
   SH/MUF W L 24
   SH/MUF W 24 Long
-</verb>
+</verb></tscreen>
 
 Gives you an estimate of the long path propagation characterics. It
 should be noted that the figures will probably not be very useful, nor
@@ -4058,10 +4058,10 @@ distance and bearing between two locators or (if only one locator is
 given on the command line) the distance and beraing from your station
 to the locator. For example:-
 
-<verb>
+<tscreen><verb>
 SH/QRA IO92QL 
 SH/QRA JN06 IN73
-</verb>
+</verb></tscreen>
 
 The first example will show the distance and bearing to the locator from
 yourself, the second example will calculate the distance and bearing from
@@ -4071,9 +4071,9 @@ It is also possible to convert a latitude and longitude to a locator by
 using this command with a latitude and longitude as an argument, for
 example:-
 
-<verb>
+<tscreen><verb>
 SH/QRA 52 41 N 0 58 E
-</verb>
+</verb></tscreen>
 
 <sect1>show/qrz (0)
 
@@ -4098,9 +4098,9 @@ is provided for users of this software by http://www.qrz.com
 This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 
-<verb>
+<tscreen><verb>
   sh/route n2tly
-</verb>
+</verb></tscreen>
 
 <sect1>show/satellite (0)
 
@@ -4128,10 +4128,10 @@ Each pass in a period is separated with a row of '-----' characters
 
 So for example:-
 
-<verb>
+<tscreen><verb>
 SH/SAT AO-10 
 SH/SAT FENGYUN1 12 2
-</verb>
+</verb></tscreen>
 
 <sect1>show/sun (0)
 
@@ -4155,10 +4155,10 @@ that you are connected to.
 
 For example:-
 
-<verb>
+<tscreen><verb>
   SH/SUN
   SH/SUN G1TLH K9CW ZS
-</verb>
+</verb></tscreen>
 
 <sect1>show/time (0)
 
@@ -4291,19 +4291,19 @@ required in the correct order. You may intersperse those characters
 with others to obscure your reply for any watchers. For example (and
 these values are for explanation :-):
 
-<verb>
+<tscreen><verb>
   password = 012345678901234567890123456789
   > sysop
   22 10 15 17 3
-</verb>
+</verb></tscreen>
 
 you type:-
 
-<verb>
+<tscreen><verb>
  aa2bbbb0ccc5ddd7xxx3n
  or 2 0 5 7 3
  or 20573
-</verb>
+</verb></tscreen>
 
 They will all match. If there is no password you will still be offered
 numbers but nothing will happen when you input a string. Any match is
@@ -4344,16 +4344,16 @@ terminal.
 If you want to do something (such as send a spot) you precede the normal 
 command with a '/' character, eg:-
 
-<verb>
+<tscreen><verb>
    /DX 14001 G1TLH What's a B class licensee doing on 20m CW?
    /HELP talk
-</verb>
+</verb></tscreen>
 
 To leave talk mode type:
    
-<verb>
+<tscreen><verb>
    /EX
-</verb>
+</verb></tscreen>
 
 <sect1>type (0)
 
@@ -4367,9 +4367,9 @@ Type out the contents of a file in a filearea. So, for example, in
 filearea 'bulletins' you want to look at file 'arld051' you would 
 enter:-
 
-<verb>
+<tscreen><verb>
    TYPE bulletins/arld051
-</verb>
+</verb></tscreen>
 
 See also SHOW/FILES to see what fileareas are available and a 
 list of content.
