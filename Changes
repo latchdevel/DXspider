@@ -1,3 +1,6 @@
+14Oct02=======================================================================
+1. added show/usdb command as a simple, direct interface to the information
+available in the USDB stuff.
 13Oct02=======================================================================
 1. A large change has occurred. There is now some (optional) US state recog-
 nition. This is in its early stages but appears to work for me. You will need

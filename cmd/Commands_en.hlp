@@ -2058,6 +2058,12 @@ time and UTC as the computer has it right now. If you give some prefixes
 then it will show UTC and UTC + the local offset (not including DST) at
 the prefixes or callsigns that you specify.
 
+=== 0^SHOW/USDB [call ..]^Show information held on the FCC Call database
+Show the City and State of a Callsign held on the FCC database if
+his is being run on this system, eg:-
+
+  sh/usdb k1xx
+
 === 0^SHOW/VHFSTATS^Show the VHF DX Statistics for last 31 days
 Show the VHF DX spots breakdown by band for the last 31 days
 
