@@ -51,14 +51,17 @@ sub start
   my $user = $self->{user};
   my $call = $self->{call};
   my $name = $user->{name};
-
+  my $info = DXCluster::cluster();
+  
   $self->{name} = $name ? $name : $call;
   $self->send($self->msg('l2',$self->{name}));
   $self->send_file($main::motd) if (-e $main::motd);
+  $self->send("Cluster:$info");
   $self->send($self->msg('pr', $call));
   $self->state('prompt');                  # a bit of room for further expansion, passwords etc
   $self->{priv} = $user->priv;
   $self->{lang} = $user->lang;
+  $self->{pagelth} = 20;
   $self->{priv} = 0 if $line =~ /^(ax|te)/;     # set the connection priv to 0 - can be upgraded later
   $self->{consort} = $line;                # save the connection type
 
@@ -86,9 +89,56 @@ sub normal
 {
 	my $self = shift;
 	my $cmdline = shift;
+	my @ans;
 	
-	my @ans = run_cmd($self, $cmdline);
-	$self->send(@ans) if @ans > 0;
+	# remove leading and trailing spaces
+	$cmdline =~ s/^\s*(.*)\s*$/$1/;
+	
+	if ($self->{state} eq 'prompt') {
+		@ans = run_cmd($self, $cmdline) if length $cmdline;
+       
+		if ($self->{pagelth} && @ans > $self->{pagelth}) {
+			my $i;
+			for ($i = $self->{pagelth}; $i-- > 0; ) {
+				my $line = shift @ans;
+				$line =~ s/\s+$//o;            # why am having to do this? 
+				$self->send($line);
+			}
+			$self->{pagedata} =  \@ans;
+			$self->state('page');
+			$self->send($self->msg('page', scalar @ans));
+		} else {
+			for (@ans) {
+				s/\s+$//o;                     # why ?????????
+				$self->send($_);
+			}
+		} 
+	} elsif ($self->{state} eq 'page') {
+		my $i = $self->{pagelth};
+		my $ref = $self->{pagedata};
+		my $tot = @$ref;
+		
+		# abort if we get a line starting in with a
+		if ($cmdline =~ /^a/io) {
+			undef $ref;
+			$i = 0;
+		}
+        
+		# send a tranche of data
+		while ($i-- > 0 && @$ref) {
+			my $line = shift @$ref;
+			$line =~ s/\s+$//o;            # why am having to do this? 
+			$self->send($line);
+		}
+
+		# reset state if none or else chuck out an intermediate prompt
+		if ($ref && @$ref) {
+			$tot -= $self->{pagelth};
+			$self->send($self->msg('page', $tot));
+		} else {
+			$self->state('prompt');
+		}
+	}
 	
 	# send a prompt only if we are in a prompt state
 	$self->prompt() if $self->{state} =~ /^prompt/o;
@@ -118,10 +168,10 @@ sub run_cmd
   } else {
 
     # special case only \n input => " "
-    if ($cmdline eq " ") {
-	  $self->prompt();
-	  return;
-	}
+#    if ($cmdline eq " ") {
+#	  $self->prompt();
+#	  return;
+#	}
 	
     # strip out //
     $cmdline =~ s|//|/|og;
@@ -167,7 +217,7 @@ sub run_cmd
 		@ans = $self->msg('e1');
 	}
   }
-  return @ans;
+  return (@ans);
 }
 
 #

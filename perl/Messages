@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 
 # this file contains the system messages. Don't forget to reload them
-# if you change them
+# if you change them (load/messages)
 #
 # $Id$
 #
@@ -38,9 +38,13 @@ package DXM;
 				node => '$_[0] set as AK1A style Node',
 				nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
 				ok => 'Operation successful',
+				page => 'Press Enter to continue, A to abort ($_[0] lines) >',
 				pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
 				priv => 'Privilege level changed on $_[0]',
 				prx => '$main::mycall >',
+				read1 => 'Sorry, no new messages for you',
+				read2 => 'Msg $_[0] not found',
+				read3 => 'Msg $_[0] not available',
 				shutting => '$main::mycall shutting down...',
 				talks => 'Talk flag set on $_[0]',
 				talku => 'Talk flag unset on $_[0]',

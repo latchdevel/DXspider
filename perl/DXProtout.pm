@@ -93,7 +93,8 @@ sub pc17
 # Request init string
 sub pc18
 {
-  return "PC18^wot a load of twaddle^$DXProt::myprot_version^~";
+	my $info = DXCluster::cluster;
+	return "PC18^$info^$DXProt::myprot_version^~";
 }
 
 #

@@ -26,10 +26,12 @@ return (1, "$call not visible on the cluster") if !$ref;
 my $dxchan = DXCommandmode->get($to);         # is it for us?
 if ($dxchan && $dxchan->is_user) {
   $dxchan->send("$to de $from $line");
+  Log('talk', $to, $from, $main::mycall, $line);
 } else {
   $line =~ s/\^//og;            # remove any ^ characters
   my $prot = DXProt::pc10($from, $to, $via, $line);
   DXProt::route($via?$via:$to, $prot);
+  Log('talk', $to, $from, $via?$via:$main::mycall, $line);
 }
 
 return (1, ());

@@ -48,7 +48,8 @@ package main;
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
 $version = 1.5;					# the version no of the software
-
+$starttime = 0;                 # the starting time of the cluster   
+ 
 # handle disconnections
 sub disconnect
 {
@@ -171,13 +172,23 @@ sub process_inqueue
 	}
 }
 
+sub uptime
+{
+	my $t = $systime - $starttime;
+	my $days = int $t / 86400;
+	$t -= $days * 86400;
+	my $hours = int $t / 3600;
+	$t -= $hours * 3600;
+	my $mins = int $t / 60;
+	return sprintf "%d %02d:%02d", $days, $hours, $mins;
+}
 #############################################################
 #
 # The start of the main line of code 
 #
 #############################################################
 
-$systime = time;
+$starttime = $systime = time;
 
 # open the debug file, set various FHs to be unbuffered
 foreach (@debug) {

@@ -106,6 +106,7 @@ sub normal
 		my $text = unpad($field[3]);
 		my $ref = DXChannel->get($call);
 		$ref->send("$call de $field[1]: $text") if $ref;
+		Log('talk', $call, $field[1], $field[6], $text);
 	  } else {
 	    route($field[2], $line);       # relay it on its way
 	  }
@@ -151,24 +152,29 @@ sub normal
         # strip leading and trailing stuff
 	    my $text = unpad($field[3]);
 		my $target;
+		my $to = 'To ';
 		my @list;
 		
 	    if ($field[4] eq '*') {          # sysops
-		  $target = "To Sysops";
+		  $target = "Sysops";
 		  @list = map { $_->priv >= 5 ? $_ : () } get_all_users();
 		} elsif ($field[4] gt ' ') {     # speciality list handling
 		  my ($name) = split /\./, $field[4]; 
-          $target = "To $name";          # put the rest in later (if bothered) 
+          $target = "$name";          # put the rest in later (if bothered) 
         } 
 		
-        $target = "WX" if $field[6] eq '1';
-		$target = "To All" if !$target;
+		if ($field[6] eq '1') {
+			$target = "WX"; 
+			$to = '';
+		}
+		$target = "All" if !$target;
 		
 		if (@list > 0) {
-		  broadcast_list("$target de $field[1]: $text", @list);
+		  broadcast_list("$to$target de $field[1]: $text", @list);
 		} else {
 		  broadcast_users("$target de $field[1]: $text");
 		}
+		Log('ann', $target, $field[1], $text);
 		
 		return if $field[2] eq $main::mycall;   # it's routed to me
 	  } else {
@@ -300,11 +306,15 @@ sub normal
 	
     if ($pcno == 34 || $pcno == 36) {   # remote commands (incoming)
 		if ($field[1] eq $main::mycall) {
-			if ($self->{priv}) {        # you have to have SOME privilege, the commands have further filtering
+			my $ref = DXUser->get_current($field[2]);
+			Log('rcmd', 'in', $ref->{priv}, $field[2], $field[3]);
+			if ($ref->{priv}) {        # you have to have SOME privilege, the commands have further filtering
 				$self->{remotecmd} = 1; # for the benefit of any command that needs to know
-				for (DXCommandmode::run_cmd($self, $field[3])) {
+				my @in = (DXCommandmode::run_cmd($self, $field[3]));
+				for (@in) {
 					s/\s*$//og;
-					$self->send(pc35($main::mycall, $self->{call}, "$main::mycall:$_"));
+					$self->send(pc35($main::mycall, $field[2], "$main::mycall:$_"));
+					Log('rcmd', 'out', $field[2], $_);
 				}
 				delete $self->{remotecmd};
 			}

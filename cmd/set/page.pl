@@ -1,0 +1,13 @@
+#
+# set the page length for this invocation of the client
+#
+# Copyright (c) 1998 - Dirk Koopman G1TLH
+#
+# $Id$
+#
+my $self = shift;
+my $l = shift;
+$l = 20 if $l = 0;
+$l = 10 if $l < 10;
+$self->pagelth($l);
+return (1);

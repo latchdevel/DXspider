@@ -24,16 +24,16 @@ if (@f == 0) {
   }
 }
 
-return (1, "Sorry, no new messages for you") if @f == 0;
+return (1, $self->msg('read1')) if @f == 0;
 
 for $msgno (@f) {
   $ref = DXMsg::get($msgno);
   if (!$ref) {
-    push @out, "Msg $msgno not found";
+    push @out, $self->msg('read2', $msgno);
 	next;
   }
   if ($self->priv < 5 && $ref->private && $ref->to ne $self->call && $ref->from ne $self->call ) {
-    push @out, "Msg $msgno not available";
+    push @out, $self->msg('read3', $msgno);
 	next;
   }
   push @out, sprintf "Msg: %d From: %s Date: %6.6s %5.5s Subj: %-30.30s", $msgno,

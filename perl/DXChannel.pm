@@ -66,6 +66,8 @@ use vars qw(%channels %valid);
   pc34to => '9,last rcmd call',
   pc34t => '9,last rcmd time,atime',
   pings => '9,out/st pings',
+  pagelth => '0,Page Length',
+  pagedata => '9,Page Data Store',
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]

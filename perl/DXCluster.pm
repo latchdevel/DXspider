@@ -92,6 +92,15 @@ sub showcall
   return $self->{call};
 }
 
+# the answer required by show/cluster
+sub cluster
+{
+	my $users = DXCommandmode::get_all();
+	my $uptime = main::uptime();
+	
+	return " $DXNode::nodes nodes, $users local / $DXNode::users total users  Max users $DXNode::maxusers  Uptime $uptime";
+}
+
 sub DESTROY
 {
   my $self = shift;
@@ -122,9 +131,6 @@ package DXNodeuser;
 use DXDebug;
 
 use strict;
-use vars qw($users);
-
-$users = 0;
 
 sub new 
 {
@@ -135,7 +141,6 @@ sub new
   my $self = $pkg->alloc($dxchan, $call, $confmode, $here);
   $self->{mynode} = $node;
   $node->{list}->{$call} = $self;     # add this user to the list on this node
-  $users++;
   dbg('cluster', "allocating user $call to $node->{call} in cluster\n");
   $node->update_users;
   return $self;
@@ -151,12 +156,11 @@ sub del
   delete $DXCluster::cluster{$call};     # remove me from the cluster table
   dbg('cluster', "deleting user $call from $node->{call} in cluster\n");
   $node->update_users;
-  $users-- if $users > 0;
 }
 
 sub count
 {
-  return $users;                 # + 1 for ME (naf eh!)
+  return $DXNode::users;                 # + 1 for ME (naf eh!)
 }
 
 no strict;
@@ -172,9 +176,12 @@ package DXNode;
 use DXDebug;
 
 use strict;
-use vars qw($nodes);
+use vars qw($nodes $users $maxusers);
 
 $nodes = 0;
+$users = 0;
+$maxusers = 0;
+
 
 sub new 
 {
@@ -217,11 +224,14 @@ sub update_users
 {
   my $self = shift;
   my $count = shift;
+  $users -= $self->{users};
   if ((keys %{$self->{list}})) {
     $self->{users} = (keys %{$self->{list}});
   } else {
     $self->{users} = $count;
   }
+  $users += $self->{users};
+  $maxusers = $users+$nodes if $users+$nodes > $maxusers;
 }
 
 sub count

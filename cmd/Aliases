@@ -56,6 +56,9 @@ package CmdAlias;
 	k => [
 	],
 	l => [
+	  '^l$', 'directory', 'directory',
+	  '^ll$', 'directory', 'directory',
+	  '^ll/(\d+)', 'directory $1', 'directory',
 	],
 	m => [
 	],
@@ -69,8 +72,10 @@ package CmdAlias;
 	  '^q', 'bye', 'bye',
 	],
 	r => [
+	  '^r$', 'read', 'read',
 	],
 	s => [
+	  '^sh/c$', 'show/configuration', 'show/configuration',
 	  '^sh/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
 	  '^sh/dx/(\d+)', 'show/dx $1', 'show/dx',
 	  '^sh/dx/d(\d+)', 'show/dx from $1', 'show/dx',
