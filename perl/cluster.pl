@@ -244,7 +244,7 @@ sub rec
 sub clean_inqueue
 {
 	my $dxchan = shift;
-	@inqueue = grep {$_ != $dxchan} @inqueue;
+	@inqueue = grep {$_->{dxchan} != $dxchan} @inqueue;
 }
 
 sub login

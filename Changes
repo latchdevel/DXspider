@@ -1,3 +1,6 @@
+17Jan03=======================================================================
+1. Fix problem with lines being left in the main input queue for a 
+disconnected/ing node.
 14Jan03=======================================================================
 1. Tidy up AUTOLOAD functions
 2. Make sure that empty PC16s are not sent on startup to a node.
