@@ -64,7 +64,7 @@
 
 
 
-  1. Installation (Original version by Iain Phillips, G0RDI)
+  1. Installation (Original version by Iain Philipps, G0RDI)
 
      1.1 Introduction
      1.2 Preparation
@@ -288,7 +288,7 @@
 
   ______________________________________________________________________
 
-  11..  IInnssttaallllaattiioonn ((OOrriiggiinnaall vveerrssiioonn bbyy IIaaiinn PPhhiilllliippss,, GG00RRDDII))
+  11..  IInnssttaallllaattiioonn ((OOrriiggiinnaall vveerrssiioonn bbyy IIaaiinn PPhhiilliippppss,, GG00RRDDII))
 
   11..11..  IInnttrroodduuccttiioonn
 
