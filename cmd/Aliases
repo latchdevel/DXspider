@@ -26,6 +26,7 @@ package CmdAlias;
 	  '^\?', 'apropos', 'apropos',
 	],
     'a' => [
+	  '^a$', 'announce', 'announce',
 	'^acc?e?p?t?$', 'apropos accept', 'apropos',
 	  '^ann?o?u?n?c?e?/full', 'announce full', 'announce', 
 	  '^ann?o?u?n?c?e?/sysop', 'announce sysop', 'announce',
