@@ -3,6 +3,7 @@
 ones).
 2. Have only one is_callsign and not an iscallsign as well.
 3. Add set/hops and show/hops commands.
+4. Add unset/badnode command and put some help in for these commands
 03Nov00=======================================================================
 1. allow - in filter strings
 2. store only the filter expression NOTE BENE: you will need to clear all 

@@ -7,8 +7,8 @@
 #
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) if $self->priv < 6;
-my @out;
+my @out = ($self->msg('badnode3'));
 for (@DXProt::nodx_node) {
-	push @out, "$_ is a badnode";
+	push @out,  $_;
 }
 return (1, @out);

@@ -805,6 +805,24 @@ SP is an alias for SEND PRIVATE
 
 === 5^SET/ARCLUSTER <call> [<call>..]^Make the callsign an AR-Cluster node
 
+=== 6^SET/BADNODE <call>^Stop spots from this callsign being propagated
+=== 6^UNSET/BADNODE <call>^Allow spots from this callsign again
+Setting a callsign as a 'badnode' will prevent spots from that node 
+going any further. They will not be displayed and they will not be 
+sent onto other nodes.
+
+The call can be a full or partial call (or a prefix), eg:-
+
+  set/badnode K1TTT 
+
+will stop anything from K1TTT (including any SSID's)
+
+  unset/badnode K1TTT
+
+will allow spots from him again.
+
+Use with extreme care. This command may well be superceeded by FILTERing.
+
 === 0^SET/BEEP^Add a beep to DX and other messages on your terminal
 === 0^UNSET/BEEP^Stop beeps for DX and other messages on your terminal
 
@@ -977,6 +995,10 @@ Tell the system where you are. For example:-
 
 === 0^SET/WX^Allow WX messages to come out on your terminal
 === 0^UNSET/WX^Stop WX messages coming out on your terminal
+
+=== 6^SHOW/BADNODE^Show all the bad nodes in the system
+Display all the bad node callsigns in the system, see SET/BADNODE
+for more information.
 
 === 0^SHOW/CALL <callsign>^Show any callbook details on a callsign
 This command queries an international callbook server on the internet
