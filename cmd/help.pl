@@ -50,21 +50,24 @@ $line =~ s/\s+$//og;
 my $alias = CmdAlias::get_hlp($line);
 $line = $alias if $alias;
 
-my $include;
+my $state = 0;
 foreach $in (<$h>) {
 	next if $in =~ /^\#/;
 	chomp $in;
 	if ($in =~ /^===/) {
-		$include = 0;
+	    last if $state == 2;           # come out on next command
 		$in =~ s/=== //;
 		my ($priv, $cmd, $desc) = split /\^/, $in;
 		next if $priv > $self->priv;             # ignore subcommands that are of no concern
 		next unless $cmd =~ /$line/i;
 		push @out, "$cmd $desc" unless $cmd =~ /-$/o;
-		$include = 1;
+		$state = 1;
 		next;
 	}
-	push @out, "   $in" if $include;
+	if ($state > 0) {
+	    push @out, " $in";
+		$state = 2;
+	}
 }
 
 close($h);

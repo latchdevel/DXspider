@@ -376,8 +376,8 @@ can contain any characters but any spaces are removed (you can type in
 spaces - but they won't appear in the password). You can see the
 result with STAT/USER.
  
-=== 0^SET/QRA <locator>^Set your QRA locator
 === 9^SET/SYS_QRA <locator>^Set your cluster QRA locator
+=== 0^SET/QRA <locator>^Set your QRA locator
 Tell the system what your QRA (or Maidenhead) locator is. If you have not
 done a SET/LOCATION then your latitude and longitude will be set roughly
 correctly (assuming your locator is correct ;-). For example:-

@@ -49,8 +49,9 @@ if ($self->state eq "prompt") {
 		for ($i++ ; $i < @f; $i++) {
 			my $msgno = DXMsg::next_transno('Msgno');
 			my $newsubj = "CC: " . $oref->subject;
+			my $newcall = uc $f[$i];
 			my $nref = DXMsg->alloc($msgno, 
-									uc $f[$i], 
+									$newcall, 
 									$self->call,  
 									$main::systime, 
 									'1',  
@@ -68,8 +69,7 @@ if ($self->state eq "prompt") {
 			push @list, $oref->read_msg_body();
 			$nref->store(\@list);
 			$nref->add_dir();
-			push @out, $self->msg('m2', $oref->msgno, $to);
-#			push @out, "copy of msg $oref->{msgno} sent to $to";
+			push @out, $self->msg('m2', $oref->msgno, $newcall);
 		}
 		DXMsg::queue_msg();
 		return (1, @out);
@@ -127,7 +127,6 @@ if ($self->state eq "prompt") {
 			}
 		}
 		if (grep $_ eq $t, @DXMsg::badmsg) {
-#			push @out, "Sorry, $t is an unacceptable TO address";
 			push @out, $self->msg('m3', $t);
 		} else {
 			push @to, $t;
@@ -144,7 +143,6 @@ if ($self->state eq "prompt") {
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('send1');
 	push @out, $self->msg('m1');
-	#push @out, "Enter Subject (30 characters) >";
 }
 
 return (1, @out);

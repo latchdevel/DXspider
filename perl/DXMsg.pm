@@ -267,7 +267,7 @@ sub process
 						# does an identical message already exist?
 						my $m;
 						for $m (@msg) {
-							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from}) {
+							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from} && $ref->{to} eq $m->{to}) {
 								$ref->stop_msg($self->call);
 								my $msgno = $m->{msgno};
 								dbg('msg', "duplicate message to $msgno\n");
