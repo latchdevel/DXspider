@@ -348,6 +348,7 @@ while (<CL>) {
 }
 close CL;
 foreach my $fn (@fn) {
+	$fn =~ s|::|/|g;
 	open(CL, "$main::root/perl/${fn}.pm") or next;
 	while (<CL>) {
 		if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)/ ) {

@@ -1,3 +1,8 @@
+07Jun01=======================================================================
+1. move userconfig.pl and nodeconfig.pl to stat/
+2. fix problem with locally connected users not being removed from the 
+routing tables
+3. Fix the build calc to take into account subdirectories
 06Jun01=======================================================================
 1. add stat/route_node and stat/route_user commands
 2. add sh/userconfig command (to show backward links to nodes)
