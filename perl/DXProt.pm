@@ -149,7 +149,13 @@ sub normal
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
 	return unless $pcno;
 	return if $pcno < 10 || $pcno > 51;
-	
+
+	# dump bad protocol messages unless it is a PC29
+	if ($line =~ /\%[0-9A-F][0-9A-F]/o && $pcno != 29) {
+		dbg('chan', "CORRUPT protocol message - dumped");
+		return;
+	}
+
 	# local processing 1
 	my $pcr;
 	eval {

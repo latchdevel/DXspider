@@ -159,6 +159,7 @@ sub rec_stdin
 	#  $prbuf =~ s/\n/\\n/;
 	#  print "sys: $r ($prbuf)\n";
 	if (defined $r) {
+		
 		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
 			
 			# save the lines
@@ -266,6 +267,13 @@ sub rec_stdin
 				beep();
 			}
 		} elsif ($r ge ' ' && $r le '~') {
+			# move the top screen back to the bottom if you type something
+			if ($spos < @shistory - 1) {
+				$spos = @shistory;
+				show_screen();
+			}
+		
+			# insert the character into the keyboard buffer
 			if ($pos < $lth) {
 				my $a = substr($inbuf, 0, $pos);
 				my $b = substr($inbuf, $pos);

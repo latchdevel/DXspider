@@ -261,6 +261,7 @@ sub dochat
 		for (;;) {
 			if ($csort eq 'telnet') {
 				$line = $sock->get();
+				cease(11) unless $line;          # the socket has gone away?
 				$line =~ s/\r\n/\n/og;
 				chomp;
 			} elsif ($csort eq 'ax25' || $csort eq 'prog') {

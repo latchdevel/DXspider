@@ -1,3 +1,7 @@
+17Aug99=======================================================================
+1. all protocol except PC29 containing %XX characters will be dumped.
+2. Changed console.pl so that if you start typing it moves the top window
+back to the bottom.
 19Jul99=======================================================================
 1. Added iota and qra clauses to sh/dx as well, these take optional arguments
 and will look for the appropriate strings.
