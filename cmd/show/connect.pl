@@ -11,22 +11,27 @@ return (1, $self->msg('e5')) if $self->priv < 1;
 my @out;
 my $count;
 
-push @out, "Cnum Call      Address/Port              State  Type   Dir.";
+push @out, "Cnum Call      Address/Port              State  Type   Dir.     Module";
 
 foreach my $call (sort keys %Msg::conns) {
 	my $r = $Msg::conns{$call};
-	my $addr = "$r->{peerhost}/$r->{peerport}";
 	my $c = $call;
+	my $addr;
+	
 	if ($c =~ /^Server\s+(\S+)$/) {
 		$addr = $1;
 		$c = "Server";
+	} else {
+		$addr = "$r->{peerhost}/$r->{peerport}";
 	}
-	push @out, 	sprintf(" %3d %-9s %-27.27s %3s %7s %8s", 
+	my $csort = $r->{csort} || '';
+	my $sort = $r->{sort} || '';
+	push @out, 	sprintf(" %3d %-9s %-27.27s %3s %7s %8s %-8s", 
 						$r->{cnum}, $c, 
 						$addr, $r->{state}, 
-						$r->{csort}, $r->{sort});
+						$csort, $sort, ref $r);
 
 	$count++;
 }
-push @out, "$count Connections";
+push @out, "$count Connections ($Msg::noconns Allocated)";
 return (1, @out);

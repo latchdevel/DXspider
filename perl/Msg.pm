@@ -16,7 +16,7 @@ use IO::Socket;
 use DXDebug;
 use Timer;
 
-use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported);
+use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported $cnum);
 
 %rd_callbacks = ();
 %wt_callbacks = ();
@@ -53,6 +53,8 @@ my $eagain = eval {EAGAIN()};
 my $einprogress = eval {EINPROGRESS()};
 my $ewouldblock = eval {EWOULDBLOCK()};
 $^W = $w;
+$cnum = 0;
+
 
 #
 #-----------------------------------------------------------------
@@ -73,9 +75,11 @@ sub new
 		csort => 'telnet',
 		timeval => 60,
 		blocking => 0,
-		cnum => ++$noconns,
+		cnum => (($cnum < 999) ? (++$cnum) : ($cnum = 1)),
     };
 
+	$noconns++;
+	
 	dbg('connll', "Connection created ($noconns)");
 	return bless $conn, $class;
 }
@@ -119,7 +123,7 @@ sub conns
 		$call = $pkg->{call} unless $call;
 		return undef unless $call;
 		dbg('connll', "changing $pkg->{call} to $call") if exists $pkg->{call} && $call ne $pkg->{call};
-		delete $conns{$pkg->{call}} if $pkg->{call} ne $call; 
+		delete $conns{$pkg->{call}} if exists $pkg->{call} && exists $conns{$pkg->{call}} && $pkg->{call} ne $call; 
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
 		dbg('connll', "Connection $pkg->{cnum} $call stored");
