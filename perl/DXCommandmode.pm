@@ -288,6 +288,7 @@ sub normal
 		}
 		if ($@) {
 			$self->send_ans("Syserr: on stored func $self->{func}", $@);
+			delete $self->{func};
 			$self->state('prompt');
 			undef $@;
 		}

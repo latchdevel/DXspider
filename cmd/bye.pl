@@ -15,5 +15,6 @@ if ($self->is_user && -e "$main::data/logout") {
 	sleep(1);
 }
 
-$self->state('bye');
+$self->disconnect;
+
 return (1);

@@ -311,7 +311,6 @@ sub process_inqueue
 			die "\$user not defined for $call" if !defined $user;
 			# normal input
 			$dxchan->normal($line);
-			$dxchan->disconnect if ($dxchan->{state} eq 'bye');
 		} elsif ($sort eq 'Z') {
 			$dxchan->disconnect;
 		} elsif ($sort eq 'D') {
