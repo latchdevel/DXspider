@@ -67,6 +67,7 @@ use DXDupe;
 use BadWords;
 
 use Data::Dumper;
+use IO::File;
 use Fcntl ':flock'; 
 use POSIX ":sys_wait_h";
 
@@ -75,8 +76,10 @@ use Local;
 package main;
 
 use strict;
-use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects $zombies $root
-		   @listeners $lang $myalias @debug $userfn $clusteraddr $clusterport $mycall $decease );
+use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
+			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
+			$clusterport $mycall $decease $build
+		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
@@ -228,8 +231,8 @@ sub cease
 		$_->close_server;
 	}
 
-	dbg('chan', "DXSpider version $version ended");
-	Log('cluster', "DXSpider V$version stopped");
+	dbg('chan', "DXSpider version $version, build $build ended");
+	Log('cluster', "DXSpider V$version, build $build ended");
 	dbgclose();
 	Logclose();
 	unlink $lockfn;
@@ -309,10 +312,30 @@ foreach (@debug) {
 }
 STDOUT->autoflush(1);
 
-Log('cluster', "DXSpider V$version started");
+# calculate build number
+$build = $main::version;
+
+if (opendir(DIR, "$main::root/perl")) {
+	my @d = readdir(DIR);
+	closedir(DIR);
+	foreach my $fn (@d) {
+		if ($fn =~ /^cluster\.pl$/ || $fn =~ /\.pm$/) {
+			my $f = new IO::File "$main::root/perl/$fn" or next;
+			while (<$f>) {
+				if (/^#\s+\$Id:\s+[\w\._]+,v\s+(\d+\.\d+)/ ) {
+					$build += $1;
+					last;
+				}
+			}
+			$f->close;
+		}
+	}
+}
+
+Log('cluster', "DXSpider V$version, build $build started");
 
 # banner
-dbg('err', "DXSpider DX Cluster Version $version", "Copyright (c) 1998-2001 Dirk Koopman G1TLH");
+dbg('err', "DXSpider Version $version, build $build started", "Copyright (c) 1998-2001 Dirk Koopman G1TLH");
 
 # load Prefixes
 dbg('err', "loading prefixes ...");

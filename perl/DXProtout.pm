@@ -102,8 +102,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $info = DXCluster::cluster;
-	return "PC18^$info^$DXProt::myprot_version^";
+	return "PC18^DXSpider Version $main::version Build $main::build^$DXProt::myprot_version^";
 }
 
 #
