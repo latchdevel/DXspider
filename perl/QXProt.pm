@@ -79,12 +79,12 @@ sub normal
 	my ($id, $fromnode, $msgid, $incs);
 	return unless ($id, $fromnode, $msgid, $incs) = $_[1] =~ /^QX(\d\d)\^([-A-Z0-9]+)\^([0-9A-F]{1,4})\^.*\^([0-9A-F]{2})$/;
 
+	$msgid = hex $msgid;
 	my $noderef = Route::Node::get($fromnode);
 	$noderef = Route::Node::new($fromnode) unless $noderef;
-	my $user = DXChannel->get_current($fromnode);
 
 	my $il = length $incs; 
-	my $cs = sprintf("%02X", unpack("%32C*", substr($_[1], 0, length($_[1]) - ($il+1))));
+	my $cs = sprintf("%02X", unpack("%32C*", substr($_[1], 0, length($_[1]) - ($il+1))) & 255);
 	if ($incs ne $cs) {
 		dbg("QXPROT: Checksum fail in: $incs ne calc: $cs" ) if isdbg('chanerr');
 		return;
@@ -102,7 +102,7 @@ sub handle
 	my $self = shift;
 	my $id = 0 + shift;
 	my $sub = "handle$id";
-	$self->$sub($self, @_) if $self->can($sub);
+	$self->$sub(@_) if $self->can($sub);
 	return;
 }
 
@@ -112,7 +112,7 @@ sub gen
 	my $self = shift;
 	my $id = 0 + shift;
 	my $sub = "gen$id";
-	$self->$sub($self, @_) if $self->can($sub);
+	$self->$sub(@_) if $self->can($sub);
 	return;
 }
 
@@ -162,20 +162,20 @@ sub handle1
 	my $self = shift;
 	
 	my @f = split /\^/, $_[2];
-	my $inv = Verify->new($f[5]);
-	unless ($inv->verify($main::me->user->passphrase, $f[6], $main::mycall, $self->call)) {
+	my $inv = Verify->new($f[7]);
+	unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
 		$self->sendnow('D','Sorry...');
 		$self->disconnect;
 	}
 	if ($self->{outbound}) {
 		$self->send($self->gen1);
 	} 
-	if ($self->{sort} ne 'S' && $f[2] eq 'DXSpider') {
+	if ($self->{sort} ne 'S' && $f[4] eq 'DXSpider') {
 		$self->{user}->{sort} = $self->{sort} = 'S';
 		$self->{user}->{priv} = $self->{priv} = 1 unless $self->{priv};
 	}
-	$self->{version} = $f[3];
-	$self->{build} = $f[4];
+	$self->{version} = $f[5];
+	$self->{build} = $f[6];
 	$self->state('normal');
 	$self->{lastping} = 0;
 }
@@ -184,7 +184,7 @@ sub gen1
 {
 	my $self = shift;
 	my $inp = Verify->new;
-	return frame(1, 1, "DXSpider", $main::version + 53, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
+	return frame(1, 1, "DXSpider", ($main::version + 53) * 100, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
 }
 
 sub handle2

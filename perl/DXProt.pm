@@ -1914,6 +1914,8 @@ sub broadcast_route
 		foreach $dxchan (@dxchan) {
 			next if $dxchan == $self;
 			next if $dxchan == $main::me;
+			next if $dxchan->user->wantnp;
+			
 			$dxchan->send_route($generate, @_);
 		}
 	}
