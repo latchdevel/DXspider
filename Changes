@@ -2,6 +2,9 @@
 1. Finally managed to update my source with the sourceforge one
 2. added user->qra cleaning in various places
 3. added four digit locator strings to broadcast DX spots (for users).
+4. PC11 with blank callsigns should now be ignored.
+5. put back the unpadding to the PC11 dup checking to catch spots with added
+blanks at the end of lines.
 25Jun00=======================================================================
 1. added 0 to the regex that checks for valid data on the cluster.pl->client
 channel - this will allow G0VGS and G0RDI to connect....
