@@ -657,7 +657,7 @@ sub normal
 		}
 		
 		if ($pcno == 39) {		# incoming disconnect
-			$self->disconnect();
+			$self->disconnect(1);
 			return;
 		}
 		
