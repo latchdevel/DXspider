@@ -766,6 +766,20 @@ was just after a cluster restart.
 Reload the /spider/msg/forward.pl file if you have changed it
 manually whilst the cluster is running.
 
+=== 5^LOAD/KEPS^Load new keps data
+=== 5^LOAD/KEPS [nn]^Load new keps data from message
+If there is no message number then reload the current Keps data from
+the Keps.pm data file. You create this file by running 
+
+ /spider/perl/convkeps.pl <filename>
+
+on a file containing NASA 2 line keps as a message issued by AMSAT. 
+
+If there is a message number, then it will take the message, run
+convkeps.pl on it and then load the data, all in one step.
+
+These messages are sent to ALL by GB7DJK (and others) from time to time. 
+
 === 9^LOAD/MESSAGES^Reload the system messages file
 If you change the /spider/perl/Messages file (usually whilst
 fiddling/writing new commands) you can have them take effect during a

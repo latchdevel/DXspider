@@ -1,6 +1,9 @@
 17Dec01=======================================================================
 1. added new satellite stuff from Steve K9AN. Fixed upper/lower problem
 in convkeps.pl.
+2. enhanced load/keps to accept a message no. This will create a new keps
+file from a msg (hopefully containing 2 Line Nasa keps) and then load - all
+in one step. Added load/keps to the help files
 15Dec01=======================================================================
 1. added superfluous spaces back into PC73 for the benefit of clx
 14Dec01=======================================================================

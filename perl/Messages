@@ -230,6 +230,7 @@ package DXM;
 				sat2 => 'dd/mm  UTC      Lat     Lon  Alt Km      Az      El Dist Km',
 				sat3 => 'Syntax: SH/SAT <name> [<hours> <interval>]',
 				sat4 => 'Satellites available/Age of Keps (days):-',
+				sat5 => 'need nnnnn.AMSAT in subject to load keps from this message',
 				satnf => 'Satellite $_[0] unknown',
 				satdisc => '-----',
 				sethop1 => 'usage: set/hops <call> ann|spots|wwv|wcy <no of hops>',

@@ -1,7 +1,7 @@
 #
 # this file is automatically produced by convkeps.pl
 #
-# Last update: Mon Dec 17 16:52:38 2001
+# Last update: Mon Dec 17 18:13:30 2001
 #
 
 package Sun;
@@ -70,22 +70,6 @@ package Sun;
     meananomaly => '7.0532',
     eccentricity => '0.0012448',
     inclination => '82.9232'
-  },
-  'SO-35' => {
-    orbit => '9604',
-    elset => '281',
-    argperigee => '310.331',
-    epoch => '356.30570266',
-    bstar => '0.00020263',
-    number => '99008',
-    raan => '155.0303',
-    mm1 => '7.23e-06',
-    meanmotion => '14.41615958',
-    mm2 => '0',
-    meananomaly => '48.4786',
-    id => '25636',
-    inclination => '96.4508',
-    eccentricity => '0.0151034'
   },
   'GO-32' => {
     orbit => '17796',
@@ -199,21 +183,21 @@ package Sun;
     eccentricity => '0.0011822',
     inclination => '98.3351'
   },
-  'AO-27' => {
-    orbit => '42823',
-    elset => '149',
-    argperigee => '94.8763',
-    epoch => '1347.88570444',
-    bstar => '0.0002808',
-    number => '93061',
-    raan => '28.4306',
-    mm1 => '6.64e-06',
-    meanmotion => '14.28597495',
+  FENGYUN1 => {
+    orbit => '13372',
+    elset => '429',
+    argperigee => '148.7618',
+    epoch => '1347.72195466',
+    bstar => '0.00012402',
+    number => '99025',
+    raan => '17.8166',
+    mm1 => '1.79e-06',
+    meanmotion => '14.10428848',
     mm2 => '0',
-    id => '22825',
-    meananomaly => '265.3505',
-    eccentricity => '0.0009495',
-    inclination => '98.3272'
+    id => '25730',
+    meananomaly => '211.4408',
+    eccentricity => '0.0014339',
+    inclination => '98.6741'
   },
   'NOAA-11' => {
     orbit => '68177',
@@ -231,53 +215,21 @@ package Sun;
     eccentricity => '0.0011964',
     inclination => '98.9441'
   },
-  FENGYUN1 => {
-    orbit => '13372',
-    elset => '429',
-    argperigee => '148.7618',
-    epoch => '1347.72195466',
-    bstar => '0.00012402',
-    number => '99025',
-    raan => '17.8166',
-    mm1 => '1.79e-06',
-    meanmotion => '14.10428848',
+  'AO-27' => {
+    orbit => '42823',
+    elset => '149',
+    argperigee => '94.8763',
+    epoch => '1347.88570444',
+    bstar => '0.0002808',
+    number => '93061',
+    raan => '28.4306',
+    mm1 => '6.64e-06',
+    meanmotion => '14.28597495',
     mm2 => '0',
-    id => '25730',
-    meananomaly => '211.4408',
-    eccentricity => '0.0014339',
-    inclination => '98.6741'
-  },
-  OCS => {
-    orbit => '4779',
-    elset => '405',
-    argperigee => '347.6221',
-    epoch => '356.70018964',
-    bstar => '0.030241',
-    number => '4',
-    raan => '263.5965',
-    mm1 => '0.00237336',
-    meanmotion => '14.81378842',
-    mm2 => '0',
-    meananomaly => '12.499',
-    id => '26062',
-    inclination => '100.2182',
-    eccentricity => '0.0022433'
-  },
-  'TIUNGSAT-1' => {
-    orbit => '6538',
-    elset => '221',
-    argperigee => '299.7435',
-    epoch => '1347.2554667',
-    bstar => '0.00083493',
-    number => '57',
-    raan => '275.7103',
-    mm1 => '6.053e-05',
-    meanmotion => '14.78230514',
-    mm2 => '0',
-    id => '26548',
-    meananomaly => '59.8964',
-    eccentricity => '0.0047431',
-    inclination => '64.5594'
+    id => '22825',
+    meananomaly => '265.3505',
+    eccentricity => '0.0009495',
+    inclination => '98.3272'
   },
   'NOAA-12' => {
     orbit => '54974',
@@ -294,6 +246,22 @@ package Sun;
     meananomaly => '164.6835',
     eccentricity => '0.0012491',
     inclination => '98.5871'
+  },
+  'TIUNGSAT-1' => {
+    orbit => '6538',
+    elset => '221',
+    argperigee => '299.7435',
+    epoch => '1347.2554667',
+    bstar => '0.00083493',
+    number => '57',
+    raan => '275.7103',
+    mm1 => '6.053e-05',
+    meanmotion => '14.78230514',
+    mm2 => '0',
+    id => '26548',
+    meananomaly => '59.8964',
+    eccentricity => '0.0047431',
+    inclination => '64.5594'
   },
   'RS-15' => {
     orbit => '28672',
@@ -327,22 +295,6 @@ package Sun;
     eccentricity => '0.0009431',
     inclination => '99.1885'
   },
-  'RS-12/13' => {
-    orbit => '54436',
-    elset => '387',
-    argperigee => '51.3648',
-    epoch => '1346.95326096',
-    bstar => '0.00019814',
-    number => '91007',
-    raan => '142.3842',
-    mm1 => '2.03e-06',
-    meanmotion => '13.7431434',
-    mm2 => '0',
-    id => '21089',
-    meananomaly => '309.0257',
-    eccentricity => '0.0030776',
-    inclination => '82.9195'
-  },
   'NOAA-15' => {
     orbit => '18636',
     elset => '462',
@@ -359,21 +311,21 @@ package Sun;
     eccentricity => '0.0011105',
     inclination => '98.5835'
   },
-  'NOAA-16' => {
-    orbit => '6323',
-    elset => '613',
-    argperigee => '88.3285',
-    epoch => '1347.80714413',
-    bstar => '0.00042048',
-    number => '55',
-    raan => '290.7081',
-    mm1 => '7.18e-06',
-    meanmotion => '14.11410831',
+  'RS-12/13' => {
+    orbit => '54436',
+    elset => '387',
+    argperigee => '51.3648',
+    epoch => '1346.95326096',
+    bstar => '0.00019814',
+    number => '91007',
+    raan => '142.3842',
+    mm1 => '2.03e-06',
+    meanmotion => '13.7431434',
     mm2 => '0',
-    id => '26536',
-    meananomaly => '271.9166',
-    eccentricity => '0.0011459',
-    inclination => '98.8477'
+    id => '21089',
+    meananomaly => '309.0257',
+    eccentricity => '0.0030776',
+    inclination => '82.9195'
   },
   HUBBLE => {
     orbit => '43769',
@@ -391,6 +343,22 @@ package Sun;
     eccentricity => '0.00118',
     inclination => '28.4644'
   },
+  'NOAA-16' => {
+    orbit => '6323',
+    elset => '613',
+    argperigee => '88.3285',
+    epoch => '1347.80714413',
+    bstar => '0.00042048',
+    number => '55',
+    raan => '290.7081',
+    mm1 => '7.18e-06',
+    meanmotion => '14.11410831',
+    mm2 => '0',
+    id => '26536',
+    meananomaly => '271.9166',
+    eccentricity => '0.0011459',
+    inclination => '98.8477'
+  },
   'UO-36' => {
     orbit => '14257',
     elset => '455',
@@ -406,22 +374,6 @@ package Sun;
     meananomaly => '133.9607',
     eccentricity => '0.0032417',
     inclination => '64.5628'
-  },
-  MIR => {
-    orbit => '84870',
-    elset => '341',
-    argperigee => '138.854',
-    epoch => '356.86032407',
-    bstar => '0.00042632',
-    number => '86017',
-    raan => '14.9528',
-    mm1 => '0.00102535',
-    meanmotion => '15.84741655',
-    mm2 => '0',
-    meananomaly => '231.2527',
-    id => '16609',
-    inclination => '51.6493',
-    eccentricity => '0.0016068'
   },
   'WO-18' => {
     orbit => '62073',
@@ -487,22 +439,6 @@ package Sun;
     eccentricity => '0.0023078',
     inclination => '82.5489'
   },
-  'FO-20' => {
-    orbit => '55498',
-    elset => '368',
-    argperigee => '265.152',
-    epoch => '1346.62570696',
-    bstar => '7.6115e-05',
-    number => '90013',
-    raan => '21.5136',
-    mm1 => '-2e-08',
-    meanmotion => '12.83303773',
-    mm2 => '0',
-    id => '20480',
-    meananomaly => '88.7769',
-    eccentricity => '0.0539851',
-    inclination => '99.0333'
-  },
   'WO-39' => {
     orbit => '9852',
     elset => '424',
@@ -519,6 +455,22 @@ package Sun;
     eccentricity => '0.0036514',
     inclination => '100.2096'
   },
+  'FO-20' => {
+    orbit => '55498',
+    elset => '368',
+    argperigee => '265.152',
+    epoch => '1346.62570696',
+    bstar => '7.6115e-05',
+    number => '90013',
+    raan => '21.5136',
+    mm1 => '-2e-08',
+    meanmotion => '12.83303773',
+    mm2 => '0',
+    id => '20480',
+    meananomaly => '88.7769',
+    eccentricity => '0.0539851',
+    inclination => '99.0333'
+  },
   'AO-10' => {
     orbit => '13904',
     elset => '854',
@@ -534,22 +486,6 @@ package Sun;
     meananomaly => '103.7199',
     eccentricity => '0.6049418',
     inclination => '26.1045'
-  },
-  OPAL => {
-    orbit => '688',
-    elset => '46',
-    argperigee => '55.7964',
-    epoch => '75.10024777',
-    bstar => '0.00026939',
-    number => '4',
-    raan => '280.3797',
-    mm1 => '7.03e-06',
-    meanmotion => '14.34200204',
-    mm2 => '0',
-    meananomaly => '304.6814',
-    id => '26063',
-    inclination => '100.2291',
-    eccentricity => '0.0038081'
   },
   'LO-19' => {
     orbit => '62077',
@@ -583,22 +519,6 @@ package Sun;
     eccentricity => '0.0003453',
     inclination => '67.0529'
   },
-  'FO-29' => {
-    orbit => '26290',
-    elset => '463',
-    argperigee => '256.7106',
-    epoch => '1347.62828255',
-    bstar => '0.00015964',
-    number => '96046',
-    raan => '188.2787',
-    mm1 => '1.18e-06',
-    meanmotion => '13.52803169',
-    mm2 => '0',
-    id => '24278',
-    meananomaly => '99.4764',
-    eccentricity => '0.0350179',
-    inclination => '98.5162'
-  },
   POSAT => {
     orbit => '42820',
     elset => '125',
@@ -614,6 +534,22 @@ package Sun;
     meananomaly => '282.6301',
     eccentricity => '0.0010802',
     inclination => '98.3286'
+  },
+  'FO-29' => {
+    orbit => '26290',
+    elset => '463',
+    argperigee => '256.7106',
+    epoch => '1347.62828255',
+    bstar => '0.00015964',
+    number => '96046',
+    raan => '188.2787',
+    mm1 => '1.18e-06',
+    meanmotion => '13.52803169',
+    mm2 => '0',
+    id => '24278',
+    meananomaly => '99.4764',
+    eccentricity => '0.0350179',
+    inclination => '98.5162'
   },
   'AO-16' => {
     orbit => '62075',
@@ -663,38 +599,6 @@ package Sun;
     eccentricity => '0.0007819',
     inclination => '98.1234'
   },
-  UNK1 => {
-    orbit => '446',
-    elset => '34',
-    argperigee => '54.8262',
-    epoch => '75.10152136',
-    bstar => '0.0013283',
-    number => '4',
-    raan => '280.3591',
-    mm1 => '3.697e-05',
-    meanmotion => '14.34222766',
-    mm2 => '0',
-    meananomaly => '305.6315',
-    id => '26091',
-    inclination => '100.2243',
-    eccentricity => '0.0036379'
-  },
-  'AO-37' => {
-    orbit => '9845',
-    elset => '394',
-    argperigee => '62.5166',
-    epoch => '1347.87179766',
-    bstar => '0.00046965',
-    number => '4',
-    raan => '313.518',
-    mm1 => '1.288e-05',
-    meanmotion => '14.34933',
-    mm2 => '0',
-    id => '26065',
-    meananomaly => '297.9883',
-    eccentricity => '0.0038145',
-    inclination => '100.2129'
-  },
   'OKEAN-4' => {
     orbit => '38610',
     elset => '949',
@@ -711,69 +615,21 @@ package Sun;
     eccentricity => '0.0024546',
     inclination => '82.5418'
   },
-  UNK2 => {
-    orbit => '449',
-    elset => '38',
-    argperigee => '57.7071',
-    epoch => '75.16312311',
-    bstar => '0.0008449',
+  'AO-37' => {
+    orbit => '9845',
+    elset => '394',
+    argperigee => '62.5166',
+    epoch => '1347.87179766',
+    bstar => '0.00046965',
     number => '4',
-    raan => '280.4286',
-    mm1 => '2.348e-05',
-    meanmotion => '14.34558971',
+    raan => '313.518',
+    mm1 => '1.288e-05',
+    meanmotion => '14.34933',
     mm2 => '0',
-    meananomaly => '302.7904',
-    id => '26092',
-    inclination => '100.2173',
-    eccentricity => '0.0038886'
-  },
-  GRO => {
-    orbit => '37903',
-    elset => '788',
-    argperigee => '62.445',
-    epoch => '75.14126322',
-    bstar => '0.0004263',
-    number => '91027',
-    raan => '259.3084',
-    mm1 => '0.00011373',
-    meanmotion => '15.25595337',
-    mm2 => '0',
-    meananomaly => '297.6646',
-    id => '21225',
-    inclination => '28.4577',
-    eccentricity => '0.0005035'
-  },
-  UNK3 => {
-    orbit => '470',
-    elset => '41',
-    argperigee => '59.0925',
-    epoch => '75.09738477',
-    bstar => '0.0013991',
-    number => '4',
-    raan => '280.3768',
-    mm1 => '3.914e-05',
-    meanmotion => '14.34403542',
-    mm2 => '0',
-    meananomaly => '301.4011',
-    id => '26093',
-    inclination => '100.2214',
-    eccentricity => '0.0038328'
-  },
-  UNK4 => {
-    orbit => '417',
-    elset => '22',
-    argperigee => '57.489',
-    epoch => '75.02817116',
-    bstar => '0.00079759',
-    number => '4',
-    raan => '280.2847',
-    mm1 => '2.202e-05',
-    meanmotion => '14.34342323',
-    mm2 => '0',
-    meananomaly => '302.9942',
-    id => '26094',
-    inclination => '100.2222',
-    eccentricity => '0.003787'
+    id => '26065',
+    meananomaly => '297.9883',
+    eccentricity => '0.0038145',
+    inclination => '100.2129'
   },
   'IO-26' => {
     orbit => '42810',
@@ -807,22 +663,6 @@ package Sun;
     eccentricity => '0.0037628',
     inclination => '100.2112'
   },
-  RESURS => {
-    orbit => '17809',
-    elset => '61',
-    argperigee => '330.0024',
-    epoch => '1347.76053225',
-    bstar => '0.0012571',
-    number => '98043',
-    raan => '62.7588',
-    mm1 => '2.808e-05',
-    meanmotion => '14.23364838',
-    mm2 => '0',
-    id => '25394',
-    meananomaly => '30.112',
-    eccentricity => '0.0001193',
-    inclination => '98.6705'
-  },
   'PO-34' => {
     orbit => '17216',
     elset => '506',
@@ -838,6 +678,22 @@ package Sun;
     meananomaly => '2.1247',
     eccentricity => '0.0006081',
     inclination => '28.462'
+  },
+  RESURS => {
+    orbit => '17809',
+    elset => '61',
+    argperigee => '330.0024',
+    epoch => '1347.76053225',
+    bstar => '0.0012571',
+    number => '98043',
+    raan => '62.7588',
+    mm1 => '2.808e-05',
+    meanmotion => '14.23364838',
+    mm2 => '0',
+    id => '25394',
+    meananomaly => '30.112',
+    eccentricity => '0.0001193',
+    inclination => '98.6705'
   },
   PCSAT => {
     orbit => '1066',
@@ -886,22 +742,6 @@ package Sun;
     meananomaly => '314.4753',
     eccentricity => '0.0012385',
     inclination => '98.3959'
-  },
-  JAWSAT => {
-    orbit => '693',
-    elset => '32',
-    argperigee => '55.7126',
-    epoch => '75.52219673',
-    bstar => '0.00029735',
-    number => '4',
-    raan => '280.8828',
-    mm1 => '7.8e-06',
-    meanmotion => '14.34110882',
-    mm2 => '0',
-    meananomaly => '304.7691',
-    id => '26065',
-    inclination => '100.2316',
-    eccentricity => '0.003852'
   },
   'KO-23' => {
     orbit => '43865',
