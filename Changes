@@ -1,3 +1,6 @@
+01Jan00=======================================================================
+1. Fixed Julian routines to get rid of the millenium bug! (do as I say, not
+as I do!).
 11Dec99=======================================================================
 1. added missing pc48 so that it calls the DXDb::process routine 
 10Dec99=======================================================================

@@ -29,7 +29,7 @@ $dirprefix = "spots";
 sub init
 {
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
-	$fp = DXLog::new($dirprefix, "dat", 'd')
+	$fp = DXLog::new($dirprefix, "dat", 'd');
 }
 
 sub prefix

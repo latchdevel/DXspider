@@ -20,9 +20,7 @@ sub unixtoj
 	my $t = shift;
 	my ($year, $day) = (gmtime($t))[5,7];
 	
-	if ($year < 100) {
-		$year += ($year < 50) ? 2000 : 1900;
-	}
+	$year += 1900;
 	return ($year, $day+1);
 }
 
@@ -31,9 +29,8 @@ sub unixtojm
 {
 	my $t = shift;
 	my ($mon, $year) = (gmtime($t))[4..5];
-	if ($year < 100) {
-		$year += ($year < 50) ? 2000 : 1900;
-	}
+
+	$year += 1900;
 	return ($year, $mon + 1);
 }
 
