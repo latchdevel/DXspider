@@ -28,7 +28,7 @@ sub dup
 	chomp $text;
 	unpad($text);
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $dupkey = "$call|$to|$text";
+	my $dupkey = "$to|$text";
 	return 1 if exists $dup{$dupkey};
 	$dup{$dupkey} = $d;         # in seconds (to the nearest minute)
 	return 0; 
