@@ -52,9 +52,15 @@ sub add
 
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @dxcc = Prefix::extract($out[1]);
-	push @out, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	my $spotted_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	my $spotted_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
+	my $spotted_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
+	push @out, $spotted_dxcc;
 	@dxcc = Prefix::extract($out[4]);
-	push @out, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	my $spotter_dxcc = (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
+	my $spotter_itu = (@dxcc > 0 ) ? $dxcc[1]->itu() : 0;
+	my $spotter_cq = (@dxcc > 0 ) ? $dxcc[1]->cq() : 0;
+	push @out, $spotter_dxcc;
 	push @out, $spot[5];
 	
 	my $buf = join("\^", @out);
@@ -63,7 +69,7 @@ sub add
 	# automagically closes the output file (if any)). 
 	$fp->writeunix($out[2], $buf);
   
-	return $buf;
+	return ($buf, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
 }
 
 # search the spot database for records based on the field no and an expression

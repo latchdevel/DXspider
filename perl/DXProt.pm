@@ -203,7 +203,14 @@ sub normal
 				return;
 			}
 			
-			my $spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
+			my @spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
+
+            #
+			# @spot at this point contains:-
+            # freq, spotted call, time, text, spotter, spotted cc, spotters cc,
+            # orig node, spotted itu, spotted cq, spotters itu, spotters cq
+			# you should be able to route on any of these
+            #
 			
 			# local processing 
 			my $r;
@@ -214,9 +221,9 @@ sub normal
 			return if $r;
 
 			# send orf to the users
-			if ($spot && $pcno == 11) {
+			if (@spot && $pcno == 11) {
 				my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
-				broadcast_users("$buf\a\a", 'dx', $spot);
+				broadcast_users("$buf\a\a", 'dx', $spot[0]);
 			}
 
 			# DON'T be silly and send on PC26s!
