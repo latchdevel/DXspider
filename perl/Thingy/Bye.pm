@@ -55,7 +55,7 @@ sub handle
 		my $uref = Route::get($user);
 		if ($parent && $uref) {
 			if ($uref->isa('Route::Node')) {
-				@pc21 = $parent->del($uref);
+				@pc21 = $uref->del($parent);
 			} else {
 				$parent->del_user($uref);
 				$thing->{pc17n} = $parent;
