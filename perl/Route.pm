@@ -217,7 +217,7 @@ sub config
 
 		if ($nref) {
 			my $c = $nref->user_call;
-			dbg('routec', "recursing from $call -> $c");
+#			dbg('routec', "recursing from $call -> $c");
 			push @out, $nref->config($nodes_only, $level+1, $seen, @_);
 		} else {
 			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
@@ -253,35 +253,40 @@ sub alldxchan
 {
 	my $self = shift;
 	my @dxchan;
+#	dbg('routech', "Trying node $self->{call}");
 	my $dxchan = DXChannel->get($self->{call});
 	push @dxchan, $dxchan if $dxchan;
 	
 	# it isn't, build up a list of dxchannels and possible ping times 
 	# for all the candidates.
-	foreach my $p (@{$self->{parent}}) {
-		my $dxchan = DXChannel->get($p);
-		if ($dxchan) {
-			push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
-		} else {
+	unless (@dxchan) {
+		foreach my $p (@{$self->{parent}}) {
+#			dbg('routech', "Trying parent $p");
 			next if $p eq $main::mycall; # the root
-			my $ref = $self->get($p);
-			push @dxchan, $ref->alldxchan if $ref;
+			my $dxchan = DXChannel->get($p);
+			if ($dxchan) {
+				push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
+			} else {
+				next if grep $p eq $_, @_;
+				my $ref = Route::Node::get($p);
+#				dbg('routech', "Next node $p " . ($ref ? 'Found' : 'NOT Found') );
+				push @dxchan, $ref->alldxchan($self->{call}, @_) if $ref;
+			}
 		}
 	}
+#	dbg('routech', "Got dxchan: " . join(',', (map{ $_->call } @dxchan)) );
 	return @dxchan;
 }
 
 sub dxchan
 {
 	my $self = shift;
-	my $dxchan = DXChannel->get($self->{call});
-	return $dxchan if $dxchan;
-	
 	my @dxchan = $self->alldxchan;
 	return undef unless @dxchan;
 	
 	# determine the minimum ping channel
 	my $minping = 99999999;
+	my $dxchan;
 	foreach my $dxc (@dxchan) {
 		my $p = $dxc->pingave;
 		if (defined $p  && $p < $minping) {
