@@ -36,7 +36,7 @@ $defaultspots = 10;				# normal number of spots to return
 $maxdays = 100;				# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
-$dupage = 3*3600;               # the length of time to hold spot dups
+$dupage = 1*3600;               # the length of time to hold spot dups
 $maxcalllth = 12;                               # the max length of call to take into account for dupes
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
