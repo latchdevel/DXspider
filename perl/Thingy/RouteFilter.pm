@@ -88,8 +88,10 @@ sub out_filter
 			delete $thing->{fpc19n};
 			delete $thing->{fpc21n};
 	
-			$thing->{fpc16n} = _filter($dxchan, $thing->{pc16n}) if $thing->{pc16u} && $thing->{pc16n};
-			$thing->{fpc17n} = _filter($dxchan, $thing->{pc17n}) if $thing->{pc17u} && $thing->{pc17n};
+			my @n16 = _filter($dxchan, $thing->{pc16n}) if $thing->{pc16u} && $thing->{pc16n};
+			$thing->{fpc16n} = $n16[0] if @n16;
+			my @n17 = _filter($dxchan, $thing->{pc17n}) if $thing->{pc17u} && $thing->{pc17n};
+			$thing->{fpc17n} = $n17[0] if @n17;
 			my @pc19 = _filter($dxchan, @{$thing->{pc19n}}) if $thing->{pc19n};
 			$thing->{fpc19n} = \@pc19 if @pc19;
 			my @pc21 = _filter($dxchan, @{$thing->{pc21n}}) if $thing->{pc21n};
