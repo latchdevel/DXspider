@@ -16,9 +16,9 @@ use Data::Dumper;
 use strict;
 use vars qw($db  %prefix_loc %pre);
 
-local $db;     # the DB_File handle
-local %prefix_loc;   # the meat of the info
-local %pre;       # the prefix list
+$db;     # the DB_File handle
+%prefix_loc;   # the meat of the info
+%pre;       # the prefix list
 
 sub load
 {

@@ -31,6 +31,7 @@ require Exporter;
   e1 => 'Invalid command',
   e2 => 'Error: $_[0]',
   e3 => '$_[0]: $_[1] not found',
+  e4 => 'Need at least a prefix or callsign',
   email => 'E-mail address set to: $_[0]',
   heres => 'Here set on $_[0]',
   hereu => 'Here unset on $_[0]',

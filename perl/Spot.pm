@@ -109,14 +109,9 @@ sub search
 	$to = $defaultspots;
   }
 
-  $expr =~ s/\$f(\d)/zzzref->[$1]/g;               # swap the letter n for the correct field name
-  $expr =~ s/[\@\$\%\{\}]//g;                           # remove any other funny characters
-  $expr =~ s/\&\w+\(//g;                           # remove subroutine calls
-  $expr =~ s/eval//g;                              # remove eval words
-  $expr =~ s/zzzref/\$ref/g;                       # put back the $ref
-  $expr =~ s|(/.+/)|$1oi|g;                        # add oi characters to /ccc/
+  $expr =~ s/\$f(\d)/\$ref->[$1]/g;               # swap the letter n for the correct field name
   
-  print "expr=($expr), from=$from, to=$to\n";
+  dbg("search", "expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
   
   # build up eval to execute
   $eval = qq(my \$c;

@@ -10,7 +10,7 @@ package DXUtil;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf
+@EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf parray parraypairs
              print_all_fields 
             );
 
@@ -100,6 +100,29 @@ sub promptf
   }
   $prompt = sprintf "%15s: %s", $prompt, $value;
   return ($priv, $prompt);
+}
+
+# take an arg as an array list and print it
+sub parray
+{
+  return join(', ', @{shift});
+}
+
+# take the arg as an array reference and print as a list of pairs
+sub parraypairs
+{
+  my $ref = shift;
+  my $i;
+  my $out;
+  
+  for ($i = 0; $i < @$ref; $i += 2) {
+    my $r1 = @$ref[$i];
+	my $r2 = @$ref[$i+1];
+	$out .= "$r1-$r2, ";
+  }
+  chop $out;     # remove last space
+  chop $out;     # remove last comma
+  return $out;
 }
 
 # print all the fields for a record according to privilege

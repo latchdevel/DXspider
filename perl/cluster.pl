@@ -27,6 +27,7 @@ use DXProt;
 use DXCluster;
 use DXDebug;
 use Prefix;
+use Bands;
 
 package main;
 
@@ -161,12 +162,19 @@ foreach(@debug) {
 STDOUT->autoflush(1);
 
 # load Prefixes
+print "loading prefixes ...\n";
 Prefix::load();
 
+# load band data
+print "loading band data ...\n";
+Bands::load();
+
 # initialise User file system
+print "loading user file system ...\n"; 
 DXUser->init($userfn);
 
 # start listening for incoming messages/connects
+print "starting listener ...\n";
 Msg->new_server("$clusteraddr", $clusterport, \&login);
 
 # prime some signals
@@ -178,6 +186,7 @@ $SIG{'HUP'} = 'IGNORE';
 DXProt->init();
 
 # this, such as it is, is the main loop!
+print "orft we jolly well go ...\n";
 for (;;) {
   my $timenow;
   Msg->event_loop(1, 0.001);

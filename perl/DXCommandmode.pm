@@ -16,13 +16,14 @@ use DXChannel;
 use DXUser;
 use DXVars;
 use DXDebug;
+use DXM;
+use Carp;
 
 use strict;
+use vars qw(%Cache %cmd_cache);
 
-#use vars qw( %Cache $last_dir_mtime @cmd);
-my %Cache = ();                  # cache of dynamically loaded routine's mod times
-my $last_dir_mtime = 0;          # the last time one of the cmd dirs was modified
-my @cmd = undef;                 # a list of commands+path pairs (in alphabetical order)
+%Cache = ();                  # cache of dynamically loaded routine's mod times
+%cmd_cache = ();            # cache of short names
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -57,6 +58,7 @@ sub start
 
   # set some necessary flags on the user if they are connecting
   $self->{wwv} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
+  $self->prompt() if $self->{state} =~ /^prompt/o;
 
 }
 
@@ -68,7 +70,7 @@ sub normal
   my $self = shift;
   my $user = $self->{user};
   my $call = $self->{call};
-  my $cmdline = shift; 
+  my $cmdline = shift;
 
   # strip out //
   $cmdline =~ s|//|/|og;
@@ -77,12 +79,15 @@ sub normal
   my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
 
   if ($cmd) {
-
+    
+	my ($path, $fcmd);
+   
     # first expand out the entry to a command
-    $cmd = search($cmd);
+    ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
+    ($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
-    my @ans = $self->eval_file($main::localcmd, $cmd, $args);
-	@ans = $self->eval_file($main::cmd, $cmd, $args) if !$ans[0];
+    my @ans = $self->eval_file($path, $fcmd, $args) if $path && $fcmd;
+#	@ans = $self->eval_file($main::cmd, $cmd, $args) if !$ans[0];
 	if ($ans[0]) {
       shift @ans;
 	  $self->send(@ans) if @ans > 0;
@@ -178,9 +183,62 @@ sub get_all
 
 sub search
 {
-  my $short_cmd = shift;
-  return $short_cmd;    # just return it for now
+  my ($path, $short_cmd, $suffix) = @_;
+  my ($apath, $acmd);
+
+  # commands are lower case
+  $short_cmd = lc $short_cmd;
+  dbg('command', "command: $path $short_cmd\n");
+  
+  # return immediately if we have it
+  my ($apath, $acmd) = split ',', $cmd_cache{$short_cmd};
+  if ($apath && $acmd) {
+    dbg('command', "cached $short_cmd = ($apath, $acmd)\n");
+    return ($apath, $acmd) if $apath;
+  }
+  
+  # if not guess
+  my @parts = split '/', $short_cmd;
+  my $dirfn;
+  my $curdir = $path;
+  my $p;
+  my $i;
+  
+  for ($i = 0; $i < @parts; $i++) {
+    my  $p = $parts[$i];
+	opendir(D, $curdir) or confess "can't open $curdir $!";
+	my @ls = readdir D;
+	closedir D;
+	my $l;
+	foreach $l (sort @ls) {
+	  next if $l =~ /^\./;
+      if ($i < $#parts) {            # we are dealing with directories
+        if ((-d "$curdir/$l") && $p eq substr($l, 0, length $p)) {
+		  dbg('command', "got dir: $curdir/$l\n");
+		  $dirfn .= "$l/";
+		  $curdir .= "/$l";
+		  last;
+		}
+      } else {                       # we are dealing with commands
+		next if !$l =~ /\.$suffix$/;       # only look for .$suffix files
+		if ($p eq substr($l, 0, length $p)) {
+		  $l =~ s/\.$suffix$//;      # remove the suffix
+		  chop $dirfn;               # remove trailing /
+		  $cmd_cache{"$short_cmd"} = join(',', ($path, "$dirfn/$l"));   # cache it
+          dbg('command', "got path: $path cmd: $dirfn/$l\n");
+		  return ($path, "$dirfn/$l"); 
+		}
+	  }
+	}
+  }
+  return ();  
 }  
+
+# clear the command name cache
+sub clear_cmd_cache
+{
+  %cmd_cache = ();
+}
 
 #
 # the persistant execution of things from the command directories
