@@ -23,6 +23,14 @@ BEGIN {
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 
+	# do some validation of the input
+	die "The directory $root doesn't exist, please RTFM" unless -d $root;
+	die "$root/local doesn't exist, please RTFM" unless -d "$root/local";
+	die "$root/local/DXVars doesn't exist, please RTFM" unless -e "$root/local/DXVars.pm";
+	
+	mkdir "$root/local_cmd" unless -e "$root/local_cmd";
+	
+
 	# try to create and lock a lockfile (this isn't atomic but 
 	# should do for now
 	$lockfn = "$root/perl/cluster.lck";       # lock file name
@@ -381,6 +389,14 @@ Bands::load();
 # initialise User file system
 dbg("loading user file system ..."); 
 DXUser->init($userfn, 1);
+
+# look for the sysop and the alias user and complain if they aren't there
+{
+	my $ref = DXUser->get($mycall);
+	die "$mycall missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
+	$ref = DXUser->get($myalias);
+	die "$myalias missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
+}
 
 # start listening for incoming messages/connects
 dbg("starting listeners ...");
