@@ -41,9 +41,11 @@ some examples:-
 or
   acc/ann by G,M,2 
 
-You can use the tag 'all' to reject everything that is left, eg:
+You can use the tag 'all' to accept everything eg:
 
   acc/ann all
+
+but this probably for advanced users...
 
 === 8^ACCEPT/ANNOUNCE <call> [input] [0-9] <pattern>^Announce filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
@@ -75,14 +77,22 @@ You can use any of the following things in this line:-
   origin <prefixes>
   channel <prefixes>
 
+For frequencies, you can use any of the band names defined in
+SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
+thus: hf/ssb. You can also just have a simple range like: 0/30000 -
+this is more efficient than saying simply: freq HF (but don't get
+too hung up about that)
+
 some examples:-
 
   acc/spot 1 freq hf/cw
   acc/spot 2 freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
-You can use the tag 'all' to reject everything that is left, eg:
+You can use the tag 'all' to accept everything, eg:
 
   ann/spot 3 all
+
+but this probably for advanced users...
 
 === 8^ACCEPT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
@@ -448,6 +458,27 @@ To remove the filter in its entirty:-
 
   clear/spots all
 
+ADVANCED USERS:-
+
+Once you are happy with the results you get, you may like to experiment. 
+
+my example that filters hf/cw spots and accepts vhf/uhf spots from EU can be 
+written with a mixed filter, eg:
+
+  rej/spot freq hf/cw
+  acc/spot freq 0/30000
+  acc/spot 2 freq 50000/1400000 and (by_zone 14,15,16 or call_zone 14,15,16)
+
+each filter slot actually has a 'reject' slot and an 'accept' slot. The reject
+slot is executed BEFORE the accept slot.
+
+It was mentioned earlier that after a reject test that doesn't match, the default
+for following tests is 'accept', the reverse is true for 'accept'. In the example
+what happens is that the reject is executed first, any non hf/cw spot is passed 
+to the accept line, which lets thru everything else on HF.
+
+The next filter line lets through just VHF/UHF spots from EU.
+
 === 1^FORWARD/OPERNAM <call>^Send out information on this <call> to all clusters
 This command sends out any information held in the user file which can 
 be broadcast in PC41 protocol packets. This information is Name, QTH, Location
@@ -662,9 +693,11 @@ some examples:-
 
   rej/ann by_zone 14,15,16 and not by G,M,2
  
-You can use the tag 'all' to reject everything that is left, eg:
+You can use the tag 'all' to reject everything eg:
 
   rej/ann all
+
+but this probably for advanced users...
 
 === 8^REJECT/ANNOUNCE <call> [input] [0-9] <pattern>^Announce filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
@@ -696,14 +729,22 @@ You can use any of the following things in this line:-
   origin <prefixes>
   channel <prefixes>
 
+For frequencies, you can use any of the band names defined in
+SHOW/BANDS and you can use a subband name like: cw, rtty, data, ssb -
+thus: hf/ssb. You can also just have a simple range like: 0/30000 -
+this is more efficient than saying simply: freq HF (but don't get
+too hung up about that)
+
 some examples:-
 
   rej/spot 1 freq hf
   rej/spot 2 freq vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
 
-You can use the tag 'all' to reject everything that is left, eg:
+You can use the tag 'all' to reject everything eg:
 
   rej/spot 3 all
+
+but this probably for advanced users...
 
 === 8^REJECT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
 This version allows a sysop to set a filter for a callsign as well as the
