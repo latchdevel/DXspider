@@ -1,7 +1,7 @@
   The DXSpider Installation Manual v1.48
   Iain Philipps, G0RDI (g0rdi@77hz.com) and Ian Maude, G0VGS,
   (ianmaude@btinternet.com)
-  Version 1.48, July 2001 revision 1.0
+  Version 1.48, July 2001 revision 1.1
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -96,8 +96,89 @@
   o  Time-HiRes-01.20.tar.gz
 
 
-  Do get the latest versions of these packages and install them but use
-  the above list as the earliest versions usable.
+  Copy the CPAN modules listed above to a convenient place on your
+  computer. One good place would be /usr/local/packages, and the
+  instructions which follow will assume that that's where you have put
+  them.
+
+
+  Log in as 'root', and make sure you're at '/root' before you continue.
+  Here are exactly the commands you must issue next: -
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # tar xvfz /usr/local/packages/Data-Dumper-2.10.tar.gz
+  # cd Data-Dumper-2.10
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
+  # cd TimeDate-1.10
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/IO-1.20.tar.gz
+  # cd IO-1.20
+  # perl Makefile.PL
+  # make test
+  # make install UNINST=1
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Net-Telnet-3.02.tar.gz
+  # cd Net-Telnet-3.02
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Curses-1.05.tar.gz
+  # cd Curses-1.05
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Time-HiRes-01.20.tar.gz
+  # cd Time-HiRes-01.20
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+
+
+
+
+  Do not fall into the trap of thinking they're all the same, just
+  because they nearly are! Pay particular attention to the instructions
+  of IO, above.
+
 
 
   1.2.  Preparation
@@ -115,8 +196,6 @@
   your own choice.
 
 
-
-
        # adduser -m sysop
 
 
@@ -127,13 +206,10 @@
 
 
 
-
-
-
-  # passwd sysop
-  # New UNIX password:
-  # Retype new UNIX password:
-  passwd: all authentication tokens updated successfully
+       # passwd sysop
+       # New UNIX password:
+       # Retype new UNIX password:
+       passwd: all authentication tokens updated successfully
 
 
 
@@ -195,9 +271,8 @@
 
 
 
-
-  # chown root ax25_call netrom_call
-  # chmod 4775 ax25_call netrom_call
+       # chown root ax25_call netrom_call
+       # chmod 4775 ax25_call netrom_call
 
 
 
@@ -253,16 +328,12 @@
        $ cd ../perl
 
 
-
-
-
   Now type the following command which creates the basic user file with
   you as the sysop.
 
 
 
-
-  $ ./create_sysop.pl
+       $ ./create_sysop.pl
 
 
 
@@ -323,10 +394,8 @@
        shutdown
 
 
-
-
-
   and both the cluster and the client should return to Linux prompts.
+
 
   1.6.  The Client program
 
@@ -389,6 +458,7 @@
 
 
   o  Login as root
+
 
   o  Enter the correct line in ax25d.conf (root)
 
@@ -455,8 +525,11 @@
 
 
 
-       GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
-       default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+  GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
+  default  * * * * * *  - sysop /spider/src/client client %u ax25
+
+
 
 
 
@@ -517,7 +590,6 @@
 
 
   Assuming all is well, then try a telnet from your linux console ....
-
 
 
        telnet localhost 8000
@@ -651,6 +723,7 @@
   an AK1A type node.
 
 
+
   Start up the cluster as you did before and login as the sysop with
   client.  The cluster node I am wanting to make a connection to is
   GB7BAA but you would obviously use whatever callsign you required.  At
@@ -658,7 +731,7 @@
 
 
 
-  set/node gb7baa
+       set/node gb7baa
 
 
 
@@ -716,6 +789,7 @@
   connections is therefore relatively simple.
 
 
+
   The connect scripts consist of lines which start with the following
   keywords or symbols:-
 
@@ -723,6 +797,7 @@
 
      #  All lines starting with a # are ignored, as are completely blank
         lines.
+
 
      timeout
         timeout followed by a number is the number of seconds to wait
@@ -775,15 +850,6 @@
 
 
 
-       timeout 60
-       abort (Busy|Sorry|Fail)
-       # don't forget to chmod 4775 netrom_call!
-       connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
-       # you can leave this out if you call the script 'gb7dxm'
-       client gb7dxm ax25
-
-
-
 
 
 
@@ -792,11 +858,25 @@
 
   timeout 60
   abort (Busy|Sorry|Fail)
-  # this does exactly the same as the previous example
-  # the '1' is the AGW port number to connect thru for g1tlh
-  connect agw 1 g1tlh
+  # don't forget to chmod 4775 netrom_call!
+  connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
   # you can leave this out if you call the script 'gb7dxm'
   client gb7dxm ax25
+
+
+
+
+
+
+
+
+       timeout 60
+       abort (Busy|Sorry|Fail)
+       # this does exactly the same as the previous example
+       # the '1' is the AGW port number to connect thru for g1tlh
+       connect agw 1 g1tlh
+       # you can leave this out if you call the script 'gb7dxm'
+       client gb7dxm ax25
 
 
 
@@ -838,20 +918,6 @@
   can follow the connection by watching the term or console from where
   you started cluster.pl.  From version 1.47 onwards, you will need to
   set/debug connect first.  You should see something like this ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -54,8 +54,56 @@ following modules from
 <A HREF="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz">Time-HiRes-01.20.tar.gz</A></LI>
 </UL>
 <P>
-<P><EM>Do</EM> get the latest versions of these packages and install them 
-but use the above list as the earliest versions usable.
+<P>Copy the CPAN modules listed above to a convenient place on your computer. One good place would be /usr/local/packages, and the instructions which follow will assume that that's where you have put them.
+<P>
+<P>Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -
+<P>
+<PRE>
+# tar xvfz /usr/local/packages/Data-Dumper-2.10.tar.gz
+# cd Data-Dumper-2.10
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
+# cd TimeDate-1.10
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/IO-1.20.tar.gz
+# cd IO-1.20
+# perl Makefile.PL
+# make test
+# make install UNINST=1
+# cd ..
+#
+# tar xvfz /usr/local/packages/Net-Telnet-3.02.tar.gz
+# cd Net-Telnet-3.02
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Curses-1.05.tar.gz
+# cd Curses-1.05
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
+# tar xvfz /usr/local/packages/Time-HiRes-01.20.tar.gz 
+# cd Time-HiRes-01.20
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+</PRE>
+<P>
+<P>Do not fall into the trap of thinking they're all the same, just because they nearly are! Pay particular attention to the instructions of IO, above.
+<P>
 <P>
 <H2><A NAME="ss1.2">1.2 Preparation</A>
 </H2>
