@@ -65,15 +65,13 @@ sub send
 	}
 
 	# generate the line which may (or not) be cached
-	my @out;
-	if (my $ref = $thing->{class}) {
-		push @out, ref $ref ? @$ref : $ref;
-	} else {
+	my $ref;
+	unless ($ref = $thing->{class}) {
 		no strict 'refs';
 		my $sub = "gen_$class";
-		push @out, $thing->$sub($dxchan) if $thing->can($sub);
+		$ref = $thing->$sub($dxchan) if $thing->can($sub);
 	}
-	$dxchan->send(@out) if @out;
+	$dxchan->send(ref $ref ? @$ref : $ref) if $ref;
 }
 
 # broadcast to all except @_

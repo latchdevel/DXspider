@@ -28,8 +28,10 @@ sub gen_Aranea
 	my $thing = shift;
 	unless ($thing->{Aranea}) {
 		my @items;
-		push @items, 't', $thing->{t} if $thing->{t};
-		push @items, 'd', $thing->{d} if $thing->{d};
+		push @items, 's', $thing->{'s'} if $thing->{'s'};
+		push @items, 'n', $thing->{n} if $thing->{n};
+		push @items, 'v', $thing->{v} if $thing->{v};
+		push @items, 'u', $thing->{u} if $thing->{u};
 	 	$thing->{Aranea} = Aranea::genmsg($thing, 'RT', @items) if @items;
 	}
  	return $thing->{Aranea};
@@ -46,6 +48,33 @@ sub gen_DXProt
 {
 	my $thing = shift;
 	my $dxchan = shift;
+	my $s = $thing->{'s'};
+	if ($s eq 'au') {
+		my $n = $thing->{n} || $thing->{user};
+		my @out;
+		if ($n && (my $u = $thing->{u})) {
+			my $s = '';
+			for (split /:/, $u) {
+				my ($here, $call) = unpack "A1 A*", $_;
+				my $str = sprintf "^%s * %d", $call, $here;
+				if (length($s) + length($str) > $DXProt::sentencelth) {
+					push @out, "PC16^$n" . $s . sprintf "^%s^", DXProt::get_hops(16);
+					$s = '';
+				}
+				$s .= $str;
+			}
+			push @out, "PC16^$n" . $s . sprintf "^%s^", DXProt::get_hops(16);
+			$thing->{DXProt} = @out > 1 ? \@out : $out[0];
+		}
+	} elsif ($s eq 'du') {
+		my $n = $thing->{n} || $thing->{user};
+		my $hops = DXProt::get_hops(17);
+		if ($n && (my $u = $thing->{u})) {
+			$thing->{DXProt} = "PC17^$u^$n^$hops^"; 
+		}
+	} elsif ($s eq 'an') {
+	} elsif ($s eq 'dn') {
+	}
 	return $thing->{DXProt};
 }
 
@@ -85,74 +114,58 @@ sub handle
 	}
 }
 
-sub handle_eau
+# these contain users and either a node (for externals) or the from address 
+sub handle_au
 {
 	my $thing = shift;
 	my $dxchan = shift;
 
-	if (my $d = $thing->{d}) {
-		my $nref;
-		for (split /:/, $d) {
-			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
-			if ($type eq 'U') {
-				unless ($nref) {
-					dbg("Thingy::Rt::ea need a node before $call");
-					return;
-				}
+	my $node = $thing->{n} || $thing->{user};
+	my $nref = Route::Node::get($node);
+
+	if ($nref) {
+		if (my $u = $thing->{u}) {
+			for (split /:/, $u) {
+				my ($here, $call) = unpack "A1 A*", $_;
 				add_user($nref, $call, $here);
 				my $h = $dxchan->{call} eq $nref->{call} ? 3 : ($thing->{hops} || 99);
 				RouteDB::update($call, $dxchan->{call}, $h);
-			} elsif ($type eq 'N') {
-				$nref = Route::Node::get($call);
-				unless ($nref) {
-					dbg("Thingy::Rt::ea need a definition for $call");
-					return;
-				}
-				my $h = $dxchan->{call} eq $nref->{call} ? 2 : ($thing->{hops} || 99);
-				RouteDB::update($nref->{call}, $dxchan->{call}, $h);
-			} else {
-				dbg("Thingy::Rt::ea invalid type $type");
-				return;
 			}
 		}
+	} else {
+		dbg("Thingy::Rt::au: $node not found") if isdbg('chanerr');
+		return;
 	}
 	return $thing;
 }
 
-sub handle_edu
+sub handle_du
 {
 	my $thing = shift;
 	my $dxchan = shift;
 
-	if (my $d = $thing->{d}) {
-		my $nref;
-		for (split /:/, $d) {
-			my ($type, $here, $call) = unpack "A1 A1 A*", $_;
-			if ($type eq 'U') {
-				unless ($nref) {
-					dbg("Thingy::Rt::edu need a node before $call");
-					return;
-				}
+	my $node = $thing->{n} || $thing->{user};
+	my $nref = Route::Node::get($node);
+
+	if ($nref) {
+		if (my $u = $thing->{u}) {
+			for (split /:/, $u) {
+				my ($here, $call) = unpack "A1 A*", $_;
 				my $uref = Route::User::get($call);
 				unless ($uref) {
-					dbg("Thingy::Rt::edu $call not a user") if isdbg('chanerr');
+					dbg("Thingy::Rt::du $call not a user") if isdbg('chanerr');
 					next;
 				}
 				$nref->del_user($uref);
 				RouteDB::delete($call, $dxchan->{call});
-			} elsif ($type eq 'N') {
-				$nref = Route::Node::get($call);
-				unless ($nref) {
-					dbg("Thingy::Rt::ed need a definition for $call");
-					return;
-				}
-				RouteDB::update($nref->{call}, $dxchan->{call}, $dxchan->{call} eq $nref->{call} ? 2 : ($thing->{hops} || 99));
-			} else {
-				dbg("Thingy::Rt::ed invalid type $type");
-				return;
 			}
+			RouteDB::update($nref->{call}, $dxchan->{call}, $dxchan->{call} eq $nref->{call} ? 2 : ($thing->{hops} || 99));
 		}
+	} else {
+		dbg("Thingy::Rt::du: $node not found") if isdbg('chanerr');
+		return;
 	}
+
 	return $thing;
 }
 

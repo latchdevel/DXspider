@@ -726,6 +726,12 @@ sub is_node
 	return $self->{sort} =~ /[ACRSX]/;
 }
 
+sub is_aranea
+{
+	my $self = shift;
+	return $self->{sort} eq 'W';
+}
+
 sub is_user
 {
 	my $self = shift;

@@ -49,7 +49,9 @@ sub handle
 	my $dxchan = shift;
 	
 	# verify authenticity
-	if ($dxchan->call eq $thing->{origin}) {
+	if ($dxchan->{call} eq $thing->{origin}) {
+
+		# for directly connected calls
 		if ($verify_on_login) {
 			my $pp = $dxchan->user->passphrase;
 			unless ($pp) {
@@ -71,7 +73,30 @@ sub handle
 				$thing->send($dxchan);
 			}
 		}
+	} else {
+		
+		# for otherwise connected calls, that come in relayed from other nodes
+		# note that we cannot do any connections at this point
+		my $nref = Route::Node::get($thing->{origin});
+		unless ($nref) {
+			my $v = $thing->{user} ? undef : $thing->{v};
+			$nref = Route::Node->new($thing->{origin}, $v, 1);
+		}
+		if (my $user = $thing->{user}) {
+			my $ur = Route::get($user);
+			unless ($ur) {
+				my $uref = DXUser->get_current($user);
+				if ($uref->is_node || $uref->is_aranea) {
+					$nref->add($user, $thing->{v}, 1);
+				} else {
+					$nref->add_user($user, 1);
+				}
+			}
+		}
 	}
+	RouteDB::update($thing->{origin}, $dxchan->{call}, $thing->{hopsaway});
+	RouteDB::update($thing->{user}, $dxchan->{call}, $thing->{hopsaway}) if $thing->{user};
+		
 	$thing->broadcast($dxchan);
 }
 

@@ -197,6 +197,23 @@ sub disconnect
 # because it has to be used before a channel is fully initialised).
 #
 
+sub formathead
+{
+	my $mycall = shift;
+	my $dts = shift;
+	my $hop = shift;
+	my $user = shift;
+	my $group = shift;
+	
+	my $s = "$mycall,$dts,$hop";
+	$s .= ",$user" if $user;
+	if ($group) {
+		$s .= "," unless $user;
+		$s .= ",$group" if $group;
+	} 
+	return $s;
+}
+
 sub genheader
 {
 	my $mycall = shift;
@@ -204,10 +221,7 @@ sub genheader
 	my $from = shift;
 	
 	my $date = ((($dayno << 1) | $ntpflag) << 18) |  ($main::systime % 86400);
-	my $r = "$mycall," . sprintf('%6X%04X,0', $date, $seqno);
-	$r .= ",$to" if $to;
-	$r .= "," if $from && !$to;
-	$r .= ",$from" if $from;
+	my $r = formathead($mycall, sprintf('%6X%04X', $date, $seqno), 0, $from, $to);
 	$seqno++;
 	$seqno = 0 if $seqno > 0x0ffff;
 	return $r;
@@ -285,7 +299,7 @@ sub input
 	my ($head, $data) = split /\|/, $line, 2;
 	return unless $head && $data;
 
-	my ($origin, $dts, $hop, $group, $user) = split /,/, $head;
+	my ($origin, $dts, $hop, $user, $group) = split /,/, $head;
 	return if DXDupe::check("Ara,$origin,$dts", $dupeage);
 	my $err;
 	$err .= "incomplete header," unless $origin && $dts && defined $hop;
@@ -313,9 +327,7 @@ sub input
 		$thing = $class->new();
 
 		# reconstitute the header but wth hop increased by one
-		$head = join(',', $origin, $dts, ++$hop);
-		$head .= ",$group" if $group;
-		$head .= ",$user" if $user;
+		$head = formathead($origin, $dts, ++$hop, $user, $group);
 		$thing->{Aranea} = "$head|$data";
 
 		# store useful data
