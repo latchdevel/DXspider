@@ -69,32 +69,52 @@ sub sig_term
 	cease(1, @_);
 }
 
+# determine the colour of the line
+sub setattr
+{
+	if ($has_colors) {
+		foreach my $ref (@colors) {
+			if ($_[0] =~ m{$$ref[0]}) {
+				$top->attrset($$ref[1]);
+				last;
+			}
+		}
+	}
+}
+
 # display the top screen
 sub show_screen
 {
-	my $p = $spos - $pages;
-	my $i;
-	$p = 0 if $p < 0;
+	if ($spos == @shistory - 1) {
 
-	$top->move(0, 0);
-	$top->attrset(COLOR_PAIR(0)) if $has_colors;
-	$top->clrtobot();
-	for ($i = 0; $i < $pages && $p < @shistory; $i++, $p++) {
-		my $line = $shistory[$p];
-		$line = substr($line, 0, COLS()) if length $line > COLS();
-		$top->move($i, 0);
-		if ($has_colors) {
-			foreach my $ref (@colors) {
-				if ($line =~ m{$$ref[0]}) {
-					$top->attrset($$ref[1]);
-					last;
-				}
-			}
-		}
+		# if we really are scrolling thru at the end of the history
+		my $line = $shistory[-1];
+		$top->addstr("\n") if $spos > 0;
+		setattr($line);
 		$top->addstr($line);
 		$top->attrset(COLOR_PAIR(0)) if $has_colors;
+		$spos = @shistory;
+		
+	} else {
+		
+		# anywhere else
+		my $p = $spos - $pages;
+		my $i;
+		$p = 0 if $p < 0;
+		
+		$top->move(0, 0);
+		$top->attrset(COLOR_PAIR(0)) if $has_colors;
+		$top->clrtobot();
+		for ($i = 0; $i < $pages && $p < @shistory; $i++, $p++) {
+			my $line = $shistory[$p];
+			$line = substr($line, 0, COLS()) if length $line > COLS();
+			$top->move($i, 0);
+			setattr($line);
+			$top->addstr($line);
+			$top->attrset(COLOR_PAIR(0)) if $has_colors;
+		}
+		$spos = $p;
 	}
-	$spos = $p;
 	$top->refresh();
 }
 
@@ -111,7 +131,7 @@ sub rec_socket
 		if ($sort eq 'D') {
 			push @shistory, $line;
 			shift @shistory if @shistory > $maxshist;
-			$spos = @shistory if $spos >= @shistory - 1;
+#			$spos = @shistory if $spos >= @shistory - 1;
 			show_screen();
 		} elsif ($sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
@@ -308,10 +328,9 @@ $scr->refresh();
 $SIG{__DIE__} = \&sig_term;
 
 $pages = LINES()-4;
-my $dpages = $pages - 2;
 
 $conn->send_now("A$call|$connsort");
-$conn->send_now("I$call|set/page $dpages");
+$conn->send_now("I$call|set/page $maxshist");
 $conn->send_now("I$call|set/nobeep");
 
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
