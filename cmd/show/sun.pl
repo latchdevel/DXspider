@@ -43,7 +43,7 @@ if (@list) {
 	}
 }
 
-push @out, "                                      Rise   Set      Azim   Elev";
+push @out, $self->msg('sun');
 foreach $l (@in) {
 	my ($rise, $set, $az, $dec )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],0);
 	$l->[3] =~ s{(-\d+|/\w+)$}{};
