@@ -2,14 +2,18 @@ package Chain;
 
 use strict;
 use Carp;
-	
-use vars qw($VERSION $docheck);
 
-$VERSION = do { my @r = (q$Revision$ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r};
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use constant NEXT => 0;
 use constant PREV => 1;
 use constant OBJ => 2;
+
+use vars qw($docheck);
 
 $docheck = 1;
 			
