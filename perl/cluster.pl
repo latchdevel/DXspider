@@ -33,11 +33,7 @@ sub disconnect
   return if !defined $dxchan;
   my $user = $dxchan->{user};
   my $conn = $dxchan->{conn};
-  if ($user->{sort} eq 'A') {           # and here (when I find out how to write it!)
-    $dxchan->pc_finish();  
-  } else {
-    $dxchan->user_finish();
-  }
+  $dxchan->finish();
   $user->close() if defined $user;
   $conn->disconnect() if defined $conn;
   $dxchan->del();
@@ -59,7 +55,11 @@ sub rec
      my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
      my $user = DXUser->get($call);
 	 $user = DXUser->new($call) if !defined $user;
-     $dxchan = DXChannel->new($call, $conn, $user);  
+	 $user->sort('U') if (!$user->sort());
+	 my $sort = $user->sort();
+     $dxchan = DXCommandmode->new($call, $conn, $user) if ($sort eq 'U');
+     $dxchan = DXProt->new($call, $conn, $user) if ($sort eq 'A');
+	 die "Invalid sort of user on $call = $sort" if !$dxchan;
   }
   
   # queue the message and the channel object for later processing
@@ -102,21 +102,12 @@ sub process_inqueue
   print "<- $sort $call $line\n";
   
   # handle A records
-  my $user = $dxchan->{user};
+  my $user = $dxchan->user;
   if ($sort eq 'A') {
-	$user->{sort} = 'U' if !defined $user->{sort};
-    if ($user->{sort} eq 'A') {
-	  $dxchan->pc_start($line);  
-	} else {
-	  $dxchan->user_start($line);
-	}
+    $dxchan->start($line);  
   } elsif ($sort eq 'D') {
     die "\$user not defined for $call" if !defined $user;
-    if ($user->{sort} eq 'A') {           # we will have a symbolic ref to a proc here
-	  $dxchan->pc_normal($line);  
-	} else {
-	  $dxchan->user_normal($line);
-	}
+	$dxchan->normal($line);  
     disconnect($dxchan) if ($dxchan->{state} eq 'bye');
   } elsif ($sort eq 'Z') {
     disconnect($dxchan);
@@ -158,7 +149,7 @@ for (;;) {
 	$ztime = &ztime();
   }
   process_inqueue();                 # read in lines from the input queue and despatch them
-  DXCommandmode::user_process();     # process ongoing command mode stuff
-  DXProt::pc_process();              # process ongoing ak1a pcxx stuff
+  DXCommandmode::process();     # process ongoing command mode stuff
+  DXProt::process();              # process ongoing ak1a pcxx stuff
 }
 

@@ -1,0 +1,6 @@
+#
+# set the qth field
+#
+my ($self, $args)  = @_;
+my $user = $self->user;
+return (1, "qth is now ", $user->qth($args));

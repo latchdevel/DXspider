@@ -1,0 +1,15 @@
+#
+# show either the current user or a nominated set
+#
+my $self = shift;
+my @set = split;      # the list of users you want listings (may be null)
+
+@set = ($self->call) if !@set;   # my call if no args
+
+my ($call, $field);
+my @fields = DXUser->fields();
+foreach $call (@set) {
+  my $user = DXUser->get($call);
+}
+
+

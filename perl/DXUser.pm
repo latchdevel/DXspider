@@ -29,11 +29,23 @@ $filename = undef;
   qra => 'Locator',
   email => 'E-mail Address',
   priv => 'Privilege Level',
-  sort => 'Type of User',
   lastin => 'Last Time in',
   passwd => 'Password',
-  addr => 'Full Address'
+  addr => 'Full Address',
+  'sort' => 'Type of User',  # A - ak1a, U - User, S - spider cluster, B - BBS 
 );
+
+sub AUTOLOAD
+{
+  my $self = shift;
+  my $name = $AUTOLOAD;
+  
+  return if $name =~ /::DESTROY$/;
+  $name =~ s/.*:://o;
+  
+  die "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+  @_ ? $self->{$name} = shift : $self->{$name} ;
+}
 
 #
 # initialise the system
@@ -125,13 +137,13 @@ sub elements
 }
 
 #
-# return a prompt together with the existing value
+# return a prompt for a field
 #
 
 sub prompt
 { 
   my ($self, $ele) = @_;
-  return "$valid{$ele} [$self->{$ele}]";
+  return $valid{$ele};
 }
 
 #
@@ -166,6 +178,13 @@ sub enter
 	return 1;
   }
   return 0;
+}
+
+# some variable accessors
+sub sort
+{
+  my $self = shift;
+  @_ ? $self->{sort} = shift : $self->{sort} ;
 }
 1;
 __END__

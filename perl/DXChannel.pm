@@ -25,14 +25,24 @@
 #
 package DXChannel;
 
-require Exporter;
-@ISA = qw(DXCommandmode DXProt Exporter);
-
 use Msg;
 use DXUtil;
 use DXM;
 
 %channels = undef;
+
+%valid = (
+  call => 'Callsign',
+  conn => 'Msg Connection ref',
+  user => 'DXUser ref',
+  t => 'Time',
+  priv => 'Privilege',
+  state => 'Current State',
+  oldstate => 'Last State',
+  list => 'Dependant DXChannels list',
+  name => 'User Name',
+);
+
 
 # create a new connection object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
 sub new
@@ -171,6 +181,19 @@ sub state
   $self->{oldstate} = $self->{state};
   $self->{state} = shift;
   print "Db   $self->{call} channel state $self->{oldstate} -> $self->{state}\n" if $main::debug;
+}
+
+# various access routines
+sub AUTOLOAD
+{
+  my $self = shift;
+  my $name = $AUTOLOAD;
+  
+  return if $name =~ /::DESTROY$/;
+  $name =~ s/.*:://o;
+  
+  die "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+  @_ ? $self->{$name} = shift : $self->{$name} ;
 }
 
 1;

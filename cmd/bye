@@ -1,0 +1,7 @@
+#
+# the bye command
+#
+
+my $self = shift;
+$self->state('bye');
+return (1);

@@ -9,11 +9,15 @@
 
 package DXCommandmode;
 
+@ISA = qw(DXChannel);
+
 use DXUtil;
 use DXChannel;
 use DXUser;
-use DXM;
 use DXVars;
+
+use strict;
+use vars qw( %Cache $last_dir_mtime @cmd);
 
 $last_dir_mtime = 0;          # the last time one of the cmd dirs was modified
 @cmd = undef;                 # a list of commands+path pairs (in alphabetical order)
@@ -22,15 +26,13 @@ $last_dir_mtime = 0;          # the last time one of the cmd dirs was modified
 # possibly some other messages asking you to set various things up if you are
 # new (or nearly new and slacking) user.
 
-sub user_start
+sub start
 { 
   my $self = shift;
   my $user = $self->{user};
   my $call = $self->{call};
   my $name = $self->{name};
   $name = $call if !defined $name;
-  $self->{normal} = \&user_normal;    # rfu for now
-  $self->{finish} = \&user_finish;
   $self->msg('l2',$name);
   $self->send_file($main::motd) if (-e $main::motd);
   $self->msg('pr', $call);
@@ -41,40 +43,50 @@ sub user_start
 #
 # This is the normal command prompt driver
 #
-sub user_normal
+sub normal
 {
   my $self = shift;
   my $user = $self->{user};
   my $call = $self->{call};
-  my $cmd = shift; 
+  my $cmdline = shift; 
 
-  # read in the list of valid commands, note that the commands themselves are cached elsewhere
-  scan_cmd_dirs if (!defined %cmd);
+  # strip out //
+  $cmdline =~ s|//|/|og;
   
-  # strip out any nasty characters like $@%&|. and double // etc.
-  $cmd =~ s/[%\@\$&\\.`~]//og;
-  $cmd =~ s|//|/|og;
-  
-  # split the command up into parts
-  my @part = split /[\/\b]+/, $cmd;
+  # split the command line up into parts, the first part is the command
+  my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
 
-  # the bye command - temporary probably
-  if ($part[0] =~ /^b/io) {
-    $self->user_finish();
-	$self->state('bye');
-	return;
+  if ($cmd) {
+
+    # first expand out the entry to a command
+    $cmd = search($cmd);
+
+    my @ans = $self->eval_file($main::localcmd, $cmd, $args);
+	@ans = $self->eval_file($main::cmd, $cmd, $args) if !$ans[0];
+	if ($ans[0]) {
+      shift @ans;
+	  $self->send(@ans) if @ans > 0;
+	} else {
+      shift @ans;
+	  if (@ans > 0) {
+	    $self->msg('e2', @ans);
+	  } else {
+        $self->msg('e1');
+	  }
+	}
+  } else {
+    $self->msg('e1');
   }
-
-  # first expand out the entry to a command, note that I will accept 
-  # anything in any case with any (reasonable) seperator
-  $self->prompt();
+  
+  # send a prompt only if we are in a prompt state
+  $self->prompt() if $self->{state} =~ /^prompt/o;
 }
 
 #
 # This is called from inside the main cluster processing loop and is used
 # for despatching commands that are doing some long processing job
 #
-sub user_process
+sub process
 {
 
 }
@@ -82,7 +94,7 @@ sub user_process
 #
 # finish up a user context
 #
-sub user_finish
+sub finish
 {
 
 }
@@ -95,24 +107,18 @@ sub prompt
 {
   my $self = shift;
   my $call = $self->{call};
-  $self->msg('pr', $call);
+  DXChannel::msg($self, 'pr', $call);
 }
 
 #
-# scan the command directories to see if things have changed
-#
-# If they have remake the command list
-#
-# There are two command directories a) the standard one and b) the local one
-# The local one overides the standard one
+# search for the command in the cache of short->long form commands
 #
 
-sub scan_cmd_dirs
+sub search
 {
-  my $self = shift;
-
-
-}
+  my $short_cmd = shift;
+  return $short_cmd;    # just return it for now
+}  
 
 #
 # the persistant execution of things from the command directories
@@ -124,8 +130,6 @@ sub scan_cmd_dirs
 #
 
 #require Devel::Symdump;  
-use strict;
-use vars '%Cache';
 
 sub valid_package_name {
   my($string) = @_;
@@ -135,8 +139,8 @@ sub valid_package_name {
   $string =~ s|/(\d)|sprintf("/_%2x",unpack("C",$1))|eg;
 	
   #Dress it up as a real package name
-  $string =~ s|/|::|g;
-  return "DXEmbed" . $string;
+  $string =~ s|/|_|g;
+  return "Emb_" . $string;
 }
 
 #borrowed from Safe.pm
@@ -145,7 +149,7 @@ sub delete_package {
   my ($stem, $leaf);
 	
   no strict 'refs';
-  $pkg = "main::$pkg\::";    # expand to full symbol table name
+  $pkg = "DXChannel::$pkg\::";    # expand to full symbol table name
   ($stem, $leaf) = $pkg =~ m/(.*::)(\w+::)$/;
 	
   my $stem_symtab = *{$stem}{HASH};
@@ -154,11 +158,15 @@ sub delete_package {
 }
 
 sub eval_file {
-  my($self, $path, $cmdname) = @_;
+  my $self = shift;
+  my $path = shift;
+  my $cmdname = shift;
   my $package = valid_package_name($cmdname);
   my $filename = "$path/$cmdname";
   my $mtime = -M $filename;
-  my @r;
+  
+  # return if we can't find it
+  return (0, DXM::msg('e1')) if !defined $mtime;
   
   if(defined $Cache{$package}{mtime} && $Cache{$package}{mtime } <= $mtime) {
     #we have compiled this subroutine already,
@@ -167,33 +175,37 @@ sub eval_file {
 	;
   } else {
 	local *FH;
-	open FH, $filename or die "open '$filename' $!";
+	if (!open FH, $filename) {
+	  return (0, "Syserr: can't open '$filename' $!"); 
+	};
 	local($/) = undef;
 	my $sub = <FH>;
 	close FH;
 		
     #wrap the code into a subroutine inside our unique package
-	my $eval = qq{package $package; sub handler { $sub; }};
+	my $eval = qq{package DXChannel; sub $package { $sub; }};
+	print "eval $eval\n";
 	{
 	  #hide our variables within this block
 	  my($filename,$mtime,$package,$sub);
 	  eval $eval;
 	}
 	if ($@) {
-	  $self->send("Eval err $@ on $package");
 	  delete_package($package);
-	  return undef;
+	  return (0, "Syserr: Eval err $@ on $package");
 	}
 		
 	#cache it unless we're cleaning out each time
 	$Cache{$package}{mtime} = $mtime;
   }
-
-  @r = eval {$package->handler;};
+  
+  my @r;
+  my $c = qq{ \@r = \$self->$package(\@_); };
+  print "c = $c\n";
+  eval  $c; ;
   if ($@) {
-    $self->send("Eval err $@ on cached $package");
     delete_package($package);
-	return undef;
+	return (0, "Syserr: Eval err $@ on cached $package");
   }
 
   #take a look if you want
