@@ -19,7 +19,7 @@ return (1, $self->msg('e5')) if $self->priv < 9;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $chan = DXChannel->get($call);
+	my $chan = DXChannel::get($call);
 	if ($chan) {
 		push @out, $self->msg('nodee1', $call);
 	} else {

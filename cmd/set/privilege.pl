@@ -27,7 +27,7 @@ if ($priv < 0 || $priv > 9) {
 foreach $call (@args) {
 	$call = uc $call;
 	unless ($self->remotecmd || $self->inscript) {
-		if ($ref = DXChannel->get($call)) {
+		if ($ref = DXChannel::get($call)) {
 			$ref->priv($priv);
 			$ref->user->priv($priv);
 			$ref->user->put();

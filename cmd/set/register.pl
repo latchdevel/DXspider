@@ -32,7 +32,7 @@ foreach $call (@args) {
 			$ref->put();
 			push @out, $self->msg("regc", $call);
 		}
-		my $dxchan = DXChannel->get($call);
+		my $dxchan = DXChannel::get($call);
 		$dxchan->registered(1) if $dxchan;
 		Log('DXCommand', $self->call . " registered $call");
 	} else {

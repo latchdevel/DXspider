@@ -16,7 +16,7 @@ my @out;
 my $dxchan;
 
 for ( map {uc $_ } split /\s+/, $line ) {
-	if (($dxchan = DXChannel->get($_)) && $dxchan->is_node) {
+	if (($dxchan = DXChannel::get($_)) && $dxchan->is_node) {
 		push @dxchan, $dxchan;
 	} else {
 		push @out, $self->msg('e10', $_);

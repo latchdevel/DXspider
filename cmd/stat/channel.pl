@@ -13,7 +13,7 @@ my $call;
 my @out;
 foreach $call (@list) {
   $call = uc $call;
-  my $ref = DXChannel->get($call);
+  my $ref = DXChannel::get($call);
   if ($ref) {
     @out = print_all_fields($self, $ref, "Channel Information $call");
   } else {

@@ -25,7 +25,7 @@ foreach $call (@args) {
 		if ($ref = DXUser->get_current($call)) {
 			$ref->registered(0);
 			$ref->put();
-			my $dxchan = DXChannel->get($call);
+			my $dxchan = DXChannel::get($call);
 			$dxchan->registered(0) if $dxchan;
 			push @out, $self->msg("regun", $call);
 			Log('DXCommand', $self->call . " unregistered $call");
