@@ -70,7 +70,15 @@ sub dbginit
 {
 	# add sig{__DIE__} handling
 	if (!defined $DB::VERSION) {
-		$SIG{__WARN__} = sub { dbgstore($@, Carp::shortmess(@_)); };
+		$SIG{__WARN__} = sub { 
+			if ($_[0] =~ /Deep\s+recursion/i) {
+				dbgstore($@, Carp::longmess(@_)); 
+				CORE::die;
+			} else { 
+				dbgstore($@, Carp::shortmess(@_));
+			}
+		};
+		
 		$SIG{__DIE__} = sub { dbgstore($@, Carp::longmess(@_)); };
 	}
 

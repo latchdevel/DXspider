@@ -554,7 +554,15 @@ sub normal
 				next unless $call && $conf && defined $here && is_callsign($call);
 				$conf = $conf eq '*';
 
-				push @rout, $parent->add_user($call, Route::here($here)|Route::conf($conf));
+				my $r = Route::User::get($call);
+				my $flags = Route::here($here)|Route::conf($conf);
+				
+				if ($r && $r->flags != $flags) {
+					$r->$flags($flags);
+					push @rout, $r;
+				} elsif (!$r) {
+					push @rout, $parent->add_user($call, $flags);
+				}
 				
 				# add this station to the user database, if required
 				$call =~ s/-\d+$//o;        # remove ssid for users
@@ -570,7 +578,6 @@ sub normal
 			# queue up any messages (look for privates only)
 			DXMsg::queue_msg(1) if $self->state eq 'normal';     
 
-			dbg('route', "B/C PC16 on $ncall for: " . join(',', map{$_->call} @rout)) if @rout;
 			$self->route_pc16($parent, @rout) if @rout;
 			return;
 		}
@@ -578,6 +585,7 @@ sub normal
 		if ($pcno == 17) {		# remove a user
 			my $dxchan;
 			my $ncall = $field[2];
+			my $ucall = $field[1];
 			if ($ncall eq $main::mycall) {
 				dbg('chan', "PCPROT: trying to alter config on this node from outside!");
 				return;
@@ -592,8 +600,8 @@ sub normal
 				dbg('chan', "PCPROT: Route::Node $ncall not in config");
 				return;
 			}
-			my @rout = $parent->del_user($field[1]);
-			dbg('route', "B/C PC17 on $ncall for: $field[1]");
+			my $r = Route::User::get($ucall);
+			my @rout = $parent->del_user($ucall) if $r;
 			$self->route_pc17($parent, @rout) if @rout;
 			return;
 		}
@@ -636,9 +644,10 @@ sub normal
 
 				# update it if required
 				my $r;
-				if ($parent->call eq $call && !$parent->version) {
+				my $flags = Route::here($here)|Route::conf($conf);
+				if ($parent->call eq $call && ($parent->version ne $ver || $parent->flags != $flags)) {
 					$parent->version($ver);
-					$parent->flags(Route::here($here)|Route::conf($conf));
+					$parent->flags($flags);
 					push @rout, $parent;
 				} elsif ($parent->call ne $call) {
 					next if $call eq $main::mycall || $call eq $self->{call};
@@ -647,7 +656,7 @@ sub normal
 					push @rout, $r if $r;
 				} else {
 					$r = Route::Node::get($call);
-					if ($r && (!$r->version || $r->version eq '0000')) {
+					if ($r && ($r->version ne $ver || $r->flags != $flags)) {
 						$r->version($ver);
 						$r->flags(Route::here($here)|Route::conf($conf));
 						push @rout, $r;
@@ -672,8 +681,6 @@ sub normal
 				$user->put;
 			}
 
-			dbg('route', "B/C PC19 for: " . join(',', map{$_->call} @rout)) if @rout;
-			
 			$self->route_pc19(@rout) if @rout;
 			return;
 		}
@@ -706,8 +713,6 @@ sub normal
 				dbg('chan', "PCPROT: I WILL _NOT_ be disconnected!");
 				return;
 			}
-			dbg('route', "B/C PC21 for: " . join(',', (map{$_->call} @rout))) if @rout;
-			
 			$self->route_pc21(@rout) if @rout;
 			return;
 		}
@@ -1098,7 +1103,9 @@ sub process
 		# send a pc50 out on this channel
 		$dxchan->{pc50_t} = $main::systime unless exists $dxchan->{pc50_t};
 		if ($t >= $dxchan->{pc50_t} + $DXProt::pc50_interval) {
-			$dxchan->send(pc50(scalar DXChannel::get_all_users));
+			my $s = pc50(scalar DXChannel::get_all_users);
+			eph_dup($s);
+			$dxchan->send($s);
 			$dxchan->{pc50_t} = $t;
 		} 
 

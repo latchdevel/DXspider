@@ -16,6 +16,6 @@ if (@list && $list[0] =~ /^NOD/) {
 	shift @list;
 }
 
-push @out, $main::routeroot->config($nodes_only, 0, @list);
+push @out, $main::routeroot->config($nodes_only, 0, [], @list);
 return (1, @out);
 

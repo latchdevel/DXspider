@@ -155,6 +155,7 @@ sub config
 	my $self = shift;
 	my $nodes_only = shift;
 	my $level = shift;
+	my $seen = shift;
 	my @out;
 	my $line;
 	my $call = $self->user_call;
@@ -168,6 +169,16 @@ sub config
 	if ($printit) {
 		$line = ' ' x ($level*2) . "$call";
 		$call = ' ' x length $call; 
+		
+		# recursion detector
+		if ((DXChannel->get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
+			$line .= ' ...';
+			push @out, $line;
+			return @out;
+		}
+		push @$seen, $self->{call};
+
+		# print users
 		unless ($nodes_only) {
 			if (@{$self->{users}}) {
 				$line .= '->';
@@ -194,12 +205,14 @@ sub config
 		push @out, $line if length $line;
 	}
 	
+	# deal with more nodes
 	foreach my $ncall (sort @{$self->{nodes}}) {
 		my $nref = Route::Node::get($ncall);
 
 		if ($nref) {
 			my $c = $nref->user_call;
-			push @out, $nref->config($nodes_only, $level+1, @_);
+			dbg('routec', "recursing from $call -> $c");
+			push @out, $nref->config($nodes_only, $level+1, $seen, @_);
 		} else {
 			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_); 
 		}
