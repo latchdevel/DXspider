@@ -131,6 +131,7 @@ sub handle
 						}
 					}
 				}
+				delete $ping{$ref->{id}};
 			}
 		}
 	} else {
