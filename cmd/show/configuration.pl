@@ -55,7 +55,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 			if (@list) {
 				next unless grep $node->call =~ /^$_/, @list;
 			} else {
-				next unless $node->dxcc == $self->dxcc;
+				next unless grep $node->dxcc == $_, @main::my_cc;
 			}
 		}
 		my $call = $node->call;

@@ -406,7 +406,7 @@ dbg("DXSpider Version $version, build $build started");
 
 # load Prefixes
 dbg("loading prefixes ...");
-my $r = Prefix::load();
+my $r = Prefix::init();
 confess $r if $r;
 dbg(USDB::init());
 

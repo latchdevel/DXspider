@@ -59,13 +59,8 @@ return (1, @out) if @out;
 
 # default prefixes
 unless (@pref) {					# no prefix or callsign, use default prefix
-	if ($self->dxcc >= 61 && $self->dxcc < 67) {
-		push @dxcc, [$_, 2] for (61..67);
-		push @pref, "GB";
-	} else {
-		push @dxcc, [$self->dxcc, 2];
-		push @pref, $self->call;
-	}
+	push @dxcc, [$_, 2] for @main::my_cc;
+	push @pref, $main::mycall;
 }
 
 # default date

@@ -17,7 +17,7 @@ require Exporter;
                 $clusterport $clusteraddr $debugfn 
                 $def_hopcount $data $system $cmd
 				$userfn $motd $local_cmd $mybbsaddr
-                $lang
+                $lang @my_cc
 				$pc50_interval $user_interval
                );
 			   
@@ -52,6 +52,15 @@ $mybbsaddr = "G1TLH\@GB7TLH.#35.GBR.EU";
 
 # the default language (the key used must match the one in the Messages file)
 $lang = 'en';
+
+# the country codes that my node is located in
+# 
+# for example 'qw(EA EA8 EA9 EA0)' for Spain and all its islands.
+# if you leave this blank then it will use the country code for
+# your $mycall. This will suit 98% of sysops (including GB7 BTW).
+#
+
+@my_cc = qw();
 
 # the tcp address of the cluster this can be an address of an ethernet port
 # but this is more secure. For normal use this will be fine. 

@@ -33,6 +33,30 @@ $db = undef;					# the DB_File handle
 $hits = $misses = $matchtotal = 1;		# cache stats
 $lrusize = 1000;				# size of prefix LRU cache
 
+sub init
+{
+	my $r = load();
+	return $r if $r;
+
+	# fix up the node's default country codes
+	push @main::my_cc, (61..67) if !@main::my_cc && $main::mycall =~ /^GB/;
+	push @main::my_cc, qw(EA EA6 EA8 EA9) if !@main::my_cc && $main::mycall =~ /^E(ABCD)/;
+	push @main::my_cc, $main::mycall unless @main::my_cc;
+
+	my @c;
+	for (@main::my_cc) {
+		if (/^\d+$/) {
+			push @c, $_;
+		} else {
+			my @dxcc = extract($_);
+			push @c, $dxcc[1]->dxcc if @dxcc > 1;
+		}
+	}
+	return "\@main::my_cc does not contain a valid prefix or callsign (" . join(',', @main::my_cc) . ")" unless @c;
+	@main::my_cc = @c;
+	return undef;
+}
+
 sub load
 {
 	# untie every thing
