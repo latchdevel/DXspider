@@ -19,10 +19,16 @@ print "Content-type: text/html\n\n";
 
 # Get the parameters passed to the script.
 read (STDIN, $post_data, $ENV{CONTENT_LENGTH});
-@call = split (/=/, $post_data) ;
+
+$callstart = index($post_data, "=") + 1 ;
+$callend = index($post_data, "&") ;
+
+$call = substr($post_data, $callstart, $callend - $callstart), 
+$password = substr($post_data, index($post_data, "=", $callend) + 1, length($post_data)) ;
 
 # Print the page header.
-
+#print("Callsign : $call") ;
+#print("Password : $password") ;
 print <<'EOF';
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -57,11 +63,12 @@ EOF
 if($ENV{CONTENT_LENGTH} > 0)
     {
     # Callsign is set - print the whole <APPLET> stuff....
-    # print("Callsign is $call[1]<BR>\n") ;
+    # print("Callsign is $call<BR>\n") ;
 
     print("<CENTER>\n") ;
     print("    <APPLET CODE=\"spiderclient.class\" CODEBASE=\"/client/\" width=800 height=130>\n") ;
-    print("        <PARAM NAME=\"CALL\" VALUE=\"$call[1]\">\n") ;
+    print("        <PARAM NAME=\"CALL\" VALUE=\"$call\">\n") ;
+    print("        <PARAM NAME=\"PASSWORD\" VALUE=\"$password\">\n") ;
     print("        <PARAM NAME=\"HOSTNAME\" VALUE=\"$HOSTNAME\">\n") ;
     print("        <PARAM NAME=\"PORT\" VALUE=\"$PORT\">\n") ;
     print("    </APPLET>\n") ;
@@ -75,6 +82,8 @@ else
     <FORM METHOD=POST>
         <STRONG>Please enter your callsign: </STRONG><BR>
         <INPUT name="call" size=10><BR>
+        <STRONG>Please enter your password: </STRONG><BR>
+        <INPUT name="password" size=10 TYPE=PASSWORD><BR>
         <INPUT type=submit value="Click here to Login">
     </FORM>
     </CENTER>

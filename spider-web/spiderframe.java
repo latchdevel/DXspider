@@ -173,6 +173,10 @@ menubar.add(mailbox);
 		Call = s;
 	}
 
+    public void setPassword(String s) {
+        Password = s ;
+    }
+
 	public void setPrefix(String s) {
 	        Prefix = s;
 		}
@@ -207,6 +211,10 @@ menubar.add(mailbox);
 		return Call;
 	}
 	
+    public String getPassword() {
+        return Password;
+    }
+    
 	public String setPrefix(){
 	       return Prefix;
 	       }
@@ -563,6 +571,7 @@ menubar.add(mailbox);
 	private Font InFont = new Font("Courier", Font.BOLD, 13);
 	
 	private String Call = new String("NOCALL");
+	private String Password = new String();
 	private String Fullname = new String("NOBODY");
 	private String Hostname = new String("localhost");
 	private String Port = new String("3600");

@@ -15,6 +15,9 @@ public class spiderclient extends Applet {
 		p = getParameter("CALL");
 		if (p != null) cf.setCall(p);
 		
+        p = getParameter("PASSWORD");
+        if (p != null) cf.setPassword(p);
+        
 		p = getParameter("FULLNAME");
 		if (p != null) cf.setFullname(p);
 
@@ -44,7 +47,12 @@ public class spiderclient extends Applet {
 			listener = new StreamListener(cf, in);
 			
 			out.println(cf.getCall());
-			out.println(cf.getFullname());
+
+			if(cf.getPassword().length() > 0) {
+                out.println(cf.getPassword());
+            }
+
+			// out.println(cf.getFullname());
 		}
 		catch (IOException e) { 
 			InfoDialog id = new InfoDialog(cf, "Error", e.toString());
