@@ -1,5 +1,6 @@
 25Oct02=======================================================================
 1. remove the dupefile automatically if it becomes corrupted
+2. instrument the startup slightly more
 21Oct02=======================================================================
 1. Fix msg aging.
 2. make the default pinginterval and obscount variable (set/var 

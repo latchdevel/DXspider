@@ -455,23 +455,29 @@ unless ($is_win) {
 }
 
 # start dupe system
+dbg("Starting Dupe system");
 DXDupe::init();
 
 # read in system messages
+dbg("Read in Messages");
 DXM->init();
 
 # read in command aliases
+dbg("Read in Aliases");
 CmdAlias->init();
 
 # initialise the Geomagnetic data engine
+dbg("Start WWV");
 Geomag->init();
+dbg("Start WCY");
 WCY->init();
 
 # initial the Spot stuff
+dbg("Starting DX Spot system");
 Spot->init();
 
 # initialise the protocol engine
-dbg("reading in duplicate spot and WWV info ...");
+dbg("Start Protocol Engines ...");
 DXProt->init();
 QXProt->init();
 
