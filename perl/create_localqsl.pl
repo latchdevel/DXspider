@@ -27,6 +27,9 @@ use DXUtil;
 use Spot;
 use DXDb;
 
+my $end = 0;
+$SIG{TERM} = $SIG{INT} = sub { $end++ };
+
 my $qslfn = "localqsl";
 
 $main::systime = time;
@@ -49,9 +52,10 @@ foreach my $year (sort readdir YEAR) {
 	my $baseyear = "$base/$year";
 	opendir DAY,  $baseyear or die "$baseyear $!";
 	foreach my $day (sort readdir DAY) {
-		next if $day =~ /^\./;
+		next unless $day =~ /dat$/;
 		my $fn = "$baseyear/$day";
 		my $f = new IO::File $fn  or die "$fn ($!)"; 
+		print "doing: $fn\n";
 		while (<$f>) {
 			if (/(QSL|VIA)/i) {
 				my ($freq, $call, $t, $comment, $by, @rest) = split /\^/;
@@ -62,6 +66,7 @@ foreach my $year (sort readdir YEAR) {
 				}
 			}
 		}
+		$f->close;
 	}
 }
 
