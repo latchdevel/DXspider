@@ -16,7 +16,7 @@ my @out;
 foreach $call (@args) {
   $call = uc $call;
   my $dxchan = DXChannel->get($call);
-  my $ref = DXCluster->get($call);
+  my $ref = DXCluster->get_exact($call);
   if ($dxchan && $ref) {
 	$dxchan->here(0);
     $ref->here(0);

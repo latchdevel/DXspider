@@ -441,6 +441,9 @@ what your latitude and longitude is. If you have not yet done a SET/QRA
 then this command will set your QRA locator for you. For example:-
   SET/LOCATION 52 22 N 0 57 E
 
+=== 0^SET/LOGININFO^Inform when a station logs in locally
+=== 0^UNSET/LOGININFO^Inform when a station logs out locally
+
 === 9^SET/LOCKOUT <call>^Stop a callsign connecting to the cluster
 === 9^UNSET/LOCKOUT <call>^Allow a callsign to connect to the cluster
 

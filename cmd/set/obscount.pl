@@ -22,9 +22,7 @@ $val *= 60 if $val < 120;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $dxchan = DXChannel->get($call);
-	$user = $dxchan->user if $dxchan;
-	$user = DXUser->get_exact($call) unless $user;
+	$user = DXUser->get_current($call);
 	if ($user) {
 		unless ($user->sort eq 'A' || $user->sort eq 'S') {
 			push @out, $self->msg('e13', $call);

@@ -1,3 +1,6 @@
+28Nov99=======================================================================
+1. fixed all the stupid errors introduced in 1.36 confusing DXUser->get with
+DXCluster->get_exact.
 24Nov99=======================================================================
 1. extended badmsg.pl stuff so that it works like the forward file and allows
 one to reject on to, from, origin and subject fields.

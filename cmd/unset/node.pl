@@ -23,7 +23,7 @@ foreach $call (@args) {
 	if ($chan) {
 		push @out, $self->msg('nodee1', $call);
 	} else {
-		$user = DXUser->get_exact($call);
+		$user = DXUser->get($call);
 		return (1, $self->msg('usernf', $call)) if !$user; 
 		$user->sort('U');
 		$user->close();

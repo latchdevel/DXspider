@@ -32,7 +32,7 @@ foreach $call (@args) {
 			$ref->user->priv($priv);
 			$ref->user->put();
 		}
-		if (!$ref && ($user = DXUser->get_exact($call))) {
+		if (!$ref && ($user = DXUser->get($call))) {
 			$user->priv($priv);
 			$user->put();
 		}

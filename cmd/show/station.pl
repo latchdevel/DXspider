@@ -59,7 +59,8 @@ if (@f == 0) {
 				$miles = $dx * 0.62133785;
 			}
 			
-			my $cref = DXCluster->get($call);
+			my $cref = DXCluster->get_exact($call);
+			$cref = DXCluster->get($call) unless $cref;
 			my $seek = $cref->mynode->call if $cref;
 
 			if ($seek) {
