@@ -154,7 +154,8 @@ if (@freq) {
 		$expr .= "(\$f0 >= $freq[$i] && \$f0 <= $freq[$i+1]) ||";
 		my $r = Spot::ftor($freq[$i], $freq[$i+1]);
 #		$hint .= "m{$r\\.} ||" if $r;
-		$hint .= "m{\d+\.} ||";
+#		$hint .= "m{\d+\.} ||";
+		$hint .= "1 ||";
 	}
 	chop $expr;	chop $expr;
 	chop $hint;	chop $hint;
