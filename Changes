@@ -1,3 +1,6 @@
+03Jul02=======================================================================
+1. Added the DEMONSTRATE command which allows a sysop to demonstrate a 
+command to a user (from a request by Charlie K1XX). 
 02Jul02=======================================================================
 1. Fixed the problem with badspotter or badnode being set to baddx if either
 of the data files are missing. 

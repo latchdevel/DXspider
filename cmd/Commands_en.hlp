@@ -729,6 +729,19 @@ node>).
 
 Best of luck - you will need it.
   
+=== 9^DEMOSTRATE <call> <command>^Demonstrate a command to another user
+This command is provided so that sysops can demonstrate commands to 
+other users. It runs a command as though that user had typed it in and
+then sends the output to that user, together with the command that 
+caused it.
+
+  DEMO g7brn sh/dx iota oc209
+  DEMO g1tlh set/here
+
+Note that this command is similar to SPOOF and will have the same side
+effects. Commands are run at the privilege of the user which is being
+demonstrated to. 
+
 === 0^KILL <msgno> [<msgno..]^Delete a message from the local system
 === 0^KILL <from msgno>-<to msgno>^Delete a range of messages
 === 0^KILL from <regex>^Delete messages FROM a callsign or pattern
