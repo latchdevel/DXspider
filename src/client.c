@@ -352,7 +352,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 						*mp->inp++ = *p++;
 					}
 					break;
-				case '\b':
+				case 0x08:
 				case 0x7f:
 					if (mp->inp > mp->data)
 						mp->inp--;
@@ -814,6 +814,7 @@ lgotcall:
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
 	if (tcgetattr(0, &in->t) < 0) {
 /*		echo = 0; */
+		in->echo = echo;
 		in->t_set = 0;
 	} else {
 		struct termios t = in->t;
