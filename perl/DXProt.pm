@@ -313,20 +313,24 @@ sub normal
 		
 		if ($pcno == 16) {		# add a user
 			my $node = DXCluster->get_exact($field[1]); 
+			my $dxchan;
+			if (!$node && ($dxchan = DXChannel->get($field[1]))) {
+				# add it to the node table if it isn't present and it's
+				# connected locally
+				$node = DXNode->new($dxchan, $field[1], 0, 1, 5400);
+			}
 			return unless $node; # ignore if havn't seen a PC19 for this one yet
 			return unless $node->isa('DXNode');
 			if ($node->dxchan != $self) {
 				dbg('chan', "LOOP: $field[1] came in on wrong channel");
 				return;
 			}
-			my $dxchan;
 			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
 				dbg('chan', "LOOP: $field[1] connected locally");
 				return;
 			}
 			my $i;
-			
-			
+						
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $confmode, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
 				next if !$call || length $call < 3 || length $call > 8;

@@ -195,7 +195,7 @@ sub run_cmd
 		dbg('eval', "stored func cmd = $c\n");
 		eval  $c;
 		if ($@) {
-			return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
+			return ("Syserr: Eval err $errstr on stored func $self->{func}", $@);
 		}
 	} else {
 
@@ -232,31 +232,25 @@ sub run_cmd
 				
 				if ($package) {
 					dbg('command', "package: $package");
-					
-					my $c = qq{ \@ans = $package(\$self, \$args) };
-					dbg('eval', "cluster cmd = $c\n");
-					eval  $c;
-					if ($@) {
-						@ans = (0, "Syserr: Eval err cached $package\n$@");
+					my $c;
+					unless (exists $Cache{$package}->{sub}) {
+						$c = eval $Cache{$package}->{eval};
+						if ($@) {
+							return ("Syserr: Syntax error in $package", $@);
+						}
+						$Cache{$package}->{sub} = $c;
 					}
+					$c = $Cache{$package}->{sub};
+					@ans = &{$c}($self, $args);
 				}
 			} else {
 				dbg('command', "cmd: $cmd not found");
-				@ans = (0);
+				return ($self->msg('e1'));
 			}
 		}
 	}
 	
-	if ($ans[0]) {
-		shift @ans;
-	} else {
-		shift @ans;
-		if (@ans > 0) {
-			unshift @ans, $self->msg('e2');
-		} else {
-			@ans = $self->msg('e1');
-		}
-	}
+	shift @ans;
 	return (@ans);
 }
 
@@ -443,22 +437,7 @@ sub valid_package_name {
 	
 	#Dress it up as a real package name
 	$string =~ s/\//_/og;
-	return "Emb_" . $string;
-}
-
-#borrowed from Safe.pm
-sub delete_package {
-	my $pkg = shift;
-	my ($stem, $leaf);
-	
-	no strict 'refs';
-	$pkg = "DXCommandmode::$pkg\::"; # expand to full symbol table name
-	($stem, $leaf) = $pkg =~ m/(.*::)(\w+::)$/;
-	
-	if ($stem && $leaf) {
-		my $stem_symtab = *{$stem}{HASH};
-		delete $stem_symtab->{$leaf};
-	}
+	return $string;
 }
 
 # find a cmd reference
@@ -502,13 +481,12 @@ sub find_cmd_name {
 		return undef;
 	}
 	
-	if(defined $Cache{$package}{mtime} && $Cache{$package}{mtime } <= $mtime) {
+	if(defined $Cache{$package}->{mtime} &&$Cache{$package}->{mtime} <= $mtime) {
 		#we have compiled this subroutine already,
 		#it has not been updated on disk, nothing left to do
 		#print STDERR "already compiled $package->handler\n";
 		;
 	} else {
-		delete_package($package) if defined $Cache{$package}{mtime};
 		
 		my $fh = new IO::File;
 		if (!open $fh, $filename) {
@@ -520,7 +498,7 @@ sub find_cmd_name {
 		close $fh;
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq{ sub $package { $sub } };
+		my $eval = qq( sub { $sub } );
 		
 		if (isdbg('eval')) {
 			my @list = split /\n/, $eval;
@@ -530,25 +508,9 @@ sub find_cmd_name {
 			}
 		}
 		
-		{
-			#hide our variables within this block
-			my($filename,$mtime,$package,$sub);
-			eval $eval;
-		}
-		
-		if ($@) {
-			print "\$\@ = $@";
-			$errstr = $@;
-			delete_package($package);
-		} else {
-			#cache it unless we're cleaning out each time
-			$Cache{$package}{'mtime'} = $mtime;
-		}
+		$Cache{$package} = {mtime => $mtime, eval => $eval };
 	}
-	
-	#print Devel::Symdump->rnew($package)->as_string, $/;
-	$package = "DXCommandmode::$package" if $package;
-	$package = undef if $errstr;
+
 	return $package;
 }
 

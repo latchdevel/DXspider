@@ -1,3 +1,8 @@
+03Nov99=======================================================================
+1. Simplified command caching so it uses anonymous subroutines, you should
+also get error messages back on the console now when developing.
+2. Allow locally connected AK1A clusters that for some obscure reason don't
+issue PC19s to still appear as connected and allow them to acquire users.
 31Oct99=======================================================================
 1. updated Minimuf.pm and show/muf.pl to the fixed versions sent to me by
 Steve Franke K9AN. 
