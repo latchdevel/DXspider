@@ -1,3 +1,6 @@
+22Dec04=======================================================================
+1. Changed all the names of US prefixes to be prepended with their State code.
+thus "Alaska-KL7" becomes "AK-Alaska-KL7". 
 21Dec04=======================================================================
 1. added AGW port no after an example by IW5DEZ.
 2. modified links command to suggestions by Charlie K1XX.
