@@ -91,6 +91,7 @@ $count = 0;
 		  talklist => '0,Talk List,parray',
 		  cluster => '5,Cluster data',
 		  isbasic => '9,Internal Connection', 
+		  errors => '9,Errors',
 		 );
 
 # object destruction

@@ -1,3 +1,6 @@
+02May01=======================================================================
+1. put an upper limit on the number of concurrent errors allowed in command
+mode (20). This should disconnect runaway spot suckers....
 28Apr01=======================================================================
 1. fix an occasional problem with 'sorry connected to' messages
 23Apr01=======================================================================

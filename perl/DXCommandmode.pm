@@ -32,13 +32,14 @@ use Sun;
 use Internet;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
 $errstr = ();					# error string from eval
 %aliases = ();					# aliases for (parts of) commands
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
+$maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -351,12 +352,27 @@ sub run_cmd
 				}
 			} else {
 				dbg('command', "cmd: $cmd not found");
-				return ($self->msg('e1'));
+				if (++$self->{errors} > $maxerrors) {
+					$self->send($self->msg('e26'));
+					$self->disconnect;
+					return ();
+				} else {
+					return ($self->msg('e1'));
+				}
 			}
 		}
 	}
 	
-	shift @ans;
+	my $ok = shift @ans;
+	if ($ok) {
+		delete $self->{errors};
+	} else {
+		if (++$self->{errors} > $maxerrors) {
+			$self->send($self->msg('e26'));
+			$self->disconnect;
+			return ();
+		}
+	}
 	return (@ans);
 }
 
