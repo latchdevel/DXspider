@@ -73,8 +73,12 @@ sub update
 		
 		#	my $trydate = cltounix($mydate, sprintf("%02d18Z", $mytime));
 		if ($mydate >= $date) {
+			if ($myr) {
+				$r = 0 + $myr;
+			} else {
+				$r = 0 unless abs ($mysfi - $sfi) > 3;
+			}
 			$sfi = 0 + $mysfi;
-            $r = 0 + $myr unless !$r && $myk == $k;
 			$k = 0 + $myk;
 			$a = 0 + $mya;
 			$forecast = $myforecast;

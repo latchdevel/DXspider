@@ -9,6 +9,9 @@
 
 package DXCommandmode;
 
+use POSIX;
+use IO::File;
+
 @ISA = qw(DXChannel);
 
 use DXUtil;
@@ -21,9 +24,9 @@ use DXLog;
 use DXLogPrint;
 use DXBearing;
 use CmdAlias;
-use IO::File;
 use Filter;
 use Carp;
+use Minimuf;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases);

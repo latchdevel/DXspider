@@ -34,12 +34,19 @@
 
 package Minimuf;
 
-use strict;
 use POSIX;
-use vars qw($pi $d2r $r2d $halfpi $pi2 $VOFL $R $hE $hF $GAMMA $LN10
+
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw($pi $d2r $r2d $halfpi $pi2 $VOFL $R $hE $hF $GAMMA $LN10
 		    $MINBETA $BOLTZ $NTEMP $DELTAF $MPATH $GLOSS $SLOSS
             $noise);
 
+use strict;
+use vars qw($pi $d2r $r2d $halfpi $pi2 $VOFL $R $hE $hF $GAMMA $LN10
+		    $MINBETA $BOLTZ $NTEMP $DELTAF $MPATH $GLOSS $SLOSS
+            $noise);
+ 
 $pi = 3.141592653589;
 $d2r = ($pi/180);
 $r2d = (180/$pi);
@@ -201,9 +208,15 @@ sub ion
 	my $d = shift;				# path angle (rad)
 	my $fcF = shift;			# F-layer critical frequency 
 	my $ssn = shift;            # current sunspot number
-    my $daynight = shift;		# ref to daynight array one per hop
+	my $lat1 = shift;
+	my $lon1 = shift;
+	my $b1 = shift;
+	my $b2 = shift;
+	my $lats = shift;
+	my $lons = shift;
 	
 	# various refs to arrays
+    my $daynight = shift;		# ref to daynight array one per hop
 	my $mufE = shift;
 	my $mufF = shift;
 	my $absorp = shift;
@@ -233,13 +246,14 @@ sub ion
 	$phiE = atan($ftemp / sqrt(1 - $ftemp * $ftemp));
 	$ftemp = $R * cos($beta) / ($R + $hF);
 	$phiF = atan($ftemp / sqrt(1 - $ftemp * $ftemp));
-	$$mufF->[$h] = $fcF / cos($phiF);;
+	$absorp->[$h] = $mufE->[$h] = $daynight->[$h] = 0;
+	$mufF->[$h] = $fcF / cos($phiF);;
 	for ($dist = $dhop; $dist < $d; $dist += $dhop * 2) {
 
 		# Calculate the E-layer critical frequency and MUF.
 		 
 		$fcE = 0;
-		$psi = zenith($dist);
+		$psi = zenith($dist, $lat1, $lon1, $b2, $b1, $lats, $lons);
 		$ftemp = cos($psi);
 		$fcE = .9 * pow((180. + 1.44 * $ssn) * $ftemp, .25) if ($ftemp > 0);
 		$fcE = .005 * $ssn if ($fcE < .005 * $ssn);
@@ -306,7 +320,7 @@ sub pathloss
 	$level = $noise;
 	$j = 0;
 	for ($h = $hop; $h < $hop + 3; $h++) {
-#		$daynight->[$h] &= ~(P_E | P_S | P_M);
+		$daynight->[$h] &= ~(4 | 8 | 16);
 		if ($freq < 0.85 * $mufF->[$h]) {
 
 			# Transmit power (dBm)
@@ -401,7 +415,63 @@ sub zenith
 	$psi += $pi if ($psi < 0);
 	return($psi);
 }
-		
-		
+
+#  official minimuf version of display		
+sub dsx
+{
+	my $h = shift;
+	my $rsens = shift;
+	my $dB2 = shift;
+	my $daynight = shift;
+	
+	my $c1;
+	my $c2;
+
+	return "       " unless $h;
+	
+	if (($daynight->[$h] & 3) == 3) {
+		$c1 = 'x';
+	} elsif ($daynight->[$h] & 1) {
+		$c1 = 'j';
+	} elsif ($daynight->[$h] & 2) {
+		$c1 = 'n';
+	}
+	if ($daynight->[$h] & 4) {
+		$c2 = 's';
+	} elsif ($daynight->[$h] & 16) {
+		$c2 = 'm';
+	} else {
+		$c2 = ' ';
+	}
+    return sprintf("%4.0f%s%1d%s", $dB2->[$h] - $rsens, $c1, $h, $c2)
+}		
+
+#  my version
+sub ds
+{
+	my $h = shift;
+	my $rsens = shift;
+	my $dB2 = shift;
+	my $daynight = shift;
+	
+	my $c2;
+
+	return "    " unless $h;
+	
+	if ($daynight->[$h] & 4) {
+		$c2 = 's';
+	} elsif ($daynight->[$h] & 16) {
+		$c2 = 'm';
+	} else {
+		$c2 = ' ';
+	}
+	my $l = $dB2->[$h] - $rsens;
+	my $s = int $l / 6;
+	$s = 9 if $s > 9;
+	$s = 0 if $s < 0;
+    my $plus = (($l / 6) >= $s + 0.5) ? '+' : ' ';
+	
+    return "$c2\S$s$plus";
+}		
 
 1;

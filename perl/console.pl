@@ -195,9 +195,9 @@ sub rec_socket
 	if (defined $msg) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 		
-		if ($sort eq 'D') {
+		if ($sort && $sort eq 'D') {
 			addtotop($line);
-		} elsif ($sort eq 'Z') { # end, disconnect, go, away .....
+		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
 		}	  
 	}

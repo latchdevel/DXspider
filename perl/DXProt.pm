@@ -516,7 +516,8 @@ sub normal
 			my $sfi = unpad($field[3]);
 			my $k = unpad($field[4]);
 			my $i = unpad($field[5]);
-			my $r = $field[6] =~ /R=(\d+)/ || 0;
+			my ($r) = $field[6] =~ /R=(\d+)/;
+			$r = 0 unless $r;
 			my $dupkey = "$d.$sfi$k$i";
 			if ($wwvdup{$dupkey}) {
 				dbg('chan', "Dup WWV Spot ignored\n");
