@@ -32,8 +32,8 @@ DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
-=== 9^CATCHUP <node call> All|[<msgno> ...]^Mark a message as sent
-=== 9^UNCATCHUP <node call> All|[msgno> ...]^Unmark a message as sent
+=== 5^CATCHUP <node call> All|[<msgno> ...]^Mark a message as sent
+=== 5^UNCATCHUP <node call> All|[msgno> ...]^Unmark a message as sent
 When you send messages the fact that you have forwarded it to another node 
 is remembered so that it isn't sent again. When you have a new partner
 node and you add their callsign to your /spider/msg/forward.pl file, all
