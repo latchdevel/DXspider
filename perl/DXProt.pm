@@ -30,11 +30,12 @@ use Geomag;
 use WCY;
 use Time::HiRes qw(gettimeofday tv_interval);
 use BadWords;
+use DXHash;
 
 use strict;
 use vars qw($me $pc11_max_age $pc23_max_age
 			$last_hour %pings %rcmds
-			%nodehops @baddx $baddxfn $censorpc
+			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
 $me = undef;					# the channel id for this cluster
@@ -45,10 +46,11 @@ $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
-@baddx = ();                    # list of illegal spotted callsigns
 $censorpc = 0;					# Do a BadWords::check on text fields and reject things
-
-$baddxfn = "$main::data/baddx.pl";
+								# loads of 'bad things'
+$baddx = new DXHash "baddx";
+$badspotter = new DXHash "badspotter";
+$badnode = new DXHash "badnode";
 
 @checklist = 
 (
@@ -177,10 +179,6 @@ sub init
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
 	$me->{sort} = 'S';    # S for spider
-
-	# load the baddx file
-	do "$baddxfn" if -e "$baddxfn";
-	print "$@\n" if $@;
 }
 
 #
@@ -332,8 +330,14 @@ sub normal
 			}
 			
 			# if this is a 'nodx' node then ignore it
-			if (grep $field[7] =~ /^$_/,  @DXProt::nodx_node) {
-				dbg('chan', "PCPROT: Bad DXNode, dropped");
+			if ($badnode->in($field[7])) {
+				dbg('chan', "PCPROT: Bad Node, dropped");
+				return;
+			}
+			
+			# if this is a 'bad spotter' user then ignore it
+			if ($badspotter->in($field[7])) {
+				dbg('chan', "PCPROT: Bad Spotter, dropped");
 				return;
 			}
 			
@@ -346,7 +350,7 @@ sub normal
 			}
 
 			# is it 'baddx'
-			if (grep $field[2] eq $_, @baddx) {
+			if ($baddx->in($field[2])) {
 				dbg('chan', "PCPROT: Bad DX spot, ignored");
 				return;
 			}

@@ -607,11 +607,6 @@ running in order for the changes to take effect.
 Reload the /spider/data/bands.pl file if you have changed it manually whilst
 the cluster is running. 
 
-=== 9^LOAD/BADDX^Reload the bad DX table
-Reload the /spider/data/baddx.pl file if you have changed it manually whilst
-the cluster is running. This table contains the DX Calls that, if spotted, 
-will not be passed on. FR0G and TEST are classic examples.
-
 === 9^LOAD/BADMSG^Reload the bad msg table
 Reload the /spider/msg/badmsg.pl file if you have changed it manually whilst
 the cluster is running. This table contains a number of perl regular 
@@ -931,19 +926,53 @@ SP is an alias for SEND PRIVATE
 
 === 5^SET/ARCLUSTER <call> [<call>..]^Make the callsign an AR-Cluster node
 
-=== 6^SET/BADNODE <call>^Stop spots from this callsign being propagated
-=== 6^UNSET/BADNODE <call>^Allow spots from this callsign again
+=== 8^SET/BADDX <call>..^Stop spots for this callsign being propagated
+=== 8^UNSET/BADDX <call>..^Allow spots for this callsign again
+Setting a callsign as a 'baddx' will prevent spots of this callsign 
+going any further. They will not be displayed and they will not be 
+sent onto other nodes.
+
+The call must be a full eg:-
+
+  set/baddx FORSALE VIDEO FR0G 
+
+  unset/badnode VIDEO
+
+will allow spots to that callsign again.
+
+=== 8^SET/BADNODE <call>..^Stop spots from this node being propagated
+=== 8^UNSET/BADNODE <call>..^Allow spots from this node again
 Setting a callsign as a 'badnode' will prevent spots from that node 
 going any further. They will not be displayed and they will not be 
 sent onto other nodes.
 
-The call can be a full or partial call (or a prefix), eg:-
+The call must be a full eg:-
 
   set/badnode K1TTT 
 
-will stop anything from K1TTT (including any SSID's)
+will stop anything from K1TTT. If you want SSIDs as well then you must
+enter them specifically.
 
   unset/badnode K1TTT
+
+will allow spots from him again.
+
+Use with extreme care. This command may well be superceeded by FILTERing.
+
+=== 8^SET/BADSPOTTER <call>..^Stop spots from this callsign being propagated
+=== 8^UNSET/BADSPOTTER <call>..^Allow spots from this callsign again
+Setting a callsign as a 'badspotter' will prevent spots from this callsign 
+going any further. They will not be displayed and they will not be 
+sent onto other nodes.
+
+The call must be a full eg:-
+
+  set/badspotter VE2STN 
+
+will stop anything from VE2STN. If you want SSIDs as well then you must
+enter them specifically.
+
+  unset/badnode VE2STN
 
 will allow spots from him again.
 
@@ -1142,8 +1171,16 @@ Tell the system where you are. For example:-
 === 0^SET/WX^Allow WX messages to come out on your terminal
 === 0^UNSET/WX^Stop WX messages coming out on your terminal
 
-=== 6^SHOW/BADNODE^Show all the bad nodes in the system
+=== 1^SHOW/BADDX^Show all the bad dx calls in the system
+Display all the bad dx callsigns in the system, see SET/BADDX
+for more information.
+
+=== 1^SHOW/BADNODE^Show all the bad nodes in the system
 Display all the bad node callsigns in the system, see SET/BADNODE
+for more information.
+
+=== 1^SHOW/BADSPOTTER^Show all the bad spotters in the system
+Display all the bad spotter's callsigns in the system, see SET/BADSPOTTER
 for more information.
 
 === 0^SHOW/DATE [<prefix>|<callsign>]^Show the local time 

@@ -1,3 +1,9 @@
+08Jan01=======================================================================
+1. Changed the way that badnodes, badmsg etc work. There is a new general way
+implemented (dunno why I didn't do this before - hey ho...) as a consequence
+there are set/unset/show baddx (for bad dx callsigns) badnode (for dx from
+bad nodes) badspotter (for bad spotters of dx eg VE2STN). Expect more of 
+this sort of thing...
 06Jan01=======================================================================
 1. Fix set/obscount so it actually works.
 2. Allow different number formats for set/pingint eg: 5m for 5 minutes and
