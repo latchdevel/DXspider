@@ -1,3 +1,6 @@
+13Aug00=======================================================================
+1. removed extra /60 in AnnTalk to make deduping of announces work a bit
+better for longer...
 05Aug00=======================================================================
 1. Fixed hax character problem put in somewhen in the C Client
 03Aug00=======================================================================

@@ -23,7 +23,7 @@ $dupage = 24*3600;               # the length of time to hold spot dups
 sub dup
 {
 	my ($call, $to, $text) = @_; 
-	my $d = $main::systime / 60;
+	my $d = $main::systime;
 
 	chomp $text;
 	unpad($text);
