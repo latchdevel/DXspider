@@ -1,5 +1,5 @@
 08Jan01=======================================================================
-1. Changed the way that badnodes, badmsg etc work. There is a new general way
+1. Changed the way that badnodes, baddx etc work. There is a new general way
 implemented (dunno why I didn't do this before - hey ho...) as a consequence
 there are set/unset/show baddx (for bad dx callsigns) badnode (for dx from
 bad nodes) badspotter (for bad spotters of dx eg VE2STN). Expect more of 
