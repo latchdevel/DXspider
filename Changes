@@ -1,3 +1,7 @@
+18Apr01=======================================================================
+1. added Ian M0AZM's Java Client (SpiderConsole)
+17Apr01=======================================================================
+1. made a slight speedup on write in Msg.pm (about doubled it)
 16Apr01=======================================================================
 1. make the correct error messages come out on reject/accept when people
 leave out keywords like 'on'.

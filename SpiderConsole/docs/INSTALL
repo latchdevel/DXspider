@@ -1,0 +1,79 @@
+RadioConsole (Possibly referred to as SpiderConsole)
+by (C) 2001 Ian Norton, i.norton@lancaster.ac.uk
+First Release v1.0, 20010418 (18th April 2001).
+
+1.  Introduction
+
+ This document assumes that you have the JDK or JRE already installed and
+working on your machine.  I have no intention of providing a HOWTO on this,
+there are plenty out there already. <http://www.blackdown.org> has a list of
+JDK/JRE mirror sites for Linux if you don't have it.
+ 
+ If you install the JRE (Java Runtime Environment) you will not be able to
+compile the source code, you will only be able to interpret the code that
+has already been compiled (Java works by compiling source into byte code,
+and then using an interpreter to run the byte code, this is why you must
+install some Java stuff, but this is also how it is platform independent).
+ If you don't intend to modify or recompile the source code, skip the
+programming section, it won't be of any interest to you.
+ 
+ This version of JCAdmin has been tested with the Blackdown port for linux
+of the Java Development Kit version 1.3.0 <http://www.blackdown.org/>.          
+
+1.1.  Acknowledgements
+
+ Some time ago I created JCAdmin for my good friends Ian (G0VGS) and Linda 
+(G0YLM) Maude.  JCAdmin was designed to be an admin interface to the CLX 
+cluster software (http://www.clx.muc.de/).  It was written with the expressed
+purpose of performing certain tasks on Ian's cluster and never really intended
+to be anything marvelous.  After about a year of using this, Ian decided that
+CLX was no longer the software he wanted to use and switched to Dx Spider
+(http://www.dxcluster.org).  After much wailing and gnashing of teeth he
+persuaded me that perhaps I might like to write a new console for Spider.
+After experiencing a brief sense of flashback and "I've been here before" I
+decided that it would be a good challenge to write not only a new console but
+a framework on which to build future consoles.
+
+This is the approach I have taken with this console.
+
+1.2.  So how do I get this console to talk to something then?
+
+ The console works on the principle that whatever specific task you want to
+perform can be done with a plugin.  The console provides a framework for adding
+and removing plugins that provide menu items, toolbar buttons and so on.
+(Some of these features are planned but havn't yet been implemented fully).
+
+ To take the previously mentioned example, the SpiderCluster plugin can talk
+directly to the DX Spider internal protocol engine, thus allowing the user
+administrative rights on the cluster whilst they are using the console.
+
+ All sections SPECIFIC to spider are written into the SpiderCluster plugin.
+Generic communication modules are then used to get everything to talk.
+The next logical addition to the SpiderCluster plugin is a standard Cluster
+plugin that allows a user to connect to a spider cluster via IP (Although this
+requires some more work before it's actually useful).
+
+ So using the generic framework should make just about anything possible.
+Want a graph of WWV/WCY?  Just write a new plugin for it then!
+
+1.3.  Getting it to run.
+
+ Compile all the java files in the src directory simply with javac *.java.
+ You should now be able to start the console with java Console.
+ By default the SpiderCluster plugin is used and a connect made to
+        127.0.0.1:27754.
+
+1.4.  New versions / updates.
+ 
+ New versions of RadioConsole and it's documentation will be made available
+ through the DX Spider homepage <http://www.dxcluster.org/>.
+
+1.5.  Feedback
+ 
+ Please mail me your comments, observations and suggestions for features or
+improvements and in the unlikely event (!) of bugs.  I will do my best to give
+you a prompt reply and request number!
+ 
+Ian Norton
+ 
+i.norton@lancaster.ac.uk

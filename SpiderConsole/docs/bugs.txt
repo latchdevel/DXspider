@@ -1,0 +1,13 @@
+Bug #1 20010403 - reporter Ian, G0VGS.
+
+    Error on typing in a long command.
+
+    java.lang.IndexOutOfBoundsException
+            at java.io.PipedInputStream.read(PipedInputStream.java:271)
+            at PipedInputMUX.run(PipedInputMUX.java:79)
+            at java.lang.Thread.run(Thread.java:484)
+    ConnectionOutput: IOException reading data.
+                
+    IDN 20010403 - Fixed 
+        PipedInputMUX was trying to read all the input into a 16 byte array.
+        Put an if > 16 line in that tells it to only read 16 bytes.

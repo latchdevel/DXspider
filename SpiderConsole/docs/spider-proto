@@ -1,0 +1,256 @@
+<ea1dav> supose two ports in tnc3
+<Stephan> never tried the 2nd port Jesus
+<ea1dav> oh,ok
+<Stephan> but it is mentioned in the ax25-howto (not tnc3, but multiport tnc¥s)
+<ea1dav> yes i have an kpc4 in my node and use mkis
+<ea1dav> but go to change by an tnc3 1k2/9k6
+<Stephan> should be easy anyway
+<ea1dav> how many RAM you have in tnc3 ?
+<Stephan> at db0sue-4(db0sue-7) 256Kb
+<ea1dav> it seem the standard when attached to an PC, then a buy with 256K also
+<Stephan> It isd tnc3/xnet and just have 2 links (one local to db0sue-7 wire and one to db0sue on 2.4GHz 80m distance)
+<ea1dav> ah, Xnet inside tnc..No i have xnet run in pc.
+<ea1dav> a radio link off 80 m the shortest I know :-)
+<Stephan> a kiss link, with Siemens GIGA SET M101DATA (virtuell rs232)
+<ea1dav> how  much power (mW).. it is very interesant
+<Stephan> 100mW, but not sure - have to search for the manual
+<ea1dav> are usual (easy to find ) that equipment..?
+<Stephan> look for M101DATA
+<Stephan> 115k2 (real 57k6)
+<ea1dav> very good,only need an external antena to increase distance.
+<Stephan> max 6.5Km we have tested
+<ea1dav> with external...or with built in antena.?
+<Stephan> external
+<ea1dav> ah, very good solution,I like it.
+<Stephan> since 1 1/2 year we have that link up without any error
+<ea1dav> and is an rs-232 transparent or need some software.?
+<ea1dav> all info that fint is in german :-(
+<ea1dav> find
+<Stephan> yep, needs windows to setup the master and slave - just for initial
+<ea1dav> and then store the info and act like a cable.?
+<Stephan> it is stored in the memory of the master/slave rx/tx
+<-- pa3ezl has quit (EOF From client)
+<-- Dirk-home has quit ([x]chat)
+<ea1dav> go home....by
+<ea7wa> bye
+<-- ea1dav (ea1dav@212.51.60.18) has left #9000 (ea1dav)
+<-- oz1lqh (~nospam@cpe.atm0-0-0-130143.arcnxx2.customer.tele.dk) has left #9000 (oz1lqh)
+<ea7wa> check your mail Stephan
+<g0vgs> is it fixed Angel?
+<ea7wa> which thing Ian ?
+<Stephan> ok
+<g0vgs> the mail
+<g0vgs> and ge all
+<ea7wa> no, I'm talking with Ben, but maybe I'm loosing my english and I'm not able
+<ea7wa> to explain myself in this language
+<g0vgs> I was reading your comments and it seems ok to me
+<g0vgs> although to my knowledge, Spider and AK1A treat mail in the same way.  I cannot be sure about DXNet
+<ea7wa> I think Olivier will be also using that style for dxnet
+<g0vgs> The diff with Spider is that it treats mail as simply as possible
+<g0vgs> that is.. it can only ever deal with one message at a time
+<g0vgs> and if it receives a message for another node/user it simply says...
+<g0vgs> is that node/user on the network?  Ok, send the message.  There is no delay at all
+<ea7wa> yes, that's understood bye Ben, it will be fixed it seems in next release
+<ea7wa> so, send the message as soon as it arrives.
+<g0vgs> good, it would be nice to see it finally fixed
+<ea7wa> <dl6rai-1>: b) trigger it whenever an outgoing message is created
+<g0vgs> only send it if the user is seen on the network
+<Stephan> got it - finally :)
+<g0vgs> if the user cannot be seen on the network then hold the message until they are
+<g0vgs> pointless sending mail when we do not know where the user will appear
+<g0vgs> the time is a day out on that example Angel!
+<g0vgs> sorry, I thought it was the same message, it is not
+<g0vgs> well I am going to bed folks, I have work in the morning :-(
+<g0vgs> at least I will be working at home!
+<Stephan> nite Ian
+<g0vgs> g'night all
+* g0vgs  is away: Zzzzzzzzzz
+<ea7wa> Bye Ian, all stuff on clx is being sent with that PC28 synyax
+<ea7wa> synyax = syntax
+<Stephan> Im off for to bed, goodnight
+--- Stephan is now known as dk8lv-Zzz
+<ea7wa> did you get the mail ?
+<dk8lv-Zzz> yes, I told you
+<ea7wa> ah, sorry
+<dk8lv-Zzz> will try that one tomorrow
+<ea7wa> ok, sleep well
+<dk8lv-Zzz> goodnight Angel
+<dk8lv-Zzz> btw
+<dk8lv-Zzz> need someone looking for sue-7 the next weeks
+--> pa4ab (~pa4ab@212.163.193.2) has joined #9000
+<Amanda> [pa4ab] [pa4ab] Arnold, qth: Ede joins channel #9000 Hello to all!
+--- Amanda gives channel operator status to pa4ab
+<dk8lv-Zzz> Hello Arnold, merry christmas for the rest
+--- dk8lv-Zzz is now known as Stephan
+<pa4ab> Hello Stephan also a Merry Christmas for next year :-0
+<Stephan> still sun, beach and girls ?
+<Stephan> :))
+<pa4ab> Nope rain and rain and rain
+<Stephan> too bad - but here it is/was cold - not too much snow yet
+<pa4ab> no snow here still ten degrees at night
+--> pa3ezl (^aurelio@pa3goj.ampr.org) has joined #9000
+<pa3ezl> GA!
+<pa4ab> Hello Aurelio
+<Stephan> thought that channel ops are able to give op to other
+<pa3ezl> nice to see you ARnold!
+<Stephan> but Amanda do not like that
+<Stephan> hi Aurelio
+<pa3ezl> how have you been?
+<pa3ezl> GA Stephan
+<pa4ab> Who needs to be operator here?
+<pa4ab> I am doing well Aurelio although very busy :-)
+<pa4ab> how are things in PA country?
+<Stephan> Ian (0AZM), Jesus, Rene
+<pa4ab> Do we all need to be operator?
+<Stephan> don¥t know :)
+<pa3ezl> snow..
+<pa4ab> I better can ask Amanda to put auto-operator on!
+<pa3ezl> but slowly melting
+<pa4ab> SNOW????????????????????????????????????
+<pa3ezl> yes!
+<pa3ezl> 2cm
+<pa3ezl> I was just outside putting some 'karton' in from of the 'radiateur'
+<pa3ezl> it feels cold
+<pa4ab> Mhh we are better of here it seems
+<pa3ezl> other than that, all is fine. Another 'attach' by that Molukse actiegroep
+<pa3ezl> attach=attack
+<Stephan> Arnold, is there a command to put lilo into MBR (not with yast)?
+<pa3ezl> so, how is your work progressing?
+<pa4ab> another? I have not heard about that do we have ETA now in Holland too?
+<pa4ab> Well work is not progressing too well, waiting for the lines (for internet)
+<pa4ab> Telefonica is not that fast
+<pa3ezl> well, they claimed the action of putting a sack of rocks on a rail track
+<pa4ab> oh dear
+<pa3ezl> all and all it was nice, white Xmas
+<pa3ezl> can you operate HF?
+<pa4ab> No not right away I have stuff with me but at 'home'
+<pa4ab> not at work
+<pa4ab> I think it must be defined in /etc/lilo.conf Stephan
+<pa3ezl> I will be in EHV this friday, would be nice working you
+<pa4ab> Well I can try but friday is a transport day here I will go back to our house in Asturias
+<pa4ab> for the celebration of the end of the year
+<Stephan> looked there, but it foes not tell how to install lilo into mbr
+<pa3ezl> -rr- next time then
+<pa4ab> and what's wrong with yast?
+<Stephan> if, for some reason, I have to fdisk /mbr (overwrite lilo), I have to re-install the whole linux
+<Stephan> coz yast just can install lilo to hda and yast2 to hde (only once)
+<pa4ab> lilo has an uninstall
+<Stephan> and I don¥t have hda as my first HD
+<pa4ab> lilo -u
+<pa3ezl> Bem-vindo ao PY5UFP-11 Cluster CLX (r) v4.06 - Voce se logou de 200.17.209.10
+<Stephan> that is un-install?!
+<pa3ezl> is that version still with user links?
+<pa4ab> yes Stephan
+<pa4ab> yes Aurelio
+<pa4ab> sorry have to run
+<pa4ab> cu l8ter
+<pa3ezl> bye
+<Stephan> I want the other way - install to mbr on /dev/hde
+<Stephan> cul Arnold
+<-- pa4ab has quit (Connection reset by peer)
+<ea7wa> Hola
+<Stephan> Hola Angel
+<-- pa3ezl has quit (Leaving)
+--> dk8lv-Zzz (~dk8lv@pD903B746.dip.t-dialin.net) has joined #9000
+<Amanda> [dk8lv-Zzz] Stephan - Groﬂ Rheide
+--- Amanda gives channel operator status to dk8lv-Zzz
+<-- Stephan has quit (Ping timeout)
+<-- ea7wa has quit (Leaving)
+--> pa4ab (~pa4ab@212.163.193.2) has joined #9000
+<Amanda> [pa4ab] [pa4ab] Arnold, qth: Ede joins channel #9000 Hello to all!
+--- Amanda gives channel operator status to pa4ab
+<-- pa4ab has quit (Connection reset by peer)
+--> Dirk-home (~djk@gate.tobit.co.uk) has joined #9000
+--- Amanda gives channel operator status to Dirk-home
+<Dirk-home> Greetings to this IRC channel
+<m0azm> Evening
+<Dirk-home> LO
+<Dirk-home> ?
+<m0azm> Been looking at a java based telnet interface today Dirk.  It supports an applet front end and plug in modules.
+<m0azm> Built in support for IO stream plug in filters too...
+<m0azm> Looks like an ideal start for a front end.
+<Dirk-home> I am just in the process of thinking about making some small changes to the 'internal' protocol so that it is possible to distinguish talks from announces from dx from logging info from the rest
+<Dirk-home> But I really need to get the latest 'version' out the door so IAN are you there?
+<Dirk-home> IAN
+<m0azm> Havn't had chance to look at that yet.  How does that work in terms of actually connecting to the cluster?  Does it connect as a normal user and then do some kind of negotiaton?
+<Dirk-home> The internal protocol is very simple:-
+<Dirk-home> <letter><callsign>|<data>\n
+<Dirk-home> when you connect you send:
+<Dirk-home> AG1TLH|telnet
+<Dirk-home> (if you are telnetting in)
+<Dirk-home> to send a 'normal' line to the node:
+<Dirk-home> IG1TLH|t m0azm hello sailor
+<Dirk-home> it replies to you (for normal data)
+<Dirk-home> DM0AZM|M0AZM de G1TLH: Hello sailor
+--> ea1dav (jesus@180-CORU-X5.libre.retevision.es) has joined #9000
+<Dirk-home> there are a few control letters like:-
+<Dirk-home> BG1TLH|0
+<Dirk-home> EG1TLH|0
+<Dirk-home> which means don't buffer and don't echo respectively and are sent to the client by the node
+<Dirk-home> and 
+<Dirk-home> ZG1TLH|Bye
+<Dirk-home> should be self evident
+--> pa3ezl (pa3ezl@c71057.upc-c.chello.nl) has joined #9000
+--- Amanda gives channel operator status to pa3ezl
+<Dirk-home> no binary (all such are encoded over the link as %07, %FF etc)
+<pa3ezl> GE all
+<Dirk-home> GE
+<m0azm> Ge.
+<ea1dav> Ge all
+<Dirk-home> as default the node only listens to localhost port 27754
+<m0azm> Where abouts do the new protocol bits live?
+<Dirk-home> what I will do is make talk output 'TG1TLH|', DX broadcasts 'XG1TLH|' and announce broadcasts 'NG1TLH|' so you can stick them into different colours/windows easily also have 'LG1TLH|' for logging info which currently comes out on the stdout of the node program
+<Dirk-home> new protocol is inter cluster protocol and that has not been designed in detail yet, I thought you wanted to do a sysop interface in java?
+<m0azm> Yes, I thought this was the internode protocol though?  Or do you have a separate proto for the console?
+<Dirk-home> separate protocol for console and clients. 
+--> aurelio (pa3ezl@c71057.upc-c.chello.nl) has joined #9000
+<Dirk-home> It is a client/server architecture.
+--- Amanda gives channel operator status to aurelio
+<Dirk-home> this is the simple internal protocol that you have to interpret.
+<m0azm> Ok, I think I'm confused now.  Will this be a connect to localhost port 27754 or a connect to the standard port?
+<Dirk-home> Of course there in nothing to stop me sending you either full or bastardised PC protocol but that may a bit too much for starters.
+<-- aurelio has quit (EOF From client)
+<Dirk-home> OK
+<m0azm> :)
+<Dirk-home> What happens is this:
+<Dirk-home> There is a node (cluster.pl) which is a server which sits there listening on localhost port 27754
+<m0azm> Ok.
+<Dirk-home> then either it or some other process starts a 'client' who's sole job in life is to normalise 'input' and 'output' to and from this server
+<m0azm> Right, ok I'm with you now.
+<m0azm> So I could manually telnet to the port and issue these commands?
+<m0azm> Same idea as sendmail etc..
+<Dirk-home> for a 'normal' user this amounts to dealing with line ending conventions and coping with 'binary characters'
+<Dirk-home> yes.
+<m0azm> Sorry, I seem to be a little slow on the uptake today :-)
+<Dirk-home> The callsign that you use determines whether you see 'user' or 'node' data - but the data is always framed in the way I described earlier. 
+<m0azm> Ok.  That seems fairly straight forward.
+<Dirk-home> It isn't wonderfully secure, which is why the node only listens to localhost.
+<Dirk-home> If you look at console.pl it should show you the sort of thing that happens. It is very simple.
+<Dirk-home> what it doesn't currently do is distinguish the various broadcast things from 'interactive' traffic which is what I want to do next. If I also allow log info onto that 'channel' then you can split out a window with that on. 
+<m0azm> Ok, I've just given it an initial glance today.  Trying to work out how the Java Telnet application works.
+<m0azm> It seems to do everything that we need, it just needs tweeking.
+<Dirk-home> My personal view is that you might be better to start again. A lot of these 'applets' have been written by erm... less experienced people.
+<Dirk-home> send us a copy and let me look at (just out of curiosity).
+<m0azm> It looks to be written how I had initially thought about writing it.
+<m0azm> Hang on, I'll grab the URL.
+<m0azm> http://www.mud.de/se/jta/html/download.html
+<m0azm> It'll need a bit of a re-work to get the GUI to look a bit nicer, but other than that it seems a good way to start.
+<m0azm> Or, as you say I might steal some of the better ideas and start afresh.
+<Dirk-home> It's erm.. big isn't it? it's bigger than a normal telnet session!
+<m0azm> Yes, it's a bit bloated.  But then there's no telnet implementation for Java, you have to write your own from scratch.
+<m0azm> It has lots of extra rubbish we don't need such as ssh support.
+<Dirk-home> I was sort of thinking that this might be a stand alone thingie rather than a 'use a browser' thingie.
+<Dirk-home> You shouldn't need any of the telent protocol stuff (%ff%xx) pairs. I assume a 'noecho' connection
+<m0azm> Yes, that's what it does.  There's an applet there too, but it's just a front end plug in.
+<m0azm> So you think I should be able to open a raw connection to it?
+<Dirk-home> basically you don't need anything other than a basic socket connection plus the 'internal' protocol engine together with a really funky 'swing' interface (:-)
+<Dirk-home> That's what I do.
+<m0azm> I'm just looking at funky swing stuff atm
+<m0azm> !
+<m0azm> Ok, I'll have a re-think.
+<Dirk-home> have a look at the perl/C clients you will see they are very simple.
+<m0azm> I thought I had to deal with the telnet stuff from the RFC.
+<Dirk-home> Of course once you have done that then we can look at the 'remote' user version that implements the multicast protocol (that I haven't defined properly yet) and start to make this all really good...
+<m0azm> <Throws a thick book out of the window>
+<Dirk-home> and with that thought I shall leave for a moment or five and search for a nice glass of wine...
+<m0azm> Ok, thanks for the pointers :-)
