@@ -75,6 +75,8 @@ if ($childpid) {
 	STDOUT->autoflush(1);
     while (defined (my $msg = <$handle>)) {
 		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+		next unless defined $sort;
+		$line =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 		if ($sort eq 'Z') {
 			kill 'TERM', $childpid;
 			exit(0);

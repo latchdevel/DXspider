@@ -1,5 +1,6 @@
 19Mar01=======================================================================
 1. Add 'not allowed' messages into sh/filter with callsign and reduce priv
+2. decode %xx characters in winclient.pl
 necessary to 1.
 18Mar01=======================================================================
 1. minor changes to user and admin manuals.  Added revsion numbers
