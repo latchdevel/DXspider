@@ -9,7 +9,10 @@ of this will happen when the general mechanism for doing that is available.
 no longer see many of the of talk like announces. Unfortunately you may
 miss the odd useful one as well (but since everything is repeated many times
 you probably won't :-)
-3. centralise the invalid callsign check.
+3. centralise the invalid callsign check so that g1tlh1 and similar calls
+will not be allowed to login anymore.
+4. Fiddle with the lockout mechanism so that set/login g1tlh also locks out
+g1tlh-1 -> g1tlh-15 UNLESS one of these is specifically unlocked.
 13Sep01=======================================================================
 1. did some work on making talk more intelligent and fixed a>b problem.
 2. fixed a nasty problem on input when being hit with full buffers of 

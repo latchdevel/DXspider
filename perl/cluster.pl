@@ -156,6 +156,20 @@ sub new_channel
 		already_conn($conn, $call, $mess);
 		return;
 	}
+
+	# is he locked out ?
+	my $basecall = $call;
+	$basecall =~ s/-\d+$//;
+	my $baseuser = DXUser->get($basecall);
+	if ($baseuser && $baseuser->lockout) {
+		my $lock = $user->lockout if $user;
+		if (!$user || !defined $lock || $lock) {
+			my $host = $conn->{peerhost} || "unknown";
+			Log('DXCommand', "$call on $host is locked out, disconnected");
+			$conn->disconnect;
+			return;
+		}
+	}
 	
 	if ($user) {
 		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
@@ -163,13 +177,6 @@ sub new_channel
 		$user = DXUser->new($call);
 	}
 	
-	# is he locked out ?
-	if ($user->lockout) {
-		my $host = $conn->{peerhost} || "unknown";
-		Log('DXCommand', "$call on $host is locked out, disconnected");
-		$conn->disconnect;
-		return;
-	}
 
 	# create the channel
 	$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
