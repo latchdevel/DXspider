@@ -8,6 +8,10 @@
 6. Allow decodes of DK0WCY-3 WWV data beacon announces
 7. rewrote send so that an SB doesn't send a buckshee bull to NOPRIVATE!
 8. Changed default colouration on console so that all spots >= 50Mhz are red
+9. Fixed init command so that PC21s are sent down non-initted channels
+10. Allow forwarding of unknown private mail. This means that you can set up
+forwarding of 'foreign' mail across to and by gateways using the same 
+mechanism as bulletins (/spider/msg/forward.pl).
 18Oct99=======================================================================
 1. changed help command so that it works correctly with multiple title lines.
 2. added to address to the list of things a message checks to see whether it
