@@ -18,7 +18,7 @@ my $pre;
 my $spotter;
 my $info;
 my $expr;
-my $doqsl;
+my ($doqsl, $doiota, $doqra);
 
 while ($f = shift @list) {		# next field
 	#  print "f: $f list: ", join(',', @list), "\n";
@@ -59,6 +59,23 @@ while ($f = shift @list) {		# next field
 	}
 	if (lc $f eq 'qsl') {
 		$doqsl = 1;
+		next;
+	}
+	if (lc $f eq 'iota') {
+		my ($a, $b);
+#		$DB::single =1;
+		
+		if (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d\d\d)/oi) {
+			$a = uc $a;
+			$doiota = "\\b$a\[\-\ \]\?$b\\b";
+			shift @list;
+		}
+		$doiota = '\b(IOTA|(AF|AN|NA|SA|EU|AS|OC)[- ]?\d\d\d)\b' unless $doiota;
+		next;
+	}
+	if (lc $f eq 'qra') {
+		$doqra = uc shift @list if $list[0] =~ /[A-Z][A-Z]\d\d/oi;
+		$doqra = '\b([A-Z][A-Z]\d\d|[A-Z][A-Z]\d\d[A-Z][A-Z])\b' unless $doqra;
 		next;
 	}
 	if (!$pre) {
@@ -105,6 +122,18 @@ if ($spotter) {
 if ($doqsl) {
 	$expr .= " && " if $expr;
 	$expr .= "\$f3 =~ m{(QSL|VIA)}io";
+}
+
+# iota requests
+if ($doiota) {
+	$expr .= " && " if $expr;
+	$expr .= "\$f3 =~ m{$doiota}io";
+}
+
+# iota requests
+if ($doqra) {
+	$expr .= " && " if $expr;
+	$expr .= "\$f3 =~ m{$doqra}io";
 }
 
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";

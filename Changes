@@ -1,3 +1,6 @@
+19Jul99=======================================================================
+1. Added iota and qra clauses to sh/dx as well, these take optional arguments
+and will look for the appropriate strings.
 17Jul99=======================================================================
 1. Started database integration.
 2. added qsl clause to sh/dx that searches for qsl or via in the dx info

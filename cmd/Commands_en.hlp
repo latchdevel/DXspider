@@ -381,7 +381,15 @@ info <text>     - any spots containing <text> in the info or remarks
 spotter <call>  - any spots spotted by <call>
 
 qsl             - this automatically looks for any qsl info on the call
-                  held in the database.
+                  held in the spot database.
+
+iota [<iota>]   - If the iota island number is missing it will look for
+                  the string iota and anything which looks like an iota
+                  island number. If you specify then it will look for  
+                  that island.
+
+qra [<locator>] - this will look for the specific locator if you specify
+                  one or else anything that looks like a locator.
    
 e.g. 
    
@@ -389,6 +397,9 @@ e.g.
    SH/DX on 20m info iota
    SH/DX 9a on vhf day 30
    SH/DX rf1p qsl
+   SH/DX iota 
+   SH/DX iota eu-064
+   SH/DX qra jn86
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 
