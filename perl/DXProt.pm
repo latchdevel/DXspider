@@ -693,9 +693,8 @@ sub normal
 			# input filter if required
 			return unless $self->in_filter_route($parent);
 			
-			my @rout = $parent->del_user($uref);
-
-			$self->route_pc17($parent, @rout) if @rout;
+			$parent->del_user($uref);
+			$self->route_pc17($parent, $uref);
 			return;
 		}
 		
