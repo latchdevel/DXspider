@@ -1,3 +1,8 @@
+30Dec03=======================================================================
+1. updated website to make it clear(er) that it all works under Windows (like
+wot Charlie said...).
+2. made the changes to the German Messages that Thomas DL3SBB sent me a 
+loooong time ago.
 29Dec03=======================================================================
 1. updated dxoldtonew.pl so that it takes an AK1A DX.DAT file (argument on
 command line or a default of /spider/data/DX.DAT and outputs the standard
