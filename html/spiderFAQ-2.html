@@ -71,13 +71,14 @@ take effect.
 <H2><A NAME="ss2.5">2.5 How can I automatically limit the amount of debug logfiles that are stored?</A>
 </H2>
 
-<P>Use the tmpwatch command.  Add a line in /etc/cron.daily like this ...
+<P>Use the tmpwatch command.  Create a file in /etc/cron.daily/ containing the line ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
 /usr/sbin/tmpwatch -f 240 /spider/data/debug
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>Remember to make it executable!
 <P>This will limit your debug data down to the last 10 days
 <P>
 <HR>

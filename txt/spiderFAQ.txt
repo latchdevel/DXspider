@@ -142,7 +142,8 @@
   22..55..  HHooww ccaann II aauuttoommaattiiccaallllyy lliimmiitt tthhee aammoouunntt ooff ddeebbuugg llooggffiilleess tthhaatt
   aarree ssttoorreedd??
 
-  Use the tmpwatch command.  Add a line in /etc/cron.daily like this ...
+  Use the tmpwatch command.  Create a file in /etc/cron.daily/
+  containing the line ...
 
 
 
@@ -151,10 +152,9 @@
 
 
 
+  Remember to make it executable!
+
   This will limit your debug data down to the last 10 days
-
-
-
 
 
 

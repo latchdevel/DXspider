@@ -114,11 +114,13 @@ take effect.
 <sect1>How can I automatically limit the amount of debug logfiles that are stored?
 
 <P>
-Use the tmpwatch command.  Add a line in /etc/cron.daily like this ...
+Use the tmpwatch command.  Create a file in /etc/cron.daily/ containing the line ...
 
 <tscreen><verb>
 /usr/sbin/tmpwatch -f 240 /spider/data/debug
 </verb></tscreen>
+
+Remember to make it executable!
 
 This will limit your debug data down to the last 10 days
 
