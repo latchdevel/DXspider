@@ -42,9 +42,9 @@ sub gen_DXProt
 	my $thing = shift;
 	my @out;
 	push @out, DXProt::pc21(@{$thing->{fpc21n}}) if $thing->{fpc21n};
-	push @out, DXProt::pc17($thing->{fpc17n}, @{$thing->{pc17u}})  if $thing->{fpc17n};
+	push @out, DXProt::pc17($thing->{fpc17n}, @{$thing->{pc17u}})  if $thing->{pc17u} && $thing->{fpc17n};
 	push @out, DXProt::pc19(@{$thing->{fpc19n}}) if $thing->{fpc19n};
-	push @out, DXProt::pc16($thing->{fpc16n}, @{$thing->{pc16u}}) if $thing->{fpc16n};
+	push @out, DXProt::pc16($thing->{fpc16n}, @{$thing->{pc16u}}) if $thing->{pc16u} && $thing->{fpc16n};
 	return \@out;
 }
 
@@ -88,8 +88,8 @@ sub out_filter
 			delete $thing->{fpc19n};
 			delete $thing->{fpc21n};
 	
-			$thing->{fpc16n} = _filter($dxchan, $thing->{pc16n}) if $thing->{pc16n};
-			$thing->{fpc17n} = _filter($dxchan, $thing->{pc17n}) if $thing->{pc17n};
+			$thing->{fpc16n} = _filter($dxchan, $thing->{pc16n}) if $thing->{pc16u} && $thing->{pc16n};
+			$thing->{fpc17n} = _filter($dxchan, $thing->{pc17n}) if $thing->{pc17u} && $thing->{pc17n};
 			my @pc19 = _filter($dxchan, @{$thing->{pc19n}}) if $thing->{pc19n};
 			$thing->{fpc19n} = \@pc19 if @pc19;
 			my @pc21 = _filter($dxchan, @{$thing->{pc21n}}) if $thing->{pc21n};
