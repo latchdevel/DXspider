@@ -191,7 +191,7 @@ sub per_minute
 					# i am special but, currently, still a node
 					my $thing = Thingy::Rt->new_cf;
 					$thing->broadcast;
-					$self->lastcf($main::systime);
+					$dxchan->lastcf($main::systime);
 				} else {
 
 					# i am a pc protocol node connected directly
