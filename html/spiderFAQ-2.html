@@ -81,6 +81,20 @@ take effect.
 <P>Remember to make it executable!
 <P>This will limit your debug data down to the last 10 days
 <P>
+<H2><A NAME="ss2.6">2.6 I updated my Linux distribution and now Spider cannot read the users</A>
+file or the dupefile, what is the problem?</H2>
+
+<P>Almost certainly this is a change in the db format of perl.  Follow these
+few steps to correct the problem.
+<P>
+<UL>
+<LI>stop the cluster (disable any autostart in inittab)</LI>
+<LI>cd /spider/data</LI>
+<LI>issue the command perl user_asc</LI>
+<LI>restart the cluster</LI>
+</UL>
+<P>That should solve the problem.
+<P>
 <HR>
 Next
 <A HREF="spiderFAQ-1.html">Previous</A>

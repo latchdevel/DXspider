@@ -6,7 +6,7 @@
 
 <title>The DXSpider FAQ 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 0.4 March 2001
+<date>Version 0.5 March 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -123,5 +123,21 @@ Use the tmpwatch command.  Create a file in /etc/cron.daily/ containing the line
 Remember to make it executable!
 
 This will limit your debug data down to the last 10 days
+
+<sect1>I updated my Linux distribution and now Spider cannot read the users
+file or the dupefile, what is the problem?
+
+<P>
+Almost certainly this is a change in the db format of perl.  Follow these
+few steps to correct the problem.
+
+<itemize>
+<item>stop the cluster (disable any autostart in inittab)
+<item>cd /spider/data
+<item>issue the command perl user_asc
+<item>restart the cluster
+</itemize>
+
+That should solve the problem.
 
 </article>

@@ -1,6 +1,6 @@
   The DXSpider FAQ
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 0.4 March 2001
+  Version 0.5 March 2001
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
@@ -22,6 +22,7 @@
      2.3 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.
      2.4 I do not seem to be sending any bulletin mail to my link partners, what is wrong?
      2.5 How can I automatically limit the amount of debug logfiles that are stored?
+     2.6 I updated my Linux distribution and now Spider cannot read the users file or the dupefile, what is the problem?
 
 
   ______________________________________________________________________
@@ -64,6 +65,8 @@
   The tarballs are designed to not overwrite your existing configuration
   and can be used at any time to update your Spider software.  All the
   key files have the suffix .issue (eg. DXVars.pm.issue) at default.
+
+
   11..44..  II aamm rruunnnniinngg RReeddHHaatt 55..22 aanndd II aamm ggeettttiinngg ssttrraannggee eerrrroorrss,, wwhhaatt iiss
   wwrroonngg??
 
@@ -127,8 +130,8 @@
 
 
 
-
   Assuming that the node_call you are changing is gb7adx.
+
 
   22..44..  II ddoo nnoott sseeeemm ttoo bbee sseennddiinngg aannyy bbuulllleettiinn mmaaiill ttoo mmyy lliinnkk ppaarrtt--
   nneerrss,, wwhhaatt iiss wwrroonngg??
@@ -157,25 +160,22 @@
   This will limit your debug data down to the last 10 days
 
 
+  22..66..  ffiillee oorr tthhee dduuppeeffiillee,, wwhhaatt iiss tthhee pprroobblleemm??  II uuppddaatteedd mmyy LLiinnuuxx
+  ddiissttrriibbuuttiioonn aanndd nnooww SSppiiddeerr ccaannnnoott rreeaadd tthhee uusseerrss
+
+  Almost certainly this is a change in the db format of perl.  Follow
+  these few steps to correct the problem.
 
 
+  +o  stop the cluster (disable any autostart in inittab)
 
+  +o  cd /spider/data
 
+  +o  issue the command perl user_asc
 
+  +o  restart the cluster
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  That should solve the problem.
 
 
 
