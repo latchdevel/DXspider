@@ -34,6 +34,8 @@ You can clear your work with:
 clear/spots [<call>] [input] [<filterno>|all]
 
 Have fun and someone please write the documentation.
+4. Added show/msg_status.pl sysop command (shows some info on what is busy in 
+the message system)
 31Oct00=======================================================================
 1. add 0x8e to the list of characters we clobber (make xterm go into graphics
 mode).

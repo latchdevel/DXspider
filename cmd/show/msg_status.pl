@@ -5,17 +5,26 @@
 #
 # $Id$
 #
-my $self = shift;
+my ($self, $line) = @_;
 return (0, $self->msg('e5')) if $self->priv < 5;
 
 my @out;
 
-push @out, "Work Queue";
-for (keys %DXMsg::work) {
-	push @out, "$_ : $DXMsg::work{$_}\n";
+if (!$line || $line =~ /^b/i) {
+	push @out, "Busy Queue";
+	push @out, "----------";
+	for (keys %DXMsg::busy) {
+		my $r = $DXMsg::busy{$_};
+		push @out, "$_ : $r->{msgno}, $r->{from} -> $r->{to}, $r->{subject}\n";
+	}
 }
-push @out, "Busy Queue";
-for (keys %DXMsg::busy) {
-	push @out, "$_ : $DXMsg::busy{$_}\n";
+if (!$line || $line =~ /^w/i) {
+	push @out, "Work Queue";
+	push @out, "----------";
+	for (keys %DXMsg::work) {
+		my $r = $DXMsg::work{$_};
+		push @out, print_all_fields($self, $r, "Msg Parameters $msgno");
+	}
 }
+
 return (0, @out);

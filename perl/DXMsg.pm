@@ -669,7 +669,7 @@ sub start_msg
 	my ($self, $dxchan) = @_;
 	
 	dbg('msg', "start msg $self->{msgno}\n");
-	$self->{linesreq} = 5;
+	$self->{linesreq} = 10;
 	$self->{count} = 0;
 	$self->{tonode} = $dxchan->call;
 	$self->{fromnode} = $main::mycall;
