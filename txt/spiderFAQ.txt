@@ -1,6 +1,6 @@
   The DXSpider FAQ
   Ian Maude, G0VGS, (ianmaude@btinternet.com)
-  Version 0.5 March 2001
+  $Date$ $Revision$
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________

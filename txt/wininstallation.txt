@@ -1,6 +1,6 @@
   The Installation Guide for DXSpider under Microsoft Windows
   Iain Philipps, G0RDI (g0rdi@77hz.com)
-  Version 1.1 28 March 2001
+  $Date$ $Revision$
 
   DX Spider under Microsoft Windows (TM)
   ______________________________________________________________________
@@ -405,15 +405,13 @@
 
 
 
-       ["localhost", 7300],
-       ["foo.dxcluster.net", 7300],
+       ["0.0.0.0", 7300],
 
 
 
 
-  On my machine, I've simply uncommented the "localhost" entry by
-  removing the '#' from the front of the line. I've also uncommented the
-  second line, and changed the hostname to point at "spud.ath.cx".
+  On my machine, I've simply uncommented the "0.0.0.0" entry by removing
+  the '#' from the front of the line.
 
   If you don't have a static hostname for your machine, and you intend
   to allow folk to connect to your machine across the internet, then I'd
@@ -432,7 +430,9 @@
   connected to anything particularly useful at any given moment. Contact
   me by Email if you want me to set up a connection for you.
 
-  Last updated: 05-Mar-01
+  Last updated: 15-Apr-01
+
+
 
 
 

@@ -2,7 +2,7 @@
 <HTML>
 <HEAD>
  <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>The DXSpider Installation and Administration Manual : Configuration</TITLE>
+ <TITLE>The DXSpider Installation and Administration Manual: Configuration</TITLE>
  <LINK HREF="adminmanual-4.html" REL=next>
  <LINK HREF="adminmanual-2.html" REL=previous>
  <LINK HREF="adminmanual.html#toc3" REL=contents>
@@ -35,16 +35,31 @@ default  * * * * * *  - sysop /spider/src/client client %u ax25
 default  * * * * * *  - sysop /spider/src/client client %s ax25
 </PRE>
 </CODE></BLOCKQUOTE>
+<P>For most purposes this is not desirable. The only time you probably will need this is
+when you need to allow other cluster nodes that are using SSID's in. In this case it
+owuld probably be better to use the first example and then add a specific line for that
+node like this:
 <P>
-<H2><A NAME="ss3.2">3.2 Allowing telnet connects from users</A>
+<BLOCKQUOTE><CODE>
+<PRE>
+GB7DJK-2  * * * * * *  - sysop /spider/src/client client gb7djk-2 ax25
+default  * * * * * *  - sysop /spider/src/client client %u ax25
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss3.2">3.2 Allowing telnet connects from users </A>
 </H2>
 
+<P> 
+From version 1.47 there is a new (more efficient) way of doing this (see next section) but, 
+if you prefer, the method of doing it described here will continue to work just fine.
+<P>
 <P>Allowing telnet connections is quite simple.  Firstly you need to add a line 
 in /etc/services to allow connections to a port number, like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-spdlogin   8000/tcp     # spider anonymous login port
+spdlogin   7300/tcp     # spider anonymous login port
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>Then add a line in /etc/inetd.conf like this ....
@@ -55,8 +70,7 @@ spdlogin stream tcp nowait root /usr/sbin/tcpd /spider/src/client login telnet
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<P>This needs to be added above the standard services such as ftp, telnet etc.  
-Once this is done, you need to restart inetd like this ....
+<P>Once this is done, you need to restart inetd like this ....
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -81,13 +95,88 @@ no good reason for a password prompt to be given so it is not asked for.
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-telnet localhost 8000
+telnet localhost 7300
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
 <P>You should now get the login prompt and be able to login as before.
 <P>
-<H2><A NAME="ss3.3">3.3 Setting up node connects</A>
+<H2><A NAME="ss3.3">3.3 Setting up telnet connects (from 1.47 onwards)</A>
+</H2>
+
+<P>From version 1.47 you can chose to allow the perl cluster.pl program to 
+allow connections direct (i.e. not via the <CODE>/spider/src/client</CODE>
+interface program). If you are using Windows then this is the only method
+available of allowing incoming telnet connections.
+<P>
+<P>To do this you need first to remove any line that you may previously have set
+up in /etc/inetd.conf. Remember to:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+killall -HUP inetd
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>to make the change happen...
+<P>
+<P>Having done that then you need to copy the file 
+<CODE>/spider/perl/Listeners.pm</CODE> to <CODE>/spider/local</CODE> and 
+then edit it. You will need to uncomment the line containing &quot;0.0.0.0&quot; 
+and select the correct port to listen on. So that it looks like this:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+@listen = (
+    ["0.0.0.0", 7300],
+);
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>As standard, the listener will listen on all interfaces simultaniously. If you require more
+control than this, you can specify each interface individually:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+@listen = (
+    ["gb7baa.dxcluster.net", 7300],
+    ["44.131.16.2", 6300],
+);
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>This will only be successful if the IP addresses on each interface are static. 
+If you are using some kind of dynamic IP addressing then the 'default' method is the
+only one which will work.
+<P>
+<P>Restart the cluster.pl program to enable the listener.
+<P>
+<P>One important difference with the internal listener is that no echoing is done by the
+cluster program. Users will need to set 'local-echo' on in their telnet clients if 
+it isn't set automatically (as per the standards). Needless to say this will probably
+only apply to Windows users. 
+<P>
+<H2><A NAME="ss3.4">3.4 Setting up for AGW Engine (1.47 onwards)</A>
+</H2>
+
+<P>AGW Engine is a Windows based ax25 stack. You can connect to an AGW engine from Linux
+as well as Windows based machines.
+<P>
+<P>In order to enable access to an AGW Engine you need to copy <CODE>/spider/perl/AGWConnect.pm</CODE>
+to <CODE>/spider/local</CODE> and edit it. Specifically you must:-
+<P>
+<UL>
+<LI> set <CODE>$enable</CODE> to 1.</LI>
+<LI> set <CODE>$login</CODE> and <CODE>$passwd</CODE> to the values set up in your AGW installation. 
+If you haven't set any there, then you should not touch these values.</LI>
+<LI> You can connect to a remote AGW engine (ie on some other machine) by changing <CODE>$addr</CODE>
+and <CODE>$port</CODE> appropriately.</LI>
+<LI> Restart the cluster.pl program</LI>
+</UL>
+   
+<P>
+<P>
+<H2><A NAME="ss3.5">3.5 Setting up node connects</A>
 </H2>
 
 <P>In order to allow cluster node connections, spider needs to know that the 
@@ -147,7 +236,17 @@ PC38^GB7MBC^~
 this is all that needs to be done.  If the connection is to be outgoing then 
 a connection script needs to be written.
 <P>
-<H2><A NAME="ss3.4">3.4 Connection scripts</A>
+<P>Sometimes you make a mistake... Honest, it does happen.  If you want to make a node
+back to being a normal user, regardless
+of what type it is, do:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+unset/node gb7baa
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss3.6">3.6 Connection scripts</A>
 </H2>
 
 <P>Because DXSpider operates under Linux, connections can be made using just about 
@@ -158,49 +257,49 @@ Writing a script for connections is therefore relatively simple.
 <P>The connect scripts consist of lines which start with the following keywords 
 or symbols:-
 <P>
-<PRE>
-        
-#               All lines starting with a # are ignored, as are completely 
-                blank lines.
-
-timeout         timeout followed by a number is the number of seconds to wait for a 
-                command to complete. If there is no timeout specified in the script 
-                then the default is 60 seconds.
-
-abort           abort is a regular expression containing one or more strings to look 
-                for to abort a connection. This is a perl regular expression and is 
-                executed ignoring case.
-
-connect         connect followed by ax25 or telnet and some type dependent 
-                information. In the case of a telnet connection, there can be up to 
-                two parameters.
-                The first is the ip address or hostname of the computer you wish to 
-                connect to and the second is the port number you want to use (this 
-                can be left out if it is a normal telnet session).
-                In the case of an ax25 session then this would normally be a call to
-                ax25_call or netrom_call as in the example above. It is your
-                responsibility to get your node and other ax25 parameters to work 
-                before going down this route!
-
-'               ' is the delimiting character for a word or phrase of an expect/send 
-                line in a chat type script. The words/phrases normally come in pairs,
-                either can be empty. Each line reads input from the connection until 
-                it sees the string (or perl regular expression) contained in the
-                left hand string. If the left hand string is empty then it doesn't 
-                read or wait for anything. The comparison is done ignoring case.
-                When the left hand string has found what it is looking for (if it is)
-                then the right hand string is sent to the connection.
-                This process is repeated for every line of chat script. 
-
-client          client starts the connection, put the arguments you would want here 
-                if you were starting the client program manually. You only need this 
-                if the script has a different name to the callsign you are trying to 
-                connect to (i.e. you have a script called other which actually 
-                connects to GB7DJK-1 [instead of a script called gb7djk-1]).
-</PRE>
+<DL>
 <P>
-<P>There are many possible ways to configure the script but here are two examples, 
-one for a NETRom/AX25 connect and one for tcp/ip.  
+<DT><B>#</B><DD><P>All lines starting with a <CODE>#</CODE> are ignored, as are completely 
+blank lines.
+<P>
+<DT><B>timeout</B><DD><P><CODE>timeout</CODE> followed by a number is the number of seconds to wait for a 
+command to complete. If there is no timeout specified in the script 
+then the default is 60 seconds.
+<P>
+<DT><B>abort</B><DD><P><CODE>abort</CODE> is a regular expression containing one or more strings to look 
+for to abort a connection. This is a perl regular expression and is 
+executed ignoring case.
+<P>
+<DT><B>connect</B><DD><P><CODE>connect</CODE> followed by ax25, agw (for Windows users) or telnet and some type dependent 
+information. In the case of a telnet connection, there can be up to 
+two parameters.
+The first is the ip address or hostname of the computer you wish to 
+connect to and the second is the port number you want to use (this 
+can be left out if it is a normal telnet session).
+In the case of an ax25 session then this would normally be a call to
+ax25_call or netrom_call as in the example above. It is your
+responsibility to get your node and other ax25 parameters to work 
+before going down this route!
+<P>
+<DT><B>'</B><DD><P><CODE>'</CODE> is the delimiting character for a word or phrase of an expect/send 
+line in a chat type script. The words/phrases normally come in pairs,
+either can be empty. Each line reads input from the connection until 
+it sees the string (or perl regular expression) contained in the
+left hand string. If the left hand string is empty then it doesn't 
+read or wait for anything. The comparison is done ignoring case.
+When the left hand string has found what it is looking for (if it is)
+then the right hand string is sent to the connection.
+This process is repeated for every line of chat script. 
+<P>
+<DT><B>client</B><DD><P><CODE>client</CODE> starts the connection, put the arguments you would want here 
+if you were starting the client program manually. You only need this 
+if the script has a different name to the callsign you are trying to 
+connect to (i.e. you have a script called other which actually 
+connects to GB7DJK-1 [instead of a script called gb7djk-1]).
+</DL>
+<P>
+<P>There are many possible ways to configure the script but here are three examples, 
+one for a NETRom/AX25 connect, one for AGW engines and one for tcp/ip.  
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -208,6 +307,23 @@ timeout 60
 abort (Busy|Sorry|Fail)
 # don't forget to chmod 4775 netrom_call!
 connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
+'Connect' '' 
+'Connect' 'c np7'
+'Connect' 'c gb7dxm'
+# you can leave this out if you call the script 'gb7dxm'
+client gb7dxm ax25
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+timeout 60
+abort (Busy|Sorry|Fail)
+# this does exactly the same as the previous example
+# the '1' is the AGW port number to connect thru for g1tlh
+connect agw 1 g1tlh
 'Connect' '' 
 'Connect' 'c np7'
 'Connect' 'c gb7dxm'
@@ -233,7 +349,7 @@ client gb7djk telnet
 <P>Both these examples assume that everything is set up properly at the other end.  
 You will find other examples in the /spider/examples directory.
 <P>
-<H2><A NAME="ss3.5">3.5 Starting the connection</A>
+<H2><A NAME="ss3.7">3.7 Starting the connection</A>
 </H2>
 
 <P>You start the connection, from within a sysop enabled cluster login, by typing 
@@ -248,7 +364,8 @@ G0VGS de GB7MBC 13-Dec-1998 2043Z >
 </CODE></BLOCKQUOTE>
 <P>This will start a connection using the script called <EM>gb7djk-1</EM>.  You can
 follow the connection by watching the term or console from where you started
-<EM>cluster.pl</EM>.  You should see something like this ...
+<EM>cluster.pl</EM>.  From version 1.47 onwards, you will need to <CODE>set/debug connect</CODE> first.
+You should see something like this ...
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
@@ -308,7 +425,7 @@ connect telnet mary 3000
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss3.6">3.6 Telnet echo</A>
+<H2><A NAME="ss3.8">3.8 Telnet echo</A>
 </H2>
 
 <P>Cluster links in particular suffer greatly from the presence of telnet echo.  
@@ -319,7 +436,7 @@ on the route taken to connect.
 <P>
 <P>Telnet echo itself should only be a problem if the connection is being made to 
 the telnet port (23).  This port uses special rules that include echo negotiation.
-If the connection is to a different port, such as 8000, this negotiation does 
+If the connection is to a different port, such as 7300, this negotiation does 
 not happen and therefore no echo should be present.
 <P>
 <P>Sometimes it is not possible to make a direct connection to another node and this 

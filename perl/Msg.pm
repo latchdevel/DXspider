@@ -118,7 +118,7 @@ sub conns
 	if (ref $pkg) {
 		$call = $pkg->{call} unless $call;
 		return undef unless $call;
-		confess "changing $pkg->{call} to $call" if exists $pkg->{call} && $call ne $pkg->{call};
+		dbg('connll', "changing $pkg->{call} to $call") if exists $pkg->{call} && $call ne $pkg->{call};
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
 		dbg('connll', "Connection $pkg->{cnum} $call stored");
