@@ -23,7 +23,7 @@ if (!$line || $line =~ /^w/i) {
 	push @out, "----------";
 	for (keys %DXMsg::work) {
 		my $r = $DXMsg::work{$_};
-		push @out, print_all_fields($self, $r, "Msg Parameters $r->{msgno}");
+		push @out, "$_ : stream $r->{stream}, tonode $r->{tonode}, fromnode $r->{fromnode}, count $r->{count}\n";
 	}
 }
 
