@@ -66,6 +66,7 @@ use BadWords;
 
 use Data::Dumper;
 use Fcntl ':flock'; 
+use POSIX ":sys_wait_h";
 
 use Local;
 
@@ -239,8 +240,10 @@ sub cease
 sub reap
 {
 	$SIG{'CHLD'} = \&reap;
-	my $cpid = wait;
-	@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
+	my $cpid;
+	while (($cpid = waitpid(1, &WNOHANG) != -1)) {
+		@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
+	}
 }
 
 # this is where the input queue is dealt with and things are dispatched off to other parts of
