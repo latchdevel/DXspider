@@ -1,3 +1,5 @@
+23Oct00=======================================================================
+1. Added K5K as Kingman Reef
 17Oct00=======================================================================
 1. force frames to go down the local interface when doing a route. This is 
 particularly important for pings!
