@@ -213,7 +213,9 @@ sub start
 	# remember type of connection
 	$self->{consort} = $line;
 	$self->{outbound} = $sort eq 'O';
-	$self->{priv} = $user->priv || 1;     # other clusters can always be 'normal' users
+	my $priv = $user->priv;
+	$priv = $user->priv(1) unless $priv;
+	$self->{priv} = $priv;     # other clusters can always be 'normal' users
 	$self->{lang} = $user->lang || 'en';
 	$self->{isolate} = $user->{isolate};
 	$self->{consort} = $line;	# save the connection type
@@ -716,7 +718,7 @@ sub normal
 					$user = DXUser->new($call);
 					$user->sort('A');
 					$user->priv(1);                   # I have relented and defaulted nodes
-					$self->{priv} = 1;                # to user RCMDs allowed
+					$user->lockout(1);
 					$user->homenode($call);
 					$user->node($call);
 				}

@@ -1,3 +1,11 @@
+26Aug01=======================================================================
+1. make all newly learned nodes locked out by default.
+2. add lock_nodes.pl which locks out all the nodes in the user file whose
+privilege is 1 or less and which isn't mentioned as an argument to the 
+command on the command line.
+3. make set/node, set/spider and their friends unlock a node as well as make
+them one. 
+4. Make sh/log et al more efficient / less memory hungry
 24Aug01=======================================================================
 1. Allow badmsg to reject on interface callsign ('I')
 20Aug01=======================================================================

@@ -25,8 +25,9 @@ use strict;
 sub print
 {
 	my $fcb = $DXLog::log;
-	my $from = shift;
-	my $to = shift;
+	my $from = shift || 0;
+	my $to = shift || 20;
+	my $count;
 	my $jdate = $fcb->unixtoj(shift);
 	my $pattern = shift;
 	my $who = uc shift;
@@ -34,54 +35,47 @@ sub print
 	my @in;
 	my @out = ();
 	my $eval;
-	my $count;
+	my $tot = $from + $to;
 	my $hint = "";
 	    
 	if ($pattern) {
-		$search = "\$ref->[1] =~ m{^$pattern}i";
-		$hint = "m{$pattern}i";
+		$hint = "m{\\Q$pattern\\E}i";
 	}
 	if ($who) {
-		if ($search) {
-			$search .= ' && ';
+		if ($hint) {
 			$hint .= ' && ';
 		}
-		$search .= "(\$ref->[2] =~ m{$who}i || \$ref->[3] =~ m{$who}i)";
-		$hint .= 'm{$who}i';
+		$hint .= 'm{\\Q$who\\E}i';
 	}
 	$hint = "next unless $hint" if $hint;
-	$search = "1" unless $search;
 	
 	$eval = qq(
 			   \@in = ();
 			   while (<\$fh>) {
 				   $hint;
 				   chomp;
-				   \$ref = [ split '\\^' ];
-				   push \@\$ref, "" unless \@\$ref >= 4;
-				   push \@in, \$ref;
+				   push \@in, \$_;
+				   shift \@in, if \@in > $tot;
 			   }
-			   my \$c;
-			   for (\$c = \$#in; \$c >= 0; \$c--) {
-					\$ref = \$in[\$c];
-					if ($search) {
-						\$count++;
-						next if \$count < $from;
-						unshift \@out, print_item(\$ref);
-						last if \$count >= \$to;                  # stop after n
-					}
-				}
-			  );
+		   );
 	
 	$fcb->close;                                      # close any open files
 
 	my $fh = $fcb->open($jdate); 
-	for ($count = 0; $count < $to; ) {
+	L1: for ($count = 0; $count < $to; ) {
 		my $ref;
 		if ($fh) {
 			eval $eval;               # do the search on this file
-			last if $count >= $to;                  # stop after n
 			return ("Log search error", $@) if $@;
+			my @tmp;
+			while (@in) {
+				last L1 if $count >= $to;
+				my $ref = [ split /\^/, shift @in ];
+				next if defined $pattern && $ref->[1] ne $pattern;
+				push @tmp, print_item($ref);
+				$count++;
+			}
+			@out = (@tmp, @out);
 		}
 		$fh = $fcb->openprev();      # get the next file
 		last if !$fh;

@@ -29,6 +29,7 @@ foreach $call (@args) {
 		if ($user) {
 			$user->sort('S');
 			$user->homenode($call);
+			$user->lockout(0);
 			$user->priv(1) unless $user->priv;
 			$user->close();
 			push @out, $self->msg($create ? 'nodesc' : 'nodes', $call);
