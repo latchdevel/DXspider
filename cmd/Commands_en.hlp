@@ -11,6 +11,47 @@
 #
 # Comment lines are indented before printing
 #
+=== 0^ACCEPT/SPOTS [0-9] <pattern>^Set an 'accept' filter line for spots
+Create an 'accept this spot' line for a filter. 
+
+An accept filter line means that if the spot matches this filter it is
+passed onto the user. See HELP FILTERS for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+  call <prefixes>        eg: G,PA,HB9
+  info <string>          eg: iota or qsl
+  by <prefixes>            
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  origin <prefixes>
+  channel <prefixes>
+
+some examples:-
+
+  acc/spot 1 freq hf/cw
+  acc/spot 2 freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+You can use the tag 'all' to reject everything that is left, eg:
+
+  rej/spot 3 all
+
+=== 8^ACCEPT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  accept/spot db0sue-7 1 by_zone 14,15,16
+  accept/spot node_default all
+  set/hops node_default 10
+
+  accept/spot user_default by G,M,2
+
 === 0^ANNOUNCE <text>^Send an announcement to LOCAL users only
 <text> is the text of the announcement you wish to broadcast 
 
@@ -25,12 +66,6 @@ the names of all the commands that may be relevant.
 
 === 0^BYE^Exit from the cluster
 This will disconnect you from the cluster
-
-=== 5^CONNECT <callsign>^Start a connection to another DX Cluster
-Start a connection process that will culminate in a new connection to the
-DX cluster <callsign>. This process creates a new 'client' process which will
-use the script in /spider/connect/<callsign> to effect the 'chat' exchange
-necessary to traverse the network(s) to logon to the cluster <callsign>.
 
 === 5^CATCHUP <node call> All|[<msgno> ...]^Mark a message as sent
 === 5^UNCATCHUP <node call> All|[msgno> ...]^Unmark a message as sent
@@ -52,6 +87,35 @@ and to undo what you have just done:-
 which will arrange for them to be forward candidates again.
 
 Order is not important.
+
+=== 0^CLEAR/SPOTS [1|all]^Clear a spot filter line
+This command allows you to clear (remove) a line in a spot filter or to 
+remove the whole filter.
+
+If you have a filter:-
+
+  acc/spot 1 freq hf/cw
+  acc/spot 2 freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+and you say:-
+
+  clear/spot 1
+
+you will be left with:-
+
+  acc/spot 2 freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+If you do:
+
+  clear/spot all
+
+the filter will be completely removed.
+
+=== 5^CONNECT <callsign>^Start a connection to another DX Cluster
+Start a connection process that will culminate in a new connection to the
+DX cluster <callsign>. This process creates a new 'client' process which will
+use the script in /spider/connect/<callsign> to effect the 'chat' exchange
+necessary to traverse the network(s) to logon to the cluster <callsign>.
 
 === 0^DBAVAIL^Show a list of all the Databases in the system
 Title says it all really, this command lists all the databases defined
@@ -242,7 +306,101 @@ suffix.
 BE WARNED: this will write to any file you have write access to. No check is
 made on the filename (if any) that you specify.
 
-=== 1^FORWARD/OPERNAME <call>^Send out information on this <call> to all clusters
+=== 0^FILTERING...^Filtering things in DXSpider
+There are a number of things you can filter in the DXSpider system. They
+all use the same general mechanism.
+
+In general terms you can create a 'reject' or an 'accept' filter which can
+have up to 10 lines in it. You do this using, for example:-
+ 
+  accept/spots .....
+  reject/spots .....
+
+where ..... are the specific commands for that type of filter. There are 
+filters for spots, wwv, announce, wcy and (for sysops) connects. See each
+different accept or reject command reference for more details.
+
+There is also a command to clear out one or more lines in a filter and one
+to show you what you have set. They are:-
+
+  clear/spots 1
+  clear/spots all
+
+and 
+  
+  show/filter
+
+There is clear/xxxx command for each type of filter.
+
+For now we are going to use spots for the examples, but you can apply the 
+principles to all types of filter. 
+
+There are two main types of filter 'accept' or 'reject'; which you use depends
+entirely on how you look at the world and what is least writing to achieve 
+what you want. Each filter has 10 lines (of any length) which are tried in 
+order. If a line matches then the action you have specified is taken (ie reject
+means ignore it and accept means gimme it).
+
+The important thing to remember is that if you specify a 'reject' filter (all
+the lines in it say 'reject/spots' (for instance) then if a spot comes in that
+doesn't match any of the lines then you will get it BUT if you specify an
+'accept' filter then any spots that don't match are dumped. For example if I 
+have a one line accept filter:-
+
+  accept/spots freq vhf and (by_zone 14,15,16 or call_zone 14,15,16)
+
+then automatically you will ONLY get VHF spots from or to CQ zones 14 15 and 16.
+If you set a reject filter like:
+
+  reject/spots freq hf/cw
+
+Then you will get everything EXCEPT HF CW spots, If you am interested in IOTA
+and will work it even on CW then you could say:-
+
+  reject/spots freq hf/cw and not info iota
+
+But in that case you might only be interested in iota and say:-
+
+  accept/spots not freq hf/cw or info iota
+
+which is exactly the same. You should choose one or the other until you are
+confortable with the way it works. Yes, you can mix them (actually you can
+have an accept AND a reject on the same line) but don't try this at home
+until you can analyse the results that you get without ringing up the sysop
+for help.
+
+You can arrange your filter lines into logical units, either for your own 
+understanding or simply convenience. I have one set frequently:-
+
+  reject/spots 1 freq/cw
+  reject/spots 2 freq 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)  
+
+This is an exmaple where you would use the line number (1 and 2 in this case).
+
+You can leave the word 'and' out if you want, it is implied. You can use any 
+number of brackets to make the 'expression' as you want it. There are things
+called precedence rules working here which mean that you will NEED brackets 
+in a situation like line 2 because, without it, will assume:-
+
+  (freq 50000/1400000 and by_zone 14,15,16) or call_zone 14,15,16 
+
+annoying, but that is the way it is. If you use OR - use brackets. Whilst we
+are here CASE is not important. 'And BY_Zone' is just 'and by_zone'.
+
+If you want to alter your filter you can just redefine one or more
+lines of it or clear out one line. For example:-
+
+  reject/spots 1 freq/ssb
+
+or 
+
+  clear/spots 1
+
+To remove the filter in its entirty:-
+
+  clear/spots all
+
+=== 1^FORWARD/OPERNAM <call>^Send out information on this <call> to all clusters
 This command sends out any information held in the user file which can 
 be broadcast in PC41 protocol packets. This information is Name, QTH, Location
 and Homenode. PC41s are only sent for the information that is available.
@@ -429,6 +587,47 @@ message either sent by or sent to your callsign.
 
 === 5^READ-^
 As a sysop you may read any message on the system
+
+=== 0^REJECT/SPOTS [0-9] <pattern>^Set an 'reject' filter line for spots
+Create an 'accept this spot' line for a filter. 
+
+An reject filter line means that if the spot matches this filter it is
+dumped (not passed on). See HELP FILTERS for more info. Please read this
+to understand how filters work - it will save a lot of grief later on.
+
+You can use any of the following things in this line:-
+
+  freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+  call <prefixes>        eg: G,PA,HB9
+  info <string>          eg: iota or qsl
+  by <prefixes>            
+  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+  call_itu <numbers>
+  call_zone <numbers>
+  by_dxcc <numbers>
+  by_itu <numbers>
+  by_zone <numbers>
+  origin <prefixes>
+  channel <prefixes>
+
+some examples:-
+
+  rej/spot 1 freq hf
+  rej/spot 2 freq vhf and not (by_zone 14,15,16 or call_zone 14,15,16)
+
+You can use the tag 'all' to reject everything that is left, eg:
+
+  rej/spot 3 all
+
+=== 8^REJECT/SPOTS <call> [input] [0-9] <pattern>^Spot filter sysop version
+This version allows a sysop to set a filter for a callsign as well as the
+default for nodes and users eg:-
+
+  reject/spot db0sue-7 1 by_zone 14,15,16
+  reject/spot node_default all
+  set/hops node_default 10
+
+  reject/spot user_default by G,M,2
 
 === 0^REPLY^Reply (privately) to the last message that you have read
 === 0^REPLY <msgno>^Reply (privately) to the specified message
@@ -716,6 +915,10 @@ string to see a selection of files in a filearea eg:-
    SH/FILES bulletins arld*
 
 See also TYPE - to see the contents of a file.
+
+=== 0^SHOW/FILTER^Show the contents of all the filters you have set
+Show the contents of all the filters that are set. This command displays
+all the filters set - for all the various categories.
 
 === 1^SHOW/ISOLATE^Show list of ISOLATED nodes
 
