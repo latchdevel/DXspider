@@ -13,9 +13,9 @@ return (1, $self->msg('e5')) if $self->priv < 1;
 if (@list == 0) {
 	my $ref;
 	push @out, "Work Queue Keys";
-	push @out, map { " $_" } sort DXMsg::get_all_fwq();
+	push @out, map { " $_" } sort (DXMsg::get_all_fwq());
 	push @out, "Busy Queue Data";
-	foreach my $key (sort DXMsg::get_all_busy()) {
+	foreach my $key (sort (DXMsg::get_all_busy())) {
 		$ref = DXMsg::get_busy($key);
 		if ($ref) {
 			my $msgno = $ref->msgno;
