@@ -2307,6 +2307,8 @@ sub disconnect
 			eph_del_regex("^PC1[679].*$c");
 		}
 	}
+
+	RouteDB::delete_interface($call);
 	
 	# remove them from the pc19list as well
 	while (my ($k,$v) = each %pc19list) {

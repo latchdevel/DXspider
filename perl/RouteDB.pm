@@ -106,6 +106,14 @@ sub delete
 	delete $ref->{item}->{$interface} if $ref;
 }
 
+sub delete_interface
+{
+	my $interface = shift;
+	foreach my $ref (values %list) {
+		delete $ref->{item}->{$interface};
+	}
+}
+
 #
 # generic AUTOLOAD for accessors
 #
