@@ -55,10 +55,11 @@ sub gen_DXProt
 		# {user} as well as a true user and also it may not
 		# have originated here.
 
-		my $from = $thing->{o};
+		my $from = $thing->{o} if $thing->{out};
 	    $from ||= $thing->{user} if Route::Node::get($thing->{user});
 		$from ||= $thing->{origin};
-		my $to = $thing->{touser} if Route::Node::get($thing->{touser});
+		my $to = $thing->{o} unless $thing->{out};
+		$to ||= $thing->{touser} if Route::Node::get($thing->{touser});
 		$to ||= $thing->{group};
 
 		
@@ -71,8 +72,7 @@ sub gen_DXCommandmode
 {
 	my $thing = shift;
 	my $dxchan = shift;
-	my $buf;
-
+	my $buf = $dxchan->msg('pingi', ($thing->{user} || $thing->{origin}), $thing->{ft}, $thing->{fave});
 	return $buf;
 }
 
@@ -132,11 +132,9 @@ sub handle
 					$tochan->{nopings} = $nopings; # pump up the timer
 				}
 				if (my $dxc = DXChannel::get($ref->{user} || $ref->{origin})) {
-					if ($dxc->is_user) {
-						my $s = sprintf "%.2f", $t; 
-						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-						$dxc->send($dxc->msg('pingi', ($ref->{touser} || $ref->{group}), $s, $ave))
-					} 
+					$thing->{ft} = sprintf "%.2f", $t;
+					$thing->{fave} = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
+					$thing->send($dxc);
 				}
 				delete $ping{$ref->{id}};
 			}
