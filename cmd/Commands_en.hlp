@@ -840,6 +840,19 @@ to you will normally find their way there should you not be connected.
 eg:-
   SET/HOMENODE gb7djk
 
+=== 8^SET/HOPS <call> ann|spots|wwv|wcy <n>^Set hop count  
+Set the hop count for a particular type of broadcast for a node.
+
+This command allows you to set up special hop counts for a node 
+for currently: announce, spots, wwv and wcy broadcasts.
+
+eg:
+  set/hops gb7djk ann 10
+  set/hops gb7mbc spots 20
+
+Set SHOW/HOPS for information on what is already set. This command
+creates a filter and works in conjunction with the filter system. 
+
 === 9^SET/ISOLATE^Isolate a node from the rest of the network
 Connect a node to your system in such a way that you are a full protocol
 member of its network and can see all spots on it, but nothing either leaks
@@ -1047,6 +1060,11 @@ See also TYPE - to see the contents of a file.
 Show the contents of all the filters that are set. This command displays
 all the filters set - for all the various categories.
 
+=== 8^SHOW/HOPS <call> [ann|spots|wcy|wwv]^Show the hop counts for a node
+This command shows the hop counts set up for a node. You can specify
+which category you want to see. If you leave the category out then 
+all the categories will be listed.
+ 
 === 1^SHOW/ISOLATE^Show list of ISOLATED nodes
 
 === 9^SHOW/LOCKOUT^Show the list of locked out or excluded callsigns

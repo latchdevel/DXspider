@@ -184,8 +184,6 @@ sub it
 {
 	my $self = shift;
 	
-	my $hops = undef;
-		
 	my $filter;
 	my @keys = sort $self->getfilkeys;
 	my $key;
@@ -210,17 +208,9 @@ sub it
 		} 
 	}
 
-	# hops are done differently 
-	if ($self->{hops}) {
-		my ($comp, $ref);
-		while (($comp, $ref) = each %{$self->{hops}}) {
-			my ($field, $h) = @$ref;
-			if ($_[$field] =~ m{$comp}) {
-				$hops = $h;
-				last;
-			} 
-		}		
-	}
+	# hops are done differently (simply) 
+	my $hops = $self->{hops} if exists $self->{hops};
+
 	return ($r, $hops);
 }
 
@@ -369,7 +359,7 @@ sub parse
 			}
 
 			$filter = Filter::read_in($sort, $call, $flag);
-			$filter = Filter->new($sort, $call, $flag) unless $filter;
+			$filter = Filter->new($sort, $call, $flag) if !$filter || $filter->isa('Filter::Old');
 			
 			$ntoken++;
 			next;

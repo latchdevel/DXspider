@@ -1,5 +1,5 @@
 #
-# show filter commands
+# show hops commands
 #
 # Copyright (c) 2000 Dirk Koopman G1TLH
 #
@@ -27,10 +27,9 @@ if (@f) {
 
 my $sort;
 foreach $sort (@in) {
-	my $ref = Filter::read_in($sort, $call, 1);
-	push @out, $ref->print($call, $sort, "input") if $ref;
-	$ref = Filter::read_in($sort, $call, 0);
-	push @out, $ref->print($call, $sort, "") if $ref;
+	my $ref = Filter::read_in($sort, $call, 0);
+	my $hops = $ref ? $ref->{hops} : undef;
+	push @out, $self->msg('sethop2', $hops, '', $sort, $call) if $hops;
 }
-push @out, $self->msg('filter3', $call) unless @out;
+push @out, $self->msg('sethop3', $call) unless @out;
 return (1, @out);
