@@ -53,7 +53,7 @@ $baddxfn = "$main::data/baddx.pl";
 @checklist = 
 (
  [ qw(c c m bp bc c) ],			# pc10
- [ qw(f m d t m c c h) ],		# pc11
+ [ qw(f c d t m c c h) ],		# pc11
  [ qw(c bc m bp bm p h) ],		# pc12
  [ qw(c h) ],					# 
  [ qw(c h) ],					# 

@@ -1,3 +1,6 @@
+31Oct00=======================================================================
+1. add 0x8e to the list of characters we clobber (make xterm go into graphics
+mode).
 30Oct00=======================================================================
 1. put in new Filter::it code and tested it. Now all we have to do is write
 the user access routines (oh and the help files!).

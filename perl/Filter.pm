@@ -219,10 +219,13 @@ sub write
 {
 	my $self = shift;
 	my $sort = $self->{sort};
-	my $fn = $self->{name};
+	my $name = $self->{name};
 	my $dir = "$filterbasefn/$sort";
+	my $fn = "$dir/$name";
+	
 	mkdir $dir, 0775 unless -e $dir; 
-	my $fh = new IO::File ">$dir/$fn" or return "$dir/$fn $!";
+    rename $fn, "$fn.o" if -e $fn;
+	$fh = new IO::File ">$fn";
 	if ($fh) {
 		my $dd = new Data::Dumper([ $self ]);
 		$dd->Indent(1);
@@ -230,6 +233,9 @@ sub write
 		$dd->Quotekeys($] < 5.005 ? 1 : 0);
 		$fh->print($dd->Dumpxs);
 		$fh->close;
+	} else {
+		rename "$fn.o", $fn if -e "$fn.o";
+		return "$fn $!";
 	}
 	return undef;
 }
