@@ -1,6 +1,7 @@
 05Mar01=======================================================================
 1. do some major surgery on the connect logic to shorten the possibility of 
 duplicate connects happening
+2. fix stupid error on sh/qrz queries that don't work
 04Mar01=======================================================================
 1. allow fallback to english for help
 03Mar01=======================================================================
