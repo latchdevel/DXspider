@@ -36,7 +36,7 @@ know how to use <em>tar</em> and how to edit files using your favourite editor.
 The crucial ingredient for all of this is 
 <htmlurl url="http://www.perl.org" name="Perl">.  Earlier versions of
 Spider required perl 5.004, however it is now <it>STRONGLY</it> recommended
-that you use at least version 5.005_03 as this is the version being used
+that you use at least version 5.6.1 as this is the version being used
 in the development of Spider.
 
 <P>
@@ -48,9 +48,9 @@ perl distribution.
 
 <P>
 <itemize>
-<item> <htmlurl url="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.10.tar.gz" name="Data-Dumper-2.101.tar.gz">
+<item> <htmlurl url="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.101.tar.gz" name="Data-Dumper-2.101.tar.gz">  <em> this is included in perl 5.6.1 and above </em>
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Date/TimeDate-1.10.tar.gz" name="TimeDate-1.10.tar.gz">
-<item> <htmlurl url="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz" name="IO-1.20.tar.gz (for perl 5.00403 and lower)">
+<item> <htmlurl url="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz" name="IO-1.20.tar.gz">  (<em>for perl 5.00403 and lower</em>)
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Net/Net-Telnet-3.03.tar.gz" name="Net-Telnet-3.03.tar.gz">
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Curses/Curses-1.06.tar.gz" name="Curses-1.06.tar.gz">
 <item> <htmlurl url="http://www.cpan.org/modules/by-module/Time/Time-HiRes-01.20.tar.gz" name="Time-HiRes-01.20.tar.gz">
@@ -66,25 +66,11 @@ that's where you have put them.
 Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -
 
 <verb>
-# tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
-# cd Data-Dumper-2.101
-# perl Makefile.PL
-# make test
-# make install
-# cd ..
-#
 # tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
 # cd TimeDate-1.10
 # perl Makefile.PL
 # make test
 # make install
-# cd ..
-#
-# tar xvfz /usr/local/packages/IO-1.20.tar.gz
-# cd IO-1.20
-# perl Makefile.PL
-# make test
-# make install UNINST=1
 # cd ..
 #
 # tar xvfz /usr/local/packages/Net-Telnet-3.03.tar.gz
@@ -114,6 +100,27 @@ Log in as 'root', and make sure you're at '/root' before you continue. Here are 
 # make test
 # make install
 # cd ..
+</verb>
+
+<p>
+Only if you need to do these (because your perl is old):-
+
+<verb>
+#
+# tar xvfz /usr/local/packages/IO-1.20.tar.gz
+# cd IO-1.20
+# perl Makefile.PL
+# make test
+# make install UNINST=1
+# cd ..
+#
+# tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
+# cd Data-Dumper-2.101
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
 </verb>
 
 <P>
@@ -234,8 +241,9 @@ $mycall = "GB7DJK";
 </verb></tscreen>
 
 <P>
-This is the call sign of your cluster.  If you use an SSID then include it here
-also.
+This is the call sign of your cluster.  Here in the UK we have 
+separate callsigns for our cluster nodes. If you can't use a different callsign I suggest
+you use an SSID of '-2' for the node callsign '$mycall'.
 
 <tscreen><verb>
 $myalias = "G1TLH";

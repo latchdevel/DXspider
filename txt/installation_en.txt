@@ -80,8 +80,8 @@
 
   The crucial ingredient for all of this is Perl.  Earlier versions of
   Spider required perl 5.004, however it is now [4mSTRONGLY[24m recommended
-  that you use at least version 5.005_03 as this is the version being
-  used in the development of Spider.
+  that you use at least version 5.6.1 as this is the version being used
+  in the development of Spider.
 
 
   In addition to the standard Red Hat distribution you will require the
@@ -93,11 +93,11 @@
 
 
 
-  o  Data-Dumper-2.101.tar.gz
+  o  Data-Dumper-2.101.tar.gz   [4mthis[24m [4mis[24m [4mincluded[24m [4min[24m [4mperl[24m [4m5.6.1[24m [4mand[24m [4mabove[0m
 
   o  TimeDate-1.10.tar.gz
 
-  o  IO-1.20.tar.gz (for perl 5.00403 and lower)
+  o  IO-1.20.tar.gz  ([4mfor[24m [4mperl[24m [4m5.00403[24m [4mand[24m [4mlower[24m)
 
   o  Net-Telnet-3.03.tar.gz
 
@@ -119,25 +119,11 @@
 
 
 
-  # tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
-  # cd Data-Dumper-2.101
-  # perl Makefile.PL
-  # make test
-  # make install
-  # cd ..
-  #
   # tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
   # cd TimeDate-1.10
   # perl Makefile.PL
   # make test
   # make install
-  # cd ..
-  #
-  # tar xvfz /usr/local/packages/IO-1.20.tar.gz
-  # cd IO-1.20
-  # perl Makefile.PL
-  # make test
-  # make install UNINST=1
   # cd ..
   #
   # tar xvfz /usr/local/packages/Net-Telnet-3.03.tar.gz
@@ -167,6 +153,27 @@
   # make test
   # make install
   # cd ..
+
+
+
+  Only if you need to do these (because your perl is old):-
+
+
+  #
+  # tar xvfz /usr/local/packages/IO-1.20.tar.gz
+  # cd IO-1.20
+  # perl Makefile.PL
+  # make test
+  # make install UNINST=1
+  # cd ..
+  #
+  # tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
+  # cd Data-Dumper-2.101
+  # perl Makefile.PL
+  # make test
+  # make install
+  # cd ..
+  #
 
 
 
@@ -234,7 +241,7 @@
 
 
 
-       # vi /etc/group                (or your favorite editor)
+  # vi /etc/group                (or your favorite editor)
 
 
 
@@ -292,15 +299,14 @@
   Using the distributed DXVars.pm as a a template, set your cluster
   callsign, sysop callsign and other user info to suit your own
   environment.
-
-
-
        $mycall = "GB7DJK";
 
 
 
-  This is the call sign of your cluster.  If you use an SSID then
-  include it here also.
+  This is the call sign of your cluster.  Here in the UK we have
+  separate callsigns for our cluster nodes. If you can't use a different
+  callsign I suggest you use an SSID of '-2' for the node callsign
+  '$mycall'.
 
 
 
@@ -359,6 +365,9 @@
   use it though it has to be "made".  CD to /spider/src and type [4mmake[24m.
   You should see the output on your screen and hopefully now have a
   small C program called [4mclient[24m.  Leave it in this directory.
+
+
+
   [1m1.6.  Starting up for the first time[0m
 
   We can now bring spider up for the first time and see if all is well
@@ -406,7 +415,7 @@
 
 
 
-       shutdown
+  shutdown
 
 
 
@@ -468,6 +477,7 @@
   o  Enter the correct line in ax25d.conf (root)
 
   o  Enter the correct line in /etc/services (root)
+
 
   o  Enter the correct line in /etc/inetd.conf (root)
 
@@ -535,8 +545,6 @@
   There are 2 main node packages in use of which I shall keep to the
   original by Tomi Manninen, OH2BNS as this is included in the ax25 rpms
   as standard.  The other is AWZNode by IZ5AWZ.
-
-
   NB: The AX25 stuff in 2.4 kernels appears to have been broken until
   2.4.18.  I strongly suggest you get at least this kernel.
 
@@ -609,6 +617,8 @@
   NOTE:- before we start it is important to realise that every interface
   requires a different SSID.  You should be able to follow this in the
   following examples.
+
+
   [1m3.5.  axports[0m
 
   This file sets up the ax25 ports you want to use.  An example is below
@@ -655,6 +665,7 @@
 
 
   The file headings are as follows ...
+
 
 
   portname        -       The name you will refer to the port by

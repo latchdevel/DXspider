@@ -1,6 +1,7 @@
 01Jan04=======================================================================
 1. move position of USDB init to get rid of an obscure bug pointed out by
 Charlie K1XX.
+2. Remove redundant documentation
 31Dec03=======================================================================
 1. alter remote database handling to 'new standard'.
 30Dec03=======================================================================

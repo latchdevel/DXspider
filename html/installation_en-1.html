@@ -28,7 +28,7 @@ know how to use <EM>tar</EM> and how to edit files using your favourite editor.<
 <P>The crucial ingredient for all of this is 
 <A HREF="http://www.perl.org">Perl</A>.  Earlier versions of
 Spider required perl 5.004, however it is now <I>STRONGLY</I> recommended
-that you use at least version 5.005_03 as this is the version being used
+that you use at least version 5.6.1 as this is the version being used
 in the development of Spider.</P>
 
 <P>In addition to the standard Red Hat distribution you will require the 
@@ -41,11 +41,11 @@ perl distribution.</P>
 <P>
 <UL>
 <LI> 
-<A HREF="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.10.tar.gz">Data-Dumper-2.101.tar.gz</A></LI>
+<A HREF="http://www.cpan.org/modules/by-module/Data/Data-Dumper-2.101.tar.gz">Data-Dumper-2.101.tar.gz</A>  <EM> this is included in perl 5.6.1 and above </EM></LI>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/Date/TimeDate-1.10.tar.gz">TimeDate-1.10.tar.gz</A></LI>
 <LI> 
-<A HREF="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz">IO-1.20.tar.gz (for perl 5.00403 and lower)</A></LI>
+<A HREF="http://www.cpan.org/modules/by-module/IO/IO-1.20.tar.gz">IO-1.20.tar.gz</A>  (<EM>for perl 5.00403 and lower</EM>)</LI>
 <LI> 
 <A HREF="http://www.cpan.org/modules/by-module/Net/Net-Telnet-3.03.tar.gz">Net-Telnet-3.03.tar.gz</A></LI>
 <LI> 
@@ -64,25 +64,11 @@ that's where you have put them.</P>
 <P>Log in as 'root', and make sure you're at '/root' before you continue. Here are exactly the commands you must issue next: -</P>
 <P>
 <PRE>
-# tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
-# cd Data-Dumper-2.101
-# perl Makefile.PL
-# make test
-# make install
-# cd ..
-#
 # tar xvfz /usr/local/packages/TimeDate-1.10.tar.gz
 # cd TimeDate-1.10
 # perl Makefile.PL
 # make test
 # make install
-# cd ..
-#
-# tar xvfz /usr/local/packages/IO-1.20.tar.gz
-# cd IO-1.20
-# perl Makefile.PL
-# make test
-# make install UNINST=1
 # cd ..
 #
 # tar xvfz /usr/local/packages/Net-Telnet-3.03.tar.gz
@@ -112,6 +98,27 @@ that's where you have put them.</P>
 # make test
 # make install
 # cd ..
+</PRE>
+</P>
+
+<P>Only if you need to do these (because your perl is old):-</P>
+<P>
+<PRE>
+#
+# tar xvfz /usr/local/packages/IO-1.20.tar.gz
+# cd IO-1.20
+# perl Makefile.PL
+# make test
+# make install UNINST=1
+# cd ..
+#
+# tar xvfz /usr/local/packages/Data-Dumper-2.101.tar.gz
+# cd Data-Dumper-2.101
+# perl Makefile.PL
+# make test
+# make install
+# cd ..
+#
 </PRE>
 </P>
 
@@ -246,8 +253,9 @@ $mycall = "GB7DJK";
 </CODE></BLOCKQUOTE>
 </P>
 
-<P>This is the call sign of your cluster.  If you use an SSID then include it here
-also.</P>
+<P>This is the call sign of your cluster.  Here in the UK we have 
+separate callsigns for our cluster nodes. If you can't use a different callsign I suggest
+you use an SSID of '-2' for the node callsign '$mycall'.</P>
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
