@@ -13,7 +13,11 @@ package main;
 use vars qw(@listen);
 
 @listen = (
-#		   ["0.0.0.0", 7300],
-		  );
+# remove the '#' character from the next line to enable the listener!
+  #		   ["0.0.0.0", 7300],
+# ^
+# |
+# This one!!!!!
+);
  
 1;
