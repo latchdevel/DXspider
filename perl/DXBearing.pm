@@ -110,7 +110,7 @@ sub bdist
 # turn a lat long string into floating point lat and long
 sub stoll
 {
-	my ($latd, $latm, $latl, $longd, $longm, $longl) = $_[0] =~ /(\d{1,2})\s+(\d{1,2})\s*([NnSs])\s+(\d{1,3})\s+(\d{1,2})\s*([EeWw])/;
+	my ($latd, $latm, $latl, $longd, $longm, $longl) = $_[0] =~ /(\d{1,2})\s+(\d{1,2})\s*([NnSs])\s+(1?\d{1,2})\s+(\d{1,2})\s*([EeWw])/;
 	
 	$longd += ($longm/60);
 	$longd = 0-$longd if (uc $longl) eq 'W'; 

@@ -17,7 +17,8 @@ $line =~ s/^\s+//;
 $line =~ s/\s+$//;
 
 return (1, $self->msg('loce1')) if !$line;
-return (1, $self->msg('loce2', $line)) unless $line =~ /\d+ \d+ [NnSs] \d+ \d+ [EeWw]/o;
+return (1, $self->msg('loce3', uc $line)) if is_qra($line);
+return (1, $self->msg('loce2', $line)) unless is_latlong($line);
 
 $user = DXUser->get_current($call);
 if ($user) {

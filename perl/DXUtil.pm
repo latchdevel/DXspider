@@ -379,7 +379,7 @@ sub is_qra
 # does it look like a valid lat/long
 sub is_latlong
 {
-	return $_[0] =~ /^\s*\d{1,2}\s+\d{1,2}\s*[NnSs]\s+\d{1,2}\s+\d{1,2}\s*[EeWw]\s*$/;
+	return $_[0] =~ /^\s*\d{1,2}\s+\d{1,2}\s*[NnSs]\s+1?\d{1,2}\s+\d{1,2}\s*[EeWw]\s*$/;
 }
 
 # insert an item into a list if it isn't already there returns 1 if there 0 if not
