@@ -1,47 +1,31 @@
 #
-# This is an example filter for the 'isolated' node k1xx
+# This is an example filter for the 'isolated' node GB7YDX
 # 
-# I give him any spots that have a spotter or a spotted in the
-# US. In other filters on the UK side I do the opposite see 
-# GB7DJK.pl.issue
+# I give him all spots with a fixed hop count of one using the
+# 'default' rule.
 #
-# the elements of each list are 
-#
-# [action, field_no, sort, possible_values, hops]
-#
-# where:-
-#
-#   action is 1 or 0 
-# 
-#   the field list is:-
-#      0 = frequency
-#      1 = call
-#      2 = date in unix format
-#      3 = comment
-#      4 = spotter
-#      5 = spotted dxcc country
-#      6 = spotter's dxcc country
-#      7 = origin
-#      8 = spotted itu
-#      9 = spotted cq
-#      10 = spotter's itu
-#      11 = spotter's cq
-#      12 = callsign of the channel on which the spot has appeared
-#
-#   sort is
-#     n - numeric list of numbers e.g. [ 1,2,3 ]
-#     r - ranges of pairs of numbers e.g. between 2 and 4 or 10 to 17 - [ 2,4, 10,17 ] 
-#     a - an alphanumeric regex
-#     d - the default rule
-#
-#   if hops is left out or zero then the existing hop count will be used as normal
+# The element list is:-
+#   0 = frequency
+#   1 = call
+#   2 = date in unix format
+#   3 = comment
+#   4 = spotter
+#   5 = spotted dxcc country
+#   6 = spotter's dxcc country
+#   7 = origin
+#   8 = spotted itu
+#   9 = spotted cq
+#   10 = spotter's itu
+#   11 = spotter's cq
 #
 # The spot data (in this case '15') is the used as the hop count
 # if this is missing then the normal default applies
 #
 
+# In this the first arg is 'true', next is null, next is 'd' for
+# default rule, next is null (ignored) and last is 2 which is the
+# hop count
+
 $in = [
-	   [ 1, 9, 'n', [ 14,15 ], 15 ],   # 14 and 15 is CQ region for europe   
-	   [ 1, 11, 'n', [ 14,15 ], 15 ],  
-       [ 0, 0, 'd' ],
+	[ 1, 0, 'd', 0, 4 ]
 ];

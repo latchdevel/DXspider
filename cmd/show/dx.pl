@@ -18,7 +18,7 @@ my $pre;
 my $spotter;
 my $info;
 my $expr;
-my $qsl;
+my $doqsl;
 
 while ($f = shift @list) {		# next field
 	#  print "f: $f list: ", join(',', @list), "\n";

@@ -1,5 +1,6 @@
 17Jul99=======================================================================
 1. Started database integration.
+2. added qsl clause to sh/dx that searches for qsl or via in the dx info
 16Jul99=======================================================================
 1. drop frames with 'illegal' characters in them (but pass frames with 
 embedded %XX characters).
