@@ -2,6 +2,7 @@
 1. allow a residence time of (default) 2 days before actually deleting a msg.
 2. reduce the number R: lines on a bull from a bbs to 2 (the origin and the
 last port of call).
+3. ignore deleted messages for queuing purposes
 03Oct01=======================================================================
 1. don't allow @WWW to become a 'TO' field...
 2. handle @gb7tlh.#35.eu type addresses as well

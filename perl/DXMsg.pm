@@ -648,6 +648,7 @@ sub queue_msg
 			$ref->del_msg;
 			next;
 		}
+		next if $ref->{delete};
 		
 		# firstly, is it private and unread? if so can I find the recipient
 		# in my cluster node list offsite?
