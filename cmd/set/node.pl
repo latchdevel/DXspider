@@ -13,6 +13,7 @@ my @args = split /\s+/, $line;
 my $call;
 my @out;
 my $user;
+my $create;
 
 return (0) if $self->priv < 5;
 
@@ -23,10 +24,12 @@ foreach $call (@args) {
 	push @out, $self->msg('nodee1', $call);
   } else {
     $user = DXUser->get($call);
+	$create = !$user;
+	$user = DXUser->new($call) if $create;
 	if ($user) {
 	  $user->sort('A');
 	  $user->close();
-      push @out, $self->msg('node', $call);
+      push @out, $self->msg($create ? 'nodec' : 'node', $call);
 	} else {
       push @out, $self->msg('e3', "Set Node", $call);
 	}

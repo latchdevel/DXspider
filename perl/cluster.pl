@@ -85,8 +85,11 @@ sub rec
 			return;
 		}
 		
-		# is there one already connected elsewhere in the cluster?
-		if (($call eq $main::myalias && DXCluster->get_exact($call)) ||
+		# is there one already connected elsewhere in the cluster (and not a cluster)
+		my $user = DXUser->get($call);
+		if ($user && $user->sort eq 'A' && !DXCluster->get_exact($call)) {
+			;
+		} elsif (($call eq $main::myalias && DXCluster->get_exact($call)) ||
 		    DXCluster->get($call)) {
 			my $mess = DXM::msg($lang, 'concluster', $call);
 			dbg('chan', "-> D $call $mess\n"); 

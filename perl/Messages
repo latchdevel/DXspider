@@ -36,6 +36,7 @@ package DXM;
 				l2 => 'Hello $_[0], this is $main::mycall in $main::myqth running DXSpider V$main::version',
 				m2 => '$_[0] Information: $_[1]',
 				node => '$_[0] set as AK1A style Node',
+				nodec => '$_[0] created as AK1A style Node',
 				nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
 				ok => 'Operation successful',
 				page => 'Press Enter to continue, A to abort ($_[0] lines) >',
