@@ -56,7 +56,7 @@ foreach $in (<$defh>) {
 		$include = 1;
 		next;
 	}
-	$include =~ 1 if $cmd =~ /$line/i;
+	$include = 1 if $cmd =~ /$line/i;
 }
 $cmd{$cmd} = "$cmd $desc" if $include;
 $defh->close;
@@ -79,7 +79,7 @@ if ($h) {
 			$include = 1;
 			next;
 		}
-		$include =~ 1 if $cmd =~ /$line/i;
+		$include = 1 if $cmd =~ /$line/i;
 	}
 	$cmd{$cmd} = "$cmd $desc" if $include;
 	$h->close;

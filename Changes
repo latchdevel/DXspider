@@ -1,3 +1,6 @@
+03Oct02=======================================================================
+1. only sysop (priv=5+) can now send to distro SYSOP, ordinary users will have 
+their message routed to the $main::myalias callsign as a private message. 
 29Sep02=======================================================================
 1. Added LRU caching to DXUsers and Prefix.
 2. make Timer::handler only search its chain once a second seeing as that

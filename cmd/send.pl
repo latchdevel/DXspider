@@ -113,19 +113,25 @@ if ($self->state eq "prompt") {
 #			$DB::single = 1;
 			
 			# is this callsign a distro?
-			my $fn = "/spider/msg/distro/$f.pl";
-			if (-e $fn) {
-				my $fh = new IO::File $fn;
-				if ($fh) {
-					local $/ = undef;
-					my $s = <$fh>;
-					$fh->close;
-					my @call;
-					@call = eval $s;
-					return (1, "Error in Distro $f.pl:", $@) if $@;
-					if (@call > 0) {
-						push @f, @call;
-						next;
+			# but be careful about messages to 'sysop'
+			if ($self->priv < 5 && $f eq 'SYSOP') {
+				push @to, $main::myalias;
+				$loc->{private} = 1;
+			} else {
+				my $fn = "/spider/msg/distro/$f.pl";
+				if (-e $fn) {
+					my $fh = new IO::File $fn;
+					if ($fh) {
+						local $/ = undef;
+						my $s = <$fh>;
+						$fh->close;
+						my @call;
+						@call = eval $s;
+						return (1, "Error in Distro $f.pl:", $@) if $@;
+						if (@call > 0) {
+							push @f, @call;
+							next;
+						}
 					}
 				}
 			}
