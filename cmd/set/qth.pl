@@ -20,7 +20,7 @@ $user = DXUser->get_current($call);
 if ($user) {
 	$user->qth($line);
 	$user->put();
-	DXProt::broadcast_ak1a(DXProt::pc41($call, 2, $line), $DXProt::me);
+	DXProt::broadcast_all_ak1a(DXProt::pc41($call, 2, $line), $DXProt::me);
 	return (1, $self->msg('qth', $line));
 } else {
 	return (1, $self->msg('namee2', $call));

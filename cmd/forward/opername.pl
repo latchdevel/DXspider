@@ -23,10 +23,10 @@ if (@f == 0) {
 			my $long = $ref->long;
 			my $node = $ref->homenode;
 			my $latlong = DXBearing::lltos($lat, $long) if $lat && $long;
-			DXProt::broadcast_ak1a(DXProt::pc41($call, 1, $name), $DXProt::me) if $name;
-			DXProt::broadcast_ak1a(DXProt::pc41($call, 2, $qth), $DXProt::me) if $qth;
-			DXProt::broadcast_ak1a(DXProt::pc41($call, 3, $latlong), $DXProt::me) if $latlong;
-			DXProt::broadcast_ak1a(DXProt::pc41($call, 4, $node), $DXProt::me) if $node;
+			DXProt::broadcast_all_ak1a(DXProt::pc41($call, 1, $name), $DXProt::me) if $name;
+			DXProt::broadcast_all_ak1a(DXProt::pc41($call, 2, $qth), $DXProt::me) if $qth;
+			DXProt::broadcast_all_ak1a(DXProt::pc41($call, 3, $latlong), $DXProt::me) if $latlong;
+			DXProt::broadcast_all_ak1a(DXProt::pc41($call, 4, $node), $DXProt::me) if $node;
 		}
 	}
 }

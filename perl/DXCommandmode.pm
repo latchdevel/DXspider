@@ -77,7 +77,9 @@ sub start
 	# issue a pc16 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
 	my @pc16 = DXProt::pc16($nchan, $cuser);
-	DXProt::broadcast_ak1a(@pc16);
+	for (@pc16) {
+		DXProt::broadcast_all_ak1a($_);
+	}
 	Log('DXCommand', "$call connected");
 	
 	# send prompts and things
@@ -304,7 +306,7 @@ sub finish
 	# issue a pc17 to everybody interested
 	my $nchan = DXChannel->get($main::mycall);
 	my $pc17 = $nchan->pc17($self);
-	DXProt::broadcast_ak1a($pc17);
+	DXProt::broadcast_all_ak1a($pc17);
 	
 	Log('DXCommand', "$call disconnected");
 	$ref->del() if $ref;

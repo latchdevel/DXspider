@@ -773,7 +773,8 @@ sub route
 	}
 }
 
-# broadcast a message to all clusters [except those mentioned after buffer]
+# broadcast a message to all clusters taking into account isolation
+# [except those mentioned after buffer]
 sub broadcast_ak1a
 {
 	my $s = shift;				# the line to be rebroadcast
@@ -786,6 +787,23 @@ sub broadcast_ak1a
 		next if grep $dxchan == $_, @except;
 		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
 		$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
+	}
+}
+
+# broadcast a message to all clusters ignoring isolation
+# [except those mentioned after buffer]
+sub broadcast_all_ak1a
+{
+	my $s = shift;				# the line to be rebroadcast
+	my @except = @_;			# to all channels EXCEPT these (dxchannel refs)
+	my @dxchan = get_all_ak1a();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	foreach $dxchan (@dxchan) {
+		next if grep $dxchan == $_, @except;
+		my $routeit = adjust_hops($dxchan, $s);      # adjust its hop count by node name
+		$dxchan->send($routeit);
 	}
 }
 

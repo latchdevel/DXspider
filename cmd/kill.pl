@@ -37,7 +37,7 @@ for $msgno (@f) {
   } 
   Log('msg', "Message $ref->{msgno} from $ref->{from} to $ref->{to} deleted by $call");
   if ($full) {
-	  DXProt::broadcast_ak1a(DXProt::pc49($self->call, $ref->{subject}), $DXProt::me);
+	  DXProt::broadcast_all_ak1a(DXProt::pc49($self->call, $ref->{subject}), $DXProt::me);
   }
   $ref->del_msg;
   push @out, "Message $msgno deleted";

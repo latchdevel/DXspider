@@ -91,7 +91,7 @@ if (grep $_ eq $spotted, @DXProt::baddx) {
 		DXProt::broadcast_users($buf, 'dx', \@spot);
 
 		# send it orf to the cluster (hang onto your tin helmets) 
-		DXProt::broadcast_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line));
+		DXProt::broadcast_all_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line), $DXProt::me);
 	}
 }
 
