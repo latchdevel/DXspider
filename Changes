@@ -1,3 +1,6 @@
+14Oct01=======================================================================
+1. Add the shortform SH/ST like display to sh/user <call> to make it more
+AK1A compatible (G0RDI+G4PDQ pace).
 12Oct01=======================================================================
 1. make del nnn delete messages again (fix system Aliases file)
 2. substr the subject so that the dup works for stuff coming back via AK1A

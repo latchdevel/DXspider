@@ -9,34 +9,48 @@
 my ($self, $line) = @_;
 my @list = map { uc } split /\s+/, $line; # list of callsigns of nodes
 my @out;
-my $node = $main::routeroot;
 
-push @out, "Callsigns connected to $main::mycall";
-my $call;
-my $i = 0;
-my @l;
-my @val = sort $node->users;
-foreach $call (@val) {
-	if (@list) {
-		next if !grep $call eq $_, @list;
-	} 
-	if ($i >= 5) {
-		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
-		@l = ();
-		$i = 0;
+if (@list) {
+	foreach my $call (sort @list) {
+		my $uref = DXUser->get_current($call);
+		if ($uref) {
+			my $name = $uref->name || '?';
+			my $qth = $uref->qth || '?';
+			my $qra = $uref->qra || '';
+			my $route = '';
+			if (my $rref = Route::get($call)) {
+				$route = '(at ' . join(',', $rref->parents) . ')';
+			}
+			push @out, "$call $route $name $qth $qra",
+		} else {
+			push @out, $self->msg('usernf', $call);
+		}
 	}
-	my $uref = Route::User::get($call);
-	my $s = $call;
-	if ($uref) {
-		$s = sprintf "(%s)", $call unless $uref->here;
-	} else {
-		$s = "$call?";
+} else {
+	my $node = $main::routeroot;
+	push @out, "Callsigns connected to $main::mycall";
+	my $call;
+	my $i = 0;
+	my @l;
+	my @val = sort $node->users;
+	foreach $call (@val) {
+		if ($i >= 5) {
+			push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+			@l = ();
+			$i = 0;
+		}
+		my $uref = Route::User::get($call);
+		my $s = $call;
+		if ($uref) {
+			$s = sprintf "(%s)", $call unless $uref->here;
+		} else {
+			$s = "$call?";
+		}
+		push @l, $s;
+		$i++;
 	}
-	push @l, $s;
-	$i++;
+	push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 }
-push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
-
 
 return (1, @out);
 
