@@ -54,7 +54,7 @@ sub check
 
 sub find
 {
-	return 1 if exists $d{$_[0]};
+	return $d{$_[0]};
 }
 
 sub add

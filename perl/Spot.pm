@@ -330,24 +330,24 @@ sub dup
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
 	$call = substr($call, 0, 12) if length $call > 12;
 
-	# quick test now for simple case
-	my $sdupkey = "X$freq|$call|$d|$by";
-	return 1 if DXDupe::find($sdupkey);
-	
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	unpad($text);
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^a-zA-Z0-9]//g;
-	for (-60, -120, -180, -240, 0, 60, 120, 180, 240, 300) {
-		my $dt = $d - $_;
-		my $ldupkey = "X$freq|$call|$dt|\L$text";
-		my $sdupkey = "X$freq|$call|$dt|$by";
-		return 1 if DXDupe::find($ldupkey) || DXDupe::find($sdupkey);
+	my $ldupkey = "X$freq|$call|\L$text";
+	my $sdupkey = "X$freq|$call|$by";
+	my $t = DXDupe::find($ldupkey);
+	if ($t) {
+		my $dt = $main::systime + $dupage - $t;
+		return 1 if $dt < 300;
 	}
-	my $ldupkey = "X$freq|$call|$d|\L$text";
-	$sdupkey = "X$freq|$call|$d|$by";
+	$t = DXDupe::find($sdupkey);
+	if ($t) {
+		my $dt = $main::systime + $dupage - $t;
+		return 1 if $dt < 300;
+	}
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 	DXDupe::add($sdupkey, $main::systime+$dupage);
 	return 0;
