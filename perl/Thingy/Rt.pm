@@ -209,5 +209,6 @@ sub upd_user_rec
 	$user->homenode($parentcall) if !$user->homenode;
 	$user->node($parentcall);
 	$user->lastin($main::systime) unless DXChannel->get($call);
+	return $user;
 }
 1;
