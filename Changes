@@ -1,6 +1,8 @@
 02Aug01=======================================================================
 1. correct manual and help references on accept/route and reject/route. Thanks
 to ea1dav for pointing out the errors
+2. make sure that the actual line is printed in grepdbg & watchdbg esp. with
+ALL the '^' and leading space characters as they really are
 30Jul01=======================================================================
 1. changes to manuals to add links etc. (g0vgs)
 23Jul01=======================================================================

@@ -77,12 +77,11 @@ sub printit
 		my $line = shift;
 		chomp $line;
 		$line =~ s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
-		my @line =  split '\^', $line;
-		my $t = shift @line;
+		my ($t, $l) =  split /\^/, $line, 2;
 		my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
 		my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
 		
-		print $buf, ' ', join('^', @line), "\n"; 
+		print $buf, ' ', $l, "\n"; 
 	}
 }
 exit(0);
