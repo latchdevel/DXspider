@@ -136,7 +136,7 @@ sub handle_edu
 					dbg("Thingy::Rt::edu $call not a user") if isdbg('chanerr');
 					next;
 				}
-				$nref->del_user($call);
+				$nref->del_user($uref);
 				RouteDB::delete($call, $dxchan->{call});
 			} elsif ($type eq 'N') {
 				$nref = Route::Node::get($call);
