@@ -12,6 +12,9 @@ my $to = uc $argv[0];
 my $via;
 my $from = $self->call();
 
+# have we a callsign and some text?
+return (1, $self->msg('e8')) if @argv < 2;
+
 if ($argv[1] eq '>') {
   $via = uc $argv[2];
   $line =~ s/^$argv[0]\s+>\s+$argv[2]\s*//;

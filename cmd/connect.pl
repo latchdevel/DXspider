@@ -3,8 +3,12 @@
 #
 my $self = shift;
 my $call = uc shift;
-return (0) if $self->priv < 9;
+my $lccall = lc $call;
+
+return (0) if $self->priv < 8;
+return (1, $self->msg('e6')) unless $call gt ' ';
 return (1, $self->msg('already', $call)) if DXChannel::get($call);
+return (1, $self->msg('conscript', $lccall)) unless -e "$main::root/connect/$lccall";
 
 my $prog = "$main::root/local/client.pl";
 $prog = "$main::root/perl/client.pl" if ! -e $prog;

@@ -11,33 +11,64 @@ my @list = map { uc } split /\s+/, $line;           # list of callsigns of nodes
 my @out;
 my @nodes = (DXNode::get_all());
 my $node;
+my @l;
+my @val;
 
 push @out, "Node         Callsigns";
-foreach $node (@nodes) {
-  if (@list) {
-    next if !grep $node->call eq $_, @list;
-  }
-  my $i = 0;
-  my @l;
-  my $call = $node->call;
-  $call = "($call)" if $node->here == 0;
-  push @l, $call;
-  my $nlist = $node->list;
-  my @val = values %{$nlist};
-  foreach $call (@val) {
-    if ($i >= 5) {
-	  push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
-	  @l = ();
-	  push @l, "";
-	  $i = 0;
+if ($list[0] =~ /^NOD/) {
+	my @ch = DXProt::get_all_ak1a();
+	my $dxchan;
+	
+	foreach $dxchan (@ch) {
+		@val = grep { $_->dxchan == $dxchan } @nodes;
+		my $call = $dxchan->call;
+		$call = "($call)" if $dxchan->here == 0;
+		@l = ();
+		push @l, $call;
+		
+		my $i = 0;
+		foreach $call (@val) {
+			if ($i >= 5) {
+				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+				@l = ();
+				push @l, "";
+				$i = 0;
+			}
+			my $s = $call->{call};
+			$s = sprintf "(%s)", $s if $call->{here} == 0;
+			push @l, $s;
+			$i++;
+		}
+		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
-	my $s = $call->{call};
-	$s = sprintf "(%s)", $s if $call->{here} == 0;
-	push @l, $s;
-	$i++;
-  }
-  push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+} else {
+	# build up the screen from the Node table
+	foreach $node (@nodes) {
+		next if scalar @list && !grep $node->call eq $_, @list;
+		my $call = $node->call;
+		$call = "($call)" if $node->here == 0;
+		@l = ();
+		push @l, $call;
+		my $nlist = $node->list;
+		@val = values %{$nlist};
+
+		my $i = 0;
+		foreach $call (@val) {
+			if ($i >= 5) {
+				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+				@l = ();
+				push @l, "";
+				$i = 0;
+			}
+			my $s = $call->{call};
+			$s = sprintf "(%s)", $s if $call->{here} == 0;
+			push @l, $s;
+			$i++;
+		}
+		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
+	}
 }
+
 
 
 return (1, @out);

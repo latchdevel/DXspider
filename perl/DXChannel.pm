@@ -60,6 +60,7 @@ use vars qw(%channels %valid);
   lang => '0,Language',
   func => '9,Function',
   loc => '9,Local Vars',     # used by func to store local variables in
+  beep => '0,Want Beeps,yesno',
   lastread => '9,Last Msg Read',
   outbound => '9,outbound?,yesno',
   remotecmd => '9,doing rcmd,yesno',
@@ -152,8 +153,8 @@ sub send_now
 	
   foreach $line (@_) {
     chomp $line;
-	dbg('chan', "-> $sort $call $line\n") if $conn;
 	$conn->send_now("$sort$call|$line") if $conn;
+	dbg('chan', "-> $sort $call $line") if $conn;
   }
   $self->{t} = time;
 }
@@ -170,8 +171,8 @@ sub send              # this is always later and always data
 
   foreach $line (@_) {
     chomp $line;
-	dbg('chan', "-> D $call $line\n") if $conn;
 	$conn->send_later("D$call|$line") if $conn;
+	dbg('chan', "-> D $call $line") if $conn;
   }
   $self->{t} = time;
 }

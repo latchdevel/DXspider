@@ -25,6 +25,9 @@ my $loc;
 if ($self->state eq "prompt") {
 
   my @f = split /\s+/, $line;
+
+  # any thing after send?
+  return (1, $self->msg('e6')) if !@f;
   
   $f[0] = uc $f[0];
   
@@ -93,10 +96,9 @@ if ($self->state eq "prompt") {
   }
   
   # check we have some callsigns
-  if ($i  >  @f) {
+  if ($i  >=  @f) {
     delete $self->{loc};
-    #return (0, $self->msg('esend2'));
-    return (0, "need a callsign");
+	return (1, $self->msg('e6'));
   }
   
   # now save all the 'to' callsigns for later

@@ -33,6 +33,7 @@ sub dbg
 	if ($dbglevel{$l}) {
 		for (@_) {
 			s/\n$//og;
+			s/\a//og;   # beeps
 		}
 		print "@_\n" if defined \*STDOUT;
 		my $t = time;

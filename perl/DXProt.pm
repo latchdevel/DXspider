@@ -38,6 +38,7 @@ sub init
 {
 	my $user = DXUser->get($main::mycall);
 	$me = DXProt->new($main::mycall, undef, $user); 
+	$me->{here} = 1;
 	#  $me->{sort} = 'M';    # M for me
 }
 
@@ -606,6 +607,7 @@ sub broadcast_users
 	
 	foreach $chan (@chan) {
 		next if grep $chan == $_, @except;
+		$s =~ s/\a//og if !$chan->{beep};
 		$chan->send($s);		# send it if it isn't the except list
 	}
 }

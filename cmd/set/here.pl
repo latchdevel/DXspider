@@ -15,9 +15,11 @@ my @out;
 
 foreach $call (@args) {
   $call = uc $call;
-  my $ref = DXCluster->get($call);
-  if ($ref) {
-    $ref->here(1);
+  my $dxchan = DXChannel->get($call);
+  my $ref = DXCluster->get_exact($call);
+  if ($dxchan && $ref) {
+	$dxchan->here(1);
+	$ref->here(1);
 	DXProt::broadcast_ak1a(DXProt::pc24($ref));
 	push @out, $self->msg('heres', $call);
   } else {

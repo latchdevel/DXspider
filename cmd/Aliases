@@ -75,6 +75,9 @@ package CmdAlias;
 	  '^r$', 'read', 'read',
 	],
 	s => [
+	  '^set/nobe', 'unset/beep', 'unset/beep',
+	  '^set/nohe', 'unset/here', 'unset/here',
+	  '^sh/c/n', 'show/configuration nodes', 'show/configuration',
 	  '^sh/c$', 'show/configuration', 'show/configuration',
 	  '^sh/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
 	  '^sh/dx/(\d+)', 'show/dx $1', 'show/dx',
