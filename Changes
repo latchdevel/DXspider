@@ -1,7 +1,10 @@
 10Jan02=======================================================================
 1. set SO_LINGER = 0 to try to prevent the system sending data on a closing
-socket. This MAY help some of the hanging problems.
+socket. This MAY help some of the hanging problems (but I am now beginning
+to doubt this).
 2. do the same on the C client (which means DON'T FORGET to make it).
+3. set KEEPALIVE on TCP connections for both the node and C Client (you will
+have to make the C client again) and you will need to restart.
 08Jan02=======================================================================
 1. altered sh/qrz to point to the new server
 2. alter the character set handling a bit to make it better for spanish

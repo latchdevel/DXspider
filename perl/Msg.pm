@@ -364,7 +364,8 @@ sub nolinger
 		my ($l, $t) = unpack("ll", $buf);
 		dbg("Linger is: $buf = $l $t");
 	}
-	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt: $!";
+	setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt linger: $!";
+	setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
 	if (isdbg('sock') && ($buf = getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER))) {
 		my ($l, $t) = unpack("ll", $buf);
 		dbg("Linger is: $buf = $l $t");

@@ -825,6 +825,7 @@ void connect_to_node()
 	struct hostent *hp, *gethostbyname();
 	struct sockaddr_in server;
 	int nodef;
+	int one = 1;
 	sel_t *sp;
 	struct linger lg;
 					
@@ -847,6 +848,9 @@ void connect_to_node()
 	memset(&lg, 0, sizeof lg);
 	if (setsockopt(nodef, SOL_SOCKET, SO_LINGER, &lg, sizeof lg) < 0) {
 		die("Error on SO_LINGER to %s port %d (%d)", node_addr, node_port, errno);
+	}
+	if (setsockopt(nodef, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof one) < 0) {
+		die("Error on SO_KEEPALIVE to %s port %d (%d)", node_addr, node_port, errno);
 	}
 	
 	node = fcb_new(nodef, MSG);
