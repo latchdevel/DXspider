@@ -213,7 +213,7 @@ FINISH:
 
 sub _error
 {
-	dbg('agw', "error on AGW connection $addr/$port $!");
+	dbg('err', "error on AGW connection $addr/$port $!");
 	Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
 	$sock = undef;
 	for (%circuit) {

@@ -5,5 +5,5 @@
 #
 my $self = shift;
 return (1, $self->msg('e5')) if $self->priv < 5;
-AGWMsg::init();
+main::AGWrestart();
 return (1, $self->msg('done'));

@@ -304,6 +304,12 @@ sub uptime
 	my $mins = int $t / 60;
 	return sprintf "%d %02d:%02d", $days, $hours, $mins;
 }
+
+sub AGWrestart
+{
+	AGWMsg::init(\&new_channel);
+}
+
 #############################################################
 #
 # The start of the main line of code 
@@ -371,7 +377,7 @@ for (@main::listen) {
 	push @listeners, $conn;
 	dbg('err', "External Port: $_->[0] $_->[1]");
 }
-AGWMsg::init(\&new_channel);
+AGWrestart();
 
 # load bad words
 dbg('err', "load badwords: " . (BadWords::load or "Ok"));
