@@ -1,3 +1,5 @@
+20Oct99=======================================================================
+1. Translated all the subroutines of minimuf into perl as Minimuf.pm
 18Oct99=======================================================================
 1. changed help command so that it works correctly with multiple title lines.
 2. added to address to the list of things a message checks to see whether it

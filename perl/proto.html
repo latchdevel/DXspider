@@ -11,7 +11,7 @@
     <address><a href="mailto:djk@tobit.co.uk"></a>Dirk Koopman G1TLH</address><br>
 <!-- Created: Sat Sep  4 21:11:44 BST 1999 -->
 <!-- hhmts start -->
-Last modified: Sat Sep  4 22:50:53 BST 1999
+Last modified: Sat Sep  4 23:50:50 BST 1999
 <!-- hhmts end -->
 	<hr>
 	<h4>Some thoughts</h4>
@@ -41,15 +41,29 @@ Last modified: Sat Sep  4 22:50:53 BST 1999
 		<tr>
 		  <td width="20%"><b>OP Code</b></td>
 		  <td width="80%">
+			
 			This will be 'B' for now, but will be extended when multicasting
-			comes into being
+			comes into being, the possible values are:-<br>
+			<table>
+			  <tr><td>A</td><td>ACK</td></tr>
+			  <tr><td>B</td><td>Broadcast</td></tr>
+			  <tr><td>C</td><td>Catch up</td></tr>
+			  <tr><td>J</td><td>Join</td></tr>
+			  <tr><td>L</td><td>Leave</td></tr>
+			  <tr><td>M</td><td>Multicast</td></tr>
+			  <tr><td>N</td><td>NAK</td></tr>
+			  <tr><td>P</td><td>Point to Point</td></tr>
+			  <tr><td>T</td><td>Time (ping with time)</td></tr>
+			</table>
 		  </td>
 		</tr>
 		<tr>
 		  <td width="20%"><b>From Address</b></td>
 		  <td width="80%">
-			This will always be the originating cluster callsign and shall 
-			<emph>never</emph> be changed
+			This will always be the originating (cluster) callsign and shall 
+			<emph>never</emph> be changed. The word cluster is in brackets because
+			it is envisaged that 'connected' callsigns will eventually speak the
+			the same protocol as the clusters.
 		  </td>
 		</tr>
 		<tr>
@@ -107,11 +121,11 @@ Last modified: Sat Sep  4 22:50:53 BST 1999
 
 	<p>
 	  A typical packet might look like:- <br><br>
-	  <quote>
+	  <code>
 		BGB7DJK||8BCF65DE|DX^G1TLH^M0BAA^144123^Humungous Signal!|A8<BR>
 		BGB7DJK|SYSOP|8BCF65FC|AN^G1TLH^What @$%7C%5E!** condxs?|5C<BR>
 		BGB7DJK|GB7BAA|8BCF670102|TA^G1TLH^G8TIC^Baaaaaaaaaaa|FD<BR>
-      </quote>
+      </code>
     <p>
 
     <p>
