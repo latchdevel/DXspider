@@ -371,7 +371,7 @@ sub is_digits
 # does it look like a qra locator?
 sub is_qra
 {
-	return $_[0] =~ /^[A-Za-z][A-Za-z]\d\d[A-Za-z][A-Za-z]$/o;
+	return $_[0] =~ /^[A-Ra-r][A-Ra-r]\d\d[A-Xa-x][A-xa-x]$/;
 }
 
 # does it look like a valid lat/long

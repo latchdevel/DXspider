@@ -82,7 +82,7 @@ while ($f = shift @list) {		# next field
 		my ($a, $b);
 #		$DB::single =1;
 		
-		if ($list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d?\d\d)/oi)) {
+		if (@list && $list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d?\d\d)/oi)) {
 			$a = uc $a;
 			$doiota = "\\b$a\[\-\ \]\?$b\\b";
 			shift @list;
@@ -91,7 +91,7 @@ while ($f = shift @list) {		# next field
 		next;
 	}
 	if (lc $f eq 'qra') {
-		$doqra = uc shift @list if $list[0] =~ /[A-Z][A-Z]\d\d/oi;
+		$doqra = uc shift @list if @list && $list[0] =~ /[A-Z][A-Z]\d\d/oi;
 		$doqra = '\b([A-Z][A-Z]\d\d|[A-Z][A-Z]\d\d[A-Z][A-Z])\b' unless $doqra;
 		next;
 	}

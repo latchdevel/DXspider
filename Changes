@@ -1,3 +1,5 @@
+09Jul02=======================================================================
+1. make the is_qra more accurate (from Mark HB9DBM).
 04Jul02=======================================================================
 1. added another fix to Prefix.pm so that it resolves Japan callsigns again
 also you can 'set/debug prefix' to see what it is trying to do.
