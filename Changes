@@ -1,3 +1,8 @@
+22Feb01=======================================================================
+1. Added platform name to sh/version
+2. changed client.pl so that it send \r\n instead of \n on telnet connects
+3. added lineend '\r\n' command to connect scripts so you can override 
+defaults
 03Feb01=======================================================================
 1. Changes and additions to the manual and added a help file for sh/log (g0vgs)
 13Jan01=======================================================================

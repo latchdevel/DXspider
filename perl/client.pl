@@ -88,8 +88,10 @@ sub setmode
 {
 	if ($mode == 1) {
 		$mynl = "\r";
+		$out_lineend = "\r";
 	} else {
 		$mynl = "\n";
+		$out_lineend = "\r\n";
 	}
 	$/ = $mynl;
 }
@@ -265,6 +267,16 @@ sub dotimeout
 	$timeout = $val;
 }
 
+sub dolineend
+{
+	my $val = shift;
+	$out_lineend = $val;
+	$out_lineend =~ s/\\r/\r/g;
+	$out_lineend =~ s/\\n/\n/g;
+	dbg('connect', "lineend set to $val ");
+	$out_lineend = $mynl unless $out_lineend;
+}
+
 sub dochat
 {
 	my ($expect, $send) = @_;
@@ -304,9 +316,10 @@ sub dochat
 	}
 	if ($send) {
 		if ($csort eq 'telnet') {
-			$sock->print("$send\n");
+			local $\ = $out_lineend;
+			$sock->print("$send$out_lineend");
 		} elsif ($csort eq 'ax25') {
-			local $\ = "\r";
+			local $\ = $out_lineend;
 			$wfh->print("$send");
 		}
 		dbg('connect', "sent \"$send\"");
@@ -350,6 +363,7 @@ $maxecho = 5;                  # length of max echo queue
 $pid = 0;                       # the pid of the child program
 $csort = "";                    # the connection type
 $sock = 0;                      # connection socket
+$out_lineend = $mynl;          # connection lineending (used for outgoing connects) 
 
 $stdin = *STDIN;
 $stdout = *STDOUT;
@@ -444,7 +458,9 @@ if ($connsort eq "connect") {
 		doconnect($1, $2) if /^\s*co\w*\s+(\w+)\s+(.*)$/io;
 		doabort($1) if /^\s*a\w*\s+(.*)/io;
 		dotimeout($1) if /^\s*t\w*\s+(\d+)/io;
+		dolineend($1) if /^\s*[Ll]\w*\s+\'((?:\\[rn])+)\'/;
 		dochat($1, $2) if /^\s*\'(.*)\'\s+\'(.*)\'/io;
+		
 		if (/^\s*cl\w+\s+(.*)/io) {
 			doclient($1);
 			last;

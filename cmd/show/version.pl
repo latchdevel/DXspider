@@ -8,7 +8,7 @@
 
 my @out;
 
-push @out, "DX Spider Cluster version $main::version";
+push @out, "DX Spider Cluster version $main::version on \u$^O";
 push @out, "Copyright (c) 1998-2001 Dirk Koopman G1TLH";
 
 return (1, @out);
