@@ -170,6 +170,9 @@ $SIG{'INT'} = \&cease;
 $SIG{'TERM'} = \&cease;
 $SIG{'HUP'} = 'IGNORE';
 
+# initialise the protocol engine
+DXProt->init();
+
 # this, such as it is, is the main loop!
 for (;;) {
   my $timenow;

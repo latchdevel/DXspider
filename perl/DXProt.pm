@@ -18,8 +18,20 @@ use DXM;
 use DXCluster;
 use DXProtVars;
 use DXCommandmode;
+use Spot;
+use Date::Parse;
+use DXProtout;
 
 use strict;
+
+my $me;            # the channel id for this cluster
+
+sub init
+{
+  my $user = DXUser->get($main::mycall);
+  $me = DXChannel::alloc('DXProt', $main::mycall, undef, $user); 
+  $me->{sort} = 'M';    # M for me
+}
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -47,8 +59,8 @@ sub start
   $self->send_now('B',"0");
   
   # send initialisation string
-  $self->send($self->pc38()) if DXNode->get_all();
-  $self->send($self->pc18());
+  $self->send(pc38()) if DXNode->get_all();
+  $self->send(pc18());
   $self->state('normal');
   $self->pc50_t(time);
 }
@@ -69,39 +81,150 @@ sub normal
   return if $pcno < 10 || $pcno > 51;
   
   SWITCH: {
-    if ($pcno == 10) {last SWITCH;}
+    if ($pcno == 10) {             # incoming talk
+
+      # is it for me or one of mine?
+	  my $call = ($field[5] gt ' ') ? $field[5] : $field[2];
+	  if ($call eq $main::mycall || grep $_ eq $call, get_all_user_calls()) {
+	    
+		# yes, it is
+		my $text = unpad($field[3]);
+		my $ref = DXChannel->get($call);
+		$ref->send("$call de $field[1]: $text") if $ref;
+	  } else {
+	    route($field[2], $line);       # relay it on its way
+	  }
+	  return;
+	}
+	
     if ($pcno == 11) {             # dx spot
+
+      # if this is a 'nodx' node then ignore it
+	  last SWITCH if grep $field[7] =~ /^$_/,  @DXProt::nodx_node;
+	  
+      # convert the date to a unix date
+	  my $date = $field[3];
+	  my $time = $field[4];
+	  $date =~ s/^\s*(\d+)-(\w\w\w)-(19\d\d)$/$1 $2 $3/;
+	  $time =~ s/^(\d\d)(\d\d)Z$/$1:$2 +0000/;
+	  my $d = str2time("$date $time");
+	  return if !$d;               # bang out (and don't pass on) if date is invalid
+	  
+	  # strip off the leading & trailing spaces from the comment
+	  my $text = unpad($field[5]);
+	  
+	  # store it away
+	  Spot::add($field[1], $field[2], $d, $text, $field[6]);
+	  
+	  # format and broadcast it to users
+	  my $spotter = $field[6];
+	  $spotter =~ s/^(\w+)-\d+/$1/;    # strip off the ssid from the spotter
+      $spotter .= ':';                # add a colon
+	  
+	  # send orf to the users
+	  my $buf = sprintf "DX de %-7.7s %13.13s %-12.12s %-30.30s %5.5s\a\a", $spotter, $field[1], $field[2], $text, $field[4];
+      broadcast_users($buf);
 	  
 	  last SWITCH;
 	}
-    if ($pcno == 12) {last SWITCH;}
+	
+    if ($pcno == 12) {             # announces
+	
+	  if ($field[2] eq '*' || $field[2] eq $main::mycall) {
+
+        # strip leading and trailing stuff
+	    my $text = unpad($field[3]);
+		my $target = "To Sysops" if $field[4] eq '*';
+		$target = "WX" if $field[6];
+		$target = "To All" if !$target;
+		broadcast_users("$target de $field[1]: $text"); 
+		
+		return if $field[2] eq $main::mycall;   # it's routed to me
+	  } else {
+	    route($field[2], $line);
+		return;                     # only on a routed one
+	  }
+	  
+	  last SWITCH;
+	}
+	
     if ($pcno == 13) {last SWITCH;}
     if ($pcno == 14) {last SWITCH;}
     if ($pcno == 15) {last SWITCH;}
-    if ($pcno == 16) {last SWITCH;}
-    if ($pcno == 17) {last SWITCH;}
-    if ($pcno == 18) {last SWITCH;}
-    if ($pcno == 19) {last SWITCH;}
-    if ($pcno == 20) {              # send local configuration
-
-      # set our data (manually 'cos we only have a psuedo channel [at the moment])
-	  my $hops = $self->get_hops();
-	  $self->send("PC19^1^$main::mycall^0^$DXProt::myprot_version^$hops^");
+	
+    if ($pcno == 16) {              # add a user
+	  my $node = DXCluster->get($field[1]);
+	  last SWITCH if !$node;        # ignore if havn't seen a PC19 for this one yet
+	  my $i;
 	  
-      # get all the local users and send them out
-      my @list;
-	  for (@list = DXCommandmode::get_all(); @list; ) {
-	    @list = $self->pc16(@list);
-	    my $out = shift @list;
-		$self->send($out);
+	  for ($i = 2; $i < $#field-1; $i++) {
+	    my ($call, $confmode, $here) = $field[$i] =~ /^(\w+) (-) (\d)/o;
+		next if length $call < 3;
+		next if !$confmode;
+        $call =~ s/^(\w+)-\d+/$1/;        # remove ssid
+		next if DXCluster->get($call);    # we already have this (loop?)
+		
+		$confmode = $confmode eq '*';
+		DXNodeuser->new($self, $node, $call, $confmode, $here);
 	  }
-	  $self->send($self->pc22());
-	  return;
-	}
-    if ($pcno == 21) {             # delete a cluster from the list
-	  
 	  last SWITCH;
 	}
+	
+    if ($pcno == 17) {              # remove a user
+	  my $ref = DXCluster->get($field[1]);
+	  $ref->del() if $ref;
+	  last SWITCH;
+	}
+	
+    if ($pcno == 18) {              # link request
+	
+      # send our nodes
+	  my $hops = get_hops(19);
+	  $self->send($me->pc19(get_all_ak1a()));
+	  
+      # get all the local users and send them out
+	  $self->send($me->pc16(get_all_users()));
+	  $self->send(pc20());
+	  last SWITCH;
+	}
+	
+    if ($pcno == 19) {               # incoming cluster list
+      my $i;
+	  for ($i = 1; $i < $#field-1; $i += 4) {
+	    my $here = $field[$i];
+	    my $call = $field[$i+1];
+		my $confmode = $field[$i+2] eq '*';
+		my $ver = $field[$i+3];
+		
+		# now check the call over
+		next if DXCluster->get($call);   # we already have this
+		
+		# check for sane parameters
+		next if $ver < 5000;             # only works with version 5 software
+		next if length $call < 3;        # min 3 letter callsigns
+        DXNode->new($self, $call, $confmode, $here, $ver);
+	  }
+	  last SWITCH;
+	}
+	
+    if ($pcno == 20) {              # send local configuration
+
+      # send our nodes
+	  my $hops = get_hops(19);
+	  $self->send($me->pc19(get_all_ak1a()));
+	  
+      # get all the local users and send them out
+	  $self->send($me->pc16(get_all_users()));
+	  $self->send(pc22());
+	  return;
+	}
+	
+    if ($pcno == 21) {             # delete a cluster from the list
+	  my $ref = DXCluster->get($field[1]);
+	  $ref->del() if $ref;
+	  last SWITCH;
+	}
+	
     if ($pcno == 22) {last SWITCH;}
     if ($pcno == 23) {last SWITCH;}
     if ($pcno == 24) {last SWITCH;}
@@ -130,9 +253,13 @@ sub normal
     if ($pcno == 47) {last SWITCH;}
     if ($pcno == 48) {last SWITCH;}
     if ($pcno == 49) {last SWITCH;}
-    if ($pcno == 50) {
+	
+    if ($pcno == 50) {              # keep alive/user list
+	  my $ref = DXCluster->get($field[1]);
+	  $ref->update_users($field[2]) if $ref;
 	  last SWITCH;
 	}
+	
     if ($pcno == 51) {              # incoming ping requests/answers
 	  
 	  # is it for us?
@@ -142,14 +269,14 @@ sub normal
 	    $self->send($self->pc51($field[2], $field[1], $flag));
 	  } else {
 	    # route down an appropriate thingy
-		$self->route($field[1], $line);
+		route($field[1], $line);
 	  }
 	  return;
 	}
   }
   
   # if get here then rebroadcast the thing with its Hop count decremented (if
-  # the is one). If it has a hop count and it decrements to zero then don't
+  # there is one). If it has a hop count and it decrements to zero then don't
   # rebroadcast it.
   #
   # NOTE - don't arrive here UNLESS YOU WANT this lump of protocol to be
@@ -164,7 +291,7 @@ sub normal
 	my $newhops = $hops - 1;
 	if ($newhops > 0) {
 	  $line =~ s/\^H$hops(\^\~?)$/\^H$newhops$1/;       # change the hop count
-	  DXProt->broadcast($line, $self);             # send it to everyone but me
+	  broadcast_ak1a($line, $self);             # send it to everyone but me
 	}
   }
 }
@@ -195,7 +322,9 @@ sub process
 #
 sub finish
 {
-
+  my $self = shift;
+  broadcast_ak1a($self->pc21('Gone.'));
+  $self->delnode();
 }
  
 # 
@@ -204,7 +333,7 @@ sub finish
 
 sub adduser
 {
-
+  DXNodeuser->add(@_);
 }
 
 #
@@ -213,7 +342,9 @@ sub adduser
 
 sub deluser
 {
-
+  my $self = shift;
+  my $ref = DXCluster->get($self->call);
+  $ref->del() if $ref;
 }
 
 #
@@ -222,7 +353,7 @@ sub deluser
 
 sub addnode
 {
-
+  DXNode->new(@_);
 }
 
 #
@@ -230,7 +361,9 @@ sub addnode
 #
 sub delnode
 {
-
+  my $self = shift;
+  my $ref = DXCluster->get($self->call);
+  $ref->del() if $ref;
 }
 
 #
@@ -240,11 +373,11 @@ sub delnode
 #
 # route a message down an appropriate interface for a callsign
 #
-# expects $self to indicate 'from' and is called $self->route(to, pcline);
+# is called route(to, pcline);
 #
 sub route
 {
-  my ($self, $call, $line) = @_;
+  my ($call, $line) = @_;
   my $cl = DXCluster->get($call);
   if ($cl) {
     my $dxchan = $cl->{dxchan};
@@ -253,33 +386,65 @@ sub route
 }
 
 # broadcast a message to all clusters [except those mentioned after buffer]
-sub broadcast
+sub broadcast_ak1a
 {
-  my $pkg = shift;                # ignored
   my $s = shift;                  # the line to be rebroadcast
   my @except = @_;                # to all channels EXCEPT these (dxchannel refs)
-  my @chan = DXChannel->get_all();
-  my ($chan, $except);
+  my @chan = get_all_ak1a();
+  my $chan;
   
-L: foreach $chan (@chan) {
-     next if !$chan->sort eq 'A';  # only interested in ak1a channels  
-	 foreach $except (@except) {
-	   next L if $except == $chan;  # ignore channels in the 'except' list
-	 }
-	 chan->send($s);              # send it
+  foreach $chan (@chan) {
+	 $chan->send($s) if !grep $chan, @except;              # send it if it isn't the except list
+  }
+}
+
+# broadcast to all users
+sub broadcast_users
+{
+  my $s = shift;                  # the line to be rebroadcast
+  my @except = @_;                # to all channels EXCEPT these (dxchannel refs)
+  my @chan = get_all_users();
+  my $chan;
+  
+  foreach $chan (@chan) {
+	 $chan->send($s) if !grep $chan, @except;              # send it if it isn't the except list
   }
 }
 
 #
 # gimme all the ak1a nodes
 #
-sub get_all
+sub get_all_ak1a
 {
   my @list = DXChannel->get_all();
   my $ref;
   my @out;
   foreach $ref (@list) {
-    push @out, $ref if $ref->sort eq 'A';
+    push @out, $ref if $ref->is_ak1a;
+  }
+  return @out;
+}
+
+# return a list of all users
+sub get_all_users
+{
+  my @list = DXChannel->get_all();
+  my $ref;
+  my @out;
+  foreach $ref (@list) {
+    push @out, $ref if $ref->is_user;
+  }
+  return @out;
+}
+
+# return a list of all user callsigns
+sub get_all_user_calls
+{
+  my @list = DXChannel->get_all();
+  my $ref;
+  my @out;
+  foreach $ref (@list) {
+    push @out, $ref->call if $ref->is_user;
   }
   return @out;
 }
@@ -290,115 +455,18 @@ sub get_all
 
 sub get_hops
 {
-  my ($self, $pcno) = @_;
-  return "H$DXProt::def_hopcount";       # for now
+  my ($pcno) = @_;
+  my $hops = $DXProt::hopcount{$pcno};
+  $hops = $DXProt::def_hopcount if !$hops;
+  return "H$hops";       
 }
 
-#
-# All the PCxx generation routines
-#
-
-#
-# add one or more users (I am expecting references that have 'call', 
-# 'confmode' & 'here' method) 
-# 
-# NOTE this sends back a list containing the PC string (first element)
-# and the rest of the users not yet processed
-# 
-sub pc16
+# remove leading and trailing spaces from an input string
+sub unpad
 {
-  my $self = shift;    
-  my @list = @_;       # list of users
-  my @out = ('PC16', $main::mycall);
-  my $i;
-  
-  for ($i = 0; @list && $i < $DXProt::pc16_max_users; $i++) {
-    my $ref = shift @list;
-	my $call = $ref->call;
-	my $s = sprintf "%s %s %d", $call, $ref->confmode ? '*' : '-', $ref->here;
-	push @out, $s;
-  }
-  push @out, $self->get_hops();
-  my $str = join '^', @out;
-  $str .= '^';
-  return ($str, @list);
-}
-
-# Request init string
-sub pc18
-{
-  return "PC18^wot a load of twaddle^$DXProt::myprot_version^~";
-}
-
-#
-# add one or more nodes 
-# 
-# NOTE this sends back a list containing the PC string (first element)
-# and the rest of the nodes not yet processed (as PC16)
-# 
-sub pc19
-{
-  my $self = shift;    
-  my @list = @_;       # list of users
-  my @out = ('PC19', $main::mycall);
-  my $i;
-  
-  for ($i = 0; @list && $i < $DXProt::pc19_max_nodes; $i++) {
-    my $ref = shift @list;
-	push @out, $ref->here, $ref->call, $ref->confmode, $ref->pcversion;
-  }
-  push @out, $self->get_hops();
-  my $str = join '^', @out;
-  $str .= '^';
-  return ($str, @list);
-}
-
-# end of Rinit phase
-sub pc20
-{
-  return 'PC20^';
-}
-
-# delete a node
-sub pc21
-{
-  my ($self, $ref, $reason) = @_;
-  my $call = $ref->call;
-  my $hops = $self->get_hops();
-  return "PC21^$call^$reason^$hops^";
-}
-
-# end of init phase
-sub pc22
-{
-  return 'PC22^';
-}
-
-# send all the DX clusters I reckon are connected
-sub pc38
-{
-  my @list = DXNode->get_all();
-  my $list;
-  my @nodes;
-  
-  foreach $list (@list) {
-    push @nodes, $list->call;
-  }
-  return "PC38^" . join(',', @nodes) . "^~";
-}
-
-# periodic update of users, plus keep link alive device (always H99)
-sub pc50
-{
-  my $n = DXNodeuser->count;
-  return "PC50^$main::mycall^$n^H99^";
-}
-
-# generate pings
-sub pc51
-{
-  my ($self, $to, $from, $val) = @_;
-  return "PC51^$to^$from^$val^";
+  my $s = shift;
+  $s =~ s/^\s+|\s+$//;
+  return $s;
 }
 1;
 __END__ 

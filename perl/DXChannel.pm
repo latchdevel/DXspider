@@ -29,6 +29,7 @@ use Msg;
 use DXUtil;
 use DXM;
 use DXDebug;
+use Carp;
 
 use strict;
 
@@ -55,7 +56,6 @@ my %valid = (
   confmode => '0,In Conference?,yesno',
   dx => '0,DX Spots,yesno',
 );
-
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
 sub alloc
@@ -133,8 +133,8 @@ sub send_now
 	
   foreach $line (@_) {
     chomp $line;
-	dbg('chan', "-> $sort $call $line\n");
-	$conn->send_now("$sort$call|$line");
+	dbg('chan', "-> $sort $call $line\n") if $conn;
+	$conn->send_now("$sort$call|$line") if $conn;
   }
   $self->{t} = time;
 }
@@ -151,8 +151,8 @@ sub send              # this is always later and always data
 
   foreach $line (@_) {
     chomp $line;
-	dbg('chan', "-> D $call $line\n");
-	$conn->send_later("D$call|$line");
+	dbg('chan', "-> D $call $line\n") if $conn;
+	$conn->send_later("D$call|$line") if $conn;
   }
   $self->{t} = time;
 }
@@ -216,7 +216,7 @@ sub AUTOLOAD
   return if $name =~ /::DESTROY$/;
   $name =~ s/.*:://o;
   
-  die "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
   @_ ? $self->{$name} = shift : $self->{$name} ;
 }
 

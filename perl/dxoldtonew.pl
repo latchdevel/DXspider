@@ -5,12 +5,13 @@
 #
 
 use Date::Parse;
-use spot;
+use Spot;
 
 sysopen(IN, "../data/DX.DAT", 0) or die "can't open DX.DAT ($!)";
 open(OUT, ">../data/dxcomma") or die "can't open dxcomma ($!)";
 
-spot->init();
+system("rm -rf $Spot::prefix");
+Spot->init();
 
 while (sysread(IN, $buf, 86)) {
   ($freq,$call,$date,$time,$comment,$spotter) = unpack 'A10A13A12A6A31A14', $buf;
@@ -19,7 +20,7 @@ while (sysread(IN, $buf, 86)) {
   $d = str2time("$date $time");
   $comment =~ s/^\s+//o;
   if ($d) {
-    spot->new($freq, $call, $d, $comment, $spotter);
+    Spot->new($freq, $call, $d, $comment, $spotter);
   } else {
     print "$call $freq $date $time\n";
   }

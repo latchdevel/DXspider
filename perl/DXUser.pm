@@ -13,6 +13,7 @@ require Exporter;
 
 use MLDBM qw(DB_File);
 use Fcntl;
+use Carp;
 
 %u = undef;
 $dbm = undef;
@@ -50,7 +51,7 @@ sub AUTOLOAD
   return if $name =~ /::DESTROY$/;
   $name =~ s/.*:://o;
   
-  die "Non-existant field '$AUTOLOAD'" if !$valid{$name};
+  confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
   if (@_) {
     $self->{$name} = shift;
 	$self->put();

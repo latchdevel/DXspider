@@ -6,7 +6,7 @@
 # $Id$
 #
 
-package julian;
+package Julian;
 
 use FileHandle;
 use DXDebug;
@@ -18,7 +18,7 @@ my @days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 # take a unix date and transform it into a julian day (ie (1998, 13) = 13th day of 1998)
 sub unixtoj
 {
-  my ($pkg, $t) = @_;
+  my ($t) = @_;
   my ($day, $mon, $year) = (gmtime($t))[3..5];
   my $jday;
   
@@ -37,7 +37,7 @@ sub unixtoj
 # take a julian date and subtract a number of days from it, returning the julian date
 sub sub
 {
-  my ($pkg, $year, $day, $amount) = @_;
+  my ($year, $day, $amount) = @_;
   my $diny = isleap($year) ? 366 : 365;
   $day -= $amount;
   while ($day <= 0) {
@@ -50,7 +50,7 @@ sub sub
 
 sub add
 {
-  my ($pkg, $year, $day, $amount) = @_;
+  my ($year, $day, $amount) = @_;
   my $diny = isleap($year) ? 366 : 365;
   $day += $amount;
   while ($day > $diny) {
@@ -63,7 +63,7 @@ sub add
 
 sub cmp
 {
-  my ($pkg, $y1, $d1, $y2, $d2) = @_;
+  my ($y1, $d1, $y2, $d2) = @_;
   return $d1 - $d2 if ($y1 == $y2);
   return $y1 - $y2;
 }
@@ -75,10 +75,12 @@ sub isleap
   return ($year % 4 == 0 && ($year % 100 != 0 || $year % 400 == 0)) ? 1 : 0; 
 }
 
+# this section deals with files that are julian date based
+
 # open a data file with prefix $fn/$year/$day.dat and return an object to it
 sub open
 {
-  my ($name, $pkg, $fn, $year, $day, $mode) = @_;
+  my ($pkg, $fn, $year, $day, $mode) = @_;
 
   # if we are writing, check that the directory exists
   if (defined $mode) {

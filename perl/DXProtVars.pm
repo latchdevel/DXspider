@@ -28,11 +28,26 @@ $def_hopcount = 15;
 
 # some variable hop counts based on message type
 %hopcount = (
-  11 => 25,
+  11 => 1,
   16 => 10,
   17 => 10,
   19 => 10,
   21 => 10,
 );
 
+# list of nodes we don't accept dx from
+@nodx_node = (
 
+);
+
+# list of nodes we don't accept announces from
+@noann_node = (
+
+);
+
+# list of node we don't accept wwvs from
+@nowwv_node = (
+
+);
+
+1;
