@@ -11,7 +11,7 @@ my $self = shift;
 my $dxchan;
 my @out;
 
-push @out, "  Callsign Type      Started           Name                Ave RTT";
+push @out, "  Callsign Type      Started           Name     Ave RTT Link";
 
 foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
     my $call = $dxchan->call();
@@ -26,8 +26,10 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 		$sort = "AK1A" if $dxchan->is_ak1a;
 	}
 	my $name = $dxchan->user->name || " ";
-	my $ping = $dxchan->is_node && $dxchan != $DXProt::me ? sprintf("%8.2f", $dxchan->pingave) : "";
-	push @out, sprintf "%10s $type $sort $t %-18.18s $ping", $call, $name;
+	my $ping = $dxchan->is_node && $dxchan != $DXProt::me ? sprintf("%5.2f", $dxchan->pingave) : "     ";
+	my $conn = $dxchan->conn;
+	my $ip = $conn->{peerhost} || '' if $conn;
+	push @out, sprintf "%10s $type $sort $t %-10.10s $ping $ip", $call, $name;
 }
 
 return (1, @out)

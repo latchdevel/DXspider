@@ -115,7 +115,8 @@ sub new_channel
 	# set up the basic channel info
 	# is there one already connected to me - locally? 
 	my $user = DXUser->get($call);
-	if ($sort ne 'O' && Msg->conns($call)) {
+	my $dxchan = DXChannel->get($call);
+	if ($dxchan) {
 		my $mess = DXM::msg($lang, ($user && $user->is_node) ? 'concluster' : 'conother', $call, $main::mycall);
 		already_conn($conn, $call, $mess);
 		return;
@@ -150,7 +151,6 @@ sub new_channel
 	}
 
 	# create the channel
-	my $dxchan;
 	$dxchan = DXCommandmode->new($call, $conn, $user) if $user->is_user;
 	$dxchan = DXProt->new($call, $conn, $user) if $user->is_node;
 	$dxchan = BBS->new($call, $conn, $user) if $user->is_bbs;
