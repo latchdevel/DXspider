@@ -1,0 +1,198 @@
+  The DXSpider FAQ
+  Ian Maude, G0VGS, (ianmaude@btinternet.com)
+  Version 0.2 July 2000
+
+  A reference for SysOps of the DXSpider DXCluster program.
+  ______________________________________________________________________
+
+  Table of Contents
+
+
+  1. Installation
+
+     1.1 Where do I get DXSpider?
+     1.2 How do I use the patches?
+     1.3 If I use a tarball to overwrite my installation, what happens to my configuration?
+     1.4 I am running RedHat 5.2 and I am getting strange errors, what is wrong?
+
+  2. Administration
+
+     2.1 How can I get Spider to restart automatically if it crashes?
+     2.2 How can I monitor traffic to and from a node or user?
+     2.3 My neighbouring node cannot use the RCMD command to me, he just keeps getting the "tut tut" message.
+     2.4 I do not seem to be sending any bulletin mail to my link partners, what is wrong?
+
+
+  ______________________________________________________________________
+
+  Please mail any FAQs to the maintainer at the address above.
+
+
+
+  11..  IInnssttaallllaattiioonn
+
+  11..11..  WWhheerree ddoo II ggeett DDXXSSppiiddeerr??
+
+  All things Spider can be found at www.dxcluster.org and the actual
+  program and patches can be found in the download area.
+
+
+  11..22..  HHooww ddoo II uussee tthhee ppaattcchheess??
+
+  Patching is done in the standard linux way ...
+
+
+
+       zcat /tmp/patch-1.40 | patch -p0
+
+
+
+
+
+  assuming the patch version you are using is 1.40 and resides in /tmp!
+
+
+  Be aware that each patch assumes the previous patch has been applied.
+  That is to say if you are patching from version 1.38 to 1.40 you would
+  first need to apply patch-1.39 and then patch-1.40.
+
+
+  11..33..  IIff II uussee aa ttaarrbbaallll ttoo oovveerrwwrriittee mmyy iinnssttaallllaattiioonn,, wwhhaatt hhaappppeennss ttoo
+  mmyy ccoonnffiigguurraattiioonn??
+
+  The tarballs are designed to not overwrite your existing configuration
+  and can be used at any time to update your Spider software.  All the
+  key files have the suffix .issue (eg. DXVars.pm.issue) at default.
+
+  11..44..  II aamm rruunnnniinngg RReeddHHaatt 55..22 aanndd II aamm ggeettttiinngg ssttrraannggee eerrrroorrss,, wwhhaatt iiss
+  wwrroonngg??
+
+  The version of Perl that comes with 5.2 seems to be some kind of pre-
+  release and is broken.  You can get a new version of perl from
+  www.dxcluster.org or ftp://updates.redhat.com.  Don't forget to patch
+  it with the CPAN modules.
+
+
+  22..  AAddmmiinniissttrraattiioonn
+
+  22..11..  HHooww ccaann II ggeett SSppiiddeerr ttoo rreessttaarrtt aauuttoommaattiiccaallllyy iiff iitt ccrraasshheess??
+
+  Put this line into /etc/inittab ..
+
+
+
+       DX:3:respawn:/bin/su -c "/usr/bin/perl -w /spider/perl/cluster.pl" sysop > /dev/tty7
+
+
+
+
+  Run _t_e_l_i_n_i_t _q as root.  Spider will restart so be aware.  However, any
+  time you reboot, cluster.pl will start in tty7 and if it crashes, it
+  should restart ok.
+
+
+  22..22..  HHooww ccaann II mmoonniittoorr ttrraaffffiicc ttoo aanndd ffrroomm aa nnooddee oorr uusseerr??
+
+  There are 2 ways to achieve this.  You can use the _t_a_i_l command like
+  this ..
+
+
+
+       tail -f /spider/data/debug/167.dat |grep G0VGS
+
+
+
+
+  or in later versions of Spider, there is a command called _w_a_t_c_h_d_b_g in
+  which case you simply type ..
+
+
+
+       watchdbg G0VGS
+
+
+
+
+
+  22..33..  MMyy nneeiigghhbboouurriinngg nnooddee ccaannnnoott uussee tthhee RRCCMMDD ccoommmmaanndd ttoo mmee,, hhee jjuusstt
+  kkeeeeppss ggeettttiinngg tthhee ""ttuutt ttuutt"" mmeessssaaggee..
+
+  Assuming that the permissions are set correctly (perm level 5
+  required), it could be that the home_node is set incorrectly.  You can
+  reset the home_node using the _s_p_o_o_f command like this ..
+
+
+
+       spoof gb7adx set/home gb7adx
+
+
+
+
+  Assuming that the node_call you are changing is gb7adx.
+
+  22..44..  II ddoo nnoott sseeeemm ttoo bbee sseennddiinngg aannyy bbuulllleettiinn mmaaiill ttoo mmyy lliinnkk ppaarrtt--
+  nneerrss,, wwhhaatt iiss wwrroonngg??
+
+  There is a file in /spider/msg called forward.pl.issue.  Rename this
+  to forward.pl and edit it to meet your requirements.  You will need to
+  restart Spider for the changes to take effect.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
