@@ -10,7 +10,7 @@
 package AGWMsg;
 
 use strict;
-use vars qw($enable $login $passwd $addr $port $monitor);
+use vars qw($enable $login $passwd $addr $port $monitor $ypolltime $hpolltime);
 
 # set this to 1 to enable AGW Engine handling
 $enable = 0;
@@ -32,5 +32,11 @@ $port = 8000;
 
 # default monitor status
 $monitor = 0;
+
+# time between polls of channel queues
+$ypolltime = 10;
+
+# time between polls of Mheard
+$hpolltime = 120;
  
 1;

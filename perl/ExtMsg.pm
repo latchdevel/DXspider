@@ -312,7 +312,7 @@ sub _dochat
 			}
 			if ($line =~ /\Q$expect/i) {
 				dbg('connect', "got: \"$expect\" sending: \"$send\"");
-				$conn->send_later($send);
+				$conn->send_later("D$conn->{call}|$send");
 				delete $conn->{msg}; # get rid any input if a match
 				return;
 			}
