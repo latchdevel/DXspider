@@ -334,7 +334,7 @@ sub rec_stdin
 		} elsif ($r eq KEY_PPAGE || $r eq "\032") {
 			if ($spos > 0) {
 				my ($i, $l);
-				for ($i = 0; $i <= $pagel && $spos >= 0; ) {
+				for ($i = 0; $i <= $pagel-1 && $spos >= 0; ) {
 					$l = measure($shistory[$spos]);
 					$i += $l;
 					$spos-- if $i <= $pagel;

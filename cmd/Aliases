@@ -59,7 +59,7 @@ package CmdAlias;
 	  '^expun?g?e?$', 'kill expunge', 'kill expunge',
 	],
 	'f' => [
-	'^fo\w*$', 'apropos forward', 'apropos',
+	'^for?w?a?r?d?$', 'apropos forward', 'apropos',
 	],
 	'g' => [
 	],
