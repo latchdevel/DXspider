@@ -11,6 +11,7 @@ package DXUser;
 require Exporter;
 @ISA = qw(Exporter);
 
+use DXLog;
 use DB_File;
 use Fcntl;
 use Carp;
