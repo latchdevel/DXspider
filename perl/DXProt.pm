@@ -1141,7 +1141,7 @@ sub handle_25
 		my @in = reverse Spot::search(1, undef, undef, 0, $_[3]);
 		my $in;
 		foreach $in (@in) {
-			$self->send(pc26(@{$in}[0..4], $_[2]));
+			$self->send_frame($main::me, pc26(@{$in}[0..4], $_[2]));
 		}
 	}
 
@@ -1150,7 +1150,7 @@ sub handle_25
 		my @in = reverse Geomag::search(0, $_[4], time, 1);
 		my $in;
 		foreach $in (@in) {
-			$self->send(pc27(@{$in}[0..5], $_[2]));
+			$self->send_frame($main::me, pc27(@{$in}[0..5], $_[2]));
 		}
 	}
 }
@@ -1364,7 +1364,7 @@ sub handle_51
 	# is it for us?
 	if ($to eq $main::mycall) {
 		if ($flag == 1) {
-			$self->send(pc51($from, $to, '0'));
+			$self->send_frame($main::me, pc51($from, $to, '0'));
 		} else {
 			# it's a reply, look in the ping list for this one
 			my $ref = $pings{$from};
@@ -1521,7 +1521,7 @@ sub process
 		next if $dxchan == $main::me;
 
 		# send the pc50 or PC90
-		$dxchan->send($pc50s) if $pc50s;
+		$dxchan->send_frame($main::me, $pc50s) if $pc50s;
 		
 		# send a ping out on this channel
 		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
@@ -1552,8 +1552,16 @@ sub process
 }
 
 #
-# finish up a pc context
+# wrap send up so that we can tell where this came from
+# new prot will need this
 #
+
+sub send_frame
+{
+	my $to = shift;
+	my $from = shift;
+	$to->send(@_);
+}
 
 #
 # some active measures
@@ -1572,13 +1580,14 @@ sub send_dx_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
-		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
+		$dxchan->dx_spot($self, $line, $self->{isolate}, @_, $self->{call});
 	}
 }
 
 sub dx_spot
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my ($filter, $hops);
@@ -1587,12 +1596,12 @@ sub dx_spot
 		($filter, $hops) = $self->{spotsfilter}->it(@_);
 		return unless $filter;
 	}
-	send_prot_line($self, $filter, $hops, $isolate, $line);
+	send_prot_line($self, $origin, $filter, $hops, $isolate, $line);
 }
 
 sub send_prot_line
 {
-	my ($self, $filter, $hops, $isolate, $line) = @_;
+	my ($self, $origin, $filter, $hops, $isolate, $line) = @_;
 	my $routeit;
 	
 	if ($hops) {
@@ -1603,9 +1612,9 @@ sub send_prot_line
 		return unless $routeit;
 	}
 	if ($filter) {
-		$self->send($routeit);
+		$self->send_frame($origin, $routeit);
 	} else {
-		$self->send($routeit) unless $self->{isolate} || $isolate;
+		$self->send_frame($origin, $routeit) unless $self->{isolate} || $isolate;
 	}
 }
 
@@ -1638,7 +1647,7 @@ sub send_wwv_spot
 		my $routeit;
 		my ($filter, $hops);
 
-		$dxchan->wwv($line, $self->{isolate}, @_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->wwv($self, $line, $self->{isolate}, @_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
 	}
 	
 }
@@ -1646,6 +1655,7 @@ sub send_wwv_spot
 sub wwv
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my ($filter, $hops);
@@ -1654,7 +1664,7 @@ sub wwv
 		($filter, $hops) = $self->{wwvfilter}->it(@_);
 		return unless $filter;
 	}
-	send_prot_line($self, $filter, $hops, $isolate, $line)
+	send_prot_line($self, $origin, $filter, $hops, $isolate, $line)
 }
 
 sub send_wcy_spot
@@ -1683,13 +1693,14 @@ sub send_wcy_spot
 		next if $dxchan == $main::me;
 		next if $dxchan == $self;
 
-		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->wcy($self, $line, $self->{isolate}, @_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
 	}
 }
 
 sub wcy
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my ($filter, $hops);
@@ -1698,7 +1709,7 @@ sub wcy
 		($filter, $hops) = $self->{wcyfilter}->it(@_);
 		return unless $filter;
 	}
-	send_prot_line($self, $filter, $hops, $isolate, $line) if $self->is_clx || $self->is_spider || $self->is_dxnet;
+	send_prot_line($self, $origin,$filter, $hops, $isolate, $line) if $self->is_clx || $self->is_spider || $self->is_dxnet;
 }
 
 # send an announce
@@ -1767,13 +1778,14 @@ sub send_announce
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
-		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
+		$dxchan->announce($self, $line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 	}
 }
 
 sub announce
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my $to = shift;
@@ -1785,7 +1797,7 @@ sub announce
 		($filter, $hops) = $self->{annfilter}->it(@_);
 		return unless $filter;
 	}
-	send_prot_line($self, $filter, $hops, $isolate, $line) unless $_[1] eq $main::mycall;
+	send_prot_line($self, $origin, $filter, $hops, $isolate, $line) unless $_[1] eq $main::mycall;
 }
 
 
@@ -1818,13 +1830,13 @@ sub send_local_config
 	}
 	
 
-	$self->send_route(\&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
+	$self->send_route($main::me, \&pc19, scalar(@localnodes)+scalar(@remotenodes), @localnodes, @remotenodes);
 	
 	# get all the users connected on the above nodes and send them out
 	foreach $node (@localnodes, @remotenodes) {
 		if ($node) {
 			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->send_route(\&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
+			$self->send_route($main::me, \&pc16, 1, $node, @rout) if @rout && $self->user->wantsendpc16;
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
 		}
@@ -1860,7 +1872,7 @@ sub route
 	if ($dxchan) {
 		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 		if ($routeit) {
-			$dxchan->send($routeit) unless $dxchan == $main::me;
+			$dxchan->send_frame($self, $routeit) unless $dxchan == $main::me;
 		}
 	} else {
 		dbg("PCPROT: No route available, dropped") if isdbg('chanerr');
@@ -1900,7 +1912,7 @@ sub adjust_hops
 			return "" if defined $newhops && $newhops == 0;
 			$newhops = $ref->{default} unless $newhops;
 			return "" if defined $newhops && $newhops == 0;
-			$newhops = $hops if !$newhops;
+			$newhops = $hops if !$newhops || $hops < $newhops;
 			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
 		} else {
 			# simply decrement it
@@ -2115,6 +2127,7 @@ sub talk
 sub send_route
 {
 	my $self = shift;
+	my $origin = shift;
 	my $generate = shift;
 	my $no = shift;     # the no of things to filter on 
 	my $routeit;
@@ -2149,7 +2162,7 @@ sub send_route
 				$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
 				next unless $routeit;
 			}
-			$self->send($routeit);
+			$self->send_frame($origin, $routeit);
 		}
 	}
 }
@@ -2169,7 +2182,7 @@ sub broadcast_route
 			next unless $dxchan->isa('DXProt');
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
  
-			$dxchan->send_route($generate, @_);
+			$dxchan->send_route($self, $generate, @_);
 		}
 	}
 }

@@ -149,6 +149,15 @@ sub frame
 	return "$line^$cs";
 }
 
+sub send_frame
+{
+	my $self = shift;
+	my $origin = shift;
+	for (@_) {
+		$self->send(frame('X', undef, $origin == $main::me || $origin->is_user ? '' : $origin->call, $_));
+	}
+}
+
 sub handleI
 {
 	my $self = shift;
@@ -208,39 +217,17 @@ sub genP
 
 }
 
-sub gen2
+sub handleX
 {
 	my $self = shift;
-	
-	my $node = shift;
-	my $sort = shift;
-	my @out;
-	my $dxchan;
-	
-	while (@_) {
-		my $str = '';
-		for (; @_ && length $str <= 230;) {
-			my $ref = shift;
-			my $call = $ref->call;
-			my $flag = 0;
-			
-			$flag += 1 if $ref->here;
-			$flag += 2 if $ref->conf;
-			if ($ref->is_node) {
-				my $ping = int($ref->pingave * 10);
-				$str .= "^N$flag$call,$ping";
-				my $v = $ref->build || $ref->version;
-				$str .= ",$v" if defined $v;
-			} else {
-				$str .= "^U$flag$call";
-			}
-		}
-		push @out, $str if $str;
+	my ($tonode, $fromnode, $msgid, $line) = @_[0..3];
+	my ($origin, $l) = split /\^/, $line, 2;
+
+	my ($pcno) = $l =~ /^PC(\d\d)/;
+	if ($pcno) {
+		DXProt::normal($self, $l);
 	}
-	my $n = @out;
-	my $h = get_hops(90);
-	@out = map { sprintf "PC90^%s^%X^%s%d%s^%s^", $node->call, $main::systime, $sort, --$n, $_, $h } @out;
-	return @out;
 }
+
 
 1;

@@ -1,3 +1,11 @@
+21Jan03=======================================================================
+1. Started the structural changes to the code for new protocol
+2. added Storable support for DXUser to increase speed and reduce cputime.
+3. Moved lock files to /spider/local.
+4. Changed hop modification so that rehopping only happens if the hops are
+currently too large (this will annoy, but I don't think I shall change it).
+I have made this change to try to stem some of the PC41 and other storms that
+occur, largely because the hops will never decrement to 0 otherwise.
 20Jan03=======================================================================
 1. changed sh/c so that, by default, it only shows the caller's country nodes
 sh/c all will show the old style full list. "sh/c sk gb" will show the config

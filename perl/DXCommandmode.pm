@@ -770,6 +770,7 @@ sub talk
 sub announce
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my $to = shift;
@@ -801,6 +802,7 @@ sub announce
 sub dx_spot
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my ($filter, $hops);
@@ -827,6 +829,7 @@ sub dx_spot
 sub wwv
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my ($filter, $hops);
@@ -846,6 +849,7 @@ sub wwv
 sub wcy
 {
 	my $self = shift;
+	my $origin = shift;
 	my $line = shift;
 	my $isolate = shift;
 	my ($filter, $hops);

@@ -26,9 +26,8 @@ my @locals = DXCommandmode->get_all();
 my $to;
 my $from = $self->call;
 my $t = ztime(time);
-my $tonode;
-my $toflag = '*';
-my $sysopflag;
+my $tonode = '*';
+my $sysopflag = ' ';
 
 if ($sort eq "FULL") {
   $line =~ s/^$f[0]\s+//;    # remove it
@@ -57,12 +56,13 @@ if (@bad = BadWords::check($line)) {
 	return (1, ());
 }
 
-return (1, $self->msg('dup')) if $self->priv < 5 && AnnTalk::dup($from, $toflag, $line);
+return (1, $self->msg('dup')) if $self->priv < 5 && AnnTalk::dup($from, $tonode, $line);
 Log('ann', $to, $from, $line);
-DXChannel::broadcast_list("To $to de $from ($t): $line\a", 'ann', undef, @locals);
 if ($to ne "LOCAL") {
-  my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 0);
-  DXChannel::broadcast_nodes($pc);
+	my $pc = DXProt::pc12($from, $line, $tonode, $sysopflag, 0);
+	DXProt::send_announce($main::me, $pc, $from, $tonode, $line, $sysopflag, $main::mycall, '0' );
+} else {
+	DXChannel::broadcast_list("To $to de $from ($t): $line\a", 'ann', undef, @locals);
 }
 
 return (1, ());
