@@ -371,7 +371,7 @@ sub rec_stdin
 			$pos = 0;
 		} elsif ($r eq KEY_END || $r eq "\005") {
 			$pos = $lth;
-		} elsif ($r eq KEY_BACKSPACE || $r eq "\010" || $r eq "\0177") {
+		} elsif ($r eq KEY_BACKSPACE || $r eq "\010" || $r eq "\x7f") {
 			if ($pos > 0) {
 				my $a = substr($inbuf, 0, $pos-1);
 				my $b = substr($inbuf, $pos) if $pos < $lth;
