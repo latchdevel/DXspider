@@ -243,7 +243,10 @@ sub _decode
 					$conn->to_connected($conn->{call}, 'O', $conn->{csort});
 				}
 			} else {
-				&{$conn->{rproc}}($conn, "I$conn->{call}|$data");
+				my @lines = split /\cM/, $data;
+				for (@lines) {
+					&{$conn->{rproc}}($conn, "I$conn->{call}|$_");
+				}
 			}
 		} else {
 			dbg('err', "AGW error Unsolicited Data!");
@@ -251,13 +254,18 @@ sub _decode
 	} elsif ($sort eq 'I' || $sort eq 'S' || $sort eq 'U' || $sort eq 'M' || $sort eq 'T') {
 		my $d = unpack "Z*", $data;
 		$d =~ s/\cM$//;
-		dbg('agw', "AGW Monitor port: $port \"$d\"");
+		my @lines = split /\cM/, $d;
+
+		for (@lines) {
+			s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+			dbg('agw', "AGW Monitor port: $port \"$_\"");
+		}
 	} elsif ($sort eq 'C') {
 		my $d = unpack "Z*", $data;
 		$d =~ s/\cM$//;
 		dbg('agw', "AGW Connect port: $port pid: $pid '$from'->'$to' \"$d\"");
 		my $call = $from eq $main::mycall ? $to : $from;
-		my $conn = Msg->conns($call);
+		my $conn = _find($call);
 		if ($conn) {
 			if ($conn->{state} eq 'WC') {
 				if (exists $conn->{cmd} && @{$conn->{cmd}}) {
@@ -278,7 +286,7 @@ sub _decode
 		}
 	} elsif ($sort eq 'd') {
 		dbg('agw', "AGW '$from'->'$to' port: $port Disconnected");
-		my $conn = Msg->conns($from eq $main::mycall ? $to : $from);
+		my $conn = _find($from eq $main::mycall ? $to : $from);
 		$conn->in_disconnect if $conn;
 	} elsif ($sort eq 'y') {
 		my ($frames) = unpack "V", $data;
@@ -316,6 +324,17 @@ sub _decode
 	}
 }
 
+sub _find
+{
+	my $call = shift;
+	for (values %Msg::conns) {
+		if ($_->isa('AGWMsg') && $call eq $_->{agwcall}) {
+			return $_;
+		}
+	}
+	return undef;
+}
+
 sub connect
 {
 	my ($conn, $line) = @_;
@@ -329,6 +348,7 @@ sub connect
 	$conn->{agwcall} = uc $call;
 	
 	_sendf('C', $main::mycall, $conn->{agwcall}, $conn->{agwport}, $conn->{agwpid});
+	return 1;
 }
 
 sub in_disconnect
