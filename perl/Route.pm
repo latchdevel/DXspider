@@ -274,6 +274,7 @@ sub alldxchan
 	my $self = shift;
 	my @dxchan;
 #	dbg("Trying node $self->{call}") if isdbg('routech');
+
 	my $dxchan = DXChannel->get($self->{call});
 	push @dxchan, $dxchan if $dxchan;
 	
@@ -301,12 +302,16 @@ sub alldxchan
 sub dxchan
 {
 	my $self = shift;
+	
+	# ALWAYS return the locally connected channel if present;
+	my $dxchan = DXChannel->get($self->call);
+	return $dxchan if $dxchan;
+	
 	my @dxchan = $self->alldxchan;
 	return undef unless @dxchan;
 	
 	# determine the minimum ping channel
 	my $minping = 99999999;
-	my $dxchan;
 	foreach my $dxc (@dxchan) {
 		my $p = $dxc->pingave;
 		if (defined $p  && $p < $minping) {
