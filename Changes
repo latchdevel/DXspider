@@ -1,3 +1,6 @@
+14Aug00=======================================================================
+1. Added regex support to sh/dup_*.pl commands
+2. fixed rcmd in crontab so that will work again
 13Aug00=======================================================================
 1. removed extra /60 in AnnTalk to make deduping of announces work a bit
 better for longer...

@@ -7,5 +7,6 @@
 # $Id$
 #
 my $self = shift;
+my $line = shift;
 return (1, $self->msg('e5')) unless $self->priv >= 9; 
-return (1, Spot::listdups);
+return (1, Spot::listdups $line);
