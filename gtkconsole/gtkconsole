@@ -14,6 +14,7 @@ BEGIN {
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 	
 	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/gtkconsole";
 	unshift @INC, "$root/local";
 }
 
@@ -26,6 +27,7 @@ use vars qw(@modules);
 								# that has Gtk stuff in it
 
 use DXVars;
+use DXUtil;
 use IO::Socket::INET;
 use Gtk qw(-init);
 use Text;
@@ -95,6 +97,11 @@ $toplist->set_editable(0);
 my $tophandler = Gtk::Gdk->input_add($sock->fileno, ['read'], \&tophandler, $sock);
 my $rbuf = "";						# used in handler
 
+$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
+#$bot->{signalid} = $bot->signal_connect(insert_text => \&botinsert, $bot); 
+$vbox->pack_start($top, 1, 1, 0);
+$vbox->show;
+
 # the bottom handler
 my $bot = new Gtk::Entry;
 $bot->set_editable(1);
@@ -103,11 +110,30 @@ $bot->can_focus(1);
 $bot->can_default(1);
 $bot->grab_focus;
 $bot->grab_default;
-$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
-#$bot->{signalid} = $bot->signal_connect(insert_text => \&botinsert, $bot); 
-$vbox->pack_end($bot, 0, 1, 0);
-$vbox->pack_end($top, 1, 1, 0);
-$vbox->show;
+$bot->show;
+
+# a horizontal box
+my $hbox = new Gtk::HBox;
+$hbox->show;
+
+# callsign and current date and time
+my $calllabel = new Gtk::Label($call);
+my $date = new Gtk::Label(cldatetime(time));
+Gtk->timeout_add(1000, \&updatetime);
+$calllabel->show;
+$date->show;
+ 
+$hbox->pack_start( $calllabel, 0, 1, 0 );
+$hbox->pack_end($date, 0, 1, 0);
+
+
+$vbox->pack_start($hbox, 0, 1, 0); 
+
+# nice little separator
+my $separator = new Gtk::HSeparator();
+$vbox->pack_start( $separator, 0, 1, 0 );
+$separator->show();
+$vbox->pack_start($bot, 0, 1, 0);
 
 # the main loop
 $main->show_all;
@@ -116,6 +142,12 @@ Gtk->main;
 #
 # handlers
 #
+
+sub updatetime
+{
+	$date->set_text(cldatetime(time));
+	1;
+}
 
 sub doinsert {
 	my ($self, $text) = @_;
