@@ -459,7 +459,7 @@ Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 my $lastmin = 0;
 for (;;) {
 	my $t;
-	Msg->event_loop(1, 0.1);
+	Msg->event_loop(10, 0.01);
 	$t = time;
 	if ($t > $lasttime) {
 		my ($min)= (gmtime($t))[1];

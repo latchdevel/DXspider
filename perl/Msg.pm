@@ -425,7 +425,6 @@ sub event_loop {
         last unless ($rd_handles->count() || $wt_handles->count());
         
 		($rset, $wset) = IO::Select->select($rd_handles, $wt_handles, $er_handles, $timeout);
-		$now = time;
 		
         foreach $e (@$eset) {
             &{$er_callbacks{$e}}($e) if exists $er_callbacks{$e};
