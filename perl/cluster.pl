@@ -165,6 +165,10 @@ sub cease
 	foreach $dxchan (DXChannel->get_all()) {
 		disconnect($dxchan) unless $dxchan == $DXProt::me;
 	}
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
+	Msg->event_loop(1, 0.05);
 	Log('cluster', "DXSpider V$version stopped");
 	unlink $lockfn;
 	exit(0);

@@ -80,15 +80,19 @@ return (1, @out) if !$valid;
 # change ^ into : for transmission
 $line =~ s/\^/:/og;
 
-# Store it here
-if (Spot::add($freq, $spotted, $main::systime, $line, $spotter, $main::mycall)) {
-	# send orf to the users
+# Store it here (but only if it isn't baddx)
+if (grep $_ eq $spotted, @DXProt::baddx) {
 	my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
-	DXProt::broadcast_users($buf, 'dx', $buf);
+	push @out, $buf;
+} else {
+	if (Spot::add($freq, $spotted, $main::systime, $line, $spotter, $main::mycall)) {
+		# send orf to the users
+		my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
+		DXProt::broadcast_users($buf, 'dx', $buf);
 
-
-	# send it orf to the cluster (hang onto your tin helmets)!
-	DXProt::broadcast_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line));
+		# send it orf to the cluster (hang onto your tin helmets) 
+		DXProt::broadcast_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line));
+	}
 }
 
 return (1, @out);

@@ -1,0 +1,14 @@
+#
+# the list of TO addresses for messages that we won't store having
+# received them (bear in mind that we must receive them fully before
+# we can bin them)
+#
+
+package DXMsg;
+
+@badmsg = qw
+(
+ SALE
+ FORSALE
+ WANTED
+);

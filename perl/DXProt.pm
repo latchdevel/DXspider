@@ -27,7 +27,9 @@ use Local;
 use Carp;
 
 use strict;
-use vars qw($me $pc11_max_age $pc11_dup_age $pc23_dup_age %spotdup %wwvdup $last_hour %pings %rcmds %nodehops);
+use vars qw($me $pc11_max_age $pc11_dup_age $pc23_dup_age 
+			%spotdup %wwvdup $last_hour %pings %rcmds 
+			%nodehops @baddx $baddxfn);
 
 $me = undef;					# the channel id for this cluster
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -39,7 +41,9 @@ $last_hour = time;				# last time I did an hourly periodic update
 %pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
+@baddx = ();                    # list of illegal spotted callsigns
 
+$baddxfn = "$main::data/baddx.pl";
 
 sub init
 {
@@ -69,6 +73,9 @@ sub init
 		$wwvdup{$dupkey} = $_->[1];
 	}
 
+	# load the baddx file
+	do "$baddxfn" if -e "$baddxfn";
+	print "$@\n" if $@;
 }
 
 #
@@ -189,6 +196,12 @@ sub normal
 			}
 			
 			$spotdup{$dupkey} = $d;
+
+			# is it 'baddx'
+			if (grep $field[2] eq $_, @baddx) {
+				dbg('chan', "Bad DX spot, ignored");
+				return;
+			}
 			
 			my $spot = Spot::add($freq, $field[2], $d, $text, $spotter, $field[7]);
 			

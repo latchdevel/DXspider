@@ -1,3 +1,12 @@
+30Jan99========================================================================
+1. Some of the dates we get can cause crashes, tried to make it more robust (oh
+and Y2K compliant)
+2. PC16 seem to come in with missing callsigns from somewhere
+3. added $main::data/baddx.pl which prevents callsigns that are in the list being
+a) forwarded b) stored and c) (except for the originator, if local) being
+displayed locally.
+4. added $main::data/badmsg.pl which deletes any messages whose TO address is
+in this list (this is largely for european sensibilities). 
 18Jan99========================================================================
 1. added present(),presentish() and disconnect() to DXCron so that you can see 
 (easily) if a station is on the cluster anywhere and also disconnect them

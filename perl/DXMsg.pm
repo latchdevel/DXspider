@@ -29,7 +29,8 @@ use FileHandle;
 use Carp;
 
 use strict;
-use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean);
+use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
+			@badmsg $badmsgfn);
 
 %work = ();						# outstanding jobs
 @msg = ();						# messages we have
@@ -37,6 +38,8 @@ use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean);
 $msgdir = "$main::root/msg";	# directory contain the msgs
 $maxage = 30 * 86400;			# the maximum age that a message shall live for if not marked 
 $last_clean = 0;				# last time we did a clean
+
+$badmsgfn = "$main::data/badmsg.pl";  # list of TO address we wont store
 
 %valid = (
 		  fromnode => '9,From Node',
@@ -194,6 +197,14 @@ sub process
 								Log('msg', "duplicate message to $msgno");
 								return;
 							}
+						}
+							
+						# look for 'bad' to addresses 
+						if (grep $ref->{to} eq $_, @badmsg) {
+							$ref->stop_msg($self);
+							dbg('msg', "'Bad' TO address $ref->{to}");
+							Log('msg', "'Bad' TO address $ref->{to}");
+							return;
 						}
 
 						$ref->{msgno} = next_transno("Msgno");
@@ -621,7 +632,10 @@ sub init
 	my $dir = new FileHandle;
 	my @dir;
 	my $ref;
-	
+
+	do "$badmsgfn" if -e "$badmsgfn";
+	print "$@\n" if $@;
+
 	# read in the directory
 	opendir($dir, $msgdir) or confess "can't open $msgdir $!";
 	@dir = readdir($dir);
@@ -629,15 +643,21 @@ sub init
 
 	@msg = ();
 	for (sort @dir) {
-		next if /^\./o;
-		next if ! /^m\d+/o;
+		next unless /^m\d+/o;
 		
 		$ref = read_msg_header("$msgdir/$_");
-		next if !$ref;
+		next unless $ref;
 		
+		# delete any messages to 'badmsg.pl' places
+		if (grep $ref->{to} eq $_, @badmsg) {
+			dbg('msg', "'Bad' TO address $ref->{to}");
+			Log('msg', "'Bad' TO address $ref->{to}");
+			$ref->del_msg;
+			next;
+		}
+
 		# add the message to the available queue
 		add_dir($ref); 
-		
 	}
 }
 

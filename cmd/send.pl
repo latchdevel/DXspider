@@ -102,8 +102,22 @@ if ($self->state eq "prompt") {
 	}
   
 	# now save all the 'to' callsigns for later
-	my @to = map {uc $_} @f[ $i..$#f ];
-	$loc->{to} = \@to;
+	# first check the 'to' addresses for 'badness'
+    my $t;
+	my @to;
+	foreach  $t (@f[ $i..$#f ]) {
+		$t = uc $t;
+		if (grep $_ eq $t, @DXMsg::badmsg) {
+			push @out, "Sorry, $t is an unacceptable TO address";
+		} else {
+			push @to, $t;
+		}
+	}
+	if (@to) {
+		$loc->{to} = \@to;
+	} else {
+		return (1, @out);
+	}
 
 	# find me and set the state and the function on my state variable to
 	# keep calling me for every line until I relinquish control

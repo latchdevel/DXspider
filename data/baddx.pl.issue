@@ -1,0 +1,19 @@
+#
+# the list of dx spot addresses that we don't store and don't pass on
+#
+
+package DXProt;
+
+@baddx = qw 
+(
+ FROG 
+ SALE
+ FORSALE
+ WANTED
+ P1RATE
+ PIRATE
+ TEST
+ DXTEST
+ NIL
+ NOCALL 
+);
