@@ -1259,7 +1259,10 @@ sub send_announce
 				$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
 				
 			}
-		} elsif ($dxchan->is_user && $dxchan->{ann}) {
+		} elsif ($dxchan->is_user) {
+			unless ($dxchan->{ann}) {
+				next if $_[0] ne $main::myalias && $_[0] ne $main::mycall;
+			}
 			next if $target eq 'SYSOP' && $dxchan->{priv} < 5;
 			my $buf = "$to$target de $_[0]: $text";
 			$buf .= "\a\a" if $dxchan->{beep};

@@ -1,6 +1,7 @@
 23Aug00=======================================================================
 1. Added persistant dupe file so that all dupes are stored here (including
 announces) - announces are now kept for 5 days (as default).
+2. limit the characters stored in a dupe for spots and announces
 20Aug00=======================================================================
 1. Added system Alias for set/nodxgrid => unset/dxgrid
 2. Add full individual checking for all PC protocol fields in all messages
