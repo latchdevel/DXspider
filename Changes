@@ -1,3 +1,6 @@
+17Mar01=======================================================================
+1. put block check back in, try a work around for EWOULDBLOCK/EINPROGRESS
+for M$. 
 16Mar01=======================================================================
 1. integrate build number into main cluster and change the PC18 to show 
 version and build in the text portion

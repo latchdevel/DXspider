@@ -28,6 +28,22 @@ $wt_handles   = IO::Select->new();
 $er_handles   = IO::Select->new();
 
 $now = time;
+my $blocking_supported = 0;
+
+BEGIN {
+    # Checks if blocking is supported
+    eval {
+        require POSIX; POSIX->import(qw (F_SETFL O_NONBLOCK));
+    };
+    $blocking_supported = 1 unless $@;
+}
+
+my $w = $^W;
+$^W = 0;
+my $eagain = eval {EAGAIN()};
+my $einprogress = eval {EINPROGRESS()};
+my $ewouldblock = eval {EWOULDBLOCK()};
+$^W = $w;
 
 #
 #-----------------------------------------------------------------
@@ -71,6 +87,8 @@ sub set_rproc
 
 sub blocking
 {
+	return unless $blocking_supported;
+	
 	my $flags = fcntl ($_[0], F_GETFL, 0);
 	if ($_[1]) {
 		$flags &= ~O_NONBLOCK;
@@ -137,9 +155,7 @@ sub connect {
 	my $ip = gethostbyname($to_host);
 #	my $r = $sock->connect($to_port, $ip);
 	my $r = connect($sock, pack_sockaddr_in($to_port, $ip));
-	unless ($r) {
-		return undef unless $! == EINPROGRESS;
-	}
+	return undef unless $r || _err_will_block($r);
 	
 	$conn->{sock} = $sock;
     
@@ -265,7 +281,8 @@ sub _send {
 }
 
 sub _err_will_block {
-	return ($_[0] == EAGAIN || $_[0] == EWOULDBLOCK || $_[0] == EINPROGRESS);
+	return 0 unless $blocking_supported;
+	return ($_[0] == $eagain || $_[0] == $ewouldblock || $_[0] == $einprogress);
 }
 
 sub close_on_empty
