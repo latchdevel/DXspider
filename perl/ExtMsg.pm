@@ -58,7 +58,7 @@ sub dequeue
 	my $conn = shift;
 	my $msg;
 
-	if ($conn->{sort} eq 'ax25' && exists $conn->{msg}) {
+	if ($conn->{csort} eq 'ax25' && exists $conn->{msg}) {
 		$conn->{msg} =~ s/\cM/\cJ/g;
 	}
 	if ($conn->{state} eq 'WC') {
@@ -229,7 +229,7 @@ sub _doconnect
 			}
 			dbg('connect', "program $sort $line started");
 			$conn->{pid} = $pid;
-			$conn->{sort} = $sort;
+			$conn->{csort} = $sort;
 			$conn->{lineend} = "\cM" if $sort eq 'ax25';
 		} else {
 			dbg('connect', "can't $sort fork for $line $!");
