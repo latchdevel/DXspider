@@ -383,7 +383,7 @@ sub input
 	my ($gp, $tus) = split /:/, $group, 2 if $group;
 
 	$err .= "from me," if $origin eq $main::mycall;
-	$err .= "invalid group ($gp)," if $gp && $gp !~ /^[A-Z0-9]{2,}$/;
+	$err .= "invalid group ($gp)," if $gp && $gp !~ /^[-A-Z0-9]{2,}$/;
 	$err .= "invalid tocall ($tus)," if $tus && !is_callsign($tus);
 	$err .= "invalid fromcall ($user)," if $user && !is_callsign($user);
 
