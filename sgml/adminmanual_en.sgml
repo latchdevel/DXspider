@@ -3656,6 +3656,14 @@ You can carry on with the message until you are ready to send it.
 </tt>
 
 <P>
+<sect1>set/dxcq (0)
+
+<P>
+<tt>
+<bf>set/dxcq</bf> Show CQ Zones on the end of DX announcements
+</tt>
+
+<P>
 <sect1>set/dxgrid (0)
 
 <P>
@@ -3664,19 +3672,19 @@ You can carry on with the message until you are ready to send it.
 </tt>
 
 <P>
+<sect1>set/dxitu (0)
+
+<P>
+<tt>
+<bf>set/dxitu</bf> Show ITU Zones on the end of DX announcements
+</tt>
+
+<P>
 <sect1>set/dxnet &lt;call&gt; &lsqb;&lt;call&gt;..&rsqb; (5)
 
 <P>
 <tt>
 <bf>set/dxnet &lt;call&gt; &lsqb;&lt;call&gt;..&rsqb;</bf> Make the callsign an DXNet node
-</tt>
-
-<P>
-<sect1>set/dxstate (0)
-
-<P>
-<tt>
-<bf>set/dxstate</bf> Allow US State info on the end of DX announcements
 </tt>
 
 <P>
@@ -3886,6 +3894,14 @@ fed new style DX Protocol rather normal user commands.
 <P>
 <tt>
 <bf>set/talk</bf> Allow TALK messages to come out on your terminal
+</tt>
+
+<P>
+<sect1>set/usstate (0)
+
+<P>
+<tt>
+<bf>set/usstate</bf> Allow US State info on the end of DX announcements
 </tt>
 
 <P>
@@ -5177,6 +5193,22 @@ will allow text with this word again.
 </tt>
 
 <P>
+<sect1>unset/dxcq (0)
+
+<P>
+<tt>
+<bf>unset/dxcq</bf> Stop CQ Zones on the end of DX announcements
+</tt>
+
+<P>
+Display both the Spotter's and the Spotted's CQ Zone on the end
+of a DX announcement (there is just enough room). Some user programs
+cannot cope with this. The Spotter's CQ is on the RHS of the 
+time, the Spotted's CQ is on the LHS.
+
+Conflicts with: SET/DXGRID, SET/DXITU, SHOW/USSTATE
+
+Do a STAT/USER to see which flags you have set if you are confused.  
 <sect1>unset/dxgrid (0)
 
 <P>
@@ -5190,24 +5222,26 @@ that if the spotter's grid square is known it is output on the end
 of a DX announcement (there is just enough room). Some user programs
 cannot cope with this. You can use this command to reset (or set)
 this feature.
-<sect1>unset/dxstate (0)
+
+Conflicts with: SET/DXCQ, SET/DXITU
+
+Do a STAT/USER to see which flags you have set if you are confused.  
+<sect1>unset/dxitu (0)
 
 <P>
 <tt>
-<bf>unset/dxstate</bf> Stop US State info on the end of DX announcements
+<bf>unset/dxitu</bf> Stop ITU Zones on the end of DX announcements
 </tt>
 
 <P>
-If the spotter's or spotted's US State is known it is output on the 
-end of a DX announcement (there is just enough room). 
+Display both the Spotter's and the Spotted's ITU Zone on the end
+of a DX announcement (there is just enough room). Some user programs
+cannot cope with this. The Spotter's ITU is on the RHS of the 
+time, the Spotted's ITU is on the LHS.
 
-A spotter's state will appear on the RHS of the time (like 
-SET/DXGRID) and the spotted's State will appear on the LHS of the
-time field. Any information found will override any locator 
-information from SET/DXGRID.
+Conflicts with: SET/DXGRID, SET/DXCQ, SHOW/USSTATE
 
-Some user programs cannot cope with this. You can use this command 
-to reset (or set) this feature.
+Do a STAT/USER to see which flags you have set if you are confused.  
 <sect1>unset/echo (0)
 
 <P>
@@ -5333,6 +5367,28 @@ normal.
 </tt>
 
 <P>
+<sect1>unset/usstate (0)
+
+<P>
+<tt>
+<bf>unset/usstate</bf> Stop US State info on the end of DX announcements
+</tt>
+
+<P>
+If the spotter's or spotted's US State is known it is output on the 
+end of a DX announcement (there is just enough room). 
+
+A spotter's state will appear on the RHS of the time (like 
+SET/DXGRID) and the spotted's State will appear on the LHS of the
+time field. Any information found will override any locator 
+information from SET/DXGRID.
+
+Some user programs cannot cope with this. You can use this command 
+to reset (or set) this feature.
+
+Conflicts with: SET/DXCQ, SET/DXITU
+
+Do a STAT/USER to see which flags you have set if you are confused.  
 <sect1>unset/wcy (0)
 
 <P>
