@@ -65,7 +65,6 @@ if (!$valid) {
 }
 
 
-
 push @out, $self->msg('dx1', $freq) if !$valid;
 
 # check we have a callsign :-)
@@ -85,10 +84,11 @@ if (grep $_ eq $spotted, @DXProt::baddx) {
 	my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
 	push @out, $buf;
 } else {
-	if (Spot::add($freq, $spotted, $main::systime, $line, $spotter, $main::mycall)) {
+	my @spot = Spot::add($freq, $spotted, $main::systime, $line, $spotter, $main::mycall);
+	if (@spot) {
 		# send orf to the users
 		my $buf = Spot::formatb($freq, $spotted, $main::systime, $line, $spotter);
-		DXProt::broadcast_users($buf, 'dx', $buf);
+		DXProt::broadcast_users($buf, 'dx', \@spot);
 
 		# send it orf to the cluster (hang onto your tin helmets) 
 		DXProt::broadcast_ak1a(DXProt::pc11($spotter, $freq, $spotted, $line));

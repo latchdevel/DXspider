@@ -22,6 +22,7 @@ use DXLog;
 use Spot;
 use DXProtout;
 use DXDebug;
+use Filter;
 use Local;
 
 use Carp;
@@ -106,6 +107,11 @@ sub start
 	$self->{isolate} = $user->{isolate};
 	$self->{consort} = $line;	# save the connection type
 	$self->{here} = 1;
+
+	# get the filters
+	$self->{spotfilter} = Filter::read_in('spots', $call);
+	$self->{wwvfilter} = Filter::read_in('wwv', $call);
+	$self->{annfilter} = Filter::read_in('ann', $call);
 	
 	# set unbuffered
 	$self->send_now('B',"0");
@@ -207,29 +213,45 @@ sub normal
 
             #
 			# @spot at this point contains:-
-            # freq, spotted call, time, text, spotter, spotted cc, spotters cc,
-            # orig node, spotted itu, spotted cq, spotters itu, spotters cq
+            # freq, spotted call, time, text, spotter, spotted cc, spotters cc, orig node
+			# then  spotted itu, spotted cq, spotters itu, spotters cq
 			# you should be able to route on any of these
             #
 			
 			# local processing 
 			my $r;
 			eval {
-				$r = Local::spot($self, $freq, $field[2], $d, $text, $spotter, $field[7]);
+				$r = Local::spot($self, @spot);
 			};
 #			dbg('local', "Local::spot1 error $@") if $@;
 			return if $r;
 
+			# DON'T be silly and send on PC26s!
+			return if $pcno == 26;
+
+			# send out the filtered spots
+			my @dxchan = get_all_ak1a();
+			my $dxchan;
+	
+			# send it if it isn't the except list and isn't isolated and still has a hop count
+			foreach $dxchan (@dxchan) {
+				next if $dxchan == $self;
+				my $routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+				my $filter = Filter::it($dxchan->{spotfilter}, @spot) if $dxchan->{spotfilter};
+				if ($filter) {
+					$dxchan->send($routeit) if $routeit;
+				} else {
+					$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
+				}					
+			}
+
 			# send orf to the users
-			if (@spot && $pcno == 11) {
+			if (@spot) {
 				my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
 				broadcast_users("$buf\a\a", 'dx', $spot[0]);
 			}
 
-			# DON'T be silly and send on PC26s!
-			return if $pcno == 26;
-			
-			last SWITCH;
+			return;
 		}
 		
 		if ($pcno == 12) {		# announces
@@ -781,13 +803,19 @@ sub broadcast_list
 	my $dxchan;
 	
 	foreach $dxchan (@_) {
+		my $filter = 1;
 		
-		next if $sort eq 'dx' && !$dxchan->{dx};
+		if ($sort eq 'dx') {
+		    next unless $dxchan->{dx};
+			$filter = Filter::it($dxchan->{spotfilter}, @{$fref}) if ref $fref;
+			next unless $filter;
+		}
 		next if $sort eq 'ann' && !$dxchan->{ann};
 		next if $sort eq 'wwv' && !$dxchan->{wwv};
 		next if $sort eq 'wx' && !$dxchan->{wx};
 
 		$s =~ s/\a//og unless $dxchan->{beep};
+
 		if ($dxchan->{state} eq 'prompt' || $dxchan->{state} eq 'convers') {
 			$dxchan->send($s);	
 		} else {

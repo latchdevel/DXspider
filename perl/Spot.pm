@@ -69,7 +69,7 @@ sub add
 	# automagically closes the output file (if any)). 
 	$fp->writeunix($out[2], $buf);
   
-	return ($buf, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
+	return (@spot, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
 }
 
 # search the spot database for records based on the field no and an expression
@@ -83,7 +83,10 @@ sub add
 #   $f2 = date in unix format
 #   $f3 = comment
 #   $f4 = spotter
-#   $f5 = dxcc country
+#   $f5 = spotted dxcc country
+#   $f6 = spotter dxcc country
+#   $f7 = origin
+#
 #
 # In addition you can specify a range of days, this means that it will start searching
 # from <n> days less than today to <m> days less than today

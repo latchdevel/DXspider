@@ -1,3 +1,8 @@
+21Feb99========================================================================
+1. Allowed multiple 'on <freq>' for show/dx
+2. Made sure the 'on 20m/ssb' thing worked (also 'on hf/cw').
+3. first cut of the Filtering code, no user commands yet but the file
+format is defined and manually added filters should work for spots
 17Feb99========================================================================
 1. added export_user.pl to export user files (for interest and safety)
 2. changed DXUser::init to allow O_RDONLY access which may limit the number
@@ -19,7 +24,7 @@ off which means that the netrom/ax25 call programs terminate properly (and not
 loop as fast as their little legs can paddle, soaking up CPU time).
 2. Implemented read receipts as an especial request from G4PDQ.
 3. Fiddled with DXUser a bit to see whether I can stop it core dumping on new
-users in PC16s on his machine.
+users in PC16s on G0RDI's machine.
 4. Added E4 (Palestine) to Prefix data.
 30Jan99========================================================================
 1. Some of the dates we get can cause crashes, tried to make it more robust (oh

@@ -22,6 +22,7 @@ use DXLogPrint;
 use DXBearing;
 use CmdAlias;
 use FileHandle;
+use Filter;
 use Carp;
 
 use strict;
@@ -87,6 +88,9 @@ sub start
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('msgnew')) if DXMsg::for_me($call);
+
+	# get the filters
+	$self->{spotfilter} = Filter::read_in('spots', $call);
 	
 	$self->send($self->msg('pr', $call));
 }

@@ -55,6 +55,7 @@ use Prefix;
 use Bands;
 use Geomag;
 use CmdAlias;
+use Filter;
 use Local;
 use Fcntl ':flock'; 
 

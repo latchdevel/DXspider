@@ -70,6 +70,9 @@ use vars qw(%channels %valid);
 		  group => '0,Access Group,parray',	# used to create a group of users/nodes for some purpose or other
 		  isolate => '9,Isolate network,yesno',
 		  delayed => '9,Delayed messages,parray',
+		  annfilter => '9,Announce Filter',
+		  wwvfilter => '9,WWV Filter',
+		  spotfilter => '9,Spot Filter',
 		 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
