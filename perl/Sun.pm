@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#/usr/bin/perl -w
 #
 # This module was written by Steve Franke K9AN. 
 # November, 1999.
@@ -169,6 +169,7 @@ sub rise_set
 	my ($alpha1,$alpha2,$alpha3,$delta1,$delta2,$delta3);
 	my ($m0,$m1,$m2,$theta,$alpha,$delta,$H,$az,$h,$h0,$aznow,$hnow,$corr);
 	my ($i,$arg,$argtest,$H0,$alphanow,$deltanow,$distance,$distancenow);
+	my ($ifrac,$ifracnow);
 	
 	my $julianday=Julian_Day($year,$month,$day);
 	my $tt1 = ($julianday-1-2451545)/36525.;
@@ -198,10 +199,10 @@ sub rise_set
 	}
 
 	if ( $sun0_moon1 == 1 ) {
-		($alpha1, $delta1, $distance)=get_moon_alpha_delta($tt1);
-		($alpha2, $delta2, $distance)=get_moon_alpha_delta($tt2);
-		($alpha3, $delta3, $distance)=get_moon_alpha_delta($tt3);
-		($alphanow, $deltanow, $distancenow)=get_moon_alpha_delta($ttnow);
+		($alpha1, $delta1, $distance, $ifrac)=get_moon_alpha_delta($tt1);
+		($alpha2, $delta2, $distance, $ifrac)=get_moon_alpha_delta($tt2);
+		($alpha3, $delta3, $distance, $ifrac)=get_moon_alpha_delta($tt3);
+		($alphanow, $deltanow, $distancenow, $ifracnow)=get_moon_alpha_delta($ttnow);
 		$h0=0.7275*$r2d*asin(6378.14/$distancenow)-34./60.;
 		$H=$thetanow-$lon-$alphanow;
 		$H=reduce_angle_to_360($H);
@@ -315,13 +316,16 @@ sub rise_set
 	}
 	if ( $sun0_moon1 == 1 ) {
 		return (sprintf("%s", $risetime), sprintf("%s",$settime), 
-				$aznow+180,$hnow, -40*log10($distance/385000) );
+			$aznow+180,$hnow, -40*log10($distance/385000), $ifracnow );
 	}
 }
 sub get_moon_alpha_delta 
 {
 	#
 	# Calculate the moon's right ascension and declination
+	#
+	# As of October 2001, also calculate the illuminated fraction of the 
+	# moon's disk... (why not?)
 	#
 	my $tt=shift;
 
@@ -542,7 +546,20 @@ sub get_moon_alpha_delta
 	my $delta=asin(cosdeg($beta)*sindeg($epsilon)*sindeg($lambda)+sindeg($beta)*cosdeg($epsilon))*$r2d;
 	$delta = reduce_angle_to_360($delta);
 
-	return ($alpha,$delta,$distance);
+# $phase will be the "moon phase angle" from p. 346 of Meeus' book...
+	my $phase=180.0 - $D - 6.289 *sindeg($Mp)
+				+ 2.100 *sindeg($M)
+				- 1.274 *sindeg(2.*$D - $Mp)
+				- 0.658 *sindeg(2.*$D)
+				- 0.214 *sindeg(2.*$Mp)
+				- 0.110 *sindeg($D);
+
+# $illum_frac is the fraction of the disk that is illuminated, and will be
+# zero at new moon and 1.0 at full moon.
+
+	my $illum_frac = (1.0 + cosdeg( $phase ))/2.;	
+
+	return ($alpha,$delta,$distance,$illum_frac);
 }
  
 sub get_sun_alpha_delta 

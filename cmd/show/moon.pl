@@ -17,6 +17,7 @@ my $f;
 my $l;
 my $n_offset;
 my @list;
+my ($rise, $set, $az, $dec, $loss, $ifrac);
 
 while ($f = shift @f){
 	if(!$n_offset){
@@ -70,7 +71,7 @@ if( !$n_offset ) {
 }
 
 foreach $l (@in) {
-	my ($rise, $set, $az, $dec, $loss )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],1);
+	($rise, $set, $az, $dec, $loss, $ifrac)=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],1);
 	$l->[3] =~ s{(-\d+|/\w+)$}{};
 	if( !$n_offset ) {	
 	push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s %6.1f %6.1f", $l->[3], $l->[0], $day, $month, $yr, $rise, $set, $az, $dec);
@@ -78,7 +79,5 @@ foreach $l (@in) {
 	push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s", $l->[3], $l->[0], $day, $month, $yr, $rise, $set);
 	}
 }
-
-			
-
+push @out,sprintf("Illuminated fraction of the Moon's disk is %4.2f",$ifrac);
 return (1, @out);
