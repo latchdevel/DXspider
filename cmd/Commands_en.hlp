@@ -95,9 +95,25 @@ Sysops can see all users' messages.
 === 8^DISCONNECT <call> [<call> ...]^Disconnect a user or cluster
 Disconnect any <call> connected locally
 
-=== 0^DX <freq> <callsign> <remarks>^Send a DX spot throughout the cluster
-<freq> is compared against the available bands set up in the cluster.
-see show/bands for more information.
+=== 0^DX [BY <call>] <freq> <call> <remarks>^Send a DX spot
+This is how you send a DX Spot to other users. You can, in fact, now
+enter the <freq> and the <call> either way round. 
+
+   DX FR0G 144.600
+   DX 144.600 FR0G
+   DX 144600 FR0G 
+
+will all give the same result. You can add some remarks to the end
+of the command and they will be added to the spot.
+
+   DX FR0G 144600 this is a test
+
+You can credit someone else by saying:-
+
+   DX by G1TLH FR0G 144.600 he isn't on the cluster
+
+The <freq> is compared against the available bands set up in the 
+cluster.  See SHOW/BANDS for more information.
 
 === 1^FORWARD/OPERNAME <call>^Send out information on this <call> to all clusters
 This command sends out any information held in the user file which can 

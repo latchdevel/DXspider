@@ -16,19 +16,32 @@ my $freq;
 my @out;
 my $valid = 0;
 
-# first lets see if we think we have a callsign as the first argument
-if (defined @f && @f >= 3 && $f[0] =~ /[A-Za-z]/) {
-	$spotter = uc $f[0];
+# do we have at least two args?
+return (1, $self->msg('dx2')) unless @f >= 2;
+
+# as a result of a suggestion by Steve K9AN, I am changing the syntax of
+# 'spotted by' things to "dx by g1tlh <freq> <call>" <freq> and <call>
+# can be in any order
+
+if ($f[0] =~ /^by$/i) {
+    $spotter = uc $f[1];
+    $line =~ s/^\s*$f[0]\s+$f[1]\s+//;
+    shift @f;
+	shift @f;
+	return (1, $self->msg('dx2')) unless @f >= 2;
+}
+
+# get the freq and callsign either way round
+if ($f[0] =~ /[A-Za-z]/) {
+	$spotted = uc $f[0];
 	$freq = $f[1];
-	$spotted = uc $f[2];
-	$line =~ s/^$f[0]\s+$f[1]\s+$f[2]\s*//;
-} elsif (defined @f && @f >= 2) {
-	$freq = $f[0];
-	$spotted = uc $f[1]; 
-	$line =~ s/^$f[0]\s+$f[1]\s*//;
-} elsif (!defined @f || @f < 2) {
+} elsif ($f[0] =~ /^[0-9\.\,]+$/) {
+    $freq = $f[0];
+	$spotted = uc $f[1];
+} else {
 	return (1, $self->msg('dx2'));
 }
+$line =~ s/^$f[0]\s+$f[1]\s*//;
 
 # bash down the list of bands until a valid one is reached
 my $bandref;
@@ -47,7 +60,7 @@ foreach $bandref (Bands::get_all()) {
 	}
 }
 
-if (!$valid) {
+unless ($valid) {
 
 	# try again in MHZ 
 	$freq = $freq * 1000 if $freq;
@@ -65,7 +78,7 @@ if (!$valid) {
 }
 
 
-push @out, $self->msg('dx1', $freq) if !$valid;
+push @out, $self->msg('dx1', $freq) unless $valid;
 
 # check we have a callsign :-)
 if ($spotted le ' ') {
@@ -74,7 +87,7 @@ if ($spotted le ' ') {
 	$valid = 0;
 }
 
-return (1, @out) if !$valid;
+return (1, @out) unless $valid;
 
 # change ^ into : for transmission
 $line =~ s/\^/:/og;
