@@ -1,4 +1,8 @@
 08Nov02=======================================================================
+1. update Keps.pm to reflect which satellites now come round in the weekly
+updates. I suggest that you copy this file to /spider/local and do a load/kep
+and you should lose all the 'old' satellites (eg MIR).
+08Nov02=======================================================================
 1. made some small mods to grepdbg and spot2csv.pl
 2. fix a possible DOS in dx command
 07Nov02=======================================================================
