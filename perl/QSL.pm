@@ -80,7 +80,7 @@ sub update
 			}
 		} else {
 			$r = [$man, 1, $t, $by];
-			push @{$self->[1]}, $r;
+			unshift @{$self->[1]}, $r;
 		}
 	}
 	$self->put;
