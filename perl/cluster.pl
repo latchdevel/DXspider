@@ -332,6 +332,13 @@ $SIG{'TERM'} = \&cease;
 $SIG{'HUP'} = 'IGNORE';
 $SIG{'CHLD'} = \&reap;
 
+$SIG{PIPE} = sub { 	dbg('err', "Broken PIPE signal received"); };
+$SIG{IO} = sub { 	dbg('err', "SIGIO received"); };
+$SIG{ILL} = $SIG{FPE} = 
+	$SIG{SEGV} = $SIG{USR1} = $SIG{USR2} =
+	$SIG{BUS} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  };
+
+
 # read in system messages
 DXM->init();
 
@@ -380,11 +387,6 @@ dbg('local', "Local::init error $@") if $@;
 dbg('err', "orft we jolly well go ...");
 
 #open(DB::OUT, "|tee /tmp/aa");
-
-$SIG{PIPE} = sub { 
-	#$DB::single = 1;  
-	dbg('err', "Broken PIPE signal received"); 
-};
 
 for (;;) {
 	my $timenow;

@@ -1,5 +1,10 @@
 05Aug00=======================================================================
 1. Fixed hax character problem put in somewhen in the C Client
+03Aug00=======================================================================
+1. caught some more signals (are any of these causing the random stopping
+of the code?
+2. the Console now requires 1.05 of the Curses module ^R REFRESHES THE SCREEN
+(as does ^L) AT LAST!!!!!
 02Aug00=======================================================================
 1. put back hex check exception for PC29
 01Aug00=======================================================================

@@ -30,7 +30,7 @@ use DXVars;
 use DXDebug;
 use DXUtil;
 use IO::File;
-use Curses;
+use Curses 1.05;
 
 use Console;
 
@@ -59,7 +59,8 @@ sub do_initscr
 	
 	if ($has_colors) {
 		start_color();
-		init_pair(0, $foreground, $background);
+		init_pair("0", $foreground, $background);
+#		init_pair(0, $background, $foreground);
 		init_pair(1, COLOR_RED, $background);
 		init_pair(2, COLOR_YELLOW, $background);
 		init_pair(3, COLOR_GREEN, $background);
@@ -74,6 +75,7 @@ sub do_initscr
 		init_pair(12, COLOR_MAGENTA, COLOR_BLUE);
 		init_pair(13, COLOR_YELLOW, COLOR_GREEN);
 		init_pair(14, COLOR_RED, COLOR_GREEN);
+		$scr->attrset(COLOR_PAIR(0));
 	}
 	
 	$top = $scr->subwin(LINES()-4, COLS, 0, 0);
@@ -384,7 +386,8 @@ sub rec_stdin
 			$pos++;
 			$lth++;
 		} elsif ($r eq "\014" || $r eq "\022") {
-			#do_resize();
+			touchwin($curscr, 1);
+			refresh($curscr);
 			return;
 		} elsif ($r eq "\013") {
 			$inbuf = substr($inbuf, 0, $pos);
