@@ -504,7 +504,7 @@ sub decode_input
 sub rspfcheck
 {
 	my ($self, $flag, $node, $user) = @_;
-	my $nref = Route::Node::Get($node);
+	my $nref = Route::Node::get($node);
 	if ($nref) {
 	    if ($nref->dxchan == $self) {
 			return 1 unless $user;
