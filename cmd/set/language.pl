@@ -11,7 +11,7 @@ my $call = $self->call;
 my $user;
 
 # modify this next line if you add a language to Messages
-my @lang = qw( en nl sp );
+my @lang = qw( en nl sp de );
 
 # remove leading and trailing spaces
 $line =~ s/^\s+//;
