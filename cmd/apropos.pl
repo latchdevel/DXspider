@@ -24,6 +24,7 @@ if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
 }
 my $in;
 
+$line = 'help' unless $line;
 $line =~ s/\W//og;   # remove dubious characters
 
 my $include;

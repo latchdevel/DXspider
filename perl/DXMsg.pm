@@ -824,7 +824,7 @@ sub do_send_stuff
 	} elsif ($self->state eq 'sendbody') {
 		confess "local var gone missing" if !ref $self->{loc};
 		my $loc = $self->{loc};
-		if ($line eq "\032" || uc $line eq "/EX") {
+		if ($line eq "\032" || $line eq '%1A' || uc $line eq "/EX") {
 			my $to;
 			
 			if (@{$loc->{lines}} > 0) {

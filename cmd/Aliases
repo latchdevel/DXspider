@@ -23,7 +23,7 @@ package CmdAlias;
 
 %alias = (
     '?' => [
-	  '^\?', 'apropos', 'apropos',
+	  '^\?', 'apropos help', 'apropos',
 	],
     'a' => [
 	  '^ann.*/full', 'announce full', 'announce', 

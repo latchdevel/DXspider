@@ -720,7 +720,7 @@ sub normal
 	 #        REBROADCAST!!!!
 	 #
 	 
-	if (!$self->{isolate}) {
+	unless ($self->{isolate}) {
 		broadcast_ak1a($line, $self); # send it to everyone but me
 	}
 }
@@ -743,7 +743,7 @@ sub process
 		if ($t >= $dxchan->pc50_t + $DXProt::pc50_interval) {
 			$dxchan->send(pc50());
 			$dxchan->pc50_t($t);
-		}
+		} 
 	}
 	
 	my $key;

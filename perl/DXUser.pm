@@ -49,6 +49,12 @@ $filename = undef;
 		  hmsgno => '0,Highest Msgno',
 		  group => '0,Access Group,parray',	# used to create a group of users/nodes for some purpose or other
 		  isolate => '9,Isolate network,yesno',
+		  wantbeep => '0,Rec Beep,yesno',
+		  wantann => '0,Rec Announce,yesno',
+		  wantwwv => '0,Rec WWV,yesno',
+		  wanttalk => '0,Rec Talk,yesno',
+		  wantwx => '0,Rec WX,yesno',
+		  wantdx => '0,Rec DX Spots,yesno',
 		 );
 
 no strict;
@@ -63,7 +69,6 @@ sub AUTOLOAD
 	confess "Non-existant field '$AUTOLOAD'" if !$valid{$name};
 	if (@_) {
 		$self->{$name} = shift;
-		#	$self->put();
 	}
 	return $self->{$name};
 }
@@ -324,5 +329,41 @@ sub sort
 	my $self = shift;
 	@_ ? $self->{'sort'} = shift : $self->{'sort'} ;
 }
+
+# some accessors
+sub _want
+{
+	my $n = shift;
+	my $self = shift;
+	my $s = "want$n";
+	return $self->{$n} = shift if @_;
+	return defined $self->{$n} ? $self->{$n} : 1;
+}
+
+sub wantbeep
+{
+	return _want('beep', @_);
+}
+
+sub wantann
+{
+	return _want('ann', @_);
+}
+
+sub wantwwv
+{
+	return _want('wwv', @_);
+}
+
+sub wantwx
+{
+	return _want('wx', @_);
+}
+
+sub wantdx
+{
+	return _want('dx', @_);
+}
+
 1;
 __END__

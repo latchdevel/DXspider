@@ -1,3 +1,6 @@
+12Nov99=======================================================================
+1. added sh/sun command kindly supplied by Steve K9AN.
+2. allow ^Z on its own on a line to terminate a message
 08Nov99=======================================================================
 1. added spoofing (mk1 version) for sysops, useful for those little jobs like
 reseting a user's qra locator and such like "spoof g7brn set/qra jo02lq".

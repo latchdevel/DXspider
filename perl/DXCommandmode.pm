@@ -27,6 +27,7 @@ use Filter;
 use Carp;
 use Minimuf;
 use DXDb;
+use Sun;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase);
@@ -70,8 +71,13 @@ sub start
 	$self->{consort} = $line;	# save the connection type
 	
 	# set some necessary flags on the user if they are connecting
-	$self->{beep} = $self->{wwv} = $self->{wx} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
-	#  $self->prompt() if $self->{state} =~ /^prompt/o;
+	$self->{beep} = $user->wantbeep;
+	$self->{ann} = $user->wantann;
+	$self->{wwv} = $user->wantwwv;
+	$self->{talk} = $user->wanttalk;
+	$self->{wx} = $user->wantwx;
+	$self->{dx} = $user->wantdx;
+	$self->{here} = 1;
 	
 	# add yourself to the database
 	my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";

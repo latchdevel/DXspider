@@ -14,7 +14,7 @@ my ($self, $line) = @_;
 my @out;
 
 # this is naff but it will work for now
-$line = "help" if !$line;
+$line = "help" unless $line;
 my $lang = $self->lang;
 $lang = 'en' if !$lang;
 
