@@ -326,15 +326,17 @@ sub input
 		$thing->{user} = $user if $user;
 		$thing->{hopsaway} = $hop; 
 
-		for (split(/,/, $rdata)) {
-			if (/=/) {
-				my ($k,$v) = split /=/, $_, 2;
-				$thing->{$k} = tdecode($v);
-			} else {
-				$thing->{$_} = 1;
+		if ($rdata) {
+			for (split(/,/, $rdata)) {
+				if (/=/) {
+					my ($k,$v) = split /=/, $_, 2;
+					$thing->{$k} = tdecode($v);
+				} else {
+					$thing->{$_} = 1;
+				}
 			}
 		}
-
+		
 		# post process the thing, this generally adds on semantic meaning
 		# does parameter checking etc. It also adds / prepares the thingy so
 		# this is compatible with older protocol and arranges data so

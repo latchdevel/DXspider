@@ -30,7 +30,7 @@ sub gen_Aranea
 		my @items;
 		push @items, 't', $thing->{t} if $thing->{t};
 		push @items, 'd', $thing->{d} if $thing->{d};
-	 	$thing->{Aranea} = Aranea::genmsg($thing, 'RT');
+	 	$thing->{Aranea} = Aranea::genmsg($thing, 'RT', @items) if @items;
 	}
  	return $thing->{Aranea};
 }
