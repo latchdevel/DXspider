@@ -1,3 +1,9 @@
+26Nov00=======================================================================
+1. made it possible for sysop calls to be used on other nodes and still have
+anti loop checking on PC16/17.
+25Nov00=======================================================================
+1. -l <nnn> now works on C client
+2. -e toggles echo cancelling (normally on) on C client
 20Nov00=======================================================================
 1. added even more checking to PC16,17 and 39
 19Nov00=======================================================================

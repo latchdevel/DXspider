@@ -16,9 +16,10 @@
  * $Id$
  */
 
+#include <sys/types.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -96,6 +97,7 @@ int tabsize = 8;				/* default tabsize for text messages */
 char *connsort = "local";		/* the connection variety */
 int state = 0;					/* the current state of the connection */
 int laststate = 0;				/* the last state we were in */
+char echocancel = 1;			/* echo cancelling */
 reft echobase;					/* the anti echo queue */
 int maxecho = 5;				/* the depth of the anti echo queue */
 int echon;						/* no of entries in the anti echo queue */
@@ -104,7 +106,7 @@ int echon;						/* no of entries in the anti echo queue */
 #define WAITLOGIN 1
 #define WAITPASSWD 2
 #define WAITINPUT 10
-
+#define DOCHAT 20
 
 myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
 	{
@@ -203,6 +205,14 @@ int iscallsign(char *s)
 	return 0;
 }
 
+void reaper(int i)
+{
+	pid_t mypid;
+	while ((mypid = waitpid(-1, 0, WNOHANG)) > 0) {
+		;
+	}
+}
+
 /*
  * higher level send and receive routines
  */
@@ -231,10 +241,12 @@ void flush_text(fcb_t *f)
 		emp->size = size;
 		memcpy(emp->data, imp->data, size);
 		emp->inp = emp->data + size; /* just in case */
-		chain_add(&echobase, emp);
-		if (++echon > maxecho) {
-			emp = cmsg_prev(&echobase);
-			cmsg_free(emp);
+		if (echocancel) {
+			chain_add(&echobase, emp);
+			if (++echon > maxecho) {
+				emp = cmsg_prev(&echobase);
+				cmsg_free(emp);
+			}
 		}
 		
 		/* queue it for sending */
@@ -597,10 +609,12 @@ void process_stdin()
 		dbg(DMSG, "MSG size: %d", mp->size);
 		
 		/* check for echos */
-		for (wmp = 0; wmp = chain_get_next(&echobase, wmp); ) {
-			if (!memcmp(wmp->data, mp->data, wmp->size)) {
-				cmsg_callback(mp, 0);
-				return;
+		if (echocancel) {
+			for (wmp = 0; wmp = chain_get_next(&echobase, wmp); ) {
+				if (!memcmp(wmp->data, mp->data, wmp->size)) {
+					cmsg_callback(mp, 0);
+					return;
+				}
 			}
 		}
 
@@ -652,6 +666,11 @@ void process_stdin()
 			
 			chgstate(CONNECTED);
 			send_file("connected");
+			break;
+			
+		case DOCHAT:
+
+			break;
 		}
 
 		cmsg_callback(mp, 0);
@@ -749,8 +768,11 @@ void initargs(int argc, char *argv[])
 {
 	int i, c, err = 0;
 
-	while ((c = getopt(argc, argv, "h:p:x:")) > 0) {
+	while ((c = getopt(argc, argv, "eh:l:p:x:")) > 0) {
 		switch (c) {
+		case 'e':
+			echocancel ^= 1;
+			break;
 		case 'h':
 			node_addr = optarg;
 			break;
@@ -776,7 +798,7 @@ void initargs(int argc, char *argv[])
 
 lerr:
 	if (err) {
-		die("usage: client [-x n|-h<host>|-p<port>|-l<paclen>] <call>|login [local|telnet|ax25]");
+		die("usage: client [-e|-x n|-h<host>|-p<port>|-l<paclen>] <call>|login [local|telnet|ax25]");
 	}
 	
 	if (optind < argc) {
@@ -879,6 +901,8 @@ main(int argc, char *argv[])
 #ifdef SIGPWR
 	signal(SIGPWR, terminate);
 #endif
+	signal(SIGCLD, reaper);
+	
 	/* init a few things */
 	chain_init(&echobase);
 

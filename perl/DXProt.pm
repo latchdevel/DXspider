@@ -504,8 +504,12 @@ sub normal
 #				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 				
 			}
-			if ($field[2] eq $main::mycall || $field[2] eq $main::myalias || $field[1] eq $main::myalias || $field[1] eq $main::mycall) {
-				dbg('chan', "LOOP: trying to connect myself!");
+			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
+				dbg('chan', "LOOP: trying to alter config on this node from outside!");
+				return;
+			}
+			if ($field[2] eq $main::myalias && DXChannel->get($field[1])) {
+				dbg('chan', "LOOP: trying to connect sysop from outside!");
 				return;
 			}
 			unless ($node) {
@@ -568,8 +572,12 @@ sub normal
 				dbg('chan', "$field[2] no PC19 yet, autovivified as node");
 #				broadcast_ak1a(pc19($dxchan, $node), $dxchan, $self) unless $dxchan->{isolate};
 			}
-			if ($field[2] eq $main::mycall || $field[2] eq $main::myalias || $field[1] eq $main::myalias || $field[1] eq $main::mycall) {
-				dbg('chan', "LOOP: trying to disconnect me!");
+			if ($field[1] eq $main::mycall || $field[2] eq $main::mycall) {
+				dbg('chan', "LOOP: trying to alter config on this node from outside!");
+				return;
+			}
+			if ($field[1] eq $main::myalias && DXChannel->get($field[1])) {
+				dbg('chan', "LOOP: trying to disconnect sysop from outside!");
 				return;
 			}
 			unless ($node) {
