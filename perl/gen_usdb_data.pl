@@ -36,6 +36,7 @@ BEGIN {
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 
+	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 }
 
