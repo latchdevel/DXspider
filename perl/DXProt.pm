@@ -159,7 +159,7 @@ sub normal
 	return if $pcno < 10 || $pcno > 99;
 
 	# dump bad protocol messages
-	if ($line =~ /\%[01][0-9A-F]/) {
+	if ($pcno != 29 && $line =~ /\%[01][0-9A-F]/) {
 		dbg('chan', "CORRUPT protocol message - dumped");
 		return;
 	}

@@ -1,3 +1,5 @@
+02Aug00=======================================================================
+1. put back hex check exception for PC29
 01Aug00=======================================================================
 1. made the export and import ascii system work finally. The user_asc file
 generated (automatically and 0000Z Sunday morning) is autoloading. Just 
