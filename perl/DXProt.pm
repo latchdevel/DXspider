@@ -2037,7 +2037,7 @@ sub send_local_config
 	# send our nodes
 	if ($self->{isolate}) {
 		@localnodes = ( $main::routeroot );
-		$self->send_route(\&pc19, 1, $main::routeroot, $main::routeroot);
+		$self->send_route($main::mycall, \&pc19, 1, $main::routeroot, $main::routeroot);
 	} else {
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
