@@ -223,7 +223,7 @@ sub init
 	$main::me->{metric} = 0;
 	$main::me->{pingave} = 0;
 	$main::me->{registered} = 1;
-	$main::me->{version} = 5251 + $main::version;
+	$main::me->{version} = 5252 + $main::version;
 	$main::me->{build} = $main::build;
 }
 

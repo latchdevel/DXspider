@@ -267,7 +267,7 @@ DXProt->init();
 Aranea->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-$routeroot = Route::Node->new($mycall, $version*100+5251, Route::here($main::me->here)|Route::conf($main::me->conf));
+$routeroot = Route::Node->new($mycall, $version*100+5252, Route::here($main::me->here)|Route::conf($main::me->conf));
 
 # make sure that there is a routing OUTPUT node default file
 #unless (Filter::read_in('route', 'node_default', 0)) {
