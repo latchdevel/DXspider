@@ -1,4 +1,4 @@
-! highest DXCC number is now 339
+! highest DXCC number is now 341
 !
 ! changed FO/M (Marquesas) to 339             991111
 ! changed FO/A (Austral) to 338               991111
@@ -76,7 +76,6 @@ R1FJ Franz-Jo-Land-R1FJ(OLD_4K2)      180 75 40 -5.0 80 0 0 N 50 0 0 E @
 4U1U,4U43 U.N.-NY-4U/U                284  8  5  5.0 40 48 0 N 74 0 0 W
 4U1I I.T.U.-Geneva-4U/I               283 28 14 -1.0 46 12 0 N 6 12 0 E @
 4U1U U.N.-N.Y.-4U/U                   284 8   5  5.0 40 48 0 N 74 0 0 W @
-4W Yemen-7O                           285 39 21 -3.0 15 0 0 N 44 0 0 E
 4X Israel-4X                          286 39 20 -2.0 32 0 0 N 35 0 0 E @
 4Z Israel-4X                          286 39 20 -2.0 32 0 0 N 35 0 0 E
 5A Libya-5A                           287 38 34 -2.0 32 30 0 N 12 30 0 E @
@@ -99,7 +98,6 @@ C4,P30,P36,H2,P3 Cyprus-5B            288 39 20 -2.0 35 0 0 N 33 0 0 E
 6V Senegal-6W                         298 46 35  0.0 15 0 0 N 18 0 0 W
 6Y Jamaica-6Y                         299 11  8  5.0 18 0 0 N 76 0 0 W @
 7O Yemen-People's-7O                  300 39 21 -3.0 13 0 0 N 45 0 0 E @
-4W Yemen-People's-7O                  300 39 21 -3.0 13 0 0 N 45 0 0 E
 7P Lesotho-7P                         301 57 38 -2.0 29 30 0 S 28 0 0 E @
 7Q Malawi-7Q                          302 53 37 -2.0 15 0 0 S 35 0 0 E @
 7X Algeria-7X                         303 37 33  0.0 36 42 0 N 3 0 0 E @
@@ -883,5 +881,8 @@ ZS6 So-Africa-ZS                265 57 38 -2.0 26 12 0 S 28 6 0 E
 ZS2 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E
 ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
+4W East-Timor-4W				340 51 28 -8.0 8 73 0 S 126 30 0 E  
+TX0 Chesterfield-Is-TX0         341 56 32 -11.0 19 31 0 S 158 11 0 E
 T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirat_Country 666 17 14 -0.0 0 0 0 S 0 0 0 E @
+
 

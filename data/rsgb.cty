@@ -34,7 +34,7 @@ Uganda:                   AF: 48: 37: 5X:    5X;
 Kenya:                    AF: 48: 37: 5Z:    5Y=5Z;
 Senegal:                  AF: 46: 35: 6W:    6V=6W;
 Jamaica:                  NA: 11: 08: 6Y:    6Y;
-Yemen:                    AS: 39: 21: 7O:    4W=7O;
+Yemen:                    AS: 39: 21: 7O:    7O;
 Lesotho:                  AF: 57: 38: 7P:    7P;
 Malawi:                   AF: 53: 37: 7Q:    7Q;
 Algeria:                  AF: 37: 33: 7X:    7R=7T=7U=7V=7W=7X=7Y;
@@ -355,3 +355,8 @@ Orange Free State:        AF: 01: 01: ZS4:   ZS4=ZR4=ZT4=ZU4;
 Natal:                    AF: 01: 01: ZS5:   ZS5=ZR5=ZT5=ZU5;
 Transvaal:                AF: 01: 01: ZS6:   ZS6=ZR6=ZR6=ZU6;
 Marion Island:            AF: 57: 38: ZS8:   ZS8=ZR8=ZT8=ZU8;
+East Timor:		          OC: 51: 28: 4X:    4X;
+Chesterfield Island:      OC: 56: 32: TX0:	 TX0DX;
+
+
+

@@ -1,3 +1,13 @@
+27Mar00=======================================================================
+1. updated wpxloc.raw and rsgb.cty for 4W and TX0
+26Mar00=======================================================================
+1. first cut of C client
+18Mar00=======================================================================
+1. fixed convkeps.pl so that it accepts more formats for floating point.
+08Mar00=======================================================================
+1. tidied up Sun.pm and sh/sat
+2. fixed sh/qra so that the correct lat/long is displayed if only one locator
+is given.
 10Jan00=======================================================================
 1. added Steve Franke's new Sun.pm and show/satellite command
 08Jan00=======================================================================
