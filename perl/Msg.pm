@@ -66,6 +66,7 @@ sub new
 		lineend => "\r\n",
 		csort => 'telnet',
 		timeval => 60,
+		blocking => 0,
     };
 
 	$noconns++;
@@ -154,7 +155,11 @@ sub connect {
 	my $proto = getprotobyname('tcp');
 	$sock->socket(AF_INET, SOCK_STREAM, $proto) or return undef;
 	
-	blocking($sock, 0);
+	if ($conn->{blocking}) {
+		blocking($sock, 0);
+		$conn->{blocking} = 0;
+	}
+
 	my $ip = gethostbyname($to_host);
 #	my $r = $sock->connect($to_port, $ip);
 	my $r = connect($sock, pack_sockaddr_in($to_port, $ip));
@@ -235,7 +240,10 @@ sub _send {
     # return to the event loop only after every message, or if it
     # is likely to block in the middle of a message.
 
-	blocking($sock, $flush);
+	if ($conn->{blocking} != $flush) {
+		blocking($sock, $flush);
+		$conn->{blocking} = $flush;
+	}
     my $offset = (exists $conn->{send_offset}) ? $conn->{send_offset} : 0;
 
     while (@$rq) {
@@ -354,7 +362,10 @@ sub _rcv {                     # Complement to _send
     return unless defined($sock);
 
 	my @lines;
-	blocking($sock, 0);
+	if ($conn->{blocking}) {
+		blocking($sock, 0);
+		$conn->{blocking} = 0;
+	}
 	$bytes_read = sysread ($sock, $msg, 1024, 0);
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
@@ -413,6 +424,7 @@ sub close_all_clients
 	}
 }
 
+#
 #----------------------------------------------------
 # Event loop routines used by both client and server
 
@@ -478,6 +490,15 @@ sub event_loop {
             last unless --$loop_count;
         }
     }
+}
+
+sub sleep
+{
+	my ($pkg, $interval) = @_;
+	my $now = time;
+	while (time - $now < $interval) {
+		$pkg->event_loop(10, 0.01);
+	}
 }
 
 sub DESTROY

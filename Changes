@@ -1,3 +1,10 @@
+27Mar01=======================================================================
+1. add first cut at an AGW Engine. Copy /spider/perl/AGWConnect.pm to 
+/spider/local and edit it appropriately. You shouldn't need a login and passwd
+if you are using the default setup. It may allow incoming connects (and then
+again it may not - I don't have a reliable infrostructure to test with at the
+moment). The AGW Engine is a M$ thingy, but that don't preclude you connecting
+to it from a unix box. 
 22Mar01=======================================================================
 1. edit the helpfile for set/debug and add help for show/debug
 2. Allow ^Z again on messages

@@ -41,6 +41,7 @@ BEGIN {
 use Msg;
 use IntMsg;
 use ExtMsg;
+use AGWMsg;
 use DXVars;
 use DXDebug;
 use DXLog;
@@ -97,7 +98,7 @@ sub already_conn
 	
 	dbg('chan', "-> D $call $mess\n"); 
 	$conn->send_now("D$call|$mess");
-	sleep(2);
+	Msg->sleep(2);
 	$conn->disconnect;
 }
 
@@ -214,6 +215,10 @@ sub cease
 		next if $dxchan->is_node;
 		$dxchan->disconnect unless $dxchan == $DXProt::me;
 	}
+
+	# disconnect AGW
+	AGWMsg::finish();
+	
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
 	Msg->event_loop(1, 0.05);
@@ -363,6 +368,7 @@ for (@main::listen) {
 	push @listeners, $conn;
 	dbg('err', "External Port: $_->[0] $_->[1]");
 }
+AGWMsg::init(\&new_channel);
 
 # load bad words
 dbg('err', "load badwords: " . (BadWords::load or "Ok"));
