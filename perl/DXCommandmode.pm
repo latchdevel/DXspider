@@ -436,7 +436,7 @@ sub run_cmd
 		# strip out // on command only
 		$cmd =~ s|//|/|g;
 		$cmd =~ s|^/||g;		# no leading / either
-		$cmd =~ s|[^-\w/]||g;		# and no funny characters either
+		$cmd =~ s|[^-?\w/]||g;		# and no funny characters either
 					
 		my ($path, $fcmd);
 			

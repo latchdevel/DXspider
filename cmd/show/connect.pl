@@ -18,11 +18,13 @@ foreach my $call (sort keys %Msg::conns) {
 	my $c = $call;
 	my $addr;
 	
-	if ($c =~ /^Server\s+(\S+)$/) {
+	if ($c =~ /^Server\s+(\S+)/) {
 		$addr = $1;
 		$c = "Server";
 	} else {
-		$addr = "$r->{peerhost}/$r->{peerport}";
+		$addr = "AGW Port ($r->{agwport})" if exists $r->{agwport};
+		$addr ||= "$r->{peerhost}/$r->{peerport}";
+		$addr ||= "Unknown";
 	}
 	my $csort = $r->{csort} || '';
 	my $sort = $r->{sort} || '';

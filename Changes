@@ -1,4 +1,8 @@
 22Mar05=======================================================================
+1. Fix ? so it works again.
+2. Fix Aliases for sh/c so they are correct
+3. Fix sh/connect for AGW ports and other niffnaffs.
+22Mar05=======================================================================
 1. fixed sh/c/node sh/c/a and sh/newc/n.
 21Mar05=======================================================================
 1. log AGW port on connection
