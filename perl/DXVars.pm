@@ -48,8 +48,9 @@ $myemail = "djk\@tobit.co.uk";
 # Your BBS addr
 $mybbsaddr = "G1TLH\@GB7TLH.#35.GBR.EU";
 
-# the tcp address of the cluster and so does this !!!
-$clusteraddr = "dirk1.tobit.co.uk";
+# the tcp address of the cluster this can be an address of an ethernet port
+# but this is more secure. For normal use this will be fine. 
+$clusteraddr = "localhost";
 
 # the port number of the cluster (just leave this, unless it REALLY matters to you)
 $clusterport = 27754;

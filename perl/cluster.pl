@@ -16,8 +16,8 @@ BEGIN {
   $root = "/spider"; 
   $root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 
-  unshift @INC, '$root/perl';  # this IS the right way round!
-  unshift @INC, '$root/local';
+  unshift @INC, "$root/perl";  # this IS the right way round!
+  unshift @INC, "$root/local";
 }
 
 use Msg;
@@ -169,6 +169,9 @@ foreach(@debug) {
   dbgadd($_);
 }
 STDOUT->autoflush(1);
+
+# banner
+print "DXSpider DX Cluster Version $version\nCopyright (c) 1998 Dirk Koopman G1TLH\n";
 
 # load Prefixes
 print "loading prefixes ...\n";
