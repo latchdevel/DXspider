@@ -1,3 +1,5 @@
+27Aug01=======================================================================
+1. make rej/wwv and rej/wcy work
 26Aug01=======================================================================
 1. make all newly learned nodes locked out by default.
 2. add lock_nodes.pl which locks out all the nodes in the user file whose

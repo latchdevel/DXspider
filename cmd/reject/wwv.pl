@@ -8,7 +8,7 @@
 
 my ($self, $line) = @_;
 my $type = 'reject';
-my $sort  = 'ann';
+my $sort  = 'wwv';
 
 my ($r, $filter, $fno) = $Geomag::filterdef->cmd($self, $sort, $type, $line);
 return (0, $r ? $filter : $self->msg('filter1', $fno, $filter->{name})); 
