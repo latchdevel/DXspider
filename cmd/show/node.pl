@@ -27,7 +27,7 @@ my $count;
 unless (@call) {
 	
 	my ($action, $key, $data);
-	for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = R_NEXT) {
+	for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
 		if ($data =~ m{sort => '[ACRSX]'}) {
 		    push @call, $key;
 			++$count;
