@@ -1124,7 +1124,10 @@ sub handle_23
 		}
 	}
 
-	return if $rspfcheck and !$self->rspfcheck(1, $_[8], $_[7]);
+	# only do a rspf check on PC23 (not 27)
+	if ($pcno == 23) {
+		return if $rspfcheck and !$self->rspfcheck(1, $_[8], $_[7])
+	}
 
 	# do some de-duping
 	my $d = cltounix($_[1], sprintf("%02d18Z", $_[2]));
