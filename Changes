@@ -2,6 +2,7 @@
 1. Fixed prompting in languages other than English.
 2. Fixed language problem with spoof, but that simply hides a whole can of
 worms that I shall have to address later.
+3. Added make clean to src Makefile (!!!)
 12Jan05=======================================================================
 1. Add $main::bumpexisting variable which allows a new connection for a user
 call to disconnect an existing connection with the same call. The default for

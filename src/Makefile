@@ -9,3 +9,6 @@ CLIENTBIN = client
 
 $(CLIENTBIN) : $(CLIENTOBJ)
 	$(CC) $(CFLAGS) $(CLIENTOBJ) -o $(CLIENTBIN) 
+
+clean:
+	rm -f $(CLIENTOBJ) $(CLIENTBIN) *~
