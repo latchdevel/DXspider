@@ -241,6 +241,7 @@ sub normal
 				my ($filter, $hops) = Filter::it($dxchan->{spotfilter}, @spot) if $dxchan->{spotfilter};
 				if ($hops) {
 					$line =~ s/\^H\d+\^\~$/\^H$hops\^\~/;
+					$routeit = $line;
 				} else {
 					$routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
 					next unless $routeit;
