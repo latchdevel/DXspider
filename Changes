@@ -2,6 +2,8 @@
 1. fix frequency hinting routine so it correctly handles things like 'on 23cm'
 where digits are the 'wrong' way round.
 2. made default max days to search for spots 3 months.
+3. added hex decodes for those pesky 'national' characters that aren't really
+in grepdbg and watchdbg.
 03Dec00=======================================================================
 1. change grepdbg and watchdbg so that you can see a number of lines before
 the condx that you are looking for so:-
