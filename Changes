@@ -2,6 +2,7 @@
 1. made login info not the default
 2. change the looping protoection for PC16/17/19/21 and also be more rigorous
 in who we accept which PC16/17/21's from.
+3. fix MAJOR disconnect bug introduced accidentally in the NP work.
 30Sep01=======================================================================
 1. made some small bug fixes in rspf checking and also messages. 
 23Sep01=======================================================================

@@ -84,6 +84,12 @@ sub process
 	}
 }
 
+sub disconnect
+{
+	my $self = shift;
+	$self->DXProt::disconnect(@_);
+}
+
 sub sendallnodes
 {
 	my $nodes = join(',', map {sprintf("%s:%d", $_->{call}, int($_->{pingave} * $_->{metric}))} DXChannel::get_all_nodes());
