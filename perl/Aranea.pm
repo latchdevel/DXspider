@@ -126,7 +126,7 @@ sub start
 	unless ($self->{outbound}) {
 		my $thing = Thingy::Rt->new_cf;
 		$thing->broadcast;
-		$self->lastcf($main::systime);
+		$main::me->lastcf($main::systime);
 	}
 	
 	# run a script send the output to the debug file
@@ -186,15 +186,25 @@ sub per_minute
 		if ($dxchan->is_node) {
 			if ($main::systime >= $dxchan->lastcf + $cf_interval) {
 				my $call = $dxchan->call;
-				my $thing = Thingy::Rt->new();
-				$thing->{user} = $call unless $dxchan == $main::me;
-				if (my $nref = Route::Node::get($call)) {
-					$thing->copy_pc16_data($nref);
-					$thing->broadcast($dxchan);
-					$dxchan->lastcf($main::systime);
+				if ($dxchan == $main::me) {
+
+					# i am special but, currently, still a node
+					my $thing = Thingy::Rt->new_cf;
+					$thing->broadcast;
+					$self->lastcf($main::systime);
 				} else {
-					dbg("Aranea::per_minute: Route::Node for $call disappeared");
-					$dxchan->disconnect;
+
+					# i am a pc protocol node connected directly
+					my $thing = Thingy::Rt->new();
+					$thing->{user} = $call unless $dxchan == $main::me;
+					if (my $nref = Route::Node::get($call)) {
+						$thing->copy_pc16_data($nref);
+						$thing->broadcast($dxchan);
+						$dxchan->lastcf($main::systime);
+					} else {
+						dbg("Aranea::per_minute: Route::Node for $call disappeared");
+						$dxchan->disconnect;
+					}
 				}
 			}
 		}

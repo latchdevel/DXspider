@@ -339,15 +339,6 @@ sub _deluser
     return $self->_dellist('users', @_);
 }
 
-sub DESTROY
-{
-	my $self = shift;
-	my $pkg = ref $self;
-	my $call = $self->{call} || "Unknown";
-	
-	dbg("destroying $pkg with $call") if isdbg('routelow');
-}
-
 #
 # generic AUTOLOAD for accessors
 #
