@@ -348,7 +348,7 @@ sub send_talks
 	$to = $ent unless $to;
 	my $call = $via ? $via : $to;
 	my $clref = Route::get($call);
-	my $dxchan = $clref->dxchan if $clref;
+	my $dxchan = $clref->bestdxchan if $clref;
 	if ($dxchan) {
 		$dxchan->talk($self->{call}, $to, $via, $line);
 	} else {
@@ -765,7 +765,7 @@ sub talk
 		my $key = "$to$from";
 		unless (exists $nothereslug{$key}) {
 			my ($ref, $dxchan);
-			if (($ref = Route::get($from)) && ($dxchan = $ref->dxchan)) {
+			if (($ref = Route::get($from)) && ($dxchan = $ref->bestdxchan)) {
 				my $name = $self->user->name || $to;
 				my $s = $self->user->nothere || $dxchan->msg('nothere', $name);
 				$nothereslug{$key} = $main::systime;

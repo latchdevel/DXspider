@@ -37,7 +37,7 @@ use vars qw(%list %valid $filterdef);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
-		  lastseen => 'Last Seen,atime',
+		  lastseen => '0,Last Seen,atime',
 		 );
 
 $filterdef = bless ([
@@ -201,8 +201,8 @@ sub config
 		
 		# recursion detector
 		if ((DXChannel->get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
-			$line .= ' ...';
-			push @out, $line;
+#			$line .= ' ...';
+#			push @out, $line;
 			return @out;
 		}
 		push @$seen, $self->{call};
@@ -271,20 +271,35 @@ sub get
 	return Route::Node::get($call) || Route::User::get($call);
 }
 
+sub get_all
+{
+	return (Route::Node::get_all(), Route::User::get_all());
+}
+
 # find all the possible dxchannels which this object might be on
 sub alldxchan
 {
 	my $self = shift;
-	my @dxchan;
-#	dbg("Trying node $self->{call}") if isdbg('routech');
 
 	my $dxchan = DXChannel->get($self->{call});
-	push @dxchan, $dxchan if $dxchan;
+	if ($dxchan) {
+		dbg("alldxchan for $self->{call} = $dxchan->{call}") if isdbg('routelow');
+		return $dxchan if $dxchan;
+	}
+	
+	my @nodes;
+	if ($self->isa('Route::User')) {
+		push @nodes, map{Route::Node::get($_)} @{$self->{nodes}};
+	} elsif ($self->isa('Route::Node')) {
+		push @nodes, $self;
+	}
 	
 	# it isn't, build up a list of dxchannels and possible ping times 
 	# for all the candidates.
-	unless (@dxchan) {
-		foreach my $p (@{$self->{dxchan}}) {
+	my @dxchan;
+	foreach my $nref (@nodes) {
+		next unless $nref;
+		foreach my $p (@{$nref->{dxchan}}) {
 #			dbg("Trying dxchan $p") if isdbg('routech');
 			next if $p eq $main::mycall; # the root
 			my $dxchan = DXChannel->get($p);
@@ -298,7 +313,7 @@ sub alldxchan
 			}
 		}
 	}
-#	dbg('routech', "Got dxchan: " . join(',', (map{ $_->call } @dxchan)) );
+	dbg("alldxchan for $self->{call} = (" . join(',', @dxchan) . ")") if isdbg('routelow');
 	return @dxchan;
 }
 

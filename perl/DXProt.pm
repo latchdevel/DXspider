@@ -444,7 +444,7 @@ sub handle_10
 	if ($ref = Route::get($to)) {
 		$vref = Route::Node::get($via) if $via;
 		$vref = undef unless $vref && grep $to eq $_, $vref->users;
-		$ref->dxchan->talk($from, $to, $vref ? $via : undef, $_[3], $_[6]);
+		$ref->bestdxchan->talk($from, $to, $vref ? $via : undef, $_[3], $_[6]);
 		return;
 	}
 
@@ -453,7 +453,7 @@ sub handle_10
 	$ref = Route::get($from);
 	$vref = $ref = Route::Node::get($_[6]) unless $ref; 
 	if ($ref) {
-		$dxchan = $ref->dxchan;
+		$dxchan = $ref->bestdxchan;
 		$dxchan->talk($main::mycall, $from, $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
 	}
 }
@@ -572,7 +572,7 @@ sub handle_11
 			if ($send_opernam && $to && $to ne $main::mycall && $main::systime > $last + $DXUser::lastoperinterval && ($node = Route::Node::get($to)) ) {
 				my $cmd = "forward/opernam $spot[4]";
 				# send the rcmd but we aren't interested in the replies...
-				my $dxchan = $node->dxchan;
+				my $dxchan = $node->bestdxchan;
 				if ($dxchan && $dxchan->is_clx) {
 					route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
 				} else {
@@ -582,7 +582,7 @@ sub handle_11
 					$to = $_[7];
 					$node = Route::Node::get($to);
 					if ($node) {
-						$dxchan = $node->dxchan;
+						$dxchan = $node->bestdxchan;
 						if ($dxchan && $dxchan->is_clx) {
 							route(undef, $to, pc84($main::mycall, $to, $main::mycall, $cmd));
 						} else {
@@ -666,7 +666,7 @@ sub handle_12
 			if ($call) {
 				my $ref = Route::get($call);
 				if ($ref) {
-					$dxchan = $ref->dxchan;
+					$dxchan = $ref->bestdxchan;
 					$dxchan->talk($_[1], $call, undef, $_[3], $_[5]) if $dxchan != $self;
 					return;
 				}
@@ -707,7 +707,10 @@ sub handle_16
 	}
 
 	# do we believe this call? 
-	next unless $ncall eq $self->{call} || $self->is_believed($ncall);
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		dbg("PCPROT: We don't believe $ncall on $self->{call}");
+		return;
+	}
 
 	my $node = Route::Node::get($ncall);
 	unless ($node) {
@@ -740,8 +743,8 @@ sub handle_16
 			dbg("PCPROT: $call is a node") if isdbg('chanerr');
 			next;
 		}
-				
-		$r = Route::User::get($call) || Route::User::get($call);
+
+		$r = Route::User::get($call) || Route::User->new($call);
 		$r->here($here);
 		$r->conf($conf);
 		$node->lastseen($main::systime);
@@ -784,7 +787,10 @@ sub handle_17
 	}
 
 	# do we believe this call? 
-	next unless $ncall eq $self->{call} || $self->is_believed($ncall);
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		dbg("PCPROT: We don't believe $ncall on $self->{call}");
+		return;
+	}
 
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
@@ -843,11 +849,15 @@ sub handle_18
 
 	# first clear out any nodes on this dxchannel
 	my $node = Route::Node::get($self->{call}) ;
-	my @rout = grep {$_ != $node } $main::routeroot->remove_route($node, $self) if $node;
-	my @rusers;
-	push @rusers, $_->unlink_all_users for @rout;
+	my @rout;
+	foreach my $n ($node->nodes) {
+		next if $n eq $main::mycall;
+		next if $n eq $self->{call};
+		my $nref = Route::Node::get($n);
+		push @rout, $node->remove_route($nref, $self) if $nref;
+	} 
 	$self->route_pc21($origin, $line, @rout) if @rout;
-	for (@rout, @rusers) {
+	for (@rout) {
 		$_->delete;
 	};
 	
@@ -900,7 +910,10 @@ sub handle_19
 		next if $call eq $main::mycall;
 
 		# do we believe this call? 
-		next unless $call eq $self->{call} || $self->is_believed($call);
+		unless ($call eq $self->{call} || $self->is_believed($call)) {
+			dbg("PCPROT: We don't believe $call on $self->{call}");
+			next;
+		}
 
 		eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
 				
@@ -963,6 +976,11 @@ sub handle_21
 	my $call = uc $_[1];
 
 	return if $call eq $main::mycall;  # don't allow malicious buggers to disconnect me (or ignore loops)!
+
+	unless ($call eq $self->{call} || $self->is_believed($call)) {
+		dbg("PCPROT: We don't believe $call on $self->{call}");
+		return;
+	}
 
 	eph_del_regex("^PC1[679].*$call");
 			
@@ -1425,7 +1443,7 @@ sub handle_59
 	return unless $self->in_filter_route($fnode);
 
 	# now do it properly for actions
-	my $node = Route::Node::get($ncall) || Route::Node::new($ncall);
+	my $node = Route::Node::get($ncall) || Route::Node->new($ncall);
 	$node->newroute(1);
 
 	# find each of the entries (or create new ones)
@@ -1456,7 +1474,7 @@ sub handle_59
 					$user->node($ncall);
 					$user->put;
 				}
-				$ref = Route::User::new($ecall, 0); 
+				$ref = Route::User->new($ecall, 0); 
 			}
 		} elsif ($esort eq 'N') {
 			$ref = Route::Node::get($ecall);
@@ -1472,7 +1490,7 @@ sub handle_59
 					$user->node($ncall);
 					$user->put;
 				}
-				$ref = Route::Node::new($ecall, 0); 
+				$ref = Route::Node->new($ecall, 0); 
 			} 
 		} else {
 			dbg("DXPROT: unknown entity type '$esort' on $ecall for node $ncall") if isdbg('chan');
@@ -2041,7 +2059,7 @@ sub route
 	my $dxchan = DXChannel->get($call);
 	unless ($dxchan) {
 		my $cl = Route::get($call);
-		$dxchan = $cl->dxchan if $cl;
+		$dxchan = $cl->bestdxchan if $cl;
 		if (ref $dxchan) {
 			if (ref $self && $dxchan eq $self) {
 				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
@@ -2217,7 +2235,7 @@ sub addrcmd
 	$rcmds{$to} = $r;
 	
 	my $ref = Route::Node::get($to);
-	my $dxchan = $ref->dxchan;
+	my $dxchan = $ref->bestdxchan;
 	if ($dxchan && $dxchan->is_clx) {
 		route(undef, $to, pc84($main::mycall, $to, $self->{call}, $cmd));
 	} else {
@@ -2243,16 +2261,12 @@ sub disconnect
 	# do routing stuff, remove me from routing table
 	my $node = Route::Node::get($call);
 	my @rout;
-	my @rusers;
 	if ($node) {
 
 		# remove the route from this node and return a list
 		# of nodes that have become orphanned as a result. 
 		push @rout, $main::routeroot->remove_route($node, $self);
 
-		# remove all consequently orphanned users from these nodes
-		push @rusers, $_->unlink_all_users for @rout;
-		
 		# remove all my ephemera as well
 		for (@rout) {
 			my $c = $_->call;
@@ -2271,7 +2285,7 @@ sub disconnect
 	}
 
 	# delete all the unwanted nodes
-	$_->delete for @rout, @rusers;
+	$_->delete for @rout;
 	
 	# remove outstanding pings
 	delete $pings{$call};

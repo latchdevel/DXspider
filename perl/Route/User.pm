@@ -23,7 +23,8 @@ use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
-		  dxchan => '0,Dxchan Calls,parray',
+		  dxchan => '0,Dxchan List,parray',
+		  nodes => '0,On Node(s),parray',
 );
 
 $filterdef = $Route::filterdef;

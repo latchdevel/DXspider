@@ -774,7 +774,7 @@ sub queue_msg
 			next if $ref->{'read'};           # if it is read, it is stuck here
 			$clref = Route::get($ref->{to});
 			if ($clref) {
-				$dxchan = $clref->dxchan;
+				$dxchan = $clref->bestdxchan;
 				if ($dxchan) {
 					if ($dxchan->is_node) {
 						next if $clref->call eq $main::mycall;  # i.e. it lives here

@@ -25,8 +25,8 @@ use vars qw(%list %valid @ISA $max $filterdef);
 
 %valid = (
 		  dxchan => '0,DXChannel List,parray',
-		  nodes => '0,Nodes,parray',
-		  users => '0,Users,parray',
+		  nodes => '0,Node List,parray',
+		  users => '0,User List,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
 		  newroute => '0,New Routing?,yesno',
@@ -97,9 +97,9 @@ sub remove_route
 	foreach my $r (@in) {
 		next unless $r;
 		next if $visited{$r->call};
-		my ($o) = $r->del_dxchan($self);
+		my ($o) = $r->del_dxchan($dxchan);
 		if ($o) {
-			dbg("Orphanning $_->{call}") if isdbg('routelow');
+			dbg("Orphanning $o->{call}") if isdbg('routelow');
 			push @rout, $o;
 		}
 		push @in, map{ Route::Node::get($_) } $r->nodes;
@@ -155,7 +155,8 @@ sub add_dxchan
 sub del_dxchan
 {
 	my ($self, $dxchan) = @_;
-	return $self->_dellist('dxchan', $dxchan);
+	$self->_dellist('dxchan', $dxchan);
+	return $self->is_empty('dxchan') ? ($self) : ();
 }
 
 sub usercount
@@ -213,7 +214,10 @@ sub new
 sub delete
 {
 	my $self = shift;
-	dbg("deleting Route::Node $self->{call}") if isdbg('routelow');
+	dbg("Deleting Route::Node $self->{call}") if isdbg('routelow');
+	for ($self->unlink_all_users) {
+		$_->delete;
+	}
 	delete $list{$self->{call}};
 }
 
