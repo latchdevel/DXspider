@@ -27,7 +27,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw(%list %valid $filterdef);
+use vars qw(%list %valid $filterdef $default_metric);
 
 %valid = (
 		  call => "0,Callsign",
@@ -37,7 +37,10 @@ use vars qw(%list %valid $filterdef);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  dxchan => '0,DXChans,parray',
+		  links => '0,Node Links,parray',
 		 );
+
 
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
@@ -58,6 +61,7 @@ $filterdef = bless ([
 			  ['by_state', 'ns', 9],
 			 ], 'Filter::Cmd');
 
+$default_metric = 10;
 
 sub new
 {
@@ -170,12 +174,6 @@ sub conf
 	return $r ? 1 : 0;
 }
 
-sub parents
-{
-	my $self = shift;
-	return @{$self->{parent}};
-}
-
 # 
 # display routines
 #
@@ -243,7 +241,7 @@ sub config
 	}
 	
 	# deal with more nodes
-	foreach my $ncall (sort @{$self->{nodes}}) {
+	foreach my $ncall (sort @{$self->{links}}) {
 		my $nref = Route::Node::get($ncall);
 
 		if ($nref) {
@@ -279,34 +277,61 @@ sub get
 	return Route::Node::get($call) || Route::User::get($call);
 }
 
+sub _distance
+{
+	my $self = shift;
+	my $ah = shift;
+	my $call = $self->{call};
+	
+	if (DXChannel->get($call)) {
+		my $n = scalar @_ || 0;
+		my $o = $ah->{$call} || 9999;
+		$ah->{$call} = $n if $n < $o;
+		dbg("_distance hit: $call = $n") if isdbg('routech');
+		return;
+	} 
+
+	dbg("_distance miss $call: " . join(',', @_)) if isdbg('routech');
+	
+	foreach my $c (@{$self->{links}}) {
+		next if $c eq $call || $c eq $main::mycall;
+		next if grep $c eq $_, @_;
+		
+		my $n = get($c);
+		_distance($n, $ah, @_, $c);
+	}
+	return;
+}
+
+sub _ordered_routes
+{
+	my $self = shift;
+	my @routes;
+
+	if (exists $self->{dxchan}) {
+		dbg("stored routes for $self->{call}: " . join(',', @{$self->{dxchan}})) if isdbg('routech');
+		return @{$self->{dxchan}} if exists $self->{dxchan};
+	}
+
+	my %ah;
+	_distance($self, \%ah);
+	
+	@routes = sort {$ah{$a} <=> $ah{$b}} keys %ah;
+	$self->{dxchan} = \@routes;
+	dbg("new routes for $self->{call}: " . join(',', @routes)) if isdbg('routech');
+	return @routes;
+}
+
 # find all the possible dxchannels which this object might be on
 sub alldxchan
 {
 	my $self = shift;
 	my @dxchan;
-#	dbg("Trying node $self->{call}") if isdbg('routech');
 
 	my $dxchan = DXChannel->get($self->{call});
 	push @dxchan, $dxchan if $dxchan;
-	
-	# it isn't, build up a list of dxchannels and possible ping times 
-	# for all the candidates.
-	unless (@dxchan) {
-		foreach my $p (@{$self->{parent}}) {
-#			dbg("Trying parent $p") if isdbg('routech');
-			next if $p eq $main::mycall; # the root
-			my $dxchan = DXChannel->get($p);
-			if ($dxchan) {
-				push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
-			} else {
-				next if grep $p eq $_, @_;
-				my $ref = Route::Node::get($p);
-#				dbg("Next node $p " . ($ref ? 'Found' : 'NOT Found') if isdbg('routech') );
-				push @dxchan, $ref->alldxchan($self->{call}, @_) if $ref;
-			}
-		}
-	}
-#	dbg('routech', "Got dxchan: " . join(',', (map{ $_->call } @dxchan)) );
+
+	@dxchan = map {DXChannel->get($_)} _ordered_routes($self) unless @dxchan;
 	return @dxchan;
 }
 
@@ -334,7 +359,19 @@ sub dxchan
 	return $dxchan;
 }
 
+sub _addlink
+{
+	my $self = shift;
+	delete $self->{dxchan};
+    return $self->_addlist('links', @_);
+}
 
+sub _dellink
+{
+	my $self = shift;
+	delete $self->{dxchan};
+    return $self->_dellist('links', @_);
+}
 
 #
 # track destruction

@@ -812,7 +812,7 @@ sub handle_16
 					my @nrout;
 					for (@$nl) {
 						$parent = Route::Node::get($_->[0]);
-						$dxchan = $parent->dxchan if $parent;
+						$dxchan = DXChannel->get($_->[0]) if $parent;
 						if ($dxchan && $dxchan ne $self) {
 							dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 							$parent = undef;
@@ -844,7 +844,7 @@ sub handle_16
 		}
 	} else {
 				
-		$dxchan = $parent->dxchan;
+		$dxchan = DXChannel->get($parent->call);
 		if ($dxchan && $dxchan ne $self) {
 			dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 			return;
@@ -2081,13 +2081,13 @@ sub send_local_config
 				}
 			}
 		} else {
-			my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
+			my @rawintcalls = map { $_->links } @localnodes if @localnodes;
 			my @intcalls;
 			for $node (@rawintcalls) {
 				push @intcalls, $node unless grep $node eq $_, @intcalls; 
 			}
 			my $ref = Route::Node::get($self->{call});
-			my @rnodes = $ref->nodes;
+			my @rnodes = $ref->links;
 			for $node (@intcalls) {
 				push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
 			}

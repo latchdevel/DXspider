@@ -24,8 +24,6 @@ use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
-		  parent => '0,Parent Calls,parray',
-		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
@@ -69,12 +67,12 @@ sub add
 	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
 	my $self = get($call);
 	if ($self) {
-		$self->_addparent($parent);
-		$parent->_addnode($self);
+		$self->_addlink($parent);
+		$parent->_addlink($self);
 		return undef;
 	}
 	$self = $parent->new($call, @_);
-	$parent->_addnode($self);
+	$parent->_addlink($self);
 	return $self;
 }
 
@@ -91,21 +89,25 @@ sub del
 	my $pref = shift;
 
 	# delete parent from this call's parent list
-	$pref->_delnode($self);
-    $self->_delparent($pref);
+	$pref->_dellink($self);
+    $self->_dellink($pref);
 	my @nodes;
 	my $ncall = $self->{call};
 	
 	# is this the last connection, I have no parents anymore?
-	unless (@{$self->{parent}}) {
-		foreach my $rcall (@{$self->{nodes}}) {
+	unless (@{$self->{links}}) {
+		foreach my $rcall (@{$self->{links}}) {
 			next if grep $rcall eq $_, @_;
 			my $r = Route::Node::get($rcall);
 			push @nodes, $r->del($self, $ncall, @_) if $r;
 		}
-		$self->_del_users;
-		delete $list{$self->{call}};
-		push @nodes, $self;
+		if ($ncall ne $main::mycall) {
+			$self->_del_users;
+			delete $list{$self->{call}};
+			push @nodes, $self;
+		} else {
+			croak "trying to delete route node";
+		}
 	}
 	return @nodes;
 }
@@ -114,7 +116,9 @@ sub del_nodes
 {
 	my $parent = shift;
 	my @out;
-	foreach my $rcall (@{$parent->{nodes}}) {
+	foreach my $rcall (@{$parent->{links}}) {
+		next if $rcall eq $parent->{call};
+		next if DXChannel->get($rcall);
 		my $r = get($rcall);
 		push @out, $r->del($parent, $parent->{call}, @_) if $r;
 	}
@@ -185,31 +189,11 @@ sub users
 	return @{$self->{users}};
 }
 
-sub nodes
+sub links
 {
 	my $self = shift;
-	return @{$self->{nodes}};
+	return @{$self->{links}};
 }
-
-sub parents
-{
-	my $self = shift;
-	return @{$self->{parent}};
-}
-
-sub rnodes
-{
-	my $self = shift;
-	my @out;
-	foreach my $call (@{$self->{nodes}}) {
-		next if grep $call eq $_, @_;
-		push @out, $call;
-		my $r = get($call);
-		push @out, $r->rnodes($call, @_) if $r;
-	}
-	return @out;
-}
-
 
 sub new
 {
@@ -219,11 +203,10 @@ sub new
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
-	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
+	$self->{links} = ref $pkg ? [ $pkg->{call} ] : [ ];
 	$self->{version} = shift;
 	$self->{flags} = shift;
 	$self->{users} = [];
-	$self->{nodes} = [];
 	$self->{lid} = 0;
 	
 	$list{$call} = $self;
@@ -259,31 +242,6 @@ sub newid
 		return 1;
 	}
 	return 0;
-}
-
-sub _addparent
-{
-	my $self = shift;
-    return $self->_addlist('parent', @_);
-}
-
-sub _delparent
-{
-	my $self = shift;
-    return $self->_dellist('parent', @_);
-}
-
-
-sub _addnode
-{
-	my $self = shift;
-    return $self->_addlist('nodes', @_);
-}
-
-sub _delnode
-{
-	my $self = shift;
-    return $self->_dellist('nodes', @_);
 }
 
 

@@ -23,7 +23,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
 %valid = (
-		  parent => '0,Parent Calls,parray',
+		  links => '0,Parent Calls,parray',
 );
 
 $filterdef = $Route::filterdef;
@@ -52,7 +52,7 @@ sub new
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
-	$self->{parent} = [ $ncall ];
+	$self->{links} = [ $ncall ];
 	$self->{flags} = $flags;
 	$list{$call} = $self;
 
@@ -69,7 +69,7 @@ sub del
 	my $self = shift;
 	my $pref = shift;
 	$self->delparent($pref);
-	unless (@{$self->{parent}}) {
+	unless (@{$self->{links}}) {
 		delete $list{$self->{call}};
 		return $self;
 	}
@@ -87,14 +87,18 @@ sub get
 
 sub addparent
 {
-	my $self = shift;
-    return $self->_addlist('parent', @_);
+	goto &Route::_addlink;
 }
 
 sub delparent
 {
+	goto &Route::_dellink;
+}
+
+sub parents
+{
 	my $self = shift;
-    return $self->_dellist('parent', @_);
+	return @{$self->{links}};
 }
 
 #
