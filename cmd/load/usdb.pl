@@ -12,9 +12,11 @@
 # $Id$
 #
 
-my $self = shift;
+my ($self, $line) = @_;
 my @out;
 return (1, $self->msg('e5')) if $self->priv < 9;
-push @out, (USDB::load());
+return (1, $self->msg('e3', "load/usdb", $line)) if $line && !-r $line;
+$line = "$main::data/usdbraw" unless $line;
+push @out, (USDB::load($line));
 @out = ($self->msg('ok')) unless @out;
 return (1, @out); 
