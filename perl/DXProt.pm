@@ -286,7 +286,7 @@ sub normal
 	# check for and dump bad protocol messages
 	my $n = check($pcno, @field);
 	if ($n) {
-		dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chan');
+		dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
 		return;
 	}
 
@@ -305,7 +305,7 @@ sub normal
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[3])) {
-					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chan');
+					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 					return;
 				}
 			}
@@ -340,13 +340,13 @@ sub normal
 			
 			# if this is a 'nodx' node then ignore it
 			if ($badnode->in($field[7])) {
-				dbg("PCPROT: Bad Node, dropped") if isdbg('chan');
+				dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
 				return;
 			}
 			
 			# if this is a 'bad spotter' user then ignore it
 			if ($badspotter->in($field[6])) {
-				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chan');
+				dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
 				return;
 			}
 			
@@ -354,13 +354,13 @@ sub normal
 			my $d = cltounix($field[3], $field[4]);
 			# bang out (and don't pass on) if date is invalid or the spot is too old (or too young)
 			if (!$d || ($pcno == 11 && ($d < $main::systime - $pc11_max_age || $d > $main::systime + 900))) {
-				dbg("PCPROT: Spot ignored, invalid date or out of range ($field[3] $field[4])\n") if isdbg('chan');
+				dbg("PCPROT: Spot ignored, invalid date or out of range ($field[3] $field[4])\n") if isdbg('chanerr');
 				return;
 			}
 
 			# is it 'baddx'
 			if ($baddx->in($field[2])) {
-				dbg("PCPROT: Bad DX spot, ignored") if isdbg('chan');
+				dbg("PCPROT: Bad DX spot, ignored") if isdbg('chanerr');
 				return;
 			}
 			
@@ -368,17 +368,17 @@ sub normal
 			$field[5] =~ s/^\s+//;      # take any leading blanks off
 			$field[2] = unpad($field[2]);	# take off leading and trailing blanks from spotted callsign
 			if ($field[2] =~ /BUST\w*$/) {
-				dbg("PCPROT: useless 'BUSTED' spot") if isdbg('chan');
+				dbg("PCPROT: useless 'BUSTED' spot") if isdbg('chanerr');
 				return;
 			}
 			if (Spot::dup($field[1], $field[2], $d, $field[5])) {
-				dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chan');
+				dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
 				return;
 			}
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[5])) {
-					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chan');
+					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 					return;
 				}
 			}
@@ -388,7 +388,7 @@ sub normal
 			if ($self->{inspotsfilter}) {
 				my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
 				unless ($filter) {
-					dbg("PCPROT: Rejected by filter") if isdbg('chan');
+					dbg("PCPROT: Rejected by filter") if isdbg('chanerr');
 					return;
 				}
 			}
@@ -470,14 +470,14 @@ sub normal
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
-				dbg("PCPROT: Duplicate Announce ignored") if isdbg('chan');
+				dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
 				return;
 			}
 
 			if ($censorpc) {
 				my @bad;
 				if (@bad = BadWords::check($field[3])) {
-					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chan');
+					dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 					return;
 				}
 			}
@@ -502,7 +502,7 @@ sub normal
 					my ($filter, $hops) = $self->{inannfilter}->it(@field[1..6], $self->{call}, 
 													$ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 					unless ($filter) {
-						dbg("PCPROT: Rejected by filter") if isdbg('chan');
+						dbg("PCPROT: Rejected by filter") if isdbg('chanerr');
 						return;
 					}
 				}
@@ -534,19 +534,23 @@ sub normal
 			my $newline = "PC16^";
 			
 			if ($ncall eq $main::mycall) {
-				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chan');
+				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 				return;
 			}
 			$dxchan = DXChannel->get($ncall);
 			if ($dxchan && $dxchan ne $self) {
-				dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chan');
+				dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 				return;
 			}
 			my $parent = Route::Node::get($ncall); 
 			unless ($parent) {
-				dbg("PCPROT: Node $ncall not in config") if isdbg('chan');
+				dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
 				return;
 			}
+			
+			# input filter if required
+			return unless $self->in_filter_route($parent);
+			
 			my $i;
 			my @rout;
 			for ($i = 2; $i < $#field; $i++) {
@@ -587,19 +591,23 @@ sub normal
 			my $ncall = $field[2];
 			my $ucall = $field[1];
 			if ($ncall eq $main::mycall) {
-				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chan');
+				dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 				return;
 			}
 			$dxchan = DXChannel->get($ncall);
 			if ($dxchan && $dxchan ne $self) {
-				dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chan');
+				dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 				return;
 			}
 			my $parent = Route::Node::get($ncall);
 			unless ($parent) {
-				dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chan');
+				dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
 				return;
 			}
+
+			# input filter if required
+			return unless $self->in_filter_route($parent);
+
 			my @rout = $parent->del_user($ucall);
 			$self->route_pc17($parent, @rout) if @rout;
 			return;
@@ -638,23 +646,29 @@ sub normal
 				next if length $call < 3; # min 3 letter callsigns
 
 				# update it if required
-				my $r;
+				my $r = Route::Node::get($call);
 				my $flags = Route::here($here)|Route::conf($conf);
 				if ($parent->call eq $call && ($parent->version ne $ver || $parent->flags != $flags)) {
 					$parent->version($ver);
 					$parent->flags($flags);
 					push @rout, $parent;
-				} elsif ($parent->call ne $call) {
-					next if $call eq $main::mycall || $call eq $self->{call};
-
-					my $r = $parent->add($call, $ver, Route::here($here)|Route::conf($conf));
-					push @rout, $r if $r;
-				} else {
-					$r = Route::Node::get($call);
-					if ($r && ($r->version ne $ver || $r->flags != $flags)) {
+				} elsif ($r) {
+					my $ar = $parent->add($r);
+					push @rout, $ar if $ar;
+					if ($r->version ne $ver || $r->flags != $flags) {
 						$r->version($ver);
 						$r->flags(Route::here($here)|Route::conf($conf));
-						push @rout, $r;
+						push @rout, $r unless $ar;
+					}
+				} elsif ($parent->call ne $call) {
+					next if $call eq $main::mycall || $call eq $self->{call};
+					
+					my $new = Route::Node->new($call, $ver, Route::here($here)|Route::conf($conf));
+				    if ($self->in_filter_route($new)) {
+						$parent->add($new);
+						push @rout, $new;
+					} else {
+						$new->del($parent);
 					}
 				}
 
@@ -692,21 +706,25 @@ sub normal
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
 			unless ($parent) {
-				dbg("PCPROT: Route::Node $call not in config") if isdbg('chan');
+				dbg("PCPROT: Route::Node $call not in config") if isdbg('chanerr');
 				return;
 			}
 			my $node = Route::Node::get($call);
-			
 			if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
 				if ($call eq $self->{call}) {
-					dbg("PCPROT: Trying to disconnect myself with PC21") if isdbg('chan');
+					dbg("PCPROT: Trying to disconnect myself with PC21") if isdbg('chanerr');
 					return;
 				}
 
-				# routing objects
-				push @rout, $node->del($parent) if $node;
+				if ($node) {
+					# input filter it
+					return unless $self->in_filter_route($node);
+
+					# routing objects
+					push @rout, $node->del($parent);
+				}
 			} else {
-				dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chan');
+				dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
 				return;
 			}
 			$self->route_pc21(@rout) if @rout;
@@ -736,11 +754,11 @@ sub normal
 			my ($r) = $field[6] =~ /R=(\d+)/;
 			$r = 0 unless $r;
 			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
-				dbg("PCPROT: WWV Date ($field[1] $field[2]) out of range") if isdbg('chan');
+				dbg("PCPROT: WWV Date ($field[1] $field[2]) out of range") if isdbg('chanerr');
 				return;
 			}
 			if (Geomag::dup($d,$sfi,$k,$i,$field[6])) {
-				dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chan');
+				dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chanerr');
 				return;
 			}
 			$field[7] =~ s/-\d+$//o;            # remove spotter's ssid
@@ -769,6 +787,9 @@ sub normal
 			$ref = Route::User::get($call);
 			$ref->here($field[2]) if $ref;
 			
+			# input filter if required
+			return unless $self->in_filter_route($ref);
+
 			$self->route_pc24($ref, $field[3]) if $ref && !eph_dup($line);
 			return;
 		}
@@ -779,7 +800,7 @@ sub normal
 				return;
 			}
 			if ($field[2] eq $main::mycall) {
-				dbg("PCPROT: Trying to merge to myself, ignored") if isdbg('chan');
+				dbg("PCPROT: Trying to merge to myself, ignored") if isdbg('chanerr');
 				return;
 			}
 
@@ -882,7 +903,7 @@ sub normal
 			if ($field[1] eq $self->{call}) {
 				$self->disconnect(1);
 			} else {
-				dbg("PCPROT: came in on wrong channel") if isdbg('chan');
+				dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
 			}
 			return;
 		}
@@ -908,6 +929,10 @@ sub normal
 			$user->lastoper($main::systime);   # to cut down on excessive for/opers being generated
 			$user->put;
 			my $ref = Route::get($call);
+
+			# input filter if required
+			return unless $self->in_filter_route($ref);
+
 			$self->route_pc41($ref, $call, $field[2], $field[3], $field[4]) if $ref && !eph_dup($line);
 			return;
 		}
@@ -927,6 +952,10 @@ sub normal
 			if ($node) {
 				return unless $node->call eq $self->{call};
 				$node->usercount($field[2]);
+
+				# input filter if required
+				return unless $self->in_filter_route($node);
+
 				$self->route_pc50($node, $field[2], $field[3]) unless eph_dup($line);
 			}
 			return;
@@ -991,12 +1020,12 @@ sub normal
 			# do some de-duping
 			my $d = cltounix($call, sprintf("%02d18Z", $field[2]));
 			if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $field[2] < 0 || $field[2] > 23) {
-				dbg("PCPROT: WCY Date ($call $field[2]) out of range") if isdbg('chan');
+				dbg("PCPROT: WCY Date ($call $field[2]) out of range") if isdbg('chanerr');
 				return;
 			}
 			@field = map { unpad($_) } @field;
 			if (WCY::dup($d,@field[3..7])) {
-				dbg("PCPROT: Dup WCY Spot ignored\n") if isdbg('chan');
+				dbg("PCPROT: Dup WCY Spot ignored\n") if isdbg('chanerr');
 				return;
 			}
 		
@@ -1089,7 +1118,7 @@ sub normal
 	#
 
 	if (eph_dup($line)) {
-		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chan');
+		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
 	} else {
 		unless ($self->{isolate}) {
 			broadcast_ak1a($line, $self); # send it to everyone but me
@@ -1433,7 +1462,7 @@ sub send_local_config
 		if ($n) {
 			send_route($self, \&pc16, 1, $n, map {my $r = Route::User::get($_); $r ? ($r) : ()} $n->users);
 		} else {
-			dbg("sent a null value") if isdbg('chan');
+			dbg("sent a null value") if isdbg('chanerr');
 		}
 	}
 }
@@ -1448,7 +1477,7 @@ sub route
 	my ($self, $call, $line) = @_;
 
 	if (ref $self && $call eq $self->{call}) {
-		dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chan');
+		dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
 		return;
 	}
 
@@ -1459,7 +1488,7 @@ sub route
 		$dxchan = $cl->dxchan if $cl;
 		if (ref $dxchan) {
 			if (ref $self && $dxchan eq $self) {
-				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chan');
+				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
 				return;
 			}
 		}
@@ -1470,7 +1499,7 @@ sub route
 			$dxchan->send($routeit);
 		}
 	} else {
-		dbg("PCPROT: No route available, dropped") if isdbg('chan');
+		dbg("PCPROT: No route available, dropped") if isdbg('chanerr');
 	}
 }
 
@@ -1720,15 +1749,23 @@ sub send_route
 	my ($filter, $hops);
 	my @rin;
 	
-	if ($self->{routefilter}) {
-		for (; @_ && $no; $no--) {
-			my $r = shift;
+	for (; @_ && $no; $no--) {
+		my $r = shift;
+		
+		if ($self->{routefilter}) {
+			$filter = undef;
 			if ($r) {
 				($filter, $hops) = $self->{routefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
-				push @rin, $r if $filter;
+				if ($filter) {
+					push @rin, $r;
+				} else {
+					dbg('DXPROT: Rejected by filter') if isdbg('chanerr');
+				}
 			} else {
-				dbg("was sent a null value") if isdbg('chan');
+				dbg("was sent a null value") if isdbg('chanerr');
 			}
+		} else {
+			push @rin, $r;
 		}
 	}
 	if (@rin) {
@@ -1740,7 +1777,7 @@ sub send_route
 				$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
 				next unless $routeit;
 			}
-			$self->send($routeit);
+			$self->send($routeit) if $self->{routefilter} || !$self->{isolate};
 		}
 	}
 }
@@ -1756,7 +1793,11 @@ sub broadcast_route
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan == $me;
-		$dxchan->send_route($generate, @_);
+		if ($self->{routefilter} || !$self->{isolate}) {
+			$dxchan->send_route($generate, @_) 
+		} else {
+			dbg('DXPROT: isolated') if isdbg('chanerr');
+		}
 	}
 }
 
@@ -1802,7 +1843,18 @@ sub route_pc50
 	broadcast_route($self, \&pc50, 1, @_);
 }
 
-
+sub in_filter_route
+{
+	my $self = shift;
+	my $r = shift;
+	my ($filter, $hops) = (1, 1);
+	
+	if ($self->{inroutefilter}) {
+		($filter, $hops) = $self->{inroutefilter}->it($self->{call}, $self->{dxcc}, $self->{itu}, $self->{cq}, $r->call, $r->dxcc, $r->itu, $r->cq);
+		dbg('PCPROT: rejected by filter') if !$filter && isdbg('chanerr');
+	}
+	return $filter;
+}
 
 sub eph_dup
 {

@@ -428,10 +428,10 @@ DXProt->init();
 $routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($DXProt::me->here)|Route::conf($DXProt::me->conf));
 
 # make sure that there is a routing OUTPUT node default file
-unless (Filter::read_in('route', 'node_default', 0)) {
-	my $dxcc = $DXProt::me->dxcc;
-	$Route::filterdef->cmd($DXProt::me, 'route', 'accept', "node_default call $mycall" );
-}
+#unless (Filter::read_in('route', 'node_default', 0)) {
+#	my $dxcc = $DXProt::me->dxcc;
+#	$Route::filterdef->cmd($DXProt::me, 'route', 'accept', "node_default call $mycall" );
+#}
 
 # read in any existing message headers and clean out old crap
 dbg("reading existing message headers ...");
