@@ -4,7 +4,7 @@
 
 CFLAGS = -g -O
 
-CLIENTOBJ = client.o sel.o cmsg.o chain.o
+CLIENTOBJ = client.o sel.o cmsg.o chain.o debug.o
 CLIENTBIN = client
 
 $(CLIENTBIN) : $(CLIENTOBJ)

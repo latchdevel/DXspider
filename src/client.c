@@ -29,13 +29,18 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+#include <termios.h>
 
 #include "sel.h"
 #include "cmsg.h"
+#include "debug.h"
 
 #define TEXT 1
 #define MSG 2
 #define MAXBUFL 1024
+
+#define DBUF 1
+#define DMSG 2
 
 typedef struct 
 {
@@ -46,6 +51,8 @@ typedef struct
 	reft *inq;					/* input queue */
 	reft *outq;					/* output queue */
 	sel_t *sp;					/* my select fcb address */
+	int echo;					/* echo characters back to this cnum */
+	struct termios t;			/* any termios associated with this cnum */
 } fcb_t;
 
 char *node_addr = "localhost";	/* the node tcp address */
@@ -53,11 +60,13 @@ int node_port = 27754;			/* the tcp port of the node at the above address */
 char *call;						/* the caller's callsign */
 char *connsort;					/* the type of connection */
 fcb_t *in;						/* the fcb of 'stdin' that I shall use */
-fcb_t *out;						/* the fcb of 'stdout' that I shall use */
 fcb_t *node;					/* the fcb of the msg system */
 char nl = '\n';					/* line end character */
 char ending = 0;				/* set this to end the program */
 char send_Z = 1;				/* set a Z record to the node on termination */
+char echo = 1;					/* echo characters on stdout from stdin */
+
+void terminate(int);
 
 /*
  * utility routines - various
@@ -71,8 +80,8 @@ void die(char *s, ...)
 	va_start(ap, s);
 	vsprintf(buf, s, ap);
 	va_end(ap);
-	fprintf(stderr, buf);
-	exit(-1);
+	fprintf(stderr,"%s\n", buf);
+	terminate(-1);
 }
 
 char *strupper(char *s)
@@ -156,7 +165,7 @@ void send_msg(fcb_t *f, char let, char *s, int l)
 int fcb_handler(sel_t *sp, int in, int out, int err)
 {
 	fcb_t *f = sp->fcb;
-	cmsg_t *mp;
+	cmsg_t *mp, *omp;
 	
 	/* input modes */
 	if (in) {
@@ -184,36 +193,67 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 			return 0;
 		}
 
+		dbgdump(DBUF, "in ->", buf, r);
+		
 		/* create a new message buffer if required */
 		if (!f->in)
-			f->in = cmsg_new(MAXBUFL, sp->sort, f);
+			f->in = cmsg_new(MAXBUFL, f->sort, f);
 		mp = f->in;
 
 		switch (f->sort) {
 		case TEXT:
 			p = buf;
+			if (f->echo)
+				omp = cmsg_new(3*r, f->sort, f);
 			while (r > 0 && p < &buf[r]) {
+
+				/* echo processing */
+				if (f->echo) {
+					switch (*p) {
+					case '\b':
+					case 0x7f:
+						strcpy(omp->inp, "\b \b");
+						omp->inp += strlen(omp->inp);
+						break;
+					default:
+						*omp->inp++ = *p;
+					}
+				}
 				
-				/*
-				 * if we have a nl then send the message upstairs
-				 * start a new message
-				 */
-				
-				if (*p == nl) {
-					if (mp->inp == mp->data)
-						*mp->inp++ = ' ';
-					*mp->inp = 0;              /* zero terminate it, but don't include it in the length */
-					cmsg_send(f->inq, mp, 0);
-					f->in = mp = cmsg_new(MAXBUFL, sp->sort, f);
+				/* character processing */
+				switch (*p) {
+				case '\b':
+				case 0x7f:
+					if (mp->inp > mp->data)
+						mp->inp--;
 					++p;
-				} else {
-					if (mp->inp < &mp->data[MAXBUFL])
-						*mp->inp++ = *p++;
-					else {
-						mp->inp = mp->data;
+					break;
+				default:
+					if (*p == nl) {
+						if (mp->inp == mp->data)
+							*mp->inp++ = ' ';
+						*mp->inp = 0;              /* zero terminate it, but don't include it in the length */
+						dbgdump(DMSG, "QUEUE TEXT", mp->data, mp->inp-mp->data);
+						cmsg_send(f->inq, mp, 0);
+						f->in = mp = cmsg_new(MAXBUFL, f->sort, f);
+						++p;
+					} else {
+						if (mp->inp < &mp->data[MAXBUFL])
+							*mp->inp++ = *p++;
+						else {
+							mp->inp = mp->data;
+						}
 					}
 				}
 			}
+			
+			/* queue any echo text */
+			if (f->echo) {
+				dbgdump(DMSG, "QUEUE ECHO TEXT", omp->data, omp->inp - omp->data);
+				cmsg_send(f->outq, omp, 0);
+				f->sp->flags |= SEL_OUTPUT;
+			}
+			
 			break;
 
 		case MSG:
@@ -224,16 +264,20 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 				switch (mp->state) {
 				case 0:
 				case 1:
+					mp->state++;
+					break;
 				case 2:
 				case 3:
-					mp->size = (mp->size << 8) | *p++;
+					mp->size = (mp->size << 8) | (*p++ & 0xff);
 					mp->state++;
 					break;
 				default:
 					if (mp->inp - mp->data < mp->size) {
 						*mp->inp++ = *p++;
-					} else {
+					} 
+					if (mp->inp - mp->data >= mp->size) {
 						/* kick it upstairs */
+						dbgdump(DMSG, "QUEUE MSG", mp->data, mp->inp - mp->data);
 						cmsg_send(f->inq, mp, 0);
 						mp = f->in = cmsg_new(MAXBUFL, f->sort, f);
 					}
@@ -261,6 +305,9 @@ lout:;
 		}
 		l = mp->size - (mp->inp - mp->data);
 		if (l > 0) {
+			
+			dbgdump(DBUF, "<-out", mp->inp, l);
+			
 			r = write(f->cnum, mp->inp, l);
 			if (r < 0) {
 				switch (errno) {
@@ -282,8 +329,8 @@ lout:;
 		if (mp->inp - mp->data >= mp->size) {
 			cmsg_callback(mp, 0);
 			f->out = 0;
-			if (!is_chain_empty(f->outq))
-				sp->flags &= ~SEL_OUTPUT;
+/*			if (is_chain_empty(f->outq))
+			sp->flags &= ~SEL_OUTPUT; */
 		}
 	}
 lend:;
@@ -296,26 +343,49 @@ lend:;
 
 void initargs(int argc, char *argv[])
 {
-	int i;
-	if (argc >= 2) {
-		call = strupper(argv[1]);
+	int i, c, err = 0;
+
+	while ((c = getopt(argc, argv, "x:")) > 0) {
+		switch (c) {
+		case 'x':
+			dbginit("client");
+			dbgset(atoi(optarg));
+			break;
+		default:
+			++err;
+			goto lerr;
+		}
+	}
+
+lerr:
+	if (err) {
+		die("usage: client [-x nn] <call>|login [local|telnet|ax25]");
+	}
+	
+	if (optind < argc) {
+		call = strupper(argv[optind]);
 		if (eq(call, "LOGIN"))
 			die("login not implemented (yet)");
+		++optind;
 	}
 	if (!call)
 		die("Must have at least a callsign (for now)");
 
-	if (argc >= 3) {
-		connsort = strlower(argv[2]);
+	if (optind < argc) {
+		connsort = strlower(argv[optind]);
 		if (eq(connsort, "telnet") || eq(connsort, "local")) {
 			nl = '\n';
+			echo = 1;
 		} else if (eq(connsort, "ax25")) {
 			nl = '\r';
+			echo = 0;
 		} else {
 			die("2nd argument must be \"telnet\" or \"ax25\" or \"local\"");
 		}
 	} else {
 		connsort = "local";
+		nl = '\n';
+		echo = 1;
 	}
 }
 
@@ -353,11 +423,10 @@ void connect_to_node()
 void term_timeout(int i)
 {
 	/* none of this is going to be reused so don't bother cleaning up properly */
-	if (out)
-		out = 0;
+	if (in)
+		tcsetattr(0, TCSANOW, &in->t);
 	if (node) {
 		close(node->cnum);
-		node = 0;
 	}
 	exit(i);
 }
@@ -371,10 +440,12 @@ void terminate(int i)
 	signal(SIGALRM, term_timeout);
 	alarm(10);
 	
-	while ((out && !is_chain_empty(out->outq)) ||
+	while ((in && !is_chain_empty(in->outq)) ||
 		   (node && !is_chain_empty(node->outq))) {
 		sel_run();
 	}
+	if (in)
+		tcsetattr(0, TCSANOW, &in->t);
 	if (node) 
 		close(node->cnum);
 	exit(i);
@@ -388,7 +459,11 @@ void process_stdin()
 {
 	cmsg_t *mp = cmsg_next(in->inq);
 	if (mp) {
-		send_msg(node, 'I', mp->data, mp->size);
+		dbg(DMSG, "MSG size: %d", mp->size);
+	
+		if (mp->size > 0 && mp->inp > mp->data) {
+			send_msg(node, 'I', mp->data, mp->size);
+		}
 		cmsg_callback(mp, 0);
 	}
 }
@@ -397,27 +472,33 @@ void process_node()
 {
 	cmsg_t *mp = cmsg_next(node->inq);
 	if (mp) {
-		char *p = strchr(mp->data, '|');
-		if (p)
-			p++;
-		switch (mp->data[0]) {
-		case 'Z':
-			send_Z = 0;
-			ending++;
-			return;
-		case 'D':
-			if (p) {
-				int l = mp->inp - (unsigned char *) p;
-				send_text(out, p, l);
+		dbg(DMSG, "MSG size: %d", mp->size);
+	
+		if (mp->size > 0 && mp->inp > mp->data) {
+			char *p = strchr(mp->data, '|');
+			if (p)
+				p++;
+			switch (mp->data[0]) {
+			case 'Z':
+				send_Z = 0;
+				ending++;
+				return;
+			case 'E':
+				if (isdigit(*p))
+					in->echo = *p - '0';
+				break;
+			case 'D':
+				if (p) {
+					int l = mp->inp - (unsigned char *) p;
+					send_text(in, p, l);
 			}
-			break;
-		default:
-			break;
- 		}
+				break;
+			default:
+				break;
+			}
+		}
 		cmsg_callback(mp, 0);
 	}
-	if (is_chain_empty(out->outq))
-		fsync(out->cnum);
 }
 
 /*
@@ -439,8 +520,15 @@ main(int argc, char *argv[])
 	/* connect up stdin, stdout and message system */
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
-	out = fcb_new(1, TEXT);
-	out->sp = sel_open(1, out, "STDOUT", fcb_handler, TEXT, 0);
+	if (tcgetattr(0, &in->t) < 0) 
+		die("tcgetattr (%d)", errno);
+	{
+		struct termios t = in->t;
+		t.c_lflag &= ~(ECHO|ECHONL|ICANON);
+		if (tcsetattr(0, TCSANOW, &t) < 0) 
+			die("tcsetattr (%d)", errno);
+		in->echo = echo;
+	}
 	connect_to_node();
 
 	/* tell the cluster who I am */
@@ -456,6 +544,7 @@ main(int argc, char *argv[])
 	}
 	terminate(0);
 }
+
 
 
 
