@@ -25,8 +25,6 @@ use Carp;
 %dbglevel = ();
 $fp = DXLog::new('debug', 'dat', 'd');
 
-no strict 'refs';
-
 sub dbg
 {
 	my $l = shift;
@@ -55,7 +53,7 @@ sub dbgsub
 	my $entry;
 	
 	foreach $entry (@_) {
-		delete $dbglevel{entry};
+		delete $dbglevel{$entry};
 	}
 }
 

@@ -98,7 +98,7 @@ sub print_item
 	} elsif ($ref[1] eq 'talk') {
 		$s = "$ref[3] -> $ref[2] ($ref[4]) $ref[5]";
 	} elsif ($ref[1] eq 'ann') {
-		$s = "$ref[2] -> $ref[3] $ref[4]";
+		$s = "$ref[3] -> $ref[2] $ref[4]";
 	} else {
 		$s = "$ref[2]";
 	}

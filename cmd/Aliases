@@ -71,8 +71,9 @@ package CmdAlias;
 	q => [
 	  '^q', 'bye', 'bye',
 	],
-	r => [
+	r => [	
 	  '^r$', 'read', 'read',
+	  '^rcmd/(\S+)', 'rcmd $1', 'rcmd',
 	],
 	s => [
 	  '^set/nobe', 'unset/beep', 'unset/beep',
