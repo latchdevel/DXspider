@@ -108,13 +108,13 @@ sub read_in
 #   	sort => 'spots',
 #   	filter1 => {
 #			user_rej => {
-#				by_zone => '4,5',
+#				by_dxcc => 'W,VE',
 #			},
 #   		reject => {
-#   			by_zone => [11, 'n', 4, 5],
+#   			by_dxcc => [6, 'n', 226,197],
 #   		},
 #			user_acc => {
-#				freq => 'hf',
+#				freq => '0/30000',
 #			},
 #   		accept => {
 #   			freq => [0, 'r', 0, 30000],
@@ -136,11 +136,13 @@ sub read_in
 #
 #   clear/spots 1 2
 #   accept/spots 1 freq 0/30000
-#   reject/spots 1 by_zone 4,5
+#   reject/spots 1 by_dxcc W,VE
 #   accept/spots 2 freq vhf 
 #   accept/spots 2 by_zone 14,15,16
 #
 # no filter no implies filter 1
+#
+# The field nos are the same as for the 'Old' filters
 #
 # The user_* fields are there so that the structure can be listed easily
 # in human readable form when required. They are not used in the filtering
@@ -166,14 +168,14 @@ sub it
 					($field, $fieldsort) = @$ref[0,1];
 					my $val = $_[$field];
 					if ($fieldsort eq 'n') {
-						next L1 if grep {$_ == $val} @{$ref}[2..$#$ref];
+						next L1 if grep $_ == $val, @{$ref}[2..$#$ref];
 					} elsif ($fieldsort eq 'r') {
 						my $i;
 						for ($i = 2; $i < @$ref; $i += 2) {
 							next L1 if $val >= $ref->[$i] && $val <= $ref->[$i+1];
 						}
 					} elsif ($fieldsort eq 'a') {
-						next L1  if grep { $val =~ m{$_}} @$ref[2..$#$ref];  
+						next L1  if grep $val =~ m{$_}, @$ref[2..$#$ref];  
 					} 
 				}
 			}
@@ -182,14 +184,14 @@ sub it
 					($field, $fieldsort) = @$ref[0,1];
 					my $val = $_[$field];
 					if ($fieldsort eq 'n') {
-						next L1 unless grep {$_ == $val} @{$ref}[2..$#$ref];
+						next L1 unless grep $_ == $val, @{$ref}[2..$#$ref];
 					} elsif ($fieldsort eq 'r') {
 						my $i;
 						for ($i = 2; $i < @$ref; $i += 2) {
 							next L1 unless $val >= $ref->[$i] && $val <= $ref->[$i+1];
 						}
 					} elsif ($fieldsort eq 'a') {
-						next L1 unless grep { $val =~ m{$_}} @{$ref}[2..$#$ref];  
+						next L1 unless grep $val =~ m{$_}, @{$ref}[2..$#$ref];  
 					} 
 				}
 			} 
