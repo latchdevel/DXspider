@@ -204,84 +204,86 @@
      11.133 show/configuration [<node>] (0)
      11.134 show/configuration/node (0)
      11.135 show/connect (1)
-     11.136 show/date [<prefix>|<callsign>] (0)
-     11.137 show/db0sdx <callsign> (0)
-     11.138 show/dx (0)
-     11.139 show/dxcc <prefix> (0)
-     11.140 show/dxstats [days] [date] (0)
-     11.141 show/files [<filearea> [<string>]] (0)
-     11.142 show/filter (0)
-     11.143 show/hfstats [days] [date] (0)
-     11.144 show/hftable [days] [date] [prefix ...] (0)
-     11.145 show/hops <call> [ann|spots|route|wcy|wwv] (8)
-     11.146 show/isolate (1)
-     11.147 show/log [<callsign>] (8)
-     11.148 show/moon [ndays] [<prefix>|<callsign>] (0)
-     11.149 show/muf <prefix> [<hours>][long] (0)
-     11.150 show/newconfiguration [<node>] (0)
-     11.151 show/newconfiguration/node (0)
-     11.152 show/node [<callsign> ...] (1)
-     11.153 show/prefix <callsign> (0)
-     11.154 show/program (5)
-     11.155 show/qra <lat> <long> (0)
-     11.156 show/qra <locator> [<locator>] (0)
-     11.157 show/qrz <callsign> (0)
-     11.158 show/route <callsign> ... (0)
-     11.159 show/satellite <name> [<hours> <interval>] (0)
-     11.160 show/station all [<regex>] (6)
-     11.161 show/station [<callsign> ..] (0)
-     11.162 show/sun [ndays] [<prefix>|<callsign>] (0)
-     11.163 show/time [<prefix>|<callsign>] (0)
-     11.164 show/usdb [call ..] (0)
-     11.165 show/vhfstats [days] [date] (0)
-     11.166 show/vhftable [days] [date] [prefix ...] (0)
-     11.167 show/wcy (0)
-     11.168 show/wcy <n> (0)
-     11.169 show/wm7d <callsign> (0)
-     11.170 show/wwv (0)
-     11.171 show/wwv <n> (0)
-     11.172 shutdown (5)
-     11.173 stat/channel [<callsign>] (5)
-     11.174 stat/db <dbname> (5)
-     11.175 stat/msg (1)
-     11.176 stat/msg <msgno> (1)
-     11.177 stat/route_node <callsign> (5)
-     11.178 stat/route_node all (5)
-     11.179 stat/route_user <callsign> (5)
-     11.180 stat/route_user all (5)
-     11.181 stat/user [<callsign>] (5)
-     11.182 sysop (0)
-     11.183 talk <call> > <node> [<text>] (0)
-     11.184 talk <call> [<text>] (0)
-     11.185 type <filearea>/<name> (0)
-     11.186 uncatchup <node call> all|[msgno> ...] (5)
-     11.187 unset/announce (0)
-     11.188 unset/anntalk (0)
-     11.189 unset/baddx <call>.. (8)
-     11.190 unset/badnode <call>.. (8)
-     11.191 unset/badspotter <call>.. (8)
-     11.192 unset/badword <word>.. (8)
-     11.193 unset/beep (0)
-     11.194 unset/dx (0)
-     11.195 unset/dxcq (0)
-     11.196 unset/dxgrid (0)
-     11.197 unset/dxitu (0)
-     11.198 unset/echo (0)
-     11.199 unset/email (0)
-     11.200 unset/here (0)
-     11.201 unset/hops <call> ann|spots|route|wwv|wcy (8)
-     11.202 unset/logininfo (0)
-     11.203 unset/privilege (0)
-     11.204 unset/prompt (0)
-     11.205 unset/talk (0)
-     11.206 unset/usstate (0)
-     11.207 unset/wcy (0)
-     11.208 unset/wwv (0)
-     11.209 unset/wx (0)
-     11.210 who (0)
-     11.211 wx <text> (0)
-     11.212 wx full <text> (0)
-     11.213 wx sysop <text> (5)
+     11.136 show/contest <year and month> (0)
+     11.137 show/date [<prefix>|<callsign>] (0)
+     11.138 show/db0sdx <callsign> (0)
+     11.139 show/dx (0)
+     11.140 show/dxcc <prefix> (0)
+     11.141 show/dxqsl <callsign> (0)
+     11.142 show/dxstats [days] [date] (0)
+     11.143 show/files [<filearea> [<string>]] (0)
+     11.144 show/filter (0)
+     11.145 show/hfstats [days] [date] (0)
+     11.146 show/hftable [days] [date] [prefix ...] (0)
+     11.147 show/hops <call> [ann|spots|route|wcy|wwv] (8)
+     11.148 show/isolate (1)
+     11.149 show/log [<callsign>] (8)
+     11.150 show/moon [ndays] [<prefix>|<callsign>] (0)
+     11.151 show/muf <prefix> [<hours>][long] (0)
+     11.152 show/newconfiguration [<node>] (0)
+     11.153 show/newconfiguration/node (0)
+     11.154 show/node [<callsign> ...] (1)
+     11.155 show/prefix <callsign> (0)
+     11.156 show/program (5)
+     11.157 show/qra <lat> <long> (0)
+     11.158 show/qra <locator> [<locator>] (0)
+     11.159 show/qrz <callsign> (0)
+     11.160 show/route <callsign> ... (0)
+     11.161 show/satellite <name> [<hours> <interval>] (0)
+     11.162 show/station all [<regex>] (6)
+     11.163 show/station [<callsign> ..] (0)
+     11.164 show/sun [ndays] [<prefix>|<callsign>] (0)
+     11.165 show/time [<prefix>|<callsign>] (0)
+     11.166 show/usdb [call ..] (0)
+     11.167 show/vhfstats [days] [date] (0)
+     11.168 show/vhftable [days] [date] [prefix ...] (0)
+     11.169 show/wcy (0)
+     11.170 show/wcy <n> (0)
+     11.171 show/wm7d <callsign> (0)
+     11.172 show/wwv (0)
+     11.173 show/wwv <n> (0)
+     11.174 shutdown (5)
+     11.175 stat/channel [<callsign>] (5)
+     11.176 stat/db <dbname> (5)
+     11.177 stat/msg (1)
+     11.178 stat/msg <msgno> (1)
+     11.179 stat/route_node <callsign> (5)
+     11.180 stat/route_node all (5)
+     11.181 stat/route_user <callsign> (5)
+     11.182 stat/route_user all (5)
+     11.183 stat/user [<callsign>] (5)
+     11.184 sysop (0)
+     11.185 talk <call> > <node> [<text>] (0)
+     11.186 talk <call> [<text>] (0)
+     11.187 type <filearea>/<name> (0)
+     11.188 uncatchup <node call> all|[msgno> ...] (5)
+     11.189 unset/announce (0)
+     11.190 unset/anntalk (0)
+     11.191 unset/baddx <call>.. (8)
+     11.192 unset/badnode <call>.. (8)
+     11.193 unset/badspotter <call>.. (8)
+     11.194 unset/badword <word>.. (8)
+     11.195 unset/beep (0)
+     11.196 unset/dx (0)
+     11.197 unset/dxcq (0)
+     11.198 unset/dxgrid (0)
+     11.199 unset/dxitu (0)
+     11.200 unset/echo (0)
+     11.201 unset/email (0)
+     11.202 unset/here (0)
+     11.203 unset/hops <call> ann|spots|route|wwv|wcy (8)
+     11.204 unset/logininfo (0)
+     11.205 unset/privilege (0)
+     11.206 unset/prompt (0)
+     11.207 unset/talk (0)
+     11.208 unset/usstate (0)
+     11.209 unset/wcy (0)
+     11.210 unset/wwv (0)
+     11.211 unset/wx (0)
+     11.212 who (0)
+     11.213 wx <text> (0)
+     11.214 wx full <text> (0)
+     11.215 wx sysop <text> (5)
 
 
   ______________________________________________________________________
@@ -340,6 +342,7 @@
   a lot better for not getting involved. If you are successfully using
   isolation then you also probably don't need to use route filtering.
 
+
   To put it simply, you should not mix Isolation and Route Filtering.
   It will work, of sorts, but you will not get the expected results.  If
   you are using Isolation sucessfully at the moment, do not get involved
@@ -395,14 +398,15 @@
 
 
 
-       call <prefixes>
-       call_dxcc <numbers>
-       call_itu <numbers>
-       call_zone <numbers>
-       channel <prefixes>
-       channel_dxcc <numbers>
-       channel_itu <numbers>
-       channel_zone <numbers>
+  call <prefixes>
+  call_dxcc <numbers>
+  call_itu <numbers>
+  call_zone <numbers>
+  channel <prefixes>
+  channel_dxcc <numbers>
+  channel_itu <numbers>
+  channel_zone <numbers>
+
 
 
   Please be careful if you alter this setting, it will affect ALL your
@@ -456,8 +460,6 @@
 
 
        set/debug filter
-
-
 
   After you have got tired of that, to put it back the way it was:-
 
@@ -578,8 +580,6 @@
 
   For now we are going to use spots for the examples, but you can apply
   the same principles to all types of filter.
-
-
   1.6.  Types of filter
 
   There are two main types of filter, accept or reject.  You can use
@@ -642,9 +642,6 @@
 
   You can arrange your filter lines into logical units, either for your
   own understanding or simply convenience. Here is an example ...
-
-
-
        reject/spots 1 on hf/cw
        reject/spots 2 on 50000/1400000 not (by_zone 14,15,16 or call_zone 14,15,16)
 
@@ -711,6 +708,7 @@
   You can filter in several different ways.  The options are listed in
   the various helpfiles for accept, reject and filter.
 
+
   1.8.  Default filters
 
   Sometimes all that is needed is a general rule for node connects.
@@ -768,7 +766,6 @@
   first, any non hf/cw spot is passed to the accept line, which lets
   through everything else on HF.  The next filter line lets through just
   VHF/UHF spots from EU.
-
 
   1.10.  Basic hop control
 
@@ -960,9 +957,6 @@
   the cluster or the other cluster nodes that we are linked to.  This is
   usually because of rules and regulations pertaining to items for sale
   etc in a particular country.
-
-
-
   2.2.  Filtering words from text fields in Announce, Talk and DX spots
 
   From version 1.48 onwards the interface to this has changed. You can
@@ -3880,7 +3874,20 @@
   tothe node. This command gives slightly more information than WHO.
 
 
-  11.136.  show/date [<prefix>|<callsign>] (0)
+  11.136.  show/contest <year and month> (0)
+
+  show/contest <year and month> Show all the contests for a month
+
+  Show all known contests which are maintained at
+  http://www.sk3bg.se/contest/for a particular month or year. The format
+  is reasonably flexible.For example:-
+
+
+         SH/CONTEST sep2003  SH/CONTEST 03 march
+
+
+
+  11.137.  show/date [<prefix>|<callsign>] (0)
 
   show/date [<prefix>|<callsign>] Show the local time
 
@@ -3891,7 +3898,7 @@
   show UTC and UTC + the local offset (not including DST) atthe prefixes
   or callsigns that you specify.
 
-  11.137.  show/db0sdx <callsign> (0)
+  11.138.  show/db0sdx <callsign> (0)
 
   show/db0sdx <callsign> Show QSL infomation from DB0SDX database
 
@@ -3900,7 +3907,7 @@
   for users of this software by http://www.qslinfo.de.See also SHOW/QRZ,
   SHOW/WM7D.
 
-  11.138.  show/dx (0)
+  11.139.  show/dx (0)
 
   show/dx Interrogate the spot database
 
@@ -3934,7 +3941,7 @@
 
 
 
-   qsl             - this automatically looks for any qsl info on the call                   held in the spot database.
+        qsl             - this automatically looks for any qsl info on the call                   held in the spot database.
 
 
 
@@ -3962,7 +3969,7 @@
 
 
 
-  11.139.  show/dxcc <prefix> (0)
+  11.140.  show/dxcc <prefix> (0)
 
   show/dxcc <prefix> Interrogate the spot database by country
 
@@ -3975,8 +3982,6 @@
 
           SH/DXCC G   SH/DXCC W on 20m iota
 
-
-
   This can be done with the SHOW/DX command like this:-
 
 
@@ -3984,14 +3989,39 @@
 
 
 
-  11.140.  show/dxstats [days] [date] (0)
+  11.141.  show/dxqsl <callsign> (0)
+
+  show/dxqsl <callsign> Show any QSL info gathered from spots
+
+  The node collects information from the comment fields in spots
+  (thingslike 'VIA EA7WA' or 'QSL-G1TLH') and stores these in a
+  database.This command allows you to interrogate that database and if
+  the callsignis found will display the manager(s) that people have
+  spotted. This information is NOT reliable, but it is normally
+  reasonably accurate ifit is spotted enough times.For example:-
+
+
+         sh/dxqsl 4k9w
+
+
+
+  You can check the raw input spots yourself with:-
+
+
+         sh/dx 4k9w qsl
+
+
+
+  This gives you more background information.
+
+  11.142.  show/dxstats [days] [date] (0)
 
   show/dxstats [days] [date] Show the DX Statistics
 
   Show the total DX spots for the last <days> no of days (default is
   31), starting from a <date> (default: today).
 
-  11.141.  show/files [<filearea> [<string>]] (0)
+  11.143.  show/files [<filearea> [<string>]] (0)
 
   show/files [<filearea> [<string>]] List the contents of a filearea
 
@@ -4015,21 +4045,23 @@
 
   See also TYPE - to see the contents of a file.
 
-  11.142.  show/filter (0)
+
+
+  11.144.  show/filter (0)
 
   show/filter Show the contents of all the filters you have set
 
   Show the contents of all the filters that are set. This command
   displaysall the filters set - for all the various categories.
 
-  11.143.  show/hfstats [days] [date] (0)
+  11.145.  show/hfstats [days] [date] (0)
 
   show/hfstats [days] [date] Show the HF DX Statistics
 
   Show the HF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a <date> (default: today).
 
-  11.144.  show/hftable [days] [date] [prefix ...] (0)
+  11.146.  show/hftable [days] [date] [prefix ...] (0)
 
   show/hftable [days] [date] [prefix ...] Show the HF DX Spotter Table
 
@@ -4050,7 +4082,8 @@
   haveto list all possible prefixes for each country.If you want more or
   less days than the default simply include thenumber you require:-
 
-    sh/hftable 20 pa
+
+         sh/hftable 20 pa
 
 
 
@@ -4072,7 +4105,7 @@
 
 
 
-  11.145.  show/hops <call> [ann|spots|route|wcy|wwv] (8)
+  11.147.  show/hops <call> [ann|spots|route|wcy|wwv] (8)
 
   show/hops <call> [ann|spots|route|wcy|wwv] Show the hop counts for a
   node
@@ -4081,12 +4114,12 @@
   specifywhich category you want to see. If you leave the category out
   then all the categories will be listed.
 
-  11.146.  show/isolate (1)
+  11.148.  show/isolate (1)
 
   show/isolate Show list of ISOLATED nodes
 
 
-  11.147.  show/log [<callsign>] (8)
+  11.149.  show/log [<callsign>] (8)
 
   show/log [<callsign>] Show excerpts from the system log
 
@@ -4094,7 +4127,7 @@
   will output a general logfile.  With the optional callsign it willshow
   output from the log associated with that callsign.
 
-  11.148.  show/moon [ndays] [<prefix>|<callsign>] (0)
+  11.150.  show/moon [ndays] [<prefix>|<callsign>] (0)
 
   show/moon [ndays] [<prefix>|<callsign>] Show Moon rise and set times
 
@@ -4115,7 +4148,8 @@
   You can also use this command to see into the past or the future, soif
   you want to see yesterday's times then do:-
 
-    SH/MOON -1
+
+         SH/MOON -1
 
 
 
@@ -4130,7 +4164,7 @@
   note that the rise and set times are given as the UT times of rise and
   set on the requested UT day.
 
-  11.149.  show/muf <prefix> [<hours>][long] (0)
+  11.151.  show/muf <prefix> [<hours>][long] (0)
 
   show/muf <prefix> [<hours>][long] Show the likely propagation to a
   prefix
@@ -4180,8 +4214,7 @@
   80m but usable signals on 40m (about S3).inputing:-
 
 
-
-    SH/MUF W 24
+         SH/MUF W 24
 
 
 
@@ -4197,7 +4230,7 @@
   Itshould be noted that the figures will probably not be very useful,
   norterrible accurate, but it is included for completeness.
 
-  11.150.  show/newconfiguration [<node>] (0)
+  11.152.  show/newconfiguration [<node>] (0)
 
   show/newconfiguration [<node>] Show all the nodes and users visible
 
@@ -4208,13 +4241,15 @@
   different formatwhich may not take up quite as much space if you don't
   have anyloops.BE WARNED: the list that is returned can be VERY long
 
-  11.151.  show/newconfiguration/node (0)
+
+
+  11.153.  show/newconfiguration/node (0)
 
   show/newconfiguration/node Show all the nodes connected locally
 
   Show all the nodes connected to this node in the new format.
 
-  11.152.  show/node [<callsign> ...] (1)
+  11.154.  show/node [<callsign> ...] (1)
 
   show/node [<callsign> ...] Show the type and version number of nodes
 
@@ -4222,7 +4257,7 @@
   thecommand line. If no callsigns are specified then a sorted list of
   allthe non-user callsigns known to the system will be displayed.
 
-  11.153.  show/prefix <callsign> (0)
+  11.155.  show/prefix <callsign> (0)
 
   show/prefix <callsign> Interrogate the prefix database
 
@@ -4232,7 +4267,7 @@
   with the internal country no, the CQ and ITU regions. See also
   SHOW/DXCC
 
-  11.154.  show/program (5)
+  11.156.  show/program (5)
 
   show/program Show the locations of all the included program modules
 
@@ -4240,7 +4275,7 @@
   Thisis useful for checking where you think you have loaded a .pm file
   from.
 
-  11.155.  show/qra <lat> <long> (0)
+  11.157.  show/qra <lat> <long> (0)
 
   show/qra <lat> <long> Convert lat/long to a QRA Grid locator
 
@@ -4266,12 +4301,13 @@
 
 
 
-  11.156.  show/qra <locator> [<locator>] (0)
+  11.158.  show/qra <locator> [<locator>] (0)
 
   show/qra <locator> [<locator>] Show distance between QRA Grid locators
 
 
-  11.157.  show/qrz <callsign> (0)
+
+  11.159.  show/qrz <callsign> (0)
 
   show/qrz <callsign> Show any callbook details on a callsign
 
@@ -4280,7 +4316,7 @@
   provided for users of this software by http://www.qrz.com See also
   SHOW/WM7D for an alternative.
 
-  11.158.  show/route <callsign> ... (0)
+  11.160.  show/route <callsign> ... (0)
 
   show/route <callsign> ... Show the route to the callsign
 
@@ -4292,7 +4328,7 @@
 
 
 
-  11.159.  show/satellite <name> [<hours> <interval>] (0)
+  11.161.  show/satellite <name> [<hours> <interval>] (0)
 
   show/satellite <name> [<hours> <interval>] Show tracking data
 
@@ -4311,12 +4347,12 @@
 
 
 
-  11.160.  show/station all [<regex>] (6)
+  11.162.  show/station all [<regex>] (6)
 
   show/station all [<regex>] Show list of users in the system
 
 
-  11.161.  show/station [<callsign> ..] (0)
+  11.163.  show/station [<callsign> ..] (0)
 
   show/station [<callsign> ..] Show information about a callsign
 
@@ -4330,9 +4366,10 @@
 
   If no callsign is given then show the information for yourself.
 
-  11.162.  show/sun [ndays] [<prefix>|<callsign>] (0)
+  11.164.  show/sun [ndays] [<prefix>|<callsign>] (0)
 
   show/sun [ndays] [<prefix>|<callsign>] Show sun rise and set times
+
 
   Show the sun rise and set times for a (list of) prefixes or callsigns,
   together with the azimuth and elevation of the sun currently at
@@ -4366,7 +4403,7 @@
   note that the rise and set times are given as the UT times of rise and
   set on the requested UT day.
 
-  11.163.  show/time [<prefix>|<callsign>] (0)
+  11.165.  show/time [<prefix>|<callsign>] (0)
 
   show/time [<prefix>|<callsign>] Show the local time
 
@@ -4375,9 +4412,7 @@
   prefixesthen it will show UTC and UTC + the local offset (not
   including DST) atthe prefixes or callsigns that you specify.
 
-
-
-  11.164.  show/usdb [call ..] (0)
+  11.166.  show/usdb [call ..] (0)
 
   show/usdb [call ..] Show information held on the FCC Call database
 
@@ -4389,16 +4424,17 @@
 
 
 
-  11.165.  show/vhfstats [days] [date] (0)
+  11.167.  show/vhfstats [days] [date] (0)
 
   show/vhfstats [days] [date] Show the VHF DX Statistics
 
   Show the VHF DX spots breakdown by band for the last <days> no of days
   (default is 31), starting from a date (default: today).
 
-  11.166.  show/vhftable [days] [date] [prefix ...] (0)
+  11.168.  show/vhftable [days] [date] [prefix ...] (0)
 
   show/vhftable [days] [date] [prefix ...] Show the VHF DX Spotter Table
+
 
   Show the VHF DX Spotter table for the list of prefixes for the last
   <days> no of days (default is 31), starting from a date (default:
@@ -4440,19 +4476,19 @@
 
 
 
-  11.167.  show/wcy (0)
+  11.169.  show/wcy (0)
 
   show/wcy Show last 10 WCY broadcasts
 
 
-  11.168.  show/wcy <n> (0)
+  11.170.  show/wcy <n> (0)
 
   show/wcy <n> Show last <n> WCY broadcasts
 
   Display the most recent WCY information that has been received by the
   system
 
-  11.169.  show/wm7d <callsign> (0)
+  11.171.  show/wm7d <callsign> (0)
 
   show/wm7d <callsign> Show callbook details on a US callsigns
 
@@ -4461,25 +4497,24 @@
   provided for users of this software by http://www.wm7d.net.See also
   SHOW/QRZ.
 
-  11.170.  show/wwv (0)
+  11.172.  show/wwv (0)
 
   show/wwv Show last 10 WWV broadcasts
 
-
-  11.171.  show/wwv <n> (0)
+  11.173.  show/wwv <n> (0)
 
   show/wwv <n> Show last <n> WWV broadcasts
 
   Display the most recent WWV information that has been received by the
   system
 
-  11.172.  shutdown (5)
+  11.174.  shutdown (5)
 
   shutdown Shutdown the cluster
 
   Shutdown the cluster and disconnect all the users
 
-  11.173.  stat/channel [<callsign>] (5)
+  11.175.  stat/channel [<callsign>] (5)
 
   stat/channel [<callsign>] Show the status of a channel on the cluster
 
@@ -4487,7 +4522,7 @@
   that you are on or else for the callsign that you asked for.Only the
   fields that are defined (in perl term) will be displayed.
 
-  11.174.  stat/db <dbname> (5)
+  11.176.  stat/db <dbname> (5)
 
   stat/db <dbname> Show the status of a database
 
@@ -4495,12 +4530,12 @@
   privilege level you will see more or less information. This command is
   unlikely to be of much use to anyone other than a sysop.
 
-  11.175.  stat/msg (1)
+  11.177.  stat/msg (1)
 
   stat/msg Show the status of the message system
 
 
-  11.176.  stat/msg <msgno> (1)
+  11.178.  stat/msg <msgno> (1)
 
   stat/msg <msgno> Show the status of a message
 
@@ -4509,27 +4544,28 @@
   etc.If no message number is given then the status of the message
   system is displayed.
 
-  11.177.  stat/route_node <callsign> (5)
+  11.179.  stat/route_node <callsign> (5)
 
   stat/route_node <callsign> Show the data in a Route::Node object
 
 
-  11.178.  stat/route_node all (5)
+  11.180.  stat/route_node all (5)
 
   stat/route_node all Show list of all Route::Node objects
 
 
-  11.179.  stat/route_user <callsign> (5)
+  11.181.  stat/route_user <callsign> (5)
 
   stat/route_user <callsign> Show the data in a Route::User object
 
 
-  11.180.  stat/route_user all (5)
+  11.182.  stat/route_user all (5)
 
   stat/route_user all Show list of all Route::User objects
 
 
-  11.181.  stat/user [<callsign>] (5)
+
+  11.183.  stat/user [<callsign>] (5)
 
   stat/user [<callsign>] Show the full status of a user
 
@@ -4537,7 +4573,7 @@
   flagsand stuff.Only the fields that are defined (in perl term) will be
   displayed.
 
-  11.182.  sysop (0)
+  11.184.  sysop (0)
 
   sysop Regain your privileges if you login remotely
 
@@ -4567,7 +4603,7 @@
   offerednumbers but nothing will happen when you input a string. Any
   match iscase sensitive.
 
-  11.183.  talk <call> > <node> [<text>] (0)
+  11.185.  talk <call> > <node> [<text>] (0)
 
   talk <call> > <node> [<text>] Send a text message to another station
   via a node
@@ -4614,12 +4650,12 @@
   will send the hftable as you have it to all the people you are cur-
   rently talking to.
 
-  11.184.  talk <call> [<text>] (0)
+  11.186.  talk <call> [<text>] (0)
 
   talk <call> [<text>] Send a text message to another station
 
 
-  11.185.  type <filearea>/<name> (0)
+  11.187.  type <filearea>/<name> (0)
 
   type <filearea>/<name> Look at the contents of a file in one of the
   fileareas
@@ -4636,9 +4672,7 @@
   See also SHOW/FILES to see what fileareas are available and a list of
   content.
 
-
-
-  11.186.  uncatchup <node call> all|[msgno> ...] (5)
+  11.188.  uncatchup <node call> all|[msgno> ...] (5)
 
   uncatchup <node call> all|[msgno> ...] Unmark a message as sent
 
@@ -4663,13 +4697,12 @@
 
   which will arrange for them to be forward candidates again.Order is
   not important.
-
-  11.187.  unset/announce (0)
+  11.189.  unset/announce (0)
 
   unset/announce Stop announce messages coming out on your terminal
 
 
-  11.188.  unset/anntalk (0)
+  11.190.  unset/anntalk (0)
 
   unset/anntalk Stop talk like announce messages on your terminal
 
@@ -4692,7 +4725,7 @@
 
   allows you to see them again. This is the default.
 
-  11.189.  unset/baddx <call>.. (8)
+  11.191.  unset/baddx <call>.. (8)
 
   unset/baddx <call>.. Propagate a dx spot with this callsign again
 
@@ -4703,8 +4736,7 @@
   allowed eg:-
 
 
-
-    set/baddx FORSALE VIDEO FR0G
+         set/baddx FORSALE VIDEO FR0G
 
 
 
@@ -4715,7 +4747,7 @@
 
 
 
-  11.190.  unset/badnode <call>.. (8)
+  11.192.  unset/badnode <call>.. (8)
 
   unset/badnode <call>.. Allow spots from this node again
 
@@ -4730,8 +4762,6 @@
 
   will stop anything from K1TTT. If you want SSIDs as well then you mus-
   tenter them specifically.
-
-
          unset/badnode K1TTT
 
 
@@ -4739,7 +4769,7 @@
   will allow spots from him again.Use with extreme care. This command
   may well be superceeded by FILTERing.
 
-  11.191.  unset/badspotter <call>.. (8)
+  11.193.  unset/badspotter <call>.. (8)
 
   unset/badspotter <call>.. Allow spots from this callsign again
 
@@ -4765,7 +4795,7 @@
   will allow spots from him again.Use with extreme care. This command
   may well be superceded by FILTERing.
 
-  11.192.  unset/badword <word>.. (8)
+  11.194.  unset/badword <word>.. (8)
 
   unset/badword <word>.. Propagate things with this word again
 
@@ -4788,17 +4818,17 @@
 
   will allow text with this word again.
 
-  11.193.  unset/beep (0)
+  11.195.  unset/beep (0)
 
   unset/beep Stop beeps for DX and other messages on your terminal
 
 
-  11.194.  unset/dx (0)
+  11.196.  unset/dx (0)
 
   unset/dx Stop DX messages coming out on your terminal
 
 
-  11.195.  unset/dxcq (0)
+  11.197.  unset/dxcq (0)
 
   unset/dxcq Stop CQ Zones on the end of DX announcements
 
@@ -4809,7 +4839,7 @@
   SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.196.  unset/dxgrid (0)
+  11.198.  unset/dxgrid (0)
 
   unset/dxgrid Stop QRA Grid Squares on the end of DX announcements
 
@@ -4820,7 +4850,7 @@
   feature.Conflicts with: SET/DXCQ, SET/DXITUDo a STAT/USER to see which
   flags you have set if you are confused.
 
-  11.197.  unset/dxitu (0)
+  11.199.  unset/dxitu (0)
 
   unset/dxitu Stop ITU Zones on the end of DX announcements
 
@@ -4831,7 +4861,7 @@
   SHOW/USSTATEDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.198.  unset/echo (0)
+  11.200.  unset/echo (0)
 
   unset/echo Stop the cluster echoing your input
 
@@ -4841,7 +4871,7 @@
   setting appropriately. The setting is stored in your user profile.YOU
   DO NOT NEED TO USE THIS COMMAND IF YOU ARE CONNECTED VIA AX25.
 
-  11.199.  unset/email (0)
+  11.201.  unset/email (0)
 
   unset/email Stop personal msgs being forwarded by email
 
@@ -4863,12 +4893,12 @@
 
 
 
-  11.200.  unset/here (0)
+  11.202.  unset/here (0)
 
   unset/here Tell the system you are absent from your terminal
 
 
-  11.201.  unset/hops <call> ann|spots|route|wwv|wcy (8)
+  11.203.  unset/hops <call> ann|spots|route|wwv|wcy (8)
 
   unset/hops <call> ann|spots|route|wwv|wcy Unset hop count
 
@@ -4890,12 +4920,12 @@
 
 
 
-  11.202.  unset/logininfo (0)
+  11.204.  unset/logininfo (0)
 
   unset/logininfo Inform when a station logs out locally
 
 
-  11.203.  unset/privilege (0)
+  11.205.  unset/privilege (0)
 
   unset/privilege Remove any privilege for this session
 
@@ -4904,7 +4934,7 @@
   will need toeither logout and login again (if you are on a console) or
   use theSYSOP command.
 
-  11.204.  unset/prompt (0)
+  11.206.  unset/prompt (0)
 
   unset/prompt Set your prompt back to default
 
@@ -4921,12 +4951,13 @@
   UNSET/PROMPT will undo the SET/PROMPT command and set you prompt back
   tonormal.
 
-  11.205.  unset/talk (0)
+  11.207.  unset/talk (0)
 
   unset/talk Stop TALK messages coming out on your terminal
 
 
-  11.206.  unset/usstate (0)
+
+  11.208.  unset/usstate (0)
 
   unset/usstate Stop US State info on the end of DX announcements
 
@@ -4940,41 +4971,39 @@
   SET/DXITUDo a STAT/USER to see which flags you have set if you are
   confused.
 
-  11.207.  unset/wcy (0)
+  11.209.  unset/wcy (0)
 
   unset/wcy Stop WCY messages coming out on your terminal
 
 
-  11.208.  unset/wwv (0)
+  11.210.  unset/wwv (0)
 
   unset/wwv Stop WWV messages coming out on your terminal
 
 
-  11.209.  unset/wx (0)
+  11.211.  unset/wx (0)
 
   unset/wx Stop WX messages coming out on your terminal
 
 
-  11.210.  who (0)
+  11.212.  who (0)
 
   who Show who is physically connected
 
   This is a quick listing that shows which callsigns are connected
   andwhat sort of connection they have
 
-
-
-  11.211.  wx <text> (0)
+  11.213.  wx <text> (0)
 
   wx <text> Send a weather message to local users
 
 
-  11.212.  wx full <text> (0)
+  11.214.  wx full <text> (0)
 
   wx full <text> Send a weather message to all cluster users
 
 
-  11.213.  wx sysop <text> (5)
+  11.215.  wx sysop <text> (5)
 
   wx sysop <text> Send a weather message to other clusters only
 

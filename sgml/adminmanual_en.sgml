@@ -4024,6 +4024,23 @@ Show all the nodes connected to this node.
 <P>
 This command shows information on all the active connections known to
 the node. This command gives slightly more information than WHO.
+<sect1>show/contest &lt;year and month&gt; (0)
+
+<P>
+<tt>
+<bf>show/contest &lt;year and month&gt;</bf> Show all the contests for a month
+</tt>
+
+<P>
+Show all known contests which are maintained at http://www.sk3bg.se/contest/
+for a particular month or year. The format is reasonably flexible.
+For example:-
+  
+<tscreen><verb>
+  SH/CONTEST sep2003
+  SH/CONTEST 03 march
+</verb></tscreen>
+
 <sect1>show/date &lsqb;&lt;prefix&gt;|&lt;callsign&gt;&rsqb; (0)
 
 <P>
@@ -4173,6 +4190,35 @@ This can be done with the SHOW/DX command like this:-
    SH/DX dxcc w on 20m iota
 </verb></tscreen>
 
+<sect1>show/dxqsl &lt;callsign&gt; (0)
+
+<P>
+<tt>
+<bf>show/dxqsl &lt;callsign&gt;</bf> Show any QSL info gathered from spots
+</tt>
+
+<P>
+The node collects information from the comment fields in spots (things
+like 'VIA EA7WA' or 'QSL-G1TLH') and stores these in a database.
+
+This command allows you to interrogate that database and if the callsign
+is found will display the manager(s) that people have spotted. This 
+information is NOT reliable, but it is normally reasonably accurate if
+it is spotted enough times.
+
+For example:-
+
+<tscreen><verb>
+  sh/dxqsl 4k9w
+</verb></tscreen>
+
+You can check the raw input spots yourself with:-
+
+<tscreen><verb>
+  sh/dx 4k9w qsl
+</verb></tscreen>
+
+This gives you more background information.
 <sect1>show/dxstats &lsqb;days&rsqb; &lsqb;date&rsqb; (0)
 
 <P>
