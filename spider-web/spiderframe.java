@@ -68,6 +68,7 @@ menubar.add(set);
 menubar.add(dxann);	
 
 		mailbox = new Menu("Mailbox");
+		mailbox.add(new MenuItem("Last 10 Msgs"));
 		mailbox.add(new MenuItem("Last 50 Msgs"));
 		mailbox.add(new MenuItem("List DX Bulletins"));
 		mailbox.add(new MenuItem("New Messages"));
@@ -496,7 +497,10 @@ menubar.add(mailbox);
 	        		if (Connected) out.println ("dx " + Freq + " " + Call2 + " " + Remarks );
 	
 			}
-			// mailbox 
+			// mailbox
+			 else if (arg.equals("Last 10 Msgs")) {
+				if (Connected) out.println ("dir" );
+             }
 			 else if (arg.equals("Last 50 Msgs")) {
 				if (Connected) out.println ("dir/50" );
 			 }
