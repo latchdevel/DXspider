@@ -17,14 +17,15 @@ use DXUser;
 use DXVars;
 use DXDebug;
 use DXM;
+use FileHandle;
 use Carp;
 
 use strict;
-use vars qw(%Cache %cmd_cache);
+use vars qw(%Cache %cmd_cache $errstr);
 
 %Cache = ();                  # cache of dynamically loaded routine's mod times
 %cmd_cache = ();            # cache of short names
-
+$errstr = ();                # error string from eval
 #
 # obtain a new connection this is derived from dxchannel
 #
@@ -48,9 +49,9 @@ sub start
   my $name = $user->{name};
 
   $self->{name} = $name ? $name : $call;
-  $self->msg('l2',$self->{name});
+  $self->send($self->msg('l2',$self->{name}));
   $self->send_file($main::motd) if (-e $main::motd);
-  $self->msg('pr', $call);
+  $self->send($self->msg('pr', $call));
   $self->state('prompt');                  # a bit of room for further expansion, passwords etc
   $self->{priv} = $user->priv;
   $self->{lang} = $user->lang;
@@ -59,7 +60,7 @@ sub start
 
   # set some necessary flags on the user if they are connecting
   $self->{wwv} = $self->{talk} = $self->{ann} = $self->{here} = $self->{dx} = 1;
-  $self->prompt() if $self->{state} =~ /^prompt/o;
+#  $self->prompt() if $self->{state} =~ /^prompt/o;
   
   # add yourself to the database
   my $node = DXNode->get($main::mycall) or die "$main::mycall not allocated in DXNode database";
@@ -81,36 +82,64 @@ sub normal
   my $user = $self->{user};
   my $call = $self->{call};
   my $cmdline = shift;
+  my @ans;
 
-  # strip out //
-  $cmdline =~ s|//|/|og;
+  # are we in stored state?
+  if ($self->{func}) {
+    my $c = qq{ \@ans = $self->{func}(\$self, \$cmdline) };
+    dbg('eval', "stored func cmd = $c\n");
+    eval  $c;
+    if ($@) {
+      return (1, "Syserr: Eval err $errstr on stored func $self->{func}");
+    }
+  } else {
+
+    # special case only \n input => " "
+    if ($cmdline eq " ") {
+	  $self->prompt();
+	  return;
+	}
+	
+    # strip out //
+    $cmdline =~ s|//|/|og;
   
-  # split the command line up into parts, the first part is the command
-  my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
+    # split the command line up into parts, the first part is the command
+    my ($cmd, $args) = $cmdline =~ /^([\w\/]+)\s*(.*)/o;
 
-  if ($cmd) {
+    if ($cmd) {
     
-	my ($path, $fcmd);
+	  my ($path, $fcmd);
    
-    # first expand out the entry to a command
-    ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-    ($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+      # first expand out the entry to a command
+	  ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
+	  ($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
 
-    my @ans = $self->eval_file($path, $fcmd, $args) if $path && $fcmd;
-#	@ans = $self->eval_file($main::cmd, $cmd, $args) if !$ans[0];
-	if ($ans[0]) {
-      shift @ans;
-	  $self->send(@ans) if @ans > 0;
-	} else {
-      shift @ans;
-	  if (@ans > 0) {
-	    $self->msg('e2', @ans);
-	  } else {
-        $self->msg('e1');
+      my $package = find_cmd_name($path, $fcmd);
+	  @ans = (0, "Syserr: compile err on $package\n$@$errstr") if !$package ;
+
+      if ($package) {
+	    my $c = qq{ \@ans = $package(\$self, \$args) };
+	    dbg('eval', "cluster cmd = $c\n");
+	    eval  $c;
+	    if ($@) {
+		  @ans = (0, "Syserr: Eval err cached $package\n$@");
+        }
 	  }
 	}
+  }
+ 	
+#    my @ans = $self->eval_file($path, $fcmd, $args) if $path && $fcmd;
+#	@ans = $self->eval_file($main::cmd, $cmd, $args) if !$ans[0];
+  if ($ans[0]) {
+    shift @ans;
+	$self->send(@ans) if @ans > 0;
   } else {
-    $self->msg('e1');
+    shift @ans;
+	if (@ans > 0) {
+	  $self->send($self->msg('e2', @ans));
+	} else {
+      $self->send($self->msg('e1'));
+	}
   }
   
   # send a prompt only if we are in a prompt state
@@ -168,7 +197,8 @@ sub prompt
 {
   my $self = shift;
   my $call = $self->{call};
-  DXChannel::msg($self, 'pr', $call);
+  $self->send($self->msg('pr', $call));
+  #DXChannel::msg($self, 'pr', $call);
 }
 
 # broadcast a message to all users [except those mentioned after buffer]
@@ -286,7 +316,7 @@ sub valid_package_name {
   $string =~ s|/(\d)|sprintf("/_%2x",unpack("C",$1))|eg;
 	
   #Dress it up as a real package name
-  $string =~ s|/|_|g;
+  $string =~ s/\//_/og;
   return "Emb_" . $string;
 }
 
@@ -296,16 +326,43 @@ sub delete_package {
   my ($stem, $leaf);
 	
   no strict 'refs';
-  $pkg = "DXChannel::$pkg\::";    # expand to full symbol table name
+  $pkg = "DXCommandmode::$pkg\::";    # expand to full symbol table name
   ($stem, $leaf) = $pkg =~ m/(.*::)(\w+::)$/;
-	
-  my $stem_symtab = *{$stem}{HASH};
-	
-  delete $stem_symtab->{$leaf};
+
+  if ($stem && $leaf) {
+    my $stem_symtab = *{$stem}{HASH};
+    delete $stem_symtab->{$leaf};
+  }
 }
 
-sub eval_file {
-  my $self = shift;
+# find a cmd reference
+# this is really for use in user written stubs
+#
+# use the result as a symbolic reference:-
+#
+# no strict 'refs';
+# @out = &$r($self, $line);
+#
+sub find_cmd_ref
+{
+  my $cmd = shift;
+  my $r;
+  
+  if ($cmd) {
+  
+    # first expand out the entry to a command
+    my ($path, $fcmd) = search($main::localcmd, $cmd, "pl");
+    ($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+
+    # make sure it is loaded
+    $r = find_cmd_name($path, $fcmd);
+  }
+  return $r;
+}
+
+# 
+# this bit of magic finds a command in the offered directory
+sub find_cmd_name {
   my $path = shift;
   my $cmdname = shift;
   my $package = valid_package_name($cmdname);
@@ -313,7 +370,11 @@ sub eval_file {
   my $mtime = -M $filename;
   
   # return if we can't find it
-  return (0, DXM::msg('e1')) if !defined $mtime;
+  $errstr = undef;
+  if (undef $mtime) {
+    $errstr = DXM::msg('e1');
+	return undef;
+  }
   
   if(defined $Cache{$package}{mtime} && $Cache{$package}{mtime } <= $mtime) {
     #we have compiled this subroutine already,
@@ -321,50 +382,50 @@ sub eval_file {
 	#print STDERR "already compiled $package->handler\n";
 	;
   } else {
-	local *FH;
-	if (!open FH, $filename) {
-	  return (0, "Syserr: can't open '$filename' $!"); 
+	my $fh = new FileHandle;
+	if (!open $fh, $filename) {
+	  $errstr = "Syserr: can't open '$filename' $!";
 	};
-	local($/) = undef;
-	my $sub = <FH>;
-	close FH;
+	my $old = $fh->input_record_separator(undef);
+	my $sub = <$fh>;
+	$fh->input_record_separator($old);
+	close $fh;
 		
     #wrap the code into a subroutine inside our unique package
-	my $eval = qq{package DXChannel; sub $package { $sub; }};
+	my $eval = qq{ 
+	sub $package 
+	{ 
+	  $sub 
+	} };
+	
 	if (isdbg('eval')) {
 	  my @list = split /\n/, $eval;
 	  my $line;
-	  foreach (@list) {
+	  for (@list) {
 	    dbg('eval', $_, "\n");
 	  }
 	}
-	#print "eval $eval\n";
+	
 	{
 	  #hide our variables within this block
 	  my($filename,$mtime,$package,$sub);
 	  eval $eval;
 	}
+	
 	if ($@) {
+	  print "\$\@ = $@";
+	  $errstr = $@;
 	  delete_package($package);
-	  return (1, "Syserr: Eval err $@ on $package");
+	  $package = undef;
+	} else {
+      #cache it unless we're cleaning out each time
+	  $Cache{$package}{mtime} = $mtime;
 	}
-		
-	#cache it unless we're cleaning out each time
-	$Cache{$package}{mtime} = $mtime;
   }
   
-  my @r;
-  my $c = qq{ \@r = \$self->$package(\@_); };
-  dbg('eval', "cluster cmd = $c\n");
-  eval  $c;
-  if ($@) {
-    delete_package($package);
-	return (1, "Syserr: Eval err $@ on cached $package");
-  }
-
-  #take a look if you want
   #print Devel::Symdump->rnew($package)->as_string, $/;
-  return @r;
+  $package = "DXCommandmode::$package" if $package;
+  return $package;
 }
 
 1;

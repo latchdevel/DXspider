@@ -62,10 +62,12 @@ the following modules:-
    users with useradd -m <callsign>. Alter the default .bashrc so that it
    contains just one line (assuming you use the default bash shell).
    
-   exec /spider/perl/client.pl <callsign>
+   exec /spider/perl/client.pl <callsign> telnet
    
    Don't forget to give them a real password. This is really for network
-   cluster logins
+   cluster logins. The telnet argument does two things, it sets the EOL 
+   convention to \n rather than AX25's \r and it automatically reduces
+   the privilege of the <callsign> to a 'safe[r]' level.
    
 7) for incoming AX25 connections you are expected to have got the AX25
    utilities setup, tested and working. See the AX25-HOWTO for more info

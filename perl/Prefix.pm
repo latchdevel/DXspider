@@ -12,6 +12,7 @@ use Carp;
 use DXVars;
 use DB_File;
 use Data::Dumper;
+use Carp;
 
 use strict;
 use vars qw($db  %prefix_loc %pre);

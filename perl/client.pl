@@ -39,6 +39,7 @@ BEGIN {
 
 use Msg;
 use DXVars;
+use Carp;
 
 $mode = 2;                      # 1 - \n = \r as EOL, 2 - \n = \n, 0 - transparent
 $call = "";                     # the callsign being used
@@ -147,7 +148,11 @@ sub rec_stdin
     if ($mode) {
 	  $buf =~ s/\r/\n/og if $mode == 1;
 	  $dangle = !($buf =~ /\n$/);
-	  @lines = split /\n/, $buf;
+	  if ($buf eq "\n") {
+	    @lines = (" ");
+	  } else {
+	    @lines = split /\n/, $buf;
+	  }
 	  if ($dangle) {                # pull off any dangly bits
 	    $buf = pop @lines;
 	  } else {

@@ -16,8 +16,8 @@ package DXCluster;
 
 use Exporter;
 @ISA = qw(Exporter);
-use Carp;
 use DXDebug;
+use Carp;
 
 use strict;
 use vars qw(%cluster %valid);

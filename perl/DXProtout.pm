@@ -15,6 +15,7 @@ package DXProt;
 
 use DXUtil;
 use DXM;
+use Carp;
 
 use strict;
 
@@ -86,7 +87,7 @@ sub pc17
 {
   my ($self, $ref) = @_;
   my $hops = get_hops(17);
-  return "PC17^$self->{call}^$ref->{call}^$hops^";
+  return "PC17^$ref->{call}^$self->{call}^$hops^";
 }
 
 # Request init string
@@ -154,11 +155,12 @@ sub pc24
 # message start (fromnode, tonode, to, from, t, private, subject, origin)
 sub pc28
 {
-  my ($fromnode, $tonode, $to, $from, $t, $private, $subject, $origin) = @_;
+  my ($tonode, $fromnode, $to, $from, $t, $private, $subject, $origin, $rr) = @_;
   my $date = cldate($t);
   my $time = ztime($t);
   $private = $private ? '1' : '0';
-  return "PC28^$fromnode^$tonode^$to^from^$date^$time^$private^$subject^ ^5^0^ ^$origin^~";
+  $rr = $rr ? '1' : '0';
+  return "PC28^$tonode^$fromnode^$to^$from^$date^$time^$private^$subject^ ^5^$rr^ ^$origin^~";
 }
 
 # message text (from and to node same way round as pc29)
@@ -166,7 +168,7 @@ sub pc29
 {
   my ($fromnode, $tonode, $stream, $text) = @_;
   $text =~ s/\^//og;        # remove ^
-  return "PC29^$fromnode^$tonode^$stream^text^~";
+  return "PC29^$fromnode^$tonode^$stream^$text^~";
 }
 
 # subject acknowledge (will have to and from node reversed to pc28)
@@ -197,7 +199,6 @@ sub pc33
   return "PC33^$fromnode^$tonode^$stream^";
 }
 
-
 # send all the DX clusters I reckon are connected
 sub pc38
 {
@@ -214,11 +215,42 @@ sub pc38
 # tell the local node to discconnect
 sub pc39
 {
-  my ($ref, $reason) = @_;
-  my $call = $ref->call;
+  my ($call, $reason) = @_;
   my $hops = get_hops(21);
   $reason = "Gone." if !$reason;
   return "PC39^$call^$reason^";
+}
+
+# cue up bulletin or file for transfer
+sub pc40
+{
+  my ($to, $from, $fn, $bull) = @_;
+  $bull = $bull ? '1' : '0';
+  return "PC40^$to^$from^$fn^$bull^5^";
+}
+
+# user info
+sub pc41
+{
+  my ($call, $sort, $info) = @_;
+  my $hops = get_hops(41);
+  $sort = $sort ? "$sort" : '0';
+  return "PC41^$call^$sort^$info^$hops^~";
+}
+
+# abort message
+sub pc42
+{
+  my ($fromnode, $tonode, $stream) = @_;
+  return "PC42^$fromnode^$tonode^$stream^";
+}
+
+# bull delete
+sub pc49
+{
+  my ($from, $subject) = @_;
+  my $hops = get_hops(49);
+  return "PC49^$from^$subject^$hops^~";
 }
 
 # periodic update of users, plus keep link alive device (always H99)

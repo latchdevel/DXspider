@@ -35,6 +35,7 @@ use DXCron;
 use DXConnect;
 use Prefix;
 use Bands;
+use Carp;
 
 package main;
 
@@ -142,13 +143,10 @@ sub process_inqueue
     $dxchan->start($line);  
   } elsif ($sort eq 'D') {
     die "\$user not defined for $call" if !defined $user;
-	if ($dxchan->{func}) {   
-	  # call an ongoing routine if there is a function specified
-	  &{$dxchan->{func}} ($dxchan, $line);
-	} else {
-	  # normal input
-	  $dxchan->normal($line);
-	}
+	
+	# normal input
+	$dxchan->normal($line);
+
     disconnect($dxchan) if ($dxchan->{state} eq 'bye');
   } elsif ($sort eq 'Z') {
     disconnect($dxchan);

@@ -9,6 +9,7 @@
 package DXUtil;
 
 use Date::Parse;
+use Carp;
 
 require Exporter;
 @ISA = qw(Exporter);

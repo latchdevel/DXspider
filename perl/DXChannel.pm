@@ -26,8 +26,8 @@
 package DXChannel;
 
 use Msg;
-use DXUtil;
 use DXM;
+use DXUtil;
 use DXDebug;
 use Carp;
 
@@ -59,6 +59,7 @@ use vars qw(%channels %valid);
   redirect => '0,Redirect messages to',
   lang => '0,Language',
   func => '9,Function',
+  loc => '9,Local Vars',     # used by func to store local variables in 
 );
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
@@ -182,20 +183,23 @@ sub send_file
   $self->send(@buf);
 }
 
-# just a shortcut for $dxchan->send(msg(...));
+# this will implement language independence (in time)
 sub msg
 {
   my $self = shift;
-  $self->send(DXM::msg(@_));
+  return DXM::msg(@_);
 }
 
 # change the state of the channel - lots of scope for debugging here :-)
 sub state
 {
   my $self = shift;
-  $self->{oldstate} = $self->{state};
-  $self->{state} = shift;
-  dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
+  if (@_) {
+    $self->{oldstate} = $self->{state};
+    $self->{state} = shift;
+    dbg('state', "$self->{call} channel func $self->{func} state $self->{oldstate} -> $self->{state}\n");
+  }
+  return $self->{state};
 }
 
 # disconnect this channel

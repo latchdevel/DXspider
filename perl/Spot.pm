@@ -11,6 +11,7 @@ package Spot;
 use FileHandle;
 use DXVars;
 use DXDebug;
+use DXUtil;
 use Julian;
 use Prefix;
 use Carp;
@@ -55,7 +56,10 @@ sub add
   my @dxcc = Prefix::extract($spot[1]);
   push @spot, (@dxcc > 0 ) ? $dxcc[1]->dxcc() : 0;
 
-  $fh->print(join("\^", @spot), "\n");
+  my $buf = join("\^", @spot);
+  $fh->print($buf, "\n");
+  
+  return $buf;
 }
 
 # search the spot database for records based on the field no and an expression
@@ -111,11 +115,24 @@ sub search
   }
 
   $expr =~ s/\$f(\d)/\$ref->[$1]/g;               # swap the letter n for the correct field name
+#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
   dbg("search", "expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n");
   
   # build up eval to execute
-  $eval = qq(my \$c;
+  $eval = qq(
+#    while (<\$fh>) {
+#	  chomp;
+#	  my \@spots = split /\\^/o;
+#	  if ($expr) {                # note NO \$expr
+#	    \$count++;
+#		next if \$count < \$from;                  # wait until from 
+#		push(\@out, \\\@spots);
+#		last LOOP if \$count >= \$to;                  # stop after to
+#	  }
+#	}
+    my \$c;
+	my \$ref;
     for (\$c = \$#spots; \$c >= 0; \$c--) {
 	  \$ref = \$spots[\$c];
 	  if ($expr) {
@@ -124,11 +141,12 @@ sub search
         push(\@out, \$ref);
 		last LOOP if \$count >= \$to;                  # stop after to
 	  }
-  });
+    }
+  );
 
 LOOP:
-  for ($i = 0; $i < 60; ++$i) {
-    my @now = Julian::sub(@fromdate, $i);
+  for ($i = 0; $i < $maxdays; ++$i) {             # look thru $maxdays worth of files only
+    my @now = Julian::sub(@fromdate, $i);         # but you can pick which $maxdays worth
 	last if Julian::cmp(@now, @todate) <= 0;         
 	
 	my @spots = ();
@@ -138,11 +156,10 @@ LOOP:
 	  my $in;
 	  foreach $in (<$fh>) {
 	    chomp $in;
-        push @spots, [ split('\^', $in) ];
+       push @spots, [ split('\^', $in) ];
 	  }
-	  my $ref;
 	  eval $eval;               # do the search on this file
-	  return ("error", $@) if $@;
+	  return ("Spot search error", $@) if $@;
 	}
   }
 
@@ -160,6 +177,23 @@ sub open
 sub close
 {
   # do nothing, unreferencing or overwriting the $self will close it  
+}
+
+# format a spot for user output in 'broadcast' mode
+sub formatb
+{
+  my @dx = @_;
+  my $t = ztime($dx[2]);
+  return sprintf "DX de %-9.9s: %9.1f %-12s %-30s<%s>", $dx[4], $dx[0], $dx[1], $dx[3], $t ;
+}
+
+# format a spot for user output in list mode
+sub formatl
+{
+  my @dx = @_;
+  my $t = ztime($dx[2]);
+  my $d = cldate($dx[2]);
+  return sprintf "%9.1f %-12s %s %s %-30s<%s>", $dx[0], $dx[1], $d, $t, $dx[3], $dx[4] ;
 }
 
 1;

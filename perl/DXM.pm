@@ -16,9 +16,7 @@
 
 package DXM;
 
-require Exporter;
-@ISA = qw(Exporter);
-@EXPORT = qw(msg);
+use DXVars;
 
 %msgs = (
   addr => 'Address set to: $_[0]',
@@ -32,6 +30,7 @@ require Exporter;
   e2 => 'Error: $_[0]',
   e3 => '$_[0]: $_[1] not found',
   e4 => 'Need at least a prefix or callsign',
+  e5 => 'Not Allowed',
   email => 'E-mail address set to: $_[0]',
   heres => 'Here set on $_[0]',
   hereu => 'Here unset on $_[0]',
@@ -43,6 +42,7 @@ require Exporter;
   node => '$_[0] set as AK1A style Node',
   nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
   pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
+  priv => 'Privilege level changed on $_[0]',
   prx => '$main::$mycall >',
   talks => 'Talk flag set on $_[0]',
   talku => 'Talk flag unset on $_[0]',
@@ -55,6 +55,8 @@ sub msg
   my $self = shift;
   my $s = $msgs{$self};
   return "unknown message '$self'" if !defined $s;
-  return  eval qq("$s");
+  my $ans = eval qq{ "$s" };
+  confess $@ if $@;
+  return $ans;
 }
   

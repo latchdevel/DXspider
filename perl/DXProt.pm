@@ -20,11 +20,16 @@ use DXProtVars;
 use DXCommandmode;
 use Spot;
 use DXProtout;
+use Carp;
 
 use strict;
-use vars qw($me);
+use vars qw($me $pc11_max_age $pc11_dup_age %dup $last_hour);
 
-$me = undef;            # the channel id for this cluster
+$me = undef;                # the channel id for this cluster
+$pc11_max_age = 1*3600;     # the maximum age for an incoming 'real-time' pc11
+$pc11_dup_age = 24*3600;    # the maximum time to keep the dup list for
+%dup = ();                  # the pc11 and 26 dup hash 
+$last_hour = time;          # last time I did an hourly periodic update
 
 sub init
 {
@@ -61,7 +66,7 @@ sub start
   # send initialisation string
   $self->send(pc38()) if DXNode->get_all();
   $self->send(pc18());
-  $self->state('normal');
+  $self->state('init');
   $self->pc50_t(time);
 }
 
@@ -97,34 +102,34 @@ sub normal
 	  return;
 	}
 	
-    if ($pcno == 11) {             # dx spot
+    if ($pcno == 11 || $pcno == 26) {             # dx spot
 
       # if this is a 'nodx' node then ignore it
 	  last SWITCH if grep $field[7] =~ /^$_/,  @DXProt::nodx_node;
 	  
       # convert the date to a unix date
 	  my $d = cltounix($field[3], $field[4]);
-#	  my $date = $field[3];
-#	  my $time = $field[4];
-#	  $date =~ s/^\s*(\d+)-(\w\w\w)-(19\d\d)$/$1 $2 $3/;
-#	  $time =~ s/^(\d\d)(\d\d)Z$/$1:$2 +0000/;
-#	  my $d = str2time("$date $time");
-	  return if !$d;               # bang out (and don't pass on) if date is invalid
+	  return if !$d || ($pcno == 11 && $d < $main::systime - $pc11_max_age);  # bang out (and don't pass on) if date is invalid or the spot is too old
 	  
 	  # strip off the leading & trailing spaces from the comment
 	  my $text = unpad($field[5]);
 	  
 	  # store it away
-	  Spot::add($field[1], $field[2], $d, $text, $field[6]);
-	  
-	  # format and broadcast it to users
 	  my $spotter = $field[6];
 	  $spotter =~ s/-\d+$//o;         # strip off the ssid from the spotter
-      $spotter .= ':';                # add a colon
+
+      # do some de-duping
+	  my $dupkey = "$field[1]$field[2]$d$text$field[6]";
+	  return if $dup{$dupkey};
+	  $dup{$dupkey} = $d;
+	  
+	  my $spot = Spot::add($field[1], $field[2], $d, $text, $spotter);
 	  
 	  # send orf to the users
-	  my $buf = sprintf "DX de %-7.7s %13.13s %-12.12s %-30.30s %5.5s\a\a", $spotter, $field[1], $field[2], $text, $field[4];
-      broadcast_users($buf);
+      if ($spot && $pcno == 11) {
+	    my $buf = Spot::formatb($field[1], $field[2], $d, $text, $spotter);
+        broadcast_users("$buf\a\a");
+	  }
 	  
 	  last SWITCH;
 	}
@@ -190,6 +195,9 @@ sub normal
 		$user->node($node->call) if !$user->node;
 		$user->put;
 	  }
+	  
+	  # queue up any messages (look for privates only)
+	  DXMsg::queue_msg(1) if $self->state eq 'normal';     
 	  last SWITCH;
 	}
 	
@@ -200,9 +208,9 @@ sub normal
 	}
 	
     if ($pcno == 18) {              # link request
-	
 	  $self->send_local_config();
 	  $self->send(pc20());
+      $self->state('init');	
 	  last SWITCH;
 	}
 	
@@ -221,13 +229,24 @@ sub normal
 		next if $ver < 5000;             # only works with version 5 software
 		next if length $call < 3;        # min 3 letter callsigns
         DXNode->new($self, $call, $confmode, $here, $ver);
+
+        # unbusy and stop and outgoing mail (ie if somehow we receive another PC19 without a disconnect)
+		my $mref = DXMsg::get_busy($call);
+		$mref->stop_msg($self) if $mref;
 	  }
+	  
+	  # queue up any messages
+	  DXMsg::queue_msg() if $self->state eq 'normal';     
 	  last SWITCH;
 	}
 	
     if ($pcno == 20) {              # send local configuration
 	  $self->send_local_config();
 	  $self->send(pc22());
+	  $self->state('normal');
+	  
+	  # queue mail
+	  DXMsg::queue_msg();
 	  return;
 	}
 	
@@ -239,7 +258,10 @@ sub normal
 	}
 	
     if ($pcno == 22) {last SWITCH;}
-    if ($pcno == 23) {last SWITCH;}
+
+    if ($pcno == 23 || $pcno == 27) {  # WWV info
+      last SWITCH;
+	}
 
     if ($pcno == 24) {             # set here status
 	  my $call = uc $field[1];
@@ -250,8 +272,6 @@ sub normal
 	}
 	
     if ($pcno == 25) {last SWITCH;}
-    if ($pcno == 26) {last SWITCH;}
-    if ($pcno == 27) {last SWITCH;}
 
     if (($pcno >= 28 && $pcno <= 33) || $pcno == 40 || $pcno == 42) {   # mail/file handling
 	  DXMsg::process($self, $line);
@@ -366,6 +386,17 @@ sub process
 	  $chan->pc50_t($t);
 	}
   }
+  
+  my $key;
+  my $val;
+  my $cutoff;
+  if ($main::systime - 3600 > $last_hour) {
+    $cutoff  = $main::systime - $pc11_dup_age;
+	while (($key, $val) = each %dup) {
+	  delete $dup{$key} if $val < $cutoff;
+	}
+	$last_hour = $main::systime;
+  }
 }
 
 #
@@ -375,6 +406,10 @@ sub finish
 {
   my $self = shift;
   my $ref = DXCluster->get($self->call);
+
+  # unbusy and stop and outgoing mail
+  my $mref = DXMsg::get_busy($self->call);
+  $mref->stop_msg($self) if $mref;
   
   # broadcast to all other nodes that all the nodes connected to via me are gone
   my @gonenodes = map { $_->dxchan == $self ? $_ : () } DXNode::get_all();

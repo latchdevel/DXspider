@@ -18,6 +18,7 @@ use vars qw(%dbglevel $dbgfh);
 
 use FileHandle;
 use DXUtil;
+use Carp;
 
 %dbglevel = ();
 $dbgfh = "";

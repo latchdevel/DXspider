@@ -12,13 +12,14 @@ if ($self->priv < 9) {
 
 foreach $call (@calls) {
   $call = uc $call;
+  next if $call eq $main::mycall;
   my $dxchan = DXChannel->get($call);
   if ($dxchan) {
     if ($dxchan->is_ak1a) {
-      $dxchan->send_now("D", $self->pc39('Disconnected'));
-	} else {
+      $dxchan->send_now("D", DXProt::pc39($dxchan->call, 'Disconnected'));
+    } else {
       $dxchan->disconnect;
-	}
+	} 
 	push @out, "disconnected $call";
   } else {
     push @out, "$call not connected locally";

@@ -13,6 +13,8 @@ my @out;
 my @body;
 my $ref;
 
+# $DB::single = 1;
+
 for $msgno (@f) {
   $ref = DXMsg::get($msgno);
   if (!$ref) {
