@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.29 January 2001
+<date>Version 1.30 January 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -19,7 +19,7 @@ A reference for SysOps of the DXSpider DXCluster program.
 <sect>Installation (Original version by Iain Phillips, G0RDI)
 
 <P>
-Last modified: 13 January 2001 by Ian Maude, G0VGS
+Last modified: 24 January 2001 by Ian Maude, G0VGS
 
 <sect1>Introduction
 
@@ -1673,6 +1673,19 @@ announces etc.  To use this program, simply use console.pl instead of client.pl.
 <P>
 To edit the colours, copy /spider/perl/Console.pl to /spider/local and edit the 
 file with your favourite editor.
+
+<sect1>BBS interface
+
+<P>
+Spider provides a simple BBS interface.  No input is required from the sysop
+of the cluster at all.  The BBS simply sets the cluster as a BBS and pushes
+any required mail to the cluster.  No mail can flow from Spider to the BBS,
+the interface is one-way.
+
+<P>
+Please be careful not to flood the cluster network with unnecessary mail.
+Make sure you only send mail to the clusters that want it by using the
+Forward.pl file very carefully.
 
 <sect>CVS
 
