@@ -195,7 +195,7 @@ sub it
 	my $key;
 	my $type = 'Dunno';
 	my $asc = '?';
-	
+
 	my $r = @keys > 0 ? 0 : 1;
 	foreach $key (@keys) {
 		$filter = $self->{$key};

@@ -10,6 +10,8 @@ reduce (slightly) the dups that are dumped.
 6. make set/isolate and acc/route mutually exclusive (and issue appropriate
 error messages).
 7. Improve stat/route_node and stat/route_user for diagnostics.
+8. strip top bit of comments in ann/spots.
+9. fix the announce filtering problem.
 01Sep01=======================================================================
 1. Change build number calc (hopefully for the last time)
 27Aug01=======================================================================

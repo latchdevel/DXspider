@@ -1366,10 +1366,7 @@ sub send_announce
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $me;
 		next if $dxchan == $self && $self->is_node;
-		my $routeit;
-		my ($filter, $hops);
-
-		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq)
+		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 	}
 }
 
@@ -1380,6 +1377,7 @@ sub announce
 	my $isolate = shift;
 	my $to = shift;
 	my $target = shift;
+	my $text = shift;
 	my ($filter, $hops);
 
 	if ($self->{annfilter}) {

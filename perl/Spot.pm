@@ -311,9 +311,9 @@ sub dup
  
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
 	chomp $text;
+	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	unpad($text);
-	$text =~ s/[\\\%]\d+//g;
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^a-zA-Z0-9]//g;
 	for (0,60,120,180,240,300) {
