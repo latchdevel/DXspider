@@ -129,14 +129,14 @@ sub new_client {
 		$conn->{sock} = $sock;
 		Msg::blocking($sock, 0);
 		$conn->{blocking} = 0;
-		my $host;
-		eval {$host = $conn->{peerhost}};
-		my $port;
-		eval {$port = $conn->{peerport}} unless $@;
+		eval {$conn->{peerhost} = $sock->peerhost};
 		if ($@) {
+			dbg('conn', $@);
 			$conn->disconnect;
 		} else {
-			my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $host, $conn->{peerport} = $port);
+			eval {$conn->{peerport} = $sock->peerport};
+			$conn->{peerport} = 0 if $@;
+			my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost}, $conn->{peerport});
 			dbg('connll', "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}");
 			if ($eproc) {
 				$conn->{eproc} = $eproc;
