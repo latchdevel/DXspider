@@ -105,8 +105,6 @@ sub start
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
 
-	$DXProt::me->conn($self->conn) if $call eq $main::myalias; # send all output for mycall to myalias
-
 	Log('DXCommand', "$call connected");
 
 	# send prompts and things
@@ -408,11 +406,6 @@ sub disconnect
 {
 	my $self = shift;
 	my $call = $self->call;
-
-	# reset the redirection of messages back to 'normal' if we are the sysop
-	if ($call eq $main::myalias) {
-		$DXProt::me->conn(undef);
-	}
 
 	my @rout = $main::routeroot->del_user($call);
 	dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');

@@ -316,7 +316,8 @@ sub normal
 			} else {
 				$call = $to = $field[2];
 			}
-			$dxchan = DXChannel->get($call);
+			$dxchan = DXChannel->get($main::myalias) if $call eq $main::mycall;
+			$dxchan = DXChannel->get($call) unless $dxchan;
 			if ($dxchan && $dxchan->is_user) {
 				$field[3] =~ s/\%5E/^/g;
 				$dxchan->talk($field[1], $to, $via, $field[3]);
@@ -421,7 +422,7 @@ sub normal
 					my $node;
 					my $to = $user->homenode;
 					my $last = $user->lastoper || 0;
-					if ($send_opernam && $main::systime > $last + $DXUser::lastoperinterval && $to && ($node = Route::Node::get($to)) ) {
+					if ($to ne $main::mycall && $send_opernam && $main::systime > $last + $DXUser::lastoperinterval && $to && ($node = Route::Node::get($to)) ) {
 						my $cmd = "forward/opernam $spot[4]";
 						# send the rcmd but we aren't interested in the replies...
 						my $dxchan = $node->dxchan;
@@ -1515,7 +1516,7 @@ sub route
 	if ($dxchan) {
 		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 		if ($routeit) {
-			$dxchan->send($routeit);
+			$dxchan->send($routeit) unless $dxchan == $me;
 		}
 	} else {
 		dbg("PCPROT: No route available, dropped") if isdbg('chanerr');
@@ -1693,10 +1694,10 @@ sub addrcmd
 	$r->{t} = $main::systime;
 	$r->{cmd} = $cmd;
 	$rcmds{$to} = $r;
-
+	
 	my $ref = Route::Node::get($to);
 	my $dxchan = $ref->dxchan;
-    if ($dxchan && $dxchan->is_clx) {
+	if ($dxchan && $dxchan->is_clx) {
 		route(undef, $to, pc84($main::mycall, $to, $self->{call}, $cmd));
 	} else {
 		route(undef, $to, pc34($main::mycall, $to, $cmd));
