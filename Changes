@@ -1,6 +1,9 @@
 01Jan00=======================================================================
 1. Fixed Julian routines to get rid of the millenium bug! (do as I say, not
 as I do!).
+2. updated gdx.pl so that external programs can do a sh/dx just as a normal
+user can. On reflection this could be used as a model for all sorts of 
+"external" interface routines.
 11Dec99=======================================================================
 1. added missing pc48 so that it calls the DXDb::process routine 
 10Dec99=======================================================================
