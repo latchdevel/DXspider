@@ -51,12 +51,12 @@ sub rec_socket
     cease(1);
   }
   if (defined $msg) {
-    my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)|(.*)$/;
+    my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
 	
 	if ($sort eq 'D') {
 	   $nl = "" if $mode == 0;
-	   $line =~ s/\n/\r/o if $mode == 1;
-	   print $line, $nl;
+	   $line =~ s/\n/\r/og if $mode == 1;
+	   print $line;
 	} elsif ($sort eq 'M') {
 	  $mode = $line;               # set new mode from cluster
 	} elsif ($sort eq 'Z') {       # end, disconnect, go, away .....
@@ -78,7 +78,7 @@ sub rec_stdin
 #  print "sys: $r $buf";
   if ($r > 0) {
     if ($mode) {
-	  $buf =~ s/\r/\n/o if $mode == 1;
+	  $buf =~ s/\r/\n/og if $mode == 1;
 	  $dangle = !($buf =~ /\n$/);
 	  @lines = split /\n/, $buf;
 	  if ($dangle) {                # pull off any dangly bits
@@ -113,7 +113,7 @@ select STDOUT; $| = 1;
 
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;
-#$SIG{'HUP'} = \&sig_term;
+$SIG{'HUP'} = \&sig_term;
 
 $conn = Msg->connect("$clusteraddr", $clusterport, \&rec_socket);
 $conn->send_now("A$call|start");

@@ -28,8 +28,8 @@ sub disconnect
 {
   my $dxchan = shift;
   return if !defined $dxchan;
-  my ($user) = $dxchan->{user};
-  my ($conn) = $dxchan->{conn};
+  my $user = $dxchan->{user};
+  my $conn = $dxchan->{conn};
   $user->close() if defined $user;
   $conn->disconnect() if defined $conn;
   $dxchan->del();
@@ -46,8 +46,9 @@ sub rec
 	return;
   }
   
-  # set up the basic channel info
+  # set up the basic channel info - this needs a bit more thought - there is duplication here
   if (!defined $dxchan) {
+     my ($sort, $call, $line) = $msg =~ /^(\w)(\S+)\|(.*)$/;
      my $user = DXUser->get($call);
 	 $user = DXUser->new($call) if !defined $user;
      $dxchan = DXChannel->new($call, $conn, $user);  
@@ -74,6 +75,7 @@ sub cease
   foreach $dxchan (DXChannel->get_all()) {
     disconnect($dxchan);
   }
+  exit(0);
 }
 
 # this is where the input queue is dealt with and things are dispatched off to other parts of
@@ -85,7 +87,7 @@ sub process_inqueue
   
   my $data = $self->{data};
   my $dxchan = $self->{dxchan};
-  my ($sort, $call, $line) = $data =~ /^(\w)(\S+)|(.*)$/;
+  my ($sort, $call, $line) = $data =~ /^(\w)(\S+)\|(.*)$/;
   
   # do the really sexy console interface bit! (Who is going to do the TK interface then?)
   print DEBUG atime, " < $sort $call $line\n" if defined DEBUG;
@@ -96,7 +98,7 @@ sub process_inqueue
     my $user = $dxchan->{user};
 	$user->{sort} = 'U' if !defined $user->{sort};
     if ($user->{sort} eq 'U') {
-	  $dxchan->send_later('D', m('l2', $call, $mycall, $myqth));
+	  $dxchan->send_now('D', msg('l2', $call, $mycall, $myqth));
 	  $dxchan->send_file($motd) if (-e $motd);
 	}
   } elsif (sort eq 'D') {
@@ -113,7 +115,7 @@ sub process_inqueue
 #############################################################
 
 # open the debug file, set various FHs to be unbuffered
-open(DEBUG, ">>$debugfn") or die "can't open $debugfn($!)\n";
+open(DEBUG, ">>$debugfn") or die "can't open $debugfn($!)";
 select DEBUG; $| = 1;
 select STDOUT; $| = 1;
 

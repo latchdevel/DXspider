@@ -11,6 +11,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 use Msg;
+use DXUtil;
 
 %connects = undef;
 
@@ -20,7 +21,7 @@ sub new
   my ($pkg, $call, $conn, $user) = @_;
   my $self = {};
   
-  die "trying to create a duplicate Connect for call $call\n" if $connects{$call};
+  die "trying to create a duplicate channel for $call" if $connects{$call};
   $self->{call} = $call;
   $self->{conn} = $conn;
   $self->{user} = $user;
@@ -74,7 +75,9 @@ sub send_now
   my $line;
 
   foreach $line (@_) {
-    print DEBUG "$t > $sort $call $line\n" if defined DEBUG;
+    my $t = atime;
+	chomp $line;
+    print main::DEBUG "$t > $sort $call $line\n" if defined DEBUG;
 	print "> $sort $call $line\n";
     $conn->send_now("$sort$call|$line");
   }
@@ -89,7 +92,9 @@ sub send_later
   my $line;
 
   foreach $line (@_) {
-    print DEBUG "$t > $sort $call $line\n" if defined DEBUG;
+    my $t = atime;
+	chomp $line;
+    print main::DEBUG "$t > $sort $call $line\n" if defined DEBUG;
     print "> $sort $call $line\n";
     $conn->send_later("$sort$call|$line");
   }

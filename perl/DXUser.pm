@@ -42,8 +42,8 @@ sub init
 {
   my ($pkg, $fn) = @_;
   
-  die "need a filename in User\n" if !$fn;
-  $dbm = tie %u, MLDBM, $fn, O_CREAT|O_RDWR, 0666 or die "can't open user file: $fn ($!)\n";
+  die "need a filename in User" if !$fn;
+  $dbm = tie %u, MLDBM, $fn, O_CREAT|O_RDWR, 0666 or die "can't open user file: $fn ($!)";
   $filename = $fn;
 }
 
@@ -78,7 +78,7 @@ sub new
 
 sub get
 {
-  my $call = shift;
+  my ($pkg, $call) = @_;
   return $u{$call};
 }
 
