@@ -44,7 +44,7 @@ $last_clean = 0;				# last time we did a clean
 @forward = ();                  # msg forward table
 $timeout = 30*60;               # forwarding timeout
 $waittime = 60*60;              # time an aborted outgoing message waits before trying again
-$queueinterval = 5*60;          # run the queue every 5 minutes
+$queueinterval = 2*60;          # run the queue every 2 minutes
 $lastq = 0;
 
 
@@ -649,6 +649,7 @@ sub start_msg
 	$self->{fromnode} = $main::mycall;
 	$busy{$self->{tonode}} = $self;
 	$work{$self->{tonode}} = $self;
+	$self->{lastt} = $main::systime;
 	$dxchan->send(DXProt::pc28($self->{tonode}, $self->{fromnode}, $self->{to}, $self->{from}, $self->{t}, $self->{private}, $self->{subject}, $self->{origin}, $self->{rrreq}));
 }
 
