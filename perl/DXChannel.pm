@@ -77,6 +77,7 @@ use vars qw(%channels %valid);
 		  spotfilter => '5,Spot Filter',
 		  inannfilter => '5,Input Ann Filter',
 		  inwwvfilter => '5,Input WWV Filter',
+		  inwcyfilter => '5,Input WCY Filter',
 		  inspotfilter => '5,Input Spot Filter',
 		  passwd => '9,Passwd List,parray',
 		  pingint => '5,Ping Interval ',
@@ -132,6 +133,7 @@ sub alloc
 	# get the filters
 	$self->{spotfilter} = Filter::read_in('spots', $call, 0);
 	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0);
+	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0);
 	$self->{annfilter} = Filter::read_in('ann', $call, 0);
 
 	bless $self, $pkg; 

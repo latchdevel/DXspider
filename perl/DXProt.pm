@@ -106,6 +106,7 @@ sub start
 	# get the INPUT filters (these only pertain to Clusters)
 	$self->{inspotfilter} = Filter::read_in('spots', $call, 1);
 	$self->{inwwvfilter} = Filter::read_in('wwv', $call, 1);
+	$self->{inwcyfilter} = Filter::read_in('wcy', $call, 1);
 	$self->{inannfilter} = Filter::read_in('ann', $call, 1);
 	
 	# set unbuffered and no echo
