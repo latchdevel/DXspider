@@ -15,6 +15,7 @@ my @out;
 my @file;
 my @d;
 my @slot;
+my $patt = '^.*$';
 
 if (@f) {
 	my $fn = lc $f[0];
@@ -22,6 +23,8 @@ if (@f) {
 	$fn =~ s/\.//og;
 	$fn =~ s/^\///og;
 	$root = "$root/$fn";
+
+    $patt = shellregex(lc $f[1]) if defined $f[1];
 }
 
 opendir(DIR, $root) or 	return (1, $self->msg('e3', 'show/files', $f[0]));
@@ -31,6 +34,7 @@ closedir(DIR);
 my $flag = 0;
 for (@file) {
 	next if /^\./;
+    next unless m{$patt};
 	my $fn = "$root/$_";
 	my $size;
 	
