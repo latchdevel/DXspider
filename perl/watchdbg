@@ -41,8 +41,8 @@ for (;;) {
 		if ($exp) {
 			printit($line) if $line =~ m{(?:$exp)}oi;
 		} else {
-            printit($line);
-        }
+	            printit($line);
+        	}
 	} else {
 		sleep(1);
 
@@ -52,6 +52,7 @@ for (;;) {
 		if ($today[1] != $now[1]) {
 			$fp->close;
 			$fh = $fp->open(@now) or die $!; 
+			@today = @now;
 		}
 	}
 }
@@ -61,6 +62,9 @@ sub printit
 	my $line = shift;
 	my @line =  split '\^', $line;
 	my $t = shift @line;
-	print atime($t), ' ', join('^', @line); 
+        my ($sec,$min,$hour) = gmtime((defined $t) ? $t : time);
+        my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
+
+	print $buf, ' ', join('^', @line); 
 }
 exit(0);

@@ -1,3 +1,6 @@
+28Jul00=======================================================================
+1. fixed watchdbg midnight rollover loop and removed the date part of the 
+date/time translation to leave just the time.
 27Jul00=======================================================================
 1. made sure that 'en' is the default language on new users.
 2. issue error message if shutdown is attempted by a low privileged user.
