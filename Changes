@@ -1,5 +1,6 @@
 13Jun01=======================================================================
 1. fix init cnd rinit cmds
+2. add missing clear/route cmd
 10Jun01=======================================================================
 1. fix set/here and unset/here
 2. fix indirect routing to users two hops away
