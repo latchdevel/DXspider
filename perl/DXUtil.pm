@@ -64,8 +64,11 @@ sub cltounix
 {
 	my $date = shift;
 	my $time = shift;
-	$date =~ s/^\s*(\d+)-(\w\w\w)-(19\d\d)$/$1 $2 $3/;
-	$time =~ s/^(\d\d)(\d\d)Z$/$1:$2 +0000/;
+
+	return 0 unless /^\s*(\d+)-(\w\w\w)-([12][90]\d\d)$/;
+	$date = "$1 $2 $3";
+	return 0 unless /^(\d\d)(\d\d)Z$/;
+	$time = "$1:$2 +0000";
 	return str2time("$date $time");
 }
 
