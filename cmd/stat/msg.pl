@@ -23,10 +23,11 @@ if (@list == 0) {
 		$lines = @$lref if $lref;
 		my $count = $ref->count;
 		my $to = $ref->to;
+		my $from = $ref->from;
 		my $lastt = $ref->lastt ? " Last Processed: " . cldatetime($ref->lastt) : "";
 		my $waitt = $ref->waitt ? " Waiting since: " . cldatetime($ref->waitt) : "";
 		
-		push @out, " $call -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
+		push @out, "$from -> $to msg: $msgno stream: $stream Count: $count Lines: $lines$lastt$waitt";
 	}
 } else {
 	foreach my $msgno (@list) {
