@@ -1,3 +1,17 @@
+28Feb01=======================================================================
+1. allow sh/c gb7 (ie show the config of all gb7 nodes)(for example)
+2. get rid of spurious DXHash 'uninitialised' messages if no corresponding 
+file is present.
+3. changed policy of $censorpc in DXProt.pm so that badwords are looked for
+in all text announces etc.
+4. Unpad (remove excess spaces from) spotted callsigns in PC11. 
+5. test for opertaing system in various places and do different if M$
+27Feb01=======================================================================
+1. allow partial node callsigns on sh/c (eg sh/c gb7)
+2. Changed Msg.pm to allow a more generalised interface with more than one
+listener.
+3. Added IntMsg.pm to implement the internal connection management that is
+currently scattered about the cluster code.
 25Feb01=======================================================================
 1. Fixed watchdbg so that simple arguments work again
 22Feb01=======================================================================
