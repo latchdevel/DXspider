@@ -26,6 +26,7 @@ my $to;
 my $from = $self->call;
 my $t = ztime(time);
 my $tonode;
+my $toflag = '*';
 my $sysopflag;
 
 if ($sort eq "FULL") {
@@ -51,7 +52,7 @@ if (@bad = BadWords::check($line)) {
 	return (1, $self->msg('e17', @bad));
 }
 
-return (1, $self->msg('dup')) if AnnTalk::dup($from, $to, $line);
+return (1, $self->msg('dup')) if AnnTalk::dup($from, $toflag, $line);
 Log('ann', $to, $from, $line);
 DXProt::broadcast_list("To $to de $from <$t>: $line", 'ann', undef, @locals);
 if ($to ne "LOCAL") {
