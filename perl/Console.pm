@@ -45,9 +45,9 @@ if ($ENV{'TERM'} =~ /(console|linux)/) {
 	$background = COLOR_BLACK();
 	@colors = (
 		   [ '^DX de [\-\w]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
-		   [ '^DX', COLOR_PAIR(5) ],
+		   [ '^DX', COLOR_PAIR(4) ],
 		   [ '^To', COLOR_PAIR(3) ],
-		   [ '^WWV', COLOR_PAIR(4) ],
+		   [ '^WWV', COLOR_PAIR(5) ],
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
 		   [ '^WX', COLOR_PAIR(3) ],

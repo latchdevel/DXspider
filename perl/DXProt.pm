@@ -437,8 +437,6 @@ sub normal
 				$user->put;
 			}
 			
-			# queue up any messages
-			DXMsg::queue_msg(0) if $self->state eq 'normal';
 			return if $newline eq "PC19^";
 
 			# add hop count 
@@ -451,10 +449,6 @@ sub normal
 			$self->send_local_config();
 			$self->send(pc22());
 			$self->state('normal');
-			
-			# queue mail
-			DXMsg::queue_msg(0);
-
 			return;
 		}
 		
@@ -483,12 +477,9 @@ sub normal
 		
 		if ($pcno == 22) {
 			$self->state('normal');
-			
-			# queue mail
-			DXMsg::queue_msg(0);
 			return;
 		}
-		
+				
 		if ($pcno == 23 || $pcno == 27) { # WWV info
 			
 			# route 'foreign' pc27s 

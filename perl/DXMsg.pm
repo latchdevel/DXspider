@@ -32,7 +32,8 @@ use Carp;
 
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
-			@badmsg $badmsgfn $forwardfn @forward $timeout $waittime);
+			@badmsg $badmsgfn $forwardfn @forward $timeout $waittime
+		    $queueinterval $lastq);
 
 %work = ();						# outstanding jobs
 @msg = ();						# messages we have
@@ -43,6 +44,9 @@ $last_clean = 0;				# last time we did a clean
 @forward = ();                  # msg forward table
 $timeout = 30*60;               # forwarding timeout
 $waittime = 60*60;              # time an aborted outgoing message waits before trying again
+$queueinterval = 5*60;          # run the queue every 5 minutes
+$lastq = 0;
+
 
 $badmsgfn = "$msgdir/badmsg.pl";  # list of TO address we wont store
 $forwardfn = "$msgdir/forward.pl";  # the forwarding table
@@ -137,7 +141,13 @@ sub process
 				$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
 			}
 		}
-		
+
+		# queue some message if the interval timer has gone off
+		if ($main::systime > $lastq + $queueinterval) {
+			queue_msg(0);
+			$lastq = $main::systime;
+		}
+
 		# clean the message queue
 		clean_old() if $main::systime - $last_clean > 3600 ;
 		return;
@@ -173,6 +183,7 @@ sub process
 			$work{"$f[2]$stream"} = $ref; # store in work
 			$busy{$f[2]} = $ref; # set interlock
 			$self->send(DXProt::pc30($f[2], $f[1], $stream)); # send ack
+			$ref->{lastt} = $main::systime;
 			last SWITCH;
 		}
 		
@@ -269,7 +280,6 @@ sub process
 					}
 				}
 				$ref->stop_msg($self->call);
-				queue_msg(0);
 			} else {
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			}
@@ -292,7 +302,6 @@ sub process
 			} else {
 				$self->send(DXProt::pc42($f[2], $f[1], $f[3]));	# unknown stream
 			} 
-			queue_msg(0);
 			last SWITCH;
 		}
 		
@@ -830,7 +839,6 @@ sub do_send_stuff
 			delete $self->{loc};
 			$self->func(undef);
 			
-			DXMsg::queue_msg(0);
 			$self->state('prompt');
 		} elsif ($line eq "\031" || uc $line eq "/ABORT" || uc $line eq "/QUIT") {
 			#push @out, $self->msg('sendabort');
