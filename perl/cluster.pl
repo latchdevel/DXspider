@@ -239,11 +239,12 @@ sub cease
 # the reaper of children
 sub reap
 {
-	$SIG{'CHLD'} = \&reap;
 	my $cpid;
-	while (($cpid = waitpid(1, &WNOHANG) != -1)) {
+	while (($cpid = waitpid(1, &WNOHANG)) != -1) {
+		dbg('reap', "cpid: $cpid");
 		@outstanding_connects = grep {$_->{pid} != $cpid} @outstanding_connects;
 	}
+	dbg('reap', "cpid: $cpid");
 }
 
 # this is where the input queue is dealt with and things are dispatched off to other parts of
