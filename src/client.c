@@ -232,7 +232,12 @@ void send_text(fcb_t *f, char *s, int l)
 		flush_text(f);
 		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
 	}
-	*mp->inp++ = '\n';
+	if (nl == '\r')
+		*mp->inp++ = nl;
+	else {
+		*mp->inp++ = '\r';
+		*mp->inp++ = '\n';
+	}
 	if (!f->buffer_it)
 		flush_text(f);
 }
@@ -297,12 +302,14 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 			default:
 /*				if (f->sort == MSG)
 				send_Z = 0; */
+				dbg(DBUF,"got errno %d in input", errno);
 				ending++;
 				return 0;
 			}
 		} else if (r == 0) {
 /*			if (f->sort == MSG)
 			send_Z = 0; */
+			dbg(DBUF, "ending normally");
 			ending++;
 			return 0;
 		}
@@ -475,6 +482,7 @@ lout:;
 				default:
 /*					if (f->sort == MSG)
 					send_Z = 0; */
+					dbg(DBUF,"got errno %d in output", errno);
 					ending++;
 					return;
 				}
@@ -749,7 +757,8 @@ main(int argc, char *argv[])
 	/* is this a login? */
 	if (eq(call, "LOGIN")) {
 		char buf[MAXPACLEN+1];
-		int r;
+		char callsign[MAXCALLSIGN+1];
+		int r, i;
 		int f = xopen("data", "issue", 0);
 		if (f > 0) {
 			while ((r = read(f, buf, paclen)) > 0) {
@@ -767,19 +776,32 @@ main(int argc, char *argv[])
 		signal(SIGALRM, login_timeout);
 		alarm(timeout);
 		write(0, "login: ", 7);
-		r = read(0, buf, 20);
-		if (r <= 0)
-			die("No login or error (%d)", errno);
+		dbgdump(DBUF, "<-out", "login: ", 7);
+		for (i = 0;;) {
+			char *p;
+		    r = read(0, buf, 20);
+			dbgdump(DBUF, "in ->", buf, r);
+			if (r <= 0)
+				die("No login or error (%d)", errno);
+			write(0, buf, r);
+			dbgdump(DBUF, "<-out", buf, r);
+			for (p = buf; p < buf+r; ++p) {
+				if (i < MAXCALLSIGN) {
+					if (*p == '\r' || *p == '\n')
+						goto lgotcall;
+					else if (isalnum(*p))
+						callsign[i++] = *p;
+					else
+						die("%c is not a valid callsign character", *p);
+				} else 
+					die("callsign entered is too long");
+			}
+		}
+lgotcall:
 		signal(SIGALRM, SIG_IGN);
 		alarm(0);
-		while (r > 0) {
-			if (buf[r-1] == ' ' || buf[r-1] == '\r' || buf[r-1] == '\n')
-				--r;
-			else
-				break;
-		}
-		buf[r] = 0;
-		call = strupper(buf);
+		callsign[i]= 0;
+		call = strupper(callsign);
 	}
 
 	/* check the callsign */
