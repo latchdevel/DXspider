@@ -1,3 +1,6 @@
+11Feb99========================================================================
+1. Fixed a problem with isolated nodes' configurations being sent on sending 
+local configs to new connections.
 08Feb99========================================================================
 1. added a $SIG{ALRM} in the client to actually catch the alarm when it goes 
 off which means that the netrom/ax25 call programs terminate properly (and not
@@ -5,6 +8,7 @@ loop as fast as their little legs can paddle, soaking up CPU time).
 2. Implemented read receipts as an especial request from G4PDQ.
 3. Fiddled with DXUser a bit to see whether I can stop it core dumping on new
 users in PC16s on his machine.
+4. Added E4 (Palestine) to Prefix data.
 30Jan99========================================================================
 1. Some of the dates we get can cause crashes, tried to make it more robust (oh
 and Y2K compliant)

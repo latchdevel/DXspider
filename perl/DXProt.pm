@@ -692,8 +692,10 @@ sub send_local_config
 		@nodes = (DXCluster->get_exact($main::mycall));
 	} else {
 		# create a list of all the nodes that are not connected to this connection
-		@nodes = DXNode::get_all();
-		@nodes = grep { $_->dxchan != $self } @nodes;
+		# and are not themselves isolated, this to make sure that isolated nodes
+        # don't appear outside of this node
+		@nodes = DXNode::get_all(); 
+		@nodes = grep { $_->dxchan != $self && !$_->{isolate} } @nodes;
 	}
 
 	my @s = $me->pc19(@nodes);
