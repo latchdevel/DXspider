@@ -64,12 +64,12 @@ $baddxfn = "$main::data/baddx.pl";
  undef ,						# pc20 no validation
  [ qw(c m h) ],					# pc21
  undef ,						# pc22 no validation
- [ qw(d t n n n m c c h) ],		# pc23
+ [ qw(d n n n n m c c h) ],		# pc23
  [ qw(c p h) ],					# pc24
  [ qw(c c n n) ],				# pc25
- [ qw(f c m d t c c) ],			# pc26
- [ qw(d t n n n m c c) ],		# pc27
- [ qw(c c c c d t p m bp n p bp c) ], # pc28
+ [ qw(f m d t m c c) ],			# pc26
+ [ qw(d n n n n m c c) ],		# pc27
+ [ qw(c c c c d t p m bp n p bp bc) ], # pc28
  [ qw(c c n m) ],				# pc29
  [ qw(c c n) ],					# pc30
  [ qw(c c n) ],					# pc31
@@ -114,7 +114,7 @@ $baddxfn = "$main::data/baddx.pl";
  undef,							# pc70
  undef,
  undef,
- [ qw(d n n n n n n n m m m c c) ],	# pc73
+ [ qw(d n n n n n n m m m c c h) ],	# pc73
  undef,
  undef,
  undef,
@@ -143,7 +143,7 @@ sub check
 	shift;    # not interested in the first field
 	for ($i = 0; $i < @_; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
-		next if $blank && $_[$i] eq ' ';
+		next if $blank && $_[$i] =~ /^[ \*]$/;
 		if ($act eq 'c') {
 			return $i+1 unless is_callsign($_[$i]);
 		} elsif ($act eq 'm') {
