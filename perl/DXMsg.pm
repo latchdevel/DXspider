@@ -201,7 +201,7 @@ sub process
 						$ref->store($ref->{lines});
 						add_dir($ref);
 						my $dxchan = DXChannel->get($ref->{to});
-						$dxchan->msg('msgnew') if $dxchan;
+						$dxchan->send($dxchan->msg('msgnew')) if $dxchan;
 						Log('msg', "Message $ref->{msgno} from $ref->{from} received from $f[2] for $ref->{to}");
 					}
 				}
