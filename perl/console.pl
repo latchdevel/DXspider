@@ -30,8 +30,9 @@ use IntMsg;
 use DXVars;
 use DXDebug;
 use DXUtil;
+use DXDebug;
 use IO::File;
-use Curses 1.05;
+use Curses 1.06;
 
 use Console;
 
@@ -50,14 +51,16 @@ $khistpos = 0;
 $spos = $pos = $lth = 0;
 $inbuf = "";
 
+sub mydbg
+{
+	local *STDOUT = undef;
+	dbg(@_);
+}
+
 # do the screen initialisation
 sub do_initscr
 {
 	$scr = new Curses;
-	raw();
-	noecho();
-	$has_colors = has_colors();
-	
 	if ($has_colors) {
 		start_color();
 		init_pair("0", $foreground, $background);
@@ -76,28 +79,41 @@ sub do_initscr
 		init_pair(12, COLOR_MAGENTA, COLOR_BLUE);
 		init_pair(13, COLOR_YELLOW, COLOR_GREEN);
 		init_pair(14, COLOR_RED, COLOR_GREEN);
-		$scr->attrset(COLOR_PAIR(0));
+		assume_default_colors($foreground, $background);
 	}
 	
-	$top = $scr->subwin(LINES()-4, COLS, 0, 0);
+	$top = $scr->subwin($lines-4, $cols, 0, 0);
 	$top->intrflush(0);
 	$top->scrollok(1);
-	$scr->addstr(LINES()-4, 0, '-' x COLS);
-	$bot = $scr->subwin(3, COLS, LINES()-3, 0);
+	$top->meta(1);
+#	$scr->addstr($lines-4, 0, '-' x $cols);
+	$bot = $scr->subwin(3, $cols, $lines-3, 0);
 	$bot->intrflush(0);
 	$bot->scrollok(1);
 	$bot->keypad(1);
 	$bot->move(1,0);
+	$bot->meta(1);
+	$bot->nodelay(1);
 	$scr->refresh();
 	
-	$pagel = LINES()-4;
+	$pagel = $lines-4;
 	$mycallcolor = COLOR_PAIR(1) unless $mycallcolor;
 }
 
 sub do_resize
 {
-	undef $scr;
+	endwin() if $scr;
+	initscr();
+	raw();
+	noecho();
+	$lines = LINES;
+	$cols = COLS;
+	$has_colors = has_colors();
 	do_initscr();
+
+	$winch = 0;
+	$SIG{'WINCH'} = sub {$winch = 1};
+	show_screen();
 }
 
 # cease communications
@@ -137,8 +153,8 @@ sub measure
 	return 0 unless $line;
 
 	my $l = length $line;
-	my $lines = int ($l / COLS());
-	$lines++ if $l / COLS() > $lines;
+	my $lines = int ($l / $cols);
+	$lines++ if $l / $cols > $lines;
 	return $lines;
 }
 
@@ -183,13 +199,15 @@ sub show_screen
 		$spos = @shistory if $spos > @shistory;
 	}
     my $shl = @shistory;
+	my $size = $lines . 'x' . $cols . '-'; 
 	my $add = "-$spos-$shl";
     my $time = ztime(time);
-	my $str =  "-" . $time . '-' x (COLS() - (length($call) + length($add) + length($time) + 1));
-	$scr->addstr(LINES()-4, 0, $str);
+	my $str =  "-" . $time . '-' x ($cols - (length($size) + length($call) + length($add) + length($time) + 1));
+	$scr->addstr($lines-4, 0, $str);
 	
+	$scr->addstr($size);
 	$scr->attrset($mycallcolor) if $has_colors;
-	$scr->addstr("$call");
+	$scr->addstr($call);
 	$scr->attrset(COLOR_PAIR(0)) if $has_colors;
     $scr->addstr($add);
 	$scr->refresh();
@@ -236,9 +254,7 @@ sub rec_socket
 
 sub rec_stdin
 {
-	my ($fh) = @_;
-
-	$r = $bot->getch();
+	my $r = shift;;
 	
 	#  my $prbuf;
 	#  $prbuf = $buf;
@@ -246,6 +262,7 @@ sub rec_stdin
 	#  $prbuf =~ s/\n/\\n/;
 	#  print "sys: $r ($prbuf)\n";
 	if (defined $r) {
+
 		
 		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
 			
@@ -271,7 +288,7 @@ sub rec_stdin
 				$khistpos = @khistory;
 				$bot->move(0,0);
 				$bot->clrtoeol();
-				$bot->addstr(substr($inbuf, 0, COLS));
+				$bot->addstr(substr($inbuf, 0, $cols));
 			}
 
 			# add it to the monitor window
@@ -367,13 +384,18 @@ sub rec_stdin
 			} else {
 				beep();
 			}
+		} elsif ($r eq KEY_RESIZE || $r eq "\0632") {
+			do_resize();
+			return;
 		} elsif (is_pctext($r)) {
 			# move the top screen back to the bottom if you type something
 			if ($spos < @shistory) {
 				$spos = @shistory;
 				show_screen();
 			}
-		
+
+		#	$r = ($r lt ' ' || $r gt "\x7e") ? sprintf("'%x", ord $r) : $r;
+			
 			# insert the character into the keyboard buffer
 			if ($pos < $lth) {
 				my $a = substr($inbuf, 0, $pos);
@@ -385,8 +407,8 @@ sub rec_stdin
 			$pos++;
 			$lth++;
 		} elsif ($r eq "\014" || $r eq "\022") {
-			touchwin($curscr, 1);
-			refresh($curscr);
+			touchwin(curscr, 1);
+			refresh(curscr);
 			return;
 		} elsif ($r eq "\013") {
 			$inbuf = substr($inbuf, 0, $pos);
@@ -421,6 +443,8 @@ if ($call eq $mycall) {
 	exit(0);
 }
 
+dbginit();
+
 $conn = IntMsg->connect("$clusteraddr", $clusterport, \&rec_socket);
 if (! $conn) {
 	if (-r "$data/offline") {
@@ -443,23 +467,23 @@ unless ($DB::VERSION) {
 	$SIG{'TERM'} = \&sig_term;
 }
 
-#$SIG{'WINCH'} = \&do_resize;
 $SIG{'HUP'} = \&sig_term;
 
-do_initscr();
+# start up
+do_resize();
 
 $SIG{__DIE__} = \&sig_term;
 
-$conn->send_later("A$call|$connsort width=$COLS");
+$conn->send_later("A$call|$connsort width=$cols");
 $conn->send_later("I$call|set/page $maxshist");
 $conn->send_later("I$call|set/nobeep");
 
-Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
+#Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
 my $lastmin = 0;
 for (;;) {
 	my $t;
-	Msg->event_loop(10, 0.01);
+	Msg->event_loop(1, 0.01);
 	$t = time;
 	if ($t > $lasttime) {
 		my ($min)= (gmtime($t))[1];
@@ -468,6 +492,17 @@ for (;;) {
 			$lastmin = $min;
 		}
 		$lasttime = $t;
+	}
+	my $ch = $bot->getch();
+	if ($winch) {
+#		mydbg("Got Resize");
+#		do_resize();
+		next;
+	}
+	if (defined $ch) {
+		if ($ch ne '-1') {
+			rec_stdin($ch);
+		}
 	}
 	$top->refresh() if $top->is_wintouched;
 	$bot->refresh();

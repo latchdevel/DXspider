@@ -44,7 +44,7 @@ $main::branch += $BRANCH;
 
 use vars qw($me $pc11_max_age $pc23_max_age $last_pc50
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
-			%nodehops $baddx $badspotter $badnode $censorpc
+			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist);
 
 $me = undef;					# the channel id for this cluster
@@ -62,6 +62,7 @@ $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
 $ann_to_talk = 1;
+$rspfcheck = 1;
 
 @checklist = 
 (
@@ -316,6 +317,9 @@ sub normal
  SWITCH: {
 		if ($pcno == 10) {		# incoming talk
 
+			# rsfp check
+			return if $rspfcheck and !$self->rspfcheck(0, $field[6], $field[1]);
+			
 			# will we allow it at all?
 			if ($censorpc) {
 				my @bad;
@@ -384,6 +388,9 @@ sub normal
 				}
 			}
 			
+			# rsfp check
+			return if $rspfcheck and !$self->rspfcheck(1, $field[7], $field[6]);
+
 			# if this is a 'nodx' node then ignore it
 			if ($badnode->in($field[7])) {
 				dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
@@ -513,6 +520,9 @@ sub normal
 		}
 		
 		if ($pcno == 12) {		# announces
+
+			return if $rspfcheck and !$self->rspfcheck(1, $field[5], $field[1]);
+
 			# announce duplicate checking
 			$field[3] =~ s/^\s+//;  # remove leading blanks
 			if (AnnTalk::dup($field[1], $field[2], $field[3])) {
@@ -848,6 +858,8 @@ sub normal
 					return;
 				}
 			}
+
+			return if $rspfcheck and !$self->rspfcheck(1, $field[8], $field[7]);
 
 			# do some de-duping
 			my $d = cltounix($field[1], sprintf("%02d18Z", $field[2]));

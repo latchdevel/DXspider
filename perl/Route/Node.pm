@@ -189,6 +189,12 @@ sub nodes
 	return @{$self->{nodes}};
 }
 
+sub parents
+{
+	my $self = shift;
+	return @{$self->{parent}};
+}
+
 sub rnodes
 {
 	my $self = shift;

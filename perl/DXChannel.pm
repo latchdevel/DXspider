@@ -32,6 +32,7 @@ use DXVars;
 use DXDebug;
 use Filter;
 use Prefix;
+use Route;
 
 use strict;
 use vars qw(%channels %valid @ISA $count);
@@ -498,6 +499,25 @@ sub decode_input
 	}
 	
 	return ($sort, $call, $line);
+}
+
+sub rspfcheck
+{
+	my ($self, $flag, $node, $user) = @_;
+	my $nref = Route::Node::Get($node);
+	if ($nref) {
+	    if ($nref->dxchan == $self) {
+			return 1 unless $user;
+			return 1 if grep $user eq $_, $nref->users;
+			dbg("RSPF: $user not on $node") if isdbg('rspf');
+		} else {
+			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('rspf');
+		}
+	} else {
+		return 1 if $flag;
+		dbg("RSPF: required $node not found" ) if isdbg('rspf');
+	}
+	return 0;
 }
 
 no strict;
