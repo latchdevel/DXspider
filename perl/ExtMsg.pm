@@ -19,7 +19,7 @@ use DXUtil;
 use DXDebug;
 use IO::File;
 use IO::Socket;
-use IPC::Open2;
+use IPC::Open3;
 
 use vars qw(@ISA $deftimeout);
 
@@ -83,7 +83,7 @@ sub dequeue
 			dbg('connect', $msg) unless $conn->{state} eq 'C';
 		
 			$msg =~ s/\xff\xfa.*\xff\xf0|\xff[\xf0-\xfe].//g; # remove telnet options
-			$msg =~ s/[\x00-\x08\x0a-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
+			$msg =~ s/[\x00-\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 			
 			if ($conn->{state} eq 'C') {
 				&{$conn->{rproc}}($conn, "I$conn->{call}|$msg");
@@ -211,17 +211,15 @@ sub _doconnect
 			dbg('connect', "***Connect Failed to $host $port $!");
 		}
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
-		$conn->{sock} = new IO::File;
-		if ($conn->{sock}) {
-			my $outfd = fileno($conn->{sock});
-			my $out = new IO::File ">&$outfd";
-			if ($conn->{pid} = open2($conn->{sock}, $out, $line)) {
-				$conn->{csort} = $sort;
-				$conn->{lineend} = "\cM" if $sort eq 'ax25';
-				dbg('connect', "started $line");
-			} else {
-				dbg('connect', "can't start $line $!");
-			}
+		my $sock = new IO::Socket::INET;
+		local *H;
+		my $wrt = \*H;
+		
+		if ($conn->{pid} = open3("<&$sock", ">&$sock", '', $line)) {
+			$conn->{sock} = $sock;
+			$conn->{csort} = $sort;
+			$conn->{lineend} = "\cM" if $sort eq 'ax25';
+			dbg('connect', "started pid: $conn->{pid} as $line");
 		} else {
 			dbg('connect', "can't start $line $!");
 		}

@@ -283,6 +283,22 @@ sub _send {
     1;  # Success
 }
 
+sub dup_sock
+{
+	my $conn = shift;
+	my $oldsock = $conn->{sock};
+	my $rc = $rd_callbacks{$oldsock};
+	my $wc = $wt_callbacks{$oldsock};
+	my $ec = $er_callbacks{$oldsock};
+	my $sock = $oldsock->new_from_fd($oldsock, "w+");
+	if ($sock) {
+		set_event_handler($oldsock, read=>undef, write=>undef, error=>undef);
+		$conn->{sock} = $sock;
+		set_event_handler($sock, read=>$rc, write=>$wc, error=>$ec);
+		$oldsock->close;
+	}
+}
+
 sub _err_will_block {
 	return 0 unless $blocking_supported;
 	return ($_[0] == $eagain || $_[0] == $ewouldblock || $_[0] == $einprogress);
