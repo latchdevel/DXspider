@@ -53,7 +53,7 @@ $baddxfn = "$main::data/baddx.pl";
 (
  [ qw(c c m p bc c) ],			# pc10
  [ qw(f m d t m c c h) ],		# pc11
- [ qw(c bc m p c p h) ],		# pc12
+ [ qw(c bc m p bc p h) ],		# pc12
  [ qw(c h) ],					# 
  [ qw(c h) ],					# 
  [ qw(c m h) ],					# 
@@ -143,6 +143,7 @@ sub check
 	shift;    # not interested in the first field
 	for ($i = 0; $i < @_; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
+		return 0 unless $act;
 		next if $blank && $_[$i] =~ /^[ \*]$/;
 		if ($act eq 'c') {
 			return $i+1 unless is_callsign($_[$i]);
