@@ -430,12 +430,17 @@ $conn->send_now("I$call|set/nobeep");
 
 Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
+my $lastmin = 0;
 for (;;) {
 	my $t;
 	Msg->event_loop(1, 1);
 	$t = time;
 	if ($t > $lasttime) {
-		show_screen();
+		my ($min)= (gmtime($t))[1];
+		if ($min != $lastmin) {
+			show_screen();
+			$lastmin = $min;
+		}
 		$lasttime = $t;
 	}
 	$top->refresh() if $top->is_wintouched;
