@@ -154,10 +154,15 @@ sub handleI
 	my $self = shift;
 	
 	my @f = split /\^/, $_[3];
-	my $inv = Verify->new($f[7]);
-	unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
-		$self->sendnow('D','Sorry...');
-		$self->disconnect;
+	if ($self->passphrase && $f[7] && $f[8]) {
+		my $inv = Verify->new($f[7]);
+		unless ($inv->verify($f[8], $main::me->user->passphrase, $main::mycall, $self->call)) {
+			$self->sendnow('D','Sorry...');
+			$self->disconnect;
+		}
+		$self->{verified} = 1;
+	} else {
+		$self->{verified} = 0;
 	}
 	if ($self->{outbound}) {
 		$self->send($self->genI);
@@ -175,8 +180,12 @@ sub handleI
 sub genI
 {
 	my $self = shift;
-	my $inp = Verify->new;
-	return frame('I', $self->call, "DXSpider", ($main::version + 53) * 100, $main::build, $inp->challenge, $inp->response($self->user->passphrase, $self->call, $main::mycall));
+	my @out = ('I', $self->call, "DXSpider", ($main::version + 53) * 100, $main::build);
+	if (my $pass = $self->user->passphrase) {
+		my $inp = Verify->new;
+		push @out, $inp->challenge, $inp->response($pass, $self->call, $main::mycall);
+	}
+	return frame(@out);
 }
 
 sub handleR

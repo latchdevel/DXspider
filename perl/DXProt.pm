@@ -1706,7 +1706,7 @@ sub load_hops
 	return $self->msg('lh1') unless -e "$main::data/hop_table.pl";
 	do "$main::data/hop_table.pl";
 	return $@ if $@;
-	return 0;
+	return ();
 }
 
 

@@ -21,24 +21,27 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 	
 	foreach $dxchan (@ch) {
 		@val = sort {$a->call cmp $b->call} grep { $_->dxchan == $dxchan } @nodes;
-		my $call = $dxchan->call;
-		$call = "($call)" if $dxchan->here == 0;
 		@l = ();
+		my $call = $dxchan->call;
+		$call ||= '???';
+		$call = "($call)" unless $dxchan->here;
 		push @l, $call;
 		
 		my $i = 0;
-		foreach $call (@val) {
+		foreach my $ref (@val) {
 			if ($i >= 5) {
 				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 				@l = ();
 				push @l, "";
 				$i = 0;
 			}
-			my $s = $call->call;
-			$s = sprintf "(%s)", $s unless $call->here;
+			my $s = $ref->call;
+			$s ||= '???';
+			$s = sprintf "(%s)", $s unless $ref->here;
 			push @l, $s;
 			$i++;
 		}
+		push @l, "" while ($i++ < 5);
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 } else {
@@ -46,8 +49,9 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 	foreach $node (@nodes) {
 		next if scalar @list && !grep $node->call =~ /^$_/, @list;
 		my $call = $node->call;
-		$call = "($call)" unless $node->here;
 		@l = ();
+		$call ||= '???';
+		$call = "($call)" unless $node->here;
 		push @l, $call;
 		@val = sort $node->users;
 
@@ -72,6 +76,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 			push @l, $s;
 			$i++;
 		}
+		push @l, "" while ($i++ < 5);
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 }

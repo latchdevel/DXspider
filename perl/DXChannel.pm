@@ -112,6 +112,7 @@ $count = 0;
 		  prompt => '0,Required Prompt',
 		  version => '1,Node Version',
 		  build => '1,Node Build',
+		  verified => '9,Verified?,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);
