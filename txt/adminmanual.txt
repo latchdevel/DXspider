@@ -1815,8 +1815,8 @@
 
 
 
-  Now login to the cluster as your sysop user and run the command "mrtg
-  all".
+  Now login to the cluster with your sysop callsign and run the command
+  "mrtg all".
 
 
   Now you are nearly there!  Login as the sysop user and change to the
