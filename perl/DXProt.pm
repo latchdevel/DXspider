@@ -1738,36 +1738,6 @@ sub process
 #
 
 
-sub send_dx_spot
-{
-	my $self = shift;
-	my $line = shift;
-	my @dxchan = DXChannel->get_all();
-	my $dxchan;
-	
-	# send it if it isn't the except list and isn't isolated and still has a hop count
-	# taking into account filtering and so on
-	foreach $dxchan (@dxchan) {
-		next if $dxchan == $main::me;
-		next if $dxchan == $self && $self->is_node;
-		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
-	}
-}
-
-sub dx_spot
-{
-	my $self = shift;
-	my $line = shift;
-	my $isolate = shift;
-	my ($filter, $hops);
-
-	if ($self->{spotsfilter}) {
-		($filter, $hops) = $self->{spotsfilter}->it(@_);
-		return unless $filter;
-	}
-	send_prot_line($self, $filter, $hops, $isolate, $line);
-}
-
 sub send_prot_line
 {
 	my ($self, $filter, $hops, $isolate, $line) = @_;

@@ -86,7 +86,7 @@ sub gen_DXCommandmode
 	if ($dxchan->{ve7cc}) {
 		$buf = VE7CC::dx_spot($dxchan, $thing->{spotdata});
 	} else {
-		$buf = $dxchan->format_dx_spot($thing->{spotdata});
+		$buf = Spot::format_dx_spot($dxchan, $thing->{spotdata});
 		$buf .= "\a\a" if $dxchan->{beep};
 		$buf =~ s/\%5E/^/g;
 	}

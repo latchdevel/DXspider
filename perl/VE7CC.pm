@@ -28,9 +28,10 @@ $main::branch += $BRANCH;
 sub dx_spot
 {
 	my $self = shift;			# this may be useful some day
-	my $freq = shift;
-	my $spotted = shift;
-	my $t = shift;
+	my $spot = ref $_[0] ? shift : \@_;
+	my $freq = $spot->[0];
+	my $spotted = $spot->[1];
+	my $t = $spot->[2];
 	my $loc_spotted = '';
 	my $loc_spotter = '';
 	my $ref = DXUser->get_current($spotted);
@@ -40,21 +41,21 @@ sub dx_spot
 	}
 
 	# remove any items above the top of the max spot data
-	pop while @_ > 11;
+	pop while @_ > 14;
 	
 	# make sure both US states are defined
-	$_[9] ||= '';
-	$_[10] ||= '';
+	$_[12] ||= '';
+	$_[13] ||= '';
 	
 	my $spotted_cc = (Prefix::cty_data($spotted))[5];
-	my $spotter_cc = (Prefix::cty_data($_[1]))[5];
-	$ref = DXUser->get_current($_[1]);
+	my $spotter_cc = (Prefix::cty_data($_[4]))[5];
+	$ref = DXUser->get_current($_[4]);
 	if ($ref) {
 		my $loc = $ref->qra || '';
 		$loc_spotter = substr($loc, 0, 4) if $loc;
 	}
 	
-	return sprintf("CC11^%0.1f^%s^", $freq, $spotted) . join('^', cldate($t), ztime($t), @_, $spotted_cc, $spotter_cc, $loc_spotted, $loc_spotter);
+	return sprintf("CC11^%0.1f^%s^", $freq, $spotted) . join('^', cldate($t), ztime($t), @$spot[3..-1], $spotted_cc, $spotter_cc, $loc_spotted, $loc_spotter);
 }
 
 1;

@@ -292,9 +292,44 @@ sub ftor
 # format a spot for user output in list mode
 sub formatl
 {
-	my $t = ztime($_[2]);
-	my $d = cldate($_[2]);
-	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, $_[3], "<$_[4]" ;
+	my $spot = ref $_[0] ? shift : \@_;
+
+	my $t = ztime($spot->[2]);
+	my $d = cldate($spot->[2]);
+	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $spot->[0], $spot->[1], $d, $t, $spot->[3], "<$spot->[4]" ;
+}
+
+# format a spot for normal output
+sub format_dx_spot
+{
+	my $dxchan = shift;
+	my $spot = ref $_[0] ? shift : \@_;
+	
+	my $t = ztime($spot->[2]);
+	my $loc = '';
+	my $clth = $dxchan->{consort} eq 'local' ? 29 : 30;
+	my $comment = substr $spot->[3], 0, $clth; 
+	$comment .= ' ' x ($clth - length($comment));
+	if ($dxchan->{user}->wantgrid) { 
+		my $ref = DXUser->get_current($spot->[4]);
+		if ($ref) {
+			$loc = $ref->qra || '';
+			$loc = ' ' . substr($loc, 0, 4) if $loc;
+		}
+	}
+
+	if ($dxchan->{user}->wantdxitu) {
+		$loc = ' ' . sprintf("%2d", $spot->[10]) if defined $spot->[10];
+		$comment = substr($comment, 0,  $dxchan->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[8]) if defined $spot->[8]; 
+	} elsif ($dxchan->{user}->wantdxcq) {
+		$loc = ' ' . sprintf("%2d", $spot->[11]) if defined $spot->[11];
+		$comment = substr($comment, 0,  $dxchan->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[9]) if defined $spot->[9]; 
+	} elsif ($dxchan->{user}->wantusstate) {
+		$loc = ' ' . $spot->[13] if $spot->[13];
+		$comment = substr($comment, 0,  $dxchan->{consort} eq 'local' ? 26 : 27) . ' ' . $spot->[12] if $spot->[12]; 
+	}
+
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$spot->[4]:", $spot->[0], $spot->[1], $comment;
 }
 
 #

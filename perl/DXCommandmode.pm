@@ -846,66 +846,6 @@ sub chat
 	$self->local_send('C', $buf);
 }
 
-sub format_dx_spot
-{
-	my $self = shift;
-	my $spot = ref $_[0] ? shift : \@_;
-	
-	my $t = ztime($spot->[2]);
-	my $loc = '';
-	my $clth = $self->{consort} eq 'local' ? 29 : 30;
-	my $comment = substr $spot->[3], 0, $clth; 
-	$comment .= ' ' x ($clth - length($comment));
-	if ($self->{user}->wantgrid) { 
-		my $ref = DXUser->get_current($spot->[4]);
-		if ($ref) {
-			$loc = $ref->qra || '';
-			$loc = ' ' . substr($loc, 0, 4) if $loc;
-		}
-	}
-
-	if ($self->{user}->wantdxitu) {
-		$loc = ' ' . sprintf("%2d", $spot->[10]) if defined $spot->[10];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[8]) if defined $spot->[8]; 
-	} elsif ($self->{user}->wantdxcq) {
-		$loc = ' ' . sprintf("%2d", $spot->[11]) if defined $spot->[11];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[9]) if defined $spot->[9]; 
-	} elsif ($self->{user}->wantusstate) {
-		$loc = ' ' . $spot->[13] if $spot->[13];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $spot->[12] if $spot->[12]; 
-	}
-
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$spot->[4]:", $spot->[0], $spot->[1], $comment;
-}
-
-# send a dx spot
-sub dx_spot
-{
-	my $self = shift;
-	my $line = shift;
-	my $isolate = shift;
-	return unless $self->{dx};
-
-	my ($filter, $hops);
-
-	if ($self->{spotsfilter}) {
-		($filter, $hops) = $self->{spotsfilter}->it(@_ );
-		return unless $filter;
-	}
-
-	dbg('spot: "' . join('","', @_) . '"') if isdbg('dxspot');
-
-	my $buf;
-	if ($self->{ve7cc}) {
-		$buf = VE7CC::dx_spot($self, @_);
-	} else {
-		$buf = $self->format_dx_spot(@_);
-		$buf .= "\a\a" if $self->{beep};
-		$buf =~ s/\%5E/^/g;
-	}
-
-	$self->local_send('X', $buf);
-}
 
 sub wwv
 {

@@ -365,7 +365,7 @@ foreach $ref (@res) {
 		push @out, VE7CC::dx_spot($self, @$ref);
 	} else {
 		if ($real) {
-			push @out, $self->format_dx_spot(@$ref);
+			push @out, $self->format_dx_spot($ref);
 		} else {
 			push @out, Spot::formatl(@$ref);
 		}

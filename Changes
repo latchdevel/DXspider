@@ -1,3 +1,8 @@
+14Feb05=======================================================================
+1. Move version no to 2.01
+2. Add more of the new Thingy infrastructure.
+3. allow authenticated HELLO commands
+4. port DX broadcasts for all flavours of interface.
 08Feb05=======================================================================
 1. possibly fixed the multiple condition problems on sh/dx
 2. added some FAQs.
