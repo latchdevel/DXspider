@@ -50,6 +50,9 @@
 
 #define DBUF 1
 #define DMSG 2
+#define DSTS 4
+
+#define UC unsigned char
 
 typedef struct 
 {
@@ -83,7 +86,6 @@ fcb_t *node;					/* the fcb of the msg system */
 char nl = '\n';					/* line end character */
 char mode = 1;                  /* 0 - ax25, 1 - normal telnet, 2 - nlonly telnet */
 char ending = 0;				/* set this to end the program */
-char send_Z = 1;				/* set a Z record to the node on termination */
 char echo = 1;					/* echo characters on stdout from stdin */
 char int_tabs = 0;				/* interpret tabs -> spaces */
 char *root = "/spider";         /* root of data tree, can be overridden by DXSPIDER_ROOT  */
@@ -91,6 +93,15 @@ int timeout = 60;				/* default timeout for logins and things */
 int paclen = DEFPACLEN;			/* default buffer size for outgoing packets */
 int tabsize = 8;				/* default tabsize for text messages */
 char *connsort = "local";		/* the connection variety */
+int state = 0;					/* the current state of the connection */
+int laststate = 0;				/* the last state we were in */
+
+
+
+#define CONNECTED 100
+#define WAITLOGIN 1
+#define WAITPASSWD 2
+#define WAITINPUT 10
 
 
 myregex_t iscallreg[] = {		/* regexes to determine whether this is a reasonable callsign */
@@ -122,6 +133,13 @@ void terminate(int);
 /*
  * utility routines - various
  */
+
+void chgstate(int new)
+{
+	laststate = state;
+	state = new;
+	dbg(DSTS, "chg state %d->%d", laststate, state);
+}
 
 void die(char *s, ...)
 {
@@ -162,11 +180,11 @@ int eq(char *a, char *b)
 	return (strcmp(a, b) == 0);
 }
 
-int xopen(char *dir, char *name, int mode)
+FILE *xopen(char *dir, char *name, char *mode)
 {
 	char fn[MAXPATHLEN+1];
 	snprintf(fn, MAXPATHLEN, "%s/%s/%s", root, dir, name);
-	return open(fn, mode);
+	return fopen(fn, mode);
 }
 
 int iscallsign(char *s)
@@ -209,7 +227,7 @@ void flush_text(fcb_t *f)
 	}
 }
 
-void send_text(fcb_t *f, char *s, int l)
+void send_text(fcb_t *f, char *s, int l, int nlreq)
 {
 	cmsg_t *mp;
 	char *p;
@@ -235,18 +253,20 @@ void send_text(fcb_t *f, char *s, int l)
 		flush_text(f);
 		f->obuf = mp = cmsg_new(paclen+1, f->sort, f);
 	}
-	if (nl == '\r')
-		*mp->inp++ = nl;
-	else {
-		if (mode != 2)
-			*mp->inp++ = '\r';
-		*mp->inp++ = '\n';
+	if (nlreq) {
+		if (nl == '\r')
+			*mp->inp++ = nl;
+		else {
+			if (mode != 2)
+				*mp->inp++ = '\r';
+			*mp->inp++ = '\n';
+		}
 	}
 	if (!f->buffer_it)
 		flush_text(f);
 }
 
-void send_msg(fcb_t *f, char let, unsigned char *s, int l)
+void send_msg(fcb_t *f, char let, UC *s, int l)
 {
 	cmsg_t *mp;
 	int ln;
@@ -258,7 +278,7 @@ void send_msg(fcb_t *f, char let, unsigned char *s, int l)
 	mp->inp += strlen(call);
 	*mp->inp++ = '|';
 	if (l > 0) {
-		unsigned char *p;
+		UC *p;
 		for (p = s; p < s+l; ++p) {
 			if (mp->inp >= mp->data + (myl - 4)) {
 				int off = mp->inp - mp->data;
@@ -288,7 +308,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 {
 	fcb_t *f = sp->fcb;
 	cmsg_t *mp, *omp;
-	unsigned char c;
+	UC c;
 	
 	/* input modes */
 	if (ending == 0 && in) {
@@ -304,15 +324,11 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 			case EAGAIN:
 				goto lout;
 			default:
-/*				if (f->sort == MSG)
-				send_Z = 0; */
 				dbg(DBUF,"got errno %d in input", errno);
 				ending++;
 				return 0;
 			}
 		} else if (r == 0) {
-/*			if (f->sort == MSG)
-			send_Z = 0; */
 			dbg(DBUF, "ending normally");
 			ending++;
 			return 0;
@@ -339,6 +355,12 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 					case 0x7f:
 						strcpy(omp->inp, "\b \b");
 						omp->inp += strlen(omp->inp);
+						break;
+					case '\r':
+						break;
+					case '\n':
+						strcpy(omp->inp, "\r\n");
+						omp->inp += 2;
 						break;
 					default:
 						*omp->inp++ = *p;
@@ -395,7 +417,7 @@ int fcb_handler(sel_t *sp, int in, int out, int err)
 		case MSG:
 			p = buf;
 			while (r > 0 && p < &buf[r]) {
-				unsigned char ch = *p++;
+				UC ch = *p++;
 				
 				if (mp->inp >= mp->data + (MAXBUFL-1)) {
 					mp->state = 0;
@@ -484,8 +506,6 @@ lout:;
 				case EAGAIN:
 					goto lend;
 				default:
-/*					if (f->sort == MSG)
-					send_Z = 0; */
 					dbg(DBUF,"got errno %d in output", errno);
 					ending++;
 					return;
@@ -525,6 +545,151 @@ void setmode(char *m)
 	} else {
 		die("Connection type must be \"telnet\", \"nlonly\", \"ax25\", \"login\" or \"local\"");
 	}
+}
+
+
+/*
+ * things to do with ongoing processing of inputs
+ */
+
+void process_stdin()
+{
+	cmsg_t *mp = cmsg_next(in->inq);
+	char *p, hasa, hasn, i;
+	char callsign[MAXCALLSIGN+1];
+	
+	if (mp) {
+		dbg(DMSG, "MSG size: %d", mp->size);
+
+		switch (state) {
+		case CONNECTED:
+			if (mp->size > 0) {
+				send_msg(node, 'I', mp->data, mp->size);
+			}
+			break;
+		case WAITLOGIN:
+			for (i = 0; i < mp->size; ++i) {
+				UC ch = mp->data[i];
+				if (i < MAXCALLSIGN) {
+					if (isalpha(ch))
+						++hasa;
+					if (isdigit(ch))
+						++hasn;
+				    if (isalnum(ch) || ch == '-')
+						callsign[i] = ch;
+					else
+						die("invalid callsign");
+				} else 
+					die("invalid callsign");
+			}
+			callsign[i]= 0;
+			if (strlen(callsign) < 3)
+				die("invalid callsign");
+			if (hasa && hasn)
+				;
+			else
+				die("invalid callsign");
+			call = strupper(callsign);
+			
+			/* check the callsign against the regexes */
+			if (!iscallsign(call)) {
+				die("Sorry, %s isn't a valid callsign", call);
+			}
+
+			alarm(0);
+			signal(SIGALRM, SIG_IGN);
+			
+			/* tell the cluster who I am */
+			send_msg(node, 'A', connsort, strlen(connsort));
+			
+			chgstate(CONNECTED);
+		}
+
+		cmsg_callback(mp, 0);
+
+	}
+}
+
+void process_node()
+{
+	cmsg_t *mp = cmsg_next(node->inq);
+	if (mp) {
+		dbg(DMSG, "MSG size: %d", mp->size);
+	
+		if (mp->size > 0 && mp->inp > mp->data) {
+			char *p = strchr(mp->data, '|');
+			if (p)
+				p++;
+			switch (mp->data[0]) {
+			case 'Z':
+				ending++;
+				return;
+			case 'E':
+				if (isdigit(*p))
+					in->echo = *p - '0';
+				break;
+			case 'B':
+				if (isdigit(*p))
+					in->buffer_it = *p - '0';
+				break;
+			case 'D':
+				if (p) {
+					int l = mp->inp - (UC *) p;
+					send_text(in, p, l, 1);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		cmsg_callback(mp, 0);
+	} else {
+		flush_text(in);
+	}
+}
+
+/*
+ * things to do with going away
+ */
+
+void term_timeout(int i)
+{
+	/* none of this is going to be reused so don't bother cleaning up properly */
+	if (in && in->t_set)
+		tcsetattr(0, TCSANOW, &in->t);
+	if (node) {
+		shutdown(node->cnum, 3);
+		close(node->cnum);
+	}
+	exit(i);
+}
+
+void terminate(int i)
+{
+	signal(SIGALRM, term_timeout);
+	alarm(10);
+	
+	while ((in && !is_chain_empty(in->outq)) ||
+		   (node && !is_chain_empty(node->outq))) {
+		sel_run();
+	}
+	if (in && in->t_set)
+		tcsetattr(0, TCSADRAIN, &in->t);
+	if (node) {
+		shutdown(node->cnum, 3);
+		close(node->cnum);
+	}
+	exit(i);
+}
+
+void login_timeout(int i)
+{
+	write(0, "Timed Out", 10);
+	write(0, &nl, 1);
+	sel_run();					/* force a coordination */
+	if (in && in->t_set)
+		tcsetattr(0, TCSANOW, &in->t);
+	exit(i);
 }
 
 /*
@@ -612,117 +777,26 @@ void connect_to_node()
 }
 
 /*
- * things to do with going away
- */
-
-void term_timeout(int i)
-{
-	/* none of this is going to be reused so don't bother cleaning up properly */
-	if (in && in->t_set)
-		tcsetattr(0, TCSANOW, &in->t);
-	if (node) {
-		shutdown(node->cnum, 3);
-		close(node->cnum);
-	}
-	exit(i);
-}
-
-void terminate(int i)
-{
-#if 0
-	if (node && send_Z && call) {
-		send_msg(node, 'Z', "bye", 3);
-	}
-#endif
-	
-	signal(SIGALRM, term_timeout);
-	alarm(10);
-	
-	while ((in && !is_chain_empty(in->outq)) ||
-		   (node && !is_chain_empty(node->outq))) {
-		sel_run();
-	}
-	if (in && in->t_set)
-		tcsetattr(0, TCSADRAIN, &in->t);
-	if (node) {
-		shutdown(node->cnum, 3);
-		close(node->cnum);
-	}
-	exit(i);
-}
-
-void login_timeout(int i)
-{
-	write(0, "Timed Out", 10);
-	write(0, &nl, 1);
-	sel_run();					/* force a coordination */
-	if (in && in->t_set)
-		tcsetattr(0, TCSANOW, &in->t);
-	exit(i);
-}
-
-/*
- * things to do with ongoing processing of inputs
- */
-
-void process_stdin()
-{
-	cmsg_t *mp = cmsg_next(in->inq);
-	if (mp) {
-		dbg(DMSG, "MSG size: %d", mp->size);
-	
-		if (mp->size > 0 && mp->inp > mp->data) {
-			send_msg(node, 'I', mp->data, mp->size);
-		}
-		cmsg_callback(mp, 0);
-	}
-}
-
-void process_node()
-{
-	cmsg_t *mp = cmsg_next(node->inq);
-	if (mp) {
-		dbg(DMSG, "MSG size: %d", mp->size);
-	
-		if (mp->size > 0 && mp->inp > mp->data) {
-			char *p = strchr(mp->data, '|');
-			if (p)
-				p++;
-			switch (mp->data[0]) {
-			case 'Z':
-				send_Z = 0;
-				ending++;
-				return;
-			case 'E':
-				if (isdigit(*p))
-					in->echo = *p - '0';
-				break;
-			case 'B':
-				if (isdigit(*p))
-					in->buffer_it = *p - '0';
-				break;
-			case 'D':
-				if (p) {
-					int l = mp->inp - (unsigned char *) p;
-					send_text(in, p, l);
-				}
-				break;
-			default:
-				break;
-			}
-		}
-		cmsg_callback(mp, 0);
-	} else {
-		flush_text(in);
-	}
-}
-
-/*
  * the program itself....
  */
 
 main(int argc, char *argv[])
 {
+	/* compile regexes for iscallsign */
+	{
+		myregex_t *rp;
+		for (rp = iscallreg; rp->in; ++rp) {
+			regex_t reg;
+			int r = regcomp(&reg, rp->in, REG_EXTENDED|REG_ICASE|REG_NOSUB);
+			if (r)
+				die("regcomp returned %d for '%s'", r, rp->in);
+			rp->regex = malloc(sizeof(regex_t));
+			if (!rp->regex)
+				die("out of room - compiling regexes");
+			*rp->regex = reg;
+		}
+	}
+	
 	/* set up environment */
 	{
 		char *p = getenv("DXSPIDER_ROOT");
@@ -757,77 +831,6 @@ main(int argc, char *argv[])
 	signal(SIGPWR, terminate);
 #endif
 
-	/* compile regexes for iscallsign */
-	{
-		myregex_t *rp;
-		for (rp = iscallreg; rp->in; ++rp) {
-			regex_t reg;
-			int r = regcomp(&reg, rp->in, REG_EXTENDED|REG_ICASE|REG_NOSUB);
-			if (r)
-				die("regcomp returned %d for '%s'", r, rp->in);
-			rp->regex = malloc(sizeof(regex_t));
-			if (!rp->regex)
-				die("out of room - compiling regexes");
-			*rp->regex = reg;
-		}
-	}
-	
-	/* is this a login? */
-	if (eq(call, "LOGIN") || eq(call, "login")) {
-	
-		char buf[MAXPACLEN+1];
-		char callsign[MAXCALLSIGN+1];
-		int r, i;
-		int f = xopen("data", "issue", 0);
-		if (f > 0) {
-			while ((r = read(f, buf, paclen)) > 0) {
-				if (nl != '\n') {
-					char *p;
-					for (p = buf; p < &buf[r]; ++p) {
-						if (*p == '\n')
-							*p = nl;
-					}
-				}
-				write(0, buf, r);
-			}
-			close(f);
-		}
-		signal(SIGALRM, login_timeout);
-		alarm(timeout);
-		write(0, "login: ", 7);
-		dbgdump(DBUF, "<-out", "login: ", 7);
-		for (i = 0;;) {
-			char *p;
-		    r = read(0, buf, 20);
-			dbgdump(DBUF, "in ->", buf, r);
-			if (r <= 0)
-				die("No login or error (%d)", errno);
-			write(0, buf, r);
-			dbgdump(DBUF, "<-out", buf, r);
-			for (p = buf; p < buf+r; ++p) {
-				if (i < MAXCALLSIGN) {
-					if (*p == '\r' || *p == '\n')
-						goto lgotcall;
-					else if (isalnum(*p) || *p == '-')
-						callsign[i++] = *p;
-					else
-						die("%c is not a valid callsign character", *p);
-				} else 
-					die("callsign entered is too long");
-			}
-		}
-lgotcall:
-		signal(SIGALRM, SIG_IGN);
-		alarm(0);
-		callsign[i]= 0;
-		call = strupper(callsign);
-	}
-
-	/* check the callsign */
-	if (!iscallsign(call)) {
-		die("Sorry, %s isn't a valid callsign", call);
-	}
-	
 	/* connect up stdin */
 	in = fcb_new(0, TEXT);
 	in->sp = sel_open(0, in, "STDIN", fcb_handler, TEXT, SEL_INPUT);
@@ -849,9 +852,39 @@ lgotcall:
 	/* connect up node */
 	connect_to_node();
 
-	/* tell the cluster who I am */
-	send_msg(node, 'A', connsort, strlen(connsort));
+	/* is this a login? */
+	if (eq(call, "LOGIN") || eq(call, "login")) {
 	
+		char buf[MAXPACLEN+1];
+		int r, i;
+		FILE *f = xopen("data", "issue", "r");
+		if (f) {
+			while (fgets(buf, paclen, f)) {
+				i = strlen(buf);
+				if (i && buf[i-1] == '\n') 
+					buf[--i] = 0;
+				send_text(in, buf, i, 1);
+			}
+			fclose(f);
+		}
+		signal(SIGALRM, login_timeout);
+		alarm(timeout);
+		send_text(in, "login: ", 7, 0);
+		chgstate(WAITLOGIN);
+	} else {
+
+		/* check the callsign against the regexes */
+		if (!iscallsign(call)) {
+			die("Sorry, %s isn't a valid callsign", call);
+		}
+
+		/* tell the cluster who I am */
+		send_msg(node, 'A', connsort, strlen(connsort));
+	
+		chgstate(CONNECTED);
+	}
+	
+
 	/* main processing loop */
 	while (ending == 0) {
 		sel_run();
