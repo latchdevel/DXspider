@@ -186,7 +186,7 @@ sub rec_stdin
 			} else {
 				beep();
 			}
-		} elsif ($r eq KEY_PPAGE || $r eq "\026") {
+		} elsif ($r eq KEY_PPAGE || $r eq "\032") {
 			if ($spos > 0) {
 				$spos -= $pages;
 				$spos = 0 if $spos < 0;
@@ -194,7 +194,7 @@ sub rec_stdin
 			} else {
 				beep();
 			}
-		} elsif ($r eq KEY_NPAGE || $r eq "\032") {
+		} elsif ($r eq KEY_NPAGE || $r eq "\026") {
 			if ($spos < @shistory - 1) {
 				$spos += $pages;
 				$spos = @shistory if $spos > @shistory;
