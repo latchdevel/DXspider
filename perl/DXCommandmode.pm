@@ -180,10 +180,7 @@ sub normal
 	} elsif ($self->{state} eq 'talk') {
 		if ($cmdline =~ m{^(?:/EX|/ABORT)}i) {
 			for (@{$self->{talklist}}) {
-				my $ent = $_;
-				my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
-				my $dxchan = DXChannel->get($via);
-				$dxchan->talk($self->{call}, $to, $via, $self->msg('talkend')) if $dxchan;
+				$self->send_talks($_,  $self->msg('talkend'));
 			}
 			$self->state('prompt');
 			delete $self->{talklist};
@@ -194,24 +191,7 @@ sub normal
 		} elsif ($self->{talklist} && @{$self->{talklist}}) {
 			# send what has been said to whoever is in this person's talk list
 			for (@{$self->{talklist}}) {
-				my $ent = $_;
-				my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
-				$to = $ent unless $to;
-				my $call = $via ? $via : $to;
-				my $clref = DXCluster->get_exact($call);
-				my $dxchan = $clref->dxchan if $clref;
-				if ($dxchan) {
-					$dxchan->talk($self->{call}, $to, $via, $cmdline);
-				} else {
-					$self->send($self->msg('disc2', $via ? $via : $to));
-					my @l = grep { $_ ne $ent } @{$self->{talklist}};
-					if (@l) {
-						$self->{talklist} = \@l;
-					} else {
-						delete $self->{talklist};
-						$self->state('prompt');
-					}
-				}
+				$self->send_talks($_, $cmdline);
 			}
 			$self->send($self->talk_prompt) if $self->{state} eq 'talk';
 		} else {
@@ -224,6 +204,30 @@ sub normal
 	
 	# send a prompt only if we are in a prompt state
 	$self->prompt() if $self->{state} =~ /^prompt/o;
+}
+
+# send out the talk messages taking into account vias and connectivity
+sub send_talks
+{
+	my ($self, $ent, $line) = @_;
+	
+	my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
+	$to = $ent unless $to;
+	my $call = $via ? $via : $to;
+	my $clref = DXCluster->get_exact($call);
+	my $dxchan = $clref->dxchan if $clref;
+	if ($dxchan) {
+		$dxchan->talk($self->{call}, $to, $via, $line);
+	} else {
+		$self->send($self->msg('disc2', $via ? $via : $to));
+		my @l = grep { $_ ne $ent } @{$self->{talklist}};
+		if (@l) {
+			$self->{talklist} = \@l;
+		} else {
+			delete $self->{talklist};
+			$self->state('prompt');
+		}
+	}
 }
 
 sub talk_prompt
