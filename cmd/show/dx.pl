@@ -86,7 +86,7 @@ while ($f = shift @list) {		# next field
 		next;
 	}
 	if (lc $f =~ /^filt/) {
-		$dofilter = 1;
+		$dofilter = 1 if $self->{spotfilter};
 		next;
 	}
 	if (lc $f eq 'qsl') {

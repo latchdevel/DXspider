@@ -1,3 +1,5 @@
+06Dec04=======================================================================
+1. fix show/mydx if there is no defined spotfilter
 07Oct04=======================================================================
 1. added the ability for people to import chat from external programs.
 create a directory called /spider/chat_import, make sure it is writable
