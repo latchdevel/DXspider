@@ -22,7 +22,17 @@ my @out;
 
 # search thru the user for nodes
 unless (@call) {
-	@call = sort map { my $ref; (($ref = DXUser->get_current($_)) && $ref->sort ne 'U') ? $_ : () } DXUser::get_all_calls;
+#  the official way
+#	@call = sort map { my $ref; (($ref = DXUser->get_current($_)) && $ref->sort ne 'U') ? $_ : () } DXUser::get_all_calls;
+	use DB_File;
+	
+	my ($action, $count, $key, $data);
+	for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = R_NEXT) {
+		if ($data =~ m{sort => '[ACRSX]'}) {
+		    push @call, $key;
+		}
+		++$count;
+	} 
 }
 
 my $call;
@@ -34,6 +44,7 @@ foreach $call (@call) {
 	my $pcall = sprintf "%-11s", $call;
 	push @out, $self->msg('snode1') unless @out > 0;
 	if ($uref) {
+		$sort = "Unknwn";
 		$sort = "Spider" if $uref->is_spider;
 		$sort = "AK1A  " if $uref->is_ak1a;
 		$sort = "Clx   " if $uref->is_clx;
@@ -53,7 +64,7 @@ foreach $call (@call) {
 	}
 	
 	my ($major, $minor, $subs) = unpack("AAA*", $ver) if $ver;
-	if ($sort eq 'Spider') {
+	if ($uref->is_spider) {
 		push @out, $self->msg('snode2', $pcall, $sort, "$ver  ");
 	} else {
 		push @out, $self->msg('snode2', $pcall, $sort, $ver ? "$major\-$minor.$subs" : "      ");

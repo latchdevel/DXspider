@@ -155,18 +155,11 @@ sub get
 {
 	my $pkg = shift;
 	my $call = uc shift;
-	#  $call =~ s/-\d+$//o;       # strip ssid
-	my $s = $u{$call};
-	return $s ?  decode($s) : undef;
-}
-
-#
-# get all callsigns in the database 
-#
-
-sub get_all_calls
-{
-	return (sort keys %u);
+	my $data;
+	unless ($dbm->get($call, $data)) {
+		return decode($data);
+	}
+	return undef;
 }
 
 #
@@ -181,11 +174,23 @@ sub get_current
 {
 	my $pkg = shift;
 	my $call = uc shift;
-	#  $call =~ s/-\d+$//o;       # strip ssid
   
 	my $dxchan = DXChannel->get($call);
 	return $dxchan->user if $dxchan;
-	return get($pkg, $call);
+	my $data;
+	unless ($dbm->get($call, $data)) {
+		return decode($data);
+	}
+	return undef;
+}
+
+#
+# get all callsigns in the database 
+#
+
+sub get_all_calls
+{
+	return (sort keys %u);
 }
 
 #
@@ -203,7 +208,7 @@ sub put
 	}
 	delete $self->{annok} if $self->{annok};
 	delete $self->{dxok} if $self->{dxok};
-	$u{$call} = $self->encode();
+	$dbm->put($call, $self->encode);
 }
 
 # 
@@ -226,10 +231,12 @@ sub decode
 {
 	my $s = shift;
 	my $ref;
-	$s = '$ref = ' . $s;
-	eval $s;
-	Log('DXUser', $@) if $@;
-	$ref = undef if $@;
+	eval '$ref = ' . $s;
+	if ($@) {
+		dbg('err', $@) if $@;
+		Log('err', $@) if $@;
+		$ref = undef;
+	}
 	return $ref;
 }
 
