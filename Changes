@@ -8,7 +8,8 @@ last port of call).
 6. dup check PC49 (kill full)
 7. improved the regex matching of badwords (more efficient, better coverage)
 8. added default badword and badw_regex tables (as .issue files) which will
-activate unless there is one there already.
+activate unless there is one there already. It will NOT overwrite an existing
+file - so if you change it your changes will remain intact.
 03Oct01=======================================================================
 1. don't allow @WWW to become a 'TO' field...
 2. handle @gb7tlh.#35.eu type addresses as well
