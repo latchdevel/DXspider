@@ -30,7 +30,7 @@ use Fcntl;
 use strict;
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
-		    $queueinterval $lastq $importfn $minchunk $maxchunk);
+		    $queueinterval $lastq $importfn $minchunk $maxchunk $bulltopriv);
 
 %work = ();						# outstanding jobs
 @msg = ();						# messages we have
@@ -48,6 +48,8 @@ $lastq = 0;
 
 $minchunk = 4800;               # minimum chunk size for a split message
 $maxchunk = 6000;               # maximum chunk size
+$bulltopriv = 1;				# convert msgs with callsigns to private if they are bulls
+
 
 $badmsgfn = "$msgdir/badmsg.pl";    # list of TO address we wont store
 $forwardfn = "$msgdir/forward.pl";  # the forwarding table
@@ -102,6 +104,7 @@ sub alloc
 	$self->{gotit} = [];
 	$self->{lastt} = $main::systime;
 	$self->{lines} = [];
+	$self->{private} = 1 if $bulltopriv && DXUser->get_current($self->{to});
     
 	return $self;
 }
