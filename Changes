@@ -1,3 +1,7 @@
+17Nov01=======================================================================
+1. updated the Java Web Interface from Ian, m0azm to allow passwords.  If
+a user with no password enters anything, including null, it is happily
+accepted and ignored.
 14Nov01=======================================================================
 1. make the number of characters of the dx comment dependant on the type of
 connection. This should mean that 'legacy' user programs can cope.
