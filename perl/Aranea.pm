@@ -173,13 +173,13 @@ sub per_minute
 	foreach my $dxchan (DXChannel::get_all()) {
 		next if $dxchan == $main::me;
 		next if $dxchan->is_aranea;
-		if ($main::systime > $dxchan->lasthello + $hello_interval) {
+		if ($main::systime >= $dxchan->lasthello + $hello_interval) {
 			my $thing = Thingy::Hello->new(user => $dxchan->call, h => $dxchan->here);
 			$thing->broadcast($dxchan);
 			$dxchan->lasthello($main::systime);
 		}
 		if ($dxchan->is_node) {
-			if ($main::systime > $dxchan->lasthello + $hello_interval) {
+			if ($main::systime >= $dxchan->lastcf + $cf_interval) {
 				my $call = $dxchan->call;
 				my $thing = Thingy::Rt->new(user => $call);
 				if (my $nref = Route::Node::get($call)) {
