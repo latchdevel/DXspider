@@ -2251,7 +2251,7 @@
   repository.  You do this with the command below ...
 
 
-  cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/DXSpider login
+  cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
 
 
 
@@ -2272,7 +2272,7 @@
   current directory.
 
 
-  cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/DXSpider co spider
+  cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider co spider
 
 
 

@@ -1726,7 +1726,7 @@ The next step will create a brand new 'spider' directory in your current
 directory.
 
 <verb>
-cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/DXSpider co spider
+cvs -z3 -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider co spider
 </verb>
 
 This command is all on one line.
