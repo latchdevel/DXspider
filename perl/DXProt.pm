@@ -236,12 +236,13 @@ sub normal
 			# send it if it isn't the except list and isn't isolated and still has a hop count
 			foreach $dxchan (@dxchan) {
 				next if $dxchan == $self;
-				my $routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
 				my $filter = Filter::it($dxchan->{spotfilter}, @spot) if $dxchan->{spotfilter};
+				my $routeit = adjust_hops($dxchan, $line);  # adjust its hop count by node name
+				next unless $routeit;
 				if ($filter) {
 					$dxchan->send($routeit) if $routeit;
 				} else {
-					$dxchan->send($routeit) unless $dxchan->{isolate} || !$routeit;
+					$dxchan->send($routeit) unless $dxchan->{isolate} || $self->{isolate};
 				}					
 			}
 

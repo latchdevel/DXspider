@@ -69,7 +69,7 @@ sub add
 	# automagically closes the output file (if any)). 
 	$fp->writeunix($out[2], $buf);
   
-	return (@spot, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
+	return (@out, $spotted_itu, $spotted_cq, $spotter_itu, $spotter_cq);
 }
 
 # search the spot database for records based on the field no and an expression
