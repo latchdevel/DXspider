@@ -1754,7 +1754,7 @@ sub send_route
 				$routeit = adjust_hops($self, $line);  # adjust its hop count by node name
 				next unless $routeit;
 			}
-			$self->send($routeit) if $self->{routefilter} || !$self->{isolate};
+			$self->send($routeit);
 		}
 	}
 }
@@ -1770,7 +1770,7 @@ sub broadcast_route
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan == $me;
-		if ($dxchan->{routefilter} || !$self->{isolate}) {
+		if ($dxchan->{routefilter} || (!$self->{isolate} && !$dxchan->{isolate})) {
 			$dxchan->send_route($generate, @_) 
 		} else {
 			dbg('DXPROT: isolated') if isdbg('chanerr');
