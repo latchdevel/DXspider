@@ -194,6 +194,7 @@ sub new
 	$avail{$self->{name}} = $self;
 	mkdir $dbbase, 02775 unless -e $dbbase;
 	save();
+	return $self;
 }
 
 # delete a database
