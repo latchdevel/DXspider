@@ -21,7 +21,7 @@ use DXDupe;
 use strict;
 use vars qw($date $sfi $k $a $r $forecast @allowed @denied $fp $node $from 
             $dirprefix $param
-            $duplth $dupage);
+            $duplth $dupage $filterdef);
 
 $fp = 0;						# the DXLog fcb
 $date = 0;						# the unix time of the WWV (notional)
@@ -39,6 +39,19 @@ $dupage = 12*3600;				# the length of time to hold spot dups
 
 $dirprefix = "$main::data/wwv";
 $param = "$dirprefix/param";
+
+$filterdef = bless ([
+			  # tag, sort, field, priv, special parser 
+			  ['by', 'c', 7],
+			  ['origin', 'c', 8],
+			  ['channel', 'n', 9],
+			  ['by_dxcc', 'n', 10],
+			  ['by_itu', 'n', 11],
+			  ['by_zone', 'n', 12],
+			  ['origin_dxcc', 'c', 13],
+			  ['origin_itu', 'c', 14],
+			  ['origin_itu', 'c', 15],
+			 ], 'Filter::Cmd');
 
 sub init
 {

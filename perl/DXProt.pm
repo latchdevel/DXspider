@@ -1225,6 +1225,19 @@ sub send_wwv_spot
 	my $line = shift;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
+	my ($wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+	my @dxcc = Prefix::extract($_[7]);
+	if (@dxcc > 0) {
+		$wwv_dxcc = $dxcc[1]->dxcc;
+		$wwv_itu = $dxcc[1]->itu;
+		$wwv_cq = $dxcc[1]->cq;						
+	}
+	@dxcc = Prefix::extract($_[8]);
+	if (@dxcc > 0) {
+		$org_dxcc = $dxcc[1]->dxcc;
+		$org_itu = $dxcc[1]->itu;
+		$org_cq = $dxcc[1]->cq;						
+	}
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
@@ -1233,7 +1246,7 @@ sub send_wwv_spot
 		my ($filter, $hops);
 
 		if ($dxchan->{wwvfilter}) {
-			 ($filter, $hops) = $dxchan->{wwvfilter}->it(@_, $self->{call} );
+			($filter, $hops) = $dxchan->{wwvfilter}->it(@_, $self->{call}, $wwv_dxcc, $wwv_itu, $wwv_cq, $org_dxcc, $org_itu, $org_cq);
 			 next unless $filter;
 		}
 		if ($dxchan->is_node) {
@@ -1269,6 +1282,19 @@ sub send_wcy_spot
 	my $line = shift;
 	my @dxchan = DXChannel->get_all();
 	my $dxchan;
+	my ($wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+	my @dxcc = Prefix::extract($_[11]);
+	if (@dxcc > 0) {
+		$wcy_dxcc = $dxcc[1]->dxcc;
+		$wcy_itu = $dxcc[1]->itu;
+		$wcy_cq = $dxcc[1]->cq;						
+	}
+	@dxcc = Prefix::extract($_[12]);
+	if (@dxcc > 0) {
+		$org_dxcc = $dxcc[1]->dxcc;
+		$org_itu = $dxcc[1]->itu;
+		$org_cq = $dxcc[1]->cq;						
+	}
 	
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
@@ -1277,7 +1303,7 @@ sub send_wcy_spot
 		my ($filter, $hops);
 
 		if ($dxchan->{wcyfilter}) {
-			 ($filter, $hops) = $dxchan->{wcyfilter}->it(@_, $self->{call} );
+			($filter, $hops) = $dxchan->{wcyfilter}->it(@_, $self->{call}, $wcy_dxcc, $wcy_itu, $wcy_cq, $org_dxcc, $org_itu, $org_cq);
 			 next unless $filter;
 		}
 		if ($dxchan->is_clx || $dxchan->is_spider || $dxchan->is_dxnet) {
@@ -1332,6 +1358,21 @@ sub send_announce
 	
 	Log('ann', $target, $_[0], $text);
 
+	# obtain country codes etc 
+	my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
+	my @dxcc = Prefix::extract($_[0]);
+	if (@dxcc > 0) {
+		$ann_dxcc = $dxcc[1]->dxcc;
+		$ann_itu = $dxcc[1]->itu;
+		$ann_cq = $dxcc[1]->cq;						
+	}
+	@dxcc = Prefix::extract($_[4]);
+	if (@dxcc > 0) {
+		$org_dxcc = $dxcc[1]->dxcc;
+		$org_itu = $dxcc[1]->itu;
+		$org_cq = $dxcc[1]->cq;						
+	}
+
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
@@ -1339,19 +1380,6 @@ sub send_announce
 		my ($filter, $hops);
 
 		if ($dxchan->{annfilter}) {
-			my ($ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq) = (0..0);
-			my @dxcc = Prefix::extract($_[0]);
-			if (@dxcc > 0) {
-				$ann_dxcc = $dxcc[1]->dxcc;
-				$ann_itu = $dxcc[1]->itu;
-				$ann_cq = $dxcc[1]->cq;						
-			}
-			@dxcc = Prefix::extract($_[4]);
-			if (@dxcc > 0) {
-				$org_dxcc = $dxcc[1]->dxcc;
-				$org_itu = $dxcc[1]->itu;
-				$org_cq = $dxcc[1]->cq;						
-			}
 			($filter, $hops) = $dxchan->{annfilter}->it(@_, $self->{call}, $ann_dxcc, $ann_itu, $ann_cq, $org_dxcc, $org_itu, $org_cq);
 			next unless $filter;
 		} 

@@ -1,5 +1,7 @@
 18Dec00=======================================================================
 1. fix double printing of DB results
+2. add new style filtering for WWV and WCY to complete the set
+3. got the field nos right (hopefully) on Announces for filters
 05Dec00=======================================================================
 1. fix frequency hinting routine so it correctly handles things like 'on 23cm'
 where digits are the 'wrong' way round.

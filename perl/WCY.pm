@@ -20,7 +20,7 @@ use Data::Dumper;
 use strict;
 use vars qw($date $sfi $k $expk $a $r $sa $gmf $au  @allowed @denied $fp $node $from 
             $dirprefix $param
-            $duplth $dupage);
+            $duplth $dupage $filterdef);
 
 $fp = 0;						# the DXLog fcb
 $date = 0;						# the unix time of the WWV (notional)
@@ -40,6 +40,20 @@ $dupage = 12*3600;				# the length of time to hold spot dups
 
 $dirprefix = "$main::data/wcy";
 $param = "$dirprefix/param";
+
+$filterdef = bless ([
+			  # tag, sort, field, priv, special parser 
+			  ['by', 'c', 11],
+			  ['origin', 'c', 12],
+			  ['channel', 'n', 13],
+			  ['by_dxcc', 'n', 14],
+			  ['by_itu', 'n', 15],
+			  ['by_zone', 'n', 16],
+			  ['origin_dxcc', 'c', 17],
+			  ['origin_itu', 'c', 18],
+			  ['origin_itu', 'c', 19],
+			 ], 'Filter::Cmd');
+
 
 sub init
 {
