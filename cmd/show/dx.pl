@@ -18,6 +18,7 @@ my $pre;
 my $spotter;
 my $info;
 my $expr;
+my $qsl;
 
 while ($f = shift @list) {		# next field
 	#  print "f: $f list: ", join(',', @list), "\n";
@@ -54,6 +55,10 @@ while ($f = shift @list) {		# next field
 	if ((lc $f eq 'spotter' || lc $f eq 'by') && $list[0]) {
 		#    print "got spotter\n";
 		$spotter = uc shift @list;
+		next;
+	}
+	if (lc $f eq 'qsl') {
+		$doqsl = 1;
 		next;
 	}
 	if (!$pre) {
@@ -94,6 +99,12 @@ if ($spotter) {
 	$expr .= " && " if $expr;
 	$spotter = shellregex($spotter);
 	$expr .= "\$f4 =~ m{$spotter}o";
+}
+
+# qsl requests
+if ($doqsl) {
+	$expr .= " && " if $expr;
+	$expr .= "\$f3 =~ m{(QSL|VIA)}io";
 }
 
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";

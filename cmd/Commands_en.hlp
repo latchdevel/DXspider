@@ -379,12 +379,16 @@ day <from>-<to> - <from> days <to> days ago
 info <text>     - any spots containing <text> in the info or remarks
    
 spotter <call>  - any spots spotted by <call>
+
+qsl             - this automatically looks for any qsl info on the call
+                  held in the database.
    
 e.g. 
    
    SH/DX 9m0
    SH/DX on 20m info iota
    SH/DX 9a on vhf day 30
+   SH/DX rf1p qsl
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 
