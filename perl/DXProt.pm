@@ -833,30 +833,32 @@ sub handle_17
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
 		dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
-		return;
 	}
 	my $parent = Route::Node::get($ncall);
 	unless ($parent) {
 		dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
-		return;
 	}			
 
-	$dxchan = $parent->dxchan;
+	$dxchan = $parent->dxchan if $parent;
 	if ($dxchan && $dxchan ne $self) {
 		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 		return;
 	}
 
-	# input filter if required
-	return unless $self->in_filter_route($parent);
-			
-	$parent->del_user($uref);
+	# input filter if required and then remove user if present
+	if ($parent) {
+#		return unless $self->in_filter_route($parent);	
+		$parent->del_user($uref) if $uref;
+	} else {
+		$parent = Route->new($ncall);  # throw away
+	}
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
 		return;
 	}
 
+	$uref = Route->new($ucall) unless $uref; # throw away
 	$self->route_pc17($origin, $line, $parent, $uref);
 }
 		
