@@ -788,14 +788,15 @@ sub for_me
 {
 	my $call = uc shift;
 	my $ref;
+	my $count;
 	
 	foreach $ref (@msg) {
 		# is it for me, private and unread? 
 		if ($ref->{to} eq $call && $ref->{private}) {
-			return 1 if !$ref->{'read'};
+		   $count++ unless $ref->{'read'} || $ref->{delete};
 		}
 	}
-	return 0;
+	return $count;
 }
 
 # start the message off on its travels with a PC28

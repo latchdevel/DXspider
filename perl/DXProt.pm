@@ -208,7 +208,7 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call, '0000', Route::here(1)) if $call ne $main::mycall;
+	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
 
 	return $self;
 }
@@ -743,7 +743,7 @@ sub normal
 				eph_del_regex("^PC(?:21\^$call|17\^[^\^]+\^$call)");
 				
 				# check for sane parameters
-				$ver = 5000 if $ver eq '0000';
+#				$ver = 5000 if $ver eq '0000';
 				next if $ver < 5000; # only works with version 5 software
 				next if length $call < 3; # min 3 letter callsigns
 				next if $call eq $main::mycall;

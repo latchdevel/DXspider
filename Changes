@@ -1,3 +1,8 @@
+02Dec01=======================================================================
+1. Fix spurious 'new message for you' messages if things are deleted but 
+unread.
+2. stop remote passive nodes (those with version numbers of 0000) from
+poluting the nodes table. Maybe this will make things slightly more stable.
 26Nov01=======================================================================
 1. Make changes to the installation manual to show making the client before
 actually trying to use it!  Thanks to oz1lqh.  Also add a line for SuSE
