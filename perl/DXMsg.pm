@@ -522,7 +522,7 @@ sub store
 			my $rr = $ref->{rrreq} ? '1' : '0';
 			my $priv = $ref->{private} ? '1': '0';
 			my $del = $ref->{delete} ? '1' : '0';
-			my $delt = $ref->{deletetime} || '0';
+			my $delt = $ref->{deletetime} || ($ref->{t} + $maxage);
 			my $keep = $ref->{keep} || '0';
 			print $fh "=== $ref->{msgno}^$ref->{to}^$ref->{from}^$ref->{t}^$priv^$ref->{subject}^$ref->{origin}^$ref->{'read'}^$rr^$del^$delt^$keep\n";
 			print $fh "=== ", join('^', @{$ref->{gotit}}), "\n";
