@@ -338,6 +338,7 @@ sub dup
 	$text =~ s/\b\w{1,4}$// if $prefix && Prefix::extract($prefix);
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
+	$text =~ s/[^\w]//g;
 	my $ldupkey = "X$freq|$call|$by|$text";
 	my $t = DXDupe::find($ldupkey);
 	return 1 if $t && $t - $main::systime > 0;
