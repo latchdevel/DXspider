@@ -597,12 +597,16 @@ sub normal
 				dbg('chan', "PCPROT: $field[2] came in on wrong channel");
 				return;
 			}
-			if (($dxchan = DXChannel->get($field[2])) && $dxchan != $self) {
-				dbg('chan', "PCPROT: $field[2] connected locally");
+			if (($dxchan = DXChannel->get($field[1])) && $dxchan != $self) {
+				dbg('chan', "PCPROT: $field[1] connected locally");
 				return;
 			}
 			my $ref = DXCluster->get_exact($field[1]);
 			if ($ref) {
+				if ($ref->mynode != $node) {
+					dbg('chan', "PCPROT: $field[1] came in from wrong node $field[2]");
+					return;
+				}
 				$ref->del;
 			} else {
 				dbg('chan', "PCPROT: $field[1] not known" );
