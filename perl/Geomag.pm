@@ -135,5 +135,79 @@ sub forecast
   @_ ? $forecast = shift : $forecast ;
 }
 
+#
+# print some items from the log backwards in time
+#
+# This command outputs a list of n lines starting from line $from to $to
+#
+sub print
+{
+	my $self = $fp;
+	my $from = shift;
+	my $to = shift;
+	my @date = $self->unixtoj(shift);
+	my $pattern = shift;
+	my $search;
+	my @in;
+	my @out;
+	my $eval;
+	my $count;
+	    
+	$search = 1;
+	$eval = qq(
+			   my \$c;
+			   my \$ref;
+			   for (\$c = \$#in; \$c >= 0; \$c--) {
+					\$ref = \$in[\$c];
+					if ($search) {
+						\$count++;
+						next if \$count < $from;
+						push \@out, print_item(\$ref);
+						last LOOP if \$count >= \$to;                  # stop after n
+					}
+				}
+			  );
+	
+	$self->close;                                      # close any open files
+
+	my $fh = $self->open(@date); 
+LOOP:
+	while ($count < $to) {
+		my @spots = ();
+		if ($fh) {
+			while (<$fh>) {
+				chomp;
+				push @in, [ split '\^' ] if length > 2;
+			}
+			eval $eval;               # do the search on this file
+			return ("Spot search error", $@) if $@;
+		}
+		$fh = $self->openprev();      # get the next file
+		last if !$fh;
+	}
+
+	return @out;
+}
+
+#
+# the standard log printing interpreting routine.
+#
+# every line that is printed should call this routine to be actually visualised
+#
+# Don't really know whether this is the correct place to put this stuff, but where
+# else is correct?
+#
+# I get a reference to an array of items
+#
+sub print_item
+{
+	my $r = shift;
+	my @ref = @$r;
+	my $d = cldate($ref[1]);
+	my ($t) = (gmtime($ref[1]))[2];
+
+	return sprintf("$d   %02d %5d %3d %3d %-37s <%s>", $t, $ref[2], $ref[3], $ref[4], $ref[5], $ref[0]);
+}
+
 1;
 __END__;

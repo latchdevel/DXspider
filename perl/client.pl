@@ -374,6 +374,15 @@ if ($loginreq) {
 	}
 }
 
+# handle callsign and connection type firtling
+sub doclient
+{
+	my $line = shift;
+	my @f = split /\s+/, $line;
+	$call = uc $f[0] if $f[0];
+	$csort = $f[1] if $f[1];
+}
+
 # is this an out going connection?
 if ($connsort eq "connect") {
 	my $mcall = lc $call;
@@ -391,10 +400,14 @@ if ($connsort eq "connect") {
 		doconnect($1, $2) if /^\s*co\w*\s+(\w+)\s+(.*)$/io;
 		doabort($1) if /^\s*a\w*\s+(.*)/io;
 		dotimeout($1) if /^\s*t\w*\s+(\d+)/io;
-		dochat($1, $2) if /\s*\'(.*)\'\s+\'(.*)\'/io;          
+		dochat($1, $2) if /\s*\'(.*)\'\s+\'(.*)\'/io;
+		if (/\s*cl\w+\s+(.*)/io) {
+			doclient($1);
+			last;
+		}
 	}
 	
-    dbg('connect', "Connected to $call, starting normal protocol");
+    dbg('connect', "Connected to $call ($csort), starting normal protocol");
 	dbgsub('connect');
 	
 	# if we get here we are connected

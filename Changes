@@ -8,7 +8,10 @@ is only done on channels that are in state 'normal'.
 mods to the callsign, useful for sending manual PC protocol to unstick things.
 Also for sending anonymous messages to online users.
 5. Stopped duplicate messages being stored (it receives them and then bins them)
-6. Implemented PC49 delete/full from outside
+6. Implemented PC49 delete/full from outside (kill full on the inside)
+7. Implemented the client command in connect scripts so that you can have 
+different scripts for the same callsign.
+8. Added sh/wwv command
 13Dec98========================================================================
 1. Fixed VS6 lat/long in prefix_data and wpxloc.raw
 2. Sorted out last in times for remote users

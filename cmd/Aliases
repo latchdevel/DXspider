@@ -36,6 +36,7 @@ package CmdAlias;
 	],
 	d => [
 	  '^del', 'kill', 'kill',
+	  '^del.*/fu', 'kill full', 'kill',
 	  '^di\w*/a\w*', 'directory all', 'directory',
 	  '^di\w*/b\w*', 'directory bulletins', 'directory',
 	  '^di\w*/n\w*', 'directory new', 'directory',
@@ -81,14 +82,16 @@ package CmdAlias;
 	s => [
 	  '^set/nobe', 'unset/beep', 'unset/beep',
 	  '^set/nohe', 'unset/here', 'unset/here',
-	  '^sh/c/n', 'show/configuration nodes', 'show/configuration',
-	  '^sh/c$', 'show/configuration', 'show/configuration',
-	  '^sh/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
-	  '^sh/dx/(\d+)', 'show/dx $1', 'show/dx',
-	  '^sh/dx/d(\d+)', 'show/dx from $1', 'show/dx',
+	  '^sh.*/c/n', 'show/configuration nodes', 'show/configuration',
+	  '^sh.*/c$', 'show/configuration', 'show/configuration',
+	  '^sh.*/dx/(\d+)-(\d+)', 'show/dx $1-$2', 'show/dx',
+	  '^sh.*/dx/(\d+)', 'show/dx $1', 'show/dx',
+	  '^sh.*/dx/d(\d+)', 'show/dx from $1', 'show/dx',
 	  '^sp$', 'send', 'send',
-	  '^sb$', 'send noprivate', 'send',
-	],
+	  '^sb$', 'send noprivate', 'send',	
+	  '^sh.*/wwv/(\d+)-(\d+)', 'show/wwv $1-$2', 'show/wwv',
+	  '^sh.*/wwv/(\d+)', 'show/wwv $1', 'show/wwv',
+    ],
 	t => [
 	],
 	u => [

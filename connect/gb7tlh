@@ -4,4 +4,4 @@ connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh
 'Connect' ''
 'Connect' 'cluster'
 'Connect'
-client /usr/bin/perl /spider/perl/client.pl gb7tlh ax25
+client gb7tlh ax25

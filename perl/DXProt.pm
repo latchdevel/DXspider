@@ -161,7 +161,7 @@ sub normal
 				my @list;
 				
 				if ($field[4] eq '*') {	# sysops
-					$target = "Sysops";
+					$target = "SYSOP";
 					@list = map { $_->priv >= 5 ? $_ : () } get_all_users();
 				} elsif ($field[4] gt ' ') { # speciality list handling
 					my ($name) = split /\./, $field[4]; 
@@ -270,6 +270,8 @@ sub normal
 				if (!$user) {
 					$user = DXUser->new($call);
 					$user->sort('A');
+					$user->priv(1);                   # I have relented and defaulted nodes
+					$self->{priv} = 1;                # to user RCMDs allowed
 					$user->homenode($call);
 					$user->node($call);
 				}
@@ -334,15 +336,19 @@ sub normal
 			if ($field[1] eq $main::mycall) {
 				my $ref = DXUser->get_current($field[2]);
 				Log('rcmd', 'in', $ref->{priv}, $field[2], $field[3]);
-				if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
-					$self->{remotecmd} = 1; # for the benefit of any command that needs to know
-					my @in = (DXCommandmode::run_cmd($self, $field[3]));
-					for (@in) {
-						s/\s*$//og;
-						$self->send(pc35($main::mycall, $field[2], "$main::mycall:$_"));
-						Log('rcmd', 'out', $field[2], $_);
+				unless ($field[3] =~ /rcmd/i) {    # not allowed to relay RCMDS!
+					if ($ref->{priv}) {	# you have to have SOME privilege, the commands have further filtering
+						$self->{remotecmd} = 1; # for the benefit of any command that needs to know
+						my @in = (DXCommandmode::run_cmd($self, $field[3]));
+						for (@in) {
+							s/\s*$//og;
+							$self->send(pc35($main::mycall, $field[2], "$main::mycall:$_"));
+							Log('rcmd', 'out', $field[2], $_);
+						}
+						delete $self->{remotecmd};
 					}
-					delete $self->{remotecmd};
+				} else {
+					$self->send(pc35($main::mycall, $field[2], "$main::mycall:Tut tut tut...!"));
 				}
 			} else {
 				route($field[1], $line);

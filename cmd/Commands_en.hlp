@@ -82,6 +82,16 @@ Look at the APROPOS <string> command which will search the help database
 for the <string> you specify and give you a list of likely commands
 to look at with HELP.
 
+=== 0^KILL <msgno> [<msgno..]^Delete a message from the local system
+Delete a message from the local system. You will only be able to delete messages
+that you have originated or been sent (unless you are the sysop).
+
+=== 5^KILL FULL <msgno> [<msgno..]^Delete a message from the whole cluster
+Delete a message (usually a 'bulletin') from the whole cluster system. 
+
+This uses the subject field, so any messages that have exactly the same subject
+will be deleted. Beware!
+
 === 9^LOAD/ALIASES^Reload the command alias table
 Reload the /spider/cmd/Aliases file after you have editted it. You will need to
 do this if you change this file whilst the cluster is running in order for the
@@ -311,6 +321,10 @@ it is and then displays all the relevant prefixes for that country
 together with the internal country no, the CQ and ITU regions. 
 
 See also SHOW/DXCC
+
+=== 0^SHOW/WWV^Show last 10 WWV broadcasts
+=== 0^SHOW/WWV <n>^Show last <n> WWV broadcasts
+Display the most recent WWV information that has been received by the system
 
 === 5^SHUTDOWN^Shutdown the cluster
 Shutdown the cluster and disconnect all the users 
