@@ -10,13 +10,14 @@ package DXUtil;
 
 use Date::Parse;
 use IO::File;
+use Data::Dumper;
 
 use Carp;
 
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
-			 parray parraypairs shellregex readfilestr
+			 parray parraypairs shellregex readfilestr writefilestr
              print_all_fields cltounix iscallsign
             );
 
@@ -204,22 +205,25 @@ sub readfilestr
 {
 	my ($dir, $file, $suffix) = @_;
 	my $fn;
-	
+	my $f;
 	if ($suffix) {
-		$fn = "$dir/$file.$suffix";
+		$f = uc $file;
+		$fn = "$dir/$f.$suffix";
 		unless (-e $fn) {
-			my $f = uc $file;
+			$f = lc $file;
 			$fn = "$dir/$file.$suffix";
 		}
 	} elsif ($file) {
+		$f = uc $file;
 		$fn = "$dir/$file";
 		unless (-e $fn) {
-			my $f = uc $file;
+			$f = lc $file;
 			$fn = "$dir/$file";
 		}
 	} else {
 		$fn = $dir;
 	}
+
 	my $fh = new IO::File $fn;
 	my $s = undef;
 	if ($fh) {
@@ -228,4 +232,47 @@ sub readfilestr
 		$fh->close;
 	}
 	return $s;
+}
+
+# write out a file in the format required for reading
+# in via readfilestr, it expects the same arguments 
+# and a reference to an object
+sub writefilestr
+{
+	my $dir = shift;
+	my $file = shift;
+	my $suffix = shift;
+	my $obj = shift;
+	my $fn;
+	my $f;
+	
+	confess('no object to write in writefilestr') unless $obj;
+	confess('object not a reference in writefilestr') unless ref $obj;
+	
+	if ($suffix) {
+		$f = uc $file;
+		$fn = "$dir/$f.$suffix";
+		unless (-e $fn) {
+			$f = lc $file;
+			$fn = "$dir/$file.$suffix";
+		}
+	} elsif ($file) {
+		$f = uc $file;
+		$fn = "$dir/$file";
+		unless (-e $fn) {
+			$f = lc $file;
+			$fn = "$dir/$file";
+		}
+	} else {
+		$fn = $dir;
+	}
+
+	my $fh = new IO::File ">$fn";
+	my $dd = new Data::Dumper([ $obj ]);
+	$dd->Indent(1);
+	$dd->Terse(1);
+    $dd->Quotekeys(0);
+#	$fh->print(@_) if @_ > 0;     # any header comments, lines etc
+	$fh->print($dd->Dumpxs);
+	$fh->close;
 }

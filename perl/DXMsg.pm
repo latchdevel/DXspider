@@ -43,8 +43,8 @@ $maxage = 30 * 86400;			# the maximum age that a message shall live for if not m
 $last_clean = 0;				# last time we did a clean
 @forward = ();                  # msg forward table
 $timeout = 30*60;               # forwarding timeout
-$waittime = 60*60;              # time an aborted outgoing message waits before trying again
-$queueinterval = 2*60;          # run the queue every 2 minutes
+$waittime = 30*60;              # time an aborted outgoing message waits before trying again
+$queueinterval = 1*60;          # run the queue every 1 minute
 $lastq = 0;
 
 
@@ -130,21 +130,22 @@ sub process
 	# this is periodic processing
 	if (!$self || !$line) {
 
-		# wander down the work queue stopping any messages that have timed out
-		for (keys %busy) {
-			my $node = $_;
-			my $ref = $busy{$_};
-			if (exists $ref->{lastt} && $main::systime > $ref->{lastt} + $timeout) {
-				dbg('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
-				$ref->stop_msg($node);
-
-				# delay any outgoing messages that fail
-				$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
-			}
-		}
-
-		# queue some message if the interval timer has gone off
 		if ($main::systime > $lastq + $queueinterval) {
+
+			# wander down the work queue stopping any messages that have timed out
+			for (keys %busy) {
+				my $node = $_;
+				my $ref = $busy{$_};
+				if (exists $ref->{lastt} && $main::systime >= $ref->{lastt} + $timeout) {
+					dbg('msg', "Timeout, stopping msgno: $ref->{msgno} -> $node");
+					$ref->stop_msg($node);
+					
+					# delay any outgoing messages that fail
+					$ref->{waitt} = $main::systime + $waittime + rand(120) if $node ne $main::mycall;
+				}
+			}
+
+			# queue some message if the interval timer has gone off
 			queue_msg(0);
 			$lastq = $main::systime;
 		}
@@ -367,7 +368,6 @@ sub process
 				$ref->stop_msg($self->call);
 				$ref = undef;
 			}
-			
 			last SWITCH;
 		}
 

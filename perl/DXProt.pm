@@ -24,6 +24,7 @@ use DXProtout;
 use DXDebug;
 use Filter;
 use Local;
+use DXDb;
 
 use Carp;
 
@@ -670,11 +671,7 @@ sub normal
 			last SWITCH;
 		}
 		if ($pcno == 37 || $pcno == 44 || $pcno == 45 || $pcno == 46 || $pcno == 47) {
-			if ($field[1] eq $main::mycall) {
-				;
-			} else {
-				$self->route($field[1], $line);
-			}
+			DXDb::process($self, $line);
 			return;
 		}
 		
@@ -699,9 +696,11 @@ sub normal
 					# it's a reply, look in the ping list for this one
 					my $ref = $pings{$field[2]};
 					if ($ref) {
-						my $r = shift @$ref;
-						my $dxchan = DXChannel->get($r->{call});
-						$dxchan->send($dxchan->msg('pingi', $field[2], atime($main::systime), $main::systime - $r->{t})) if $dxchan;
+						while (@$ref) {
+							my $r = shift @$ref;
+							my $dxchan = DXChannel->get($r->{call});
+							$dxchan->send($dxchan->msg('pingi', $field[2], atime($main::systime), $main::systime - $r->{t})) if $dxchan;
+						}
 					}
 				}
 				

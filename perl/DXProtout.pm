@@ -272,6 +272,28 @@ sub pc42
 	return "PC42^$fromnode^$tonode^$stream^";
 }
 
+# remote db request
+sub pc44
+{
+	my ($fromnode, $tonode, $stream, $db, $req, $call) = @_;
+	$db = uc $db;
+	return "PC44^$tonode^$fromnode^$stream^$db^$req^$call^";
+}
+
+# remote db data
+sub pc45
+{
+	my ($fromnode, $tonode, $stream, $data) = @_;
+	return "PC45^$tonode^$fromnode^$stream^$data^";
+}
+
+# remote db data complete
+sub pc46
+{
+	my ($fromnode, $tonode, $stream) = @_;
+	return "PC46^$tonode^$fromnode^$stream^";
+}
+
 # bull delete
 sub pc49
 {

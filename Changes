@@ -4,6 +4,13 @@
 a WWV.
 3. Added some logging for set/priv (un)set/lockout.
 4. Added test long path calc to sh/muf
+5. Only wonder down the msg queue every minute
+6. Put in the initial DB code (at last), you can create and remove local and
+standard remote dbs, you can import AK1A style .FUL ascii databases, you can
+enquire on a local or remote database.
+7. A return ping to a node will clear down all outstanding pings to
+that node (which might cause some confusion if more then one ping is
+outstanding for a node, but then - shit happens).
 04Nov99=======================================================================
 1. Removed ~ from the end of the PC18.
 2. Removed a hangover from duff character checking in cluster.pl

@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+#
+# Database update routine
+#
+# Copyright (c) 1999 Dirk Koopman G1TLH
+#
+my ($self, $line) = @_;
+my ($name, $fn) = split /\s+/, $line;
+my @out;
+
+return (1, $self->msg('e5')) if $self->priv < 9;
+
+my $db = DXDb::getdesc($name);
+return (1, $self->msg('db3', $name)) unless $db;
+return (1, $self->msg('db1', $db->remote )) if $db->remote;
+return (1, $self->msg('e3', 'dbimport', $fn)) unless -e $fn;
+
+my $state = 0;
+my $key;
+my $value;
+my $count;
+
+open(IMP, $fn) or return (1, "Cannot open $fn $!");
+while (<IMP>) {
+	chomp;
+	s/\r//g;
+	if ($state == 0) {
+		if (/^\&\&/) {
+			$state = 0;
+			next;
+		}
+		$key = uc $_;
+		$value = undef;
+		++$state;
+	} elsif ($state == 1) {
+		if (/^\&\&/) {
+			if ($key =~ /^#/) {
+			}
+			$db->putkey($key, $value);
+			$state = 0;
+			$count++;
+			next;
+		}
+		$value .= $_ . "\n";
+	}
+}
+close (IMP);
+
+push @out, $self->msg('db10', $count, $db->name);
+return (1, @out);

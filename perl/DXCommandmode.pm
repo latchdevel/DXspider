@@ -242,7 +242,11 @@ sub run_cmd
 						$Cache{$package}->{sub} = $c;
 					}
 					$c = $Cache{$package}->{sub};
-					@ans = &{$c}($self, $args);
+					eval {
+						@ans = &{$c}($self, $args);
+				    };
+					
+					return ($@) if $@;
 				}
 			} else {
 				dbg('command', "cmd: $cmd not found");

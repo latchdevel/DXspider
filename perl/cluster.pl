@@ -178,6 +178,9 @@ sub cease
 	};
 	dbg('local', "Local::finish error $@") if $@;
 
+	# close all databases
+	DXDb::closeall;
+	
 	# disconnect users
 	foreach $dxchan (DXChannel->get_all()) {
 		next if $dxchan->is_ak1a;
@@ -346,6 +349,10 @@ DXMsg::clean_old();
 print "reading cron jobs ...\n";
 DXCron->init();
 
+# read in database descriptors
+print "reading database descriptors ...\n";
+DXDb::load();
+
 # starting local stuff
 print "doing local initialisation ...\n";
 eval {
@@ -375,6 +382,7 @@ for (;;) {
 		DXProt::process();		# process ongoing ak1a pcxx stuff
 		DXConnect::process();
 		DXMsg::process();
+		DXDb::process();
 		eval { 
 			Local::process();       # do any localised processing
 		};
