@@ -32,7 +32,7 @@ $lang = 'en' if !$lang;
 # The fields are:- privilege level, Language, full command name, short description
 #
 
-my $h = new FileHandle;
+my $h = new IO::File;
 
 if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
 	if (!open($h, "$main::cmd/Commands_$lang.hlp")) {

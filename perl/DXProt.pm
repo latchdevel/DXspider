@@ -661,6 +661,7 @@ sub normal
 		if ($pcno == 50) {		# keep alive/user list
 			my $node = DXCluster->get_exact($field[1]);
 			if ($node) {
+				return unless $node->isa('DXNode');
 				return unless $node->dxchan == $self;
 				$node->update_users($field[2]);
 			}

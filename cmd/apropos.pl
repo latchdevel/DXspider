@@ -15,7 +15,7 @@ my @out;
 my $lang = $self->lang;
 $lang = 'en' if !$lang;
 
-my $h = new FileHandle;
+my $h = new IO::File;
 
 if (!open($h, "$main::localcmd/Commands_$lang.hlp")) {
 	if (!open($h, "$main::cmd/Commands_$lang.hlp")) {
