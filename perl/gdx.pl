@@ -3,7 +3,7 @@
 # grep for expressions in various fields of the dx file
 #
 
-use FileHandle;
+use IO::File;
 use DXUtil;
 use DXDebug;
 use Spot;

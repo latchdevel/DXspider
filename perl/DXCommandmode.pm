@@ -21,7 +21,7 @@ use DXLog;
 use DXLogPrint;
 use DXBearing;
 use CmdAlias;
-use FileHandle;
+use IO::File;
 use Filter;
 use Carp;
 
@@ -509,7 +509,7 @@ sub find_cmd_name {
 	} else {
 		delete_package($package) if defined $Cache{$package}{mtime};
 		
-		my $fh = new FileHandle;
+		my $fh = new IO::File;
 		if (!open $fh, $filename) {
 			$errstr = "Syserr: can't open '$filename' $!";
 			return undef;

@@ -26,7 +26,8 @@ use DXProtVars;
 use DXProtout;
 use DXDebug;
 use DXLog;
-use FileHandle;
+use IO::File;
+use Fcntl;
 use Carp;
 
 use strict;
@@ -330,7 +331,7 @@ sub store
 	if ($ref->{file}) {			# a file
 		dbg('msg', "To be stored in $ref->{to}\n");
 		
-		my $fh = new FileHandle "$ref->{to}", "w";
+		my $fh = new IO::File "$ref->{to}", "w";
 		if (defined $fh) {
 			my $line;
 			foreach $line (@{$lines}) {
@@ -350,7 +351,7 @@ sub store
 		dbg('msg', "To be stored in $fn\n");
 		
 		# now save the file, overwriting what's there, YES I KNOW OK! (I will change it if it's a problem)
-		my $fh = new FileHandle "$fn", "w";
+		my $fh = new IO::File "$fn", "w";
 		if (defined $fh) {
 			my $rr = $ref->{rrreq} ? '1' : '0';
 			my $priv = $ref->{private} ? '1': '0';
@@ -419,7 +420,7 @@ sub read_msg_header
 	my @f;
 	my $size;
 	
-	$file = new FileHandle;
+	$file = new IO::File;
 	if (!open($file, $fn)) {
 		print "Error reading $fn $!\n";
 		return undef;
@@ -464,7 +465,7 @@ sub read_msg_body
 	my $fn = filename($msgno);
 	my @out;
 	
-	$file = new FileHandle;
+	$file = new IO::File;
 	if (!open($file, $fn)) {
 		print "Error reading $fn $!\n";
 		return undef;
@@ -622,7 +623,7 @@ sub next_transno
 	my $fn = "$msgdir/$name";
 	my $msgno;
 	
-	my $fh = new FileHandle;
+	my $fh = new IO::File;
 	if (sysopen($fh, $fn, O_RDWR|O_CREAT, 0666)) {
 		$fh->autoflush(1);
 		$msgno = $fh->getline;
@@ -641,7 +642,7 @@ sub next_transno
 # initialise the message 'system', read in all the message headers
 sub init
 {
-	my $dir = new FileHandle;
+	my $dir = new IO::File;
 	my @dir;
 	my $ref;
 

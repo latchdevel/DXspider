@@ -8,7 +8,7 @@
 
 package DXLog;
 
-use FileHandle;
+use IO::File;
 use DXVars;
 use DXDebug ();
 use DXUtil;

@@ -17,7 +17,6 @@ require Exporter;
 use strict;
 use vars qw(%dbglevel $fp);
 
-use FileHandle;
 use DXUtil;
 use DXLog ();
 use Carp;

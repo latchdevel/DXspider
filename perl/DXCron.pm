@@ -12,7 +12,7 @@ use DXVars;
 use DXUtil;
 use DXM;
 use DXDebug;
-use FileHandle;
+use IO::File;
 use Carp;
 
 use strict;
@@ -58,7 +58,7 @@ sub init
 sub cread
 {
 	my $fn = shift;
-	my $fh = new FileHandle;
+	my $fh = new IO::File;
 	my $line = 0;
 
 	dbg('cron', "cron: reading $fn\n");

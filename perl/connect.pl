@@ -38,7 +38,7 @@ BEGIN {
 
 use DXVars;
 use IO::Socket;
-use FileHandle;
+use IO::File;
 use Open2;
 use DXDebug;
 use POSIX qw(dup);

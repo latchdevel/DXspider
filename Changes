@@ -5,6 +5,7 @@ appropriate.
 also reformat PC19 for onward broadcast so that nodes coming in on loops are
 dropped from those broadcasts.
 3. make sure PC16,17,19,21 doen't affect locally connected nodes.
+4. Changed all instances of FileHandle to IO::File.
 01Jun99=======================================================================
 1. removed a output of an unwanted pc21 for isolated nodes
 31May99=======================================================================

@@ -14,7 +14,7 @@ use DXVars;
 use DXUtil;
 use DXLog;
 use Julian;
-use FileHandle;
+use IO::File;
 use Carp;
 
 use strict;
@@ -44,7 +44,7 @@ sub init
 # write the current data away
 sub store
 {
-	my $fh = new FileHandle;
+	my $fh = new IO::File;
 	open $fh, "> $param" or confess "can't open $param $!";
 	print $fh "# Geomagnetic data parameter file last mod:", scalar gmtime, "\n";
 	print $fh "\$date = $date;\n";

@@ -8,6 +8,7 @@
 
 package Prefix;
 
+use IO::File;
 use Carp;
 use DXVars;
 use DB_File;
@@ -40,7 +41,7 @@ sub load
 sub store
 {
 	my ($k, $l);
-	my $fh = new FileHandle;
+	my $fh = new IO::File;
 	my $fn = "$main::data/prefix_data.pl";
   
 	confess "Prefix system not started" if !$db;

@@ -29,7 +29,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(Log Logclose);
 
-use FileHandle;
+use IO::File;
 use DXVars;
 use DXDebug ();
 use DXUtil;
@@ -75,7 +75,7 @@ sub open
 	$mode = 'r' if !$mode;
 	$self->{mode} = $mode;
 	
-	my $fh = new FileHandle $self->{fn}, $mode, 0666;
+	my $fh = new IO::File $self->{fn}, $mode, 0666;
 	return undef if !$fh;
 	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
 	$self->{fh} = $fh;
