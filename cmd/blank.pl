@@ -17,7 +17,7 @@ if (@f && $f[0] !~ /^\d+$/) {
 }
 if (@f && $f[0] =~ /^\d+$/) {
 	$lines = shift @f;
-	$lines = 9 if $lines < 9;
+	$lines = 9 if $lines > 9;
 	$lines = 1 if $lines < 1;
 }
 my @out;
