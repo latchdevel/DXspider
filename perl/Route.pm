@@ -168,6 +168,46 @@ sub conf
 	return $r ? 1 : 0;
 }
 
+#
+# pc59 entity encoding and decoding
+#
+sub enc_pc59
+{
+	my $self = shift;
+	my $sort = shift || 'N';
+	my $out = "$sort$self->{flag}$self->{call}";
+	if ($self->{build}) {
+		$out .= "b$self->{build}";
+	} elsif ($self->{version}) {
+		$out .= "v$self->{version}"; 
+	}
+}
+
+sub dec_pc59
+{
+	my $node = shift;
+	my $s = ref($node) ? shift : $node;
+	$node = undef;
+	
+	my ($sort, $here, $call) = unpack "A A A*", $s;
+	return unless is_callsign($call);
+	return unless $here =~ /^[0123]$/;
+	return unless $sort =~ /^[NUE]$/;
+	if ($sort eq 'E' || $sort eq 'N') {
+		$node = Route::Node::get($call) || Route::Node->new($call);
+		if ($s =~ /b([\d\.])/) {
+			$node->{build} = $1;
+		}
+		if ($s =~ /v([\d\.])/) {
+			$node->{version} = $1;
+		}
+	} elsif ($sort eq 'U') {
+		$node = Route::User::get($call) || Route::User->new($call);
+	}
+	$node->flags = $here;
+	return $node;
+}
+
 # 
 # display routines
 #
