@@ -1,3 +1,5 @@
+17Dec04=======================================================================
+1. add undocumented special command for VE7CC.
 10Dec04=======================================================================
 1. Included fixes sent in by David, N9KT for the new DB0SDX site.
 2. removed redundant "rm *bys" and "rm *cys" from Spot::init().

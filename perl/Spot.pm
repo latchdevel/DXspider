@@ -136,7 +136,7 @@ sub prepare
 
 sub add
 {
-	my $buf = join("\^", @_);
+	my $buf = join('^', @_);
 	$fp->writeunix($_[2], $buf);
 	$totalspots++;
 	if ($_[0] <= 30000) {

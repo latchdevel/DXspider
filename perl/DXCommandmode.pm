@@ -34,6 +34,7 @@ use Script;
 use Net::Telnet;
 use QSL;
 use DB_File;
+use VE7CC;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount);
@@ -859,20 +860,26 @@ sub dx_spot
 	my $self = shift;
 	my $line = shift;
 	my $isolate = shift;
+	return unless $self->{dx};
+
 	my ($filter, $hops);
 
-	return unless $self->{dx};
-	
 	if ($self->{spotsfilter}) {
 		($filter, $hops) = $self->{spotsfilter}->it(@_ );
 		return unless $filter;
 	}
 
 	dbg('spot: "' . join('","', @_) . '"') if isdbg('dxspot');
-	
-	my $buf = $self->format_dx_spot(@_);
-	$buf .= "\a\a" if $self->{beep};
-	$buf =~ s/\%5E/^/g;
+
+	my $buf;
+	if ($self->{ve7cc}) {
+		$buf = VE7CC::dx_spot($self, @_);
+	} else {
+		$buf = $self->format_dx_spot(@_);
+		$buf .= "\a\a" if $self->{beep};
+		$buf =~ s/\%5E/^/g;
+	}
+
 	$self->local_send('X', $buf);
 }
 

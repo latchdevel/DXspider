@@ -114,6 +114,7 @@ $count = 0;
 		  build => '1,Node Build',
 		  verified => '9,Verified?,yesno',
 		  newroute => '1,New Style Routing,yesno',
+		  ve7cc => '0,VE7CC program special,yesno',
 		 );
 
 use vars qw($VERSION $BRANCH);
