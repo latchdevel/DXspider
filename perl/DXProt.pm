@@ -887,12 +887,6 @@ sub normal
 			my $ref = Route::get($call) || Route->new($call);
 			return unless $self->in_filter_route($ref);
 
-			# dup check it
-			if (eph_dup($line)) {
-				dbg("PCPROT: ephemeral PC41 dup dropped") if isdbg('chanerr');
-				return;
-			}
-
 			# add this station to the user database, if required
 			my $user = DXUser->get_current($call);
 			$user = DXUser->new($call) if !$user;
@@ -1829,7 +1823,7 @@ sub eph_dup
 	my $s = shift;
 
 	# chop the end off
-	$s =~ s/\^H\d\d?\^?~?$//;
+	$s =~ s/\^H\d\d?\^?\~?$//;
 	return 1 if exists $eph{$s};
 	$eph{$s} = $main::systime;
 	return undef;
