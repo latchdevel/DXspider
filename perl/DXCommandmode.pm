@@ -120,15 +120,6 @@ sub start
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
 
-	# send prompts and things
-	my $info = Route::cluster();
-	$self->send("Cluster:$info");
-	$self->send($self->msg('namee1')) if !$user->name;
-	$self->send($self->msg('qthe1')) if !$user->qth;
-	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
-	$self->send($self->msg('hnodee1')) if !$user->qth;
-	$self->send($self->msg('m9')) if DXMsg::for_me($call);
-
 	# decide on echo
 	if (!$user->wantecho) {
 		$self->send_now('E', "0");
@@ -149,6 +140,16 @@ sub start
 	my $script = new Script(lc $call) || new Script('user_default');
 	$script->run($self) if $script;
 
+	# send cluster info
+	my $info = Route::cluster();
+	$self->send("Cluster:$info");
+
+	# send prompts and things
+	$self->send($self->msg('namee1')) if !$user->name;
+	$self->send($self->msg('qthe1')) if !$user->qth;
+	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
+	$self->send($self->msg('hnodee1')) if !$user->qth;
+	$self->send($self->msg('m9')) if DXMsg::for_me($call);
 	$self->prompt;
 }
 
