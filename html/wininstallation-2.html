@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The Installation Guide for DXSpider under Microsoft Windows: Installing the software</TITLE>
+ <LINK HREF="wininstallation-1.html" REL=previous>
+ <LINK HREF="wininstallation.html#toc2" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+Next
+<A HREF="wininstallation-1.html">Previous</A>
+<A HREF="wininstallation.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. Installing the software</A></H2>
+
+<P>Ensure that your CVS session or your unZIPped file have left you
+with a directory "C:\spider\local"; if not, go to "C:\spider\"
+and create one. If "C:\spider" is missing, go back and figure out
+why, because it shouldn't be.
+<P>Now create your own local copy of the DXVars.pm file by:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+copy c:\spider\perl\DXVars.pm.issue
+c:\spider\local\DXVars.pm
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Now you'll need to edit this file using a text editor. If nothing
+else, you can simply
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+cd \spider\local
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>and then
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+notepad DXVars.pm
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>to bring up an editor window containing the file. As an absolute
+minimum you must adjust the following items in DXVars.pm:-
+<P>
+<UL>
+<LI> $mycall  - Should hold the callsign of your DX Cluster</LI>
+<LI> $myname  - The SysOp's first name</LI>
+<LI> $myalias - the SysOp's callsign. Cannot be the same as $mycall!</LI>
+</UL>
+<P>You really also ought to update the $mylatitude, $mylongitude,
+$myqth and $myemail variables. And unless you are absolutely
+certain you know what you're doing, you should change nothing
+else in this file.
+<P>
+<H2><A NAME="ss2.1">2.1 The AGW packet engine</A>
+</H2>
+
+<P>On the assumption that you'll be using the SV2AGW Packet Engine
+to interface your radios to the cluster, you should now create
+your own local copy of AGWConnect.pm by:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+copy c:\spider\perl\AGWConnect.pm
+c:\spider\local\AGWConnect.pm
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>and then
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+notepad AGWConnect.pm
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>to bring up an editor window containing the file. You must
+consider adjusting the following items in AGWConnect.pm:-
+<P>
+<UL>
+<LI>$enable - set to '1' to enable AGWPE interface </LI>
+<LI>$login  - the login ID you chose when you set up the SV2AGW security :-)</LI>
+<LI>$passwd - password that matches $login</LI>
+</UL>
+<P>
+<H2><A NAME="ss2.2">2.2 Setting up the initial user files</A>
+</H2>
+
+<P>Next you need to create the initial user files, etc. A tool is
+supplied which will do this for you. To run the tool:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+cd \spider\perl
+perl create_sysop.pl
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If all goes according to plan, you will see no output from this
+program, and after a brief wait, your DOS prompt will be
+returned.
+<P>Depending on how brave you are, you might now care to try the
+following:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+perl cluster.pl
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If you did everything you were told, your DOS window will now
+hold a display which looks something like:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+DXSpider DX Cluster Version 1.47
+Copyright (c) 1998-2001 Dirk Koopman G1TLH
+loading prefixes ...
+loading band data ...
+loading user file system ...
+starting listeners ...
+Internal port: localhost 27754
+load badwords: Ok
+reading in duplicate spot and WWV info ...
+reading existing message headers ...
+load badmsg: Ok
+load forward: Ok
+load swop: Ok
+@msg = 0 before delete
+@msg = 0 after delete
+reading cron jobs ...v cron: reading /spider/cmd/crontab
+cron: adding 1 0 * * 0
+DXUser::export("$main::data/user_asc")
+reading database descriptors ...
+doing local initialisation ...
+orft we jolly well go ...
+queue msg (0)
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Now, if that's what you've got, you are very nearly home and dry
+(in as far as these particular experiments are concerned, anyhow)
+<P>To access your new cluster (from the local machine) find yourself another
+"DOS box" and do the following:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+cd \spider\perl
+perl winclient.pl
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If you are rewarded with a display which looks something like:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Hello Iain, this is GB7SJP in Amersham, Bucks running DXSpider V1.47
+Cluster: 1 nodes, 1 local / 1 total users Max users 2 Uptime 0 00:00
+M0ADI de GB7SJP 4-Mar-2001 1511Z >
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>You've arrived. Try some commands, and see how they feel. (In
+case you were wondering, "Iain", "M0ADI" and "GB7SJP" all came
+from the version of DXVars.pm that was on the machine when I
+started the winclient.pl)
+<P>
+<H2><A NAME="ss2.3">2.3 Incoming telnets</A>
+</H2>
+
+<P>If you want to enable inbound "TELNET" connections, you've got a
+little more work to do. From a handy "DOS box" that's not doing
+anything else, do the following:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+copy \spider\perl\listeners.pm \spider\local
+cd \spider\local
+notepad listeners.pm
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>The following lines need attention:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+["localhost", 7300],
+["foo.dxcluster.net", 7300],
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>On my machine, I've simply uncommented the "localhost" entry by
+removing the '#' from the front of the line. I've also
+uncommented the second line, and changed the hostname to point at
+"spud.ath.cx".
+<P>If you don't have a static hostname for your machine, and you
+intend to allow folk to connect to your machine across the
+internet, then I'd suggest you pay a visit to www.dyndns.org and
+create one for yourself. While it's free, it will take a modest
+an amount of effort on your part to read, understand and
+implement what needs to be done to set this up.
+<P>
+<H2><A NAME="ss2.4">2.4 Connecting to other clusters</A>
+</H2>
+
+<P>If you want to connect this to another cluster, then you'll want
+to negotiate a link with someone. For experimental purposes, I'm
+happy to allow folk to connect to GB7DXA (spud.ath.cx), on the
+understanding that the system may or may not be there and may or
+may not be connected to anything particularly useful at any given
+moment. Contact me by Email if you want me to set up a connection
+for you.
+<P><I>Last updated: 05-Mar-01</I>
+<P>
+<HR>
+Next
+<A HREF="wininstallation-1.html">Previous</A>
+<A HREF="wininstallation.html#toc2">Contents</A>
+</BODY>
+</HTML>

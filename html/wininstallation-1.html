@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>The Installation Guide for DXSpider under Microsoft Windows: Introduction</TITLE>
+ <LINK HREF="wininstallation-2.html" REL=next>
+
+ <LINK HREF="wininstallation.html#toc1" REL=contents>
+<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">
+</HEAD>
+<BODY>
+<A HREF="wininstallation-2.html">Next</A>
+Previous
+<A HREF="wininstallation.html#toc1">Contents</A>
+<HR>
+<H2><A NAME="s1">1. Introduction</A></H2>
+
+<P><B>IMPORTANT:</B> 
+<P>What you'll be left with once you've followed these instructions
+is (hopefully) a working DX Spider v1.47 system that is capable
+of accepting or originating "internet" connections, plus inbound
+AX.25 and TCP/IP radio connections. If the absence of outbound
+radio connections is a serious limitation for you, it would be
+better for you to wait a couple more weeks until this support has
+been added.
+<P>On the other hand, you may have an enquiring mind, or better yet,
+may be looking for a useful way of connecting your current
+(perhaps) AK1A cluster "to the internet" via some networking
+mechanism (BPQEther, etc) or other. I won't be producing
+instructions for the latter case, because I don't have an AK1A to
+play with. But someone might ...
+<P>Whatever, this document is intended to get you started with DX
+Spider in a Microsoft Windows &trade; environment. It's not
+intended to teach you anything other than how to perform a
+minimum configuration of a DX Spider installation and have it
+able to connect across "the internet" to other DX Clusters, while
+accepting inbound TELNET and radio connections.
+<P>
+<H2><A NAME="ss1.1">1.1 The requirements</A>
+</H2>
+
+<P>The very first things you're going to need are (in order of
+importance):-
+<P>
+<UL>
+<LI>A cup of good, strong tea</LI>
+<LI>A supported Windows platform with an internet connection so you can
+download the necessary software bits and bobs directly to it. There are other ways, but this is preferable.</LI>
+<LI>Another cup of good, strong tea</LI>
+<LI>If all goes according to plan, about an hour to spare</LI>
+<LI>Plenty of good, strong tea</LI>
+</UL>
+<P>
+<H2><A NAME="ss1.2">1.2 The system</A>
+</H2>
+
+<P>The platform I used to generate these instructions was a
+"vanilla" Microsoft Windows Me 4.90.3000 system, with a 700MHz
+AMD Athlon processor and 96 Mb memory. I've also personally
+verified that it runs on my laptop (Pentium 266MHz, 32 Mb memory,
+Windows 98 SE v4.10.2222 A) and a computer that I assembled from
+a random pile of junk (AMD K6-2 333MHz, 64 Mb memory, Windows 98
+v4.10.1998). As a result, I have reason to believe that what I'm
+about to describe will perform equally on any 32-bit MS Windows
+environment with 32 Mb of memory.
+<P>Because of the changes that have recently been made to the core
+"cluster.pl" module and the introduction of a very lightweight
+"winclient.pl", I have a sneaking suspicion that this will now
+run on any platform that has reasonably complete support for
+Perl. Is there someone out there with both an enquiring mind and
+(say) a Macintosh, for instance?
+<P>Please bear in mind, though, that my instructions relate solely
+to how to get this going under a Microsoft Windows environment,
+and I have zero intention of trying to make them say otherwise.
+<P>
+<H2><A NAME="ss1.3">1.3 Perl</A>
+</H2>
+
+<P>Install your chosen Perl environment. Unless you have a very good
+reason for not doing so, I strongly suggest that you use
+ActivePerl v5.6. For my testing &amp; development, I used build 623.
+You can get this from:- 
+<A HREF="http://www.activestate.com/Products/ActivePerl/Download.html">http://www.activestate.com/Products/ActivePerl/Download.html</A><P>You will need to choose either the MSI or the AS package. My
+recommendation is that you choose the MSI package and deal with
+the consequences if your system isn't equipped with support for
+the latest MS Installer; you'll be better off in the long run.
+The build 623 download is 7,460 KB, so now is a really good time
+to have some tea if you're on a slow dial-up connection.
+<P>During installation, please ensure that you do choose the options
+to "Add Perl to the PATH environment variable" and "Create Perl
+file extension association"; it will make your life so much
+easier. Once the installation is finished, be sure to reboot your
+PC. You probably won't be told anywhere else that this needs to
+be done now, but it does. Really.
+<P>Once you've rebooted, open a "DOS box" (Start > Run > command
+might do it, if you can't find it elsewhere) and from wherever it
+lands, type PERL -v &lt;ENTER&gt; (it's better if that's a lower-case
+'v', because an upper-case 'V' means something else. You should
+be rewarded with some interesting information about your Perl
+installation. If you're not, you must go back to the beginning
+and discover what went wrong and fix it. It's pointless to
+proceed unless this simple check is passed. Assuming it did work,
+you may now move on.
+<P>
+<H2><A NAME="ss1.4">1.4 Additional packages</A>
+</H2>
+
+<P>Some extensions ("packages") need to be added to the base Perl
+distribution, and we'll do this next. If you're using the Perl I
+recommended, and don't know any better for yourself, then just
+blindly following these instructions will work just fine. If that
+didn't describe you, then you're on your own.
+<P>Visit the following URL:
+<P>
+<A HREF="http://www.activestate.com/PPMPackages/zips/6xx-builds-only/">http://www.activestate.com/PPMPackages/zips/6xx-builds-only/</A><P>and download the following files:-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+Data-Dumper.zip
+Net-Telnet.zip
+TimeDate.zip
+Time-HiRes.zip
+DB_File.zip
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>Make yourself a convenient directory to unpack all of these zip
+files into (I put mine in "D:\ppm>") and do the following (the
+bits you type in are blue ). Note that where these files land
+will be directly related to where you chose to install your
+ActivePerl (mine, as you can probably guess from what follows,
+went into "D:\Perl"):-
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+D:\ppm>ppm install Data-Dumper.ppd
+Installing package 'Data-Dumper.ppd'
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.bs
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.dll
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.exp
+Installing D:\Perl\site\lib\auto\Data\Dumper\Dumper.lib
+Installing D:\Perl\html\site\lib\auto\Data\Dumper\Dumper.html
+Installing D:\Perl\site\lib\Data\Dumper\Dumper.pm
+Writing D:\Perl\site\lib\auto\Data\Dumper\Dumper.packlist
+D:\ppm>
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>I'm not going to bother you with exhaustive details of the rest
+of them, but suffice it to say you need to:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+ppm install DB_File.ppd
+ppm install Net-Telnet.ppd
+ppm install TimeDate.ppd
+ppm install Time-HiRes.ppd
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>If all that seemed to work OK, time to move along. Before anyone
+who is familiar with PPM tells me that we didn't need to download
+and keep those files locally, I knew that. I also knew that PPM
+is sometimes awkward to configure via firewalls, and that
+sometimes the repositories don't always work the way we'd hope. I
+do it that way because it suits me.
+<P>
+<H2><A NAME="ss1.5">1.5 Getting Spider</A>
+</H2>
+
+<P>Get the current version of the DX Spider distribution. This needs
+to be v1.47 or later. You've got two ways (currently) of getting
+this; either get a CVS update from sourceforge (if you don't know
+what this is, then it isn't for you) or get my package from:-
+<P>
+<A HREF="http://www.dcc.rsgb.org/WinSpider.zip">http://www.dcc.rsgb.org/WinSpider.zip</A><P>If you went down the CVS route, then everything will be nicely
+set out on your local disk. If you got the ZIP file, unpack it to
+somewhere convenient. The following examples assume that you put
+it on drive "C:\", for convenience.
+<P><B>NOTE:</B> This distribution method will go away as soon as the first
+v1.47 tarball is released. You can use WinZip to unpack that, and
+my life will be made easier by not needing to keep this .ZIP file
+updated.
+<P>
+<HR>
+<A HREF="wininstallation-2.html">Next</A>
+Previous
+<A HREF="wininstallation.html#toc1">Contents</A>
+</BODY>
+</HTML>

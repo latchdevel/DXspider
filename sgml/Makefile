@@ -2,7 +2,7 @@
 # Makefile for Ian, 2.1.2001
 #
 
-all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../txt/spiderFAQ.txt ../html/usermanual.html ../txt/usermanual.txt
+all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../txt/spiderFAQ.txt ../html/usermanual.html ../txt/usermanual.txt ../html/wininstallation.html ../txt/wininstallation.txt
 
 #	../txt/adminmanual.txt: adminmanual.sgml
 	sgml2txt adminmanual.sgml
@@ -21,6 +21,12 @@ all:	../html/adminmanual.html ../txt/adminmanual.txt ../html/spiderFAQ.html ../t
 
 #	../txt/usermanual.txt: usermanual.sgml
 	sgml2txt usermanual.sgml
+
+#	../html/wininstallation.html: wininstallation.sgml
+	sgml2html wininstallation.sgml
+
+#	../txt/winistallation.txt: wininstallation.sgml
+	sgml2txt -f wininstallation.sgml
 
 	perl -pi.bak -e 's|</HEAD>|<link rel=stylesheet href="style.css" type="text/css" title="default stylesheet">\n</HEAD>|' *.html
 	mv *.html ../html
