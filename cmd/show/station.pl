@@ -73,16 +73,16 @@ if (@f <= 2 && uc $f[0] eq 'ALL') {
 			my $seek = $cref->isa('Route::Node') ? $call : join(',', $cref->parents) if $cref;
 
 			if ($seek) {
-				push @out, "User         : $call (at $seek)";
+				push @out, sprintf("%-13s: %s (%s %s)", $self->msg('user'), $call, $self->msg('at'), $seek);
 			} else {
-				push @out, "User         : $call";
+				push @out, sprintf("%-13s: %s", $self->msg('user'), $call);
 			}
-			push @out, "Name         : $name" if $name;
-			push @out, "Last Connect : $last" if $last;
-			push @out, "QTH          : $qth" if $qth;
-			push @out, "Location     : $latlong ($qra)" if $latlong || $qra ;
-			push @out, sprintf("Heading      : %.0f Deg %.0f Mi. %.0f Km.", $bearing, $miles, $dx) if $latlong;
-			push @out, "Home Node    : $homenode" if $homenode;
+			push @out, sprintf("%-13s: %s", $self->msg('name1'), $name) if $name;
+			push @out, sprintf("%-13s: %s", $self->msg('lastconn'), $last) if $last;
+			push @out, sprintf("%-13s: %s", 'QTH', $qth) if $qth;
+			push @out, sprintf("%-13s: %s", $self->msg('location'), "$latlong ($qra)") if $latlong || $qra ;
+			push @out, sprintf("%-13s: %.0f Deg. %.0f Mi. %.0f Km.", $self->msg('heading'), $bearing, $miles, $dx) if $latlong;
+			push @out, sprintf("%-13s: %s", $self->msg('homenode2'), $homenode) if $homenode;
 		} else {
 			push @out, $self->msg('usernf', $call);
 		}

@@ -29,7 +29,7 @@ while ($f = shift @f) {                 # next field
 $from = 1 unless $from;
 $to = 10 unless $to;
 
-push @out, "Date        Hour   SFI   A   K Exp.K   R SA    GMF   Aurora   Logger";
+push @out, $self->msg('wcy3');
 my @in = WCY::search($from, $to, $main::systime);
 for (@in) {
 	push @out, WCY::print_item($_);

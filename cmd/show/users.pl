@@ -28,7 +28,7 @@ if (@list) {
 	}
 } else {
 	my $node = $main::routeroot;
-	push @out, "Callsigns connected to $main::mycall";
+	push @out, join(' ', $self->msg('userconn'), $main::mycall);
 	my $call;
 	my $i = 0;
 	my @l;

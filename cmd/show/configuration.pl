@@ -14,7 +14,7 @@ my $node;
 my @l;
 my @val;
 
-push @out, "Node         Callsigns";
+push @out, $self->msg('showconf');
 if ($list[0] && $list[0] =~ /^NOD/) {
 	my @ch = sort {$a->call cmp $b->call} DXChannel::get_all_nodes();
 	my $dxchan;
