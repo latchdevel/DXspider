@@ -394,24 +394,24 @@ sub nolinger
 {
 	my $conn = shift;
 
-	if (isdbg('sock')) {
-		my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
-		my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
-		my $n = $main::is_win ? 0 : unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
-		dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
-	}
-		
-	setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
 	unless ($main::is_win) {
+		if (isdbg('sock')) {
+			my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
+			my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
+			my $n = $main::is_win ? 0 : unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
+			dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
+		}
+		
+		setsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE, 1) or confess "setsockopt keepalive: $!";
 		setsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER, pack("ll", 0, 0)) or confess "setsockopt linger: $!";
 		setsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY, 1) or confess "setsockopt: $!";
-	}		
-	if (isdbg('sock')) {
-		my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
-		my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
-		my $n = $main::is_win ? 0 : unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
-		dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
-	  
+
+		if (isdbg('sock')) {
+			my ($l, $t) = unpack "ll", getsockopt($conn->{sock}, SOL_SOCKET, SO_LINGER); 
+			my $k = unpack 'l', getsockopt($conn->{sock}, SOL_SOCKET, SO_KEEPALIVE);
+			my $n = $main::is_win ? 0 : unpack "l", getsockopt($conn->{sock}, IPPROTO_TCP, TCP_NODELAY);
+			dbg("Linger is: $l $t, keepalive: $k, nagle: $n");
+		}
 	} 
 	$conn->{sock}->autoflush(0);
 }
