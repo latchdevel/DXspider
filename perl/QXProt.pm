@@ -152,7 +152,7 @@ sub frame
 sub send_frame
 {
 	my $self = shift;
-	my $origin = shift;
+	my $origin = shift || $main::me;
 	for (@_) {
 		$self->send(frame('X', undef, $origin == $main::me || $origin->is_user ? '' : $origin->call, $_));
 	}
