@@ -1,5 +1,6 @@
 30Nov00=======================================================================
 1. remove %nn strings from dups of announces and spots
+2. remove check for ssids on PC41s 
 29Nov00=======================================================================
 1. make some small changes to DXmsg to try to track delete problems?
 2. fix ann/full so it doesn't dup

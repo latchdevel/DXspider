@@ -897,11 +897,6 @@ sub normal
 		if ($pcno == 41) {		# user info
 			# add this station to the user database, if required
 			my $user = DXUser->get_current($field[1]);
-			if (!$user) {
-				# then try without an SSID
-				$field[1] =~ s/-\d+$//o;
-				$user = DXUser->get_current($field[1]);
-			}
 			$user = DXUser->new($field[1]) if !$user;
 			
 			if ($field[2] == 1) {
