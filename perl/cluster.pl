@@ -368,7 +368,7 @@ print "orft we jolly well go ...\n";
 dbg('chan', "DXSpider version $version started...");
 for (;;) {
 	my $timenow;
-	Msg->event_loop(1, 0.001);
+	Msg->event_loop(1, 0.1);
 	$timenow = time;
 	process_inqueue();			# read in lines from the input queue and despatch them
 	

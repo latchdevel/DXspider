@@ -1,5 +1,8 @@
 24Oct99=======================================================================
 1. fixed announces so that nodes only get one of them (not two).
+2. Altered the select timeouts to prevent apparent excessive CPU usage on
+multiprocessor machines (or at least that is what seems to be the trouble
+here). 
 22Oct99=======================================================================
 1. allow filter CALLSIGNS to be in upper or lower case.
 2. create the concept of input and output filters, input filters are of the 

@@ -426,7 +426,7 @@ Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
 for (;;) {
 	my $t;
-	Msg->event_loop(1, 0.010);
+	Msg->event_loop(1, 1);
 	$top->refresh() if $top->is_wintouched;
 	$bot->refresh();
 	$t = time;

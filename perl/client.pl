@@ -493,7 +493,7 @@ Msg->set_event_handler($stdin, "read" => \&rec_stdin);
 
 for (;;) {
 	my $t;
-	Msg->event_loop(1, 0.010);
+	Msg->event_loop(1, 1);
 	$t = time;
 	if ($t > $lasttime) {
 		if ($outqueue) {
