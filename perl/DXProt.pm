@@ -332,7 +332,7 @@ sub normal
 
 			# if we are converting announces to talk is it a dup?
 			if ($ann_to_talk) {
-				if (AnnTalk::is_talk_candidate($$from, $field[3]) && AnnTalk::dup($$from, $to, $field[3])) {
+				if (AnnTalk::is_talk_candidate($from, $field[3]) && AnnTalk::dup($from, $to, $field[3])) {
 					dbg("DXPROT: Dupe talk from announce, dropped") if isdbg('chanerr');
 					return;
 				}
@@ -343,7 +343,7 @@ sub normal
 			$dxchan = DXChannel->get($to) unless $dxchan;
 			if ($dxchan && $dxchan->is_user) {
 				$field[3] =~ s/\%5E/^/g;
-				$dxchan->talk($$from, $to, $via, $field[3]);
+				$dxchan->talk($from, $to, $via, $field[3]);
 				return;
 			}
 
@@ -354,17 +354,17 @@ sub normal
 			if ($ref = Route::get($to)) {
 				$vref = Route::Node::get($via) if $via;
 				$vref = undef unless $vref && grep $to eq $_, $vref->users;
-				$ref->dxchan->talk($$from, $to, $vref ? $via : undef, $field[3], $field[6]);
+				$ref->dxchan->talk($from, $to, $vref ? $via : undef, $field[3], $field[6]);
 				return;
 			}
 
 			# not visible here, send a message of condolence
 			$vref = undef;
-			$ref = Route::get($$from);
+			$ref = Route::get($from);
 			$vref = $ref = Route::Node::get($field[6]) unless $ref; 
 			if ($ref) {
 				$dxchan = $ref->dxchan;
-				$dxchan->talk($main::mycall, $$from, $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
+				$dxchan->talk($main::mycall, $from, $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
 			}
 			return;
 		}
