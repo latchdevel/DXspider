@@ -172,6 +172,7 @@ package DXM;
 				nodeu => '$_[0] set back as a User',
 				nodee1 => 'You cannot use this command whilst your target ($_[0]) is on-line',
 				notdone => 'NOT Done',
+				nothere => 'Sorry, but $_[0] isn\'t here at the moment, please try later', 
 				obscount => 'Ping obsolescence count on $_[0] set to $_[1]',
 				ok => 'Operation successful',
 				outconn => 'Outstanding connect to $_[0]',

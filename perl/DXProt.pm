@@ -275,10 +275,8 @@ sub normal
 	
 #	print join(',', @field), "\n";
 						
-	# ignore any lines that don't start with PC
-	return if !$field[0] =~ /^PC/;
 	
-	# process PC frames
+	# process PC frames, this will fail unless the frame starts PCnn
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
 	return unless $pcno;
 	return if $pcno < 10 || $pcno > 99;
@@ -785,16 +783,21 @@ sub normal
 		
 		if ($pcno == 24) {		# set here status
 			my $call = uc $field[1];
-			my $ref = Route::Node::get($call);
-			$ref->here($field[2]) if $ref;
-			$ref = Route::User::get($call);
-			$ref->here($field[2]) if $ref;
-			$ref ||= Route->new($call);
+			my ($nref, $uref);
+			$nref = Route::Node::get($call) && $nref->here($field[2]);
+			$uref = Route::User::get($call) && $uref->here($field[2]);
+			return unless $nref || $uref;	# if we don't know where they are, it's pointless sending it on
 			
-			# input filter if required
-			return unless $self->in_filter_route($ref);
-
-			$self->route_pc24($ref, $field[3]) if $ref && !eph_dup($line);
+			unless (eph_dup($line)) {
+				if ($nref) {
+					return unless $self->in_filter_route($nref);
+					$self->route_pc24($nref, $field[3])
+				}
+				if ($uref) {
+					return unless $self->in_filter_route($uref);
+					$self->route_pc24($uref, $field[3]);
+				}
+			}
 			return;
 		}
 		

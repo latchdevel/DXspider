@@ -644,6 +644,15 @@ sub talk
 	$line =~ s/\\5E/\^/g;
 	$self->send("$to de $from: $line") if $self->{talk};
 	Log('talk', $to, $from, $main::mycall, $line);
+	# send a 'not here' message if required
+	unless ($self->{here} && $from ne $to) {
+		my ($ref, $dxchan);
+		if (($ref = Route::get($from)) && ($dxchan = $ref->dxchan)) {
+			my $name = $self->user->name || $to;
+			my $s = $self->user->nothere || $dxchan->msg('nothere', $name);
+			$dxchan->talk($to, $from, undef, $s);
+		}
+	}
 }
 
 # send an announce
