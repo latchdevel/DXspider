@@ -2,6 +2,7 @@
 1. added a help file for forward/latlong and updated the admin manual to
 match. (g0vgs)
 2. Add spot2csv.pl to convert spot files into tab delimited .csv format.
+3. Add show/route to see which interface a station is connected on.
 31Dec00=======================================================================
 1. add lat/long info to show/prefix
 30Dec00=======================================================================

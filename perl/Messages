@@ -183,6 +183,7 @@ package DXM;
 				read1 => 'Sorry, no new messages for you',
 				read2 => 'Msg $_[0] not found',
 				read3 => 'Msg $_[0] not available',
+				route => '$_[0] on $_[1] via $_[2]',
 				sat1 => 'Tracking Table for $_[0] for the next $_[1] hours every $_[2] mins',
 				sat2 => 'dd/mm  UTC      Lat     Lon  Alt Km      Az      El Dist Km',
 				sat3 => 'Syntax: SH/SAT <name> [<hours> <interval>]',

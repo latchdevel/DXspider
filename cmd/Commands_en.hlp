@@ -1351,6 +1351,12 @@ This command queries the QRZ callbook server on the internet
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
 
+=== 0^SHOW/ROUTE <callsign> ...^Show the route to the callsign
+This command allows you to see which node the callsigns specified are
+connected via. It is a sort of inverse sh/config.
+
+sh/route n2tly
+
 === 0^SHOW/SATELLITE <name> [<hours> <interval>]^Show tracking data
 Show the tracking data from your location to the satellite of your choice
 from now on for the next few hours.
