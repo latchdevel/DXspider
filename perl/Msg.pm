@@ -58,6 +58,8 @@ BEGIN {
 	if ($^O eq 'MSWin32') { 
 		eval '*EINPROGRESS = sub { 10036 };';
 		eval '*EWOULDBLOCK = *EAGAIN = sub { 10035 };';
+		eval '*F_GETFL     = sub {     0 };';
+		eval '*F_SETFL     = sub {     0 };';
 		$blocking_supported = 1;
 	} 
 }
