@@ -63,6 +63,11 @@ Disconnect any <call> connected locally
 <freq> is compared against the available bands set up in the cluster.
 see show/bands for more information.
 
+=== 1^FORWARD/OPERNAME <call>^Send out information on this <call> to all clusters
+This command sends out any information held in the user file which can 
+be broadcast in PC41 protocol packets. This information is Name, QTH, Location
+and Homenode. PC41s are only sent for the information that is available.
+ 
 === 0^HELP^The HELP Command
 HELP is available for a number of commands. The syntax is:-
 
@@ -76,35 +81,38 @@ to SH/DX, ANNOUNCE can be shortened to AN and so on.
 Look at the APROPOS <string> command which will search the help database
 for the <string> you specify and give you a list of likely commands
 to look at with HELP.
-=== 0^SHOW/DX^Interrogate the spot database
-If you just type SHOW/DX you will get the last so many spots
-(sysop configurable, but usually 10).
-   
-In addition you can add any number of these commands in very nearly
-any order to the basic SHOW/DX command, they are:-
-   
-on <band>       - eg 160m 20m 2m 23cm 6mm
-on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
-   
-<number>        - the number of spots you want
-<from>-<to>     - <from> spot no <to> spot no in the selected list
-   
-<prefix>        - for a spotted callsign beginning with <prefix>
-*<suffix>       - for a spotted callsign ending in <suffix>
-*<string>*      - for a spotted callsign containing <string>
-   
-day <number>    - starting <number> days ago
-day <from>-<to> - <from> days <to> days ago
-   
-info <text>     - any spots containing <text> in the info or remarks
-   
-spotter <call>  - any spots spotted by <call>
-   
-e.g. 
-   
-   SH/DX 9m0
-   SH/DX on 20m info iota
-   SH/DX 9a on vhf day 30
+
+=== 9^LOAD/ALIASES^Reload the command alias table
+Reload the /spider/cmd/Aliases file after you have editted it. You will need to
+do this if you change this file whilst the cluster is running in order for the
+changes to take effect.
+
+=== 9^LOAD/BANDS^Reload the band limits table
+Reload the /spider/data/bands.pl file if you have changed it manually whilst
+the cluster is running. 
+
+=== 9^LOAD/CMD_CACHE^Reload the automatic command cache
+Normally, if you change a command file in the cmd or local_cmd tree it will
+automatially be picked up by the cluster program. Sometimes it can get confused
+if you are doing a lot of moving commands about or delete a command in the 
+local_cmd tree and want to use the normal one again. Execute this command to
+reset everything back to the state it was just after a cluster restart.
+
+=== 9^LOAD/MESSAGES^Reload the system messages file
+If you change the /spider/perl/Messages file (usually whilst fiddling/writing new
+commands) you can have them take effect during a cluster session by executing this
+command. You need to do this if get something like :-
+
+unknown message 'xxxx' in lang 'en'
+
+=== 9^LOAD/PREFIXES^Reload the prefix table
+Reload the /spider/data/prefix_data.pl file if you have changed it manually whilst
+the cluster is running. 
+
+=== 1^PING <node>^Send a ping command to another cluster
+This command is used to estimate the quality of the link to another cluster. 
+The time returned is the length of time taken for a PC51 to go to another 
+cluster and be returned.
 
 === 0^KILL <msgno> [<msgno> ...]^Remove or erase a message from the system
 You can get rid of any message to or originating from your callsign using 
@@ -170,6 +178,112 @@ receive a read receipt when they have read the message.
 
 SB is an alias for SEND NOPRIVATE (or send a bulletin in BBS speak)
 SP is an alias for SEND PRIVATE
+
+=== 0^SET/ADDRESS <your address>^Record your postal address
+
+=== 0^SET/ANNOUNCE^Allow announce messages to come out on your terminal
+=== 0^UNSET/ANNOUNCE^Stop announce messages coming out on your terminal
+
+=== 0^SET/BEEP^Add a beep to DX and other messages on your terminal
+=== 0^UNSET/BEEP^Stop beeps for DX and other messages on your terminal
+
+=== 9^SET/DEBUG <name>^Add a debug level to the debug set
+=== 9^UNSET/DEBUG <name>^Remove a debug level from the debug set
+
+=== 0^SET/DX^Allow DX messages to come out on your terminal
+=== 0^UNSET/DX^Stop DX messages coming out on your terminal
+
+=== 0^SET/HERE^Tell the system you are present at your terminal
+=== 0^UNSET/HERE^Tell the system you are absent from your terminal
+
+=== 0^SET/HOMENODE <node> ^Set your normal cluster callsign
+Tell the cluster system where you normally connect to. Any Messages sent
+to you will normally find their way there should you not be connected.
+eg:-
+  SET/HOMENODE gb7djk
+
+=== 0^SET/LOCATION <lat & long>^Set your latitude and longitude
+In order to get accurate headings and such like you must tell the system
+what your latitude and longitude is. If you have not yet done a SET/QRA
+then this command will set your QRA locator for you. For example:-
+  SET/LOCATION 52 22 N 0 57 E
+
+=== 0^SET/LOCKOUT <call>^Stop a callsign connecting to the cluster
+=== 0^UNSET/LOCKOUT <call>^Allow a callsign to connect to the cluster
+
+=== 0^SET/NAME <your name>^Set your name
+Tell the system what your name is eg:-
+  SET/NAME Dirk
+
+=== 9^SET/NODE <call> [<call>..]^Make the callsign an AK1A cluster
+Tell the system that the call(s) are to be treated as AK1A cluster and
+fed PC Protocol rather normal user commands.
+
+=== 0^SET/PAGE <lines per page>^Set the lines per page
+Tell the system how many lines you wish on a page when the number of line
+of output from a command is more than this. The default is 20. Setting it
+explicitly to 0 will disable paging. 
+  SET/PAGE 30
+  SET/PAGE 0
+
+=== 9^SET/PRIVILEGE <n> <call> [<call..]^Set privilege level on a call
+Set the privilege level on a callsign. The privilege levels that pertain
+to commands are as default:-
+  0 - normal user
+  1 - allow remote nodes normal user RCMDs
+  5 - various privileged commands (including shutdown, but not disc-
+      connect), the normal level for another node.
+  8 - more privileged commands (including disconnect)
+  9 - local sysop privilege. DO NOT SET ANY REMOTE USER OR NODE TO THIS
+      LEVEL.
+If you are a sysop and you come in as a normal user on a remote connection
+your privilege will automatically be set to 0.
+
+=== 0^SET/QRA <locator>^Set your QRA locator
+Tell the system what your QRA (or Maidenhead) locator is. If you have not
+done a SET/LOCATION then your latitude and longitude will be set roughly
+correctly (assuming your locator is correct ;-). For example:-
+  SET/QRA JO02LQ
+
+=== 0^SET/QTH <your qth>^Set your QTH
+Tell the system where you are. For example:-
+  SET/QTH East Dereham, Norfolk
+
+=== 0^SET/TALK^Allow TALK messages to come out on your terminal
+=== 0^UNSET/TALK^Stop TALK messages coming out on your terminal
+
+=== 0^SET/WWV^Allow WWV messages to come out on your terminal
+=== 0^UNSET/WWV^Stop WWV messages coming out on your terminal
+
+=== 0^SHOW/DX^Interrogate the spot database
+If you just type SHOW/DX you will get the last so many spots
+(sysop configurable, but usually 10).
+   
+In addition you can add any number of these commands in very nearly
+any order to the basic SHOW/DX command, they are:-
+   
+on <band>       - eg 160m 20m 2m 23cm 6mm
+on <region>     - eg hf vhf uhf shf      (see SHOW/BANDS)
+   
+<number>        - the number of spots you want
+<from>-<to>     - <from> spot no <to> spot no in the selected list
+   
+<prefix>        - for a spotted callsign beginning with <prefix>
+*<suffix>       - for a spotted callsign ending in <suffix>
+*<string>*      - for a spotted callsign containing <string>
+   
+day <number>    - starting <number> days ago
+day <from>-<to> - <from> days <to> days ago
+   
+info <text>     - any spots containing <text> in the info or remarks
+   
+spotter <call>  - any spots spotted by <call>
+   
+e.g. 
+   
+   SH/DX 9m0
+   SH/DX on 20m info iota
+   SH/DX 9a on vhf day 30
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 

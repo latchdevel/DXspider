@@ -12,7 +12,7 @@ my @out;
 my $call;
 
 if (@f == 0) {
-	return (1, $self->('e6')) if ($self->priv < 5); 
+	return (1, $self->('e6')) if ($self->priv < 1); 
 } else {
 	foreach $call (@f) {
 		my $ref = DXUser->get_current($call);

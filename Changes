@@ -5,6 +5,8 @@
 mine in spider/html
 4. fixed telnet connections
 5. added connect instructions to html tree.
+6. Added some more help
+7. Upissued version
 12Dec98========================================================================
 1. Incorporated sh/st, (un)set/lockout, forward/opername from Iain G0RDI
 2. Added group handling with (un)set/group, show/group. This allows arbitrary
