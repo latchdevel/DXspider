@@ -719,6 +719,47 @@ See also SHOW/DXCC
 Show the name and location where every program module was load from. This
 is useful for checking where you think you have loaded a .pm file from. 
 
+=== 0^SHOW/QRA <locator> [<locator>]^Show distance between locators
+=== 0^SHOW/QRA <lat> <long>^Convert latitude and longitude to a locator
+This is a multipurpose command that allows you either to calculate the
+distance and bearing between two locators or (if only one locator is
+given on the command line) the distance and beraing from your station
+to the locator. For example:-
+
+SH/QRA IO92QL 
+SH/QRA JN06 IN73
+
+The first example will show the distance and bearing to the locator from
+yourself, the second example will calculate the distance and bearing from
+the first locator to the second. You can use 4 or 6 character locators.
+
+It is also possible to convert a latitude and longitude to a locator by 
+using this command with a latitude and longitude as an argument, for
+example:-
+
+SH/QRA 52 41 N 0 58 E
+
+=== 0^SHOW/SATELLITE <name> [<hours> <interval>]^Show tracking data
+Show the tracking data from your location to the satellite of your choice
+from now on for the next few hours.
+
+If you use this command without a satellite name it will display a list
+of all the satellites known currently to the system. 
+
+If you give a name then you can obtain tracking data of all the passes
+that start and finish 5 degrees below the horizon. As default it will
+give information for the next three hours for every five minute period.
+
+You can alter the number of hours and the step size, within certain 
+limits. 
+
+Each pass in a period is separated with a row of '-----' characters
+
+So for example:-
+
+SH/SAT AO-10 
+SH/SAT FENGYUN1 12 2
+
 === 0^SHOW/SUN [<prefix>|<callsign>]^Show sun rise and set times
 Show the sun rise and set times for a (list of) prefixes or callsigns, 
 together with the azimuth and elevation of the sun currently at those

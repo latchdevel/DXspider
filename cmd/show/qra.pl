@@ -8,6 +8,7 @@
 
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;		      # generate a list of callsigns
+return (1, $self->msg('qrashe1')) unless @list > 0;
 
 my @out;
 my $fll;
@@ -23,38 +24,30 @@ if (!$long && !$lat) {
 my $fqra = DXBearing::is_qra($list[0]);
 my $sqra = $list[0] =~ /^[A-Za-z][A-Za-z]\d\d$/;
 my $ll = $line =~ /^\d+\s+\d+\s*[NSns]\s+\d+\s+\d+\s*[EWew]/;
-return (1, $self->msg('qrashe1')) unless @list > 0;
 return (1, $self->msg('qrae2', $list[0])) unless $fqra || $sqra || $ll;
 
+# convert a lat/long into a qra locator
 if ($ll) {
 	my ($llat, $llong) = DXBearing::stoll($line);
 	return (1, "QRA $line = " . DXBearing::lltoqra($llat, $llong)); 
 }
 
-#print "$lat $long\n";
+unshift @list, $self->user->qra if @list == 1 && $self->user->qra;
+unshift @list, DXBearing::lltoqra($lat, $long) unless @list > 1;
 
-my $l = uc $list[0];
-my $f;
+my $f = uc $list[0];
+$f .= 'MM' if $f =~ /^[A-Z][A-Z]\d\d$/;
+($lat, $long) = DXBearing::qratoll($f);
+return (1, $self->msg('qrae2', $list[1])) unless (DXBearing::is_qra($list[1]) || $list[1] =~ /^[A-Za-z][A-Za-z]\d\d$/);
 
-if (@list > 1) {
-	$f = $l;
-	$f .= 'MM' if $f =~ /^[A-Z][A-Z]\d\d$/;
-	($lat, $long) = DXBearing::qratoll($f);
-	$fll = DXBearing::lltos($lat, $long);
-    #print "$lat $long\n";
-	
-	return (1, $self->msg('qrae2', $list[1])) unless (DXBearing::is_qra($list[1]) || $list[1] =~ /^[A-Za-z][A-Za-z]\d\d$/);
-	$l = uc $list[1];
-}
+my $l = uc $list[1];
 
-$l .= 'MM' if $l =~ /^[A-Z][A-Z]\d\d$/;
-		
-my ($qlat, $qlong) = DXBearing::qratoll($l);
-#print "$qlat $qlong\n";
 $fll = DXBearing::lltos($lat, $long);
-$fll =~ s/\s+([NSEW])/$1/g;
+my ($qlat, $qlong) = DXBearing::qratoll($l);
 $tll = DXBearing::lltos($qlat, $qlong);
+
 $tll =~ s/\s+([NSEW])/$1/g;
+$fll =~ s/\s+([NSEW])/$1/g;
 
 my ($b, $dx) = DXBearing::bdist($lat, $long, $qlat, $qlong);
 my ($r, $rdx) = DXBearing::bdist($qlat, $qlong, $lat, $long);

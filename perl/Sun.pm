@@ -28,11 +28,28 @@ require Exporter;
 @EXPORT = qw($pi $d2r $r2d );
 
 use strict;
-use vars qw($pi $d2r $r2d );
+use vars qw($pi $d2r $r2d);
  
 $pi = 3.141592653589;
 $d2r = ($pi/180);
 $r2d = (180/$pi);
+
+use vars qw(%keps);
+use Keps;
+use DXVars;
+use DXUtil;
+
+# reload the keps data
+sub load
+{
+	my @out;
+	my $s = readfilestr("$main::root/local/Keps.pm");
+	if ($s) {
+		eval $s;
+		push @out, $@ if $@;
+	}
+    return @out;
+}
 
 sub Julian_Day
 {
@@ -563,50 +580,6 @@ sub get_satellite_pos
 #
 #Temporary keps database...
 #
-my %keps = (
-	noaa15 => {
-		number => 25338,
-		id => 98030,
-		epoch => 99341.00000000,
-		mm1 => .00000376,
-		mm2 => .00000e-0,
-		bstar => .18612e-3,
-		inclination => 98.6601,  
-		raan => 8.2003,
-		eccentricity => .0011401,
-		argperigee => 112.4684,
-		meananomaly => 42.5140,
-		meanmotion => 14.23047277081382,
-	},
-	tdrs5 => {
-		number => 21639,
-		id => 91054,
-		epoch => 99341.34471854,
-		mm1 => .00000095,
-		mm2 => .00000e-0,
-		bstar => .10000e-3,
-		inclination => 1.5957,  
-		raan => 88.4884,
-		eccentricity => .003028,
-		argperigee => 161.6582,
-		meananomaly => 135.4323,
-		meanmotion => 1.00277774,
-	},
-	oscar16 => {
-		number => 20439,
-		id => 90005,
-		epoch => 99341.14501399,
-		mm1 => .00000343,
-		mm2 => .00000e-0,
-		bstar => .14841e-3,
-		inclination => 98.4690,  
-		raan => 55.0032,
-		eccentricity => .0012163,
-		argperigee => 66.4615,
-		meananomaly => 293.7842,
-		meanmotion => 14.303202855,
-	},
-);
 	my $jtime = shift;
 	my $lat = shift;
 	my $lon = shift;
@@ -901,6 +874,10 @@ sub Calendar_date_and_time_from_JD
 	$yr = $c-4715 if( $mon == 1 || $mon == 2 );
 	$hr = int($frac*24);
 	$min= int(($frac*24 - $hr)*60+0.5);
+	if ($min == 60) {   # this may well prove inadequate DJK
+		$hr += 1;
+		$min = 0;
+	}
 	return ($yr,$mon,$day,$hr,$min);
 }
 	
