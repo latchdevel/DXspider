@@ -1,12 +1,12 @@
   The DXSpider Administration Manual v1.50
-  Ian Maude, G0VGS, (g0vgs@gb7mbc.net)
+  Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and Charlie Carroll,
+  K1XX, (k1xx@ptcnh.net)
   July 2002 revision 0.1
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
 
   Table of Contents
-
 
 
 
@@ -126,6 +126,9 @@
      8.2 Passwords
 
   9. CVS
+
+     9.1 CVS from a Linux platform
+     9.2 CVS from a Windows platform
 
   10. The DXSpider command set
 
@@ -325,9 +328,6 @@
   called passive mode. A more detailed explanation of isolation is given
   further below. This system is still available and, for simple
   networks, is probably all that you need.
-
-
-
   The new functionality introduced in version 1.48 allows filtering the
   node and user protocol frames on a "per interface" basis. We call this
   route filtering. This is used instead of isolation.
@@ -2069,10 +2069,13 @@
 
   9.  CVS
 
+  9.1.  CVS from a Linux platform
+
   CVS stands for "Concurrent Versions System" and the CVS for DXSpider
   is held at Sourceforge.  This means that it is possible to update your
   DXSpider installation to the latest sources by using a few simple
-  commands.
+  commands.  A graphical interface to CVS for Windows is explained in
+  the next section.
 
 
   Please be aware that if you update your system using CVS, it is
@@ -2171,8 +2174,11 @@
 
 
 
-       cd /spider
-       cvs -z3 update -d
+
+
+  cd /spider
+  cvs -z3 update -d
+
 
 
 
@@ -2185,13 +2191,139 @@
   You will find any changes documented in the /spider/Changes file.
 
 
+  9.2.  CVS from a Windows platform
+
+  After the initial setup, an update to your DXSpider software is no
+  more than a couple of clicks away.  This section is intended to
+  explain and illustrate the use of the WinCVS application to update
+  your DXSpider software.  The current stable version of WinCVS is Ver.
+  1.2.  You can get this software at:
+
+  http://prdownloads.sourceforge.net/cvsgui/WinCvs120.zip
+
+  Pick your download mirror and then install WinCVS after the download
+  is complete.
+
+  In this next section I have included a series of links to .jpg files
+  to take advantage of the picture and 1000 words equivalency.  The .jpg
+  files are in the C:\spider\html directory.  If someone using a Linux
+  system is reading this section from boredom, the files are in
+  /home/sysop/spider/html.  One aside, a Linux user can also get a copy
+  of gcvs and do your updates graphically as opposed to from the command
+  line.  The following descriptions are almost identical between WinCvs
+  and gcvs.  The following screen shots have duplicate links, depending
+  upon whether you are viewing this information under the Windows or
+  Linux operating system.
+
+  When WinCVS is installed, running, and you are connected to the
+  internet, the initial screen looks like:
+
+  initial.jpg
+
+  If you want, you can also look at these .jpg files with another viewer
+  that might provide some better clarity to the image.  On the left is
+  the directory tree for your hard disk.  Notice that the spider
+  directory has a gray highlight.
+
+  To start configuring WinCVS, click on Admin at the top of the screen
+  and then Preferences.  This should get you:
+
+  pref-gen.jpg
+
+  In the top line for CVSROOT, enter:
+
+
+       anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+
+
+
+
+  and select
+
+
+
+  "passwd" file on the cvs server
+
+
+
+
+  for Authentication on the General tab.
+
+  Next, move to the right to the Ports tab.
+
+  pref-ports.jpg
+
+  In here, check the box on the second line down for the "pserver" port.
+  Enter a port number of 2401.
+
+  Finally, go to the WinCvs tab all the way to the right.
+
+  pref-wincvs.jpg
+
+  Enter Notepad as the viewer to open files.  For the HOME folder, put
+  "C:\spider" and click OK because the configuration is now complete.
+
+  You are now ready to upgrade your copy of DXSpider.  Click on the
+  greyed Spider folder shown in the directory tree on the left of the
+  WinCVS display.  Two things should happen.  The Spider folder will be
+  selected and the greyed-out arrow located just below the word Query in
+  the top line will turn to solid green.
+
+  For anyone using gcvs under Linux, the green arrow is located on the
+  extreme left of the display, under the word File.  A gcvs screen looks
+  like:
+
+  gcvs.jpg
+
+  Click on the now green arrow to start the download process.  An Update
+  Settings box will be displayed to which you can simply say OK.
+
+  update-OK.jpg
+
+  For future reference, the Update Settings box is the place where you
+  can enter information to revert to a prior version of DXSpider.
+  Information on reverting to a Before Date is contained in the WinCVS
+  manual.
+
+  After a short period of time, a series of file names will scroll by in
+  the lower pane of the WinCVS window.  Eventually you should see
+
+
+       *****CVS exited normally with code 0*****
+
+
+
+
+  appear in the lower pane.  You're done.  The updated files are in
+  place ready for you to stop and then restart your DXSpider.  After the
+  restart, you're running with the latest version of DXSpider.
+
+  completed.jpg
+
+  To paraphrase from the CVS section... Now the magic part!  From now on
+  when you want to update, simply connect to the Internet and start
+  WinCVS.
+
+
+
+
+
+  Click on the greyed-out Spider directory in the left screen
+  Click on the green down arrow
+  Click OK on the Update Settings dialog box
+  Restart your Spider software
+
+
+
+
+
   10.  The DXSpider command set
 
   Below is a complete list of commands available from the cluster
   prompt.  Most maintenance tasks are automatic but there are some
   commands that are useful for a sysop.  These are listed below in
   alphabetical order.  The number in brackets following the command name
-  is the permissions level needed to use the command.
+  is the permissions level needed to use the command
 
 
   10.1.  accept/announce (0)
@@ -2341,23 +2473,86 @@
   passed onto the user. See HELP FILTERS for more info. Please read this
   to understand how filters work - it will save a lot of grief later on.
 
+  Please read the following section carefully.  Though it looks similar,
+  reformatting, corrections, and hopefully clarifications have been
+  added.
+
   You can use any of the following things in this line:-
 
 
 
-         freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-         on <range>             same as 'freq'
-         call <prefixes>        eg: G,PA,HB9
-         info <string>          eg: iota or qsl
-         by <prefixes>
-         call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
-         call_itu <numbers>
-         call_zone <numbers>
-         by_dxcc <numbers>
-         by_itu <numbers>
-         by_zone <numbers>
-         origin <prefixes>
-         channel <prefixes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  Filters for the station being spotted:
+    call <letters of the prefix, but NOT country inclusive>
+       call G --> G1AAA, GJ2BBB, GU3CCC, etc will be spotted
+       call K --> K1XX, K1XXX will be spotted
+                  W1XX, W1XXX will NOT be spotted
+       call PA --> PA3EZL will be spotted
+                   PB2FG will NOT be spotted
+
+    call_dxcc <numbers or prefixes>
+       call_dxcc G --> G1AAA will be spotted
+                       GU1AAA will NOT be spotted (different country)
+       call_dxcc K --> K1XX, W1XX will be spotted (same country)
+       call_dxcc 139 --> PA3EZL and PB2FG will be spotted
+
+    call_itu <numbers>
+    call_zone <numbers>
+
+  Filters for the callsign of the station doing the spotting:
+    by <letters of the prefix, but NOT country inclusive>
+       by G --> spots from G1AAA, GJ2BBB, GU3CCC, etc will be spotted
+       by K --> spots from K1XX, K1XXX will be spotted
+                spots from W1XX, W1XXX will NOT be spotted
+
+    by_dxcc <numbers or prefixes>
+       by_dxcc G --> spots from G1AAA will be spotted
+                     spots from GU1AAA will NOT be spotted (different
+  country)
+       by_dxcc K --> spots from K1XX, W1XX will be spotted (same country)
+       by_dxcc 139 --> spots from PA3EZL or PB2FG will be spotted
+
+    by_itu <numbers>
+    by_zone <numbers>
+
+  Filters for the callsign of the "node" doing the spotting:
+    origin <letters of the prefix, but NOT country inclusive>
+       origin K --> spots from a node starting with K will be spotted
+                    spots from a node starting with KK will NOT be spotted
+                    spots from a node starting with W will NOT be spotted
+
+  Filters for the callsign of the connected node or user (channel) doing the spotting:
+    channel <prefixes>
+       channel W1HR --> spots from the connected node W1HR will be spotted
+       channel K1QX --> spots from the connected user K1QX will be spotted
+
+    info <string>          eg: iota or qsl
+    freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+    on <range>             same as 'freq'
 
 
 
@@ -2373,11 +2568,8 @@
 
 
 
-
-    acc/spot 1 on hf/cw
-    acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
-
+         acc/spot 1 on hf/cw
+         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
   You can use the tag 'all' to accept everything, eg:
@@ -2445,6 +2637,7 @@
   See HELP FILTER for information.
 
 
+
   10.7.  accept/wcy (extended for sysops) (8)
 
   accept/wcy <call> [input] [0-9] <pattern> WCY filter sysop version
@@ -2505,17 +2698,17 @@
   accept/wwv <call> [input] [0-9] <pattern> WWV filter sysop version
 
 
-
   This version allows a sysop to set a filter for a callsign as well as
   the default for nodes and users eg:-
 
 
 
-         accept/wwv db0sue-7 1 by_zone 4
-         accept/wwv node_default all
-         set/hops node_default 10
 
-         accept/wwv user_default by W,K
+    accept/wwv db0sue-7 1 by_zone 4
+    accept/wwv node_default all
+    set/hops node_default 10
+
+    accept/wwv user_default by W,K
 
 
 
@@ -2638,9 +2831,8 @@
 
 
 
-    acc/spot 1 on hf/cw
-    acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
-
+         acc/spot 1 on hf/cw
+         acc/spot 2 on vhf and (by_zone 14,15,16 or call_zone 14,15,16)
 
 
 
@@ -2703,7 +2895,6 @@
   node_default or user_default.
 
 
-
   10.22.  clear/wwv (0)
 
   clear/wwv [1|all] Clear a WWV filter line
@@ -2711,7 +2902,6 @@
 
   This command allows you to clear (remove) a line in a WWV filter or to
   remove the whole filter.
-
   see CLEAR/SPOTS for a more detailed explanation.
 
 
@@ -2768,7 +2958,6 @@
   is:
 
   DBCREATE sdx_qsl chain sql_ad
-
 
   No checking is done to see if the any of the chained databases exist,
   in fact it is usually better to do the above statement first then do
@@ -2835,7 +3024,6 @@
   dbremove <dbname> Delete a database
 
 
-
   DBREMOVE will completely remove a database entry and also delete any
   data file that is associated with it.
 
@@ -2844,6 +3032,7 @@
   For example:
 
   DBREMOVE oblast
+
 
   will remove the oblast database from the system and it will also
   remove the associated datafile.
@@ -2901,6 +3090,7 @@
 
   It will interrupt the cluster just after the debug command has
   finished.
+
 
   10.31.  delete/user (9)
 
@@ -2968,13 +3158,16 @@
 
 
 
+
   You can abbreviate all the commands to one letter and use ak1a
   syntax:-
 
 
 
-          DIR/T G1* 10
-          DIR/S QSL 10-100 5
+
+
+     DIR/T G1* 10
+     DIR/S QSL 10-100 5
 
 
 
@@ -3034,10 +3227,10 @@
   The <freq> is compared against the available bands set up in the
   cluster.  See SHOW/BANDS for more information.
 
+
   10.37.  export (9)
 
   export <msgno> <filename> Export a message to a file
-
 
   Export a message to a file. This command can only be executed on a
   local console with a fully privileged user. The file produced will be
@@ -3170,6 +3363,7 @@
 
   clear/spots 1
 
+
   To remove the filter in its entirty:-
 
   clear/spots all
@@ -3229,7 +3423,6 @@
   10.42.  help (0)
 
   help <cmd> Get help on a command
-
 
 
   All commands can be abbreviated, so SHOW/DX can be abbreviated to
@@ -3297,12 +3490,10 @@
   message for deletion. The actual deletion only happens later (usually
   two days later).
 
-
   The KILL EXPUNGE command causes the message to be truly deleted more
   or less immediately.
 
   It otherwise is used in the same way as the KILL command.
-
 
 
   10.48.  links (0)
@@ -3364,14 +3555,13 @@
 
   load/cmd_cache Reload the automatic command cache
 
+
   Normally, if you change a command file in the cmd or local_cmd tree it
   will automatially be picked up by the cluster program. Sometimes it
   can get confused if you are doing a lot of moving commands about or
   delete a command in the local_cmd tree and want to use the normal one
   again. Execute this command to reset everything back to the state it
   was just after a cluster restart.
-
-
   10.54.  load/forward (9)
 
   load/forward Reload the msg forwarding routing table
@@ -3425,6 +3615,14 @@
   Alter message parameters like To, From, Subject, whether private or
   bulletin or return receipt (RR) is required or whether to keep this
   message from timing out.
+
+
+
+
+
+
+
+
 
 
 

@@ -5,7 +5,8 @@
 <!-- Title information -->
 
 <title>The DXSpider Administration Manual v1.50</title> 
-<author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net)</author>
+<author>Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and
+Charlie Carroll, K1XX, (k1xx@ptcnh.net)</author>
 <date>July 2002 revision 0.1</date>
 
 <abstract>
@@ -1433,7 +1434,7 @@ $PORT = "8000" ;
 'PORT' is the portnumber that you use to connect to your DxSpider via
 telnet (see Listeners.pm)
 
-NOTE: If you can start the console but cannot connect to the cluster from it, 
+NOTE: If you can start the console but cannot connect to the cluster from it,
 then it is possible that the machine you are on cannot resolve the hostname of 
 your cluster machine.  If this is the case, you need to set your hostname 
 manually as above.
@@ -1523,11 +1524,14 @@ set/password g0vgs new_password
 
 <sect>CVS
 
+<sect1>CVS from a Linux platform
+
 <P>
 CVS stands for "Concurrent Versions System" and the CVS for DXSpider is held
 at <htmlurl url="http://www.sourceforge.net" name="Sourceforge">.  This means
 that it is possible to update your DXSpider installation to the latest
-sources by using a few simple commands.
+sources by using a few simple commands.  A graphical interface to CVS for
+Windows is explained in the next section.
 
 <P>
 Please be aware that if you update your system using CVS, it is possible that
@@ -1552,14 +1556,14 @@ First login as the user <em>sysop</em>.  Next you need to connect to the CVS
 repository.  You do this with the command below ...
 
 <verb>
-cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login 
+cvs -d:pserver:anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
 </verb>
 
 You will get a password prompt.  Simply hit return here and your machine should
 return to a normal linux prompt.
 
 <P>
-What happens next depends on whether you have an existing installation that 
+What happens next depends on whether you have an existing installation that
 you want to update with the latest and greatest or whether you just want
 to see what is there and/or run it on a new machine for testing.
 
@@ -1580,8 +1584,8 @@ This command is all on one line.
 <P>
 Hopefully your screen should show you downloading files.  The -z3 simply compresses
 the download to improve speed.
-When this has finished, you will have exactly the same as if you had untarred a full 
-tarball PLUS some extra directories and files that CVS needs to do the magic that 
+When this has finished, you will have exactly the same as if you had untarred a full
+tarball PLUS some extra directories and files that CVS needs to do the magic that
 it does.
 
 <P>
@@ -1612,7 +1616,7 @@ expect it to be fatal!  At least your cluster will have been restarted then so i
 will be too late to worry about it!
 
 <P>
-Now the magic part!  From now on when you want to update, simply connect to the 
+Now the magic part!  From now on when you want to update, simply connect to the
 Internet and then, as the user <em>sysop</em> ...
 
 <tscreen><verb>
@@ -1620,21 +1624,118 @@ cd /spider
 cvs -z3 update -d
 </verb></tscreen>
 
-and your files will be updated.  As above, remember to recompile the "C" client 
+and your files will be updated.  As above, remember to recompile the "C" client
 if it has been updated (CVS will tell you) and restart if any of the perl scripts
 have been altered or added, again, CVS will tell you.
 
 <P>
 You will find any changes documented in the /spider/Changes file.
 
+<sect1>CVS from a Windows platform
+
+<P>
+After the initial setup, an update to your DXSpider software is no more than a couple
+of clicks away.  This section is intended to explain and illustrate the use of the
+WinCVS application to update your DXSpider software.  The current stable version of
+WinCVS is Ver. 1.2.  You can get this software at:
+
+<htmlurl url="http://prdownloads.sourceforge.net/cvsgui/WinCvs120.zip" name="http://prdownloads.sourceforge.net/cvsgui/WinCvs120.zip">
+
+Pick your download mirror and then install WinCVS after the download is complete.
+
+In this next section I have included a series of links to .jpg files to take advantage of the
+picture and 1000 words equivalency.  The .jpg files are in the C:\spider\html directory.  If
+someone using a Linux system is reading this section from boredom, the files are in
+/home/sysop/spider/html.  One aside, a Linux user can also get a copy of gcvs and do your updates
+graphically as opposed to from the command line.  The following descriptions are almost identical
+between WinCvs and gcvs.  The following screen shots have duplicate links, depending upon whether
+you are viewing this information under the Windows or Linux operating system.
+
+When WinCVS is installed, running, and you are connected to the internet, the initial screen looks like:
+
+<htmlurl url="initial.jpg" name="initial.jpg">
+
+If you want, you can also look at these .jpg files with another viewer that might provide some
+better clarity to the image.  On the left is the directory tree for your hard disk.  Notice that
+the spider directory has a gray highlight.
+
+To start configuring WinCVS, click on Admin at the top of the screen and then Preferences.  This 
+should get you:
+
+<htmlurl url="pref-gen.jpg" name="pref-gen.jpg">
+
+In the top line for CVSROOT, enter:
+<tscreen><verb>
+anonymous@cvs.DXSpider.sourceforge.net:/cvsroot/dxspider login
+</verb></tscreen>
+
+and select
+<tscreen><verb>
+"passwd" file on the cvs server
+</verb></tscreen>
+
+for Authentication on the General tab.
+
+Next, move to the right to the Ports tab.
+
+<htmlurl url="pref-ports.jpg" name="pref-ports.jpg">
+
+In here, check the box on the second line down for the "pserver" port.  Enter a port number of 2401.
+
+Finally, go to the WinCvs tab all the way to the right.
+
+<htmlurl url="pref-wincvs.jpg" name="pref-wincvs.jpg">
+
+Enter Notepad as the viewer to open files.  For the HOME folder, put "C:\spider" and click OK
+because the configuration is now complete.
+
+You are now ready to upgrade your copy of DXSpider.  Click on the greyed Spider folder
+shown in the directory tree on the left of the WinCVS display.  Two things should happen.  The Spider
+folder will be selected and the greyed-out arrow located just below the word Query in the top line will
+turn to solid green.
+
+For anyone using gcvs under Linux, the green arrow is located on the extreme left of the display,
+under the word File.  A gcvs screen looks like:
+
+<htmlurl url="gcvs.jpg" name="gcvs.jpg">
+
+Click on the now green arrow to start the download process.  An Update Settings box will be displayed
+to which you can simply say OK.
+
+<htmlurl url="update-OK.jpg" name="update-OK.jpg">
+
+For future reference, the Update Settings box is the place where you can enter information to revert
+to a prior version of DXSpider.  Information on reverting to a Before Date is contained in the WinCVS
+manual.
+
+After a short period of time, a series of file names will scroll by in the lower pane of the WinCVS
+window.  Eventually you should see
+<tscreen><verb>
+*****CVS exited normally with code 0*****
+
+</verb></tscreen>
+appear in the lower pane.  You're done.  The updated files are in place ready for you to stop and then
+restart your DXSpider.  After the restart, you're running with the latest version of DXSpider.
+
+<htmlurl url="completed.jpg" name="completed.jpg">
+
+To paraphrase from the CVS section... Now the magic part!  From now on when you want to update, simply
+connect to the Internet and start WinCVS.
+<tscreen><verb>
+Click on the greyed-out Spider directory in the left screen
+Click on the green down arrow
+Click OK on the Update Settings dialog box
+Restart your Spider software
+</verb></tscreen>
+
 <sect>The DXSpider command set
 
 <P>
 Below is a complete list of commands available from the cluster prompt.
-Most maintenance tasks are automatic but there are some commands that are useful 
-for a sysop.  These are listed below in alphabetical order.  The number in 
-brackets following the command name is the permissions level needed to use 
-the command.
+Most maintenance tasks are automatic but there are some commands that are useful
+for a sysop.  These are listed below in alphabetical order.  The number in
+brackets following the command name is the permissions level needed to use
+the command
 
 <sect1>accept/announce (0)
 
@@ -1645,7 +1746,7 @@ the command.
 </tt>
 
 <P>
-Create an 'accept this announce' line for a filter. 
+Create an 'accept this announce' line for a filter.
 
 An accept filter line means that if the announce matches this filter it is
 passed onto the user. See HELP FILTERS for more info. Please read this
@@ -1655,7 +1756,7 @@ You can use any of the following things in this line:-
 
 <tscreen><verb>
   info <string>            eg: iota or qsl
-  by <prefixes>            eg: G,M,2         
+  by <prefixes>            eg: G,M,2
   origin <prefixes>
   origin_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
   origin_itu <numbers>
@@ -1719,7 +1820,7 @@ default for nodes and users eg:-
 Create an 'accept this routing PC Protocol' line for a filter. 
 
 <P>
-An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter
 it is passed thru that interface. See HELP FILTERING for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 
@@ -1768,22 +1869,60 @@ An accept filter line means that if the spot matches this filter it is
 passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 
+Please read the following section carefully.  Though it looks similar,
+reformatting, corrections, and hopefully clarifications have been added.
+
 You can use any of the following things in this line:-
 
 <tscreen><verb>
-  freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-  on <range>             same as 'freq'
-  call <prefixes>        eg: G,PA,HB9
-  info <string>          eg: iota or qsl
-  by <prefixes>            
-  call_dxcc <numbers>    eg: 61,62 (from eg: sh/pre G)
+Filters for the station being spotted:
+  call <letters of the prefix, but NOT country inclusive>
+     call G --> G1AAA, GJ2BBB, GU3CCC, etc will be spotted
+     call K --> K1XX, K1XXX will be spotted
+                W1XX, W1XXX will NOT be spotted
+     call PA --> PA3EZL will be spotted
+                 PB2FG will NOT be spotted
+
+  call_dxcc <numbers or prefixes>
+     call_dxcc G --> G1AAA will be spotted
+                     GU1AAA will NOT be spotted (different country)
+     call_dxcc K --> K1XX, W1XX will be spotted (same country)
+     call_dxcc 139 --> PA3EZL and PB2FG will be spotted
+
   call_itu <numbers>
   call_zone <numbers>
-  by_dxcc <numbers>
+
+Filters for the callsign of the station doing the spotting:
+  by <letters of the prefix, but NOT country inclusive>
+     by G --> spots from G1AAA, GJ2BBB, GU3CCC, etc will be spotted
+     by K --> spots from K1XX, K1XXX will be spotted
+              spots from W1XX, W1XXX will NOT be spotted
+
+  by_dxcc <numbers or prefixes>
+     by_dxcc G --> spots from G1AAA will be spotted
+                   spots from GU1AAA will NOT be spotted (different
+country)
+     by_dxcc K --> spots from K1XX, W1XX will be spotted (same country)
+     by_dxcc 139 --> spots from PA3EZL or PB2FG will be spotted
+
   by_itu <numbers>
   by_zone <numbers>
-  origin <prefixes>
+
+Filters for the callsign of the "node" doing the spotting:
+  origin <letters of the prefix, but NOT country inclusive>
+     origin K --> spots from a node starting with K will be spotted
+                  spots from a node starting with KK will NOT be spotted
+                  spots from a node starting with W will NOT be spotted
+
+Filters for the callsign of the connected node or user (channel) doing the spotting:
   channel <prefixes>
+     channel W1HR --> spots from the connected node W1HR will be spotted
+     channel K1QX --> spots from the connected user K1QX will be spotted
+
+  info <string>          eg: iota or qsl
+  freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+  on <range>             same as 'freq'
+
 </verb></tscreen>
 
 <P>

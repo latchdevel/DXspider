@@ -15,10 +15,10 @@ Next
 <H2><A NAME="s10">10. The DXSpider command set</A></H2>
 
 <P>Below is a complete list of commands available from the cluster prompt.
-Most maintenance tasks are automatic but there are some commands that are useful 
-for a sysop.  These are listed below in alphabetical order.  The number in 
-brackets following the command name is the permissions level needed to use 
-the command.
+Most maintenance tasks are automatic but there are some commands that are useful
+for a sysop.  These are listed below in alphabetical order.  The number in
+brackets following the command name is the permissions level needed to use
+the command
 <P>
 <H2><A NAME="ss10.1">10.1 accept/announce (0)</A>
 </H2>
@@ -26,7 +26,7 @@ the command.
 <P><CODE><B>accept/announce [0-9] &lt;pattern&gt;</B> Set an accept filter
 line for announce</CODE>
 <P>
-<P>Create an 'accept this announce' line for a filter. 
+<P>Create an 'accept this announce' line for a filter.
 <P>An accept filter line means that if the announce matches this filter it is
 passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
@@ -35,7 +35,7 @@ to understand how filters work - it will save a lot of grief later on.
 <BLOCKQUOTE><CODE>
 <PRE>
   info &lt;string>            eg: iota or qsl
-  by &lt;prefixes>            eg: G,M,2         
+  by &lt;prefixes>            eg: G,M,2
   origin &lt;prefixes>
   origin_dxcc &lt;numbers>    eg: 61,62 (from eg: sh/pre G)
   origin_itu &lt;numbers>
@@ -97,7 +97,7 @@ default for nodes and users eg:-
 <P>
 <P>Create an 'accept this routing PC Protocol' line for a filter. 
 <P>
-<P>An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter 
+<P>An accept filter line means that if a PC16/17/19/21/24/41/50 matches this filter
 it is passed thru that interface. See HELP FILTERING for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
 <P>
@@ -143,23 +143,59 @@ to understand how filters work - it will save a lot of grief later on.
 <P>An accept filter line means that if the spot matches this filter it is
 passed onto the user. See HELP FILTERS for more info. Please read this
 to understand how filters work - it will save a lot of grief later on.
+<P>Please read the following section carefully.  Though it looks similar,
+reformatting, corrections, and hopefully clarifications have been added.
 <P>You can use any of the following things in this line:-
 <P>
 <BLOCKQUOTE><CODE>
 <PRE>
-  freq &lt;range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
-  on &lt;range>             same as 'freq'
-  call &lt;prefixes>        eg: G,PA,HB9
-  info &lt;string>          eg: iota or qsl
-  by &lt;prefixes>            
-  call_dxcc &lt;numbers>    eg: 61,62 (from eg: sh/pre G)
+Filters for the station being spotted:
+  call &lt;letters of the prefix, but NOT country inclusive>
+     call G --> G1AAA, GJ2BBB, GU3CCC, etc will be spotted
+     call K --> K1XX, K1XXX will be spotted
+                W1XX, W1XXX will NOT be spotted
+     call PA --> PA3EZL will be spotted
+                 PB2FG will NOT be spotted
+
+  call_dxcc &lt;numbers or prefixes>
+     call_dxcc G --> G1AAA will be spotted
+                     GU1AAA will NOT be spotted (different country)
+     call_dxcc K --> K1XX, W1XX will be spotted (same country)
+     call_dxcc 139 --> PA3EZL and PB2FG will be spotted
+
   call_itu &lt;numbers>
   call_zone &lt;numbers>
-  by_dxcc &lt;numbers>
+
+Filters for the callsign of the station doing the spotting:
+  by &lt;letters of the prefix, but NOT country inclusive>
+     by G --> spots from G1AAA, GJ2BBB, GU3CCC, etc will be spotted
+     by K --> spots from K1XX, K1XXX will be spotted
+              spots from W1XX, W1XXX will NOT be spotted
+
+  by_dxcc &lt;numbers or prefixes>
+     by_dxcc G --> spots from G1AAA will be spotted
+                   spots from GU1AAA will NOT be spotted (different
+country)
+     by_dxcc K --> spots from K1XX, W1XX will be spotted (same country)
+     by_dxcc 139 --> spots from PA3EZL or PB2FG will be spotted
+
   by_itu &lt;numbers>
   by_zone &lt;numbers>
-  origin &lt;prefixes>
+
+Filters for the callsign of the "node" doing the spotting:
+  origin &lt;letters of the prefix, but NOT country inclusive>
+     origin K --> spots from a node starting with K will be spotted
+                  spots from a node starting with KK will NOT be spotted
+                  spots from a node starting with W will NOT be spotted
+
+Filters for the callsign of the connected node or user (channel) doing the spotting:
   channel &lt;prefixes>
+     channel W1HR --> spots from the connected node W1HR will be spotted
+     channel K1QX --> spots from the connected user K1QX will be spotted
+
+  info &lt;string>          eg: iota or qsl
+  freq &lt;range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+  on &lt;range>             same as 'freq'
 </PRE>
 </CODE></BLOCKQUOTE>
 <P>
