@@ -1,7 +1,7 @@
   The DXSpider Administration Manual v1.50
   Ian Maude, G0VGS, (g0vgs@gb7mbc.net), and Charlie Carroll,
   K1XX, (k1xx@ptcnh.net)
-  February 2003 revision 0.4
+  March 2003 revision 0.5
 
   A reference for SysOps of the DXSpider DXCluster program.
   ______________________________________________________________________
