@@ -128,7 +128,6 @@ sub start
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
-	$self->prompt;
 
 	# decide on echo
 	if (!$user->wantecho) {
@@ -149,6 +148,8 @@ sub start
 	# run a script send the output to the punter
 	my $script = new Script(lc $call) || new Script('user_default');
 	$script->run($self) if $script;
+
+	$self->prompt;
 }
 
 #
