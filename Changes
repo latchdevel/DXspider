@@ -1,3 +1,6 @@
+10Jun00=======================================================================
+1. got rid of some more nasty bugs in sh/qra.
+2. fixed 9A3xx to always be Croatia (and not Haiti!).
 09Jun00=======================================================================
 1. change some print commands in DXMsg to dbg('err'...
 2. overloaded confess, croak et al into DXDebug and removed Carp from 
