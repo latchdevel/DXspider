@@ -437,8 +437,9 @@ sub run_cmd
 	$args = "" unless defined $args;
 		
 	if ($cmd) {
-		# strip out // on command only
+		# strip out // and .. on command only
 		$cmd =~ s|//|/|g;
+		$cmd =~ s|\.+|\.|g;
 					
 		my ($path, $fcmd);
 			
@@ -454,7 +455,7 @@ sub run_cmd
 			
 		# first expand out the entry to a command
 		($path, $fcmd) = search($main::localcmd, $cmd, "pl");
-		($path, $fcmd) = search($main::cmd, $cmd, "pl") if !$path || !$fcmd;
+		($path, $fcmd) = search($main::cmd, $cmd, "pl") unless $path && $fcmd;
 
 		if ($path && $cmd) {
 			dbg("path: $cmd cmd: $fcmd") if isdbg('command');
