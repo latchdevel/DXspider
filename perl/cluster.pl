@@ -18,10 +18,13 @@ use DXUtil;
 use DXChannel;
 use DXUser;
 use DXM;
+use DXCommandmode;
+use DXProt;
 
 package main;
 
-@inqueue = ();                # the main input queue, an array of hashes 
+@inqueue = ();                # the main input queue, an array of hashes
+$systime = 0;                 # the time now (in seconds)
 
 # handle disconnections
 sub disconnect
@@ -30,6 +33,11 @@ sub disconnect
   return if !defined $dxchan;
   my $user = $dxchan->{user};
   my $conn = $dxchan->{conn};
+  if ($user->{sort} eq 'A') {           # and here (when I find out how to write it!)
+    $dxchan->pc_finish();  
+  } else {
+    $dxchan->user_finish();
+  }
   $user->close() if defined $user;
   $conn->disconnect() if defined $conn;
   $dxchan->del();
@@ -94,17 +102,25 @@ sub process_inqueue
   print "< $sort $call $line\n";
   
   # handle A records
+  my $user = $dxchan->{user};
   if ($sort eq 'A') {
-    my $user = $dxchan->{user};
 	$user->{sort} = 'U' if !defined $user->{sort};
-    if ($user->{sort} eq 'U') {
-	  $dxchan->send_now('D', msg('l2', $call, $mycall, $myqth));
-	  $dxchan->send_file($motd) if (-e $motd);
+    if ($user->{sort} eq 'A') {
+	  $dxchan->pc_start($line);  
+	} else {
+	  $dxchan->user_start($line);
 	}
-  } elsif (sort eq 'D') {
-    ;
+  } elsif ($sort eq 'D') {
+    die "\$user not defined for $call" if !defined $user;
+    if ($user->{sort} eq 'A') {           # we will have a symbolic ref to a proc here
+	  $dxchan->pc_normal($line);  
+	} else {
+	  $dxchan->user_normal($line);
+	}
   } elsif ($sort eq 'Z') {
     disconnect($dxchan);
+  } else {
+    print STDERR atime, " Unknown command letter ($sort) received from $call\n";
   }
 }
 
@@ -132,7 +148,16 @@ $SIG{'HUP'} = 'IGNORE';
 
 # this, such as it is, is the main loop!
 for (;;) {
+  my $timenow;
   Msg->event_loop(1, 0.001);
-  process_inqueue();
+  $timenow = time;
+  if ($timenow != $systime) {
+    $systime = $timenow;
+	$cldate = &cldate();
+	$ztime = &ztime();
+  }
+  process_inqueue();                 # read in lines from the input queue and despatch them
+  DXCommandmode::user_process();     # process ongoing command mode stuff
+  DXProt::pc_process();              # process ongoing ak1a pcxx stuff
 }
 

@@ -24,12 +24,30 @@ sub create_it
   $self->{lat} = $mylatitude;
   $self->{long} = $mylongtitude;
   $self->{email} = $myemail;
+  $self->{bbsaddr} = $mybbsaddr;
   $self->{sort} = 'C';           # C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
   $self->{priv} = 9;             # 0 - 9 - with 9 being the highest
   $self->{lastin} = 0;
 
   # write it away
   $self->close();
+
+  # now do one for the alias
+  $self = DXUser->new($myalias);
+  $self->{name} = $myname;
+  $self->{qth} = $myqth;
+  $self->{qra} = $mylocator;
+  $self->{lat} = $mylatitude;
+  $self->{long} = $mylongtitude;
+  $self->{email} = $myemail;
+  $self->{bbsaddr} = $mybbsaddr;
+  $self->{sort} = 'U';           # C - Console user, S - Spider cluster, A - AK1A, U - User, B - BBS
+  $self->{priv} = 9;             # 0 - 9 - with 9 being the highest
+  $self->{lastin} = 0;
+
+  # write it away
+  $self->close();
+
   DXUser->finish();
   print "New user database created as $userfn\n";
 }

@@ -25,7 +25,6 @@ $call = "";                     # the callsign being used
 @stdoutq = ();                  # the queue of stuff to send out to the user
 $conn = 0;                      # the connection object for the cluster
 $lastbit = "";                  # the last bit of an incomplete input line
-$nl = "\r";
 
 # cease communications
 sub cease
@@ -41,6 +40,21 @@ sub cease
 sub sig_term
 {
   cease(1);
+}
+
+sub setmode
+{
+  if ($mode == 1) {
+    $nl = "\r";
+  } else {
+	$nl = "\n";
+  }
+  $/ = $nl;
+  if ($mode == 0) {
+    $\ = undef;
+  } else {
+    $\ = $nl;
+  }
 }
 
 # handle incoming messages
@@ -59,7 +73,8 @@ sub rec_socket
 	   print $line;
 	} elsif ($sort eq 'M') {
 	  $mode = $line;               # set new mode from cluster
-	} elsif ($sort eq 'Z') {       # end, disconnect, go, away .....
+      setmode();
+    } elsif ($sort eq 'Z') {       # end, disconnect, go, away .....
 	  cease(0);
     }	  
   } 
@@ -103,13 +118,11 @@ sub rec_stdin
 $call = uc $ARGV[0];
 die "client.pl <call> [<mode>]\r\n" if (!$call);
 $mode = $ARGV[1] if (@ARGV > 1);
+setmode();
 
-if ($mode != 1) {
-  $nl = "\n";
-  $\ = $nl;
-}
 
-select STDOUT; $| = 1;
+#select STDOUT; $| = 1;
+STDOUT->autoflush(1);
 
 $SIG{'INT'} = \&sig_term;
 $SIG{'TERM'} = \&sig_term;

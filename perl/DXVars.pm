@@ -16,12 +16,12 @@ require Exporter;
                 $myqth $myemail $myprot 
                 $clusterport $clusteraddr $debugfn 
                 $def_hopcount $root $data $system $cmd
-				$userfn $motd
+				$userfn $motd $local_cmd $mybbsaddr
                );
 			   
 			   
 # this really does need to change for your system!!!!			   
-$mycall = "GB7TLH";
+$mycall = "GB7DJK";
 
 # your name
 $myname = "Dirk";
@@ -43,6 +43,9 @@ $myqth = "East Dereham, Norfolk";
 
 # Your e-mail address
 $myemail = "djk\@tobit.co.uk";
+
+# Your BBS addr
+$mybbsaddr = "G1TLH\@GB7TLH.#35.GBR.EU";
 
 # the tcp address of the cluster and so does this !!!
 $clusteraddr = "dirk1.tobit.co.uk";
@@ -70,6 +73,9 @@ $system = "$root/sys";
 
 # command files live in
 $cmd = "$root/cmd";
+
+# local command files live in (and overide $cmd)
+$localcmd = "$root/local_cmd";
 
 # where the user data lives
 $userfn = "$data/users";

@@ -23,6 +23,7 @@ require Exporter;
 %msgs = (
   l1 => 'Sorry $_[0], you are already logged on on another channel',
   l2 => 'Hello $_[0], this is $main::mycall located in $main::myqth',
+  pr => '$_[0] de $main::mycall $main::cldate $main::ztime >',
 );
 
 sub msg
