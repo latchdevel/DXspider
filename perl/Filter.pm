@@ -92,7 +92,9 @@ sub compile
 	my $rr;
 	
 	if ($ref->{$ar} && exists $ref->{$ar}->{asc}) {
-		$ref->{$ar}->{code} = eval "sub { my \$r=shift; return $ref->{$ar}->{asc}; }" ;
+		my $s = $ref->{$ar}->{asc};	# an optimisation?
+		$s =~ s/\$r/\$_[0]/g;
+		$ref->{$ar}->{code} = eval "sub { $s }" ;
 		if ($@) {
 			my $sort = $ref->{sort};
 			my $name = $ref->{name};

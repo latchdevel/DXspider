@@ -79,7 +79,8 @@ $lrusize = 2000;
 		  wantpc90 => '1,Req PC90,yesno',
 		  wantnp => '1,Req New Protocol,yesno',
 		  wantpc16 => '9,Want Users from node,yesno',
-		  wantsendpc16 => '9,Send users to node,yesno',
+		  wantsendpc16 => '9,Send PC16,yesno',
+		  wantroutepc19 => '9,Route PC19,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -587,6 +588,11 @@ sub wantpc16
 sub wantsendpc16
 {
 	return _want('sendpc16', @_);
+}
+
+sub wantroutepc16
+{
+	return _want('routepc16', @_);
 }
 
 sub wantlogininfo

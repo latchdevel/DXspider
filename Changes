@@ -1,3 +1,14 @@
+19Jan03=======================================================================
+1. I have made a fundemental change to the way PC19s are dealt with as a 
+result of the discussions on the mailing list. From now on, only nodes that
+issue PC16s will have PC19s propagated. If they *ever* issue a PC16 then from
+then on they are considered as being 'connected' and thus routable. No PC16
+and you have no route. This should stop all passive links being routed. For
+the few cases where you know that that is a very small node and it rarely has
+users, then you can do a set/routepc19 <node> to enable PC19 propagation. In
+the even more rare case of you wanting to prevent PC19s being routed thru 
+your node, you can use unset/routepc19. THIS IS NOT A SUBSTITUTE FOR ROUTE
+FILTERING!!!!! [translators: I have added wpc16s, wpc16u, wpc19s, wpc19u]
 17Jan03=======================================================================
 1. Fix problem with lines being left in the main input queue for a 
 disconnected/ing node.

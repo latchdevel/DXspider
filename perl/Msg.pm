@@ -217,7 +217,6 @@ sub connect {
 	my $ip = gethostbyname($to_host);
 	return undef unless $ip;
 	
-#	my $r = $sock->connect($to_port, $ip);
 	my $r = connect($sock, pack_sockaddr_in($to_port, $ip));
 	return undef unless $r || _err_will_block($!);
 	
