@@ -175,7 +175,7 @@ sub process
 
 			if (exists $busy{$fromnode}) {
 				my $ref = $busy{$fromnode};
-				my $tonode = $ref->{tonode};
+				my $tonode = $ref->{tonode} || "unknown";
 				dbg("Busy, stopping msgno: $ref->{msgno} $fromnode->$tonode") if isdbg('msg');
 				$ref->stop_msg($self->call);
 			}

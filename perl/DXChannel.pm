@@ -506,8 +506,9 @@ sub rspfcheck
 {
 	my ($self, $flag, $node, $user) = @_;
 	my $nref = Route::Node::get($node);
-	if ($nref) {
-	    if ($nref->dxchan == $self) {
+	my $dxchan = $nref->dxchan if $nref;
+	if ($nref && $dxchan) {
+	    if ($dxchan == $self) {
 			return 1 unless $user;
 			my @users = $nref->users;
 			return 1 if @users == 0 || grep $user eq $_, @users;
