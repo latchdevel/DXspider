@@ -1,5 +1,6 @@
 12Oct01=======================================================================
 1. make del nnn delete messages again (fix system Aliases file)
+2. substr the subject so that the dup works for stuff coming back via AK1A
 09Oct01=======================================================================
 1. change Aliases to allow shutdown as a command again. If you have changed
 /spider/cmd/Aliases and you update from CVS you may find it better to remove

@@ -282,7 +282,7 @@ sub process
 						# does an identical message already exist?
 						my $m;
 						for $m (@msg) {
-							if ($ref->{subject} eq $m->{subject} && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from} && $ref->{to} eq $m->{to}) {
+							if (substr($ref->{subject},0,28) eq substr($m->{subject},0,28) && $ref->{t} == $m->{t} && $ref->{from} eq $m->{from} && $ref->{to} eq $m->{to}) {
 								$ref->stop_msg($fromnode);
 								my $msgno = $m->{msgno};
 								dbg("duplicate message from $ref->{from} -> $ref->{to} to msg: $msgno") if isdbg('msg');
@@ -1325,7 +1325,18 @@ sub import_one
 	} else {
 		push @chunk, $ref;
 	}
-				  
+
+	# does an identical message already exist?
+	my $m;
+	for $m (@msg) {
+		if (substr($subject,0,28) eq substr($m->{subject},0,28) && $from eq $m->{from} && grep $m->{to} eq $_, @to) {
+			my $msgno = $m->{msgno};
+			dbg("duplicate message from $from -> $m->{to} to msg: $msgno") if isdbg('msg');
+			Log('msg', "duplicate message from $from -> $m->{to} to msg: $msgno");
+			return;
+		}
+	}
+
     # write all the messages away
 	my $i;
 	for ( $i = 0;  $i < @chunk; $i++) {
