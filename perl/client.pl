@@ -45,7 +45,7 @@ use IO::File;
 use IO::Socket;
 use IPC::Open2;
 use Net::Telnet qw(TELOPT_ECHO);
-use Carp;
+use Carp qw{cluck};
 
 # cease communications
 sub cease
@@ -60,6 +60,7 @@ sub cease
 		kill(9, $pid);
 	}
 	dbgclose();
+#	$SIG{__WARN__} = sub {my $a = shift; cluck($a); };
 	sleep(1);
 	exit(0);	
 }

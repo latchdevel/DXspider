@@ -61,7 +61,7 @@ use Filter;
 use Local;
 use Fcntl ':flock'; 
 
-use Carp;
+use Carp qw(cluck);
 
 package main;
 
@@ -194,7 +194,9 @@ sub cease
 	dbg('chan', "DXSpider version $version ended");
 	Log('cluster', "DXSpider V$version stopped");
 	dbgclose();
+	Logclose();
 	unlink $lockfn;
+#	$SIG{__WARN__} = $SIG{__DIE__} =  sub {my $a = shift; cluck($a); };
 	exit(0);
 }
 

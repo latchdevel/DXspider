@@ -27,7 +27,7 @@ package DXLog;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(Log);
+@EXPORT = qw(Log Logclose);
 
 use FileHandle;
 use DXVars;
@@ -174,10 +174,8 @@ sub Log
 	$log->writeunix($t, join('^', $t, @_) );
 }
 
-sub DESTROY						# catch undefs and do what is required further down the tree
+sub Logclose
 {
-	my $self = shift;
-#	DXDebug::dbg("dxlog", "closing $self->{fn}\n");
-	undef $self->{fh} if defined $self->{fh};
-} 
+	$log->close();
+}
 1;

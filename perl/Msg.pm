@@ -68,6 +68,7 @@ sub disconnect {
     return unless defined($sock);
     set_event_handler ($sock, "read" => undef, "write" => undef);
     shutdown($sock, 3);
+	close($sock);
 }
 
 sub send_now {

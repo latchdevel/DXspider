@@ -136,11 +136,11 @@ sub cluster
 	return " $DXNode::nodes nodes, $users local / $tot total users  Max users $DXNode::maxusers  Uptime $uptime";
 }
 
-sub DESTROY
-{
-	my $self = shift;
-	dbg('cluster', "destroying $self->{call}\n");
-}
+#sub DESTROY
+#{
+#	my $self = shift;
+#	dbg('cluster', "destroying $self->{call}\n");
+#}
 
 no strict;
 sub AUTOLOAD
