@@ -18,6 +18,8 @@
 # 5 - BLUE, $background
 # 6 - MAGENTA, $background
 #
+# You can or these with A_BOLD and or A_REVERSE for a different effect
+#
 
 package main;
 
@@ -26,13 +28,16 @@ $maxshist = 500;
 if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 	$ENV{'TERM'} = 'color_xterm';
 	$foreground = COLOR_BLACK();
-	$background = A_BOLD|COLOR_WHITE();
+	$background = COLOR_WHITE();
 	@colors = (
-		   [ '^DX de [\-\w]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
+		   [ '^DX de [\-A-Z0-9]+:\s+(14[45]\d\d\d|5[01]\d\d\d)', COLOR_PAIR(1) ],
 		   [ '^DX', COLOR_PAIR(5) ],
 		   [ '^To', COLOR_PAIR(3) ],
 		   [ '^WWV', COLOR_PAIR(4) ],
+		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
+		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
 		   [ '^WX', COLOR_PAIR(3) ],
+		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
 		   );
 }
 if ($ENV{'TERM'} =~ /(console|linux)/) {
@@ -43,7 +48,10 @@ if ($ENV{'TERM'} =~ /(console|linux)/) {
 		   [ '^DX', COLOR_PAIR(5) ],
 		   [ '^To', COLOR_PAIR(3) ],
 		   [ '^WWV', COLOR_PAIR(4) ],
+		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
+		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
 		   [ '^WX', COLOR_PAIR(3) ],
+		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
 		   );
 }
 
