@@ -6,5 +6,6 @@
 # $Id$
 #
 my ($self, $line) = @_;
+$line = join(' ', map {s|[/-]\d+$||; $_} split(/\s+/, $line));
 return $DXProt::badspotter->set(8, $self->msg('e6'), $self, $line);
 

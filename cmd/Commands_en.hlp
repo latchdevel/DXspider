@@ -1429,6 +1429,9 @@ will allow spots from him again.
 
 Use with extreme care. This command may well be superceded by FILTERing.
 
+This command will also stop TALK and ANNOUNCE/FULL from any user marked
+as a BADSPOTTER.
+
 === 8^SET/BADWORD <word>..^Stop things with this word being propagated
 === 8^UNSET/BADWORD <word>..^Propagate things with this word again
 Setting a word as a 'badword' will prevent things like spots,

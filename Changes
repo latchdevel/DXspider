@@ -1,3 +1,6 @@
+23Mar05=======================================================================
+1. fix (un)set/badspotter so that it only stores non-ssid calls.
+2. mention action on talk and ann/full in help.
 22Mar05=======================================================================
 1. Fix ? so it works again.
 2. Fix Aliases for sh/c so they are correct
