@@ -69,7 +69,7 @@ sub gen_DXProt
 		my $text = $sd->[3] || ' ';
 		$text =~ s/\^/\%5E/g;
 		my $t = $sd->[2];
-		$thing->{DXProt} = sprintf "PC11^%.1f^$sd->[1]^%s^%s^%s^$sd->[4]^$sd->[7]^$hops^~", $sd->[0], cldate($t), ztime($t), $text;
+		$thing->{DXProt} = sprintf "PC11^%.1f^$sd->[1]^%s^%s^%s^$sd->[4]^$sd->[7]^H$hops^~", $sd->[0], cldate($t), ztime($t), $text;
 	}
 	return $thing->{DXProt};
 }
