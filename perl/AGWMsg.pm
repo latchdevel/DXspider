@@ -183,6 +183,8 @@ sub _rcv {                     # Complement to _send
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
 			$inmsg .= $msg;
+#			$msg =~ s/([\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+#			dbg('connll', $msg);
 		} 
 	} else {
 		if (Msg::_err_will_block($!)) {
@@ -196,7 +198,7 @@ FINISH:
     if (defined $bytes_read && $bytes_read == 0) {
 		finish();
     } else {
-		_decode() if length $inmsg > 36;
+		_decode() if length $inmsg >= 36;
 	}
 }
 
@@ -358,7 +360,8 @@ sub _decode
 			dbg('agw', "AGW Port: $_");
 		}
 		for (my $i = 0; $i < $noports; $i++) {
-			_sendf('y', undef, undef, $i );
+			_sendf('y', undef, undef, $i);
+			_sendf('g', undef, undef, $i);
 		}
 	} else {
 		my $d = unpack "Z*", $data;
