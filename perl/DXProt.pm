@@ -1916,12 +1916,13 @@ sub in_filter_route
 sub eph_dup
 {
 	my $s = shift;
+	my $r;
 
 	# chop the end off
 	$s =~ s/\^H\d\d?\^?\~?$//;
-	return 1 if exists $eph{$s};
+	$r = 1 if exists $eph{$s};    # pump up the dup if it keeps circulating
 	$eph{$s} = $main::systime;
-	return undef;
+	return $r;
 }
 
 sub eph_del_regex
@@ -1940,7 +1941,7 @@ sub eph_clean
 	my ($key, $val);
 	
 	while (($key, $val) = each %eph) {
-		if ($main::systime - $val > 90) {
+		if ($main::systime - $val > 180) {
 			delete $eph{$key};
 		}
 	}

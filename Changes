@@ -3,6 +3,7 @@
 2. Change ping averaging to be like TCP and become a smoothed RTT.
 3. Make all the Prompts in stat/* like output appear in alphebetical order
 4. Fix problem with 17m spots not appearing in sh/dx
+5. pump up eph dups everytime they re-occur and increase life to 180 secs
 04Sep01=======================================================================
 1. add delete/user command
 03Sep01=======================================================================
