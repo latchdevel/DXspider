@@ -610,11 +610,7 @@ sub normal
 
 			# first clear out any nodes on this dxchannel
 			my $parent = Route::Node::get($self->{call});
-			my @rout;
-			for ($parent->nodes) {
-				my $r = Route::Node::get($_);
-				push @rout, $r->del_node if $r;
-			}
+			my @rout = $parent->del_nodes;
 			$self->route_pc21(@rout, $parent);
 			$self->send_local_config();
 			$self->send(pc20());

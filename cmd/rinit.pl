@@ -18,13 +18,10 @@ foreach $call (@calls) {
 	my $dxchan = DXChannel->get($call);
 	if ($dxchan) {
 		if ($dxchan->is_node) {
-			
-			# first clear out any nodes on this dxchannel
-			my $node = Route::Node::get($self->{call});
-			my @rout = $node->del_nodes if $node;
-			DXProt::route_pc21($self, @rout);
-			$dxchan->send(DXProt::pc20());
+			my $parent = Route::Node::get($call);
 			$dxchan->state('init');
+			$dxchan->send_local_config;
+			$dxchan->send(DXProt::pc20());
 			push @out, $self->msg('init1', $call);
 		} 
 	} else {
