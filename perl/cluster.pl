@@ -101,6 +101,7 @@ use UDPMsg;
 use QSL;
 use Thingy;
 use RouteDB;
+use AMsg;
 
 use Data::Dumper;
 use IO::File;
@@ -128,7 +129,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 use vars qw($VERSION $BRANCH $build $branch);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += 3;				# add an offset to make it bigger than last system
+$main::build += 2;				# add an offset to make it bigger than last system
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
@@ -432,14 +433,16 @@ DXUser->init($userfn, 1);
 # start listening for incoming messages/connects
 dbg("starting listeners ...");
 my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
-$conn->conns("Server $clusteraddr/$clusterport");
+$conn->conns("Server $clusteraddr/$clusterport using IntMsg");
 push @listeners, $conn;
-dbg("Internal port: $clusteraddr $clusterport");
+dbg("Internal port: $clusteraddr $clusterport using IntMsg");
 foreach my $l (@main::listen) {
-	$conn = ExtMsg->new_server($l->[0], $l->[1], \&login);
-	$conn->conns("Server $l->[0]/$l->[1]");
+	no strict 'refs';
+	my $pkg = $l->[2] || 'ExtMsg';
+	$conn = $pkg->new_server($l->[0], $l->[1], \&login);
+	$conn->conns("Server $l->[0]/$l->[1] using $pkg");
 	push @listeners, $conn;
-	dbg("External Port: $l->[0] $l->[1]");
+	dbg("External Port: $l->[0] $l->[1] using $pkg");
 }
 
 dbg("AGW Listener") if $AGWMsg::enable;
