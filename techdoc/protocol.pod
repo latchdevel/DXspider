@@ -32,7 +32,7 @@ for inter-node communications.
 =head1 DESCRIPTION
 
 This protocol is
-designed to be an extensible basis for any type of one to many
+designed to be an extensible basis for any type of one too many
 "instant" line-based communications tasks.
 
 This protocol is designed to be flood routed in a meshed network in
@@ -89,7 +89,7 @@ announces, talk, logging info etc. It is a pain to have to do it, as now,
 by trying to make sense of the (slightly different for each piece of node 
 software) human readable "user" version of the output. Far better to pass on
 regular, specified, easily computer decodable versions of the message,
-i.e. in the this protocol, and leave
+i.e. in this protocol, and leave
 the human presentation to the client software.
 
 Having said that, the protocol allows for traditional, character based,
@@ -375,7 +375,7 @@ vertical bar '|',
 percent '%', 
 equals '=' 
 and non printable characters less than 127 (or %7F in hex)
-[including newline and carraige return] are tranlated to
+[including newline and carraige return] are translated to
 their two hex digit equivalent preceeded by the percent '%' character.
 
 For example:
