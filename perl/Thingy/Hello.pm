@@ -90,7 +90,7 @@ sub handle
 				$thing->send($dxchan);
 
 				# broadcast our configuration to the world
-				$thing = Thingy::Rt->new_lcf;
+				$thing = Thingy::Rt->new_cf;
 				$thing->broadcast;
 			}
 		}

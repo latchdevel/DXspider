@@ -122,7 +122,7 @@ sub start
 
 	# broadcast our configuration to the world
 	unless ($self->{outbound}) {
-		my $thing = Thingy::Rt->new_lcf;
+		my $thing = Thingy::Rt->new_cf;
 		$thing->broadcast;
 	}
 	

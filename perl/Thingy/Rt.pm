@@ -210,7 +210,7 @@ sub _upd_user_rec
 # info whenever a node connects and also periodically.
 #
 
-sub new_lcf
+sub new_cf
 {
 	my $pkg = shift;
 	my $thing = $pkg->SUPER::new(@_);
