@@ -1005,11 +1005,34 @@ sub handle_19
 
 	# new routing list
 	my @rout;
+
+	# first get the INTERFACE node
 	my $parent = Route::Node::get($self->{call});
 	unless ($parent) {
 		dbg("DXPROT: my parent $self->{call} has disappeared");
 		$self->disconnect;
 		return;
+	}
+
+	# if the origin isn't the same as the INTERFACE, then reparent, creating nodes as necessary
+	if ($origin ne $self->call) {
+		my $op = Route::Node::get($origin);
+		unless ($op) {
+			$op = $parent->add($origin, 5000, Route::here(1));
+			my $user = DXUser->get_current($origin);
+			if (!$user) {
+				$user = DXUser->new($origin);
+				$user->sort('S');
+				$user->priv(1);		# I have relented and defaulted nodes
+				$user->lockout(1);
+				$user->homenode($origin);
+				$user->node($origin);
+				$user->wantroutepc19(1);
+				$user->wantpc90(1);
+			}
+			$user->put;
+		}
+		$parent = $op;
 	}
 
 	# parse the PC19
