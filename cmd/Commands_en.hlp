@@ -1347,11 +1347,32 @@ use. If you want to get your normal privilege back you will need to
 either logout and login again (if you are on a console) or use the
 SYSOP command.
 
+=== 0^SET/PASSWORD^Set your own password
+This command only works for a 'telnet' user (currently). It will
+only work if you have a password already set. This initial password
+can only be set by the sysop.
+
+When you execute this command it will ask you for your old password,
+then ask you to type in your new password twice (to make sure you
+get it right). You may or may not see the data echoed on the screen
+as you type, depending on the type of telnet client you have.
+
 === 9^SET/PASSWORD <callsign> <string>^Set a users password
 The password for a user can only be set by a full sysop. The string
-can contain any characters but any spaces are removed (you can type in
-spaces - but they won't appear in the password). You can see the
-result with STAT/USER.
+can contain any characters. 
+
+The way this field is used depends on context. If it is being used in
+the SYSOP command context then you are offered 5 random numbers and you
+have to supply the corresponding letters. This is now mainly for ax25
+connections.
+
+If it is being used on incoming telnet connections then, if a password
+is set or the:
+
+  set/var $main::passwdreq = 1
+
+command is executed in the startup script, then a password prompt is
+given after the normal 'login: ' prompt.  
 
 === 5^SET/SPIDER <call> [<call>..]^Make the callsign an DXSpider node
 Tell the system that the call(s) are to be treated as DXSpider node and
@@ -1368,6 +1389,23 @@ correctly (assuming your locator is correct ;-). For example:-
 Tell the system where you are. For example:-
   SET/QTH East Dereham, Norfolk
 
+=== 9^SET/REGISTER <call> ...^Mark a user as registered
+=== 9^UNSET/REGISTER <call> ...^Mark a user as not registered
+Registration is a concept that you can switch on by executing the
+
+  set/var $main::regreq = 1 
+
+command (usually in your startup file)
+
+If a user is NOT registered then, firstly, instead of the normal
+motd file (/spider/data/motd) being sent to the user at startup, the
+user is sent the motd_nor file instead. Secondly, the non registered
+user only has READ-ONLY access to the node. The non-registered user
+cannot use DX, ANN etc. 
+
+The only exception to this is that a non-registered user can TALK or
+SEND messages to the sysop.
+ 
 === 0^SET/TALK^Allow TALK messages to come out on your terminal
 === 0^UNSET/TALK^Stop TALK messages coming out on your terminal
 
@@ -1513,7 +1551,7 @@ all the categories will be listed.
  
 === 1^SHOW/ISOLATE^Show list of ISOLATED nodes
 
-=== 9^SHOW/LOCKOUT^Show the list of locked out or excluded callsigns
+=== 9^SHOW/LOCKOUT <prefix>|ALL^Show the list of locked out or excluded callsigns
 
 === 8^SHOW/LOG [<callsign>]^Show excerpts from the system log
 This command outputs a short section of the system log.  On its own
@@ -1671,6 +1709,8 @@ SH/QRA 52 41 N 0 58 E
 This command queries the QRZ callbook server on the internet
 and returns any information available for that callsign. This service
 is provided for users of this software by http://www.qrz.com 
+
+=== 9^SHOW/REGISTERED [<prefix>]^Show the registered users
 
 === 0^SHOW/ROUTE <callsign> ...^Show the route to the callsign
 This command allows you to see to which node the callsigns specified are

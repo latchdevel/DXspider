@@ -23,6 +23,8 @@ my $from = $self->call;
 my $t = ztime(time);
 my $tonode;
 my $sysopflag;
+return (1, $self->msg('e5')) if $self->remotecmd;
+return (1, $self->msg('e28')) unless $self->registered;
 
 if ($sort eq "FULL") {
   $line =~ s/^$f[0]\s+//;    # remove it

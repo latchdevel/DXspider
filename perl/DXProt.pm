@@ -238,6 +238,9 @@ sub start
 	$self->{here} = 1;
 	$self->{width} = 80;
 
+	# sort out registration
+	$self->{registered} = 1;
+
 	# get the output filters
 	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'node_default', 0);
 	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) || Filter::read_in('wwv', 'node_default', 0);

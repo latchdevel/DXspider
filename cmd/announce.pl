@@ -19,6 +19,7 @@ my ($self, $line) = @_;
 my @f = split /\s+/, $line;
 return (1, $self->msg('e5')) if $self->remotecmd;
 return (1, $self->msg('e9')) if !@f;
+return (1, $self->msg('e28')) unless $self->registered;
 
 my $sort = uc $f[0];
 my @locals = DXCommandmode->get_all();

@@ -1,9 +1,9 @@
 #
-# show/lockout
+# show/registered
 #
-# show all excluded users 
+# show all registered users 
 #
-# Copyright (c) 2000 Dirk Koopman G1TLH
+# Copyright (c) 2001 Dirk Koopman G1TLH
 #
 # $Id$
 #
@@ -20,14 +20,12 @@ if ($line) {
 	$line = "^\U\Q$line";
 }
 
-return (1, $self->msg('lockoutuse')) unless $line;
-
 my ($action, $count, $key, $data) = (0,0,0,0);
 for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
-	if ($data =~ m{lockout =>}) {
-		if ($line eq 'ALL' || $key =~ /$line/) {
-			my $ur = DXUser->get_current($key);
-			if ($ur && $ur->lockout) {
+	if ($data =~ m{registered =>}) {					
+		if (!$line || ($line && $key =~ /$line/)) {
+			my $u = DXUser->get_current($key);
+			if ($u && $u->registered) {
 				push @out, $key;
 				++$count;
 			}

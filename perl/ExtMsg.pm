@@ -104,9 +104,32 @@ sub dequeue
 				if (is_callsign($msg) && $msg !~ m|/| ) {
 					my $sort = $conn->{csort};
 					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
-					$conn->to_connected($msg, 'A', $sort);
+					my $uref;
+					if ($main::passwdreq || ($uref = DXUser->get_current($msg)) && $uref->passwd ) {
+						$conn->conns($msg);
+						$conn->{state} = 'WP';
+						$conn->{decho} = $conn->{echo};
+						$conn->{echo} = 0;
+						$conn->send_raw('password: ');
+					} else {
+						$conn->to_connected($msg, 'A', $sort);
+					}
 				} else {
 					$conn->send_now("Sorry $msg is an invalid callsign");
+					$conn->disconnect;
+				}
+			} elsif ($conn->{state} eq 'WP' ) {
+				my $uref = DXUser->get_current($conn->{call});
+				$msg =~ s/[\r\n]+$//;
+				if ($uref && $msg eq $uref->passwd) {
+					my $sort = $conn->{csort};
+					$conn->{echo} = $conn->{decho};
+					delete $conn->{decho};
+					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
+					$conn->{usedpasswd} = 1;
+					$conn->to_connected($conn->{call}, 'A', $sort);
+				} else {
+					$conn->send_now("Sorry");
 					$conn->disconnect;
 				}
 			} elsif ($conn->{state} eq 'WC') {

@@ -18,7 +18,7 @@ my $n = 0;
 my @all = grep {!$_->private || !($self->priv < 5 && $_->to ne $self->call && $_->from ne $self->call)} (DXMsg::get_all());
 @all =  grep {!$_->delete  || ($self->priv >= 5 && $_->delete)} @all;
 
-return (1, $self->msg('e3', 'directory', $line)) unless @all;
+return (1, $self->msg('dir1')) unless @all;
 my $sel = 0;
 my $from = 0;
 my $to = $all[@all-1]->msgno;
@@ -80,6 +80,6 @@ if (@ref) {
 		last if ++$count >= $n;
 	}
 } else {
-	push @out, $self->msg('e3', 'directory', $line); 
+	push @out, $self->msg('dir1'); 
 }
 return (1, @out);

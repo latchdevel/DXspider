@@ -1,5 +1,20 @@
+24Oct01=======================================================================
+1. added (un)set/register, show/registered commands which when a 'set/var
+$main::reqreg = 1' is done in the startup script will require users to 
+be 'registered' in order for them to have 'write' access to the node. Non-
+registered users will only be allowed to TALK or SEND PRIVATE to the cluster
+sysop callsign.
+2. Added password interrogation to the ExtMsg connections. If a user comes
+in via telnet and this is being done with the internal listener and a pass-
+word has been set for that user - he will be asked for it. You can force 
+a password interrogation (for ALL users) with a 'set/var $main::passwdreq = 1'
+in the node's startup script. It is anticipated that if you are using
+registration you will also issue passwords to those registered users.
+3. set/password has been changed so that users already with passwords can 
+change them.   
 19Oct01=======================================================================
 1. Allow DELETE (0x7f) for backspace in console.pl
+2. redo prefix table using latest cty.dat
 14Oct01=======================================================================
 1. Add the shortform SH/ST like display to sh/user <call> to make it more
 AK1A compatible (G0RDI+G4PDQ pace).

@@ -28,7 +28,7 @@ if ($self->state eq "prompt") {
 	
 	# now deal with real message inputs 
 	# parse out send line for various possibilities
-	$loc = $self->{loc} = {};
+	$loc = {};
 	
 	my $i = 0;
 	my @extra = ();
@@ -56,10 +56,7 @@ if ($self->state eq "prompt") {
 	#  $DB::single = 1;
 	
 	$oref = DXMsg::get($msgno) if $msgno;
-	unless ($oref) {
-		delete $self->{loc};
-		return (1, $self->msg('m4', $i));
-	}
+	return (1, $self->msg('m4', $i)) unless $oref;
 	
 	# now save all the 'to' callsigns for later
 	my $to;
@@ -69,6 +66,9 @@ if ($self->state eq "prompt") {
 		$to = $oref->to;
 		@extra = ();
 	} 
+
+	return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
+	
 	$loc->{to} = [ $to, @extra ];       # to is an array
 	$loc->{subject} = $oref->subject;
 	$loc->{subject} = "Re: " . $loc->{subject} if !($loc->{subject} =~ /^Re:\s/io); 
@@ -77,6 +77,7 @@ if ($self->state eq "prompt") {
 	# keep calling me for every line until I relinquish control
 	$self->func("DXMsg::do_send_stuff");
 	$self->state('sendbody');
+	$self->loc($loc);
 	push @out, $self->msg('m6', join(',', $to, @extra));
 	push @out, $self->msg('m7', $loc->{subject});
 	push @out, $self->msg('m8');

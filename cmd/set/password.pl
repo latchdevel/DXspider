@@ -8,23 +8,41 @@
 #
 
 my ($self, $line) = @_;
-my @args = split /\s+/, $line;
+my @args = split /\s+/, $line, 2;
 my $call = shift @args;
 my @out;
 my $user;
 my $ref;
 
-return (1, $self->msg('e5')) if $self->priv < 9;
+if ($self->remotecmd) {
+	$call ||= $self->call;
+	Log('DXCommand', $self->call . " attempted to change password for $call remotely");
+	return (1, $self->msg('e5'));
+}
 
-if ($ref = DXUser->get_current($call)) {
-	$line =~ s/^\s*$call\s+//;
-	$line =~ s/\s+//og;                    # remove any blanks
-	$line =~ s/[{}]//g;   # no braces allowed
-	$ref->passwd($line);
-	$ref->put();
-	push @out, $self->msg("password", $call);
+if ($call) {
+	if ($self->priv < 9) {
+		Log('DXCommand', $self->call . " attempted to change password for $call");
+		return (1, $self->msg('e5'));
+	}
+	return (1, $self->msg('e29')) unless @args;
+	if ($ref = DXUser->get_current($call)) {
+		$ref->passwd($args[0]);
+		$ref->put();
+		push @out, $self->msg("password", $call);
+		Log('DXCommand', $self->call . " changed password for $call");
+	} else {
+		push @out, $self->msg('e3', 'User record for', $call);
+	}
 } else {
-	push @out, $self->msg('e3', 'User record for', $call);
+	if ($self->conn->{csort} eq 'telnet' && $self->user->passwd) {
+		$self->conn->{decho} = $self->conn->{echo};
+		$self->conn->{echo} = 0;
+		push @out, $self->msg('pw0');
+		$self->state('passwd');
+	} else {
+		push @out, $self->msg('e5');
+	}
 }
 
 return (1, @out);

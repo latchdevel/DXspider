@@ -85,12 +85,10 @@ sub start
 
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
-	$self->send_file($main::motd) if (-e $main::motd);
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv || 0;
 	$self->{lang} = $user->lang || $main::lang || 'en';
 	$self->{pagelth} = $user->pagelth || 20;
-	$self->{priv} = 0 if $line =~ /^(ax|te)/; # set the connection priv to 0 - can be upgraded later
 	($self->{width}) = $line =~ /width=(\d+)/;
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
@@ -106,6 +104,22 @@ sub start
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{ann_talk} = $user->wantann_talk;
 	$self->{here} = 1;
+
+	# sort out registration
+	if ($main::reqreq) {
+		$self->{registered} = $user->registered;
+	} else {
+		$self->{registered} = 1;
+	}
+
+
+	# decide which motd to send
+	my $motd = "${main::motd}_nor" unless $self->{registered};
+	$motd = $main::motd unless $motd && -e $motd;
+	$self->send_file($motd) if -e $motd;
+
+	# sort out privilege reduction
+	$self->{priv} = 0 if $line =~ /^(ax|te)/ && !$self->conn->{usedpasswd};
 
 	# get the filters
 	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'user_default', 0);
@@ -197,8 +211,8 @@ sub normal
 		}
 	} elsif ($self->{state} eq 'sysop') {
 		my $passwd = $self->{user}->passwd;
-		my @pw = split / */, $passwd;
 		if ($passwd) {
+			my @pw = grep {$_ !~ /\s/} split //, $passwd;
 			my @l = @{$self->{passwd}};
 			my $str = "$pw[$l[0]].*$pw[$l[1]].*$pw[$l[2]].*$pw[$l[3]].*$pw[$l[4]]";
 			if ($cmdline =~ /$str/) {
@@ -209,7 +223,31 @@ sub normal
 		} else {
 			$self->send($self->msg('sorry'));
 		}
-		delete $self->{passwd};
+		$self->state('prompt');
+	} elsif ($self->{state} eq 'passwd') {
+		my $passwd = $self->{user}->passwd;
+		if ($passwd && $cmdline eq $passwd) {
+			$self->send($self->msg('pw1'));
+			$self->state('passwd1');
+		} else {
+			$self->conn->{echo} = $self->conn->{decho};
+			delete $self->conn->{decho};
+			$self->send($self->msg('sorry'));
+			$self->state('prompt');
+		}
+	} elsif ($self->{state} eq 'passwd1') {
+		$self->{passwd} = $cmdline;
+		$self->send($self->msg('pw2'));
+		$self->state('passwd2');
+	} elsif ($self->{state} eq 'passwd2') {
+		if ($cmdline eq $self->{passwd}) {
+			$self->{user}->passwd($cmdline);
+			$self->send($self->msg('pw3'));
+		} else {
+			$self->send($self->msg('pw4'));
+		}
+		$self->conn->{echo} = $self->conn->{decho};
+		delete $self->conn->{decho};
 		$self->state('prompt');
 	} elsif ($self->{state} eq 'talk') {
 		if ($cmdline =~ m{^(?:/EX|/ABORT)}i) {

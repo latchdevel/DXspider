@@ -34,6 +34,7 @@ my $call = $via ? $via : $to;
 my $clref = Route::get($call);     # try an exact call
 my $dxchan = $clref->dxchan if $clref;
 return (1, $self->msg('e7', $call)) unless $dxchan;
+return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
 
 # if there is a line send it, otherwise add this call to the talk list
 # and set talk mode for command mode

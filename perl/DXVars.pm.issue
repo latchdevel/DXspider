@@ -23,12 +23,13 @@ require Exporter;
 			   
 			   
 # this really does need to change for your system!!!!			   
+# use CAPITAL LETTERS
 $mycall = "GB7DJK";
 
 # your name
 $myname = "Dirk";
 
-# Your 'normal' callsign 
+# Your 'normal' callsign (in CAPTTAL LETTERS) 
 $myalias = "G1TLH";
 
 # Your latitude (+)ve = North (-)ve = South in degrees and decimal degrees
@@ -37,7 +38,7 @@ $mylatitude = +52.68584579;
 # Your Longtitude (+)ve = East, (-)ve = West in degrees and decimal degrees
 $mylongitude = +0.94518260;
 
-# Your locator (yes I know I can calculate it - eventually)
+# Your locator (USE CAPITAL LETTERS)
 $mylocator = "JO02LQ";
 
 # Your QTH (roughly)
