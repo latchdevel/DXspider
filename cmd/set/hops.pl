@@ -21,7 +21,7 @@ if (is_callsign(uc $f[0])) {
 my $sort = lc shift @f if $f[0] =~ /^ann|spots|wwv|wcy|route$/i;
 my $hops = shift @f if $f[0] =~ /^\d+$/;
 
-return (0, $self->msg('sethop1')) unless $call && $sort && $hops;
+return (0, $self->msg('sethop1')) unless $call && $sort && defined $hops;
 
 my $ref = Filter::read_in($sort, $call, 0);
 $ref = Filter->new($sort, $call, 0) if !$ref || $ref->isa('Filter::Old');
