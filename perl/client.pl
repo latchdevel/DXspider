@@ -110,7 +110,7 @@ sub rec_socket
 			$line =~ s/\n/\r/og if $mode == 1;
 			#my $p = qq($line$snl);
 			if ($buffered) {
-				if (length $outqueue >= 128) {
+				if (length $outqueue >= $client_buffer_lth) {
 					print $stdout $outqueue;
 					$outqueue = "";
 				}
@@ -296,12 +296,12 @@ sub timeout
 
 $mode = 2;                      # 1 - \n = \r as EOL, 2 - \n = \n, 0 - transparent
 $call = "";                     # the callsign being used
-@stdoutq = ();                  # the queue of stuff to send out to the user
 $conn = 0;                      # the connection object for the cluster
 $lastbit = "";                  # the last bit of an incomplete input line
 $mynl = "\n";                   # standard terminator
 $lasttime = time;               # lasttime something happened on the interface
-$outqueue = "";                 # the output queue length
+$outqueue = "";                 # the output queue 
+$client_buffer_lth = 200;       # how many characters are buffered up on outqueue
 $buffered = 1;                  # buffer output
 $savenl = "";                   # an NL that has been saved from last time
 $timeout = 60;                  # default timeout for connects
@@ -317,6 +317,7 @@ $stdout = *STDOUT;
 $rfh = 0;
 $wfh = 0;
 
+$waitedpid = 0;
 
 #
 # deal with args
@@ -359,7 +360,7 @@ if ($loginreq) {
 		close(I);
 		$issue = s/\n/\r/og if $mode == 1;
 		local $/ = $nl;
-		$stdout->print($issue) if issue;
+		$stdout->print($issue) if $issue;
 	}
 	
 
@@ -442,7 +443,7 @@ if ($connsort eq "connect") {
 		#		close W;
         $stdin = $rfh;
 		$stdout = $wfh;
-		$csort = 'telnet' if $sort eq 'prog';
+		$csort = 'telnet' if $csort eq 'prog';
 	} elsif ($csort eq 'telnet') {
 		#		open(STDIN, "<&$sock"); 
 		#		open(STDOUT, ">&$sock"); 

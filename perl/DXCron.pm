@@ -20,7 +20,7 @@ use strict;
 use vars qw{@crontab $mtime $lasttime $lastmin};
 
 @crontab = ();
-$mtime = 1;
+$mtime = 0;
 $lasttime = 0;
 $lastmin = 0;
 
@@ -41,7 +41,7 @@ sub init
 			$t = -M $fn;
 			
 			cread($fn);
-			$mtime = $t if  $t <= $mtime;
+			$mtime = $t if  !$mtime || $t <= $mtime;
 		}
 
 		# then read in any local ones
@@ -165,12 +165,70 @@ sub process
 # these are simple stub functions to make connecting easy in DXCron contexts
 #
 
+# is it locally connected?
 sub connected
 {
 	my $call = uc shift;
 	return DXChannel->get($call);
 }
 
+# is it remotely connected anywhere (with exact callsign)?
+sub present
+{
+	my $call = uc shift;
+	return DXCluster->get_exact($call);
+}
+
+# is it remotely connected anywhere (ignoring SSIDS)?
+sub presentish
+{
+	my $call = uc shift;
+	return DXCluster->get($call);
+}
+
+# is it remotely connected anywhere (with exact callsign) and on node?
+sub present_on
+{
+	my $call = uc shift;
+	my $node = uc shift;
+	my $ref = DXCluster->get_exact($call);
+	return ($ref && $ref->mynode) ? $ref->mynode->call eq $node : undef;
+}
+
+# is it remotely connected anywhere (ignoring SSIDS) and on node?
+sub presentish_on
+{
+	my $call = uc shift;
+	my $node = uc shift;
+	my $ref = DXCluster->get($call);
+	return ($ref && $ref->mynode) ? $ref->mynode->call eq $node : undef;
+}
+
+# last time this thing was connected
+sub last_connect
+{
+	my $call = uc shift;
+	return $main::systime if DXChannel->get($call);
+	my $user = DXUser->get($call);
+	return $user ? $user->lastin : 0;
+}
+
+# disconnect a locally connected thing
+sub disconnect
+{
+	my $call = uc shift;
+	my $dxchan = DXChannel->get($call);
+	if ($dxchan) {
+		if ($dxchan->is_ak1a) {
+			$dxchan->send_now("D", DXProt::pc39($main::mycall, "$main::mycall DXCron"));
+		} else {
+			$dxchan->send_now('D', "");
+		} 
+		$dxchan->disconnect;
+	}
+}
+
+# start a connect process off
 sub start_connect
 {
 	my $call = uc shift;
@@ -201,6 +259,7 @@ sub start_connect
 	sleep(1);
 }
 
+# spawn any old job off
 sub spawn
 {
 	my $line = shift;
@@ -225,6 +284,20 @@ sub spawn
 
 	# coordinate
 	sleep(1);
+}
+
+# do an rcmd to another cluster from the crontab
+sub rcmd
+{
+	my $call = uc shift;
+	my $line = shift;
+
+	# can we see it? Is it a node?
+	my $noderef = DXCluster->get_exact($call);
+	return  if !$noderef || !$noderef->pcversion;
+
+	# send it 
+	DXProt::addrcmd($main::mycall, $call, $line);
 }
 1;
 __END__

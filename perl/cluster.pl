@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 #
 # This is the DX cluster 'daemon'. It sits in the middle of its little
 # web of client routines sucking and blowing data where it may.

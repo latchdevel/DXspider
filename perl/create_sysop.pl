@@ -37,7 +37,7 @@ sub create_it
 	$self->{qth} = $myqth;
 	$self->{qra} = $mylocator;
 	$self->{lat} = $mylatitude;
-	$self->{long} = $mylongtitude;
+	$self->{long} = $mylongitude;
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
 	$self->{homenode} = $mycall;
@@ -59,7 +59,7 @@ sub create_it
 	$self->{qth} = $myqth;
 	$self->{qra} = $mylocator;
 	$self->{lat} = $mylatitude;
-	$self->{long} = $mylongtitude;
+	$self->{long} = $mylongitude;
 	$self->{email} = $myemail;
 	$self->{bbsaddr} = $mybbsaddr;
 	$self->{homenode} = $mycall;
@@ -75,20 +75,24 @@ sub create_it
 
 }
 
-DXUser->init($userfn);
 if (-e "$userfn") {
 	print "Do you wish to destroy your user database (THINK!!!) [y/N]: ";
 	$ans = <STDIN>;
 	if ($ans =~ /^[Yy]/) {
 		delete_it();
+		DXUser->init($userfn);
 		create_it();
 	} else {
 		print "Do you wish to reset your cluster and sysop information? [y/N]: ";
 		$ans = <STDIN>;
-		create_it() if $ans =~ /^[Yy]/;
+		if ($ans =~ /^[Yy]/) {
+			DXUser->init($userfn);
+			create_it();
+		}
 	}
   
 } else {
+	DXUser->init($userfn);
 	create_it();
 }
 DXUser->finish();

@@ -1,3 +1,19 @@
+18Jan99========================================================================
+1. added present(),presentish() and disconnect() to DXCron so that you can see 
+(easily) if a station is on the cluster anywhere and also disconnect them
+locally. 
+2. added rcmd() to DXCron so you can send an rcmd to someone else from crontab.
+3. <embarrassment>Fixed create_sysop.pl so that longitude is spelt correctly
+there as well</embarrassment> made the update work properly. NOTE create_sysop
+will only do what you expect if all cluster.pl and client.pl programs are 
+stopped.
+4. DXCron wasn't reading in reliably on startup, this is now (hopefully) fixed.
+the -M semantics are rather strange!
+5. The -w switch is now standard on cluster.pl
+6. Added last_connect() which gives the last connect time of a user (or now
+if connected).
+7. Added present_on(call, node) and presentish_on(ditto) which returns true if 
+the call is connected to the node.
 17Jan99========================================================================
 1. fixed some permission problems on DXLog.
 2. There is a circumstance in DXMsg which caused the cluster to stop on an 
