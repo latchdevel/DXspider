@@ -1,6 +1,8 @@
 24Jun02=======================================================================
 1. make set/badspotter non SSID sensitive. Set/badnode is left to be SSID
 sensitive. 
+2. added 3XA(=3X) and K1B(=KH1) also changed the logic of sh/prefix. This
+may break things, please test it. 
 19Jun02=======================================================================
 1. make set/badspotter and set/badnode apply to announces and talks as well
 as spots. 

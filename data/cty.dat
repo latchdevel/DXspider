@@ -28,7 +28,7 @@ Tunisia:                  33:  37:  AF:   36.80:   -10.20:    -1.0:  3V:
 Vietnam:                  26:  49:  AS:   10.80:  -106.70:    -7.0:  3W:
     3W,XV;
 Republic of Guinea:       35:  46:  AF:    9.50:    13.70:     0.0:  3X:
-    3X;
+    3X,3XA;
 Bouvet:                   38:  67:  AF:  -54.50:    -3.40:     0.0:  3Y/b:
     3Y;
 Peter I I.:               12:  72:  SA:  -68.80:    90.60:     6.0:  3Y/p:
@@ -413,7 +413,7 @@ Guantanamo Bay:           08:  11:  NA:   19.90:    75.20:     5.0:  KG4:
 Mariana Is.:              27:  64:  OC:   15.20:  -145.80:    10.0:  KH0:
     AH0,KG6SL,KH0,NH0,WH0;
 Baker & Howland Is.:      31:  61:  OC:    0.50:   176.00:    11.0:  KH1:
-    AH1,KH1,NH1,WH1;
+    AH1,KH1,NH1,WH1,K1B;
 Guam:                     27:  64:  OC:   13.50:  -144.80:   -10.0:  KH2:
     AH2,KG6ASO,KH2,NH2,WH2;
 Johnston I.:              31:  61:  OC:   16.80:   169.50:    10.0:  KH3:

@@ -177,12 +177,15 @@ sub extract
 		foreach $p (@parts) {
 			$sp = $p if length $sp > length $p;
 		}
-		# now start to resolve it from the left hand end
-		for ($i = 1; $i <= length $sp; ++$i) {
+#		# now start to resolve it from the left hand end
+#		for ($i = 1; $i <= length $sp; ++$i) {
+		# now start to resolve it from the right hand end
+		for ($i = length $sp; $i >= 1; --$i) {
 			my @wout = get(substr($sp, 0, $i));
 			last if @wout > 0 && $wout[0] gt $sp;
-			last if @wout == 0;
+#			last if @wout == 0;
 			push @out, @wout;
+			last if @wout;
 		}
 	}
 	return @out;

@@ -13,12 +13,13 @@ my @out;
 #print "line: $line\n";
 foreach $l (@list) {
   my @ans = Prefix::extract($l);
-  #print "ans:", @ans, "\n";
+  my $dd = new Data::Dumper([ \@ans ]);
+  print "ans:", $dd->Dumpxs;
   next if !@ans;
   my $pre = shift @ans;
   my $a;
   foreach $a (@ans) {
-    push @out, sprintf "%s DXCC: %d ITU: %d CQ: %d LL: %s %s (%s, %s)", uc $l, $a->dxcc(), $a->itu(), $a->cq(), slat($a->lat), slong($a->long), $pre, $a->name();
+    push @out, sprintf "%s DXCC: %d ITU: %d CQ: %d LL: %s %s (%s, %s)", uc $l, $a->dxcc, $a->itu, $a->cq, slat($a->lat), slong($a->long), $pre, $a->name;
 	$l = " " x length $l;
   }
 }
