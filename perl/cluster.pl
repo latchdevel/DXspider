@@ -293,7 +293,7 @@ sub process_inqueue
 	while (@inqueue) {
 		my $self = shift @inqueue;
 		return if !$self;
-	
+
 		my $data = $self->{data};
 		my $dxchan = $self->{dxchan};
 		my $error;
@@ -302,13 +302,18 @@ sub process_inqueue
 	
 		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 		dbg("<- $sort $call $line\n") if $sort ne 'D' && isdbg('chan');
-
+		if ($self->{disconnecting}) {
+			dbg('In disconnection, ignored');
+			next;
+		}
+		
 		# handle A records
 		my $user = $dxchan->user;
 		if ($sort eq 'A' || $sort eq 'O') {
 			$dxchan->start($line, $sort);  
 		} elsif ($sort eq 'I') {
 			die "\$user not defined for $call" if !defined $user;
+
 			# normal input
 			$dxchan->normal($line);
 		} elsif ($sort eq 'Z') {

@@ -1,6 +1,8 @@
 11Jan02=======================================================================
 1. Make M$ TCP connx blocking again, sigh...
 2. backed out ALL the M$ speedup and make nicer changes :-(
+3. cope with data coming in during the disconnection process. Don't worry
+Earth people, this will take no longer than 15 of your Earth seconds...
 10Jan02=======================================================================
 1. set SO_LINGER = 0 to try to prevent the system sending data on a closing
 socket. This MAY help some of the hanging problems (but I am now beginning
