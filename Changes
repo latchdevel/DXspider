@@ -2,7 +2,7 @@
 1. allow three digit longitudes
 2. make a small change to see if messages now stay in place.
 3. make keep actually stick over a reboot and take it fully into account for
-deletions.
+deletions (translators: I added m18).
 4. try not to delete new messages (even if this is an update that reads 'old'
 messages with missing fields).
 29Oct02=======================================================================
