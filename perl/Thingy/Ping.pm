@@ -59,7 +59,7 @@ sub gen_DXProt
 	    $from ||= $thing->{user} if Route::Node::get($thing->{user});
 		$from ||= $thing->{origin};
 		my $to = $thing->{o} unless $thing->{out};
-		$to ||= $thing->{touser} if Route::Node::get($thing->{touser});
+		$to ||= $thing->{touser} unless Route::User::get($thing->{touser});
 		$to ||= $thing->{group};
 
 		
