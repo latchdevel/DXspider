@@ -1277,6 +1277,11 @@ all the categories will be listed.
 
 === 9^SHOW/LOCKOUT^Show the list of locked out or excluded callsigns
 
+=== 8^SHOW/LOG [<callsign>]^Show excerpts from the system log
+This command outputs a short section of the system log.  On its own
+it will output a general logfile.  With the optional callsign it will
+show output from the log associated with that callsign.
+
 === 0^SHOW/MOON [<prefix>|<callsign>]^Show Moon rise and set times
 Show the Moon rise and set times for a (list of) prefixes or callsigns, 
 together with the azimuth and elevation of the sun currently at those

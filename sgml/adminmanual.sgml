@@ -6,7 +6,7 @@
 
 <title>The DXSpider Installation and Administration Manual 
 <author>Ian Maude, G0VGS, (ianmaude@btinternet.com)
-<date>Version 1.31 January 2001
+<date>Version 1.32 February 2001
 <abstract>
 A reference for SysOps of the DXSpider DXCluster program.
 </abstract>
@@ -1501,6 +1501,123 @@ the interface is one-way.
 Please be careful not to flood the cluster network with unnecessary mail.
 Make sure you only send mail to the clusters that want it by using the
 Forward.pl file very carefully.
+
+<sect>Databases
+
+<P>
+Spider allows the creation of local or remote databases.  It supports
+chained databases, allowing several different databases to be scanned
+with one simple command.  Importing of databases is limited at present
+to the standard AK1A databases such as OBLAST and the DB0SDX QSL 
+database but will expand with time.
+
+<sect1>Creating databases
+
+<P>
+Creating a database could not be more simple.  All the commands are
+sent from the cluster prompt as the <em>sysop</em> user.
+
+To create a database you use the command <em>dbcreate</em>.  It can
+be used in 3 different ways like so ..
+
+<tscreen><verb>
+dbcreate <name>
+</verb></tscreen>
+
+To simply create a database locally, you just tell the command the
+name of the database.  This does not create the actual database, it
+simply defines it to say that it exists.
+
+<tscreen><verb>
+dbcreate <name> chain <name> [<name>...]
+</verb></tscreen>
+
+This creates a chained database entry.  The first database will be
+scanned, then the second, the third etc...
+
+<tscreen><verb>
+dbcreate <name> remote <name>
+</verb></tscreen>
+
+This creates a remote entry.  the first name field is the database
+name at the remote node, then the remote switch, then the actual
+node_call of the remote node, for example...
+
+<tscreen><verb>
+dbcreate buckmaster remote gb7dxc
+</verb></tscreen>
+
+Remote databases cannot be chained, however, the last database in a
+chain can be a remote database.
+
+<sect1>Importing databases
+
+<P>
+The only databases that Spider can currently import are the standard
+AK1A databases such as OBLAST or the DB0SDX qsl and address database.
+This will be added to with time.
+
+To import such a database, first put the file somewhere useful like /tmp
+and then issue the following command ...
+
+<tscreen><verb>
+dbimport oblast /tmp/OBLAST.FUL
+</verb></tscreen>
+
+This will update the existing local oblast database or create it if
+it does not exist.
+
+<sect1>Checking available databases
+
+<P>
+Once a database is created, you will want to check that it has been
+added.  To do this use the <em>dbavail</em> command.  This will
+output the available databases.  For example ...
+
+<tscreen><verb>
+dbavail
+DB Name          Location   Chain
+qsl              Local
+buck             GB7ADX
+hftest           GB7DXM
+G0VGS de GB7MBC  3-Feb-2001 1925Z >
+</verb></tscreen>
+
+<sect1>Looking up databases
+
+<P>
+To look for information in a defined database, simply use the <em>dbshow</em>
+command, for example ...
+
+<tscreen><verb>
+dbshow buckmaster G0YLM
+</verb></tscreen>
+
+will show the information for the callsign G0YLM from the buckmaster
+database if it exists.  To make things more standard for the users
+you can add an entry in the Aliases file so that it looks like a standard 
+<em>show</em> command like this ...
+
+<tscreen><verb>
+'^sh\w*/buc', 'dbshow buckmaster', 'dbshow',
+</verb></tscreen>
+
+Now you can simply use show/buckmaster or an abreviation.
+
+<sect1>Removing databases
+
+<P>
+To delete an existing database you use the <em>dbremove</em> command.
+For example ...
+
+<tscreen><verb>
+dbremove oblast
+</verb></tscreen>
+
+would remove the oblast database and its associated datafile from the
+system.  There are no warnings or recovery possible from this command.
+If you remove a database it ceases to exist and would have to be created
+from scratch if you still required it.
 
 <sect>Information, files and useful programs
 
@@ -4030,6 +4147,18 @@ Show which nodes are currently set to be isolated.
 <P>
 Show a list of callsigns that have been excluded (locked out) of the
 cluster locally with the <em>set/lockout</em> command
+
+<sect1>show/log (8)
+
+<P>
+<tt>
+<bf>show/log &lsqb;&lt;callsign&gt;&rsqb;</bf> Show excerpts from the system log
+</tt>
+
+<P>
+This command outputs a short section of the system log.  On its own
+it will output a general logfile.  With the optional callsign it will
+show output from the log associated with that callsign.
 
 <sect1>show/moon (0)
 
