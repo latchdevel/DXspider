@@ -9,8 +9,6 @@
 my @out;
 my $build = $main::version;
 
-use IO::File;
-
 if (opendir(DIR, "$main::root/perl")) {
 	my @d = readdir(DIR);
 	closedir(DIR);
