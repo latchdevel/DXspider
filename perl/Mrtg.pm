@@ -72,7 +72,7 @@ sub data
 sub cfgprint
 {
 	my ($self, $name, $options, $max, $title, $legend, $iname, $oname) = @_;
-	my $opt = join ', ', @$options, qw(withzeroes gauge growright nopercent integer);
+	my $opt = join ', ', @$options, qw(withzeroes growright nopercent integer);
 
 	$self->{mc}->print(<<"EOF");
 
