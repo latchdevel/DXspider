@@ -41,7 +41,7 @@ sub init
 	# fix up the node's default country codes
 	unless (@main::my_cc) {
 		push @main::my_cc, (61..67) if $main::mycall =~ /^GB/;
-		push @main::my_cc, qw(EA EA6 EA8 EA9) if $main::mycall =~ /^E(ABCD)/;
+		push @main::my_cc, qw(EA EA6 EA8 EA9) if $main::mycall =~ /^E[ABCD]/;
 		push @main::my_cc, qw(I IT IS) if $main::mycall =~ /^I/;
 		push @main::my_cc, qw(SV SV5 SV9) if $main::mycall =~ /^SV/;
 
