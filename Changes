@@ -10,6 +10,7 @@ one in the announce.
 5. Change the badwords interface to be the same as baddx, badspotter et al.
 added set/badword, unset/badword and show/badword. This routine will auto
 convert (and delete afterwards) the old badwords file. 
+6. fix intermittant bullitin mail forwarding?
 11Sep01=======================================================================
 1. added IP address logging of connections
 10Sep01=======================================================================

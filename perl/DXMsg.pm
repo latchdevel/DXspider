@@ -587,7 +587,6 @@ sub send_tranche
 sub queue_msg
 {
 	my $sort = shift;
-	my $call = shift;
 	my $ref;
 	my $clref;
 	
@@ -641,23 +640,23 @@ sub queue_msg
 					dbg("Route: No dxchan for $ref->{to} " . ref($clref) ) if isdbg('msg');
 				}
 			}
-		}
-		
-		# otherwise we are dealing with a bulletin or forwarded private message
-		# compare the gotit list with
-		# the nodelist up above, if there are sites that haven't got it yet
-		# then start sending it - what happens when we get loops is anyone's
-		# guess, use (to, from, time, subject) tuple?
-		foreach $dxchan (@nodelist) {
-			my $call = $dxchan->call;
-			next unless $call;
-			next if $call eq $main::mycall;
-			next if ref $ref->{gotit} && grep $_ eq $call, @{$ref->{gotit}};
-			next unless $ref->forward_it($call);           # check the forwarding file
-
-			# if we are here we have a node that doesn't have this message
-			$ref->start_msg($dxchan) if !get_busy($call)  && $dxchan->state eq 'normal';
-			last;
+		} else {
+			
+			# otherwise we are dealing with a bulletin or forwarded private message
+			# compare the gotit list with
+			# the nodelist up above, if there are sites that haven't got it yet
+			# then start sending it - what happens when we get loops is anyone's
+			# guess, use (to, from, time, subject) tuple?
+			foreach $dxchan (@nodelist) {
+				my $call = $dxchan->call;
+				next unless $call;
+				next if $call eq $main::mycall;
+				next if ref $ref->{gotit} && grep $_ eq $call, @{$ref->{gotit}};
+				next unless $ref->forward_it($call);           # check the forwarding file
+				
+				# if we are here we have a node that doesn't have this message
+				$ref->start_msg($dxchan) if !get_busy($call)  && $dxchan->state eq 'normal';
+			}
 		}
 
 		# if all the available nodes are busy then stop
