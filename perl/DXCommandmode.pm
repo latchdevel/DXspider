@@ -82,6 +82,12 @@ sub start
 	# send prompts and things
 	my $info = DXCluster::cluster();
 	$self->send("Cluster:$info");
+	$self->send($self->msg('namee1')) if !$user->name;
+	$self->send($self->msg('qthe1')) if !$user->qth;
+	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
+	$self->send($self->msg('hnodee1')) if !$user->qth;
+	
+	
 	$self->send($self->msg('pr', $call));
 }
 

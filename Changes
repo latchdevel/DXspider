@@ -1,8 +1,12 @@
 07Dec98========================================================================
-1. Added set/name, set/qra, set/location, set/qth, set/homenode
+1. Added set/name, set/qra, set/location, set/qth, set/homenode, set/bbs, 
+set/email
 2. changed the Msg socket close to a shutdown (hopefully more reliable), this 
 should stop clients hanging on exit.
 3. Added Alias support for help
+4. Added lltos and stoll routines to DXBearing
+5. Added auto prompting for name, qth, location and homenode if any of these
+aren't known.
 06Dec98========================================================================
 1. Fixed DXBearing::is_qra so that it correctly detects full QRA locators
 2. Added sh/qra for doing locator distances and bearings
