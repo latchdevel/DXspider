@@ -554,6 +554,8 @@ sub normal
 			for ($i = 2; $i < $#field; $i++) {
 				my ($call, $conf, $here) = $field[$i] =~ /^(\S+) (\S) (\d)/o;
 				next unless $call && $conf && defined $here && is_callsign($call);
+				next if $call eq $main::mycall;
+				
 				$conf = $conf eq '*';
 
 				my $r = Route::User::get($call);
@@ -633,6 +635,11 @@ sub normal
 			# new routing list
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
+			unless ($parent) {
+				dbg("DXPROT: my parent $self->{call} has disappeared");
+				$self->disconnect;
+				return;
+			}
 
 			# parse the PC19
 			for ($i = 1; $i < $#field-1; $i += 4) {
@@ -645,6 +652,7 @@ sub normal
 				$ver = 5000 if $ver eq '0000';
 				next if $ver < 5000; # only works with version 5 software
 				next if length $call < 3; # min 3 letter callsigns
+				next if $call eq $main::mycall;
 
 				# update it if required
 				my $r = Route::Node::get($call);
@@ -665,7 +673,10 @@ sub normal
 						push @rout, $r unless $ar;
 					}
 				} else {
-					next if $call eq $main::mycall || $call eq $self->{call};
+					if ($call eq $self->{call}) {
+						dbg("DXPROT: my channel route for $call has disappeared");
+						next;
+					};
 					
 					my $new = Route->new($call);          # throw away
 				    if ($self->in_filter_route($new)) {
@@ -710,7 +721,8 @@ sub normal
 			my @rout;
 			my $parent = Route::Node::get($self->{call});
 			unless ($parent) {
-				dbg("PCPROT: Route::Node $call not in config") if isdbg('chanerr');
+				dbg("DXPROT: my parent $self->{call} has disappeared");
+				$self->disconnect;
 				return;
 			}
 			my $node = Route::Node::get($call);
