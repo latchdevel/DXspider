@@ -1,5 +1,7 @@
 05Nov00=======================================================================
-1. 75% speed up on sh/dx !, lower memory usage as well! 
+1. 75% speed up on sh/dx !, lower memory usage as well!
+2. Fixed problem with clear/spot 0 (how did this one last so long!!!)
+3. add 'on' in accept/reject spots as synonym for 'freq' 
 04Nov00=======================================================================
 1. fix sh/filter so ity now works for any callsign (and not just connected
 ones).

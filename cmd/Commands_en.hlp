@@ -65,6 +65,7 @@ to understand how filters work - it will save a lot of grief later on.
 You can use any of the following things in this line:-
 
   freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+  on <range>             same as 'freq'
   call <prefixes>        eg: G,PA,HB9
   info <string>          eg: iota or qsl
   by <prefixes>            
@@ -723,6 +724,7 @@ to understand how filters work - it will save a lot of grief later on.
 You can use any of the following things in this line:-
 
   freq <range>           eg: 0/30000 or hf or hf/cw or 6m,4m,2m
+  on <range>             same as 'freq'
   call <prefixes>        eg: G,PA,HB9
   info <string>          eg: iota or qsl
   by <prefixes>            
