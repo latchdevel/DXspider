@@ -405,7 +405,7 @@ sub input
 		$thing = $class->new();
 
 		# reconstitute the header but wth hop increased by one
-		$head = formathead($origin, $dts, ++$hop, $user, $group);
+		$head = formathead($origin, $dts, ++$hop, $user, $group, $tocall);
 		$thing->{Aranea} = "$head|$data";
 
 		# store useful data
