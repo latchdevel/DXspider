@@ -57,8 +57,7 @@ sub add
 
   # compare dates to see whether need to open another save file (remember, redefining $fp 
   # automagically closes the output file (if any)). 
-  my @date = Julian::unixtoj($spot[2]);
-  $fp->write(@date, $buf);
+  $fp->writeunix($spot[2], $buf);
   
   return $buf;
 }

@@ -11,63 +11,61 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist isdbg);
+@EXPORT = qw(dbg dbgadd dbgsub dbglist isdbg);
+@EXPORT_OK = qw(dbg dbgadd dbgsub dbglist isdbg);
 
 use strict;
-use vars qw(%dbglevel $dbgfh);
+use vars qw(%dbglevel $fp);
 
 use FileHandle;
 use DXUtil;
+use DXLog ();
 use Carp;
 
 %dbglevel = ();
-$dbgfh = "";
+$fp = DXLog::new('debug', 'dat', 'd');
 
 no strict 'refs';
 
-sub dbginit
-{
-  my $fhname = shift;
-  $dbgfh = new FileHandle;
-  $dbgfh->open(">>$fhname") or die "can't open debug file '$fhname' $!";
-  $dbgfh->autoflush(1);
-}
-
 sub dbg
 {
-  my $l = shift;
-  if ($dbglevel{$l}) {
-    print @_;
-	print $dbgfh atime, @_ if $dbgfh;
-  }
+	my $l = shift;
+	if ($dbglevel{$l}) {
+		for (@_) {
+			s/\n$//og;
+		}
+		my $str = atime . "@_" ;
+		print "$str\n";
+		$fp->writenow($str);
+	}
 }
 
 sub dbgadd
 { 
-  my $entry;
-  
-  foreach $entry (@_) {
-    $dbglevel{$entry} = 1;
-  }
+	my $entry;
+	
+	foreach $entry (@_) {
+		$dbglevel{$entry} = 1;
+	}
 }
 
 sub dbgsub
 {
-  my $entry;
-
-  foreach $entry (@_) {
-    delete $dbglevel{entry};
-  }
+	my $entry;
+	
+	foreach $entry (@_) {
+		delete $dbglevel{entry};
+	}
 }
 
 sub dbglist
 {
-  return keys (%dbglevel);
+	return keys (%dbglevel);
 }
 
 sub isdbg
 {
-  return $dbglevel{shift};
+	return $dbglevel{shift};
 }
 1;
 __END__

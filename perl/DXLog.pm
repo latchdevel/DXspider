@@ -25,14 +25,22 @@
 
 package DXLog;
 
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw(Log);
+
 use FileHandle;
 use DXVars;
-use DXDebug;
+use DXDebug ();
 use DXUtil;
 use Julian;
 use Carp;
 
 use strict;
+
+use vars qw($log);
+
+$log = new('log', 'dat', 'm');
 
 # create a log object that contains all the useful info needed
 # prefix is the main directory off of the data directory
@@ -76,7 +84,7 @@ sub open
 	$self->{year} = $year;
 	$self->{thing} = $thing;
 	
-	dbg("dxlog", "opening $self->{fn}\n");
+	DXDebug::dbg("dxlog", "opening $self->{fn}\n");
 	
 	return $self->{fh};
 }
@@ -105,27 +113,46 @@ sub opennext
 	return $self->open($self->{year}, $self->{thing}, @_);
 }
 
+# convert a date into the correct format from a unix date depending on its sort
+sub unixtoj
+{
+	my $self = shift;
+	
+	if ($self->{sort} eq 'm') {
+		return Julian::unixtojm(shift);
+	} elsif ($self->{sort} eq 'd') {
+		return Julian::unixtoj(shift);
+	}
+	confess "shouldn't get here";
+}
+
 # write (actually append) to a file, opening new files as required
 sub write
 {
 	my ($self, $year, $thing, $line) = @_;
-	$self->open($year, $thing, ">>") if (!$self->{fh} || 
-										 $self->{mode} ne ">>" || 
-										 $year != $self->{year} || 
-										 $thing != $self->{thing})
-		or confess "can't open $self->{fn} $!";
+	if (!$self->{fh} || 
+		$self->{mode} ne ">>" || 
+		$year != $self->{year} || 
+		$thing != $self->{thing}) {
+		$self->open($year, $thing, ">>") or confess "can't open $self->{fn} $!";
+	}
 
-	$self->{fh}->print("$line\n");
-	return $self;
+	return $self->{fh}->print("$line\n");
 }
 
 # write (actually append) using the current date to a file, opening new files as required
 sub writenow
 {
 	my ($self, $line) = @_;
-	my @date = unixtoj(time) if $self->{sort} = 'd';
-	@date = unixtojm(time) if $self->{sort} = 'm';
-	
+	my @date = $self->unixtoj(time);
+	return $self->write(@date, $line);
+}
+
+# write (actually append) using a unix time to a file, opening new files as required
+sub writeunix
+{
+	my ($self, $t, $line) = @_;
+	my @date = $self->unixtoj($t);
 	return $self->write(@date, $line);
 }
 
@@ -138,10 +165,19 @@ sub close
 	delete $self->{mode};
 }
 
+# log something in the system log 
+# this routine is exported to any module that declares DXLog
+# it takes all its args and joins them together with the unixtime writes them out as one line
+# The user is responsible for making sense of this!
+sub Log
+{
+	$log->writeunix($main::systime, join('^', $main::systime, @_) );
+}
+
 sub DESTROY						# catch undefs and do what is required further do the tree
 {
 	my $self = shift;
-	dbg("dxlog", "closing $self->{fn}\n");
+	DXDebug::dbg("dxlog", "closing $self->{fn}\n");
 	undef $self->{fh} if defined $self->{fh};
 } 
 1;

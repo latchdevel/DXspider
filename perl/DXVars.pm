@@ -59,9 +59,6 @@ $clusteraddr = "localhost";
 # the port number of the cluster (just leave this, unless it REALLY matters to you)
 $clusterport = 27754;
 
-# cluster debug file
-$debugfn = "/tmp/debug_cluster";
-
 # your favorite way to say 'Yes'
 $yes = 'Yes';
 

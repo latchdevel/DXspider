@@ -11,17 +11,22 @@ package Geomag;
 
 use DXVars;
 use DXUtil;
+use DXLog;
+use Julian;
 use FileHandle;
 use Carp;
 
 use strict;
-use vars qw($date $sfi $k $a $forecast @allowed @denied);
+use vars qw($date $sfi $k $a $forecast @allowed @denied $fp $node $from);
 
+$fp = 0;            # the DXLog fcb
 $date = 0;          # the unix time of the WWV (notional)
 $sfi = 0;           # the current SFI value
 $k = 0;             # the current K value
 $a = 0;             # the current A value
 $forecast = "";     # the current geomagnetic forecast
+$node = "";         # originating node
+$from = "";         # who this came from
 @allowed = ();      # if present only these callsigns are regarded as valid WWV updators
 @denied = ();       # if present ignore any wwv from these callsigns
 my $dirprefix = "$main::data/wwv";
@@ -29,9 +34,10 @@ my $param = "$dirprefix/param";
 
 sub init
 {
-  mkdir $dirprefix, 0777 if !-e $dirprefix;
-  do "$param" if -e "$param";
-  confess $@ if $@;
+	$fp = DXLog::new('wwv', 'dat', 'm');
+	mkdir $dirprefix, 0777 if !-e $dirprefix;        # now unnecessary DXLog will create it
+	do "$param" if -e "$param";
+	confess $@ if $@;
 }
 
 # write the current data away
@@ -44,16 +50,20 @@ sub store
   print $fh "\$sfi = $sfi;\n";
   print $fh "\$a = $a;\n";
   print $fh "\$k = $k;\n";
-  print $fh "\$forecast = '$forecast';\n";
+  print $fh "\$from = '$from';\n";
+  print $fh "\$node = '$node';\n";
   print $fh "\@denied = qw(", join(' ', @denied), ");\n" if @denied > 0;
   print $fh "\@allowed = qw(", join(' ', @allowed), ");\n" if @allowed > 0;
   close $fh;
+
+  # log it
+  $fp->writeunix($date, "$from^$date^$sfi^$a^$k^$forecast^$node\n");
 }
 
 # update WWV info in one go (usually from a PC23)
 sub update
 {
-  my ($mydate, $mytime, $mysfi, $mya, $myk, $myforecast, $from, $node) = @_;
+  my ($mydate, $mytime, $mysfi, $mya, $myk, $myforecast, $myfrom, $mynode) = @_;
   if ((@allowed && grep {$_ eq $from} @allowed) || 
       (@denied && !grep {$_ eq $from} @denied) ||
 	  (@allowed == 0 && @denied == 0)) {
@@ -64,6 +74,10 @@ sub update
       $k = 0 + $myk;
       $a = 0 + $mya;
       $forecast = $myforecast;
+	  $date = $trydate;
+	  $from = $myfrom;
+	  $node = $mynode;
+	  
 	  store();
 	}
   }

@@ -18,10 +18,15 @@ BEGIN {
 	
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
+
+#	require Exporter;
+#	$Exporter::Verbose = 1;
 }
 
 use Msg;
 use DXVars;
+use DXDebug;
+use DXLog;
 use DXUtil;
 use DXChannel;
 use DXUser;
@@ -30,7 +35,6 @@ use DXCommandmode;
 use DXProt;
 use DXMsg;
 use DXCluster;
-use DXDebug;
 use DXCron;
 use DXConnect;
 use Prefix;
@@ -167,7 +171,6 @@ sub process_inqueue
 #############################################################
 
 # open the debug file, set various FHs to be unbuffered
-dbginit($debugfn);
 foreach (@debug) {
 	dbgadd($_);
 }
