@@ -37,7 +37,8 @@ use DB_File;
 use VE7CC;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount $msgpolltime);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug
+	$maxbadcount $msgpolltime $default_pagelth);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -97,7 +98,9 @@ sub start
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv || 0;
 	$self->{lang} = $user->lang || $main::lang || 'en';
-	$self->{pagelth} = $user->pagelth || 20;
+	my $pagelth = $user->pagelth;
+	$pagelth = $default_pagelth unless defined $pagelth;
+	$self->{pagelth} = $pagelth;
 	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
