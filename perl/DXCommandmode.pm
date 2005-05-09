@@ -41,7 +41,8 @@ use Thingy::Hello;
 use Thingy::Bye;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug $maxbadcount $msgpolltime);
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug
+			$maxbadcount $msgpolltime $default_pagelth);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -51,6 +52,8 @@ $scriptbase = "$main::root/scripts"; # the place where all users start scripts g
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
+$default_pagelth = 20;			# the default page length 0 = unlimited
+
 
 
 use vars qw($VERSION $BRANCH);
@@ -96,7 +99,9 @@ sub start
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv || 0;
 	$self->{lang} = $user->lang || $main::lang || 'en';
-	$self->{pagelth} = $user->pagelth || 20;
+	my $pagelth = $user->pagelth;
+	$pagelth = $default_pagelth unless defined $pagelth;
+	$self->{pagelth} = $pagelth;
 	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
