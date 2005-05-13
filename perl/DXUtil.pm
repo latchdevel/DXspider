@@ -17,7 +17,7 @@ use strict;
 
 use vars qw($VERSION $BRANCH);
 
-main::mkver($VERSION = q$Revision$);
+main::mkver($VERSION = q$Revision$) if main->can('mkver');
 
 use vars qw(@month %patmap @ISA @EXPORT);
 
