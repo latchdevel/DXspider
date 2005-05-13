@@ -18,6 +18,14 @@ use DXDebug;
 use ARRL::DX;
 
 
-my $dx = ARRL::DX->new;
+while (@ARGV) {
+	my $fn = shift;
+	print "Processing $fn ";
+	my $dx = ARRL::DX->new(file=>$fn);
+	my $c = $dx->process;
+	print "$c paragraphs\n";
+}
+
+ARRL::DX::close();
 
 exit 0;
