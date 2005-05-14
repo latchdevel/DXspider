@@ -20,6 +20,10 @@ use ARRL::DX;
 
 while (@ARGV) {
 	my $fn = shift;
+	if ($fn eq '-d') {
+		ARRL::DX::drop();
+		next;
+	}
 	print "Processing $fn ";
 	my $dx = ARRL::DX->new(file=>$fn);
 	my $c = $dx->process;
