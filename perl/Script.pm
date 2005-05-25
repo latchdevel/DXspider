@@ -35,12 +35,22 @@ sub clean
 sub new
 {
 	my $pkg = shift;
-	my $script = clean(lc shift);
-	my $fn = "$base/$script";
+	my $script = clean(shift);
+	my $mybase = shift || $base;
+	my $fn = "$mybase/$script";
 
-	my $fh = new IO::File $fn;
-	return undef unless $fh;
-	my $self = bless {call => $script}, $pkg;
+	my $self = {call => $script};
+	my $fh = IO::File->new($fn);
+	if ($fh) {
+		$self->{fn} = $fn;
+	} else {
+		$fh = IO::File->new(lc $fn);
+		if ($fh) {
+			$self->{fn} = $fn;
+		} else {
+			return undef;
+		}
+	}
 	my @lines;
 	while (<$fh>) {
 		chomp;
@@ -48,6 +58,7 @@ sub new
 	}
 	$fh->close;
 	$self->{lines} = \@lines;
+	$self->{inscript} = 1;
 	return bless $self, $pkg;
 }
 
@@ -55,19 +66,34 @@ sub run
 {
 	my $self = shift;
 	my $dxchan = shift;
+	my $return_output = shift;
+	my @out;
+	
 	foreach my $l (@{$self->{lines}}) {
 		unless ($l =~ /^\s*\#/ || $l =~ /^\s*$/) {
-			$dxchan->inscript(1);
-			my @out = DXCommandmode::run_cmd($dxchan, $l);
-			$dxchan->inscript(0);
-			if ($dxchan->can('send_ans')) {
-				$dxchan->send_ans(@out);
-			} else {
-				dbg($_) for @out;
-			}
+			$dxchan->inscript(1) if $self->{inscript};
+			push @out, DXCommandmode::run_cmd($dxchan, $l);
+			$dxchan->inscript(0) if $self->{inscript};
 			last if @out && $l =~ /^pri?v?/i;
 		}
 	}
+	if ($return_output) {
+		return @out;
+	} else {
+		if ($dxchan->can('send_ans')) {
+			$dxchan->send_ans(@out);
+		} else {
+			dbg($_) for @out;
+		}
+	}
+	return ();
+}
+
+sub inscript
+{
+	my $self = shift;
+	$self->{inscript} = shift if @_;
+	return $self->{inscript};
 }
 
 sub store
@@ -97,7 +123,6 @@ sub lines
 
 sub erase
 {
-	my $call = clean(lc shift);
-	my $fn = "$base/$call";
-	unlink $fn;
+	my $self = shift;
+	unlink $self->{fn};
 }

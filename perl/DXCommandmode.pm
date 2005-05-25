@@ -38,7 +38,7 @@ use VE7CC;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug
-	$maxbadcount $msgpolltime $default_pagelth);
+	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -48,7 +48,9 @@ $scriptbase = "$main::root/scripts"; # the place where all users start scripts g
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
-
+$cmdimportdir = "$main::root/cmd_import"; # the base directory for importing command scripts 
+                                          # this does not exist as default, you need to create it manually
+					  #
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -525,6 +527,8 @@ sub process
 			delete $nothereslug{$k};
 		}
 	}
+
+	import_cmd();
 }
 
 #
@@ -1011,5 +1015,78 @@ sub store_startup_script
 	return @out;
 }
 
+# Import any commands contained in any files in import_cmd directory
+#
+# If the filename has a recogisable callsign as some delimited part
+# of it, then this is the user the command will be run as. 
+#
+sub import_cmd
+{
+	# are there any to do in this directory?
+	return unless -d $cmdimportdir;
+	unless (opendir(DIR, $cmdimportdir)) {
+		dbg("can\'t open $cmdimportdir $!");
+		Log('err', "can\'t open $cmdimportdir $!");
+		return;
+	} 
+
+	my @names = readdir(DIR);
+	closedir(DIR);
+	my $name;
+	foreach $name (@names) {
+		next if $name =~ /^\./;
+
+		my $s = Script->new($name, $cmdimportdir);
+		if ($s) {
+
+			dbg("Run import cmd file $name");
+			Log('DXCommand', "Run import cmd file $name");
+			my @cat = split /[^A-Za-z0-9]+/, $name;
+			my ($call) = grep {is_callsign(uc $_)} @cat;
+			$call ||= $main::mycall;
+			$call = uc $call;
+			my @out;
+			
+			
+			$s->inscript(0);	# switch off script checks
+			
+			if ($call eq $main::mycall) {
+				@out = $s->run($main::me, 1);
+			} else {
+				my $dxchan = DXChannel::get($call);
+			    if ($dxchan) {
+					@out = $s->run($dxchan, 1);
+				} else {
+					my $u = DXUser->get($call);
+					if ($u) {
+						$dxchan = $main::me;
+						my $old = $dxchan->{call};
+						my $priv = $dxchan->{priv};
+						my $user = $dxchan->{user};
+						$dxchan->{call} = $call;
+						$dxchan->{priv} = $u->priv;
+						$dxchan->{user} = $u;
+						@out = $s->run($dxchan, 1);
+						$dxchan->{call} = $call;
+						$dxchan->{priv} = $priv;
+						$dxchan->{user} = $user;
+					} else {
+						Log('err', "Trying to run import cmd for non-existant user $call");
+						dbg( "Trying to run import cmd for non-existant user $call");
+					}
+				}
+			}
+			$s->erase;
+			for (@out) {
+				Log('DXCommand', "Import cmd $name/$call: $_");
+				dbg("Import cmd $name/$call: $_");
+			}
+		} else {
+			Log("Failed to open $cmdimportdir/$name $!");
+			dbg("Failed to open $cmdimportdir/$name $!");
+			unlink "$cmdimportdir/$name";
+		}
+	}
+}
 1;
 __END__

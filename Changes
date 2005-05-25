@@ -1,3 +1,6 @@
+25May05=======================================================================
+1. Added a means to import a script of arbitrary commands to allow external
+programs to do stuff.
 23Mar05=======================================================================
 1. fix (un)set/badspotter so that it only stores non-ssid calls.
 2. mention action on talk and ann/full in help.
