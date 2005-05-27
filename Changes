@@ -1,3 +1,5 @@
+27May05=======================================================================
+1. change copyright in dbg message at startup.
 25May05=======================================================================
 1. Added a means to import a script of arbitrary commands to allow external
 programs to do stuff.
