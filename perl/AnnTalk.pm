@@ -53,9 +53,9 @@ sub dup
 	chomp $text;
 	unpad($text);
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^\#a-zA-Z0-9]//g;
+	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $dupkey = "A$to|\L$text";
 	return DXDupe::check($dupkey, $t);
 }
