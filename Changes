@@ -1,3 +1,7 @@
+29Aug05=======================================================================
+1. try something else to resolve/prevent more of these spot dupes. It appears
+that there is software out there chopping off variable amounts from the ends
+of comment fields. This makes the task of detecting dupes that much harder.
 10Aug05=======================================================================
 1. trim dx spot duplicate length after normalisation
 2. Do the same for announces
