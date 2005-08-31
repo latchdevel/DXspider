@@ -350,9 +350,9 @@ sub dup
 	my $ldupkey = "X$freq|$call|$by|$text";
 	my $t = DXDupe::find($ldupkey);
 	return 1 if $t && $t - $main::systime > 0;
-	if ($otext) {
-		DXDupe::add($ldupkey, $main::systime+$dupage);
-		$otext = substr($otext, 0, $duplth) if length $otext > $duplth; 
+	DXDupe::add($ldupkey, $main::systime+$dupage);
+	$otext = substr($otext, 0, $duplth) if length $otext > $duplth; 
+	if ( length $otext && $otext ne $text) {
 		$ldupkey = "X$freq|$call|$by|$otext";
 		$t = DXDupe::find($ldupkey);
 		return 1 if $t && $t - $main::systime > 0;
