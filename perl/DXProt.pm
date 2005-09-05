@@ -1236,21 +1236,22 @@ sub handle_23
 	}
 
 	# global wwv filtering on INPUT
-	my @dxcc = ((Prefix::cty_data($_[6]))[0..2], (Prefix::cty_data($_[7]))[0..2]);
+	my @dxcc = ((Prefix::cty_data($_[7]))[0..2], (Prefix::cty_data($_[8]))[0..2]);
 	if ($self->{inwwvfilter}) {
 		my ($filter, $hops) = $self->{inwwvfilter}->it(@_[7,8], $origin, @dxcc);
 		unless ($filter) {
-			dbg("PCPROT: Rejected by input spot filter") if isdbg('chanerr');
+			dbg("PCPROT: Rejected by input wwv filter") if isdbg('chanerr');
 			return;
 		}
 	}
-	if (Geomag::dup($d,$sfi,$k,$i,$_[6])) {
+	if (Geomag::dup($d,$sfi,$k,$i,$_[6],$_[7])) {
 		dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chanerr');
 		return;
 	}
 	$_[7] =~ s/-\d+$//o;		# remove spotter's ssid
 		
-	my $wwv = Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
+	# note this only takes the first one it gets
+	Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
 
 	my $rep;
 	eval {

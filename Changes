@@ -1,3 +1,8 @@
+01Sep05=======================================================================
+1. Change the logic of propagating WWV broadcasts. Now all non-input filtered
+PC23s will be sent on. Previously only the first successful new WWV was 
+rebroadcast.
+2. fix the problem with by_dxcc and origin_dxcc not working on WWV.
 29Aug05=======================================================================
 1. try something else to resolve/prevent more of these spot dupes. It appears
 that there is software out there chopping off variable amounts from the ends

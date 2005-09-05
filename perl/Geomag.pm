@@ -268,12 +268,12 @@ sub readfile
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($d, $sfi, $k, $a, $text) = @_; 
+	my ($d, $sfi, $k, $a, $text, $call) = @_; 
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
  
-	my $dupkey = "W$d|$sfi|$k|$a";
+	my $dupkey = "W$d|$sfi|$k|$a|$call";
 	return DXDupe::check($dupkey, $main::systime+$dupage);
 }
 

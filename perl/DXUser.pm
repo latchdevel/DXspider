@@ -491,7 +491,7 @@ print "There are $count user records and $err errors\n";
 			my $ref = decode($val);
 			if ($ref) {
 				my $t = $ref->{lastin} || 0;
-				if ($main::systime > $t + $tooold) {
+				if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
 					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
 						eval {$dbm->del($key)};
 						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
