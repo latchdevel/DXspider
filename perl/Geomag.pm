@@ -98,7 +98,7 @@ sub update
 		(@allowed == 0 && @denied == 0)) {
 		
 		#	my $trydate = cltounix($mydate, sprintf("%02d18Z", $mytime));
-		if ($mydate >= $date) {
+		if ($mydate > $date) {
 			if ($myr) {
 				$r = 0 + $myr;
 			} else {

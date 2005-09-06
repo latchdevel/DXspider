@@ -1244,11 +1244,11 @@ sub handle_23
 			return;
 		}
 	}
+	$_[7] =~ s/-\d+$//o;		# remove spotter's ssid
 	if (Geomag::dup($d,$sfi,$k,$i,$_[6],$_[7])) {
 		dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chanerr');
 		return;
 	}
-	$_[7] =~ s/-\d+$//o;		# remove spotter's ssid
 		
 	# note this only takes the first one it gets
 	Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
