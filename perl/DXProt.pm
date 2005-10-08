@@ -82,7 +82,7 @@ $pc19_version = 5466;			# the visible version no for outgoing PC19s generated fr
 @checklist = 
 (
  [ qw(i c c m bp bc c) ],			# pc10
- [ qw(i f m d t m c c h) ],		# pc11
+ [ qw(i f bm d t m c c h) ],		# pc11
  [ qw(i c bm m bm bm p h) ],		# pc12
  [ qw(i c h) ],					# 
  [ qw(i c h) ],					# 
