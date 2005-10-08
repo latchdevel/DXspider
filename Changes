@@ -1,3 +1,5 @@
+08Oct05=======================================================================
+1. Reject PC11s with blank spot callsigns
 01Sep05=======================================================================
 1. Change the logic of propagating WWV broadcasts. Now all non-input filtered
 PC23s will be sent on. Previously only the first successful new WWV was 
