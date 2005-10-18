@@ -2415,7 +2415,6 @@ sub import_chat
 	my $name;
 	foreach $name (@names) {
 		next if $name =~ /^\./;
-		my $splitit = $name =~ /^split/;
 		my $fn = "$chatimportfn/$name";
 		next unless -f $fn;
 		unless (open(MSG, $fn)) {
