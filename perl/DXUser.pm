@@ -482,9 +482,13 @@ print "There are $count user records and $err errors\n";
 
         for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
 			if (!is_callsign($key) || $key =~ /^0/) {
-				Log('DXCommand', "Export Error1: $key\t$val");
+				my $eval = $val;
+				my $ekey = $key;
+				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				Log('DXCommand', "Export Error1: $ekey\t$eval");
 				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $key\t$val\n$@")) if $@;
+				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
 				++$err;
 				next;
 			}
