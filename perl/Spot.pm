@@ -209,6 +209,9 @@ sub search
                           my \@a = (Prefix::cty_data(\$s[1]))[1..3];
                           my \@b = (Prefix::cty_data(\$s[4]))[1..3];
                           push \@s, \@a[0,1], \@b[0,1], \$a[2], \$a[2];  
+                      } else {
+                          \$s[12] ||= ' ';
+                          \$s[13] ||= ' ';
                       }
 	                  my (\$filter, \$hops) = \$dxchan->{spotsfilter}->it(\@s);
 	                  next unless (\$filter);
