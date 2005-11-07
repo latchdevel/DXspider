@@ -346,15 +346,17 @@ sub dup
 			$text = "" if $cty == $try[0];
 		}
 	}
-	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	$text =~ s/\s+$//;
 	my $otext = $text;
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
+	$text =~ s/\s{2,}[\dA-Z]?[A-Z]\d?$// if length $text > 24;
 	$text =~ s/[^\w]//g;
+	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $ldupkey = "X$freq|$call|$by|$text";
 	my $t = DXDupe::find($ldupkey);
 	return 1 if $t && $t - $main::systime > 0;
 	DXDupe::add($ldupkey, $main::systime+$dupage);
+	$otext = substr($otext, 0, $duplth) if length $otext > $duplth; 
+	$otext =~ s/\s+$//;
 	if (length $otext && $otext ne $text) {
 		$ldupkey = "X$freq|$call|$by|$otext";
 		$t = DXDupe::find($ldupkey);
