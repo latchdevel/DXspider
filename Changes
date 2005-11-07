@@ -1,3 +1,6 @@
+07Nov05=======================================================================
+1. Fix warnings on filtering spots where the filter was looking at US states
+and there is no US state in the spot. 
 01Nov05=======================================================================
 1. add log2csv.pl for printing out logfiles
 25Oct05=======================================================================

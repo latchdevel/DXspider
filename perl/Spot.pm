@@ -22,21 +22,22 @@ use QSL;
 use strict;
 
 use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
-main::mkver($VERSION = q$Revision$);
-
-use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth );
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth);
 
 $fp = undef;
 $statp = undef;
-$maxspots = 100;				# maximum spots to return
+$maxspots = 100;					# maximum spots to return
 $defaultspots = 10;				# normal number of spots to return
-$maxdays = 100;					# normal maximum no of days to go back
+$maxdays = 100;				# normal maximum no of days to go back
 $dirprefix = "spots";
 $duplth = 20;					# the length of text to use in the deduping
-$dupage = 3600;					# the length of time to hold spot dups
-$maxcalllth = 12;				# the maximum call lth
-
+$dupage = 1*3600;               # the length of time to hold spot dups
+$maxcalllth = 12;                               # the max length of call to take into account for dupes
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['freq', 'r', 0, 0, \&decodefreq],
@@ -122,7 +123,8 @@ sub prepare
 	$out[4] =~ s/-\d+$//o;
 
 	# remove leading and trailing spaces
-	$out[3] = unpad($out[3]);
+	$_[3] = unpad($_[3]);
+	
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @spd = Prefix::cty_data($out[1]);
@@ -207,6 +209,9 @@ sub search
                           my \@a = (Prefix::cty_data(\$s[1]))[1..3];
                           my \@b = (Prefix::cty_data(\$s[4]))[1..3];
                           push \@s, \@a[0,1], \@b[0,1], \$a[2], \$a[2];  
+                      } else {
+                          \$s[12] ||= ' ';
+                          \$s[13] ||= ' ';
                       }
 	                  my (\$filter, \$hops) = \$dxchan->{spotsfilter}->it(\@s);
 	                  next unless (\$filter);
@@ -291,44 +296,9 @@ sub ftor
 # format a spot for user output in list mode
 sub formatl
 {
-	my $spot = ref $_[0] ? shift : \@_;
-
-	my $t = ztime($spot->[2]);
-	my $d = cldate($spot->[2]);
-	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $spot->[0], $spot->[1], $d, $t, $spot->[3], "<$spot->[4]" ;
-}
-
-# format a spot for normal output
-sub format_dx_spot
-{
-	my $dxchan = shift;
-	my $spot = ref $_[0] ? shift : \@_;
-	
-	my $t = ztime($spot->[2]);
-	my $loc = '';
-	my $clth = $dxchan->{consort} eq 'local' ? 29 : 30;
-	my $comment = substr $spot->[3], 0, $clth; 
-	$comment .= ' ' x ($clth - length($comment));
-	if ($dxchan->{user}->wantgrid) { 
-		my $ref = DXUser->get_current($spot->[4]);
-		if ($ref) {
-			$loc = $ref->qra || '';
-			$loc = ' ' . substr($loc, 0, 4) if $loc;
-		}
-	}
-
-	if ($dxchan->{user}->wantdxitu) {
-		$loc = ' ' . sprintf("%2d", $spot->[10]) if defined $spot->[10];
-		$comment = substr($comment, 0,  $dxchan->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[8]) if defined $spot->[8]; 
-	} elsif ($dxchan->{user}->wantdxcq) {
-		$loc = ' ' . sprintf("%2d", $spot->[11]) if defined $spot->[11];
-		$comment = substr($comment, 0,  $dxchan->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $spot->[9]) if defined $spot->[9]; 
-	} elsif ($dxchan->{user}->wantusstate) {
-		$loc = ' ' . $spot->[13] if $spot->[13];
-		$comment = substr($comment, 0,  $dxchan->{consort} eq 'local' ? 26 : 27) . ' ' . $spot->[12] if $spot->[12]; 
-	}
-
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$spot->[4]:", $spot->[0], $spot->[1], $comment;
+	my $t = ztime($_[2]);
+	my $d = cldate($_[2]);
+	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, $_[3], "<$_[4]" ;
 }
 
 #
@@ -361,6 +331,7 @@ sub dup
 	$d = int ($d / 60);
 	$d *= 60;
 
+	# remove SSID or area
 	$by =~ s|[-/]\d+$||;
 	
 	$freq = sprintf "%.1f", $freq;       # normalise frequency
@@ -375,13 +346,21 @@ sub dup
 			$text = "" if $cty == $try[0];
 		}
 	}
+	my $otext = $text;
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^\w]//g;
-	$text = substr($text, 0, $duplth) if length $text > $duplth;
+	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $ldupkey = "X$freq|$call|$by|$text";
 	my $t = DXDupe::find($ldupkey);
 	return 1 if $t && $t - $main::systime > 0;
 	DXDupe::add($ldupkey, $main::systime+$dupage);
+	$otext = substr($otext, 0, $duplth) if length $otext > $duplth; 
+	if ( length $otext && $otext ne $text) {
+		$ldupkey = "X$freq|$call|$by|$otext";
+		$t = DXDupe::find($ldupkey);
+		return 1 if $t && $t - $main::systime > 0;
+		DXDupe::add($ldupkey, $main::systime+$dupage);
+	}
 #	my $sdupkey = "X$freq|$call|$by";
 #	$t = DXDupe::find($sdupkey);
 #	return 1 if $t && $t - $main::systime > 0;	
