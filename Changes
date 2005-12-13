@@ -1,3 +1,5 @@
+13Dec05=======================================================================
+1. upissue version no to 1.52
 07Nov05=======================================================================
 1. Fix warnings on filtering spots where the filter was looking at US states
 and there is no US state in the spot. 
