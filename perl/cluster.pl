@@ -47,14 +47,6 @@ BEGIN {
 
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 	$systime = time;
-
-	sub main::mkver
-	{
-		my $s = shift;
-		my ($v, $b) = $s =~ /(\d+\.\d+)(?:\.(\d+\.\d+))?/;
-		$main::build += sprintf "%.3f", $v;
-		$main::branch += sprintf("%.3f", $b) if $b;
-	}
 }
 
 use DXVars;
@@ -129,7 +121,7 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "2.01";				# the version no of the software
+$version = "1.52";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
@@ -139,8 +131,197 @@ $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 
 
 use vars qw($VERSION $BRANCH $build $branch);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += 1;				# add an offset to make it bigger than last system
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
-mkver($VERSION = q$Revision$);
+      
+# send a message to call on conn and disconnect
+sub already_conn
+{
+	my ($conn, $call, $mess) = @_;
+
+	$conn->disable_read(1);
+	dbg("-> D $call $mess\n") if isdbg('chan'); 
+	$conn->send_now("D$call|$mess");
+	sleep(2);
+	$conn->disconnect;
+}
+
+sub error_handler
+{
+	my $dxchan = shift;
+	$dxchan->{conn}->set_error(undef) if exists $dxchan->{conn};
+	$dxchan->disconnect(1);
+}
+
+# handle incoming messages
+sub new_channel
+{
+	my ($conn, $msg) = @_;
+	my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
+	return unless defined $sort;
+
+	unless (is_callsign($call)) {
+		already_conn($conn, $call, DXM::msg($lang, "illcall", $call));
+		return;
+	}
+
+	# set up the basic channel info
+	# is there one already connected to me - locally? 
+	my $user = DXUser->get_current($call);
+	my $dxchan = DXChannel::get($call);
+	if ($dxchan) {
+		if ($user && $user->is_node) {
+			already_conn($conn, $call, DXM::msg($lang, 'concluster', $call, $main::mycall));
+			return;
+		}
+		if ($bumpexisting) {
+			my $ip = $conn->{peerhost} || 'unknown';
+			$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
+			Log('DXCommand', "$call bumped off by $ip, disconnected");
+			dbg("$call bumped off by $ip, disconnected");
+			$dxchan->disconnect;
+		} else {
+			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+			return;
+		}
+	}
+
+	# is he locked out ?
+	my $basecall = $call;
+	$basecall =~ s/-\d+$//;
+	my $baseuser = DXUser->get_current($basecall);
+	my $lock = $user->lockout if $user;
+	if ($baseuser && $baseuser->lockout || $lock) {
+		if (!$user || !defined $lock || $lock) {
+			my $host = $conn->{peerhost} || "unknown";
+			Log('DXCommand', "$call on $host is locked out, disconnected");
+			$conn->disconnect;
+			return;
+		}
+	}
+	
+	if ($user) {
+		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
+	} else {
+		$user = DXUser->new($call);
+	}
+	
+	# create the channel
+	if ($user->is_node) {
+		$dxchan = DXProt->new($call, $conn, $user);
+	} elsif ($user->is_user) {
+		$dxchan = DXCommandmode->new($call, $conn, $user);
+	} elsif ($user->is_bbs) {
+		$dxchan = BBS->new($call, $conn, $user);
+	} else {
+		die "Invalid sort of user on $call = $sort";
+	}
+
+	# check that the conn has a callsign
+	$conn->conns($call) if $conn->isa('IntMsg');
+
+	# set callbacks
+	$conn->set_error(sub {error_handler($dxchan)});
+	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg);});
+	$dxchan->rec($msg);
+}
+
+
+sub login
+{
+	return \&new_channel;
+}
+
+# cease running this program, close down all the connections nicely
+sub cease
+{
+	my $dxchan;
+
+	unless ($is_win) {
+		$SIG{'TERM'} = 'IGNORE';
+		$SIG{'INT'} = 'IGNORE';
+	}
+	
+	DXUser::sync;
+
+	eval {
+		Local::finish();   # end local processing
+	};
+	dbg("Local::finish error $@") if $@;
+
+	# disconnect nodes
+	foreach $dxchan (DXChannel::get_all_nodes) {
+	    $dxchan->disconnect(2) unless $dxchan == $main::me;
+	}
+	Msg->event_loop(100, 0.01);
+
+	# disconnect users
+	foreach $dxchan (DXChannel::get_all_users) {
+		$dxchan->disconnect;
+	}
+
+	# disconnect AGW
+	AGWMsg::finish();
+
+	# disconnect UDP customers
+	UDPMsg::finish();
+
+	# end everything else
+	Msg->event_loop(100, 0.01);
+	DXUser::finish();
+	DXDupe::finish();
+
+	# close all databases
+	DXDb::closeall;
+
+	# close all listeners
+	foreach my $l (@listeners) {
+		$l->close_server;
+	}
+
+	dbg("DXSpider version $version, build $build ended") if isdbg('chan');
+	Log('cluster', "DXSpider V$version, build $build ended");
+	dbgclose();
+	Logclose();
+	unlink $lockfn;
+#	$SIG{__WARN__} = $SIG{__DIE__} =  sub {my $a = shift; cluck($a); };
+	exit(0);
+}
+
+# the reaper of children
+sub reap
+{
+	my $cpid;
+	while (($cpid = waitpid(-1, WNOHANG)) > 0) {
+		dbg("cpid: $cpid") if isdbg('reap');
+#		Msg->pid_gone($cpid);
+		$zombies-- if $zombies > 0;
+	}
+	dbg("cpid: $cpid") if isdbg('reap');
+}
+
+# this is where the input queue is dealt with and things are dispatched off to other parts of
+# the cluster
+
+sub uptime
+{
+	my $t = $systime - $starttime;
+	my $days = int $t / 86400;
+	$t -= $days * 86400;
+	my $hours = int $t / 3600;
+	$t -= $hours * 3600;
+	my $mins = int $t / 60;
+	return sprintf "%d %02d:%02d", $days, $hours, $mins;
+}
+
+sub AGWrestart
+{
+	AGWMsg::init(\&new_channel);
+}
 
 #############################################################
 #
@@ -269,7 +450,7 @@ DXProt->init();
 Aranea->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
-$routeroot = Route::Node->new($mycall, int($version*100)+$DXProt::myprot_version, $main::me->here);
+$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
 
 # make sure that there is a routing OUTPUT node default file
 #unless (Filter::read_in('route', 'node_default', 0)) {
@@ -312,14 +493,12 @@ for (;;) {
 	my $timenow = time;
 
 	DXChannel::process();
-	Thingy::process();
 	
 #	$DB::trace = 0;
 	
 	# do timed stuff, ongoing processing happens one a second
 	if ($timenow != $systime) {
-		rand();					# keep randomising to reduce (but not eliminate) predictability
-		reap() if $zombies;
+		reap if $zombies;
 		$systime = $timenow;
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
@@ -344,189 +523,4 @@ for (;;) {
 cease(0);
 exit(0);
 
-      
-# send a message to call on conn and disconnect
-sub already_conn
-{
-	my ($conn, $call, $mess) = @_;
-
-	$conn->disable_read(1);
-	dbg("-> D $call $mess\n") if isdbg('chan'); 
-	$conn->send_now("D$call|$mess");
-	sleep(2);
-	$conn->disconnect;
-}
-
-sub error_handler
-{
-	my $dxchan = shift;
-	$dxchan->{conn}->set_error(undef) if exists $dxchan->{conn};
-	$dxchan->disconnect(1);
-}
-
-# handle incoming messages
-sub new_channel
-{
-	my ($conn, $msg) = @_;
-	my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
-	return unless defined $sort;
-
-	unless (is_callsign($call)) {
-		already_conn($conn, $call, DXM::msg($lang, "illcall", $call));
-		return;
-	}
-
-	# set up the basic channel info
-	# is there one already connected to me - locally? 
-	my $user = DXUser->get_current($call);
-	my $dxchan = DXChannel::get($call);
-	if ($dxchan) {
-		if ($user && $user->is_node) {
-			already_conn($conn, $call, DXM::msg($lang, 'concluster', $call, $main::mycall));
-			return;
-		}
-		if ($bumpexisting && $call ne $main::mycall) {
-			my $ip = $conn->{peerhost} || 'unknown';
-			$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
-			Log('DXCommand', "$call bumped off by $ip, disconnected");
-			dbg("$call bumped off by $ip, disconnected");
-			$dxchan->disconnect;
-		} else {
-			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
-			return;
-		}
-	}
-
-	# is he locked out ?
-	my $basecall = $call;
-	$basecall =~ s/-\d+$//;
-	my $baseuser = DXUser->get_current($basecall);
-	my $lock = $user->lockout if $user;
-	if ($baseuser && $baseuser->lockout || $lock) {
-		if (!$user || !defined $lock || $lock) {
-			my $host = $conn->{peerhost} || "unknown";
-			Log('DXCommand', "$call on $host is locked out, disconnected");
-			$conn->disconnect;
-			return;
-		}
-	}
-	
-	if ($user) {
-		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
-	} else {
-		$user = DXUser->new($call);
-	}
-	
-	# create the channel
-	if ($user->is_node) {
-		$dxchan = DXProt->new($call, $conn, $user);
-	} elsif ($user->is_user) {
-		$dxchan = DXCommandmode->new($call, $conn, $user);
-	} elsif ($user->is_bbs) {
-		$dxchan = BBS->new($call, $conn, $user);
-	} else {
-		die "Invalid sort of user on $call = $sort";
-	}
-
-	# check that the conn has a callsign
-	$conn->conns($call) if $conn->isa('IntMsg');
-
-	# set callbacks
-	$conn->set_error(sub {error_handler($dxchan)});
-	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg);});
-	$dxchan->rec($msg);
-}
-
-
-sub login
-{
-	return \&new_channel;
-}
-
-# cease running this program, close down all the connections nicely
-sub cease
-{
-	my $dxchan;
-
-	unless ($is_win) {
-		$SIG{'TERM'} = 'IGNORE';
-		$SIG{'INT'} = 'IGNORE';
-	}
-	
-	DXUser::sync;
-
-	eval {
-		Local::finish();   # end local processing
-	};
-	dbg("Local::finish error $@") if $@;
-
-	# disconnect nodes
-	foreach $dxchan (grep {$_->is_node || $_->is_aranea} DXChannel::get_all()) {
-	    $dxchan->disconnect(2) unless $dxchan == $main::me;
-	}
-	Msg->event_loop(100, 0.01);
-
-	# disconnect users
-	foreach $dxchan (DXChannel::get_all_users) {
-		$dxchan->disconnect;
-	}
-
-	# disconnect AGW
-	AGWMsg::finish();
-
-	# disconnect UDP customers
-	UDPMsg::finish();
-
-	# end everything else
-	Msg->event_loop(100, 0.01);
-	DXUser::finish();
-	DXDupe::finish();
-
-	# close all databases
-	DXDb::closeall;
-
-	# close all listeners
-	foreach my $l (@listeners) {
-		$l->close_server;
-	}
-
-	dbg("DXSpider version $version, build $build ended") if isdbg('chan');
-	Log('cluster', "DXSpider V$version, build $build ended");
-	dbgclose();
-	Logclose();
-	unlink $lockfn;
-#	$SIG{__WARN__} = $SIG{__DIE__} =  sub {my $a = shift; cluck($a); };
-	exit(0);
-}
-
-# the reaper of children
-sub reap
-{
-	my $cpid;
-	while (($cpid = waitpid(-1, WNOHANG)) > 0) {
-		dbg("cpid: $cpid") if isdbg('reap');
-#		Msg->pid_gone($cpid);
-		$zombies-- if $zombies > 0;
-	}
-	dbg("cpid: $cpid") if isdbg('reap');
-}
-
-# this is where the input queue is dealt with and things are dispatched off to other parts of
-# the cluster
-
-sub uptime
-{
-	my $t = $systime - $starttime;
-	my $days = int $t / 86400;
-	$t -= $days * 86400;
-	my $hours = int $t / 3600;
-	$t -= $hours * 3600;
-	my $mins = int $t / 60;
-	return sprintf "%d %02d:%02d", $days, $hours, $mins;
-}
-
-sub AGWrestart
-{
-	AGWMsg::init(\&new_channel);
-}
 
