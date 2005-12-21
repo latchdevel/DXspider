@@ -87,7 +87,7 @@ $motd = "$data/motd";
 @debug = qw(chan state msg cron connect);
 
 # the SQL database DBI dsn
-#$dsn = "dbi:sqlite:$root/data/dxspider.db";
+#$dsn = "dbi:SQLite:dbname=$root/data/dxspider.db";
 #$dbuser = "";
 #$dbpass = "";
 
