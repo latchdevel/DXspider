@@ -1,3 +1,6 @@
+21Dec05=======================================================================
+1. Add start of optional SQL working.
+2. Fix BadWords so that the simple word check splits words on word boundaries.
 13Dec05=======================================================================
 1. upissue version no to 1.52
 07Nov05=======================================================================
