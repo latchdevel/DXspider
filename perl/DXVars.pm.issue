@@ -9,19 +9,6 @@
 
 package main;
 
-require Exporter;
-@ISA = qw(Exporter);
-
-@EXPORT_OK = qw($mycall $myname $myalias $mylatitude $mylongtitude $mylocator
-                $myqth $myemail $myprot_version 
-                $clusterport $clusteraddr $debugfn 
-                $def_hopcount $data $system $cmd
-				$userfn $motd $local_cmd $mybbsaddr
-                $lang @my_cc
-				$pc50_interval $user_interval
-               );
-			   
-			   
 # this really does need to change for your system!!!!			   
 # use CAPITAL LETTERS
 $mycall = "GB7DJK";
@@ -98,3 +85,10 @@ $motd = "$data/motd";
 
 # are we debugging ?
 @debug = qw(chan state msg cron connect);
+
+# the SQL database DBI dsn
+#$dsn = "dbi:sqlite:$root/data/dxspider.db";
+#$dbuser = "";
+#$dbpass = "";
+
+1;

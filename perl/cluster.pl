@@ -116,7 +116,7 @@ use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
-			$allowdxby
+			$allowdxby $dbh $dsn $dbuser $dbpass
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -287,6 +287,9 @@ sub cease
 	Log('cluster', "DXSpider V$version, build $build ended");
 	dbgclose();
 	Logclose();
+
+	$dbh->finish if $dbh;
+	
 	unlink $lockfn;
 #	$SIG{__WARN__} = $SIG{__DIE__} =  sub {my $a = shift; cluck($a); };
 	exit(0);
@@ -350,6 +353,16 @@ my ($year) = (gmtime)[5];
 $year += 1900;
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 dbg("DXSpider Version $version, build $build started");
+
+# try to load the database
+if ($dsn && -e "$root/perl/DXSql.pm") {
+	require DXSql;
+	import DXSql;
+	
+	if (DXSql::init()) {
+		$dbh = DXSql->new($dsn, $dbuser, $dbpass);
+	}
+}
 
 # load Prefixes
 dbg("loading prefixes ...");
