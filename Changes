@@ -1,3 +1,7 @@
+27Dec05=======================================================================
+1. put some more flesh on the SQL stuff (which may turn out to be a bit of a
+red herring as it doesn't appear to be significantly faster (for spots) than
+the existing code).
 21Dec05=======================================================================
 1. Add start of optional SQL working.
 2. Fix BadWords so that the simple word check splits words on word boundaries.

@@ -334,6 +334,10 @@ sub AGWrestart
 $starttime = $systime = time;
 $lang = 'en' unless $lang;
 
+unless ($DB::VERSION) {
+	$SIG{INT} = $SIG{TERM} = \&cease;
+}
+
 # open the debug file, set various FHs to be unbuffered
 dbginit(\&DXCommandmode::broadcast_debug);
 foreach (@debug) {
