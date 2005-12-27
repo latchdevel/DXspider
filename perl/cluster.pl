@@ -135,6 +135,8 @@ $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
+$main::build += 1;				# fudge (put back for now)
+
 
       
 # send a message to call on conn and disconnect
