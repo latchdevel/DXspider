@@ -8,7 +8,7 @@
 # Copyright (c) 2005 Dirk Koopman G1TLH
 #
 
-package DXSql::SQLite;
+package DXSql::mysql;
 
 use DXDebug;
 
@@ -23,7 +23,7 @@ $main::branch += $BRANCH;
 sub show_tables
 {
 	my $self = shift;
-	my $s = q(SELECT name FROM sqlite_master WHERE type='table' ORDER BY name);
+	my $s = q(show tables);
 	my $sth = $self->prepare($s);
 	$sth->execute;
 	my @out;
@@ -36,21 +36,21 @@ sub spot_create_table
 {
 	my $self = shift;
 	my $s = q{create table spot (
-rowid integer primary key,
+rowid integer auto_increment primary key ,
 freq real not null,
-spotcall text not null,
+spotcall varchar(14) not null,
 time int not null,
-comment text,
-spotter text not null,
-spotdxcc int,
-spotterdxcc int,
-origin text,
-spotitu int,
-spotcq int,
-spotteritu int,
-spottercq int,
-spotstate text,
-spotterstate text
+comment varchar(255),
+spotter varchar(14) not null,
+spotdxcc smallint,
+spotterdxcc smallint,
+origin varchar(14),
+spotitu tinyint,
+spotcq tinyint,
+spotteritu tinyint,
+spottercq tinyint,
+spotstate char(2),
+spotterstate char(2)
 )};
 	$self->do($s);
 }

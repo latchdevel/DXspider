@@ -103,6 +103,58 @@ sub init
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
 	$fp = DXLog::new($dirprefix, "dat", 'd');
 	$statp = DXLog::new($dirprefix, "dys", 'd');
+
+	# load up any old spots 
+	if ($main::dbh) {
+		unless (grep $_ eq 'spot', $main::dbh->show_tables) {
+			dbg('initialising spot tables');
+			my $t = time;
+			my $total;
+			$main::dbh->spot_create_table;
+			
+			my $now = Julian::Day->alloc(1995, 0);
+			my $today = Julian::Day->new(time);
+			my $sth = $main::dbh->spot_insert_prepare;
+			$main::dbh->{RaiseError} = 0;
+			while ($now->cmp($today) <= 0) {
+				my $fh = $fp->open($now);
+				if ($fh) {
+					my $count = 0;
+					while (<$fh>) {
+						chomp;
+						my @s = split /\^/;
+						if (@s < 12) {
+							my @a = (Prefix::cty_data($s[1]))[1..3];
+							my @b = (Prefix::cty_data($s[4]))[1..3];
+							push @s, $b[1] if @s < 7;
+							push @s, '' if @s < 8;
+							push @s, @a[0,1], @b[0,1] if @s < 12;
+							push @s,  $a[2], $a[2] if @s < 14;  
+						} 
+						
+						push @s, undef while @s < 14;
+						pop @s while @s > 14;
+
+						$main::dbh->spot_insert(\@s, $sth);
+						$count++;
+					}
+					$main::dbh->commit if $count;
+					$main::dbh->{RaiseError} = 0;
+					dbg("inserted $count spots from $now->[0] $now->[1]");
+					$fh->close;
+					$total += $count;
+				}
+				$now = $now->add(1);
+			}
+			$main::dbh->spot_add_indexes;
+			$main::dbh->commit;
+			$main::dbh->{RaiseError} = 1;
+			$t = time - $t;
+			my $min = int($t / 60);
+			my $sec = $t % 60;
+			dbg("$total spots converted in $min:$sec");
+		}
+	}
 }
 
 sub prefix
@@ -139,6 +191,10 @@ sub add
 {
 	my $buf = join('^', @_);
 	$fp->writeunix($_[2], $buf);
+	if ($main::dbh) {
+		$main::dbh->spot_insert(\@_);
+		$main::dbh->commit;
+	}
 	$totalspots++;
 	if ($_[0] <= 30000) {
 		$hfspots++;
@@ -199,6 +255,10 @@ sub search
 	$expr = "1" unless $expr;
 	
 	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
+
+	if ($main::dbh) {
+		return $main::dbh->spot_search($expr, $dayfrom, $dayto, $to-$from, $dxchan);
+	}
 
 	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
@@ -298,7 +358,7 @@ sub formatl
 {
 	my $t = ztime($_[2]);
 	my $d = cldate($_[2]);
-	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, $_[3], "<$_[4]" ;
+	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
 }
 
 #

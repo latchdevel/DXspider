@@ -314,7 +314,11 @@ if ($state) {
 		push @expr, "\$f12 eq '$_'";
 		push @hint, "m{$_}";
 	}
-	$expr .= @expr > 1 ? '($f12 && (' . join(' || ', @expr) . '))' : "(\$f12 && $expr[0])";
+	if ($main::dbh) {
+		$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : "$expr[0]";
+	} else {
+		$expr .= @expr > 1 ? '(\$f12 && (' . join(' || ', @expr) . '))' : "(\$f12 && $expr[0])";
+	}
 	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
 }
 if ($bystate) {
@@ -326,7 +330,11 @@ if ($bystate) {
 		push @expr, "\$f13 eq '$_'";
 		push @hint, "m{$_}";
 	}
-	$expr .= @expr > 1 ? '($f13 && (' . join(' || ', @expr) . '))' : "(\$f13 && $expr[0])";
+	if ($main::dbh) {
+		$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : "$expr[0]";
+	} else {
+		$expr .= @expr > 1 ? '(\$f13 && (' . join(' || ', @expr) . '))' : "(\$f13 && $expr[0])";
+	}
 	$hint .= @hint > 1 ? '(' . join(' || ', @hint) . ')' : $hint[0];
 }
 
@@ -365,7 +373,7 @@ foreach $ref (@res) {
 		push @out, VE7CC::dx_spot($self, @$ref);
 	} else {
 		if ($real) {
-			push @out, $self->format_dx_spot($ref);
+			push @out, $self->format_dx_spot(@$ref);
 		} else {
 			push @out, Spot::formatl(@$ref);
 		}
