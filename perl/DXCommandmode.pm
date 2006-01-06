@@ -432,7 +432,8 @@ sub run_cmd
 	
 
 	return () if length $cmdline == 0;
-		
+	
+	
 	# split the command line up into parts, the first part is the command
 	my ($cmd, $args) = split /\s+/, $cmdline, 2;
 	$args = "" unless defined $args;
