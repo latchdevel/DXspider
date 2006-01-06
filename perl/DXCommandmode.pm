@@ -35,14 +35,10 @@ use Net::Telnet;
 use QSL;
 use DB_File;
 use VE7CC;
-use Thingy;
-use Thingy::Dx;
-use Thingy::Hello;
-use Thingy::Bye;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug
-			$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
+	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -52,15 +48,15 @@ $scriptbase = "$main::root/scripts"; # the place where all users start scripts g
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
-$default_pagelth = 20;			# the default page length 0 = unlimited
 $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing command scripts 
                                           # this does not exist as default, you need to create it manually
-
-
+					  #
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -73,11 +69,12 @@ sub new
 	# routing, this must go out here to prevent race condx
 	my $pkg = shift;
 	my $call = shift;
-	my @rout = $main::routeroot->add_user($call, 1);
+	my @rout = $main::routeroot->add_user($call, Route::here(1));
 
-	
+	# ALWAYS output the user
 	my $ref = Route::User::get($call);
 	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
+
 	return $self;
 }
 
@@ -93,7 +90,9 @@ sub start
 	my $name = $user->{name};
 	
 	# log it
-	my $host = $self->{conn}->{peerhost} || "unknown";
+	my $host = $self->{conn}->{peerhost};
+	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
+	$host ||= "unknown";
 	Log('DXCommand', "$call connected from $host");
 
 	$self->{name} = $name ? $name : $call;
@@ -181,11 +180,6 @@ sub start
 		run_cmd($main::me, "forward/opernam $call");
 		$user->lastoper($main::systime + ((int rand(10)) * 86400));
 	}
-
-	# ALWAYS output the user
-	my $thing = Thingy::Hello->new(user => $call, h => $self->{here});
-	$thing->broadcast($self);
-	$self->lasthello($main::systime);
 
 	# run a script send the output to the punter
 	my $script = new Script(lc $call) || new Script('user_default');
@@ -438,16 +432,17 @@ sub run_cmd
 	
 
 	return () if length $cmdline == 0;
-		
+	
+	
 	# split the command line up into parts, the first part is the command
 	my ($cmd, $args) = split /\s+/, $cmdline, 2;
 	$args = "" unless defined $args;
 		
 	if ($cmd) {
-		# strip out // and .. on command only
+		# strip out // on command only
 		$cmd =~ s|//|/|g;
 		$cmd =~ s|^/||g;		# no leading / either
-		$cmd =~ s|[^-?\w/]||g;	# and no funny characters
+		$cmd =~ s|[^-?\w/]||g;		# and no funny characters either
 					
 		my ($path, $fcmd);
 			
@@ -557,9 +552,6 @@ sub disconnect
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
-
-		my $thing = Thingy::Bye->new(user=>$call);
-		$thing->broadcast($self);
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}
@@ -570,9 +562,6 @@ sub disconnect
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
 
-	# remove any outstanding pings I have sent
-	Thingy::Ping::forget($call);
-	
 	Log('DXCommand', "$call disconnected");
 
 	$self->SUPER::disconnect;
@@ -618,6 +607,14 @@ sub get_all
 	return grep {$_->{sort} eq 'U'} DXChannel::get_all();
 }
 
+# run a script for this user
+sub run_script
+{
+	my $self = shift;
+	my $silent = shift || 0;
+	
+}
+
 #
 # search for the command in the cache of short->long form commands
 #
@@ -646,40 +643,41 @@ sub search
 	my $dirfn;
 	my $curdir = $path;
 	
-	while (my $p = shift @parts) {
-		opendir(D, $curdir) or confess "can't open $curdir $!";
-		my @ls = readdir D;
-		closedir D;
+        while (my $p = shift @parts) {
+                opendir(D, $curdir) or confess "can't open $curdir $!";
+                my @ls = readdir D;
+                closedir D;
 
-		# if this isn't the last part
-		if (@parts) {
-			my $found;
-			foreach my $l (sort @ls) {
-				next if $l =~ /^\./;
-				if ((-d "$curdir/$l") && $p eq substr($l, 0, length $p)) {
-					dbg("got dir: $curdir/$l\n") if isdbg('command');
-					$dirfn .= "$l/";
-					$curdir .= "/$l";
-					$found++;
-					last;
-				}
-			}
-			# only proceed if we find the directory asked for
-			return () unless $found;
-		} else {
-			foreach my $l (sort @ls) {
-				next if $l =~ /^\./;
-				next unless $l =~ /\.$suffix$/;
-				if ($p eq substr($l, 0, length $p)) {
-					$l =~ s/\.$suffix$//;
-					$dirfn = "" unless $dirfn;
-					$cmd_cache{$short_cmd} = join(',', ($path, "$dirfn$l")); # cache it
-					dbg("got path: $path cmd: $dirfn$l\n") if isdbg('command');
-					return ($path, "$dirfn$l"); 
-				}
-			}
-		}
-	}
+                # if this isn't the last part
+                if (@parts) {
+                        my $found;
+                        foreach my $l (sort @ls) {
+                                next if $l =~ /^\./;
+                                if ((-d "$curdir/$l") && $p eq substr($l, 0, length $p)) {
+                                        dbg("got dir: $curdir/$l\n") if isdbg('command');
+                                        $dirfn .= "$l/";
+                                        $curdir .= "/$l";
+                                        $found++;
+                                        last;
+                                }
+                        }
+                        # only proceed if we find the directory asked for
+                        return () unless $found;
+                } else {
+                        foreach my $l (sort @ls) {
+                                next if $l =~ /^\./;
+                                next unless $l =~ /\.$suffix$/;
+                                if ($p eq substr($l, 0, length $p)) {
+                                        $l =~ s/\.$suffix$//;
+                                        $dirfn = "" unless $dirfn;
+                                        $cmd_cache{$short_cmd} = join(',', ($path, "$dirfn$l")); # cache it
+                                        dbg("got path: $path cmd: $dirfn$l\n") if isdbg('command');
+                                        return ($path, "$dirfn$l");
+                                }
+                        }
+                }
+        }
+
 	return ();  
 }  
 
@@ -860,6 +858,65 @@ sub chat
 	$self->local_send('C', $buf);
 }
 
+sub format_dx_spot
+{
+	my $self = shift;
+
+	my $t = ztime($_[2]);
+	my $loc = '';
+	my $clth = $self->{consort} eq 'local' ? 29 : 30;
+	my $comment = substr $_[3], 0, $clth; 
+	$comment .= ' ' x ($clth - length($comment));
+	if ($self->{user}->wantgrid) { 
+		my $ref = DXUser->get_current($_[4]);
+		if ($ref) {
+			$loc = $ref->qra || '';
+			$loc = ' ' . substr($loc, 0, 4) if $loc;
+		}
+	}
+
+	if ($self->{user}->wantdxitu) {
+		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[8]) if defined $_[8]; 
+	} elsif ($self->{user}->wantdxcq) {
+		$loc = ' ' . sprintf("%2d", $_[11]) if defined $_[11];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[9]) if defined $_[9]; 
+	} elsif ($self->{user}->wantusstate) {
+		$loc = ' ' . $_[13] if $_[13];
+		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $_[12] if $_[12]; 
+	}
+
+	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+}
+
+# send a dx spot
+sub dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	return unless $self->{dx};
+
+	my ($filter, $hops);
+
+	if ($self->{spotsfilter}) {
+		($filter, $hops) = $self->{spotsfilter}->it(@_ );
+		return unless $filter;
+	}
+
+	dbg('spot: "' . join('","', @_) . '"') if isdbg('dxspot');
+
+	my $buf;
+	if ($self->{ve7cc}) {
+		$buf = VE7CC::dx_spot($self, @_);
+	} else {
+		$buf = $self->format_dx_spot(@_);
+		$buf .= "\a\a" if $self->{beep};
+		$buf =~ s/\%5E/^/g;
+	}
+
+	$self->local_send('X', $buf);
+}
 
 sub wwv
 {
@@ -871,7 +928,7 @@ sub wwv
 	return unless $self->{wwv};
 	
 	if ($self->{wwvfilter}) {
-		($filter, $hops) = $self->{wwvfilter}->it(@_ );
+		($filter, $hops) = $self->{wwvfilter}->it(@_[7..$#_] );
 		return unless $filter;
 	}
 
@@ -1032,6 +1089,5 @@ sub import_cmd
 		}
 	}
 }
-
 1;
 __END__
