@@ -42,7 +42,7 @@ if ($line) {
 	my @bad;
 	if (@bad = BadWords::check($line)) {
 		$self->badcount(($self->badcount||0) + @bad);
-		Log('DXCommand', "$self->{call} swore: $line");
+		LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
 	} else {
 		$dxchan->talk($self->call, $to, $via, $line) if $dxchan;
 	}

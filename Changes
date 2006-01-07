@@ -2,6 +2,10 @@
 1. Fixed problem with the standalone 'showdx' program pointed out by Leo,
 IZ5FSA.
 2. Fixed rounding problem on entering spots as pointed out by Ron N5IN.
+3. Fixed problem with badspotters sending DX as pointed out by Luigi IK5ZUK.
+4. Added some extra logging for swearing so that we can see what lines used
+which swear words. Hopefully this will allow sysops to refine their swearing 
+filters more easily. 
 06Jan06=======================================================================
 1. Fix problem with rcmd <call> sh/fdx
 27Dec05=======================================================================

@@ -22,8 +22,8 @@ return (1, $self->msg('e28')) unless $self->registered;
 my @bad;
 if (@bad = BadWords::check($line)) {	
 	$self->badcount(($self->badcount||0) + @bad);
-	Log('DXCommand', "$self->{call} swore: $line");
-	$localonly++;
+	LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
+	$localonly++; 
 }
 
 # do we have at least two args?
@@ -51,6 +51,24 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 	$spotted = uc $f[1];
 } else {
 	return (1, $self->msg('dx3'));
+}
+
+# check some other things
+# remove ssid from calls
+my $callnoid = $self->call;
+$callnoid =~ s/-\d+$//;
+my $spotternoid = $spotter;
+$spotternoid =~ s/-\d+$//;
+if ($DXProt::baddx->in($spotted)) {
+	$localonly++; 
+}
+if ($DXProt::badspotter->in($callnoid)) { 
+	LogDbg('DXCommand', "$self->{call} badspotter with $callnoid ($line)");
+	$localonly++; 
+}
+if ($callnoid ne $spotternoid && $DXProt::badspotter->in($spotternoid)) { 
+	LogDbg('DXCommand', "$self->{call} badspotter with $spotternoid ($line)");
+	$localonly++; 
 }
 
 # make line the rest of the line
@@ -107,7 +125,7 @@ my $t = (int ($main::systime/60)) * 60;
 return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
 my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
 
-if ($DXProt::baddx->in($spotted) || $freq =~ /^69/ || $localonly) {
+if ($freq =~ /^69/ || $localonly) {
 
 	# heaven forfend that we get a 69Mhz band :-)
 	if ($freq =~ /^69/) {

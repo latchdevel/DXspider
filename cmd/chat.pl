@@ -29,7 +29,7 @@ $line =~ s/\^/:/og;
 my @bad;
 if (@bad = BadWords::check($line)) {
 	$self->badcount(($self->badcount||0) + @bad);
-	Log('DXCommand', "$self->{call} swore: $line");
+	LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
 	Log('chat', $target, $from, "[to $from only] $line");
 	return (1, "$target de $from <$t>: $line");
 }

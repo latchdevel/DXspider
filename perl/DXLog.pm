@@ -27,7 +27,7 @@ package DXLog;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(Log Logclose);
+@EXPORT = qw(Log LogDbg Logclose);
 
 use IO::File;
 use DXVars;
@@ -202,6 +202,12 @@ sub Log
 {
 	my $t = time;
 	$log->writeunix($t, join('^', $t, @_) );
+}
+
+sub LogDbg
+{
+	DXDebug::dbg($_[$#_]);
+	Log(@_);
 }
 
 sub Logclose
