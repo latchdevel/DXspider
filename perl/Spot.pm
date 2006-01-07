@@ -169,13 +169,13 @@ sub prepare
 	my @out = @_[0..4];      # just up to the spotter
 
 	# normalise frequency
-	$_[0] = sprintf "%.1f", $_[0];
+	$out[0] = sprintf "%.1f", $out[0]+0.05;
   
 	# remove ssids and /xxx if present on spotter
 	$out[4] =~ s/-\d+$//o;
 
 	# remove leading and trailing spaces
-	$_[3] = unpad($_[3]);
+	$out[3] = unpad($out[3]);
 	
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
