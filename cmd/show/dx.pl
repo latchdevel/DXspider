@@ -369,7 +369,7 @@ my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $
 my $ref;
 my @dx;
 foreach $ref (@res) {
-	if ($self->ve7cc) {
+	if ($self && $self->ve7cc) {
 		push @out, VE7CC::dx_spot($self, @$ref);
 	} else {
 		if ($real) {
