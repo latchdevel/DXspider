@@ -86,7 +86,7 @@ while ($f = shift @list) {		# next field
 		next;
 	}
 	if (lc $f =~ /^filt/) {
-		$dofilter = 1 if $self->spotsfilter;
+		$dofilter = 1 if $self && $self->spotsfilter;
 		next;
 	}
 	if (lc $f eq 'qsl') {
@@ -372,7 +372,7 @@ foreach $ref (@res) {
 	if ($self && $self->ve7cc) {
 		push @out, VE7CC::dx_spot($self, @$ref);
 	} else {
-		if ($real) {
+		if ($self && $real) {
 			push @out, DXCommandmode::format_dx_spot($self, @$ref);
 		} else {
 			push @out, Spot::formatl(@$ref);
