@@ -297,7 +297,7 @@ sub normal
 					my @bad;
 					if (@bad = BadWords::check($l)) {
 						$self->badcount(($self->badcount||0) + @bad);
-						Log('DXCommand', "$self->{call} swore: $l");
+						LogDbg('DXCommand', "$self->{call} swore: $l with words:" . join(',', @bad) . ")");
 					} else {
 						for (@{$self->{talklist}}) {
 							$self->send_talks($_, $l);
