@@ -1,6 +1,7 @@
 07Jan06=======================================================================
 1. Fixed problem with the standalone 'showdx' program pointed out by Leo,
 IZ5FSA.
+2. Fixed rounding problem on entering spots as pointed out by Ron N5IN.
 06Jan06=======================================================================
 1. Fix problem with rcmd <call> sh/fdx
 27Dec05=======================================================================
