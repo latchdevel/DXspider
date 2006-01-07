@@ -173,8 +173,13 @@ if ($pre) {
 		}
 	} 
 	unless (@ans) {
-		$pre .= '*' unless $pre =~ /[\*\?\[]/o;
+		$pre .= '*' unless $pre =~ /[\*\?\[]$/o;
 		$pre = shellregex($pre);
+		if ($main::dbh) {
+			$pre =~ s/\.\*/%/g;
+		} else {
+			$pre =~ s/\.\*\$$//;
+		}
 		$expr = "\$f1 =~ m{$pre}";
 		$pre =~ s/[\^\$]//g;
 		$hint = "m{\U$pre}";
@@ -245,6 +250,11 @@ if ($spotter) {
 		$expr .= ' && ' if $expr;
 		$spotter .= '*' unless $spotter =~ /[\*\?\[]/o;
 		$spotter = shellregex($spotter);
+		if ($main::dbh) {
+			$spotter =~ s/\.\*/%/g;
+		} else {
+			$spotter =~ s/\.\*\$$//;
+		}
 		$expr .= "\$f4 =~ m{\U$spotter}";
 		$hint .= ' && ' if $hint;
 		$spotter =~ s/[\^\$]//g;

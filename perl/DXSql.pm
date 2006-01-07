@@ -170,7 +170,7 @@ sub spot_search
 		$expr =~ s/\$f9/spotcq/g;
 		$expr =~ s/\|\|/ or /g;
 		$expr =~ s/\&\&/ and /g;
-		$expr =~ s/=~\s+m\{\^([\w]+)[^\}]*\}/ like '$1%'/g;
+		$expr =~ s/=~\s+m\{\^([%\w]+)[^\}]*\}/ like '$1'/g;
 	} else {
 		$expr = '';
 	}  
