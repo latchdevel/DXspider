@@ -21,6 +21,7 @@ use IO::Handle;
 use DXUtil;
 use Bands;
 use Spot;
+use VE7CC;
 
 $dxdir = "/spider/cmd/show";
 $dxcmd = "dx.pl";
@@ -44,7 +45,7 @@ for (;;) {
 		chomp $myexpr;
 		last if $myexpr =~ /^q$/i;
 	}
-	my @out = map {"$_\n"} &$dxproc({priv=>0,call=>'GDX'}, $myexpr);
+	my @out = map {"$_\n"} &$dxproc(undef, $myexpr);
 	shift @out;   # remove return code
 	print @out;
 	last if $expr;

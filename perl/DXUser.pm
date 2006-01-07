@@ -212,17 +212,23 @@ sub finish
 # new - create a new user
 #
 
-sub new
+sub alloc
 {
 	my $pkg = shift;
 	my $call = uc shift;
+	my $self = bless {call => $call, 'sort'=>'U'}, $pkg;
+	return $self;
+}
+
+sub new
+{
+	my $pkg = shift;
+	my $call = shift;
 	#  $call =~ s/-\d+$//o;
   
 #	confess "can't create existing call $call in User\n!" if $u{$call};
 
-	my $self = bless {}, $pkg;
-	$self->{call} = $call;
-	$self->{'sort'} = 'U';
+	my $self = $pkg->alloc($call);
 	$self->put;
 	return $self;
 }
