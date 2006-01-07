@@ -33,8 +33,10 @@ eval {
 use strict;
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw(%work @msg $msgdir %valid %busy $maxage $last_clean $residencetime
 			@badmsg @swop $swopfn $badmsgfn $forwardfn @forward $timeout $waittime
@@ -344,17 +346,22 @@ sub handle_32
 				}
 
 				# check the message for bad words 
+				my @bad;
 				my @words;
+				@bad = BadWords::check($ref->{subject});
+				push @words, [$ref->{subject}, @bad] if @bad; 
 				for (@{$ref->{lines}}) {
-					push @words, BadWords::check($_);
+					@bad = BadWords::check($_);
+					push @words, [$_, @bad] if @bad;
 				}
-				push @words, BadWords::check($ref->{subject});
 				if (@words) {
-					dbg("$ref->{from} swore: '@words' -> $ref->{to} '$ref->{subject}' origin: $ref->{origin} via " . $dxchan->call) if isdbg('msg');
-					Log('msg',"$ref->{from} swore: '@words' -> $ref->{to} origin: $ref->{origin} via " . $dxchan->call);
+					dbg("$ref->{from} swore: $ref->{to} '$ref->{subject}' origin: $ref->{origin} via " . $dxchan->call) if isdbg('msg');
+					Log('msg',"$ref->{from} swore: $ref->{to} origin: $ref->{origin} via " . $dxchan->call);
+				    dbg("subject: $ref->{subject}");
 					Log('msg',"subject: $ref->{subject}");
-					for (@{$ref->{lines}}) {
-						Log('msg', "line: $_");
+					for (@words) {
+						dbg("line: $_->[0] (using words: ". join(',',@{$_->[1]}).")");
+						Log('msg', "line: $_->[0] (using words: ". join(',',@{$_->[1]}).")");
 					}
 					$ref->stop_msg($fromnode);
 					return;

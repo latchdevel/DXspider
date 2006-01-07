@@ -51,7 +51,7 @@ $line =~ s/\^/:/og;
 my @bad;
 if (@bad = BadWords::check($line)) {
 	$self->badcount(($self->badcount||0) + @bad);
-	Log('DXCommand', "$self->{call} swore: $line");
+	LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
 	Log('ann', $to, $from, "[to $from only] $line");
 	$self->send("To $to de $from <$t>: $line");
 	return (1, ());

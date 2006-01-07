@@ -311,7 +311,7 @@ sub normal
 			my @bad;
 			if (@bad = BadWords::check($cmdline)) {
 				$self->badcount(($self->badcount||0) + @bad);
-				Log('DXCommand', "$self->{call} swore: $cmdline");
+				LogDbg('DXCommand', "$self->{call} swore: $cmdline with words:" . join(',', @bad) . ")");
 			} else {
 				for (@{$self->{talklist}}) {
 					$self->send_talks($_, $rawline);
@@ -343,7 +343,7 @@ sub normal
 
 	# check for excessive swearing
 	if ($self->{badcount} && $self->{badcount} >= $maxbadcount) {
-		Log('DXCommand', "$self->{call} logged out for excessive swearing");
+		LogDbg('DXCommand', "$self->{call} logged out for excessive swearing");
 		$self->disconnect;
 		return;
 	}

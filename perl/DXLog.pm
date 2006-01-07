@@ -27,7 +27,7 @@ package DXLog;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(Log Logclose);
+@EXPORT = qw(Log LogDbg Logclose);
 
 use IO::File;
 use DXVars;
@@ -39,7 +39,10 @@ use Carp;
 use strict;
 
 use vars qw($VERSION $BRANCH);
-main::mkver($VERSION = q$Revision$) if main->can('mkver');
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw($log);
 
@@ -199,6 +202,12 @@ sub Log
 {
 	my $t = time;
 	$log->writeunix($t, join('^', $t, @_) );
+}
+
+sub LogDbg
+{
+	DXDebug::dbg($_[$#_]);
+	Log(@_);
 }
 
 sub Logclose
