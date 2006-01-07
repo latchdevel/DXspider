@@ -355,13 +355,12 @@ sub handle_32
 					push @words, [$_, @bad] if @bad;
 				}
 				if (@words) {
-					dbg("$ref->{from} swore: $ref->{to} '$ref->{subject}' origin: $ref->{origin} via " . $dxchan->call) if isdbg('msg');
-					Log('msg',"$ref->{from} swore: $ref->{to} origin: $ref->{origin} via " . $dxchan->call);
-				    dbg("subject: $ref->{subject}");
-					Log('msg',"subject: $ref->{subject}");
+					LogDbg('msg',"$ref->{from} swore: $ref->{to} origin: $ref->{origin} via " . $dxchan->call);
+					LogDbg('msg',"subject: $ref->{subject}");
 					for (@words) {
-						dbg("line: $_->[0] (using words: ". join(',',@{$_->[1]}).")");
-						Log('msg', "line: $_->[0] (using words: ". join(',',@{$_->[1]}).")");
+						my $r = $_;
+						my $line = shift @$r;
+						LogDbg('msg', "line: $line (using words: ". join(',', @$r).")");
 					}
 					$ref->stop_msg($fromnode);
 					return;
@@ -1114,7 +1113,7 @@ sub do_send_stuff
 					$ref->notify;
 				}
 			} else {
-				Log('msg', $self->call . " swore to @{$loc->{to}} subject: '$loc->{subject}' in msg, REJECTED");
+				LogDbg('msg', $self->call . " swore to @{$loc->{to}} subject: '$loc->{subject}' in msg, REJECTED");
 			}
 			
 			delete $loc->{lines};
