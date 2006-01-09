@@ -76,10 +76,10 @@ sub load
 	}
 
 	# tie the main prefix database
-	$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0664, $DB_BTREE) or confess "can't tie \%pre ($!)";  
-	my $out = $@ if $@;
-	do "$main::data/prefix_data.pl" if !$out;
-	$out = $@ if $@;
+	eval {$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0664, $DB_BTREE);};
+	my $out = "$@($!)" if !$db || $@ ;
+	eval {do "$main::data/prefix_data.pl" if !$out; };
+	$out .= $@ if $@;
 	$lru = LRU->newbase('Prefix', $lrusize);
 
  	return $out;

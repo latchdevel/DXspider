@@ -78,8 +78,6 @@ $v3 = 0;
 		  wantlogininfo => '0,Login Info Req,yesno',
           wantgrid => '0,Show DX Grid,yesno',
 		  wantann_talk => '0,Talklike Anns,yesno',
-		  wantpc90 => '1,Req PC90,yesno',
-		  wantnp => '1,Req New Proto,yesno',
 		  wantpc16 => '9,Want Users from node,yesno',
 		  wantsendpc16 => '9,Send PC16,yesno',
 		  wantroutepc19 => '9,Route PC19,yesno',
@@ -686,11 +684,6 @@ sub wantpc16
 	return _want('pc16', @_);
 }
 
-sub wantpc90
-{
-	return _wantnot('pc90', @_);
-}
-
 sub wantsendpc16
 {
 	return _want('sendpc16', @_);
@@ -714,11 +707,6 @@ sub wantdxcq
 sub wantdxitu
 {
 	return _want('dxitu', @_);
-}
-
-sub wantnp
-{
-	return _wantnot('np', @_);
 }
 
 sub wantlogininfo

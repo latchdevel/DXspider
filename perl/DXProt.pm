@@ -35,26 +35,23 @@ use Route::Node;
 use Script;
 use Investigate;
 use RouteDB;
-use Thingy;
-use Thingy::Dx;
-use Thingy::Rt;
-use Thingy::Ping;
-use Thingy::T;
-use Thingy::Hello;
-use Thingy::Bye;
+
 
 use strict;
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
-			$allowzero $decode_dk0wcy $send_opernam @checklist);
+			$allowzero $decode_dk0wcy $send_opernam @checklist
+			$handle_xml);
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
@@ -82,11 +79,12 @@ $chatdupeage = 20 * 60 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
+$handle_xml = 0;				# handle XML sentences
 
 @checklist = 
 (
  [ qw(i c c m bp bc c) ],			# pc10
- [ qw(i f m d t m c c h) ],		# pc11
+ [ qw(i f bm d t m c c h) ],		# pc11
  [ qw(i c bm m bm bm p h) ],		# pc12
  [ qw(i c h) ],					# 
  [ qw(i c h) ],					# 
@@ -214,6 +212,7 @@ sub init
 	my $user = DXUser->get($main::mycall);
 	die "User $main::mycall not setup or disappeared RTFM" unless $user;
 	
+	$myprot_version += $main::version*100;
 	$main::me = DXProt->new($main::mycall, 0, $user); 
 	$main::me->{here} = 1;
 	$main::me->{state} = "indifferent";
@@ -222,9 +221,8 @@ sub init
 	$main::me->{metric} = 0;
 	$main::me->{pingave} = 0;
 	$main::me->{registered} = 1;
-	$main::me->{version} = $myprot_version + int ($main::version * 100);
+	$main::me->{version} = $main::version;
 	$main::me->{build} = $main::build;
-	$main::me->{lastcf} = $main::me->{lasthello} = time;
 }
 
 #
@@ -238,7 +236,8 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
-	$main::routeroot->add($call, '5000', 1) if $call ne $main::mycall;
+	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
+
 	return $self;
 }
 
@@ -252,7 +251,10 @@ sub start
 	my $user = $self->{user};
 
 	# log it
-	my $host = $self->{conn}->{peerhost} || "unknown";
+	my $host = $self->{conn}->{peerhost};
+	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
+	$host ||= "unknown";
+
 	Log('DXProt', "$call connected from $host");
 	
 	# remember type of connection
@@ -308,11 +310,6 @@ sub start
 	$self->state('init');
 	$self->{pc50_t} = $main::systime;
 
-	# ALWAYS output the hello
-	my $thing = Thingy::Hello->new(user => $call, h => $self->{here});
-	$thing->broadcast($self);
-	$self->lasthello($main::systime);
-	
 	# send info to all logged in thingies
 	$self->tell_login('loginn');
 
@@ -331,7 +328,6 @@ sub sendinit
 	$self->send(pc18());
 }
 
-
 #
 # This is the normal pcxx despatcher
 #
@@ -346,6 +342,7 @@ sub normal
 	
 #	print join(',', @field), "\n";
 						
+	
 	# process PC frames, this will fail unless the frame starts PCnn
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
 	unless (defined $pcno && $pcno >= 10 && $pcno <= 99) {
@@ -358,16 +355,6 @@ sub normal
 	if ($n) {
 		dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
 		return;
-	}
-
-	# decrement any hop fields at this point
-	if ($line =~ /\^H(\d\d?)\^?~?$/) {
-		my $hops = $1 - 1;
-		if ($hops < 0) {
-			dbg("PCPROT: zero hop count, dumped") if isdbg('chanerr');
-			return;
-		}
-		$line =~ s/\^H\d\d?(\^?~?)$/^H$hops$1/;
 	}
 
 	my $origin = $self->{call};
@@ -434,7 +421,7 @@ sub handle_10
 	}
 
 	# remember a route to this node and also the node on which this user is
-	RouteDB::update($_[6], $origin);
+	RouteDB::update($_[6], $self->{call});
 #	RouteDB::update($to, $_[6]);
 
 	# it is here and logged on
@@ -511,7 +498,7 @@ sub handle_11
 	}
 
 	# is it 'baddx'
-	if ($baddx->in($_[2]) || BadWords::check($_[2])) {
+	if ($baddx->in($_[2]) || BadWords::check($_[2]) || $_[2] =~ /COCK/) {
 		dbg("PCPROT: Bad DX spot, ignored") if isdbg('chanerr');
 		return;
 	}
@@ -535,15 +522,27 @@ sub handle_11
 #	RouteDB::update($_[7], $self->{call});
 #	RouteDB::update($_[6], $_[7]);
 	
-	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $_[6], $_[7]);
-
-	my $thing = Thingy::Dx->new(origin=>$main::mycall);
-	$thing->from_DXProt(DXProt=>$line,spotdata=>\@spot);
-	$thing->process($self);
+	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $nossid, $_[7]);
+	# global spot filtering on INPUT
+	if ($self->{inspotsfilter}) {
+		my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
+		unless ($filter) {
+			dbg("PCPROT: Rejected by input spot filter") if isdbg('chanerr');
+			return;
+		}
+	}
 
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
+	if (Spot::dup(@spot[0..4,5])) {
+		dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
+		return;
+	}
+
+	# add it 
+	Spot::add(@spot);
+
 	#
 	# @spot at this point contains:-
 	# freq, spotted call, time, text, spotter, spotted cc, spotters cc, orig node
@@ -597,6 +596,20 @@ sub handle_11
 			}
 		}
 	}
+				
+	# local processing 
+	my $r;
+	eval {
+		$r = Local::spot($self, @spot);
+	};
+	#			dbg("Local::spot1 error $@") if isdbg('local') if $@;
+	return if $r;
+
+	# DON'T be silly and send on PC26s!
+	return if $pcno == 26;
+
+	# send out the filtered spots
+	send_dx_spot($self, $line, @spot) if @spot;
 }
 		
 # announces
@@ -688,7 +701,7 @@ sub handle_16
 			
 	# dos I want users from this channel?
 	unless ($self->user->wantpc16) {
-		dbg("PCPROT: don't send users to $origin") if isdbg('chanerr');
+		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
 		return;
 	}
 	# is it me?
@@ -700,14 +713,14 @@ sub handle_16
 	RouteDB::update($ncall, $self->{call});
 
 	# do we believe this call? 
-#	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
-#		if (my $ivp = Investigate::get($ncall, $self->{call})) {
-#			$ivp->store_pcxx($pcno,$line,$origin,@_);
-#		} else {
-#			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
-#		}
-#		return;
-#	}
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		} else {
+			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
+		}
+		return;
+	}
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
@@ -718,7 +731,62 @@ sub handle_16
 
 	# if there is a parent, proceed, otherwise if there is a latent PC19 in the PC19list, 
 	# fix it up in the routing tables and issue it forth before the PC16
-	if ($parent) {
+	unless ($parent) {
+		my $nl = $pc19list{$ncall};
+
+		if ($nl && @_ > 3) { # 3 because of the hop count!
+
+			# this is a new (remembered) node, now attach it to me if it isn't in filtered
+			# and we haven't disallowed it
+			my $user = DXUser->get_current($ncall);
+			if (!$user) {
+				$user = DXUser->new($ncall);
+				$user->sort('A');
+				$user->priv(1);	# I have relented and defaulted nodes
+				$user->lockout(1);
+				$user->homenode($ncall);
+				$user->node($ncall);
+			}
+
+			my $wantpc19 = $user->wantroutepc19;
+			if ($wantpc19 || !defined $wantpc19) {
+				my $new = Route->new($ncall); # throw away
+				if ($self->in_filter_route($new)) {
+					my @nrout;
+					for (@$nl) {
+						$parent = Route::Node::get($_->[0]);
+						$dxchan = $parent->dxchan if $parent;
+						if ($dxchan && $dxchan ne $self) {
+							dbg("PCPROT: PC19 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
+							$parent = undef;
+						}
+						if ($parent) {
+							my $r = $parent->add($ncall, $_->[1], $_->[2]);
+							push @nrout, $r unless @nrout;
+						}
+					}
+					$user->wantroutepc19(1) unless defined $wantpc19; # for now we work on the basis that pc16 = real route 
+					$user->lastin($main::systime) unless DXChannel::get($ncall);
+					$user->put;
+						
+					# route the pc19 - this will cause 'stuttering PC19s' for a while
+					$self->route_pc19($origin, $line, @nrout) if @nrout ;
+					$parent = Route::Node::get($ncall);
+					unless ($parent) {
+						dbg("PCPROT: lost $ncall after sending PC19 for it?");
+						return;
+					}
+				} else {
+					return;
+				}
+				delete $pc19list{$ncall};
+			}
+		} else {
+			dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
+			return;
+		}
+	} else {
+				
 		$dxchan = $parent->dxchan;
 		if ($dxchan && $dxchan ne $self) {
 			dbg("PCPROT: PC16 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
@@ -727,28 +795,19 @@ sub handle_16
 
 		# input filter if required
 		return unless $self->in_filter_route($parent);
-	} else {
-		dbg("PCPROT: Node $ncall not in config") if isdbg('chanerr');
-		return;
 	}
 
-	# is he under the control of the new protocol?
-#	if ($parent && $parent->np) {
-#		dbg("PCPROT: $ncall aranea node, ignored") if isdbg('chanerr');
-#		return;
-#	}
-		
 	my $i;
 	my @rout;
 	for ($i = 2; $i < $#_; $i++) {
 		my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
 		next unless $call && $conf && defined $here && is_callsign($call);
 		next if $call eq $main::mycall;
-		
+
 		eph_del_regex("^PC17\\^$call\\^$ncall");
-		
+				
 		$conf = $conf eq '*';
-		
+
 		# reject this if we think it is a node already
 		my $r = Route::Node::get($call);
 		my $u = DXUser->get_current($call) unless $r;
@@ -756,10 +815,10 @@ sub handle_16
 			dbg("PCPROT: $call is a node") if isdbg('chanerr');
 			next;
 		}
-		
+				
 		$r = Route::User::get($call);
-		my $flags = $here;
-		
+		my $flags = Route::here($here)|Route::conf($conf);
+				
 		if ($r) {
 			my $au = $r->addparent($parent);					
 			if ($r->flags != $flags) {
@@ -771,7 +830,7 @@ sub handle_16
 			push @rout, $parent->add_user($call, $flags);
 		}
 		
-		
+				
 		# add this station to the user database, if required
 		$call =~ s/-\d+$//o;	# remove ssid for users
 		my $user = DXUser->get_current($call);
@@ -781,7 +840,7 @@ sub handle_16
 		$user->lastin($main::systime) unless DXChannel::get($call);
 		$user->put;
 	}
-	$self->route_pc16($origin, $line, $parent, @rout) if @rout && (DXChannel::get($parent->call) || $parent->np);
+	$self->route_pc16($origin, $line, $parent, @rout) if @rout;
 }
 		
 # remove a user
@@ -810,50 +869,45 @@ sub handle_17
 	RouteDB::delete($ncall, $self->{call});
 
 	# do we believe this call? 
-#	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
-#		if (my $ivp = Investigate::get($ncall, $self->{call})) {
-#			$ivp->store_pcxx($pcno,$line,$origin,@_);
-#		} else {
-#			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
-#		}
-#		return;
-#	}
+	unless ($ncall eq $self->{call} || $self->is_believed($ncall)) {
+		if (my $ivp = Investigate::get($ncall, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		} else {
+			dbg("PCPROT: We don't believe $ncall on $self->{call}") if isdbg('chanerr');
+		}
+		return;
+	}
 
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
 		dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
-		return;
 	}
 	my $parent = Route::Node::get($ncall);
 	unless ($parent) {
 		dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
-		return;
 	}			
 
-	$dxchan = $parent->dxchan;
+	$dxchan = $parent->dxchan if $parent;
 	if ($dxchan && $dxchan ne $self) {
 		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 		return;
 	}
 
-	# is he under the control of the new protocol?
-#	if ($parent && $parent->np) {
-#		dbg("PCPROT: $ncall aranea node, ignored") if isdbg('chanerr');
-#		return;
-#	}
-
 	# input filter if required and then remove user if present
-	if ($parent && !$parent->np) {
+	if ($parent) {
 #		return unless $self->in_filter_route($parent);	
 		$parent->del_user($uref) if $uref;
-	} 
+	} else {
+		$parent = Route->new($ncall);  # throw away
+	}
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
 		return;
 	}
 
-	$self->route_pc17($origin, $line, $parent, $uref) if (DXChannel::get($parent->call) || $parent->np);
+	$uref = Route->new($ucall) unless $uref; # throw away
+	$self->route_pc17($origin, $line, $parent, $uref);
 }
 		
 # link request
@@ -867,8 +921,8 @@ sub handle_18
 
 	# record the type and version offered
 	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+\.\d+)/) {
-		$self->version(0 + $1);
-		$self->user->version(0 + $1);
+		$self->version(53 + $1);
+		$self->user->version(53 + $1);
 		$self->build(0 + $2);
 		$self->user->build(0 + $2);
 		unless ($self->is_spider) {
@@ -876,6 +930,7 @@ sub handle_18
 			$self->user->put;
 			$self->sort('S');
 		}
+		$self->handle_xml++ if $_[1] =~ /\bxml\b/;
 	} else {
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
@@ -883,7 +938,7 @@ sub handle_18
 	}
 
 	# first clear out any nodes on this dxchannel
-	my $parent = Route::Node::get($origin);
+	my $parent = Route::Node::get($self->{call});
 	my @rout = $parent->del_nodes;
 	$self->route_pc21($origin, $line, @rout, $parent) if @rout;
 	$self->send_local_config();
@@ -905,11 +960,31 @@ sub handle_19
 	my @rout;
 
 	# first get the INTERFACE node
-	my $parent = Route::Node::get($origin);
+	my $parent = Route::Node::get($self->{call});
 	unless ($parent) {
-		dbg("DXPROT: my parent $origin has disappeared");
+		dbg("DXPROT: my parent $self->{call} has disappeared");
 		$self->disconnect;
 		return;
+	}
+
+	# if the origin isn't the same as the INTERFACE, then reparent, creating nodes as necessary
+	if ($origin ne $self->call) {
+		my $op = Route::Node::get($origin);
+		unless ($op) {
+			$op = $parent->add($origin, 5000, Route::here(1));
+			my $user = DXUser->get_current($origin);
+			if (!$user) {
+				$user = DXUser->new($origin);
+				$user->priv(1);		# I have relented and defaulted nodes
+				$user->lockout(1);
+				$user->homenode($origin);
+				$user->node($origin);
+				$user->wantroutepc19(1);
+			}
+			$user->sort('A') unless $user->is_node;
+			$user->put;
+		}
+		$parent = $op;
 	}
 
 	# parse the PC19
@@ -924,14 +999,14 @@ sub handle_19
 				
 		# check for sane parameters
 		#				$ver = 5000 if $ver eq '0000';
-		next unless $ver > 5000;	# only works with version 5 software that isn't a passive node
+		next if $ver < 5000;	# only works with version 5 software
 		next if length $call < 3; # min 3 letter callsigns
 		next if $call eq $main::mycall;
 
 		# check that this PC19 isn't trying to alter the wrong dxchan
 		my $dxchan = DXChannel::get($call);
 		if ($dxchan && $dxchan != $self) {
-			dbg("PCPROT: PC19 from $origin trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
+			dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
 			next;
 		}
 
@@ -946,22 +1021,32 @@ sub handle_19
 		}
 		$user->sort('A') unless $user->is_node;
 
-		RouteDB::update($call, $origin);
+		RouteDB::update($call, $self->{call});
 
+		# do we believe this call?
 		my $genline = "PC19^$here^$call^$conf^$ver^$_[-1]^"; 
+		unless ($call eq $self->{call} || $self->is_believed($call)) {
+			my $pt = $user->lastping($self->{call}) || 0;
+			if ($pt+$investigation_int < $main::systime && !Investigate::get($call, $self->{call})) {
+				my $ivp  = Investigate->new($call, $self->{call});
+				$ivp->version($ver);
+				$ivp->here($here);
+				$ivp->store_pcxx($pcno,$genline,$origin,'PC19',$here,$call,$conf,$ver,$_[-1]);
+			} else {
+				dbg("PCPROT: We don't believe $call on $self->{call}") if isdbg('chanerr');
+			}
+			$user->put;
+			next;
+		}
+
 		if (eph_dup($genline)) {
 			dbg("PCPROT: dup PC19 for $call detected") if isdbg('chanerr');
 			next;
 		}
 
 		my $r = Route::Node::get($call);
-		my $flags = $here;
+		my $flags = Route::here($here)|Route::conf($conf);
 
-		# is he under the control of the new protocol and not my interface call?
-		if ($call ne $origin && $r && $r->np) {
-			dbg("PCPROT: $call aranea node, ignored") if isdbg('chanerr');
-			next;
-		}
 		# modify the routing table if it is in it, otherwise store it in the pc19list for now
 		if ($r) {
 			my $ar;
@@ -972,17 +1057,16 @@ sub handle_19
 				} else {
 					next;
 				}
-			} else {
-				if ($r->version != $ver || $r->flags != $flags) {
-					$r->version($ver);
-					$r->flags($flags);
-					push @rout, $r;
-				}
+			}
+			if ($r->version ne $ver || $r->flags != $flags) {
+				$r->version($ver);
+				$r->flags($flags);
+				push @rout, $r unless $ar;
 			}
 		} else {
 
 			# if he is directly connected or allowed then add him, otherwise store him up for later
-			if ($call eq $origin || $user->wantroutepc19) {
+			if ($call eq $self->{call} || $user->wantroutepc19) {
 				my $new = Route->new($call); # throw away
 				if ($self->in_filter_route($new)) {
 					my $ar = $parent->add($call, $ver, $flags);
@@ -991,6 +1075,10 @@ sub handle_19
 				} else {
 					next;
 				}
+			} else {
+				$pc19list{$call} = [] unless exists $pc19list{$call};
+				my $nl = $pc19list{$call};
+				push @{$pc19list{$call}}, [$self->{call}, $ver, $flags] unless grep $_->[0] eq $self->{call}, @$nl;
 			}
 		}
 
@@ -1002,8 +1090,7 @@ sub handle_19
 		$user->put;
 	}
 
-	# we only output information that we regard as reliable
-	@rout = grep {$_ && (DXChannel::get($_->{call}) || $_->np) } @rout;
+
 	$self->route_pc19($origin, $line, @rout) if @rout;
 }
 		
@@ -1018,11 +1105,6 @@ sub handle_20
 	$self->send(pc22());
 	$self->state('normal');
 	$self->{lastping} = 0;
-	my $thing = Thingy::Rt->new(user=>$self->{call});
-	my $nref = Route::Node::get($self->{call});
-	$thing->copy_pc16_data($nref);
-	$thing->broadcast($self);
-	$self->lastcf($main::systime);
 }
 		
 # delete a cluster from the list
@@ -1043,56 +1125,54 @@ sub handle_21
 		return;
 	}
 
-	RouteDB::delete($call, $origin);
+	RouteDB::delete($call, $self->{call});
 
 	# check if we believe this
-#	unless ($call eq $origin || $self->is_believed($call)) {
-#		if (my $ivp = Investigate::get($call, $origin)) {
-#			$ivp->store_pcxx($pcno,$line,$origin,@_);
-#		} else {
-#			dbg("PCPROT: We don't believe $call on $origin") if isdbg('chanerr');
-#		}
-#		return;
-#	}
+	unless ($call eq $self->{call} || $self->is_believed($call)) {
+		if (my $ivp = Investigate::get($call, $self->{call})) {
+			$ivp->store_pcxx($pcno,$line,$origin,@_);
+		} else {
+			dbg("PCPROT: We don't believe $call on $self->{call}") if isdbg('chanerr');
+		}
+		return;
+	}
 
 	# check to see if we are in the pc19list, if we are then don't bother with any of
 	# this routing table manipulation, just remove it from the list and dump it
 	my @rout;
-
-	my $parent = Route::Node::get($origin);
-	unless ($parent) {
-		dbg("DXPROT: my parent $origin has disappeared");
-		$self->disconnect;
-		return;
-	}
-	if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
-		my $node = Route::Node::get($call);
-		if ($node) {
-			
-			my $dxchan = DXChannel::get($call);
-			if ($dxchan && $dxchan != $self) {
-				dbg("PCPROT: PC21 from $origin trying to alter locally connected $call, ignored!") if isdbg('chanerr');
-				return;
-			}
-			
-			# input filter it
-			return unless $self->in_filter_route($node);
-			
-			# is he under the control of the new protocol?
-			if ($node->np) {
-				dbg("PCPROT: $call aranea node, ignored") if isdbg('chanerr');
-				return;
-			}
-			
-			# routing objects
-			push @rout, $node->del($parent);
-		}
+	if (my $nl = $pc19list{$call}) {
+		$pc19list{$call} = [ grep {$_->[0] ne $self->{call}} @$nl ];
+		delete $pc19list{$call} unless @{$pc19list{$call}};
 	} else {
-		dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
-		return;
+				
+		my $parent = Route::Node::get($self->{call});
+		unless ($parent) {
+			dbg("DXPROT: my parent $self->{call} has disappeared");
+			$self->disconnect;
+			return;
+		}
+		if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
+			my $node = Route::Node::get($call);
+			if ($node) {
+						
+				my $dxchan = DXChannel::get($call);
+				if ($dxchan && $dxchan != $self) {
+					dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
+					return;
+				}
+						
+				# input filter it
+				return unless $self->in_filter_route($node);
+						
+				# routing objects
+				push @rout, $node->del($parent);
+			}
+		} else {
+			dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
+			return;
+		}
 	}
 
-	@rout = grep {$_ && (DXChannel::get($_->{call}) || $_->np) } @rout;
 	$self->route_pc21($origin, $line, @rout) if @rout;
 }
 		
@@ -1105,11 +1185,6 @@ sub handle_22
 	my $origin = shift;
 	$self->state('normal');
 	$self->{lastping} = 0;
-	my $thing = Thingy::Rt->new(user=>$self->{call});
-	my $nref = Route::Node::get($self->{call});
-	$thing->copy_pc16_data($nref);
-	$thing->broadcast($self);
-	$self->lastcf($main::systime);
 }
 				
 # WWV info
@@ -1144,13 +1219,24 @@ sub handle_23
 		dbg("PCPROT: WWV Date ($_[1] $_[2]) out of range") if isdbg('chanerr');
 		return;
 	}
-	if (Geomag::dup($d,$sfi,$k,$i,$_[6])) {
+
+	# global wwv filtering on INPUT
+	my @dxcc = ((Prefix::cty_data($_[7]))[0..2], (Prefix::cty_data($_[8]))[0..2]);
+	if ($self->{inwwvfilter}) {
+		my ($filter, $hops) = $self->{inwwvfilter}->it(@_[7,8], $origin, @dxcc);
+		unless ($filter) {
+			dbg("PCPROT: Rejected by input wwv filter") if isdbg('chanerr');
+			return;
+		}
+	}
+	$_[7] =~ s/-\d+$//o;		# remove spotter's ssid
+	if (Geomag::dup($d,$sfi,$k,$i,$_[6],$_[7])) {
 		dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chanerr');
 		return;
 	}
-	$_[7] =~ s/-\d+$//o;		# remove spotter's ssid
 		
-	my $wwv = Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
+	# note this only takes the first one it gets
+	Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
 
 	my $rep;
 	eval {
@@ -1312,7 +1398,7 @@ sub handle_39
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	if ($_[1] eq $origin) {
+	if ($_[1] eq $self->{call}) {
 		$self->disconnect(1);
 	} else {
 		dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
@@ -1428,11 +1514,11 @@ sub handle_50
 
 	my $call = $_[1];
 
-	RouteDB::update($call, $origin);
+	RouteDB::update($call, $self->{call});
 
 	my $node = Route::Node::get($call);
 	if ($node) {
-		return unless $node->call eq $origin;
+		return unless $node->call eq $self->{call};
 		$node->usercount($_[2]);
 
 		# input filter if required
@@ -1449,15 +1535,70 @@ sub handle_51
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $to = $_[1];
+	my $from = $_[2];
+	my $flag = $_[3];
 
-	if (eph_dup($line, 60)) {
-		dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
-		return;
+			
+	# is it for us?
+	if ($to eq $main::mycall) {
+		if ($flag == 1) {
+			$self->send(pc51($from, $to, '0'));
+		} else {
+			# it's a reply, look in the ping list for this one
+			my $ref = $pings{$from};
+			if ($ref) {
+				my $tochan =  DXChannel::get($from);
+				while (@$ref) {
+					my $r = shift @$ref;
+					my $dxchan = DXChannel::get($r->{call});
+					next unless $dxchan;
+					my $t = tv_interval($r->{t}, [ gettimeofday ]);
+					if ($dxchan->is_user) {
+						my $s = sprintf "%.2f", $t; 
+						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
+						$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
+					} elsif ($dxchan->is_node) {
+						if ($tochan) {
+							my $nopings = $tochan->user->nopings || $obscount;
+							push @{$tochan->{pingtime}}, $t;
+							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
+							
+							# cope with a missed ping, this means you must set the pingint large enough
+							if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
+								$t -= $tochan->{pingint};
+							}
+							
+							# calc smoothed RTT a la TCP
+							if (@{$tochan->{pingtime}} == 1) {
+								$tochan->{pingave} = $t;
+							} else {
+								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
+							}
+							$tochan->{nopings} = $nopings; # pump up the timer
+							if (my $ivp = Investigate::get($from, $self->{call})) {
+								$ivp->handle_ping;
+							}
+						} elsif (my $rref = Route::Node::get($r->{call})) {
+							if (my $ivp = Investigate::get($from, $self->{call})) {
+								$ivp->handle_ping;
+							}
+						}
+					}
+				}
+			}
+		}
+	} else {
+
+		RouteDB::update($from, $self->{call});
+
+		if (eph_dup($line)) {
+			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
+			return;
+		}
+		# route down an appropriate thingy
+		$self->route($to, $line);
 	}
-
-	my $thing = Thingy::Ping->new(origin=>$main::mycall);
-	$thing->from_DXProt($self, $line, @_);
-	$thing->handle($self);
 }
 
 # dunno but route it
@@ -1588,7 +1729,7 @@ sub process
 		}
 	}
 
-#	Investigate::process();
+	Investigate::process();
 
 	# every ten seconds
 	if ($t - $last10 >= 10) {	
@@ -1614,6 +1755,36 @@ sub process
 # some active measures
 #
 
+
+sub send_dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my @dxchan = DXChannel::get_all();
+	my $dxchan;
+	
+	# send it if it isn't the except list and isn't isolated and still has a hop count
+	# taking into account filtering and so on
+	foreach $dxchan (@dxchan) {
+		next if $dxchan == $main::me;
+		next if $dxchan == $self && $self->is_node;
+		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
+	}
+}
+
+sub dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my ($filter, $hops);
+
+	if ($self->{spotsfilter}) {
+		($filter, $hops) = $self->{spotsfilter}->it(@_);
+		return unless $filter;
+	}
+	send_prot_line($self, $filter, $hops, $isolate, $line);
+}
 
 sub send_prot_line
 {
@@ -1664,7 +1835,7 @@ sub wwv
 	my ($filter, $hops);
 	
 	if ($self->{wwvfilter}) {
-		($filter, $hops) = $self->{wwvfilter}->it(@_);
+		($filter, $hops) = $self->{wwvfilter}->it(@_[7..$#_]);
 		return unless $filter;
 	}
 	send_prot_line($self, $filter, $hops, $isolate, $line)
@@ -1868,7 +2039,7 @@ sub send_local_config
         # don't appear outside of this node
 
 		# send locally connected nodes
-		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && ($_->is_node || $_->is_aranea) } DXChannel::get_all();
+		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
 		$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
 
@@ -1883,7 +2054,6 @@ sub send_local_config
 		for $node (@intcalls) {
 			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
 		}
-		@remotenodes = grep {$_ && (DXChannel::get($_->{call}) || $_->np) } @remotenodes;
 		$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
 	}
 	
@@ -1989,7 +2159,7 @@ sub adjust_hops
 			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
 		} else {
 			# simply decrement it
-#			$hops--;               this is done on receipt now
+			$hops--;
 			return "" if !$hops;
 			$s =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/ if $hops;
 		}
@@ -2014,9 +2184,22 @@ sub load_hops
 sub addping
 {
 	my ($from, $to, $via) = @_;
-	my $thing = Thingy::Ping->new_ping($from eq $main::mycall ? () : (user=>$from), $via ? (touser=> $to, group => $via) : (group => $to));
-	$thing->remember;
-	$thing->broadcast;
+	my $ref = $pings{$to} || [];
+	my $r = {};
+	$r->{call} = $from;
+	$r->{t} = [ gettimeofday ];
+	if ($via && (my $dxchan = DXChannel::get($via))) {
+		$dxchan->send(pc51($to, $main::mycall, 1));
+	} else {
+		route(undef, $to, pc51($to, $main::mycall, 1));
+	}
+	push @$ref, $r;
+	$pings{$to} = $ref;
+	my $u = DXUser->get_current($to);
+	if ($u) {
+		$u->lastping(($via || $from), $main::systime);
+		$u->put;
+	}
 }
 
 sub process_rcmd
@@ -2163,14 +2346,11 @@ sub disconnect
 	
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2) {
-		my $thing = Thingy::Bye->new(user=>$call);
-		$thing->broadcast($self);
-
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
 	}
 
 	# remove outstanding pings
-	Thingy::Ping::forget($call);
+	delete $pings{$call};
 	
 	# I was the last node visited
     $self->user->node($main::mycall);
@@ -2415,6 +2595,7 @@ sub import_chat
 	my $name;
 	foreach $name (@names) {
 		next if $name =~ /^\./;
+		my $splitit = $name =~ /^split/;
 		my $fn = "$chatimportfn/$name";
 		next unless -f $fn;
 		unless (open(MSG, $fn)) {

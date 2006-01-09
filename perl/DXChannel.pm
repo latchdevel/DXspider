@@ -117,14 +117,15 @@ $count = 0;
 		  ve7cc => '0,VE7CC program special,yesno',
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  inscript => '9,In a script,yesno',
+		  handle_xml => '9,Handles XML,yesno',
 		  inqueue => '9,Input Queue,parray',
-		  lastcf => '1,Last CF Update,atime',
-		  lasthello => '1,Last Hello Update,atime',
 		 );
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 # object destruction
 sub DESTROY
@@ -190,7 +191,8 @@ sub rec
 # obtain a channel object by callsign [$obj = DXChannel::get($call)]
 sub get
 {
-	return $channels{$_[0]};
+	my $call = shift;
+	return $channels{$call};
 }
 
 # obtain all the channel objects
@@ -265,7 +267,7 @@ sub is_bbs
 sub is_node
 {
 	my $self = shift;
-	return $self->{'sort'} =~ /[ACRSX]/;
+	return $self->{'sort'} =~ /[ACRSXW]/;
 }
 # is it an ak1a node ?
 sub is_ak1a

@@ -102,6 +102,7 @@ use QSL;
 use Thingy;
 use RouteDB;
 use AMsg;
+use DXXml;
 
 use Data::Dumper;
 use IO::File;
@@ -349,13 +350,6 @@ STDOUT->autoflush(1);
 $build += $main::version;
 $build = "$build.$branch" if $branch;
 
-LogDbg('cluster', "DXSpider V$version, build $build started");
-
-# banner
-my ($year) = (gmtime)[5];
-$year += 1900;
-dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
-
 # try to load the database
 if ($dsn && -e "$root/perl/DXSql.pm") {
 	require DXSql;
@@ -366,6 +360,15 @@ if ($dsn && -e "$root/perl/DXSql.pm") {
 		$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
 	}
 }
+
+# try to load XML::Simple
+DXXml::init();
+
+# banner
+my ($year) = (gmtime)[5];
+$year += 1900;
+LogDbg('cluster', "DXSpider V$version, build $build started");
+dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 # load Prefixes
 dbg("loading prefixes ...");

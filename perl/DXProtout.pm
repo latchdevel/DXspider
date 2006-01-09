@@ -20,13 +20,15 @@ use DXDebug;
 use strict;
 
 use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
-main::mkver($VERSION = q$Revision$);
-
-use vars qw($sentencelth);
+use vars qw($sentencelth $handle_xml);
 
 $sentencelth = 180;
- 
+
 #
 # All the PCxx generation routines
 #
@@ -107,8 +109,8 @@ sub pc16
 sub pc17
 {
 	my @out;
-	my $node = shift;
 	while (@_) {
+		my $node = shift;
 		my $ref = shift;
 		my $hops = get_hops(17);
 		my $ncall = $node->call;
@@ -121,8 +123,8 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $v = $DXProt::myprot_version + int($main::version * 100);
-	return "PC18^DXSpider Version: $main::version Build: $main::build^$v^";
+	my $flags = " xml" if $handle_xml; 
+	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }
 
 #
@@ -140,10 +142,7 @@ sub pc19
 		my $call = $ref->call;
 		my $here = $ref->here;
 		my $conf = $ref->conf;
-		my $version = $ref->version || 5401;
-		$version = 5300 + int($version*100) if $version < 2;
-		$version = 5252 + int($version*100) if $version < 3;
-		$version =~ s/\.\d+$//;	# kludge
+		my $version = $ref->version;
 		my $str = "^$here^$call^$conf^$version";
 		if (length($s) + length($str) > $sentencelth) {
 			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);

@@ -31,6 +31,7 @@ sub init
 		import DBI;
 		$active++;
 	}
+	undef $@;
 	return $active;
 } 
 
