@@ -117,6 +117,7 @@ $count = 0;
 		  ve7cc => '0,VE7CC program special,yesno',
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  inscript => '9,In a script,yesno',
+		  handle_xml => '9,Handles XML,yesno',
 		  inqueue => '9,Input Queue,parray',
 		 );
 

@@ -25,10 +25,10 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($sentencelth);
+use vars qw($sentencelth $handle_xml);
 
 $sentencelth = 180;
- 
+
 #
 # All the PCxx generation routines
 #
@@ -123,7 +123,8 @@ sub pc17
 # Request init string
 sub pc18
 {
-	return "PC18^DXSpider Version: $main::version Build: $main::build^$DXProt::myprot_version^";
+	my $flags = " xml" if $handle_xml; 
+	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }
 
 #
