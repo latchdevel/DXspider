@@ -182,8 +182,7 @@ sub new_channel
 		if ($bumpexisting) {
 			my $ip = $conn->{peerhost} || 'unknown';
 			$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
-			Log('DXCommand', "$call bumped off by $ip, disconnected");
-			dbg("$call bumped off by $ip, disconnected");
+			LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
 			$dxchan->disconnect;
 		} else {
 			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
@@ -199,7 +198,7 @@ sub new_channel
 	if ($baseuser && $baseuser->lockout || $lock) {
 		if (!$user || !defined $lock || $lock) {
 			my $host = $conn->{peerhost} || "unknown";
-			Log('DXCommand', "$call on $host is locked out, disconnected");
+			LogDbg('DXCommand', "$call on $host is locked out, disconnected");
 			$conn->disconnect;
 			return;
 		}
@@ -284,8 +283,7 @@ sub cease
 		$l->close_server;
 	}
 
-	dbg("DXSpider version $version, build $build ended") if isdbg('chan');
-	Log('cluster', "DXSpider V$version, build $build ended");
+	LogDbg('cluster', "DXSpider V$version, build $build ended");
 	dbgclose();
 	Logclose();
 
@@ -351,13 +349,12 @@ STDOUT->autoflush(1);
 $build += $main::version;
 $build = "$build.$branch" if $branch;
 
-Log('cluster', "DXSpider V$version, build $build started");
+LogDbg('cluster', "DXSpider V$version, build $build started");
 
 # banner
 my ($year) = (gmtime)[5];
 $year += 1900;
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
-dbg("DXSpider Version $version, build $build started");
 
 # try to load the database
 if ($dsn && -e "$root/perl/DXSql.pm") {

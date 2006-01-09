@@ -344,8 +344,7 @@ sub asc_decode
 	my $ref;
 	eval '$ref = ' . $s;
 	if ($@) {
-		dbg($@);
-		Log('err', $@);
+		LogDbg('err', $@);
 		$ref = undef;
 	}
 	return $ref;
@@ -492,7 +491,7 @@ print "There are $count user records and $err errors\n";
 				my $ekey = $key;
 				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
 				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				Log('DXCommand', "Export Error1: $ekey\t$eval");
+				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
 				eval {$dbm->del($key)};
 				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
 				++$err;
@@ -505,7 +504,7 @@ print "There are $count user records and $err errors\n";
 					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
 						eval {$dbm->del($key)};
 						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
-						Log('DXCommand', "$ref->{call} deleted, too old");
+						LogDbg('DXCommand', "$ref->{call} deleted, too old");
 						$del++;
 						next;
 					}
@@ -514,7 +513,7 @@ print "There are $count user records and $err errors\n";
 				print $fh "$key\t" . $ref->asc_encode . "\n";
 				++$count;
 			} else {
-				Log('DXCommand', "Export Error3: $key\t$val");
+				LogDbg('DXCommand', "Export Error3: $key\t$val");
 				eval {$dbm->del($key)};
 				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
 				++$err;

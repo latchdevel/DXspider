@@ -93,7 +93,7 @@ sub start
 	my $host = $self->{conn}->{peerhost};
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
-	Log('DXCommand', "$call connected from $host");
+	LogDbg('DXCommand', "$call connected from $host");
 
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
@@ -562,7 +562,7 @@ sub disconnect
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
 
-	Log('DXCommand', "$call disconnected");
+	LogDbg('DXCommand', "$call disconnected");
 
 	$self->SUPER::disconnect;
 }
@@ -1026,8 +1026,7 @@ sub import_cmd
 	# are there any to do in this directory?
 	return unless -d $cmdimportdir;
 	unless (opendir(DIR, $cmdimportdir)) {
-		dbg("can\'t open $cmdimportdir $!");
-		Log('err', "can\'t open $cmdimportdir $!");
+		LogDbg('err', "can\'t open $cmdimportdir $!");
 		return;
 	} 
 
@@ -1039,9 +1038,7 @@ sub import_cmd
 
 		my $s = Script->new($name, $cmdimportdir);
 		if ($s) {
-
-			dbg("Run import cmd file $name");
-			Log('DXCommand', "Run import cmd file $name");
+			LogDbg('DXCommand', "Run import cmd file $name");
 			my @cat = split /[^A-Za-z0-9]+/, $name;
 			my ($call) = grep {is_callsign(uc $_)} @cat;
 			$call ||= $main::mycall;
@@ -1072,19 +1069,16 @@ sub import_cmd
 						$dxchan->{priv} = $priv;
 						$dxchan->{user} = $user;
 					} else {
-						Log('err', "Trying to run import cmd for non-existant user $call");
-						dbg( "Trying to run import cmd for non-existant user $call");
+						LogDbg('err', "Trying to run import cmd for non-existant user $call");
 					}
 				}
 			}
 			$s->erase;
 			for (@out) {
-				Log('DXCommand', "Import cmd $name/$call: $_");
-				dbg("Import cmd $name/$call: $_");
+				LogDbg('DXCommand', "Import cmd $name/$call: $_");
 			}
 		} else {
-			Log("Failed to open $cmdimportdir/$name $!");
-			dbg("Failed to open $cmdimportdir/$name $!");
+			LogDbg('err', "Failed to open $cmdimportdir/$name $!");
 			unlink "$cmdimportdir/$name";
 		}
 	}
