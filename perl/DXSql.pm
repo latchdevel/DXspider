@@ -22,6 +22,8 @@ our $active = 0;
 
 sub init
 {
+	my $dsn = shift;
+	return unless $dsn;
 	return $active if $active;
 	
 	eval { 

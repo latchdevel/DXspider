@@ -23,6 +23,8 @@ $xs = undef;							# the XML::Simple parser instance
 
 sub init
 {
+	return unless $main::do_xml;
+	
 	eval { require XML::Simple; };
 	unless ($@) {
 		import XML::Simple;

@@ -68,7 +68,6 @@ use DXCommandmode;
 use DXProtVars;
 use DXProtout;
 use DXProt;
-use Aranea;
 use DXMsg;
 use DXCron;
 use DXConnect;
@@ -99,10 +98,9 @@ use Mrtg;
 use USDB;
 use UDPMsg;
 use QSL;
-use Thingy;
 use RouteDB;
-use AMsg;
 use DXXml;
+use DXSql;
 
 use Data::Dumper;
 use IO::File;
@@ -117,7 +115,7 @@ use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
-			$allowdxby $dbh $dsn $dbuser $dbpass
+			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -136,7 +134,7 @@ $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
-$main::build += 1;				# fudge (put back for now)
+$main::build += 4;				# fudge (put back for now)
 
 
       
@@ -351,14 +349,9 @@ $build += $main::version;
 $build = "$build.$branch" if $branch;
 
 # try to load the database
-if ($dsn && -e "$root/perl/DXSql.pm") {
-	require DXSql;
-	import DXSql;
-	
-	if (DXSql::init()) {
-		$dbh = DXSql->new($dsn);
-		$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
-	}
+if (DXSql::init($dsn)) {
+	$dbh = DXSql->new($dsn);
+	$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
 }
 
 # try to load XML::Simple
@@ -466,7 +459,6 @@ Spot->init();
 # initialise the protocol engine
 dbg("Start Protocol Engines ...");
 DXProt->init();
-Aranea->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
 $routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
@@ -522,7 +514,6 @@ for (;;) {
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXProt::process();		# process ongoing ak1a pcxx stuff
-		Aranea::process();
 		DXConnect::process();
 		DXMsg::process();
 		DXDb::process();

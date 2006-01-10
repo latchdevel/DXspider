@@ -86,6 +86,9 @@ $motd = "$data/motd";
 # are we debugging ?
 @debug = qw(chan state msg cron connect);
 
+# are we doing xml?
+$do_xml = 0;
+
 # the SQL database DBI dsn
 #$dsn = "dbi:SQLite:dbname=$root/data/dxspider.db";
 #$dbuser = "";
