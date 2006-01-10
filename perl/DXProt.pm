@@ -301,7 +301,7 @@ sub start
 	$self->{pingave} = 999;
 	$self->{metric} ||= 100;
 	$self->{lastping} = $main::systime;
-
+	
 	# send initialisation string
 	unless ($self->{outbound}) {
 		$self->sendinit;
@@ -334,6 +334,11 @@ sub sendinit
 sub normal
 {
 	my ($self, $line) = @_;
+
+	if ($line =~ '^<\w+\s') {
+		DXXml::normal($self, $line);
+		return;
+	}
 
 	my @field = split /\^/, $line;
 	return unless @field;
@@ -1545,48 +1550,7 @@ sub handle_51
 		if ($flag == 1) {
 			$self->send(pc51($from, $to, '0'));
 		} else {
-			# it's a reply, look in the ping list for this one
-			my $ref = $pings{$from};
-			if ($ref) {
-				my $tochan =  DXChannel::get($from);
-				while (@$ref) {
-					my $r = shift @$ref;
-					my $dxchan = DXChannel::get($r->{call});
-					next unless $dxchan;
-					my $t = tv_interval($r->{t}, [ gettimeofday ]);
-					if ($dxchan->is_user) {
-						my $s = sprintf "%.2f", $t; 
-						my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-						$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
-					} elsif ($dxchan->is_node) {
-						if ($tochan) {
-							my $nopings = $tochan->user->nopings || $obscount;
-							push @{$tochan->{pingtime}}, $t;
-							shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-							
-							# cope with a missed ping, this means you must set the pingint large enough
-							if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
-								$t -= $tochan->{pingint};
-							}
-							
-							# calc smoothed RTT a la TCP
-							if (@{$tochan->{pingtime}} == 1) {
-								$tochan->{pingave} = $t;
-							} else {
-								$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
-							}
-							$tochan->{nopings} = $nopings; # pump up the timer
-							if (my $ivp = Investigate::get($from, $self->{call})) {
-								$ivp->handle_ping;
-							}
-						} elsif (my $rref = Route::Node::get($r->{call})) {
-							if (my $ivp = Investigate::get($from, $self->{call})) {
-								$ivp->handle_ping;
-							}
-						}
-					}
-				}
-			}
+			$self->handle_ping_reply($from);
 		}
 	} else {
 
@@ -1598,6 +1562,56 @@ sub handle_51
 		}
 		# route down an appropriate thingy
 		$self->route($to, $line);
+	}
+}
+
+sub handle_ping_reply
+{
+	my $self = shift;
+	my $from = shift;
+	my $id = shift;
+	
+	# it's a reply, look in the ping list for this one
+	my $ref = $pings{$from};
+	return unless $ref;
+
+	my $tochan =  DXChannel::get($from);
+	while (@$ref) {
+		my $r = shift @$ref;
+		my $dxchan = DXChannel::get($r->{call});
+		next unless $dxchan;
+		my $t = tv_interval($r->{t}, [ gettimeofday ]);
+		if ($dxchan->is_user) {
+			my $s = sprintf "%.2f", $t; 
+			my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
+			$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
+		} elsif ($dxchan->is_node) {
+			if ($tochan) {
+				my $nopings = $tochan->user->nopings || $obscount;
+				push @{$tochan->{pingtime}}, $t;
+				shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
+				
+				# cope with a missed ping, this means you must set the pingint large enough
+				if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
+					$t -= $tochan->{pingint};
+				}
+				
+				# calc smoothed RTT a la TCP
+				if (@{$tochan->{pingtime}} == 1) {
+					$tochan->{pingave} = $t;
+				} else {
+					$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
+				}
+				$tochan->{nopings} = $nopings; # pump up the timer
+				if (my $ivp = Investigate::get($from, $self->{call})) {
+					$ivp->handle_ping;
+				}
+			} elsif (my $rref = Route::Node::get($r->{call})) {
+				if (my $ivp = Investigate::get($from, $self->{call})) {
+					$ivp->handle_ping;
+				}
+			}
+		}
 	}
 }
 
@@ -1711,7 +1725,8 @@ sub process
 	}
 
 	foreach $dxchan (@dxchan) {
-		next unless $dxchan->is_node();
+		next unless $dxchan->is_node;
+		next if $dxchan->handle_xml;
 		next if $dxchan == $main::me;
 
 		# send the pc50
@@ -1725,6 +1740,7 @@ sub process
 				addping($main::mycall, $dxchan->call);
 				$dxchan->{nopings} -= 1;
 				$dxchan->{lastping} = $t;
+				$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
 			}
 		}
 	}
