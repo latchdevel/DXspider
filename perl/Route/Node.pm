@@ -15,8 +15,10 @@ use Route::User;
 use strict;
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
@@ -27,9 +29,9 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
-		  build => '0,Build',
-		  sw => '0,Software',
-		  np => '0,Using New Prot,yesno',
+		  handle_xml => '0,Using XML,yesno',
+		  lastmsg => '0,Last Route Msg,atime',
+		  lastid => '0,Last Route MsgID',
 );
 
 $filterdef = $Route::filterdef;
@@ -58,7 +60,7 @@ sub max
 # object with that callsign. The upper layers are expected to do something
 # sensible with this!
 #
-# called as $parent->add(call, version, flags) 
+# called as $parent->add(call, dxchan, version, flags) 
 #
 
 sub add
@@ -66,21 +68,13 @@ sub add
 	my $parent = shift;
 	my $call = uc shift;
 	confess "Route::add trying to add $call to myself" if $call eq $parent->{call};
-	my $version = shift;
-	my $here = shift;
-	
 	my $self = get($call);
 	if ($self) {
 		$self->_addparent($parent);
 		$parent->_addnode($self);
-		if ($self->{version} != $version || $self->{flags} != $here) {
-			$self->{version} = $version;
-			$self->{flags} = $here;
-			return $self;
-		}
 		return undef;
 	}
-	$self = $parent->new($call, $version, $here);
+	$self = $parent->new($call, @_);
 	$parent->_addnode($self);
 	return $self;
 }
@@ -149,10 +143,10 @@ sub add_user
 	my $uref = Route::User::get($ucall);
 	my @out;
 	if ($uref) {
-		push @out, $uref->addparent($self);
+		@out = $uref->addparent($self);
 	} else {
 		$uref = Route::User->new($ucall, $self->{call}, @_);
-		push @out, $uref;
+		@out = $uref;
 	}
 	$self->_adduser($uref);
 	$self->{usercount} = scalar @{$self->{users}};
@@ -204,25 +198,6 @@ sub parents
 	return @{$self->{parent}};
 }
 
-sub has_user
-{
-	my $self = shift;
-	return $self->_haslist('users', shift);
-}
-
-sub has_node
-{
-	my $self = shift;
-	return $self->_haslist('nodes', shift);
-}
-
-sub has_parent
-{
-	my $self = shift;
-	return $self->_haslist('parent', shift);
-}
-
-
 sub rnodes
 {
 	my $self = shift;
@@ -236,39 +211,6 @@ sub rnodes
 	return @out;
 }
 
-# return the differences in nodes between what we currently have and
-# the list proffered. Returns two refs one to a list of nodes to remove and  
-# the other a list of nodes to add
-# 
-# input is a list of callsigns (not refs)
-sub diff_nodes
-{
-	my $self = shift;
-	my $in = ref $_[0] ? shift : \@_;
-	my %del = map {($_, 1)} nodes($self);
-	my %in = map {($_, 1)} @$in;
-	
-	# remove all the calls that are in both lists
-	for (@$in) {
-		delete $in{$_} if delete $del{$_};
-	}
-	return ([keys %del], [keys %in]);
-}
-
-# same as above but for users
-sub diff_users
-{
-	my $self = shift;
-	my $in = ref $_[0] ? shift : \@_;
-	my %del = map {($_, 1)} users($self);
-	my %in = map {($_, 1)} @$in;
-	
-	# remove all the calls that are in both lists
-	for (@$in) {
-		delete $in{$_} if delete $del{$_};
-	}
-	return ([keys %del], [keys %in]);
-}
 
 sub new
 {
@@ -279,11 +221,10 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
-	$self->{version} = 0 || shift;
-	$self->{flags} = 0 || shift;
+	$self->{version} = shift;
+	$self->{flags} = shift;
 	$self->{users} = [];
 	$self->{nodes} = [];
-	$self->{lid} = 0;
 	
 	$list{$call} = $self;
 	
@@ -302,22 +243,6 @@ sub get
 sub get_all
 {
 	return values %list;
-}
-
-sub newid
-{
-	my $self = shift;
-	my $id = shift;
-	
-	return 0 if $id == $self->{lid};
-	if ($id > $self->{lid}) {
-		$self->{lid} = $id;
-		return 1;
-	} elsif ($self->{lid} - $id > 500) {
-		$self->{id} = $id;
-		return 1;
-	}
-	return 0;
 }
 
 sub _addparent
@@ -356,6 +281,15 @@ sub _deluser
 {
 	my $self = shift;
     return $self->_dellist('users', @_);
+}
+
+sub DESTROY
+{
+	my $self = shift;
+	my $pkg = ref $self;
+	my $call = $self->{call} || "Unknown";
+	
+	dbg("destroying $pkg with $call") if isdbg('routelow');
 }
 
 #

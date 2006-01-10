@@ -101,6 +101,7 @@ use QSL;
 use RouteDB;
 use DXXml;
 use DXSql;
+use IsoTime;
 
 use Data::Dumper;
 use IO::File;
@@ -134,7 +135,7 @@ $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
-$main::build += 3;				# fudge (put back for now)
+#$main::build += 2;				# fudge (put back for now)
 
 
       
@@ -511,8 +512,10 @@ for (;;) {
 	if ($timenow != $systime) {
 		reap if $zombies;
 		$systime = $timenow;
+		IsoTime::update($systime);
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
+		DXXml::process();
 		DXProt::process();		# process ongoing ak1a pcxx stuff
 		DXConnect::process();
 		DXMsg::process();
