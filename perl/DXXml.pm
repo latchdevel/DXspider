@@ -122,7 +122,23 @@ sub toxml
 	$self->{id} ||= nextid();
 
 	my ($name) = ref $self =~ /::(\w+)$/;
-	my $s = $xs->XMLout($self, RootName =>$name, NumericEscape=>1);
+	my $s = $xs->XMLout($self, RootName =>lc $name, NumericEscape=>1);
 	return $self->{'-xml'} = $s;
 }
+
+sub has_xml
+{
+	return exists $_[0]->{'-xml'};
+}
+
+sub has_pcxx
+{
+	return exists $_[0]->{'-pcxx'};
+}
+
+sub has_cmd
+{
+	return exists $_[0]->{'-cmd'};
+}
+
 1;
