@@ -63,7 +63,7 @@ sub add
 	my $ref = $pings{$to} || [];
 	my $r = {};
 	my $self = DXXml::Ping->new(to=>$to, '-hirestime'=>[ gettimeofday ], s=>'1');
-	$self->{u} = $from unless $from eq $main::mycall;
+	$self->{u} = $from;
 	$self->{'-via'} = $via if $via && DXChannel::get($via);
 	$self->{o} = $main::mycall;
 	$self->{id} = $self->nextid;
@@ -98,7 +98,7 @@ sub handle_ping_reply
 	my $tochan = DXChannel::get($from);
 	while (@$ref) {
 		my $r = shift @$ref;
-		my $dxchan = DXChannel::get($r->{to});
+		my $dxchan = DXChannel::get($r->{u});
 		next unless $dxchan;
 		my $t = tv_interval($r->{'-hirestime'}, [ gettimeofday ]);
 		if ($dxchan->is_user) {
