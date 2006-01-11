@@ -37,6 +37,7 @@ sub handle_input
 									   oid=>$self->{id},
 									   ot=>$self->{t}
 									  );
+			$dxchan->send($rep->toxml);
 		} else {
 			handle_ping_reply($dxchan, $self->{o}, $self->{ot}, $self->{oid});
 		}
