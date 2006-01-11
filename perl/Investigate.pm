@@ -124,7 +124,7 @@ sub process
 		if ($v->{state} eq 'start') {
 			my $via = $via{$v->{via}} || 0;
 			if ($main::systime > $via+$pingint) {
-				DXProt::addping($main::mycall, $v->{call}, $v->{via});
+				DXXml::Ping::add($main::me, $v->{call}, $v->{via});
 				$v->{start} = $lastping = $main::systime;
 				dbg("Investigate: ping sent to $v->{call} via $v->{via}") if isdbg('investigate');
 				$v->chgstate('waitping');

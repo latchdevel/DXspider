@@ -117,13 +117,75 @@ sub toxml
 {
 	my $self = shift;
 
-	$self->{o} ||= $main::mycall;
-	$self->{t} ||= IsoTime::dayms();
-	$self->{id} ||= nextid();
+	unless (exists $self->{'-xml'}) {
+		$self->{o} ||= $main::mycall;
+		$self->{t} ||= IsoTime::dayms();
+		$self->{id} ||= nextid();
+		
+		my ($name) = ref $self =~ /::(\w+)$/;
+		$self->{'-xml'} = $xs->XMLout($self, RootName =>lc $name, NumericEscape=>1);
+	}
+	return $self->{'-xml'};
+}
 
-	my ($name) = ref $self =~ /::(\w+)$/;
-	my $s = $xs->XMLout($self, RootName =>lc $name, NumericEscape=>1);
-	return $self->{'-xml'} = $s;
+sub route
+{
+	my $self = shift;
+	my $fromdxchan = shift;
+	my $to = shift;
+	my $via = $to || $self->{'-via'} || $self->{to};
+
+	unless ($via) {
+		dbg("XML: no route specified (" . $self->toxml . ")") if isdbg('chanerr');
+		return;
+	}
+	if (ref $fromdxchan && $via && $fromdxchan->call eq $via) {
+		dbg("XML: Trying to route back to source (" . $self->toxml . ")") if isdbg('chanerr');
+		return;
+	}
+
+	# always send it down the local interface if available
+	my $dxchan = DXChannel::get($via);
+	if ($dxchan) {
+		dbg("route: $via -> $dxchan->{call} direct" ) if isdbg('route');
+	} else {
+		my $cl = Route::get($via);
+		$dxchan = $cl->dxchan if $cl;
+		dbg("route: $via -> $dxchan->{call} using normal route" ) if isdbg('route');
+	}
+
+	# try the backstop method
+	unless ($dxchan) {
+		my $rcall = RouteDB::get($via);
+		if ($rcall) {
+			$dxchan = DXChannel::get($rcall);
+			dbg("route: $via -> $rcall using RouteDB" ) if isdbg('route') && $dxchan;
+		}
+	}
+	
+	unless ($dxchan) {
+		dbg("XML: no route available to $via") if isdbg('chanerr');
+		return;
+	}
+
+	if ($fromdxchan->call eq $via) {
+		dbg("XML: Trying to route back to source (" . $self->toxml . ")") if isdbg('chanerr');
+		return;
+	}
+
+	if ($dxchan == $main::me) {
+		dbg("XML: Trying to route to me (" . $self->toxml . ")") if isdbg('chanerr');
+		return;
+	}
+
+	if ($dxchan->handle_xml) {
+		$dxchan->send($self->toxml);
+	} else {
+		$self->{o} ||= $main::mycall;
+		$self->{id} ||= nextid();
+		$self->{'-timet'} ||= $main::systime;
+		$dxchan->send($self->topcxx);
+	}
 }
 
 sub has_xml
