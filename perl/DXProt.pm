@@ -933,7 +933,7 @@ sub handle_18
 			$self->user->put;
 			$self->sort('S');
 		}
-		$self->{handle_xml}++ if $_[1] =~ /\bxml\b/;
+		$self->{handle_xml}++ if $main::do_xml && $_[1] =~ /\bxml\b/;
 	} else {
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
