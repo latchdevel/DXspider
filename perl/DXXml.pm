@@ -90,8 +90,44 @@ sub normal
 #
 # note that this a function not a method
 #
+
+my $last10;
+my $last_hour;
+
 sub process
 {
+	my $t = time;
+	my @dxchan = DXChannel::get_all();
+	my $dxchan;
+
+	foreach $dxchan (@dxchan) {
+		next unless $dxchan->is_node;
+		next unless $dxchan->handle_xml;
+		next if $dxchan == $main::me;
+
+		# send a ping out on this channel
+		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
+			if ($dxchan->{nopings} <= 0) {
+				$dxchan->disconnect;
+			} else {
+				DXXml::Ping::add($main::me, $dxchan->call);
+				$dxchan->{nopings} -= 1;
+				$dxchan->{lastping} = $t;
+				$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
+			}
+		}
+	}
+
+
+	# every ten seconds
+	if (!$last10 || $t - $last10 >= 10) {	
+		$last10 = $t;
+	}
+
+	# every hour
+	if (!$last_hour || $main::systime - 3600 > $last_hour) {
+		$last_hour = $main::systime;
+	}
 
 }
 
