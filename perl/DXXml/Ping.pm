@@ -30,6 +30,19 @@ sub handle_input
 	my $self = shift;
 	my $dxchan = shift;
 	
+	if ($self->{to} eq $main::mycall) {
+		if ($self->{s} eq '1') {
+			my $rep = DXXml::Ping->new(to=>$self->{o}, 
+									   s=>'0',
+									   oid=>$self->{id},
+									   ot=>$self->{t}
+									  );
+		} else {
+			handle_ping_reply($dxchan, $self->{o}, $self->{ot}, $self->{oid});
+		}
+	} else {
+		$self->route($dxchan);
+	}
 }
 
 sub topcxx
@@ -68,6 +81,8 @@ sub handle_ping_reply
 {
 	my $fromdxchan = shift;
 	my $from = shift;
+	my $ot = shift;
+	my $oid = shift;
 	my $fromxml;
 	
 	if (ref $from) {
