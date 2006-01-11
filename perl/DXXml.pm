@@ -119,10 +119,10 @@ sub toxml
 
 	unless (exists $self->{'-xml'}) {
 		$self->{o} ||= $main::mycall;
-		$self->{t} ||= IsoTime::dayms();
+		$self->{t} ||= IsoTime::dayminsec();
 		$self->{id} ||= nextid();
 		
-		my ($name) = ref $self =~ /::(\w+)$/;
+		my ($name) = (ref $self) =~ /::(\w+)$/;
 		$self->{'-xml'} = $xs->XMLout($self, RootName =>lc $name, NumericEscape=>1);
 	}
 	return $self->{'-xml'};
