@@ -178,6 +178,14 @@ sub alloc
 	return $channels{$call} = $self;
 }
 
+# rebless this channel as something else
+sub rebless
+{
+	my $self = shift;
+	my $class = shift;
+	return $channels{$self->{call}} = bless $self, $class;
+}
+
 sub rec	
 {
 	my ($self, $msg) = @_;

@@ -27,7 +27,6 @@ use DXDb;
 use AnnTalk;
 use Geomag;
 use WCY;
-use Time::HiRes qw(gettimeofday tv_interval);
 use BadWords;
 use DXHash;
 use Route;
@@ -57,7 +56,6 @@ $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
 
 $last_hour = time;				# last time I did an hourly periodic update
-%pings = ();                    # outstanding ping requests outbound
 %rcmds = ();                    # outstanding rcmd requests outbound
 %nodehops = ();                 # node specific hop control
 %pc19list = ();					# list of outstanding PC19s that haven't had PC16s on them
@@ -1550,7 +1548,7 @@ sub handle_51
 		if ($flag == 1) {
 			$self->send(pc51($from, $to, '0'));
 		} else {
-			$self->handle_ping_reply($from);
+			DXXml::Ping::handle_ping_reply($self, $from);
 		}
 	} else {
 
@@ -1562,56 +1560,6 @@ sub handle_51
 		}
 		# route down an appropriate thingy
 		$self->route($to, $line);
-	}
-}
-
-sub handle_ping_reply
-{
-	my $self = shift;
-	my $from = shift;
-	my $id = shift;
-	
-	# it's a reply, look in the ping list for this one
-	my $ref = $pings{$from};
-	return unless $ref;
-
-	my $tochan =  DXChannel::get($from);
-	while (@$ref) {
-		my $r = shift @$ref;
-		my $dxchan = DXChannel::get($r->{call});
-		next unless $dxchan;
-		my $t = tv_interval($r->{t}, [ gettimeofday ]);
-		if ($dxchan->is_user) {
-			my $s = sprintf "%.2f", $t; 
-			my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-			$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
-		} elsif ($dxchan->is_node) {
-			if ($tochan) {
-				my $nopings = $tochan->user->nopings || $obscount;
-				push @{$tochan->{pingtime}}, $t;
-				shift @{$tochan->{pingtime}} if @{$tochan->{pingtime}} > 6;
-				
-				# cope with a missed ping, this means you must set the pingint large enough
-				if ($t > $tochan->{pingint}  && $t < 2 * $tochan->{pingint} ) {
-					$t -= $tochan->{pingint};
-				}
-				
-				# calc smoothed RTT a la TCP
-				if (@{$tochan->{pingtime}} == 1) {
-					$tochan->{pingave} = $t;
-				} else {
-					$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
-				}
-				$tochan->{nopings} = $nopings; # pump up the timer
-				if (my $ivp = Investigate::get($from, $self->{call})) {
-					$ivp->handle_ping;
-				}
-			} elsif (my $rref = Route::Node::get($r->{call})) {
-				if (my $ivp = Investigate::get($from, $self->{call})) {
-					$ivp->handle_ping;
-				}
-			}
-		}
 	}
 }
 
@@ -1737,7 +1685,7 @@ sub process
 			if ($dxchan->{nopings} <= 0) {
 				$dxchan->disconnect;
 			} else {
-				addping($main::mycall, $dxchan->call);
+				DXXml::Ping::add($main::me, $dxchan->call);
 				$dxchan->{nopings} -= 1;
 				$dxchan->{lastping} = $t;
 				$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
@@ -2193,29 +2141,6 @@ sub load_hops
 	do "$main::data/hop_table.pl";
 	return $@ if $@;
 	return ();
-}
-
-
-# add a ping request to the ping queues
-sub addping
-{
-	my ($from, $to, $via) = @_;
-	my $ref = $pings{$to} || [];
-	my $r = {};
-	$r->{call} = $from;
-	$r->{t} = [ gettimeofday ];
-	if ($via && (my $dxchan = DXChannel::get($via))) {
-		$dxchan->send(pc51($to, $main::mycall, 1));
-	} else {
-		route(undef, $to, pc51($to, $main::mycall, 1));
-	}
-	push @$ref, $r;
-	$pings{$to} = $ref;
-	my $u = DXUser->get_current($to);
-	if ($u) {
-		$u->lastping(($via || $from), $main::systime);
-		$u->put;
-	}
 }
 
 sub process_rcmd

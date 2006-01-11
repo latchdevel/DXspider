@@ -35,6 +35,7 @@ use Net::Telnet;
 use QSL;
 use DB_File;
 use VE7CC;
+use DXXml;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug

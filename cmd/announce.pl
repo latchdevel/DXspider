@@ -48,10 +48,24 @@ if ($sort eq "FULL") {
 # change ^ into : for transmission
 $line =~ s/\^/:/og;
 
+# if this is a 'bad spotter' user then ignore it
+my $nossid = $from;
+my $drop = 0;
+$nossid =~ s/-\d+$//;
+if ($DXProt::badspotter->in($nossid)) {
+	LogDbg('DXCommand', "bad spotter ($from) announcement: $line");
+	$drop++;
+}
+
+# have they sworn?
 my @bad;
 if (@bad = BadWords::check($line)) {
 	$self->badcount(($self->badcount||0) + @bad);
 	LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
+	$drop++;
+}
+
+if ($drop) {
 	Log('ann', $to, $from, "[to $from only] $line");
 	$self->send("To $to de $from <$t>: $line");
 	return (1, ());

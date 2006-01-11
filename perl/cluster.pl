@@ -510,9 +510,8 @@ for (;;) {
 	
 	# do timed stuff, ongoing processing happens one a second
 	if ($timenow != $systime) {
-		reap if $zombies;
-		$systime = $timenow;
-		IsoTime::update($systime);
+		reap() if $zombies;
+		IsoTime::update($systime = $timenow);
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXXml::process();

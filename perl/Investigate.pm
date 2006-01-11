@@ -20,9 +20,12 @@ package Investigate;
 use DXDebug;
 use DXUtil;
 
-use vars qw($VERSION $BRANCH);
 
-main::mkver($VERSION = q$Revision$);
+use vars qw($VERSION $BRANCH);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw (%list %valid $pingint $maxpingwait);
 
@@ -121,7 +124,7 @@ sub process
 		if ($v->{state} eq 'start') {
 			my $via = $via{$v->{via}} || 0;
 			if ($main::systime > $via+$pingint) {
-				DXProt::addping($main::mycall, $v->{call}, $v->{via});
+				DXXml::Ping::add($main::me, $v->{call}, $v->{via});
 				$v->{start} = $lastping = $main::systime;
 				dbg("Investigate: ping sent to $v->{call} via $v->{via}") if isdbg('investigate');
 				$v->chgstate('waitping');
