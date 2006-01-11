@@ -101,11 +101,7 @@ sub handle_ping_reply
 		my $dxchan = DXChannel::get($r->{u});
 		next unless $dxchan;
 		my $t = tv_interval($r->{'-hirestime'}, [ gettimeofday ]);
-		if ($dxchan->is_user) {
-			my $s = sprintf "%.2f", $t; 
-			my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
-			$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
-		} elsif ($dxchan->is_node) {
+		if ($dxchan->is_node) {
 			if ($tochan) {
 				my $nopings = $tochan->user->nopings || $DXProt::obscount;
 				push @{$tochan->{pingtime}}, $t;
@@ -127,11 +123,16 @@ sub handle_ping_reply
 					$ivp->handle_ping;
 				}
 			} elsif (my $rref = Route::Node::get($r->{to})) {
-				if (my $ivp = Investigate::get($from, $fromdxchan->{to})) {
+				if (my $ivp = Investigate::get($from, $fromdxchan->{call})) {
 					$ivp->handle_ping;
 				}
 			}
-		}
+		}		
+		if ($dxchan->is_user) {
+			my $s = sprintf "%.2f", $t; 
+			my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
+			$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
+		} 
 	}
 }
 
