@@ -66,7 +66,6 @@ sub add
 	$self->{u} = $from;
 	$self->{'-via'} = $via if $via && DXChannel::get($via);
 	$self->{o} = $main::mycall;
-	$self->{id} = $self->nextid;
 	$self->route($dxchan);
 
 	push @$ref, $self;

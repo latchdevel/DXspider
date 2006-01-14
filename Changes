@@ -1,3 +1,5 @@
+14Jan06=======================================================================
+1. undo frequency rounding change, it causes more problems than it solves.
 11Jan06=======================================================================
 1. Fixed problem with badspotters doing ann/full as pointed out by Luigi 
 IK5ZUK.
