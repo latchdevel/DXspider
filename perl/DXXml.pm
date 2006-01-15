@@ -42,13 +42,12 @@ sub init
 	return unless $main::do_xml;
 	
 	eval { require XML::Simple };
-	eval { require XML::SAX } unless $@;
-	eval { require XML::SAX::Expat } unless $@;
+	eval { require XML::Parser } unless $@;
 	if ($@) {
 		LogDbg('err', "do_xml was set to 1 and the XML routines failed to load ($@)");
 		$main::do_xml = 0;
 	} else {
-		$XML::Simple::PREFERRED_PARSER = 'XML::SAX::Expat';
+		$XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 		import XML::Simple;
 		$DXProt::handle_xml = 1;
 		$xs = new XML::Simple(Cache=>[]);
