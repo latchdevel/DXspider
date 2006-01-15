@@ -21,6 +21,13 @@ sub new
 {
 	my $pkg = shift;
 	my $size = shift;
+
+	# 0 - size
+	# 1 - lth
+	# 2 - end
+	# 3 - start
+	# 4 - pos
+	# 5 - buffer []
 	return bless [$size, 0, 0, 0, 0, []], (ref $pkg || $pkg);
 }
 
