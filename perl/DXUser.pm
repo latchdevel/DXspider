@@ -141,7 +141,7 @@ sub init
 
 		$ufn = "$fn.v3";
 		$v3 = 1;
-		$convert++ unless -e $ufn;
+		$convert++ if -e "$fn.v2" && !-e $ufn;
 	}
 	
 	if ($mode) {
@@ -150,10 +150,12 @@ sub init
 		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
 	}
 
+	die "Cannot open $ufn ($!)\n" unless $dbm;
+
 	$lru = LRU->newbase("DXUser", $lrusize);
 	
 	# do a conversion if required
-	if ($convert) {
+	if ($dbm && $convert) {
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
 		
 		my %oldu;

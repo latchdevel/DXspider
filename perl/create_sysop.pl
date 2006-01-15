@@ -16,7 +16,6 @@ BEGIN {
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 
 	unshift @INC, "$root/local";
-	sub main::mkver {}
 }
 
 use DXVars;
@@ -85,7 +84,9 @@ if (-e $lockfn) {
 	close CLLOCK;
 }
 
-if (-e "$userfn") {
+$DXUser::v3 = 1;
+
+if (-e "$userfn.v2" || -e "$userfn.v3") {
 	print "Do you wish to destroy your user database (THINK!!!) [y/N]: ";
 	$ans = <STDIN>;
 	if ($ans =~ /^[Yy]/) {

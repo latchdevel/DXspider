@@ -10,10 +10,11 @@ package DXLog;
 
 use IO::File;
 use DXVars;
-#use DXDebug ();
+use DXDebug qw(dbg isdbg);
 use DXUtil;
 use DXLog;
 use Julian;
+use RingBuf;
 
 use strict;
 
@@ -32,7 +33,7 @@ sub print
 {
 	my $fcb = $DXLog::log;
 	my $from = shift || 0;
-	my $to = shift || 20;
+	my $to = shift || 10;
 	my $jdate = $fcb->unixtoj(shift);
 	my $pattern = shift;
 	my $who = uc shift;
@@ -46,7 +47,7 @@ sub print
 	if ($pattern) {
 		$hint = "m{\\Q$pattern\\E}i";
 	} else {
-		$hint = "!m{ann|rcmd|talk|chat}";
+		$hint = "!m{\\^(?:ann|rcmd|talk|chat)\\^}";
 	}
 	if ($who) {
 		$hint .= ' && ' if $hint;
@@ -59,24 +60,30 @@ sub print
 	$eval = qq(while (<\$fh>) {
 				   $hint;
 				   chomp;
-				   push \@tmp, \$_;
+				   \$ring->write(\$_);
 			   } );
+	
+	if (isdbg('search')) {
+		dbg("sh/log hint: $hint");
+		dbg("sh/log eval: $eval");
+	}
 	
 	$fcb->close;                                      # close any open files
 
 	my $fh = $fcb->open($jdate); 
  L1: for (;@in < $to;) {
 		my $ref;
+		my $ring = RingBuf->new($tot);
+
 		if ($fh) {
 			my @tmp;
 			eval $eval;               # do the search on this file
 			return ("Log search error", $@) if $@;
-			@in = (@tmp, @in);
-			if (@in > $to) {
-				@in = splice @in, -$to, $to;
-				last L1;
-			} 
+			
+			@in = ($ring->readall, @in);
+			last L1 if @in > $tot;
 		}
+
 		$fh = $fcb->openprev();      # get the next file
 		last if !$fh;
 	}
@@ -87,6 +94,7 @@ sub print
 	}
 	return @out;
 }
+
 
 #
 # the standard log printing interpreting routine.

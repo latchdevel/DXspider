@@ -53,7 +53,7 @@ my $nossid = $from;
 my $drop = 0;
 $nossid =~ s/-\d+$//;
 if ($DXProt::badspotter->in($nossid)) {
-	LogDbg('DXCommand', "bad spotter ($from) made announcement: $line");
+	LogDbg('DXCommand', "bad spotter ($self->{call}) made announcement: $line");
 	$drop++;
 }
 
