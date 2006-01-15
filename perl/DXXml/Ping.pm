@@ -118,16 +118,9 @@ sub handle_ping_reply
 					$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 				}
 				$tochan->{nopings} = $nopings; # pump up the timer
-				if (my $ivp = Investigate::get($from, $fromdxchan->{call})) {
-					$ivp->handle_ping;
-				}
-			} elsif (my $rref = Route::Node::get($r->{to})) {
-				if (my $ivp = Investigate::get($from, $fromdxchan->{call})) {
-					$ivp->handle_ping;
-				}
 			}
-		}		
-		if ($dxchan->is_user) {
+			_handle_believe($from, $fromdxchan->{call});
+		} elsif ($dxchan->is_user) {
 			my $s = sprintf "%.2f", $t; 
 			my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
 			$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
@@ -135,4 +128,18 @@ sub handle_ping_reply
 	}
 }
 
+sub _handle_believe
+{
+	my ($from, $via) = @_;
+	
+	if (my $ivp = Investigate::get($from, $via)) {
+		$ivp->handle_ping;
+	} else {
+		my $user = DXUser->get_current($from);
+		if ($user) {
+			$user->set_believe($via);
+			$user->put;
+		}
+	}
+}
 1;

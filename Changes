@@ -1,3 +1,9 @@
+15Jan06=======================================================================
+1. Fix some obviously long standing problems with create_sysop.pl and also
+with initialising the User file.
+2. Fixed the problem with certain things not being shown in sh/log (because of
+a regex that rejected too many things).
+3. Speeded up sh/log quite a bit at the same time.
 14Jan06=======================================================================
 1. undo frequency rounding change, it causes more problems than it solves.
 11Jan06=======================================================================
