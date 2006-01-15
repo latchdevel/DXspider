@@ -4,6 +4,7 @@ with initialising the User file.
 2. Fixed the problem with certain things not being shown in sh/log (because of
 a regex that rejected too many things).
 3. Speeded up sh/log quite a bit at the same time.
+4. Add a default limit of the last 36 months for sh/log querys. 
 14Jan06=======================================================================
 1. undo frequency rounding change, it causes more problems than it solves.
 11Jan06=======================================================================

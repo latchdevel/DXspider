@@ -18,11 +18,13 @@ use RingBuf;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
+use vars qw($VERSION $BRANCH $maxmonths);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
 $main::branch += $BRANCH;
+
+$maxmonths = 36;
 
 #
 # print some items from the log backwards in time
@@ -70,8 +72,9 @@ sub print
 	
 	$fcb->close;                                      # close any open files
 
+	my $months;
 	my $fh = $fcb->open($jdate); 
- L1: for (;@in < $to;) {
+ L1: for ($months = 0; $months < $maxmonths && @in < $tot; $months++) {
 		my $ref;
 		my $ring = RingBuf->new($tot);
 
@@ -87,6 +90,9 @@ sub print
 		$fh = $fcb->openprev();      # get the next file
 		last if !$fh;
 	}
+	
+	@in = splice @in, -$tot, $tot if @in > $tot;
+    
 	for (@in) {
 		my @line = split /\^/ ;
 		push @out, print_item(\@line);
