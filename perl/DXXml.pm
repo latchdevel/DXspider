@@ -19,7 +19,7 @@ use DXXml::Ping;
 use DXXml::Dx;
 use DXXml::IM;
 
-use vars qw($VERSION $BRANCH $xs $id $max_old_age $max_future_age);
+use vars qw($VERSION $BRANCH $xs $id $max_old_age $max_future_age $dupeage);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
@@ -29,6 +29,8 @@ $xs = undef;					# the XML::Simple parser instance
 $id = 0;						# the next ID to be used
 $max_old_age = 3600;			# how old a sentence we will accept
 $max_future_age = 900;			# how far into the future we will accept
+$dupeage = 12*60*60;			# duplicates stored half a day 
+
 
 # generate a new XML sentence structure 
 sub new
@@ -113,7 +115,7 @@ sub normal
 	# now check that we have not seen this before 
 	# this is based on the tuple (o (origin), t (time, normalised to time_t), id)
 	$xref->{'-timet'} = $t;
-	return if DXDupe::check("xml,$o,$t,$id");
+	return if DXDupe::check("xml,$o,$t,$id", $dupeage);
 		
 	$xref = bless $xref, $pkg;
 	$xref->{'-xml'} = $line; 
