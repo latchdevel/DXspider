@@ -84,7 +84,7 @@ sub print
 			return ("Log search error", $@) if $@;
 			
 			@in = ($ring->readall, @in);
-			last L1 if @in > $tot;
+			last L1 if @in >= $tot;
 		}
 
 		$fh = $fcb->openprev();      # get the next file
