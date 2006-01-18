@@ -28,7 +28,7 @@ sub new
 	# 3 - start
 	# 4 - pos
 	# 5 - buffer []
-	return bless [$size, 0, 0, 0, 0, []], (ref $pkg || $pkg);
+	return bless [$size+1, 0, 0, 0, 0, []], (ref $pkg || $pkg);
 }
 
 sub write
@@ -37,10 +37,7 @@ sub write
 
 	$self->[5]->[$self->[2]++] = shift;
 	$self->[2] = 0 if $self->[2] >= $self->[0];
-	if ($self->[1] < $self->[0]) {
-		$self->[1] = ++$self->[1];
-	}
-	$self->[2] = $self->[2];
+	$self->[1]++ if $self->[1] < $self->[0];
 	if ($self->[1] == $self->[0] && $self->[2] == $self->[3]) {
 		$self->[3] = $self->[2]+1;
 		$self->[3] = 0 if $self->[3] >= $self->[0]; 

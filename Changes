@@ -1,3 +1,5 @@
+18Jan06=======================================================================
+1. Fix spurious announce from previous year appearing in sh/ann.
 15Jan06=======================================================================
 1. Fix some obviously long standing problems with create_sysop.pl and also
 with initialising the User file.
