@@ -14,10 +14,12 @@ use IsoTime;
 use DXProt;
 use DXDebug;
 use DXLog;
+use DXUtil;
 use DXXml::Ping;
 use DXXml::Dx;
+use DXXml::IM;
 
-use vars qw($VERSION $BRANCH $xs $id);
+use vars qw($VERSION $BRANCH $xs $id $max_old_age $max_future_age);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
 $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
 $main::build += $VERSION;
@@ -25,6 +27,8 @@ $main::branch += $BRANCH;
 
 $xs = undef;					# the XML::Simple parser instance
 $id = 0;						# the next ID to be used
+$max_old_age = 3600;			# how old a sentence we will accept
+$max_future_age = 900;			# how far into the future we will accept
 
 # generate a new XML sentence structure 
 sub new
@@ -82,11 +86,35 @@ sub normal
 		undef $@;
 		return;
 	}
-	
+
+	# do some basic checks
+	my ($o, $t, $id);
+	unless (exists $xref->{o} && is_callsign($o = $xref->{o})) {
+		dbg("Invalid origin, not a callsign") if isdbg('chanerr');
+		return;
+	}
+	unless (exists $xref->{t} && ($t = IsoTime::unixtime($xref->{t}))) {
+		dbg("Invalid, non-existant or zero time") if isdbg('chanerr');
+		return;
+	}
+	unless ($t < $main::systime - $max_old_age || $t > $main::systime + $max_future_age) {
+		dbg("Too old or too far in the future") if isdbg('chanerr');
+		return;
+	}
+	unless (exists $xref->{id} && ($id = $xref->{id}) >= 0 && $id <= 9999) {
+		dbg("Invalid or non-existant id") if isdbg('chanerr');
+		return;
+	}
+
 	# mark the handle as accepting xml (but only if they 
 	# have at least one right)
 	$dxchan->handle_xml(1);
 
+	# now check that we have not seen this before 
+	# this is based on the tuple (o (origin), t (time, normalised to time_t), id)
+	$xref->{'-timet'} = $t;
+	return if DXDupe::check("xml,$o,$t,$id");
+		
 	$xref = bless $xref, $pkg;
 	$xref->{'-xml'} = $line; 
 	$xref->handle_input($dxchan);
