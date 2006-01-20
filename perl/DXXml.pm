@@ -99,11 +99,11 @@ sub normal
 		dbg("Invalid, non-existant or zero time") if isdbg('chanerr');
 		return;
 	}
-	unless ($t < $main::systime - $max_old_age || $t > $main::systime + $max_future_age) {
+	unless ($t > $main::systime - $max_old_age && $t < $main::systime + $max_future_age) {
 		dbg("Too old or too far in the future") if isdbg('chanerr');
 		return;
 	}
-	unless (exists $xref->{id} && ($id = $xref->{id}) >= 0 && $id <= 9999) {
+	unless (exists $xref->{id} && ($id = $xref->{id}) >= 0 && $id <= 999) {
 		dbg("Invalid or non-existant id") if isdbg('chanerr');
 		return;
 	}
