@@ -63,7 +63,7 @@ sub add
 	my $ref = $pings{$to} || [];
 	my $r = {};
 	my $self = DXXml::Ping->new(to=>$to, '-hirestime'=>[ gettimeofday ], s=>'1');
-	$self->{u} = $from;
+	$self->{u} = $from unless $from eq $main::mycall;
 	$self->{'-via'} = $via if $via && DXChannel::get($via);
 	$self->{o} = $main::mycall;
 	$self->route($dxchan);
