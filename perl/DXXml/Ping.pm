@@ -97,7 +97,7 @@ sub handle_ping_reply
 	my $tochan = DXChannel::get($from);
 	while (@$ref) {
 		my $r = shift @$ref;
-		my $dxchan = DXChannel::get($r->{u});
+		my $dxchan = DXChannel::get($r->{o});
 		next unless $dxchan;
 		my $t = tv_interval($r->{'-hirestime'}, [ gettimeofday ]);
 		if ($dxchan->is_node) {
@@ -120,7 +120,8 @@ sub handle_ping_reply
 				$tochan->{nopings} = $nopings; # pump up the timer
 			}
 			_handle_believe($from, $fromdxchan->{call});
-		} elsif ($dxchan->is_user) {
+		} 
+		if (exists $r->{u} && ($dxchan = DXChannel::get($r->{u})) && $dxchan->is_user) {
 			my $s = sprintf "%.2f", $t; 
 			my $ave = sprintf "%.2f", $tochan ? ($tochan->{pingave} || $t) : $t;
 			$dxchan->send($dxchan->msg('pingi', $from, $s, $ave))
