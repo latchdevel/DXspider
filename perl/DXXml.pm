@@ -190,7 +190,7 @@ sub toxml
 
 	unless (exists $self->{'-xml'}) {
 		$self->{o} ||= $main::mycall;
-		$self->{t} ||= IsoTime::dayminsec();
+		$self->{t} ||= IsoTime::hourminsec();
 		$self->{id} ||= nextid();
 		
 		my ($name) = (ref $self) =~ /::(\w+)$/;
