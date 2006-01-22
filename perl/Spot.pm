@@ -407,6 +407,7 @@ sub dup
 		}
 	}
 	my $otext = $text;
+	$text =~ s/^\+\w+\s*//;			# remove leading LoTW callsign
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/\s{2,}[\dA-Z]?[A-Z]\d?$// if length $text > 24;
 	$text =~ s/[^\w]//g;
