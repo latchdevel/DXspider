@@ -64,7 +64,7 @@ sub init
 		$XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 		import XML::Simple;
 		$DXProt::handle_xml = 1;
-		$xs = new XML::Simple(Cache=>[]);
+		$xs = new XML::Simple(ContentKey=>'content', ForceArray=>1);
 	}
 	undef $@;
 }
@@ -125,9 +125,9 @@ sub normal
 	$xref->{'-timet'} = $t;
 	return if DXDupe::check("xml,$o,$t,$id", $dupeage);
 		
-	$xref = bless $xref, $pkg;
-	$xref->{'-xml'} = $line; 
-	$xref->handle_input($dxchan);
+	my $r = bless $xref, $pkg;
+	$r->{'-xml'} = $line; 
+	$r->handle_input($dxchan);
 }
 
 #
@@ -269,7 +269,7 @@ sub route
 
 	if ($dxchan->handle_xml) {
 		$dxchan->send($self->toxml);
-	} elsif ($dxchan->isnode) {
+	} elsif ($dxchan->is_node) {
 		my $ref = $self->topcxx($dxchan);
 		if (ref $ref) {
 			for (@$ref) {
