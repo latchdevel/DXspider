@@ -18,6 +18,8 @@ use DXUtil;
 use DXXml::Ping;
 use DXXml::Dx;
 use DXXml::IM;
+use DXXml::Text;
+use DXXml::Cmd;
 
 use vars qw($VERSION $BRANCH $xs $id $max_old_age $max_future_age $dupeage);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -37,7 +39,13 @@ sub new
 {
 	my $pkg = shift;
 	my $class = ref $pkg || $pkg;
-	return bless{@_}, $class;
+	my $self = bless{@_}, $class;
+	while (@_) {
+		my $key = shift;
+		my $val = shift;
+		$self->{$key} = $val if defined $val;
+	}
+	return $self; 
 }
 
 #
@@ -204,7 +212,13 @@ sub route
 	my $self = shift;
 	my $fromdxchan = shift;
 	my $to = shift;
-	my $via = $to || $self->{'-via'} || $self->{to};
+	my $via = $to;
+	my $dxchan;
+	
+	if (my $u = $self->{u}) {
+		$via ||= $u if ($dxchan = DXChannel::get($u));
+	}
+	$via ||= $self->{'-via'} || $self->{to};
 
 	unless ($via) {
 		dbg("XML: no route specified (" . $self->toxml . ")") if isdbg('chanerr');
@@ -216,7 +230,7 @@ sub route
 	}
 
 	# always send it down the local interface if available
-	my $dxchan = DXChannel::get($via);
+	$dxchan ||= DXChannel::get($via);
 	if ($dxchan) {
 		dbg("route: $via -> $dxchan->{call} direct" ) if isdbg('route');
 	} else {
@@ -249,13 +263,30 @@ sub route
 		return;
 	}
 
+	$self->{o} ||= $main::mycall;
+	$self->{id} ||= nextid();
+	$self->{'-timet'} ||= $main::systime;
+
 	if ($dxchan->handle_xml) {
 		$dxchan->send($self->toxml);
+	} elsif ($dxchan->isnode) {
+		my $ref = $self->topcxx($dxchan);
+		if (ref $ref) {
+			for (@$ref) {
+				$dxchan->send($_);
+			}
+		} else {
+			$dxchan->send($ref);
+		}
 	} else {
-		$self->{o} ||= $main::mycall;
-		$self->{id} ||= nextid();
-		$self->{'-timet'} ||= $main::systime;
-		$dxchan->send($self->topcxx);
+		my $ref = $self->tocmd($dxchan);
+		if (ref $ref) {
+			for (@$ref) {
+				$dxchan->send($_);
+			}
+		} else {
+			$dxchan->send($ref);
+		}
 	}
 }
 
