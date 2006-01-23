@@ -29,13 +29,17 @@ sub handle_input
 	my $self = shift;
 	my $dxchan = shift;
 
-	# this is always routed
-	if ($self->{to} eq $main::mycall ) {
-		my $r = DXChannel::get($main::myalias);
-		$dxchan = $r if $r;
+	if ($self->{to} eq $main::mycall) {
+		my $tochan = DXChannel::get($self->{u} || $main::myalias);
+		if ($tochan) {
+			my $ref = $self->tocmd;
+			$tochan->send($_) for (ref $ref ? @$ref : $ref);
+		} else {
+			dbg("no user or $main::myalias not online") if isdbg('chanerr');
+		}
+	} else {	
+		$self->route($dxchan);
 	}
-	$self->route($dxchan);
-
 }
 
 sub topcxx
