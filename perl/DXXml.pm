@@ -39,7 +39,7 @@ sub new
 {
 	my $pkg = shift;
 	my $class = ref $pkg || $pkg;
-	my $self = bless{@_}, $class;
+	my $self = bless{}, $class;
 	while (@_) {
 		my $key = shift;
 		my $val = shift;
@@ -271,22 +271,10 @@ sub route
 		$dxchan->send($self->toxml);
 	} elsif ($dxchan->is_node) {
 		my $ref = $self->topcxx($dxchan);
-		if (ref $ref) {
-			for (@$ref) {
-				$dxchan->send($_);
-			}
-		} else {
-			$dxchan->send($ref);
-		}
+		$dxchan->send($ref);
 	} else {
 		my $ref = $self->tocmd($dxchan);
-		if (ref $ref) {
-			for (@$ref) {
-				$dxchan->send($_);
-			}
-		} else {
-			$dxchan->send($ref);
-		}
+		$dxchan->send($ref);
 	}
 }
 
