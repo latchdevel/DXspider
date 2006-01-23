@@ -14,8 +14,8 @@ use DXDebug;
 use DXProt;
 use IsoTime;
 use Investigate;
-use Time::HiRes qw(gettimeofday tv_interval);
 use DXXml::Text;
+use DXLog;
 
 use vars qw($VERSION $BRANCH @ISA %pings);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -56,7 +56,7 @@ sub handle_input
 			}
 			Log('rcmd', 'in', $ref->{priv}, $self->{o}, "$self->{content}($answer)");
 		}
-		my $rep = DXXml::Text->new(u=>$self->{u}, to=>$self->{o}, content=>join('%0A', @in));
+		my $rep = DXXml::Text->new(u=>$self->{u}, to=>$self->{o}, content=>join('%0A', map {"$main::mycall:$_"} @in));
 		$rep->route($main::me); # because it's coming from me!
 	} else {
 		$self->route($dxchan);

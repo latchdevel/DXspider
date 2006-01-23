@@ -396,15 +396,16 @@ sub send						# this is always later and always data
 	return unless $conn;
 	my $call = $self->{call};
 
-	for (@_) {
-#		chomp;
-        my @lines = split /\n/;
-		for (@lines) {
-			$conn->send_later("D$call|$_");
-			dbg("-> D $call $_") if isdbg('chan');
+	foreach my $l (@_) {
+		for (ref $l ? @$l : $l) {
+			my @lines = split /\n/;
+			for (@lines) {
+				$conn->send_later("D$call|$_");
+				dbg("-> D $call $_") if isdbg('chan');
+			}
 		}
 	}
-	$self->{t} = time;
+	$self->{t} = $main::systime;
 }
 
 # send a file (always later)

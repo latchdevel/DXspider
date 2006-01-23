@@ -12,9 +12,7 @@ package DXXml::Text;
 
 use DXDebug;
 use DXProt;
-use IsoTime;
-use Investigate;
-use Time::HiRes qw(gettimeofday tv_interval);
+use DXLog;
 
 use vars qw($VERSION $BRANCH @ISA %pings);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
@@ -32,8 +30,7 @@ sub handle_input
 	if ($self->{to} eq $main::mycall) {
 		my $tochan = DXChannel::get($self->{u} || $main::myalias);
 		if ($tochan) {
-			my $ref = $self->tocmd;
-			$tochan->send($_) for (ref $ref ? @$ref : $ref);
+			$tochan->send($self->tocmd);
 		} else {
 			dbg("no user or $main::myalias not online") if isdbg('chanerr');
 		}
@@ -54,9 +51,9 @@ sub topcxx
 		$line =~ s/\s*$//;
 		Log('rcmd', 'out', $self->{to}, $line);
 		if ($self->{u} && $dxchan->is_clx && $ref->is_clx) {
-			push @out, pc85($main::mycall, $self->{to}, $self->{u}, "$main::mycall:$line");
+			push @out, DXProt::pc85($main::mycall, $self->{to}, $self->{u}, "$main::mycall:$line");
 		} else {
-			push @out, pc35($main::mycall, $self->{to}, "$main::mycall:$line");
+			push @out, DXProt::pc35($main::mycall, $self->{to}, "$main::mycall:$line");
 		}
 	}
 
