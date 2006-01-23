@@ -35,7 +35,7 @@ sub handle_input
 		
 		my $cmd = $self->{content};
 		
-		if ($self->{o} eq $dxchan->call) {	# online user or node
+		if ($self->{u} && $self->{u} eq $dxchan->call) {	# online user or node
 			@in = (DXCommandmode::run_cmd($dxchan, $cmd));
 		} else {
 			# remote command
@@ -57,7 +57,7 @@ sub handle_input
 			Log('rcmd', 'in', $ref->{priv}, $self->{o}, "$self->{content}($answer)");
 		}
 		my $rep = DXXml::Text->new(u=>$self->{u}, to=>$self->{o}, content=>join('%0A', @in));
-		$rep->route($dxchan);
+		$rep->route($main::me); # because it's coming from me!
 	} else {
 		$self->route($dxchan);
 	}
