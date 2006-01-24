@@ -38,6 +38,9 @@ sub handle_input
 									   ot=>$self->{t}
 									  );
 			$dxchan->send($rep->toxml);
+			if ($dxchan->{outgoing} && abs($dxchan->{lastping} - $main::systime) < 15) {
+				$dxchan->{lastping} += $dxchan->{pingint} / 2; 
+			}
 		} else {
 			handle_ping_reply($dxchan, $self->{o}, $self->{ot}, $self->{oid});
 		}

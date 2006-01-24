@@ -156,7 +156,6 @@ sub process
 				DXXml::Ping::add($main::me, $dxchan->call);
 				$dxchan->{nopings} -= 1;
 				$dxchan->{lastping} = $t;
-				$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
 			}
 		}
 	}
