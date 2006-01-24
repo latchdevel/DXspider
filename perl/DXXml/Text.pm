@@ -46,8 +46,8 @@ sub topcxx
 	my @out;
 
 	my $ref = DXUser->get_current($self->{to});
-	while (@_) {
-		my $line = shift;
+	for (split /(?:%0D)?\%0A/, $self->{content}) {
+		my $line = $_;
 		$line =~ s/\s*$//;
 		Log('rcmd', 'out', $self->{to}, $line);
 		if ($self->{u} && $dxchan->is_clx && $ref->is_clx) {
