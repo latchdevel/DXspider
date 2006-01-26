@@ -1,3 +1,6 @@
+26Jan06=======================================================================
+1. Fix divide by 0 error in DXBearing (how come this has taken so long to
+appear?).
 22Jan06=======================================================================
 1. Remove +<prefix> from the fronts of comments to fix LoTW dupes.
 18Jan06=======================================================================
