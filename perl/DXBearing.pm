@@ -95,12 +95,12 @@ sub bdist
 	my $e = dr(shift);
 	return (0, 0) if $hn == $n && $he == $e;
 	my $co = cos($he-$e)*cos($hn)*cos($n)+sin($hn)*sin($n);
-	my $ca = atan(abs(sqrt(1-$co*$co)/$co));
+	my $ca = $co ? atan(abs(sqrt(1-$co*$co)/$co)) : $pi;
 	$ca = $pi-$ca if $co < 0;
 	my $dx = 6367*$ca;
 	my $si = sin($e-$he)*cos($n)*cos($hn);
 	$co = sin($n)-sin($hn)*cos($ca);
-	my $az = atan(abs($si/$co));
+	my $az = $co ? atan(abs($si/$co)) : $pi;
 	$az = $pi - $az if $co < 0;
 	$az = -$az if $si < 0;
 	$az = $az+2*$pi if $az < 0;
