@@ -82,7 +82,7 @@ $handle_xml = 0;				# handle XML sentences
 @checklist = 
 (
  [ qw(i c c m bp bc c) ],			# pc10
- [ qw(i f bm d t m c c h) ],		# pc11
+ [ qw(i f m d t m c c h) ],		# pc11
  [ qw(i c bm m bm bm p h) ],		# pc12
  [ qw(i c h) ],					# 
  [ qw(i c h) ],					# 
@@ -477,6 +477,13 @@ sub handle_11
 			
 	# rsfp check
 	#			return if $rspfcheck and !$self->rspfcheck(1, $_[7], $_[6]);
+	
+	# is the spotted callsign blank? This should really be trapped earlier but it
+	# could break other protocol sentences.
+	if ($_[2] =~ /^\s*$/) {
+		dbg("PCPROT: blank callsign, dropped") if isdbg('chanerr');
+		return;
+	}
 
 	# if this is a 'nodx' node then ignore it
 	if ($badnode->in($_[7])) {
