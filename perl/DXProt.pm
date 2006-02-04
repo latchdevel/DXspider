@@ -479,11 +479,16 @@ sub handle_11
 	#			return if $rspfcheck and !$self->rspfcheck(1, $_[7], $_[6]);
 	
 	# is the spotted callsign blank? This should really be trapped earlier but it
-	# could break other protocol sentences.
+	# could break other protocol sentences. Also check for lower case characters.
 	if ($_[2] =~ /^\s*$/) {
 		dbg("PCPROT: blank callsign, dropped") if isdbg('chanerr');
 		return;
 	}
+	if ($_[2] =~ /[a-z]/) {
+		dbg("PCPROT: lowercase characters, dropped") if isdbg('chanerr');
+		return;
+	}
+
 
 	# if this is a 'nodx' node then ignore it
 	if ($badnode->in($_[7])) {
