@@ -4,6 +4,7 @@
 3. Try to make the state machine in convkeps.pl deal with more variations
 of the 2 line keps sets that are available on line. Also give a sensible
 error message if no keps were actually decoded.
+4. Update the base keps to the latest set of AMSAT keps 06033.
 04Feb06=======================================================================
 1. Explicitly ignore spots with lower case characters in the spotted call
 01Feb06=======================================================================
