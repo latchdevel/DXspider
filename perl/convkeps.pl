@@ -94,6 +94,7 @@ while (<$f>) {
 		$state = 1;
 	} elsif ($state == 1) {
 		last if m{^-};
+		next if m{^To\s+all}i;
 		
 		if (/^[- \w]+$/) {
 			s/\s/-/g;
@@ -116,7 +117,7 @@ while (<$f>) {
 			
 			$state = 3;
 		} else {
-#			print "out of order on line $line\n";
+			#print "out of order on line $line\n";
 			undef $ref;
 			delete $keps{$name};
 			$state = 1;
@@ -133,7 +134,7 @@ while (<$f>) {
 			$ref->{orbit} = $orbit - 0;
 			$count++;
 		} else {
-#			print "out of order on line $line\n";
+			#print "out of order on line $line\n";
 			delete $keps{$name};
 		}
 		undef $ref;
