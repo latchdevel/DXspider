@@ -36,10 +36,13 @@ my ($d, $b1, $b2);				# distance, bearing from TX and from RX
 my ($lat2, $lon2);              # lats and longs in radians
 my $lat1 = $self->user->lat;
 my $lon1 = $self->user->long;
+my $loc1 = $self->user->qth || "unknown";
+
 if (!$lon1 && !$lat1) {
 	push @out, $self->msg('heade1');
 	$lat1 = $main::mylatitude;
 	$lon1 = $main::mylongitude;
+	$loc1 = $main::myqth;
 }
 $lat2 = $a->{lat};
 $lon2 = $a->{long};
@@ -119,7 +122,7 @@ $delay = ((2 * $hop * sin($dhop) * ($R + $hF)) / cos($beta1) / $VOFL) * 1e6;
 push @out, sprintf("RxSens: $rsens dBM SFI:%4.0f   R:%4.0f   Month: $month   Day: $day", $flux, $ssn);
 push @out, sprintf("Power :  %3.0f dBW    Distance:%6.0f km    Delay:%5.1f ms", $dB1, $d * $R, $delay);
 push @out, sprintf("Location                       Lat / Long           Azim");
-push @out, sprintf("%-30.30s %-18s    %3.0f", $main::myqth, DXBearing::lltos($lat1*$r2d, -$lon1*$r2d), $b1 * $r2d);
+push @out, sprintf("%-30.30s %-18s    %3.0f", $loc1, DXBearing::lltos($lat1*$r2d, -$lon1*$r2d), $b1 * $r2d);
 push @out, sprintf("%-30.30s %-18s    %3.0f", $a->name, DXBearing::lltos($lat2*$r2d, -$lon2*$r2d), $b2 * $r2d);
 my $head = "UT LT  MUF Zen";
 for ($i = 0; $i < $nfreq; $i++) {

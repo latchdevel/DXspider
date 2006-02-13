@@ -1,3 +1,13 @@
+13Feb06=======================================================================
+1. Updated prefixes with cty-1601 data.
+2. Fixed qth in show/muf so that it shows the correct qth (if known).
+3. Try to make the state machine in convkeps.pl deal with more variations
+of the 2 line keps sets that are available on line. Also give a sensible
+error message if no keps were actually decoded.
+04Feb06=======================================================================
+1. Explicitly ignore spots with lower case characters in the spotted call
+01Feb06=======================================================================
+1. Explicitly ignore spots with blank spotted callsigns
 26Jan06=======================================================================
 1. Fix divide by 0 error in DXBearing (how come this has taken so long to
 appear?).
