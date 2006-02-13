@@ -59,6 +59,8 @@ my $state = 0;
 my $name;
 my $ref;
 my $line;
+my $count = 0;
+
 my $f = \*STDIN;
 
 while (@ARGV) {
@@ -79,19 +81,21 @@ while (@ARGV) {
 
 while (<$f>) {
 	++$line;
+#    print;
 	chomp;
+	last if m{^-};
+
 	s/^\s+//;
     s/[\s\r]+$//;
 	next unless $_;
 	last if m{^/EX}i;
-	last if m{^-};
 	
-	if ($state == 0 && /^TO ALL/) {
+	if ($state == 0 && /^Decode/i) {
 		$state = 1;
 	} elsif ($state == 1) {
-		last if m{^/EX/i};
+		last if m{^-};
 		
-		if (/^\w+/) {
+		if (/^[- \w]+$/) {
 			s/\s/-/g;
 			$name = uc $_;
 			$ref = $keps{$name} = {}; 
@@ -112,7 +116,7 @@ while (<$f>) {
 			
 			$state = 3;
 		} else {
-			print "out of order on line $line\n";
+#			print "out of order on line $line\n";
 			undef $ref;
 			delete $keps{$name};
 			$state = 1;
@@ -127,8 +131,9 @@ while (<$f>) {
 			$ref->{argperigee} = $peri - 0;
 			$ref->{raan} = $raan - 0;
 			$ref->{orbit} = $orbit - 0;
+			$count++;
 		} else {
-			print "out of order on line $line\n";
+#			print "out of order on line $line\n";
 			delete $keps{$name};
 		}
 		undef $ref;
@@ -136,16 +141,21 @@ while (<$f>) {
 	}
 }
 
-my $dd = new Data::Dumper([\%keps], [qw(*keps)]);
-$dd->Indent(1);
-$dd->Quotekeys(0);
-open(OUT, ">$fn") or die "$fn $!";
-print OUT "#\n# this file is automatically produced by convkeps.pl\n#\n";
-print OUT "# Last update: ", scalar gmtime, "\n#\n";
-print OUT "\npackage Sun;\n\n";
-print OUT $dd->Dumpxs;
-print OUT "1;\n";
-close(OUT);
+if ($count) {
+	my $dd = new Data::Dumper([\%keps], [qw(*keps)]);
+	$dd->Indent(1);
+	$dd->Quotekeys(0);
+	open(OUT, ">$fn") or die "$fn $!";
+	print OUT "#\n# this file is automatically produced by convkeps.pl\n#\n";
+	print OUT "# Last update: ", scalar gmtime, "\n#\n";
+	print OUT "\npackage Sun;\n\n";
+	print OUT $dd->Dumpxs;
+	print OUT "1;\n";
+	close(OUT);
+}
+
+print "$count keps converted\n";
+exit($count ? 0 : -1);
 
 
 # convert (+/-)00000-0 to (+/-).00000e-0
