@@ -1,3 +1,5 @@
+14Feb06=======================================================================
+1. Turn R and SFI around in mrtg.pl.
 13Feb06=======================================================================
 1. Updated prefixes with cty-1601 data.
 2. Fixed qth in show/muf so that it shows the correct qth (if known).
