@@ -126,7 +126,7 @@ if ($want{hfvhf} || $want{all}) {
 # wwv stuff
 if ($want{wwv} || $want{all}) {
 	$mc->cfgprint('wwvsfi', [qw(gauge)], 1000, 'WWV <font color=#00cc00>SFI</font> and <font color=#0000ff>R</font>', 'SFI / R', 'SFI', 'R') unless $want{dataonly};
-	$mc->data('wwvsfi', ($Geomag::r || $WCY::r), ($Geomag::sfi || $WCY::sfi), 'WWV SFI and R') unless $want{cfgonly};
+	$mc->data('wwvsfi', ($Geomag::sfi || $WCY::sfi), ($Geomag::r || $WCY::r), 'WWV SFI and R') unless $want{cfgonly};
 	$mc->cfgprint('wwvka', [qw(gauge)], 1000, 'WWV <font color=#00cc00>A</font> and <font color=#0000ff>K</font>',
 			 'A / K', 'A', 'K') unless $want{dataonly};
 	$mc->data('wwvka', $Geomag::a, $Geomag::k, 'WWV A and K') unless $want{cfgonly};
