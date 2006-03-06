@@ -66,7 +66,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 			push @l, sprintf "(%d users)", $node->usercount;
 		}
 		foreach $call (@val) {
-			if (@l >= 5) {
+			if (@l >= 6) {
 				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 				@l = ();
 				push @l, "";
@@ -80,7 +80,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 			}
 			push @l, $s;
 		}
-		push @l, "" while @l < 5;
+		push @l, "" while @l < 6;
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 }
