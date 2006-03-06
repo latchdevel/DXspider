@@ -845,9 +845,12 @@ sub handle_16
 			push @rout, $parent->add_user($call, $flags);
 		}
 		
+		# send info to all logged in thingies
+		$self->tell_login('loginu', $call) if DXUser->get_current($ncall)->is_local_node;
+		$self->tell_buddies('loginb', $call);
 				
 		# add this station to the user database, if required
-		$call =~ s/-\d+$//o;	# remove ssid for users
+#		$call =~ s/-\d+$//o;	# remove ssid for users
 		my $user = DXUser->get_current($call);
 		$user = DXUser->new($call) if !$user;
 		$user->homenode($parent->call) if !$user->homenode;
@@ -915,6 +918,10 @@ sub handle_17
 	} else {
 		$parent = Route->new($ncall);  # throw away
 	}
+
+	# send info to all logged in thingies
+	$self->tell_login('logoutu', $ucall) if DXUser->get_current($ncall)->is_local_node;
+	$self->tell_buddies('logoutb', $ucall);
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
@@ -1014,6 +1021,7 @@ sub handle_19
 				
 		# check for sane parameters
 		#				$ver = 5000 if $ver eq '0000';
+		next unless $ver && $ver =~ /^\d+$/;
 		next if $ver < 5000;	# only works with version 5 software
 		next if length $call < 3; # min 3 letter callsigns
 		next if $call eq $main::mycall;

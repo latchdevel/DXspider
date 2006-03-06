@@ -1,5 +1,5 @@
 #
-# join a group
+# join a group (note this applies only to users)
 #
 # Copyright (c) 2003 - Dirk Koopman G1TLH
 #

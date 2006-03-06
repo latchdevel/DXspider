@@ -153,7 +153,8 @@ sub alloc
 	if (defined $user) {
 		$self->{user} = $user;
 		$self->{lang} = $user->lang;
-		$user->new_group() if !$user->group;
+		$user->new_group unless $user->group;
+		$user->new_buddies unless $user->buddies;
 		$self->{group} = $user->group;
 		$self->{sort} = $user->sort;
 	}
@@ -493,7 +494,9 @@ sub closeall
 #
 sub tell_login
 {
-	my ($self, $m) = @_;
+	my ($self, $m, $call) = @_;
+	
+	$call ||= $self->{call};
 	
 	# send info to all logged in thingies
 	my @dxchan = get_all_users();
@@ -501,7 +504,26 @@ sub tell_login
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan->{call} eq $main::mycall;
-		$dxchan->send($dxchan->msg($m, $self->{call})) if $dxchan->{logininfo};
+		$dxchan->send($dxchan->msg($m, $call)) if $dxchan->{logininfo};
+	}
+}
+
+#
+# Tell all the users if a buddy is logged or out
+#
+sub tell_buddies
+{
+	my ($self, $m, $call) = @_;
+	
+	$call ||= $self->{call};
+	
+	# send info to all logged in thingies
+	my @dxchan = get_all_users();
+	my $dxchan;
+	foreach $dxchan (@dxchan) {
+		next if $dxchan == $self;
+		next if $dxchan->{call} eq $main::mycall;
+		$dxchan->send($dxchan->msg($m, $call)) if grep $_ eq $call, @{$dxchan->user->buddies} ;
 	}
 }
 

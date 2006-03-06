@@ -173,6 +173,7 @@ sub start
 	}
 	
 	$self->tell_login('loginu');
+	$self->tell_buddies('loginb');
 	
 	# do we need to send a forward/opernam?
 	my $lastoper = $user->lastoper || 0;
@@ -562,6 +563,7 @@ sub disconnect
 		
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
+	$self->tell_login('logoutb');
 
 	LogDbg('DXCommand', "$call disconnected");
 

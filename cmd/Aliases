@@ -114,7 +114,7 @@ package CmdAlias;
       '^set/user', 'unset/node', 'unset/node',
 	'^set$', 'apropos set', 'apropos',
 	  '^sho?w?/u$', 'show/user', 'show/user',
-	  '^sho?w?/bu', 'show/files bulletins', 'show/files',
+	  '^sho?w?/bul', 'show/files bulletins', 'show/files',
 	  '^sho?w?/co?n?\w*/a', 'show/configuration all', 'show/configuration',
 	  '^sho?w?/co?n?\w*/n', 'show/configuration nodes', 'show/configuration',
 	  '^sho?w?/c$', 'show/configuration', 'show/configuration',

@@ -1454,6 +1454,12 @@ will allow text with this word again.
 
 === 5^SET/BBS <call> [<call>..]^Make the callsign a BBS
 
+=== 0^SET/BUDDY <call> [<call>..]^Add this call to my buddy list
+=== 0^UNSET/BUDDY <call> [<call>..]^Remove this call from my buddy list
+A notification message 
+is sent to you automatically if anybody on your buddy list logs in or
+out of any node in this cluster.
+
 === 5^SET/CLX <call> [<call>..]^Make the callsign an CLX node
 
 === 9^SET/DEBUG <name>^Add a debug level to the debug set
@@ -1576,6 +1582,21 @@ Remove isolation from a node - SET/ISOLATE
 You can select the language that you want the cluster to use. Currently
 the languages available are en (English), de (German), es (Spanish),
 Czech (cz), French (fr), Portuguese (pt), Italian (it) and nl (Dutch).
+
+=== 5^SET/LOCAL_NODE^Add node to the local_node group
+=== 5^UNSET/LOCAL_NODE^Remove node from the local_node group
+The 'local_node' group is a group of nodes that you want a user
+to perceive as effectively one big node. At the moment, this extends 
+only to announcing whenever a user is logging in or out of one of
+the nodes in the group (if those users have SET/LOGININFO). 
+
+The local node group is as setup on this node. If you want the other
+nodes to also include this node and all the other nodes specified, then
+you must get those nodes to also run this command (or rcmd them to do
+so).
+
+In principle, therefore, each node determines its own local node group
+and these can overlap with other nodes' views.
 
 === 0^SET/LOCATION <lat & long>^Set your latitude and longitude
 === 9^SET/SYS_LOCATION <lat & long>^Set your cluster latitude and longitude
@@ -1832,6 +1853,9 @@ for more information.
 === 1^SHOW/BADWORD^Show all the bad words in the system
 Display all the bad words in the system, see SET/BADWORD
 for more information.
+
+=== 0^SHOW/BUDDY^Show your list of buddies
+See SET/BUDDY for more information about buddies.
 
 === 0^SHOW/CHAT [<group>] [<lines>]^Show any chat or conferencing 
 This command allows you to see any chat or conferencing that has  

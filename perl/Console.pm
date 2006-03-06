@@ -46,7 +46,7 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
 		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
 		   [ '^WX', COLOR_PAIR(3) ],
-		   [ '^(User|Node)\b', COLOR_PAIR(8) ],
+		   [ '^(User|Node|Buddy)\b', COLOR_PAIR(8) ],
 		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
 		    
 		   );
