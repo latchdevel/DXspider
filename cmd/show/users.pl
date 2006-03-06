@@ -30,14 +30,12 @@ if (@list) {
 	my $node = $main::routeroot;
 	push @out, join(' ', $self->msg('userconn'), $main::mycall);
 	my $call;
-	my $i = 0;
 	my @l;
 	my @val = sort $node->users;
 	foreach $call (@val) {
-		if ($i >= 5) {
+		if (@l >= 5) {
 			push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
 			@l = ();
-			$i = 0;
 		}
 		my $uref = Route::User::get($call);
 		my $s = $call;
@@ -47,9 +45,8 @@ if (@list) {
 			$s = "$call?";
 		}
 		push @l, $s;
-		$i++;
 	}
-	push @l, "" while $i++ < 5;
+	push @l, "" while @l < 5;
 	push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
 }
 

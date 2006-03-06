@@ -61,7 +61,8 @@ $v3 = 0;
 		  annok => '9,Accept Announces?,yesno', # accept his announces?
 		  lang => '0,Language',
 		  hmsgno => '0,Highest Msgno',
-		  group => '0,Chat Group,parray',	# used to create a group of users/nodes for some purpose or other
+		  group => '0,Group,parray',	# used to create a group of users/nodes for some purpose or other
+		  buddies => '0,Buddies,parray',
 		  isolate => '9,Isolate network,yesno',
 		  wantbeep => '0,Req Beep,yesno',
 		  wantann => '0,Req Announce,yesno',
@@ -585,6 +586,13 @@ sub new_group
 	$self->{group} = [ 'local' ];
 }
 
+# set up empty buddies (only happens for them's that connect direct)
+sub new_buddies
+{
+	my $self = shift;
+	$self->{buddies} = [  ];
+}
+
 #
 # return a prompt for a field
 #
@@ -723,6 +731,12 @@ sub is_node
 {
 	my $self = shift;
 	return $self->{sort} =~ /[ACRSX]/;
+}
+
+sub is_local_node
+{
+	my $self = shift;
+	return grep $_ eq 'local_node', @{$self->{group}};
 }
 
 sub is_user

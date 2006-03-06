@@ -16,7 +16,7 @@ my @val;
 
 push @out, $self->msg('showconf');
 if ($list[0] && $list[0] =~ /^NOD/) {
-	my @ch = sort {$a->call cmp $b->call} grep {$_->is_node || $_->is_aranea} DXChannel::get_all();
+	my @ch = sort {$a->call cmp $b->call} DXChannel::get_all_nodes();
 	my $dxchan;
 	
 	foreach $dxchan (@ch) {
@@ -27,21 +27,18 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 		$call = "($call)" unless $dxchan->here;
 		push @l, $call;
 		
-		my $i = 0;
 		foreach my $ref (@val) {
-			if ($i >= 5) {
+			if (@l >= 5) {
 				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 				@l = ();
 				push @l, "";
-				$i = 0;
 			}
 			my $s = $ref->call;
 			$s ||= '???';
 			$s = sprintf "(%s)", $s unless $ref->here;
 			push @l, $s;
-			$i++;
 		}
-		push @l, "" while ($i++ < 5);
+		push @l, "" while @l < 5;
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 } else {
@@ -65,16 +62,14 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 		push @l, $call;
 		@val = sort $node->users;
 
-		my $i = 0;
 		if (@val == 0 && $node->usercount) {
 			push @l, sprintf "(%d users)", $node->usercount;
 		}
 		foreach $call (@val) {
-			if ($i >= 5) {
+			if (@l >= 5) {
 				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 				@l = ();
 				push @l, "";
-				$i = 0;
 			}
 			my $uref = Route::User::get($call);
 			my $s = $call;
@@ -84,9 +79,8 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 				$s = "$call?";
 			}
 			push @l, $s;
-			$i++;
 		}
-		push @l, "" while ($i++ < 5);
+		push @l, "" while @l < 5;
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 }

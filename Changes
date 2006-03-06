@@ -1,3 +1,9 @@
+06Mar06=======================================================================
+1. Fix warning on empty PC19s.
+2. Add new command set/local_node to allow people to see logins/outs on other
+related nodes.
+3. Add new command set/buddy to allow people to see when their favorite 
+chum(s) logins/out.
 14Feb06=======================================================================
 1. Turn R and SFI around in mrtg.pl.
 13Feb06=======================================================================
