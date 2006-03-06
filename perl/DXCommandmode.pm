@@ -150,10 +150,21 @@ sub start
 	$self->{priv} = 0 if $line =~ /^(ax|te)/ && !$self->conn->{usedpasswd};
 
 	# get the filters
-	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) || Filter::read_in('spots', 'user_default', 0);
-	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) || Filter::read_in('wwv', 'user_default', 0);
-	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0) || Filter::read_in('wcy', 'user_default', 0);
-	$self->{annfilter} = Filter::read_in('ann', $call, 0) || Filter::read_in('ann', 'user_default', 0) ;
+	my $nossid = $call;
+	$nossid =~ s/-\d+$//;
+	
+	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) 
+		|| Filter::read_in('spots', $nossid, 0)
+			|| Filter::read_in('spots', 'user_default', 0);
+	$self->{wwvfilter} = Filter::read_in('wwv', $call, 0) 
+		|| Filter::read_in('wwv', $nossid, 0) 
+			|| Filter::read_in('wwv', 'user_default', 0);
+	$self->{wcyfilter} = Filter::read_in('wcy', $call, 0) 
+		|| Filter::read_in('wcy', $nossid, 0) 
+			|| Filter::read_in('wcy', 'user_default', 0);
+	$self->{annfilter} = Filter::read_in('ann', $call, 0) 
+		|| Filter::read_in('ann', $nossid, 0) 
+			|| Filter::read_in('ann', 'user_default', 0) ;
 
 	# clean up qra locators
 	my $qra = $user->qra;

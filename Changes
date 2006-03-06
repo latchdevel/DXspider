@@ -4,6 +4,8 @@
 related nodes.
 3. Add new command set/buddy to allow people to see when their favorite 
 chum(s) logins/out.
+4. Arrange filter reading so that the following order is followed for users: 
+callsign, callsign less ssid, user_default. Nodes are unchanged. 
 14Feb06=======================================================================
 1. Turn R and SFI around in mrtg.pl.
 13Feb06=======================================================================
