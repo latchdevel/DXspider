@@ -574,7 +574,7 @@ sub disconnect
 		
 	# send info to all logged in thingies
 	$self->tell_login('logoutu');
-	$self->tell_login('logoutb');
+	$self->tell_buddies('logoutb');
 
 	LogDbg('DXCommand', "$call disconnected");
 
