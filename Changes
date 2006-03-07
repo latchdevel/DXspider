@@ -1,3 +1,5 @@
+07Mar06=======================================================================
+1. Add the node call to remote tell_login and tell_buddie calls.
 06Mar06=======================================================================
 1. Fix warning on empty PC19s.
 2. Add new command set/local_node to allow people to see logins/outs on other
