@@ -523,7 +523,7 @@ sub tell_buddies
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan->{call} eq $main::mycall;
-		$dxchan->send($dxchan->msg($m, $call)) if grep $_ eq $call, @{$dxchan->user->buddies} ;
+		$dxchan->send($dxchan->msg($m, $call)) if grep $_ eq $call, @{$dxchan->{user}->{buddies}} ;
 	}
 }
 
