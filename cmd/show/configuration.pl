@@ -28,7 +28,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 		push @l, $call;
 		
 		foreach my $ref (@val) {
-			if (@l >= 5) {
+			if (@l >= 6) {
 				push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 				@l = ();
 				push @l, "";
@@ -38,7 +38,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 			$s = sprintf "(%s)", $s unless $ref->here;
 			push @l, $s;
 		}
-		push @l, "" while @l < 5;
+		push @l, "" while @l < 6;
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s %-12s", @l;
 	}
 } else {

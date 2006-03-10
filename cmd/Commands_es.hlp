@@ -1496,6 +1496,20 @@ permitirá de nuevo incluir la palabra en cualquier texto.
 
 === 5^SET/BBS <indicativo> [<indicativo>..]^Define el indicativo como tipo BBS
 
+=== 0^SET/BUDDY <indicativo> [<indicativo>..]^Añade este indicativo a mi lista de amigos
+Recibirás un mensaje de aviso si el indicativo de la "lista de amigos",
+conecta o desconecta en cualquier cluster de la red, aunque no sea
+en el que nosotros estamos conectados.
+
+Ejemplo:   SET/BUDDY EA7WA
+
+Para ver la lista de indicativos de amigos que tengas creada
+puedes pedir:        SHOW/BUDDY
+
+=== 0^UNSET/BUDDY <indicativo> [<indicativo>..]^Borra este indicativo de mi lista de amigos
+Borras el indicativo seleccionado de la lista de amigos y por lo tanto
+dejarás de recibir avisos de conexión o desconexión de este indicativo.
+
 === 5^SET/CLX <indicativo> [<indicativo>..]^Define el indicativo como un nodo CLX 
 
 === 9^SET/DEBUG <nombre>^Añade un nivel de debug a los ya activados.
@@ -1637,11 +1651,35 @@ Puedes seleccionar el idioma en el que quieres recibir la información
 interna y la ayuda del cluster.
 Actualmente los idiomas disponibles son:
 
- Ingles:    set/language en
+ Inglés:    set/language en
  Alemán:    set/language de
  Holandés:  set/language nl
  Español :  set/language es
  Italiano:  set/language it
+
+=== 5^SET/LOCAL_NODE^Añade un nodo al grupo de nodos locales.
+=== 5^UNSET/LOCAL_NODE^Elimina un nodo del grupo de nodos locales.
+El concepto de grupo de nodos locales,(local_node group), es el
+de un grupo de nodos que quieres que tus usuarios vean como local,
+por lo que recibirán un aviso de conexión o desconexión de los
+usuarios que conecten o desconecten de ese grupo de nodos en el
+caso de que tengan activado el comando SET/LOGININFO que es de momento
+a lo único que afecta este parámetro.
+
+El grupo de nodos locales es un parámetro que nosotros definimos en
+nuestro cluster.
+
+Si queremos que los otros nodos también incluyan al nuestro para que
+sus usuarios tengan notificación de las conexiones y desconexiones
+de nuestros usuarios como si se tratase de un solo cluster, tendremos
+que activarlo en tantos nodos como queramos que esta opción sea efectiva,
+o bien, activarlo por medio de rcmd o comando remoto, aunque es
+preferible que los sysops estén al tanto.
+
+En principio, cada cluster determina su propio grupo de nodos locales,
+aunque si los sysops se ponen de acuerdo, este grupo puede ser
+el mismo en ambos lados de la red.
+
 
 === 0^SET/LOCATION <lat & long>^Introduce tus datos de latitud y longitud
 === 9^SET/SYS_LOCATION <lat & long>^Define latitud y longitud del cluster
@@ -1852,7 +1890,11 @@ en modo de SÓLO-RECIBIR no pudiendo usar los comandos DX, ANN, etc.
 
 La única excepción que se le hace a un usuario no registrado es la
 de poder enviar un TALK o un mensaje al sysop.
- 
+
+=== 5^SET/SPIDER <indicativo> [<indicativo>..]^Define este indicativo como un nodo DXSpider
+Define en el sistema a este indicativo como un nodo tipo DXSpider y
+por lo tanto se le enviará la información en formato PC.
+
 === 6^SET/STARTUP <indicativo>^Crea un fichero de inicio de conexión.
 === 0^SET/STARTUP^Crea tu propio fichero de inicio de conexión.
 === 6^UNSET/STARTUP <indicativo>^Borra el fichero de inicio de un usuario.
@@ -1926,6 +1968,10 @@ cualquier spot, ver SET/BADSPOTTER para más información.
 === 1^SHOW/BADWORD^Muestra todas las palabras a rechazar en PC10,11,12...
 Muestra la lista de palabras que el sistema rechazará al encontrarse
 en cualquier PC10,11,12... , ver SET/BADWORD para más información.
+
+=== 0^SHOW/BUDDY^Muestra tu lista de indicativos amigos.
+Ver comando SET/BUDDY para más información acerca de la lista de
+indicativos amigos.
 
 === 0^SHOW/CHAT [<grupo>] [<líneas>]^Muestra cualquier grupo de chat
 Este comando te permite ver cualquier mensaje enviado al chat mientras
