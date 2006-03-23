@@ -1,3 +1,11 @@
+23Mar06=======================================================================
+1. Added cty-1603 data.
+2. On the advice of Jim AD1C I have changed around some things in wpxloc.raw
+that affect 8J,CT2,KC4,KG4,KG6,ZK1 and ZS2. These should now show the more 
+likely canonical prefix.
+3. On the advice of Tom WB8ZRL, I have made BW an alias for BV (Taiwan) and 
+made some other changes to affect the selection between the mainland and the
+island more reliable. 
 10Mar06=======================================================================
 1. fix sh/c/n.
 2. Add new Spanish translations by Angel EA7WA.
