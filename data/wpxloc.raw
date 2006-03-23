@@ -7,6 +7,11 @@
 ! 'master' entries for a 'country'. It doesn't make
 ! a lot of difference but please observe the convention.
 !
+! reordered some Antarctic lines to make them 060223
+! aliases for the US ones.
+! removed BV and BW from China
+! commented out CT2 Azores and ZS2 for 
+! Marion Is (all on advice from Jim AD1C)
 ! Added Swains Island KH8/S                   050225
 ! changed DXCC no for T8                      041221
 ! added African Italy for IG9                 041220
@@ -158,7 +163,7 @@ AQ,AR,AS,6P,6Q,6R,6S Pakistan-AP        8 41 21 -5.0 25 0 0 N 67 0 0 E
 BS7 Scarborough-Reef-BS7              329 50 27 -8.0 15 7 0 N 117 51 0 E @
 BV9P Pratas-Island-BV9P                 330 44 24 -8.0 21 0 0 N 117 0 0 E @
 BV Taiwan-BV                            9 44 24 -8.0 25 0 0 N 122 0 0 E @
-BO Taiwan-BV                            9 44 24 -8.0 25 0 0 N 122 0 0 E
+BO,BW Taiwan-BV                            9 44 24 -8.0 25 0 0 N 122 0 0 E
 BY China-Bejing-BY                    10 33 24 -8.0 29 48 0 N 106 30 0 E * @
 BY China-Peking-BY                    10 33 24 -8.0 40 0 0 N 116 25 0 E *
 BY China-Shanghai-BY                  10 33 24 -8.0 21 12 0 N 121 30 0 E 
@@ -166,7 +171,7 @@ BT China-Bejing-BY                    10 33 24 -8.0 29 48 0 N 106 30 0 E
 BT China-Peking-BY                    10 33 24 -8.0 40 0 0 N 116 25 0 E 
 BT China-Shanghai-BY                  10 33 24 -8.0 21 12 0 N 121 30 0 E
 BA,BB,BC,BD,BE,BF,BG,BH,BI,BJ,BK,BL China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
-BM,BN,BP,BQ,BR,BS,BU,BV,BW,BX,BZ,XS China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
+BM,BN,BP,BQ,BR,BS,BU,BX,BZ,XS China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
 3H,3I,3J,3K,3L,3M,3N,3O,3P,3Q,3R,3S,3T,3U China-BY 10 33 24 -8.0 29 48 0 N 106 30 0 E
 C2 Nauru-C2                            11 65 31 -11.30 0 30 0 S 166 54 0 E @
 C3 Andorra-C3                          12 27 14 -1.0 42 30 0 N 1 30 0 E @
@@ -197,7 +202,7 @@ CE9 Antarctica_Scotti-CE9             102 67 30 -11.0 77 50 0 S 166 25 0 E *
 CE9 Antarctica_Dumonti-CE9            102 67 30 -9.0 66 40 0 S 140 0 0 E *
 CE9 Antarctica_Gen.Belgradoi-CE9      102 67 13  2.0 77 30 0 S 36 0 0 W *
 CE9 Antarctica_Showai-CE9             102 67 13  2.0 69 0 0 S 39 35 0 W 
-7S8,8J,AT0,CX0,DP0 Antarctica-CE9     102 67 12  8.0 80 0 0 S 120 0 0 W
+!7S8,8J,AT0,CX0,DP0 Antarctica-CE9     102 67 12  8.0 80 0 0 S 120 0 0 W
 CE0Y Easter-Island-CE0Y                17 63 12  5.0 28 0 0 S 109 0 0 W @
 CE0X San-Felix-CE0X                    18 14 12  4.0 26 0 0 S 80 0 0 W @
 CE0Z Juan-Fernandez-CE0Z               19 14 12  4.0 33 36 0 S 78 48 0 W @
@@ -210,7 +215,7 @@ CP Bolivia-CP                          22 12 10  4.0 16 30 0 S 68 24 0 W @
 CT Portugal-CT                         23 37 14  0.0 38 42 0 N 9 12 0 W @
 CR,CS,CQ Portugal-CT                   23 37 14  0.0 38 42 0 N 9 12 0 W
 CU Azores-Is-CU                        24 36 14  1.0 38 0 0 N 25 0 0 W @
-CT2 Azores-Is-CU                       24 36 14  1.0 38 0 0 N 25 0 0 W
+!CT2 Azores-Is-CU                       24 36 14  1.0 38 0 0 N 25 0 0 W
 CT3 Madeira-Is-CT3                     25 36 33  0.0 33 0 0 N 17 0 0 W @
 CQ3,CR9,CT9,CR3,CQ9 Madeira-Is-CT3     25 36 33  0.0 33 0 0 N 17 0 0 W
 CX Uruguay-CX                          26 14 13  3.0 34 54 0 S 56 12 0 W @
@@ -403,15 +408,10 @@ JW Svalbard-Is-JW                      99 18 40 -1.0 78 48 0 N 16 0 0 E @
 JW/B Bear-Is-JW/B		              345 18 40 -1.0 79 30 0 N 19 0 0 E @
 JX Jan-Mayen-JX                       100 18 40 -1.0 71 0 0 N 8 0 0 W @
 JY Jordan-JY                          101 39 20 -2.0 32 0 0 N 36 0 0 E @
-KC4 Antarctica-McMurdo-CE9            102 67 12 -11.0 77 30 0 S 167 0 0 E *
-KC4 Antarctica-Bryd-CE9               102 67 12 8.0 80 0 0 S 120 0 0 W *
-KC4 Antarctica-Palmer-CE9             102 67 12  4.0 65 0 0 S 64 0 0 W 
 Y90 Antarctica-CE9                    102 67 12  4.0 65 0 0 S 64 0 0 W
-KG4 Guantanamo-Bay-KG4                105 11  8  5.0 20 0 0 N 75 0 0 W @
 KH1 Amer-Phoenix-KH1                  106 62 31 11.0 0 30 0 N 176 0 0 W @
 AH1,NH1,WH1 Amer-Phoenix-KH1          106 62 31 11.0 0 30 0 N 176 0 0 W
 KH2 GU-Guam-KH2                          107 64 27 -10.0 14 0 0 N 145 0 0 E @
-AH2,NH2,WH2,KG6 GU-Guam-KH2              107 64 27 -10.0 14 0 0 N 145 0 0 E
 KH3 UM-Johnston-Is-KH3                   108 61 31 10.0 17 0 0 N 170 0 0 W @
 AH3,NH3,WH3 UM-Johnston-Is-KH3           108 61 31 10.0 17 0 0 N 170 0 0 W
 KH4 Midway-Is-KH4                     109 61 31 11.0 28 0 0 N 177 30 0 W @
@@ -1599,10 +1599,10 @@ ZD9 Tristan-Da-Cunha-ZD9              253 66 38 0.0 37 6 0 S 12 18 0 W @
 Z2 Zimbabwe-Z2                  254 53 38 -2.0 18 0 0 S 31 0 0 E @
 ZE Zimbabwe-Z2                  254 53 38 -2.0 18 0 0 S 31 0 0 E
 ZF Cayman-Is-ZF                 255 11  8  5.0 19 30 0 N 81 12 0 W @
-ZK1/N No-Cook-Is-ZK1/N          256 62 32 10.30 10 30 0 S 161 0 0 W @
 ZK1/S So-Cook-Is-ZK1/S          257 62 32 10.30 21 0 0 S 159 30 0 W @
-ZK1 No-Cook-Is-ZK1/N            256 62 32 10.30 10 30 0 S 161 0 0 W *
+ZK1/N No-Cook-Is-ZK1/N          256 62 32 10.30 10 30 0 S 161 0 0 W @
 ZK1 So-Cook-Is-ZK1/S            257 62 32 10.30 21 0 0 S 159 30 0 W
+ZK1 No-Cook-Is-ZK1/N            256 62 32 10.30 10 30 0 S 161 0 0 W *
 ZK2 Niue-Is-ZK2                 258 62 32 11.0 19 0 0 S 170 0 0 W @
 ZK3 Tokelaus-ZK3                259 62 31 11.0 8 24 0 S 172 42 0 W @
 ZL New-Zealand-ZL1-ZL           260 60 32 -12.0 36 54 0 S 174 48 0 E * @
@@ -1631,10 +1631,19 @@ ZS1 So-Africa-ZS                265 57 38 -2.0 33 54 0 S 18 24 0 E
 ZS4 So-Africa-ZS                265 57 38 -2.0 28 30 0 S 27 0 0 E
 ZS5 So-Africa-ZS                265 57 38 -2.0 29 54 0 S 30 54 0 E
 ZS6 So-Africa-ZS                265 57 38 -2.0 26 12 0 S 28 6 0 E
-ZS2 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E
+!ZS2 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E
 ZS8 Marion-Is-ZS8               266 57 38 -2.0 46 48 0 S 37 48 0 E @
 V50,V51 Namibia-V5              267 57 38 -2.0 22 36 0 S 17 6 0 E
 4W Timor-Leste-4W				340 54 28 -8.0 8 73 0 S 126 30 0 E  
 T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirate-Ctry-QQ 666 0 0 -0.0 0 0 0 S 0 0 0 E @
+! 
+! reordered ones 
+!
+7S8,8J,AT0,CX0,DP0 Antarctica-CE9     102 67 12  8.0 80 0 0 S 120 0 0 W
+KC4 Antarctica-McMurdo-CE9            102 67 12 -11.0 77 30 0 S 167 0 0 E *
+KC4 Antarctica-Bryd-CE9               102 67 12 8.0 80 0 0 S 120 0 0 W *
+KC4 Antarctica-Palmer-CE9             102 67 12  4.0 65 0 0 S 64 0 0 W 
+KG4 Guantanamo-Bay-KG4                105 11  8  5.0 20 0 0 N 75 0 0 W @
+AH2,NH2,WH2,KG6 GU-Guam-KH2              107 64 27 -10.0 14 0 0 N 145 0 0 E
 
 
