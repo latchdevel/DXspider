@@ -18,13 +18,14 @@
 #
 # $Id$
 # 
+# 2005/02/25 add calculation of civil dawn and dusk, defined to be times
+#            when solar zenith angle is 96 degrees.
 # 2001/12/16 Fixed Julian_Date_of_Epoch and now I actually use it...
 # 2001/09/15 some changes to take care of cases where the object 
 #            doesn't rise or set on a given day... 
 
 package Sun;
 
-use POSIX;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -33,8 +34,10 @@ require Exporter;
 use strict;
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw($pi $d2r $r2d);
  
@@ -46,6 +49,9 @@ use vars qw(%keps);
 use Keps;
 use DXVars;
 use DXUtil;
+use DXDebug;
+
+use POSIX qw(:math_h);
 
 # reload the keps data
 sub load

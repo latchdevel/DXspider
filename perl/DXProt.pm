@@ -847,7 +847,7 @@ sub handle_16
 		
 		# send info to all logged in thingies
 		$self->tell_login('loginu', "$ncall: $call") if DXUser->get_current($ncall)->is_local_node;
-		$self->tell_buddies('loginb', "$ncall: $call");
+		$self->tell_buddies('loginb', $call, $ncall);
 				
 		# add this station to the user database, if required
 #		$call =~ s/-\d+$//o;	# remove ssid for users
@@ -921,7 +921,7 @@ sub handle_17
 
 	# send info to all logged in thingies
 	$self->tell_login('logoutu', "$ncall: $ucall") if DXUser->get_current($ncall)->is_local_node;
-	$self->tell_buddies('logoutb', "$ncall: $ucall");
+	$self->tell_buddies('logoutb', $ucall, $ncall);
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');

@@ -513,9 +513,11 @@ sub tell_login
 #
 sub tell_buddies
 {
-	my ($self, $m, $call) = @_;
+	my ($self, $m, $call, $node) = @_;
 	
 	$call ||= $self->{call};
+	$call =~ s/-\d+$//;
+	my $s = $node ? "$node: $call" : $call;
 	
 	# send info to all logged in thingies
 	my @dxchan = get_all_users();
@@ -523,7 +525,7 @@ sub tell_buddies
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $self;
 		next if $dxchan->{call} eq $main::mycall;
-		$dxchan->send($dxchan->msg($m, $call)) if grep $_ eq $call, @{$dxchan->{user}->{buddies}} ;
+		$dxchan->send($dxchan->msg($m, $s)) if grep $_ eq $call, @{$dxchan->{user}->{buddies}} ;
 	}
 }
 

@@ -36,7 +36,6 @@
 
 package Minimuf;
 
-use POSIX;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -45,6 +44,9 @@ require Exporter;
             $noise);
 
 use strict;
+
+use DXDebug;
+use POSIX qw(:math_h);
 
 use vars qw($VERSION $BRANCH);
 $VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
