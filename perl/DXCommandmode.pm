@@ -9,7 +9,7 @@
 
 package DXCommandmode;
 
-use POSIX;
+#use POSIX;
 
 @ISA = qw(DXChannel);
 
@@ -202,12 +202,24 @@ sub start
 	my $info = Route::cluster();
 	$self->send("Cluster:$info");
 
-	# send prompts and things
+	# send prompts for qth, name and things
 	$self->send($self->msg('namee1')) if !$user->name;
 	$self->send($self->msg('qthe1')) if !$user->qth;
 	$self->send($self->msg('qll')) if !$user->qra || (!$user->lat && !$user->long);
 	$self->send($self->msg('hnodee1')) if !$user->qth;
 	$self->send($self->msg('m9')) if DXMsg::for_me($call);
+
+	# send out any buddy messages for other people that are online
+	foreach my $call (@{$user->buddies}) {
+		my $ref = Route::User::get($call);
+		if ($ref) {
+			foreach my $node (@{$ref->parent}) {
+				my $s = $node eq $main::mycall ? $call : "$node: $call";
+				$self->send($self->msg('loginb', $s));
+			} 
+		}
+	}
+
 	$self->lastmsgpoll($main::systime);
 	$self->prompt;
 }

@@ -26,7 +26,6 @@
 
 package Sun;
 
-use POSIX;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -50,6 +49,9 @@ use vars qw(%keps);
 use Keps;
 use DXVars;
 use DXUtil;
+use DXDebug;
+
+use POSIX qw(:math_h);
 
 # reload the keps data
 sub load

@@ -13,8 +13,8 @@
 
 package DXBearing;
 
-use POSIX;
 use DXUtil;
+use POSIX qw(:math_h);
 
 use strict;
 use vars qw($pi);
