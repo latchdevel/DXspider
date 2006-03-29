@@ -1,3 +1,5 @@
+29Mar06=======================================================================
+1. fix sh/muf that I broke in the previous change
 26Mar06=======================================================================
 1. Arrange for any online buddies to be displayed when a user logs on.
 2. Try to reduce the amount of POSIX stuff that is loaded to just that which

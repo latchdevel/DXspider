@@ -13,6 +13,7 @@ package DXCommandmode;
 
 @ISA = qw(DXChannel);
 
+use POSIX qw(:math_h);
 use DXUtil;
 use DXChannel;
 use DXUser;
