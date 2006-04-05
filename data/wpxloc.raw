@@ -1643,7 +1643,7 @@ T0,SSB,1B,X5,X8,ZC6,10G,50V,Q,0,MAJ Pirate-Ctry-QQ 666 0 0 -0.0 0 0 0 S 0 0 0 E 
 KC4 Antarctica-McMurdo-CE9            102 67 12 -11.0 77 30 0 S 167 0 0 E *
 KC4 Antarctica-Bryd-CE9               102 67 12 8.0 80 0 0 S 120 0 0 W *
 KC4 Antarctica-Palmer-CE9             102 67 12  4.0 65 0 0 S 64 0 0 W 
-KG4 Guantanamo-Bay-KG4                105 11  8  5.0 20 0 0 N 75 0 0 W @
+KG4,KG44 Guantanamo-Bay-KG4                105 11  8  5.0 20 0 0 N 75 0 0 W @
 AH2,NH2,WH2,KG6 GU-Guam-KH2              107 64 27 -10.0 14 0 0 N 145 0 0 E
 
 
