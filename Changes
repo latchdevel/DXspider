@@ -1,5 +1,8 @@
 03Jun06=======================================================================
-1. Added changes from Jim AD1C. 
+1. Added changes to wpxloc.raw (prefixes) suggested by Jim AD1C. 
+2. Made a change to prevent xml data being interpreted unless we are
+configured for it.
+3. Change the buddy messages after a suggestion from Angel EA7WA.
 02Apr06=======================================================================
 1. incorporated cty-1604 data.
 29Mar06=======================================================================
