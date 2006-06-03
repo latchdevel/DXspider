@@ -333,7 +333,7 @@ sub normal
 {
 	my ($self, $line) = @_;
 
-	if ($line =~ '^<\w+\s') {
+	if ($line =~ '^<\w+\s' && $main::do_xml) {
 		DXXml::normal($self, $line);
 		return;
 	}

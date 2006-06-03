@@ -215,8 +215,7 @@ sub start
 		my $ref = Route::User::get($call);
 		if ($ref) {
 			foreach my $node (@{$ref->parent}) {
-				my $s = $node eq $main::mycall ? $call : "$node: $call";
-				$self->send($self->msg('loginb', $s));
+				$self->send($self->msg($node eq $main::mycall ? 'loginb' : 'loginbn', $call, $node));
 			} 
 		}
 	}
