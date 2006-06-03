@@ -1,0 +1,195 @@
+#!/usr/bin/perl -w
+
+use strict;
+use IO::Socket;
+
+use Gtk2 -init;
+use Glib qw/TRUE FALSE/;
+use Gtk2::Helper;
+use Gtk2::Pango;
+use Gtk2::Gdk::Keysyms;
+
+my $callsign = uc $ARGV[0];
+#check and warn if we received wrong argument
+unless($callsign){
+	print "usage <program name> <callsign> [<host> <port>]\n";
+	exit;
+}
+
+my ($sock, $MAXLEN, $SEND_PORT, $SEND_HOST) = (undef, 1024, 7301, "localhost");
+
+if (@ARGV >= 3) {
+	$SEND_HOST = $ARGV[1];
+	$SEND_PORT = $ARGV[2];
+}
+
+my $tview;
+	
+#---------------------------------
+#set up a udp server waiting for incomming messages
+$sock = IO::Socket::INET->new(PeerHost => $SEND_HOST, PeerPort => $SEND_PORT, Proto => 'tcp')
+	or die "socket: $@";
+
+#add a Gtk2::Helper watch on any incomming connections
+Gtk2::Helper->add_watch ( fileno $sock, 'in', sub{ 
+							  my ($fd,$condition,$fh) = @_;
+							  #call 'watch_callback' to handle the incoming data	
+							  \&watch_callback($fh, $tview);
+						  },$sock);
+	
+print "Awaiting TCP messages on $SEND_HOST:$SEND_PORT\n";
+#---------------------------------
+
+#Gtk2::Rc->parse ('/usr/share/themes/Anger/gtk/gtkrc');
+#this is parsing our theme file, giving a personal touch
+#Gtk2::Rc->parse ('gtkrc');
+
+#standard window creation, placement, and signal connecting
+my $window = Gtk2::Window->new('toplevel');
+$window->signal_connect('delete_event' => sub { exit;});
+$window->set_border_width(5);
+$window->set_position('center_always');
+#again just some fine touches
+$window->set_title("gconsole: $callsign");
+#$window->set_icon_from_file($img_send);
+
+#this vbox will geturn the bulk of the gui
+my ($vbox) = &ret_vbox();
+
+#add and show the vbox
+$window->add($vbox);
+$window->show();
+
+#our main event-loop
+Gtk2->main();
+
+sub ret_vbox {
+
+	my $vbox = Gtk2::VBox->new(FALSE,0);
+	#add an image to indicate who you are
+#	my $img_who = Gtk2::Image->new_from_file($img_big);
+#
+#	$vbox->pack_start($img_who,TRUE,TRUE,0);
+
+	my $frame = Gtk2::Frame->new("gconsole: $callsign");
+		
+	#method of Gtk2::Container
+	$frame->set_border_width(5);
+	
+	my $sw = Gtk2::ScrolledWindow->new (undef, undef);
+	$sw->set_shadow_type ('etched-out');
+	$sw->set_policy ('automatic', 'automatic');
+	#This is a method of the Gtk2::Widget class,it will force a minimum 
+	#size on the widget. Handy to give intitial size to a 
+	#Gtk2::ScrolledWindow class object
+	$sw->set_size_request (800, 600);
+	#method of Gtk2::Container
+	$sw->set_border_width(5);
+		
+	$tview = Gtk2::TextView->new();
+	#we do not want to edit anything
+	$tview->set_editable(FALSE);
+	$tview->set_cursor_visible (FALSE);
+							
+	my $buffer = $tview->get_buffer();
+	$buffer->create_tag ("monospace", family => "monospace"); 
+			
+	#create a mark at the end of the buffer, and on each
+	#'insert_text' we tell the textview to scroll to that mark
+	$buffer->create_mark ('end', $buffer->get_end_iter, FALSE);
+#	$buffer->signal_connect (insert_text => sub {
+#								 $tview->scroll_to_mark ($buffer->get_mark ('end'),
+#														 0.0, TRUE, 0, 0.5);
+#							 });
+			
+	#create a tag for the shreck		
+#	$buffer->create_tag ("shrek",
+#						 style =>'italic',
+#						 weight => PANGO_WEIGHT_ULTRALIGHT,
+#						 family => 'flubber',
+#						 foreground => "#189f3b",
+#						 size => 20000,
+#						);
+					
+	#create a tag for the donkey		
+#	$buffer->create_tag ("donkey",
+#						 style =>'italic',
+#						 weight => PANGO_WEIGHT_ULTRALIGHT,
+#						 family => 'davis',
+#						 foreground => "blue",
+#						 size => 20000,
+#						);
+						
+	$sw->add($tview);
+	$frame->add($sw);
+	$vbox->pack_start($frame,TRUE,TRUE,4);
+	#--------------------------------------
+	my $hbox = Gtk2::HBox->new(FALSE,5);
+	
+	my $ent_send = Gtk2::Entry->new;
+	$hbox->pack_start($ent_send,TRUE,TRUE,0);
+	
+	my $btn_send = Gtk2::Button->new_from_stock('gtk-ok');
+	#connect the 'key_press_signal' to a handler that will
+	#filter for 'Return'; if TRUE, trigger a button click
+	$ent_send->signal_connect('key_press_event'=> sub {
+								  my ($widget,$event) = @_;
+								  if ($event->keyval == $Gtk2::Gdk::Keysyms{Return}) {
+									  $btn_send->clicked;
+									  return 1;
+								  }
+		
+							  });
+		
+	$btn_send->signal_connect("clicked" =>sub {
+								  #get the contents of the entry
+								  my $msg_send = $ent_send->get_text;
+								  #clear the entry
+								  $ent_send->set_text("");
+								  #grab focus again for the next round of talks
+								  $ent_send->grab_focus;
+								  #if there was bogus input, ignore it!
+								  if ($msg_send !~ m/^$/) {
+									  my $msg = $msg_send;
+									  $msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+									  syswrite($sock, $msg . "\r\n") or die "syswrite: $!";
+									  update_buffer($buffer, $msg_send, TRUE);	
+								  }
+							  });
+		
+	$hbox->pack_end($btn_send,TRUE,TRUE,0);	
+	#--------------------------------------
+	$vbox->pack_start($hbox,TRUE,TRUE,4);
+	#set initial focus
+	$vbox->set_focus_child($hbox);
+	
+	$vbox->show_all();
+	return $vbox;
+}
+
+my $buf;
+	
+sub watch_callback {
+
+	my ($fh,$tview) = @_;
+	my $msg;
+	my $r = sysread($fh, $msg, $MAXLEN) or die "sysread: $!";
+	if (defined $r && $r) {
+		$msg =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
+		$msg =~ s/\x0d//g;
+		my $buffer = $tview->get_buffer();
+		update_buffer($buffer, $msg, FALSE);
+	}
+		
+	return 1;
+}
+
+sub update_buffer {
+
+	my ($buffer,$msg,$send)= @_;
+	
+	$msg = $msg;
+	my $iter = $buffer->get_end_iter;
+	$buffer->insert_with_tags_by_name($iter, $msg, "monospace");
+	$tview->scroll_to_mark ($buffer->get_mark ('end'),	 0.0, TRUE, 0, 0.5);
+}
