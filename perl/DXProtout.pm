@@ -25,7 +25,7 @@ $BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0))
 $main::build += $VERSION;
 $main::branch += $BRANCH;
 
-use vars qw($sentencelth $handle_xml);
+use vars qw($sentencelth);
 
 $sentencelth = 180;
 
@@ -124,7 +124,7 @@ sub pc17
 sub pc18
 {
 	my $flags = "";
-	$flags .= " xml" if $handle_xml; 
+	$flags .= " xml" if DXXml::available(); 
 	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }
 

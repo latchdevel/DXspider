@@ -50,7 +50,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
-			$handle_xml);
+		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23
@@ -77,7 +77,6 @@ $chatdupeage = 20 * 60 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
-$handle_xml = 0;				# handle XML sentences
 
 @checklist = 
 (
@@ -952,7 +951,7 @@ sub handle_18
 			$self->user->put;
 			$self->sort('S');
 		}
-		$self->{handle_xml}++ if $main::do_xml && $_[1] =~ /\bxml\b/;
+		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml\b/;
 	} else {
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;

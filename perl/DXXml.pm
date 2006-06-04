@@ -59,14 +59,19 @@ sub init
 	eval { require XML::Parser } unless $@;
 	if ($@) {
 		LogDbg('err', "do_xml was set to 1 and the XML routines failed to load ($@)");
-		$main::do_xml = 0;
+		$main::do_xml = $xs = 0;
 	} else {
 		$XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 		import XML::Simple;
-		$DXProt::handle_xml = 1;
 		$xs = new XML::Simple(ContentKey=>'content', ForceArray=>1);
 	}
 	undef $@;
+}
+
+# is XML avaiable and active
+sub available
+{
+	return $main::do_xml && $xs;
 }
 
 #
@@ -77,7 +82,7 @@ sub normal
 	my $dxchan = shift;
 	my $line = shift;
 
-	unless ($main::do_xml) {
+	unless (available()) {
 		dbg("xml not enabled, IGNORED") if isdbg('chanerr');
 		return;
 	}
@@ -214,7 +219,7 @@ sub route
 	my $via = $to;
 	my $dxchan;
 	
-	if (my $u = $self->{u}) {
+	if (my $u = $self->{u} && $self->{to} eq $main::mycall) {
 		$via ||= $u if ($dxchan = DXChannel::get($u));
 	}
 	$via ||= $self->{'-via'} || $self->{to};

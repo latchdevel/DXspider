@@ -724,6 +724,19 @@ sub process
 	}
 }
 
+sub handle_xml
+{
+	my $self = shift;
+	my $r = 0;
+	
+	if (DXXml::available()) {
+		$r = $self->{handle_xml} || 0;
+	} else {
+		delete $self->{handle_xml} if exists $self->{handle_xml};
+	}
+	return $r;
+}
+
 #no strict;
 sub AUTOLOAD
 {
