@@ -30,7 +30,7 @@ require Exporter;
 			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
-			 is_prefix
+			 is_prefix dd
             );
 
 
@@ -134,6 +134,22 @@ sub yesno
 	return $n ? $main::yes : $main::no;
 }
 
+# provide a data dumpered version of the object passed
+sub dd
+{
+	my $value = shift;
+	my $dd = new Data::Dumper([$value]);
+	$dd->Indent(0);
+	$dd->Terse(1);
+    $dd->Quotekeys($] < 5.005 ? 1 : 0);
+	$value = $dd->Dumpxs;
+	$value =~ s/([\r\n\t])/sprintf("%%%02X", ord($1))/eg;
+	$value =~ s/^\s*\[//;
+    $value =~ s/\]\s*$//;
+	
+	return $value;
+}
+
 # format a prompt with its current value and return it with its privilege
 sub promptf
 {
@@ -145,12 +161,7 @@ sub promptf
 		my $q = qq{\$value = $action(\$value)};
 		eval $q;
 	} elsif (ref $value) {
-		my $dd = new Data::Dumper([$value]);
-		$dd->Indent(0);
-		$dd->Terse(1);
-		$dd->Quotekeys(0);
-		$value = $dd->Dumpxs;
-		$value =~ s/([\r\n\t])/sprintf("%%%02X", ord($1))/eg;
+		$value = dd($value);
 	}
 	$prompt = sprintf "%15s: %s", $prompt, $value;
 	return ($priv, $prompt);

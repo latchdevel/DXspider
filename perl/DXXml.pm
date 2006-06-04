@@ -225,11 +225,11 @@ sub route
 	$via ||= $self->{'-via'} || $self->{to};
 
 	unless ($via) {
-		dbg("XML: no route specified (" . $self->toxml . ")") if isdbg('chanerr');
+		dbg("XML: no route specified (" . dd($self) . ")") if isdbg('chanerr');
 		return;
 	}
 	if (ref $fromdxchan && $via && $fromdxchan->call eq $via) {
-		dbg("XML: Trying to route back to source (" . $self->toxml . ")") if isdbg('chanerr');
+		dbg("XML: Trying to route back to source (" . dd($self) . ")") if isdbg('chanerr');
 		return;
 	}
 
@@ -258,12 +258,12 @@ sub route
 	}
 
 	if ($fromdxchan->call eq $via) {
-		dbg("XML: Trying to route back to source (" . $self->toxml . ")") if isdbg('chanerr');
+		dbg("XML: Trying to route back to source (" . dd($self) . ")") if isdbg('chanerr');
 		return;
 	}
 
 	if ($dxchan == $main::me) {
-		dbg("XML: Trying to route to me (" . $self->toxml . ")") if isdbg('chanerr');
+		dbg("XML: Trying to route to me (" . dd($self) . ")") if isdbg('chanerr');
 		return;
 	}
 
