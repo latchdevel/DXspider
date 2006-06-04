@@ -329,11 +329,7 @@ sub decode
 sub asc_encode
 {
 	my $self = shift;
-	my $dd = new Data::Dumper([$self]);
-	$dd->Indent(0);
-	$dd->Terse(1);
-    $dd->Quotekeys($] < 5.005 ? 1 : 0);
-	return $dd->Dumpxs;
+	return dd($self);
 }
 
 #
@@ -343,6 +339,7 @@ sub asc_decode
 {
 	my $s = shift;
 	my $ref;
+	$s =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	eval '$ref = ' . $s;
 	if ($@) {
 		LogDbg('err', $@);
