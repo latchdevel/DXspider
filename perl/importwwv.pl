@@ -101,6 +101,7 @@ sub out
 	my $fn = "solar.txt.$$";
    
 	open OUT, ">$tmp/$fn" or die "import $tmp/$fn $!";
+	chmod 0666, "$tmp/$fn";
 	print OUT map { "$_\n" } @_;
 	close OUT;
 
