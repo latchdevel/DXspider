@@ -50,6 +50,7 @@ sub process
 	# open the output file in the data area
 	my $fn = "$root/tmp/keps.txt.$$";
 	open OUT, ">$fn" or die "$fn $!";
+	chmod 0666, $fn;
 	print OUT $inp;
 	close OUT;
 
