@@ -20,11 +20,7 @@ foreach $f (@f) {
 	my @in;
 	push @in, (eval $f);
 	if (@in) {
-        my $dd = Data::Dumper->new([ \@in ], [ "$f" ]);
-        $dd->Indent(1);
-		$dd->Quotekeys(0);
-		my $s = $dd->Dumpxs;
-		push @out, $s;
+		push @out, "$f = ". dd(\@in);
 		Log('DXCommand', $self->call . " show/var $f");
 	} else {
 		push @out, $@ ? $@ : $self->msg('e3', 'show/var', $f);

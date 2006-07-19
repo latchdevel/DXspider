@@ -101,6 +101,7 @@ $count = 0;
 		  itu => '0,ITU Zone',
 		  cq => '0,CQ Zone',
 		  enhanced => '5,Enhanced Client,yesno',
+		  gtk => '5,Using GTK,yesno',
 		  senddbg => '8,Sending Debug,yesno',
 		  width => '0,Column Width',
 		  disconnecting => '9,Disconnecting,yesno',

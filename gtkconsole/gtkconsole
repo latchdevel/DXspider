@@ -20,15 +20,16 @@ BEGIN {
 
 use strict;
 
-use Gtk qw(-init);
+use Glib;
+use Gtk2 qw(-init);
+use Gtk2::Helper;
+use Gtk2::SimpleList;
 
 use vars qw(@modules $font);                    
 
 @modules = ();					# is the list of modules that need init calling
 								# on them. It is set up by each  'use'ed module
 								# that has Gtk stuff in it
-$font = Gtk::Gdk::Font->load("-misc-fixed-medium-r-normal-*-*-130-*-*-c-*-koi8-r");
-
 use DXVars;
 use DXUtil;
 use IO::Socket::INET;
@@ -49,11 +50,15 @@ if ($ssid) {
 
 die "You cannot connect as your cluster callsign ($main::mycall)\n" if $call eq $main::mycall;
 
+my $host = 'localhost';
+my $port = 7301;
 
-my $sock = IO::Socket::INET->new(PeerAddr=>$main::clusteraddr, PeerPort=>$main::clusterport);
-die "Cannot connect to $main::clusteraddr/$main::clusterport ($!)\n" unless $sock;
-sendmsg('A', 'local');
-sendmsg('G', '2');
+my $sock = IO::Socket::INET->new(PeerAddr=>$host, PeerPort=>$port);
+die "Cannot connect to  $host/$port ($!)\n" unless $sock;
+sendmsg('I', $call);
+sendmsg('I', 'set/gtk');
+#sendmsg('A', 'local');
+#sendmsg('G', '2');
 sendmsg('I', 'set/page 500');
 sendmsg('I', 'set/nobeep');
 
@@ -62,87 +67,197 @@ sendmsg('I', 'set/nobeep');
 #
 
 
+# 
+# +--------+-------+------------------------------------------------------------------------------------+
+# | _File  | _Help |                                                                                    |
+# +--------+-------+------------------------------------------------------------------------------------+
+#
 # main window
-my $main = new Gtk::Window('toplevel');
+my $main = new Gtk2::Window('toplevel');
 $main->set_default_size(600, 600);
-$main->set_policy(0, 1, 0);
-$main->signal_connect('destroy', sub { Gtk->exit(0); });
-$main->signal_connect('delete_event', sub { Gtk->exit(0); });
+$main->signal_connect('delete_event', sub { Gtk2->main_quit; });
 $main->set_title("gtkconsole - The DXSpider Console - $call");
 
 # the main vbox
-my $vbox = new Gtk::VBox(0, 1);
-$vbox->border_width(1);
+my $vbox = new Gtk2::VBox(0, 1);
 $main->add($vbox);
+
 
 # the menu bar
 my @menu = ( 
 			{path => '/_File', type => '<Branch>'},
-			{path => '/_File/Quit', callback => sub {Gtk->exit(0)}},
+			{path => '/_File/Quit', callback => sub {Gtk2->main_quit}},
 			{path => '/_Help', type => '<LastBranch>'},
 			{path => '/_Help/About'},
 		   );
-my $accel = new Gtk::AccelGroup();
-my $itemf = new Gtk::ItemFactory('Gtk::MenuBar', '<main>', $accel);
+my $itemf = new Gtk2::ItemFactory('Gtk2::MenuBar', '<main>');
 $itemf->create_items(@menu);
-$main->add_accel_group($accel);
 my $menu = $itemf->get_widget('<main>');
 $vbox->pack_start($menu, 0, 1, 0);
-$menu->show;
 
 
-my $top = new Text(1);
-my $toplist = $top->text;
-$toplist->set_editable(0);
-$toplist->sensitive(0);
+# another hbox is packed as the bottom of the vbox
+my $bhbox = Gtk2::HBox->new(0, 1);
+$vbox->pack_end($bhbox, 1, 1, 0);
 
-# add the handler for incoming messages from the node
-my $tophandler = Gtk::Gdk->input_add($sock->fileno, ['read'], \&tophandler, $sock);
-my $rbuf = "";						# used in handler
+# now pack two vboxes into the hbox
+my $lhvbox = Gtk2::VBox->new(0, 1);
+my $rhvbox = Gtk2::VBox->new(0, 1);
+$bhbox->pack_start($lhvbox, 1, 1, 5);
+$bhbox->pack_start(Gtk2::VSeparator->new, 0, 1, 0);
+$bhbox->pack_end($rhvbox, 1, 1, 5);
 
-#$toplist->{signalid} = $toplist->signal_connect(insert_text => \&doinsert, $toplist); 
-#$bot->{signalid} = $bot->signal_connect(insert_text => \&botinsert, $bot); 
-$vbox->pack_start($top, 1, 1, 0);
-$vbox->show;
+# first add a column type for the QRG
+my $font = 'monospace 10';
+my $oddbg = 'light blue';
+my $evenbg = 'white';
+
+Gtk2::SimpleList->add_column_type( 'qrg',
+                     type     => 'Glib::Scalar',
+                     renderer => 'Gtk2::CellRendererText',
+                     attr     => sub {
+                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
+                          my $info = $model->get ($iter, $col_num);
+                          $cell->set(text => sprintf("%.1f", $info), font => $font);
+                     }
+                );
+
+
+Gtk2::SimpleList->add_column_type( 'tt',
+                     type     => 'Glib::Scalar',
+                     renderer => 'Gtk2::CellRendererText',
+                     attr     => sub {
+                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
+                          my $info = $model->get ($iter, $col_num);
+                          $cell->set(text => $info, font => $font);
+                     }
+                );
+
+
+#
+# LEFT HAND SIDE
+#
+
+# DX window
+my $dxlist = Gtk2::SimpleList->new(
+								   'RxTime' => 'tt',
+								   'QRG' => 'qrg',
+								   'DX Call' => 'tt',
+								   'Grid' => 'tt',
+								   'Remarks' => 'tt',
+								   'By' => 'tt',
+								   'Grid' => 'tt',
+								   'TxTime' => 'tt',
+								  );
+my $dxscroll = Gtk2::ScrolledWindow->new (undef, undef);
+$dxscroll->set_shadow_type ('etched-out');
+$dxscroll->set_policy ('never', 'automatic');
+#$dxscroll->set_size_request (700, 400);
+$dxscroll->add($dxlist);
+$dxscroll->set_border_width(5);
+$lhvbox->pack_start($dxscroll, 1, 1, 0);
+
+# The command list
+my $cmdlist = Gtk2::SimpleList->new(
+									RxTime => 'tt',
+									Information => 'tt',
+								   );
+my $cmdscroll = Gtk2::ScrolledWindow->new (undef, undef);
+$cmdscroll->set_shadow_type ('etched-out');
+$cmdscroll->set_policy ('never', 'automatic');
+#$cmdscroll->set_size_request (700, 400);
+$cmdscroll->add($cmdlist);
+$cmdscroll->set_border_width(5);
+$lhvbox->pack_start($cmdscroll, 1, 1, 0);
+
+
+# nice little separator
+$lhvbox->pack_start(Gtk2::HSeparator->new, 0, 1, 0 );
+
+# callsign and current date and time
+my $hbox = new Gtk2::HBox;
+my $calllabel = new Gtk2::Label($call);
+my $date = new Gtk2::Label(cldatetime(time));
+$date->{tick} = Glib::Timeout->add(1000, \&updatetime, 0);
+$hbox->pack_start( $calllabel, 0, 1, 0 );
+$hbox->pack_end($date, 0, 1, 0);
+$lhvbox->pack_start($hbox, 0, 1, 0);
+$lhvbox->pack_start(Gtk2::HSeparator->new, 0, 1, 0);
 
 # the bottom handler
-my $bot = new Gtk::Entry;
-my $style = $toplist->style;
-$style->font($main::font);
-$bot->set_style($style);
+my $bot = new Gtk2::Entry;
 $bot->set_editable(1);
 $bot->signal_connect('activate', \&bothandler);
 $bot->can_default(1);
+$lhvbox->pack_end($bot, 0, 1, 0);
 $bot->grab_default;
-$bot->show;
 
-# a horizontal box
-my $hbox = new Gtk::HBox;
-$hbox->show;
+#
+# RIGHT HAND SIDE
+#
 
-# callsign and current date and time
-my $calllabel = new Gtk::Label($call);
-my $date = new Gtk::Label(cldatetime(time));
-Gtk->timeout_add(1000, \&updatetime);
-$calllabel->show;
-$date->show;
+# The announce list
+my $annlist = Gtk2::SimpleList->new(
+									RxTime => 'tt',
+									From => 'tt',
+									To => 'tt',
+									Announcement => 'tt',
+								   );
+my $annscroll = Gtk2::ScrolledWindow->new (undef, undef);
+$annscroll->set_shadow_type ('etched-out');
+$annscroll->set_policy ('automatic', 'automatic');
+#$annscroll->set_size_request (700, 400);
+$annscroll->add($annlist);
+$annscroll->set_border_width(5);
+$rhvbox->pack_start($annscroll, 0, 1, 0);
+
+# The wwv list
+my $wwvlist = Gtk2::SimpleList->new(
+									RxTime => 'tt',
+									From => 'tt',
+									SFI => 'int',
+									A => 'int',
+									K => 'int',
+									Remarks => 'tt',
+									Hour => 'tt'
+								   );
+my $wwvscroll = Gtk2::ScrolledWindow->new (undef, undef);
+$wwvscroll->set_shadow_type ('etched-out');
+$wwvscroll->set_policy ('never', 'automatic');
+#$wwvscroll->set_size_request (700, 200);
+$wwvscroll->add($wwvlist);
+$wwvscroll->set_border_width(5);
+$rhvbox->pack_start($wwvscroll, 1, 1, 0);
+
+# The wcy list
+my $wcylist = Gtk2::SimpleList->new(
+									RxTime => 'tt',
+									From => 'tt',
+									K => 'int',
+									ExpK => 'int',
+									A => 'int',
+									R => 'int',
+									SFI => 'int', 
+									SA => 'tt',
+									GMF => 'tt',
+									Aurora => 'tt',
+									Time => 'tt'
+								   );
+my $wcyscroll = Gtk2::ScrolledWindow->new (undef, undef);
+$wcyscroll->set_shadow_type ('etched-out');
+$wcyscroll->set_policy ('never', 'automatic');
+#$wcyscroll->set_size_request (700, 200);
+$wcyscroll->add($wcylist);
+$wcyscroll->set_border_width(5);
+$rhvbox->pack_start($wcyscroll, 1, 1, 0);
+
+my $sock_helper = Gtk2::Helper->add_watch($sock->fileno, 'in', \&tophandler, $sock);
  
-$hbox->pack_start( $calllabel, 0, 1, 0 );
-$hbox->pack_end($date, 0, 1, 0);
-
-
-$vbox->pack_start($hbox, 0, 1, 0); 
-
-# nice little separator
-my $separator = new Gtk::HSeparator();
-$vbox->pack_start( $separator, 0, 1, 0 );
-$separator->show();
-$vbox->pack_start($bot, 0, 1, 0);
-
 # the main loop
 $main->show_all;
 $bot->grab_focus;
-Gtk->main;
+Gtk2->main;
+exit(0);
 
 #
 # handlers
@@ -151,20 +266,6 @@ Gtk->main;
 sub updatetime
 {
 	$date->set_text(cldatetime(time));
-	1;
-}
-
-sub doinsert {
-	my ($self, $text) = @_;
-
-	# we temporarily block this handler to avoid recursion
-	$self->signal_handler_block($self->{signalid});
-	my $pos = $self->insert($self->{font}, $toplist->style->black, $toplist->style->white, $text);
-	$self->signal_handler_unblock($self->{signalid});
-
-	# we already inserted the text if it was valid: no need
-	# for the self to process this signal emission
-	$self->signal_emit_stop_by_name('insert-text');
 	1;
 }
 
@@ -178,57 +279,140 @@ sub bothandler
 	senddata($msg);
 }
 
+my $rbuf;
+
 sub tophandler
 {
-	my ($socket, $fd, $flags) = @_;
-	if ($flags->{read}) {
-		my $offset = length $rbuf;
-		my $l = sysread($socket, $rbuf, 1024, $offset);
-		if (defined $l) {
-			my $freeze;
-			if ($l) {
-				while ($rbuf =~ s/^([^\015\012]*)\015?\012//) {
-					my $msg = $1;
-					$msg =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-					$msg =~ s/[\x00-\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
-					$toplist->freeze unless $freeze++;
-					handlemsg($msg);
-				}
-				if ($freeze) {
-					$toplist->thaw;
-					$toplist->vadj->set_value($toplist->vadj->upper);
-					$toplist->vadj->value_changed;
-				}
-			} else {
-				Gtk->exit(0);
+	my ($fd, $condx, $socket) = @_;
+
+	my $offset = length $rbuf;
+	my $l = sysread($socket, $rbuf, 1024, $offset);
+	if (defined $l) {
+		if ($l) {
+			while ($rbuf =~ s/^([^\015\012]*)\015?\012//) {
+				my $msg = $1;
+				handlemsg($msg);
 			}
 		} else {
-			Gtk->exit(0);
+			Gtk2->main_quit;
 		}
+	} else {
+		Gtk2->main_quit;
 	}
+	1;
+	
 }
 
 sub handlemsg
 {
-	my $msg = shift;
-	my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
-	if ($sort eq 'D') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");	
-	} elsif ($sort eq 'X') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
-	} elsif ($sort eq 'T') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
-	} elsif ($sort eq 'Y') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
-	} elsif ($sort eq 'V') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
-	} elsif ($sort eq 'N') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
-	} elsif ($sort eq 'W') {
-		$toplist->insert($toplist->{font}, undef, undef, "$line\n");
-	} elsif ($sort eq 'Z') {
-		Gtk->exit(0);
+	my $line = shift;
+
+	# this is truely evil and I bet there is a better way...
+	chomp $line;
+	my $list;
+	if ($line =~ /^'\w{2,4}',/) {
+		$list = eval qq([$line]);
+	} else {
+		$list = ['cmd', $line];
 	}
+	unless ($@) {
+		no strict 'refs';
+		my $cmd = shift @$list;
+		my $handle = "handle_$cmd";
+		if (__PACKAGE__->can($handle)) {
+			__PACKAGE__->$handle($list);
+		} else {
+			push @$list, $cmd;
+			__PACKAGE__->handle_def($list);
+		}
+	}
+}
+
+sub handle_cmd
+{
+	my $self = shift;
+	my $ref = shift;
+	my ($t, $ts) = (time, '');
+	my $s;
+	$s = ref $ref ? join ', ',@$ref : $ref;
+
+	if (exists $cmdlist->{lasttime} != $t) {
+		$ts = tim($t);
+		$cmdlist->{lasttime} = $t;
+	}
+
+	chomp $s;
+	push @{$cmdlist->{data}}, [$ts,  $s];
+}
+
+sub handle_def
+{
+	my $self = shift;
+	my $ref = shift;
+	my $s;
+	$s = ref $ref ? join ', ',@$ref : $ref;
+	my ($t, $ts) = (time, '');
+
+	if (exists $cmdlist->{lasttime} != $t) {
+		$ts = tim($t);
+		$cmdlist->{lasttime} = $t;
+	}
+	
+	chomp $s;
+	push @{$cmdlist->{data}}, [$ts,  $s];
+}
+
+sub handle_dx
+{
+	my $self = shift;
+	my $ref = shift;
+	my ($t, $ts) = (time, '');
+
+	if (exists $dxlist->{lasttime} != $t) {
+		$ts = tim($t);
+		$dxlist->{lasttime} = $t;
+	}
+	push @{$dxlist->{data}}, [$ts,  @$ref[0,1,15,3,4,16], stim($ref->[2]) ];
+	
+}
+
+sub handle_ann
+{
+	my $self = shift;
+	my $ref = shift;
+	my ($t, $ts) = (time, '');
+	my $s;
+	$s = ref $ref ? join ', ',@$ref : $ref;
+
+	if (exists $cmdlist->{lasttime} != $t) {
+		$ts = tim($t);
+		$cmdlist->{lasttime} = $t;
+	}
+
+	chomp $s;
+	push @{$cmdlist->{data}}, [$ts,  @$ref[0,1,2]];
+}
+
+sub handle_wcy
+{
+	my $self = shift;
+	my $ref = shift;
+	my $s;
+	$s = ref $ref ? join ', ',@$ref : $ref;
+
+	chomp $s;
+	push @{$cmdlist->{data}}, [tim(),  @$ref[10,4,5,3,6,2,7,8,9,1] ];
+}
+
+sub handle_wwv
+{
+	my $self = shift;
+	my $ref = shift;
+	my $s;
+	$s = ref $ref ? join ', ',@$ref : $ref;
+
+	chomp $s;
+	push @{$cmdlist->{data}}, [tim(),  @$ref[6,2,3,4,5,1] ];
 }
 
 #
@@ -244,6 +428,19 @@ sub senddata
 sub sendmsg
 {
 	my ($let, $msg) = @_;
-	$msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-	$sock->print("$let$call|$msg\n");
+#	$msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+#	$sock->print("$let$call|$msg\n");
+	$sock->print("$msg\n");
+}
+
+sub tim
+{
+	my $t = shift || time;
+	return sprintf "%02d:%02d:%02d", (gmtime($t))[2,1,0];
+}
+
+sub stim
+{
+	my $t = shift || time;
+	return sprintf "%02d:%02d", (gmtime($t))[2,1];
 }

@@ -14,9 +14,9 @@ return (1, $self->msg('e9')) unless $line;
 
 my ($var, $rest) = split /=|\s+/, $line, 2;
 $rest =~ s/^=\s*//;
-Log('DXCommand', $self->call . " set $var = $rest" );
+Log('DXCommand', $self->call . " set $var = " . dd($rest) );
 eval "$var = $rest";
-return (1, $@ ? $@ : "Ok, $var = $rest" );
+return (1, $@ ? $@ : "Ok, $var = " . dd($rest) );
 
 
 
