@@ -121,6 +121,8 @@ package DXM;
 				grayline2 => 'Location                              dd/mm/yyyy Dawn   Rise   Set    Dusk',
 				grids => 'DX Grid enabled for $_[0]',
 				gridu => 'DX Grid disabled for $_[0]',
+				gtks => 'GTK output enabled for $_[0]',
+				gtku => 'GTK output disabled for $_[0]',
 				illcall => 'Sorry, $_[0] is an invalid callsign',
 				hasha => '$_[0] already exists in $_[1]',
 				hashb => '$_[0] added to $_[1]',

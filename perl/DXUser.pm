@@ -85,6 +85,7 @@ $v3 = 0;
 		  wantusstate => '0,Show US State,yesno',
 		  wantdxcq => '0,Show CQ Zone,yesno',
 		  wantdxitu => '0,Show ITU Zone,yesno',
+		  wantgtk => '0,Want GTK interface,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -714,6 +715,11 @@ sub wantdxcq
 sub wantdxitu
 {
 	return _want('dxitu', @_);
+}
+
+sub wantgtk
+{
+	return _want('gtk', @_);
 }
 
 sub wantlogininfo

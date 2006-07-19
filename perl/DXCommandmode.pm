@@ -600,6 +600,9 @@ sub disconnect
 sub prompt
 {
 	my $self = shift;
+
+	return if $self->{gtk};		# 'cos prompts are not a concept that applies here
+	
 	my $call = $self->call;
 	my $date = cldate($main::systime);
 	my $time = ztime($main::systime);
@@ -797,6 +800,18 @@ sub find_cmd_name {
 	return $package;
 }
 
+sub send
+{
+	my $self = shift;
+	if ($self->{gtk}) {
+		for (@_) {
+			$self->SUPER::send(dd(['cmd',$_]));
+		}
+	} else {
+		$self->SUPER::send(@_);
+	}
+}
+
 sub local_send
 {
 	my ($self, $let, $buf) = @_;
@@ -816,7 +831,13 @@ sub talk
 {
 	my ($self, $from, $to, $via, $line) = @_;
 	$line =~ s/\\5E/\^/g;
-	$self->local_send('T', "$to de $from: $line") if $self->{talk};
+	if ($self->{talk}) {
+		if ($self->{gtk}) {
+			$self->local_send('T', dd(['talk',$to,$from,$via,$line,@_]));
+		} else {
+			$self->local_send('T', "$to de $from: $line");
+		}
+	}
 	Log('talk', $to, $from, $via?$via:$main::mycall, $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
@@ -858,9 +879,14 @@ sub announce
 		return if $_[0] ne $main::myalias && $_[0] ne $main::mycall;
 	}
 	return if $target eq 'SYSOP' && $self->{priv} < 5;
-	my $buf = "$to$target de $_[0]: $text";
-	$buf =~ s/\%5E/^/g;
-	$buf .= "\a\a" if $self->{beep};
+	my $buf;
+	if ($self->{gtk}) {
+		$buf = dd(['ann', $to, $target, $text, @_])
+	} else {
+		$buf = "$to$target de $_[0]: $text";
+		$buf =~ s/\%5E/^/g;
+		$buf .= "\a\a" if $self->{beep};
+	}
 	$self->local_send($target eq 'WX' ? 'W' : 'N', $buf);
 }
 
@@ -878,9 +904,14 @@ sub chat
 	return unless grep uc $_ eq $target, @{$self->{user}->{group}};
 	
 	$text =~ s/^\#\d+ //;
-	my $buf = "$target de $_[0]: $text";
-	$buf =~ s/\%5E/^/g;
-	$buf .= "\a\a" if $self->{beep};
+	my $buf;
+	if ($self->{gtk}) {
+		$buf = dd(['chat', $to, $target, $text, @_])
+	} else {
+		$buf = "$target de $_[0]: $text";
+		$buf =~ s/\%5E/^/g;
+		$buf .= "\a\a" if $self->{beep};
+	}
 	$self->local_send('C', $buf);
 }
 
@@ -935,6 +966,24 @@ sub dx_spot
 	my $buf;
 	if ($self->{ve7cc}) {
 		$buf = VE7CC::dx_spot($self, @_);
+	} elsif ($self->{gtk}) {
+		my ($dxloc, $byloc);
+
+		my $ref = DXUser->get_current($_[4]);
+		if ($ref) {
+			$byloc = $ref->qra;
+			$byloc = substr($byloc, 0, 4) if $byloc;
+		}
+
+		my $spot = $_[1];
+		$spot =~ s|/\w{1,4}$||;
+		$ref = DXUser->get_current($spot);
+		if ($ref) {
+			$dxloc = $ref->qra;
+			$dxloc = substr($dxloc, 0, 4) if $dxloc;
+		}
+		$buf = dd(['dx', @_, ($dxloc||''), ($byloc||'')]);
+		
 	} else {
 		$buf = $self->format_dx_spot(@_);
 		$buf .= "\a\a" if $self->{beep};
@@ -958,8 +1007,14 @@ sub wwv
 		return unless $filter;
 	}
 
-	my $buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
-	$buf .= "\a\a" if $self->{beep};
+	my $buf;
+	if ($self->{gtk}) {
+		$buf = dd(['wwv', @_])
+	} else {
+		$buf = "WWV de $_[6] <$_[1]>:   SFI=$_[2], A=$_[3], K=$_[4], $_[5]";
+		$buf .= "\a\a" if $self->{beep};
+	}
+	
 	$self->local_send('V', $buf);
 }
 
@@ -977,8 +1032,13 @@ sub wcy
 		return unless $filter;
 	}
 
-	my $buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
-	$buf .= "\a\a" if $self->{beep};
+	my $buf;
+	if ($self->{gtk}) {
+		$buf = dd(['wcy', @_])
+	} else {
+		$buf = "WCY de $_[10] <$_[1]> : K=$_[4] expK=$_[5] A=$_[3] R=$_[6] SFI=$_[2] SA=$_[7] GMF=$_[8] Au=$_[9]";
+		$buf .= "\a\a" if $self->{beep};
+	}
 	$self->local_send('Y', $buf);
 }
 
@@ -989,7 +1049,11 @@ sub broadcast_debug
 	
 	foreach my $dxchan (DXChannel::get_all) {
 		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
-		$dxchan->send_later('L', $s);
+		if ($dxchan->{gtk}) {
+			$dxchan->local_send('L', dd(['db', $s]));
+		} else {
+			$dxchan->local_send('L', $s);
+		}
 	}
 }
 
