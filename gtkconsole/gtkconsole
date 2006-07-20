@@ -194,6 +194,7 @@ my $dxlist = Gtk2::SimpleList->new(
 								   'TxTime' => 'tt',
 								  );
 $dxlist->set_rules_hint(1);
+$dxlist->get_model->signal_connect('row-changed', \&row_inserted, $dxlist);
 my $dxscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $dxscroll->set_shadow_type ('etched-out');
 $dxscroll->set_policy ('never', 'automatic');
@@ -215,6 +216,8 @@ $cmdscroll->set_policy ('automatic', 'automatic');
 #$cmdscroll->set_size_request (700, 400);
 $cmdscroll->add($cmdlist);
 $cmdscroll->set_border_width(5);
+$cmdlist->get_model->signal_connect('row-changed', \&row_inserted, $cmdlist);
+
 $lhvbox->pack_start($cmdscroll, 1, 1, 0);
 
 
@@ -249,6 +252,7 @@ my $annlist = Gtk2::SimpleList->new(
 									Announcement => 'ttlesslong',
 								   );
 $annlist->set_rules_hint(1);
+$annlist->get_model->signal_connect('row-changed', \&row_inserted, $annlist);
 my $annscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $annscroll->set_shadow_type ('etched-out');
 $annscroll->set_policy ('automatic', 'automatic');
@@ -270,6 +274,7 @@ my $wwvlist = Gtk2::SimpleList->new(
 									Hour => 'tt'
 								   );
 $wwvlist->set_rules_hint(1);
+$wwvlist->get_model->signal_connect('row-changed', \&row_inserted, $wwvlist);
 my $wwvscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $wwvscroll->set_shadow_type ('etched-out');
 $wwvscroll->set_policy ('never', 'automatic');
@@ -293,6 +298,7 @@ my $wcylist = Gtk2::SimpleList->new(
 									Hour => 'tt'
 								   );
 $wcylist->set_rules_hint(1);
+$wcylist->get_model->signal_connect('row-changed', \&row_inserted, $wcylist);
 my $wcyscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $wcyscroll->set_shadow_type ('etched-out');
 $wcyscroll->set_policy ('never', 'automatic');
@@ -466,6 +472,21 @@ sub handle_wwv
 
 	chomp $s;
 	push @{$wwvlist->{data}}, [tim(),  @$ref[6,2,3,4,5,1] ];
+}
+
+
+sub row_inserted
+{
+	my ($list, $path, $iter, $tree) = @_;
+#	print $list->get_string_from_iter, "\n";
+	$tree->scroll_to_cell($path, undef, 0, 0, 0);
+}
+
+sub row_activated
+{
+	my ($tree, $path, $col) = @_;
+	print "row activated\n";
+	$tree->scroll_to_cell($path, undef, 0, 0, 0);
 }
 
 #
