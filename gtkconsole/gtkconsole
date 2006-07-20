@@ -2,7 +2,7 @@
 #
 # A GTK based console program
 #
-# Copyright (c) 2001 Dirk Koopman G1TLH
+# Copyright (c) 2001-6 Dirk Koopman G1TLH
 #
 # $Id$
 #
@@ -50,8 +50,8 @@ if ($ssid) {
 
 die "You cannot connect as your cluster callsign ($main::mycall)\n" if $call eq $main::mycall;
 
-my $host = 'localhost';
-my $port = 7301;
+my $host = 'gb7djk.dxcluster.net';
+my $port = 7300;
 
 my $sock = IO::Socket::INET->new(PeerAddr=>$host, PeerPort=>$port);
 die "Cannot connect to  $host/$port ($!)\n" unless $sock;
@@ -118,7 +118,7 @@ Gtk2::SimpleList->add_column_type( 'qrg',
                      attr     => sub {
                           my ($treecol, $cell, $model, $iter, $col_num) = @_;
                           my $info = $model->get ($iter, $col_num);
-                          $cell->set(text => sprintf("%.1f", $info), font => $font);
+                          $cell->set(text => sprintf("%.1f", $info), font => $font, xalign => 1.0);
                      }
                 );
 
@@ -149,6 +149,7 @@ my $dxlist = Gtk2::SimpleList->new(
 								   'Grid' => 'tt',
 								   'TxTime' => 'tt',
 								  );
+$dxlist->set_rules_hint(1);
 my $dxscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $dxscroll->set_shadow_type ('etched-out');
 $dxscroll->set_policy ('never', 'automatic');
@@ -203,6 +204,7 @@ my $annlist = Gtk2::SimpleList->new(
 									To => 'tt',
 									Announcement => 'tt',
 								   );
+$annlist->set_rules_hint(1);
 my $annscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $annscroll->set_shadow_type ('etched-out');
 $annscroll->set_policy ('automatic', 'automatic');
@@ -221,6 +223,7 @@ my $wwvlist = Gtk2::SimpleList->new(
 									Remarks => 'tt',
 									Hour => 'tt'
 								   );
+$wwvlist->set_rules_hint(1);
 my $wwvscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $wwvscroll->set_shadow_type ('etched-out');
 $wwvscroll->set_policy ('never', 'automatic');
@@ -243,6 +246,7 @@ my $wcylist = Gtk2::SimpleList->new(
 									Aurora => 'tt',
 									Time => 'tt'
 								   );
+$wcylist->set_rules_hint(1);
 my $wcyscroll = Gtk2::ScrolledWindow->new (undef, undef);
 $wcyscroll->set_shadow_type ('etched-out');
 $wcyscroll->set_policy ('never', 'automatic');
@@ -336,9 +340,9 @@ sub handle_cmd
 	my $s;
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
-	if (exists $cmdlist->{lasttime} != $t) {
+	if (($cmdscroll->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$cmdlist->{lasttime} = $t;
+		$cmdscroll->{lasttime} = $t;
 	}
 
 	chomp $s;
@@ -353,9 +357,9 @@ sub handle_def
 	$s = ref $ref ? join ', ',@$ref : $ref;
 	my ($t, $ts) = (time, '');
 
-	if (exists $cmdlist->{lasttime} != $t) {
+	if (($cmdscroll->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$cmdlist->{lasttime} = $t;
+		$cmdscroll->{lasttime} = $t;
 	}
 	
 	chomp $s;
@@ -368,9 +372,9 @@ sub handle_dx
 	my $ref = shift;
 	my ($t, $ts) = (time, '');
 
-	if (exists $dxlist->{lasttime} != $t) {
+	if (($dxscroll->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$dxlist->{lasttime} = $t;
+		$dxscroll->{lasttime} = $t;
 	}
 	push @{$dxlist->{data}}, [$ts,  @$ref[0,1,15,3,4,16], stim($ref->[2]) ];
 	
@@ -384,13 +388,13 @@ sub handle_ann
 	my $s;
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
-	if (exists $cmdlist->{lasttime} != $t) {
+	if (($annscroll->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$cmdlist->{lasttime} = $t;
+		$annscroll->{lasttime} = $t;
 	}
 
 	chomp $s;
-	push @{$cmdlist->{data}}, [$ts,  @$ref[0,1,2]];
+	push @{$annlist->{data}}, [$ts,  @$ref[0,1,2]];
 }
 
 sub handle_wcy
@@ -401,7 +405,7 @@ sub handle_wcy
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
 	chomp $s;
-	push @{$cmdlist->{data}}, [tim(),  @$ref[10,4,5,3,6,2,7,8,9,1] ];
+	push @{$wcylist->{data}}, [tim(),  @$ref[10,4,5,3,6,2,7,8,9,1] ];
 }
 
 sub handle_wwv
@@ -412,7 +416,7 @@ sub handle_wwv
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
 	chomp $s;
-	push @{$cmdlist->{data}}, [tim(),  @$ref[6,2,3,4,5,1] ];
+	push @{$wwvlist->{data}}, [tim(),  @$ref[6,2,3,4,5,1] ];
 }
 
 #
