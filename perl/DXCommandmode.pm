@@ -833,7 +833,7 @@ sub talk
 	$line =~ s/\\5E/\^/g;
 	if ($self->{talk}) {
 		if ($self->{gtk}) {
-			$self->local_send('T', dd(['talk',$to,$from,$via,$line,@_]));
+			$self->local_send('T', dd(['talk',$to,$from,$via,$line]));
 		} else {
 			$self->local_send('T', "$to de $from: $line");
 		}

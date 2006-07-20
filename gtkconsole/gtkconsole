@@ -326,7 +326,7 @@ sub handlemsg
 		if (__PACKAGE__->can($handle)) {
 			__PACKAGE__->$handle($list);
 		} else {
-			push @$list, $cmd;
+			unshift @$list, $cmd;
 			__PACKAGE__->handle_def($list);
 		}
 	}
