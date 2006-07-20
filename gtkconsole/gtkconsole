@@ -33,8 +33,6 @@ use vars qw(@modules $font);
 use DXVars;
 use DXUtil;
 use IO::Socket::INET;
-use Text;
-use DebugHandler;
 
 #
 # main initialisation
@@ -74,7 +72,10 @@ sendmsg('I', 'set/nobeep');
 #
 # main window
 my $main = new Gtk2::Window('toplevel');
-$main->set_default_size(600, 600);
+my $scr = $main->get_screen;
+my $scr_width = $scr->get_width;
+my $scr_height = $scr->get_height;
+$main->set_default_size($scr_width, $scr_height/2);
 $main->signal_connect('delete_event', sub { Gtk2->main_quit; });
 $main->set_title("gtkconsole - The DXSpider Console - $call");
 
@@ -108,7 +109,7 @@ $bhbox->pack_start(Gtk2::VSeparator->new, 0, 1, 0);
 $bhbox->pack_end($rhvbox, 1, 1, 5);
 
 # first add a column type for the QRG
-my $font = 'monospace 10';
+my $font = 'monospace 9';
 my $oddbg = 'light blue';
 my $evenbg = 'white';
 
@@ -211,7 +212,7 @@ $annscroll->set_policy ('automatic', 'automatic');
 #$annscroll->set_size_request (700, 400);
 $annscroll->add($annlist);
 $annscroll->set_border_width(5);
-$rhvbox->pack_start($annscroll, 0, 1, 0);
+$rhvbox->pack_start($annscroll, 1, 1, 0);
 
 # The wwv list
 my $wwvlist = Gtk2::SimpleList->new(
@@ -230,7 +231,7 @@ $wwvscroll->set_policy ('never', 'automatic');
 #$wwvscroll->set_size_request (700, 200);
 $wwvscroll->add($wwvlist);
 $wwvscroll->set_border_width(5);
-$rhvbox->pack_start($wwvscroll, 1, 1, 0);
+$rhvbox->pack_start($wwvscroll, 0, 1, 0);
 
 # The wcy list
 my $wcylist = Gtk2::SimpleList->new(
@@ -244,7 +245,7 @@ my $wcylist = Gtk2::SimpleList->new(
 									SA => 'tt',
 									GMF => 'tt',
 									Aurora => 'tt',
-									Time => 'tt'
+									Hour => 'tt'
 								   );
 $wcylist->set_rules_hint(1);
 my $wcyscroll = Gtk2::ScrolledWindow->new (undef, undef);
@@ -253,7 +254,7 @@ $wcyscroll->set_policy ('never', 'automatic');
 #$wcyscroll->set_size_request (700, 200);
 $wcyscroll->add($wcylist);
 $wcyscroll->set_border_width(5);
-$rhvbox->pack_start($wcyscroll, 1, 1, 0);
+$rhvbox->pack_start($wcyscroll, 0, 1, 0);
 
 my $sock_helper = Gtk2::Helper->add_watch($sock->fileno, 'in', \&tophandler, $sock);
  
@@ -394,7 +395,7 @@ sub handle_ann
 	}
 
 	chomp $s;
-	push @{$annlist->{data}}, [$ts,  @$ref[0,1,2]];
+	push @{$annlist->{data}}, [$ts,  @$ref[3,1,2]];
 }
 
 sub handle_wcy
