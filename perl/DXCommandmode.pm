@@ -1050,9 +1050,9 @@ sub broadcast_debug
 	foreach my $dxchan (DXChannel::get_all) {
 		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
 		if ($dxchan->{gtk}) {
-			$dxchan->local_send('L', dd(['db', $s]));
+			$dxchan->send_later('L', dd(['db', $s]));
 		} else {
-			$dxchan->local_send('L', $s);
+			$dxchan->send_later('L', $s);
 		}
 	}
 }

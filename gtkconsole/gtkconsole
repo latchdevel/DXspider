@@ -2,6 +2,8 @@
 #
 # A GTK based console program
 #
+# usage: gtkconsole [<callsign>] [<host> <port>]
+# 
 # Copyright (c) 2001-6 Dirk Koopman G1TLH
 #
 # $Id$
@@ -16,299 +18,111 @@ BEGIN {
 	# root of directory tree for this system
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-	
-	unshift @INC, "$root/perl";	# this IS the right way round!
-	unshift @INC, "$root/gtkconsole";
-	unshift @INC, "$root/local";
 }
 
 use Glib;
 use Gtk2 qw(-init);
 use Gtk2::Helper;
-use Gtk2::SimpleList;
+use Gtk2::SimpleMenu;
+use Data::Dumper;
+use IO::File;
 
-use Text::Wrap;
+use Screen;
 
 use vars qw(@modules $font);                    
 
 @modules = ();					# is the list of modules that need init calling
 								# on them. It is set up by each  'use'ed module
 								# that has Gtk stuff in it
-use DXVars;
-use DXUtil;
 use IO::Socket::INET;
+
+our @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+
+# various GTK handles
+our $main;						# the main screen
+our $scr_width;					# calculated screen dimensions
+our $scr_height;
+our ($dx, $cmd, $ann, $wcy, $wwv); # scrolling list windows
+our $bot;						# the cmd entry window
+our $date;						# the current date
+
+# read in the user data
+our $userfn = "$ENV{HOME}/.gtkconsole_data";
+our $user = read_user_data();
+our $call;
+our $passwd;
+our $host;
+our $port = 7300;
 
 # 
 # read in gtkconsole file
+#
 
 Gtk2::Rc->set_default_files("$root/gtkconsole/gtkconsolerc", "$ENV{HOME}/.gtkconsolerc", ".gtkconsolerc");
-print join(', ', Gtk2::Rc->get_default_files), "\n";
 Gtk2::Rc->reparse_all;
  
+# sort out a callsign, host and port, looking in order
+#  1. the command line
+#  2. any defaults in the user data;
+#  3. poke about in any spider tree that we can find
 #
-# main initialisation
-#
-my $call = uc shift @ARGV if @ARGV;
-$call = uc $main::myalias unless $call;
-my ($scall, $ssid) = split /-/, $call;
-$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
-if ($ssid) {
-	$ssid = 15 if $ssid > 15;
-	$call = "$scall-$ssid";
+
+if (@ARGV) {
+	$call = uc shift @ARGV;
+	$host = shift @ARGV if @ARGV;
+	$port = shift @ARGV if @ARGV;
 }
 
-die "You cannot connect as your cluster callsign ($main::mycall)\n" if $call eq $main::mycall;
+unless ($call && $host) {
+	my $node = $user->{clusters}->{$user->{node}};
+	
+	if ($node->{call} || $user->{call}) {
+		$call = $node->{call} || $user->{call};
+		$host = $node->{passwd};
+		$host = $node->{host};
+		$port = $node->{port};
+	}
+}
 
-my $host = 'gb7djk.dxcluster.net';
-my $port = 7300;
+unless ($call && $host) {
+	if (-e "$root/local/DXVars.pm") {
+		require "$root/local/DXVars.pm";
+		$call = $main::myalias;
+		$call = $main::myalias;	# for the warning
+	}
+	if (-e "$root/local/Listeners.pm") {
+		require  "$root/local/Listeners.pm";
+		$host = $main::listen->[0]->[0];
+		$port = $main::listen->[0]->[1];
+	}
+}
 
-my $sock = IO::Socket::INET->new(PeerAddr=>$host, PeerPort=>$port);
-die "Cannot connect to  $host/$port ($!)\n" unless $sock;
-sendmsg('I', $call);
-sendmsg('I', 'set/gtk');
-#sendmsg('A', 'local');
-#sendmsg('G', '2');
-sendmsg('I', 'set/page 500');
-sendmsg('I', 'set/nobeep');
+unless ($host) {
+	$host = $user->{clusters}->{$user->{node}}->{host};
+	$port = $user->{clusters}->{$user->{node}}->{port};
+}
+
+$call ||= '';
+$host ||= '';
+$port ||= '';
+die "You need a callsign ($call), a hostname($host) and a port($port) to proceed" unless $call && $host;
 
 #
 # start of GTK stuff
 #
 
+gtk_create_main_screen();
 
-# 
-# +--------+-------+------------------------------------------------------------------------------------+
-# | _File  | _Help |                                                                                    |
-# +--------+-------+------------------------------------------------------------------------------------+
-#
-# main window
-my $main = new Gtk2::Window('toplevel');
-my $scr = $main->get_screen;
-my $scr_width = $scr->get_width;
-my $scr_height = $scr->get_height;
-$main->set_default_size($scr_width, $scr_height/2);
-$main->signal_connect('delete_event', sub { Gtk2->main_quit; });
 $main->set_title("gtkconsole - The DXSpider Console - $call");
 
-# the main vbox
-my $vbox = new Gtk2::VBox(0, 1);
-$main->add($vbox);
-
-
-# the menu bar
-my @menu = ( 
-			{path => '/_File', type => '<Branch>'},
-			{path => '/_File/Quit', callback => sub {Gtk2->main_quit}},
-			{path => '/_Help', type => '<LastBranch>'},
-			{path => '/_Help/About'},
-		   );
-my $itemf = new Gtk2::ItemFactory('Gtk2::MenuBar', '<main>');
-$itemf->create_items(@menu);
-my $menu = $itemf->get_widget('<main>');
-$vbox->pack_start($menu, 0, 1, 0);
-
-
-# a paned hbox is packed as the bottom of the vbox
-my $bhpane = Gtk2::HPaned->new;
-$vbox->pack_end($bhpane, 1, 1, 0);
-
-# now create the lh and rh panes
-my $lhvpane = Gtk2::VPaned->new;
-my $rhvpane = Gtk2::VPaned->new;
-$bhpane->pack1($lhvpane, 1, 0);
-$bhpane->pack2($rhvpane, 1, 0);
-
-# first add a column type for the QRG
-my $font = 'monospace 9';
-my $oddbg = 'light blue';
-my $evenbg = 'white';
-
-Gtk2::SimpleList->add_column_type( 'qrg',
-                     type     => 'Glib::Scalar',
-                     renderer => 'Gtk2::CellRendererText',
-                     attr     => sub {
-                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
-                          my $info = $model->get ($iter, $col_num);
-                          $cell->set(text => sprintf("%.1f", $info), font => $font, xalign => 1.0);
-                     }
-                );
-
-
-Gtk2::SimpleList->add_column_type( 'tt',
-                     type     => 'Glib::Scalar',
-                     renderer => 'Gtk2::CellRendererText',
-                     attr     => sub {
-                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
-                          my $info = $model->get ($iter, $col_num);
-                          $cell->set(text => $info, font => $font);
-                     }
-                );
-
-Gtk2::SimpleList->add_column_type( 'ttlong',
-                     type     => 'Glib::Scalar',
-                     renderer => 'Gtk2::CellRendererText',
-                     attr     => sub {
-                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
-                          my $info = $model->get ($iter, $col_num);
-						  $Text::Wrap::columns = 80;
-                          $cell->set(text => join("\n",wrap("","",$info)), font => $font);
-                     }
-                );
-
-Gtk2::SimpleList->add_column_type( 'ttlesslong',
-                     type     => 'Glib::Scalar',
-                     renderer => 'Gtk2::CellRendererText',
-                     attr     => sub {
-                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
-                          my $info = $model->get ($iter, $col_num);
-						  $Text::Wrap::columns = 65;
-                          $cell->set(text => join("\n",wrap("","",$info)), font => $font);
-                     }
-                );
-
-Gtk2::SimpleList->add_column_type( 'ttshort',
-                     type     => 'Glib::Scalar',
-                     renderer => 'Gtk2::CellRendererText',
-                     attr     => sub {
-                          my ($treecol, $cell, $model, $iter, $col_num) = @_;
-                          my $info = $model->get ($iter, $col_num);
-						  $Text::Wrap::columns = 30;
-                          $cell->set(text => join("\n",wrap("","",$info)), font => $font);
-                     }
-                );
-
-
-#
-# LEFT HAND SIDE
-#
-
-# DX window
-my $dxlist = Gtk2::SimpleList->new(
-								   'RxTime' => 'tt',
-								   'QRG' => 'qrg',
-								   'DX Call' => 'tt',
-								   'Grid' => 'tt',
-								   'Remarks' => 'ttshort',
-								   'By' => 'tt',
-								   'Grid' => 'tt',
-								   'TxTime' => 'tt',
-								  );
-$dxlist->set_rules_hint(1);
-$dxlist->get_model->signal_connect('row-changed', \&row_inserted, $dxlist);
-my $dxscroll = Gtk2::ScrolledWindow->new (undef, undef);
-$dxscroll->set_shadow_type ('etched-out');
-$dxscroll->set_policy ('never', 'automatic');
-#$dxscroll->set_size_request (700, 400);
-$dxscroll->add($dxlist);
-$dxscroll->set_border_width(5);
-
-$lhvpane->pack1($dxscroll, 1, 0);
-
-# The command list
-my $lhvbox = Gtk2::VBox->new(0, 1);
-my $cmdlist = Gtk2::SimpleList->new(
-									RxTime => 'tt',
-									Information => 'ttlong',
-								   );
-my $cmdscroll = Gtk2::ScrolledWindow->new (undef, undef);
-$cmdscroll->set_shadow_type ('etched-out');
-$cmdscroll->set_policy ('automatic', 'automatic');
-#$cmdscroll->set_size_request (700, 400);
-$cmdscroll->add($cmdlist);
-$cmdscroll->set_border_width(5);
-$cmdlist->get_model->signal_connect('row-changed', \&row_inserted, $cmdlist);
-
-$lhvbox->pack_start($cmdscroll, 1, 1, 0);
-
-
-# callsign and current date and time
-my $hbox = new Gtk2::HBox;
-my $calllabel = new Gtk2::Label($call);
-my $date = new Gtk2::Label(cldatetime(time));
-$date->{tick} = Glib::Timeout->add(1000, \&updatetime, 0);
-$hbox->pack_start( $calllabel, 0, 1, 0 );
-$hbox->pack_end($date, 0, 1, 0);
-$lhvbox->pack_start($hbox, 0, 1, 0);
-$lhvbox->pack_start(Gtk2::HSeparator->new, 0, 1, 0);
-
-# the bottom handler
-my $bot = new Gtk2::Entry;
-$bot->set_editable(1);
-$bot->signal_connect('activate', \&bothandler);
-$bot->can_default(1);
-$lhvbox->pack_end($bot, 0, 1, 0);
-$lhvpane->pack2($lhvbox, 1, 0);
-$bot->grab_default;
-
-#
-# RIGHT HAND SIDE
-#
-
-# The announce list
-my $annlist = Gtk2::SimpleList->new(
-									RxTime => 'tt',
-									From => 'tt',
-									To => 'tt',
-									Announcement => 'ttlesslong',
-								   );
-$annlist->set_rules_hint(1);
-$annlist->get_model->signal_connect('row-changed', \&row_inserted, $annlist);
-my $annscroll = Gtk2::ScrolledWindow->new (undef, undef);
-$annscroll->set_shadow_type ('etched-out');
-$annscroll->set_policy ('automatic', 'automatic');
-#$annscroll->set_size_request (700, 400);
-$annscroll->add($annlist);
-$annscroll->set_border_width(5);
-$rhvpane->pack1($annscroll, 1, 0);
-
-# The wwv list
-my $rhvbox = Gtk2::VBox->new(0, 1);
-
-my $wwvlist = Gtk2::SimpleList->new(
-									RxTime => 'tt',
-									From => 'tt',
-									SFI => 'int',
-									A => 'int',
-									K => 'int',
-									Remarks => 'ttshort',
-									Hour => 'tt'
-								   );
-$wwvlist->set_rules_hint(1);
-$wwvlist->get_model->signal_connect('row-changed', \&row_inserted, $wwvlist);
-my $wwvscroll = Gtk2::ScrolledWindow->new (undef, undef);
-$wwvscroll->set_shadow_type ('etched-out');
-$wwvscroll->set_policy ('never', 'automatic');
-#$wwvscroll->set_size_request (700, 200);
-$wwvscroll->add($wwvlist);
-$wwvscroll->set_border_width(5);
-$rhvbox->pack_start($wwvscroll, 1, 1, 0);
-
-# The wcy list
-my $wcylist = Gtk2::SimpleList->new(
-									RxTime => 'tt',
-									From => 'tt',
-									K => 'int',
-									ExpK => 'int',
-									A => 'int',
-									R => 'int',
-									SFI => 'int', 
-									SA => 'tt',
-									GMF => 'tt',
-									Aurora => 'tt',
-									Hour => 'tt'
-								   );
-$wcylist->set_rules_hint(1);
-$wcylist->get_model->signal_connect('row-changed', \&row_inserted, $wcylist);
-my $wcyscroll = Gtk2::ScrolledWindow->new (undef, undef);
-$wcyscroll->set_shadow_type ('etched-out');
-$wcyscroll->set_policy ('never', 'automatic');
-$wcyscroll->add($wcylist);
-$wcyscroll->set_border_width(5);
-$rhvbox->pack_start($wcyscroll, 1, 1, 0);
-$rhvbox->set_size_request (-1, $scr_height / 4);
-
-
-$rhvpane->pack2($rhvbox, 1, 0);
+# connect and send stuff
+my $sock = IO::Socket::INET->new(PeerAddr=>$host, PeerPort=>$port);
+die "Cannot connect to  $/$port ($!)\n" unless $sock;
+sendmsg($call);
+sendmsg($passwd) if $passwd;
+sendmsg('set/gtk');
+sendmsg('set/page 500');
+sendmsg('set/nobeep');
 
 my $sock_helper = Gtk2::Helper->add_watch($sock->fileno, 'in', \&tophandler, $sock);
  
@@ -324,7 +138,7 @@ exit(0);
 
 sub updatetime
 {
-	$date->set_text(cldatetime(time));
+	$_[0]->set_text(cldatetime(time));
 	1;
 }
 
@@ -335,10 +149,10 @@ sub bothandler
 	$msg =~ s/\r?\n$//;
 	$self->set_text('');
 	$self->grab_focus;
-	senddata($msg);
+	sendmsg($msg);
 }
 
-my $rbuf;
+my $rbuf = '';
 
 sub tophandler
 {
@@ -395,30 +209,27 @@ sub handle_cmd
 	my $s;
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
-	if (($cmdscroll->{lasttime}||0) != $t) {
+	if (($cmd->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$cmdscroll->{lasttime} = $t;
+		$cmd->{lasttime} = $t;
 	}
 
 	chomp $s;
-	push @{$cmdlist->{data}}, [$ts,  $s];
+	$cmd->add_data([$ts,  $s]);
 }
 
 sub handle_def
 {
 	my $self = shift;
 	my $ref = shift;
-	my $s;
-	$s = ref $ref ? join ', ',@$ref : $ref;
 	my ($t, $ts) = (time, '');
-
-	if (($cmdscroll->{lasttime}||0) != $t) {
+	my $s;
+	$s = ref $ref ? join(', ', @$ref) : $ref;
+	if (($cmd->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$cmdscroll->{lasttime} = $t;
+		$cmd->{lasttime} = $t;
 	}
-	
-	chomp $s;
-	push @{$cmdlist->{data}}, [$ts,  $s];
+	$cmd->add_data([$ts,  $s]);
 }
 
 sub handle_dx
@@ -427,11 +238,11 @@ sub handle_dx
 	my $ref = shift;
 	my ($t, $ts) = (time, '');
 
-	if (($dxscroll->{lasttime}||0) != $t) {
+	if (($dx->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$dxscroll->{lasttime} = $t;
+		$dx->{lasttime} = $t;
 	}
-	push @{$dxlist->{data}}, [$ts,  @$ref[0,1,15,3,4,16], stim($ref->[2]) ];
+	$dx->add_data([$ts,  @$ref[0,1,15,3,4,16], stim($ref->[2]) ]);
 	
 }
 
@@ -443,13 +254,13 @@ sub handle_ann
 	my $s;
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
-	if (($annscroll->{lasttime}||0) != $t) {
+	if (($ann->{lasttime}||0) != $t) {
 		$ts = tim($t);
-		$annscroll->{lasttime} = $t;
+		$ann->{lasttime} = $t;
 	}
 
 	chomp $s;
-	push @{$annlist->{data}}, [$ts,  @$ref[3,1,2]];
+	$ann->add_data([$ts,  @$ref[3,1,2]]);
 }
 
 sub handle_wcy
@@ -460,7 +271,8 @@ sub handle_wcy
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
 	chomp $s;
-	push @{$wcylist->{data}}, [tim(),  @$ref[10,4,5,3,6,2,7,8,9,1] ];
+
+	$wcy->add_data([tim(),  @$ref[10,4,5,3,6,2,7,8,9,1] ]);
 }
 
 sub handle_wwv
@@ -471,39 +283,18 @@ sub handle_wwv
 	$s = ref $ref ? join ', ',@$ref : $ref;
 
 	chomp $s;
-	push @{$wwvlist->{data}}, [tim(),  @$ref[6,2,3,4,5,1] ];
+	$wwv->add_data([tim(),  @$ref[6,2,3,4,5,1] ]);
 }
 
 
-sub row_inserted
-{
-	my ($list, $path, $iter, $tree) = @_;
-#	print $list->get_string_from_iter, "\n";
-	$tree->scroll_to_cell($path, undef, 0, 0, 0);
-}
-
-sub row_activated
-{
-	my ($tree, $path, $col) = @_;
-	print "row activated\n";
-	$tree->scroll_to_cell($path, undef, 0, 0, 0);
-}
 
 #
 # subroutine
 #
 
-sub senddata
-{
-	my $msg = shift;
-	sendmsg('I', $msg);
-}
-
 sub sendmsg
 {
-	my ($let, $msg) = @_;
-#	$msg =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-#	$sock->print("$let$call|$msg\n");
+	my $msg = shift;
 	$sock->print("$msg\n");
 }
 
@@ -517,4 +308,250 @@ sub stim
 {
 	my $t = shift || time;
 	return sprintf "%02d:%02d", (gmtime($t))[2,1];
+}
+
+# get a zulu time in cluster format (2300Z)
+sub ztime
+{
+	my $t = shift;
+	$t = defined $t ? $t : time;
+	my $dst = shift;
+	my ($sec,$min,$hour) = $dst ? localtime($t): gmtime($t);
+	my $buf = sprintf "%02d%02d%s", $hour, $min, ($dst) ? '' : 'Z';
+	return $buf;
+}
+
+# get a cluster format date (23-Jun-1998)
+sub cldate
+{
+	my $t = shift;
+	$t = defined $t ? $t : time;
+	my $dst = shift;
+	my ($sec,$min,$hour,$mday,$mon,$year) = $dst ? localtime($t) : gmtime($t);
+	$year += 1900;
+	my $buf = sprintf "%2d-%s-%04d", $mday, $month[$mon], $year;
+	return $buf;
+}
+
+# return a cluster style date time
+sub cldatetime
+{
+	my $t = shift;
+	my $dst = shift;
+	my $date = cldate($t, $dst);
+	my $time = ztime($t, $dst);
+	return "$date $time";
+}
+
+sub read_user_data
+{
+	my $u;
+	
+	if (-e $userfn) {
+		my $fh = new IO::File $userfn;
+		my $s = undef;
+		if ($fh) {
+			local $/ = undef;
+			$s = <$fh>;
+			$fh->close;
+		}
+		eval "\$u = $s";
+	}
+	unless ($u) {
+		print "$userfn missing or unreadable, starting afresh!\n";
+		
+		$u = {
+			  clusters => {
+						   'GB7DJK' => {host => 'gb7djk.dxcluster.net', port => 7300},
+						   'WR3D' => {host => 'wr3d.dxcluster.net', port => 7300},
+						   'GB7BAA' => {host => 'gb7baa.dxcluster.net', port => 7300},
+						  },
+			  node => 'GB7DJK',
+			 };
+		write_user_data($u);
+	}
+	return $u;
+}
+
+sub write_user_data
+{
+	my $u = shift;
+	
+	my $fh = new IO::File ">$userfn";
+	if ($fh) {
+		my $dd = new Data::Dumper([ $u ]);
+		$dd->Indent(1);
+		$dd->Terse(1);
+		$dd->Quotekeys(0);
+		$fh->print($dd->Dumpxs);
+		$fh->close;
+		return 1;
+	}
+	return 0;
+}
+
+sub def_menu_callback
+{
+
+}
+
+sub gtk_create_main_screen
+{
+	$main = new Gtk2::Window('toplevel');
+	my $scr = $main->get_screen;
+	$scr_width = int ($scr->get_width > 1280 ? 1280 : $scr->get_width) * 0.99;
+	$scr_height = int $scr->get_height * 0.5;
+	$main->set_default_size($scr_width, $scr_height);
+	$main->signal_connect('delete_event', sub { Gtk2->main_quit; });
+
+	# the main vbox
+	my $vbox = new Gtk2::VBox(0, 1);
+	$main->add($vbox);
+
+	my $menutree = [
+					_File => {
+							  item_type => '<Branch>',
+							  children => [
+										   _Quit => {
+													 callback => sub { Gtk2->main_quit; },
+													 callback_action => 1,
+													 accelerator => '<ctrl>Q',
+													}
+										  ],
+							 },
+
+					_Help => {
+							  item_type => '<Branch>',
+							  children => [
+										   _About => {
+													  callback_action => 9,
+													 },
+										  ],
+							 },
+
+				   ];
+	
+	my $menu = Gtk2::SimpleMenu->new(menu_tree => $menutree, default_callback => \&def_menu_callback, user_data => $user);
+	$vbox->pack_start($menu->{widget}, 0, 1, 0);
+
+
+	# a paned hbox is packed as the bottom of the vbox
+	my $bhpane = Gtk2::HPaned->new;
+	$vbox->pack_end($bhpane, 1, 1, 0);
+
+	# now create the lh and rh panes
+	my $lhvpane = Gtk2::VPaned->new;
+	my $rhvpane = Gtk2::VPaned->new;
+	$bhpane->pack1($lhvpane, 1, 0);
+	$bhpane->pack2($rhvpane, 1, 0);
+
+	#
+	# LEFT HAND SIDE
+	#
+	# The announce list
+	$ann = Screen::List->new(fields =>[
+									   RxTime => 'tt',
+									   From => 'tt',
+									   To => 'tt',
+									   Announcement => 'ttlesslong',
+									  ],
+							 hint => 1,
+							 frame => 'Announcements',
+							 size => [$scr_width * 0.45, $scr_height * 0.33],
+							);
+
+	$lhvpane->pack1($ann->widget, 1, 0);
+
+	# The command list
+	my $lhvbox = Gtk2::VBox->new(0, 1);
+	$cmd = Screen::List->new(fields => [
+										RxTime => 'tt',
+										Information => 'ttlong',
+									   ],
+							 size => [$scr_width * 0.45, $scr_height * 0.66],
+							);
+	$lhvbox->pack_start($cmd->widget, 1, 1, 0);
+
+
+	# callsign and current date and time
+	my $hbox = new Gtk2::HBox;
+	my $calllabel = new Gtk2::Label($call);
+	my $date = new Gtk2::Label(cldatetime(time));
+	$date->{tick} = Glib::Timeout->add(1000, \&updatetime, $date);
+	$hbox->pack_start( $calllabel, 0, 1, 0 );
+	$hbox->pack_end($date, 0, 1, 0);
+	$lhvbox->pack_start($hbox, 0, 1, 0);
+	$lhvbox->pack_start(Gtk2::HSeparator->new, 0, 1, 0);
+
+	# the bottom handler
+	$bot = new Gtk2::Entry;
+	$bot->set_editable(1);
+	$bot->signal_connect('activate', \&bothandler);
+	$bot->can_default(1);
+	$lhvbox->pack_end($bot, 0, 1, 0);
+	$lhvpane->pack2($lhvbox, 1, 0);
+	$bot->grab_default;
+
+	#
+	# RIGHT HAND SIDE
+	#
+
+	# DX window
+	$dx = Screen::List->new(fields => [
+									   'RxTime' => 'tt',
+									   'QRG' => 'qrg',
+									   'DX Call' => 'tt',
+									   'Grid' => 'tt',
+									   'Remarks' => 'ttshort',
+									   'By' => 'tt',
+									   'Grid' => 'tt',
+									   'TxTime' => 'tt',
+									  ],
+							policy => [qw(never automatic)],
+							hint => 1,
+							frame => "DX Spots",
+							maxsize => 500,
+							size => [$scr_width * 0.45, $scr_height * 0.45],
+						   );
+	$rhvpane->pack1($dx->widget, 1, 0);
+
+	# The wwv list
+	my $rhvbox = Gtk2::VBox->new(0, 1);
+	$wwv = Screen::List->new( fields =>[
+										RxTime => 'tt',
+										From => 'tt',
+										SFI => 'int',
+										A => 'int',
+										K => 'int',
+										Remarks => 'ttshort',
+										Hour => 'tt'
+									   ],
+							  hint => 1,
+							  policy => ['never', 'automatic'],
+							  frame => 'WWV Data',
+							);
+	$rhvbox->pack_start($wwv->widget, 1, 1, 0);
+
+	# The wcy list
+	$wcy = Screen::List->new(fields => [
+										RxTime => 'tt',
+										From => 'tt',
+										K => 'int',
+										ExpK => 'int',
+										A => 'int',
+										R => 'int',
+										SFI => 'int', 
+										SA => 'tt',
+										GMF => 'tt',
+										Aurora => 'tt',
+										Hour => 'tt' 
+									   ],
+							 hint => 1,
+							 policy => ['never', 'automatic'],
+							 frame => 'WCY Data',
+							);
+
+	$rhvbox->pack_start($wcy->widget, 1, 1, 0);
+	$rhvbox->set_size_request($scr_width * 0.45, $scr_height * 0.33);
+	$rhvpane->pack2($rhvbox, 1, 0);
 }
