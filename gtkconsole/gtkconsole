@@ -11,6 +11,8 @@
 
 use strict;
 
+our $VERSION = '$Revision$';
+
 our $root;
 
 # search local then perl directories
@@ -113,7 +115,7 @@ die "You need a callsign ($call), a hostname($host) and a port($port) to proceed
 
 gtk_create_main_screen();
 
-$main->set_title("gtkconsole - The DXSpider Console - $call");
+$main->set_title("gtkconsole $VERSION - DXSpider Console - $call \@ $host:$port");
 
 # connect and send stuff
 my $sock = IO::Socket::INET->new(PeerAddr=>$host, PeerPort=>$port);
