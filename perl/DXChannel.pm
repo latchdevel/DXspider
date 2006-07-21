@@ -384,7 +384,7 @@ sub send_later
 		for (@lines) {
 			$conn->send_later("$sort$call|$_");
 			# debug log it, but not if it is a log message
-			dbg("-> $sort $call $_") if $sort ne 'L' isdbg('chan');
+			dbg("-> $sort $call $_") if $sort ne 'L' && isdbg('chan');
 		}
 	}
 	$self->{t} = time;
