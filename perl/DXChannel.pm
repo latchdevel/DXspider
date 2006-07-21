@@ -359,7 +359,8 @@ sub send_now
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_now("$sort$call|$_");
-			dbg("-> $sort $call $_") if isdbg('chan');
+			# debug log it, but not if it is a log message
+			dbg("-> $sort $call $_") if $sort ne 'L' && isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -382,7 +383,8 @@ sub send_later
         my @lines = split /\n/;
 		for (@lines) {
 			$conn->send_later("$sort$call|$_");
-			dbg("-> $sort $call $_") if isdbg('chan');
+			# debug log it, but not if it is a log message
+			dbg("-> $sort $call $_") if $sort ne 'L' isdbg('chan');
 		}
 	}
 	$self->{t} = time;
