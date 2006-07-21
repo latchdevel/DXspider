@@ -1,3 +1,9 @@
+21Jul06=======================================================================
+1. Added the (now) all new gtkconsole program, with all the changes needed in
+dxspider to run it (yet another cmd interface (sigh)). You will need gtk2-perl
+installed (most modern linux distros do this automatically). The big news is
+that this will work on Windows boxes as well if you install the Gtk libraries
+as per: http://gtk2-perl.sf.net.
 03Jun06=======================================================================
 1. Added changes to wpxloc.raw (prefixes) suggested by Jim AD1C. 
 2. Made a change to prevent xml data being interpreted unless we are
