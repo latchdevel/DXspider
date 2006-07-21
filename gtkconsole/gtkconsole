@@ -12,6 +12,7 @@
 use strict;
 
 our $VERSION = '$Revision$';
+$VERSION =~ s|[^\d\.]+||g;
 
 our $root;
 
