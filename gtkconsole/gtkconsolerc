@@ -3,3 +3,9 @@
 #
 # $Id$
 #
+
+style "std_gtkconsole" {
+	font_name = "monospace 9"
+}
+
+class "GtkTreeView" style "std_gtkconsole"

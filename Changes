@@ -1,3 +1,6 @@
+26Jul06=======================================================================
+1. incorporated Jim AD1C's spiffy new, unified, wpxloc.raw and version 
+1605 of cty.dat.
 21Jul06=======================================================================
 1. Added the (now) all new gtkconsole program, with all the changes needed in
 dxspider to run it (yet another cmd interface (sigh)). You will need gtk2-perl
