@@ -4536,6 +4536,6 @@
    533 => bless( { name => 'Antarctica-Bryd-CE9', dxcc => 102, itu => 67, cq => 12, utcoff => 8.00, lat => -80, long => -120 }, 'Prefix'),
    534 => bless( { name => 'Antarctica-McMurdo-CE9', dxcc => 102, itu => 67, cq => 12, utcoff => -11.00, lat => -77.5, long => 167 }, 'Prefix'),
    535 => bless( { name => 'Antarctica-Palmer-CE9', dxcc => 102, itu => 67, cq => 12, utcoff => 4.00, lat => -65, long => -64 }, 'Prefix'),
-   536 => bless( { name => '24-Jul-2006', dxcc => 351, itu => 0, cq => 0, utcoff => 0.00, lat => 0, long => 0 }, 'Prefix'),
+   536 => bless( { name => '26-Jul-2006', dxcc => 351, itu => 0, cq => 0, utcoff => 0.00, lat => 0, long => 0 }, 'Prefix'),
 );
 
