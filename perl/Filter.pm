@@ -116,17 +116,25 @@ sub read_in
 		$in = undef; 
 		my $s = readfilestr($fn);
 		my $newin = eval $s;
-		dbg($@) if $@;
+		if ($@) {
+			dbg($@);
+			unlink($fn);
+			return undef;
+		}
 		if ($in) {
 			$newin = new('Filter::Old', $sort, $call, $flag);
 			$newin->{filter} = $in;
-		} else {
+		} elsif (ref $newin && $newin->can('getfilkeys')) {
 			my $filter;
 			my $key;
 			foreach $key ($newin->getfilkeys) {
 				$newin->compile($key, 'reject');
 				$newin->compile($key, 'accept');
 			}
+		} else {
+			# error on reading file, delete and exit
+			unlink($fn);
+			return undef;
 		}
 		return $newin;
 	}
