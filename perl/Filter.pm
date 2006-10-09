@@ -35,8 +35,10 @@ use Prefix;
 use strict;
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 use vars qw ($filterbasefn $in);
 
@@ -114,17 +116,25 @@ sub read_in
 		$in = undef; 
 		my $s = readfilestr($fn);
 		my $newin = eval $s;
-		dbg($@) if $@;
+		if ($@) {
+			dbg($@);
+			unlink($fn);
+			return undef;
+		}
 		if ($in) {
 			$newin = new('Filter::Old', $sort, $call, $flag);
 			$newin->{filter} = $in;
-		} else {
+		} elsif (ref $newin && $newin->can('getfilkeys')) {
 			my $filter;
 			my $key;
 			foreach $key ($newin->getfilkeys) {
 				$newin->compile($key, 'reject');
 				$newin->compile($key, 'accept');
 			}
+		} else {
+			# error on reading file, delete and exit
+			unlink($fn);
+			return undef;
 		}
 		return $newin;
 	}
@@ -196,7 +206,6 @@ sub it
 	my $key;
 	my $type = 'Dunno';
 	my $asc = '?';
-	my $data = ref $_[0] ? shift : \@_;
 
 	my $r = @keys > 0 ? 0 : 1;
 	foreach $key (@keys) {
@@ -204,7 +213,7 @@ sub it
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
 			$type = 'reject';
 			$asc = $filter->{reject}->{user};
-			if (&{$filter->{reject}->{code}}($data)) {
+			if (&{$filter->{reject}->{code}}(\@_)) {
 				$r = 0;
 				last;
 			} else {
@@ -214,7 +223,7 @@ sub it
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
 			$type = 'accept';
 			$asc = $filter->{accept}->{user};
-			if (&{$filter->{accept}->{code}}($data)) {
+			if (&{$filter->{accept}->{code}}(\@_)) {
 				$r = 1;
 				last;
 			} else {
@@ -227,7 +236,7 @@ sub it
 	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
-		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @$data;
+		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @_;
 		my $true = $r ? "OK " : "REJ";
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
@@ -302,7 +311,7 @@ sub install
 	my $dxchan;
 	my @dxchan;
 	if ($name eq 'NODE_DEFAULT') {
-		@dxchan = grep{$_->is_node || $_->is_aranea} DXChannel::get_all();
+		@dxchan = DXChannel::get_all_nodes();
 	} elsif ($name eq 'USER_DEFAULT') {
 		@dxchan = DXChannel::get_all_users();
 	} else {
