@@ -13,7 +13,7 @@ use 5.005;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.04';
+$VERSION = '1.04-1';
 
 
 my %err = (
@@ -136,10 +136,16 @@ sub decode
 
 	$l =~ s/=$//;
 	
+    # Fix dodgy TAFs.
+    # TAFs like this are non-standard, but I have seen these examples in
+    # real life, and that is, after all, what this code needs to cope with. [DW]
+    $l =~ s/\b(BECMG)(\d{4})\b/$1 $2/g;	# Some people can't use a space bar
+    $l =~ s/\bTEMP0\b/TEMPO/g;		# Some people use zero instead of a letter O
+    $l =~ s/\bBEC\b/BECMG/g;		# And some people can't spell BECMG
+    
 	my @tok = split /\s+/, $l;
 
 	$self->{line} = join ' ', @tok;
-	
 	
 	# do we explicitly have a METAR or a TAF
 	my $t = shift @tok;
@@ -153,6 +159,9 @@ sub decode
 
 	# next token is the ICAO dseignator
 	$t = shift @tok;
+    # ignore AMD (amendment) token if present.
+    $t = shift @tok if $t eq 'AMD';
+
 	if ($t =~ /^[A-Z]{4}$/) {
 		$self->{icao} = $t;
 	} else {
@@ -161,6 +170,9 @@ sub decode
 
 	# next token is an issue time
 	$t = shift @tok;
+    # ignore AMD (amendment) token if present.
+    $t = shift @tok if $t eq 'AMD';
+
 	if (my ($day, $time) = $t =~ /^(\d\d)(\d{4})Z?$/) {
 		$self->{day} = $day;
 		$self->{time} = _time($time);
@@ -230,16 +242,22 @@ sub decode
 			$self->{viz_units} ||= 'm';
 			push @chunk, $self->_chunk('CLOUD', 'CAVOK');
 
+        # AMD group (end for now)
+        } elsif ($t eq 'AMD') {
+            last;
+
         # RMK group (end for now)
 		} elsif ($t eq 'RMK') {
 			last;
 
         # from
-        } elsif (my ($time) = $t =~ /^FM(\d\d\d\d)$/ ) {
+        } elsif (my ($time) = $t =~ /^FM(\d\d\d?\d?)Z?$/ ) {
+	    $time .= '0' while length($time) < 4;
 			push @chunk, $self->_chunk('FROM', _time($time));
 
         # Until
-        } elsif (($time) = $t =~ /^TL(\d\d\d\d)$/ ) {
+        } elsif (($time) = $t =~ /^TI?LL?(\d\d\d?\d?)Z?$/ ) {
+	    $time .= '0' while length($time) < 4;
 			push @chunk, $self->_chunk('TIL', _time($time));
 
         # probability
@@ -313,25 +331,28 @@ sub decode
 			$self->{viz_units} ||= 'Km';
 			push @chunk, $self->_chunk('VIZ', $viz, 'Km');
 
-		# viz group in miles and faction of a mile with space between
+        # viz group in miles and fraction of a mile with space between
 		} elsif (my ($m) = $t =~ m!^(\d)$!) {
-			my $viz;
-			if (@tok && (($viz) = $tok[0] =~ m!^(\d/\d)SM$!)) {
+            my ($viz, $denom);
+            if (@tok && (($viz, $denom) = $tok[0] =~ m!^(\d)/(\d)SM$!)) {
 				shift @tok;
-				$viz = "$m $viz";
+		$denom ||= 1;
+		$viz = $m + $viz / $denom;
 				$self->{viz_dist} ||= $viz;
-				$self->{viz_units} ||= 'miles';
-				push @chunk, $self->_chunk('VIZ', $viz, 'miles');
+                $self->{viz_units} ||= 'Miles';
+                push @chunk, $self->_chunk('VIZ', $viz, 'Miles');
 			}
 			
 		# viz group in miles (either in miles or under a mile)
-		} elsif (my ($lt, $mviz) = $t =~ m!^(M)?(\d+(:?/\d)?)SM$!) {
-			$mviz = '<' . $mviz if $lt;
+        } elsif (my ($lt, $mviz, $denom) = $t =~ m!^([MP])?(\d+)(?:/(\d))?SM$!) {
+	    $denom ||= 1;
+	    $mviz /= $denom;
+            $mviz = '<' . $mviz if $lt and $lt eq 'M';
+            $mviz = '>' . $mviz if $lt and $lt eq 'P';
 			$self->{viz_dist} ||= $mviz;
-			$self->{viz_units} ||= 'Stat. Miles';
+            $self->{viz_units} ||= 'Miles';
 			push @chunk, $self->_chunk('VIZ', $mviz, 'Miles');
 			
-
 		# runway visual range
 		} elsif (my ($rw, $rlt, $range, $vlt, $var, $runit, $tend) = $t =~ m!^R(\d\d[LRC]?)/([MP])?(\d\d\d\d)(?:V([MP])(\d\d\d\d))?(?:(FT)/?)?([UND])?$!) {
 			$runit = 'm' unless $runit;
@@ -351,7 +372,7 @@ sub decode
 			push @chunk, $self->_chunk('CLOUD', $amt, $height eq '///' ? 0 : $height * 100, $cb) unless $amt eq '///' && $height eq '///';
 
 		# temp / dew point
-		} elsif (my ($ms, $t, $n, $d) = $t =~ m!^(M)?(\d\d)/(M)?(\d\d)?$!) {
+        } elsif (my ($ms, $t, $n, $d) = $t =~ m!^T?(M)?(\d\d)/(M)?(\d\dZ?)?$!) {
 			$t = 0 + $t;
 			$d = 0 + $d;
 			$t = -$t if defined $ms;
@@ -719,7 +740,6 @@ sub as_string
 
     return "until $self->[0]";
 }
-
 
 # Autoload methods go after =cut, and are processed by the autosplit program.
 

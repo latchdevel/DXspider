@@ -133,6 +133,7 @@ sub read_in
 			}
 		} else {
 			# error on reading file, delete and exit
+			dbg("empty or unreadable filter: $fn, deleted");
 			unlink($fn);
 			return undef;
 		}
