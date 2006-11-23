@@ -1,3 +1,5 @@
+23Nov06=======================================================================
+1. added wrapping to over length lines in console.pl.
 03Nov06=======================================================================
 1. add CTY-1609 changes
 2. add back Geo::Taf code with submitted mods
