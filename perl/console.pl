@@ -34,6 +34,7 @@ use DXDebug;
 use IO::File;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Curses 1.06;
+use Text::Wrap;
 
 use Console;
 
@@ -229,8 +230,13 @@ sub addtotop
 		if ($inbuf =~ s/\x07+$//) {
 			beep();
 		}
-		push @shistory, $inbuf;
-		shift @shistory if @shistory > $maxshist;
+		if (length $inbuf > $cols) {
+			$Text::Wrap::Columns = $cols;
+			push @shistory, wrap('',"\t", $inbuf);
+		} else {
+			push @shistory, $inbuf;
+		}
+		shift @shistory while @shistory > $maxshist;
 	}
 	show_screen();
 }
@@ -491,6 +497,8 @@ $conn->send_later("I$call|set/page $maxshist");
 #$conn->send_later("I$call|set/nobeep");
 
 #Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
+
+$Text::Wrap::Columns = $cols;
 
 my $lastmin = 0;
 for (;;) {
