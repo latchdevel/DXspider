@@ -119,6 +119,8 @@ $count = 0;
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  inscript => '9,In a script,yesno',
 		  handle_xml => '9,Handles XML,yesno',
+		  do_pc92 => '9,Handles PC92,yesno',
+		  send_pc92 => '9,Send PC92,atime',
 		  inqueue => '9,Input Queue,parray',
 		 );
 

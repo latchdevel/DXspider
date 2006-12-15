@@ -123,7 +123,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $flags = "";
+	my $flags = " pc";
 	$flags .= " xml" if DXXml::available(); 
 	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }
@@ -374,9 +374,64 @@ sub pc85
 	return "PC85^$tonode^$fromnode^$call^$msg^~";
 }
 
-# spider route broadcast
-sub pc90
+# spider route broadcasts
+#
+
+my $_last_time;
+my $_last_occurs;
+
+sub _gen_time
 {
+	if (!$_last_time || $_last_time != $main::systime) {
+		$_last_time = $main::systime;
+		$_last_occurs = 0;
+		return $_last_time;
+	} else {
+		$_last_occurs++;
+		return "$_last_time:$_last_occurs";
+	}
+}
+
+sub _gen_pc92
+{
+	my $sort = shift;
+	my $s = "PC92^$sort^" . _gen_time;
+	for (@_) {
+		my $flag = 0;
+		my $call = $_->call; 
+		my $extra = '';
+		if ($_->isa('Route::Node')) {
+			$flag = 4;
+			if ($call ne $main::mycall && DXChannel::get($call)) {
+				$flag += 2;
+			}
+			if ($sort eq 'C') {
+				$extra .= ':' . ($_->version || '') if $_->build;
+				$extra .= ':' . $_->build if $_->build;
+			}
+		}
+		$flag += $_->here ? 1 : 0;
+		$s .= "^$flag$call$extra";
+	}
+	return $s . '^H99';
+}
+
+# add a local one
+sub pc92a
+{
+	return _gen_pc92('A', @_);
+}
+
+# delete a local one
+sub pc92d
+{
+	return _gen_pc92('D', @_);
+}
+
+# send a config
+sub pc92c
+{
+	return _gen_pc92('C', @_);
 }
 
 1;
