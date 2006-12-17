@@ -123,7 +123,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $flags = " pc";
+	my $flags = " pc92";
 	$flags .= " xml" if DXXml::available(); 
 	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }
@@ -388,32 +388,19 @@ sub _gen_time
 		return $_last_time;
 	} else {
 		$_last_occurs++;
-		return "$_last_time:$_last_occurs";
+		return sprintf "$_last_time.%02d", $_last_occurs;
 	}
 }
 
 sub _gen_pc92
 {
 	my $sort = shift;
-	my $s = "PC92^$sort^" . _gen_time;
+	my $ext = $sort eq 'C';
+	my $s = "PC92^" . _encode_pc92_call($main::me, $ext) . "^" . _gen_time . "^$sort";
 	for (@_) {
-		my $flag = 0;
-		my $call = $_->call; 
-		my $extra = '';
-		if ($_->isa('Route::Node')) {
-			$flag = 4;
-			if ($call ne $main::mycall && DXChannel::get($call)) {
-				$flag += 2;
-			}
-			if ($sort eq 'C') {
-				$extra .= ':' . ($_->version || '') if $_->build;
-				$extra .= ':' . $_->build if $_->build;
-			}
-		}
-		$flag += $_->here ? 1 : 0;
-		$s .= "^$flag$call$extra";
+		$s .= "^" . _encode_pc92_call($_, $ext);
 	}
-	return $s . '^H99';
+	return $s . '^H99^';
 }
 
 # add a local one

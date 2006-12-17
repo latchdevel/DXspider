@@ -121,7 +121,7 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.52";				# the version no of the software
+$version = "1.53";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners

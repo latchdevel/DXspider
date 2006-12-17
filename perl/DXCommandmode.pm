@@ -75,7 +75,10 @@ sub new
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
-	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
+	if ($ref) {
+		$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref);
+		$main::me->route_pc92a($main::mycall, undef, $ref);
+	}
 
 	return $self;
 }
@@ -577,6 +580,7 @@ sub disconnect
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
+		$main::me->route_pc92d($main::mycall, undef, $uref);
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}

@@ -225,6 +225,7 @@ sub new
 	$self->{flags} = shift;
 	$self->{users} = [];
 	$self->{nodes} = [];
+	$self->{lastid} = {};
 	
 	$list{$call} = $self;
 	
