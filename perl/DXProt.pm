@@ -365,6 +365,7 @@ sub normal
 		$hops--;
 		return if $hops < 0;
 		$line =~ s/\^H(\d+)(\^?\~?)?$/sprintf('^H%d%s', $hops, $trail)/e;
+		$field[-1] = "H$hops";
 	}
 
 	# send it out for processing
