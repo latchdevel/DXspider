@@ -1297,7 +1297,7 @@ sub handle_92
 			dbg("PCPROT: dup / old id <= $lastid, ignored") if isdbg('chanerr');
 			return;
 		}
-		$nref->flags = Route::flags($here);
+		$nref->flags(Route::flags($here));
 	} else {
 		$nref = Route::Node->new($ncall, $version, Route::here($here));
 	}
