@@ -1012,7 +1012,7 @@ sub disconnect
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2)  {
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
-		$self->route_pc92d($main::mycall, undef, $node);
+		$self->route_pc92d($main::mycall, undef, $node) if $node;
 	}
 
 	# remove outstanding pings

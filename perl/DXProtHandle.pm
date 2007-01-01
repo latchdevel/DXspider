@@ -1259,7 +1259,7 @@ sub _encode_pc92_call
 #		if ($ref->version || $ref->build) {
 		if ($ref->version) {
 			my $version = $ref->version || 1.0;
-			$version =  $version * 100 + 5300 if $version > 50;
+			$version =  $version * 100 + 5300 if $version < 50;
 			$extra .= ":" . $version;
 #			$extra .= (":" . ($ref->build ? $ref->build : '')) if $ref->build;
 		}
