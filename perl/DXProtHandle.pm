@@ -579,6 +579,23 @@ sub handle_18
 	$self->send(pc20());
 }
 		
+sub check_add_node
+{
+	my $call = shift;
+	
+	# add this station to the user database, if required (don't remove SSID from nodes)
+	my $user = DXUser->get_current($call);
+	if (!$user) {
+		$user = DXUser->new($call);
+		$user->priv(1);		# I have relented and defaulted nodes
+		$user->lockout(1);
+		$user->homenode($call);
+		$user->node($call);
+	}
+	$user->sort('A') unless $user->is_node;
+	return $user;
+}
+
 # incoming cluster list
 sub handle_19
 {
@@ -635,17 +652,8 @@ sub handle_19
 			next;
 		}
 
-		# add this station to the user database, if required (don't remove SSID from nodes)
-		my $user = DXUser->get_current($call);
-		if (!$user) {
-			$user = DXUser->new($call);
-			$user->priv(1);		# I have relented and defaulted nodes
-			$user->lockout(1);
-			$user->homenode($call);
-			$user->node($call);
-		}
-		$user->sort('A') unless $user->is_node;
-
+		my $user = check_add_node($call);
+		
 #		if (eph_dup($genline)) {
 #			dbg("PCPROT: dup PC19 for $call detected") if isdbg('chanerr');
 #			next;
@@ -1267,6 +1275,41 @@ sub _encode_pc92_call
 	return "$flag$call$extra";
 }
 
+sub _add_thingy
+{
+	my $parent = shift;
+	my $s = shift;
+	my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($s);
+	my @rout;
+
+	if ($call) {
+		if ($is_node) {
+			@rout = $parent->add($call, $version, Route::here($here));
+		} else {
+			@rout = $parent->add_user($call, Route::here($here));
+		}
+	}
+	return @rout;
+}
+
+sub _del_thingy
+{
+	my $parent = shift;
+	my $s = shift;
+	my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($s);
+	my @rout;
+	if ($call) {
+		if ($is_node) {
+			my $nref = Route::Node::get($call);
+			@rout = $nref->del($parent) if $nref;
+		} else {
+			my $uref = Route::User::get($call);
+			@rout = $parent->del_user($uref) if $uref;
+		}
+	}
+	return @rout;
+}
+
 # DXSpider routing entries
 sub handle_92
 {
@@ -1277,38 +1320,49 @@ sub handle_92
 
 	$self->{do_pc92} ||= 1;
 
-	my ($ncall, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[1]);
-	unless ($ncall) {
+	my ($pcall, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[1]);
+	unless ($pcall) {
 		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
 		return;
 	}
 	my $t = $_[2];
 	my $sort = $_[3];
 	
-	if ($ncall eq $main::mycall) {
+	if ($pcall eq $main::mycall) {
 		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
 		return;
 	}
 
-	my $nref = Route::Node::get($ncall);
-	if ($nref) {
-		my $lastid = $nref->lastid->{92} || 0;
+	my $parent = Route::Node::get($pcall);
+	if ($parent) {
+		my $lastid = $parent->lastid->{92} || 0;
 		if ($lastid > $t) {
 			dbg("PCPROT: dup / old id <= $lastid, ignored") if isdbg('chanerr');
 			return;
 		}
-		$nref->flags(Route::flags($here));
+		$parent->flags(Route::here($here));
+		$parent->version($version) if $version;
 	} else {
-		$nref = Route::Node->new($ncall, $version, Route::here($here));
+		$parent = Route::Node->new($pcall, $version, Route::here($here));
 	}
-	$nref->lastid->{92} = $t;
+	$parent->lastid->{92} = $t;
+	$parent->build($build) if $build;
 
 	if ($sort eq 'A') {
-		
+		if ($_[4]) {
+			_add_thingy($parent, $_[4]);
+		}
 	} elsif ($sort eq 'D') {
-
+		if ($_[4]) {
+			_del_thingy($parent, $_[4]);
+		}
 	} elsif ($sort eq 'C') {
-
+		my $i;
+		$parent->del_nodes;
+		$parent->_del_users;
+		for ($i = 4; $_[$i]; $i++) {
+			_add_thingy($parent, $_[$i]);
+		}
 	} else {
 		dbg("PCPROT: unknown action '$sort', ignored") if isdbg('chanerr');
 	}
