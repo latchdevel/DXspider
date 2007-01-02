@@ -1264,6 +1264,7 @@ sub _encode_pc92_call
 	$flag |= $ref->here ? 1 : 0;
 	if ($ref->isa('Route::Node') || $ref->isa('DXProt')) {
 		$flag |= 4;
+		$flag |= 2 if $call ne $main::mycall && DXChannel::get($call);
 		if ($ext) {
 			if ($ref->version) {
 				my $version = $ref->version || 1.0;

@@ -769,11 +769,25 @@ sub send_pc92_config
 	my $node;
 
 	dbg('DXProt::send_pc92_config') if isdbg('trace');
-	
+
+	# send 'my' configuration
 	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
-	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
+	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
 	$self->send_route_pc92($main::mycall, \&pc92c, scalar @localnodes, @localnodes);
-}
+
+	# send the configuration of all the 'external' nodes that don't handle PC92
+	# out with the 'external' marker on the first node.
+	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
+	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+	foreach $node (@localnodes) {
+		if ($node) {
+			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+			$self->send_route_pc92($main::mycall, \&pc92c, 1, $node, @rout) if @rout;
+		} else {
+			dbg("sent a null value") if isdbg('chanerr');
+		}
+	}
+} 
 
 #
 # route a message down an appropriate interface for a callsign
