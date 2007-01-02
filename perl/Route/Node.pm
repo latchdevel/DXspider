@@ -211,6 +211,24 @@ sub rnodes
 	return @out;
 }
 
+# this takes in a list of node and user calls (not references) from 
+# a config type update for a node and returns
+# the differences as lists of things that have gone away
+# and things that have been added. 
+sub calc_config_changes
+{
+	my $self = shift;
+	my %nodes = map {$_ => 1} @{$self->{nodes}};
+	my %users = map {$_ => 1} @{$self->{users}};
+	my $cnodes = shift;
+	my $cusers = shift;
+	my (@dnodes, @dusers, @nnodes, @nusers);
+	push @nnodes, map {my @r = $nodes{$_} ? () : $_; delete $nodes{$_}; @r} @$cnodes;
+	push @dnodes, keys %nodes;
+	push @nusers, map {my @r = $users{$_} ? () : $_; delete $users{$_}; @r} @$cusers;
+	push @dusers, keys %users;
+	return (\@dnodes, \@dusers, \@nnodes, \@nusers);
+}
 
 sub new
 {
@@ -221,8 +239,8 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
-	$self->{version} = shift;
-	$self->{flags} = shift;
+	$self->{version} = shift || 5000;
+	$self->{flags} = shift || Route::here(1);
 	$self->{users} = [];
 	$self->{nodes} = [];
 	$self->{lastid} = {};

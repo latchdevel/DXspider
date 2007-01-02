@@ -1262,14 +1262,14 @@ sub _encode_pc92_call
 	my $call = $ref->call; 
 	my $extra = '';
 	$flag |= $ref->here ? 1 : 0;
-	if ($ext && ($ref->isa('Route::Node') || $ref->isa('DXProt'))) {
+	if ($ref->isa('Route::Node') || $ref->isa('DXProt')) {
 		$flag |= 4;
-#		if ($ref->version || $ref->build) {
-		if ($ref->version) {
-			my $version = $ref->version || 1.0;
-			$version =  $version * 100 + 5300 if $version < 50;
-			$extra .= ":" . $version;
-#			$extra .= (":" . ($ref->build ? $ref->build : '')) if $ref->build;
+		if ($ext) {
+			if ($ref->version) {
+				my $version = $ref->version || 1.0;
+				$version =  $version * 100 + 5300 if $version < 50;
+				$extra .= ":" . $version;
+			}
 		}
 	}
 	return "$flag$call$extra";
@@ -1348,23 +1348,56 @@ sub handle_92
 	$parent->lastid->{92} = $t;
 	$parent->build($build) if $build;
 
+	my (@radd, @rdel);
+	
 	if ($sort eq 'A') {
 		if ($_[4]) {
-			_add_thingy($parent, $_[4]);
+			if (@radd = _add_thingy($parent, $_[4])) {
+			}
 		}
 	} elsif ($sort eq 'D') {
 		if ($_[4]) {
-			_del_thingy($parent, $_[4]);
+			if (@rdel = _del_thingy($parent, $_[4])) {
+			}
 		}
 	} elsif ($sort eq 'C') {
 		my $i;
-		$parent->del_nodes;
-		$parent->_del_users;
+		my (@nodes, @users);
 		for ($i = 4; $_[$i]; $i++) {
-			_add_thingy($parent, $_[$i]);
+			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[$i]);
+			if ($call) {
+				if ($is_node) {
+					push @nodes, $call;
+				} else {
+					push @users, $call;
+				}
+			} else {
+				dbg("DXPROT: pc92 call entry '$_[$i]' not decoded, ignored") if isdbg('chanerr'); 
+			}
+		}
+
+		my ($dnodes, $dusers, $nnodes, $nusers) = $parent->calc_config_changes(\@nodes, \@users);
+
+		for ($i = 4; $_[$i]; $i++) {
+			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[$i]);
+			if ($call) {
+				push @radd,_add_thingy($parent, $_[$i]) if grep $call eq $_, (@$nnodes, @$nusers);
+				push @rdel,_del_thingy($parent, $_[$i]) if grep $call eq $_, (@$dnodes, @$dusers);
+			}
 		}
 	} else {
 		dbg("PCPROT: unknown action '$sort', ignored") if isdbg('chanerr');
+		return;
+	}
+
+	$self->broadcast_route_pc9x($origin, undef, $line, 0);
+	foreach my $r (@rdel) {
+		$self->route_pc21($pcall, undef, $r) if $r->isa('Route::Node');
+		$self->route_pc17($pcall, undef, $parent, $r) if $r->isa('Route::User');
+	}
+	foreach my $r (@radd) {
+		$self->route_pc19($pcall, undef, $r) if $r->isa('Route::Node');
+		$self->route_pc16($pcall, undef, $parent, $r) if $r->isa('Route::User');
 	}
 }
 

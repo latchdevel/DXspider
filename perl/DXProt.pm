@@ -1146,7 +1146,7 @@ sub broadcast_route_pc9x
 		$line = &$generate(@_);
 	} 
 
-	$line =~ /\^H(\d+)\^$/;
+	$line =~ /\^H(\d+)\^\~?$/;
 	unless ($1 > 0 && $self->{isolate}) {
 		foreach $dxchan (@dxchan) {
 			next if $dxchan == $self;
