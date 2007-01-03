@@ -771,7 +771,7 @@ sub send_pc92_config
 	dbg('DXProt::send_pc92_config') if isdbg('trace');
 
 	# send 'my' configuration for all users and pc92 capable nodes
-	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $self->{do_pc92} } DXChannel::get_all();
+	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all();
 	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
 	$self->send_route_pc92($main::mycall, \&pc92c, scalar @localnodes, @localnodes);
 

@@ -473,8 +473,10 @@ sub handle_16
 		$user->lastin($main::systime) unless DXChannel::get($call);
 		$user->put;
 	}
-	$self->route_pc16($origin, $line, $parent, @rout) if @rout;
-	
+	if (@rout) {
+		$self->route_pc16($origin, $line, $parent, @rout);
+		$self->route_pc92a($main::mycall, undef, $parent, @rout);
+	}
 }
 		
 # remove a user
@@ -541,6 +543,7 @@ sub handle_17
 
 	$uref = Route->new($ucall) unless $uref; # throw away
 	$self->route_pc17($origin, $line, $parent, $uref);
+	$self->route_pc92d($main::mycall, undef, $parent, $uref);
 }
 		
 # link request
