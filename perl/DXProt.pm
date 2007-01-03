@@ -771,9 +771,10 @@ sub send_pc92_config
 	dbg('DXProt::send_pc92_config') if isdbg('trace');
 
 	# send 'my' configuration for all users and pc92 capable nodes
-	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all();
-	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
-	$self->send_route_pc92($main::mycall, \&pc92c, scalar @localnodes, @localnodes);
+	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
+	my @localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+	push @localnodes, map { my $r = Route::Node::get($_->{call}); $r ? $r : () } DXChannel::get_all_users();
+	$self->send_route_pc92($main::mycall, \&pc92c, (scalar @localnodes)+1, $main::routeroot, @localnodes);
 
 	# send the configuration of all the 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
@@ -1027,7 +1028,7 @@ sub disconnect
 	# broadcast to all other nodes that all the nodes connected to via me are gone
 	unless ($pc39flag && $pc39flag == 2)  {
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
-		$self->route_pc92d($main::mycall, undef, $node) if $node;
+		$self->route_pc92d($main::mycall, undef, $main::routeroot, $node) if $node;
 	}
 
 	# remove outstanding pings

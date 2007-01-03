@@ -715,7 +715,7 @@ sub handle_19
 	if (@rout) {
 		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
-		$self->route_pc92a($main::mycall, $line, @rout);
+		$self->route_pc92a($main::mycall, $line, $parent, @rout);
 	}
 }
 		
@@ -787,7 +787,7 @@ sub handle_21
 
 	if (@rout) {
 		$self->route_pc21($origin, $line, @rout);
-		$self->route_pc92d($main::mycall, $line, @rout);
+		$self->route_pc92d($main::mycall, $line, $parent, @rout);
 	}
 }
 		
@@ -1325,13 +1325,15 @@ sub handle_92
 
 	$self->{do_pc92} ||= 1;
 
-	my ($pcall, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[1]);
+	my $pcall = $_[1];
 	unless ($pcall) {
 		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
 		return;
 	}
 	my $t = $_[2];
 	my $sort = $_[3];
+	
+	my @ent = grep {$_ && /^[0-7]/} @_[4 .. -1];
 	
 	if ($pcall eq $main::mycall) {
 		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
@@ -1345,31 +1347,46 @@ sub handle_92
 			dbg("PCPROT: dup / old id <= $lastid, ignored") if isdbg('chanerr');
 			return;
 		}
-		$parent->flags(Route::here($here));
-		$parent->version($version) if $version;
 	} else {
-		$parent = Route::Node->new($pcall, $version, Route::here($here));
+		$parent = Route::Node->new($pcall);
 	}
 	$parent->lastid->{92} = $t;
-	$parent->build($build) if $build;
+
+	if (@ent) {
+		my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($ent[0]);
+		if ($call && $is_node && $call eq $main::mycall) {
+			$parent->here(Route::here($here));
+			$parent->version($version) if $version;
+			$parent->build($build) if $build;
+		} elsif ($is_extnode) {
+			# reparent to external node (note that we must have received a 'C' or 'A' record
+			# from the true parent node for this external before we get one for the this node
+			unless ($parent = Route::Node::get($call)) {
+				dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+				return;
+			}
+		} else {
+			dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
+			return;
+		}
+		shift @ent;
+	}
 
 	my (@radd, @rdel);
 	
 	if ($sort eq 'A') {
-		if ($_[4]) {
-			if (@radd = _add_thingy($parent, $_[4])) {
-			}
+		for (@ent) {
+			push @radd, add_thingy($parent, $_);
 		}
 	} elsif ($sort eq 'D') {
-		if ($_[4]) {
-			if (@rdel = _del_thingy($parent, $_[4])) {
-			}
+		for (@ent) {
+			push @rdel, _del_thingy($parent, $_);
 		}
 	} elsif ($sort eq 'C') {
 		my $i;
 		my (@nodes, @users);
-		for ($i = 4; $_[$i]; $i++) {
-			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[$i]);
+		for (@ent) {
+			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);
 			if ($call) {
 				if ($is_node) {
 					push @nodes, $call;
@@ -1383,8 +1400,8 @@ sub handle_92
 
 		my ($dnodes, $dusers, $nnodes, $nusers) = $parent->calc_config_changes(\@nodes, \@users);
 
-		for ($i = 4; $_[$i]; $i++) {
-			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_[$i]);
+		for (@ent) {
+			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);
 			if ($call) {
 				push @radd,_add_thingy($parent, $_[$i]) if grep $call eq $_, (@$nnodes, @$nusers);
 				push @rdel,_del_thingy($parent, $_[$i]) if grep $call eq $_, (@$dnodes, @$dusers);

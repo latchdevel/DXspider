@@ -396,7 +396,7 @@ sub _gen_pc92
 {
 	my $sort = shift;
 	my $ext = $sort eq 'C';
-	my $s = "PC92^" . _encode_pc92_call($main::me, $ext) . "^" . _gen_time . "^$sort";
+	my $s = "PC92^$main::mycall^" . _gen_time . "^$sort";
 	for (@_) {
 		$s .= "^" . _encode_pc92_call($_, $ext);
 	}
