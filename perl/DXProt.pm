@@ -772,7 +772,7 @@ sub send_pc92_config
 
 	# send 'my' configuration for all users and pc92 capable nodes
 	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
-	my @localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
 #	push @localnodes, map { my $r = Route::Node::get($_->{call}); $r ? $r : () } DXChannel::get_all_users();
 	$self->send_route_pc92($main::mycall, \&pc92c, (scalar @localnodes)+1, $main::routeroot, @localnodes);
 

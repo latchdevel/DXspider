@@ -715,7 +715,7 @@ sub handle_19
 	if (@rout) {
 		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
-		$self->route_pc92a($main::mycall, $line, $parent, @rout);
+		$self->route_pc92a($main::mycall, $line, $main::routemain, @rout);
 	}
 }
 		
@@ -787,7 +787,7 @@ sub handle_21
 
 	if (@rout) {
 		$self->route_pc21($origin, $line, @rout);
-		$self->route_pc92d($main::mycall, $line, $parent, @rout);
+		$self->route_pc92d($main::mycall, $line, $main::routemain, @rout);
 	}
 }
 		
@@ -1333,7 +1333,7 @@ sub handle_92
 	my $t = $_[2];
 	my $sort = $_[3];
 	
-	my @ent = grep {$_ && /^[0-7]/} @_[4 .. -1];
+	my @ent = grep {$_ && /^[0-7]/} @_[4 .. $#_];
 	
 	if ($pcall eq $main::mycall) {
 		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
@@ -1354,7 +1354,7 @@ sub handle_92
 
 	if (@ent) {
 		my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($ent[0]);
-		if ($call && $is_node && $call eq $main::mycall) {
+		if ($call && $is_node && $call eq $pcall) {
 			$parent->here(Route::here($here));
 			$parent->version($version) if $version;
 			$parent->build($build) if $build;
@@ -1376,14 +1376,13 @@ sub handle_92
 	
 	if ($sort eq 'A') {
 		for (@ent) {
-			push @radd, add_thingy($parent, $_);
+			push @radd, _add_thingy($parent, $_);
 		}
 	} elsif ($sort eq 'D') {
 		for (@ent) {
 			push @rdel, _del_thingy($parent, $_);
 		}
 	} elsif ($sort eq 'C') {
-		my $i;
 		my (@nodes, @users);
 		for (@ent) {
 			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);
@@ -1394,7 +1393,7 @@ sub handle_92
 					push @users, $call;
 				}
 			} else {
-				dbg("DXPROT: pc92 call entry '$_[$i]' not decoded, ignored") if isdbg('chanerr'); 
+				dbg("DXPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr'); 
 			}
 		}
 
@@ -1403,8 +1402,8 @@ sub handle_92
 		for (@ent) {
 			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);
 			if ($call) {
-				push @radd,_add_thingy($parent, $_[$i]) if grep $call eq $_, (@$nnodes, @$nusers);
-				push @rdel,_del_thingy($parent, $_[$i]) if grep $call eq $_, (@$dnodes, @$dusers);
+				push @radd,_add_thingy($parent, $_) if grep $call eq $_, (@$nnodes, @$nusers);
+				push @rdel,_del_thingy($parent, $_) if grep $call eq $_, (@$dnodes, @$dusers);
 			}
 		}
 	} else {
