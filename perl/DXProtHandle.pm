@@ -715,7 +715,7 @@ sub handle_19
 	if (@rout) {
 		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
-		$self->route_pc92a($main::mycall, $line, $main::routemain, @rout);
+		$self->route_pc92a($main::mycall, $line, $main::routeroot, @rout);
 	}
 }
 		
@@ -787,7 +787,7 @@ sub handle_21
 
 	if (@rout) {
 		$self->route_pc21($origin, $line, @rout);
-		$self->route_pc92d($main::mycall, $line, $main::routemain, @rout);
+		$self->route_pc92d($main::mycall, $line, $main::routeroot, @rout);
 	}
 }
 		
