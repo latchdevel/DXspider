@@ -1413,10 +1413,14 @@ sub handle_92
 
 	$self->broadcast_route_pc9x($origin, undef, $line, 0);
 	foreach my $r (@rdel) {
+		next unless $r;
+		
 		$self->route_pc21($pcall, undef, $r) if $r->isa('Route::Node');
 		$self->route_pc17($pcall, undef, $parent, $r) if $r->isa('Route::User');
 	}
 	foreach my $r (@radd) {
+		next unless $r;
+
 		$self->route_pc19($pcall, undef, $r) if $r->isa('Route::Node');
 		$self->route_pc16($pcall, undef, $parent, $r) if $r->isa('Route::User');
 	}
