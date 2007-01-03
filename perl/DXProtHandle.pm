@@ -1411,7 +1411,7 @@ sub handle_92
 		return;
 	}
 
-	$self->broadcast_route_pc9x($origin, undef, $line, 0);
+	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
 	foreach my $r (@rdel) {
 		next unless $r;
 		
