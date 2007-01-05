@@ -792,7 +792,7 @@ sub send_pc92_config
 	foreach $node (@localnodes) {
 		if ($node && $node->lastid->{92}) {
 			my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
-			my $line = gen_pc29_with_time($node->call, 'C', $node->lastid->{92}, @rout);
+			my $line = gen_pc92_with_time($node->call, 'C', $node->lastid->{92}, @rout);
 			$self->send($line);
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
