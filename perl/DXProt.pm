@@ -50,6 +50,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
+			$eph_pc15_restime
 		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -70,6 +71,7 @@ $ann_to_talk = 1;
 $rspfcheck = 1;
 $eph_restime = 180;
 $eph_info_restime = 60*60;
+$eph_pc15_restime = 6*60;
 $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
@@ -775,6 +777,20 @@ sub send_pc92_config
 	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
 #	push @localnodes, map { my $r = Route::Node::get($_->{call}); $r ? $r : () } DXChannel::get_all_users();
 	$self->send_route_pc92($main::mycall, \&pc92c, (scalar @localnodes)+1, $main::routeroot, @localnodes);
+
+	# send out the configuration of all the PC92 nodes with current configuration
+	# but with the dates that the last config came in with.
+	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
+	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+	foreach $node (@localnodes) {
+		if ($node && $node->lastid->{92}) {
+			my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
+			my $line = gen_pc29_with_time($node->call, 'C', $node->lastid->{92}, @rout);
+			$self->send($line);
+		} else {
+			dbg("sent a null value") if isdbg('chanerr');
+		}
+	}
 
 	# send the configuration of all the 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.

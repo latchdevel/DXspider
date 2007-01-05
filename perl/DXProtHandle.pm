@@ -44,6 +44,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
+			$eph_pc15_restime
 		   );
 	
 # incoming talk commands
@@ -373,6 +374,22 @@ sub handle_12
 		$self->send_announce($line, @_[1..6]);
 	} else {
 		$self->route($_[2], $line);
+	}
+}
+
+sub handle_15
+{
+	my $self = shift;
+	my $pcno = shift;
+	my $line = shift;
+	my $origin = shift;
+
+	if (eph_dup($line, $eph_pc15_restime)) {
+		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
+	} else {
+		unless ($self->{isolate}) {
+			DXChannel::broadcast_nodes($line, $self) if $line =~ /\^H\d+\^?~?$/; # send it to everyone but me
+		}
 	}
 }
 		

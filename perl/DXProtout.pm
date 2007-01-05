@@ -404,6 +404,19 @@ sub _gen_pc92
 	return $s . '^H99^';
 }
 
+sub gen_pc92_with_time
+{
+	my $call = shift;
+	my $sort = shift;
+	my $t = shift;
+	my $ext = 1;
+	my $s = "PC92^$call^$t^$sort";
+	for (@_) {
+		$s .= "^" . _encode_pc92_call($_, $ext);
+	}
+	return $s . '^H99^';
+}
+
 # add a local one
 sub pc92a
 {
