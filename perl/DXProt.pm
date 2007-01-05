@@ -50,7 +50,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
-			$eph_pc15_restime
+			$eph_pc15_restime $pc92_update_period $last_pc92_update
 		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -79,6 +79,9 @@ $chatdupeage = 20 * 60 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
+$pc92_update_period = 60*60;	# the period between PC92 C updates
+$last_pc92_update = time;		# the last time a PC92 config update
+
 
 @checklist = 
 (
@@ -429,8 +432,12 @@ sub process
 
 		eph_clean();
 		import_chat();
-		
 
+		if ($main::systime >= $last_pc92_update + $pc92_update_period) {
+			send_pc92_update();
+			$last_pc92_update = $main::systime;
+		}
+		
 		$last10 = $t;
 	}
 	
@@ -803,6 +810,38 @@ sub send_pc92_config
 		} else {
 			dbg("sent a null value") if isdbg('chanerr');
 		}
+	}
+} 
+
+sub send_pc92_update
+{
+	my $self = shift;
+	my $node;
+	my @lines;
+	
+	dbg('DXProt::send_pc92_update') if isdbg('trace');
+
+	# send 'my' configuration for all users and pc92 capable nodes
+	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
+	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
+#	push @localnodes, map { my $r = Route::Node::get($_->{call}); $r ? $r : () } DXChannel::get_all_users();
+	push @lines, pc92c($main::routeroot, @localnodes);
+
+
+	# send the configuration of all the 'external' nodes that don't handle PC92
+	# out with the 'external' marker on the first node.
+	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
+	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+	foreach $node (@localnodes) {
+		if ($node) {
+			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+			push @lines, pc92c($node, @rout);
+		} 
+	}
+
+	# broadcast the lines to all PC92 nodes
+	for (@lines) {
+		$main::me->broadcast_route_pc92('', undef, $_, 0);
 	}
 } 
 
