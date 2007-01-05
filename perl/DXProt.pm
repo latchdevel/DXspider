@@ -772,50 +772,10 @@ sub send_local_config
 	}
 }
 
-sub send_pc92_config
+sub gen_pc92_update
 {
 	my $self = shift;
-	my $node;
-
-	dbg('DXProt::send_pc92_config') if isdbg('trace');
-
-	# send 'my' configuration for all users and pc92 capable nodes
-	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
-	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
-#	push @localnodes, map { my $r = Route::Node::get($_->{call}); $r ? $r : () } DXChannel::get_all_users();
-	$self->send_route_pc92($main::mycall, \&pc92c, (scalar @localnodes)+1, $main::routeroot, @localnodes);
-
-	# send out the configuration of all the PC92 nodes with current configuration
-	# but with the dates that the last config came in with.
-	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
-	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-	foreach $node (@localnodes) {
-		if ($node && $node->lastid->{92}) {
-			my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
-			my $line = gen_pc92_with_time($node->call, 'C', $node->lastid->{92}, @rout);
-			$self->send($line);
-		} else {
-			dbg("sent a null value") if isdbg('chanerr');
-		}
-	}
-
-	# send the configuration of all the 'external' nodes that don't handle PC92
-	# out with the 'external' marker on the first node.
-	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
-	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-	foreach $node (@localnodes) {
-		if ($node) {
-			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->send_route_pc92($main::mycall, \&pc92c, 1, $node, @rout) if @rout;
-		} else {
-			dbg("sent a null value") if isdbg('chanerr');
-		}
-	}
-} 
-
-sub send_pc92_update
-{
-	my $self = shift;
+	my $with_pc92_nodes = shift;
 	my $node;
 	my @lines;
 	
@@ -828,6 +788,19 @@ sub send_pc92_update
 	push @lines, pc92c($main::routeroot, @localnodes);
 
 
+	if ($with_pc92_nodes) {
+		# send out the configuration of all the PC92 nodes with current configuration
+		# but with the dates that the last config came in with.
+		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
+		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+		foreach $node (@localnodes) {
+			if ($node && $node->lastid->{92}) {
+				my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
+				push @lines, gen_pc92_with_time($node->call, 'C', $node->lastid->{92}, @rout);
+			}
+		}
+	}
+	
 	# send the configuration of all the 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
 	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
@@ -838,10 +811,31 @@ sub send_pc92_update
 			push @lines, pc92c($node, @rout);
 		} 
 	}
+	return @lines;
+}
 
+
+sub send_pc92_config
+{
+	my $self = shift;
+
+	dbg('DXProt::send_pc92_config') if isdbg('trace');
+
+	my @out = $self->gen_pc92_update(1);
+	
+	# send the complete config out on this interface
+	for (@out) {
+		$self->send($_);
+	}
+} 
+
+sub send_pc92_update
+{
+	my @out = $main::me->gen_pc92_update(0);
+	
 	# broadcast the lines to all PC92 nodes
-	for (@lines) {
-		$main::me->broadcast_route_pc92('', undef, $_, 0);
+	for (@out) {
+		$main::me->broadcast_route_pc9x('', undef, $_, 0);
 	}
 } 
 
