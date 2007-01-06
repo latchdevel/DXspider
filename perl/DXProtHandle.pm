@@ -32,7 +32,6 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
-use Investigate;
 use RouteDB;
 
 
@@ -1332,6 +1331,43 @@ sub _del_thingy
 	return @rout;
 }
 
+my $_last_time;
+my $_last_occurs;
+
+sub gen_pc9x_t
+{
+	if (!$_last_time || $_last_time != $main::systime) {
+		$_last_time = $main::systime;
+		$_last_occurs = 0;
+		return $_last_time;
+	} else {
+		$_last_occurs++;
+		return sprintf "$_last_time.%02d", $_last_occurs;
+	}
+}
+
+sub check_pc9x_t
+{
+	my $call = shift;
+	my $t = shift;
+	my $pc = shift;
+	my $create = shift;
+	
+	my $parent = ref $call ? $call : Route::Node::get($call);
+	if ($parent) {
+		my $lastid = $parent->lastid->{$pc} || 0;
+		if ($lastid >= $t) {
+			dbg("PCPROT: dup / old id on $call <= $lastid, ignored") if isdbg('chanerr');
+			return;
+		}
+	} elsif ($create) {
+		$parent = Route::Node->new($call);
+	}
+	$parent->lastid->{$pc} = $t;
+ 
+	return $parent;
+}
+
 # DXSpider routing entries
 sub handle_92
 {
@@ -1357,35 +1393,33 @@ sub handle_92
 		return;
 	}
 
-	my $parent = Route::Node::get($pcall);
-	if ($parent) {
-		my $lastid = $parent->lastid->{92} || 0;
-		if ($lastid > $t) {
-			dbg("PCPROT: dup / old id <= $lastid, ignored") if isdbg('chanerr');
-			return;
-		}
-	} else {
-		$parent = Route::Node->new($pcall);
-	}
+	my $parent = check_pc9x_t($pcall, $t, 92, 1);
+	
 	$parent->lastid->{92} = $t;
+	$parent->do_pc92(1);
 
 	if (@ent) {
+
+		# look at the first one which will always be a node of some sort
+		# and update any information that needs to be done. 
 		my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($ent[0]);
-		if ($call && $is_node && $call eq $pcall) {
-			$parent->here(Route::here($here));
-			$parent->version($version) if $version;
-			$parent->build($build) if $build;
-		} elsif ($is_extnode) {
-			# reparent to external node (note that we must have received a 'C' or 'A' record
-			# from the true parent node for this external before we get one for the this node
-			unless ($parent = Route::Node::get($call)) {
-				dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
-				return;
+		if ($call && $is_node) {
+			if ($is_extnode) {
+				# reparent to external node (note that we must have received a 'C' or 'A' record
+				# from the true parent node for this external before we get one for the this node
+				unless ($parent = Route::Node::get($call)) {
+					dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+					return;
+				}
+				my $parent = check_pc9x_t($call, $t, 92) || return;
 			}
 		} else {
 			dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
 			return;
 		}
+		$parent->here(Route::here($here));
+		$parent->version($version) if $version && $version > $parent->version;
+		$parent->build($build) if $build && $build > $parent->build;
 		shift @ent;
 	}
 
@@ -1466,3 +1500,5 @@ sub handle_default
 		}
 	}
 }
+
+1;

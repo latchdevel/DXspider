@@ -377,27 +377,12 @@ sub pc85
 # spider route broadcasts
 #
 
-my $_last_time;
-my $_last_occurs;
-
-sub _gen_time
-{
-	if (!$_last_time || $_last_time != $main::systime) {
-		$_last_time = $main::systime;
-		$_last_occurs = 0;
-		return $_last_time;
-	} else {
-		$_last_occurs++;
-		return sprintf "$_last_time.%02d", $_last_occurs;
-	}
-}
 
 sub _gen_pc92
 {
 	my $sort = shift;
-#	my $ext = $sort eq 'C';
-	my $ext = 1;
-	my $s = "PC92^$main::mycall^" . _gen_time . "^$sort";
+	my $ext = shift;
+	my $s = "PC92^$main::mycall^" . gen_pc9x_t() . "^$sort";
 	for (@_) {
 		$s .= "^" . _encode_pc92_call($_, $ext);
 	}
@@ -420,19 +405,19 @@ sub gen_pc92_with_time
 # add a local one
 sub pc92a
 {
-	return _gen_pc92('A', @_);
+	return _gen_pc92('A', 0, @_);
 }
 
 # delete a local one
 sub pc92d
 {
-	return _gen_pc92('D', @_);
+	return _gen_pc92('D', 0, @_);
 }
 
 # send a config
 sub pc92c
 {
-	return _gen_pc92('C', @_);
+	return _gen_pc92('C', 1, @_);
 }
 
 1;

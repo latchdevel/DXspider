@@ -32,7 +32,6 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
-use Investigate;
 use RouteDB;
 use DXProtHandle;
 

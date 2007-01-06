@@ -32,6 +32,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  handle_xml => '0,Using XML,yesno',
 		  lastmsg => '0,Last Route Msg,atime',
 		  lastid => '0,Last Route MsgID',
+		  do_pc92 => '0,Uses pc92,yesno',
 );
 
 $filterdef = $Route::filterdef;
