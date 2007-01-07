@@ -116,7 +116,7 @@ use strict;
 use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects 
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
-			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml
+			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -332,6 +332,8 @@ sub AGWrestart
 #############################################################
 
 $starttime = $systime = time;
+$systime_days = int ($systime / 86400);
+$systime_daystart = $systime_days * 86400; 
 $lang = 'en' unless $lang;
 
 unless ($DB::VERSION) {
@@ -511,7 +513,13 @@ for (;;) {
 	# do timed stuff, ongoing processing happens one a second
 	if ($timenow != $systime) {
 		reap() if $zombies;
-		IsoTime::update($systime = $timenow);
+		$systime = $timenow;
+		my $days = int ($systime / 86400);
+		if ($systime_days != $days) {
+			$systime_days = $days;
+			$systime_daystart = $days * 86400;
+		}
+		IsoTime::update($systime);
 		DXCron::process();      # do cron jobs
 		DXCommandmode::process(); # process ongoing command mode stuff
 		DXXml::process();

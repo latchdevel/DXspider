@@ -1339,7 +1339,7 @@ sub gen_pc9x_t
 	if (!$_last_time || $_last_time != $main::systime) {
 		$_last_time = $main::systime;
 		$_last_occurs = 0;
-		return $_last_time;
+		return $_last_time - $main::systime_daystart;
 	} else {
 		$_last_occurs++;
 		return sprintf "$_last_time.%02d", $_last_occurs;
@@ -1356,10 +1356,12 @@ sub check_pc9x_t
 	my $parent = ref $call ? $call : Route::Node::get($call);
 	if ($parent) {
 		my $lastid = $parent->lastid->{$pc} || 0;
+		$t += 86400 if $t < $lastid - 43200;
 		if ($lastid >= $t) {
 			dbg("PCPROT: dup / old id on $call <= $lastid, ignored") if isdbg('chanerr');
 			return;
 		}
+		$t -= 86400 if $t >= 86400;
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
 	}
@@ -1394,6 +1396,7 @@ sub handle_92
 	}
 
 	my $parent = check_pc9x_t($pcall, $t, 92, 1);
+	return unless $parent;
 	
 	$parent->lastid->{92} = $t;
 	$parent->do_pc92(1);
@@ -1404,6 +1407,10 @@ sub handle_92
 		# and update any information that needs to be done. 
 		my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($ent[0]);
 		if ($call && $is_node) {
+			if ($call eq $main::mycall) {
+				dbg("PCPROT: looped back on node entry, ignored") if isdbg('chanerr');
+				return;
+			}
 			if ($is_extnode) {
 				# reparent to external node (note that we must have received a 'C' or 'A' record
 				# from the true parent node for this external before we get one for the this node
