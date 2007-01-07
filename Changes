@@ -1,3 +1,6 @@
+07Jan06=======================================================================
+1. use IO::Socket blocking where available and switch off or ignore all 
+attempts to block.
 05Jan06=======================================================================
 1. increase default ephemeral deduping on PC15 to 6 minutes (from 2).
 23Nov06=======================================================================
