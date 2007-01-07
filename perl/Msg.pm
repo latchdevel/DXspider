@@ -42,11 +42,9 @@ BEGIN {
         require POSIX; POSIX->import(qw(O_NONBLOCK F_SETFL F_GETFL))
     };
 	if ($@ || $main::is_win) {
-#		print STDERR "POSIX Blocking *** NOT *** supported $@\n";
-		$blocking_supported = 0;
+		$blocking_supported = IO::Socket->can('blocking') ? 2 : 0;
 	} else {
-		$blocking_supported = 1;
-#		print STDERR "POSIX Blocking enabled\n";
+		$blocking_supported = IO::Socket->can('blocking') ? 2 : 1;
 	}
 
 
@@ -139,12 +137,8 @@ sub blocking
 	return unless $blocking_supported;
 
 	# Make the handle stop blocking, the Windows way.
-	if ($main::is_win) { 
-	  # 126 is FIONBIO (some docs say 0x7F << 16)
-		ioctl( $_[0],
-			   0x80000000 | (4 << 16) | (ord('f') << 8) | 126,
-			   "$_[1]"
-			 );
+	if ($blocking_supported) { 
+		$_[0]->blocking($_[1]);
 	} else {
 		my $flags = fcntl ($_[0], F_GETFL, 0);
 		if ($_[1]) {
@@ -346,10 +340,10 @@ sub _send {
     # return to the event loop only after every message, or if it
     # is likely to block in the middle of a message.
 
-	if ($conn->{blocking} != $flush) {
-		blocking($sock, $flush);
-		$conn->{blocking} = $flush;
-	}
+#	if ($conn->{blocking} != $flush) {
+#		blocking($sock, $flush);
+#		$conn->{blocking} = $flush;
+#	}
     my $offset = (exists $conn->{send_offset}) ? $conn->{send_offset} : 0;
 
     while (@$rq) {
