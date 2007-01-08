@@ -221,6 +221,8 @@ sub init
 	$main::me->{registered} = 1;
 	$main::me->{version} = $main::version;
 	$main::me->{build} = $main::build;
+	$main::me->{do_pc92} = 1;
+	$main::me->{via_pc92} = 1;
 }
 
 #

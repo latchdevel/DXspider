@@ -558,6 +558,11 @@ sub handle_17
 		}
 	}
 
+	if (DXChannel::get($ucall)) {
+		dbg("PCPROT: trying do disconnect local user, ignored") if isdbg('chanerr');
+		return;
+	}
+
 	# input filter if required and then remove user if present
 	if ($parent) {
 #		return unless $self->in_filter_route($parent);	
