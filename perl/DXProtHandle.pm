@@ -768,7 +768,7 @@ sub handle_19
 		$self->route_pc19($self->{call}, $line, @rout);
 	}
 	if (@pc92out) {
-#		$self->route_pc92a($main::mycall, $line, $main::routeroot, @pc92out) if $self->{state} eq 'normal';
+		$self->route_pc92a($main::mycall, $line, $main::routeroot, @pc92out) if $self->{state} eq 'normal';
 	}
 }
 		
