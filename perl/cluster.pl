@@ -131,11 +131,8 @@ $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 
 
 use vars qw($VERSION $BRANCH $build $branch);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-$main::build -= 3;				# fudge (put back for now)
+($VERSION, $BRANCH) = dxver( q$Revision$);
+$main::build -= 2;				# fudge (put back for now)
 
 
       

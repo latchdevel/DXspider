@@ -55,10 +55,7 @@ $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing com
 					  #
 
 use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
+($VERSION, $BRANCH) = dxver(q$Revision$);
 
 #
 # obtain a new connection this is derived from dxchannel
