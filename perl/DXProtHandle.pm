@@ -1342,7 +1342,7 @@ sub gen_pc9x_t
 		return $_last_time - $main::systime_daystart;
 	} else {
 		$_last_occurs++;
-		return sprintf "$_last_time.%02d", $_last_occurs;
+		return sprintf "%d.%02d", $_last_time - $main::systime_daystart, $_last_occurs;
 	}
 }
 
@@ -1395,8 +1395,7 @@ sub handle_92
 		return;
 	}
 
-	my $parent = check_pc9x_t($pcall, $t, 92, 1);
-	return unless $parent;
+	my $parent = check_pc9x_t($pcall, $t, 92, 1) || return;
 	
 	$parent->lastid->{92} = $t;
 	$parent->do_pc92(1);
