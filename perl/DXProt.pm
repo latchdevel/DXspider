@@ -78,8 +78,8 @@ $chatdupeage = 20 * 60 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
-$pc92_update_period = 60*60;	# the period between PC92 C updates
-$last_pc92_update = time;		# the last time a PC92 config update
+$pc92_update_period = 30*60;	# the period between PC92 C updates
+$last_pc92_update = time + int rand(180);		# the last time a PC92 config update
 
 
 @checklist = 
@@ -434,7 +434,7 @@ sub process
 
 		if ($main::systime >= $last_pc92_update + $pc92_update_period) {
 			send_pc92_update();
-			$last_pc92_update = $main::systime;
+			$last_pc92_update = $main::systime + int rand(180);
 		}
 		
 		$last10 = $t;
