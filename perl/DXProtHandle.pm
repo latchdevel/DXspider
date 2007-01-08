@@ -646,7 +646,8 @@ sub handle_19
 	# The justification for this is that most of it is wrong or out of date
 	# anyway. 
 	# 
-	# From now on we are only going to believe PC92 data.
+	# From now on we are only going to believe PC92 data and locally connected
+	# non-pc92 nodes.
 	#
 	for ($i = 1; $i < $#_-1; $i += 4) {
 		my $here = $_[$i];
@@ -731,7 +732,7 @@ sub handle_19
 	if (@rout) {
 		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
-		$self->route_pc92a($main::mycall, $line, $main::routeroot, @rout);
+		$self->route_pc92a($main::mycall, $line, $main::routeroot, @rout) if $self->{state} eq 'normal';
 	}
 }
 		
@@ -816,6 +817,15 @@ sub handle_22
 	my $origin = shift;
 	$self->state('normal');
 	$self->{lastping} = 0;
+
+	# send out delayed PC92 config for this node if it is external
+	unless ($self->{do_pc92}) {
+		my $node = Route::Node::get($self->{call});
+		if ($node) {
+			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+			$self->route_pc92a($main::mycall, undef, $node, @rout);
+		} 
+	}
 }
 				
 # WWV info
