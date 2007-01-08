@@ -823,7 +823,7 @@ sub handle_22
 		my $node = Route::Node::get($self->{call});
 		if ($node) {
 			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->route_pc92a($main::mycall, undef, $node, @rout);
+			$self->route_pc92c($main::mycall, undef, $node, @rout);
 		} 
 	}
 }
