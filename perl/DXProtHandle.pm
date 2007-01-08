@@ -1282,7 +1282,7 @@ sub _decode_pc92_call
 	my $icall = shift;
 	my @part = split /:/, $icall;
 	my ($flag, $call) = unpack "A A*", $part[0];
-	return () unless $flag && $flag ge '0' && $flag le '7';
+	return () unless defined $flag && $flag ge '0' && $flag le '7';
 	return () unless $call && is_callsign($call);
 	my $is_node = $flag & 4;
 	my $is_extnode = $flag & 2;
