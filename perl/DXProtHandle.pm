@@ -1475,12 +1475,10 @@ sub handle_92
 		$self->route_pc21($pcall, undef, $r) if $r->isa('Route::Node');
 		$self->route_pc17($pcall, undef, $parent, $r) if $r->isa('Route::User');
 	}
-	foreach my $r (@radd) {
-		next unless $r;
-
-		$self->route_pc19($pcall, undef, $r) if $r->isa('Route::Node');
-		$self->route_pc16($pcall, undef, $parent, $r) if $r->isa('Route::User');
-	}
+	my @pc19 = grep { $_ && $_->isa('Route::Node') } @radd;
+	my @pc16 = grep { $_ && $_->isa('Route::User') } @radd;
+	$self->route_pc19($pcall, undef, @pc19) if @pc19;
+	$self->route_pc16($pcall, undef, $parent, @pc16) if @pc16;
 }
 
 # if get here then rebroadcast the thing with its Hop count decremented (if
