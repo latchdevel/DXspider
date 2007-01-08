@@ -431,6 +431,7 @@ sub process
 
 		if ($main::systime >= $last_pc92_update + $pc92_update_period) {
 			send_pc92_update();
+			time_out_pc92_routes();
 			$last_pc92_update = $main::systime + int rand(180);
 		}
 		
@@ -780,12 +781,11 @@ sub gen_pc92_update
 	# send 'my' configuration for all users and pc92 capable nodes
 	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
 	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
-#	push @localnodes, map { my $r = Route::Node::get($_->{call}); $r ? $r : () } DXChannel::get_all_users();
 	push @lines, pc92c($main::routeroot, @localnodes);
 
 
 	if ($with_pc92_nodes) {
-		# send out the configuration of all the PC92 nodes with current configuration
+		# send out the configuration of all the directly connected PC92 nodes with current configuration
 		# but with the dates that the last config came in with.
 		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
@@ -797,7 +797,7 @@ sub gen_pc92_update
 		}
 	}
 	
-	# send the configuration of all the 'external' nodes that don't handle PC92
+	# send the configuration of all the directly connected 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
 	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
 	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
@@ -834,6 +834,23 @@ sub send_pc92_update
 		$main::me->broadcast_route_pc9x('', undef, $_, 0);
 	}
 } 
+
+sub time_out_pc92_routes
+{
+	my @nodes = grep {$_->do_pc92 || $_->via_pc92} Route::Node::get_all();
+	my @rdel;
+	foreach my $n (@nodes) {
+		if ($n->dec_obs <= 0) {
+			my @parents = map {Route::Node::get($_)} $n->parents;
+			for (@parents) {
+				push @rdel, $n->del($_) if $_;
+			}
+		}
+	}
+	for (@rdel) {
+		$main::me->route_pc21($main::mycall, undef, $_) if $_;
+	}
+}
 
 #
 # route a message down an appropriate interface for a callsign

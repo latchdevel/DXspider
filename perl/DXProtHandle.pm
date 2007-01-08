@@ -413,6 +413,7 @@ sub handle_16
 		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
 		return;
 	}
+
 	# is it me?
 	if ($ncall eq $main::mycall) {
 		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
@@ -428,11 +429,6 @@ sub handle_16
 		return;
 	}
 
-	unless ($h) {
-		dbg("PCPROT: non-local PC16, ignored") if isdbg('chanerr');
-		return;
-	}
-
 	my $parent = Route::Node::get($ncall); 
 
 	if ($parent) {
@@ -444,6 +440,15 @@ sub handle_16
 
 		# input filter if required
 		return unless $self->in_filter_route($parent);
+	} else {
+		$parent = Route::Node->new($ncall);
+	}
+
+	unless ($h) {
+		if ($parent->via_pc92) {
+			dbg("PCPROT: non-local node controlled by PC92, ignored") if isdbg('chanerr');
+			return;
+		}
 	}
 
 	my $i;
@@ -474,9 +479,10 @@ sub handle_16
 				$r->flags($flags);
 				$au = $r;
 			}
-			push @rout, $r if $au;
+			push @rout, $r if $h && $au;
 		} else {
-			push @rout, $parent->add_user($call, $flags);
+			my @ans = $parent->add_user($call, $flags);
+			push @rout, @ans if $h && @ans; 
 		}
 		
 		# send info to all logged in thingies
@@ -493,8 +499,8 @@ sub handle_16
 		$user->put;
 	}
 	if (@rout) {
-		$self->route_pc16($origin, $line, $parent, @rout);
-		$self->route_pc92a($main::mycall, undef, $parent, @rout) if $self->{state} eq 'normal';
+		$self->route_pc16($origin, $line, $parent, @rout) if @rout;
+#		$self->route_pc92a($main::mycall, undef, $parent, @rout) if $h && $self->{state} eq 'normal';
 	}
 }
 		
@@ -516,6 +522,7 @@ sub handle_17
 		dbg("PCPROT: don't send users to $self->{call}") if isdbg('chanerr');
 		return;
 	}
+
 	if ($ncall eq $main::mycall) {
 		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
 		return;
@@ -543,6 +550,14 @@ sub handle_17
 		return;
 	}
 
+	$dxchan = DXChannel::get($ncall);
+	unless ($dxchan) {
+		if ($parent->via_pc92) {
+			dbg("PCPROT: non-local node controlled by PC92, ignored") if isdbg('chanerr');
+			return;
+		}
+	}
+
 	# input filter if required and then remove user if present
 	if ($parent) {
 #		return unless $self->in_filter_route($parent);	
@@ -562,7 +577,7 @@ sub handle_17
 
 	$uref = Route->new($ucall) unless $uref; # throw away
 	$self->route_pc17($origin, $line, $parent, $uref);
-	$self->route_pc92d($main::mycall, undef, $parent, $uref);
+#	$self->route_pc92d($main::mycall, undef, $parent, $uref) if $dxchan;
 }
 		
 # link request
@@ -586,7 +601,8 @@ sub handle_18
 			$self->sort('S');
 		}
 		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml\b/;
-		$self->{do_pc92}++ if $_[1] =~ /\bpc92\b/;
+		my ($pc9x) = $_[1] =~ /\bpc9\[(\d+)\]\b/;
+		$self->{do_pc92}++ if (defined $pc9x && $pc9x =~ /2/) || $_[1] =~ /\bpc92\b/;
 	} else {
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
@@ -630,7 +646,7 @@ sub handle_19
 	my $newline = "PC19^";
 
 	# new routing list
-	my @rout;
+	my (@rout, @pc92out);
 
 	# first get the INTERFACE node
 	my $parent = Route::Node::get($self->{call});
@@ -640,6 +656,8 @@ sub handle_19
 		return;
 	}
 
+	my $h;
+	
 	# parse the PC19
 	# 
 	# We are making a major change from now on. We are only going to accept
@@ -669,10 +687,15 @@ sub handle_19
 		next if $call eq $main::mycall;
 
 		# check that this PC19 isn't trying to alter the wrong dxchan
+		$h = 0;
 		my $dxchan = DXChannel::get($call);
-		if ($dxchan && $dxchan != $self) {
-			dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
-			next;
+		if ($dxchan) {
+			if ($dxchan == $self) {
+				$h = 1;
+			} else {
+				dbg("PCPROT: PC19 from $self->{call} trying to alter wrong locally connected $call, ignored!") if isdbg('chanerr');
+				next;
+			}
 		}
 
 		my $user = check_add_node($call);
@@ -684,9 +707,11 @@ sub handle_19
 
 		RouteDB::update($call, $self->{call}, $dxchan ? 1 : undef);
 
-		unless ($dxchan) {
-			dbg("PCPROT: PC19 not directly connected, ignored") if isdbg('chanerr');
-			next;
+		unless ($h) {
+			if ($parent->via_pc92) {
+				dbg("PCPROT: non-local node controlled by PC92, ignored") if isdbg('chanerr');
+				next;
+			}
 		}
 
 		my $r = Route::Node::get($call);
@@ -715,6 +740,7 @@ sub handle_19
 					my $ar = $parent->add($call, $ver, $flags);
 					$user->wantroutepc19(1) unless defined $user->wantroutepc19;
 					push @rout, $ar if $ar;
+					push @pc92out, $r if $h;
 				} else {
 					next;
 				}
@@ -735,7 +761,9 @@ sub handle_19
 	if (@rout) {
 		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
-		$self->route_pc92a($main::mycall, $line, $main::routeroot, @rout) if $self->{state} eq 'normal';
+	}
+	if (@pc92out) {
+#		$self->route_pc92a($main::mycall, $line, $main::routeroot, @pc92out) if $self->{state} eq 'normal';
 	}
 }
 		
@@ -802,6 +830,11 @@ sub handle_21
 		my $node = Route::Node::get($call);
 		if ($node) {
 			
+			if ($node->via_pc92) {
+				dbg("PCPROT: controlled by PC92, ignored") if isdbg('chanerr');
+				return;
+			}
+
 			my $dxchan = DXChannel::get($call);
 			if ($dxchan && $dxchan != $self) {
 				dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
@@ -822,7 +855,7 @@ sub handle_21
 
 	if (@rout) {
 		$self->route_pc21($origin, $line, @rout);
-		$self->route_pc92d($main::mycall, $line, $main::routeroot, @rout);
+#		$self->route_pc92d($main::mycall, $line, $main::routeroot, @rout);
 	}
 }
 		
@@ -1373,21 +1406,19 @@ sub check_pc9x_t
 	my $t = shift;
 	my $pc = shift;
 	my $create = shift;
-	
+
 	my $parent = ref $call ? $call : Route::Node::get($call);
 	if ($parent) {
 		my $lastid = $parent->lastid->{$pc} || 0;
-		$t += 86400 if $t < $lastid - 43200;
-		if ($lastid >= $t) {
+		if ($lastid + $main::systime_daystart >= $t + $main::systime_daystart) {
 			dbg("PCPROT: dup / old id on $call <= $lastid, ignored") if isdbg('chanerr');
 			return;
 		}
-		$t -= 86400 if $t >= 86400;
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
 	}
 	$parent->lastid->{$pc} = $t;
- 
+
 	return $parent;
 }
 
@@ -1420,6 +1451,8 @@ sub handle_92
 	
 	$parent->lastid->{92} = $t;
 	$parent->do_pc92(1);
+	$parent->via_pc92(1);
+	$parent->reset_obs;
 
 	if (@ent) {
 
@@ -1447,6 +1480,8 @@ sub handle_92
 		$parent->here(Route::here($here));
 		$parent->version($version) if $version && $version > $parent->version;
 		$parent->build($build) if $build && $build > $parent->build;
+		$parent->via_pc92(1);
+		$parent->reset_obs;
 		shift @ent;
 	}
 

@@ -18,7 +18,7 @@ use strict;
 use vars qw($VERSION $BRANCH);
 ($VERSION, $BRANCH) = dxver( q$Revision$);
 
-use vars qw(%list %valid @ISA $max $filterdef);
+use vars qw(%list %valid @ISA $max $filterdef $obscount);
 @ISA = qw(Route);
 
 %valid = (
@@ -31,11 +31,14 @@ use vars qw(%list %valid @ISA $max $filterdef);
 		  lastmsg => '0,Last Route Msg,atime',
 		  lastid => '0,Last Route MsgID',
 		  do_pc92 => '0,Uses pc92,yesno',
+		  via_pc92 => '0,Came in via pc92,yesno',
+		  obscount => '0,Obscount',
 );
 
 $filterdef = $Route::filterdef;
 %list = ();
 $max = 0;
+$obscount = 3;
 
 sub count
 {
@@ -238,7 +241,7 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = ref $pkg ? [ $pkg->{call} ] : [ ];
-	$self->{version} = shift || 5000;
+	$self->{version} = shift || 5401;
 	$self->{flags} = shift || Route::here(1);
 	$self->{users} = [];
 	$self->{nodes} = [];
@@ -299,6 +302,18 @@ sub _deluser
 {
 	my $self = shift;
     return $self->_dellist('users', @_);
+}
+
+sub dec_obs
+{
+	my $self = shift;
+	$self->{obscount}--;
+}
+
+sub reset_obs
+{
+	my $self = shift;
+	$self->{obscount} = $obscount;
 }
 
 sub DESTROY
