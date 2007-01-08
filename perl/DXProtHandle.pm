@@ -491,7 +491,7 @@ sub handle_16
 	}
 	if (@rout) {
 		$self->route_pc16($origin, $line, $parent, @rout);
-		$self->route_pc92a($main::mycall, undef, $parent, @rout);
+		$self->route_pc92a($main::mycall, undef, $parent, @rout) if $self->{state} eq 'normal';
 	}
 }
 		
@@ -736,6 +736,20 @@ sub handle_19
 	}
 }
 		
+sub send_delayed_pc92
+{
+	my $self = shift;
+	
+	# send out delayed PC92 config for this node if it is external
+	unless ($self->{do_pc92}) {
+		my $node = Route::Node::get($self->{call});
+		if ($node) {
+			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+			$self->route_pc92c($main::mycall, undef, $node, @rout);
+		} 
+	}
+}
+
 # send local configuration
 sub handle_20
 {
@@ -747,6 +761,7 @@ sub handle_20
 	$self->send(pc22());
 	$self->state('normal');
 	$self->{lastping} = 0;
+	$self->send_delayed_pc92;
 }
 		
 # delete a cluster from the list
@@ -818,14 +833,7 @@ sub handle_22
 	$self->state('normal');
 	$self->{lastping} = 0;
 
-	# send out delayed PC92 config for this node if it is external
-	unless ($self->{do_pc92}) {
-		my $node = Route::Node::get($self->{call});
-		if ($node) {
-			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->route_pc92c($main::mycall, undef, $node, @rout);
-		} 
-	}
+	$self->send_delayed_pc92
 }
 				
 # WWV info
