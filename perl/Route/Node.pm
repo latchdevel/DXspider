@@ -246,6 +246,7 @@ sub new
 	$self->{users} = [];
 	$self->{nodes} = [];
 	$self->{lastid} = {};
+	$self->reset_obs;			# by definition
 	
 	$list{$call} = $self;
 	
