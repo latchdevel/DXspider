@@ -1228,8 +1228,8 @@ sub broadcast_route_pc9x
 	$line =~ /\^H(\d+)\^\~?$/;
 	unless ($1 > 0 && $self->{isolate}) {
 		foreach $dxchan (@dxchan) {
-			next if $dxchan == $self;
-			next if $dxchan == $main::me;
+			next if $dxchan == $self || $main::me;
+			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
 			next unless $dxchan->{do_pc92};
 			next unless $dxchan->isa('DXProt');
 
