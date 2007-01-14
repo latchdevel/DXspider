@@ -1359,7 +1359,7 @@ sub _add_thingy
 {
 	my $parent = shift;
 	my $s = shift;
-	my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($s);
+	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$s;
 	my @rout;
 
 	if ($call) {
@@ -1376,7 +1376,7 @@ sub _del_thingy
 {
 	my $parent = shift;
 	my $s = shift;
-	my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($s);
+	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$s;
 	my @rout;
 	if ($call) {
 		if ($is_node) {
@@ -1445,7 +1445,7 @@ sub handle_92
 	my $t = $_[2];
 	my $sort = $_[3];
 	
-	my @ent = grep {$_ && /^[0-7]/} @_[4 .. $#_];
+	my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} @_[4 .. $#_];
 	
 	if ($pcall eq $main::mycall) {
 		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
@@ -1463,7 +1463,7 @@ sub handle_92
 
 		# look at the first one which will always be a node of some sort
 		# and update any information that needs to be done. 
-		my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($ent[0]);
+		my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]}; 
 		if ($call && $is_node) {
 			if ($call eq $main::mycall) {
 				dbg("PCPROT: looped back on node entry, ignored") if isdbg('chanerr');
@@ -1490,25 +1490,36 @@ sub handle_92
 		shift @ent;
 	}
 
+	# do a pass through removing any references to either locally connected nodes or mycall
+	my @nent;
+	for (@ent) {
+		next unless $_;
+		if ($_->[0] eq $main::mycall || DXChannel::get($_->[0])) {
+			dbg("PCPROT: $_->[0] refers to locally connected node, ignored") if isdbg('chanerr');
+			next;
+		} 
+		push @nent, $_;
+	}
+
 	my (@radd, @rdel);
 	
 	if ($sort eq 'A') {
-		for (@ent) {
+		for (@nent) {
 			push @radd, _add_thingy($parent, $_);
 		}
 	} elsif ($sort eq 'D') {
-		for (@ent) {
+		for (@nent) {
 			push @rdel, _del_thingy($parent, $_);
 		}
 	} elsif ($sort eq 'C') {
 		my (@nodes, @users);
-		for (@ent) {
-			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);
-			if ($call) {
-				if ($is_node) {
-					push @nodes, $call;
+		foreach my $r (@nent) {
+#			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);			
+			if ($r->[0]) {
+				if ($r->[1]) {
+					push @nodes, $r->[0];
 				} else {
-					push @users, $call;
+					push @users, $r->[0];
 				}
 			} else {
 				dbg("DXPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr'); 
@@ -1517,11 +1528,11 @@ sub handle_92
 
 		my ($dnodes, $dusers, $nnodes, $nusers) = $parent->calc_config_changes(\@nodes, \@users);
 
-		for (@ent) {
-			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);
+		foreach my $r (@nent) {
+			my $call = $r->[0];
 			if ($call) {
-				push @radd,_add_thingy($parent, $_) if grep $call eq $_, (@$nnodes, @$nusers);
-				push @rdel,_del_thingy($parent, $_) if grep $call eq $_, (@$dnodes, @$dusers);
+				push @radd,_add_thingy($parent, $r) if grep $call eq $_, (@$nnodes, @$nusers);
+				push @rdel,_del_thingy($parent, $r) if grep $call eq $_, (@$dnodes, @$dusers);
 			}
 		}
 	} else {
