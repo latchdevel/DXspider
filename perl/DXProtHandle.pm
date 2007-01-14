@@ -605,9 +605,9 @@ sub handle_18
 			$self->user->put;
 			$self->sort('S');
 		}
-		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml\b/;
-		my ($pc9x) = $_[1] =~ /\bpc9\[(\d+)\]\b/;
-		$self->{do_pc92}++ if (defined $pc9x && $pc9x =~ /2/) || $_[1] =~ /\bpc92\b/;
+		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
+		my ($pc9x) = $_[1] =~ /\bpc9\[(\d+)\]/;
+		$self->{do_pc92}++ if defined $pc9x && $pc9x =~ /2/;
 	} else {
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
