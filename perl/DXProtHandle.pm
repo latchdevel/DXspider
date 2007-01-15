@@ -1379,11 +1379,11 @@ sub _add_thingy
 
 	if ($call) {
 		if ($is_node) {
+			dbg("ROUTE: added node $call to " . $parent->call) if isdbg('routelow');
 			@rout = $parent->add($call, $version, Route::here($here));
-			dbg("ROUTE: added node $call to " . $parent->call) if isdbg('route');
 		} else {
+			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('routelow');
 			@rout = $parent->add_user($call, Route::here($here));
-			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('route');
 		}
 	}
 	return @rout;
@@ -1398,12 +1398,12 @@ sub _del_thingy
 	if ($call) {
 		if ($is_node) {
 			my $nref = Route::Node::get($call);
+			dbg("ROUTE: deleting node $call from " . $parent->call) if isdbg('routelow');
 			@rout = $nref->del($parent) if $nref;
-			dbg("ROUTE: deleting node $call from " . $parent->call) if isdbg('route');
 		} else {
 			my $uref = Route::User::get($call);
+			dbg("ROUTE: deleting user $call from " . $parent->call) if isdbg('routelow');
 			@rout = $parent->del_user($uref) if $uref;
-			dbg("ROUTE: deleting user $call from " . $parent->call) if isdbg('route');
 		}
 	}
 	return @rout;
@@ -1454,6 +1454,8 @@ sub handle_92
 	my $line = shift;
 	my $origin = shift;
 
+	my (@radd, @rdel);
+	
 	$self->{do_pc92} ||= 1;
 
 	my $pcall = $_[1];
@@ -1527,8 +1529,6 @@ sub handle_92
 		push @nent, $_;
 	}
 
-	my (@radd, @rdel);
-	
 	if ($sort eq 'A') {
 		for (@nent) {
 			push @radd, _add_thingy($parent, $_);
