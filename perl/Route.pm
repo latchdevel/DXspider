@@ -199,8 +199,10 @@ sub config
 	}
 
 	if ($printit) {
-		$line = ' ' x ($level*2) . "$call";
-		$call = ' ' x length $call; 
+		my $pcall = "$call:" . $self->obscount;
+		
+		$line = ' ' x ($level*2) . "$pcall";
+		$call = ' ' x length $pcall; 
 		
 		# recursion detector
 		if ((DXChannel::get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {

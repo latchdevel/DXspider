@@ -224,11 +224,25 @@ sub calc_config_changes
 	my %users = map {$_ => 1} @{$self->{users}};
 	my $cnodes = shift;
 	my $cusers = shift;
+	if (isdbg('route')) {
+		dbg("ROUTE: start calc_config_changes");
+		dbg("ROUTE: incoming nodes on $self->{call}: " . join(',', sort @$cnodes));
+		dbg("ROUTE: incoming users on $self->{call}: " . join(',', sort @$cusers));
+		dbg("ROUTE: existing nodes on $self->{call}: " . join(',', sort keys %nodes));
+		dbg("ROUTE: existing users on $self->{call}: " . join(',', sort keys %users));
+	}
 	my (@dnodes, @dusers, @nnodes, @nusers);
 	push @nnodes, map {my @r = $nodes{$_} ? () : $_; delete $nodes{$_}; @r} @$cnodes;
 	push @dnodes, keys %nodes;
 	push @nusers, map {my @r = $users{$_} ? () : $_; delete $users{$_}; @r} @$cusers;
 	push @dusers, keys %users;
+	if (isdbg('route')) {
+		dbg("ROUTE: deleted nodes on $self->{call}: " . join(',', sort @dnodes));
+		dbg("ROUTE: deleted users on $self->{call}: " . join(',', sort @dusers));
+		dbg("ROUTE: added nodes on $self->{call}: " . join(',', sort  @nnodes));
+		dbg("ROUTE: added users on $self->{call}: " . join(',', sort @nusers));
+		dbg("ROUTE: end calc_config_changes");
+	}
 	return (\@dnodes, \@dusers, \@nnodes, \@nusers);
 }
 

@@ -1399,7 +1399,7 @@ sub _del_thingy
 		if ($is_node) {
 			my $nref = Route::Node::get($call);
 			@rout = $nref->del($parent) if $nref;
-			dbg("ROUTE: deleted node $call from " . $parent->call) if isdbg('route');
+			dbg("ROUTE: deleting node $call from " . $parent->call) if isdbg('route');
 		} else {
 			my $uref = Route::User::get($call);
 			@rout = $parent->del_user($uref) if $uref;
@@ -1563,12 +1563,19 @@ sub handle_92
 
 		my ($dnodes, $dusers, $nnodes, $nusers) = $parent->calc_config_changes(\@nodes, \@users);
 
+		# add users here
 		foreach my $r (@nent) {
 			my $call = $r->[0];
 			if ($call) {
 				push @radd,_add_thingy($parent, $r) if grep $call eq $_, (@$nnodes, @$nusers);
-				push @rdel,_del_thingy($parent, $r) if grep $call eq $_, (@$dnodes, @$dusers);
 			}
+		}
+		# del users here
+		foreach my $r (@$dnodes) {
+			push @rdel,_del_thingy($parent, [$r, 1]);
+		}
+		foreach my $r (@$dusers) {
+			push @rdel,_del_thingy($parent, [$r, 0]);
 		}
 	} else {
 		dbg("PCPROT: unknown action '$sort', ignored") if isdbg('chanerr');
