@@ -432,6 +432,7 @@ sub process
 		import_chat();
 
 		if ($main::systime >= $last_pc92_update + $pc92_update_period) {
+			dbg("ROUTE: sending pc92 update") if isdbg('route');
 			send_pc92_update();
 			time_out_pc92_routes();
 			$last_pc92_update = $main::systime + int rand(180);
@@ -778,7 +779,7 @@ sub gen_pc92_update
 	my $node;
 	my @lines;
 	
-	dbg('DXProt::send_pc92_update') if isdbg('trace');
+	dbg('DXProt::gen_pc92_update') if isdbg('trace');
 
 	# send 'my' configuration for all users and pc92 capable nodes
 	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
@@ -833,7 +834,7 @@ sub send_pc92_update
 	
 	# broadcast the lines to all PC92 nodes
 	for (@out) {
-		$main::me->broadcast_route_pc9x('', undef, $_, 0);
+		$main::me->broadcast_route_pc9x($main::mycall, undef, $_, 0);
 	}
 } 
 
@@ -1232,14 +1233,14 @@ sub broadcast_route_pc9x
 	my @dxchan = DXChannel::get_all_nodes();
 	my $dxchan;
 
-	if ($origin eq $main::mycall) {
+	if ($origin eq $main::mycall && $generate && !$line) {
 		$line = &$generate(@_);
 	} 
 
 	$line =~ /\^H(\d+)\^\~?$/;
 	unless ($1 > 0 && $self->{isolate}) {
 		foreach $dxchan (@dxchan) {
-			next if $dxchan == $self || $main::me;
+			next if $dxchan == $self || $dxchan == $main::me;
 			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
 			next unless $dxchan->{do_pc92};
 			next unless $dxchan->isa('DXProt');
