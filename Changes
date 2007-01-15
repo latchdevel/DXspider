@@ -1,7 +1,8 @@
 15Jan06=======================================================================
 1. added CTY-1701
-06Jan06=======================================================================
-1. altered blocking handling for sockets for modern perl implementations
+07Jan06=======================================================================
+1. use IO::Socket blocking where available and switch off or ignore all
+attempts to block.
 03Nov06=======================================================================
 1. add CTY-1609 changes
 2. add back Geo::Taf code with submitted mods
