@@ -309,6 +309,7 @@ sub dec_obs
 {
 	my $self = shift;
 	$self->{obscount}--;
+	return $self->{obscount};
 }
 
 sub reset_obs
