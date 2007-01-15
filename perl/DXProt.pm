@@ -842,9 +842,10 @@ sub time_out_pc92_routes
 	my @nodes = grep {$_->do_pc92 || $_->via_pc92} Route::Node::get_all();
 	my @rdel;
 	foreach my $n (@nodes) {
-		if ($n->dec_obs <= 0) {
+		my $o = $n->dec_obs;
+		if ($o <= 0) {
 			if (my $dxchan = DXChannel::get($n->call)) {
-				dbg("ROUTE: disconnecting local pc92 $_->{call} on obscount") if isdbg('route');
+				dbg("ROUTE: disconnecting local pc92 $dxchan->{call} on obscount") if isdbg('route');
 				$dxchan->disconnect;
 				next;
 			}
@@ -855,6 +856,8 @@ sub time_out_pc92_routes
 					push @rdel, $n->del($_);
 				}
 			}
+		} else {
+			dbg("ROUTE: obscount on $n->{call} now $o") if isdbg('route');
 		}
 	}
 	for (@rdel) {

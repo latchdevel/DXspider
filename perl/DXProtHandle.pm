@@ -1458,6 +1458,8 @@ sub handle_92
 	$parent->do_pc92(1);
 	$parent->via_pc92(1);
 	$parent->reset_obs;
+	dbg("ROUTE: reset obscount on $pcall now " . $parent->obscount) if isdbg('route');
+
 
 	if (@ent) {
 
@@ -1481,7 +1483,10 @@ sub handle_92
 					dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
 					return;
 				}
-				my $parent = check_pc9x_t($call, $t, 92) || return;
+				$parent = check_pc9x_t($call, $t, 92) || return;
+				$parent->via_pc92(1);
+				$parent->reset_obs;
+				dbg("ROUTE: reset obscount on $pcall now " . $parent->obscount) if isdbg('route');
 			}
 		} else {
 			dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
@@ -1490,8 +1495,6 @@ sub handle_92
 		$parent->here(Route::here($here));
 		$parent->version($version) if $version && $version > $parent->version;
 		$parent->build($build) if $build && $build > $parent->build;
-		$parent->via_pc92(1);
-		$parent->reset_obs;
 		shift @ent;
 	}
 
