@@ -840,7 +840,7 @@ sub send_pc92_update
 
 sub time_out_pc92_routes
 {
-	my @nodes = grep {$_->do_pc92 || $_->via_pc92} Route::Node::get_all();
+	my @nodes = grep {$_->call ne $main::mycall && ($_->do_pc92 || $_->via_pc92)} Route::Node::get_all();
 	my @rdel;
 	foreach my $n (@nodes) {
 		my $o = $n->dec_obs;

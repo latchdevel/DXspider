@@ -793,6 +793,13 @@ sub handle_20
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+
+	if ($self->{do_pc92} && $self->{state} ne 'init92') {
+		dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
+		$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
+		$self->disconnect;
+		return;
+	}
 	$self->send_local_config();
 	$self->send(pc22());
 	$self->state('normal');
@@ -871,6 +878,14 @@ sub handle_22
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+
+	if ($self->{do_pc92} && $self->{state} ne 'init92') {
+		dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
+		$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
+		$self->disconnect;
+		return;
+	}
+
 	$self->state('normal');
 	$self->{lastping} = 0;
 
@@ -1365,8 +1380,10 @@ sub _add_thingy
 	if ($call) {
 		if ($is_node) {
 			@rout = $parent->add($call, $version, Route::here($here));
+			dbg("ROUTE: added node $call to " . $parent->call) if isdbg('route');
 		} else {
 			@rout = $parent->add_user($call, Route::here($here));
+			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('route');
 		}
 	}
 	return @rout;
@@ -1382,9 +1399,11 @@ sub _del_thingy
 		if ($is_node) {
 			my $nref = Route::Node::get($call);
 			@rout = $nref->del($parent) if $nref;
+			dbg("ROUTE: deleted node $call from " . $parent->call) if isdbg('route');
 		} else {
 			my $uref = Route::User::get($call);
 			@rout = $parent->del_user($uref) if $uref;
+			dbg("ROUTE: deleting user $call from " . $parent->call) if isdbg('route');
 		}
 	}
 	return @rout;
@@ -1444,7 +1463,6 @@ sub handle_92
 	}
 	my $t = $_[2];
 	my $sort = $_[3];
-	
 	my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} @_[4 .. $#_];
 	
 	if ($pcall eq $main::mycall) {
@@ -1452,14 +1470,16 @@ sub handle_92
 		return;
 	}
 
+	if ($pcall eq $self->{call} && $self->{state} eq 'init') {
+		$self->state('init92');
+	}
+
 	my $parent = check_pc9x_t($pcall, $t, 92, 1) || return;
+	my $oparent = $parent;
 	
 	$parent->lastid->{92} = $t;
 	$parent->do_pc92(1);
 	$parent->via_pc92(1);
-	$parent->reset_obs;
-	dbg("ROUTE: reset obscount on $pcall now " . $parent->obscount) if isdbg('route');
-
 
 	if (@ent) {
 
@@ -1485,8 +1505,6 @@ sub handle_92
 				}
 				$parent = check_pc9x_t($call, $t, 92) || return;
 				$parent->via_pc92(1);
-				$parent->reset_obs;
-				dbg("ROUTE: reset obscount on $pcall now " . $parent->obscount) if isdbg('route');
 			}
 		} else {
 			dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
@@ -1521,6 +1539,15 @@ sub handle_92
 		}
 	} elsif ($sort eq 'C') {
 		my (@nodes, @users);
+
+		# we only reset obscounts on config records
+		$oparent->reset_obs;
+		dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('route');
+		if ($oparent != $parent) {
+			$parent->reset_obs;
+			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('route');
+		}
+
 		foreach my $r (@nent) {
 #			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);			
 			if ($r->[0]) {

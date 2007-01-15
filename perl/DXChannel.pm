@@ -472,7 +472,7 @@ sub disconnect
 	my $user = $self->{user};
 	
 	$user->close() if defined $user;
-	$self->{conn}->disconnect;
+	$self->{conn}->disconnect if $self->{conn};
 	$self->del();
 }
 
