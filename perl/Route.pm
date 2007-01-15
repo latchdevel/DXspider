@@ -197,7 +197,9 @@ sub config
 	}
 
 	if ($printit) {
-		my $pcall = "$call:" . $self->obscount;
+		my $pcall = $call;
+		$pcall .= ":" . $self->obscount if $self->via_pc92;
+
 		
 		$line = ' ' x ($level*2) . "$pcall";
 		$call = ' ' x length $pcall; 
