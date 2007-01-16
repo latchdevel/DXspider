@@ -776,9 +776,15 @@ sub send_delayed_pc92
 {
 	my $self = shift;
 	
-	# send out delayed PC92 config for this node if it is external
-	my $line = $main::me->gen_my_pc92_config;
+	# send out new PC92 config to everyone else 
+	my $line = gen_my_pc92_config($main::me);
 	$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
+
+	# if this is an external node then send out the external config
+	unless ($self->{do_pc92}) {
+		$line = gen_my_pc92_config(Route::Node::get($self->{call}));
+		$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
+	}
 }
 
 # send local configuration
@@ -881,19 +887,10 @@ sub handle_22
 			$self->disconnect;
 			return;
 		}
-#		my $ref = Route::Node::get($self->{call});
-#		if ($ref) {
-#			$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref);
-#		} else {
-#			dbg("PCPROT: disconnecting because pc92 for $self->{call} received") if isdbg('chanerr');
-#			$self->disconnect;
-#			return;
-#		}
-#	} else {
-		$self->send_delayed_pc92;
 	}
 	$self->{lastping} = 0;
 	$self->state('normal');
+	$self->send_delayed_pc92;
 }
 				
 # WWV info

@@ -774,13 +774,18 @@ sub send_local_config
 
 sub gen_my_pc92_config
 {
-	my $self = shift;
+	my $node = shift;
 	
-	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
-	dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
-	dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
-	return pc92c($main::routeroot, @localnodes);
+	if ($node->{call} eq $main::mycall) {
+		my @dxchan = grep { $_->call ne $main::mycall && !$_->{isolate} } DXChannel::get_all();
+		dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
+		my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
+		dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
+		return pc92c($main::routeroot, @localnodes);
+	} else {
+		my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
+		return pc92c($node, @rout);
+	}
 }
 
 sub gen_pc92_update
@@ -795,7 +800,7 @@ sub gen_pc92_update
 	dbg('ROUTE: DXProt::gen_pc92_update start') if isdbg('routelow');
 
 	# send 'my' configuration for all channels
-	push @lines, $self->gen_my_pc92_config;
+	push @lines, gen_my_pc92_config($main::routeroot);
 	
 	if ($with_pc92_nodes) {
 		# send out the configuration of all the directly connected PC92 nodes with current configuration
@@ -820,8 +825,7 @@ sub gen_pc92_update
 	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
 	foreach $node (@localnodes) {
 		if ($node) {
-			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			push @lines, pc92c($node, @rout);
+			push @lines, gen_my_pc92_config($node);
 		} 
 	}
 
