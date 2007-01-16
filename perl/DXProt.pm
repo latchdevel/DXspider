@@ -817,7 +817,7 @@ sub gen_pc92_update
 		} 
 	}
 
-	dbg('ROUTE: DXProt::gen_pc92_update end') if isdbg('route');
+	dbg('ROUTE: DXProt::gen_pc92_update end with ' . scalar @lines . ' lines') if isdbg('route');
 	return @lines;
 }
 
