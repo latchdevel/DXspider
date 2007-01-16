@@ -16,7 +16,7 @@ my @out;
 my $nowt = time;
 
 push @out, "                                      Ave   Obs   Ping   Sec Since";
-push @out, "  Callsign Type Started               RTT  count  Int.   Last Ping";
+push @out, "  Callsign Type Started               RTT  count  Int.   Last Ping PC92";
 
 foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $call = $dxchan->call();
@@ -34,7 +34,8 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "DXNT" if $dxchan->is_dxnet;
 	$sort = "AR-C" if $dxchan->is_arcluster;
 	$sort = "AK1A" if $dxchan->is_ak1a;
-	push @out, sprintf "%10s $sort $t$ping    $obscount   %5d       %5d", $call, $pingint, $lastt;
+	my $pc92 = $dxchan->do_pc92 ? 'Y' : '';
+	push @out, sprintf "%10s $sort $t$ping    $obscount   %5d       %5d   $pc92", $call, $pingint, $lastt;
 }
 
 return (1, @out)
