@@ -121,8 +121,9 @@ sub delete
 	my @out;
 	
 	$self->_del_users;
-	foreach my $parent (@{$self->{parent}}) {
-		push @out, $parent->del($self);
+	foreach my $call (@{$self->{parent}}) {
+		my $parent = Route::Node::get($call);
+		push @out, $parent->del($self) if $parent;
 	}
 	return @out;
 }
