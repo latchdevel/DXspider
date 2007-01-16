@@ -113,6 +113,20 @@ sub del
 	return @nodes;
 }
 
+# this deletes this node completely by grabbing the parents
+# and deleting me from them
+sub delete
+{
+	my $self = shift;
+	my @out;
+	
+	$self->_del_users;
+	foreach my $parent (@{$self->{parent}}) {
+		push @out, $parent->del($self);
+	}
+	return @out;
+}
+
 sub del_nodes
 {
 	my $parent = shift;

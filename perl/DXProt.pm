@@ -241,7 +241,7 @@ sub new
 	# old style connections, because we are about to get the real deal
 	if (my $ref = Route::Node::get($call)) {
 		dbg("ROUTE: $call is already in the routing table, deleting") if isdbg('route');
-		my @rout = $ref->del_nodes;
+		my @rout = $ref->delete;
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
 	}
 	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;

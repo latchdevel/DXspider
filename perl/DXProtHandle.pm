@@ -423,6 +423,10 @@ sub handle_16
 	my $h;
 	$h = 1 if DXChannel::get($ncall);
 	RouteDB::update($ncall, $self->{call}, $h);
+	if ($h && $self->{call} ne $ncall) {
+		dbg("PCPROT: trying to update a local node, ignored") if isdbg('chanerr');
+		return;
+	}
 
 	if (eph_dup($line)) {
 		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
@@ -764,7 +768,7 @@ sub handle_19
 	# but remember there will only be one (pair) these because any extras will be
 	# thrown away.
 	if (@rout) {
-		$self->route_pc21($self->{call}, $line, @rout);
+#		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
 	}
 	if (@pc92out) {
