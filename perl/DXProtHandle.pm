@@ -879,17 +879,27 @@ sub handle_22
 	my $line = shift;
 	my $origin = shift;
 
-	if ($self->{do_pc92} && $self->{state} ne 'init92') {
-		dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
-		$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
-		$self->disconnect;
-		return;
-	}
-
 	$self->state('normal');
 	$self->{lastping} = 0;
 
-	$self->send_delayed_pc92
+	if ($self->{do_pc92}) {
+		if ($self->{state} ne 'init92') {
+			dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
+			$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
+			$self->disconnect;
+			return;
+		}
+		my $ref = Route::Node::get($self->{call});
+		if ($ref) {
+			$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref);
+		} else {
+			dbg("PCPROT: disconnecting because pc92 for $self->{call} received") if isdbg('chanerr');
+			$self->disconnect;
+			return;
+		}
+	} else {
+		$self->send_delayed_pc92;
+	}
 }
 				
 # WWV info
