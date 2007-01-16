@@ -777,13 +777,8 @@ sub send_delayed_pc92
 	my $self = shift;
 	
 	# send out delayed PC92 config for this node if it is external
-	unless ($self->{do_pc92}) {
-		my $node = Route::Node::get($self->{call});
-		if ($node) {
-			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
-			$self->route_pc92c($main::mycall, undef, $node, @rout);
-		} 
-	}
+	my $line = $main::me->gen_my_pc92_config;
+	$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
 }
 
 # send local configuration
@@ -886,15 +881,15 @@ sub handle_22
 			$self->disconnect;
 			return;
 		}
-		my $ref = Route::Node::get($self->{call});
-		if ($ref) {
-			$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref);
-		} else {
-			dbg("PCPROT: disconnecting because pc92 for $self->{call} received") if isdbg('chanerr');
-			$self->disconnect;
-			return;
-		}
-	} else {
+#		my $ref = Route::Node::get($self->{call});
+#		if ($ref) {
+#			$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref);
+#		} else {
+#			dbg("PCPROT: disconnecting because pc92 for $self->{call} received") if isdbg('chanerr');
+#			$self->disconnect;
+#			return;
+#		}
+#	} else {
 		$self->send_delayed_pc92;
 	}
 	$self->{lastping} = 0;

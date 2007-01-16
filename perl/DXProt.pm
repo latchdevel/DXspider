@@ -772,30 +772,38 @@ sub send_local_config
 	}
 }
 
+sub gen_my_pc92_config
+{
+	my $self = shift;
+	
+	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
+	dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
+	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
+	dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
+	return pc92c($main::routeroot, @localnodes);
+}
+
 sub gen_pc92_update
 {
 	my $self = shift;
 	my $with_pc92_nodes = shift;
 	my $node;
 	my @lines;
+	my @dxchan;
+	my @localnodes;
+
+	dbg('ROUTE: DXProt::gen_pc92_update start') if isdbg('routelow');
+
+	# send 'my' configuration for all channels
+	push @lines, $self->gen_my_pc92_config;
 	
-	dbg('ROUTE: DXProt::gen_pc92_update start') if isdbg('route');
-
-	# send 'my' configuration for all users and pc92 capable nodes
-	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
-	dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('route');
-	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
-	dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('route');
-	push @lines, pc92c($main::routeroot, @localnodes);
-
-
 	if ($with_pc92_nodes) {
 		# send out the configuration of all the directly connected PC92 nodes with current configuration
 		# but with the dates that the last config came in with.
 		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
-		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('route');
+		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('route');
+		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
 		foreach $node (@localnodes) {
 			if ($node && $node->lastid->{92}) {
 				my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
@@ -807,9 +815,9 @@ sub gen_pc92_update
 	# send the configuration of all the directly connected 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
 	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
-	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('route');
+	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
 	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('route');
+	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
 	foreach $node (@localnodes) {
 		if ($node) {
 			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
@@ -817,7 +825,7 @@ sub gen_pc92_update
 		} 
 	}
 
-	dbg('ROUTE: DXProt::gen_pc92_update end with ' . scalar @lines . ' lines') if isdbg('route');
+	dbg('ROUTE: DXProt::gen_pc92_update end with ' . scalar @lines . ' lines') if isdbg('routelow');
 	return @lines;
 }
 
