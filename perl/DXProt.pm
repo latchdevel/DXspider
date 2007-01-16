@@ -779,11 +779,13 @@ sub gen_pc92_update
 	my $node;
 	my @lines;
 	
-	dbg('DXProt::gen_pc92_update') if isdbg('trace');
+	dbg('ROUTE: DXProt::gen_pc92_update start') if isdbg('route');
 
 	# send 'my' configuration for all users and pc92 capable nodes
 	my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all();
+	dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('route');
 	my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
+	dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('route');
 	push @lines, pc92c($main::routeroot, @localnodes);
 
 
@@ -791,7 +793,9 @@ sub gen_pc92_update
 		# send out the configuration of all the directly connected PC92 nodes with current configuration
 		# but with the dates that the last config came in with.
 		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
+		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('route');
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('route');
 		foreach $node (@localnodes) {
 			if ($node && $node->lastid->{92}) {
 				my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
@@ -803,13 +807,17 @@ sub gen_pc92_update
 	# send the configuration of all the directly connected 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
 	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
+	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('route');
 	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('route');
 	foreach $node (@localnodes) {
 		if ($node) {
 			my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
 			push @lines, pc92c($node, @rout);
 		} 
 	}
+
+	dbg('ROUTE: DXProt::gen_pc92_update end') if isdbg('route');
 	return @lines;
 }
 
