@@ -879,9 +879,6 @@ sub handle_22
 	my $line = shift;
 	my $origin = shift;
 
-	$self->state('normal');
-	$self->{lastping} = 0;
-
 	if ($self->{do_pc92}) {
 		if ($self->{state} ne 'init92') {
 			dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
@@ -900,6 +897,8 @@ sub handle_22
 	} else {
 		$self->send_delayed_pc92;
 	}
+	$self->{lastping} = 0;
+	$self->state('normal');
 }
 				
 # WWV info
