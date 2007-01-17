@@ -235,6 +235,14 @@ sub new
 	# add this node to the table, the values get filled in later
 	my $pkg = shift;
 	my $call = shift;
+
+	# if we have an entry already, then send a PC21 to all connect
+	# old style connections, because we are about to get the real deal
+	if (my $ref = Route::Node::get($call)) {
+		dbg("ROUTE: $call is already in the routing table, deleting") if isdbg('route');
+		my @rout = $ref->delete;
+		$self->route_pc21($main::mycall, undef, @rout) if @rout;
+	}
 	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
 
 	return $self;
@@ -739,7 +747,11 @@ sub handle_16
 	}
 	# is it me?
 	if ($ncall eq $main::mycall) {
-		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
+		dbg("PCPROT: trying to alter my config from outside!") if isdbg('chanerr');
+		return;
+	}
+	if (DXChannel::get($ncall) && $ncall ne $self->{call}) {
+		dbg("PCPROT: trying to alter locally connected $ncall from $self->{call}, ignored") if isdbg('chanerr');
 		return;
 	}
 

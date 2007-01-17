@@ -1,3 +1,7 @@
+16Jan06=======================================================================
+1. back ported a change to PC16 handling so that a locally connected node's
+info clears out and generally overrides any residual PC16 info gathered from
+elsewhere.
 15Jan06=======================================================================
 1. added CTY-1701
 07Jan06=======================================================================

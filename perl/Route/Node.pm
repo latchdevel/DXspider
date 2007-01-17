@@ -111,6 +111,21 @@ sub del
 	return @nodes;
 }
 
+# this deletes this node completely by grabbing the parents
+# and deleting me from them
+sub delete
+{
+	my $self = shift;
+	my @out;
+	
+	$self->_del_users;
+	foreach my $call (@{$self->{parent}}) {
+		my $parent = Route::Node::get($call);
+		push @out, $parent->del($self) if $parent;
+	}
+	return @out;
+}
+
 sub del_nodes
 {
 	my $parent = shift;
