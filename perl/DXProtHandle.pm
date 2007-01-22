@@ -1159,9 +1159,9 @@ sub handle_41
 	} elsif ($_[2] == 3) {
 		if (is_latlong($_[3])) {
 			my ($lat, $long) = DXBearing::stoll($_[3]);
-			$user->lat($lat);
-			$user->long($long);
-			$user->qra(DXBearing::lltoqra($lat, $long));
+			$user->lat($lat) if $lat;
+			$user->long($long) if $long;
+			$user->qra(DXBearing::lltoqra($lat, $long)) unless $user->qra;
 		} else {
 			dbg('PCPROT: not a valid lat/long') if isdbg('chanerr');
 			return;
@@ -1171,8 +1171,8 @@ sub handle_41
 	} elsif ($_[2] == 5) {
 		if (is_qra(uc $_[3])) {
 			my ($lat, $long) = DXBearing::qratoll(uc $_[3]);
-			$user->lat($lat);
-			$user->long($long);
+			$user->lat($lat) if $lat && !$user->lat;
+			$user->long($long) if $long && !$user->long;
 			$user->qra(uc $_[3]);
 		} else {
 			dbg('PCPROT: not a valid QRA locator') if isdbg('chanerr');
