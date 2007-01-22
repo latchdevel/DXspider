@@ -1,5 +1,6 @@
 22Jan06=======================================================================
 1. disable default propagation of PC9x sentences
+2. simplify PC17 handling 
 16Jan06=======================================================================
 1. back ported a change to PC16 handling so that a locally connected node's
 info clears out and generally overrides any residual PC16 info gathered from

@@ -929,25 +929,23 @@ sub handle_17
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
 		dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
+		return;
 	}
 	my $parent = Route::Node::get($ncall);
 	unless ($parent) {
 		dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
+		return;
 	}			
 
-	$dxchan = $parent->dxchan if $parent;
+	$dxchan = DXChannel::get($ncall);
 	if ($dxchan && $dxchan ne $self) {
 		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 		return;
 	}
 
 	# input filter if required and then remove user if present
-	if ($parent) {
 #		return unless $self->in_filter_route($parent);	
-		$parent->del_user($uref) if $uref;
-	} else {
-		$parent = Route->new($ncall);  # throw away
-	}
+	$parent->del_user($uref);
 
 	# send info to all logged in thingies
 	$self->tell_login('logoutu', "$ncall: $ucall") if DXUser->get_current($ncall)->is_local_node;
@@ -958,7 +956,6 @@ sub handle_17
 		return;
 	}
 
-	$uref = Route->new($ucall) unless $uref; # throw away
 	$self->route_pc17($origin, $line, $parent, $uref);
 }
 		
