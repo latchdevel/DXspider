@@ -1487,6 +1487,10 @@ sub handle_41
 	$user = DXUser->new($call) unless $user;
 			
 	if ($_[2] == 1) {
+		if ($_[2] =~ /spotter/i) {
+			dbg("PCPROT: invalid name") if isdbg('chanerr');
+			return;
+		}
 		$user->name($_[3]);
 	} elsif ($_[2] == 2) {
 		$user->qth($_[3]);
