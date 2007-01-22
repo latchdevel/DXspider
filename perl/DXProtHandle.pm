@@ -1616,7 +1616,7 @@ sub handle_93
 	my $line = shift;
 	my $origin = shift;
 
-	$self->{do_pc9x} ||= 1;
+#	$self->{do_pc9x} ||= 1;
 
 	my $pcall = $_[1];
 	unless (is_callsign($pcall)) {
