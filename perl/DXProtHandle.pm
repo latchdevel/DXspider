@@ -1485,15 +1485,17 @@ sub handle_92
 
 	if ($pcall eq $self->{call} && $self->{state} eq 'init') {
 		$self->state('init92');
+		$self->{do_pc9x} = 1;
+		dbg("Do pc9x set on $pcall");
+	} 
+	unless ($self->{do_pc9x}) {
+		dbg("PCPROT: PC9x come in from non-PC9x node, ignored") if isdbg('chanerr');
+		return;
 	}
 
 	my $parent = check_pc9x_t($pcall, $t, 92, 1) || return;
 	my $oparent = $parent;
 	
-	if (!$self->{do_pc9x} && $self->{call} eq $pcall && $self->state =~ /^init/) {
-		$self->{do_pc9x} = 1;
-		dbg("Do_px9x set on $pcall");
-	}
 	$parent->do_pc9x(1);
 	$parent->via_pc92(1);
 
