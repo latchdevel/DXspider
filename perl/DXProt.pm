@@ -357,7 +357,7 @@ sub normal
 	
 	# process PC frames, this will fail unless the frame starts PCnn
 	my ($pcno) = $field[0] =~ /^PC(\d\d)/; # just get the number
-	unless (defined $pcno && $pcno >= 10 && $pcno <= 99) {
+	unless (defined $pcno && $pcno >= 10 && $pcno <= 89) { # reject PC9x messages
 		dbg("PCPROT: unknown protocol") if isdbg('chanerr');
 		return;
 	}
