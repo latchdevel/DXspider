@@ -423,9 +423,14 @@ sub pc93
 	my $from = shift;			# from user callsign
 	my $via = shift || '*';			# *, node call
 	my $line = shift;			# the text
+	my $origin = shift;			# this will be present on proxying from PC10
+	
 	$line = unpad($line);
 	$line =~ s/\^/\\5E/g;		# remove any ^ characters
-	return "PC93^$main::mycall^" . gen_pc9x_t() . "^$to^$from^$via^$line^H99^";
+	my $s = "PC93^$main::mycall^" . gen_pc9x_t() . "^$to^$from^$via^$line";
+	$s .= "^$origin" if $origin;
+	$s .= "^H99^";
+	return $s;
 }
 
 1;

@@ -105,6 +105,12 @@ sub handle_10
 	RouteDB::update($_[6], $self->{call});
 #	RouteDB::update($to, $_[6]);
 
+	# convert this to a PC93 and process it as such
+	$self->process(pc93($to, $from, $via, $_[3], $_[6]));
+	return;
+	
+	# this is all redundant but kept for now for reference
+
 	# it is here and logged on
 	$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
 	$dxchan = DXChannel::get($to) unless $dxchan;
@@ -1624,6 +1630,8 @@ sub handle_93
 	my $from = $_[4];
 	my $via = $_[5];
 	my $text = $_[6];
+	my $onode = $_[7];
+	$onode = $pcall if @_ <= 8;
 
 	# will we allow it at all?
 	if ($censorpc) {
@@ -1648,7 +1656,7 @@ sub handle_93
 		$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
 		$dxchan = DXChannel::get($to) unless $dxchan;
 		if ($dxchan && $dxchan->is_user) {
-			$dxchan->talk($from, $to, $via, $text);
+			$dxchan->talk($from, $to, $via, $text, $onode);
 			return;
 		}
 
@@ -1660,7 +1668,7 @@ sub handle_93
 				if ($dxchan->{do_pc9x}) {
 					$dxchan->send($line);
 				} else {
-					$dxchan->talk($from, $to, $via, $text);
+					$dxchan->talk($from, $to, $via, $text, $onode);
 				}
 			}
 			return;
