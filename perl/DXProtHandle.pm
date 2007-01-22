@@ -540,11 +540,6 @@ sub handle_17
 
 	RouteDB::delete($ncall, $self->{call});
 
-	unless ($ncall eq $self->{call}) {
-		dbg("PCPROT: PC17 from non-local $ncall, ignored") if isdbg('chanerr');
-		return;
-	}
-
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
 		dbg("PCPROT: Route::User $ucall not in config") if isdbg('chanerr');
@@ -554,13 +549,12 @@ sub handle_17
 		dbg("PCPROT: Route::Node $ncall not in config") if isdbg('chanerr');
 	}			
 
-	$dxchan = $parent->dxchan if $parent;
+	$dxchan = DXChannel::get($ncall);
 	if ($dxchan && $dxchan ne $self) {
 		dbg("PCPROT: PC17 from $self->{call} trying to alter locally connected $ncall, ignored!") if isdbg('chanerr');
 		return;
 	}
 
-	$dxchan = DXChannel::get($ncall);
 	unless ($dxchan) {
 		if ($parent->via_pc92) {
 			dbg("PCPROT: non-local node controlled by PC92, ignored") if isdbg('chanerr');
