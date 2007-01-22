@@ -462,7 +462,7 @@ DXProt->init();
 
 # put in a DXCluster node for us here so we can add users and take them away
 $routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
-$routeroot->do_pc92(1);
+$routeroot->do_pc9x(1);
 $routeroot->via_pc92(1);
 
 # make sure that there is a routing OUTPUT node default file

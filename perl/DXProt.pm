@@ -221,8 +221,7 @@ sub init
 	$main::me->{registered} = 1;
 	$main::me->{version} = $main::version;
 	$main::me->{build} = $main::build;
-	$main::me->{do_pc92} = 1;
-	$main::me->{via_pc92} = 1;
+	$main::me->{do_pc9x} = 1;
 }
 
 #
@@ -735,7 +734,7 @@ sub send_local_config
 	dbg('DXProt::send_local_config') if isdbg('trace');
 
 	# send our nodes
-	if ($self->{do_pc92}) { 
+	if ($self->{do_pc9x}) { 
 		$self->send_pc92_config;
 	} else {
 		my $node;
@@ -815,7 +814,7 @@ sub gen_pc92_update
 	if ($with_pc92_nodes) {
 		# send out the configuration of all the directly connected PC92 nodes with current configuration
 		# but with the dates that the last config came in with.
-		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc92} } DXChannel::get_all_nodes();
+		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc9x} } DXChannel::get_all_nodes();
 		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
 		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
 		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
@@ -829,7 +828,7 @@ sub gen_pc92_update
 	
 	# send the configuration of all the directly connected 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
-	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc92} } DXChannel::get_all_nodes();
+	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc9x} } DXChannel::get_all_nodes();
 	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
 	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
 	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
@@ -870,7 +869,7 @@ sub send_pc92_update
 
 sub time_out_pc92_routes
 {
-	my @nodes = grep {$_->call ne $main::mycall && ($_->do_pc92 || $_->via_pc92)} Route::Node::get_all();
+	my @nodes = grep {$_->call ne $main::mycall && ($_->do_pc9x || $_->via_pc92)} Route::Node::get_all();
 	my @rdel;
 	foreach my $n (@nodes) {
 		my $o = $n->dec_obs;
@@ -1159,7 +1158,7 @@ sub talk
 {
 	my ($self, $from, $to, $via, $line, $origin) = @_;
 	
-	if ($self->{do_pc93}) {
+	if ($self->{do_pc9x}) {
 		$self->send(pc93($to, $from, $via, $line));
 	} else {
 		$self->send(pc10($from, $to, $via, $line, $origin));
@@ -1232,7 +1231,7 @@ sub broadcast_route
 			next if $dxchan == $self;
 			next if $dxchan == $main::me;
 			next unless $dxchan->isa('DXProt');
-			next if $dxchan->{do_pc92};
+			next if $dxchan->{do_pc9x};
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
  
 			$dxchan->send_route($origin, $generate, @_);
@@ -1245,7 +1244,7 @@ sub send_route_pc92
 {
 	my $self = shift;
 
-	return unless $self->{do_pc92};
+	return unless $self->{do_pc9x};
 	
 	my $origin = shift;
 	my $generate = shift;
@@ -1275,7 +1274,7 @@ sub broadcast_route_pc9x
 		foreach $dxchan (@dxchan) {
 			next if $dxchan == $self || $dxchan == $main::me;
 			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
-			next unless $dxchan->{do_pc92};
+			next unless $dxchan->{do_pc9x};
 			next unless $dxchan->isa('DXProt');
 
 			$dxchan->send($line);

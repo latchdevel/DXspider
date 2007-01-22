@@ -120,7 +120,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $flags = " pc9[23]";
+	my $flags = " pc9x";
 	$flags .= " xml" if DXXml::available(); 
 	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }

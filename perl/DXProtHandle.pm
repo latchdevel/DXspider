@@ -610,10 +610,8 @@ sub handle_18
 			$self->sort('S');
 		}
 		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
-		my ($pc9x) = $_[1] =~ /\bpc9\[(\d+)\]/;
-		if (defined $pc9x) {
-			$self->{do_pc92}++ if $pc9x =~ /2/;
-			$self->{do_pc93}++ if $pc9x =~ /3/;
+		if ($_[1] =~ /\bpc9x/) {
+			$self->{do_pc9x}++;
 		}
 	} else {
 		$self->version(50.0);
@@ -788,7 +786,7 @@ sub send_delayed_pc92
 	$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
 
 	# if this is an external node then send out the external config
-	unless ($self->{do_pc92}) {
+	unless ($self->{do_pc9x}) {
 		$line = gen_my_pc92_config(Route::Node::get($self->{call}));
 		$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
 	}
@@ -802,7 +800,7 @@ sub handle_20
 	my $line = shift;
 	my $origin = shift;
 
-	if ($self->{do_pc92} && $self->{state} ne 'init92') {
+	if ($self->{do_pc9x} && $self->{state} ne 'init92') {
 		dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
 		$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
 		$self->disconnect;
@@ -887,7 +885,7 @@ sub handle_22
 	my $line = shift;
 	my $origin = shift;
 
-	if ($self->{do_pc92}) {
+	if ($self->{do_pc9x}) {
 		if ($self->{state} ne 'init92') {
 			dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
 			$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
@@ -1366,7 +1364,7 @@ sub _encode_pc92_call
 	if ($ref->isa('Route::Node') || $ref->isa('DXProt')) {
 		$flag |= 4;
 		my $dxchan = DXChannel::get($call);
-		$flag |= 2 if $call ne $main::mycall && $dxchan && !$dxchan->{do_pc92};
+		$flag |= 2 if $call ne $main::mycall && $dxchan && !$dxchan->{do_pc9x};
 		if ($ext) {
 			if ($ref->version) {
 				my $version = $ref->version || 1.0;
@@ -1464,7 +1462,7 @@ sub handle_92
 
 	my (@radd, @rdel);
 	
-	$self->{do_pc92} ||= 1;
+	$self->{do_pc9x} ||= 1;
 
 	my $pcall = $_[1];
 	unless ($pcall) {
@@ -1488,7 +1486,7 @@ sub handle_92
 	my $oparent = $parent;
 	
 	$parent->lastid->{92} = $t;
-	$parent->do_pc92(1);
+	$parent->do_pc9x(1);
 	$parent->via_pc92(1);
 
 	if (@ent) {
@@ -1612,7 +1610,7 @@ sub handle_93
 	my $line = shift;
 	my $origin = shift;
 
-	$self->{do_pc93} ||= 1;
+	$self->{do_pc9x} ||= 1;
 
 	my $pcall = $_[1];
 	unless (is_callsign($pcall)) {
@@ -1646,7 +1644,8 @@ sub handle_93
 
 	if (is_callsign($to)) {
 		# local talks 
-		my $dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
+		my $dxchan;
+		$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
 		$dxchan = DXChannel::get($to) unless $dxchan;
 		if ($dxchan && $dxchan->is_user) {
 			$dxchan->talk($from, $to, $via, $text);
@@ -1658,7 +1657,7 @@ sub handle_93
 		if ($ref) {
 			my @dxchan = $ref->alldxchan;
 			for $dxchan (@dxchan) {
-				if ($dxchan->{do_pc93}) {
+				if ($dxchan->{do_pc9x}) {
 					$dxchan->send($line);
 				} else {
 					$dxchan->talk($from, $to, $via, $text);
