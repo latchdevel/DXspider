@@ -617,7 +617,8 @@ sub handle_18
 		}
 		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
 		if ($_[1] =~ /\bpc9x/) {
-			$self->{do_pc9x}++;
+			$self->{do_pc9x} = 1;
+			dbg("Do px9x set on $self->{call}");
 		}
 	} else {
 		$self->version(50.0);
@@ -1468,8 +1469,6 @@ sub handle_92
 
 	my (@radd, @rdel);
 	
-	$self->{do_pc9x} ||= 1;
-
 	my $pcall = $_[1];
 	unless ($pcall) {
 		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
@@ -1491,7 +1490,10 @@ sub handle_92
 	my $parent = check_pc9x_t($pcall, $t, 92, 1) || return;
 	my $oparent = $parent;
 	
-	$parent->lastid->{92} = $t;
+	if (!$self->{do_pc9x} && $self->{call} eq $pcall && $self->state =~ /^init/) {
+		$self->{do_pc9x} = 1;
+		dbg("Do_px9x set on $pcall");
+	}
 	$parent->do_pc9x(1);
 	$parent->via_pc92(1);
 
