@@ -571,7 +571,7 @@ sub handle_17
 
 	# input filter if required and then remove user if present
 #		return unless $self->in_filter_route($parent);	
-	$parent->del_user($uref) if $uref;
+	$parent->del_user($uref);
 
 	# send info to all logged in thingies
 	$self->tell_login('logoutu', "$ncall: $ucall") if DXUser->get_current($ncall)->is_local_node;
@@ -1146,6 +1146,13 @@ sub handle_41
 	$user = DXUser->new($call) unless $user;
 			
 	if ($_[2] == 1) {
+		if (($_[3] =~ /spotter/i || $_[3] =~ /self/i) && $user->name && $user->name ne $_[3]) {
+			dbg("PCPROT: invalid name") if isdbg('chanerr');
+			if ($main::mycall eq 'GB7DJK' || $main::mycall eq 'GB7BAA' || $main::mycall eq 'WR3D') {
+				DXChannel::broadcast_nodes(pc41($_[1], 1, $user->name)); # send it to everyone including me
+			}
+			return;
+		}
 		$user->name($_[3]);
 	} elsif ($_[2] == 2) {
 		$user->qth($_[3]);
