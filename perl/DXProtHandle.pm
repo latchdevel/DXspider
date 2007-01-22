@@ -106,7 +106,7 @@ sub handle_10
 #	RouteDB::update($to, $_[6]);
 
 	# convert this to a PC93 and process it as such
-	$self->process(pc93($to, $from, $via, $_[3], $_[6]));
+	$self->normal(pc93($to, $from, $via, $_[3], $_[6]));
 	return;
 	
 	# this is all redundant but kept for now for reference
