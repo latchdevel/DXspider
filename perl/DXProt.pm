@@ -371,12 +371,14 @@ sub normal
 	}
 
 	# modify the hop count here
-	if (my ($hops, $trail) = $line =~ /\^H(\d+)(\^?\~?)?$/) {
-		$trail ||= '';
-		$hops--;
-		return if $hops < 0;
-		$line =~ s/\^H(\d+)(\^?\~?)?$/sprintf('^H%d%s', $hops, $trail)/e;
-		$field[-1] = "H$hops";
+	if ($self != $main::me) {
+		if (my ($hops, $trail) = $line =~ /\^H(\d+)(\^?\~?)?$/) {
+			$trail ||= '';
+			$hops--;
+			return if $hops < 0;
+			$line =~ s/\^H(\d+)(\^?\~?)?$/sprintf('^H%d%s', $hops, $trail)/e;
+			$field[-1] = "H$hops";
+		}
 	}
 
 	# send it out for processing
@@ -1157,8 +1159,11 @@ sub talk
 {
 	my ($self, $from, $to, $via, $line, $origin) = @_;
 	
-	$line =~ s/\^/\\5E/g;			# remove any ^ characters
-	$self->send(DXProt::pc10($from, $to, $via, $line, $origin));
+	if ($self->{do_pc93}) {
+		$self->send(pc93($to, $from, $via, $line));
+	} else {
+		$self->send(pc10($from, $to, $via, $line, $origin));
+	}
 	Log('talk', $to, $from, $via?$via:$self->call, $line) unless $origin && $origin ne $main::mycall;
 }
 

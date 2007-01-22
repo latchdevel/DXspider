@@ -120,7 +120,7 @@ $count = 0;
 		  inscript => '9,In a script,yesno',
 		  handle_xml => '9,Handles XML,yesno',
 		  do_pc92 => '9,Handles PC92,yesno',
-		  send_pc92 => '9,Send PC92,atime',
+		  do_pc93 => '9,Handles PC93,yesno',
 		  inqueue => '9,Input Queue,parray',
 		 );
 

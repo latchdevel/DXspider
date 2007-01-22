@@ -35,7 +35,7 @@ sub pc10
 {
 	my ($from, $to, $via, $text, $origin) = @_;
 	my ($user1, $user2);
-	if ($via && $via ne $to) {
+	if ($via && $via ne $to && $via ne '*') {
 		$user1 = $via;
 		$user2 = $to;
 	} else {
@@ -120,7 +120,7 @@ sub pc17
 # Request init string
 sub pc18
 {
-	my $flags = " pc9[2]";
+	my $flags = " pc9[23]";
 	$flags .= " xml" if DXXml::available(); 
 	return "PC18^DXSpider Version: $main::version Build: $main::build$flags^$DXProt::myprot_version^";
 }
@@ -415,6 +415,17 @@ sub pc92d
 sub pc92c
 {
 	return _gen_pc92('C', 1, @_);
+}
+
+sub pc93
+{
+	my $to = shift;				# *, callsign, chat group name, sysop
+	my $from = shift;			# from user callsign
+	my $via = shift || '*';			# *, node call
+	my $line = shift;			# the text
+	$line = unpad($line);
+	$line =~ s/\^/\\5E/g;		# remove any ^ characters
+	return "PC93^$main::mycall^" . gen_pc9x_t() . "^$to^$from^$via^$line^H99^";
 }
 
 1;

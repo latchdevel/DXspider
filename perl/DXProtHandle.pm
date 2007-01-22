@@ -611,7 +611,10 @@ sub handle_18
 		}
 		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
 		my ($pc9x) = $_[1] =~ /\bpc9\[(\d+)\]/;
-		$self->{do_pc92}++ if defined $pc9x && $pc9x =~ /2/;
+		if (defined $pc9x) {
+			$self->{do_pc92}++ if $pc9x =~ /2/;
+			$self->{do_pc93}++ if $pc9x =~ /3/;
+		}
 	} else {
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
@@ -1553,6 +1556,7 @@ sub handle_92
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('route');
 		}
 
+		# 
 		foreach my $r (@nent) {
 #			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);			
 			if ($r->[0]) {
@@ -1596,8 +1600,80 @@ sub handle_92
 	}
 	my @pc19 = grep { $_ && $_->isa('Route::Node') } @radd;
 	my @pc16 = grep { $_ && $_->isa('Route::User') } @radd;
+	unshift @pc19, $parent if $self->{state} eq 'init92' && $oparent == $parent;
 	$self->route_pc19($pcall, undef, @pc19) if @pc19;
 	$self->route_pc16($pcall, undef, $parent, @pc16) if @pc16;
+}
+
+sub handle_93
+{
+	my $self = shift;
+	my $pcno = shift;
+	my $line = shift;
+	my $origin = shift;
+
+	$self->{do_pc93} ||= 1;
+
+	my $pcall = $_[1];
+	unless (is_callsign($pcall)) {
+		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
+		return;
+	}
+	my $t = $_[2];
+	my $parent = check_pc9x_t($pcall, $t, 93, 1) || return;
+
+	my $to = $_[3];
+	my $from = $_[4];
+	my $via = $_[5];
+	my $text = $_[6];
+
+	# will we allow it at all?
+	if ($censorpc) {
+		my @bad;
+		if (@bad = BadWords::check($text)) {
+			dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
+			return;
+		}
+	}
+	
+	# if this is a 'bad spotter' user then ignore it
+	my $nossid = $from;
+	$nossid =~ s/-\d+$//;
+	if ($badspotter->in($nossid)) {
+		dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
+		return;
+	}
+
+	if (is_callsign($to)) {
+		# local talks 
+		my $dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
+		$dxchan = DXChannel::get($to) unless $dxchan;
+		if ($dxchan && $dxchan->is_user) {
+			$dxchan->talk($from, $to, $via, $text);
+			return;
+		}
+
+		# convert to PC10 talks where appropriate
+		my $ref = Route::get($to);
+		if ($ref) {
+			my @dxchan = $ref->alldxchan;
+			for $dxchan (@dxchan) {
+				if ($dxchan->{do_pc93}) {
+					$dxchan->send($line);
+				} else {
+					$dxchan->talk($from, $to, $via, $text);
+				}
+			}
+			return;
+		}
+
+		# otherwise, drop through and allow it to be broadcast
+	} elsif ($to eq '*' || $to eq 'SYSOP' || $to eq 'WX') {
+		# announces
+	} else {
+		# chat messages
+	}
+	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
 }
 
 # if get here then rebroadcast the thing with its Hop count decremented (if
@@ -1618,8 +1694,19 @@ sub handle_default
 	if (eph_dup($line)) {
 		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
 	} else {
-		unless ($self->{isolate}) {
-			DXChannel::broadcast_nodes($line, $self) if $line =~ /\^H\d+\^?~?$/; # send it to everyone but me
+		if ($pcno >= 90) {
+			my $pcall = $_[1];
+			unless (is_callsign($pcall)) {
+				dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
+				return;
+			}
+			my $t = $_[2];
+			my $parent = check_pc9x_t($pcall, $t, $pcno, 1) || return;
+			$self->broadcast_route_pc9x($pcall, undef, $line, 0);
+		} else {
+			unless ($self->{isolate}) {
+				DXChannel::broadcast_nodes($line, $self) if $line =~ /\^H\d+\^?~?$/; # send it to everyone but me
+			}
 		}
 	}
 }

@@ -90,7 +90,7 @@ sub update
 	my $interface = shift;
 	my $hops = shift || $default;
 	my $ref = $list{$call} || RouteDB->new($call);
-	my $iref = $ref->{item}->{$interface} ||= RouteDB::Item->new($interface);
+	my $iref = $ref->{item}->{$interface} ||= RouteDB::Item->new($interface, $hops);
 	$iref->{count}++;
 	$iref->{hops} = $hops if $hops < $iref->{hops};
 	$iref->{t} = shift || $main::systime;
@@ -142,7 +142,8 @@ sub new
 {
 	my $pkg = shift;
 	my $call = shift;
-	return bless {call => $call, hops => $RouteDB::default}, (ref $pkg || $pkg);
+	my $hops = shift || $RouteDB::default;
+	return bless {call => $call, hops => $hops}, (ref $pkg || $pkg);
 }
 
 1;
