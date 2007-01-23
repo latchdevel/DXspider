@@ -350,7 +350,7 @@ sub handle_12
 	my $dxchan;
 	
 	if ((($dxchan = DXChannel::get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w.]+$/){
-		$self->send_chat($line, @_[1..6]);
+		$self->send_chat(0, $line, @_[1..6]);
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
 		# remember a route
@@ -379,7 +379,7 @@ sub handle_12
 		}
 	
 		# send it
-		$self->send_announce($line, @_[1..6]);
+		$self->send_announce(0, $line, @_[1..6]);
 	} else {
 		$self->route($_[2], $line);
 	}
@@ -1677,10 +1677,17 @@ sub handle_93
 		}
 
 		# otherwise, drop through and allow it to be broadcast
-	} elsif ($to eq '*' || $to eq 'SYSOP' || $to eq 'WX') {
+	} elsif ($to eq '*' || uc $to eq 'SYSOP' || uc $to eq 'WX') {
 		# announces
+		my $sysop = uc $to eq 'SYSOP' ? '*' : ' ';
+		my $wx = uc $to eq 'WX' ? '1' : '0';
+		my $local = $via eq 'LOCAL' ? '*' : $via;
+		
+		$self->send_announce(1, pc12($from, $text, $local, $via, $sysop, $wx, $pcall), $from, $local, $text, $sysop, $pcall, $wx, $via eq 'LOCAL' ? $via : undef);
+		return if $via eq 'LOCAL';
 	} else {
-		# chat messages
+		# chat messages to non-pc9x nodes
+		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
 	}
 	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
 }

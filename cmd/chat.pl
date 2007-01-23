@@ -38,6 +38,8 @@ if (@bad = BadWords::check($line)) {
 my $msgid = DXProt::nextchatmsgid();
 $text = "#$msgid $text";
 
-DXProt::send_chat($self, DXProt::pc12($from, $text, '*', $target), $from, '*', $text, $target, $main::mycall, '0');
+$main::me->normal(DXProt::pc93($to, $from, undef, $text));
+
+#DXProt:):send_chat($self, 1, DXProt::pc12($from, $text, '*', $target), $from, '*', $text, $target, $main::mycall, '0');
 
 return (1, ());

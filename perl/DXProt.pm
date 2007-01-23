@@ -585,10 +585,11 @@ sub wcy
 sub send_announce
 {
 	my $self = shift;
+	my $from_pc9x = shift;
 	my $line = shift;
 	my @dxchan = DXChannel::get_all();
 	my $dxchan;
-	my $target;
+	my $target = $_[6];
 	my $to = 'To ';
 	my $text = unpad($_[2]);
 				
@@ -597,7 +598,7 @@ sub send_announce
 	} elsif ($_[3] gt ' ') { # speciality list handling
 		my ($name) = split /\./, $_[3]; 
 		$target = "$name"; # put the rest in later (if bothered) 
-	} 
+	}  
 	
 	if ($_[5] eq '1') {
 		$target = "WX"; 
@@ -632,6 +633,8 @@ sub send_announce
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $from_pc9x && $dxchan->{do_pc9x};
+		next if $target eq 'LOCAL' && $dxchan->is_node;
 		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call},
 						  @a[0..2], @b[0..2]);
 	}
@@ -650,6 +653,7 @@ sub nextchatmsgid
 sub send_chat
 {
 	my $self = shift;
+	my $from_pc9x = shift;
 	my $line = shift;
 	my @dxchan = DXChannel::get_all();
 	my $dxchan;
@@ -692,10 +696,11 @@ sub send_chat
 		if ($dxchan->is_node) {
 			next if $dxchan == $main::me;
 			next if $dxchan == $self;
+			next if $from_pc9x && $dxchan->{do_pc9x};
 			next unless $dxchan->is_spider || $is_ak1a;
 			next if $target eq 'LOCAL';
 			if (!$ak1a_line && $is_ak1a) {
-				$ak1a_line = DXProt::pc12($_[0], $text, $_[1], "$target.LST");
+				$ak1a_line = pc12($_[0], $text, $_[1], "$target.LST");
 			}
 		}
 		
