@@ -34,7 +34,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "DXNT" if $dxchan->is_dxnet;
 	$sort = "AR-C" if $dxchan->is_arcluster;
 	$sort = "AK1A" if $dxchan->is_ak1a;
-	my $pc92 = $dxchan->do_pc92 ? 'Y' : '';
+	my $pc92 = $dxchan->do_pc9x ? 'Y' : '';
 	push @out, sprintf "%10s $sort $t$ping    $obscount   %5d       %5d   $pc92", $call, $pingint, $lastt;
 }
 
