@@ -872,6 +872,11 @@ sub handle_21
 		return;
 	}
 
+	if (eph_dup($line)) {
+		dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
+		return;
+	}
+
 	if (@rout) {
 		$self->route_pc21($origin, $line, @rout);
 #		$self->route_pc92d($main::mycall, $line, $main::routeroot, @rout);
