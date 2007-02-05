@@ -46,9 +46,12 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
-			$eph_pc15_restime
+			$eph_pc15_restime $pc9x_past_age $pc9x_future_age
 		   );
 	
+$pc9x_past_age = 15*60;			# maximum age in the past of a px9x
+$pc9x_future_age = 5*60;		# maximum age in the future ditto
+
 # incoming talk commands
 sub handle_10
 {
@@ -1124,9 +1127,10 @@ sub handle_41
 	my $line = shift;
 	my $origin = shift;
 	my $call = $_[1];
-
-	my $l = $line;
-	$l =~ s/[\x00-\x20\x7f-\xff]+//g; # remove all funny characters and spaces for dup checking
+	my $sort = $_[2];
+	my $val = $_[3];
+	
+	my $l = "PC41^$call^$sort";
 	if (eph_dup($l, $eph_info_restime)) {
 		dbg("PCPROT: dup PC41, ignored") if isdbg('chanerr');
 		return;
@@ -1136,7 +1140,7 @@ sub handle_41
 	#			my $ref = Route::get($call) || Route->new($call);
 	#			return unless $self->in_filter_route($ref);
 
-	if ($_[3] eq $_[2] || $_[3] =~ /^\s*$/) {
+	if ($val eq $sort || $val =~ /^\s*$/) {
 		dbg('PCPROT: invalid value') if isdbg('chanerr');
 		return;
 	}
@@ -1145,20 +1149,20 @@ sub handle_41
 	my $user = DXUser->get_current($call);
 	$user = DXUser->new($call) unless $user;
 			
-	if ($_[2] == 1) {
-		if (($_[3] =~ /spotter/i || $_[3] =~ /self/i) && $user->name && $user->name ne $_[3]) {
+ 	if ($sort == 1) {
+		if (($val =~ /spotter/i || $val =~ /self/i) && $user->name && $user->name ne $val) {
 			dbg("PCPROT: invalid name") if isdbg('chanerr');
 			if ($main::mycall eq 'GB7DJK' || $main::mycall eq 'GB7BAA' || $main::mycall eq 'WR3D') {
 				DXChannel::broadcast_nodes(pc41($_[1], 1, $user->name)); # send it to everyone including me
 			}
 			return;
 		}
-		$user->name($_[3]);
-	} elsif ($_[2] == 2) {
-		$user->qth($_[3]);
-	} elsif ($_[2] == 3) {
-		if (is_latlong($_[3])) {
-			my ($lat, $long) = DXBearing::stoll($_[3]);
+		$user->name($val);
+	} elsif ($sort == 2) {
+		$user->qth($val);
+	} elsif ($sort == 3) {
+		if (is_latlong($val)) {
+			my ($lat, $long) = DXBearing::stoll($val);
 			$user->lat($lat) if $lat;
 			$user->long($long) if $long;
 			$user->qra(DXBearing::lltoqra($lat, $long)) unless $user->qra;
@@ -1166,14 +1170,14 @@ sub handle_41
 			dbg('PCPROT: not a valid lat/long') if isdbg('chanerr');
 			return;
 		}
-	} elsif ($_[2] == 4) {
-		$user->homenode($_[3]);
-	} elsif ($_[2] == 5) {
-		if (is_qra(uc $_[3])) {
-			my ($lat, $long) = DXBearing::qratoll(uc $_[3]);
+	} elsif ($sort == 4) {
+		$user->homenode($val);
+	} elsif ($sort == 5) {
+		if (is_qra(uc $val)) {
+			my ($lat, $long) = DXBearing::qratoll(uc $val);
 			$user->lat($lat) if $lat && !$user->lat;
 			$user->long($long) if $long && !$user->long;
-			$user->qra(uc $_[3]);
+			$user->qra(uc $val);
 		} else {
 			dbg('PCPROT: not a valid QRA locator') if isdbg('chanerr');
 			return;
@@ -1187,7 +1191,7 @@ sub handle_41
 	}
 
 	#  perhaps this IS what we want after all
-	#			$self->route_pc41($ref, $call, $_[2], $_[3], $_[4]);
+	#			$self->route_pc41($ref, $call, $sort, $val, $_[4]);
 }
 
 sub handle_42 {goto &handle_28}
@@ -1361,6 +1365,10 @@ sub _decode_pc92_call
 sub _encode_pc92_call
 {
 	my $ref = shift;
+
+	# plain call or value
+	return $ref unless ref $ref;
+
 	my $ext = shift;
 	my $flag = 0;
 	my $call = $ref->call; 
@@ -1444,10 +1452,23 @@ sub check_pc9x_t
 
 	my $parent = ref $call ? $call : Route::Node::get($call);
 	if ($parent) {
-		my $lastid = $parent->lastid->{$pc} || 0;
-		if ($lastid + $main::systime_daystart >= $t + $main::systime_daystart) {
-			dbg("PCPROT: dup / old id on $call <= $lastid, ignored") if isdbg('chanerr');
-			return;
+		# we only do this for external calls whose routing table
+		# record come and go. The reference for mycall is permanent
+		# and not that frequently used, it also never times out, so
+		# the id on it is completely unreliable. Besides, only commands
+		# originating on this box will go through this code...
+		if ($parent->call ne $main::mycall) {
+			my $lastid = $parent->lastid->{$pc} || 0;
+			if ($t < $lastid) {
+				if (my $d = $lastid-86400+$t > $pc9x_past_age) {
+					dbg("PCPROT: $call id $t <= $lastid, ignored") if isdbg('chanerr');
+					return;
+				} 
+			}
+			if ($lastid == $t) {
+				dbg("PCPROT: dup id on $call = $lastid, ignored") if isdbg('chanerr');
+				return;
+			}
 		}
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
@@ -1474,7 +1495,6 @@ sub handle_92
 	}
 	my $t = $_[2];
 	my $sort = $_[3];
-	my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} @_[4 .. $#_];
 	
 	if ($pcall eq $main::mycall) {
 		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
@@ -1497,119 +1517,171 @@ sub handle_92
 	$parent->do_pc9x(1);
 	$parent->via_pc92(1);
 
-	if (@ent) {
+	if ($sort eq 'F' || $sort eq 'R') {
 
-		# look at the first one which will always be a node of some sort
-		# and update any information that needs to be done. 
-		my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]}; 
-		if ($call && $is_node) {
-			if ($call eq $main::mycall) {
-				dbg("PCPROT: looped back on node entry, ignored") if isdbg('chanerr');
+		# this is the route finding section
+		# here is where the consequences of the 'find' command
+		# are dealt with
+
+		my $from = $_[4];
+		my $target = $_[5];
+		
+		if ($sort eq 'F') {
+			my $flag;
+			my $ref;
+			my $dxchan;
+			if ($ref = DXChannel::get($target)) {
+				$flag = 1;		# we are directly connected
+			} else {
+				$ref = Route::get($target);
+				$dxchan = $ref->dxchan;
+				$flag = 2;
+			}
+			if ($ref && $flag && $dxchan) {
+				$self->send(pc92r($from, $target, $flag, int($dxchan->{pingave}*1000)));
 				return;
 			}
-			if ($is_extnode) {
-				# this is only accepted from my "self"
-				if (DXChannel::get($call) && $call ne $self->{call}) {
-					dbg("PCPROT: locally connected node config for $call from other another node $self->{call}, ignored") if isdbg('chanerr');
-					return;
+		} elsif ($sort eq 'R') {
+			if (my $dxchan = DXChannel::get($from)) {
+				handle_pc92_find_reply($dxchan, $pcall, $from, $target, @_[6,7]);
+			} else {
+				my $ref = Route::get($from);
+				if ($ref) {
+					my @dxchan = grep {$_->do_pc9x} $ref->alldxchan;
+					if (@dxchan) {
+						$_->send($line) for @dxchan;
+					} else {
+						dbg("PCPROT: no return route, ignored") if isdbg('chanerr')
+					}
+				} else {
+					dbg("PCPROT: no return route, ignored") if isdbg('chanerr')
 				}
-				# reparent to external node (note that we must have received a 'C' or 'A' record
-				# from the true parent node for this external before we get one for the this node
-				unless ($parent = Route::Node::get($call)) {
-					dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
-					return;
-				}
-				$parent = check_pc9x_t($call, $t, 92) || return;
-				$parent->via_pc92(1);
 			}
-		} else {
-			dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
 			return;
 		}
-		$parent->here(Route::here($here));
-		$parent->version($version) if $version && $version > $parent->version;
-		$parent->build($build) if $build && $build > $parent->build;
-		shift @ent;
-	}
+	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
 
-	# do a pass through removing any references to either locally connected nodes or mycall
-	my @nent;
-	for (@ent) {
-		next unless $_;
-		if ($_->[0] eq $main::mycall || DXChannel::get($_->[0])) {
-			dbg("PCPROT: $_->[0] refers to locally connected node, ignored") if isdbg('chanerr');
-			next;
-		} 
-		push @nent, $_;
-	}
+		# this is the main route section
+		# here is where all the routes are created and destroyed
 
-	if ($sort eq 'A') {
-		for (@nent) {
-			push @radd, _add_thingy($parent, $_);
-		}
-	} elsif ($sort eq 'D') {
-		for (@nent) {
-			push @rdel, _del_thingy($parent, $_);
-		}
-	} elsif ($sort eq 'C') {
-		my (@nodes, @users);
+		my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} @_[4 .. $#_];
+		if (@ent) {
 
-		# we only reset obscounts on config records
-		$oparent->reset_obs;
-		dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('route');
-		if ($oparent != $parent) {
-			$parent->reset_obs;
-			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('route');
-		}
-
-		# 
-		foreach my $r (@nent) {
-#			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);			
-			if ($r->[0]) {
-				if ($r->[1]) {
-					push @nodes, $r->[0];
-				} else {
-					push @users, $r->[0];
+			# look at the first one which will always be a node of some sort
+			# and update any information that needs to be done. 
+			my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]}; 
+			if ($call && $is_node) {
+				if ($call eq $main::mycall) {
+					dbg("PCPROT: looped back on node entry, ignored") if isdbg('chanerr');
+					return;
+				}
+				if ($is_extnode) {
+					# this is only accepted from my "self"
+					if (DXChannel::get($call) && $call ne $self->{call}) {
+						dbg("PCPROT: locally connected node config for $call from other another node $self->{call}, ignored") if isdbg('chanerr');
+						return;
+					}
+					# reparent to external node (note that we must have received a 'C' or 'A' record
+					# from the true parent node for this external before we get one for the this node
+					unless ($parent = Route::Node::get($call)) {
+						dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+						return;
+					}
+					$parent = check_pc9x_t($call, $t, 92) || return;
+					$parent->via_pc92(1);
 				}
 			} else {
-				dbg("DXPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr'); 
+				dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
+				return;
 			}
+			$parent->here(Route::here($here));
+			$parent->version($version) if $version && $version > $parent->version;
+			$parent->build($build) if $build && $build > $parent->build;
+			shift @ent;
 		}
 
-		my ($dnodes, $dusers, $nnodes, $nusers) = $parent->calc_config_changes(\@nodes, \@users);
+		# do a pass through removing any references to either locally connected nodes or mycall
+		my @nent;
+		for (@ent) {
+			next unless $_;
+			if ($_->[0] eq $main::mycall || DXChannel::get($_->[0])) {
+				dbg("PCPROT: $_->[0] refers to locally connected node, ignored") if isdbg('chanerr');
+				next;
+			} 
+			push @nent, $_;
+		}
 
-		# add users here
-		foreach my $r (@nent) {
-			my $call = $r->[0];
-			if ($call) {
-				push @radd,_add_thingy($parent, $r) if grep $call eq $_, (@$nnodes, @$nusers);
+		if ($sort eq 'A') {
+			for (@nent) {
+				push @radd, _add_thingy($parent, $_);
 			}
-		}
-		# del users here
-		foreach my $r (@$dnodes) {
-			push @rdel,_del_thingy($parent, [$r, 1]);
-		}
-		foreach my $r (@$dusers) {
-			push @rdel,_del_thingy($parent, [$r, 0]);
-		}
-	} else {
-		dbg("PCPROT: unknown action '$sort', ignored") if isdbg('chanerr');
-		return;
-	}
+		} elsif ($sort eq 'D') {
+			for (@nent) {
+				push @rdel, _del_thingy($parent, $_);
+			}
+		} elsif ($sort eq 'C') {
+			my (@nodes, @users);
 
-	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
-	foreach my $r (@rdel) {
-		next unless $r;
+			# we only reset obscounts on config records
+			$oparent->reset_obs;
+			dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('route');
+			if ($oparent != $parent) {
+				$parent->reset_obs;
+				dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('route');
+			}
+
+			# 
+			foreach my $r (@nent) {
+				#			my ($call, $is_node, $is_extnode, $here, $version, $build) = _decode_pc92_call($_);			
+				if ($r->[0]) {
+					if ($r->[1]) {
+						push @nodes, $r->[0];
+					} else {
+						push @users, $r->[0];
+					}
+				} else {
+					dbg("DXPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr'); 
+				}
+			}
+
+			my ($dnodes, $dusers, $nnodes, $nusers) = $parent->calc_config_changes(\@nodes, \@users);
+
+			# add users here
+			foreach my $r (@nent) {
+				my $call = $r->[0];
+				if ($call) {
+					push @radd,_add_thingy($parent, $r) if grep $call eq $_, (@$nnodes, @$nusers);
+				}
+			}
+			# del users here
+			foreach my $r (@$dnodes) {
+				push @rdel,_del_thingy($parent, [$r, 1]);
+			}
+			foreach my $r (@$dusers) {
+				push @rdel,_del_thingy($parent, [$r, 0]);
+			}
+		} else {
+			dbg("PCPROT: unknown action '$sort', ignored") if isdbg('chanerr');
+			return;
+		}
+
+		foreach my $r (@rdel) {
+			next unless $r;
 		
-		$self->route_pc21($pcall, undef, $r) if $r->isa('Route::Node');
-		$self->route_pc17($pcall, undef, $parent, $r) if $r->isa('Route::User');
+			$self->route_pc21($pcall, undef, $r) if $r->isa('Route::Node');
+			$self->route_pc17($pcall, undef, $parent, $r) if $r->isa('Route::User');
+		}
+		my @pc19 = grep { $_ && $_->isa('Route::Node') } @radd;
+		my @pc16 = grep { $_ && $_->isa('Route::User') } @radd;
+		unshift @pc19, $parent if $self->{state} eq 'init92' && $oparent == $parent;
+		$self->route_pc19($pcall, undef, @pc19) if @pc19;
+		$self->route_pc16($pcall, undef, $parent, @pc16) if @pc16;
 	}
-	my @pc19 = grep { $_ && $_->isa('Route::Node') } @radd;
-	my @pc16 = grep { $_ && $_->isa('Route::User') } @radd;
-	unshift @pc19, $parent if $self->{state} eq 'init92' && $oparent == $parent;
-	$self->route_pc19($pcall, undef, @pc19) if @pc19;
-	$self->route_pc16($pcall, undef, $parent, @pc16) if @pc16;
+
+	# broadcast it if we get here
+	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
 }
+
 
 sub handle_93
 {

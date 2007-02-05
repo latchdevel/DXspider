@@ -417,6 +417,24 @@ sub pc92c
 	return _gen_pc92('C', 1, @_);
 }
 
+# send a 'find' message
+sub pc92f
+{
+	my $target = shift;
+	my $from = shift;
+	return "PC92^$main::mycall^" . gen_pc9x_t() . "^F^$from^$target^H99^"
+}
+
+# send a 'reply' message
+sub pc92r
+{
+	my $to = shift;
+	my $target = shift;
+	my $flag = shift;
+	my $ms = shift;
+	return "PC92^$main::mycall^" . gen_pc9x_t() . "^R^$to^$target^$flag^$ms^H99^"
+}
+
 sub pc93
 {
 	my $to = shift;				# *, callsign, chat group name, sysop

@@ -1174,5 +1174,12 @@ sub import_cmd
 		}
 	}
 }
+
+sub print_find_reply
+{
+	my ($self, $node, $target, $flag, $ms) = @_;
+	my $sort = $flag == 2 ? "External" : "Local";
+	$self->send("$sort $target found at $node in $ms ms" );
+}
 1;
 __END__

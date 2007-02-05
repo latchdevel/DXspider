@@ -45,6 +45,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc92_update_period $last_pc92_update
+			%pc92_find $pc92_find_timeout
 		   );
 
 ($VERSION, $BRANCH) = dxver(q$Revision$);
@@ -77,6 +78,9 @@ $investigation_int = 12*60*60;	# time between checks to see if we can see this n
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
 $pc92_update_period = 30*60;	# the period between PC92 C updates
 $last_pc92_update = time + int rand(180);		# the last time a PC92 config update
+%pc92_find = ();				# outstanding pc92 find operations
+$pc92_find_timeout = 30;		# maximum time to wait for a reply
+
 
 
 @checklist = 
@@ -432,6 +436,7 @@ sub process
 	}
 
 	Investigate::process();
+	clean_pc92_find();
 
 	# every ten seconds
 	if ($t - $last10 >= 10) {	
@@ -444,7 +449,7 @@ sub process
 			dbg("ROUTE: sending pc92 update") if isdbg('route');
 			send_pc92_update();
 			time_out_pc92_routes();
-			$last_pc92_update = $main::systime + int rand(180);
+			$last_pc92_update = $main::systime + int rand(5*60);
 		}
 		
 		$last10 = $t;
@@ -1497,5 +1502,28 @@ sub import_chat
 	}
 }
 
+# start a pc92 find operation
+sub start_pc92_find
+{
+	my $dxchan = shift;
+	my $target = shift;
+	my $key = "$dxchan->{call}|$target";
+	if ($pc92_find{$key}) {
+		
+	}
+}
+
+# function (not method) to handle pc92 find returns
+sub handle_pc92_find_reply
+{
+	my ($dxchan, $node, $from, $target, $flag, $ms) = @_;
+	
+	$dxchan->print_pc92_find_reply($node, $target, $flag, $ms) if $dxchan->can('print_pc92_find_return');
+}
+
+sub clean_pc92_find
+{
+
+}
 1;
 __END__ 
