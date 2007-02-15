@@ -1,16 +1,18 @@
-22Jan06=======================================================================
+15Feb07=======================================================================
+1. allow convkeps.pl to parse NORAD keps files.
+22Jan07=======================================================================
 1. disable default propagation of PC9x sentences
 2. simplify PC17 handling 
-16Jan06=======================================================================
+16Jan07=======================================================================
 1. back ported a change to PC16 handling so that a locally connected node's
 info clears out and generally overrides any residual PC16 info gathered from
 elsewhere.
-15Jan06=======================================================================
+15Jan07=======================================================================
 1. added CTY-1701
-07Jan06=======================================================================
+07Jan07=======================================================================
 1. use IO::Socket blocking where available and switch off or ignore all 
 attempts to block.
-05Jan06=======================================================================
+05Jan07=======================================================================
 1. increase default ephemeral deduping on PC15 to 6 minutes (from 2).
 23Nov06=======================================================================
 1. added wrapping to over length lines in console.pl.
