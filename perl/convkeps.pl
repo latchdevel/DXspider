@@ -104,7 +104,7 @@ while (<$f>) {
 		last if m{^-};
 		next if m{^To\s+all}i;
 		
-		if (/^([- \w]+)(?:\s+\[[-+\w]\])$/) {
+		if (/^([- \w]+)(?:\s+\[[-+\w]\])?$/) {
 			my $n = uc $1;
 			$n =~ s/\s/-/g;
 			$name = $lookup{$n};
