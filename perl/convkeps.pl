@@ -61,6 +61,14 @@ my $ref;
 my $line;
 my $count = 0;
 
+my %lookup = (
+	'AO-5' => 'AO-05',
+	'AO-6' => 'AO-06',
+	'AO-7' => 'AO-07',
+	'AO-8' => 'AO-08',
+	
+);
+
 my $f = \*STDIN;
 
 while (@ARGV) {
@@ -96,9 +104,11 @@ while (<$f>) {
 		last if m{^-};
 		next if m{^To\s+all}i;
 		
-		if (/^[- \w]+$/) {
-			s/\s/-/g;
-			$name = uc $_;
+		if (/^([- \w]+)(?:\s+\[[-+\w]\])?$/) {
+			my $n = uc $1;
+			$n =~ s/\s/-/g;
+			$name = $lookup{$n};
+			$name ||= $n;
 			$ref = $keps{$name} = {}; 
 			$state = 2;
 		}
