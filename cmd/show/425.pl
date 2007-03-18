@@ -38,7 +38,7 @@ if (!$t || $@) {
         else {
                 $op="op=search&query=".$list[0];
         }
-        my $s = "GET $url/hf/dx-news/iz5fsa/spider.php?$op HTTP/1.0\n"
+	my $s = "GET $url/hf/dx-news/spider.php?$op HTTP/1.0\n" 
         ."User-Agent:DxSpider;$main::version;$main::build;$^O;$main::mycall;$call;$list[0]\n\n";
         dbg($s) if isdbg('425');
         $t->print($s);
