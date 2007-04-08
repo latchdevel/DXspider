@@ -74,9 +74,11 @@ sub process
 {
 	# once an hour
 	if ($main::systime - $lasttime >=  3600) {
+		my @del;
 		while (($k, $v) = each %d) {
-			delete $d{$k} if $main::systime >= $v;
+			push @del, $k  if $main::systime >= $v;
 		}
+		delete $d{$_} for @del;
 		$lasttime = $main::systime;
 	}
 }
