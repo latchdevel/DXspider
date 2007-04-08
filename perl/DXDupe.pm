@@ -20,8 +20,10 @@ $lasttime = 0;
 $fn = "$main::data/dupefile";
 
 use vars qw($VERSION $BRANCH);
-
-main::mkver($VERSION = q$Revision$);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
 
 sub init
 {
@@ -72,9 +74,11 @@ sub process
 {
 	# once an hour
 	if ($main::systime - $lasttime >=  3600) {
+		my @del;
 		while (($k, $v) = each %d) {
-			delete $d{$k} if $main::systime >= $v;
+			push @del, $k  if $main::systime >= $v;
 		}
+		delete $d{$_} for @del;
 		$lasttime = $main::systime;
 	}
 }
