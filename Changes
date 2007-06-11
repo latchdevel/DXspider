@@ -1,3 +1,8 @@
+11Jun07=======================================================================
+1. Change the frequency normalisation for DX Spot dupe checks so that any
+decimal part is thrown away (in other words: truncate the freq to integer khz)
+20May07=======================================================================
+1. add 1704 cty.dat
 08Apr07=======================================================================
 1. add CTY-1703 cty.dat
 2. alter the way the dupefile deletion is done.
