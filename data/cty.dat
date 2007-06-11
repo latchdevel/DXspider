@@ -1,7 +1,7 @@
 Sov Mil Order of Malta:   15:  28:  EU:   41.90:   -12.40:    -1.0:  1A:
     1A;
 Spratly Is.:              26:  50:  AS:    8.80:  -111.90:    -8.0:  1S:
-    1S,9M0,BV9S,9M4SDX,DU0K,DX0JP,DX0K;
+    1S,9M0,BV9S,9M2/PG5M,9M4SDX,DU0K,DX0JP,DX0K;
 Monaco:                   14:  27:  EU:   43.70:    -7.40:    -1.0:  3A:
     3A;
 Agalega & St. Brandon:    39:  53:  AF:  -10.40:   -56.60:    -4.0:  3B6:
@@ -36,6 +36,8 @@ Azerbaijan:               21:  29:  AS:   40.40:   -49.90:    -4.0:  4J:
     4J,4K;
 Georgia:                  21:  29:  AS:   41.70:   -44.80:    -4.0:  4L:
     4L;
+Montenegro:               15:  28:  EU:   42.50:   -19.30:    -1.0:  4O:
+    4O;
 Sri Lanka:                22:  41:  AS:    7.00:   -79.90:    -5.5:  4S:
     4P,4Q,4R,4S;
 ITU HQ Geneva:            14:  28:  EU:   46.20:    -6.20:    -1.0:  4U1I:
@@ -298,8 +300,8 @@ French Guiana:            09:  12:  SA:    4.90:    52.30:     3.0:  FY:
 England:                  14:  27:  EU:   51.50:     0.10:     0.0:  G:
     2E,G,M;
 Isle of Man:              14:  27:  EU:   54.30:     4.50:     0.0:  GD:
-    2D,GD,GT,MD,MT,GB0MST,GB0WCY,GB100MER,GB125SR,GB2IOM,GB2WB,GB3GD,GB4IOM,
-    GB4WXM/P,GB50UN,GB5MOB,GB6SPC;
+    2D,GD,GT,MD,MT,GB0MST,GB0WCY,GB100MER,GB100TT,GB125SR,GB2IOM,GB2WB,GB3GD,
+    GB4IOM,GB4WXM/P,GB50UN,GB5MOB,GB6SPC;
 Northern Ireland:         14:  27:  EU:   54.60:     5.90:     0.0:  GI:
     2I,2N,GI,GN,MI,MN,GB0BTC,GB0BVC,GB0CI,GB0CSC,GB0DDF,GB0GPF,GB0MFD,GB0PSM,
     GB0REL,GB0SHC,GB0SIC,GB0SPD,GB0TCH,GB0WOA,GB1SPD,GB2IL,GB2LL,GB2MGY,
@@ -334,12 +336,13 @@ Guernsey:                 14:  27:  EU:   49.50:     2.70:     0.0:  GU:
 Wales:                    14:  27:  EU:   51.50:     3.20:     0.0:  GW:
     2C,2W,2X,2Y,GC,GW,MC,MW,GB0CCE,GB0CLC,GB0CVA,GB0GCR,GB0GIW,GB0GLV,GB0HEL,
     GB0HMT,GB0ML,GB0MPA,GB0MWL,GB0NEW,GB0PSG,GB0RPO,GB0RSC,GB0SDD,GB0SH,
-    GB0SOA,GB0SPS,GB0SRH,GB0TD,GB0WRC,GB100BD,GB100FI,GB100LP,GB1CCC,GB1LSG,
-    GB1SSL,GB1TDS,GB2000SET,GB200HNT,GB2ANG,GB2CPC,GB2GGM,GB2GLS,GB2GOL,
-    GB2GSG,GB2GSS,GB2HDG,GB2IMD,GB2LNP,GB2LSA,GB2MIL,GB2MLM,GB2MOP,GB2RFS,
-    GB2RSC,GB2RTB,GB2SDD,GB2SIP,GB2TD,GB2TTA,GB2VK,GB2WDS,GB2WFF,GB2WHO,
-    GB2WSF,GB4BPL,GB4CI,GB4DPS,GB4HMD,GB4HMM,GB4LSG,GB4MD,GB4MDI,GB4NDG,GB4SA,
-    GB4SMM,GB4SNF,GB4XXX,GB5BS/J,GB5FI,GB5SIP,GB60VLY,GB6AR,GB750CC,GB8OQE;
+    GB0SOA,GB0SPS,GB0SRH,GB0TD,GB0TTT,GB0WRC,GB100BD,GB100FI,GB100LP,GB1CCC,
+    GB1LSG,GB1SSL,GB1TDS,GB2000SET,GB200HNT,GB2ANG,GB2CPC,GB2GGM,GB2GLS,
+    GB2GOL,GB2GSG,GB2GSS,GB2HDG,GB2IMD,GB2LNP,GB2LSA,GB2MIL,GB2MLM,GB2MOP,
+    GB2RFS,GB2RSC,GB2RTB,GB2SDD,GB2SIP,GB2TD,GB2TTA,GB2VK,GB2WDS,GB2WFF,
+    GB2WHO,GB2WSF,GB4BPL,GB4CI,GB4DPS,GB4HMD,GB4HMM,GB4LSG,GB4MD,GB4MDI,
+    GB4NDG,GB4SA,GB4SMM,GB4SNF,GB4XXX,GB5BS/J,GB5FI,GB5SIP,GB60VLY,GB6AR,
+    GB750CC,GB8OQE;
 Solomon Islands:          28:  51:  OC:   -9.40:  -160.00:   -11.0:  H4:
     H4;
 Temotu:                   32:  51:  OC:  -10.70:  -165.80:   -11.0:  H40:
@@ -462,8 +465,8 @@ United States:            05:  08:  NA:   43.00:    87.90:     5.0:  K:
     W9IGJ(5),W9MAK(3)[6],W9NGA(3)[6],WA0KDS(3)[6],WA1FCN(4),WA1MKE(4),
     WA1UJU(4),WA2MNO(4)[7],WA4GLH(4),WA4JA(4),WA4OSD(4),WA5VGI(3)[6],WA8WV(5),
     WB2ORD(4),WB4YDL(4),WB4ZBI(4),WB6BWZ(5)[8],WB8YQJ(3)[6],WB8YYY(5),WD4K(4),
-    WD4OHD(4),WG7Y(4)[7],WH0AI(4)[8],WJ9B(5),WL7K(3)[6],WN4M(4),WO4O(4),
-    WO5D(5)[8],WP4JBG(4)[8],WS4Y(4)[7],WT5L(5)[8],WX4TM(4);
+    WD4OHD(4),WG7Y(4)[7],WH0AI(4)[8],WH6ASW/M(3)[6],WJ9B(5),WL7K(3)[6],
+    WN4M(4),WO4O(4),WO5D(5)[8],WP4JBG(4)[8],WS4Y(4)[7],WT5L(5)[8],WX4TM(4);
 Guantanamo Bay:           08:  11:  NA:   19.90:    75.20:     5.0:  KG4:
     KG4,KG44;
 Mariana Is.:              27:  64:  OC:   15.20:  -145.80:   -10.0:  KH0:
@@ -487,7 +490,7 @@ Kure I.:                  31:  61:  OC:   28.40:   178.40:    11.0:  KH7K:
 American Samoa:           32:  62:  OC:  -14.30:   170.80:    11.0:  KH8:
     AH8,KH8,NH8,WH8;
 Swains Island:            32:  62:  OC:  -11.05:   171.25:    11.0:  KH8/s:
-    KH8SI,N8S;
+    KH8S/K3UY,KH8SI,N8S;
 Wake I.:                  31:  65:  OC:   19.30:  -166.60:   -12.0:  KH9:
     AH9,KH9,NH9,WH9;
 Alaska:                   01:  01:  NA:   61.20:   150.00:     9.0:  KL:
@@ -540,7 +543,7 @@ Lebanon:                  20:  39:  AS:   33.90:   -35.50:    -2.0:  OD:
 Austria:                  15:  28:  EU:   48.20:   -16.30:    -1.0:  OE:
     OE,SH75,4U1VIC;
 Finland:                  15:  18:  EU:   60.20:   -25.00:    -2.0:  OH:
-    OF,OG,OH,OI,OJ;
+    OF,OG,OH,OI,OJ,OH0JJS/1;
 Aland Is.:                15:  18:  EU:   60.20:   -20.00:    -2.0:  OH0:
     OF0,OG0,OH0,OI0;
 Market Reef:              15:  18:  EU:   60.30:   -19.00:    -2.0:  OJ0:
@@ -552,11 +555,11 @@ Slovakia:                 15:  28:  EU:   48.10:   -17.10:    -1.0:  OM:
 Belgium:                  14:  27:  EU:   50.90:    -4.40:    -1.0:  ON:
     ON,OO,OP,OQ,OR,OS,OT;
 Greenland:                40:  05:  NA:   62.50:    45.00:     3.0:  OX:
-    OX;
+    OX,XP;
 Faroe Is.:                14:  18:  EU:   62.00:     6.80:     0.0:  OY:
     OW,OY;
 Denmark:                  14:  18:  EU:   55.70:   -12.60:    -1.0:  OZ:
-    5P,5Q,OU,OV,OZ,XP;
+    5P,5Q,OU,OV,OZ;
 Papua New Guinea:         28:  51:  OC:   -9.40:  -147.10:   -10.0:  P2:
     P2;
 Aruba:                    09:  11:  SA:   12.50:    70.00:     4.0:  P4:
@@ -714,7 +717,7 @@ Asiatic Russia:           17:  30:  AS:   55.00:   -83.00:    -7.0:  UA9:
     UG9W(16),UH0,UH7,UH8,UH8T(18)[32],UH8V(18)[33],UH9,UH9I(18)[31],UH9M(17),
     UH9S(16),UH9T(16),UH9W(16),UI0,UI7,UI8,UI8T(18)[32],UI8V(18)[33],UI9,
     UI9I(18)[31],UI9M(17),UI9S(16),UI9T(16),UI9W(16),R270A,R270E,R375I,R3F/9,
-    R9HQ(17)[30],UE105SBM(18)[32],UE15UWC(18)[32];
+    R40WK,R9HQ(17)[30],UE105SBM(18)[32],UE15UWC(18)[32];
 Uzbekistan:               17:  30:  AS:   41.20:   -69.30:    -5.0:  UK:
     UJ,UK,UL,UM;
 Kazakhstan:               17:  30:  AS:   43.30:   -76.90:    -5.0:  UN:
@@ -843,7 +846,7 @@ Romania:                  20:  28:  EU:   44.40:   -26.10:    -2.0:  YO:
 El Salvador:              07:  11:  NA:   13.70:    89.20:     6.0:  YS:
     HU,YS;
 Serbia:                   15:  28:  EU:   44.90:   -20.50:    -1.0:  YU:
-    4N,4O,YT,YT60,YU,YU60,YZ,YZ60;
+    4N,YT,YT60,YU,YU60,YZ,YZ60;
 Venezuela:                09:  12:  SA:   10.50:    67.00:     4.0:  YV:
     4M,YV,YW,YX,YY;
 Aves I.:                  08:  11:  NA:   15.70:    63.70:     4.0:  YV0:
@@ -852,8 +855,6 @@ Zimbabwe:                 38:  53:  AF:  -17.80:   -31.00:    -2.0:  Z2:
     Z2;
 Macedonia:                15:  28:  EU:   41.80:   -21.40:    -1.0:  Z3:
     Z3;
-Montenegro:               15:  28:  EU:   42.50:   -19.30:    -1.0:  Z7:
-    4N3,4N6,4O3,4O6,YT3,YT6,YU3,YU6,YZ3,YZ6,Z7;
 Albania:                  15:  28:  EU:   41.30:   -19.80:    -1.0:  ZA:
     ZA;
 Gibraltar:                14:  37:  EU:   36.10:     5.40:    -1.0:  ZB:
