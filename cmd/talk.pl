@@ -36,8 +36,10 @@ my $dxchan = $clref->dxchan if $clref;
 #return (1, $self->msg('e7', $call)) unless $dxchan;
 return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
 
+$DB::single = 1;
+
 # default the 'via'
-$via ||= '*';
+#$via ||= '*';
 
 # if there is a line send it, otherwise add this call to the talk list
 # and set talk mode for command mode
@@ -51,7 +53,7 @@ if ($line) {
 	}
 } else {
 	my $s = $to;
-	$s .= ">$via" if $via;
+	$s .= ">$via" if $via && $via ne '*';
 	my $ref = $self->talklist;
 	if ($ref) {
 		unless (grep { $_ eq $s } @$ref) {

@@ -384,11 +384,11 @@ sub send_talks
 	
 	my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
 	$to = $ent unless $to;
-	my $call = $via ? $via : $to;
+	my $call = $via && $via ne '*' ? $via : $to;
 	my $clref = Route::get($call);
 	my $dxchan = $clref->dxchan if $clref;
 	if ($dxchan) {
-		$dxchan->talk($self->{call}, $to, $via, $line);
+		$dxchan->talk($self->{call}, $to, undef, $line);
 	} else {
 		$self->send($self->msg('disc2', $via ? $via : $to));
 		my @l = grep { $_ ne $ent } @{$self->{talklist}};
