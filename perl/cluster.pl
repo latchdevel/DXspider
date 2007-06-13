@@ -121,7 +121,7 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.52";				# the version no of the software
+$version = "1.53";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
 #@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
@@ -131,13 +131,6 @@ $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 
 
 use vars qw($VERSION $BRANCH $build $branch);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-$main::build -= 3;				# fudge (put back for now)
-
-
       
 # send a message to call on conn and disconnect
 sub already_conn
