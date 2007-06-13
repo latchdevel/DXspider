@@ -130,6 +130,15 @@ $bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't al
 $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 
 
+use vars qw($VERSION $BRANCH $build $branch);
+$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
+$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
+$main::build += $VERSION;
+$main::branch += $BRANCH;
+$main::build -= 3;				# fudge (put back for now)
+
+
+      
 # send a message to call on conn and disconnect
 sub already_conn
 {
