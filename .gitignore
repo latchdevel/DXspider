@@ -1,0 +1,4 @@
+# standard things to ignore
+connect/*
+local
+local_cmd

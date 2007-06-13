@@ -1,0 +1,8 @@
+# things in data to ignore
+bad*
+debug
+*.v?
+log
+dupefile
+spots
+*.db
