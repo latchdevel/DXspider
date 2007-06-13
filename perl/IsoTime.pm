@@ -12,12 +12,7 @@ package IsoTime;
 
 use Date::Parse;
 
-use vars qw($VERSION $BRANCH $year $month $day $hour $min $sec @days @ldays);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
+use vars qw($year $month $day $hour $min $sec @days @ldays);
 @days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 @ldays = (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 

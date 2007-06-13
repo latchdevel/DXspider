@@ -14,9 +14,6 @@ use strict;
 
 use DXUtil;
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 use IO::Select;
 use IO::Socket;
 use DXDebug;

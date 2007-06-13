@@ -124,9 +124,6 @@ $count = 0;
 		 );
 
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 # object destruction
 sub DESTROY
 {

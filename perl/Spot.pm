@@ -21,10 +21,6 @@ use QSL;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
-
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth);
 
 $fp = undef;

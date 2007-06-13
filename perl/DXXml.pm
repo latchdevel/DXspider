@@ -22,11 +22,6 @@ use DXXml::Text;
 use DXXml::Cmd;
 
 use vars qw($VERSION $BRANCH $xs $id $max_old_age $max_future_age $dupeage);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 $xs = undef;					# the XML::Simple parser instance
 $id = 0;						# the next ID to be used
 $max_old_age = 3600;			# how old a sentence we will accept

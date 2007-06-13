@@ -38,9 +38,6 @@ use Carp;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 use vars qw($log);
 
 $log = new('log', 'dat', 'm');

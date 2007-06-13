@@ -7,7 +7,7 @@
 # and subsequently plagerized by K1XX.
 #
 # 16-Jun-2000
-# $Id: links.pl
+# $Id$
 #
 
 my $self = shift;

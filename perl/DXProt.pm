@@ -37,7 +37,6 @@ use DXProtHandle;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
@@ -47,8 +46,6 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$eph_pc15_restime $pc92_update_period $last_pc92_update
 			%pc92_find $pc92_find_timeout
 		   );
-
-($VERSION, $BRANCH) = dxver(q$Revision$);
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
 $pc23_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc23

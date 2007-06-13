@@ -15,7 +15,6 @@ use Data::Dumper;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
 use vars qw(@month %patmap @ISA @EXPORT);
 
 require Exporter;
@@ -25,7 +24,7 @@ require Exporter;
 			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
-			 is_prefix dd dxver
+			 is_prefix dd
             );
 
 
@@ -436,20 +435,3 @@ sub deleteitem
 	return $n - @$list;
 }
 
-sub dxver
-{
-	my $s = shift;
-	my ($a, $b, $c, $d) = $s =~ /(\d+)\.(\d+)\.(?:(\d+)\.(\d+))?/;
-	
-	my $v = sprintf( "%d.%03d", $a, $b) || 0;
-	my $br = sprintf( "%d.%03d", $c, $d) if defined $c;
-	$br ||= 0;
-
-	$main::build += $v;
-	$main::branch += $br;
-	return ($v, $br);
-}
-
-INIT {
-	($VERSION, $BRANCH) = dxver(q$Revision$);
-}

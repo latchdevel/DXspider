@@ -12,12 +12,6 @@ package DXSql::mysql;
 
 use DXDebug;
 
-use vars qw($VERSION $BRANCH @ISA);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 @ISA = qw{DXSql};
 
 sub show_tables

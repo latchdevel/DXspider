@@ -22,9 +22,6 @@ use DXUtil;
 use strict;
 
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 use vars qw(%list %valid $filterdef);
 
 %valid = (

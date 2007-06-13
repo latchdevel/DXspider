@@ -54,9 +54,6 @@ $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing com
                                           # this does not exist as default, you need to create it manually
 					  #
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 #
 # obtain a new connection this is derived from dxchannel
 #

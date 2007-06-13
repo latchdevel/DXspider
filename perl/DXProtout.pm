@@ -19,9 +19,6 @@ use DXDebug;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 use vars qw($sentencelth);
 
 $sentencelth = 180;

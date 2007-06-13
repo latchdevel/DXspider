@@ -26,12 +26,6 @@ $lastbidclean = time;			# the last time the bid file was cleaned
 $bidcleanint = 86400;			# the time between bid cleaning intervals
 $maxbidage = 60;				# the maximum age of a stored bid
 
-use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 sub init
 {
 	tie %hash, 'DB_File', $bidfn;

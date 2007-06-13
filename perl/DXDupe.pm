@@ -19,9 +19,6 @@ $default = 48*24*60*60;
 $lasttime = 0;
 $fn = "$main::data/dupefile";
 
-use vars qw($VERSION $BRANCH);
-($VERSION, $BRANCH) = dxver(q$Revision$);
-
 sub init
 {
 	$dbm = tie (%d, 'DB_File', $fn);

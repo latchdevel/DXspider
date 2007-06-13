@@ -25,10 +25,8 @@ use Prefix;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
 use vars qw(%list %valid $default);
 
-($VERSION, $BRANCH) = dxver(q$Revision$);
 
 %list = ();
 $default = 99;					# the number of hops to use if we don't know
