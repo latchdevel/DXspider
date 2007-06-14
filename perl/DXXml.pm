@@ -21,7 +21,7 @@ use DXXml::IM;
 use DXXml::Text;
 use DXXml::Cmd;
 
-use vars qw($VERSION $BRANCH $xs $id $max_old_age $max_future_age $dupeage);
+use vars qw($xs $id $max_old_age $max_future_age $dupeage);
 $xs = undef;					# the XML::Simple parser instance
 $id = 0;						# the next ID to be used
 $max_old_age = 3600;			# how old a sentence we will accept

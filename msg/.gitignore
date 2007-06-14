@@ -1,3 +1,4 @@
 *
-!.gitignore
 !*.issue
+!distro
+!.git*

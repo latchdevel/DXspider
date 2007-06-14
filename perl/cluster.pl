@@ -123,7 +123,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
 $starttime = 0;                 # the starting time of the cluster   
-#@outstanding_connects = ();     # list of outstanding connects
+@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
 $reqreg = 0;					# 1 = registration required, 2 = deregister people
 $bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't allow it
