@@ -12,6 +12,7 @@ package DXSql::mysql;
 
 use DXDebug;
 
+use vars qw(@ISA);
 @ISA = qw{DXSql};
 
 sub show_tables
