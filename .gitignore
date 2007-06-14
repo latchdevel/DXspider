@@ -1,0 +1,16 @@
+local*
+*~
+*.[oa]
+*.tmp
+CVS
+tmp
+*.bak
+.#*
+*#
+*gz
+*zip
+.*
+!.gitignore
+packclus
+tutor*
+db
