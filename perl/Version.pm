@@ -1,10 +1,15 @@
 #
+# Version information for DXSpider
 #
+# DO NOT ALTER THIS FILE. It is generated automatically
+# and will be overwritten
+#
+
 package main;
 
 use vars qw($version $build);
 
-$version = "1.53";
-$build = 466;
+$version = '1.53';
+$build = '4-gb9dffef';
 
 1;
