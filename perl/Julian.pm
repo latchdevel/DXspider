@@ -11,12 +11,7 @@ use strict;
 package Julian;
 
 
-use vars qw($VERSION $BRANCH @days @ldays @month);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
+use vars qw(@days @ldays @month);
 @days = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 @ldays = (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);

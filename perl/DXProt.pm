@@ -38,12 +38,6 @@ use RouteDB;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn

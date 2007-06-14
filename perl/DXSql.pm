@@ -14,12 +14,7 @@ use DXSql::SQLite;
 use DXSql::mysql;
 use DXDebug;
 
-use vars qw($VERSION $BRANCH $active);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
+use vars qw($active);
 $active = 0;
 
 sub init

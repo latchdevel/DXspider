@@ -17,12 +17,6 @@ use DXCommandmode;
 use DXVars;
 use IO::File;
 
-use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 my $base = "$main::root/scripts";
 
 sub clean

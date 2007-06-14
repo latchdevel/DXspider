@@ -1,3 +1,6 @@
+14Jun07=======================================================================
+1. prepare for git repository and moving of anon cvs repository to 
+scm.tobit.co.uk.
 11Jun07=======================================================================
 1. Change the frequency normalisation for DX Spot dupe checks so that any
 decimal part is thrown away (in other words: truncate the freq to integer khz)

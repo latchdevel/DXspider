@@ -107,6 +107,7 @@ use Data::Dumper;
 use IO::File;
 use Fcntl ':flock'; 
 use POSIX ":sys_wait_h";
+use Version;
 
 use Local;
 
@@ -121,17 +122,14 @@ use vars qw(@inqueue $systime $version $starttime $lockfn @outstanding_connects
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
-$version = "1.53";				# the version no of the software
 $starttime = 0;                 # the starting time of the cluster   
-#@outstanding_connects = ();     # list of outstanding connects
+@outstanding_connects = ();     # list of outstanding connects
 @listeners = ();				# list of listeners
 $reqreg = 0;					# 1 = registration required, 2 = deregister people
 $bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't allow it
 $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 
 
-use vars qw($VERSION $BRANCH $build $branch);
-      
 # send a message to call on conn and disconnect
 sub already_conn
 {
@@ -337,10 +335,6 @@ foreach (@debug) {
 	dbgadd($_);
 }
 STDOUT->autoflush(1);
-
-# calculate build number
-$build += $main::version;
-$build = "$build.$branch" if $branch;
 
 # try to load the database
 if (DXSql::init($dsn)) {

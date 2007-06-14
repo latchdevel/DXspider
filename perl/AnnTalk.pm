@@ -38,12 +38,6 @@ $filterdef = bless ([
 			  ['origin_state', 'nz', 14],
 			 ], 'Filter::Cmd');
 
-use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {

@@ -20,12 +20,6 @@ use DXDupe;
 
 use strict;
 
-use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 use vars qw($date $sfi $k $a $r $forecast @allowed @denied $fp $node $from 
             $dirprefix $param
             $duplth $dupage $filterdef);

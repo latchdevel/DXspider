@@ -26,12 +26,6 @@ use DXDebug;
 use vars qw(@ISA);
 @ISA = qw(Chain);
 
-use vars qw($VERSION $BRANCH);
-$VERSION = sprintf( "%d.%03d", q$Revision$ =~ /(\d+)\.(\d+)/ );
-$BRANCH = sprintf( "%d.%03d", q$Revision$ =~ /\d+\.\d+\.(\d+)\.(\d+)/  || (0,0));
-$main::build += $VERSION;
-$main::branch += $BRANCH;
-
 sub newbase
 {
 	my $pkg = shift;
