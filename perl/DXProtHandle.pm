@@ -596,7 +596,7 @@ sub handle_18
 	$self->state('init');	
 
 	# record the type and version offered
-	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+\.\d+)/) {
+	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+(?:\.\d+)?)/) {
 		$self->version(53 + $1);
 		$self->user->version(53 + $1);
 		$self->build(0 + $2);

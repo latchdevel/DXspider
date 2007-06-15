@@ -10,6 +10,6 @@ package main;
 use vars qw($version $build);
 
 $version = '1.54';
-$build = '36';
+$build = '37';
 
 1;
