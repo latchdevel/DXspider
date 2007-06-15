@@ -1,0 +1,4 @@
+#!/bin/sh
+# do a startard git commit
+./issue.pl
+git commit $@
