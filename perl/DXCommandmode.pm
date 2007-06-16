@@ -827,7 +827,7 @@ sub local_send
 # send a talk message here
 sub talk
 {
-	my ($self, $from, $to, $via, $line) = @_;
+	my ($self, $from, $to, $via, $line, $onode) = @_;
 	$line =~ s/\\5E/\^/g;
 	if ($self->{talk}) {
 		if ($self->{gtk}) {
@@ -836,7 +836,7 @@ sub talk
 			$self->local_send('T', "$to de $from: $line");
 		}
 	}
-	Log('talk', $to, $from, $via?$via:$main::mycall, $line);
+	Log('talk', $to, $from, '<' . ($onode || '*'), $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
 		my $key = "$to$from";

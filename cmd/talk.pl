@@ -30,13 +30,13 @@ if ($via) {
 
 $to = uc $to if $to;
 $via = uc $via if $via;
-my $call = $via ? $via : $to;
+my $call = $via || $to;
 my $clref = Route::get($call);     # try an exact call
 my $dxchan = $clref->dxchan if $clref;
 #return (1, $self->msg('e7', $call)) unless $dxchan;
 return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
 
-$DB::single = 1;
+#$DB::single = 1;
 
 # default the 'via'
 #$via ||= '*';
@@ -45,6 +45,7 @@ $DB::single = 1;
 # and set talk mode for command mode
 if ($line) {
 	my @bad;
+	Log('talk', $to, $from, '>' . ($via || ($dxchan && $dxchan->call) || '*'), $line);
 	if (@bad = BadWords::check($line)) {
 		$self->badcount(($self->badcount||0) + @bad);
 		LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
@@ -67,6 +68,7 @@ if ($line) {
 		push @out, $self->msg('talkinst');
 		$self->state('talk');
 	}
+	Log('talk', $to, $from, '>' . ($via || ($dxchan && $dxchan->call) || '*'), $self->msg('talkstart'));
 	push @out, $self->talk_prompt;
 }
 

@@ -1170,7 +1170,7 @@ sub talk
 	} else {
 		$self->send(pc10($from, $to, $via, $line, $origin));
 	}
-	Log('talk', $to, $from, $via?$via:$self->call, $line) unless $origin && $origin ne $main::mycall;
+	Log('talk', $to, $from, '>' . ($via || $origin || $self->call), $line) unless $origin && $origin ne $main::mycall;
 }
 
 # send it if it isn't the except list and isn't isolated and still has a hop count
