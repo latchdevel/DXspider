@@ -4,7 +4,7 @@
 #
 # usage: gtkconsole [<callsign>] [<host> <port>]
 # 
-# Copyright (c) 2001-6 Dirk Koopman G1TLH
+# Copyright (c) 2006-2007 Dirk Koopman G1TLH
 #
 # $Id$
 #
@@ -49,6 +49,8 @@ our ($dx, $cmd, $ann, $wcy, $wwv); # scrolling list windows
 our $bot;						# the cmd entry window
 our $date;						# the current date
 
+require "$root/local/DXVars.pm" if -e "$root/local/DXVars.pm";
+
 # read in the user data
 our $userfn = "$ENV{HOME}/.gtkconsole_data";
 our $user = read_user_data();
@@ -80,7 +82,7 @@ unless ($call && $host) {
 	my $node = $user->{clusters}->{$user->{node}};
 	
 	if ($node->{call} || $user->{call}) {
-		$call = $node->{call} || $user->{call};
+		$call = $node->{call} || $user->{call} || $main::myalias;
 		$host = $node->{passwd};
 		$host = $node->{host};
 		$port = $node->{port};
@@ -88,15 +90,13 @@ unless ($call && $host) {
 }
 
 unless ($call && $host) {
-	if (-e "$root/local/DXVars.pm") {
-		require "$root/local/DXVars.pm";
-		$call = $main::myalias;
-		$call = $main::myalias;	# for the warning
-	}
 	if (-e "$root/local/Listeners.pm") {
 		require  "$root/local/Listeners.pm";
 		$host = $main::listen->[0]->[0];
 		$port = $main::listen->[0]->[1];
+		$host ||= '127.0.0.1';
+		$host = "127.0.0.1" if $host eq '0.0.0.0';
+		$port ||= 7300;
 	}
 }
 
@@ -365,11 +365,13 @@ sub read_user_data
 		
 		$u = {
 			  clusters => {
+						   'LOCAL' => {host => '127.0.0.1', port => 7300},
 						   'GB7DJK' => {host => 'gb7djk.dxcluster.net', port => 7300},
 						   'WR3D' => {host => 'wr3d.dxcluster.net', port => 7300},
 						   'GB7BAA' => {host => 'gb7baa.dxcluster.net', port => 7300},
 						  },
-			  node => 'GB7DJK',
+			  node => 'LOCAL',
+			  call => $main::myalias,
 			 };
 		write_user_data($u);
 	}

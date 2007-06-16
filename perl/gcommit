@@ -1,0 +1,4 @@
+#!/bin/sh
+# do a startard git commit
+/spider/perl/issue.pl
+git commit -a $@
