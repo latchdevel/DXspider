@@ -118,6 +118,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr 
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
+			$can_encode
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -342,6 +343,19 @@ STDOUT->autoflush(1);
 if (DXSql::init($dsn)) {
 	$dbh = DXSql->new($dsn);
 	$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
+}
+
+# try to load Encode
+{
+	no warnings;
+	my $w = $SIG{__DIE__};
+	$SIG{__DIE__} = 'IGNORE';
+	eval { require Encode; };
+	unless ($@) {
+		import Encode;
+		$can_encode = 1;
+	}
+	$SIG{__DIE__} = $w;
 }
 
 # try to load XML::Simple

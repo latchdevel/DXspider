@@ -1,3 +1,6 @@
+18Jun06=======================================================================
+1. add a optional dependency on Encode (included in 5.8.x) to encode strings
+to latin1 for deduping purposes, hopefully getting rid of some dupes.
 13Jun06=======================================================================
 1. start using git.
 2. change all the version / build numbering.
@@ -351,7 +354,7 @@ line. Also added sh/fdx as an alias.
 01Jan04=======================================================================
 1. move position of USDB init to get rid of an obscure bug pointed out by
 Charlie K1XX.
-2. Remove redundant documentation
+2. Remove redundant documentation.
 31Dec03=======================================================================
 1. alter remote database handling to 'new standard'.
 30Dec03=======================================================================

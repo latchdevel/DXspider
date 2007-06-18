@@ -21,7 +21,7 @@ use QSL;
 
 use strict;
 
-use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth);
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth $can_encode);
 
 $fp = undef;
 $statp = undef;
@@ -402,6 +402,7 @@ sub dup
 		}
 	}
 	my $otext = $text;
+	$text = Encode::encode("iso-8859-1", $text) if $main::can_encode && Encode::is_utf8($text, 1);
 	$text =~ s/^\+\w+\s*//;			# remove leading LoTW callsign
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/\s{2,}[\dA-Z]?[A-Z]\d?$// if length $text > 24;
