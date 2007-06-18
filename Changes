@@ -1,6 +1,8 @@
 18Jun06=======================================================================
 1. add a optional dependency on Encode (included in 5.8.x) to encode strings
 to latin1 for deduping purposes, hopefully getting rid of some dupes.
+2. add a default INPUT filter for a node (by_dxcc <node's country>) if no
+specific or default INPUT node exists.
 13Jun06=======================================================================
 1. start using git.
 2. change all the version / build numbering.
