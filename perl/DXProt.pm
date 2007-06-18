@@ -294,6 +294,12 @@ sub start
 	$self->{inwcyfilter} = Filter::read_in('wcy', $call, 1) || Filter::read_in('wcy', 'node_default', 1);
 	$self->{inannfilter} = Filter::read_in('ann', $call, 1) || Filter::read_in('ann', 'node_default', 1);
 	$self->{inroutefilter} = Filter::read_in('route', $call, 1) || Filter::read_in('route', 'node_default', 1) unless $self->{isolate};
+	# if there is no route input filter then specify a default one.
+	# obviously this can be changed later by the sysop.
+	if (!$self->{inroutefilter}) {
+		my $dxcc = $self->dxcc;
+		$Route::filterdef->cmd($self, 'route', 'accept', "input by_dxcc $dxcc" );
+	}
 	
 	# set unbuffered and no echo
 	$self->send_now('B',"0");
