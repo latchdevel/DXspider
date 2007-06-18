@@ -347,7 +347,7 @@ if (DXSql::init($dsn)) {
 
 # try to load Encode
 {
-	no warnings;
+	local $^W = 0;
 	my $w = $SIG{__DIE__};
 	$SIG{__DIE__} = 'IGNORE';
 	eval { require Encode; };
