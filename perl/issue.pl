@@ -19,7 +19,8 @@ use strict;
 use vars qw($root);
 my $fn = "$root/perl/Version.pm";
 my $desc = `git-describe`;
-my ($v, $b) = $desc =~ /^([\d.]+)-(\d+)-/;
+my ($v, $s, $b) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-/;
+$s ||= '0';		# account for missing subversion
 $b++;			# to account for the commit that is about to happen
 
 open F, ">$fn" or die "issue.pl: can't open $fn $!\n";
@@ -32,9 +33,10 @@ print F qq(#
 
 package main;
 
-use vars qw(\$version \$build);
+use vars qw(\$version \$subversion \$build);
 
 \$version = '$v';
+\$subversion = '$s';
 \$build = '$b';
 
 1;

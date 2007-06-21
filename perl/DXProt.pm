@@ -221,7 +221,7 @@ sub init
 	$main::me->{pingave} = 0;
 	$main::me->{registered} = 1;
 	$main::me->{version} = $main::version;
-	$main::me->{build} = $main::build;
+	$main::me->{build} = "$main::subversion.$main::build";
 	$main::me->{do_pc9x} = 1;
 }
 
