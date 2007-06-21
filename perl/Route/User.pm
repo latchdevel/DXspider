@@ -10,6 +10,7 @@ package Route::User;
 
 use DXDebug;
 use Route;
+use DXUtil;
 
 use strict;
 
@@ -47,7 +48,7 @@ sub new
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = [ $ncall ];
-	$self->{flags} = $flags;
+	$self->{flags} = $flags || Route::here(1);
 	$list{$call} = $self;
 
 	return $self;

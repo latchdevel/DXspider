@@ -200,7 +200,7 @@ sub Log
 
 sub LogDbg
 {
-	DXDebug::dbg($_[$#_]);
+	DXDebug::dbg($_) for @_;
 	Log(@_);
 }
 

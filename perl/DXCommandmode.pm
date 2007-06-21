@@ -69,7 +69,10 @@ sub new
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
-	$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref) if $ref;
+	if ($ref) {
+		$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref);
+		$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref);
+	}
 
 	return $self;
 }
@@ -378,11 +381,11 @@ sub send_talks
 	
 	my ($to, $via) = $ent =~ /(\S+)>(\S+)/;
 	$to = $ent unless $to;
-	my $call = $via ? $via : $to;
+	my $call = $via && $via ne '*' ? $via : $to;
 	my $clref = Route::get($call);
 	my $dxchan = $clref->dxchan if $clref;
 	if ($dxchan) {
-		$dxchan->talk($self->{call}, $to, $via, $line);
+		$dxchan->talk($self->{call}, $to, undef, $line);
 	} else {
 		$self->send($self->msg('disc2', $via ? $via : $to));
 		my @l = grep { $_ ne $ent } @{$self->{talklist}};
@@ -571,6 +574,7 @@ sub disconnect
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
+		$main::me->route_pc92d($main::mycall, undef, $main::routeroot, $uref);
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}
@@ -823,7 +827,7 @@ sub local_send
 # send a talk message here
 sub talk
 {
-	my ($self, $from, $to, $via, $line) = @_;
+	my ($self, $from, $to, $via, $line, $onode) = @_;
 	$line =~ s/\\5E/\^/g;
 	if ($self->{talk}) {
 		if ($self->{gtk}) {
@@ -832,7 +836,7 @@ sub talk
 			$self->local_send('T', "$to de $from: $line");
 		}
 	}
-	Log('talk', $to, $from, $via?$via:$main::mycall, $line);
+	Log('talk', $to, $from, '<' . ($onode || '*'), $line);
 	# send a 'not here' message if required
 	unless ($self->{here} && $from ne $to) {
 		my $key = "$to$from";
@@ -1166,6 +1170,13 @@ sub import_cmd
 			unlink "$cmdimportdir/$name";
 		}
 	}
+}
+
+sub print_find_reply
+{
+	my ($self, $node, $target, $flag, $ms) = @_;
+	my $sort = $flag == 2 ? "External" : "Local";
+	$self->send("$sort $target found at $node in $ms ms" );
 }
 1;
 __END__

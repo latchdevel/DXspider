@@ -12,6 +12,8 @@ package Msg;
 
 use strict;
 
+use DXUtil;
+
 use IO::Select;
 use IO::Socket;
 use DXDebug;

@@ -14,7 +14,7 @@ use DXDebug;
 use DXProt;
 use DXLog;
 
-use vars qw(@ISA %pings);
+use vars qw(@ISA);
 @ISA = qw(DXXml);
 
 sub handle_input

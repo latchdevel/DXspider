@@ -119,6 +119,7 @@ $count = 0;
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  inscript => '9,In a script,yesno',
 		  handle_xml => '9,Handles XML,yesno',
+		  do_pc9x => '9,Handles PC9x,yesno',
 		  inqueue => '9,Input Queue,parray',
 		 );
 
@@ -466,7 +467,7 @@ sub disconnect
 	my $user = $self->{user};
 	
 	$user->close() if defined $user;
-	$self->{conn}->disconnect;
+	$self->{conn}->disconnect if $self->{conn};
 	$self->del();
 }
 

@@ -1,5 +1,15 @@
+21Jun06=======================================================================
+1. merge back SIMPLEROUTE branch to issue as official 1.54.
+18Jun06=======================================================================
+1. add a optional dependency on Encode (included in 5.8.x) to encode strings
+to latin1 for deduping purposes, hopefully getting rid of some dupes.
+2. add a default INPUT filter for a node (by_dxcc <node's country>) if no
+specific or default INPUT node exists.
+13Jun06=======================================================================
+1. start using git.
+2. change all the version / build numbering.
 14Jun07=======================================================================
-1. prepare for git repository and moving of anon cvs repository to 
+1. prepare for git repository and moving of anon cvs repository to
 scm.tobit.co.uk.
 11Jun07=======================================================================
 1. Change the frequency normalisation for DX Spot dupe checks so that any
@@ -14,12 +24,12 @@ decimal part is thrown away (in other words: truncate the freq to integer khz)
 04Mar07=======================================================================
 1. add CTY 1702 prefix data files
 22Feb07=======================================================================
-1. add show/myfdx to Aliases. 
+1. add show/myfdx to Aliases.
 15Feb07=======================================================================
 1. allow convkeps.pl to parse NORAD keps files.
 22Jan07=======================================================================
 1. disable default propagation of PC9x sentences
-2. simplify PC17 handling 
+2. simplify PC17 handling
 16Jan07=======================================================================
 1. back ported a change to PC16 handling so that a locally connected node's
 info clears out and generally overrides any residual PC16 info gathered from
@@ -27,7 +37,7 @@ elsewhere.
 15Jan07=======================================================================
 1. added CTY-1701
 07Jan07=======================================================================
-1. use IO::Socket blocking where available and switch off or ignore all 
+1. use IO::Socket blocking where available and switch off or ignore all
 attempts to block.
 05Jan07=======================================================================
 1. increase default ephemeral deduping on PC15 to 6 minutes (from 2).
@@ -348,7 +358,7 @@ line. Also added sh/fdx as an alias.
 01Jan04=======================================================================
 1. move position of USDB init to get rid of an obscure bug pointed out by
 Charlie K1XX.
-2. Remove redundant documentation
+2. Remove redundant documentation.
 31Dec03=======================================================================
 1. alter remote database handling to 'new standard'.
 30Dec03=======================================================================

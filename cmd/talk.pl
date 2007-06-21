@@ -30,38 +30,45 @@ if ($via) {
 
 $to = uc $to if $to;
 $via = uc $via if $via;
-my $call = $via ? $via : $to;
+my $call = $via || $to;
 my $clref = Route::get($call);     # try an exact call
 my $dxchan = $clref->dxchan if $clref;
-return (1, $self->msg('e7', $call)) unless $dxchan;
+#return (1, $self->msg('e7', $call)) unless $dxchan;
 return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
+
+#$DB::single = 1;
+
+# default the 'via'
+#$via ||= '*';
 
 # if there is a line send it, otherwise add this call to the talk list
 # and set talk mode for command mode
 if ($line) {
 	my @bad;
+	Log('talk', $to, $from, '>' . ($via || ($dxchan && $dxchan->call) || '*'), $line);
 	if (@bad = BadWords::check($line)) {
 		$self->badcount(($self->badcount||0) + @bad);
 		LogDbg('DXCommand', "$self->{call} swore: $line (with words:" . join(',', @bad) . ")");
 	} else {
-		$dxchan->talk($self->call, $to, $via, $line) if $dxchan;
+		$main::me->normal(DXProt::pc93($to, $self->call, $via, $line));
 	}
 } else {
 	my $s = $to;
-	$s .= ">$via" if $via;
+	$s .= ">$via" if $via && $via ne '*';
 	my $ref = $self->talklist;
 	if ($ref) {
 		unless (grep { $_ eq $s } @$ref) {
-			$dxchan->talk($self->call, $to, $via, $self->msg('talkstart'));
+			$main::me->normal(DXProt::pc93($to, $self->call, $via, $self->msg('talkstart')));
 			$self->state('talk');
 			push @$ref, $s;
 		}
 	} else { 
 		$self->talklist([ $s ]);
-		$dxchan->talk($self->call, $to, $via, $self->msg('talkstart'));
+		$main::me->normal(DXProt::pc93($to, $self->call, $via, $self->msg('talkstart')));
 		push @out, $self->msg('talkinst');
 		$self->state('talk');
 	}
+	Log('talk', $to, $from, '>' . ($via || ($dxchan && $dxchan->call) || '*'), $self->msg('talkstart'));
 	push @out, $self->talk_prompt;
 }
 
