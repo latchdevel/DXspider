@@ -20,7 +20,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 	my $dxchan;
 	
 	foreach $dxchan (@ch) {
-		@val = sort {$a->call cmp $b->call} grep { $_->dxchan == $dxchan } @nodes;
+		@val = sort {$a->call cmp $b->call} grep { $_->dxchan && $_->dxchan == $dxchan } @nodes;
 		@l = ();
 		my $call = $dxchan->call;
 		$call ||= '???';

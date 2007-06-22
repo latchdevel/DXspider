@@ -180,13 +180,15 @@ sub user_call
 sub config
 {
 	my $self = shift;
-	my $nodes_only = shift;
+	my $nodes_only = shift || 0;
 	my $level = shift;
 	my $seen = shift;
 	my @out;
 	my $line;
-	my $call = $self->user_call;
+	my $call = $self->{call};
 	my $printit = 1;
+
+	dbg("config: $call nodes: $nodes_only level: $level calls: " . join(',', @_)) if isdbg('routec');
 
 	# allow ranges
 	if (@_) {
@@ -194,20 +196,20 @@ sub config
 	}
 
 	if ($printit) {
-		my $pcall = $call;
-		$pcall .= ":" . $self->obscount if $self->via_pc92;
+		my $pcall = $self->user_call;
+		$pcall .= ":" . $self->obscount if isdbg('obscount');
 
 
 		$line = ' ' x ($level*2) . "$pcall";
-		$call = ' ' x length $pcall;
+		$pcall = ' ' x length $pcall;
 
 		# recursion detector
-		if ((DXChannel::get($self->{call}) && $level > 1) || grep $self->{call} eq $_, @$seen) {
+		if ((DXChannel::get($call) && $level > 1) || $seen->{$call}) {
 			$line .= ' ...';
 			push @out, $line;
 			return @out;
 		}
-		push @$seen, $self->{call};
+		$seen->{$call}++;
 
 		# print users
 		unless ($nodes_only) {
@@ -226,7 +228,7 @@ sub config
 					} else {
 						$line =~ s/\s+$//;
 						push @out, $line;
-						$line = ' ' x ($level*2) . "$call->$c ";
+						$line = ' ' x ($level*2) . "$pcall->$c ";
 					}
 				}
 			}
@@ -234,6 +236,12 @@ sub config
 		$line =~ s/->$//g;
 		$line =~ s/\s+$//;
 		push @out, $line if length $line;
+	} else {
+		# recursion detector
+		if ((DXChannel::get($call) && $level > 1) || $seen->{$call}) {
+			return @out;
+		}
+		$seen->{$call}++;
 	}
 
 	# deal with more nodes
@@ -242,8 +250,12 @@ sub config
 
 		if ($nref) {
 			my $c = $nref->user_call;
-#			dbg("recursing from $call -> $c") if isdbg('routec');
-			push @out, $nref->config($nodes_only, $level+1, $seen, @_);
+			dbg("recursing from $call -> $c") if isdbg('routec');
+			my @rout = $nref->config($nodes_only, $level+1, $seen, @_);
+			if (@rout && @_) {
+				push @out, ' ' x ($level*2) . $self->user_call unless grep /^\s+$call/, @out;
+			}
+			push @out, @rout;
 		} else {
 			push @out, ' ' x (($level+1)*2)  . "$ncall?" if @_ == 0 || (@_ && grep $ncall =~ m|$_|, @_);
 		}

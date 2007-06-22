@@ -920,9 +920,9 @@ sub format_dx_spot
 	my $t = ztime($_[2]);
 	my $loc = '';
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
-	my $comment = substr $_[3], 0, $clth; 
+	my $comment = substr (($_[3] || ''), 0, $clth);
 	$comment .= ' ' x ($clth - length($comment));
-	if ($self->{user}->wantgrid) { 
+	if ($self->{user}->wantgrid) {
 		my $ref = DXUser->get_current($_[4]);
 		if ($ref) {
 			$loc = $ref->qra || '';
