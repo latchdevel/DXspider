@@ -8,4 +8,5 @@
 
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) if $self->priv < 9;
-return (1, run_cmd("set/qra $main::mycall"));
+my @out = run_cmd($self, "set/qra $line");
+return (1, run_cmd($main::me, "set/qra $line"));

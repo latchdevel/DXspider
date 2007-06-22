@@ -2,6 +2,7 @@
 1. Fix Alias for sh/mydx (so it isn't the same as sh/myfdx).
 2. Fix sh/c/n uninitialised variable message
 3. Fix (and improve) sh/newc gb7 problem
+4. Fix broken set/sys_qra command
 21Jun06=======================================================================
 1. merge back SIMPLEROUTE branch to issue as official 1.54.
 18Jun06=======================================================================
