@@ -796,7 +796,7 @@ sub handle_20
 	$self->send(pc22());
 	$self->state('normal');
 	$self->{lastping} = 0;
-	$self->route_pc92a($main::mycall, $line, $main::routeroot, Route::Node::get($self->{call}));
+	$self->route_pc92a($main::mycall, undef, $main::routeroot, Route::Node::get($self->{call}));
 }
 
 # delete a cluster from the list
@@ -1555,39 +1555,49 @@ sub handle_92
 		# here is where all the routes are created and destroyed
 
 		my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} @_[4 .. $#_];
+
 		if (@ent) {
 
 			# look at the first one which will always be a node of some sort
-			# and update any information that needs to be done.
+			# except in the case of 'A' or 'D' in which the $pcall is used
+			# otherwise use the node call and update any information
+			# that needs to be done.
 			my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]};
-			if ($call && $is_node) {
-				if ($call eq $main::mycall) {
-					dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
+			if (($sort eq 'A' || $sort eq 'D') && !$is_node) {
+				# parent is already set correctly
+				# this is to allow shortcuts for A and D records
+				# not repeating the origin call to no real purpose
+				;
+			} else {
+				if ($call && $is_node) {
+					if ($call eq $main::mycall) {
+						dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
+						return;
+					}
+					if ($is_extnode) {
+						# this is only accepted from my "self"
+						if (DXChannel::get($call) && $call ne $self->{call}) {
+							dbg("PCPROT: locally connected node config for $call from other another node $self->{call}, ignored") if isdbg('chanerr');
+							return;
+						}
+						# reparent to external node (note that we must have received a 'C' or 'A' record
+						# from the true parent node for this external before we get one for the this node
+						unless ($parent = Route::Node::get($call)) {
+							dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+							return;
+						}
+						$parent = check_pc9x_t($call, $t, 92) || return;
+						$parent->via_pc92(1);
+					}
+				} else {
+					dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
 					return;
 				}
-				if ($is_extnode) {
-					# this is only accepted from my "self"
-					if (DXChannel::get($call) && $call ne $self->{call}) {
-						dbg("PCPROT: locally connected node config for $call from other another node $self->{call}, ignored") if isdbg('chanerr');
-						return;
-					}
-					# reparent to external node (note that we must have received a 'C' or 'A' record
-					# from the true parent node for this external before we get one for the this node
-					unless ($parent = Route::Node::get($call)) {
-						dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
-						return;
-					}
-					$parent = check_pc9x_t($call, $t, 92) || return;
-					$parent->via_pc92(1);
-				}
-			} else {
-				dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
-				return;
+				$parent->here(Route::here($here));
+				$parent->version($version) if $version && $version > $parent->version;
+				$parent->build($build) if $build && $build > $parent->build;
+				shift @ent;
 			}
-			$parent->here(Route::here($here));
-			$parent->version($version) if $version && $version > $parent->version;
-			$parent->build($build) if $build && $build > $parent->build;
-			shift @ent;
 		}
 
 		# do a pass through removing any references to either locally connected nodes or mycall
@@ -1650,6 +1660,9 @@ sub handle_92
 			foreach my $r (@$dusers) {
 				push @rdel,_del_thingy($parent, [$r, 0]);
 			}
+
+			# remember this last PC92C for rebroadcast on demand
+			$parent->last_PC92C($line);
 		} else {
 			dbg("PCPROT: unknown action '$sort', ignored") if isdbg('chanerr');
 			return;

@@ -44,7 +44,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc92_update_period $pc92_obs_timeout
-			%pc92_find $pc92_find_timeout
+			%pc92_find $pc92_find_timeout $pc92_short_update_period
 		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -74,6 +74,7 @@ $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
 $pc92_update_period = 60*60;	# the period between PC92 C updates
+$pc92_short_update_period = 15*60; # shorten the update period after a connection
 %pc92_find = ();				# outstanding pc92 find operations
 $pc92_find_timeout = 30;		# maximum time to wait for a reply
 $pc92_obs_timeout = $pc92_update_period; # the time between obscount countdowns
@@ -206,7 +207,8 @@ sub check
 sub update_pc92_next
 {
 	my $self = shift;
-	$self->{next_pc92_update} = $main::systime + $pc92_update_period - int rand($pc92_update_period / 4);
+	my $period = shift || $pc92_update_period;
+	$self->{next_pc92_update} = $main::systime + $period - int rand($period / 4);
 }
 
 sub init
@@ -229,7 +231,7 @@ sub init
 	$main::me->{version} = $main::version;
 	$main::me->{build} = "$main::subversion.$main::build";
 	$main::me->{do_pc9x} = 1;
-	$main::me->update_pc92_next;
+	$main::me->update_pc92_next($pc92_update_period);
 }
 
 #
@@ -338,8 +340,8 @@ sub start
 	my $script = new Script(lc $call) || new Script('node_default');
 	$script->run($self) if $script;
 
-	# set next_pc92_update time
-	$self->update_pc92_next;
+	# set next_pc92_update time for this node sooner
+	$self->update_pc92_next($pc92_short_update_period);
 }
 
 #
@@ -450,7 +452,7 @@ sub process
 		# send out a PC92 config record if required
 		if ($main::systime >= $dxchan->{next_pc92_update}) {
 			$dxchan->send_pc92_config;
-			$dxchan->update_pc92_next;
+			$dxchan->update_pc92_next($pc92_update_period);
 		}
 	}
 
