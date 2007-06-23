@@ -451,7 +451,9 @@ sub process
 
 		# send out a PC92 config record if required
 		if ($main::systime >= $dxchan->{next_pc92_update}) {
-			$dxchan->send_pc92_config;
+			if ($dxchan->{call} eq $main::mycall || !$dxchan->{do_pc9x}) {
+				$dxchan->send_pc92_update($dxchan->{call});
+			}
 			$dxchan->update_pc92_next($pc92_update_period);
 		}
 	}
@@ -898,12 +900,12 @@ sub send_pc92_config
 
 sub send_pc92_update
 {
-	my @out = $main::me->gen_pc92_update(0);
+	my $call = shift;
 
-	# broadcast the lines to all PC92 nodes
-	for (@out) {
-		$main::me->broadcast_route_pc9x($main::mycall, undef, $_, 0);
-	}
+	dbg('DXProt::send_pc92_update') if isdbg('trace');
+
+	my $l = gen_my_pc92_config(Route::Node::get($call));
+	$main::me->broadcast_route_pc9x($main::mycall, undef, $l, 0);
 }
 
 sub time_out_pc92_routes
