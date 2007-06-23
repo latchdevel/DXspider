@@ -301,6 +301,7 @@ sub findroutes
 		push @out, $level ? [$level, $dxchan] : $dxchan;
 		return @out;
 	}
+	$seen->{$call}++;
 
 	# deal with more nodes
 	my $nref = Route::get($call);

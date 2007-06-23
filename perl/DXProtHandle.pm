@@ -598,16 +598,15 @@ sub handle_18
 	my $parent = Route::Node::get($self->{call});
 
 	# record the type and version offered
-	if ($_[1] =~ /DXSpider Version: (\d+\.\d+)/) {
-		$self->{version} = 53 + $1;
-		$self->user->version(53 + $1);
-		$parent->version(0 + $1);
-		dbg("DXSpider version $1");
+	if (my ($version) = $_[1] =~ /DXSpider Version: (\d+\.\d+)/) {
+		$self->{version} = 53 + $version;
+		$self->user->version(53 + $version);
+		$parent->version(0 + $version);
 		my ($build) = $_[1] =~ /Build: (\d+(?:\.\d+)?)/;
 		$self->{build} = 0 + $build;
 		$self->user->build(0 + $build);
 		$parent->build(0 + $build);
-		dbg("DXSpider build $build");
+		dbg("DXSpider version $version build $build");
 		unless ($self->is_spider) {
 			dbg("Change U " . $self->user->sort . " C $self->{sort} -> S");
 			$self->user->sort('S');
