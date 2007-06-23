@@ -615,7 +615,7 @@ sub handle_18
 			$self->sort('S');
 		}
 #		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
-		if ($_[1] =~ /\bpc9x/) {
+		if (!$self->{isolate} && $_[1] =~ /\bpc9x/) {
 			$self->{do_pc9x} = 1;
 			dbg("Do px9x set on $self->{call}");
 		}
