@@ -285,6 +285,34 @@ sub get
 	return Route::Node::get($call) || Route::User::get($call);
 }
 
+sub findroutes
+{
+	my $call = shift;
+	my $level = shift || 0;
+	my $seen = shift || {};
+	my @out;
+
+	dbg("findroutes: $call level: $level calls: " . join(',', @_)) if isdbg('routec');
+
+	# recursion detector
+	return () if $seen->{$call};
+	if (my $dxchan = DXChannel::get($call)) {
+		$seen->{$call}++;
+		push @out, [$level, $dxchan];
+		return @out;
+	}
+
+	# deal with more nodes
+	my $nref = Route::Node::get($call);
+	foreach my $ncall (@{$nref->{nodes}}) {
+		dbg("recursing from $call -> $ncall") if isdbg('routec');
+		my @rout = findroute($ncall, $level+1, $seen);
+		push @out, @rout;
+	}
+
+	return $level == 0 ? map {$_->[1]} sort {$a->[0] <=> $b->[0]} @out : @out;
+}
+
 # find all the possible dxchannels which this object might be on
 sub alldxchan
 {

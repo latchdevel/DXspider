@@ -19,7 +19,7 @@ foreach $l (@list) {
 	my $ref = Route::get($l);
 	if ($ref) {
 		my $parents = $ref->isa('Route::Node') ? $l : join(',', $ref->parents);
-		push @out, $self->msg('route', $l, $parents,  join(',', map {$_->call} $ref->alldxchan));
+		push @out, $self->msg('route', $l, $parents,  join(',', map {$_->call} Route::findroutes($l)));
 	} else {
 		push @out, $self->msg('e7', $l);
 	}
