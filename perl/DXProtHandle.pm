@@ -598,24 +598,29 @@ sub handle_18
 	my $parent = Route::Node::get($self->{call});
 
 	# record the type and version offered
-	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+(?:\.\d+)?)/) {
+	if ($_[1] =~ /DXSpider Version: (\d+\.\d+)/) {
 		$self->{version} = 53 + $1;
 		$self->user->version(53 + $1);
 		$parent->version(0 + $1);
-		$self->{build} = 0 + $2;
-		$self->user->build(0 + $2);
-		$parent->build(0 + $2);
+		dbg("DXSpider version $1");
+		my ($build) = $_[1] =~ /Build: (\d+(?:\.\d+)?)/;
+		$self->{build} = 0 + $build;
+		$self->user->build(0 + $build);
+		$parent->build(0 + $build);
+		dbg("DXSpider build $build");
 		unless ($self->is_spider) {
+			dbg("Change U " . $self->user->sort . " C $self->{sort} -> S");
 			$self->user->sort('S');
 			$self->user->put;
 			$self->sort('S');
 		}
-		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
+#		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
 		if ($_[1] =~ /\bpc9x/) {
 			$self->{do_pc9x} = 1;
 			dbg("Do px9x set on $self->{call}");
 		}
 	} else {
+		dbg("Unknown software");
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
 		$self->user->version($self->version);
@@ -787,10 +792,8 @@ sub handle_20
 	my $origin = shift;
 
 	if ($self->{do_pc9x} && $self->{state} ne 'init92') {
-		dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
-		$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
-		$self->disconnect;
-		return;
+		$self->send("Reseting to oldstyle routing because login call not sent in any pc92");
+		$self->{do_pc9x} = 0;
 	}
 	$self->send_local_config;
 	$self->send(pc22());
@@ -878,10 +881,8 @@ sub handle_22
 
 	if ($self->{do_pc9x}) {
 		if ($self->{state} ne 'init92') {
-			dbg("PCPROT: disconnecting because login call not sent in any pc92") if isdbg('chanerr');
-			$self->send("**** You logged in with $self->{call} but that is NOT your \$mycall");
-			$self->disconnect;
-			return;
+			$self->send("Reseting to oldstyle routing because login call not sent in any pc92");
+			$self->{do_pc9x} = 0;
 		}
 	}
 	$self->{lastping} = 0;

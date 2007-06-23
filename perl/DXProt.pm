@@ -771,9 +771,11 @@ sub send_local_config
 	my @remotenodes;
 
 	if ($self->{isolate}) {
+		dbg("send_local_config: isolated");
 		@localnodes = ( $main::routeroot );
 		$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
 	} elsif ($self->{do_pc9x}) {
+		dbg("send_local_config: doing pc9x");
 		my $node = Route::Node::get($self->{call});
 		$self->send_last_pc92_config($main::routeroot);
 		$self->send(pc92a($main::routeroot, $node)) unless $main::routeroot->last_PC92C =~ /$self->{call}/;
@@ -781,6 +783,8 @@ sub send_local_config
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes
 		# don't appear outside of this node
+
+		dbg("send_local_config: traditional");
 
 		# send locally connected nodes
 		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
@@ -833,46 +837,10 @@ sub gen_my_pc92_config
 sub gen_pc92_update
 {
 	my $self = shift;
-	my $with_pc92_nodes = shift;
-	my $node;
-	my @lines;
-	my @dxchan;
-	my @localnodes;
-
-	dbg('ROUTE: DXProt::gen_pc92_update start') if isdbg('routelow');
 
 	# send 'my' configuration for all channels
-	push @lines, gen_my_pc92_config($main::routeroot);
-
-#	if ($with_pc92_nodes) {
-		# send out the configuration of all the directly connected PC92 nodes with current configuration
-		# but with the dates that the last config came in with.
-#		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc9x} } DXChannel::get_all_nodes();
-#		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-#		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-#		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
-#		foreach $node (@localnodes) {
-#			if ($node && $node->lastid->{92}) {
-#				my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
-#				push @lines, gen_pc92_with_time($node->call, 'C', $node->lastid->{92}, @rout);
-#			}
-#		}
-#	}
-
-	# send the configuration of all the directly connected 'external' nodes that don't handle PC92
-	# out with the 'external' marker on the first node.
-#	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc9x} } DXChannel::get_all_nodes();
-#	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-#	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-#	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
-#	foreach $node (@localnodes) {
-#		if ($node) {
-#			push @lines, gen_my_pc92_config($node);
-#		}
-#	}
-
-	dbg('ROUTE: DXProt::gen_pc92_update end with ' . scalar @lines . ' lines') if isdbg('routelow');
-	return @lines;
+	my $l = gen_my_pc92_config($main::routeroot);
+	return $l;
 }
 
 
