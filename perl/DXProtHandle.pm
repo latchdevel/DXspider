@@ -615,9 +615,13 @@ sub handle_18
 			$self->sort('S');
 		}
 #		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
-		if (!$self->{isolate} && $_[1] =~ /\bpc9x/) {
-			$self->{do_pc9x} = 1;
-			dbg("Do px9x set on $self->{call}");
+		if ($_[1] =~ /\bpc9x/) {
+			if ($self->{isolate}) {
+				dbg("pc9x recognised, but is isolated, using old protocol");
+			} else {
+				$self->{do_pc9x} = 1;
+				dbg("Do px9x set on $self->{call}");
+			}
 		}
 	} else {
 		dbg("Unknown software");
