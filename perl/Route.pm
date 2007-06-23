@@ -305,9 +305,11 @@ sub findroutes
 	# deal with more nodes
 	my $nref = Route::get($call);
 	foreach my $ncall (@{$nref->{parent}}) {
-		dbg("recursing from $call -> $ncall") if isdbg('routec');
-		my @rout = findroutes($ncall, $level+1, $seen);
-		push @out, @rout;
+		unless ($seen->{$ncall}) {
+			dbg("recursing from $call -> $ncall") if isdbg('routec');
+			my @rout = findroutes($ncall, $level+1, $seen);
+			push @out, @rout;
+		}
 	}
 
 	return $level == 0 ? map {$_->[1]} sort {$a->[0] <=> $b->[0]} @out : @out;
