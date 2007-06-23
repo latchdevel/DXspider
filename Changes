@@ -1,3 +1,13 @@
+23Jun06=======================================================================
+1. fix basic deduping algorithm
+2. rearrange node startup protocol to avoid issuing unnecessary PC92 and also
+to spread the PC92Cs out for dependent nodes.
+3. increase the PC92C update time to 1 hour.
+4. fix sh/route, with a view toward replacing Route::alldxchan.
+5. downgrade a link advertising pc9x if no PC92C forthcoming from it back to
+old style protocol and carry on, rather than disconnecting (protocol facist
+that I was).
+6. Fix isolated pc9x nodes so that they remain in oldstyle protocol.
 22Jun06=======================================================================
 1. Fix Alias for sh/mydx (so it isn't the same as sh/myfdx).
 2. Fix sh/c/n uninitialised variable message
