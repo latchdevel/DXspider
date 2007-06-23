@@ -900,6 +900,7 @@ sub send_pc92_config
 
 sub send_pc92_update
 {
+	my $self = shift;
 	my $call = shift;
 
 	dbg('DXProt::send_pc92_update') if isdbg('trace');
