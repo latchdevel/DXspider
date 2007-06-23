@@ -298,15 +298,15 @@ sub findroutes
 	return () if $seen->{$call};
 	if (my $dxchan = DXChannel::get($call)) {
 		$seen->{$call}++;
-		push @out, [$level, $dxchan];
+		push @out, $level ? [$level, $dxchan] : $dxchan;
 		return @out;
 	}
 
 	# deal with more nodes
-	my $nref = Route::Node::get($call);
-	foreach my $ncall (@{$nref->{nodes}}) {
+	my $nref = Route::get($call);
+	foreach my $ncall (@{$nref->{parent}}) {
 		dbg("recursing from $call -> $ncall") if isdbg('routec');
-		my @rout = findroute($ncall, $level+1, $seen);
+		my @rout = findroutes($ncall, $level+1, $seen);
 		push @out, @rout;
 	}
 
