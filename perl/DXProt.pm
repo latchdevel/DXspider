@@ -885,14 +885,14 @@ sub time_out_pc92_routes
 		my $o = $n->dec_obs;
 		if ($o <= 0) {
 			if (my $dxchan = DXChannel::get($n->call)) {
-				dbg("ROUTE: disconnecting local pc92 $dxchan->{call} on obscount") if isdbg('route');
+				dbg("disconnecting local pc92 $dxchan->{call} on obscount");
 				$dxchan->disconnect;
 				next;
 			}
 			my @parents = map {Route::Node::get($_)} $n->parents;
 			for (@parents) {
 				if ($_) {
-					dbg("ROUTE: deleting pc92 $_->{call} from $n->{call} on obscount") if isdbg('route');
+					dbg("deleting pc92 $_->{call} from $n->{call} on obscount");
 					push @rdel, $n->del($_);
 				}
 			}
