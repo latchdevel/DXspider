@@ -1467,7 +1467,7 @@ sub check_pc9x_t
 					return;
 				}
 			}
-			if ($lastid == $t) {
+			if ($lastid >= $t) {
 				dbg("PCPROT: dup id on $call = $lastid, ignored") if isdbg('chanerr');
 				return;
 			}
