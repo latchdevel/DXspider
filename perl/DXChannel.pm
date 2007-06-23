@@ -121,6 +121,7 @@ $count = 0;
 		  handle_xml => '9,Handles XML,yesno',
 		  do_pc9x => '9,Handles PC9x,yesno',
 		  inqueue => '9,Input Queue,parray',
+		  next_pc92_update => '9,Next PC92 Update,atime',
 		 );
 
 # object destruction

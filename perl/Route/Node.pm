@@ -24,12 +24,14 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
 		  version => '0,Version',
+		  build => '0,Build',
 		  handle_xml => '0,Using XML,yesno',
 		  lastmsg => '0,Last Route Msg,atime',
 		  lastid => '0,Last Route MsgID',
 		  do_pc9x => '0,Uses pc9x,yesno',
 		  via_pc92 => '0,Came in via pc92,yesno',
 		  obscount => '0,Obscount',
+		  last_PC92C => '9,Last PC92C',
 );
 
 $filterdef = $Route::filterdef;

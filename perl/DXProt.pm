@@ -43,7 +43,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
 			$allowzero $decode_dk0wcy $send_opernam @checklist
-			$eph_pc15_restime $pc92_update_period $last_pc92_update
+			$eph_pc15_restime $pc92_update_period $pc92_obs_timeout
 			%pc92_find $pc92_find_timeout
 		   );
 
@@ -73,10 +73,10 @@ $chatdupeage = 20 * 60 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
-$pc92_update_period = 30*60;	# the period between PC92 C updates
-$last_pc92_update = time + int rand(180);		# the last time a PC92 config update
+$pc92_update_period = 60*60;	# the period between PC92 C updates
 %pc92_find = ();				# outstanding pc92 find operations
 $pc92_find_timeout = 30;		# maximum time to wait for a reply
+$pc92_obs_timeout = $pc92_update_period; # the time between obscount countdowns
 
 
 
@@ -203,6 +203,12 @@ sub check
 	return 0;
 }
 
+sub update_pc92_next
+{
+	my $self = shift;
+	$self->{next_pc92_update} = $main::systime + $pc92_update_period - int rand($pc92_update_period / 4);
+}
+
 sub init
 {
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
@@ -223,6 +229,7 @@ sub init
 	$main::me->{version} = $main::version;
 	$main::me->{build} = "$main::subversion.$main::build";
 	$main::me->{do_pc9x} = 1;
+	$main::me->update_pc92_next;
 }
 
 #
@@ -330,6 +337,9 @@ sub start
 	# run a script send the output to the debug file
 	my $script = new Script(lc $call) || new Script('node_default');
 	$script->run($self) if $script;
+
+	# set next_pc92_update time
+	$self->update_pc92_next;
 }
 
 #
@@ -436,6 +446,12 @@ sub process
 				$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
 			}
 		}
+
+		# send out a PC92 config record if required
+		if ($main::systime >= $dxchan->{next_pc92_update}) {
+			$dxchan->send_pc92_config;
+			$dxchan->update_pc92_next;
+		}
 	}
 
 	Investigate::process();
@@ -448,11 +464,9 @@ sub process
 		eph_clean();
 		import_chat();
 
-		if ($main::systime >= $last_pc92_update + $pc92_update_period) {
-			dbg("ROUTE: sending pc92 update") if isdbg('route');
-			send_pc92_update();
+		if ($main::systime >= $pc92_obs_timeout) {
 			time_out_pc92_routes();
-			$last_pc92_update = $main::systime + int rand(5*60);
+			$pc92_obs_timeout = $main::systime + $pc92_update_period;
 		}
 
 		$last10 = $t;
@@ -747,42 +761,44 @@ sub send_local_config
 	dbg('DXProt::send_local_config') if isdbg('trace');
 
 	# send our nodes
-	if ($self->{do_pc9x}) {
-		$self->send_pc92_config;
+	my $node;
+	my @nodes;
+	my @localnodes;
+	my @remotenodes;
+
+	if ($self->{isolate}) {
+		@localnodes = ( $main::routeroot );
+		$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
+	} elsif ($self->{do_pc9x}) {
+		my $node = Route::Node::get($self->{call});
+		$self->send_last_pc92_config($main::routeroot);
+		$self->send(pc92a($main::routeroot, $node)) unless $main::routeroot->last_PC92C =~ /$self->{call}/;
 	} else {
+		# create a list of all the nodes that are not connected to this connection
+		# and are not themselves isolated, this to make sure that isolated nodes
+		# don't appear outside of this node
+
+		# send locally connected nodes
+		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
+		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
+		$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
+
 		my $node;
-		my @nodes;
-		my @localnodes;
-		my @remotenodes;
-
-		if ($self->{isolate}) {
-			@localnodes = ( $main::routeroot );
-			$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
-		} else {
-			# create a list of all the nodes that are not connected to this connection
-			# and are not themselves isolated, this to make sure that isolated nodes
-			# don't appear outside of this node
-
-			# send locally connected nodes
-			my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
-			@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan if @dxchan;
-			$self->send_route($main::mycall, \&pc19, scalar(@localnodes)+1, $main::routeroot, @localnodes);
-
-			my $node;
-			my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
-			my @intcalls;
-			for $node (@rawintcalls) {
-				push @intcalls, $node unless grep $node eq $_, @intcalls;
-			}
-			my $ref = Route::Node::get($self->{call});
-			my @rnodes = $ref->nodes;
-			for $node (@intcalls) {
-				push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
-			}
-			$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
+		my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
+		my @intcalls;
+		for $node (@rawintcalls) {
+			push @intcalls, $node unless grep $node eq $_, @intcalls;
 		}
+		my $ref = Route::Node::get($self->{call});
+		my @rnodes = $ref->nodes;
+		for $node (@intcalls) {
+			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
+		}
+		$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
+	}
 
-		# get all the users connected on the above nodes and send them out
+	# get all the users connected on the above nodes and send them out
+	unless ($self->{do_pc9x}) {
 		foreach $node ($main::routeroot, @localnodes, @remotenodes) {
 			if ($node) {
 				my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
@@ -824,50 +840,58 @@ sub gen_pc92_update
 	# send 'my' configuration for all channels
 	push @lines, gen_my_pc92_config($main::routeroot);
 
-	if ($with_pc92_nodes) {
+#	if ($with_pc92_nodes) {
 		# send out the configuration of all the directly connected PC92 nodes with current configuration
 		# but with the dates that the last config came in with.
-		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc9x} } DXChannel::get_all_nodes();
-		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
-		foreach $node (@localnodes) {
-			if ($node && $node->lastid->{92}) {
-				my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
-				push @lines, gen_pc92_with_time($node->call, 'C', $node->lastid->{92}, @rout);
-			}
-		}
-	}
+#		@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && $_->{do_pc9x} } DXChannel::get_all_nodes();
+#		dbg("ROUTE: pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
+#		@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+#		dbg("ROUTE: pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
+#		foreach $node (@localnodes) {
+#			if ($node && $node->lastid->{92}) {
+#				my @rout = map {my $r = Route::get($_); $r ? ($r) : ()} $node->nodes, $node->users;
+#				push @lines, gen_pc92_with_time($node->call, 'C', $node->lastid->{92}, @rout);
+#			}
+#		}
+#	}
 
 	# send the configuration of all the directly connected 'external' nodes that don't handle PC92
 	# out with the 'external' marker on the first node.
-	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc9x} } DXChannel::get_all_nodes();
-	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
-	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
-	foreach $node (@localnodes) {
-		if ($node) {
-			push @lines, gen_my_pc92_config($node);
-		}
-	}
+#	@dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} && !$_->{do_pc9x} } DXChannel::get_all_nodes();
+#	dbg("ROUTE: non pc92 dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
+#	@localnodes = map { my $r = Route::Node::get($_->{call}); $r ? $r : () } @dxchan;
+#	dbg("ROUTE: non pc92 localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
+#	foreach $node (@localnodes) {
+#		if ($node) {
+#			push @lines, gen_my_pc92_config($node);
+#		}
+#	}
 
 	dbg('ROUTE: DXProt::gen_pc92_update end with ' . scalar @lines . ' lines') if isdbg('routelow');
 	return @lines;
 }
 
 
+sub send_last_pc92_config
+{
+	my $self = shift;
+	my $node = shift;
+	if (my $l = $node->last_PC92C) {
+		$self->send($l);
+	} else {
+		$self->send_pc92_config($node);
+	}
+}
+
 sub send_pc92_config
 {
 	my $self = shift;
+	my $node = shift;
 
 	dbg('DXProt::send_pc92_config') if isdbg('trace');
 
-	my @out = $self->gen_pc92_update(1);
-
-	# send the complete config out on this interface
-	for (@out) {
-		$self->send($_);
-	}
+	$node->last_PC92C(gen_my_pc92_config($node));
+	$self->send($node->last_PC92C);
 }
 
 sub send_pc92_update
@@ -1202,7 +1226,7 @@ sub send_route
 				if ($filter) {
 					push @rin, $r;
 				} else {
-					dbg("DXPROT: $self->{call}/" . $r->call . " rejected by output filter") if isdbg('chanerr');
+					dbg("PCPROT: $self->{call}/" . $r->call . " rejected by output filter") if isdbg('filter');
 				}
 			} else {
 				dbg("was sent a null value") if isdbg('chanerr');

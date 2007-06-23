@@ -96,7 +96,7 @@ sub handle_10
 	# if we are converting announces to talk is it a dup?
 	if ($ann_to_talk) {
 		if (AnnTalk::is_talk_candidate($from, $_[3]) && AnnTalk::dup($from, $to, $_[3])) {
-			dbg("DXPROT: Dupe talk from announce, dropped") if isdbg('chanerr');
+			dbg("PCPROT: Dupe talk from announce, dropped") if isdbg('chanerr');
 			return;
 		}
 	}
@@ -595,12 +595,16 @@ sub handle_18
 	my $origin = shift;
 	$self->state('init');
 
+	my $parent = Route::Node::get($self->{call});
+
 	# record the type and version offered
 	if ($_[1] =~ /DXSpider Version: (\d+\.\d+) Build: (\d+(?:\.\d+)?)/) {
-		$self->version(53 + $1);
+		$self->{version} = 53 + $1;
 		$self->user->version(53 + $1);
-		$self->build(0 + $2);
+		$parent->version(0 + $1);
+		$self->{build} = 0 + $2;
 		$self->user->build(0 + $2);
+		$parent->build(0 + $2);
 		unless ($self->is_spider) {
 			$self->user->sort('S');
 			$self->user->put;
@@ -618,7 +622,6 @@ sub handle_18
 	}
 
 	# first clear out any nodes on this dxchannel
-	my $parent = Route::Node::get($self->{call});
 	my @rout = $parent->del_nodes;
 	$self->route_pc21($origin, $line, @rout, $parent) if @rout;
 	$self->send_local_config();
@@ -659,7 +662,7 @@ sub handle_19
 	# first get the INTERFACE node
 	my $parent = Route::Node::get($self->{call});
 	unless ($parent) {
-		dbg("DXPROT: my parent $self->{call} has disappeared");
+		dbg("PCPROT: my parent $self->{call} has disappeared");
 		$self->disconnect;
 		return;
 	}
@@ -775,21 +778,6 @@ sub handle_19
 	}
 }
 
-sub send_delayed_pc92
-{
-	my $self = shift;
-
-	# send out new PC92 config to everyone else
-	my $line = gen_my_pc92_config($main::me);
-	$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
-
-	# if this is an external node then send out the external config
-	unless ($self->{do_pc9x}) {
-		$line = gen_my_pc92_config(Route::Node::get($self->{call}));
-		$self->broadcast_route_pc9x($main::mycall, undef, $line, 0);
-	}
-}
-
 # send local configuration
 sub handle_20
 {
@@ -804,11 +792,11 @@ sub handle_20
 		$self->disconnect;
 		return;
 	}
-	$self->send_local_config();
+	$self->send_local_config;
 	$self->send(pc22());
 	$self->state('normal');
 	$self->{lastping} = 0;
-	$self->send_delayed_pc92;
+	$self->route_pc92a($main::mycall, $line, $main::routeroot, Route::Node::get($self->{call}));
 }
 
 # delete a cluster from the list
@@ -898,7 +886,7 @@ sub handle_22
 	}
 	$self->{lastping} = 0;
 	$self->state('normal');
-	$self->send_delayed_pc92;
+	$self->route_pc92a($main::mycall, undef, $main::routeroot, Route::Node::get($self->{call}));
 }
 
 # WWV info
@@ -1462,13 +1450,13 @@ sub check_pc9x_t
 		if ($parent->call ne $main::mycall) {
 			my $lastid = $parent->lastid->{$pc} || 0;
 			if ($t < $lastid) {
-				if (my $d = $lastid-86400+$t > $pc9x_past_age) {
-					dbg("PCPROT: $call id $t <= $lastid, ignored") if isdbg('chanerr');
+				if ($lastid-86400+$t > $pc9x_past_age) {
+					dbg("PCPROT: dup id on $t <= $lastid (midnight rollover), ignored") if isdbg('chanerr');
 					return;
 				}
 			}
 			if ($lastid >= $t) {
-				dbg("PCPROT: dup id on $call = $lastid, ignored") if isdbg('chanerr');
+				dbg("PCPROT: dup id on $call $lastid >= $t, ignored") if isdbg('chanerr');
 				return;
 			}
 		}
@@ -1574,7 +1562,7 @@ sub handle_92
 			my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]};
 			if ($call && $is_node) {
 				if ($call eq $main::mycall) {
-					dbg("PCPROT: looped back on node entry, ignored") if isdbg('chanerr');
+					dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
 					return;
 				}
 				if ($is_extnode) {
@@ -1642,7 +1630,7 @@ sub handle_92
 						push @users, $r->[0];
 					}
 				} else {
-					dbg("DXPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr');
+					dbg("PCPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr');
 				}
 			}
 
