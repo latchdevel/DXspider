@@ -107,40 +107,6 @@ sub handle_10
 
 	# convert this to a PC93 and process it as such
 	$self->normal(pc93($to, $from, $via, $_[3], $_[6]));
-	return;
-
-	# this is all redundant but kept for now for reference
-
-	# it is here and logged on
-	$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
-	$dxchan = DXChannel::get($to) unless $dxchan;
-	if ($dxchan && $dxchan->is_user) {
-		$_[3] =~ s/\%5E/^/g;
-		$dxchan->talk($from, $to, $via, $_[3]);
-		return;
-	}
-
-	# is it elsewhere, visible on the cluster via the to address?
-	# note: this discards the via unless the to address is on
-	# the via address
-	my ($ref, $vref);
-	if ($ref = Route::get($to)) {
-		$vref = Route::Node::get($via) if $via;
-		$vref = undef unless $vref && grep $to eq $_, $vref->users;
-		$ref->dxchan->talk($from, $to, $vref ? $via : undef, $_[3], $_[6]);
-		return;
-	}
-
-	# can we see an interface to send it down?
-
-	# not visible here, send a message of condolence
-	$vref = undef;
-	$ref = Route::get($from);
-	$vref = $ref = Route::Node::get($_[6]) unless $ref;
-	if ($ref) {
-		$dxchan = $ref->dxchan;
-		$dxchan->talk($main::mycall, $from, $vref ? $vref->call : undef, $dxchan->msg('talknh', $to) );
-	}
 }
 
 # DX Spot handling
