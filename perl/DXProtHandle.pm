@@ -1594,10 +1594,10 @@ sub handle_92
 
 			# we only reset obscounts on config records
 			$oparent->reset_obs;
-			dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('route');
+			dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('obscount');
 			if ($oparent != $parent) {
 				$parent->reset_obs;
-				dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('route');
+				dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 			}
 
 			#
@@ -1759,9 +1759,7 @@ sub handle_default
 	my $line = shift;
 	my $origin = shift;
 
-	if (eph_dup($line)) {
-		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
-	} else {
+	unless (eph_dup($line)) {
 		if ($pcno >= 90) {
 			my $pcall = $_[1];
 			unless (is_callsign($pcall)) {

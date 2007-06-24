@@ -885,19 +885,19 @@ sub time_out_pc92_routes
 		my $o = $n->dec_obs;
 		if ($o <= 0) {
 			if (my $dxchan = DXChannel::get($n->call)) {
-				dbg("disconnecting local pc92 $dxchan->{call} on obscount");
+				dbg("disconnecting local pc92 $dxchan->{call} on obscount") if isdbg('obscount');
 				$dxchan->disconnect;
 				next;
 			}
 			my @parents = map {Route::Node::get($_)} $n->parents;
 			for (@parents) {
 				if ($_) {
-					dbg("deleting pc92 $_->{call} from $n->{call} on obscount");
+					dbg("deleting pc92 $_->{call} from $n->{call} on obscount")  if isdbg('obscount');
 					push @rdel, $n->del($_);
 				}
 			}
 		} else {
-			dbg("ROUTE: obscount on $n->{call} now $o") if isdbg('route');
+			dbg("ROUTE: obscount on $n->{call} now $o") if isdbg('obscount');
 		}
 	}
 	for (@rdel) {
@@ -1223,6 +1223,7 @@ sub send_route
 	}
 }
 
+# broadcast everywhere
 sub broadcast_route
 {
 	my $self = shift;
@@ -1238,8 +1239,33 @@ sub broadcast_route
 	}
 	unless ($self->{isolate}) {
 		foreach $dxchan (@dxchan) {
-			next if $dxchan == $self;
-			next if $dxchan == $main::me;
+			next if $dxchan == $self || $dxchan == $main::me;
+			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
+			next unless $dxchan->isa('DXProt');
+
+			$dxchan->send_route($origin, $generate, @_);
+		}
+	}
+}
+
+# broadcast to non-pc9x nodes
+sub broadcast_route_nopc9x
+{
+	my $self = shift;
+	my $origin = shift;
+	my $generate = shift;
+	my $line = shift;
+	my @dxchan = DXChannel::get_all_nodes();
+	my $dxchan;
+
+	if ($line) {
+		$line =~ /\^H(\d+)\^?\~?$/;
+		return unless $1 > 0;
+	}
+	unless ($self->{isolate}) {
+		foreach $dxchan (@dxchan) {
+			next if $dxchan == $self || $dxchan == $main::me;
+			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
 			next unless $dxchan->isa('DXProt');
 			next if $dxchan->{do_pc9x};
 			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
@@ -1265,6 +1291,7 @@ sub send_route_pc92
 	$self->send($line);
 }
 
+# broadcast only to pc9x nodes
 sub broadcast_route_pc9x
 {
 	my $self = shift;
@@ -1284,8 +1311,8 @@ sub broadcast_route_pc9x
 		foreach $dxchan (@dxchan) {
 			next if $dxchan == $self || $dxchan == $main::me;
 			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
-			next unless $dxchan->{do_pc9x};
 			next unless $dxchan->isa('DXProt');
+			next unless $dxchan->{do_pc9x};
 
 			$dxchan->send($line);
 		}
@@ -1298,7 +1325,7 @@ sub route_pc16
 	return unless $self->user->wantpc16;
 	my $origin = shift;
 	my $line = shift;
-	broadcast_route($self, $origin, \&pc16, $line, 1, @_);
+	broadcast_route_nopc9x($self, $origin, \&pc16, $line, 1, @_);
 }
 
 sub route_pc17
@@ -1307,7 +1334,7 @@ sub route_pc17
 	return unless $self->user->wantpc16;
 	my $origin = shift;
 	my $line = shift;
-	broadcast_route($self, $origin, \&pc17, $line, 1, @_);
+	broadcast_route_nopc9x($self, $origin, \&pc17, $line, 1, @_);
 }
 
 sub route_pc19
@@ -1315,7 +1342,7 @@ sub route_pc19
 	my $self = shift;
 	my $origin = shift;
 	my $line = shift;
-	broadcast_route($self, $origin, \&pc19, $line, scalar @_, @_);
+	broadcast_route_nopc9x($self, $origin, \&pc19, $line, scalar @_, @_);
 }
 
 sub route_pc21
@@ -1323,7 +1350,7 @@ sub route_pc21
 	my $self = shift;
 	my $origin = shift;
 	my $line = shift;
-	broadcast_route($self, $origin, \&pc21, $line, scalar @_, @_);
+	broadcast_route_nopc9x($self, $origin, \&pc21, $line, scalar @_, @_);
 }
 
 sub route_pc24
