@@ -1,3 +1,7 @@
+24Jun06=======================================================================
+1. Fix the routing algorithms to allow route selection in the face of
+incomplete trees of nodes (trees as produced by sh/newc).
+2. Fix the obscout issues which mean that many nodes get timed out after 3hrs.
 23Jun06=======================================================================
 1. fix basic deduping algorithm
 2. rearrange node startup protocol to avoid issuing unnecessary PC92 and also

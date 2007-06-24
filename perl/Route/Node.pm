@@ -32,6 +32,7 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 		  via_pc92 => '0,Came in via pc92,yesno',
 		  obscount => '0,Obscount',
 		  last_PC92C => '9,Last PC92C',
+		  PC92C_dxchan => '9,Channel of PC92C',
 );
 
 $filterdef = $Route::filterdef;

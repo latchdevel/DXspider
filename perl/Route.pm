@@ -200,7 +200,7 @@ sub config
 		$pcall .= ":" . $self->obscount if isdbg('obscount');
 
 
-		$line = ' ' x ($level*2) . "$pcall";
+		$line = ' ' x ($level*2) . $pcall;
 		$pcall = ' ' x length $pcall;
 
 		# recursion detector
@@ -313,7 +313,34 @@ sub findroutes
 		}
 	}
 
-	return $level == 0 ? map {$_->[1]} sort {$a->[0] <=> $b->[0]} @out : @out;
+	if ($level == 0) {
+		my @nout = map {$_->[1]} sort {$a->[0] <=> $b->[0]} @out;
+		my $last;
+		if ($nref->isa('Route::Node')) {
+			my $ncall = $nref->PC92C_dxchan;
+			$last = DXChannel::get($ncall) if $ncall;
+		} else {
+			my $pcall = $nref->{parent}->[0];
+			my ($ref, $ncall);
+			$ref = Route::Node::get($pcall) if $pcall;
+			$ncall = $ref->PC92C_dxchan if $ref;
+			$last = DXChannel::get($ncall) if $ncall;
+		}
+
+		if (isdbg('findroutes')) {
+			if (@out) {
+				foreach (sort {$a->[0] <=> $b->[0]} @out) {
+					dbg("ROUTE: findroute $call -> $_->[0] " . $_->[1]->call);
+				}
+			} else {
+				dbg("ROUTE: findroute $call -> PC92C_dxchan " . $last->call) if $last;
+			}
+		}
+		push @nout, $last if @out == 0 && $last;
+		return @nout;
+	} else {
+		return @out;
+	}
 }
 
 # find all the possible dxchannels which this object might be on

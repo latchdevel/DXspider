@@ -1553,8 +1553,13 @@ sub handle_92
 						# reparent to external node (note that we must have received a 'C' or 'A' record
 						# from the true parent node for this external before we get one for the this node
 						unless ($parent = Route::Node::get($call)) {
-							dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
-							return;
+							if ($is_extnode && $oparent) {
+								@radd =  _add_thingy($oparent, $ent[0]);
+								$parent = $radd[0];
+							} else {
+								dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+								return;
+							}
 						}
 						$parent = check_pc9x_t($call, $t, 92) || return;
 						$parent->via_pc92(1);
@@ -1594,9 +1599,11 @@ sub handle_92
 
 			# we only reset obscounts on config records
 			$oparent->reset_obs;
+			$oparent->PC92C_dxchan($self->{call}) unless $self->{call} eq $oparent->call;
 			dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('obscount');
 			if ($oparent != $parent) {
 				$parent->reset_obs;
+				$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
 				dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 			}
 
