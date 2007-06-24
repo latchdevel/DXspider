@@ -1744,14 +1744,16 @@ sub handle_93
 		# convert to PC10 talks where appropriate
 		my $ref = Route::get($to);
 		if ($ref) {
-			my @dxchan = $ref->alldxchan;
-			for $dxchan (@dxchan) {
+			# just go for the "best" one for now (rather than broadcast)
+			$dxchan = $ref->dxchan;
+#			my @dxchan = $ref->alldxchan;
+#			for $dxchan (@dxchan) {
 				if ($dxchan->{do_pc9x}) {
 					$dxchan->send($line);
 				} else {
 					$dxchan->talk($from, $to, $via, $text, $onode);
 				}
-			}
+#			}
 			return;
 		}
 

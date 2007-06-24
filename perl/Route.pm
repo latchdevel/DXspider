@@ -320,30 +320,7 @@ sub findroutes
 sub alldxchan
 {
 	my $self = shift;
-	my @dxchan;
-#	dbg("Trying node $self->{call}") if isdbg('routech');
-
-	my $dxchan = DXChannel::get($self->{call});
-	push @dxchan, $dxchan if $dxchan;
-
-	# it isn't, build up a list of dxchannels and possible ping times
-	# for all the candidates.
-	unless (@dxchan) {
-		foreach my $p (@{$self->{parent}}) {
-#			dbg("Trying parent $p") if isdbg('routech');
-			next if $p eq $main::mycall; # the root
-			my $dxchan = DXChannel::get($p);
-			if ($dxchan) {
-				push @dxchan, $dxchan unless grep $dxchan == $_, @dxchan;
-			} else {
-				next if grep $p eq $_, @_;
-				my $ref = Route::Node::get($p);
-#				dbg("Next node $p " . ($ref ? 'Found' : 'NOT Found') if isdbg('routech') );
-				push @dxchan, $ref->alldxchan($self->{call}, @_) if $ref;
-			}
-		}
-	}
-#	dbg('routech', "Got dxchan: " . join(',', (map{ $_->call } @dxchan)) );
+	my @dxchan = findroutes($self->{call});
 	return @dxchan;
 }
 
@@ -359,16 +336,18 @@ sub dxchan
 	return undef unless @dxchan;
 
 	# determine the minimum ping channel
-	my $minping = 99999999;
-	foreach my $dxc (@dxchan) {
-		my $p = $dxc->pingave;
-		if (defined $p  && $p < $minping) {
-			$minping = $p;
-			$dxchan = $dxc;
-		}
-	}
-	$dxchan = shift @dxchan unless $dxchan;
-	return $dxchan;
+#	my $minping = 99999999;
+#	foreach my $dxc (@dxchan) {
+#		my $p = $dxc->pingave;
+#		if (defined $p  && $p < $minping) {
+#			$minping = $p;
+#			$dxchan = $dxc;
+#		}
+#	}
+#	$dxchan = shift @dxchan unless $dxchan;
+
+	# dxchannels are now returned in order of "closeness"
+	return $dxchan[0];
 }
 
 
