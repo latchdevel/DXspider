@@ -1689,6 +1689,11 @@ sub handle_93
 		}
 	}
 
+	# this is catch loops caused by bad software ...
+	if (eph_dup("PC93|$from|$text|$onode")) {
+		return;
+	}
+
 	# if this is a 'bad spotter' user then ignore it
 	my $nossid = $from;
 	$nossid =~ s/-\d+$//;
