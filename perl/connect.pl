@@ -23,7 +23,7 @@
 #
 # Copyright (c) Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 # search local then perl directories

@@ -10,7 +10,7 @@
 #
 # Copyright (c) 1999 - Dirk Koopman, Tobit Computer Co Ltd
 #
-# $Id$
+#
 #
 
 package main;

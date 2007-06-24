@@ -9,7 +9,7 @@
 #
 # Copyright (c) 2001 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 package Route;

@@ -4,7 +4,7 @@
 #
 # Copyright (c) 1998-2006 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 package DXProt;

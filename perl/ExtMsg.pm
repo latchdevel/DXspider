@@ -5,7 +5,7 @@
 # This is where the cluster handles direct connections coming both in
 # and out
 #
-# $Id$
+#
 #
 # Copyright (c) 2001 - Dirk Koopman G1TLH
 #

@@ -3,7 +3,7 @@
 #
 # Stuff like table creates and (later) alters
 #
-# $Id$
+#
 #
 # Copyright (c) 2005 Dirk Koopman G1TLH
 #

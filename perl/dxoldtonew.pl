@@ -11,7 +11,7 @@
 # for that day. This may then give strange 'out of order' results when viewed
 # with the show/dx command
 #
-# $Id$
+#
 #
 # Copyright (c) 1998-2003 Dirk Koopman G1TLH
 #

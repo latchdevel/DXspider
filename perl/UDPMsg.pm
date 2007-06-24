@@ -7,7 +7,7 @@
 #
 # This class will morph into (and is the test bed for) Multicasts
 #
-# $Id$
+#
 #
 # Copyright (c) 2002 - Dirk Koopman G1TLH
 #

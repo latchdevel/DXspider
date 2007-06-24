@@ -16,7 +16,7 @@
 # because I have the 'power of perl' available that avoids me getting 
 # terminally bored sorting out other people's sloppyness.
 #
-# $Id$
+#
 #
 # Copyright (c) 2001 - Dirk Koopman G1TLH
 #

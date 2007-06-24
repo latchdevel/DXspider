@@ -3,7 +3,6 @@
 # this file contains the system messages. Don't forget to reload them
 # if you change them (load/messages)
 #
-# $Id$
 #
 
 package DXM;

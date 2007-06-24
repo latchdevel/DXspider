@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2003 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 # search local then perl directories

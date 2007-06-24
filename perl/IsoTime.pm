@@ -1,7 +1,7 @@
 #
 # Utility routines for handling Iso 8601 date time groups
 #
-# $Id$
+#
 #
 # Copyright (c) Dirk Koopman, G1TLH
 #

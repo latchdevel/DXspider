@@ -21,7 +21,7 @@
 #
 # Copyright (c) 1998-2000 - Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 package DXChannel;
 

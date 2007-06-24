@@ -1,7 +1,7 @@
 #
 # XML DX Spot handler
 #
-# $Id$
+#
 #
 # Copyright (c) Dirk Koopman, G1TLH
 #

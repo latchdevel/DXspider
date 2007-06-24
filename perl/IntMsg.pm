@@ -2,7 +2,7 @@
 # This class is the internal subclass that deals with the internal port 27754
 # communications for Msg.pm
 #
-# $Id$
+#
 #
 # Copyright (c) 2001 - Dirk Koopman G1TLH
 #

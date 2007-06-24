@@ -3,7 +3,7 @@
 #
 # This uses callbacks. BE CAREFUL!!!!
 #
-# $Id$
+#
 #
 # Copyright (c) 2001 Dirk Koopman G1TLH
 #

@@ -5,7 +5,7 @@
 #
 # Copyright (c) Dirk Koopman
 #
-# $Id$
+#
 #
 
 package Log::Agent;

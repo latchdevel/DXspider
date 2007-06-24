@@ -16,7 +16,7 @@
 #
 # Copyright (c) 1999 - Steve Franke K9AN
 #
-# $Id$
+#
 # 
 # 2005/02/25 add calculation of civil dawn and dusk, defined to be times
 #            when solar zenith angle is 96 degrees.

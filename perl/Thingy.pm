@@ -3,7 +3,7 @@
 #
 # This is the new fundamental protocol engine handler
 #
-# $Id$
+#
 #
 # Copyright (c) 2004 Dirk Koopman G1TLH
 #

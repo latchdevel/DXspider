@@ -3,7 +3,7 @@
 #
 # from an idea by Steve Franke K9AN and information from Angel EA7WA
 #
-# $Id$
+#
 #
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;		      # generate a list of callsigns

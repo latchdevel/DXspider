@@ -6,7 +6,7 @@
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
-# $Id$
+#
 # 
 
 # make sure that modules are searched in the order local then perl

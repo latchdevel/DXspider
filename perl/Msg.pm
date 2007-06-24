@@ -5,7 +5,7 @@
 #
 # I have modified it to suit my devious purposes (Dirk Koopman G1TLH)
 #
-# $Id$
+#
 #
 
 package Msg;

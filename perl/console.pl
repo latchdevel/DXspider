@@ -10,7 +10,7 @@
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #
-# $Id$
+#
 # 
 
 require 5.004;

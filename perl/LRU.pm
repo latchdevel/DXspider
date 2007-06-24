@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2002 Dirk Koopman, Tobit Computer Co Ltd 
 #
-# $Id$
+#
 #
 # The structure of the objects stored are:-
 #

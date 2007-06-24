@@ -6,7 +6,7 @@
 #
 # Copyright (c) 2005 Dirk Koopman G1TLH
 #
-# $Id$
+#
 # 
 # make sure that modules are searched in the order local then perl
 use strict;

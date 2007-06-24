@@ -6,7 +6,7 @@
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 # The colour pairs are:-
 #

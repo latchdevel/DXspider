@@ -1,7 +1,7 @@
 #
 # XML handler
 #
-# $Id$
+#
 #
 # Copyright (c) Dirk Koopman, G1TLH
 #

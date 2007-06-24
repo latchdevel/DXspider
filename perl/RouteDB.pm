@@ -13,7 +13,7 @@
 #
 # Copyright (c) 2004 Dirk Koopman G1TLH
 #
-# $Id$
+#
 # 
 
 package RouteDB;

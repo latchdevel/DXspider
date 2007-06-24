@@ -1,7 +1,7 @@
 #
 # The master SQL module
 #
-# $Id$
+#
 #
 # Copyright (c) 2006 Dirk Koopman G1TLH
 #

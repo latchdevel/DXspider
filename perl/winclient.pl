@@ -5,7 +5,7 @@
 # It's very scrappy, but it *does* do enough to allow SysOp console access. It also
 # means that since it's perl, Dirk might pretty it up a bit :-)
 #
-# $Id$
+#
 #
 # Iain Philipps, G0RDI	03-Mar-01
 #

@@ -6,7 +6,7 @@
 # An instance of this is setup by a command together with a load
 # of callbacks and then runs with a state machine until completion
 #
-# $Id$
+#
 #
 # Copyright (c) 2001 - Dirk Koopman G1TLH
 #

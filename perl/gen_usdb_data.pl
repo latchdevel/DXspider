@@ -23,7 +23,7 @@
 #
 # Copyright (c) 2002 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 use strict;

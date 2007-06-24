@@ -30,7 +30,7 @@
 # MINIMUF 3.5 from QST December 1982
 # (originally in BASIC)
 #
-# $Id$
+#
 #
 #
 

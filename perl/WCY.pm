@@ -4,7 +4,7 @@
 #
 # Copyright (c) 2000 - Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 package WCY;

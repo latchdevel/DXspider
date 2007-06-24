@@ -1,7 +1,7 @@
 #
 # XML IM handler (Chat, Announces, Talk)
 #
-# $Id$
+#
 #
 # Copyright (c) Dirk Koopman, G1TLH
 #

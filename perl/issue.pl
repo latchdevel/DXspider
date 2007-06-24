@@ -2,7 +2,7 @@
 #
 # create a version and build id for the project using git ids
 #
-# $Id$
+#
 #
 # Copyright (c) 2007 Dirk Koopman, G1TLH
 #
