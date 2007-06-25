@@ -449,13 +449,6 @@ sub process
 			}
 		}
 
-		# send out a PC92 config record if required
-		if ($main::systime >= $dxchan->{next_pc92_update}) {
-			if ($dxchan->{call} eq $main::mycall || !$dxchan->{do_pc9x}) {
-				$dxchan->send_pc92_update($dxchan->{call});
-			}
-			$dxchan->update_pc92_next($pc92_update_period);
-		}
 	}
 
 	Investigate::process();
@@ -474,6 +467,20 @@ sub process
 		}
 
 		$last10 = $t;
+
+		# send out config broadcasts
+		foreach $dxchan (@dxchan) {
+			next unless $dxchan->is_node;
+
+			# send out a PC92 config record if required for me and
+			# all my non pc9x dependent nodes.
+			if ($main::systime >= $dxchan->{next_pc92_update}) {
+				if ($dxchan->{call} eq $main::mycall || !$dxchan->{do_pc9x}) {
+					$dxchan->send_pc92_update($dxchan->{call});
+				}
+				$dxchan->update_pc92_next($pc92_update_period);
+			}
+		}
 	}
 
 	if ($main::systime - 3600 > $last_hour) {
