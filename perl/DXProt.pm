@@ -624,6 +624,7 @@ sub send_announce
 	my $target = $_[6];
 	my $to = 'To ';
 	my $text = unpad($_[2]);
+	my $from = $_[0];
 
 	if ($_[3] eq '*') {	# sysops
 		$target = "SYSOP";
@@ -640,7 +641,7 @@ sub send_announce
 
 
 	# obtain country codes etc
-	my @a = Prefix::cty_data($_[0]);
+	my @a = Prefix::cty_data($from);
 	my @b = Prefix::cty_data($_[4]);
 	if ($self->{inannfilter}) {
 		my ($filter, $hops) =
@@ -653,12 +654,20 @@ sub send_announce
 		}
 	}
 
-	if (AnnTalk::dup($_[0], $_[1], $_[2])) {
-		dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
-		return;
+	if (AnnTalk::dup($from, $_[1], $_[2])) {
+		my $dxchan = DXChannel::get($from);
+		if ($dxchan && $dxchan->is_user) {
+			if ($dxchan->priv < 5) {
+				$dxchan->send($dxchan->msg('dup'));
+				return;
+			}
+		} else {
+			dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
+			return;
+		}
 	}
 
-	Log('ann', $target, $_[0], $text);
+	Log('ann', $target, $from, $text);
 
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
@@ -692,6 +701,7 @@ sub send_chat
 	my $target = $_[3];
 	my $text = unpad($_[2]);
 	my $ak1a_line;
+	my $from = $_[0];
 
 	# munge the group and recast the line if required
 	if ($target =~ s/\.LST$//) {
@@ -699,7 +709,7 @@ sub send_chat
 	}
 
 	# obtain country codes etc
-	my @a = Prefix::cty_data($_[0]);
+	my @a = Prefix::cty_data($from);
 	my @b = Prefix::cty_data($_[4]);
 	if ($self->{inannfilter}) {
 		my ($filter, $hops) =
@@ -712,13 +722,21 @@ sub send_chat
 		}
 	}
 
-	if (AnnTalk::dup($_[0], $_[1], $_[2], $chatdupeage)) {
-		dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
-		return;
+	if (AnnTalk::dup($from, $target, $_[2], $chatdupeage)) {
+		my $dxchan = DXChannel::get($from);
+		if ($dxchan && $dxchan->is_user) {
+			if ($dxchan->priv < 5) {
+				$dxchan->send($dxchan->msg('dup'));
+				return;
+			}
+		} else {
+			dbg("PCPROT: Duplicate Announce ignored") if isdbg('chanerr');
+			return;
+		}
 	}
 
 
-	Log('chat', $target, $_[0], $text);
+	Log('chat', $target, $from, $text);
 
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on

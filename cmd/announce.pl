@@ -16,6 +16,7 @@
 #
 
 my ($self, $line) = @_;
+#$DB::single = 1;
 my @f = split /\s+/, $line;
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e9')) if !@f;
@@ -64,7 +65,7 @@ if ($drop) {
 	return (1, ());
 }
 
-return (1, $self->msg('dup')) if $self->priv < 5 && AnnTalk::dup($from, $toflag, $line);
+#return (1, $self->msg('dup')) if $self->priv < 5 && AnnTalk::dup($from, $toflag, $line);
 Log('ann', $to, $from, $line);
 $main::me->normal(DXProt::pc93($to, $from, $via, $line));
 

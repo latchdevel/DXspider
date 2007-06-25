@@ -18,7 +18,7 @@ use DXVars;
 use vars qw(%dup $duplth $dupage $filterdef);
 
 $duplth = 60;					# the length of text to use in the deduping
-$dupage = 5*24*3600;			# the length of time to hold spot dups
+$dupage = 5*3600;			# the length of time to hold spot dups
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['by', 'c', 0],
@@ -51,7 +51,7 @@ sub dup
 	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/[^\#a-zA-Z0-9]//g;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $dupkey = "A$to|\L$text";
+	my $dupkey = "A$call|$to|\L$text";
 	return DXDupe::check($dupkey, $t);
 }
 
