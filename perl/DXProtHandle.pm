@@ -461,18 +461,17 @@ sub handle_16
 			push @rout, @ans if $h && @ans;
 		}
 
-		# send info to all logged in thingies
-		$self->tell_login('loginu', "$ncall: $call") if DXUser->get_current($ncall)->is_local_node;
-		$self->tell_buddies('loginb', $call, $ncall);
-
 		# add this station to the user database, if required
-#		$call =~ s/-\d+$//o;	# remove ssid for users
-		my $user = DXUser->get_current($call);
-		$user = DXUser->new($call) if !$user;
+		my $user = DXUser->get_current($ncall);
+		$user = DXUser->new($call) unless $user;
 		$user->homenode($parent->call) if !$user->homenode;
 		$user->node($parent->call);
 		$user->lastin($main::systime) unless DXChannel::get($call);
 		$user->put;
+
+		# send info to all logged in thingies
+		$self->tell_login('loginu', "$ncall: $call") if $user->is_local_node;
+		$self->tell_buddies('loginb', $call, $ncall);
 	}
 	if (@rout) {
 		$self->route_pc16($origin, $line, $parent, @rout) if @rout;
@@ -540,7 +539,8 @@ sub handle_17
 	$parent->del_user($uref);
 
 	# send info to all logged in thingies
-	$self->tell_login('logoutu', "$ncall: $ucall") if DXUser->get_current($ncall)->is_local_node;
+	my $user = DXUser->get_current($ncall);
+	$self->tell_login('logoutu', "$ncall: $ucall") if $user && $user->is_local_node;
 	$self->tell_buddies('logoutb', $ucall, $ncall);
 
 	if (eph_dup($line)) {
