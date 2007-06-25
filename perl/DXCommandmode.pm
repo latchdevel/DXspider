@@ -308,7 +308,7 @@ sub normal
 				if ($self->{state} eq 'talk') {
 					$self->send_talks($_,  $self->msg('talkend'));
 				} else {
-					$self->send_chats($_,  $self->msg('chatend', $_));
+					$self->local_send('C', $self->msg('chatend', $_));
 				}
 			}
 			$self->state('prompt');
