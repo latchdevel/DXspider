@@ -1,13 +1,13 @@
-25Jun06=======================================================================
+25Jun07=======================================================================
 1. make sure that a C record is sent for node call every update period.
 2. make announces work again (probably).
 3. Fix long standing possibility of a crash with a new user.
-24Jun06=======================================================================
+24Jun07=======================================================================
 1. Fix the routing algorithms to allow route selection in the face of
 incomplete trees of nodes (trees as produced by sh/newc).
 2. Fix the obscout issues which mean that many nodes get timed out after 3hrs.
 3. Extend 4m to 70631 to cover CT.
-23Jun06=======================================================================
+23Jun07=======================================================================
 1. fix basic deduping algorithm
 2. rearrange node startup protocol to avoid issuing unnecessary PC92 and also
 to spread the PC92Cs out for dependent nodes.
@@ -17,24 +17,24 @@ to spread the PC92Cs out for dependent nodes.
 old style protocol and carry on, rather than disconnecting (protocol facist
 that I was).
 6. Fix isolated pc9x nodes so that they remain in oldstyle protocol.
-22Jun06=======================================================================
+22Jun07=======================================================================
 1. Fix Alias for sh/mydx (so it isn't the same as sh/myfdx).
 2. Fix sh/c/n uninitialised variable message
 3. Fix (and improve) sh/newc gb7 problem
 4. Fix broken set/sys_qra command
-21Jun06=======================================================================
+21Jun07=======================================================================
 1. merge back SIMPLEROUTE branch to issue as official 1.54.
-18Jun06=======================================================================
+18Jun07=======================================================================
 1. add a optional dependency on Encode (included in 5.8.x) to encode strings
 to latin1 for deduping purposes, hopefully getting rid of some dupes.
 2. add a default INPUT filter for a node (by_dxcc <node's country>) if no
 specific or default INPUT node exists.
-13Jun06=======================================================================
-1. start using git.
-2. change all the version / build numbering.
 14Jun07=======================================================================
 1. prepare for git repository and moving of anon cvs repository to
 scm.tobit.co.uk.
+13Jun07=======================================================================
+1. start using git.
+2. change all the version / build numbering.
 11Jun07=======================================================================
 1. Change the frequency normalisation for DX Spot dupe checks so that any
 decimal part is thrown away (in other words: truncate the freq to integer khz)
