@@ -476,7 +476,7 @@ sub process
 			# all my non pc9x dependent nodes.
 			if ($main::systime >= $dxchan->{next_pc92_update}) {
 				if ($dxchan->{call} eq $main::mycall || !$dxchan->{do_pc9x}) {
-					$main::me->broadcast_pc92_update($dxchan->{call});
+					$dxchan->broadcast_pc92_update($dxchan->{call});
 				}
 			}
 		}
