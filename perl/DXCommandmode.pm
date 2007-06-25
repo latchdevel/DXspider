@@ -302,10 +302,14 @@ sub normal
 		$self->conn->{echo} = $self->conn->{decho};
 		delete $self->conn->{decho};
 		$self->state('prompt');
-	} elsif ($self->{state} eq 'talk') {
+	} elsif ($self->{state} eq 'talk' || $self->{state} eq 'chat') {
 		if ($cmdline =~ m{^(?:/EX|/ABORT)}i) {
 			for (@{$self->{talklist}}) {
-				$self->send_talks($_,  $self->msg('talkend'));
+				if ($self->{state} eq 'talk') {
+					$self->send_talks($_,  $self->msg('talkend'));
+				} else {
+					$self->send_chats($_,  $self->msg('chatend', $_));
+				}
 			}
 			$self->state('prompt');
 			delete $self->{talklist};
@@ -322,12 +326,16 @@ sub normal
 						LogDbg('DXCommand', "$self->{call} swore: $l with words:" . join(',', @bad) . ")");
 					} else {
 						for (@{$self->{talklist}}) {
-							$self->send_talks($_, $l);
+							if ($self->{state} eq 'talk') {
+								$self->send_talks($_, $l);
+							} else {
+								$self->send_chats($_, $l)
+							}
 						}
 					}
 				}
 			}
-			$self->send($self->talk_prompt);
+			$self->send($self->{state} eq 'talk' ? $self->talk_prompt : $self->chat_prompt);
 		} elsif ($self->{talklist} && @{$self->{talklist}}) {
 			# send what has been said to whoever is in this person's talk list
 			my @bad;
@@ -336,10 +344,15 @@ sub normal
 				LogDbg('DXCommand', "$self->{call} swore: $cmdline with words:" . join(',', @bad) . ")");
 			} else {
 				for (@{$self->{talklist}}) {
-					$self->send_talks($_, $rawline);
+					if ($self->{state} eq 'talk') {
+						$self->send_talks($_, $rawline);
+					} else {
+						$self->send_chats($_, $rawline);
+					}
 				}
 			}
 			$self->send($self->talk_prompt) if $self->{state} eq 'talk';
+			$self->send($self->chat_prompt) if $self->{state} eq 'chat';
 		} else {
 			# for safety
 			$self->state('prompt');
@@ -398,16 +411,40 @@ sub send_talks
 	}
 }
 
-sub talk_prompt
+sub send_chats
 {
 	my $self = shift;
+	my $target = shift;
+	my $text = shift;
+
+	my $msgid = DXProt::nextchatmsgid();
+	$text = "#$msgid $text";
+	$main::me->normal(DXProt::pc93($target, $self->{call}, undef, $text));
+}
+
+sub special_prompt
+{
+	my $self = shift;
+	my $prompt = shift;
 	my @call;
 	for (@{$self->{talklist}}) {
 		my ($to, $via) = /(\S+)>(\S+)/;
 		$to = $_ unless $to;
 		push @call, $to;
 	}
-	return $self->msg('talkprompt', join(',', @call));
+	return $self->msg($prompt, join(',', @call));
+}
+
+sub talk_prompt
+{
+	my $self = shift;
+	return $self->special_prompt('talkprompt');
+}
+
+sub chat_prompt
+{
+	my $self = shift;
+	return $self->special_prompt('chatprompt');
 }
 
 #
@@ -813,7 +850,7 @@ sub send
 sub local_send
 {
 	my ($self, $let, $buf) = @_;
-	if ($self->{state} eq 'prompt' || $self->{state} eq 'talk') {
+	if ($self->{state} eq 'prompt' || $self->{state} eq 'talk' || $self->{state} eq 'chat') {
 		if ($self->{enhanced}) {
 			$self->send_later($let, $buf);
 		} else {
