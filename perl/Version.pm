@@ -11,6 +11,6 @@ use vars qw($version $subversion $build);
 
 $version = '1.54';
 $subversion = '0';
-$build = '92';
+$build = '94';
 
 1;
