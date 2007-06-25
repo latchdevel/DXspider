@@ -476,9 +476,8 @@ sub process
 			# all my non pc9x dependent nodes.
 			if ($main::systime >= $dxchan->{next_pc92_update}) {
 				if ($dxchan->{call} eq $main::mycall || !$dxchan->{do_pc9x}) {
-					$dxchan->send_pc92_update($dxchan->{call});
+					$main::me->broadcast_pc92_update($dxchan->{call});
 				}
-				$dxchan->update_pc92_next($pc92_update_period);
 			}
 		}
 	}
@@ -841,16 +840,6 @@ sub gen_my_pc92_config
 	}
 }
 
-sub gen_pc92_update
-{
-	my $self = shift;
-
-	# send 'my' configuration for all channels
-	my $l = gen_my_pc92_config($main::routeroot);
-	return $l;
-}
-
-
 sub send_last_pc92_config
 {
 	my $self = shift;
@@ -873,15 +862,17 @@ sub send_pc92_config
 	$self->send($node->last_PC92C);
 }
 
-sub send_pc92_update
+sub broadcast_pc92_update
 {
 	my $self = shift;
 	my $call = shift;
 
-	dbg('DXProt::send_pc92_update') if isdbg('trace');
+	dbg('DXProt::broadcast_pc92_update') if isdbg('trace');
 
-	my $l = gen_my_pc92_config(Route::Node::get($call));
+	my $nref = Route::Node::get($call);
+	my $l = $nref->last_PC92C(gen_my_pc92_config($nref));
 	$main::me->broadcast_route_pc9x($main::mycall, undef, $l, 0);
+	$self->update_pc92_next($pc92_update_period);
 }
 
 sub time_out_pc92_routes
