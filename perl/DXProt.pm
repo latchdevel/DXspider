@@ -351,7 +351,7 @@ sub start
 sub sendinit
 {
 	my $self = shift;
-	$self->send(pc18());
+	$self->send(pc18(($self->{isolate} || !$self->user->wantpc9x) ? "" : " pc9x"));
 }
 
 #

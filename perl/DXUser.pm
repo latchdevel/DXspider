@@ -80,6 +80,7 @@ $v3 = 0;
 		  wantdxcq => '0,Show CQ Zone,yesno',
 		  wantdxitu => '0,Show ITU Zone,yesno',
 		  wantgtk => '0,Want GTK interface,yesno',
+		  wantpc9x => '0,Want PC9X interface,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -714,6 +715,11 @@ sub wantdxitu
 sub wantgtk
 {
 	return _want('gtk', @_);
+}
+
+sub wantpc9x
+{
+	return _want('pc9x', @_);
 }
 
 sub wantlogininfo

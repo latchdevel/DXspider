@@ -582,7 +582,9 @@ sub handle_18
 #		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
 		if ($_[1] =~ /\bpc9x/) {
 			if ($self->{isolate}) {
-				dbg("pc9x recognised, but is isolated, using old protocol");
+				dbg("pc9x recognised, but $self->{call} is isolated, using old protocol");
+			} elsif (!$self->user->wantpc9x) {
+				dbg("pc9x explicitly switched off on $self->{call}, using old protocol");
 			} else {
 				$self->{do_pc9x} = 1;
 				dbg("Do px9x set on $self->{call}");
@@ -1462,9 +1464,17 @@ sub handle_92
 	}
 
 	if ($pcall eq $self->{call} && $self->{state} eq 'init') {
-		$self->state('init92');
-		$self->{do_pc9x} = 1;
-		dbg("Do pc9x set on $pcall");
+		if ($self->{isolate}) {
+			dbg("PC9x received, but $pcall is isolated, ignored");
+			return;
+		} elsif (!$self->user->wantpc9x) {
+			dbg("PC9x explicitly switched off on $pcall, ignored");
+			return;
+		} else {
+			$self->state('init92');
+			$self->{do_pc9x} = 1;
+			dbg("Do pc9x set on $pcall");
+		}
 	}
 	unless ($self->{do_pc9x}) {
 		dbg("PCPROT: PC9x come in from non-PC9x node, ignored") if isdbg('chanerr');
@@ -1677,6 +1687,12 @@ sub handle_93
 		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
 		return;
 	}
+
+	unless ($self->{do_pc9x}) {
+		dbg("PCPROT: PC9x come in from non-PC9x node, ignored") if isdbg('chanerr');
+		return;
+	}
+
 	my $t = $_[2];
 	my $parent = check_pc9x_t($pcall, $t, 93, 1) || return;
 

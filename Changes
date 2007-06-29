@@ -1,3 +1,8 @@
+29Jun07=======================================================================
+1. If a node is set/isolated then make sure that a) pc9x is not advertised
+and b) pc9x is ignored.
+2. Add (un)set/wantpc9x command (but please don't use them without talking
+to me first), here be dragons!!
 25Jun07=======================================================================
 1. make sure that a C record is sent for node call every update period.
 2. make announces work again (probably).
