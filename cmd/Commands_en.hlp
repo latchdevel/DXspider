@@ -1864,7 +1864,7 @@ occurred whilst you were away. SHOW/CHAT on its own will show data for
 all groups. If you use a group name then it will show only chat for
 that group.
 
-=== 9^SHOW/CMD_CACHE^Show the real source path of commands
+=== 9^SHOW/CMD_CACHE [pattern]^Show the real source path of commands
 It is possible in DXSpider to define local versions of commands.
 Sometimes one forgets that one has these. This command will show you
 the source path where the node is getting each one of its commands.
@@ -1872,6 +1872,17 @@ the source path where the node is getting each one of its commands.
 If you find a local command that you don't want then then simply
 delete it, run LOAD/CMD_CACHE to clear out the command cache and
 try again. You will now be using the standard version.
+
+If you are looking for information on a specific command then
+just add a string, eg:
+
+  sh/cmd dx
+
+might give you:
+
+  Command              Path
+  set/dxgrid           /spider/cmd/set/dxgrid.pl
+  sh/dx                /spider/cmd/show/dx.pl
 
 === 0^SHOW/CONFIGURATION [<node>]^Show all the nodes and users visible
 This command allows you to see all the users that can be seen
