@@ -915,7 +915,8 @@ will automatially be picked up by the cluster program. Sometimes it
 can get confused if you are doing a lot of moving commands about or
 delete a command in the local_cmd tree and want to use the normal one
 again. Execute this command to reset everything back to the state it
-was just after a cluster restart.
+was just after a cluster restart. To see what is in the command cache
+see SHOW/CMD_CACHE.
 
 === 9^LOAD/FORWARD^Reload the msg forwarding routing table
 Reload the /spider/msg/forward.pl file if you have changed it
@@ -1862,6 +1863,15 @@ This command allows you to see any chat or conferencing that has
 occurred whilst you were away. SHOW/CHAT on its own will show data for
 all groups. If you use a group name then it will show only chat for
 that group.
+
+=== 9^SHOW/CMD_CACHE^Show the real source path of commands
+It is possible in DXSpider to define local versions of commands.
+Sometimes one forgets that one has these. This command will show you
+the source path where the node is getting each one of its commands.
+
+If you find a local command that you don't want then then simply
+delete it, run LOAD/CMD_CACHE to clear out the command cache and
+try again. You will now be using the standard version.
 
 === 0^SHOW/CONFIGURATION [<node>]^Show all the nodes and users visible
 This command allows you to see all the users that can be seen
