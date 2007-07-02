@@ -29,8 +29,10 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $pingint = $dxchan->pingint;
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
 	my $iso = $dxchan->isolate ? 'Y' :' ';
-	my ($fin, $fout) = (' ', ' ');
-	unless ($dxchan->do_pc92) {
+	my ($fin, $fout, $pc92) = (' ', ' ', ' ');
+	if ($dxchan->do_pc9x) {
+		$pc92 = 'Y';
+	} else {
 		my $f;
 		if ($f = $dxchan->inroutefilter) {
 			$fin = $dxchan->inroutefilter =~ /node_default/ ? 'D' : 'Y';
@@ -45,7 +47,6 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "DXNT" if $dxchan->is_dxnet;
 	$sort = "AR-C" if $dxchan->is_arcluster;
 	$sort = "AK1A" if $dxchan->is_ak1a;
-	my $pc92 = $dxchan->do_pc9x ? 'Y' : '';
 	push @out, sprintf "%10s $sort $t$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92", $call, $pingint, $lastt;
 }
 
