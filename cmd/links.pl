@@ -15,8 +15,8 @@ my $dxchan;
 my @out;
 my $nowt = time;
 
-push @out, "                                      Ave   Obs   Ping   Sec Since";
-push @out, "  Callsign Type Started               RTT  count  Int.   Last Ping PC92";
+push @out, "                                      Ave  Obs  Ping  Next      Filters";
+push @out, "  Callsign Type Started               RTT Count Int.  Ping Iso? In  Out PC92?";
 
 foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $call = $dxchan->call();
@@ -25,9 +25,20 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $sort;
 	my $name = $dxchan->user->name || " ";
 	my $obscount = $dxchan->nopings;
-	my $lastt = $nowt - ($dxchan->lastping);
+	my $lastt = $dxchan->pingint - ($nowt - $dxchan->lastping);
 	my $pingint = $dxchan->pingint;
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
+	my $iso = $dxchan->isolate ? 'Y' :' ';
+	my ($fin, $fout) = (' ', ' ');
+	unless ($dxchan->do_pc92) {
+		my $f;
+		if ($f = $dxchan->inroutefilter) {
+			$fin = $dxchan->inroutefilter =~ /node_default/ ? 'D' : 'Y';
+		}
+		if ($f = $dxchan->routefilter) {
+			$fout = $dxchan->routefilter =~ /node_default/ ? 'D' : 'Y';
+		}
+	}
 	$sort = 'ANEA' if $dxchan->is_aranea;
 	$sort = "DXSP" if $dxchan->is_spider;
 	$sort = "CLX " if $dxchan->is_clx;
@@ -35,7 +46,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "AR-C" if $dxchan->is_arcluster;
 	$sort = "AK1A" if $dxchan->is_ak1a;
 	my $pc92 = $dxchan->do_pc9x ? 'Y' : '';
-	push @out, sprintf "%10s $sort $t$ping    $obscount   %5d       %5d   $pc92", $call, $pingint, $lastt;
+	push @out, sprintf "%10s $sort $t$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92", $call, $pingint, $lastt;
 }
 
 return (1, @out)

@@ -2,6 +2,9 @@
 1. Add a new command to show the contents of the cmd_cache. This allows those
 people whom develop their own commands to see which version they are using.
 It is called show/cmd_cache (or sh/cmd for short).
+2. Add some extra info to the links command. Show whether a link is isolated
+and also whether it has filters (if applicable) and whether these are
+personalised ('Y') or the default node_filter ('D').
 29Jun07=======================================================================
 1. If a node is set/isolated then make sure that a) pc9x is not advertised
 and b) pc9x is ignored.
