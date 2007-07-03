@@ -1,3 +1,5 @@
+03Jul07=======================================================================
+1. fix unwanted dupe notifications if a PC12 comes back in on a loop.
 02Jul07=======================================================================
 1. Add a new command to show the contents of the cmd_cache. This allows those
 people whom develop their own commands to see which version they are using.

@@ -69,7 +69,7 @@ $eph_pc15_restime = 6*60;
 $eph_pc34_restime = 30;
 $pingint = 5*60;
 $obscount = 2;
-$chatdupeage = 20 * 60 * 60;
+$chatdupeage = 20 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
@@ -654,9 +654,9 @@ sub send_announce
 		}
 	}
 
-	if (AnnTalk::dup($from, $_[1], $_[2])) {
+	if (AnnTalk::dup($from, $target, $_[2])) {
 		my $dxchan = DXChannel::get($from);
-		if ($dxchan && $dxchan->is_user) {
+		if ($self == $main::me && $dxchan && $dxchan->is_user) {
 			if ($dxchan->priv < 5) {
 				$dxchan->send($dxchan->msg('dup'));
 				return;
@@ -681,7 +681,7 @@ sub send_announce
 	}
 }
 
-my $msgid = 0;
+my $msgid = int rand(1000);
 
 sub nextchatmsgid
 {
@@ -722,9 +722,9 @@ sub send_chat
 		}
 	}
 
-	if (AnnTalk::dup($from, $target, $_[2], $chatdupeage)) {
+	if (AnnTalk::dup($from, $target, $_[2], $main::systime + $chatdupeage)) {
 		my $dxchan = DXChannel::get($from);
-		if ($dxchan && $dxchan->is_user) {
+		if ($self == $main::me && $dxchan && $dxchan->is_user) {
 			if ($dxchan->priv < 5) {
 				$dxchan->send($dxchan->msg('dup'));
 				return;
