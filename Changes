@@ -1,3 +1,5 @@
+05Jul07=======================================================================
+1. Try to make sure that the node config broadcasts are actually sent...
 03Jul07=======================================================================
 1. fix unwanted dupe notifications if a PC12 comes back in on a loop.
 02Jul07=======================================================================

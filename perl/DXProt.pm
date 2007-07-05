@@ -45,6 +45,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc92_update_period $pc92_obs_timeout
 			%pc92_find $pc92_find_timeout $pc92_short_update_period
+			$next_pc92_obs_timeout
 		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -73,11 +74,13 @@ $chatdupeage = 20 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
-$pc92_update_period = 60*60;	# the period between PC92 C updates
+$pc92_update_period = 60*60;	# the period between outgoing PC92 C updates
 $pc92_short_update_period = 15*60; # shorten the update period after a connection
 %pc92_find = ();				# outstanding pc92 find operations
 $pc92_find_timeout = 30;		# maximum time to wait for a reply
-$pc92_obs_timeout = $pc92_update_period; # the time between obscount countdowns
+#$pc92_obs_timeout = $pc92_update_period; # the time between obscount countdowns
+$pc92_obs_timeout = 60*60; # the time between obscount for incoming countdowns
+$next_pc92_obs_timeout = $main::systime + 60*60; # the time between obscount countdowns
 
 
 
@@ -209,6 +212,7 @@ sub update_pc92_next
 	my $self = shift;
 	my $period = shift || $pc92_update_period;
 	$self->{next_pc92_update} = $main::systime + $period - int rand($period / 4);
+	dbg("ROUTE: update_pc92_next: $self->{call} " . atime($self->{next_pc92_update})) if isdbg('obscount');
 }
 
 sub init
@@ -341,7 +345,7 @@ sub start
 	$script->run($self) if $script;
 
 	# set next_pc92_update time for this node sooner
-	$self->update_pc92_next($pc92_short_update_period);
+	$self->update_pc92_next($self->{outbound} ? $pc92_short_update_period : $pc92_update_period);
 }
 
 #
@@ -461,9 +465,9 @@ sub process
 		eph_clean();
 		import_chat();
 
-		if ($main::systime >= $pc92_obs_timeout) {
+		if ($main::systime >= $next_pc92_obs_timeout) {
 			time_out_pc92_routes();
-			$pc92_obs_timeout = $main::systime + $pc92_update_period;
+			$next_pc92_obs_timeout = $main::systime + $pc92_obs_timeout;
 		}
 
 		$last10 = $t;
@@ -475,7 +479,8 @@ sub process
 			# send out a PC92 config record if required for me and
 			# all my non pc9x dependent nodes.
 			if ($main::systime >= $dxchan->{next_pc92_update}) {
-				if ($dxchan->{call} eq $main::mycall || !$dxchan->{do_pc9x}) {
+				dbg("ROUTE: pc92 broadcast candidate: $dxchan->{call}") if isdbg('obscount');
+				if ($dxchan == $main::me || !$dxchan->{do_pc9x}) {
 					$dxchan->broadcast_pc92_update($dxchan->{call});
 				}
 			}
@@ -851,7 +856,7 @@ sub gen_my_pc92_config
 		dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
 		my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
 		dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
-		return pc92c($main::routeroot, @localnodes);
+		return pc92c($node, @localnodes);
 	} else {
 		my @rout = map {my $r = Route::User::get($_); $r ? ($r) : ()} $node->users;
 		return pc92c($node, @rout);
@@ -885,7 +890,7 @@ sub broadcast_pc92_update
 	my $self = shift;
 	my $call = shift;
 
-	dbg('DXProt::broadcast_pc92_update') if isdbg('trace');
+	dbg("ROUTE: broadcast_pc92_update $call") if isdbg('obscount');
 
 	my $nref = Route::Node::get($call);
 	my $l = $nref->last_PC92C(gen_my_pc92_config($nref));
@@ -901,14 +906,14 @@ sub time_out_pc92_routes
 		my $o = $n->dec_obs;
 		if ($o <= 0) {
 			if (my $dxchan = DXChannel::get($n->call)) {
-				dbg("disconnecting local pc92 $dxchan->{call} on obscount") if isdbg('obscount');
+				dbg("ROUTE: disconnecting local pc92 $dxchan->{call} on obscount") if isdbg('obscount');
 				$dxchan->disconnect;
 				next;
 			}
 			my @parents = map {Route::Node::get($_)} $n->parents;
 			for (@parents) {
 				if ($_) {
-					dbg("deleting pc92 $_->{call} from $n->{call} on obscount")  if isdbg('obscount');
+					dbg("ROUTE: deleting pc92 $_->{call} from $n->{call} on obscount")  if isdbg('obscount');
 					push @rdel, $n->del($_);
 				}
 			}
