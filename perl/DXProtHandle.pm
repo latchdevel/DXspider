@@ -1764,7 +1764,7 @@ sub handle_93
 		my $wx = uc $to eq 'WX' ? '1' : '0';
 		my $local = $via eq 'LOCAL' ? '*' : $via;
 
-		$self->send_announce(1, pc12($from, $text, $local, $via, $sysop, $wx, $pcall), $from, $local, $text, $sysop, $pcall, $wx, $via eq 'LOCAL' ? $via : undef);
+		$self->send_announce(1, pc12($from, $text, $local, $sysop, $wx, $pcall), $from, $local, $text, $sysop, $pcall, $wx, $via eq 'LOCAL' ? $via : undef);
 		return if $via eq 'LOCAL';
 	} else {
 		# chat messages to non-pc9x nodes

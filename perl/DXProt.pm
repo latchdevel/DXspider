@@ -1533,18 +1533,15 @@ sub import_chat
 
 		foreach my $text (@msg) {
 			next unless $text && $text !~ /^\s*#/;
-			if ($target eq 'ALL' || $target eq 'LOCAL' || $target eq 'SYSOP') {
-				my $sysopflag = $target eq 'SYSOP' ? '*' : ' ';
-				if ($target ne 'LOCAL') {
-					send_announce($main::me, pc12($main::mycall, $text, '*', $sysopflag), $main::mycall, '*', $text, $sysopflag, $main::mycall, '0');
-				} else {
-					Log('ann', 'LOCAL', $main::mycall, $text);
-					DXChannel::broadcast_list("To LOCAL de ${main::mycall}: $text\a", 'ann', undef, DXCommandmode->get_all());
-				}
+			if ($target eq 'ALL' || $target eq 'LOCAL' || $target eq 'SYSOP' || $target eq 'WX') {
+				my $sysop = uc $target eq 'SYSOP' ? '*' : ' ';
+				my $wx = uc $target eq 'WX' ? '1' : '0';
+				my $via = $target;
+				$via = '*' if $target eq 'ALL' || $target eq 'SYSOP';
+				Log('ann', $target, $main::mycall, $text);
+				$main::me->normal(DXProt::pc93($target, $main::mycall, $via, $text));
 			} else {
-				my $msgid = nextchatmsgid();
-				$text = "#$msgid $text";
-				send_chat($main::me, pc12($main::mycall, $text, '*', $target), $main::mycall, '*', $text, $target, $main::mycall, '0');
+				$main::me->send_chats($target, $text);
 			}
 		}
 	}

@@ -5,6 +5,8 @@ causing nodes to time out.
 2. Make sure that the 'over midnight' distance calculation actually does what
 is required!
 3. Tart up version number reporting in sh/node.
+4. Pass the correct number of parameters in pc93 -> pc12 conversions which
+should stop returning PC12s coming out as SYSOP announces.
 05Jul07=======================================================================
 1. Try to make sure that the node config broadcasts are actually sent...
 03Jul07=======================================================================
