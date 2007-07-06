@@ -69,6 +69,7 @@ foreach $call (@call) {
 	
 	my ($major, $minor, $subs) = unpack("AAA*", $ver) if $ver;
 	if ($uref->is_spider) {
+		$ver -= 53 if $ver > 54;
 		$build = "build: " . $uref->build if $uref->build;
 		push @out, $self->msg('snode2', $pcall, $sort, "$ver $build");
 	} else {
