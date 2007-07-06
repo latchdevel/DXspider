@@ -1,3 +1,9 @@
+06Jul07=======================================================================
+1. re-arrange id checking so that it is more logical and check that config
+records, that can be an hour coming, are not thoughtlessly ignored, thus
+causing nodes to time out.
+2. Make sure that the 'over midnight' distance calculation actually does what
+is required!
 05Jul07=======================================================================
 1. Try to make sure that the node config broadcasts are actually sent...
 03Jul07=======================================================================

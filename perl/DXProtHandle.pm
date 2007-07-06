@@ -46,7 +46,8 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$eph_pc15_restime $pc9x_past_age $pc9x_future_age
 		   );
 
-$pc9x_past_age = 15*60;			# maximum age in the past of a px9x
+$pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record might be the only
+								# thing a node might send - once an hour)
 $pc9x_future_age = 5*60;		# maximum age in the future ditto
 
 # incoming talk commands
@@ -1422,14 +1423,19 @@ sub check_pc9x_t
 		if ($parent->call ne $main::mycall) {
 			my $lastid = $parent->lastid->{$pc} || 0;
 			if ($t < $lastid) {
-				if ($lastid-86400+$t > $pc9x_past_age) {
-					dbg("PCPROT: dup id on $t <= $lastid (midnight rollover), ignored") if isdbg('chanerr');
+				if ($t+86400-$lastid > $pc9x_past_age) {
+					dbg("PCPROT: dup id on $t <= $lastid, ignored") if isdbg('chanerr');
 					return;
 				}
-			}
-			if ($lastid >= $t) {
-				dbg("PCPROT: dup id on $call $lastid >= $t, ignored") if isdbg('chanerr');
+			} elsif ($t == $lastid) {
+				dbg("PCPROT: dup id on $t == $lastid, ignored") if isdbg('chanerr');
 				return;
+			} else {
+				# $t > $lastid, check that the timestamp offered isn't too far away from 'now'
+				if ($t+$main::systime_daystart-$main::systime > $pc9x_future_age ) {
+					dbg("PCPROT: id $t too far in the future, ignored") if isdbg('chanerr');
+					return;
+				}
 			}
 		}
 	} elsif ($create) {
