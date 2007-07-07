@@ -659,7 +659,8 @@ sub send_announce
 		}
 	}
 
-	if (AnnTalk::dup($from, $target, $_[2])) {
+	# the sysop ('*') thing is an attempt to minimise the damage caused by non-updated PC93 generators
+	if (AnnTalk::dup($from, $target, $_[2]) || ($_[3] eq '*' && AnnTalk::dup($from, 'ALL', $_[2]))) {
 		my $dxchan = DXChannel::get($from);
 		if ($self == $main::me && $dxchan && $dxchan->is_user) {
 			if ($dxchan->priv < 5) {

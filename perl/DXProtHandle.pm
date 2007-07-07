@@ -1560,12 +1560,14 @@ sub handle_92
 						dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
 						return;
 					}
+					# this is only accepted from my "self".
+					# this also kills configs from PC92 nodes with external PC19 nodes that are also
+					# locally connected. Local nodes always take precedence.
+					if (DXChannel::get($call) && $call ne $self->{call}) {
+						dbg("PCPROT: locally connected node $call from other another node $self->{call}, ignored") if isdbg('chanerr');
+						return;
+					}
 					if ($is_extnode) {
-						# this is only accepted from my "self"
-						if (DXChannel::get($call) && $call ne $self->{call}) {
-							dbg("PCPROT: locally connected node config for $call from other another node $self->{call}, ignored") if isdbg('chanerr');
-							return;
-						}
 						# reparent to external node (note that we must have received a 'C' or 'A' record
 						# from the true parent node for this external before we get one for the this node
 						unless ($parent = Route::Node::get($call)) {
