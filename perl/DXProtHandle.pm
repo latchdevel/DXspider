@@ -1739,13 +1739,15 @@ sub handle_93
 		$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
 		$dxchan = DXChannel::get($to) unless $dxchan;
 		# check it...
-		if (ref $dxchan && $dxchan->isa('DXChannel')) {
-			if ($dxchan->is_user) {
-				$dxchan->talk($from, $to, $via, $text, $onode);
-				return;
+		if ($dxchan) {
+			if (ref $dxchan && $dxchan->isa('DXChannel')) {
+				if ($dxchan->is_user) {
+					$dxchan->talk($from, $to, $via, $text, $onode);
+					return;
+				}
+			} else {
+				dbg("ERROR: $to -> $dxchan is not a DXChannel! (local talk)");
 			}
-		} else {
-			dbg("ERROR: $to -> $dxchan is not a DXChannel! (local talk)");
 		}
 
 		# convert to PC10 talks where appropriate
