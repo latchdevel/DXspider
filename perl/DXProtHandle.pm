@@ -1738,9 +1738,14 @@ sub handle_93
 		my $dxchan;
 		$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
 		$dxchan = DXChannel::get($to) unless $dxchan;
-		if ($dxchan && $dxchan->is_user) {
-			$dxchan->talk($from, $to, $via, $text, $onode);
-			return;
+		# check it...
+		if (ref $dxchan && $dxchan->isa('DXChannel')) {
+			if ($dxchan->is_user) {
+				$dxchan->talk($from, $to, $via, $text, $onode);
+				return;
+			}
+		} else {
+			dbg("ERROR: $to -> $dxchan is not a DXChannel! (local talk)");
 		}
 
 		# convert to PC10 talks where appropriate
@@ -1748,14 +1753,17 @@ sub handle_93
 		if ($ref) {
 			# just go for the "best" one for now (rather than broadcast)
 			$dxchan = $ref->dxchan;
-#			my @dxchan = $ref->alldxchan;
-#			for $dxchan (@dxchan) {
+
+			# check it...
+			if (ref $dxchan && $dxchan->isa('DXChannel')) {
 				if ($dxchan->{do_pc9x}) {
 					$dxchan->send($line);
 				} else {
 					$dxchan->talk($from, $to, $via, $text, $onode);
 				}
-#			}
+			} else {
+				dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
+			}
 			return;
 		}
 

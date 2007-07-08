@@ -1,3 +1,6 @@
+08Jul07=======================================================================
+1. put in a temporary fix to the crashing on incoming PC10 talks, whilst I
+try to work out how it is happening.
 06Jul07=======================================================================
 1. re-arrange id checking so that it is more logical and check that config
 records, that can be an hour coming, are not thoughtlessly ignored, thus
