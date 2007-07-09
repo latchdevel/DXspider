@@ -41,14 +41,17 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
 			$investigation_int $pc19_version $myprot_version
-			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
+			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc9x_past_age $pc9x_future_age
+			$pc10_dupe_age
 		   );
 
 $pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record might be the only
 								# thing a node might send - once an hour)
 $pc9x_future_age = 5*60;		# maximum age in the future ditto
+$pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
+
 
 # incoming talk commands
 sub handle_10
@@ -58,8 +61,10 @@ sub handle_10
 	my $line = shift;
 	my $origin = shift;
 
-	# rsfp check
-	return if $rspfcheck and !$self->rspfcheck(0, $_[6], $_[1]);
+	# this is to catch loops caused by bad software ...
+	if (eph_dup($line, $pc10_dupe_age)) {
+		return;
+	}
 
 	# will we allow it at all?
 	if ($censorpc) {
@@ -125,9 +130,6 @@ sub handle_11
 			return;
 		}
 	}
-
-	# rsfp check
-	#			return if $rspfcheck and !$self->rspfcheck(1, $_[7], $_[6]);
 
 	# is the spotted callsign blank? This should really be trapped earlier but it
 	# could break other protocol sentences. Also check for lower case characters.
@@ -286,8 +288,6 @@ sub handle_12
 	my $line = shift;
 	my $origin = shift;
 
-	#			return if $rspfcheck and !$self->rspfcheck(1, $_[5], $_[1]);
-
 	# announce duplicate checking
 	$_[3] =~ s/^\s+//;			# remove leading blanks
 
@@ -360,7 +360,7 @@ sub handle_15
 	my $origin = shift;
 
 	if (eph_dup($line, $eph_pc15_restime)) {
-		dbg("PCPROT: Ephemeral dup, dropped") if isdbg('chanerr');
+		return;
 	} else {
 		unless ($self->{isolate}) {
 			DXChannel::broadcast_nodes($line, $self) if $line =~ /\^H\d+\^?~?$/; # send it to everyone but me
@@ -402,7 +402,6 @@ sub handle_16
 	}
 
 	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC16 detected") if isdbg('chanerr');
 		return;
 	}
 
@@ -545,7 +544,6 @@ sub handle_17
 	$self->tell_buddies('logoutb', $ucall, $ncall);
 
 	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC17 detected") if isdbg('chanerr');
 		return;
 	}
 
@@ -833,7 +831,6 @@ sub handle_21
 	}
 
 	if (eph_dup($line)) {
-		dbg("PCPROT: dup PC21 detected") if isdbg('chanerr');
 		return;
 	}
 
@@ -878,10 +875,6 @@ sub handle_23
 		}
 	}
 
-	# only do a rspf check on PC23 (not 27)
-	if ($pcno == 23) {
-		return if $rspfcheck and !$self->rspfcheck(1, $_[8], $_[7])
-	}
 
 	# do some de-duping
 	my $d = cltounix($_[1], sprintf("%02d18Z", $_[2]));
@@ -941,7 +934,6 @@ sub handle_24
 	return unless $nref || $uref; # if we don't know where they are, it's pointless sending it on
 
 	if (eph_dup($line)) {
-		dbg("PCPROT: Dup PC24 ignored\n") if isdbg('chanerr');
 		return;
 	}
 
@@ -1022,7 +1014,7 @@ sub handle_34
 	my $line = shift;
 	my $origin = shift;
 	if (eph_dup($line, $eph_pc34_restime)) {
-		dbg("PCPROT: dupe PC34, ignored") if isdbg('chanerr');
+		return;
 	} else {
 		$self->process_rcmd($_[1], $_[2], $_[2], $_[3]);
 	}
@@ -1095,7 +1087,6 @@ sub handle_41
 
 	my $l = "PC41^$call^$sort";
 	if (eph_dup($l, $eph_info_restime)) {
-		dbg("PCPROT: dup PC41, ignored") if isdbg('chanerr');
 		return;
 	}
 
@@ -1176,7 +1167,6 @@ sub handle_49
 	my $origin = shift;
 
 	if (eph_dup($line)) {
-		dbg("PCPROT: Dup PC49 ignored\n") if isdbg('chanerr');
 		return;
 	}
 
@@ -1235,7 +1225,6 @@ sub handle_51
 		RouteDB::update($from, $self->{call});
 
 		if (eph_dup($line)) {
-			dbg("PCPROT: dup PC51 detected") if isdbg('chanerr');
 			return;
 		}
 		# route down an appropriate thingy
@@ -1712,6 +1701,11 @@ sub handle_93
 	my $onode = $_[7];
 	$onode = $pcall if @_ <= 8;
 
+	# this is catch loops caused by bad software ...
+	if (eph_dup("PC93|$from|$text|$onode", $pc10_dupe_age)) {
+		return;
+	}
+
 	# will we allow it at all?
 	if ($censorpc) {
 		my @bad;
@@ -1719,11 +1713,6 @@ sub handle_93
 			dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 			return;
 		}
-	}
-
-	# this is catch loops caused by bad software ...
-	if (eph_dup("PC93|$from|$text|$onode")) {
-		return;
 	}
 
 	# if this is a 'bad spotter' user then ignore it

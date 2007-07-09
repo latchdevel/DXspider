@@ -41,7 +41,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
 			$investigation_int $pc19_version $myprot_version
-			%nodehops $baddx $badspotter $badnode $censorpc $rspfcheck
+			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc92_update_period $pc92_obs_timeout
 			%pc92_find $pc92_find_timeout $pc92_short_update_period
@@ -63,8 +63,7 @@ $badspotter = new DXHash "badspotter";
 $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
 $ann_to_talk = 1;
-$rspfcheck = 1;
-$eph_restime = 180;
+$eph_restime = 60;
 $eph_info_restime = 60*60;
 $eph_pc15_restime = 6*60;
 $eph_pc34_restime = 30;

@@ -573,28 +573,6 @@ sub decode_input
 	return ($sort, $call, $line);
 }
 
-sub rspfcheck
-{
-	my ($self, $flag, $node, $user) = @_;
-	my $nref = Route::Node::get($node);
-	my $dxchan = $nref->dxchan if $nref;
-	if ($nref && $dxchan) {
-	    if ($dxchan == $self) {
-			return 1 unless $user;
-			return 1 if $user eq $node;
-			my @users = $nref->users;
-			return 1 if @users == 0 || grep $user eq $_, @users;
-			dbg("RSPF: $user not on $node") if isdbg('chanerr');
-		} else {
-			dbg("RSPF: Shortest path for $node is " . $nref->dxchan->{call}) if isdbg('chanerr');
-		}
-	} else {
-		return 1 if $flag;
-		dbg("RSPF: required $node not found" ) if isdbg('chanerr');
-	}
-	return 0;
-}
-
 # broadcast a message to all clusters taking into account isolation
 # [except those mentioned after buffer]
 sub broadcast_nodes
