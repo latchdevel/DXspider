@@ -106,8 +106,8 @@ sub handle_10
 	RouteDB::update($_[6], $self->{call});
 #	RouteDB::update($to, $_[6]);
 
-	# convert this to a PC93 and process it as such
-	$self->normal(pc93($to, $from, $via, $_[3], $_[6]));
+	# convert this to a PC93, coming from mycall with origin set and process it as such
+	$main::me->normal(pc93($to, $from, $via, $_[3], $_[6]));
 }
 
 # DX Spot handling
@@ -1696,6 +1696,7 @@ sub handle_93
 		return;
 	}
 
+	# remember that we are converting PC10->PC93
 	unless ($self->{do_pc9x}) {
 		dbg("PCPROT: PC9x come in from non-PC9x node, ignored") if isdbg('chanerr');
 		return;

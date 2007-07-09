@@ -1,3 +1,6 @@
+09Jul07=======================================================================
+1. remove check for PC93 from legacy nodes. This will allow PC10s to be
+propagated correctly. Probably.
 08Jul07=======================================================================
 1. put in a temporary fix to the crashing on incoming PC10 talks, whilst I
 try to work out how it is happening.
