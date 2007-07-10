@@ -329,7 +329,7 @@ sub normal
 							if ($self->{state} eq 'talk') {
 								$self->send_talks($_, $l);
 							} else {
-								$self->send_chats($_, $l)
+								send_chats($self, $_, $l)
 							}
 						}
 					}
@@ -347,7 +347,7 @@ sub normal
 					if ($self->{state} eq 'talk') {
 						$self->send_talks($_, $rawline);
 					} else {
-						$self->send_chats($_, $rawline);
+						send_chats($self, $_, $rawline);
 					}
 				}
 			}

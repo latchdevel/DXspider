@@ -69,6 +69,7 @@ sub create_it
 	$self->{dxok} = 1;
 	$self->{annok} = 1;
 	$self->{lang} = 'en';
+	$self->{group} = [qw(local #9000)];
   
 	# write it away
 	$self->close();

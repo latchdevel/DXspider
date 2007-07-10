@@ -1541,7 +1541,7 @@ sub import_chat
 				Log('ann', $target, $main::mycall, $text);
 				$main::me->normal(DXProt::pc93($target, $main::mycall, $via, $text));
 			} else {
-				$main::me->send_chats($target, $text);
+				DXCommandmode::send_chats($main::me, $target, $text);
 			}
 		}
 	}
