@@ -21,7 +21,7 @@ if ($list[0] && $list[0] =~ /^NOD/) {
 	
 	foreach my $n (@nodes) {
 		$dxchan = $n->dxchan;
-		push @{$ch{$dxchan->call}}, $n;
+		push @{$ch{$dxchan->call}}, $n if $dxchan;
 	}
 
 	foreach my $call (sort keys %ch) {
