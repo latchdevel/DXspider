@@ -10,7 +10,7 @@
 # Si la commande se termine par un "-", cette ligne n'est pas imprimée
 # mais les suivantes le sont.
 #
-# $Id$
+#
 #
 # Les lignes de commentaires sont indentées avant l'affichage.
 #

@@ -1,7 +1,7 @@
 #
 # show the debug status
 #
-# $Id$
+#
 #
 
 use DXDebug;

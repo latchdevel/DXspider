@@ -10,7 +10,7 @@
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 # Modified 13Dec98 Iain Phillips G0RDI
 #

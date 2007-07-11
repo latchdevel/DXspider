@@ -1,7 +1,7 @@
 #
 # the bye command
 #
-# $Id$
+#
 #
 
 my $self = shift;

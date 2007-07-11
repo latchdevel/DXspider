@@ -3,7 +3,7 @@
 #
 # you can enter two qra locators and it will calc the distance between them
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

@@ -1,5 +1,6 @@
 11Jul07=======================================================================
 1. improve speed of sh/c/n
+2. remove all $Id$ strings from cmd tree
 09Jul07=======================================================================
 1. remove check for PC93 from legacy nodes. This will allow PC10s to be
 propagated correctly. Probably.

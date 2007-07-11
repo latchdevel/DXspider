@@ -5,7 +5,7 @@
 #
 # Copyright (c) 2002 Dirk Koopman
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

@@ -9,7 +9,7 @@
 # if the command ends in a - then that line isn't printed, but any
 # subsequent lines are
 #
-# $Id$
+#
 #
 # Comment lines are indented before printing
 #

@@ -1,7 +1,7 @@
 #
 # the shutdown command
 # 
-# $Id$
+#
 #
 my $self = shift;
 my $call = $self->call;

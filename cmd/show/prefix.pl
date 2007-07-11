@@ -1,7 +1,7 @@
 #
 # show the prefix info for each callsign or prefix entered
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

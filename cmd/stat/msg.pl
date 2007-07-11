@@ -1,7 +1,7 @@
 #
 # show all the values on a message header
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

@@ -3,7 +3,7 @@
 # 
 # This produces the Gtk for all the little sub-screens
 #
-# $Id$
+#
 #
 # Copyright (c) 2006 Dirk Koopman G1TLH
 #

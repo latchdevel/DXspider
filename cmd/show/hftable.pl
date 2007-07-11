@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2001 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 # Modified on 2002/10/27 by K1XX for his own use
 # Valid inputs (and then tarted up by G1TLH to include in the

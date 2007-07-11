@@ -5,7 +5,7 @@
 #
 # Copyright (c) 2002 Charlie Carroll K1XX
 #
-# $Id$
+#
 #
 
 # wm7d accepts only single callsign

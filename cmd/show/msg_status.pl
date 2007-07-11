@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2000 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 my ($self, $line) = @_;
 return (0, $self->msg('e5')) if $self->priv < 5;

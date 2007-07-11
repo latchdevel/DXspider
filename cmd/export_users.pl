@@ -1,7 +1,7 @@
 #
 # the export the user file to ascii command
 #
-# $Id$
+#
 #
 my $self = shift;
 return (1, $self->msg('e5')) unless $self->priv >= 9;

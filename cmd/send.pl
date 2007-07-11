@@ -14,7 +14,7 @@
 # 
 # Copyright (c) Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;

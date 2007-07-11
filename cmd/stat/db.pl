@@ -1,7 +1,7 @@
 #
 # show all the values in a db fcb
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

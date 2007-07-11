@@ -4,7 +4,7 @@
 #
 # copyright (c) 1999 Steve Franke K9AN
 #
-# $Id$
+#
 # 
 # 2001/12/16 added age of keps in the sh/sat output list.
 #   Note - there is the potential for problems when satellite name

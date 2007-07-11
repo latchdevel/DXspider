@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1999 - Dirk Koopman
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

@@ -1,7 +1,7 @@
 #
 # show dx (normal)
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

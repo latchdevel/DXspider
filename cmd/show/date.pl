@@ -6,7 +6,7 @@
 #
 # Shamelessly cribbed from time.pl:-
 #
-# $Id$
+#
 #
 
 

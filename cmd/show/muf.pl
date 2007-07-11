@@ -6,7 +6,7 @@
 #
 # as fixed by Steve Franke K9AN
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

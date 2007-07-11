@@ -1,7 +1,7 @@
 #
 # set AGW engine monitoring
 #
-# $Id$
+#
 #
 
 my $self = shift;

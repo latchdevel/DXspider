@@ -1,7 +1,7 @@
 #
 # add a debug level
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1998 Iain Phillips G0RDI
 #
-# $Id$
+#
 #
 my ($self, $line) = @_;
 my @args = split /\s+/, $line;

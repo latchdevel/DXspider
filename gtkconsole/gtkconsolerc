@@ -1,7 +1,7 @@
 #
 # Standard RC file for gtkconsole
 #
-# $Id$
+#
 #
 
 style "std_gtkconsole" {

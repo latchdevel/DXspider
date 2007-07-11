@@ -5,7 +5,7 @@
 #
 # Copyright (c) 2001 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;		      # generate a list of callsigns

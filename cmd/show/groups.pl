@@ -3,7 +3,7 @@
 #
 # by Tommy SM3OSM
 #
-# $Id$
+#
 #
 
 use Time::Local;

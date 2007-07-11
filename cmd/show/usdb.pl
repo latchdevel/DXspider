@@ -1,7 +1,7 @@
 #
 # show the usdb info for each callsign or prefix entered
 #
-# $Id$
+#
 #
 # Copyright (c) 2002 Dirk Koopman G1TLH
 #

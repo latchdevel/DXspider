@@ -1,7 +1,7 @@
 #
 # show the heading and distance for each callsign or prefix entered
 #
-# $Id$
+#
 #
 # AK1A-compatible output Iain Philipps, G0RDI 16-Dec-1998
 #

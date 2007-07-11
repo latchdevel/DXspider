@@ -4,7 +4,7 @@
 # Tommy Johansson (SM3OSM) 2002-07-23
 # New version using Net::Telnet  2003-03-09
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1998-2003 - Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 my $self = shift;
 

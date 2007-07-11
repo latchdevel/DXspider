@@ -1,7 +1,7 @@
 #
 # show either the current user or a nominated set
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;

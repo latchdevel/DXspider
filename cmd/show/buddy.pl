@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2006 - Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 
 my ($self) = @_;

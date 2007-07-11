@@ -4,7 +4,7 @@
 # in other words mark all messages as being already received
 # by this node.
 #
-# $Id$
+#
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #

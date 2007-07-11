@@ -3,7 +3,7 @@
 #
 # from an idea by Leo,IZ5FSA and 425DxNews Group
 #
-# $Id$
+#
 #
 my ($self, $line) = @_;
 my @list = map {uc} split /\s+/, $line;               # generate a list of callsigns

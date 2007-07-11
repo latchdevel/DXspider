@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
-# $Id$
+#
 #
 my $self = shift;
 return (1, $self->msg('e5')) if $self->priv < 5;

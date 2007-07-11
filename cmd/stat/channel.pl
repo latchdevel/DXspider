@@ -1,7 +1,7 @@
 #
 # show the channel status
 #
-# $Id$
+#
 #
 
 use strict;

@@ -5,7 +5,7 @@
 # Modified Dec 9, 2004 for new website and xml schema by David Spoelstra N9KT
 # and tidied up by me (Dirk)
 #
-# $Id$
+#
 #
 
 my ($self, $line) = @_;
