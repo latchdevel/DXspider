@@ -16,15 +16,18 @@ my @val;
 
 push @out, $self->msg('showconf');
 if ($list[0] && $list[0] =~ /^NOD/) {
-	my @ch = sort {$a->call cmp $b->call} DXChannel::get_all_nodes();
+	my %ch;
 	my $dxchan;
 	
-	foreach $dxchan (@ch) {
-		@val = sort {$a->call cmp $b->call} grep { $_->dxchan && $_->dxchan == $dxchan } @nodes;
+	foreach my $n (@nodes) {
+		$dxchan = $n->dxchan;
+		push @{$ch{$dxchan->call}}, $n;
+	}
+
+	foreach my $call (sort keys %ch) {
+		@val = sort {$a->call cmp $b->call} @{$ch{$call}};
 		@l = ();
-		my $call = $dxchan->call;
-		$call ||= '???';
-		$call = "($call)" unless $dxchan->here;
+		$call = "($call)" unless DXChannel::get($call)->here;
 		push @l, $call;
 		
 		foreach my $ref (@val) {
