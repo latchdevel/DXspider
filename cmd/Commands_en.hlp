@@ -1855,6 +1855,14 @@ for more information.
 Display all the bad words in the system, see SET/BADWORD
 for more information.
 
+=== 0^SHOW/BANDS [band|region names]^Show the list of bands and regions
+Display the bands and regions (collections of bands) known to
+the system. If you supply band or region names to SHOW/BANDS,
+the command will display just those bands or regions, e.g.:
+
+	sh/band
+	sh/band 2m hf
+
 === 0^SHOW/BUDDY^Show your list of buddies
 See SET/BUDDY for more information about buddies.
 

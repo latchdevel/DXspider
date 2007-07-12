@@ -1,6 +1,7 @@
 12Jul07=======================================================================
 1. Change disconnection code so that nodes that are no longer routable are
 (all) cleared out.
+2. Add help for sh/band and also allow query of individual band or regions.
 11Jul07=======================================================================
 1. improve speed of sh/c/n
 2. remove all $Id$ strings from cmd tree
