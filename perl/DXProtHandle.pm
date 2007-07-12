@@ -1430,7 +1430,7 @@ sub check_pc9x_t
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
 	}
-	$parent->lastid->{$pc} = $t;
+	$parent->lastid->{$pc} = $t if $parent;
 
 	return $parent;
 }
@@ -1526,6 +1526,9 @@ sub handle_92
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
 
+		# remember the last channel we arrived on
+		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+
 		# this is the main route section
 		# here is where all the routes are created and destroyed
 
@@ -1570,6 +1573,7 @@ sub handle_92
 						}
 						$parent = check_pc9x_t($call, $t, 92) || return;
 						$parent->via_pc92(1);
+						$parent->PC92C_dxchan($self->{call});
 					}
 				} else {
 					dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
@@ -1578,6 +1582,7 @@ sub handle_92
 				$parent->here(Route::here($here));
 				$parent->version($version) if $version && $version > $parent->version;
 				$parent->build($build) if $build && $build > $parent->build;
+				$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
 				shift @ent;
 			}
 		}
@@ -1606,11 +1611,9 @@ sub handle_92
 
 			# we only reset obscounts on config records
 			$oparent->reset_obs;
-			$oparent->PC92C_dxchan($self->{call}) unless $self->{call} eq $oparent->call;
 			dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('obscount');
 			if ($oparent != $parent) {
 				$parent->reset_obs;
-				$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
 				dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 			}
 

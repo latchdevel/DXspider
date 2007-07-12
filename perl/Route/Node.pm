@@ -107,23 +107,35 @@ sub del
 			push @nodes, $r->del($self, $ncall, @_) if $r;
 		}
 		$self->_del_users;
-		delete $list{$self->{call}};
+		delete $list{$ncall};
 		push @nodes, $self;
 	}
 	return @nodes;
 }
 
 # this deletes this node completely by grabbing the parents
-# and deleting me from them
+# and deleting me from them, then deleting me from all the
+# dependent nodes.
 sub delete
 {
 	my $self = shift;
 	my @out;
+	my $ncall = $self->{call};
 
+	# get rid of users and parents
 	$self->_del_users;
-	foreach my $call (@{$self->{parent}}) {
-		my $parent = Route::Node::get($call);
-		push @out, $parent->del($self) if $parent;
+	if (@{$self->{parent}}) {
+		foreach my $call (@{$self->{parent}}) {
+			my $parent = Route::Node::get($call);
+			push @out, $parent->del($self) if $parent;
+		}
+	}
+	# get rid of my nodes
+	push @out, $self->del_nodes;
+	# this only happens if we a orphan with no parents
+	if ($list{$ncall}) {
+		push @out, $self;
+		delete $list{$ncall};
 	}
 	return @out;
 }
@@ -275,6 +287,7 @@ sub new
 	$self->{users} = [];
 	$self->{nodes} = [];
 	$self->{lastid} = {};
+	$self->{PC92C_dxchan} = '';
 	$self->reset_obs;			# by definition
 
 	$list{$call} = $self;

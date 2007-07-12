@@ -23,7 +23,9 @@ my @out;
 my $count;
 
 # search thru the user for nodes
-if ($call[0] eq 'ALL') {
+if (@call == 0) {
+	@call = map {$_->call} DXChannel::get_all_nodes();
+} elsif ($call[0] eq 'ALL') {
 	shift @call;
 	my ($action, $key, $data) = (0,0,0);
 	for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
@@ -31,9 +33,7 @@ if ($call[0] eq 'ALL') {
 		    push @call, $key;
 			++$count;
 		}
-	} 
-} elsif (@call == 0) {
-	@call = map {$_->call} DXChannel::get_all_nodes();  
+	}
 }
 
 my $call;

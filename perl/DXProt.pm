@@ -1144,28 +1144,12 @@ sub disconnect
 
 	# do routing stuff, remove me from routing table
 	my $node = Route::Node::get($call);
-	my @rout;
-	if ($node) {
-		@rout = $node->del($main::routeroot);
-
-		# and all my ephemera as well
-		for (@rout) {
-			my $c = $_->call;
-			eph_del_regex("^PC1[679].*$c");
-		}
-	}
 
 	RouteDB::delete_interface($call);
 
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);
 	$mref->stop_msg($call) if $mref;
-
-	# broadcast to all other nodes that all the nodes connected to via me are gone
-	unless ($pc39flag && $pc39flag == 2)  {
-		$self->route_pc21($main::mycall, undef, @rout) if @rout;
-		$self->route_pc92d($main::mycall, undef, $main::routeroot, $node) if $node;
-	}
 
 	# remove outstanding pings
 	delete $pings{$call};
@@ -1179,6 +1163,43 @@ sub disconnect
 	Log('DXProt', $call . " Disconnected");
 
 	$self->SUPER::disconnect;
+
+	# here we determine what needs to go out of the routing table
+	my @rout;
+	if ($node) {
+		dbg('%Route::Node::List = ' . join(',', sort keys %Route::Node::list)) if isdbg('routedisc');
+
+		@rout = $node->del($main::routeroot);
+
+		dbg('@rout = ' . join(',', sort map {$_->call} @rout)) if isdbg('routedisc');
+
+		# now we need to see what can't be routed anymore and came
+		# in via this node (probably).
+		my $n = 0;
+		while ($n != @rout) {
+			$n = @rout;
+			for (Route::Node::get_all()) {
+				unless ($_->dxchan) {
+					push @rout, $_->delete;
+				}
+			}
+			dbg('@rout = ' . join(',', sort map {$_->call} @rout)) if isdbg('routedisc');
+		}
+
+		dbg('%Route::Node::List = ' . join(',', sort keys %Route::Node::list)) if isdbg('routedisc');
+
+		# and all my ephemera as well
+		for (@rout) {
+			my $c = $_->call;
+			eph_del_regex("^PC1[679].*$c");
+		}
+	}
+
+	# broadcast to all other nodes that all the nodes connected to via me are gone
+	unless ($pc39flag && $pc39flag == 2)  {
+		$self->route_pc21($main::mycall, undef, @rout) if @rout;
+		$self->route_pc92d($main::mycall, undef, $main::routeroot, $node) if $node;
+	}
 }
 
 

@@ -305,6 +305,7 @@ sub findroutes
 
 	# deal with more nodes
 	my $nref = Route::get($call);
+	return () unless $nref;
 	foreach my $ncall (@{$nref->{parent}}) {
 		unless ($seen->{$ncall}) {
 			dbg("recursing from $call -> $ncall") if isdbg('routec');
