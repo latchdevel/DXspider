@@ -893,6 +893,10 @@ sub broadcast_pc92_update
 	dbg("ROUTE: broadcast_pc92_update $call") if isdbg('obscount');
 
 	my $nref = Route::Node::get($call);
+	unless ($nref) {
+		dbg("ERROR: broadcast_pc92_update - Route::Node $call disappeared");
+		return;
+	}
 	my $l = $nref->last_PC92C(gen_my_pc92_config($nref));
 	$main::me->broadcast_route_pc9x($main::mycall, undef, $l, 0);
 	$self->update_pc92_next($pc92_update_period);
