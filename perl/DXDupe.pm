@@ -21,14 +21,9 @@ $fn = "$main::data/dupefile";
 
 sub init
 {
+	unlink $fn;
 	$dbm = tie (%d, 'DB_File', $fn);
-	unless ($dbm) {
-		eval { untie %d };
-		dbg("Dupefile $fn corrupted, removing...");
-		unlink $fn;
-		$dbm = tie (%d, 'DB_File', $fn) or confess "can't open dupe file: $fn ($!)";
-		confess "cannot open $fn $!" unless $dbm; 
-	}
+	confess "cannot open $fn $!" unless $dbm;
 }
 
 sub finish
@@ -36,6 +31,7 @@ sub finish
 	undef $dbm;
 	untie %d;
 	undef %d;
+	unlink $fn;
 }
 
 sub check

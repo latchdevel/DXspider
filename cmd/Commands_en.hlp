@@ -328,6 +328,21 @@ see CLEAR/SPOTS for a more detailed explanation.
 A sysop can clear an input or normal output filter for a user or the
 node_default or user_default. 
 
+=== 6^CLEAR/DUPEFILE^Clear out the dupefile completely
+The system maintains a list of duplicate announces and spots (amongst many
+other things). Sometimes this file gets corrupted during operation
+(although not very often). This command will remove the file and start
+again from scratch.
+
+Try this if you get several duplicate DX Spots, one after another.
+
+Please ONLY use this command if you have a problem. And then only once.
+If it does not cure your problem, then repeating the command won't help.
+Get onto the dxspider-support list and let us try to help.
+
+If you use this command frequently then you will cause other people, as
+well as yourself, a lot of problems with duplicates.
+
 === 0^CLEAR/ROUTE [1|all]^Clear a route filter line
 This command allows you to clear (remove) a line in a route filter or to 
 remove the whole filter.

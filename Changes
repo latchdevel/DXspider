@@ -1,3 +1,6 @@
+17Jul07=======================================================================
+1. remove dupefile on startup and on ending the node. Add clear/dupefile
+command to allow people to do it at runtime as well.
 12Jul07=======================================================================
 1. Change disconnection code so that nodes that are no longer routable are
 (all) cleared out.
