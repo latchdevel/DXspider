@@ -1,3 +1,10 @@
+18Jul07=======================================================================
+1. Change the meaning of set/isolate. Set/isolate now works in both directions
+in that an isolated node will only have its local config remembered and will
+only be sent this nodes local config. This is exactly equivalent to both
+ends setting set/isolate. If that is already the case then there should be
+no noticeable change. Any extra that the far node sends, over and above its
+local config will now be ignored.
 17Jul07=======================================================================
 1. remove dupefile on startup and on ending the node. Add clear/dupefile
 command to allow people to do it at runtime as well.

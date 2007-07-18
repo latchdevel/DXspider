@@ -405,6 +405,12 @@ sub handle_16
 		return;
 	}
 
+	# isolate now means only accept stuff from this call only
+	if ($self->{isolate} && $ncall ne $self->{call}) {
+		dbg("PCPROT: $self->{call} isolated, $ncall ignored") if isdbg('chanerr');
+		return;
+	}
+
 	my $parent = Route::Node::get($ncall);
 
 	if ($parent) {
@@ -500,6 +506,12 @@ sub handle_17
 
 	if ($ncall eq $main::mycall) {
 		dbg("PCPROT: trying to alter config on this node from outside!") if isdbg('chanerr');
+		return;
+	}
+
+	# isolate now means only accept stuff from this call only
+	if ($self->{isolate} && $ncall ne $self->{call}) {
+		dbg("PCPROT: $self->{call} isolated, $ncall ignored") if isdbg('chanerr');
 		return;
 	}
 
@@ -684,6 +696,12 @@ sub handle_19
 			}
 		}
 
+		# isolate now means only accept stuff from this call only
+		if ($self->{isolate} && $call ne $self->{call}) {
+			dbg("PCPROT: $self->{call} isolated, $call ignored") if isdbg('chanerr');
+			next;
+		}
+
 		my $user = check_add_node($call);
 
 #		if (eph_dup($genline)) {
@@ -787,10 +805,15 @@ sub handle_21
 	eph_del_regex("^PC1[679].*$call");
 
 	# if I get a PC21 from the same callsign as self then ignore it
-	if ($call eq $self->call) {
+	if ($call eq $self->{call}) {
 		dbg("PCPROT: self referencing PC21 from $self->{call}");
 		return;
 	}
+
+	# for the above reason and also because of the check for PC21s coming
+	# in for self->call from outside being ignored further down
+	# we don't need any isolation code here, because we will never
+	# act on a PC21 with self->call in it.
 
 	RouteDB::delete($call, $self->{call});
 

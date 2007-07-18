@@ -1238,6 +1238,12 @@ sub send_route
 	for (; @_ && $no; $no--) {
 		my $r = shift;
 
+		# don't send messages with $self's call in back to them
+		if ($r->call eq $self->{call}) {
+			dbg("PCPROT: trying to send $self->{call} back itself") if isdbg('chanerr');
+			next;
+		}
+
 		if (!$self->{isolate} && $self->{routefilter}) {
 			$filter = undef;
 			if ($r) {
@@ -1314,8 +1320,9 @@ sub broadcast_route_nopc9x
 			next if $origin eq $dxchan->{call};	# don't route some from this call back again.
 			next unless $dxchan->isa('DXProt');
 			next if $dxchan->{do_pc9x};
-			next if ($generate == \&pc16 || $generate==\&pc17) && !$dxchan->user->wantsendpc16;
-
+			if ($generate == \&pc16 || $generate==\&pc17) {
+				next unless $dxchan->user->wantsendpc16;
+			}
 			$dxchan->send_route($origin, $generate, @_);
 		}
 	}
