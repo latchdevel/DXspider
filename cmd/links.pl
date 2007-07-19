@@ -41,6 +41,10 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 			$fout = $dxchan->routefilter =~ /node_default/ ? 'D' : 'Y';
 		}
 	}
+	unless ($pingint) {
+		$lastt = 0;
+		$ping = "        ";
+	}
 	$sort = 'ANEA' if $dxchan->is_aranea;
 	$sort = "DXSP" if $dxchan->is_spider;
 	$sort = "CLX " if $dxchan->is_clx;
