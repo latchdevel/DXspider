@@ -1,6 +1,10 @@
 local*
 *~
 *.[oa]
+*.oo
+*.ooo
+*.oooo
+*.ooooo
 *.tmp
 CVS
 tmp
@@ -14,3 +18,5 @@ tmp
 packclus
 tutor*
 db
+core
+a.out

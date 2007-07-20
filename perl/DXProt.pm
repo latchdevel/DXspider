@@ -2164,13 +2164,14 @@ sub adjust_hops
 			return "" if defined $newhops && $newhops == 0;
 			$newhops = $ref->{default} unless $newhops;
 			return "" if defined $newhops && $newhops == 0;
-			$newhops = $hops if !$newhops;
+			$newhops = $hops unless $newhops;
+			return "" unless $newhops > 0;
 			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
 		} else {
 			# simply decrement it
 			$hops--;
-			return "" if !$hops;
-			$s =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/ if $hops;
+			return "" unless $hops > 0;
+			$s =~ s/\^H(\d+)(\^~?)$/\^H$hops$2/;
 		}
 	}
 	return $s;
