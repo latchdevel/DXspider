@@ -823,13 +823,13 @@ sub send_local_config
 		my $node;
 		my @rawintcalls = map { $_->nodes } @localnodes if @localnodes;
 		my @intcalls;
-		for $node (@rawintcalls) {
-			push @intcalls, $node unless grep $node eq $_, @intcalls;
+		foreach $node (@rawintcalls) {
+			push @intcalls, $node if grep $_ && $node != $_, @intcalls;
 		}
 		my $ref = Route::Node::get($self->{call});
 		my @rnodes = $ref->nodes;
-		for $node (@intcalls) {
-			push @remotenodes, Route::Node::get($node) unless grep $node eq $_, @rnodes, @remotenodes;
+		foreach $node (@intcalls) {
+			push @remotenodes, Route::Node::get($node) if grep $_ && $node != $_, @rnodes, @remotenodes;
 		}
 		$self->send_route($main::mycall, \&pc19, scalar(@remotenodes), @remotenodes);
 	}
