@@ -9,7 +9,7 @@ package main;
 
 use vars qw($version $build);
 
-$version = '';
-$build = '1';
+$version = '1.53.0';
+$build = '2';
 
 1;
