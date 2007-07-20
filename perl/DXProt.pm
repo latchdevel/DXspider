@@ -1008,7 +1008,7 @@ sub adjust_hops
 	my $call = $self->{call};
 	my $hops;
 
-	if (($hops) = $s =~ /\^H(\d+)\^?~?$/o) {
+	if (($hops) = $s =~ /\^H([-\d]+)\^?~?$/o) {
 		my ($pcno) = $s =~ /^PC(\d\d)/o;
 		confess "$call called adjust_hops with '$s'" unless $pcno;
 		my $ref = $nodehops{$call} if %nodehops;
@@ -1017,8 +1017,11 @@ sub adjust_hops
 			return "" if defined $newhops && $newhops == 0;
 			$newhops = $ref->{default} unless $newhops;
 			return "" if defined $newhops && $newhops == 0;
-			$newhops = $hops if !$newhops;
-			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops;
+			$newhops = $hops unless $newhops;
+			return "" unless $newhops > 0;
+			$s =~ s/\^H(\d+)(\^~?)$/\^H$newhops$2/ if $newhops != $hops;
+		} else {
+			return "" unless $hops > 0;
 		}
 	}
 	return $s;
