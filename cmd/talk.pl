@@ -28,13 +28,19 @@ if ($via) {
 	($to, $line) = split /\s+/, $inline, 2;  
 }
 
-$to = uc $to if $to;
+return (1, $self->msg('e8')) unless $to;
+
+$to = uc $to;
+
+return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
+return (1, $self->msg('e22', $to)) unless is_callsign($to);
+return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
+
 $via = uc $via if $via;
 my $call = $via || $to;
 my $clref = Route::get($call);     # try an exact call
 my $dxchan = $clref->dxchan if $clref;
 #return (1, $self->msg('e7', $call)) unless $dxchan;
-return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
 
 #$DB::single = 1;
 
