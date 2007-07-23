@@ -404,9 +404,8 @@ sub dup
 	my $otext = $text;
 	$text = Encode::encode("iso-8859-1", $text) if $main::can_encode && Encode::is_utf8($text, 1);
 	$text =~ s/^\+\w+\s*//;			# remove leading LoTW callsign
-	$text = pack("C*", map {$_ & 127} unpack("C*", $text));
 	$text =~ s/\s{2,}[\dA-Z]?[A-Z]\d?$// if length $text > 24;
-	$text =~ s/[^\w]//g;
+	$text =~ s/[\W\x00-\x2F\x7B-\xFF]//g; # tautology, just to make quite sure!
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $ldupkey = "X$freq|$call|$by|$text";
 	my $t = DXDupe::find($ldupkey);
