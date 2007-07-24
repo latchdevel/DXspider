@@ -1711,7 +1711,8 @@ sub handle_93
 		return;
 	}
 
-	# remember that we are converting PC10->PC93
+	# remember that we are converting PC10->PC93 and self will be $main::me if it
+	# comes from us
 	unless ($self->{do_pc9x}) {
 		dbg("PCPROT: PC9x come in from non-PC9x node, ignored") if isdbg('chanerr');
 		return;
@@ -1720,11 +1721,11 @@ sub handle_93
 	my $t = $_[2];
 	my $parent = check_pc9x_t($pcall, $t, 93, 1) || return;
 
-	my $to = $_[3];
-	my $from = $_[4];
-	my $via = $_[5];
+	my $to = uc $_[3];
+	my $from = uc $_[4];
+	my $via = uc $_[5];
 	my $text = $_[6];
-	my $onode = $_[7];
+	my $onode = uc $_[7];
 	$onode = $pcall if @_ <= 8;
 
 	# this is catch loops caused by bad software ...
@@ -1749,7 +1750,9 @@ sub handle_93
 		return;
 	}
 
-	if (is_callsign($to)) {
+	# if it is routeable then then treat it like a talk
+	my $ref = Route::get($to);
+	if ($ref) {
 		# local talks
 		my $dxchan;
 		$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
@@ -1767,7 +1770,6 @@ sub handle_93
 		}
 
 		# convert to PC10 talks where appropriate
-		my $ref = Route::get($to);
 		if ($ref) {
 			# just go for the "best" one for now (rather than broadcast)
 			$dxchan = $ref->dxchan;
@@ -1786,15 +1788,15 @@ sub handle_93
 		}
 
 		# otherwise, drop through and allow it to be broadcast
-	} elsif ($to eq '*' || uc $to eq 'SYSOP' || uc $to eq 'WX') {
+	} elsif ($to eq '*' || $to eq 'SYSOP' || $to eq 'WX') {
 		# announces
-		my $sysop = uc $to eq 'SYSOP' ? '*' : ' ';
-		my $wx = uc $to eq 'WX' ? '1' : '0';
+		my $sysop = $to eq 'SYSOP' ? '*' : ' ';
+		my $wx = $to eq 'WX' ? '1' : '0';
 		my $local = $via eq 'LOCAL' ? '*' : $via;
 
 		$self->send_announce(1, pc12($from, $text, $local, $sysop, $wx, $pcall), $from, $local, $text, $sysop, $pcall, $wx, $via eq 'LOCAL' ? $via : undef);
 		return if $via eq 'LOCAL';
-	} else {
+	} elsif (!is_callsign($to) && $text =~ /^#\d+ /) {
 		# chat messages to non-pc9x nodes
 		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
 	}

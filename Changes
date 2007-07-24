@@ -1,3 +1,10 @@
+24Jul07=======================================================================
+1. Try to target PC93 (the combined talk/ann/chat sentence) better. Prevent
+PC12 chat going to non-dxspider and non-ak1a nodes. None of the others seem to
+handle it correctly (Lee VE7CC: do you?).
+2. a few other tidyups,
+see: http://www.dxcluster.org/cgi-bin/gitweb.cgi?p=spider.git
+for details.
 18Jul07=======================================================================
 1. Change the meaning of set/isolate. Set/isolate now works in both directions
 in that an isolated node will only have its local config remembered and will

@@ -783,7 +783,21 @@ sub announce
 
 sub chat
 {
-	goto &announce;
+	my $self = shift;
+	my $line = shift;
+	my $isolate = shift;
+	my $to = shift;
+	my $target = shift;
+	my $text = shift;
+	my ($filter, $hops);
+
+	if ($self->{annfilter}) {
+		($filter, $hops) = $self->{annfilter}->it(@_);
+		return unless $filter;
+	}
+	if (($self->is_spider || $self->is_ak1a) && $_[1] ne $main::mycall) {
+		send_prot_line($self, $filter, $hops, $isolate, $line);
+	}
 }
 
 
