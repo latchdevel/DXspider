@@ -1,5 +1,5 @@
 #
-# The talk command
+# The talk command (improved)
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
