@@ -1,3 +1,5 @@
+25Jul07=======================================================================
+1. don't clear out routing tables on shutdown. This should speed that up.
 24Jul07=======================================================================
 1. Try to target PC93 (the combined talk/ann/chat sentence) better. Prevent
 PC12 chat going to non-dxspider and non-ak1a nodes. None of the others seem to

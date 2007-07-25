@@ -1187,7 +1187,7 @@ sub disconnect
 
 	# here we determine what needs to go out of the routing table
 	my @rout;
-	if ($node) {
+	if ($node && $pc39flag != 2) {
 		dbg('%Route::Node::List = ' . join(',', sort keys %Route::Node::list)) if isdbg('routedisc');
 
 		@rout = $node->del($main::routeroot);
