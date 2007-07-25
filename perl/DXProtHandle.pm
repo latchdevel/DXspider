@@ -1770,24 +1770,21 @@ sub handle_93
 		}
 
 		# convert to PC10 talks where appropriate
-		if ($ref) {
-			# just go for the "best" one for now (rather than broadcast)
-			$dxchan = $ref->dxchan;
+		# just go for the "best" one for now (rather than broadcast)
+		$dxchan = $ref->dxchan;
 
-			# check it...
-			if (ref $dxchan && $dxchan->isa('DXChannel')) {
-				if ($dxchan->{do_pc9x}) {
-					$dxchan->send($line);
-				} else {
-					$dxchan->talk($from, $to, $via, $text, $onode);
-				}
+		# check it...
+		if (ref $dxchan && $dxchan->isa('DXChannel')) {
+			if ($dxchan->{do_pc9x}) {
+				$dxchan->send($line);
 			} else {
-				dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
+				$dxchan->talk($from, $to, $via, $text, $onode);
 			}
-			return;
+		} else {
+			dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
 		}
+		return;
 
-		# otherwise, drop through and allow it to be broadcast
 	} elsif ($to eq '*' || $to eq 'SYSOP' || $to eq 'WX') {
 		# announces
 		my $sysop = $to eq 'SYSOP' ? '*' : ' ';
