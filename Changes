@@ -1,3 +1,5 @@
+27Jul07=======================================================================
+1. Added Angel's changes to Messages for Spanish (finally).
 25Jul07=======================================================================
 1. don't clear out routing tables on shutdown. This should speed that up.
 24Jul07=======================================================================

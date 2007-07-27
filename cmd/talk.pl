@@ -32,7 +32,6 @@ return (1, $self->msg('e8')) unless $to;
 
 $to = uc $to;
 
-return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e22', $to)) unless is_callsign($to);
 return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
 
