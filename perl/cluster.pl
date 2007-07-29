@@ -484,7 +484,7 @@ DXMsg::clean_old();
 dbg("reading cron jobs ...");
 DXCron->init();
 
-# read in database descriptors
+# read in database desriptors
 dbg("reading database descriptors ...");
 DXDb::load();
 

@@ -21,7 +21,8 @@ use QSL;
 
 use strict;
 
-use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef $totalspots $hfspots $vhfspots $maxcalllth $can_encode);
+use vars qw($fp $statp $maxspots $defaultspots $maxdays $dirprefix $duplth $dupage $filterdef
+			$totalspots $hfspots $vhfspots $maxcalllth $can_encode $use_db_for_search);
 
 $fp = undef;
 $statp = undef;
@@ -52,6 +53,7 @@ $filterdef = bless ([
 					 
 			 ], 'Filter::Cmd');
 $totalspots = $hfspots = $vhfspots = 0;
+$use_db_for_search = 0;
 
 # create a Spot Object
 sub new
@@ -250,7 +252,7 @@ sub search
 	
 	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
 
-	if ($main::dbh) {
+	if ($main::dbh && $use_db_for_search) {
 		return $main::dbh->spot_search($expr, $dayfrom, $dayto, $to-$from, $dxchan);
 	}
 
