@@ -1091,10 +1091,10 @@ ZD8 Ascension-Is-ZD8                                  252 66 36   0.00  8  0  0 
 ZD9 Tristan-Da-Cunha-ZD9                              253 66 38   0.00 37  6  0 S  12 18  0 W @
 Z2 Zimbabwe-Z2                                        254 53 38  -2.00 18  0  0 S  31  0  0 E @
 ZF Cayman-Is-ZF                                       255 11  8   5.00 19 30  0 N  81 12  0 W @
-ZK1/N North-Cook-Is-ZK1/N                             256 62 32  10.30 10 30  0 S 161  0  0 W @
-E5,ZK1 North-Cook-Is-ZK1/N                            256 62 32  10.30 10 30  0 S 161  0  0 W *
-ZK1/S South-Cook-Is-ZK1/S                             257 62 32  10.30 21  0  0 S 159 30  0 W @
-E5,ZK1 South-Cook-Is-ZK1/S                            257 62 32  10.30 21  0  0 S 159 30  0 W 
+E5/N North-Cook-Is-E5/N                             256 62 32  10.30 10 30  0 S 161  0  0 W @
+ZK1/N,ZK1 North-Cook-Is-E5/N                            256 62 32  10.30 10 30  0 S 161  0  0 W *
+E5/S South-Cook-Is-E5/S                             257 62 32  10.30 21  0  0 S 159 30  0 W @
+ZK1/S,ZK1 South-Cook-Is-E5/S                            257 62 32  10.30 21  0  0 S 159 30  0 W 
 ZK2 Niue-ZK2                                          258 62 32  11.00 19  0  0 S 170  0  0 W @
 ZK3 Tokelau-ZK3                                       259 62 31  11.00  8 24  0 S 172 42  0 W @
 ZL New-Zealand-ZL                                     260 60 32 -12.00 46  0  0 S 170  0  0 E * @
@@ -1220,8 +1220,8 @@ H40 Temotu-H40                                        332 51 32 -11.00 10 43  0 
 ZP Paraguay-ZP                                        333 14 11   4.00 25 18  0 S  57 42  0 W @
 9A Croatia-9A                                         334 28 15  -1.00 45 10  0 N  15 30  0 E @
 S5 Slovenia-S5                                        335 28 15  -1.00 46  7  0 N  14 49  0 E @
-T9 Bosnia-Hercegovina-T9                              336 28 15  -1.00 43 50  0 N  18 30  0 E @
-4N4 Bosnia-Hercegovina-T9                             336 28 15  -1.00 43 50  0 N  18 30  0 E 
+E7 Bosnia-Hercegovina-E7                              336 28 15  -1.00 43 50  0 N  18 30  0 E @
+4N4,T7 Bosnia-Hercegovina-E7                             336 28 15  -1.00 43 50  0 N  18 30  0 E 
 E4 Palestine-Gaza-E4                                  337 39 20  -2.00 31 29  0 N  34 25  0 E * @
 E4 Palestine-W-Bank-E4                                337 39 20  -2.00 31 32  0 N  35  6  0 E 
 FO/A Austral-Is-FO/A                                  338 63 32  10.00 22 27  0 S 151 21  0 W @
