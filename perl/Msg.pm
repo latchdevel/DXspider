@@ -66,8 +66,8 @@ BEGIN {
 	# defines EINPROGRESS as 10035.  We provide it here because some
 	# Win32 users report POSIX::EINPROGRESS is not vendor-supported.
 	if ($^O eq 'MSWin32') { 
-		eval '*EINPROGRESS = sub { 10036 };';
-		eval '*EWOULDBLOCK = *EAGAIN = sub { 10035 };';
+		eval '*EINPROGRESS = sub { 10036 };' unless defined *EINPROGRESS;
+		eval '*EWOULDBLOCK = *EAGAIN = sub { 10035 };' unless defined *EWOULDBLOCK;
 		eval '*F_GETFL     = sub {     0 };';
 		eval '*F_SETFL     = sub {     0 };';
 		eval '*IPPROTO_TCP     = sub {     6 };';
@@ -487,10 +487,10 @@ sub _rcv {                     # Complement to _send
     return unless defined($sock);
 
 	my @lines;
-	if ($conn->{blocking}) {
-		blocking($sock, 0);
-		$conn->{blocking} = 0;
-	}
+#	if ($conn->{blocking}) {
+#		blocking($sock, 0);
+#		$conn->{blocking} = 0;
+#	}
 	$bytes_read = sysread ($sock, $msg, 1024, 0);
 	if (defined ($bytes_read)) {
 		if ($bytes_read > 0) {
