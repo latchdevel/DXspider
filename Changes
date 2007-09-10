@@ -1,3 +1,7 @@
+10Sep07=======================================================================
+1. Remove warnings for EINPROGRESS etc for Windows perl 5.8.
+2. Try to see if using just one lastid is viable in all situations. If it is
+then this will cure the talk problem.
 20Aug07=======================================================================
 1. add cty.dat + wpxloc.raw changes for CTY-1706.
 31Jul07=======================================================================

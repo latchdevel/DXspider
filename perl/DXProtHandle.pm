@@ -1433,7 +1433,7 @@ sub check_pc9x_t
 		# the id on it is completely unreliable. Besides, only commands
 		# originating on this box will go through this code...
 		if ($parent->call ne $main::mycall) {
-			my $lastid = $parent->lastid->{$pc} || 0;
+			my $lastid = $parent->lastid || 0;
 			if ($t < $lastid) {
 				if ($t+86400-$lastid > $pc9x_past_age) {
 					dbg("PCPROT: dup id on $t <= $lastid, ignored") if isdbg('chanerr');
@@ -1453,7 +1453,7 @@ sub check_pc9x_t
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
 	}
-	$parent->lastid->{$pc} = $t if $parent;
+	$parent->lastid($t) if $parent;
 
 	return $parent;
 }
