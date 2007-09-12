@@ -45,7 +45,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc92_update_period $pc92_obs_timeout
 			%pc92_find $pc92_find_timeout $pc92_short_update_period
-			$next_pc92_obs_timeout
+			$next_pc92_obs_timeout $pc92_slug_changes $last_pc92_slug
 		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -80,7 +80,6 @@ $pc92_find_timeout = 30;		# maximum time to wait for a reply
 #$pc92_obs_timeout = $pc92_update_period; # the time between obscount countdowns
 $pc92_obs_timeout = 60*60; # the time between obscount for incoming countdowns
 $next_pc92_obs_timeout = $main::systime + 60*60; # the time between obscount countdowns
-
 
 
 @checklist =
@@ -481,8 +480,16 @@ sub process
 				dbg("ROUTE: pc92 broadcast candidate: $dxchan->{call}") if isdbg('obscount');
 				if ($dxchan == $main::me || !$dxchan->{do_pc9x}) {
 					$dxchan->broadcast_pc92_update($dxchan->{call});
+					$last_pc92_slug = 0 if $dxchan == $main::me;
 				}
 			}
+		}
+
+		if ($pc92_slug_changes && $main::systime >= $last_pc92_slug + $pc92_slug_changes) {
+			my ($add, $del) = gen_pc92_changes();
+			$main::me->route_pc92d($main::mycall, undef, $main::routeroot, @$del) if @$del;
+			$main::me->route_pc92a($main::mycall, undef, $main::routeroot, @$add) if @$add;
+			clear_pc92_changes();
 		}
 	}
 
@@ -866,6 +873,7 @@ sub gen_my_pc92_config
 	my $node = shift;
 
 	if ($node->{call} eq $main::mycall) {
+		clear_pc92_changes();		# remove any slugged data, we are generating it as now
 		my @dxchan = grep { $_->call ne $main::mycall && !$_->{isolate} } DXChannel::get_all();
 		dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
 		my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;

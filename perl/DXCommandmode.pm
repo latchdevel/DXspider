@@ -65,13 +65,14 @@ sub new
 	# routing, this must go out here to prevent race condx
 	my $pkg = shift;
 	my $call = shift;
-	my @rout = $main::routeroot->add_user($call, Route::here(1));
+#	my @rout = $main::routeroot->add_user($call, Route::here(1));
+	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1]);
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
 	if ($ref) {
 		$main::me->route_pc16($main::mycall, undef, $main::routeroot, $ref);
-		$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref);
+		$main::me->route_pc92a($main::mycall, undef, $main::routeroot, $ref) unless $DXProt::pc92_slug_changes;
 	}
 
 	return $self;
@@ -606,12 +607,14 @@ sub disconnect
 	my $uref = Route::User::get($call);
 	my @rout;
 	if ($uref) {
-		@rout = $main::routeroot->del_user($uref);
+#		@rout = $main::routeroot->del_user($uref);
+		@rout = DXProt::_del_thingy($main::routeroot, [$call, 0]);
+
 		dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
-		$main::me->route_pc92d($main::mycall, undef, $main::routeroot, $uref);
+		$main::me->route_pc92d($main::mycall, undef, $main::routeroot, $uref) unless $DXProt::pc92_slug_changes;
 	} else {
 		confess "trying to disconnect a non existant user $call";
 	}

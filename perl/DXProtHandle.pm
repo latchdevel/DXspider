@@ -44,14 +44,15 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc9x_past_age $pc9x_future_age
-			$pc10_dupe_age
+			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
 		   );
 
 $pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record might be the only
 								# thing a node might send - once an hour)
 $pc9x_future_age = 5*60;		# maximum age in the future ditto
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
-
+$pc92_slug_changes = 0;			# slug any changes going outward for this long
+$last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
 
 # incoming talk commands
 sub handle_10
@@ -766,7 +767,7 @@ sub handle_19
 #		$self->route_pc21($self->{call}, $line, @rout);
 		$self->route_pc19($self->{call}, $line, @rout);
 	}
-	if (@pc92out) {
+	if (@pc92out && !$pc92_slug_changes) {
 		$self->route_pc92a($main::mycall, $line, $main::routeroot, @pc92out) if $self->{state} eq 'normal';
 	}
 }
@@ -1364,6 +1365,9 @@ sub _encode_pc92_call
 	return "$flag$call$extra";
 }
 
+my %things_add;
+my %things_del;
+
 sub _add_thingy
 {
 	my $parent = shift;
@@ -1379,6 +1383,10 @@ sub _add_thingy
 			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('routelow');
 			@rout = $parent->add_user($call, Route::here($here));
 		}
+		if ($pc92_slug_changes && $parent == $main::routeroot) {
+			$things_add{$call} = Route::get($call);
+			delete $things_del{$call};
+		}
 	}
 	return @rout;
 }
@@ -1390,17 +1398,38 @@ sub _del_thingy
 	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$s;
 	my @rout;
 	if ($call) {
+		my $ref;
 		if ($is_node) {
-			my $nref = Route::Node::get($call);
+			$ref = Route::Node::get($call);
 			dbg("ROUTE: deleting node $call from " . $parent->call) if isdbg('routelow');
-			@rout = $nref->del($parent) if $nref;
+			@rout = $ref->del($parent) if $ref;
 		} else {
-			my $uref = Route::User::get($call);
+			$ref = Route::User::get($call);
 			dbg("ROUTE: deleting user $call from " . $parent->call) if isdbg('routelow');
-			@rout = $parent->del_user($uref) if $uref;
+			@rout = $parent->del_user($ref) if $ref;
+		}
+		if ($pc92_slug_changes && $parent == $main::routeroot) {
+			$things_del{$call} = $ref unless exists $things_add{$call};
+			delete $things_add{$call};
 		}
 	}
 	return @rout;
+}
+
+# this will only happen if we are slugging changes and
+# there are some changes to be sent, it will create an add or a delete
+# or both
+sub gen_pc92_changes
+{
+	my @add = values %things_add;
+	my @del = values %things_del;
+	return (\@add, \@del);
+}
+
+sub clear_pc92_changes
+{
+	%things_add = %things_del = ();
+	$last_pc92_slug = $main::systime;
 }
 
 my $_last_time;
