@@ -480,7 +480,6 @@ sub process
 				dbg("ROUTE: pc92 broadcast candidate: $dxchan->{call}") if isdbg('obscount');
 				if ($dxchan == $main::me || !$dxchan->{do_pc9x}) {
 					$dxchan->broadcast_pc92_update($dxchan->{call});
-					$last_pc92_slug = 0 if $dxchan == $main::me;
 				}
 			}
 		}
