@@ -164,7 +164,10 @@ $next_pc92_obs_timeout = $main::systime + 60*60; # the time between obscount cou
  undef,
  undef,
  undef,
- [ qw(i c n) ],					# pc90
+ undef,							# pc90
+ undef,
+ [ qw(i c f l)],				# pc92
+ [ qw(i c f *m c *c m)],					# pc93
 );
 
 # use the entry in the check list to check the field list presented
@@ -181,7 +184,8 @@ sub check
 	for ($i = 1; $i < @$ref; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
 		return 0 unless $act;
-		next if $blank && $_[$i] =~ /^[ \*]$/;
+		next if $blank eq 'b' && $_[$i] =~ /^[ \*]$/;
+		next if $blank eq '*' && $_[$i] =~ /^\*$/;
 		if ($act eq 'c') {
 			return $i unless is_callsign($_[$i]);
 		} elsif ($act eq 'i') {
@@ -200,6 +204,8 @@ sub check
 			return $i unless $_[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
 		} elsif ($act eq 't') {
 			return $i unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
+		} elsif ($act eq 'l') {
+			return $i unless $_[$i] =~ /^[A-Z]$/;
 		}
 	}
 	return 0;

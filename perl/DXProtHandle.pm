@@ -1329,8 +1329,14 @@ sub _decode_pc92_call
 	my $icall = shift;
 	my @part = split /:/, $icall;
 	my ($flag, $call) = unpack "A A*", $part[0];
-	return () unless defined $flag && $flag ge '0' && $flag le '7';
-	return () unless $call && is_callsign($call);
+	unless (defined $flag && $flag ge '0' && $flag le '7') {
+		dbg("PCPROT: $icall no flag byte (0-7) at front of call, ignored") if isdbg('chanerr');
+		return ();
+	}
+	unless ($call && is_callsign($call)) {
+		dbg("PCPROT: $icall no recognisable callsign, ignored") if isdbg('chanerr');
+		return ();
+	}
 	my $is_node = $flag & 4;
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
@@ -1498,10 +1504,6 @@ sub handle_92
 	my (@radd, @rdel);
 
 	my $pcall = $_[1];
-	unless ($pcall) {
-		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
-		return;
-	}
 	my $t = $_[2];
 	my $sort = $_[3];
 
@@ -1586,7 +1588,14 @@ sub handle_92
 
 		# cope with missing duplicate node calls in the first slot for A or D
 		my $me = $_[4] || '';
-		$me ||= _encode_pc92_call($parent) if !$me && ($sort eq 'A' || $sort eq 'D');
+		if (($sort eq 'A' || $sort eq 'D')) {
+			$me ||= _encode_pc92_call($parent) if !$me ;
+		} else {
+			unless ($me) {
+				dbg("PCPROT: this type of PC92 *must* have a node call in the first slot, ignored") if is_dbg('chanerr');
+				return;
+			}
+		}
 
 		my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} $me, @_[5 .. $#_];
 
@@ -1597,50 +1606,43 @@ sub handle_92
 			# otherwise use the node call and update any information
 			# that needs to be done.
 			my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]};
-			if (($sort eq 'A' || $sort eq 'D') && !$is_node) {
-				# parent is already set correctly
-				# this is to allow shortcuts for A and D records
-				# not repeating the origin call to no real purpose
-				;
-			} else {
-				if ($call && $is_node) {
-					if ($call eq $main::mycall) {
-						dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
-						return;
-					}
-					# this is only accepted from my "self".
-					# this also kills configs from PC92 nodes with external PC19 nodes that are also
-					# locally connected. Local nodes always take precedence.
-					if (DXChannel::get($call) && $call ne $self->{call}) {
-						dbg("PCPROT: locally connected node $call from other another node $self->{call}, ignored") if isdbg('chanerr');
-						return;
-					}
-					if ($is_extnode) {
-						# reparent to external node (note that we must have received a 'C' or 'A' record
-						# from the true parent node for this external before we get one for the this node
-						unless ($parent = Route::Node::get($call)) {
-							if ($is_extnode && $oparent) {
-								@radd =  _add_thingy($oparent, $ent[0]);
-								$parent = $radd[0];
-							} else {
-								dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
-								return;
-							}
-						}
-						$parent = check_pc9x_t($call, $t, 92) || return;
-						$parent->via_pc92(1);
-						$parent->PC92C_dxchan($self->{call});
-					}
-				} else {
-					dbg("PCPROT: must be mycall or external node as first entry, ignored") if isdbg('chanerr');
+			if ($call && $is_node) {
+				if ($call eq $main::mycall) {
+					dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
 					return;
 				}
-				$parent->here(Route::here($here));
-				$parent->version($version) if $version && $version > $parent->version;
-				$parent->build($build) if $build && $build > $parent->build;
-				$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
-				shift @ent;
+				# this is only accepted from my "self".
+				# this also kills configs from PC92 nodes with external PC19 nodes that are also
+				# locally connected. Local nodes always take precedence.
+				if (DXChannel::get($call) && $call ne $self->{call}) {
+					dbg("PCPROT: locally connected node $call from other another node $self->{call}, ignored") if isdbg('chanerr');
+					return;
+				}
+				if ($is_extnode) {
+					# reparent to external node (note that we must have received a 'C' or 'A' record
+					# from the true parent node for this external before we get one for the this node
+					unless ($parent = Route::Node::get($call)) {
+						if ($is_extnode && $oparent) {
+							@radd =  _add_thingy($oparent, $ent[0]);
+							$parent = $radd[0];
+						} else {
+							dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+							return;
+						}
+					}
+					$parent = check_pc9x_t($call, $t, 92) || return;
+					$parent->via_pc92(1);
+					$parent->PC92C_dxchan($self->{call});
+				}
+			} else {
+				dbg("PCPROT: must be \$mycall or external node as first entry, ignored") if isdbg('chanerr');
+				return;
 			}
+			$parent->here(Route::here($here));
+			$parent->version($version) if $version && $version > $parent->version;
+			$parent->build($build) if $build && $build > $parent->build;
+			$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+			shift @ent;
 		}
 
 		# do a pass through removing any references to either locally connected nodes or mycall
@@ -1738,11 +1740,7 @@ sub handle_93
 
 #	$self->{do_pc9x} ||= 1;
 
-	my $pcall = $_[1];
-	unless (is_callsign($pcall)) {
-		dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
-		return;
-	}
+	my $pcall = $_[1];			# this is now checked earlier
 
 	# remember that we are converting PC10->PC93 and self will be $main::me if it
 	# comes from us
