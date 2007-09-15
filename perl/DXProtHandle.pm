@@ -51,7 +51,7 @@ $pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record m
 								# thing a node might send - once an hour)
 $pc9x_future_age = 5*60;		# maximum age in the future ditto
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
-$pc92_slug_changes = 0;			# slug any changes going outward for this long
+$pc92_slug_changes = 60;		# slug any changes going outward for this long
 $last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
 
 # incoming talk commands
@@ -1584,7 +1584,11 @@ sub handle_92
 		# this is the main route section
 		# here is where all the routes are created and destroyed
 
-		my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} @_[4 .. $#_];
+		# cope with missing duplicate node calls in the first slot for A or D
+		my $me = $_[4] || '';
+		$me ||= _encode_pc92_call($parent) if !$me && ($sort eq 'A' || $sort eq 'D');
+
+		my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} $me, @_[5 .. $#_];
 
 		if (@ent) {
 

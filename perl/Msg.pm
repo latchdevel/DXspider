@@ -15,11 +15,10 @@ use strict;
 use DXUtil;
 
 use IO::Select;
-use IO::Socket;
 use DXDebug;
 use Timer;
 
-use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported $cnum $total_in $total_out);
+use vars qw(%rd_callbacks %wt_callbacks %er_callbacks $rd_handles $wt_handles $er_handles $now %conns $noconns $blocking_supported $cnum $total_in $total_out $io_socket);
 
 %rd_callbacks = ();
 %wt_callbacks = ();
@@ -37,10 +36,25 @@ BEGIN {
 		local $^W;
         require POSIX; POSIX->import(qw(O_NONBLOCK F_SETFL F_GETFL))
     };
-	if ($@ || $main::is_win) {
-		$blocking_supported = IO::Socket->can('blocking') ? 2 : 0;
+
+	eval {
+		local $^W;
+		require IO::Socket::INET6;
+	};
+
+	if ($@) {
+		dbg($@);
+		require IO::Socket;
+		$io_socket = 'IO::Socket::INET';
 	} else {
-		$blocking_supported = IO::Socket->can('blocking') ? 2 : 1;
+		$io_socket = 'IO::Socket::INET6';
+	}
+	$io_socket->import;
+
+	if ($@ || $main::is_win) {
+		$blocking_supported = $io_socket->can('blocking') ? 2 : 0;
+	} else {
+		$blocking_supported = $io_socket->can('blocking') ? 2 : 1;
 	}
 
 
@@ -194,7 +208,7 @@ sub connect {
 	$conn->{sort} = 'Outgoing';
 	
     # Create a new internet socket
-    my $sock = IO::Socket::INET->new();
+    my $sock = $io_socket->new();
     return undef unless $sock;
 	
 	my $proto = getprotobyname('tcp');
@@ -225,7 +239,7 @@ sub start_program
 	my $pid;
 	
 	local $^F = 10000;		# make sure it ain't closed on exec
-	my ($a, $b) = IO::Socket->socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC);
+	my ($a, $b) = $io_socket->socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC);
 	if ($a && $b) {
 		$a->autoflush(1);
 		$b->autoflush(1);
@@ -424,7 +438,7 @@ sub new_server {
     my ($pkg, $my_host, $my_port, $login_proc) = @_;
 	my $self = $pkg->new($login_proc);
 	
-    $self->{sock} = IO::Socket::INET->new (
+    $self->{sock} = $io_socket->new (
                                           LocalAddr => "$my_host:$my_port",
 #                                          LocalPort => $my_port,
                                           Listen    => SOMAXCONN,

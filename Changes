@@ -1,3 +1,10 @@
+15Sep07=======================================================================
+1. Add *optional* INET6 connectivity. In order to use this you must load
+IO::Socket::INET6 and its dependencies from CPAN or get the distro's packaged
+versions. I used 'sudo aptitude install libio-socket-inet6-perl' for ubuntu
+(which should work for debian as well), for fedora/rpm based systems
+'sudo yum install perl-IO-Socket-INET6' or near equiv should work. This has
+been done quite simplistically, but it seems to work.
 10Sep07=======================================================================
 1. Remove warnings for EINPROGRESS etc for Windows perl 5.8.
 2. Try to see if using just one lastid is viable in all situations. If it is
