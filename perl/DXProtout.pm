@@ -380,6 +380,7 @@ sub _gen_pc92
 	my $s = "PC92^$main::mycall^" . gen_pc9x_t() . "^$sort";
 	for (@_) {
 		$s .= "^" . _encode_pc92_call($_, $ext);
+		$ext = 0;				# only the first slot has an ext.
 	}
 	return $s . '^H99^';
 }
