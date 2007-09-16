@@ -493,7 +493,7 @@ sub process
 					if ($dxchan == $main::me || ($ref && ($ref->measure_pc9x_t($main::systime-$main::systime_daystart)) >= $pc92_update_period/2)) {
 						$dxchan->broadcast_pc92_update($dxchan->{call});
 					} else {
-						$dxchan->update_pc92_next($pc92_update_period - rand(60));
+						$dxchan->update_pc92_next($pc92_update_period - rand($pc92_update_period/4));
 					}
 				}
 			}
