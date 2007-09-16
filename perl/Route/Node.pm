@@ -360,6 +360,18 @@ sub reset_obs
 	$self->{obscount} = $obscount;
 }
 
+sub measure_pc9x_t
+{
+	my $parent = shift;
+	my $t = shift;
+	my $lastid = $parent->{lastid};
+	if ($lastid) {
+		return ($t < $lastid) ? $t+86400-$lastid : $t - $lastid;
+	} else {
+		return 86400;
+	}
+}
+
 sub DESTROY
 {
 	my $self = shift;

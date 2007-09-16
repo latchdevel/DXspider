@@ -72,7 +72,7 @@ $obscount = 2;
 $chatdupeage = 20 * 60;
 $chatimportfn = "$main::root/chat_import";
 $investigation_int = 12*60*60;	# time between checks to see if we can see this node
-$pc19_version = 5466;			# the visible version no for outgoing PC19s generated from pc59
+$pc19_version = 5454;			# the visible version no for outgoing PC19s generated from pc59
 $pc92_update_period = 60*60;	# the period between outgoing PC92 C updates
 $pc92_short_update_period = 15*60; # shorten the update period after a connection
 %pc92_find = ();				# outstanding pc92 find operations
@@ -481,11 +481,20 @@ sub process
 			next unless $dxchan->is_node;
 
 			# send out a PC92 config record if required for me and
-			# all my non pc9x dependent nodes.
+			# all my non pc9x dependent nodes. But for dependent nodes we only do
+			# this if we have not seen any from anyone else for at least half
+			# of one update period. This should stop quite a bit of excess C
+			# records. Someone will win, it does not really matter who, because
+			# we always believe "us".
 			if ($main::systime >= $dxchan->{next_pc92_update}) {
 				dbg("ROUTE: pc92 broadcast candidate: $dxchan->{call}") if isdbg('obscount');
 				if ($dxchan == $main::me || !$dxchan->{do_pc9x}) {
-					$dxchan->broadcast_pc92_update($dxchan->{call});
+					my $ref = Route::Node::get($dxchan->{call});
+					if ($dxchan == $main::me || ($ref && ($ref->measure_pc9x_t($main::systime-$main::systime_daystart)) >= $pc92_update_period/2)) {
+						$dxchan->broadcast_pc92_update($dxchan->{call});
+					} else {
+						$dxchan->update_pc92_next($pc92_update_period - rand(60));
+					}
 				}
 			}
 		}
@@ -925,6 +934,7 @@ sub broadcast_pc92_update
 		return;
 	}
 	my $l = $nref->last_PC92C(gen_my_pc92_config($nref));
+	$nref->lastid(last_pc9x_id());
 	$main::me->broadcast_route_pc9x($main::mycall, undef, $l, 0);
 	$self->update_pc92_next($pc92_update_period);
 }

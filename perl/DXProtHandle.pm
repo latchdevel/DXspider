@@ -592,21 +592,22 @@ sub handle_18
 			$self->sort('S');
 		}
 #		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
-		if ($_[1] =~ /\bpc9x/) {
-			if ($self->{isolate}) {
-				dbg("pc9x recognised, but $self->{call} is isolated, using old protocol");
-			} elsif (!$self->user->wantpc9x) {
-				dbg("pc9x explicitly switched off on $self->{call}, using old protocol");
-			} else {
-				$self->{do_pc9x} = 1;
-				dbg("Do px9x set on $self->{call}");
-			}
-		}
 	} else {
 		dbg("Unknown software");
 		$self->version(50.0);
 		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
 		$self->user->version($self->version);
+	}
+
+	if ($_[1] =~ /\bpc9x/) {
+		if ($self->{isolate}) {
+			dbg("pc9x recognised, but $self->{call} is isolated, using old protocol");
+		} elsif (!$self->user->wantpc9x) {
+			dbg("pc9x explicitly switched off on $self->{call}, using old protocol");
+		} else {
+			$self->{do_pc9x} = 1;
+			dbg("Do px9x set on $self->{call}");
+		}
 	}
 
 	# first clear out any nodes on this dxchannel
@@ -1440,16 +1441,22 @@ sub clear_pc92_changes
 
 my $_last_time;
 my $_last_occurs;
+my $_last_pc9x_id;
+
+sub last_pc9x_id
+{
+	return $_last_pc9x_id;
+}
 
 sub gen_pc9x_t
 {
 	if (!$_last_time || $_last_time != $main::systime) {
 		$_last_time = $main::systime;
 		$_last_occurs = 0;
-		return $_last_time - $main::systime_daystart;
+		return $_last_pc9x_id = $_last_time - $main::systime_daystart;
 	} else {
 		$_last_occurs++;
-		return sprintf "%d.%02d", $_last_time - $main::systime_daystart, $_last_occurs;
+		return $_last_pc9x_id = sprintf "%d.%02d", $_last_time - $main::systime_daystart, $_last_occurs;
 	}
 }
 
@@ -1613,8 +1620,10 @@ sub handle_92
 				}
 				# this is only accepted from my "self".
 				# this also kills configs from PC92 nodes with external PC19 nodes that are also
-				# locally connected. Local nodes always take precedence.
+				# locally connected. Local nodes always take precedence. But we remember the lastid
+				# to try to reduce the number of dupe PC92s for this external node.
 				if (DXChannel::get($call) && $call ne $self->{call}) {
+					$parent = check_pc9x_t($call, $t, 92); # this will update the lastid time
 					dbg("PCPROT: locally connected node $call from other another node $self->{call}, ignored") if isdbg('chanerr');
 					return;
 				}
@@ -1639,7 +1648,7 @@ sub handle_92
 				return;
 			}
 			$parent->here(Route::here($here));
-			$parent->version($version) if $version && $version > $parent->version;
+			$parent->version($version || $pc19_version) if $version;
 			$parent->build($build) if $build && $build > $parent->build;
 			$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
 			shift @ent;

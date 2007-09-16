@@ -19,7 +19,7 @@ use DXDebug;
 
 use strict;
 
-use vars qw($sentencelth);
+use vars qw($sentencelth $pc19_version);
 
 $sentencelth = 180;
 
@@ -137,6 +137,8 @@ sub pc19
 		my $here = $ref->here;
 		my $conf = $ref->conf;
 		my $version = $ref->version;
+		$version = $pc19_version unless $version =~ /^\d\d\d\d$/;
+
 		my $str = "^$here^$call^$conf^$version";
 		if (length($s) + length($str) > $sentencelth) {
 			push @out, "PC19" . $s . sprintf "^%s^", get_hops(19);
