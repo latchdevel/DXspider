@@ -132,6 +132,8 @@ sub handle_11
 		}
 	}
 
+#	my ($hops) = $_[8] =~ /^H(\d+)/;
+
 	# is the spotted callsign blank? This should really be trapped earlier but it
 	# could break other protocol sentences. Also check for lower case characters.
 	if ($_[2] =~ /^\s*$/) {
@@ -1210,6 +1212,8 @@ sub handle_50
 	my $line = shift;
 	my $origin = shift;
 
+	return if (eph_dup($line));
+
 	my $call = $_[1];
 
 	RouteDB::update($call, $self->{call});
@@ -1217,12 +1221,16 @@ sub handle_50
 	my $node = Route::Node::get($call);
 	if ($node) {
 		return unless $node->call eq $self->{call};
-		$node->usercount($_[2]);
+		$node->usercount($_[2]) unless $node->users;
+		$node->reset_obs;
 
 		# input filter if required
-		return unless $self->in_filter_route($node);
+#		return unless $self->in_filter_route($node);
 
-		$self->route_pc50($origin, $line, $node, $_[2], $_[3]) unless eph_dup($line);
+		unless ($self->{isolate}) {
+			DXChannel::broadcast_nodes($line, $self); # send it to everyone but me
+		}
+#		$self->route_pc50($origin, $line, $node, $_[2], $_[3]) unless eph_dup($line);
 	}
 }
 
@@ -1500,6 +1508,58 @@ sub check_pc9x_t
 	return $parent;
 }
 
+sub pc92_handle_first_slot
+{
+	my $self = shift;
+	my $slot = shift;
+	my $parent = shift;
+	my $t = shift;
+	my $oparent = $parent;
+
+	my @radd;
+
+	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$slot;
+	if ($call && $is_node) {
+		if ($call eq $main::mycall) {
+			dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
+			return;
+		}
+		# this is only accepted from my "self".
+		# this also kills configs from PC92 nodes with external PC19 nodes that are also
+		# locally connected. Local nodes always take precedence. But we remember the lastid
+		# to try to reduce the number of dupe PC92s for this external node.
+		if (DXChannel::get($call) && $call ne $self->{call}) {
+			$parent = check_pc9x_t($call, $t, 92); # this will update the lastid time
+			dbg("PCPROT: locally connected node $call from other another node $self->{call}, ignored") if isdbg('chanerr');
+			return;
+		}
+		if ($is_extnode) {
+			# reparent to external node (note that we must have received a 'C' or 'A' record
+			# from the true parent node for this external before we get one for the this node
+			unless ($parent = Route::Node::get($call)) {
+				if ($is_extnode && $oparent) {
+					@radd = _add_thingy($oparent, $slot);
+					$parent = $radd[0];
+				} else {
+					dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
+					return;
+				}
+			}
+			$parent = check_pc9x_t($call, $t, 92) || return;
+			$parent->via_pc92(1);
+			$parent->PC92C_dxchan($self->{call});
+		}
+	} else {
+		dbg("PCPROT: must be \$mycall or external node as first entry, ignored") if isdbg('chanerr');
+		return;
+	}
+	$parent->here(Route::here($here));
+	$parent->version($version || $pc19_version) if $version;
+	$parent->build($build) if $build && $build > $parent->build;
+	$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+	return ($parent, @radd);
+}
+
 # DXSpider routing entries
 sub handle_92
 {
@@ -1585,6 +1645,22 @@ sub handle_92
 			}
 			return;
 		}
+
+	} elsif ($sort eq 'K') {
+		# remember the last channel we arrived on
+		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+
+		my @ent = _decode_pc92_call($_[4]);
+
+		if (@ent) {
+			my $add;
+
+			($parent, $add) = $self->pc92_handle_first_slot($ent[0], $parent, $t);
+			return unless $parent; # dupe
+
+			push @radd, $add if $add;
+			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
+		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
 
 		# remember the last channel we arrived on
@@ -1612,46 +1688,13 @@ sub handle_92
 			# except in the case of 'A' or 'D' in which the $pcall is used
 			# otherwise use the node call and update any information
 			# that needs to be done.
-			my ($call, $is_node, $is_extnode, $here, $version, $build) = @{$ent[0]};
-			if ($call && $is_node) {
-				if ($call eq $main::mycall) {
-					dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
-					return;
-				}
-				# this is only accepted from my "self".
-				# this also kills configs from PC92 nodes with external PC19 nodes that are also
-				# locally connected. Local nodes always take precedence. But we remember the lastid
-				# to try to reduce the number of dupe PC92s for this external node.
-				if (DXChannel::get($call) && $call ne $self->{call}) {
-					$parent = check_pc9x_t($call, $t, 92); # this will update the lastid time
-					dbg("PCPROT: locally connected node $call from other another node $self->{call}, ignored") if isdbg('chanerr');
-					return;
-				}
-				if ($is_extnode) {
-					# reparent to external node (note that we must have received a 'C' or 'A' record
-					# from the true parent node for this external before we get one for the this node
-					unless ($parent = Route::Node::get($call)) {
-						if ($is_extnode && $oparent) {
-							@radd =  _add_thingy($oparent, $ent[0]);
-							$parent = $radd[0];
-						} else {
-							dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
-							return;
-						}
-					}
-					$parent = check_pc9x_t($call, $t, 92) || return;
-					$parent->via_pc92(1);
-					$parent->PC92C_dxchan($self->{call});
-				}
-			} else {
-				dbg("PCPROT: must be \$mycall or external node as first entry, ignored") if isdbg('chanerr');
-				return;
-			}
-			$parent->here(Route::here($here));
-			$parent->version($version || $pc19_version) if $version;
-			$parent->build($build) if $build && $build > $parent->build;
-			$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+			my $add;
+
+			($parent, $add) = $self->pc92_handle_first_slot($ent[0], $parent, $t);
+			return unless $parent; # dupe
+
 			shift @ent;
+			push @radd, $add if $add;
 		}
 
 		# do a pass through removing any references to either locally connected nodes or mycall
@@ -1676,13 +1719,8 @@ sub handle_92
 		} elsif ($sort eq 'C') {
 			my (@nodes, @users);
 
-			# we only reset obscounts on config records
-			$oparent->reset_obs;
-			dbg("ROUTE: reset obscount on $pcall now " . $oparent->obscount) if isdbg('obscount');
-			if ($oparent != $parent) {
-				$parent->reset_obs;
-				dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
-			}
+			# we reset obscounts on config records as well as K records
+			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 
 			#
 			foreach my $r (@nent) {

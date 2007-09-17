@@ -122,6 +122,7 @@ $count = 0;
 		  do_pc9x => '9,Handles PC9x,yesno',
 		  inqueue => '9,Input Queue,parray',
 		  next_pc92_update => '9,Next PC92 Update,atime',
+		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
 		 );
 
 # object destruction

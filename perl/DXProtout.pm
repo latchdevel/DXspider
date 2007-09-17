@@ -416,6 +416,12 @@ sub pc92c
 	return _gen_pc92('C', 1, @_);
 }
 
+# send a keep alive
+sub pc92k
+{
+	return _gen_pc92('K', 1, @_);
+}
+
 # send a 'find' message
 sub pc92f
 {

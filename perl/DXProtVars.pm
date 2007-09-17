@@ -12,7 +12,7 @@
 package DXProt;
 
 # the interval between pc50s (in seconds)
-$pc50_interval = 14*60;
+$pc50_interval = 60*60;
 
 # the version of DX cluster (tm) software I am masquerading as
 $myprot_version = 5300;
