@@ -40,7 +40,7 @@ use strict;
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
-			$investigation_int $pc19_version $myprot_version
+			$pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc92_update_period $pc92_obs_timeout
@@ -73,12 +73,11 @@ $pingint = 5*60;
 $obscount = 2;
 $chatdupeage = 20 * 60;
 $chatimportfn = "$main::root/chat_import";
-$investigation_int = 12*60*60;	# time between checks to see if we can see this node
 $pc19_version = 5454;			# the visible version no for outgoing PC19s generated from pc59
-$pc92_update_period = 24*60*60;	# the period between outgoing PC92 C updates
+$pc92_update_period = 2*60*60;	# the period between outgoing PC92 C updates
 $pc92_short_update_period = 15*60; # shorten the update period after a connection or start up
-$pc92_extnode_update_period = 2*60*60; # the update period for external nodes
-$pc92_keepalive_period = 60*60;	# frequency of PC92 K (keepalive) records
+$pc92_extnode_update_period = 1*60*60; # the update period for external nodes
+$pc92_keepalive_period = 1*60*60;	# frequency of PC92 K (keepalive) records
 %pc92_find = ();				# outstanding pc92 find operations
 $pc92_find_timeout = 30;		# maximum time to wait for a reply
 
@@ -249,6 +248,7 @@ sub init
 	$main::me->{build} = "$main::subversion.$main::build";
 	$main::me->{do_pc9x} = 1;
 	$main::me->update_pc92_next($pc92_short_update_period);
+	$main::me->update_pc92_keepalive;
 }
 
 #
@@ -443,36 +443,9 @@ sub process
 	my $dxchan;
 	my $pc50s;
 
-
-	foreach $dxchan (@dxchan) {
-		next unless $dxchan->is_node;
-		next if $dxchan->handle_xml;
-		next if $dxchan == $main::me;
-
-		# send the pc50
-		$dxchan->send($pc50s) if $pc50s;
-
-		# send a ping out on this channel
-		if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
-			if ($dxchan->{nopings} <= 0) {
-				$dxchan->disconnect;
-			} else {
-				DXXml::Ping::add($main::me, $dxchan->call);
-				$dxchan->{nopings} -= 1;
-				$dxchan->{lastping} = $t;
-				$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
-			}
-		}
-
-	}
-
-	Investigate::process();
-	clean_pc92_find();
-
 	# every ten seconds
 	if ($t - $last10 >= 10) {
 		# clean out ephemera
-
 
 		eph_clean();
 		import_chat();
@@ -486,6 +459,29 @@ sub process
 			$last_pc50 = $t;
 			time_out_pc92_routes();
 		}
+
+		foreach $dxchan (@dxchan) {
+			next unless $dxchan->is_node;
+			next if $dxchan->handle_xml;
+			next if $dxchan == $main::me;
+
+			# send the pc50
+			$dxchan->send($pc50s) if !$dxchan->{do_pc9x} && $pc50s;
+
+			# send a ping out on this channel
+			if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
+				if ($dxchan->{nopings} <= 0) {
+					$dxchan->disconnect;
+				} else {
+					DXXml::Ping::add($main::me, $dxchan->call);
+					$dxchan->{nopings} -= 1;
+					$dxchan->{lastping} = $t;
+					$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
+				}
+			}
+		}
+
+		clean_pc92_find();
 
 		# send out config broadcasts
 		foreach $dxchan (@dxchan) {
@@ -516,12 +512,12 @@ sub process
 				if ($dxchan == $main::me || !$dxchan->{do_pc9x}) {
 					dbg("ROUTE: pc92 keepalive candidate: $dxchan->{call}") if isdbg('obscount');
 					my $ref = Route::Node::get($dxchan->{call});
-#					if ($dxchan == $main::me || ($ref && ($ref->measure_pc9x_t($main::systime-$main::systime_daystart)) >= $pc92_keepalive_period/2)) {
-#						$dxchan->broadcast_pc92_update($dxchan->{call});
-#					} else {
-#						$dxchan->update_pc92_next($pc92_extnode_update_period);
-#					}
-#				} else {
+					if ($dxchan == $main::me || ($ref && ($ref->measure_pc9x_t($main::systime-$main::systime_daystart)) >= $pc92_keepalive_period/2)) {
+						$dxchan->broadcast_pc92_keepalive($dxchan->{call});
+					} else {
+						$dxchan->update_pc92_keepalive;
+					}
+				} else {
 #					$dxchan->update_pc92_next; # this won't actually do anything, it's just to be tidy
 					$dxchan->update_pc92_keepalive;
 				}
@@ -966,6 +962,24 @@ sub broadcast_pc92_update
 	$nref->lastid(last_pc9x_id());
 	$main::me->broadcast_route_pc9x($main::mycall, undef, $l, 0);
 	$self->update_pc92_next;
+}
+
+sub broadcast_pc92_keepalive
+{
+	my $self = shift;
+	my $call = shift;
+
+	dbg("ROUTE: broadcast_pc92_keepalive $call") if isdbg('obscount');
+
+	my $nref = Route::Node::get($call);
+	unless ($nref) {
+		dbg("ERROR: broadcast_pc92_keepalive - Route::Node $call disappeared");
+		return;
+	}
+	my $l = pc92k($nref);
+	$nref->lastid(last_pc9x_id());
+	$main::me->broadcast_route_pc9x($main::mycall, undef, $l, 0);
+	$self->update_pc92_keepalive;
 }
 
 sub time_out_pc92_routes

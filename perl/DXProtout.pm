@@ -419,7 +419,12 @@ sub pc92c
 # send a keep alive
 sub pc92k
 {
-	return _gen_pc92('K', 1, @_);
+	my $nref = shift;
+	my $s = "PC92^$main::mycall^" . gen_pc9x_t() . "^K";
+	$s .= "^" . _encode_pc92_call($nref, 1);
+	$s .= "^" . scalar $nref->nodes;
+	$s .= "^" . scalar $nref->users;
+	return $s . '^H99^';
 }
 
 # send a 'find' message
