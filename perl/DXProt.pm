@@ -506,22 +506,11 @@ sub process
 					$dxchan->update_pc92_next; # this won't actually do anything, it's just to be tidy
 				}
 			}
+		}
 
-			# do the keepalives in the same way, but use a different timer
-			if ($main::systime >= $dxchan->{next_pc92_keepalive}) {
-				if ($dxchan == $main::me || !$dxchan->{do_pc9x}) {
-					dbg("ROUTE: pc92 keepalive candidate: $dxchan->{call}") if isdbg('obscount');
-					my $ref = Route::Node::get($dxchan->{call});
-					if ($dxchan == $main::me || ($ref && ($ref->measure_pc9x_t($main::systime-$main::systime_daystart)) >= $pc92_keepalive_period/2)) {
-						$dxchan->broadcast_pc92_keepalive($dxchan->{call});
-					} else {
-						$dxchan->update_pc92_keepalive;
-					}
-				} else {
-#					$dxchan->update_pc92_next; # this won't actually do anything, it's just to be tidy
-					$dxchan->update_pc92_keepalive;
-				}
-			}
+		# do the keepalive for me, if required
+		if ($main::systime >= $main::me->{next_pc92_keepalive}) {
+			$main::me->broadcast_pc92_keepalive($main::mycall);
 		}
 
 		if ($pc92_slug_changes && $main::systime >= $last_pc92_slug + $pc92_slug_changes) {

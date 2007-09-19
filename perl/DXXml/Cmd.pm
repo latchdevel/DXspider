@@ -13,7 +13,6 @@ package DXXml::Cmd;
 use DXDebug;
 use DXProt;
 use IsoTime;
-use Investigate;
 use DXXml::Text;
 use DXLog;
 

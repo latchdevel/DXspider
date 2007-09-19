@@ -13,7 +13,6 @@ package DXXml::Ping;
 use DXDebug;
 use DXProt;
 use IsoTime;
-use Investigate;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 use vars qw(@ISA %pings);
@@ -131,14 +130,10 @@ sub _handle_believe
 {
 	my ($from, $via) = @_;
 	
-	if (my $ivp = Investigate::get($from, $via)) {
-		$ivp->handle_ping;
-	} else {
-		my $user = DXUser->get_current($from);
-		if ($user) {
-			$user->set_believe($via);
-			$user->put;
-		}
+	my $user = DXUser->get_current($from);
+	if ($user) {
+		$user->set_believe($via);
+		$user->put;
 	}
 }
 1;

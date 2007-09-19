@@ -13,7 +13,6 @@ package DXXml::IM;
 use DXDebug;
 use DXProt;
 use IsoTime;
-use Investigate;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 use vars qw(@ISA);
