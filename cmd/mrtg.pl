@@ -142,5 +142,11 @@ if ($want{wcy} || $want{all}) {
 # 
 # do the mrtg thing
 #
-my @out = $mc->run unless $want{nomrtg};
+
+my @out;
+{
+local %ENV;
+$ENV{LANG} = 'C';
+@out = $mc->run unless $want{nomrtg};
+}
 return (1, @out);
