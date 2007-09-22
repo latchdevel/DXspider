@@ -1655,7 +1655,7 @@ sub handle_92
 		if (@ent) {
 			my $add;
 
-			($parent, $add) = $self->pc92_handle_first_slot($ent[0], $parent, $t);
+			($parent, $add) = $self->pc92_handle_first_slot(\@ent, $parent, $t);
 			return unless $parent; # dupe
 
 			push @radd, $add if $add;
