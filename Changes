@@ -1,3 +1,8 @@
+22Sep07=======================================================================
+1. fix mrtg script so that it sets LANG='C', in addition, it appears that you 
+will need to create a /var/lock/mrtg and /var/lib/mrtg directory, both with
+chmod 01777 /var/lock/mrtg /var/lib/mrtg. They may already exist but without
+the correct permissions.
 15Sep07=======================================================================
 1. Add *optional* INET6 connectivity. In order to use this you must load
 IO::Socket::INET6 and its dependencies from CPAN or get the distro's packaged
