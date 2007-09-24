@@ -457,7 +457,6 @@ sub process
 			$pc50s = pc50($main::me, scalar DXChannel::get_all_users);
 			eph_dup($pc50s);
 			$last_pc50 = $t;
-			time_out_pc92_routes();
 		}
 
 		foreach $dxchan (@dxchan) {
@@ -512,6 +511,7 @@ sub process
 		# do the keepalive for me, if required
 		if ($main::systime >= $main::me->{next_pc92_keepalive}) {
 			$main::me->broadcast_pc92_keepalive($main::mycall);
+			time_out_pc92_routes();
 		}
 
 		if ($pc92_slug_changes && $main::systime >= $last_pc92_slug + $pc92_slug_changes) {
