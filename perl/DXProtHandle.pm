@@ -1659,6 +1659,7 @@ sub handle_92
 			return unless $parent; # dupe
 
 			push @radd, $add if $add;
+			$parent->reset_obs;
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
@@ -1720,6 +1721,7 @@ sub handle_92
 			my (@nodes, @users);
 
 			# we reset obscounts on config records as well as K records
+			$parent->reset_obs;
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 
 			#
