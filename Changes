@@ -1,3 +1,6 @@
+24Sep07=======================================================================
+1. fix error message on disconnect and, BTW, fix the cause of premature
+disconnections in the new PC92 code.
 22Sep07=======================================================================
 1. fix mrtg script so that it sets LANG='C', in addition, it appears that you 
 will need to create a /var/lock/mrtg and /var/lib/mrtg directory, both with
