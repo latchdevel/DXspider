@@ -14,6 +14,7 @@ use DXDebug;
 use DXProt;
 use IsoTime;
 use Time::HiRes qw(gettimeofday tv_interval);
+use Route::Node;
 
 use vars qw(@ISA %pings);
 @ISA = qw(DXXml);
@@ -115,6 +116,12 @@ sub handle_ping_reply
 					$tochan->{pingave} = $tochan->{pingave} + (($t - $tochan->{pingave}) / 6);
 				}
 				$tochan->{nopings} = $nopings; # pump up the timer
+				dbg("ROUTE: $tochan->{call} ping obscount reset to $tochan->{nopings}") if isdbg('obscount');
+				my $nref = Route::Node::get($tochan->{call});
+				if ($nref) {
+					my $n = $nref->reset_obs;
+					dbg("ROUTE: reset obscount on $tochan->{call} to $n (ping)") if isdbg('obscount');
+				}
 			}
 			_handle_believe($from, $fromdxchan->{call});
 		} 

@@ -462,7 +462,6 @@ sub process
 
 		foreach $dxchan (@dxchan) {
 			next unless $dxchan->is_node;
-			next if $dxchan->handle_xml;
 			next if $dxchan == $main::me;
 
 			# send the pc50
@@ -471,12 +470,14 @@ sub process
 			# send a ping out on this channel
 			if ($dxchan->{pingint} && $t >= $dxchan->{pingint} + $dxchan->{lastping}) {
 				if ($dxchan->{nopings} <= 0) {
+					dbg("ROUTE: $dxchan->{call} disconnected on ping obscount") if isdbg('obscount');
 					$dxchan->disconnect;
 				} else {
 					DXXml::Ping::add($main::me, $dxchan->call);
 					$dxchan->{nopings} -= 1;
 					$dxchan->{lastping} = $t;
 					$dxchan->{lastping} += $dxchan->{pingint} / 2 unless @{$dxchan->{pingtime}};
+					dbg("ROUTE: $dxchan->{call} ping obscount = $dxchan->{nopings}") if isdbg('obscount');
 				}
 			}
 		}
@@ -1206,12 +1207,12 @@ sub addrcmd
 sub disconnect
 {
 	my $self = shift;
-	my $pc39flag = shift;
+	my $pc39flag = shift || 0;
 	my $call = $self->call;
 
 	return if $self->{disconnecting}++;
 
-	unless ($pc39flag && $pc39flag == 1) {
+	unless ($pc39flag == 1) {
 		$self->send_now("D", DXProt::pc39($main::mycall, $self->msg('disc1', "System Op")));
 	}
 
@@ -1272,7 +1273,7 @@ sub disconnect
 	}
 
 	# broadcast to all other nodes that all the nodes connected to via me are gone
-	unless ($pc39flag && $pc39flag == 2)  {
+	unless ($pc39flag == 2)  {
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
 		$self->route_pc92d($main::mycall, undef, $main::routeroot, $node) if $node;
 	}
