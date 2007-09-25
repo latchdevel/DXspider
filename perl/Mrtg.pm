@@ -47,7 +47,7 @@ sub run
 {
 	my $self = shift;
 	$self->{mc}->close;
-	return `mrtg $self->{cfg}`;
+	return `mrtg --lock-file=$self->{dir}/mrtg.lock --confcache-file=$self->{dir}/mrtg.confcache $self->{cfg}`;
 }
 
 sub data
