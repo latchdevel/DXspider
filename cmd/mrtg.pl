@@ -109,7 +109,7 @@ if ($want{totalusers} || $want{all}) {
 
 # do the total spots
 if ($want{totalspots} || $want{all}) {
-	$mc->cfgprint('totalspots',  [qw(unknaszero absolute noi)], 1000, 'Total Spots',
+	$mc->cfgprint('totalspots',  [qw(unknaszero absolute noi perminute)], 1000, 'Total Spots',
 			 'Spots / min', 'Spots', 'Spots') unless $want{dataonly};
 	$mc->data('totalspots', $Spot::totalspots, $Spot::totalspots, 'Total Spots') unless $want{cfgonly};
 	$Spot::totalspots = 0;
@@ -117,7 +117,7 @@ if ($want{totalspots} || $want{all}) {
 
 # do the HF and VHF spots
 if ($want{hfvhf} || $want{all}) {
-	$mc->cfgprint('hfspots', [qw(unknaszero absolute)], 1000, '<font color=#00cc00>HF</font> and <font color=#0000ff>VHF+</font> Spots',
+	$mc->cfgprint('hfspots', [qw(unknaszero absolute perminute)], 1000, '<font color=#00cc00>HF</font> and <font color=#0000ff>VHF+</font> Spots',
 			 'Spots / min', 'HF', 'VHF') unless $want{dataonly};
 	$mc->data('hfspots', $Spot::hfspots, $Spot::vhfspots, 'HF and VHF+ Spots') unless $want{cfgonly};
 	$Spot::hfspots = $Spot::vhfspots = 0;
