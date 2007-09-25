@@ -510,8 +510,8 @@ sub process
 
 		# do the keepalive for me, if required
 		if ($main::systime >= $main::me->{next_pc92_keepalive}) {
-			$main::me->broadcast_pc92_keepalive($main::mycall);
 			time_out_pc92_routes();
+			$main::me->broadcast_pc92_keepalive($main::mycall);
 		}
 
 		if ($pc92_slug_changes && $main::systime >= $last_pc92_slug + $pc92_slug_changes) {
