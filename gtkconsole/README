@@ -37,8 +37,14 @@ strongly advised to use the method outlined in 2a) and not 2b).
 
 Don't bother with running gtk-demo.
 
+You will need to reboot the machine (at least once) even though there
+isn't a message that says you should. I *think* I had to reboot twice
+before it worked.
+
 I am using a slightly earlier activestate perl than build 819, mine is
 build 815. It still seems to work for me.
+
+           ------------------------------------------------
 
 Running the program:-
 
@@ -57,8 +63,11 @@ The interface is very basic at the moment, but it will improve and get
 added to as time permits.
 
 You will notice that various windows will popup automatically as data
-for those windows arrives. You can't stop at the moment. It is a
-feature.
+for those windows arrives. You can't stop any of these at the
+moment. It is a feature.
+
+The main window has an entry box at the bottom of the screen. You put
+your normal sysop commands in there.
 
 Please report problems and feature requests to the dxspider-support
 list.
