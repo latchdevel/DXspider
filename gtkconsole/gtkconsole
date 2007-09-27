@@ -85,37 +85,34 @@ if (@ARGV) {
 	$port = shift @ARGV if @ARGV;
 }
 
-unless ($call && $host) {
-	my $node = $user->{clusters}->{$user->{node}};
-
-	if ($node->{call} || $user->{call}) {
-		$call = $node->{call} || $user->{call} || $main::myalias;
-		$host = $node->{passwd};
-		$host = $node->{host};
-		$port = $node->{port};
-	}
-}
-
-unless ($call && $host) {
-	if (-e "$root/local/Listeners.pm") {
-		require  "$root/local/Listeners.pm";
-		$host = $main::listen->[0]->[0];
-		$port = $main::listen->[0]->[1];
-		$host ||= '127.0.0.1';
-		$host = "127.0.0.1" if $host eq '0.0.0.0';
-		$port ||= 7300;
-	}
+unless ($call) {
+	$call = $main::myalias;
 }
 
 unless ($host) {
-	$host = $user->{clusters}->{$user->{node}}->{host};
-	$port = $user->{clusters}->{$user->{node}}->{port};
+	my $node = $user->{clusters}->{$user->{node}};
+
+	if ($node->{call} || $user->{call}) {
+		$host = $node->{host};
+		$port ||= $node->{port};
+	}
+
+	unless ($host) {
+		if (-e "$root/local/Listeners.pm") {
+			require  "$root/local/Listeners.pm";
+			$host = $main::listen->[0]->[0];
+			$port = $main::listen->[0]->[1];
+			$host ||= '127.0.0.1';
+			$host = "127.0.0.1" if !$host && ($host eq '0.0.0.0' || $host eq '::');
+			$port ||= 7300;
+		}
+	}
 }
 
 $call ||= '';
 $host ||= '';
 $port ||= '';
-die "You need a callsign ($call), a hostname($host) and a port($port) to proceed" unless $call && $host;
+die "You need a callsign ($call), a hostname($host) and a port($port) to proceed" unless $call && $host && $port;
 
 #
 # start of GTK stuff
