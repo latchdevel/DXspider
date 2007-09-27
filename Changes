@@ -1,3 +1,9 @@
+27Sep07=======================================================================
+1. Fixed gtkconsole to split out all the windows. See
+/spider/gtkconsole/README for installation and usage instructions. This
+program will work on both Windows and Linux provided the extra Gtk2 perl
+libraries + dependencies are installed. Instructions for getting them are in
+the README file.
 25Sep07=======================================================================
 1. Fix mrtg command so that it does not require /var/lock (which anyway gets
 removed and recreated on boot - and the debianised mrtg does not recognise

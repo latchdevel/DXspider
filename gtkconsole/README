@@ -1,0 +1,66 @@
+How to install and use Gtkconsole
+---------------------------------
+
+For Linux users:-
+
+Please make sure that you have the following perl packages loaded:-
+
+* Gtk2
+
+this is best obtained from your distro's packaging system. For
+Ubuntu/Debian users, something like (as root or via sudo):-
+
+  aptitude install libgtk2-perl
+
+or for Fedora users:-
+
+  yum install perl-Gtk2 perl-Gtk2-Ex-Simple-List perl-Gtk2-Ex-Utils
+
+For Windows Users:-
+
+This is a bit more complicated but you should either follow the instructions
+on:-
+
+  http://www.lostmind.de/gtk2-perl/
+
+The important thing is that you should be running an activestate perl
+in the 5.8 series. It may work with an earlier 5.6.1 build but I now
+longer have the where withall to test it. Now would be a good time to
+upgrade to the perl suggested on the webpage. The link points directly
+to the activestate download site.
+
+You do need the GTK+ runtime.
+You don't need Glade.
+
+Follow the instructions in "Installation instructions" and you are
+strongly advised to use the method outlined in 2a) and not 2b).
+
+Don't bother with running gtk-demo.
+
+I am using a slightly earlier activestate perl than build 819, mine is
+build 815. It still seems to work for me.
+
+Running the program:-
+
+  cd /spider/gtkconsole
+  perl gtkconsole
+
+This should work if you are running it on the same machine as the
+cluster.  Otherwise, if you get errors try:-
+
+  perl gtkconsole <your sysop call> localhost 7300
+
+where localhost and 7300 are the IP address and port of the cluster
+you want to use.
+
+The interface is very basic at the moment, but it will improve and get
+added to as time permits.
+
+You will notice that various windows will popup automatically as data
+for those windows arrives. You can't stop at the moment. It is a
+feature.
+
+Please report problems and feature requests to the dxspider-support
+list.
+
+Dirk G1TLH
