@@ -1,6 +1,4 @@
 #
-# Generic screen generator
-# 
 # This produces the Gtk for all the little sub-screens
 #
 #
@@ -26,8 +24,8 @@ INIT {
 										   $cell->set(text => sprintf("%.1f", $info), xalign => 1.0);
 									   }
 									 );
-	
-	
+
+
 	Gtk2::SimpleList->add_column_type( 'tt',
 									   type     => 'Glib::Scalar',
 									   renderer => 'Gtk2::CellRendererText',
@@ -101,18 +99,18 @@ sub new
 {
 	my $pkg = shift;
 	my %args = @_;
-	
+
 	my $list = Gtk2::SimpleList->new(@{$args{fields}});
 	$list->set_rules_hint(1) if $args{hint};
 	$list->set_name($args{pkgname} || __PACKAGE__);
-	
+
 	my $scroll = Gtk2::ScrolledWindow->new (undef, undef);
 	$scroll->set_shadow_type ($args{shadow_type} || 'etched-out');
 	$scroll->set_policy (exists $args{policy} ? @{$args{policy}} : qw(automatic automatic));
 	$scroll->set_size_request (@{$args{size}}) if exists $args{size};
 	$scroll->add($list);
 	$scroll->set_border_width(exists $args{border_width} ? $args{border_width} : 2);
-	
+
 	my $self = $pkg->SUPER::new(scroller => $scroll, list => $list, widget => $scroll, maxsize => ($args{maxsize} || 100));
 
 	$list->get_model->signal_connect('row-inserted', \&_row_inserted, $self);
@@ -129,7 +127,7 @@ sub add_data
 {
 	my $self = shift;
 	my $list = $self->{list};
-	
+
 	push @{$list->{data}}, ref $_[0] ? $_[0] : [ @_ ];
 	shift @{$list->{data}} if @{$list->{data}} > $self->{maxsize};
 }
