@@ -1,3 +1,5 @@
+01Oct07=======================================================================
+1. fix .gtkconsole_data creation bug.
 27Sep07=======================================================================
 1. Fixed gtkconsole to split out all the windows. See
 /spider/gtkconsole/README for installation and usage instructions. This

@@ -11,9 +11,6 @@
 
 use strict;
 
-our $VERSION = '$Revision$';
-$VERSION =~ s|[^\d\.]+||g;
-
 our $root;
 
 # search local then perl directories
@@ -57,6 +54,11 @@ our $wcywin;					# wcy window handle
 our $chatwin;					# chat window handle
 
 require "$root/local/DXVars.pm" if -e "$root/local/DXVars.pm";
+
+our ($version, $subversion, $build);
+require "$root/perl/Version.pm";
+
+our $VERSION = "$version.$subversion build $build";
 
 # read in the user data
 our $userfn = "$ENV{HOME}/.gtkconsole_data";
@@ -120,7 +122,7 @@ die "You need a callsign ($call), a hostname($host) and a port($port) to proceed
 
 gtk_create_main_screen();
 
-$main->set_title("gtkconsole $VERSION - DXSpider Console - $call \@ $host:$port");
+$main->set_title("DXSpider gtkconsole $VERSION - $call \@ $host:$port");
 
 # connect and send stuff
 my $sock = IO::Socket::INET->new(PeerAddr=>$host, PeerPort=>$port);
@@ -413,6 +415,7 @@ sub write_user_data
 		my $dd = new Data::Dumper([ $u ]);
 		$dd->Indent(1);
 		$dd->Quotekeys(0);
+		$dd->Terse(1);
 		$fh->print($dd->Dumpxs);
 		$fh->close;
 		return 1;
