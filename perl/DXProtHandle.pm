@@ -1265,6 +1265,8 @@ sub handle_51
 	}
 }
 
+sub handle_61 { goto &handle_11; }
+
 # dunno but route it
 sub handle_75
 {

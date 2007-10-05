@@ -53,6 +53,9 @@ our $wwvwin;					# wwv window handle
 our $wcywin;					# wcy window handle
 our $chatwin;					# chat window handle
 
+# wants
+our ($wantann, $wantdx, $wantwwv, $wantwcy, $wantchat) = (1, 1, 1, 1, 1);
+
 require "$root/local/DXVars.pm" if -e "$root/local/DXVars.pm";
 
 our ($version, $subversion, $build);
@@ -428,6 +431,12 @@ sub def_menu_callback
 
 }
 
+sub set_win
+{
+	my $var = shift;
+	$$var = shift;
+}
+
 sub gtk_create_main_screen
 {
 	$main = new Gtk2::Window('toplevel');
@@ -453,6 +462,31 @@ sub gtk_create_main_screen
 													}
 										  ],
 							 },
+					_Screens => {
+								 item_type =>'<Branch>',
+								 children => [
+											  _Dx => {
+													  item_type => '<CheckMenuItem>',
+													  callback => sub { set_win(\$wantdx, $@)},
+													 },
+											  _Announce => {
+															item_type => '<CheckItem>',
+															callback => sub { set_win(\$wantann, $@)},
+														   },
+											  _Chat => {
+														item_type => '<CheckItem>',
+														callback => sub { set_win(\$wantchat, $@)},
+													   },
+											  _WWV => {
+													   item_type => '<CheckItem>',
+													   callback => sub { set_win(\$wantwwv, $@)},
+													  },
+											  _WCY => {
+													   item_type => '<CheckItem>',
+													   callback => sub { set_win(\$wantwcy, $@)},
+													  },
+											 ],
+								},
 
 					_Help => {
 							  item_type => '<Branch>',
