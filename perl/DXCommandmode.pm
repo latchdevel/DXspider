@@ -143,6 +143,13 @@ sub start
 	}
 	$motd = "${main::motd}_$self->{lang}" unless $motd && -e $motd;
 	$motd = $main::motd unless $motd && -e $motd;
+	if ($self->conn->{csort} eq 'ax25') {
+		if ($motd) {
+			$motd = "${motd}_ax25" if -e "${motd}_ax25";
+		} else {
+			$motd = "${main::motd}_ax25" if -e "${main::motd}_ax25";
+		}
+	}
 	$self->send_file($motd) if -e $motd;
 
 	# sort out privilege reduction
