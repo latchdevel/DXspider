@@ -286,7 +286,6 @@ sub new
 	$self->{flags} = shift || Route::here(1);
 	$self->{users} = [];
 	$self->{nodes} = [];
-	$self->{lastid} = 0;
 	$self->{PC92C_dxchan} = '';
 	$self->reset_obs;			# by definition
 

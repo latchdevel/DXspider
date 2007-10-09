@@ -49,7 +49,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 
 $pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record might be the only
 								# thing a node might send - once an hour)
-$pc9x_future_age = 5*60;		# maximum age in the future ditto
+$pc9x_future_age = 2*3600;		# maximum age in the future ditto
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
 $pc92_slug_changes = 60;		# slug any changes going outward for this long
 $last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
@@ -1485,20 +1485,22 @@ sub check_pc9x_t
 		# the id on it is completely unreliable. Besides, only commands
 		# originating on this box will go through this code...
 		if ($parent->call ne $main::mycall) {
-			my $lastid = $parent->lastid || 0;
-			if ($t < $lastid) {
-				if ($t+86400-$lastid > $pc9x_past_age) {
-					dbg("PCPROT: dup id on $t <= $lastid, ignored") if isdbg('chanerr');
+			my $lastid = $parent->lastid;
+			if (defined $lastid) {
+				if ($t < $lastid) {
+					if ($t+86400-$lastid > $pc9x_past_age) {
+						dbg("PCPROT: dup id on $t <= lastid $lastid, ignored") if isdbg('chanerr');
+						return;
+					}
+				} elsif ($t == $lastid) {
+					dbg("PCPROT: dup id on $t == lastid $lastid, ignored") if isdbg('chanerr');
 					return;
-				}
-			} elsif ($t == $lastid) {
-				dbg("PCPROT: dup id on $t == $lastid, ignored") if isdbg('chanerr');
-				return;
-			} else {
-				# $t > $lastid, check that the timestamp offered isn't too far away from 'now'
-				if ($t+$main::systime_daystart-$main::systime > $pc9x_future_age ) {
-					dbg("PCPROT: id $t too far in the future, ignored") if isdbg('chanerr');
-					return;
+				} else {
+					# $t > $lastid, check that the timestamp offered isn't too far away from 'now'
+					if ($t-$lastid > $pc9x_future_age ) {
+						dbg("PCPROT: id $t too far in the future of lastid $lastid, ignored") if isdbg('chanerr');
+						return;
+					}
 				}
 			}
 		}
