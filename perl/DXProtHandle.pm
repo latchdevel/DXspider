@@ -1677,7 +1677,7 @@ sub handle_92
 		# cope with missing duplicate node calls in the first slot for A or D
 		my $me = $_[4] || '';
 		if (($sort eq 'A' || $sort eq 'D')) {
-			$me ||= _encode_pc92_call($parent) if !$me ;
+			$me ||= _encode_pc92_call($parent) unless $me ;
 		} else {
 			unless ($me) {
 				dbg("PCPROT: this type of PC92 *must* have a node call in the first slot, ignored") if is_dbg('chanerr');
@@ -1685,7 +1685,7 @@ sub handle_92
 			}
 		}
 
-		my @ent = map {[ _decode_pc92_call($_) ]} grep {$_ && /^[0-7]/} $me, @_[5 .. $#_];
+		my @ent = map {my @a = _decode_pc92_call($_); @a ? \@a : ()} grep {$_ && /^[0-7]/} $me, @_[5 .. $#_];
 
 		if (@ent) {
 
@@ -1705,7 +1705,7 @@ sub handle_92
 		# do a pass through removing any references to either locally connected nodes or mycall
 		my @nent;
 		for (@ent) {
-			next unless $_;
+			next unless $_ && @$_;
 			if ($_->[0] eq $main::mycall || DXChannel::get($_->[0])) {
 				dbg("PCPROT: $_->[0] refers to locally connected node, ignored") if isdbg('chanerr');
 				next;

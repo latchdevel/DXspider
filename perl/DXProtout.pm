@@ -19,9 +19,10 @@ use DXDebug;
 
 use strict;
 
-use vars qw($sentencelth $pc19_version);
+use vars qw($sentencelth $pc19_version $pc9x_nodupe_first_slot);
 
 $sentencelth = 180;
+$pc9x_nodupe_first_slot = 1;
 
 #
 # All the PCxx generation routines
@@ -378,8 +379,12 @@ sub _gen_pc92
 	my $sort = shift;
 	my $ext = shift;
 	my $s = "PC92^$main::mycall^" . gen_pc9x_t() . "^$sort";
+	if ($pc9x_nodupe_first_slot && ($sort eq 'A' || $sort eq 'D') && $_[0]->call eq $main::mycall) {
+		shift;
+		$s .= '^';
+	}
 	for (@_) {
-		$s .= "^" . _encode_pc92_call($_, $ext);
+		$s .= '^' . _encode_pc92_call($_, $ext);
 		$ext = 0;				# only the first slot has an ext.
 	}
 	return $s . '^H99^';
@@ -392,6 +397,10 @@ sub gen_pc92_with_time
 	my $t = shift;
 	my $ext = 1;
 	my $s = "PC92^$call^$t^$sort";
+	if ($pc9x_nodupe_first_slot && ($sort eq 'A' || $sort eq 'D') && $_[0]->call eq $main::mycall) {
+		shift;
+		$s .= '^';
+	}
 	for (@_) {
 		$s .= "^" . _encode_pc92_call($_, $ext);
 	}
