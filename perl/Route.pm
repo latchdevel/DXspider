@@ -312,7 +312,7 @@ sub findroutes
 		unless ($seen->{$ncall}) {
 
 			# put non-pc9x nodes to the back of the queue
-			my $l = $level + ($nref->{do_pc9x} ? 0 : 30);
+			my $l = $level + ($nref->{do_pc9x} && ($nref->{version}||5454) >= 5454 ? 0 : 30);
 			dbg("recursing from $call -> $ncall level $l") if isdbg('routec');
 			my @rout = findroutes($ncall, $l+1, $seen);
 			push @out, @rout;
