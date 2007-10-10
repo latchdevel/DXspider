@@ -146,13 +146,13 @@ if ($want{pc92} || $want{all}) {
 				  "PC92 <font color=#00cc00>C</font> and <font color=#0000ff>K</font> records into $main::mycall",
 				  'Bytes / Sec', 'C', 'K') unless $want{dataonly};
 	$mc->data('pc92ck', $DXProt::pc92Cin, $DXProt::pc92Kin, "PC92 C and K into $main::mycall") unless $want{cfgonly};
-#	$DXProt::pc92C = $DXProt::pc92K = 0;
+#	$DXProt::pc92Cin = $DXProt::pc92Kin = 0;
 
 	$mc->cfgprint('pc92ad', [], 1024000,
 				  "PC92 <font color=#00cc00>A</font> and <font color=#0000ff>D</font> records into $main::mycall",
 				  'Bytes / Sec', 'A', 'D') unless $want{dataonly};
 	$mc->data('pc92ad', $DXProt::pc92Ain, $DXProt::pc92Din, "PC92 A and D into $main::mycall") unless $want{cfgonly};
-#	$DXProt::pc92A = $DXProt::pc92D = 0;
+#	$DXProt::pc92Ain = $DXProt::pc92Din = 0;
 
 }
 
