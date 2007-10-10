@@ -422,7 +422,7 @@ sub pc92d
 # send a config
 sub pc92c
 {
-	return _gen_pc92('C', 0, @_);
+	return _gen_pc92('C', 1, @_);
 }
 
 # send a keep alive
