@@ -296,6 +296,8 @@ sub findroutes
 
 	# recursion detector
 	return () if $seen->{$call};
+
+	# return immediately if we are directly connected
 	if (my $dxchan = DXChannel::get($call)) {
 		$seen->{$call}++;
 		push @out, $level ? [$level, $dxchan] : $dxchan;
@@ -308,8 +310,11 @@ sub findroutes
 	return () unless $nref;
 	foreach my $ncall (@{$nref->{parent}}) {
 		unless ($seen->{$ncall}) {
-			dbg("recursing from $call -> $ncall") if isdbg('routec');
-			my @rout = findroutes($ncall, $level+1, $seen);
+
+			# put non-pc9x nodes to the back of the queue
+			my $l = $level + ($nref->{do_pc9x} ? 0 : 30);
+			dbg("recursing from $call -> $ncall level $l") if isdbg('routec');
+			my @rout = findroutes($ncall, $l+1, $seen);
 			push @out, @rout;
 		}
 	}

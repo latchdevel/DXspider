@@ -1559,7 +1559,7 @@ sub pc92_handle_first_slot
 	}
 	$parent->here(Route::here($here));
 	$parent->version($version || $pc19_version) if $version;
-	$parent->build($build) if $build && $build > $parent->build;
+	$parent->build($build) if $build;
 	$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
 	return ($parent, @radd);
 }
@@ -1674,16 +1674,9 @@ sub handle_92
 		# this is the main route section
 		# here is where all the routes are created and destroyed
 
-		# cope with missing duplicate node calls in the first slot for A or D
+		# cope with missing duplicate node calls in the first slot
 		my $me = $_[4] || '';
-		if (($sort eq 'A' || $sort eq 'D')) {
-			$me ||= _encode_pc92_call($parent) unless $me ;
-		} else {
-			unless ($me) {
-				dbg("PCPROT: this type of PC92 *must* have a node call in the first slot, ignored") if is_dbg('chanerr');
-				return;
-			}
-		}
+		$me ||= _encode_pc92_call($parent) unless $me ;
 
 		my @ent = map {my @a = _decode_pc92_call($_); @a ? \@a : ()} grep {$_ && /^[0-7]/} $me, @_[5 .. $#_];
 
