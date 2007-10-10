@@ -54,6 +54,8 @@ sub data
 {
 	my ($self, $name, $vali, $valo, $title) = @_;
 	my $uptime = main::uptime();
+	$vali ||= 0;
+	$valo ||= 0;
 
 	if (my $m = new IO::File ">$self->{dir}/$name" ) {
 		$m->print("$vali\n$valo\n$uptime\n$title\n");

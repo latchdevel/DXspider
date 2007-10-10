@@ -13,6 +13,7 @@
 #    hfvhf            - all spots split into HF and VHF
 #    wwv              - two graphs of WWV, one SFI and R other A and K
 #    wcy              - WCY A and K 
+#    pc92             - PC92 C and K, PC92 A and D
 #    all              - all of the above 
 #    
 # b) actions          
@@ -137,6 +138,22 @@ if ($want{wcy} || $want{all}) {
 	$mc->cfgprint('wcyka', [qw(gauge)], 1000, 'WCY <font color=#00cc00>A</font> and <font color=#0000ff>K</font>',
 			 'A / K', 'A', 'K') unless $want{dataonly};
 	$mc->data('wcyka', $WCY::a, $WCY::k, 'WCY A and K') unless $want{cfgonly};
+}
+
+if ($want{pc92} || $want{all}) {
+
+	$mc->cfgprint('pc92ck', [], 1024000,
+				  "PC92 <font color=#00cc00>C</font> and <font color=#0000ff>K</font> records into $main::mycall",
+				  'Bytes / Sec', 'C', 'K') unless $want{dataonly};
+	$mc->data('pc92ck', $DXProt::pc92Cin, $DXProt::pc92Kin, "PC92 C and K into $main::mycall") unless $want{cfgonly};
+#	$DXProt::pc92C = $DXProt::pc92K = 0;
+
+	$mc->cfgprint('pc92ad', [], 1024000,
+				  "PC92 <font color=#00cc00>A</font> and <font color=#0000ff>D</font> records into $main::mycall",
+				  'Bytes / Sec', 'A', 'D') unless $want{dataonly};
+	$mc->data('pc92ad', $DXProt::pc92Ain, $DXProt::pc92Din, "PC92 A and D into $main::mycall") unless $want{cfgonly};
+#	$DXProt::pc92A = $DXProt::pc92D = 0;
+
 }
 
 # 

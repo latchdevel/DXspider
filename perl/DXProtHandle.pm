@@ -45,6 +45,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc9x_past_age $pc9x_future_age
 			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
+			$pc92Ain $pc92Cin $pc92Din $pc92Kin
 		   );
 
 $pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record might be the only
@@ -1651,6 +1652,8 @@ sub handle_92
 		}
 
 	} elsif ($sort eq 'K') {
+		$pc92Kin += length $line if $sort eq 'K';
+
 		# remember the last channel we arrived on
 		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
 
@@ -1667,6 +1670,10 @@ sub handle_92
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
+
+		$pc92Ain += length $line if $sort eq 'A';
+		$pc92Cin += length $line if $sort eq 'C';
+		$pc92Din += length $line if $sort eq 'D';
 
 		# remember the last channel we arrived on
 		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
