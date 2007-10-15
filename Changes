@@ -1,3 +1,6 @@
+15Oct07=======================================================================
+1. prevent PC61 from propagating outside spider boxes.
+2. simplify the regex for sh/contest to allow it to work on perl < 5.8.x.
 09Oct07=======================================================================
 1. Added *VERY* important change to prevent loops on PC9x sentences.
 06Oct07=======================================================================
