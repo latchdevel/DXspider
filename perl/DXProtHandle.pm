@@ -2,7 +2,7 @@
 #
 # This module impliments the handlers for the protocal mode for a dx cluster
 #
-# Copyright (c) 1998-2006 Dirk Koopman G1TLH
+# Copyright (c) 1998-2007 Dirk Koopman G1TLH
 #
 #
 #
@@ -1667,6 +1667,9 @@ sub handle_92
 
 			push @radd, $add if $add;
 			$parent->reset_obs;
+			$parent->version($ent[4]) if $ent[4];
+			$parent->build($ent[5]) if $ent[5];
+
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
