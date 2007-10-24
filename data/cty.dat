@@ -41,7 +41,8 @@ Montenegro:               15:  28:  EU:   42.50:   -19.30:    -1.0:  4O:
 Sri Lanka:                22:  41:  AS:    7.00:   -79.90:    -5.5:  4S:
     4P,4Q,4R,4S;
 ITU HQ Geneva:            14:  28:  EU:   46.20:    -6.20:    -1.0:  4U1I:
-    4U1ITU,4U0ITU,4U2ITU,4U3ITU,4U4ITU,4U5ITU,4U6ITU,4U7ITU,4U8ITU,4U9ITU;
+    4U1ITU,4U0ITU,4U1WRC,4U2ITU,4U3ITU,4U4ITU,4U5ITU,4U6ITU,4U7ITU,4U8ITU,
+    4U9ITU;
 United Nations HQ:        05:  08:  NA:   40.80:    74.00:     5.0:  4U1U:
     4U0UN,4U1UN,4U2UN,4U3UN,4U4UN,4U50SPACE,4U5UN,4U6UN;
 Vienna Intl Ctr:          15:  28:  EU:   48.20:   -16.30:    -1.0:  *4U1V:
@@ -762,7 +763,7 @@ Canada:                   05:  09:  NA:   45.00:    80.00:     4.0:  VE:
     VE2III(2),VE2IM(2),VE2KK(2),VE2MTA(2),VE2MTB(2),VE2NN(2),VE2NRK(2),
     VE2PR(2),VE2QRZ(2),VE2RB(2),VE2TVU(2),VE2UA(2),VE2VH(2),VE2WDX(2),
     VE2WT(2),VE2XAA/2(2),VE2XY(2),VE2YM(2),VE2Z(2),VE2ZC(5),VE2ZM(5),VE2ZV(5),
-    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20071023,
+    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20071024,
     VY0AA(4)[3],VY0PW(4)[3],VY2MGY/3(4)[4];
 Australia:                30:  59:  OC:  -22.00:  -135.00:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ;
