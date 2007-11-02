@@ -64,7 +64,7 @@ if ($want{agw}) {
 if (!$main::is_win && ($want{proc} || $want{all})) {
 	$ENV{COLUMNS} = 250;
 	my $secs;
-	my $f = new IO::File "ps aux |";
+	my $f = new IO::File "ps ax -ocputime,args |";
 #	dbg("$f");
 	if ($f) {
 		while (<$f>) {
@@ -75,8 +75,9 @@ if (!$main::is_win && ($want{proc} || $want{all})) {
 			next if $l =~ m{bash\s+\-c};
 			my @f = split /\s+/, $l;
 #			dbg("$f[9]");
-			my ($m, $s) = split /:/, $f[9];
-			$secs = ($m * 60) + $s;
+			my ($d, $h, $m, $s) = $f[0] =~ /(?:(\d+)-)?(\d+):(\d\d):(\d\d)$/;
+			$d ||= 0;
+			$secs = ($d * 86400) + ($h * 3600) + ($m * 60) + $s;
 			last;
 		}
 		$f->close;
