@@ -548,6 +548,7 @@ sub send_dx_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $line =~ /PC61/ && !$dxchan->is_spider && !$dxchan->is_user;
 		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
 	}
 }

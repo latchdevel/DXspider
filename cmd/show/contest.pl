@@ -18,15 +18,16 @@ my $mon;;
 # trying to make the syntax abit more user friendly...
 # and yes, I have been here and it *is* all my fault (dirk)
 $line = lc $line;
-my ($m,$y) = $line =~ /^([a-z]{3})\w*\s*(\d+)/;
-($y,$m) = $line =~ /^(\d+)\s*([a-z]{3})/ unless $y && $m;
+my ($m,$y) = $line =~ /^([a-z]+)\s*(\d+)/;
+($y,$m) = $line =~ /^(\d+)\s*([a-z]+)/ unless $y && $m;
 unless ($y && $m) {
 	($m,$y) = (gmtime)[4,5];
-	$m = qw(jan feb mar apr may jun jul aug sep oct nov dec)[$m];
+	$m = lc $DXUtil::month[$m];
 	$y += 1900;
 }
 $y += 2000 if $y <= 50;
 $y += 1900 if $y > 50 && $y <= 99;
+$m = substr $m, 0, 3 if length $m > 3;
 $m = 'oct' if $m eq 'okt';
 $m = 'may' if $m eq 'mai' || $m eq 'maj';
 $mon = "$y$m";
