@@ -1490,25 +1490,33 @@ sub check_pc9x_t
 			if (defined $lastid) {
 				if ($t < $lastid) {
 					if ($t+86400-$lastid > $pc9x_past_age) {
-						dbg("PCPROT: dup id on $t <= lastid $lastid, ignored") if isdbg('chanerr');
-						return;
+						dbg("PCPROT: dup id on $t <= lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
+						return undef;
 					}
 				} elsif ($t == $lastid) {
-					dbg("PCPROT: dup id on $t == lastid $lastid, ignored") if isdbg('chanerr');
-					return;
+					dbg("PCPROT: dup id on $t == lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
+					return undef;
 				} else {
 					# $t > $lastid, check that the timestamp offered isn't too far away from 'now'
 					if ($t-$lastid > $pc9x_future_age ) {
-						dbg("PCPROT: id $t too far in the future of lastid $lastid, ignored") if isdbg('chanerr');
-						return;
+						dbg("PCPROT: id $t too far in the future of lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
+						return undef;
 					}
 				}
 			}
 		}
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
+	} else {
+		return undef;
 	}
-	$parent->lastid($t) if $parent;
+	if ('pc92dedupe') {
+		my $exists = exists $parent->{lastid}; # naughty, naughty :-)
+		my $val = $parent->{lastid};
+		my $s = $exists ? (defined $val ? $val : 'exists/undef') : 'undef';
+		dbg("PCPROT: $call pc92 id lastid $s -> $t");
+	}
+	$parent->lastid($t);
 
 	return $parent;
 }
