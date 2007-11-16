@@ -43,11 +43,12 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist
-			$eph_pc15_restime $pc9x_past_age
+			$eph_pc15_restime $pc9x_past_age $pc9x_dupe_age
 			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
 			$pc92Ain $pc92Cin $pc92Din $pc92Kin $pc9x_time_tolerance
 		   );
 
+$pc9x_dupe_age = 60;			# catch loops of circular (usually) D records
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
 $pc92_slug_changes = 60;		# slug any changes going outward for this long
 $last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
@@ -1608,6 +1609,11 @@ sub handle_92
 	my $t = $_[2];
 	my $sort = $_[3];
 
+	# this catches loops of A/Ds
+#	if (eph_dup($line, $pc9x_dupe_age)) {
+#		return;
+#	}
+
 	if ($pcall eq $main::mycall) {
 		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
 		return;
@@ -1631,7 +1637,9 @@ sub handle_92
 		return;
 	}
 
-	my $parent = check_pc9x_t($pcall, $t, 92, 1) || return;
+	# don't create routing entries for D records that don't already exist
+	# this is what causes all those PC92 loops!
+	my $parent = check_pc9x_t($pcall, $t, 92, $sort ne 'D') || return;
 	my $oparent = $parent;
 
 	$parent->do_pc9x(1);
