@@ -857,8 +857,10 @@ sub send_local_config
 	} elsif ($self->{do_pc9x}) {
 		dbg("send_local_config: doing pc9x");
 		my $node = Route::Node::get($self->{call});
-		$self->send_last_pc92_config($main::routeroot);
-		$self->send(pc92a($main::routeroot, $node)) unless $main::routeroot->last_PC92C =~ /$self->{call}/;
+#		$self->send_last_pc92_config($main::routeroot);
+#		$self->send(pc92a($main::routeroot, $node)) unless $main::routeroot->last_PC92C =~ /$self->{call}/;
+		$self->send(pc92a($main::routeroot, $node));
+		$self->send(pc92k($main::routeroot));
 	} else {
 		# create a list of all the nodes that are not connected to this connection
 		# and are not themselves isolated, this to make sure that isolated nodes

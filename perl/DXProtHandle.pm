@@ -43,17 +43,19 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc
 			$allowzero $decode_dk0wcy $send_opernam @checklist
-			$eph_pc15_restime $pc9x_past_age $pc9x_future_age
+			$eph_pc15_restime $pc9x_past_age
 			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
-			$pc92Ain $pc92Cin $pc92Din $pc92Kin
+			$pc92Ain $pc92Cin $pc92Din $pc92Kin $pc9x_time_tolerance
 		   );
 
-$pc9x_past_age = 62*60;			# maximum age in the past of a px9x (a config record might be the only
-								# thing a node might send - once an hour)
-$pc9x_future_age = 2*3600;		# maximum age in the future ditto
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
 $pc92_slug_changes = 60;		# slug any changes going outward for this long
 $last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
+$pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this amount
+$pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
+	$pc9x_time_tolerance;		# thing a node might send - once an hour and we allow an extra hour for luck)
+                                # this is actually the partition between "yesterday" and "today" but old.
+
 
 # incoming talk commands
 sub handle_10
@@ -1478,6 +1480,21 @@ sub check_pc9x_t
 	my $pc = shift;
 	my $create = shift;
 
+	# check that the time is between 0 >= $t < 86400
+	unless ($t >= 0 && $t < 86400) {
+		dbg("PCPROT: time invalid t: $t, ignored") if isdbg('chanerr');
+		return undef;
+	}
+
+	# check that the time of this pc9x is within tolerance (default 15 mins either way)
+	my $now = $main::systime - $main::systime_daystart ;
+	my $diff = abs($now - $t);
+	unless ($diff < $pc9x_time_tolerance || 86400 - $diff < $pc9x_time_tolerance) {
+		my $c = ref $call ? $call->call : $call;
+		dbg("PC9XERR: $c time out of range t: $t now: $now diff: $diff > $pc9x_time_tolerance, ignored") if isdbg('chan');
+		return undef;
+	}
+
 	my $parent = ref $call ? $call : Route::Node::get($call);
 	if ($parent) {
 		# we only do this for external calls whose routing table
@@ -1489,19 +1506,23 @@ sub check_pc9x_t
 			my $lastid = $parent->lastid;
 			if (defined $lastid) {
 				if ($t < $lastid) {
-					if ($t+86400-$lastid > $pc9x_past_age) {
+					# note that this is where we determine whether this pc9x has come in yesterday
+					# but is still greater (modulo 86400) than the lastid or is simply an old
+					# duplicate sentence. To determine this we need to do some module 86400
+					# arithmetic. High numbers mean that this is an old duplicate sentence,
+					# low numbers that it is a new sentence.
+					#
+					# Typically you will see yesterday being taken on $t = 84, $lastid = 86235
+					# and old dupes with $t = 234, $lastid = 256 (which give answers 249 and
+					# 86378 respectively in the calculation below).
+					#
+					if (($t-$lastid)%86400 > $pc9x_past_age) {
 						dbg("PCPROT: dup id on $t <= lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
 						return undef;
 					}
 				} elsif ($t == $lastid) {
 					dbg("PCPROT: dup id on $t == lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
 					return undef;
-				} else {
-					# $t > $lastid, check that the timestamp offered isn't too far away from 'now'
-					if ($t-$lastid > $pc9x_future_age ) {
-						dbg("PCPROT: id $t too far in the future of lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
-						return undef;
-					}
 				}
 			}
 		}
@@ -1510,7 +1531,7 @@ sub check_pc9x_t
 	} else {
 		return undef;
 	}
-	if ('pc92dedupe') {
+	if (isdbg('pc92dedupe')) {
 		my $exists = exists $parent->{lastid}; # naughty, naughty :-)
 		my $val = $parent->{lastid};
 		my $s = $exists ? (defined $val ? $val : 'exists/undef') : 'undef';

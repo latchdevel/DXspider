@@ -181,6 +181,7 @@ sub config
 {
 	my $self = shift;
 	my $nodes_only = shift || 0;
+	my $width = shift || 79;
 	my $level = shift;
 	my $seen = shift;
 	my @out;
@@ -223,7 +224,7 @@ sub config
 					} else {
 						$c = "$ucall?";
 					}
-					if ((length $line) + (length $c) + 1 < 79) {
+					if ((length $line) + (length $c) + 1 < $width) {
 						$line .= $c . ' ';
 					} else {
 						$line =~ s/\s+$//;
@@ -251,7 +252,7 @@ sub config
 		if ($nref) {
 			my $c = $nref->user_call;
 			dbg("recursing from $call -> $c") if isdbg('routec');
-			my @rout = $nref->config($nodes_only, $level+1, $seen, @_);
+			my @rout = $nref->config($nodes_only, $width, $level+1, $seen, @_);
 			if (@rout && @_) {
 				push @out, ' ' x ($level*2) . $self->user_call unless grep /^\s+$call/, @out;
 			}
