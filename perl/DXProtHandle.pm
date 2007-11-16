@@ -1530,6 +1530,7 @@ sub check_pc9x_t
 	} elsif ($create) {
 		$parent = Route::Node->new($call);
 	} else {
+		dbg("PCPROT: $call does not exist, ignored") if isdbg('pc92dedupe');
 		return undef;
 	}
 	if (isdbg('pc92dedupe')) {
