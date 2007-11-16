@@ -1517,7 +1517,7 @@ sub check_pc9x_t
 					# and old dupes with $t = 234, $lastid = 256 (which give answers 249 and
 					# 86378 respectively in the calculation below).
 					#
-					if (($t-$lastid)%86400 > $pc9x_past_age) {
+					if ($t+86400-$lastid > $pc9x_past_age) {
 						dbg("PCPROT: dup id on $t <= lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
 						return undef;
 					}
