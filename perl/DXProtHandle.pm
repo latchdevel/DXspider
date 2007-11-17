@@ -1934,7 +1934,7 @@ sub handle_93
 		# chat messages to non-pc9x nodes
 		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
 	}
-	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
+	$self->broadcast_route_pc9x($pcall, undef, $line, 0) unless $to eq 'LOCAL' || $via eq 'LOCAL';
 }
 
 # if get here then rebroadcast the thing with its Hop count decremented (if
