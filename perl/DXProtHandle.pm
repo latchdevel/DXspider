@@ -1887,6 +1887,12 @@ sub handle_93
 		return;
 	}
 
+	# ignore PC93 coming in from outside this node with a target of local
+	if ($to eq 'LOCAL' && $self != $main::me) {
+		dbg("PCPROT: incoming LOCAL chat not from local node, ignored") if isdbg('chanerr');
+		return;
+	}
+
 	# if it is routeable then then treat it like a talk
 	my $ref = Route::get($to);
 	if ($ref) {
@@ -1934,6 +1940,8 @@ sub handle_93
 		# chat messages to non-pc9x nodes
 		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
 	}
+
+	# broadcast this chat sentence everywhere unless it is targetted to 'LOCAL'
 	$self->broadcast_route_pc9x($pcall, undef, $line, 0) unless $to eq 'LOCAL' || $via eq 'LOCAL';
 }
 
