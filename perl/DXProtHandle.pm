@@ -273,12 +273,13 @@ sub handle_11
 	}
 
 	# local processing
-	my $r;
-	eval {
-		$r = Local::spot($self, @spot);
-	};
-	#			dbg("Local::spot1 error $@") if isdbg('local') if $@;
-	return if $r;
+	if (defined *Local::spot) {
+		my $r;
+		eval {
+			$r = Local::spot($self, @spot);
+		};
+		return if $r;
+	}
 
 	# DON'T be silly and send on PC26s!
 	return if $pcno == 26;
@@ -356,6 +357,15 @@ sub handle_12
 		$self->send_announce(0, $line, @_[1..6]);
 	} else {
 		$self->route($_[2], $line);
+	}
+
+	# local processing
+	if (defined *Local::ann) {
+		my $r;
+		eval {
+			$r = Local::ann($self, $line, @_[1..6]);
+		};
+		return if $r;
 	}
 }
 
@@ -937,12 +947,13 @@ sub handle_23
 	# note this only takes the first one it gets
 	Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
 
-	my $rep;
-	eval {
-		$rep = Local::wwv($self, $_[1], $_[2], $sfi, $k, $i, @_[6..8], $r);
-	};
-	#			dbg("Local::wwv2 error $@") if isdbg('local') if $@;
-	return if $rep;
+	if (defined *Local::wwv) {
+		my $rep;
+		eval {
+			$rep = Local::wwv($self, $_[1], $_[2], $sfi, $k, $i, @_[6..8], $r);
+		};
+		return if $rep;
+	}
 
 	# DON'T be silly and send on PC27s!
 	return if $pcno == 27;
@@ -1307,12 +1318,13 @@ sub handle_73
 
 	my $wcy = WCY::update($d, @_[2..12]);
 
-	my $rep;
-	eval {
-		$rep = Local::wcy($self, @_[1..12]);
-	};
-	# dbg("Local::wcy error $@") if isdbg('local') if $@;
-	return if $rep;
+	if (defined *Local::wcy) {
+		my $rep;
+		eval {
+			$rep = Local::wcy($self, @_[1..12]);
+		};
+		return if $rep;
+	}
 
 	# broadcast to the eager world
 	send_wcy_spot($self, $line, $d, @_[2..12]);
