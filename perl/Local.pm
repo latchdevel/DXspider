@@ -194,6 +194,26 @@ sub spot
 	return 0;
 }
 
+# called after the announce has been stored but before it is broadcast,
+# you can do funky routing here that is non-standard. 0 carries on
+# after this, 1 stops dead and no routing is done (this could mean
+# that YOU have done some routing or other instead
+#
+# Parameters:-
+# $self      - the DXChannel object
+# $line      - the input PC12 line
+# $announcer - the call that announced this
+# $via       - the destination * = everywhere, callsign - just to that node
+# $text      - the text of the chat
+# $flag      - ' ' - normal announce, * - SYSOP, else CHAT group
+# $origin    - originating node
+# $wx        - 0 - normal, 1 - WX
+sub ann
+{
+	return 0;
+}
+
+
 # called after the wwv has been stored but before it is broadcast,
 # you can do funky routing here that is non-standard. 0 carries on
 # after this, 1 stops dead and no routing is done (this could mean
