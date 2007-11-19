@@ -36,6 +36,7 @@ Htmldir: $self->{html}
 Imagedir: $self->{html}
 Logdir: $self->{dir}
 Options[_]: growright
+Timezone[_]: GMT
 ##
 ##
 EOF
