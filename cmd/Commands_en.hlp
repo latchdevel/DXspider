@@ -406,6 +406,11 @@ DX cluster <callsign>. This process creates a new 'client' process which will
 use the script in /spider/connect/<callsign> to effect the 'chat' exchange
 necessary to traverse the network(s) to logon to the cluster <callsign>.
 
+=== 5^CREATE/USER <callsign> ...^Create this user from the User Database
+This command will create one or more new users. None of the fields
+like name, qth etc will be filled in. It is just a new entry in the user
+database to which one can add more stuff like SET/PASSWORD or by SPOOF.
+
 === 9^DELETE/USDB <callsign> ...^Delete this user from the US State Database
 This command will completely remove a one or more callsigns
 from the US States database.

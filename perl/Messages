@@ -38,6 +38,7 @@ package DXM;
 				confail => 'connection to $_[0] failed ($_[1])',
 				constart => 'connection to $_[0] started',
 				conbump => 'Reconnected as $_[0] at $_[1], this instance is disconnected',
+				creuser => 'User $_[0] has been created',
 				deluser => 'User $_[0] has been deleted',
 				db1 => 'This database is hosted at $_[0]',
 				db2 => 'Sorry, but key: $_[0] was not found in $_[1]',

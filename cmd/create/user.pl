@@ -1,5 +1,5 @@
 #
-# set back to user
+# create a user
 #
 # Please note that this is only effective if the user is not on-line
 #
@@ -15,20 +15,29 @@ my @out;
 my $user;
 my $create;
 
-return (1, $self->msg('e5')) if $self->priv < 5;
+return (1, $self->msg('e5')) if $self->priv < 9 || $self->remotecmd;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $chan = DXChannel::get($call);
-	if ($chan) {
-		push @out, $self->msg('nodee1', $call);
-	} else {
-		$user = DXUser->get($call);
-		return (1, $self->msg('usernf', $call)) if !$user;
+	$user = DXUser->get($call);
+	unless ($user) {
+		$user = DXUser->new($call);
 		$user->sort('U');
-		$user->priv(0);
+		$user->homenode($main::mycall);
 		$user->close();
-		push @out, $self->msg('nodeu', $call);
+		push @out, $self->msg('creuser', $call);
+	} else {
+		push @out, $self->msg('hasha', $call, 'Users');
 	}
 }
 return (1, @out);
+
+
+
+
+
+
+
+
+
+

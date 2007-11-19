@@ -111,7 +111,6 @@ package CmdAlias;
 	  '^set/nota', 'unset/talk', 'unset/talk',
 	  '^set/noww', 'unset/wwv', 'unset/wwv',
 	  '^set/nowx', 'unset/wx', 'unset/wx',
-      '^set/user', 'unset/node', 'unset/node',
 	'^set$', 'apropos set', 'apropos',
 	  '^sho?w?/u$', 'show/user', 'show/user',
 	  '^sho?w?/bul', 'show/files bulletins', 'show/files',
@@ -154,6 +153,7 @@ package CmdAlias;
 	],
 	'u' => [
 	'^uns?e?t?$', 'apropos unset', 'apropos',
+	'^uns?e?t?/node$', 'set/user', 'set/user',
 	],
 	'v' => [
 	],
