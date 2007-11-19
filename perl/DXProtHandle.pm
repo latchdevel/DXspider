@@ -273,7 +273,7 @@ sub handle_11
 	}
 
 	# local processing
-	if (defined *Local::spot) {
+	if (defined &Local::spot) {
 		my $r;
 		eval {
 			$r = Local::spot($self, @spot);
@@ -360,7 +360,7 @@ sub handle_12
 	}
 
 	# local processing
-	if (defined *Local::ann) {
+	if (defined &Local::ann) {
 		my $r;
 		eval {
 			$r = Local::ann($self, $line, @_[1..6]);
@@ -947,7 +947,7 @@ sub handle_23
 	# note this only takes the first one it gets
 	Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
 
-	if (defined *Local::wwv) {
+	if (defined &Local::wwv) {
 		my $rep;
 		eval {
 			$rep = Local::wwv($self, $_[1], $_[2], $sfi, $k, $i, @_[6..8], $r);
@@ -1318,7 +1318,7 @@ sub handle_73
 
 	my $wcy = WCY::update($d, @_[2..12]);
 
-	if (defined *Local::wcy) {
+	if (defined &Local::wcy) {
 		my $rep;
 		eval {
 			$rep = Local::wcy($self, @_[1..12]);

@@ -240,10 +240,12 @@ sub cease
 
 	DXUser::sync;
 
-	eval {
-		Local::finish();   # end local processing
-	};
-	dbg("Local::finish error $@") if $@;
+	if (defined &Local::finish) {
+		eval {
+			Local::finish();   # end local processing
+		};
+		dbg("Local::finish error $@") if $@;
+	}
 
 	# disconnect nodes
 	foreach $dxchan (DXChannel::get_all_nodes) {
@@ -491,10 +493,13 @@ DXDb::load();
 # starting local stuff
 dbg("doing local initialisation ...");
 QSL::init(1);
-eval {
-	Local::init();
-};
-dbg("Local::init error $@") if $@;
+if (defined &Local::init) {
+	eval {
+		Local::init();
+	};
+	dbg("Local::init error $@") if $@;
+}
+
 
 # this, such as it is, is the main loop!
 dbg("orft we jolly well go ...");
@@ -534,10 +539,12 @@ for (;;) {
 		DXDupe::process();
 		AGWMsg::process();
 
-		eval {
-			Local::process();       # do any localised processing
-		};
-		dbg("Local::process error $@") if $@;
+		if (defined &Local::process) {
+			eval {
+				Local::process();       # do any localised processing
+			};
+			dbg("Local::process error $@") if $@;
+		}
 	}
 	if ($decease) {
 		last if --$decease <= 0;

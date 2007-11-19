@@ -1,3 +1,6 @@
+19Nov07=======================================================================
+1. change MRTG graphs to be based on GMT, not localtime. This allows one to
+more easily compare debug data with traffic graphs.
 17Nov07=======================================================================
 1. Add Local::ann() as requested by Felipe PY1NB.
 16Nov07=======================================================================
