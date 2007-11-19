@@ -1536,6 +1536,13 @@ sub check_pc9x_t
 				} elsif ($t == $lastid) {
 					dbg("PCPROT: dup id on $t == lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
 					return undef;
+				} else {
+					# check that if we have a low number in lastid that yesterday's numbers
+					# (likely in the 85000+ area) don't override them, thus causing flip flopping
+					if ($lastid+86400-$t < $pc9x_past_age) {
+						dbg("PCPROT: dup id on $t in yesterday, lastid $lastid, ignored") if isdbg('chanerr') || isdbg('pc92dedupe');
+						return undef;
+					}
 				}
 			}
 		}
