@@ -11,7 +11,7 @@
 
 package DXProt;
 
-@ISA = qw(DXProt DXChannel);
+@ISA = qw(DXChannel);
 
 use DXUtil;
 use DXM;
