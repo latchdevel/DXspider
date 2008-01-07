@@ -266,7 +266,7 @@ Guadeloupe:               08:  11:  NA:   16.00:    61.70:     4.0:  FG:
 Mayotte:                  39:  53:  AF:  -13.00:   -45.30:    -3.0:  FH:
     FH,TO8MZ,TX0P,TX5M,TX5NK,TX5T,TX6A;
 Saint Barthelemy:         08:  11:  NA:   17.90:    62.90:     4.0:  FJ:
-    FJ;
+    FJ,TO5FJ;
 New Caledonia:            32:  56:  OC:  -22.30:  -166.50:   -11.0:  FK:
     FK,TX8,TX1A,TX3SAM,TX5CW;
 Chesterfield Is.:         30:  56:  OC:  -19.90:  -158.30:   -11.0:  FK/c:
@@ -764,7 +764,7 @@ Canada:                   05:  09:  NA:   45.00:    80.00:     4.0:  VE:
     VE2III(2),VE2IM(2),VE2KK(2),VE2MTA(2),VE2MTB(2),VE2NN(2),VE2NRK(2),
     VE2PR(2),VE2QRZ(2),VE2RB(2),VE2TVU(2),VE2UA(2),VE2VH(2),VE2WDX(2),
     VE2WT(2),VE2XAA/2(2),VE2XY(2),VE2YM(2),VE2Z(2),VE2ZC(5),VE2ZM(5),VE2ZV(5),
-    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20071224,
+    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080106,
     VY0AA(4)[3],VY0PW(4)[3],VY2MGY/3(4)[4];
 Australia:                30:  59:  OC:  -22.00:  -135.00:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ;
