@@ -281,7 +281,7 @@ Austral Is.:              32:  63:  OC:  -22.50:   152.00:    10.0:  FO/a:
 Clipperton I.:            07:  10:  NA:   10.30:   109.20:     7.0:  FO/c:
     FO0/F8UFT,FO0AAA,FO0CI,TX5C;
 Marquesas Is.:            31:  63:  OC:   -9.00:   139.50:    10.0:  FO/m:
-    FO/HA9G;
+    FO/HA9G,FO/OH1RX;
 St. Pierre & Miquelon:    05:  09:  NA:   46.70:    56.00:     3.0:  FP:
     FP;
 Reunion:                  39:  53:  AF:  -21.10:   -55.60:    -4.0:  FR:
@@ -764,7 +764,7 @@ Canada:                   05:  09:  NA:   45.00:    80.00:     4.0:  VE:
     VE2III(2),VE2IM(2),VE2KK(2),VE2MTA(2),VE2MTB(2),VE2NN(2),VE2NRK(2),
     VE2PR(2),VE2QRZ(2),VE2RB(2),VE2TVU(2),VE2UA(2),VE2VH(2),VE2WDX(2),
     VE2WT(2),VE2XAA/2(2),VE2XY(2),VE2YM(2),VE2Z(2),VE2ZC(5),VE2ZM(5),VE2ZV(5),
-    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080106,
+    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080110,
     VY0AA(4)[3],VY0PW(4)[3],VY2MGY/3(4)[4];
 Australia:                30:  59:  OC:  -22.00:  -135.00:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ;

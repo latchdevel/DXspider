@@ -1,5 +1,7 @@
 07Jan08=======================================================================
-1. added TO5FJ to cty.day (under orders from Jim AD1C :-)
+1. more changes to cty.dat
+07Jan08=======================================================================
+1. added TO5FJ to cty.dat (under orders from Jim AD1C :-)
 05Jan08=======================================================================
 1. Made necessary change to get DXSpider to (seem to) work in perl 5.10
 27Dec07=======================================================================
