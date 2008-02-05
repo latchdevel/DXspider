@@ -102,6 +102,7 @@ use RouteDB;
 use DXXml;
 use DXSql;
 use IsoTime;
+use BPQMsg;
 
 use Data::Dumper;
 use IO::File;
@@ -260,6 +261,7 @@ sub cease
 
 	# disconnect AGW
 	AGWMsg::finish();
+	BPQMsg::finish();
 
 	# disconnect UDP customers
 	UDPMsg::finish();
@@ -411,6 +413,9 @@ foreach my $l (@main::listen) {
 dbg("AGW Listener") if $AGWMsg::enable;
 AGWrestart();
 
+dbg("BPQ Listener") if $BPQMsg::enable;
+BPQMsg::init(\&new_channel);
+
 dbg("UDP Listener") if $UDPMsg::enable;
 UDPMsg::init(\&new_channel);
 
@@ -538,6 +543,7 @@ for (;;) {
 		DXUser::process();
 		DXDupe::process();
 		AGWMsg::process();
+		BPQMsg::process();
 
 		if (defined &Local::process) {
 			eval {

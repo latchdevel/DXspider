@@ -5,9 +5,12 @@
 # This is where the cluster handles direct connections coming both in
 # and out
 #
-#
+# $Id$
 #
 # Copyright (c) 2001 - Dirk Koopman G1TLH
+#
+#	Modified Jan 2006 by John Wiseman G8BPQ to support connections to BPQ32 node,
+#		and fix pattern matching on 'chat' abort handling
 #
 
 package ExtMsg;
@@ -270,6 +273,10 @@ sub _doconnect
 		# turn it into an AGW object
 		bless $conn, 'AGWMsg';
 		$r = $conn->connect($line);
+	} elsif ($sort eq 'bpq') {
+		# turn it into an BPQ object
+		bless $conn, 'BPQMsg';
+		$r = $conn->connect($line);
 	} elsif ($sort eq 'ax25' || $sort eq 'prog') {
 		$r = $conn->start_program($line, $sort);
 	} else {
@@ -318,7 +325,7 @@ sub _dochat
 	if ($line) {
 		if ($expect) {
 			dbg("connect $conn->{cnum}: expecting: \"$expect\" received: \"$line\"") if isdbg('connect');
-			if ($conn->{abort} && $line =~ /\Q$conn->{abort}/i) {
+			if ($conn->{abort} && $line =~ /$conn->{abort}/i) {
 				dbg("connect $conn->{cnum}: aborted on /$conn->{abort}/") if isdbg('connect');
 				$conn->disconnect;
 				delete $conn->{cmd};

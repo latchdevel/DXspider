@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2001 Dirk Koopman G1TLH
 #
-#
+# $Id$
 #
 
 my $self = shift;
@@ -23,6 +23,8 @@ foreach my $call (sort keys %Msg::conns) {
 		$c = "Server";
 	} else {
 		$addr = "AGW Port ($r->{agwport})" if exists $r->{agwport};
+		$addr = "BPQ Stream ($r->{bpqstream})" if exists $r->{bpqstream};
+
 		$addr ||= "$r->{peerhost}/$r->{peerport}";
 		$addr ||= "Unknown";
 	}
