@@ -153,7 +153,7 @@ sub to_connected
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
-	$conn->nolinger unless $conn->isa('AGWMsg');
+	$conn->nolinger unless $conn->isa('AGWMsg') || $conn->isa('BPQMsg');
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
 }
