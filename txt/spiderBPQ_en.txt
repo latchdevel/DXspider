@@ -1,0 +1,50 @@
+This is the first experimental version of a BPQ32 interface for
+dx-spider. The document assumes the reader is familiar with both
+spider and BPQ32.
+
+I have only tested it with ActiveState Perl v 5.8.7 Build 813
+
+You need to install package Win32::API. I downloaded it from:
+
+http://ppm.activestate.com/PPMPackages/zips/8xx-builds-only/Windows/Win32-API-0.41.zip
+
+
+Copy \spider\perl\BPQConnect.pm to the \spider\local directory
+
+The following bit about bpqperl.dll is NOT neaded if you are using the
+Latest (409u) BPQ32.
+
+copy bpqperl.dll to your windows directory. I had problems with
+WIN32::API calling the GetData routine of the BPQ API, so had to
+create this 'glue' routine. Hopefully I can solve the problem and get
+rid of this extra routine soon.
+
+Edit BPQConnect.pm as appropriate - you may need to change ApplMask and BPQStreams.
+
+Although running spider will dynamically load BPQ32 if it is not
+already running, it seems to function very slowly. I suggest you load
+BPQ32 before starting spider. If you are already running any other bpq
+applications thats fine, otherwise run bpq32.exe, or better still
+bpqterminal, so you can monitor what is going on.
+
+Outward connects to other clusters seems to work, although I've only
+been able to test it with a very old DOS based AK1A system. See sample
+connect script below:
+
+Use command set/debug bpq from a sysop session to enable extra debug output
+
+timeout 120
+abort Downlink|Fail
+# the '1' is for compatibility with agw and is ignored
+connect bpq 1 switch
+'BPQ:GM8BPQ' 'c gb7bpq'
+'connected ''
+# you can leave this out if you call the script 'gb7bpq'
+client gb7bpq bpq
+
+Remember this is very much 'alpha' software!
+
+Any problems/suggestions, feel free to contact me.
+
+73
+John G8BPQ

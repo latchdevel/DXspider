@@ -2,6 +2,7 @@
 1. sort sh/node output. Also show more information.
 05Feb08=======================================================================
 1. Added a Windows only BPQ interface from the man himself: John G8BPQ.
+See some instructions in /spider/txt/spiderBPQ_en.txt for how to use it.
 07Jan08=======================================================================
 1. more changes to cty.dat
 07Jan08=======================================================================
