@@ -65,6 +65,7 @@ foreach $call (sort @call) {
 	} else {
 		$ver = $clref->version if $clref && $clref->version;
 		$ver = $uref->version if !$ver && $uref->version;
+		$sort = "CCClus" if $ver >= 1000 && $ver < 4000 && $sort eq "Spider";
 	}
 	
 	if ($uref->is_spider || ($clref && $clref->do_pc9x)) {
