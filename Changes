@@ -1,3 +1,9 @@
+19Feb08=======================================================================
+1. Added CTY-1801 cty.dat data.
+2. Fix problem with entering non-ascii data and then executing commands that
+are guessed from the "cleaned up" version of the string. Now if you enter
+commands with invalid characters, it will error immediately.
+3. fix a problem detecting IPV4 localhost on IPV6 enabled systems.
 10Feb08=======================================================================
 1. sort sh/node output. Also show more information.
 05Feb08=======================================================================

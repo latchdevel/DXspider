@@ -484,6 +484,20 @@ sub send_ans
 		}
 	} 
 }
+
+sub _error_out
+{
+	my $self = shift;
+	my $e = shift;
+	if (++$self->{errors} > $maxerrors) {
+		$self->send($self->msg('e26'));
+		$self->disconnect;
+		return ();
+	} else {
+		return ($self->msg($e));
+	}
+}
+
 # 
 # this is the thing that runs the command, it is done like this for the 
 # benefit of remote command execution
@@ -497,19 +511,22 @@ sub run_cmd
 	my $cmdline = shift;
 	my @ans;
 	
-
 	return () if length $cmdline == 0;
-	
 	
 	# split the command line up into parts, the first part is the command
 	my ($cmd, $args) = split /\s+/, $cmdline, 2;
 	$args = "" unless defined $args;
 		
 	if ($cmd) {
+
+		# check cmd
+		if ($cmd =~ m|^/| || $cmd =~ m|[^-?\w/]|) {
+			LogDbg('DXCommand', "cmd: invalid characters in '$cmd'");
+			return $self->_error_out('e1');
+		}
+
 		# strip out // on command only
 		$cmd =~ s|//|/|g;
-		$cmd =~ s|^/||g;		# no leading / either
-		$cmd =~ s|[^-?\w/]||g;		# and no funny characters either
 					
 		my ($path, $fcmd);
 			
@@ -520,7 +537,7 @@ sub run_cmd
 		if ($acmd) {
 			($cmd, $args) = split /\s+/, "$acmd $args", 2;
 			$args = "" unless defined $args;
-			dbg("aliased cmd: $cmd $args") if isdbg('command');
+			dbg("cmd: aliased $cmd $args") if isdbg('command');
 		}
 			
 		# first expand out the entry to a command
@@ -528,26 +545,23 @@ sub run_cmd
 		($path, $fcmd) = search($main::cmd, $cmd, "pl") unless $path && $fcmd;
 
 		if ($path && $cmd) {
-			dbg("path: $cmd cmd: $fcmd") if isdbg('command');
+			dbg("cmd: path $cmd cmd: $fcmd") if isdbg('command');
 			
 			my $package = find_cmd_name($path, $fcmd);
 			return ($@) if $@;
 				
-			if ($package) {
+			if ($package && DXCommandmode->can($package)) {
 				no strict 'refs';
-				dbg("package: $package") if isdbg('command');
+				dbg("cmd: package $package") if isdbg('command');
 				eval { @ans = &$package($self, $args) };
 				return (DXDebug::shortmess($@)) if $@;
+			} else {
+				dbg("cmd: $package not present") if isdbg('command');
+				return $self->_error_out('e1');
 			}
 		} else {
 			dbg("cmd: $cmd not found") if isdbg('command');
-			if (++$self->{errors} > $maxerrors) {
-				$self->send($self->msg('e26'));
-				$self->disconnect;
-				return ();
-			} else {
-				return ($self->msg('e1'));
-			}
+			return $self->_error_out('e1');
 		}
 	}
 	
@@ -831,14 +845,15 @@ sub find_cmd_name {
 		no strict 'refs';
 
 		if (exists $Cache{$package}) {
-			dbg("Redefining $package") if isdbg('command');
+			dbg("find_cmd_name: Redefining $package") if isdbg('command');
 			undef *$package;
 		} else {
-			dbg("Defining $package") if isdbg('command');
+			dbg("find_cmd_name: Defining $package") if isdbg('command');
 		}
+
 		eval $eval;
-		
-		$Cache{$package} = {mtime => $mtime };
+
+		$Cache{$package} = {mtime => $mtime } unless $@;
 	    
 	}
 

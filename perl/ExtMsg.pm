@@ -104,7 +104,7 @@ sub dequeue
 				$msg = uc $msg;
 				if (is_callsign($msg) && $msg !~ m|/| ) {
 					my $sort = $conn->{csort};
-					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
+					$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';
 					my $uref;
 					if ($main::passwdreq || ($uref = DXUser->get_current($msg)) && $uref->passwd ) {
 						$conn->conns($msg);
@@ -126,7 +126,7 @@ sub dequeue
 					my $sort = $conn->{csort};
 					$conn->{echo} = $conn->{decho};
 					delete $conn->{decho};
-					$sort = 'local' if $conn->{peerhost} eq "127.0.0.1";
+					$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';
 					$conn->{usedpasswd} = 1;
 					$conn->to_connected($conn->{call}, 'A', $sort);
 				} else {
