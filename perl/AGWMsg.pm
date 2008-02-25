@@ -30,7 +30,8 @@ use AGWConnect;
 use DXDebug;
 
 use vars qw(@ISA $sock @outqueue $send_offset $inmsg $rproc $noports $lastytime 
-			$lasthtime $ypolltime $hpolltime %circuit $total_in $total_out);
+			$lasthtime $ypolltime $hpolltime %circuit $total_in $total_out
+		    $lastconnect $connectinterval);
 
 @ISA = qw(Msg ExtMsg);
 $sock = undef;
@@ -44,6 +45,8 @@ $ypolltime = 10 unless defined $ypolltime;
 $hpolltime = 300 unless defined $hpolltime;
 %circuit = ();
 $total_in = $total_out = 0;
+$lastconnect = 0;
+$connectinterval = 30;
 
 sub init
 {
@@ -51,8 +54,10 @@ sub init
 	$rproc = shift;
 	
 	finish();
+
 	dbg("AGW initialising and connecting to $addr/$port ...");
 	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout=>15);
+	$lastconnect = $main::systime;
 	unless ($sock) {
 		dbg("Cannot connect to AGW Engine at $addr/$port $!");
 		return;
@@ -95,6 +100,7 @@ sub finish
 		Msg->sleep(2);
 		Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
 		$sock->close;
+		$lastconnect = $main::systime;
 	}
 }
 
@@ -228,6 +234,7 @@ sub _error
 		&{$_->{eproc}}() if $_->{eproc};
 		$_->disconnect;
 	}
+	$lastconnect = $main::systime;
 }
 
 sub _decode
@@ -443,7 +450,12 @@ sub enqueue
 
 sub process
 {
+	# try to reconnect to AGW if we could not previously or there was an error
+	if ($enable && !$sock && ($lastconnect + $connectinterval) >= $main::systime) {
+		init();
+	}
 	return unless $sock;
+
 	if ($ypolltime && $main::systime - $lastytime >= $ypolltime) {
 		for (my $i = 0; $i < $noports; $i++) {
 			_sendf('y', undef, undef, $i );

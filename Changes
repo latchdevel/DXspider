@@ -1,3 +1,6 @@
+25Feb08=======================================================================
+1. Arrange for AGWMsg to retry connection either if the AGW engine isn't
+loaded on startup or it disappears for some reason and restarts.
 19Feb08=======================================================================
 1. Added CTY-1801 cty.dat data.
 2. Fix problem with entering non-ascii data and then executing commands that
