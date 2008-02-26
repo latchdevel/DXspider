@@ -208,8 +208,8 @@ sub new_channel
 		$dxchan = DXProt->new($call, $conn, $user);
 	} elsif ($user->is_user) {
 		$dxchan = DXCommandmode->new($call, $conn, $user);
-	} elsif ($user->is_bbs) {
-		$dxchan = BBS->new($call, $conn, $user);
+#	} elsif ($user->is_bbs) {                                  # there is no support so
+#		$dxchan = BBS->new($call, $conn, $user);               # don't allow it!!!
 	} else {
 		die "Invalid sort of user on $call = $sort";
 	}

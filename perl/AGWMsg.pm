@@ -51,8 +51,11 @@ $connectinterval = 60;
 sub init
 {
 	return unless $enable;
-	$rproc = shift;
 	
+	# only set $rproc if there is something to set rproc from!
+	my $rp = shift;
+	$rproc = $rp if defined $rp;
+
 	finish();
 
 	dbg("AGW initialising and connecting to $addr/$port ...");
