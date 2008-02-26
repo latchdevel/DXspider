@@ -10,7 +10,9 @@ package DXM;
 %msgs = (
 		 en => {
 				addr => 'Address set to: $_[0]',
-		                already => '$_[0] already connected',
+				agwe => 'AGW Engine enabled',
+				agwu => 'AGW Engine disabled',
+				already => '$_[0] already connected',
 				anns => 'Announces enabled for $_[0]',
 				annu => 'Announces disabled for $_[0]',
 				annts => 'AnnTalk enabled for $_[0]',

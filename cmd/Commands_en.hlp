@@ -1375,6 +1375,15 @@ message.
 You can carry on with the message until you are ready to send it. 
 === 0^SET/ADDRESS <your address>^Record your postal address
 
+=== 9^SET/AGWENGINE^Enable the AGW Engine
+=== 9^UNSET/AGWENGINE^Disable the AGW Engine
+These commands assume that /spider/local/AGWConnect.pm has been setup
+correctly and you wish to do some testing or otherwise want to alter
+the default state of your connection to the AGW Engine.
+
+=== 9^SET/AGWMONITOR^Enable Monitoring on the AGW Engine
+=== 9^UNSET/AGWMONITOR^Disable Monitoring on the AGW Engine
+
 === 0^SET/ANNOUNCE^Allow announce messages to come out on your terminal
 === 0^UNSET/ANNOUNCE^Stop announce messages coming out on your terminal
 

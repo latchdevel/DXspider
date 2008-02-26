@@ -46,7 +46,7 @@ $hpolltime = 300 unless defined $hpolltime;
 %circuit = ();
 $total_in = $total_out = 0;
 $lastconnect = 0;
-$connectinterval = 30;
+$connectinterval = 60;
 
 sub init
 {
@@ -56,7 +56,7 @@ sub init
 	finish();
 
 	dbg("AGW initialising and connecting to $addr/$port ...");
-	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout=>15);
+	$sock = IO::Socket::INET->new(PeerAddr => $addr, PeerPort => $port, Proto=>'tcp', Timeout=>3);
 	$lastconnect = $main::systime;
 	unless ($sock) {
 		dbg("Cannot connect to AGW Engine at $addr/$port $!");
@@ -101,7 +101,9 @@ sub finish
 		Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
 		$sock->close;
 		$lastconnect = $main::systime;
+		$sock = undef;
 	}
+	$finishing = 0;
 }
 
 sub login
@@ -211,9 +213,10 @@ sub _rcv {                     # Complement to _send
 		} 
 	} else {
 		if (Msg::_err_will_block($!)) {
-			return; 
+			return;
 		} else {
-			$bytes_read = 0;
+			_error();
+			return;
 		}
     }
 
@@ -227,14 +230,17 @@ FINISH:
 
 sub _error
 {
-	dbg("error on AGW connection $addr/$port $!");
+	return if $finishing;
+	$finishing++;
+	dbg("AGW connection error on $addr/$port $!");
 	Msg::set_event_handler($sock, read=>undef, write=>undef, error=>undef);
-	$sock = undef;
 	for (%circuit) {
 		&{$_->{eproc}}() if $_->{eproc};
 		$_->disconnect;
 	}
+	$sock = undef;
 	$lastconnect = $main::systime;
+	$finishing = 0;
 }
 
 sub _decode
@@ -451,7 +457,7 @@ sub enqueue
 sub process
 {
 	# try to reconnect to AGW if we could not previously or there was an error
-	if ($enable && !$sock && ($lastconnect + $connectinterval) >= $main::systime) {
+	if ($enable && !$sock && $main::systime >= $lastconnect + $connectinterval) {
 		init();
 	}
 	return unless $sock;
