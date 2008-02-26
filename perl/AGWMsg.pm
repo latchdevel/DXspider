@@ -125,6 +125,8 @@ sub _sendf
 	my $pid  = shift || 0;
 	my $data = shift || '';
 	my $len  = 0;
+
+	return unless $sock;
 	
 	$len = length $data; 
 	if ($sort eq 'y' || $sort eq 'H') {
