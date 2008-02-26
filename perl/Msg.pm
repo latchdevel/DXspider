@@ -82,10 +82,10 @@ BEGIN {
 	if ($^O eq 'MSWin32') { 
 		eval '*EINPROGRESS = sub { 10036 };' unless defined *EINPROGRESS;
 		eval '*EWOULDBLOCK = *EAGAIN = sub { 10035 };' unless defined *EWOULDBLOCK;
-		eval '*F_GETFL     = sub {     0 };';
-		eval '*F_SETFL     = sub {     0 };';
-		eval '*IPPROTO_TCP     = sub {     6 };';
-		eval '*TCP_NODELAY     = sub {     1 };';
+		eval '*F_GETFL     = sub {     0 };' unless defined *F_GETFL;
+		eval '*F_SETFL     = sub {     0 };' unless defined *F_SETFL;
+		eval '*IPPROTO_TCP     = sub {     6 };' unless defined *IPPROTO_TCP;
+		eval '*TCP_NODELAY     = sub {     1 };' unless defined *TCP_NODELAY;
 		$blocking_supported = 0;   # it appears that this DOESN'T work :-(
 	} 
 }

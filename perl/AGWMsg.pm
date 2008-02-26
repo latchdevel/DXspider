@@ -46,7 +46,7 @@ $hpolltime = 300 unless defined $hpolltime;
 %circuit = ();
 $total_in = $total_out = 0;
 $lastconnect = 0;
-$connectinterval = 60;
+$connectinterval = 30;
 
 sub init
 {
