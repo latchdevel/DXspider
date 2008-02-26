@@ -84,8 +84,8 @@ BEGIN {
 		eval '*EWOULDBLOCK = *EAGAIN = sub { 10035 };' unless defined *EWOULDBLOCK;
 		eval '*F_GETFL     = sub {     0 };' unless defined *F_GETFL;
 		eval '*F_SETFL     = sub {     0 };' unless defined *F_SETFL;
-		eval '*IPPROTO_TCP     = sub {     6 };' unless defined *IPPROTO_TCP;
-		eval '*TCP_NODELAY     = sub {     1 };' unless defined *TCP_NODELAY;
+		eval 'sub IPPROTO_TCP  {     6 };' unless defined *IPPROTO_TCP;
+		eval 'sub TCP_NODELAY  {     1 };' unless defined *TCP_NODELAY;
 		$blocking_supported = 0;   # it appears that this DOESN'T work :-(
 	} 
 }
