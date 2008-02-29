@@ -35,7 +35,7 @@ use Prefix;
 use Route;
 
 use strict;
-use vars qw(%channels %valid @ISA $count);
+use vars qw(%channels %valid @ISA $count $maxerrors);
 
 %channels = ();
 $count = 0;
@@ -125,6 +125,8 @@ $count = 0;
 		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
 		 );
 
+$maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
+
 # object destruction
 sub DESTROY
 {
@@ -175,6 +177,22 @@ sub alloc
 	dbg("DXChannel $self->{call} created ($count)") if isdbg('chan');
 	bless $self, $pkg; 
 	return $channels{$call} = $self;
+}
+
+# count errors and disconnect if too many
+# this has to be here because it can come from rcmd (DXProt) as
+# well as DXCommandmode.
+sub _error_out
+{
+	my $self = shift;
+	my $e = shift;
+	if (++$self->{errors} > $maxerrors) {
+		$self->send($self->msg('e26'));
+		$self->disconnect;
+		return ();
+	} else {
+		return ($self->msg($e));
+	}
 }
 
 # rebless this channel as something else

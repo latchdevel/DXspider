@@ -1,3 +1,5 @@
+29Feb08=======================================================================
+1. Fix crash on rcmd of an invalid command.
 25Feb08=======================================================================
 1. Arrange for AGWMsg to retry connection either if the AGW engine isn't
 loaded on startup or it disappears for some reason and restarts.

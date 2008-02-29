@@ -39,7 +39,7 @@ use VE7CC;
 use DXXml;
 
 use strict;
-use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %nothereslug
+use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
 	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
@@ -47,7 +47,6 @@ use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase $maxerrors %notheresl
 $errstr = ();					# error string from eval
 %aliases = ();					# aliases for (parts of) commands
 $scriptbase = "$main::root/scripts"; # the place where all users start scripts go
-$maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
 $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing command scripts 
@@ -485,19 +484,6 @@ sub send_ans
 	} 
 }
 
-sub _error_out
-{
-	my $self = shift;
-	my $e = shift;
-	if (++$self->{errors} > $maxerrors) {
-		$self->send($self->msg('e26'));
-		$self->disconnect;
-		return ();
-	} else {
-		return ($self->msg($e));
-	}
-}
-
 # 
 # this is the thing that runs the command, it is done like this for the 
 # benefit of remote command execution
@@ -569,7 +555,7 @@ sub run_cmd
 	if ($ok) {
 		delete $self->{errors};
 	} else {
-		if (++$self->{errors} > $maxerrors) {
+		if (++$self->{errors} > $DXChannel::maxerrors) {
 			$self->send($self->msg('e26'));
 			$self->disconnect;
 			return ();
