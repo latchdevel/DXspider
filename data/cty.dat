@@ -454,7 +454,7 @@ United States:            05:  08:  NA:   43.00:    87.90:     5.0:  K:
     N0AX(3)[6],N1LN(4)[7],N1SZ(4)[7],N1WI(4),N1ZP(4),N2BJ(4),N2BJL(5),
     N2IC(4)[7],N2LA(4)[7],N2NB(3)[6],N2WN(4),N3AIU(4)[7],N3BB(4)[7],
     N3ZZ(3)[6],N4CVO(4),N4DD(4),N4DW(4),N4GK(4),N4GN(4),N4IR(4),N4IRR(5),
-    N4JF(4),N4KG(4),N4KZ(4),N4NO(4),N4OGW(4)[7],N4QS(4),N4SL(3)[6],N4TN(4),
+    N4JF(4),N4KG(4),N4KZ(4),N4NO(4),N4OGW(4)[8],N4QS(4),N4SL(3)[6],N4TN(4),
     N4TZ(4),N4UW(4),N4VV(4),N4XM(4),N4ZZ(4),N6AR(5)[8],N6MW(5)[8],N6MWA(3)[6],
     N6RFM(5)[8],N6ZO(5)[8],N6ZZ(4)[7],N7DC(5)[8],N7DF(4)[7],N7FLT(4)[6],
     N7IV(4)[7],N7NG(5)[8],N7VMR(4)[6],N8FF(5),N8II(5),N8NA(5),N8PR(5),N8RA(5),
@@ -767,7 +767,7 @@ Canada:                   05:  09:  NA:   45.00:    80.00:     4.0:  VE:
     VE2III(2),VE2IM(2),VE2KK(2),VE2MTA(2),VE2MTB(2),VE2NN(2),VE2NRK(2),
     VE2PR(2),VE2QRZ(2),VE2RB(2),VE2TVU(2),VE2UA(2),VE2VH(2),VE2WDX(2),
     VE2WT(2),VE2XAA/2(2),VE2XY(2),VE2YM(2),VE2Z(2),VE2ZC(5),VE2ZM(5),VE2ZV(5),
-    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080318,
+    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080324,
     VY0AA(4)[3],VY0PW(4)[3],VY2MGY/3(4)[4];
 Australia:                30:  59:  OC:  -22.00:  -135.00:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ;
@@ -886,7 +886,7 @@ Niue:                     32:  62:  OC:  -19.00:   169.90:    11.0:  ZK2:
 Tokelau:                  31:  62:  OC:   -8.40:   172.70:    11.0:  ZK3:
     ZK3;
 New Zealand:              32:  60:  OC:  -36.90:  -174.80:   -12.0:  ZL:
-    ZK,ZL,ZM;
+    ZK,ZL,ZM,ZM80WB;
 Chatham Is.:              32:  60:  OC:  -44.00:   176.50:  -12.75:  ZL7:
     ZL7,ZM7;
 Kermadec Is.:             32:  60:  OC:  -30.00:   177.90:   -12.0:  ZL8:
