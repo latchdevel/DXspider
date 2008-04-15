@@ -1238,6 +1238,7 @@ E3 Eritrea-E3                                         348 48 37  -3.00 15  0  0 
 Z3 Macedonia-Z3                                       349 28 15  -1.00 42  0  0 N  21 30  0 E @
 4O Montenegro-4O                                      350 28 15  -1.00 42 30  0 N  19 18  0 E @
 FJ St-Barthelemy-FJ                                   351 11  8   4.00 17 54  0 N  62 50  0 W @
+YU8 Kosova-YU8                                        352 28 15  -1.00 42 40  0 N  21 10  0 E @
 !
 ! reordered ones
 !
@@ -1248,7 +1249,7 @@ KG4 Guantanamo-Bay-KG4                                105 11  8   5.00 20  0  0 
 KG44 Guantanamo-Bay-KG4                               105 11  8   5.00 20  0  0 N  75  0  0 W
 KV4 VI-Virgin-Is-KP2                                  119 11  8   5.00 18  0  0 N  64 30  0 W *
 !
-VERSION 25-Dec-2007                                   352  0  0   0.00  0  0  0 N   0  0  0 E
+VERSION 15-Apr-2008                                   353  0  0   0.00  0  0  0 N   0  0  0 E
 !
 QQ Pirate-Ctry-QQ                                     666  0  0   0.00  0  0  0 S   0  0  0 E @
 0,10G,1B,50V,MAJ,Q,SSB,T0,X5,X8,ZC6 Pirate-Ctry-QQ    666  0  0   0.00  0  0  0 S   0  0  0 E
