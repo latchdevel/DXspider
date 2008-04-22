@@ -303,7 +303,7 @@ Amsterdam & St. Paul:     39:  68:  AF:  -37.70:   -77.60:    -5.0:  FT5Z:
 Wallis & Futuna Is.:      32:  62:  OC:  -13.30:   176.30:   -12.0:  FW:
     FW;
 French Guiana:            09:  12:  SA:    4.90:    52.30:     3.0:  FY:
-    FY,TO3EME,TO7C,TO7IR,TO7R,TX0A;
+    FY,TO7C,TO7IR,TO7R,TX0A;
 England:                  14:  27:  EU:   51.50:     0.10:     0.0:  G:
     2E,G,M;
 Isle of Man:              14:  27:  EU:   54.30:     4.50:     0.0:  GD:
@@ -679,7 +679,7 @@ Mali:                     35:  46:  AF:   12.70:     8.00:     0.0:  TZ:
     TZ;
 European Russia:          16:  29:  EU:   55.80:   -37.60:    -3.0:  UA:
     R,RD4W[30],RK4W[30],RM4W[30],RN4W[30],RU4W[30],RV4W[30],RW4W[30],U,
-    UA4W[30],R245GS,R7C,R7C/1,R7C/3,R7C/4;
+    UA4W[30],R245GS,R7C,R7C/1,R7C/3,R7C/4,R90LPU;
 Kaliningrad:              15:  29:  EU:   55.00:   -20.50:    -2.0:  UA2:
     R2,RA2,RB2,RC2,RD2,RE2,RF2,RG2,RH2,RI2,RJ2,RK2,RL2,RM2,RN2,RO2,RP2,RQ2,
     RR2,RS2,RT2,RU2,RV2,RW2,RX2,RY2,RZ2,U2,UA2,UB2,UC2,UD2,UE2,UF2,UG2,UH2,
@@ -767,7 +767,7 @@ Canada:                   05:  09:  NA:   45.00:    80.00:     4.0:  VE:
     VE2III(2),VE2IM(2),VE2KK(2),VE2MTA(2),VE2MTB(2),VE2NN(2),VE2NRK(2),
     VE2PR(2),VE2QRZ(2),VE2RB(2),VE2TVU(2),VE2UA(2),VE2VH(2),VE2WDX(2),
     VE2WT(2),VE2XAA/2(2),VE2XY(2),VE2YM(2),VE2Z(2),VE2ZC(5),VE2ZM(5),VE2ZV(5),
-    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080415,
+    VE3EY/2(2),VE3NE/2(2),VE3RHJ/2(2),VE8AJ(2),VE8PW(2),VE8RCS(2),VER20080422,
     VY0AA(4)[3],VY0PW(4)[3],VY2MGY/3(4)[4];
 Australia:                30:  59:  OC:  -22.00:  -135.00:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ;
@@ -788,7 +788,8 @@ Norfolk I.:               32:  60:  OC:  -29.00:  -168.00:   -11.5:  VK9N:
 Willis I.:                30:  55:  OC:  -16.30:  -149.50:   -10.0:  VK9W:
     AX9W,VH9W,VI9W,VJ9W,VK9FW,VK9KW,VK9W,VL9W,VM9W,VN9W,VZ9W,VK9DWX;
 Christmas I.:             29:  54:  OC:  -10.50:  -105.70:    -7.0:  VK9X:
-    AX9X,VH9X,VI9X,VJ9X,VK9FX,VK9KX,VK9X,VL9X,VM9X,VN9X,VZ9X;
+    AX9X,VH9X,VI9X,VJ9X,VK9FX,VK9KX,VK9X,VL9X,VM9X,VN9X,VZ9X,N1YC/VK9X,
+    PE7T/VK9X;
 Anguilla:                 08:  11:  NA:   18.30:    63.00:     4.0:  VP2E:
     VP2E;
 Montserrat:               08:  11:  NA:   16.80:    62.20:     4.0:  VP2M:
