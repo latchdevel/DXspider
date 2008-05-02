@@ -72,8 +72,13 @@ sub load
 	# tie the main prefix database
 	eval {$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0664, $DB_BTREE);};
 	my $out = "$@($!)" if !$db || $@ ;
-	eval {do "$main::data/prefix_data.pl" if !$out; };
-	$out .= $@ if $@;
+	if (-e "$main::data/wpxloc.dat") {
+		$out .= load_wpxloc_dat("$main::data/wpxloc.dat");
+		$out .= load_wpxloc_dat("$main::data/local_wpxloc.dat");
+	} else {
+		eval {do "$main::data/prefix_data.pl" if !$out; };
+		$out .= $@ if $@;
+	}
 	$lru = LRU->newbase('Prefix', $lrusize);
 
  	return $out;
@@ -521,6 +526,99 @@ sub field_prompt
 	my ($self, $ele) = @_;
 	return $valid{$ele};
 }
+
+sub load_wpxloc_dat
+{
+	my $fn = shift;
+	my $out;
+	my $id = 0;
+	my $line = 0;
+
+	return unless -e $fn;
+
+	my $in = IO::File->new("$fn");
+	$out = "error opening $fn $!", return $out unless $in;
+	while (<$in>) {
+		my $ignore = 0;
+		$line++;
+
+		next if /^\s*[!#]/;
+		next if /^\s*$/;
+		s/\s+$//;
+
+		my @f = split;
+
+		# The format of wpxloc.dat is:-
+		#   1S Spratly-Islands-1S                    269 AS 50 26   8.00  9 53 N 114 14 E
+		#   &    1S,9M0,BV9S,=9M6US/0,=DU0K
+		#   & .... can repeat ad nausium
+
+		unless ($f[0] eq '&') {
+			# main location definition and 'official' canonical prefix/tag for this locality
+			# NOTE: we assume that the file is nominally correct and that any alterations
+			# will overwrite existing entries
+			#
+			# The order is: prefix, description, country-no, continent, itu, cq, utc-offset
+			#               lat degrees, lat minutes, lat N/S, long degrees, long minutes,
+			#               long E/W
+
+			if (@f != 13) {
+				$out .= "wrong no of items for locality on line $line\n";
+				$ignore++;
+				next;
+			}
+
+			$ignore = 0;
+
+			my $e = bless {}, 'Prefix';
+			$id++;
+
+			$e->{name} = $f[1];
+			$e->{dxcc} = $f[2];
+			$e->{cont} = $f[3];
+			$e->{itu} = $f[4];
+			$e->{cq} = $f[5];
+			$e->{utcoff} = $f[6];
+			$e->{lat} = $f[7] + ($f[8] / 60);
+			$e->{lat} = -$e->{lat} if $f[9] eq 'S';
+			$e->{long} = $f[10] + ($f[11] / 60);
+			$e->{long} = -$e->{long} if $f[12] eq 'W';
+			$prefix_loc{$id} = $e;
+			$pre{"$f[0]"} = $id;
+
+#			print "line $line, $f[0]\n";
+
+		} else {
+			# additional prefixes and full callsigns (indicated with an prefix of '=')
+
+			next if $ignore;
+
+			shift @f;
+			foreach my $gob (@f) {
+				my @ent = split /\s*,\s*/, $gob;
+				foreach my $ent (@ent) {
+					$ent =~ s/^\*//;
+					my $ref = $pre{$ent};
+					if ($ref) {
+						my @id = split /,/, $ref;
+						push @id, $id unless grep {$id == $_} @id;
+						$pre{$ent} = join ',', @id;
+					} else {
+						$pre{$ent} = $id;
+					}
+				}
+			}
+		}
+	}
+	$in->close;
+
+	open POUT, ">/tmp/prefix_data";
+	print POUT Data::Dumper->Dump([\%prefix_loc, \%pre], [qw(%prefix_loc %pre)]);
+	close POUT;
+
+	return $out;
+}
+
 1;
 
 __END__
