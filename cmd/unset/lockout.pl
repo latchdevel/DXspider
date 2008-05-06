@@ -21,7 +21,7 @@ if ($self->priv < 9) {
 foreach $call (@args) {
 	$call = uc $call;
 	unless ($self->remotecmd || $self->inscript) {
-		if ($ref = DXUser->get_current($call)) {
+		if ($ref = DXUser::get_current($call)) {
 			$ref->lockout(0);
 			$ref->put();
 			push @out, $self->msg("lockoutun", $call);

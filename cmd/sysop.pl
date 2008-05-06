@@ -6,7 +6,7 @@
 #
 
 my ($self, $line) = @_;
-my $user = DXUser->get_current($self->call);
+my $user = DXUser::get_current($self->call);
 my $passwd = $user->passwd if $user;
 my $lth = length $passwd;
 $lth = 100 unless $lth;

@@ -219,7 +219,7 @@ sub last_connect
 {
 	my $call = uc shift;
 	return $main::systime if DXChannel::get($call);
-	my $user = DXUser->get($call);
+	my $user = DXUser::get($call);
 	return $user ? $user->lastin : 0;
 }
 

@@ -17,7 +17,7 @@ $line =~ s/[{}]//g;   # no braces allowed
 
 return (1, $self->msg('hnodee1')) if !$line;
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	$line = uc $line;
 	$user->homenode($line);

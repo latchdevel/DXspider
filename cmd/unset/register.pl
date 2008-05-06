@@ -22,7 +22,7 @@ return (1, $self->msg('reginac')) unless $main::reqreg;
 foreach $call (@args) {
 	$call = uc $call;
 	unless ($self->remotecmd || $self->inscript) {
-		if ($ref = DXUser->get_current($call)) {
+		if ($ref = DXUser::get_current($call)) {
 			$ref->registered(0);
 			$ref->put();
 			my $dxchan = DXChannel::get($call);

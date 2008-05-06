@@ -33,7 +33,7 @@ sub handle_input
 			@in = (DXCommandmode::run_cmd($dxchan, $cmd));
 		} else {
 			# remote command
-			my $ref = DXUser->get_current($self->{o});
+			my $ref = DXUser::get_current($self->{o});
 			my $cref = Route::Node::get($self->{o});
 			my $answer;
 			
@@ -61,7 +61,7 @@ sub topcxx
 {
 	my $self = shift;
 
-	my $ref = DXUser->get_current($self->{to});
+	my $ref = DXUser::get_current($self->{to});
 	my $s;
 	
 	if ($ref && $ref->is_clx && $self->{u}) {

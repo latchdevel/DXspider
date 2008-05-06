@@ -17,7 +17,7 @@ $line =~ s/[{}]//g;   # no braces allowed
 
 return (1, $self->msg('qthe1')) if !$line;
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	$user->qth($line);
 	$user->put();

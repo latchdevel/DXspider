@@ -40,7 +40,7 @@ sub topcxx
 	my $dxchan = shift;
 	my @out;
 
-	my $ref = DXUser->get_current($self->{to});
+	my $ref = DXUser::get_current($self->{to});
 	for (split /(?:%0D)?\%0A/, $self->{content}) {
 		my $line = $_;
 		$line =~ s/\s*$//;

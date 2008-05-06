@@ -45,7 +45,7 @@ my @ignore;
 my ($action, $key, $data) = (0,0,0);
 for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
 	if ($data =~ m{sort => '[ACRSX]'}) {
-		my $user = DXUser->get($key);
+		my $user = DXUser::get($key);
 		if ($user->is_node) {
 			$nodes ++;
 			if (grep $key eq $_, (@nodes, $mycall)) {

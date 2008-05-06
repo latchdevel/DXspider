@@ -22,7 +22,7 @@ if ($self->priv < 1) {
 
 my $call;
 foreach $call (@f) {
-	my $ref = DXUser->get_current($call);
+	my $ref = DXUser::get_current($call);
 	if ($ref) {
 		my $name = $ref->name;  
 		my $qth = $ref->qth;

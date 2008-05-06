@@ -232,7 +232,7 @@ sub init
 	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
 	confess $@ if $@;
 
-	my $user = DXUser->get($main::mycall);
+	my $user = DXUser::get($main::mycall);
 	die "User $main::mycall not setup or disappeared RTFM" unless $user;
 
 	$myprot_version += $main::version*100;
@@ -1122,7 +1122,7 @@ sub process_rcmd
 {
 	my ($self, $tonode, $fromnode, $user, $cmd) = @_;
 	if ($tonode eq $main::mycall) {
-		my $ref = DXUser->get_current($fromnode);
+		my $ref = DXUser::get_current($fromnode);
 		my $cref = Route::Node::get($fromnode);
 		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd);
 		if ($cmd !~ /^\s*rcmd/i && $cref && $ref && $ref->homenode && $cref->call eq $ref->homenode) { # not allowed to relay RCMDS!
@@ -1141,7 +1141,7 @@ sub process_rcmd
 			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "your attempt is logged, Tut tut tut...!");
 		}
 	} else {
-		my $ref = DXUser->get_current($tonode);
+		my $ref = DXUser::get_current($tonode);
 		if ($ref && $ref->is_clx) {
 			$self->route($tonode, pc84($fromnode, $tonode, $user, $cmd));
 		} else {
@@ -1166,7 +1166,7 @@ sub process_rcmd_reply
 			$dxchan->send($line) if $dxchan;
 		}
 	} else {
-		my $ref = DXUser->get_current($tonode);
+		my $ref = DXUser::get_current($tonode);
 		if ($ref && $ref->is_clx) {
 			$self->route($tonode, pc85($fromnode, $tonode, $user, $line));
 		} else {

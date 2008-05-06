@@ -68,7 +68,7 @@ sub add
 
 	push @$ref, $self;
 	$pings{$to} = $ref;
-	my $u = DXUser->get_current($to);
+	my $u = DXUser::get_current($to);
 	if ($u) {
 		$u->lastping(($via || $from), $main::systime);
 		$u->put;
@@ -137,7 +137,7 @@ sub _handle_believe
 {
 	my ($from, $via) = @_;
 	
-	my $user = DXUser->get_current($from);
+	my $user = DXUser::get_current($from);
 	if ($user) {
 		$user->set_believe($via);
 		$user->put;

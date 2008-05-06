@@ -39,7 +39,7 @@ if (@call == 0) {
 my $call;
 foreach $call (sort @call) {
 	my $clref = Route::Node::get($call);
-	my $uref = DXUser->get_current($call);
+	my $uref = DXUser::get_current($call);
 	my ($sort, $ver, $build);
 	
 	my $pcall = sprintf "%-11s", $call;

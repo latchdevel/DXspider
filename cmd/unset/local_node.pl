@@ -13,7 +13,7 @@ my @out;
 return (1, $self->msg('e5')) unless $self->priv >= 5;
 
 foreach my $call (@args) {
-	my $user = DXUser->get_current($call);
+	my $user = DXUser::get_current($call);
 	push(@out, $self->msg('e3', 'set/localnode', $call)), next unless $user; 
 	push(@out, $self->msg('e13', $call)), next unless $user->is_node; 
 	my $group = $user->group || [];

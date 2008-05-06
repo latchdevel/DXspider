@@ -22,7 +22,7 @@ foreach $call (@args) {
 	$call = uc $call;
 	my $dxchan = DXChannel::get($call);
 	$user = $dxchan->user if $dxchan;
-	$user = DXUser->get_current($call);
+	$user = DXUser::get_current($call);
 	if ($user) {
 		unless ($user->is_node) {
 			push @out, $self->msg('e13', $call);

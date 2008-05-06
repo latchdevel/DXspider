@@ -17,7 +17,7 @@ return (1, $self->msg('db3', 'FCC USDB')) unless $USDB::present;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $user = DXUser->get_current($call);
+	my $user = DXUser::get_current($call);
 	if ($user) {
 		$user->wantusstate(1);
 		if ($user->wantdxitu) {

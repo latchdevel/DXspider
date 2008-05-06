@@ -26,7 +26,7 @@ if (@f <= 2 && uc $f[0] eq 'ALL') {
 	}
 	
 	foreach $call (@calls) {
-		my $ref = DXUser->get_current($call);
+		my $ref = DXUser::get_current($call);
 		next if !$ref;
 		my $lat = $ref->lat;
 		my $long = $ref->long;
@@ -42,7 +42,7 @@ if (@f <= 2 && uc $f[0] eq 'ALL') {
 	}
 } else {
 	foreach $call (@f) {
-		my $ref = DXUser->get_current($call);
+		my $ref = DXUser::get_current($call);
 		if ($ref) {
 			my $name = $ref->name;  
 			my $qth = $ref->qth;

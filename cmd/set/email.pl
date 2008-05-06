@@ -15,7 +15,7 @@ my @f = split /\s+/, $line;
 
 return (1, $self->msg('emaile1')) if !$line;
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	$user->email(\@f);
 	$user->wantemail(1);

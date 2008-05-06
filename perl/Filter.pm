@@ -385,7 +385,7 @@ sub parse
 	while (@f) {
 		if ($ntoken == 0) {
 			
-			if (@f && $dxchan->priv >= 8 && ((is_callsign(uc $f[0]) && DXUser->get(uc $f[0])) || $f[0] =~ /(?:node|user)_default/)) {
+			if (@f && $dxchan->priv >= 8 && ((is_callsign(uc $f[0]) && DXUser::get(uc $f[0])) || $f[0] =~ /(?:node|user)_default/)) {
 				$call = shift @f;
 				if ($f[0] eq 'input') {
 					shift @f;
@@ -550,7 +550,7 @@ sub cmd
 	return $dxchan->msg('filter5') unless $line;
 
 	my ($r, $filter, $fno, $user, $s) = $self->parse($dxchan, $sort, $line);
-	my $u = DXUser->get_current($user);
+	my $u = DXUser::get_current($user);
 	return (1, $dxchan->msg('isow', $user)) if $u && $u->isolate;
 	return (1, $filter) if $r;
 

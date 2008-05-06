@@ -25,7 +25,7 @@ if ($call) {
 		return (1, $self->msg('e5'));
 	}
 	return (1, $self->msg('e29')) unless @args;
-	if ($ref = DXUser->get_current($call)) {
+	if ($ref = DXUser::get_current($call)) {
 		$ref->passphrase($args[0]);
 		$ref->put();
 		push @out, $self->msg("passphrase", $call);

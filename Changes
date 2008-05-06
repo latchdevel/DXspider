@@ -1,3 +1,7 @@
+06May08=======================================================================
+1. Finally made the incompatible change of changing DXUser->get* to
+DXUser::get*. This will break any third party addons or commands use these
+commands.
 22Apr08=======================================================================
 1. Added two Xmas Is calls.
 15Apr08=======================================================================

@@ -15,7 +15,7 @@ my @out;
 
 foreach $call (@args) {
 	$call = uc $call;
-	my $user = DXUser->get_current($call);
+	my $user = DXUser::get_current($call);
 	if ($user) {
 		$user->wantdxitu(1);
 		if ($user->wantdxcq) {

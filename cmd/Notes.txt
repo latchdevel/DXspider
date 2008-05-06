@@ -1,4 +1,4 @@
-Programming Notes ($Id$)
+Programming Notes
 
 * Every command that can used on the command line lives in either this
   directory ('cmd') or in a local version ('local_cmd'). You are cajoled or
@@ -98,7 +98,7 @@ Programming Notes ($Id$)
                               locators
 
 * It is important that you remember when you have tie hashes using MLDBM
-  et al. If you do a DXUser->get($call) you will get a different (older)
+  et al. If you do a DXUser::get($call) you will get a different (older)
   thing than the one in $self->$user. This is almost certainly NOT what
   you want if want to modify a user that is currently connected.
 

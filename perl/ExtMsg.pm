@@ -106,7 +106,7 @@ sub dequeue
 					my $sort = $conn->{csort};
 					$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';
 					my $uref;
-					if ($main::passwdreq || ($uref = DXUser->get_current($msg)) && $uref->passwd ) {
+					if ($main::passwdreq || ($uref = DXUser::get_current($msg)) && $uref->passwd ) {
 						$conn->conns($msg);
 						$conn->{state} = 'WP';
 						$conn->{decho} = $conn->{echo};
@@ -120,7 +120,7 @@ sub dequeue
 					$conn->disconnect;
 				}
 			} elsif ($conn->{state} eq 'WP' ) {
-				my $uref = DXUser->get_current($conn->{call});
+				my $uref = DXUser::get_current($conn->{call});
 				$msg =~ s/[\r\n]+$//;
 				if ($uref && $msg eq $uref->passwd) {
 					my $sort = $conn->{csort};

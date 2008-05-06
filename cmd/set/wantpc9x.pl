@@ -16,7 +16,7 @@ return (1, $self->msg('e5')) if $self->priv < 9;
 foreach $call (@args) {
 	return (1, $self->msg('e12')) unless is_callsign($call);
 
-	my $user = DXUser->get_current($call);
+	my $user = DXUser::get_current($call);
 	if ($user) {
 		$user->wantpc9x(1);
 		$user->put;

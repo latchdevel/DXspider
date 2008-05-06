@@ -12,7 +12,7 @@ my $call;
 my @out;
 foreach $call (@list) {
 	$call = uc $call;
-	my $ref = DXUser->get_current($call);
+	my $ref = DXUser::get_current($call);
 	if ($ref) {
 		if ($self->consort eq 'ax25') {
 			@out = grep { !/(Password|Privilege)/ } print_all_fields($self, $ref, "User Information $call");

@@ -40,7 +40,7 @@ my @in;
 
 if (@list) {
 	foreach $l (@list) {
-		my $user = DXUser->get_current(uc $l);
+		my $user = DXUser::get_current(uc $l);
 		if ($user && $user->lat && $user->long) {
 			push @in, [$user->qth, $user->lat, -$user->long, uc $l ];
 		} else {

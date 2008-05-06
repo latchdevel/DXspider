@@ -19,7 +19,7 @@ return (1, $self->msg('e5')) if $self->priv < 9 || $self->remotecmd;
 
 foreach $call (@args) {
 	$call = uc $call;
-	$user = DXUser->get($call);
+	$user = DXUser::get($call);
 	unless ($user) {
 		$user = DXUser->new($call);
 		$user->sort('U');

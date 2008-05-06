@@ -24,7 +24,7 @@ if ($self->priv < 9) {
 
 for (@args) {
 	my $call = uc $_;
-	if ($ref = DXUser->get_current($call)) {
+	if ($ref = DXUser::get_current($call)) {
 		$ref->unset_passwd;
 		$ref->put();
 		push @out, $self->msg("passwordu", $call);

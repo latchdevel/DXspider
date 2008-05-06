@@ -226,7 +226,7 @@ sub handle_11
 	#
 
 	# fix up qra locators of known users
-	my $user = DXUser->get_current($spot[4]);
+	my $user = DXUser::get_current($spot[4]);
 	if ($user) {
 		my $qra = $user->qra;
 		unless ($qra && is_qra($qra)) {
@@ -463,7 +463,7 @@ sub handle_16
 
 		# reject this if we think it is a node already
 		my $r = Route::Node::get($call);
-		my $u = DXUser->get_current($call) unless $r;
+		my $u = DXUser::get_current($call) unless $r;
 		if ($r || ($u && $u->is_node)) {
 			dbg("PCPROT: $call is a node") if isdbg('chanerr');
 			next;
@@ -485,7 +485,7 @@ sub handle_16
 		}
 
 		# add this station to the user database, if required
-		my $user = DXUser->get_current($ncall);
+		my $user = DXUser::get_current($ncall);
 		$user = DXUser->new($call) unless $user;
 		$user->homenode($parent->call) if !$user->homenode;
 		$user->node($parent->call);
@@ -568,7 +568,7 @@ sub handle_17
 	$parent->del_user($uref);
 
 	# send info to all logged in thingies
-	my $user = DXUser->get_current($ncall);
+	my $user = DXUser::get_current($ncall);
 	$self->tell_login('logoutu', "$ncall: $ucall") if $user && $user->is_local_node;
 	$self->tell_buddies('logoutb', $ucall, $ncall);
 
@@ -638,7 +638,7 @@ sub check_add_node
 	my $call = shift;
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
-	my $user = DXUser->get_current($call);
+	my $user = DXUser::get_current($call);
 	if (!$user) {
 		$user = DXUser->new($call);
 		$user->priv(1);		# I have relented and defaulted nodes
@@ -1142,7 +1142,7 @@ sub handle_41
 	}
 
 	# add this station to the user database, if required
-	my $user = DXUser->get_current($call);
+	my $user = DXUser::get_current($call);
 	$user = DXUser->new($call) unless $user;
 
 	if ($sort == 1) {

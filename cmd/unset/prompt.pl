@@ -10,7 +10,7 @@ my ($self, $line) = @_;
 my $call = $self->call;
 my $user;
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	delete $user->{prompt};
 	delete $self->{prompt};

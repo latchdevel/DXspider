@@ -29,7 +29,7 @@ use DB_File;
 my ($action, $count, $key, $data);
 for ($action = R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = R_NEXT) {
 	if ($data =~ m{(?:lat|long) =>}) {
-		my $u = DXUser->get_current($key);
+		my $u = DXUser::get_current($key);
 		if ($u) {
 			my $lat = $u->lat;
 			my $long = $u->long;

@@ -18,7 +18,7 @@ my $f;
 if ($self->priv >= 8) {
 	if (@f && is_callsign(uc $f[0])) {
 		$f = uc shift @f;
-		my $uref = DXUser->get($f);
+		my $uref = DXUser::get($f);
 		$call = $uref->call if $uref;
 	} elsif (@f && lc $f[0] eq 'node_default' || lc $f[0] eq 'user_default') {
 		$call = lc shift @f;

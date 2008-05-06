@@ -124,7 +124,7 @@ sub alloc
 	$self->{gotit} = [];
 #	$self->{lastt} = $main::systime;
 	$self->{lines} = [];
-	$self->{private} = 1 if $bulltopriv && DXUser->get_current($self->{to});
+	$self->{private} = 1 if $bulltopriv && DXUser::get_current($self->{to});
     
 	return $self;
 }
@@ -200,7 +200,7 @@ sub handle_28
 	$ref->{lastt} = $main::systime;
 
 	# look to see whether this is a non private message sent to a known callsign
-	my $uref = DXUser->get_current($ref->{to});
+	my $uref = DXUser::get_current($ref->{to});
 	if (is_callsign($ref->{to}) && !$ref->{private} && $uref && $uref->homenode) {
 		$ref->{private} = 1;
 		dbg("set bull to $ref->{to} to private") if isdbg('msg');
@@ -476,7 +476,7 @@ sub notify
 {
 	my $ref = shift;
 	my $to = $ref->{to};
-	my $uref = DXUser->get_current($to);
+	my $uref = DXUser::get_current($to);
 	my $dxchan = DXChannel::get($to);
 	if (((*Net::SMTP && $email_server) || $email_prog) && $uref && $uref->wantemail) {
 		my $email = $uref->email;

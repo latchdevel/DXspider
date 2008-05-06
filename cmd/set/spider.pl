@@ -23,7 +23,7 @@ foreach $call (@args) {
 	if ($chan) {
 		push @out, $self->msg('nodee1', $call);
 	} else {
-		$user = DXUser->get($call);
+		$user = DXUser::get($call);
 		$create = !$user;
 		$user = DXUser->new($call) if $create;
 		if ($user) {

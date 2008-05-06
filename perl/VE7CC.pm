@@ -27,7 +27,7 @@ sub dx_spot
 	my $t = shift;
 	my $loc_spotted = '';
 	my $loc_spotter = '';
-	my $ref = DXUser->get_current($spotted);
+	my $ref = DXUser::get_current($spotted);
 	if ($ref) {
 		my $loc = $ref->qra || '';
 		$loc_spotted =substr($loc, 0, 4) if $loc;
@@ -42,7 +42,7 @@ sub dx_spot
 	
 	my $spotted_cc = (Prefix::cty_data($spotted))[5];
 	my $spotter_cc = (Prefix::cty_data($_[1]))[5];
-	$ref = DXUser->get_current($_[1]);
+	$ref = DXUser::get_current($_[1]);
 	if ($ref) {
 		my $loc = $ref->qra || '';
 		$loc_spotter = substr($loc, 0, 4) if $loc;

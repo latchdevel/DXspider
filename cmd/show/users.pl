@@ -12,7 +12,7 @@ my @out;
 
 if (@list) {
 	foreach my $call (sort @list) {
-		my $uref = DXUser->get_current($call);
+		my $uref = DXUser::get_current($call);
 		if ($uref) {
 			my $name = $uref->name || '?';
 			my $qth = $uref->qth || '?';

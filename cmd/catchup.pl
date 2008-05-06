@@ -16,7 +16,7 @@ my @f = split /\s+/, $line;
 return (1, "usage: catchup <node call> all|[<msgno ...]") unless @f >= 2;
 
 my $call = uc shift @f;
-my $user = DXUser->get_current($call);
+my $user = DXUser::get_current($call);
 return (1, "$call not a node") unless $user && $user->sort ne 'U';
 
 my @out;

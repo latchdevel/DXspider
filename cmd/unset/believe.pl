@@ -15,13 +15,13 @@ my @nodes;
 
 return (1, $self->msg('e5')) if $self->priv < 6;
 return (1, $self->msg('e22', $node)) unless is_callsign($node);
-my $user = DXUser->get_current($node);
+my $user = DXUser::get_current($node);
 return (1, $self->msg('e13', $node)) unless $user->is_node;
 
 foreach $call (@args) {
 	return (1, $self->msg('e22', $node)) unless is_callsign($call);
 
-	my $u = DXUser->get_current($call);
+	my $u = DXUser::get_current($call);
 	push @nodes, $call;
 }
 

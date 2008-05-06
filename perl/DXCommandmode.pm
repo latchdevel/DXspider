@@ -971,7 +971,7 @@ sub format_dx_spot
 	my $comment = substr (($_[3] || ''), 0, $clth);
 	$comment .= ' ' x ($clth - length($comment));
 	if ($self->{user}->wantgrid) {
-		my $ref = DXUser->get_current($_[4]);
+		my $ref = DXUser::get_current($_[4]);
 		if ($ref) {
 			$loc = $ref->qra || '';
 			$loc = ' ' . substr($loc, 0, 4) if $loc;
@@ -1015,7 +1015,7 @@ sub dx_spot
 	} elsif ($self->{gtk}) {
 		my ($dxloc, $byloc);
 
-		my $ref = DXUser->get_current($_[4]);
+		my $ref = DXUser::get_current($_[4]);
 		if ($ref) {
 			$byloc = $ref->qra;
 			$byloc = substr($byloc, 0, 4) if $byloc;
@@ -1023,7 +1023,7 @@ sub dx_spot
 
 		my $spot = $_[1];
 		$spot =~ s|/\w{1,4}$||;
-		$ref = DXUser->get_current($spot);
+		$ref = DXUser::get_current($spot);
 		if ($ref) {
 			$dxloc = $ref->qra;
 			$dxloc = substr($dxloc, 0, 4) if $dxloc;
@@ -1191,7 +1191,7 @@ sub import_cmd
 			    if ($dxchan) {
 					@out = $s->run($dxchan, 1);
 				} else {
-					my $u = DXUser->get($call);
+					my $u = DXUser::get($call);
 					if ($u) {
 						$dxchan = $main::me;
 						my $old = $dxchan->{call};

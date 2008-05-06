@@ -26,7 +26,7 @@ my ($action, $count, $key, $data) = (0,0,0,0);
 eval qq{for (\$action = DXUser::R_FIRST, \$count = 0; !\$DXUser::dbm->seq(\$key, \$data, \$action); \$action = DXUser::R_NEXT) {
 	if (\$data =~ m{lockout}) {
 		if (\$line eq 'ALL' || \$key =~ /^$line/) {
-			my \$ur = DXUser->get_current(\$key);
+			my \$ur = DXUser::get_current(\$key);
 			if (\$ur && \$ur->lockout) {
 				push \@out, \$key;
 				++\$count;

@@ -28,7 +28,7 @@ sub delete_it
 
 sub create_it
 {
-	my $ref = DXUser->get(uc $mycall);
+	my $ref = DXUser::get(uc $mycall);
 	$ref->del() if $ref;
 	
 	my $self = DXUser->new(uc $mycall);
@@ -51,7 +51,7 @@ sub create_it
 	$self->close();
 
 	# now do one for the alias
-	$ref = DXUser->get(uc $myalias);
+	$ref = DXUser::get(uc $myalias);
 	$ref->del() if $ref;
 
 	$self = DXUser->new(uc $myalias);

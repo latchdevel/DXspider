@@ -17,7 +17,7 @@ $line =~ s/\s+$//;
 return (1, $self->msg('qrae1')) if !$line;
 return (1, $self->msg('qrae2', $line)) unless is_qra($line);
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	my $qra = uc $line;
 	my $oldqra = $user->qra || "";

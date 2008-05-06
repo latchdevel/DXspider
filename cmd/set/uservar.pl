@@ -14,7 +14,7 @@ return (1, $self->msg('suser1')) if @args < 3;
 
 
 my $call = uc $args[0];
-my $ref = DXUser->get_current($call);
+my $ref = DXUser::get_current($call);
 my $field = $args[1];
 my $value = $args[2];
 

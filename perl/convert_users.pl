@@ -50,7 +50,7 @@ package DXUser;
 @all = DXUser::get_all_calls();
 
 for $a (@all) {
-	my $ref = DXUser->get($a);
+	my $ref = DXUser::get($a);
 	my $s = $ref->encode() if $ref;
 	print OUT "'$a' => q{$s},\n" if $a;
 	$count++;

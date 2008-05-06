@@ -22,7 +22,7 @@ $line = lc $line;
 return (1, $self->msg('lange1', join(',', @lang))) unless grep $_ eq $line, @lang;
 
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	$user->lang($line);
 	$user->put();

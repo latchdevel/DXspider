@@ -16,7 +16,7 @@ $line =~ s/\s+$//;
 
 return (1, $self->msg('e9')) if !$line;
 
-$user = DXUser->get_current($call);
+$user = DXUser::get_current($call);
 if ($user) {
 	$user->prompt($line);
 	$self->{prompt} = $line;    # this is like this because $self->prompt is a function that does something else
