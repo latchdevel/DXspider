@@ -3,6 +3,8 @@
 DXUser::get*. This will break any third party addons or commands use these
 commands.
 2. Change version to 1.55
+3. Drop the lower limit of 60m to 5100 after Dave G7RAU pointed out usage.
+(see http://www.bandplans.com/index.php?band=60)
 22Apr08=======================================================================
 1. Added two Xmas Is calls.
 15Apr08=======================================================================
