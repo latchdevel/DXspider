@@ -1868,6 +1868,9 @@ Do a STAT/USER to see which flags you have set if you are confused.
 === 0^SET/WX^Allow WX messages to come out on your terminal
 === 0^UNSET/WX^Stop WX messages coming out on your terminal
 
+=== 0^SHOW/ANNOUNCE [<n>][<from>-<to>][<call>] ...^Show log of announces
+Show announcements that have come in.
+
 === 1^SHOW/BADDX^Show all the bad dx calls in the system
 Display all the bad dx callsigns in the system, see SET/BADDX
 for more information.
@@ -2399,6 +2402,9 @@ This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 
  sh/route n2tly
+
+=== 9^SHOW/RCMD [<n>][<from>-<to>][<call>] ...^Show log of rcmds
+Show the rcmds that have come in and their replies.
 
 === 0^SHOW/SATELLITE <name> [<hours> <interval>]^Show tracking data
 Show the tracking data from your location to the satellite of your choice
