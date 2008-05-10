@@ -242,14 +242,18 @@ sub get
 	
 	# is it in the LRU cache?
 	my $ref = $lru->get($call);
-	return $ref if $ref;
+	return $ref if $ref && ref $ref eq 'DXUser';
 	
 	# search for it
 	unless ($dbm->get($call, $data)) {
 		$ref = decode($data);
-		dbg("DXUser::get: data error on $call $!") unless $ref;
-		if ($ref && ref $ref ne 'DXUser') {
-			dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
+		if ($ref) {
+			if (ref $ref ne 'DXUser') {
+				dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
+				return undef;
+			}
+		} else {
+			dbg("DXUser::get: no reference returned from decode $!");
 			return undef;
 		}
 		$lru->put($call, $ref);
@@ -271,7 +275,12 @@ sub get_current
 	my $call = uc shift;
   
 	my $dxchan = DXChannel::get($call);
-	return $dxchan->user if $dxchan;
+	if ($dxchan) {
+		my $ref = $dxchan->user;
+		return $ref if ref $ref eq 'DXUser';
+
+		dbg("DXUser::get_current: got invalid user ref from dxchan $dxchan->{call} ". ref $ref. " ignoring");
+	}
 	return get($call);
 }
 
