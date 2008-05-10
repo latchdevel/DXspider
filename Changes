@@ -1,3 +1,6 @@
+10May08=======================================================================
+1. add some privileges to (un)set/bad* and show/bad* commands. Thanks to
+Mauro IV3SCP for pointing this out to me.
 06May08=======================================================================
 1. Finally made the incompatible change of changing DXUser->get* to
 DXUser::get*. This will break any third party addons or commands use these

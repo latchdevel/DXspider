@@ -1709,7 +1709,7 @@ sub handle_92
 		}
 
 	} elsif ($sort eq 'K') {
-		$pc92Kin += length $line if $sort eq 'K';
+		$pc92Kin += length $line;
 
 		# remember the last channel we arrived on
 		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;

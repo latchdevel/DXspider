@@ -1404,8 +1404,8 @@ allows you to see them again. This is the default.
 
 === 5^SET/ARCLUSTER <call> [<call>..]^Make the callsign an AR-Cluster node
 
-=== 8^SET/BADDX <call>..^Stop callsigns in a dx spot being propagated
-=== 8^UNSET/BADDX <call>..^Propagate a dx spot with this callsign again
+=== 6^SET/BADDX <call>..^Stop callsigns in a dx spot being propagated
+=== 6^UNSET/BADDX <call>..^Propagate a dx spot with this callsign again
 Setting a word as 'baddx' will prevent spots with that word in the
 'spotted' field (as in: DX 14001.1 FR0G)of a DX spot from going any
 further. They will not be displayed and they will not be sent onto
@@ -1419,8 +1419,8 @@ To allow a word again, use the following command ...
 
   unset/baddx VIDEO
 
-=== 8^SET/BADNODE <call>..^Stop spots from this node being propagated
-=== 8^UNSET/BADNODE <call>..^Allow spots from this node again
+=== 6^SET/BADNODE <call>..^Stop spots from this node being propagated
+=== 6^UNSET/BADNODE <call>..^Allow spots from this node again
 Setting a callsign as a 'badnode' will prevent spots from that node 
 going any further. They will not be displayed and they will not be 
 sent onto other nodes.
@@ -1438,8 +1438,8 @@ will allow spots from him again.
 
 Use with extreme care. This command may well be superceeded by FILTERing.
 
-=== 8^SET/BADSPOTTER <call>..^Stop spots from this callsign being propagated
-=== 8^UNSET/BADSPOTTER <call>..^Allow spots from this callsign again
+=== 6^SET/BADSPOTTER <call>..^Stop spots from this callsign being propagated
+=== 6^UNSET/BADSPOTTER <call>..^Allow spots from this callsign again
 Setting a callsign as a 'badspotter' will prevent spots from this callsign 
 going any further. They will not be displayed and they will not be 
 sent onto other nodes.
@@ -1462,8 +1462,8 @@ Use with extreme care. This command may well be superceded by FILTERing.
 This command will also stop TALK and ANNOUNCE/FULL from any user marked
 as a BADSPOTTER.
 
-=== 8^SET/BADWORD <word>..^Stop things with this word being propagated
-=== 8^UNSET/BADWORD <word>..^Propagate things with this word again
+=== 6^SET/BADWORD <word>..^Stop things with this word being propagated
+=== 6^UNSET/BADWORD <word>..^Propagate things with this word again
 Setting a word as a 'badword' will prevent things like spots,
 announces or talks with this word in the the text part from going any
 further. They will not be displayed and they will not be sent onto
