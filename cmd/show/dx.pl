@@ -28,6 +28,7 @@ my $bystate;
 my $itu;
 my $byitu;
 my $fromdxcc;
+my $exact;
 my ($doqsl, $doiota, $doqra, $dofilter);
 
 while ($f = shift @list) {		# next field
@@ -39,6 +40,10 @@ while ($f = shift @list) {		# next field
 	if (!$to) {
 		($to) = $f =~ /^(\d+)$/o if !$to; # is it a to count?
 		next if $to;
+	}
+	if (lc $f eq 'exact') {
+		$exact = 1;
+		next;
 	}
 	if (lc $f eq 'dxcc') {
 		$dxcc = 1;
@@ -180,6 +185,7 @@ if ($pre) {
 		} else {
 			$pre =~ s/\.\*\$$//;
 		}
+		$pre .= '$' if $exact;
 		$expr = "\$f1 =~ m{$pre}";
 		$pre =~ s/[\^\$]//g;
 		$hint = "m{\U$pre}";

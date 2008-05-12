@@ -1999,6 +1999,7 @@ any order to the basic SHOW/DX command, they are:-
  <prefix>        - for a spotted callsign beginning with <prefix>
  *<suffix>       - for a spotted callsign ending in <suffix>
  *<string>*      - for a spotted callsign containing <string>
+ <call> exact    - for a spotted callsign *exactly* as typed.
    
  day <number>    - starting <number> days ago
  day <from>-<to> - <from> days <to> days ago
@@ -2069,6 +2070,7 @@ any order to the basic SHOW/DX command, they are:-
    SH/DX by_zone 4,5,6
    SH/DX state in,oh
    SH/DX by_state in,oh
+   SH/DX hb2008g exact
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 
