@@ -1,3 +1,6 @@
+13May08=======================================================================
+1. add disc users|nodes|all so that each of these classes can be disconnected
+in one command. From a request by Mauro IV3SCP.
 12May08=======================================================================
 1. add 'exact' keyword on sh/dx to allow for an exact match to a callsign.
 From a request by Robert HB9DZA.

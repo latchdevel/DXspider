@@ -583,8 +583,20 @@ You can abbreviate all the commands to one letter and use ak1a syntax:-
 === 5^DIRECTORY-^
 Sysops can see all users' messages.
 
-=== 8^DISCONNECT <call> [<call> ...]^Disconnect a user or cluster
-Disconnect any <call> connected locally
+=== 8^DISCONNECT <call> [<call> ...]^Disconnect user(s) or node(s)
+Disconnect any <call> connected locally.
+
+In addition you can disconnect all users (except yourself) with
+
+  DISC users
+
+or all nodes with:
+
+  DISC nodes
+
+or everything (except yourself) with
+
+  DISC all
 
 === 0^DX [BY <call>] <freq> <call> <remarks>^Send a DX spot
 This is how you send a DX Spot to other users. You can, in fact, now

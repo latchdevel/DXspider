@@ -10,6 +10,13 @@ if ($self->priv < 5) {
 	return (1, $self->msg('e5'));
 }
 
+if ($calls[0] =~ /^user/i ) {
+	@calls = grep {$_ ne $self->call} DXChannel::get_all_user_calls();
+} elsif ($calls[0] =~ /^node/i) {
+	@calls = grep {$_ ne $main::mycall} DXChannel::get_all_node_calls();
+} elsif (lc $calls[0] eq 'all') {
+	@calls = grep {$_ ne $main::mycall && $_ ne $self->call} DXChannel::get_all_node_calls(), DXChannel::get_all_user_calls();
+}
 foreach $call (@calls) {
 	$call = uc $call;
 	next if $call eq $main::mycall;

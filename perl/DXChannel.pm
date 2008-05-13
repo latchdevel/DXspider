@@ -239,6 +239,17 @@ sub get_all_nodes
 	return @out;
 }
 
+# return a list of node calls
+sub get_all_node_calls
+{
+	my $ref;
+	my @out;
+	foreach $ref (values %channels) {
+		push @out, $ref->{call} if $ref->is_node;
+	}
+	return @out;
+}
+
 # return a list of all users
 sub get_all_users
 {
