@@ -46,6 +46,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$eph_pc15_restime $pc9x_past_age $pc9x_dupe_age
 			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
 			$pc92Ain $pc92Cin $pc92Din $pc92Kin $pc9x_time_tolerance
+			$pc92filterdef
 		   );
 
 $pc9x_dupe_age = 60;			# catch loops of circular (usually) D records
@@ -56,6 +57,15 @@ $pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this 
 $pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
 	$pc9x_time_tolerance;		# thing a node might send - once an hour and we allow an extra hour for luck)
                                 # this is actually the partition between "yesterday" and "today" but old.
+
+$pc92filterdef = bless ([
+			  # tag, sort, field, priv, special parser
+			  ['call', 'c', 0],
+			  ['by', 'c', 0],
+			  ['dxcc', 'nc', 1],
+			  ['itu', 'ni', 2],
+			  ['zone', 'nz', 3],
+			 ], 'Filter::Cmd');
 
 
 # incoming talk commands

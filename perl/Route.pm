@@ -295,8 +295,12 @@ sub findroutes
 
 	dbg("findroutes: $call level: $level calls: " . join(',', @_)) if isdbg('routec');
 
-	# recursion detector
+	# recursion detector (no point in recursing that deeply)
 	return () if $seen->{$call};
+	if ($level >= 20) {
+		dbg("Route::findroutes: recursion limit reached looking for $call");
+		return ();
+	}
 
 	# return immediately if we are directly connected
 	if (my $dxchan = DXChannel::get($call)) {

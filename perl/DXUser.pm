@@ -302,13 +302,11 @@ sub put
 	my $self = shift;
 	confess "Trying to put nothing!" unless $self && ref $self;
 	my $call = $self->{call};
-	# delete all instances of this 
-#	for ($dbm->get_dup($call)) {
-#		$dbm->del_dup($call, $_);
-#	}
+
 	$dbm->del($call);
 	delete $self->{annok} if $self->{annok};
 	delete $self->{dxok} if $self->{dxok};
+
 	$lru->put($call, $self);
 	my $ref = $self->encode;
 	$dbm->put($call, $ref);
@@ -335,7 +333,20 @@ sub decode
 sub asc_encode
 {
 	my $self = shift;
-	return dd($self);
+	my $strip = shift;
+	my $p;
+
+	if ($strip) {
+		my $ref = bless {}, ref $self;
+		foreach my $k (qw(qth lat long qra sort call homenode node lastoper lastin)) {
+			$ref->{$k} = $self->{$k} if exists $self->{$k};
+		}
+		$ref->{name} = $self->{name} if exists $self->{name} && $self->{name} !~ /selfspot/i;
+		$p = dd($ref);
+	} else {
+		$p = dd($self);
+	}
+	return $p;
 }
 
 #
@@ -362,10 +373,6 @@ sub del
 {
 	my $self = shift;
 	my $call = $self->{call};
-	# delete all instances of this 
-#	for ($dbm->get_dup($call)) {
-#		$dbm->del_dup($call, $_);
-#	}
 	$lru->remove($call);
 	$dbm->del($call);
 }
@@ -407,13 +414,14 @@ sub fields
 sub export
 {
 	my $fn = shift;
+	my $basic_info_only = shift;
 	
 	# save old ones
-        rename "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
-        rename "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
-        rename "$fn.oo", "$fn.ooo" if -e "$fn.oo";
-        rename "$fn.o", "$fn.oo" if -e "$fn.o";
-        rename "$fn", "$fn.o" if -e "$fn";
+	rename "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
+	rename "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
+	rename "$fn.oo", "$fn.ooo" if -e "$fn.oo";
+	rename "$fn.o", "$fn.oo" if -e "$fn.o";
+	rename "$fn", "$fn.o" if -e "$fn";
 
 	my $count = 0;
 	my $err = 0;
@@ -514,7 +522,7 @@ print "There are $count user records and $err errors\n";
 					}
 				}
 				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . $ref->asc_encode . "\n";
+				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
 				++$count;
 			} else {
 				LogDbg('DXCommand', "Export Error3: $key\t$val");
