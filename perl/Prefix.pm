@@ -245,12 +245,26 @@ sub extract
 
 LM:	foreach $call (split /,/, $calls) {
 
-		# first check if the whole thing succeeds either because it is cached
-		# or because it simply is a stored prefix as callsign (or even a prefix)
 		$matchtotal++;
 		$call =~ s/-\d+$//;		# ignore SSIDs
-		my $p = $lru->get($call);
 		my @nout;
+		my $ecall = "=$call";
+
+		# first check if this is a call (by prefixing it with an = sign)
+		my $p = $lru->get($ecall);
+		if ($p) {
+			$hits++;
+			if (isdbg('prefix')) {
+				my $percent = sprintf "%.1f", $hits * 100 / $misses;
+				dbg("Prefix Exact Cache Hit: $call Hits: $hits/$misses of $matchtotal = $percent\%");
+			}
+			push @out, @$p;
+			next;
+		}
+
+		# then check if the whole thing succeeds either because it is cached
+		# or because it simply is a stored prefix as callsign (or even a prefix)
+		$p = $lru->get($call);
 		if ($p) {
 			$hits++;
 			if (isdbg('prefix')) {
@@ -259,26 +273,37 @@ LM:	foreach $call (split /,/, $calls) {
 			}
 			push @out, @$p;
 			next;
-		} else {
-			
-			# is it in the USDB, force a matchprefix to match?
-			my @s = USDB::get($call);
-			if (@s) {
-				@nout = get($call);
-				@nout = matchprefix($call) unless @nout;
-				$nout[0] = $call if @nout;
-			} else {
-				@nout =  get($call);
-			}
+		}
 
-			# now store it
-			if (@nout && $nout[0] eq $call) {
-				$misses++;
-				lru_put($call, \@nout);
-				dbg("got exact prefix: $nout[0]") if isdbg('prefix');
-				push @out, @nout;
-				next;
-			}
+		# is it in the USDB, force a matchprefix to match?
+		my @s = USDB::get($call);
+		if (@s) {
+			@nout = get($call);
+			@nout = matchprefix($call) unless @nout;
+			$nout[0] = $ecall if @nout;
+		} else {
+
+			# try a straight get for an exact callsign
+			@nout = get($ecall);
+		}
+
+		# now store the exact prefix if it has been found
+		if (@nout && $nout[0] eq $ecall) {
+			$misses++;
+			$nout[0] = $call;
+			lru_put("=$call", \@nout);
+			dbg("got exact prefix: $nout[0]") if isdbg('prefix');
+			push @out, @nout;
+			next;
+		}
+
+		# now try a non-exact call/prefix
+		if ((@nout = get($call)) && $nout[0] eq $call) {
+			$misses++;
+			lru_put($call, \@nout);
+			dbg("got exact prefix: $nout[0]") if isdbg('prefix');
+			push @out, @nout;
+			next;
 		}
 
 		# now split the call into parts if required

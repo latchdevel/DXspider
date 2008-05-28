@@ -1,3 +1,7 @@
+28May08=======================================================================
+1. Improve the detection of short exact callsigns that are out of prefix area
+(eg K7A) (thank you FCC).
+2. Improve long line handling on console.pl
 26May08=======================================================================
 1. Put a hard limit on the depth of searching for routes
 2. Add CTY-1804 prefix changes

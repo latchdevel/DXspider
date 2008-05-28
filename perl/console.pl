@@ -230,7 +230,7 @@ sub addtotop
 		if ($inbuf =~ s/\x07+$//) {
 			beep();
 		}
-		if (length $inbuf > $cols) {
+		if (length $inbuf >= $cols) {
 			$Text::Wrap::Columns = $cols;
 			push @shistory, wrap('',"\t", $inbuf);
 		} else {
