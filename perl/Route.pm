@@ -286,6 +286,26 @@ sub get
 	return Route::Node::get($call) || Route::User::get($call);
 }
 
+# this may be a better algorithm
+#start = {start node}
+#end = {end node}
+#dist = 0
+#marked(n) = false for all nodes n
+#queue = [start]
+#while queue is not empty:
+#  dist = dist + 1
+#  newqueue = []
+#  for each node n in queue:
+#    for each edge from node n to node m:
+#      if not marked(m):
+#        marked(m) = true
+#        if m == end:
+#          -- We've found the end node
+#          -- it's a distance "dist" from the start
+#          return dist
+#        add m to newqueue
+#  queue = newqueue
+
 sub findroutes
 {
 	my $call = shift;
@@ -298,7 +318,7 @@ sub findroutes
 	# recursion detector (no point in recursing that deeply)
 	return () if $seen->{$call};
 	if ($level >= 20) {
-		dbg("Route::findroutes: recursion limit reached looking for $call");
+#		dbg("Route::findroutes: recursion limit reached looking for $call");
 		return ();
 	}
 

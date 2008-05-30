@@ -1,4 +1,6 @@
 28May08=======================================================================
+1. remove "recursion limit" message from Route.pm
+28May08=======================================================================
 1. Improve the detection of short exact callsigns that are out of prefix area
 (eg K7A) (thank you FCC).
 2. Improve long line handling on console.pl
