@@ -2,6 +2,8 @@
 1. Change the route finding algorithm completely. No more recursion. No more
 tree searching. It now gives you answers even on a partial cluster map. Oh
 and the answers are correct, instead on completely random.
+2. Put back (maybe some of) US State handling.
+3. Add CTY-1806 prefix data
 28May08=======================================================================
 1. remove "recursion limit" message from Route.pm
 28May08=======================================================================

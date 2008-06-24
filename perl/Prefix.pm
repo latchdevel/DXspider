@@ -170,6 +170,7 @@ sub next
 sub lru_put
 {
 	my ($call, $ref) = @_;
+	$call =~ s/^=//;
 	my @s = USDB::get($call);
 	
 	if (@s) {
