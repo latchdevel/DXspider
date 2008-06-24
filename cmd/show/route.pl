@@ -18,7 +18,7 @@ foreach $l (@list) {
 	if ($ref) {
 		my $parents = $ref->isa('Route::Node') ? $l : join(',', $ref->parents);
 		my @n = map { $_->[1]->call . '(' .  (100 - $_->[0]) . ')' } Route::findroutes($l);
-		@n = @n[0,1,2,3],'...' if @n > 4;
+		@n = (@n[0,1,2,3],'...') if @n > 4;
 		push @out, $self->msg('route', $l, $parents,  join(',', @n));
 	} else {
 		push @out, $self->msg('e7', $l);
