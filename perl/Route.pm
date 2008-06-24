@@ -295,7 +295,10 @@ sub findroutes
 
 	# return immediately if we are directly connected
 	my $dxchan = DXChannel::get($call);
-	return $dxchan if $dxchan;
+	if ($dxchan) {
+		dbg("ROUTE: findroutes $call -> directly connected") if isdbg('findroutes');
+		return $dxchan;
+	}
 
 	my $nref = Route::get($call);
 	return () unless $nref;
@@ -306,7 +309,10 @@ sub findroutes
 	foreach my $p (@parent) {
 		# return immediately if we are directly connected or a user's parent node is
 		$dxchan = DXChannel::get($p);
-		return $dxchan if $dxchan;
+		if ($dxchan) {
+			dbg("ROUTE: findroutes $call -> connected direct via parent $p") if isdbg('findroutes');
+			return $dxchan;
+		}
 
 		my $r = Route::Node::get($p);
 		if ($r) {
