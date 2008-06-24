@@ -32,7 +32,7 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 		  via_pc92 => '0,Came in via pc92,yesno',
 		  obscount => '0,Obscount',
 		  last_PC92C => '9,Last PC92C',
-		  PC92C_dxchan => '9,Channel of PC92C',
+		  PC92C_dxchan => '9,Channel of PC92C,phash',
 );
 
 $filterdef = $Route::filterdef;
@@ -286,7 +286,7 @@ sub new
 	$self->{flags} = shift || Route::here(1);
 	$self->{users} = [];
 	$self->{nodes} = [];
-	$self->{PC92C_dxchan} = '';
+	$self->{PC92C_dxchan} = {};
 	$self->reset_obs;			# by definition
 
 	$list{$call} = $self;
@@ -369,6 +369,19 @@ sub measure_pc9x_t
 	} else {
 		return 86400;
 	}
+}
+
+sub PC92C_dxchan
+{
+	my $parent = shift;
+	my $call = shift;
+	my $hops = shift;
+	if ($call && $hops) {
+		$hops =~ s/^H//;
+		$parent->{PC92C_dxchan}->{$call} = $hops;
+		return;
+	}
+	return (%{$parent->{PC92C_dxchan}});
 }
 
 sub DESTROY

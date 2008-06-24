@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#
 #
 # This module impliments the abstracted routing for all protocols and
 # is probably what I SHOULD have done the first time.
@@ -286,92 +286,52 @@ sub get
 	return Route::Node::get($call) || Route::User::get($call);
 }
 
-# this may be a better algorithm
-#start = {start node}
-#end = {end node}
-#dist = 0
-#marked(n) = false for all nodes n
-#queue = [start]
-#while queue is not empty:
-#  dist = dist + 1
-#  newqueue = []
-#  for each node n in queue:
-#    for each edge from node n to node m:
-#      if not marked(m):
-#        marked(m) = true
-#        if m == end:
-#          -- We've found the end node
-#          -- it's a distance "dist" from the start
-#          return dist
-#        add m to newqueue
-#  queue = newqueue
-
 sub findroutes
 {
 	my $call = shift;
-	my $level = shift || 0;
-	my $seen = shift || {};
 	my @out;
 
-	dbg("findroutes: $call level: $level calls: " . join(',', @_)) if isdbg('routec');
-
-	# recursion detector (no point in recursing that deeply)
-	return () if $seen->{$call};
-	if ($level >= 20) {
-#		dbg("Route::findroutes: recursion limit reached looking for $call");
-		return ();
-	}
+	dbg("ROUTE: findroutes: $call") if isdbg('findroutes');
 
 	# return immediately if we are directly connected
 	if (my $dxchan = DXChannel::get($call)) {
-		$seen->{$call}++;
-		push @out, $level ? [$level, $dxchan] : $dxchan;
-		return @out;
+		return $dxchan;
 	}
-	$seen->{$call}++;
 
-	# deal with more nodes
 	my $nref = Route::get($call);
 	return () unless $nref;
-	foreach my $ncall (@{$nref->{parent}}) {
-		unless ($seen->{$ncall}) {
 
-			# put non-pc9x nodes to the back of the queue
-			my $l = $level + ($nref->{do_pc9x} && ($nref->{version}||5454) >= 5454 ? 0 : 30);
-			dbg("recursing from $call -> $ncall level $l") if isdbg('routec');
-			my @rout = findroutes($ncall, $l+1, $seen);
-			push @out, @rout;
-		}
-	}
-
-	if ($level == 0) {
-		my @nout = map {$_->[1]} sort {$a->[0] <=> $b->[0]} @out;
-		my $last;
-		if ($nref->isa('Route::Node')) {
-			my $ncall = $nref->PC92C_dxchan;
-			$last = DXChannel::get($ncall) if $ncall;
-		} else {
-			my $pcall = $nref->{parent}->[0];
-			my ($ref, $ncall);
-			$ref = Route::Node::get($pcall) if $pcall;
-			$ncall = $ref->PC92C_dxchan if $ref;
-			$last = DXChannel::get($ncall) if $ncall;
-		}
-
-		if (isdbg('findroutes')) {
-			if (@out) {
-				foreach (sort {$a->[0] <=> $b->[0]} @out) {
-					dbg("ROUTE: findroute $call -> $_->[0] " . $_->[1]->call);
-				}
-			} else {
-				dbg("ROUTE: findroute $call -> PC92C_dxchan " . $last->call) if $last;
+	# obtain the dxchannels that have seen this thingy
+	my @parent = $nref->isa('Route::User') ? @{$nref->{parent}} : $call;
+	my %cand;
+	foreach my $p (@parent) {
+		my $r = Route::Node::get($p);
+		if ($r) {
+			my %r = $r->PC92C_dxchan;
+			while (my ($k, $v) = each %r) {
+				$cand{$k} = $v if $v > ($cand{$k} || 0);
 			}
 		}
-		push @nout, $last if @out == 0 && $last;
-		return @nout;
-	} else {
-		return @out;
 	}
+
+	# remove any dxchannels that have gone away
+	while (my ($k, $v) = each %cand) {
+		if (my $dxc = DXChannel::get($k)) {
+			push @out, [$v, $dxc];
+		}
+	}
+
+	# get a sorted list of dxchannels with the highest hop count first
+	my @nout = map {$_->[1]} sort {$b->[0] <=> $a->[0]} @out;
+	if (isdbg('findroutes')) {
+		if (@out) {
+			foreach (sort {$b->[0] <=> $a->[0]} @out) {
+				dbg("ROUTE: findroute $call -> $_->[0] " . $_->[1]->call);
+			}
+		}
+	}
+
+	return @nout;
 }
 
 # find all the possible dxchannels which this object might be on
@@ -393,21 +353,14 @@ sub dxchan
 	my @dxchan = $self->alldxchan;
 	return undef unless @dxchan;
 
-	# determine the minimum ping channel
-#	my $minping = 99999999;
-#	foreach my $dxc (@dxchan) {
-#		my $p = $dxc->pingave;
-#		if (defined $p  && $p < $minping) {
-#			$minping = $p;
-#			$dxchan = $dxc;
-#		}
-#	}
-#	$dxchan = shift @dxchan unless $dxchan;
-
 	# dxchannels are now returned in order of "closeness"
 	return $dxchan[0];
 }
 
+sub delete_interface
+{
+
+}
 
 
 #

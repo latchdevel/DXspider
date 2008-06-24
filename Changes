@@ -1,3 +1,7 @@
+24Jun08=======================================================================
+1. Change the route finding algorithm completely. No more recursion. No more
+tree searching. It now gives you answers even on a partial cluster map. Oh
+and the answers are correct, instead on completely random.
 28May08=======================================================================
 1. remove "recursion limit" message from Route.pm
 28May08=======================================================================

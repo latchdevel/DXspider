@@ -20,7 +20,7 @@ use vars qw(@month %patmap @ISA @EXPORT);
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
-			 parray parraypairs phex shellregex readfilestr writefilestr
+			 parray parraypairs phex phash shellregex readfilestr writefilestr
 			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
@@ -194,11 +194,25 @@ sub parraypairs
 	my $ref = shift;
 	my $i;
 	my $out;
-  
+
 	for ($i = 0; $i < @$ref; $i += 2) {
 		my $r1 = @$ref[$i];
 		my $r2 = @$ref[$i+1];
 		$out .= "$r1-$r2, ";
+	}
+	chop $out;					# remove last space
+	chop $out;					# remove last comma
+	return $out;
+}
+
+# take the arg as a hash reference and print it out as such
+sub phash
+{
+	my $ref = shift;
+	my $out;
+
+	while (my ($k,$v) = each %$ref) {
+		$out .= "${k}=>$v, ";
 	}
 	chop $out;					# remove last space
 	chop $out;					# remove last comma

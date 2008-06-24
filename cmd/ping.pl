@@ -21,7 +21,6 @@ return (1, $self->msg('pinge1')) if $call eq $main::mycall;
 
 # can we see it? Is it a node?
 my $noderef = Route::Node::get($call);
-$noderef = RouteDB::get($call) unless $noderef;
 
 return (1, $self->msg('e7', $call)) unless $noderef;
 

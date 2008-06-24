@@ -2331,17 +2331,18 @@ So if you have said: ACC/SPOT on hf
 Doing a SHOW/MYDX will now only, ever, show HF spots. All the other 
 options on SH/DX can still be used.
 
-=== 0^SHOW/NEWCONFIGURATION [<node>]^Show all the nodes and users visible
-This command allows you to see all the users that can be seen
-and the nodes to which they are connected. 
+=== 0^SHOW/NEWCONFIGURATION [USERS|<node call>]^Show the cluster map
+Show the map of the whole cluster.
 
-This command produces essentially the same information as 
-SHOW/CONFIGURATION except that it shows all the duplication of
-any routes that might be present It also uses a different format
-which may not take up quite as much space if you don't have any
-loops.
+This shows the structure of the cluster that you are connected to. By
+default it will only show the nodes that are known. By adding the keyword
+USER to the command it will show all the users as well.
 
-BE WARNED: the list that is returned can be VERY long
+As there will be loops, you will see '...', this means that the information
+is as printed earlier and that is a looped connection from here on.
+
+BE WARNED: the list that is returned can be VERY long (particularly
+with the USER keyword)
 
 === 0^SHOW/NEWCONFIGURATION/NODE^Show all the nodes connected locally
 Show all the nodes connected to this node in the new format.

@@ -32,7 +32,6 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
-use RouteDB;
 use DXProtHandle;
 
 use strict;
@@ -1037,19 +1036,6 @@ sub route
 		}
 	}
 
-	# try the backstop method
-	unless ($dxchan) {
-		my $rcall = RouteDB::get($call);
-		if ($rcall) {
-			if ($self && $rcall eq $self->{call}) {
-				dbg("PCPROT: Trying to route back to source, dropped") if isdbg('chanerr');
-				return;
-			}
-			$dxchan = DXChannel::get($rcall);
-			dbg("route: $call -> $rcall using RouteDB" ) if isdbg('route') && $dxchan;
-		}
-	}
-
 	if ($dxchan) {
 		my $routeit = adjust_hops($dxchan, $line);   # adjust its hop count by node name
 		if ($routeit) {
@@ -1228,7 +1214,7 @@ sub disconnect
 	# do routing stuff, remove me from routing table
 	my $node = Route::Node::get($call);
 
-	RouteDB::delete_interface($call);
+	Route::delete_interface($call);
 
 	# unbusy and stop and outgoing mail
 	my $mref = DXMsg::get_busy($call);

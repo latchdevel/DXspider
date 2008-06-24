@@ -9,10 +9,10 @@
 my ($self, $line) = @_;
 my @list = map { uc } split /\s+/, $line;           # list of callsigns of nodes
 my @out;
-my $nodes_only;
+my $nodes_only = 1;
 
-if (@list && $list[0] =~ /^NOD/) {
-	$nodes_only++;
+if (@list && $list[0] =~ /^USE/) {
+	$nodes_only = 0;
 	shift @list;
 }
 

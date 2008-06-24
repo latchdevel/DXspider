@@ -32,8 +32,6 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
-use RouteDB;
-
 
 use strict;
 
@@ -122,10 +120,6 @@ sub handle_10
 		}
 	}
 
-	# remember a route to this node and also the node on which this user is
-	RouteDB::update($_[6], $self->{call});
-#	RouteDB::update($to, $_[6]);
-
 	# convert this to a PC93, coming from mycall with origin set and process it as such
 	$main::me->normal(pc93($to, $from, $via, $_[3], $_[6]));
 }
@@ -202,10 +196,6 @@ sub handle_11
 			return;
 		}
 	}
-
-	# remember a route
-#	RouteDB::update($_[7], $self->{call});
-#	RouteDB::update($_[6], $_[7]);
 
 	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $nossid, $_[7]);
 	# global spot filtering on INPUT
@@ -338,10 +328,6 @@ sub handle_12
 		$self->send_chat(0, $line, @_[1..6]);
 	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
 
-		# remember a route
-#		RouteDB::update($_[5], $self->{call});
-#		RouteDB::update($_[1], $_[5]);
-
 		# ignore something that looks like a chat line coming in with sysop
 		# flag - this is a kludge...
 		if ($_[3] =~ /^\#\d+ / && $_[4] eq '*') {
@@ -422,7 +408,6 @@ sub handle_16
 
 	my $h;
 	$h = 1 if DXChannel::get($ncall);
-	RouteDB::update($ncall, $self->{call}, $h);
 	if ($h && $self->{call} ne $ncall) {
 		dbg("PCPROT: trying to update a local node, ignored") if isdbg('chanerr');
 		return;
@@ -541,8 +526,6 @@ sub handle_17
 		dbg("PCPROT: $self->{call} isolated, $ncall ignored") if isdbg('chanerr');
 		return;
 	}
-
-	RouteDB::delete($ncall, $self->{call});
 
 	my $uref = Route::User::get($ucall);
 	unless ($uref) {
@@ -737,7 +720,6 @@ sub handle_19
 #			next;
 #		}
 
-		RouteDB::update($call, $self->{call}, $dxchan ? 1 : undef);
 
 		unless ($h) {
 			if ($parent->via_pc92) {
@@ -842,8 +824,6 @@ sub handle_21
 	# in for self->call from outside being ignored further down
 	# we don't need any isolation code here, because we will never
 	# act on a PC21 with self->call in it.
-
-	RouteDB::delete($call, $self->{call});
 
 	my $parent = Route::Node::get($self->{call});
 	unless ($parent) {
@@ -1241,13 +1221,12 @@ sub handle_50
 
 	my $call = $_[1];
 
-	RouteDB::update($call, $self->{call});
-
 	my $node = Route::Node::get($call);
 	if ($node) {
 		return unless $node->call eq $self->{call};
 		$node->usercount($_[2]) unless $node->users;
 		$node->reset_obs;
+		$node->PC92C_dxchan($self->call, $_[-1]);
 
 		# input filter if required
 #		return unless $self->in_filter_route($node);
@@ -1279,9 +1258,6 @@ sub handle_51
 			DXXml::Ping::handle_ping_reply($self, $from);
 		}
 	} else {
-
-		RouteDB::update($from, $self->{call});
-
 		if (eph_dup($line)) {
 			return;
 		}
@@ -1415,6 +1391,9 @@ sub _add_thingy
 {
 	my $parent = shift;
 	my $s = shift;
+	my $dxchan = shift;
+	my $hops = shift;
+
 	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$s;
 	my @rout;
 
@@ -1422,6 +1401,8 @@ sub _add_thingy
 		if ($is_node) {
 			dbg("ROUTE: added node $call to " . $parent->call) if isdbg('routelow');
 			@rout = $parent->add($call, $version, Route::here($here));
+			my $r = Route::Node::get($call);
+			$r->PC92C_dxchan($dxchan->call, $hops) if $r;
 		} else {
 			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('routelow');
 			@rout = $parent->add_user($call, Route::here($here));
@@ -1579,6 +1560,7 @@ sub pc92_handle_first_slot
 	my $slot = shift;
 	my $parent = shift;
 	my $t = shift;
+	my $hops = shift;
 	my $oparent = $parent;
 
 	my @radd;
@@ -1603,7 +1585,7 @@ sub pc92_handle_first_slot
 			# from the true parent node for this external before we get one for the this node
 			unless ($parent = Route::Node::get($call)) {
 				if ($is_extnode && $oparent) {
-					@radd = _add_thingy($oparent, $slot);
+					@radd = _add_thingy($oparent, $slot, $self, $hops);
 					$parent = $radd[0];
 				} else {
 					dbg("PCPROT: no previous C or A for this external node received, ignored") if isdbg('chanerr');
@@ -1612,7 +1594,7 @@ sub pc92_handle_first_slot
 			}
 			$parent = check_pc9x_t($call, $t, 92) || return;
 			$parent->via_pc92(1);
-			$parent->PC92C_dxchan($self->{call});
+			$parent->PC92C_dxchan($self->{call}, $hops);
 		}
 	} else {
 		dbg("PCPROT: must be \$mycall or external node as first entry, ignored") if isdbg('chanerr');
@@ -1621,7 +1603,7 @@ sub pc92_handle_first_slot
 	$parent->here(Route::here($here));
 	$parent->version($version || $pc19_version) if $version;
 	$parent->build($build) if $build;
-	$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+	$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 	return ($parent, @radd);
 }
 
@@ -1638,6 +1620,7 @@ sub handle_92
 	my $pcall = $_[1];
 	my $t = $_[2];
 	my $sort = $_[3];
+	my $hops = $_[-1];
 
 	# this catches loops of A/Ds
 #	if (eph_dup($line, $pc9x_dupe_age)) {
@@ -1722,14 +1705,14 @@ sub handle_92
 		$pc92Kin += length $line;
 
 		# remember the last channel we arrived on
-		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+		$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 
 		my @ent = _decode_pc92_call($_[4]);
 
 		if (@ent) {
 			my $add;
 
-			($parent, $add) = $self->pc92_handle_first_slot(\@ent, $parent, $t);
+			($parent, $add) = $self->pc92_handle_first_slot(\@ent, $parent, $t, $hops);
 			return unless $parent; # dupe
 
 			push @radd, $add if $add;
@@ -1746,7 +1729,7 @@ sub handle_92
 		$pc92Din += length $line if $sort eq 'D';
 
 		# remember the last channel we arrived on
-		$parent->PC92C_dxchan($self->{call}) unless $self->{call} eq $parent->call;
+		$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 
 		# this is the main route section
 		# here is where all the routes are created and destroyed
@@ -1765,7 +1748,7 @@ sub handle_92
 			# that needs to be done.
 			my $add;
 
-			($parent, $add) = $self->pc92_handle_first_slot($ent[0], $parent, $t);
+			($parent, $add) = $self->pc92_handle_first_slot($ent[0], $parent, $t, $hops);
 			return unless $parent; # dupe
 
 			shift @ent;
@@ -1785,7 +1768,7 @@ sub handle_92
 
 		if ($sort eq 'A') {
 			for (@nent) {
-				push @radd, _add_thingy($parent, $_);
+				push @radd, _add_thingy($parent, $_, $self, $hops);
 			}
 		} elsif ($sort eq 'D') {
 			for (@nent) {
@@ -1818,7 +1801,7 @@ sub handle_92
 			foreach my $r (@nent) {
 				my $call = $r->[0];
 				if ($call) {
-					push @radd,_add_thingy($parent, $r) if grep $call eq $_, (@$nnodes, @$nusers);
+					push @radd,_add_thingy($parent, $r, $self, $hops) if grep $call eq $_, (@$nnodes, @$nusers);
 				}
 			}
 			# del users here

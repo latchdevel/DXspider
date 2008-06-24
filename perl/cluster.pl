@@ -98,7 +98,6 @@ use Mrtg;
 use USDB;
 use UDPMsg;
 use QSL;
-use RouteDB;
 use DXXml;
 use DXSql;
 use IsoTime;

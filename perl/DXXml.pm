@@ -238,15 +238,6 @@ sub route
 		dbg("route: $via -> $dxchan->{call} using normal route" ) if isdbg('route');
 	}
 
-	# try the backstop method
-	unless ($dxchan) {
-		my $rcall = RouteDB::get($via);
-		if ($rcall) {
-			$dxchan = DXChannel::get($rcall);
-			dbg("route: $via -> $rcall using RouteDB" ) if isdbg('route') && $dxchan;
-		}
-	}
-	
 	unless ($dxchan) {
 		dbg("XML: no route available to $via") if isdbg('chanerr');
 		return;
