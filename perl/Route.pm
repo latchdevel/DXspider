@@ -297,7 +297,7 @@ sub findroutes
 	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		dbg("ROUTE: findroutes $call -> directly connected") if isdbg('findroutes');
-		return $dxchan;
+		return [99, $dxchan];
 	}
 
 	my $nref = Route::get($call);
@@ -311,7 +311,7 @@ sub findroutes
 		$dxchan = DXChannel::get($p);
 		if ($dxchan) {
 			dbg("ROUTE: findroutes $call -> connected direct via parent $p") if isdbg('findroutes');
-			return $dxchan;
+			return [99, $dxchan];
 		}
 
 		my $r = Route::Node::get($p);
@@ -331,10 +331,10 @@ sub findroutes
 	}
 
 	# get a sorted list of dxchannels with the highest hop count first
-	my @nout = map {$_->[1]} sort {$b->[0] <=> $a->[0]} @out;
+	my @nout = sort {$b->[0] <=> $a->[0]} @out;
 	if (isdbg('findroutes')) {
-		if (@out) {
-			foreach (sort {$b->[0] <=> $a->[0]} @out) {
+		if (@nout) {
+			for (@nout) {
 				dbg("ROUTE: findroutes $call -> $_->[0] " . $_->[1]->call);
 			}
 		}
@@ -348,7 +348,7 @@ sub alldxchan
 {
 	my $self = shift;
 	my @dxchan = findroutes($self->{call});
-	return @dxchan;
+	return map {$_->[1]} @dxchan;
 }
 
 sub dxchan

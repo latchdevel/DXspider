@@ -1385,6 +1385,12 @@ This will show YOU the output from SH/VHFTABLE and also store it in the
 message. 
 
 You can carry on with the message until you are ready to send it. 
+
+=== 6^SEND_CONFIG^Broadcast PC92 C records
+This is the PC92 equivalent of INIT. In that it will send out a new
+PC92 C record to all interfaces. This can be used to bring other nodes
+up to date quicker after a restart.
+
 === 0^SET/ADDRESS <your address>^Record your postal address
 
 === 9^SET/AGWENGINE^Enable the AGW Engine
