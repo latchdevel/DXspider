@@ -291,12 +291,11 @@ sub findroutes
 	my $call = shift;
 	my @out;
 
-	dbg("ROUTE: findroutes: $call") if isdbg('findroutes');
+	dbg("ROUTE: findroutes $call") if isdbg('findroutes');
 
 	# return immediately if we are directly connected
-	if (my $dxchan = DXChannel::get($call)) {
-		return $dxchan;
-	}
+	my $dxchan = DXChannel::get($call);
+	return $dxchan if $dxchan;
 
 	my $nref = Route::get($call);
 	return () unless $nref;
@@ -305,6 +304,10 @@ sub findroutes
 	my @parent = $nref->isa('Route::User') ? @{$nref->{parent}} : $call;
 	my %cand;
 	foreach my $p (@parent) {
+		# return immediately if we are directly connected or a user's parent node is
+		$dxchan = DXChannel::get($p);
+		return $dxchan if $dxchan;
+
 		my $r = Route::Node::get($p);
 		if ($r) {
 			my %r = $r->PC92C_dxchan;
@@ -326,7 +329,7 @@ sub findroutes
 	if (isdbg('findroutes')) {
 		if (@out) {
 			foreach (sort {$b->[0] <=> $a->[0]} @out) {
-				dbg("ROUTE: findroute $call -> $_->[0] " . $_->[1]->call);
+				dbg("ROUTE: findroutes $call -> $_->[0] " . $_->[1]->call);
 			}
 		}
 	}
