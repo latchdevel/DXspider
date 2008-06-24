@@ -1913,18 +1913,29 @@ sub handle_93
 		}
 
 		# convert to PC10 talks where appropriate
-		# just go for the "best" one for now (rather than broadcast)
-		$dxchan = $ref->dxchan;
-
-		# check it...
-		if (ref $dxchan && $dxchan->isa('DXChannel')) {
-			if ($dxchan->{do_pc9x}) {
-				$dxchan->send($line);
+		# PC93 capable nodes of the same hop count all get a copy
+		# if there is a PC10 node then it will get a copy and that
+		# will be it. Hopefully such a node will not figure highly
+		# in the route list, unless it is local, 'cos it don't issue PC92s!
+		my @routes = Route::findroutes($to);
+		my $lasthops;
+		foreach my $r (@routes) {
+			$lasthops = $r->[0] unless defined $lasthops;
+			if ($r->[0] == $lasthops) {
+				$dxchan = $r->[1];
+				if (ref $dxchan && $dxchan->isa('DXChannel')) {
+					if ($dxchan->{do_pc9x}) {
+						$dxchan->send($line);
+					} else {
+						$dxchan->talk($from, $to, $via, $text, $onode);
+						last;
+					}
+				} else {
+					dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
+				}
 			} else {
-				$dxchan->talk($from, $to, $via, $text, $onode);
+				last;
 			}
-		} else {
-			dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
 		}
 		return;
 
