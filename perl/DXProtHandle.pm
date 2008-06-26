@@ -1836,6 +1836,42 @@ sub handle_92
 	$self->broadcast_route_pc9x($pcall, undef, $line, 0);
 }
 
+# get all the routes for a thing, bearing in mind that the thing (e.g. a user)
+# might be on two or more nodes at the same time or that there may be more than
+# one equal distance neighbour to a node.
+#
+# What this means that if sh/route g1tlh shows that he is on (say) two nodes, then
+# a Route::findroutes is done on each of those two nodes, the best route(s) taken from
+# each and then combined to give a set of dxchans to send the PC9x record down
+#
+sub find_pc9x_routes
+{
+	my $to = shift;
+	my $ref = Route::get($to);
+	my @parent;
+	my %cand;
+
+	if ($ref->isa('Route::User')) {
+		my $dxchan = DXChannel::get($to);
+		push @parent, $to if $dxchan;
+		push @parent, @{$ref->parent};
+	} else {
+		@parent = $to;
+	}
+	foreach my $p (@parent) {
+		my $lasthops;
+		my @routes = Route::findroutes($p);
+		foreach my $r (@routes) {
+			$lasthops = $r->[0] unless defined $lasthops;
+			if ($r->[0] == $lasthops) {
+				$cand{$r->[1]->call} = $r->[1];
+			} else {
+				last;
+			}
+		}
+	}
+	return values %cand;
+}
 
 sub handle_93
 {
@@ -1896,45 +1932,26 @@ sub handle_93
 	# if it is routeable then then treat it like a talk
 	my $ref = Route::get($to);
 	if ($ref) {
-		# local talks
 		my $dxchan;
-		$dxchan = DXChannel::get($main::myalias) if $to eq $main::mycall;
-		$dxchan = DXChannel::get($to) unless $dxchan;
-		# check it...
-		if ($dxchan) {
-			if (ref $dxchan && $dxchan->isa('DXChannel')) {
-				if ($dxchan->is_user) {
-					$dxchan->talk($from, $to, $via, $text, $onode);
-					return;
-				}
-			} else {
-				dbg("ERROR: $to -> $dxchan is not a DXChannel! (local talk)");
-			}
-		}
 
-		# convert to PC10 talks where appropriate
+		# convert to PC10 or local talks where appropriate
 		# PC93 capable nodes of the same hop count all get a copy
 		# if there is a PC10 node then it will get a copy and that
 		# will be it. Hopefully such a node will not figure highly
 		# in the route list, unless it is local, 'cos it don't issue PC92s!
-		my @routes = Route::findroutes($to);
+		# note that both local and PC93s at the same time are possible if the
+		# user on more than one node.
+		my @routes = find_pc9x_routes($to);
 		my $lasthops;
-		foreach my $r (@routes) {
-			$lasthops = $r->[0] unless defined $lasthops;
-			if ($r->[0] == $lasthops) {
-				$dxchan = $r->[1];
-				if (ref $dxchan && $dxchan->isa('DXChannel')) {
-					if ($dxchan->{do_pc9x}) {
-						$dxchan->send($line);
-					} else {
-						$dxchan->talk($from, $to, $via, $text, $onode);
-						last;
-					}
+		foreach $dxchan (@routes) {
+			if (ref $dxchan && $dxchan->isa('DXChannel')) {
+				if ($dxchan->{do_pc9x}) {
+					$dxchan->send($line);
 				} else {
-					dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
+					$dxchan->talk($from, $to, $via, $text, $onode);
 				}
 			} else {
-				last;
+				dbg("ERROR: $to -> $dxchan is not a DXChannel! (convert to pc10)");
 			}
 		}
 		return;

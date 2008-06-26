@@ -289,29 +289,33 @@ sub get
 sub findroutes
 {
 	my $call = shift;
+	my %cand;
 	my @out;
 
 	dbg("ROUTE: findroutes $call") if isdbg('findroutes');
 
-	# return immediately if we are directly connected
-	my $dxchan = DXChannel::get($call);
-	if ($dxchan) {
-		dbg("ROUTE: findroutes $call -> directly connected") if isdbg('findroutes');
-		return [99, $dxchan];
-	}
-
 	my $nref = Route::get($call);
 	return () unless $nref;
 
+	# we are directly connected, force "best possible" priority, but
+	# carry on in case user is connected on other nodes.
+	my $dxchan = DXChannel::get($call);
+	if ($dxchan) {
+		dbg("ROUTE: findroutes $call -> directly connected") if isdbg('findroutes');
+		$cand{$call} = 99;
+	}
+
 	# obtain the dxchannels that have seen this thingy
 	my @parent = $nref->isa('Route::User') ? @{$nref->{parent}} : $call;
-	my %cand;
 	foreach my $p (@parent) {
-		# return immediately if we are directly connected or a user's parent node is
+		next if $p eq $main::mycall; # this is dealt with above
+
+		# deal with directly connected nodes, again "best priority"
 		$dxchan = DXChannel::get($p);
 		if ($dxchan) {
 			dbg("ROUTE: findroutes $call -> connected direct via parent $p") if isdbg('findroutes');
-			return [99, $dxchan];
+			$cand{$p} = 99;
+			next;
 		}
 
 		my $r = Route::Node::get($p);
