@@ -10,7 +10,7 @@ my ($self, $line) = @_;
 my @call = split /\s+/, uc $line;
 my @out;
 
-$DB::single=1;
+#$DB::single=1;
 
 return (1, $self->msg('db3', 'QSL')) unless $QSL::dbm;
 

@@ -2215,7 +2215,13 @@ the worldwide statistics.
 This command shows the hop counts set up for a node. You can specify
 which category you want to see. If you leave the category out then 
 all the categories will be listed.
- 
+
+=== 0^SHOW/IK3QAR <callsign>^Obtain QSL info from IK3QAR database
+Get QSL information from the online dabase run by IK3QAR.
+
+Your sysop needs to set up this command by obtaining a password from IK3QAR.
+Instructions are available in local/Internet.pm
+
 === 1^SHOW/ISOLATE^Show list of ISOLATED nodes
 
 === 9^SHOW/LOCKOUT <prefix>|ALL^Show the list of locked out or excluded callsigns

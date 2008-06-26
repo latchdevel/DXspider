@@ -73,6 +73,18 @@ $dx425_url = 'www.ariscandicci.it';		# used by show/425
 $contest_host = 'www.sk3bg.se';         # used by show/contest
 $contest_url = "http://$contest_host/contest/text";         # used by show/contest
 
+#SHOW/IK3QAR <callsign> Show the 5 most recent informations found on IK3QAR
+##Callsign Database about QSL Manager, Manager address and comments. This
+##command works for sysop subscribed for the service at:
+##    http://www.ik3qar.it/manager/dxc.php
+##Write the given password below in $ik3qar_pw
+#
+$ik3qar_url = 'www.ik3qar.it';    # used by show/ik3qar
+$ik3qar_pw = 'PUT-PASSWORD-HERE';    # used by show/ik3qar
+
+# NOTE: you must copy $ik3qar_* lines to local/Internet.pm for them to have
+# any effect on an already running node.
+#
 #
 # end
 #
