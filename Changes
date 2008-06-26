@@ -2,6 +2,7 @@
 1. added show/ik3qar command by Leo IZ5FSA. See comments in perl/Internet.pm
 for setup instructions (note that you will have to copy these lines to
 local/Internet.pm before it will work).
+2. Send talks to every node a user is logged onto.
 24Jun08=======================================================================
 1. Change the route finding algorithm completely. No more recursion. No more
 tree searching. It now gives you answers even on a partial cluster map. Oh
