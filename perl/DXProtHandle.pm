@@ -1755,13 +1755,13 @@ sub handle_92
 			push @radd, $add if $add;
 		}
 
-		# do a pass through removing any references to either locally connected nodes or mycall
+		# do a pass through removing any references to either mycall
 		my @nent;
 		for (@ent) {
 			my $dxc;
 			next unless $_ && @$_;
-			if ($_->[0] eq $main::mycall || (($dxc = DXChannel::get($_->[0])) && $dxc->is_node)) {
-				dbg("PCPROT: $_->[0] refers to locally connected node, ignored") if isdbg('chanerr');
+			if ($_->[0] eq $main::mycall) {
+				dbg("PCPROT: $_->[0] refers to me, ignored") if isdbg('chanerr');
 				next;
 			}
 			push @nent, $_;
