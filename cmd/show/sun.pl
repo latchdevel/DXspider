@@ -18,18 +18,18 @@ my $l;
 my $n_offset;
 my @list;
 
-while ($f = shift @f){
-        if(!$n_offset){
-                ($n_offset) = $f =~ /^([-+]?\d+)$/;
-                next if $n_offset;
-        }
-        push @list, $f;
+while ($f = shift @f) {
+	if (!$n_offset) {
+		($n_offset) = $f =~ /^([-+]?\d+)$/;
+		next if $n_offset;
+	}
+	push @list, $f;
 }
 $n_offset = 0 unless defined $n_offset;
-$n_offset = 0 if $n_offset > 365;  # can request moon rise/set up to 1 year ago or from now...
+$n_offset = 0 if $n_offset > 365; # can request moon rise/set up to 1 year ago or from now...
 $n_offset = 0 if $n_offset < -365;
 
-my ($lat, $lon);              # lats and longs in radians
+my ($lat, $lon);				# lats and longs in radians
 my ($sec, $min, $hr, $day, $month, $yr) = (gmtime($main::systime+$n_offset*24*60*60))[0,1,2,3,4,5];
 
 $month++;
@@ -63,21 +63,21 @@ if (@list) {
 	}
 }
 
-if( !$n_offset ) {
-        push @out, $self->msg('sun_with_azel');
+if ( !$n_offset ) {
+	push @out, $self->msg('sun_with_azel');
 } else {
-        push @out, $self->msg('sun');
+	push @out, $self->msg('sun');
 }
 
 foreach $l (@in) {
 	my ($dawn, $rise, $set, $dusk, $az, $dec )=Sun::rise_set($yr,$month,$day,$hr,$min,$l->[1],$l->[2],0);
 		
-        $l->[3] =~ s{(-\d+|/\w+)$}{};
-        if( !$n_offset ) {
+	$l->[3] =~ s{(-\d+|/\w+)$}{};
+	if ( !$n_offset ) {
         push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s %6.1f %6.1f", $l->[3], $l->[0], $day, $month, $yr, $rise, $set, $az, $dec);
-        } else {
+	} else {
         push @out,sprintf("%-6.6s %-30.30s %02d/%02d/%4d %s %s", $l->[3], $l->[0], $day, $month, $yr, $rise, $set);
-        }
+	}
 }
 
 

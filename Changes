@@ -1,3 +1,5 @@
+28Jun08=======================================================================
+1. Made buddies work again on PC92.
 26Jun08=======================================================================
 1. added show/ik3qar command by Leo IZ5FSA. See comments in perl/Internet.pm
 for setup instructions (note that you will have to copy these lines to

@@ -1406,6 +1406,7 @@ sub _add_thingy
 		} else {
 			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('routelow');
 			@rout = $parent->add_user($call, Route::here($here));
+			$dxchan->tell_buddies('loginb', $call, $parent->call) if $dxchan;
 		}
 		if ($pc92_slug_changes && $parent == $main::routeroot) {
 			$things_add{$call} = Route::get($call);
@@ -1419,6 +1420,7 @@ sub _del_thingy
 {
 	my $parent = shift;
 	my $s = shift;
+	my $dxchan = shift;
 	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$s;
 	my @rout;
 	if ($call) {
@@ -1428,9 +1430,12 @@ sub _del_thingy
 			dbg("ROUTE: deleting node $call from " . $parent->call) if isdbg('routelow');
 			@rout = $ref->del($parent) if $ref;
 		} else {
-			$ref = Route::User::get($call);
 			dbg("ROUTE: deleting user $call from " . $parent->call) if isdbg('routelow');
-			@rout = $parent->del_user($ref) if $ref;
+			$ref = Route::User::get($call);
+			if ($ref) {
+				$dxchan->tell_buddies('logoutb', $call, $parent->call) if $dxchan;
+				@rout = $parent->del_user($ref);
+			}
 		}
 		if ($pc92_slug_changes && $parent == $main::routeroot) {
 			$things_del{$call} = $ref unless exists $things_add{$call};
@@ -1773,7 +1778,7 @@ sub handle_92
 			}
 		} elsif ($sort eq 'D') {
 			for (@nent) {
-				push @rdel, _del_thingy($parent, $_);
+				push @rdel, _del_thingy($parent, $_, $self);
 			}
 		} elsif ($sort eq 'C') {
 			my (@nodes, @users);
@@ -1807,10 +1812,10 @@ sub handle_92
 			}
 			# del users here
 			foreach my $r (@$dnodes) {
-				push @rdel,_del_thingy($parent, [$r, 1]);
+				push @rdel,_del_thingy($parent, [$r, 1], $self);
 			}
 			foreach my $r (@$dusers) {
-				push @rdel,_del_thingy($parent, [$r, 0]);
+				push @rdel,_del_thingy($parent, [$r, 0], $self);
 			}
 
 			# remember this last PC92C for rebroadcast on demand
