@@ -118,7 +118,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
-			$can_encode
+			$can_encode $maxconnect_user $maxconnect_node
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -129,7 +129,10 @@ $starttime = 0;                 # the starting time of the cluster
 $reqreg = 0;					# 1 = registration required, 2 = deregister people
 $bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't allow it
 $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
-
+$maxconnect_user = 3;			# the maximum no of concurrent connections a user can have at a time
+$maxconnect_node = 8;			# Ditto but for nodes. In either case if a new incoming connection
+								# takes the no of references in the routing table above these numbers
+								# then the connection is refused. This only affects INCOMING connections.
 
 # send a message to call on conn and disconnect
 sub already_conn
@@ -178,6 +181,19 @@ sub new_channel
 			$dxchan->disconnect;
 		} else {
 			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+			return;
+		}
+	}
+
+	# (fairly) politely disconnect people that are connected to too many other places at once
+	my $r = Route::get($call);
+	if ($r) {
+		my @n = $r->parents;
+		my $v = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
+		if ($v && @n >= $v) {
+			my $nodes = join ',', @n;
+			LogDbg('DXCommand', "$call has too many connections ($v) at $nodes, disconnected");
+			already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
 			return;
 		}
 	}

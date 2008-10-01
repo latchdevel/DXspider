@@ -218,7 +218,7 @@ sub start
 	foreach my $call (@{$user->buddies}) {
 		my $ref = Route::User::get($call);
 		if ($ref) {
-			foreach my $node (@{$ref->parent}) {
+			foreach my $node ($ref->parents) {
 				$self->send($self->msg($node eq $main::mycall ? 'loginb' : 'loginbn', $call, $node));
 			} 
 		}

@@ -1,5 +1,10 @@
 01Oct08=======================================================================
 1. added CTY-1809 prefix data
+2. added new config variables to allow an incoming users to have (as default)
+up to 2 other connections to other nodes and incoming nodes up to 8 other
+parents. Note that you can switch off this behaviour by setting
+$main::maxconnect_user or $main::maxconnect_node = 0 (or set them to whatever
+you need).
 28Jun08=======================================================================
 1. Made buddies work again on PC92.
 26Jun08=======================================================================

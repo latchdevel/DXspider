@@ -36,6 +36,7 @@ package DXM;
 				chattoomany => 'Not allowed, already in $_[1], use /chat $_[0]',
 				conother => 'Sorry $_[0] you are connected to me on another port',
 				concluster => 'Sorry $_[0] you are already connected elsewhere on the cluster (on $_[1])',
+				contomany => 'Sorry $_[0] but you are already connected to $_[1] other nodes (on $_[2])',
 				conscript => 'no connect script called \"$_[0]\" found in $main::root/connect',
 				confail => 'connection to $_[0] failed ($_[1])',
 				constart => 'connection to $_[0] started',

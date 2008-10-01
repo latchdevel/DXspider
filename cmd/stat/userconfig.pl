@@ -15,7 +15,7 @@ foreach my $uref (@users) {
 	my $ucall = $uref->call;
 	next if @list && !grep $ucall =~ m|$_|, @list;
 	my $call = $uref->user_call;
-	my $l = join ',', (map {my $ref = Route::Node::get($_); $ref ? ($ref->user_call) : ("$_?")} sort @{$uref->parent});
+	my $l = join ',', (map {my $ref = Route::Node::get($_); $ref ? ($ref->user_call) : ("$_?")} sort $uref->parents);
 	push @out, "$call->$l";
 }
 

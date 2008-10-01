@@ -1860,7 +1860,7 @@ sub find_pc9x_routes
 	if ($ref->isa('Route::User')) {
 		my $dxchan = DXChannel::get($to);
 		push @parent, $to if $dxchan;
-		push @parent, @{$ref->parent};
+		push @parent, $ref->parents;
 	} else {
 		@parent = $to;
 	}
