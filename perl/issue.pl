@@ -18,7 +18,7 @@ use strict;
 
 use vars qw($root);
 my $fn = "$root/perl/Version.pm";
-my $desc = `git-describe`;
+my $desc = `git-describe --long`;
 my ($v, $s, $b) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-/;
 $s ||= '0';		# account for missing subversion
 $b++;			# to account for the commit that is about to happen
