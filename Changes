@@ -1,6 +1,7 @@
 02Oct08=======================================================================
 1. Add set/maxconnect command to allow the defaults to be overridden for
 individual users/nodes.
+2. Make sure that the check really is for incoming connections only...
 01Oct08=======================================================================
 1. added CTY-1809 prefix data
 2. added new config variables to allow an incoming users to have (as default)

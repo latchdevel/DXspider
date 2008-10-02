@@ -187,7 +187,7 @@ sub new_channel
 
 	# (fairly) politely disconnect people that are connected to too many other places at once
 	my $r = Route::get($call);
-	if ($r && $user) {
+	if ($conn->{sort} =~ /^I/ && $r && $user) {
 		my @n = $r->parents;
 		my $m = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
 		my $c = $user->maxconnect;
