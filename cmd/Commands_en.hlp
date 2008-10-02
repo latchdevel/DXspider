@@ -1659,6 +1659,20 @@ then this command will set your QRA locator for you. For example:-
 === 9^SET/LOCKOUT <call>^Stop a callsign connecting to the cluster
 === 9^UNSET/LOCKOUT <call>^Allow a callsign to connect to the cluster
 
+=== 8^SET/MAXCONNECT <value> [<call> ..]^Set max incoming connections for user/node
+Set the maximum no of connections (parents) an incoming user or node is
+allowed to have. If this incoming connection takes it over the separate
+limits for users and nodes (defaults: 3 and 8 respectively), then the
+connection is refused (with a polite message).
+
+The idea behind this to limit the number of copies of messages that
+are sent to users (and nodes). Nodes really don't need to have more than
+5 or 6 partners and users don't need more than two connections into the
+cluster cloud.
+
+This check is only for INCOMING connections, no check is performed for
+outgoing connections.
+
 === 0^SET/NAME <your name>^Set your name
 Tell the system what your name is eg:-
   SET/NAME Dirk

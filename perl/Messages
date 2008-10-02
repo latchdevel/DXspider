@@ -205,6 +205,7 @@ package DXM;
 				m18 => 'Sorry, message $_[0] is currently set to KEEP',
 				m19 => 'Startup Script for $_[0] saved, $_[1] lines',
 				m20 => 'Empty Startup Script for $_[0] deleted',
+				maxconnect => 'Max connections on $_[0] set to $_[1]',
 				msg1 => 'Bulletin Messages Queued',
 				msg2 => 'Private Messages Queued',
 				msg3 => 'Msg $_[0]: $_[1] changed from $_[2] to $_[3]',

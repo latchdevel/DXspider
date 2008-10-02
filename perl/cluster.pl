@@ -187,12 +187,15 @@ sub new_channel
 
 	# (fairly) politely disconnect people that are connected to too many other places at once
 	my $r = Route::get($call);
-	if ($r) {
+	if ($r && $user) {
 		my @n = $r->parents;
-		my $v = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
+		my $m = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
+		my $c = $user->maxconnect;
+		my $v;
+		$v = defined $c ? $c : $m;
 		if ($v && @n >= $v) {
 			my $nodes = join ',', @n;
-			LogDbg('DXCommand', "$call has too many connections ($v) at $nodes, disconnected");
+			LogDbg('DXCommand', "$call has too many connections ($v) at $nodes - disconnected");
 			already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
 			return;
 		}

@@ -89,6 +89,7 @@ $v3 = 0;
 		  build => '1,Build',
 		  believe => '1,Believable nodes,parray',
 		  lastping => '1,Last Ping at,ptimelist',
+		  maxconnect => '1,Max Connections',
 		 );
 
 #no strict;
