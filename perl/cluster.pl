@@ -130,7 +130,7 @@ $reqreg = 0;					# 1 = registration required, 2 = deregister people
 $bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't allow it
 $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 $maxconnect_user = 3;			# the maximum no of concurrent connections a user can have at a time
-$maxconnect_node = 8;			# Ditto but for nodes. In either case if a new incoming connection
+$maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
 								# takes the no of references in the routing table above these numbers
 								# then the connection is refused. This only affects INCOMING connections.
 

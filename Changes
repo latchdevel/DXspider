@@ -1,3 +1,5 @@
+04Oct08=======================================================================
+1. set $main::maxconnect_node = 0 as default. It's causing too much aggro..
 02Oct08=======================================================================
 1. Add set/maxconnect command to allow the defaults to be overridden for
 individual users/nodes.
