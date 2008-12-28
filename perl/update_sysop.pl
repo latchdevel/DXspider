@@ -83,6 +83,8 @@ sub create_it
 
 }
 
+die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';).\n" if $mycall eq $myalias;
+
 $lockfn = "$root/local/cluster.lck";       # lock file name
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";

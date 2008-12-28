@@ -405,6 +405,7 @@ DXUser->init($userfn, 1);
 
 # look for the sysop and the alias user and complain if they aren't there
 {
+	die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';). Oh and don't forget to rerun create_sysop.pl!" if $mycall eq $myalias;
 	my $ref = DXUser::get($mycall);
 	die "$mycall missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
 	$ref = DXUser::get($myalias);
