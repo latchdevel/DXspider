@@ -133,23 +133,8 @@ sub start
 		$self->{registered} = 1;
 	}
 
-
-	# decide which motd to send
-	my $motd;
-	unless ($self->{registered}) {
-		$motd = "${main::motd}_nor_$self->{lang}";
-		$motd = "${main::motd}_nor" unless -e $motd;
-	}
-	$motd = "${main::motd}_$self->{lang}" unless $motd && -e $motd;
-	$motd = $main::motd unless $motd && -e $motd;
-	if ($self->conn->{csort} eq 'ax25') {
-		if ($motd) {
-			$motd = "${motd}_ax25" if -e "${motd}_ax25";
-		} else {
-			$motd = "${main::motd}_ax25" if -e "${main::motd}_ax25";
-		}
-	}
-	$self->send_file($motd) if -e $motd;
+	# send the relevant MOTD
+	$self->send_motd;
 
 	# sort out privilege reduction
 	$self->{priv} = 0 if $line =~ /^(ax|te)/ && !$self->conn->{usedpasswd};
@@ -1225,6 +1210,28 @@ sub print_find_reply
 	my ($self, $node, $target, $flag, $ms) = @_;
 	my $sort = $flag == 2 ? "External" : "Local";
 	$self->send("$sort $target found at $node in $ms ms" );
+}
+
+# send the most relevant motd
+sub send_motd
+{
+	my $self = shift;
+	my $motd;
+
+	unless ($self->{registered}) {
+		$motd = "${main::motd}_nor_$self->{lang}";
+		$motd = "${main::motd}_nor" unless -e $motd;
+	}
+	$motd = "${main::motd}_$self->{lang}" unless $motd && -e $motd;
+	$motd = $main::motd unless $motd && -e $motd;
+	if ($self->conn->{csort} eq 'ax25') {
+		if ($motd) {
+			$motd = "${motd}_ax25" if -e "${motd}_ax25";
+		} else {
+			$motd = "${main::motd}_ax25" if -e "${main::motd}_ax25";
+		}
+	}
+	$self->send_file($motd) if -e $motd;
 }
 1;
 __END__

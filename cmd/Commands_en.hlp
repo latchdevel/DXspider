@@ -2278,6 +2278,16 @@ Upto 366 days can be checked both in the past and in the future.
 Please note that the rise and set times are given as the UT times of rise and 
 set on the requested UT day.
 
+=== 0^SHOW/MOTD^Show your MOTD (the Message of the Day)
+The Message of the Day is normally printed whenever one logs on. However
+many people now login using logging programs or something other than plain
+telnet or ax25 connections. This command allows the user (or the program)
+to see what is in the MOTD.
+
+The actual MOTD that you are shown depends on what carrier you are logged
+on via, whether you are registered and some other factors that your sysop
+may have thrown in.
+
 === 0^SHOW/MUF <prefix> [<hours>][long]^Show the likely propagation to a prefix
 This command allow you to estimate the likelihood of you contacting
 a station with the prefix you have specified. The output assumes a modest

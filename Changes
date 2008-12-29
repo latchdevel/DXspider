@@ -1,3 +1,6 @@
+29Dec08=======================================================================
+1. Add show/motd command as requested by Ian G0VGS.
+2. add CTY-1817 prefixes
 17Nov08=======================================================================
 1. Fix sh/425 to work with new server
 2. add CTY-1814 prefixes
