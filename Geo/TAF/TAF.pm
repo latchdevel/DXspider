@@ -13,36 +13,41 @@ use 5.005;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.04-1';
+$VERSION = '1.05';
 
 
 my %err = (
-		   '1' => "No valid ICAO designator",
-		   '2' => "Length is less than 10 characters",
-		   '3' => "No valid issue time",
-		   '4' => "Expecting METAR or TAF at the beginning", 
-		  );
+		'1' => "No valid ICAO designator",
+		'2' => "Length is less than 10 characters",
+		'3' => "No valid issue time",
+		'4' => "Expecting METAR or TAF at the beginning",
+		);
 
 my %clt = (
-		   SKC => 1,
-		   CLR => 1,
-		   NSC => 1,
-		   BLU => 1,
-		   WHT => 1,
-		   GRN => 1,
-		   YLO => 1,
-		   AMB => 1,
-		   RED => 1,
-		   BKN => 1,
-		   NIL => 1,
-		  );
+		SKC		=> 1,
+		CLR   	=> 1,
+		NSC   	=> 1,
+		NSD   	=> 1,
+		'BLU+'	=> 1,
+		BLU		=> 1,
+		WHT   	=> 1,
+		GRN   	=> 1,
+		YLO   	=> 1,
+		YLO1  	=> 1,
+		YLO2  	=> 1,
+		AMB   	=> 1,
+		RED   	=> 1,
+		BKN   	=> 1,
+		NIL   	=> 1,
+		'///' 	=> 1,
+		);
 
 my %ignore = (
-			  AUTO => 1,
-			  COR => 1,
-			 );
+		'AUTO' => 1, # Automatic weather system in usage
+		'COR'  => 1, # Correction issued (US)
+		'CCA'  => 1, # Correction issued (EU)
+		);
 
-		   
 # Preloaded methods go here.
 
 sub new
@@ -58,7 +63,7 @@ sub metar
 	my $self = shift;
 	my $l = shift;
 	return 2 unless length $l > 10;
-	$l = 'METAR ' . $l unless $l =~ /^\s*(?:METAR|TAF)\s/i;
+	$l = 'METAR ' . $l unless $l =~ /^\s*(?:METAR|TAF|SPECI)\s/i;
 	return $self->decode($l);
 }
 
@@ -67,7 +72,16 @@ sub taf
 	my $self = shift;
 	my $l = shift;
 	return 2 unless length $l > 10;
-	$l = 'TAF ' . $l unless $l =~ /^\s*(?:METAR|TAF)\s/i;
+	$l = 'TAF ' . $l unless $l =~ /^\s*(?:METAR|TAF|SPECI)\s/i;
+	return $self->decode($l);
+}
+
+sub speci
+{
+	my $self = shift;
+	my $l = shift;
+	return 2 unless length $l > 10;
+	$l = 'SPECI ' . $l unless $l =~ /^\s*(?:METAR|TAF|SPECI)\s/i;
 	return $self->decode($l);
 }
 
@@ -82,6 +96,7 @@ sub as_strings
 	my $self = shift;
 	my @out;
 	for (@{$self->{chunks}}) {
+		next if $_->type =~ m/^Geo::TAF::[A-Z]+::IGNORE$/;
 		push @out, $_->as_string;
 	}
 	return @out;
@@ -97,7 +112,7 @@ sub as_chunk_strings
 {
 	my $self = shift;
 	my @out;
-	
+
 	for (@{$self->{chunks}}) {
 		push @out, $_->as_chunk;
 	}
@@ -117,7 +132,7 @@ sub raw
 
 sub is_weather
 {
-	return $_[0] =~ /^\s*(?:(?:METAR|TAF)\s+)?[A-Z]{4}\s+\d{6}Z?\s+/;
+	return $_[0] =~ /^\s*(?:(?:METAR|TAF|SPECI)\s+)?[A-Z]{4}\s+\d{6}Z?\s+/;
 }
 
 sub errorp
@@ -135,33 +150,25 @@ sub decode
 	my $l = uc shift;
 
 	$l =~ s/=$//;
-	
-    # Fix dodgy TAFs.
-    # TAFs like this are non-standard, but I have seen these examples in
-    # real life, and that is, after all, what this code needs to cope with. [DW]
-    $l =~ s/\b(BECMG)(\d{4})\b/$1 $2/g;	# Some people can't use a space bar
-    $l =~ s/\bTEMP0\b/TEMPO/g;		# Some people use zero instead of a letter O
-    $l =~ s/\bBEC\b/BECMG/g;		# And some people can't spell BECMG
-    
+
 	my @tok = split /\s+/, $l;
 
 	$self->{line} = join ' ', @tok;
-	
-	# do we explicitly have a METAR or a TAF
+
+	# Count how many problems we have
+	$self->{decode_failures} = 0;
+
+	# do we explicitly have a METAR, SPECI or TAF
 	my $t = shift @tok;
-	if ($t eq 'TAF') {
-		$self->{taf} = 1;
-	} elsif ($t eq 'METAR') {
-		$self->{taf} = 0;
+	if ($t =~ /^(TAF|METAR|SPECI)$/) {
+		$self->{report_type} = $t;
+		$self->{taf} = $t eq 'TAF';
 	} else {
 	    return 4;
 	}
 
 	# next token is the ICAO dseignator
 	$t = shift @tok;
-    # ignore AMD (amendment) token if present.
-    $t = shift @tok if $t eq 'AMD';
-
 	if ($t =~ /^[A-Z]{4}$/) {
 		$self->{icao} = $t;
 	} else {
@@ -170,9 +177,6 @@ sub decode
 
 	# next token is an issue time
 	$t = shift @tok;
-    # ignore AMD (amendment) token if present.
-    $t = shift @tok if $t eq 'AMD';
-
 	if (my ($day, $time) = $t =~ /^(\d\d)(\d{4})Z?$/) {
 		$self->{day} = $day;
 		$self->{time} = _time($time);
@@ -193,107 +197,175 @@ sub decode
 	# we are now into the 'list' of things that can repeat over and over
 
 	my @chunk = (
-				 $self->_chunk('HEAD', $self->{taf} ? 'TAF' : 'METAR', 
-							   $self->{icao}, $self->{day}, $self->{time})
+				 $self->_chunk('HEAD', $self->{report_type},
+							   $self->{icao}, $self->{day}, $self->{time}),
+				 $self->_chunk('BLOCK'), # new block always now
 				);
-	
-	push @chunk, $self->_chunk('VALID', $self->{valid_day}, $self->{valid_from}, 
-							   $self->{valid_to}) if $self->{valid_day};
+
+	if($self->{valid_day}) {
+		push @chunk, $self->_chunk('VALID');
+		push @chunk, $self->_chunk('PERIOD', $self->{valid_from}, $self->{valid_to}, $self->{valid_day}, );
+		push @chunk, $self->_chunk('BLOCK'); # new block always now
+	}
+
+	my ($c0, $c1, $expect, @remark_buffer, $ignore_no_length_change);
+	my ($day, $time, $percent, $sort, $dir);
+	my ($wdir, $spd, $gust, $unit);
+	my ($viz, $vunit);
+	my ($m, $p);
 
 	while (@tok) {
 		$t = shift @tok;
-		
+		# Count number of items in chunk, and use to determine if we could not
+		# decode.
+		$c0 = $#chunk;
+		# If this is NOT set, and the count doesn't change, we failed a decode
+		$ignore_no_length_change = 0;
+
+		# This is just so the rest patches easier
+		if(!defined($t)) {
+
 		# temporary 
-		if ($t eq 'TEMPO' || $t eq 'BECMG') {
-			
-			# next token may be a time if it is a taf
-			my ($from, $to);
-			if (@tok && (($from, $to) = $tok[0] =~ /^(\d\d)(\d\d)$/)) {
-				if ($self->{taf} && $from >= 0 && $from <= 24 && $to >= 0 && $to <= 24) {
-					shift @tok;
-					$from = _time($from * 100);
-					$to = _time($to * 100);
-				} else {
-					undef $from;
-					undef $to;
-				}
+		} elsif ($t eq 'TEMPO' || $t eq 'TEMP0' || $t eq 'BECMG') {
+			# TEMPO occurs with both a oh and a zero, in some bad automated hardware
+			$t = 'TEMPO' if $t eq 'TEMP0';
+			push @chunk, $self->_chunk('BLOCK'); # new block always now
+			push @chunk, $self->_chunk($t);
+			$expect = 'PERIOD';
+
+		# time range
+		} elsif ($expect eq 'PERIOD' || $t =~ /^(\d\d)(\d\d)\/(\d\d)(\d\d)$/) {
+			undef $expect;
+			# next token may be a period if it is a taf
+			# Two possible formats:
+			# XXYY = hour XX to hour YY (but only valid after TEMPO/BECMG)
+			# AABB/CCDD = day aa hour bb TO day cc hour dd (after TEMPO/BECMG, but ALSO valid after HEAD)
+			my ($from_time, $to_time, $from_day, $to_day);
+			my ($got_time, $got_day);
+			if (($from_time, $to_time) = $t =~ /^(\d\d)(\d\d)$/) {
+				$got_time = 1;
+			} elsif (($from_day, $from_time, $to_day, $to_time) = $t =~ /^(\d\d)(\d\d)\/(\d\d)(\d\d)$/) {
+				$got_time = $got_day = 1;
 			}
-			push @chunk, $self->_chunk($t, $from, $to);			
+			if ($got_time && $self->{taf} && $from_time >= 0 && $from_time <= 24 && $to_time >= 0 && $to_time <= 24) {
+				$from_time = _time($from_time * 100);
+				$to_time = _time($to_time * 100);
+			} else {
+				undef $from_time;
+				undef $to_time;
+				undef $got_time;
+			}
+			if($got_time && $got_day && $from_day >= 1 && $from_day <= 31 && $to_day >= 1 && $to_day <= 31) {
+				# do not shift tok, we did it already
+			} else {
+				undef $from_day;
+				undef $to_day;
+				undef $got_day;
+			}
+			push @chunk, $self->_chunk('PERIOD', $from_time, $to_time, $from_day, $to_day) if $got_time;
 
 		# ignore
 		} elsif ($ignore{$t}) {
-			;
-			
-        # no sig weather
+			push @chunk, $self->_chunk('IGNORE', $t);
+
+		# no sig weather
 		} elsif ($t eq 'NOSIG' || $t eq 'NSW') {
 			push @chunk, $self->_chunk('WEATHER', 'NOSIG');
+
+		# // means the automated system cannot determine the precipiation at all
+		} elsif ($t eq '//') {
+			push @chunk, $self->_chunk('WEATHER', $t);
 
 		# specific broken on its own
 		} elsif ($t eq 'BKN') {
 			push @chunk, $self->_chunk('WEATHER', $t);
-			
-        # other 3 letter codes
+
+		# wind shear (is followed by a runway designation)
+		} elsif ($t eq 'WS') {
+			push @chunk, $self->_chunk('WEATHER', $t);
+
+		# other 3 letter codes
 		} elsif ($clt{$t}) {
 			push @chunk, $self->_chunk('CLOUD', $t);
-			
+
 		# EU CAVOK viz > 10000m, no cloud, no significant weather
 		} elsif ($t eq 'CAVOK') {
 			$self->{viz_dist} ||= ">10000";
 			$self->{viz_units} ||= 'm';
 			push @chunk, $self->_chunk('CLOUD', 'CAVOK');
 
-        # AMD group (end for now)
-        } elsif ($t eq 'AMD') {
-            last;
+		# RMK group (end for now)
+		} elsif ($t eq 'RMK' or $t eq 'RKM') {
+			#push @chunk, $self->_chunk('RMK', join(' ',@tok));
+			$self->{in_remark} = $c0;
+			push @chunk, $self->_chunk('BLOCK'); # new block always now
+			#last;
 
-        # RMK group (end for now)
-		} elsif ($t eq 'RMK') {
-			last;
+		# from
+		} elsif (($day,$time) = $t =~ /^FM(\d\d)?(\d\d\d\d)Z?$/ ) {
+			push @chunk, $self->_chunk('BLOCK'); # new block always now
+			push @chunk, $self->_chunk('FROM', _time($time), $day);
 
-        # from
-        } elsif (my ($time) = $t =~ /^FM(\d\d\d?\d?)Z?$/ ) {
-	    $time .= '0' while length($time) < 4;
-			push @chunk, $self->_chunk('FROM', _time($time));
+		# Until
+		} elsif (($day,$time) = $t =~ /^TL(\d\d)?(\d\d\d\d)Z?$/ ) {
+			push @chunk, $self->_chunk('BLOCK'); # new block always now
+			push @chunk, $self->_chunk('TIL', _time($time), $day);
 
-        # Until
-        } elsif (($time) = $t =~ /^TI?LL?(\d\d\d?\d?)Z?$/ ) {
-	    $time .= '0' while length($time) < 4;
-			push @chunk, $self->_chunk('TIL', _time($time));
+		# At
+		# Seen at http://stoivane.iki.fi/metar/
+		} elsif (($day,$time) = $t =~ /^AT(\d\d)?(\d\d\d\d)Z?$/ ) {
+			push @chunk, $self->_chunk('BLOCK'); # new block always now
+			push @chunk, $self->_chunk('AT', _time($time), $day);
 
-        # probability
-        } elsif (my ($percent) = $t =~ /^PROB(\d\d)$/ ) {
+		# probability
+		} elsif (($percent) = $t =~ /^PROB(\d\d)$/ ) {
+			push @chunk, $self->_chunk('BLOCK'); # new block always now
+			$expect = 'PERIOD';
+			push @chunk, $self->_chunk('PROB', $percent);
 
-			# next token may be a time if it is a taf
-			my ($from, $to);
-			if (@tok && (($from, $to) = $tok[0] =~ /^(\d\d)(\d\d)$/)) {
-				if ($self->{taf} && $from >= 0 && $from <= 24 && $to >= 0 && $to <= 24) {
-					shift @tok;
-					$from = _time($from * 100);
-					$to = _time($to * 100);
-				} else {
-					undef $from;
-					undef $to;
-				}
+		# runway
+		} elsif (($sort, $dir) = $t =~ /^(RWY?|LDG|TKOF|R)(\d\d\d?[RLC]?)$/ ) {
+			# Special case,
+			# there is a some broken METAR hardware out there that codes:
+			# 'RWY01 /0100VP2000N'
+			# TODO: include the full regex here
+			if($tok[0] =~ /^\/[MP]?\d{4}/) {
+				$t .= shift @tok;
+				unshift @tok, $t
 			}
-			push @chunk, $self->_chunk('PROB', $percent, $from, $to);
+			push @chunk, $self->_chunk('RWY', $sort, $dir);
 
-        # runway
-        } elsif (my ($sort, $dir) = $t =~ /^(RWY?|LDG)(\d\d[RLC]?)$/ ) {
+		# runway, but as seen in wind shear
+		# eg: LDG RWY25L
+		} elsif (($sort) = $t =~ /^(LDG|TKOF)$/ ) {
+			my $t2;
+			$t2 = shift @tok;
+			($dir) = $t2 =~ /^RWY(\d\d[RLC]?)$/;
 			push @chunk, $self->_chunk('RWY', $sort, $dir);
 
 		# a wind group
-		} elsif (my ($wdir, $spd, $gust, $unit) = $t =~ /^(\d\d\d|VRB)(\d\d)(?:G(\d\d))?(KT|MPH|MPS|KMH)$/) {
-			
+		} elsif (($wdir, $spd, $gust, $unit) = $t =~ /^([\dO]{3}|VRB|\/{3})([\dO]{2}|\/{2})(?:G([\dO]{2,3}))?(KTS?|MPH|MPS|KMH)$/) {
 			my ($fromdir, $todir);
-			
-			if	(@tok && (($fromdir, $todir) = $tok[0] =~ /^(\d\d\d)V(\d\d\d)$/)) {
-				shift @tok;
-			}
-			
-			# it could be variable so look at the next token
 
-			$spd = 0 + $spd;
+			# More hardware suck, oh vs. zero
+			$wdir =~ s/O/0/g if $wdir;
+			$spd  =~ s/O/0/g if $spd;
+			$gust =~ s/O/0/g if $gust;
+
+			# it could be variable so look at the next token
+			if	(@tok && (($fromdir, $todir) = $tok[0] =~ /^([\dO]{3})V([\dO]{3})$/)) {
+				shift @tok;
+				$fromdir =~ s/O/0/g;
+				$todir =~ s/O/0/g;
+			}
+
+			# Part of the hardware is bad
+			$wdir = 'NA' if $wdir eq '///';
+			$spd = 'NA' if $spd eq '//';
+
+			$spd = 0 + $spd unless $spd eq 'NA';
 			$gust = 0 + $gust if defined $gust;
+			$unit = 'kt' if $unit eq 'KTS';
 			$unit = ucfirst lc $unit;
 			$unit = 'm/sec' if $unit eq 'Mps';
 			$self->{wind_dir} ||= $wdir;
@@ -301,13 +373,25 @@ sub decode
 			$self->{wind_gusting} ||= $gust;
 			$self->{wind_units} ||= $unit;
 			push @chunk, $self->_chunk('WIND', $wdir, $spd, $gust, $unit, $fromdir, $todir);
-			
-		# pressure 
-		} elsif (my ($u, $p, $punit) = $t =~ /^([QA])(?:NH)?(\d\d\d\d)(INS?)?$/) {
 
-			$p = 0 + $p;
+		# wind not reported
+		# MHRO does not seem to follow this rule.
+		} elsif ($t =~ /^\/{5}$/) {
+			if($self->{icao} eq 'MHRO') {
+				; # TODO: We will do something here once we figure what MHRO uses this field for
+				push @chunk, $self->_chunk('IGNORE', $t);
+			} else {
+				push @chunk, $self->_chunk('WIND', 'NR', undef, undef, undef, undef, undef);
+			}
+
+		# pressure 
+		} elsif (my ($u, $p, $punit) = $t =~ /^([QA])(?:NH)?(\d{4}|\/{4}|)(INS?)?$/) {
+
+			$p = 'NA' if $p eq '////';
+			$p = 'NA' if $p eq '' or !defined($p);
+			$p = 0.0 + $p unless $p eq 'NA';
 			if ($u eq 'A' || $punit && $punit =~ /^I/) {
-				$p = sprintf "%.2f", $p / 100;
+				$p = sprintf("%.2f", $p / 100.0) unless $p eq 'NA';
 				$u = 'in';
 			} else {
 				$u = 'hPa';
@@ -317,82 +401,224 @@ sub decode
 			push @chunk, $self->_chunk('PRESS', $p, $u);
 
 		# viz group in metres
-		} elsif (my ($viz, $mist) = $t =~ m!^(\d\d\d\d[NSEW]{0,2})([A-Z][A-Z])?$!) {
-			$viz = $viz eq '9999' ? ">10000" : 0 + $viz;
+		# May be \d{4}NDV per http://www.caa.co.uk/docs/33/CAP746.PDF
+		# //// = unknown
+		# strictly before the remark section. After RMK plain numbers mean other things.
+		} elsif (!defined $self->{in_remark} and ($viz, $dir) = $t =~ m/^(\d\d\d\d|\/{4})([NSEW]{1,2}|NDV)?$/) {
+			if($viz eq '////') {
+				$viz = 'NA';
+			} else {
+				$viz = $viz eq '9999' ? ">10000" : 0 + $viz;
+			}
 			$self->{viz_dist} ||= $viz;
 			$self->{viz_units} ||= 'm';
-			push @chunk, $self->_chunk('VIZ', $viz, 'm');
-			push @chunk, $self->_chunk('WEATHER', $mist) if $mist;
+			$dir = undef if $dir && $dir eq 'NDV';
+			push @chunk, $self->_chunk('VIZ', $viz, 'm', $dir);
+			#push @chunk, $self->_chunk('WEATHER', $mist) if $mist;
 
-		# viz group in KM
-		} elsif (($viz) = $t =~ m!^(\d+)KM$!) {
-			$viz = $viz eq '9999' ? ">10000" : 0 + $viz;
-			$self->{viz_dist} ||= $viz;
-			$self->{viz_units} ||= 'Km';
-			push @chunk, $self->_chunk('VIZ', $viz, 'Km');
-
-        # viz group in miles and fraction of a mile with space between
-		} elsif (my ($m) = $t =~ m!^(\d)$!) {
-            my ($viz, $denom);
-            if (@tok && (($viz, $denom) = $tok[0] =~ m!^(\d)/(\d)SM$!)) {
-				shift @tok;
-		$denom ||= 1;
-		$viz = $m + $viz / $denom;
-				$self->{viz_dist} ||= $viz;
-                $self->{viz_units} ||= 'Miles';
-                push @chunk, $self->_chunk('VIZ', $viz, 'Miles');
+		# viz group in integral KM, feet, M
+		} elsif (($viz, $vunit) = $t =~ m/^(\d+|\/{1,3})(KM|FT|M)$/) {
+			if($viz =~ /^\/+$/) {
+				$viz = 'NA';
+			} else {
+				$viz = $viz eq '9999' ? ">10000" : 0 + $viz;
 			}
-			
+			$vunit = lc $vunit;
+			$self->{viz_dist} ||= $viz;
+			$self->{viz_units} ||= $vunit;
+			push @chunk, $self->_chunk('VIZ', $viz, $vunit);
+
+		# viz group in miles and faction of a mile with space between
+		} elsif (my ($m) = $t =~ m/^(\d)$/) {
+			if (@tok && (($viz) = $tok[0] =~ m/^(\d\/\d)SM$/)) {
+				shift @tok;
+				$viz = "$m $viz";
+				$self->{viz_dist} ||= $viz;
+				$self->{viz_units} ||= 'miles';
+				push @chunk, $self->_chunk('VIZ', $viz, 'miles');
+			}
+
 		# viz group in miles (either in miles or under a mile)
-        } elsif (my ($lt, $mviz, $denom) = $t =~ m!^([MP])?(\d+)(?:/(\d))?SM$!) {
-	    $denom ||= 1;
-	    $mviz /= $denom;
-            $mviz = '<' . $mviz if $lt and $lt eq 'M';
-            $mviz = '>' . $mviz if $lt and $lt eq 'P';
-			$self->{viz_dist} ||= $mviz;
-            $self->{viz_units} ||= 'Miles';
-			push @chunk, $self->_chunk('VIZ', $mviz, 'Miles');
-			
+		} elsif (my ($lt, $viz) = $t =~ m/^(M|P)?(\d+(:?\/\d)?|\/{1,3})SM$/) {
+			if($viz =~ /^\/+$/) {
+				$viz = 'NA';
+			}
+			$viz = '<' . $viz if $lt eq 'M';
+			$viz = '>' . $viz if $lt eq 'P';
+			$self->{viz_dist} ||= $viz;
+			$self->{viz_units} ||= 'Stat. Miles';
+			push @chunk, $self->_chunk('VIZ', $viz, 'miles');
+
+		# Runway deposits state per ICAO
+		# 8 digits
+		# (DR,DR),ER,CR,(eR,eR),(BR,BR)
+		# "ER,CR,eR,eR" == CLRD when previous deposits are removed
+		# Also an alternate form, xxyzCLRD.
+		} elsif (my ($rwy, $type, $extent, $depth, $braking) = $t =~ m/^(\d\d)(\d|\/|C)(\d|\/|L)(\d\d|\/\/|RD|CL)(\d\d|\/\/|RD)$/) {
+			# Runway desginator
+			if($rwy == 99) {
+				$rwy = 'LAST';
+			} elsif($rwy == 88) {
+				$rwy = 'ALL';
+			} elsif($rwy >= 50) {
+				$rwy = ($rwy-50).'R';
+			} else {
+				$rwy = $rwy.'L';
+			}
+
+			# Type
+			# Not processed here
+
+			# Extent
+			# Not processed here
+
+			# Depth
+			if($depth eq 'RD' or $depth eq 'CL') {
+				# Previous contaminination cleared
+				$type = 'CLRD';
+				$extent = undef;
+				$depth = undef;
+				$braking = undef if $braking eq 'RD';
+			} elsif($depth eq '//') {
+				; # pass-thru
+			} elsif($depth == 0) {
+				$depth = '<1mm';
+			} elsif($depth <= 90) {
+				$depth .= 'mm';
+			} elsif($depth == 91) {
+				# BAD!
+			} elsif($depth >= 92 && $depth <= 97) {
+				# 92 = 10cm ... 97 = 35cm
+				$depth = sprintf('%dcm', (($depth - 90) * 5));
+			} elsif($depth == 99) {
+				$depth = '>40cm';
+			} elsif($depth == 99) {
+				$extent = 'CVRD';
+				$depth = 'NR';
+			}
+
+			# Friction / Breaking action
+			if(defined($braking) && $braking < 91) {
+				$braking = sprintf('%.2f', $braking/100.0);
+			} # Other codes are handling in the print
+
+			push @chunk, $self->_chunk('DEP', $rwy, $type, $extent, $depth, $braking);
+
 		# runway visual range
-		} elsif (my ($rw, $rlt, $range, $vlt, $var, $runit, $tend) = $t =~ m!^R(\d\d[LRC]?)/([MP])?(\d\d\d\d)(?:V([MP])(\d\d\d\d))?(?:(FT)/?)?([UND])?$!) {
-			$runit = 'm' unless $runit;
-			$runit = lc $unit;
+		} elsif (my ($rw, $rlt, $range, $vlt, $var, $runit, $tend) = $t =~ m/^R(\d\d\d?[LRC]?)\/([MP])?(\d\d\d\d?)(?:V([MP])?(\d\d\d\d?))?((?:FT)\/?)?([UND])?$/) {
+			$runit = 'm' unless defined($runit) && length($runit) > 0;
+			$runit = lc $runit;
 			$range = "<$range" if $rlt && $rlt eq 'M';
 			$range = ">$range" if $rlt && $rlt eq 'P';
 			$var = "<$var" if $vlt && $vlt eq 'M';
 			$var = ">$var" if $vlt && $vlt eq 'P';
 			push @chunk, $self->_chunk('RVR', $rw, $range, $var, $runit, $tend);
-		
+
 		# weather
-		} elsif (my ($deg, $w) = $t =~ /^(\+|\-|VC)?([A-Z][A-Z]{1,4})$/) {
+		} elsif (not defined $self->{in_remark} && my ($deg, $w) = $t =~ /^(\+|\-)?([A-Z][A-Z]{1,6})$/) {
 			push @chunk, $self->_chunk('WEATHER', $deg, $w =~ /([A-Z][A-Z])/g);
-			 
-        # cloud and stuff 
-		} elsif (my ($amt, $height, $cb) = $t =~ m!^(FEW|SCT|BKN|OVC|SKC|CLR|VV|///)(\d\d\d|///)(CB|TCU)?$!) {
-			push @chunk, $self->_chunk('CLOUD', $amt, $height eq '///' ? 0 : $height * 100, $cb) unless $amt eq '///' && $height eq '///';
+		# cloud and stuff
+		# /// is the TCU column means that the automated system is unable to detect it
+		} elsif (my ($amt, $height, $cb) = $t =~ m/^(FEW|SCT|BKN|OVC|SKC|CLR|VV|\/{3})(\d\d\d|\/{3})(CB|TCU|CBMAM|ACC|CLD|\/\/\/)?$/) {
+			push @chunk, $self->_chunk('CLOUD', $amt, $height eq '///' ? 0 : $height * 100, $cb);
 
 		# temp / dew point
-        } elsif (my ($ms, $t, $n, $d) = $t =~ m!^T?(M)?(\d\d)/(M)?(\d\dZ?)?$!) {
-			$t = 0 + $t;
+		} elsif (my ($ms, $temp, $n, $d) = $t =~ m/^(M)?(\d\d)\/(M)?(\d\d)?$/) {
+			$temp = 0 + $temp;
 			$d = 0 + $d;
-			$t = -$t if defined $ms;
+			$temp = -$temp if defined $ms;
 			$d = -$d if defined $d && defined $n;
-			$self->{temp} ||= $t;
+			$self->{temp} ||= $temp;
 			$self->{dewpoint} ||= $d;
-			push @chunk, $self->_chunk('TEMP', $t, $d);
-		} 
+			push @chunk, $self->_chunk('TEMP', $temp, $d);
 		
-	}			
+		# Remark section containing exact cloud type + okta number
+		# cloud type codes in Geo::TAF::EN::CLOUD
+		# example: CI1AC1TCU4 = Cirrus 1/8, Altocumulus 1/8, Towering Cumulus 4/8
+		# example: SN2SC1SC3SC2
+		} elsif (my $ct = $t =~ m/^((?:CI|CS|CC|AS|AC|ACC|ST|NS|SC|SF|SN|CF|CU|TCU|CB)\d)+$/) {
+			foreach my $ct (split m/((?:CI|CS|CC|AS|AC|ACC|ST|NS|SC|SF|SN|CF|CU|TCU|CB)\d)/, $t) {
+				chomp $ct;
+				next if(length($ct) == 0);
+				$t = $ct;
+				$ct =~ s/\d+$//;
+				$t =~ s/^$ct//;
+				push @chunk, $self->_chunk('CLOUD', $t, $ct)
+			}
+
+		# pressure equivilent @ sea level
+		} elsif (($p) = $t =~ /^SLP(\d\d\d)$/) {
+			$p = 0+$p;
+			$p = sprintf '%.1f', 1000+$p/10.0;
+			push @chunk, $self->_chunk('SLP', $p, 'hPa');
+
+		# station type
+		} elsif (defined $self->{in_remark} && ($type) = $t =~ /^AO(1|2)$/) {
+			$type = ($type == '1' ? '-' : '+').'PRECIP';
+			push @chunk, $self->_chunk('STATION_TYPE', $type);
+
+		# US NWS:
+		# Hourly Precipitation Amount (P)
+		# 3- and 6-Hour Precipitation Amount (3, 6)
+		# 24-Hour Precipitation Amount (7)
+		#
+		# The specification says 4 digits after the type code, but some stations only have 3:
+		# CXKA 011100Z AUTO 35002KT M28/M31 RMK AO1 3010 SLP219 T12761306 50023
+		# ^^^ 0.1 inches in the 3 hour period
+		#
+		# KW22 011135Z AUTO 23016G23KT 10SM BKN029 OVC036 02/M02 A2988 RMK A02 P000
+		# ^^^ 0.0 inches in the last hour
+		} elsif (defined $self->{in_remark} && my ($precip_period, $precip) = $t =~ /^(3|6|7|P)(\d{3,4})$/) {
+			$precip_period = 24 if $precip_period eq '7';
+			$precip_period = 1 if $precip_period eq 'P';
+			push @chunk, $self->_chunk('PRECIP', $precip, $precip_period);
+
+		# other remarks go to a text buffer for now
+		#} elsif (defined $self->{in_remark} && length($t) > 0) {
+		} elsif (defined $self->{in_remark}) {
+			print "Adding to remark buffer: $t\n";
+			push @remark_buffer, $t;
+			$ignore_no_length_change = 1;
+
+		#X#} elsif (1) {
+		#X#	print "Debug marker: $t\n";
+		#X#	$ignore_no_length_change = 1;
+
+		} elsif(0) {
+
+
+		# End of processing
+		}
+
+		$c1 = $#chunk;
+		if($c0 == $c1 && $ignore_no_length_change == 0) {
+			push @chunk, $self->_chunk('RMK','Failed to decode: '.$t);
+			$self->{decode_failures}++;
+		}
+	}
+
+	if (@remark_buffer) {
+		push @chunk, $self->_chunk('BLOCK') unless ($c0 == $c1);
+		push @chunk, $self->_chunk('RMK', join(' ', @remark_buffer));
+	}
 	$self->{chunks} = \@chunk;
 	return undef;	
 }
 
-sub _chunk
+sub _pkg
 {
 	my $self = shift;
 	my $pkg = shift;
 	no strict 'refs';
 	$pkg = $self->{chunk_package} . '::' . $pkg;
+	return $pkg;
+}
+sub _chunk
+{
+	my $self = shift;
+	my $pkg = shift;
+	no strict 'refs';
+	$pkg = $self->_pkg($pkg);
 	return $pkg->new(@_);
 }
 
@@ -409,7 +635,7 @@ sub AUTOLOAD
 	return if $name eq 'DESTROY';
 
 	*$AUTOLOAD = sub {return $_[0]->{$name}};
-    goto &$AUTOLOAD;
+	goto &$AUTOLOAD;
 }
 
 #
@@ -419,6 +645,7 @@ sub AUTOLOAD
 #
 
 package Geo::TAF::EN;
+sub type { return __PACKAGE__; }
 
 sub new
 {
@@ -454,15 +681,15 @@ sub day
 	return "${d}th";
 }
 
-
 package Geo::TAF::EN::HEAD;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
 	my $self = shift;
-	return "$self->[0] for $self->[1] issued at $self->[3] on " . $self->day($self->[2]);
+	return sprintf "%s for %s issued at %s on %s", $self->[0], $self->[1], $self->[3], $self->day($self->[2]);
 }
 
 package Geo::TAF::EN::VALID;
@@ -472,48 +699,73 @@ use vars qw(@ISA);
 sub as_string
 {
 	my $self = shift;
-	return "valid from $self->[1] to $self->[2] on " . $self->day($self->[0]);
+	return "valid";
+	# will be followed by a PERIOD block
 }
 
 
 package Geo::TAF::EN::WIND;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
-# direction, $speed, $gusts, $unit, $fromdir, $todir
+my %wst = (
+	NA	=> 'unknown',
+	NR	=> 'not reported',
+	VRB	=> 'variable',
+);
+
+# $direction, $speed, $gusts, $unit, $fromdir, $todir
 sub as_string
 {
 	my $self = shift;
-	my $out = "wind";
-	$out .= $self->[0] eq 'VRB' ? " variable" : " $self->[0]";
-    $out .= " varying between $self->[4] and $self->[5]" if defined $self->[4];
-	$out .= ($self->[0] eq 'VRB' ? '' : " degrees") . " at $self->[1]";
-	$out .= " gusting $self->[2]" if defined $self->[2];
-	$out .= $self->[3];
+	my $out;
+	$out  = sprintf("wind %s", ($wst{$self->[0]} ? $wst{$self->[0]}: $self->[0]));
+	$out .= sprintf(" varying between %s && %s", $self->[4], $self->[5]) if defined $self->[4];
+	$out .= sprintf("%s at %s", ($self->[0] eq 'VRB' ? '' : " degrees"), $wst{$self->[1]} ? $wst{$self->[1]} : $self->[1]) if defined $self->[1];
+	$out .= sprintf(" gusting %s", $self->[2]) if defined $self->[2] && $self->[1] ne 'NA';
+	$out .= $self->[1] eq 'NA' ? ' speed' : $self->[3] if defined $self->[3];
 	return $out;
 }
 
 package Geo::TAF::EN::PRESS;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 # $pressure, $unit
 sub as_string
 {
 	my $self = shift;
-	return "QNH $self->[0]$self->[1]";
+	return sprintf "QNH pressure not available" if $self->[0] eq 'NA';
+	return sprintf "QNH pressure %s%s", $self->[0], $self->[1];
+}
+
+package Geo::TAF::EN::SLP;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+# $pressure, $unit
+sub as_string
+{
+	my $self = shift;
+	return sprintf "SLP pressure not available" if $self->[0] eq 'NA';
+	return sprintf "SLP pressure %s%s", $self->[0], $self->[1];
 }
 
 # temperature, dewpoint
 package Geo::TAF::EN::TEMP;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
 	my $self = shift;
-	my $out = "temperature $self->[0]C";
-	$out .= " dewpoint $self->[1]C" if defined $self->[1];
+	my $out;
+	$out  = sprintf("temperature %sC", $self->[0]);
+	$out .= sprintf(" dewpoint %sC", $self->[1]) if defined $self->[1];
 
 	return $out;
 }
@@ -521,87 +773,135 @@ sub as_string
 package Geo::TAF::EN::CLOUD;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 my %st = (
-		  VV => 'vertical visibility',
-		  SKC => "no cloud",
-		  CLR => "no cloud no significant weather",
-		  SCT => "3-4 oktas",
-		  BKN => "5-7 oktas",
-		  FEW => "0-2 oktas",
-		  OVC => "8 oktas overcast",
-		  CAVOK => "no cloud below 5000ft >10Km visibility no significant weather (CAVOK)",
-		  CB => 'thunder clouds',
-          TCU => 'towering cumulus',
-		  NSC => 'no significant cloud',
-		  BLU => '3 oktas at 2500ft 8Km visibility',
-		  WHT => '3 oktas at 1500ft 5Km visibility',
-		  GRN => '3 oktas at 700ft 3700m visibility',
-		  YLO => '3 oktas at 300ft 1600m visibility',
-		  AMB => '3 oktas at 200ft 800m visibility',
-		  RED => '3 oktas at <200ft <800m visibility',
-		  NIL => 'no weather',
-		  '///' => 'some',
-		 );
+		VV    => 'vertical visibility',
+		SKC   => "no cloud",
+		CLR   => "no cloud no significant weather",
+		SCT   => "3-4 oktas/scattered",
+		BKN   => "5-7 oktas/broken",
+		FEW   => "0-2 oktas/few",
+		OVC   => "8 oktas/overcast",
+		'///' => 'some',
+);
 
+my %cloud_code = (
+		# Cloud codes found in remarks, followed by an okta
+		# same order as the SCT/BWN/FEW/OVC codes.
+		CI   => 'Cirrus',
+		CS   => 'Cirrostratus',
+		CC   => 'Cirrocumulus',
+		AS   => 'Altostratus',
+		AC   => 'Altocumulus',
+		ACC  => 'Altocumulus Castellanus',
+		ST   => 'Stratus',
+		NS   => 'Nimbostratus',
+		SC   => 'Stratoculumus',
+		SF   => 'Stratus Fractus',
+		CF   => 'Cumulus Fractus',
+		CU   => 'Cumulus',
+		TCU  => 'Towering Cumulus',
+		CB   => 'Cumulonimbus',	# aka thunder clouds
+
+		# not official, but seen often in Canada: METAR CYVR 262319Z 09011KT 1 1/2SM -SN FEW003 BKN006 OVC010 00/ RMK SN2SC1SC3SC2
+		SN   => 'Snow clouds',
+);
+
+my %col = (
+		'CAVOK'	=> "no cloud below 5000ft >10km visibility no significant weather (CAVOK)",
+		'NSC'	=> 'no significant cloud',
+		'NCD'	=> "no cloud detected",
+		'BLU+'	=> '3 oktas at >2500ft >8km visibility',
+		'BLU'	=> '3 oktas at 2500ft 8km visibility',
+		'WHT'	=> '3 oktas at 1500ft 5km visibility',
+		'GRN'	=> '3 oktas at 700ft 3700m visibility',
+		'YLO1'	=> '3 oktas at 500ft 2500m visibility',
+		'YLO2'	=> '3 oktas at 300ft 1600m visibility',
+		'YLO'	=> '3 oktas at 300ft 1600m visibility', # YLO2 and YLO are meant to be identical
+		'AMB'	=> '3 oktas at 200ft 800m visibility',
+		'RED'	=> '3 oktas at <200ft <800m visibility',
+		'NIL'	=> 'no weather',
+);
+
+my %st_storm = (
+		CB    => 'cumulonimbus',
+		TCU   => 'towering cumulus',
+		CBMAM => 'cumulonimbus mammatus',
+		ACC   => 'altocumulus castellatus',
+		CLD   => 'standing lenticular',
+		# if you get this, the automated sensors are unable to decide
+		'///' => 'unknown cumulus',
+);
+
+# $amt, $height, $cb
 sub as_string
 {
 	my $self = shift;
-	return $st{$self->[0]} if @$self == 1;
-	return $st{$self->[0]} . " $self->[1]ft" if $self->[0] eq 'VV';
-	return $st{$self->[0]} . " cloud at $self->[1]ft" . ((defined $self->[2]) ? " with $st{$self->[2]}" : "");
+	return $col{$self->[0]} if @$self == 1 && $col{$self->[0]};
+	if(@$self == 2 && (int($self->[0]) eq "$self->[0]") and defined $cloud_code{$self->[1]}) {
+		return sprintf "%s %d/8 cover", $cloud_code{$self->[1]}, $self->[0];
+	}
+	return sprintf("%s %sft", $st{$self->[0]}, $self->[1]) if $self->[0] eq 'VV';
+	my $out = sprintf("%s cloud", $st{$self->[0]});
+	$out .= sprintf(' at %sft', $self->[1]) if $self->[1];
+	$out = 'unknown cloud cover' if $self->[1] == 0 && $self->[0] eq '///';
+	$out .= sprintf(" with %s", $st_storm{$self->[2]}) if $self->[2];
+	return $out;
 }
 
 package Geo::TAF::EN::WEATHER;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 my %wt = (
-		  '+' => 'heavy',
-          '-' => 'light',
-          'VC' => 'in the vicinity',
+		'+'   => 'heavy',
+		'-'   => 'light',
+		'VC'  => 'in the vicinity',
 
-		  MI => 'shallow',
-		  PI => 'partial',
-		  BC => 'patches of',
-		  DR => 'low drifting',
-		  BL => 'blowing',
-		  SH => 'showers',
-		  TS => 'thunderstorms containing',
-		  FZ => 'freezing',
-		  RE => 'recent',
-		  
-		  DZ => 'drizzle',
-		  RA => 'rain',
-		  SN => 'snow',
-		  SG => 'snow grains',
-		  IC => 'ice crystals',
-		  PE => 'ice pellets',
-		  GR => 'hail',
-		  GS => 'small hail/snow pellets',
-		  UP => 'unknown precip',
-		  
-		  BR => 'mist',
-		  FG => 'fog',
-		  FU => 'smoke',
-		  VA => 'volcanic ash',
-		  DU => 'dust',
-		  SA => 'sand',
-		  HZ => 'haze',
-		  PY => 'spray',
-		  
-		  PO => 'dust/sand whirls',
-		  SQ => 'squalls',
-		  FC => 'tornado',
-		  SS => 'sand storm',
-		  DS => 'dust storm',
-		  '+FC' => 'water spouts',
-		  WS => 'wind shear',
-		  'BKN' => 'broken',
+		'MI'  => 'shallow',
+		'PI'  => 'partial',
+		'BC'  => 'patches of',
+		'DR'  => 'low drifting',
+		'BL'  => 'blowing',
+		'SH'  => 'showers',
+		'TS'  => 'thunderstorms containing',
+		'FZ'  => 'freezing',
+		'RE'  => 'recent',
 
-		  'NOSIG' => 'no significant weather',
-		  
-		 );
+		'DZ'  => 'drizzle',
+		'RA'  => 'rain',
+		'SN'  => 'snow',
+		'SG'  => 'snow grains',
+		'IC'  => 'ice crystals',
+		'PE'  => 'ice pellets',
+		'GR'  => 'hail',
+		'GS'  => 'small hail/snow pellets',
+		'UP'  => 'unknown precip',
+		'//'  => 'unknown weather',
+
+		'BR'  => 'mist',
+		'FG'  => 'fog',
+		'FU'  => 'smoke',
+		'VA'  => 'volcanic ash',
+		'DU'  => 'dust',
+		'SA'  => 'sand',
+		'HZ'  => 'haze',
+		'PY'  => 'spray',
+
+		'PO'  => 'dust/sand whirls',
+		'SQ'  => 'squalls',
+		'FC'  => 'tornado',
+		'SS'  => 'sand storm',
+		'DS'  => 'dust storm',
+		'+FC' => 'water spouts',
+		'WS'  => 'wind shear',
+		'BKN' => 'broken',
+
+		'NOSIG' => 'no significant weather',
+		'PRFG'  => 'fog banks', # officially PR is a modifier of FG
+		);
 
 sub as_string
 {
@@ -611,7 +911,7 @@ sub as_string
 	my ($vic, $shower);
 	my @in;
 	push @in, @$self;
-	
+
 	while (@in) {
 		my $t = shift @in;
 
@@ -628,9 +928,9 @@ sub as_string
 			shift;
 			next;
 		}
-		
+
 		push @out, $wt{$t};
-		
+
 		if (@out && $shower) {
 			$shower = 0;
 			push @out, $wt{'SH'};
@@ -641,18 +941,60 @@ sub as_string
 	return join ' ', @out;
 }
 
-package Geo::TAF::EN::RVR;
+package Geo::TAF::EN::STATION_TYPE;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
+# $code
 sub as_string
 {
 	my $self = shift;
-	my $out = "visual range on runway $self->[0] is $self->[1]$self->[3]";
-	$out .= " varying to $self->[2]$self->[3]" if defined $self->[2];
+	my $code = shift;
+	my $out = 'Automated station';
+	if($code eq '+PRECIP') {
+		$out .= ' cannot detect precipitation';
+	} elsif($code eq '-PRECIP') {
+		$out .= ' has precipitation discriminator';
+	}
+}
+
+package Geo::TAF::EN::PRECIP;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+# $precip, $period
+sub as_string
+{
+	my $self = shift;
+	my $precip = $self->[0];
+	my $period = $self->[1];
+	if($period == 1) {
+		return sprintf 'precipitation %.2f inches in last hour', $precip;
+	} elsif($period == 24) {
+		return sprintf '24 hour total precipitation %.2f inches', $precip;
+	} else {
+		return sprintf '%d-hour precipitation %.2f', $period, $precip;
+	}
+}
+
+package Geo::TAF::EN::RVR;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+# $rw, $range, $var, $runit, $tend;
+sub as_string
+{
+	my $self = shift;
+	my $out;
+	$out  = sprintf("visual range on runway %s is %s%s", $self->[0], $self->[1], $self->[3]);
+	$out .= sprintf(" varying to %s%s", $self->[2], $self->[3]) if defined $self->[2];
 	if (defined $self->[4]) {
 		$out .= " decreasing" if $self->[4] eq 'D';
 		$out .= " increasing" if $self->[4] eq 'U';
+		$out .= " unchanged"  if $self->[4] eq 'N';
 	}
 	return $out;
 }
@@ -660,50 +1002,89 @@ sub as_string
 package Geo::TAF::EN::RWY;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
+my %rwy = (
+		  LDG => 'landing',
+		  SKC => 'take-off',
+		);
 sub as_string
 {
 	my $self = shift;
-	my $out = $self->[0] eq 'LDG' ? "landing " : '';  
-	$out .= "runway $self->[1]";
+	my $out;
+	if($rwy{$self->[0]}) {
+		$out .= $rwy{$self->[0]} . ' ';
+	}
+	$out .= sprintf("runway %s", $self->[1]);
 	return $out;
 }
 
 package Geo::TAF::EN::PROB;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
+# $percent, $from, $to;
 sub as_string
 {
 	my $self = shift;
-    
-	my $out = "probability $self->[0]%";
-	$out .= " $self->[1] to $self->[2]" if defined $self->[1];
-	return $out;
+
+	return sprintf("probability %s%%", $self->[0]);
+	# will be followed by a PERIOD block
 }
 
 package Geo::TAF::EN::TEMPO;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
 	my $self = shift;
-	my $out = "temporarily";
-	$out .= " $self->[0] to $self->[1]" if defined $self->[0];
-
-	return $out;
+	return "temporarily";
+	# will be followed by a PERIOD block
 }
 
 package Geo::TAF::EN::BECMG;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
 	my $self = shift;
-	my $out = "becoming";
-	$out .= " $self->[0] to $self->[1]" if defined $self->[0];
+	return "becoming";
+	# will be followed by a PERIOD block
+}
+
+package Geo::TAF::EN::PERIOD;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+sub as_string
+{
+	my $self = shift;
+	# obj, from_time, to_time, from_day, to_day
+	my ($out, $format);
+	$out = 'period from ';
+	# format 1 = time only, no date
+	# format 2 = time, one day (or two days that are the same value)
+	# format 3 = time and two different day
+	$format = 1 if defined $self->[0] && defined $self->[1];
+	if(defined $self->[2]) {
+		$format = 3;
+		$format-- if not defined $self->[3] or $self->[2] == $self->[3];
+	}
+	if($format == 2) {
+		$out .= sprintf("%s to %s on %s", $self->[0], $self->[1], $self->day($self->[2]));
+	} elsif($format == 3) {
+		$out .= sprintf("%s %s to %s %s", $self->day($self->[2]), $self->[0], $self->day($self->[3]), $self->[1]);
+	} elsif($format == 1) {
+		$out .= sprintf("%s to %s", $self->[0], $self->[1]);
+	} else {
+		$out .= 'BAD PERIOD';
+	}
 
 	return $out;
 }
@@ -711,34 +1092,176 @@ sub as_string
 package Geo::TAF::EN::VIZ;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
-    my $self = shift;
+	my $self = shift;
 
-    return "visibility $self->[0]$self->[1]";
+	my $out = 'visibility ';
+	return $out.'not available' if $self->[0] eq 'NA';
+	return $out.sprintf("%s%s%s", ($self->[2] ? $self->[2].' ' : ''), $self->[0], $self->[1]);
+}
+
+package Geo::TAF::EN::DEP;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+my %cover_type = (
+		0		=> 'clear & dry',
+		1		=> 'damp',
+		2		=> 'wet/water patches',
+		3		=> 'frost-covered',
+		4		=> 'dry snow',
+		5		=> 'wet snow',
+		6		=> 'slush',
+		7		=> 'ice',
+		8		=> 'compacted snow',
+		9		=> 'frozen ruts',
+		'/'		=> 'unknown',
+		'CLRD'	=> 'cleared',
+		);
+
+my %extent = (
+		1		=> '<10%',
+		2		=> '11-25%',
+		5		=> '26-50%',
+		9		=> '51-100%',
+		'/'		=> 'not reported',
+		'CVRD'	=> 'non-operational',
+		);
+
+my %depth = (
+		'NR' => 'not reported',
+		'//' => 'not significent',
+		);
+
+my %breaking = (
+		95		=> 'good',
+		94		=> 'medium/good',
+		93		=> 'medium',
+		92		=> 'medium/poor',
+		91		=> 'poor',
+		99		=> 'unreliable',
+		'//'	=> 'not reported',
+		);
+
+# $rwy, $cover_type, $extent, $depth, $braking
+sub as_string
+{
+	my $self = shift;
+
+	my $out;
+	$out  = sprintf 'Runway %s conditions: %s', $self->[0], $cover_type{$self->[1]};
+	if(defined($self->[2])) {
+		$out .= sprintf(', extent %s',$extent{$self->[2]});
+	}
+	if(defined($self->[3])) {
+		$_ = $depth{$self->[3]};
+		$_ = $self->[3] unless $_;
+		$out .= sprintf(', depth %s', $_);
+	}
+	if(defined($self->[4])) {
+		$_ = $depth{$self->[4]};
+		$out .= sprintf(', braking action %s', $_) if $_;
+		$out .= sprintf(', friction coefficient %s', $self->[4]) unless $_;
+	}
+	$out .= ';';
+
+	return $out;
 }
 
 package Geo::TAF::EN::FROM;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
-    my $self = shift;
+	my $self = shift;
 
-    return "from $self->[0]";
+	if($self->[1]) {
+		return sprintf("from %s on the %s", $self->[0],$self->day($self->[1]));
+	} else {
+		return sprintf("from %s", $self->[0]);
+	}
 }
 
 package Geo::TAF::EN::TIL;
 use vars qw(@ISA);
 @ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
 
 sub as_string
 {
-    my $self = shift;
+	my $self = shift;
 
-    return "until $self->[0]";
+	if($self->[1]) {
+		return sprintf("until %s on the %s", $self->[0],$self->day($self->[1]));
+	} else {
+		return sprintf("until %s", $self->[0]);
+	}
+}
+
+package Geo::TAF::EN::AT;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+sub as_string
+{
+	my $self = shift;
+
+	if($self->[1]) {
+		return sprintf("at %s on the %s", $self->[0],$self->day($self->[1]));
+	} else {
+		return sprintf("at %s", $self->[0]);
+	}
+}
+
+package Geo::TAF::EN::RMK;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+sub as_string
+{
+	my $self = shift;
+
+	return sprintf("remark %s", $self->[0]);
+}
+
+package Geo::TAF::EN::IGNORE;
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+sub as_string
+{
+	my $self = shift;
+	return '';
+}
+
+package Geo::TAF::EN::BLOCK;
+=pod
+=begin classdoc
+
+The 'BLOCK' marker is used to explicitly indicate a new block. If producing
+human-readable output, this signifies that new line should be started.
+
+@return nothing
+
+=end classdoc
+=cut
+use vars qw(@ISA);
+@ISA = qw(Geo::TAF::EN);
+sub type { return __PACKAGE__; }
+
+sub as_string
+{
+	my $self = shift;
+	return '';
 }
 
 # Autoload methods go after =cut, and are processed by the autosplit program.
@@ -818,7 +1341,7 @@ a new constructor.
 
 If you sub-class the built-in English translation routines then 
 you can pick this up by called the constructor thus:-
- 
+
   my $t = Geo::TAF->new(chunk_package => 'Geo::TAF::ES');
 
 or whatever takes your fancy.
@@ -913,7 +1436,7 @@ Returns a stringified version of any error returned by L<decode()>
 
 =item taf()
 
-Returns whether this object is a taf or not.
+Returns whether this object is a TAF or not.
 
 =item icao()
 
@@ -1012,10 +1535,12 @@ L<http://www.ar-group.com/icaoiata.htm>
 =head1 AUTHOR
 
 Dirk Koopman, L<mailto:djk@tobit.co.uk>
+With additions/corrections by Robin H. Johnson, L<mailto:robbat2@gentoo.org>
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2003 by Dirk Koopman, G1TLH
+Portions Copyright (C) 2009 Robin H. Johnson
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
