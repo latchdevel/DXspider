@@ -141,14 +141,14 @@ void dbg(unsigned long level, char *format, ...)
 		
 		rotate_log();
 		
-        sprintf(dbuf, "%s %s[%d,%04x] ", dbgtime(), prog, pid, level);
+        sprintf(dbuf, "%s %s[%d,%04lx] ", dbgtime(), prog, pid, level);
         va_start(ap, format);
         vsprintf(buf, format, ap);
 		i = strlen(buf);
 		if (i>1 && buf[i-1] == '\n')
 			buf[i-1] = 0;
-		fprintf(f, dbuf);
-		fprintf(f, buf);
+		fprintf(f, "%s", dbuf);
+		fprintf(f, "%s", buf);
 		fputc('\n', f);
         va_end(ap);
 		fflush(f);
@@ -172,7 +172,7 @@ void dbgdump(unsigned long level, char *dir, unsigned char *s, int lth)
 
 		rotate_log();
 		
-        sprintf(buf, "%s %s[%d,%04x] %s Lth: %d", dbgtime(), prog, pid, level, dir, lth);
+        sprintf(buf, "%s %s[%d,%04lx] %s Lth: %d", dbgtime(), prog, pid, level, dir, lth);
         fprintf(f, "%s\n", buf);
 		if (dbgproc) {
 			(dbgproc)(buf);
