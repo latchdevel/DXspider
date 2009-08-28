@@ -22,7 +22,7 @@ use DXUtil;
 use strict;
 
 
-use vars qw(%list %valid $filterdef);
+use vars qw(%list %valid $filterdef $maxlevel);
 
 %valid = (
 		  call => "0,Callsign",
@@ -53,6 +53,7 @@ $filterdef = bless ([
 			  ['by_state', 'ns', 9],
 			 ], 'Filter::Cmd');
 
+$maxlevel = 25;                 # maximum recursion level in Route::config
 
 sub new
 {
@@ -205,7 +206,7 @@ sub config
 		$pcall = ' ' x length $pcall;
 
 		# recursion detector
-		if ((DXChannel::get($call) && $level > 1) || $seen->{$call}) {
+		if ((DXChannel::get($call) && $level > 1) || $seen->{$call} || $level > $maxlevel) {
 			$line .= ' ...';
 			push @out, $line;
 			return @out;
@@ -239,7 +240,7 @@ sub config
 		push @out, $line if length $line;
 	} else {
 		# recursion detector
-		if ((DXChannel::get($call) && $level > 1) || $seen->{$call}) {
+		if ((DXChannel::get($call) && $level > 1) || $seen->{$call} || $level > $maxlevel) {
 			return @out;
 		}
 		$seen->{$call}++;
