@@ -1,3 +1,6 @@
+14Nov09=======================================================================
+1. Add CTY-1921 prefixes
+2. allow -SSID values on set/badnode
 27Aug09=======================================================================
 1. Add CTY-1913 prefixes
 2. Limit Route::config to 10 levels (as default)
