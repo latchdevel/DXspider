@@ -47,7 +47,7 @@ sub dup
 	chomp $text;
 	unpad($text);
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	$text = Encode::encode("iso-8859-1", $text) if $main::can_encode && Encode::is_utf8($text, 1);
+#	$text = Encode::encode("iso-8859-1", $text) if $main::can_encode && Encode::is_utf8($text, 1);
 	$text =~ s/[^\#a-zA-Z0-9]//g;
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
 	my $dupkey = "A$call|$to|\L$text";
