@@ -3,6 +3,7 @@
 the xml interface - see http://www.qrz.com/XML/index.html for more info.
 2. Remove (bodged) forced encoding to iso-8859 on incoming text. More
 subtle handling will be required.
+3. Add CTY-1922 prefixes
 14Nov09=======================================================================
 1. Add CTY-1921 prefixes
 2. allow -SSID values on set/badnode
