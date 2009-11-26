@@ -385,7 +385,7 @@ sub _gen_pc92
 	}
 	for (@_) {
 		$s .= '^' . _encode_pc92_call($_, $ext);
-		$ext = 0;				# only the first slot has an ext.
+		$ext = 0 unless $sort eq 'A';				# only the first slot has an ext.
 	}
 	return $s . '^H99^';
 }
