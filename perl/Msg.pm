@@ -196,6 +196,10 @@ sub pid_gone
 sub peerhost
 {
 	my $self = shift;
+	my $ip;
+	unless ($self->{peerhost}) {
+		$self->{peerhost} = $self->{sock}->peerhost;
+	}
 	return $self->{peerhost};
 }
 

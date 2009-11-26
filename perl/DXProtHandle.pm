@@ -1404,15 +1404,25 @@ sub _add_thingy
 	my @rout;
 
 	if ($call) {
+		my $ncall = $parent->call;
 		if ($is_node) {
-			dbg("ROUTE: added node $call to " . $parent->call) if isdbg('routelow');
+			dbg("ROUTE: added node $call to $ncall") if isdbg('routelow');
 			@rout = $parent->add($call, $version, Route::here($here), $ip);
 			my $r = Route::Node::get($call);
 			$r->PC92C_dxchan($dxchan->call, $hops) if $r;
+			if ($ip) {
+				$r->ip($ip);
+				Log('DXProt', "PC92A $call -> $ip on $ncall");
+			}
 		} else {
-			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('routelow');
+			dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
 			@rout = $parent->add_user($call, Route::here($here), $ip);
-			$dxchan->tell_buddies('loginb', $call, $parent->call) if $dxchan;
+			$dxchan->tell_buddies('loginb', $call, $ncall) if $dxchan;
+			my $r = Route::User::get($call);
+			if ($ip) {
+				$r->ip($ip);
+				Log('DXProt', "PC92A $call -> $ip on $ncall");
+			}
 		}
 		if ($pc92_slug_changes && $parent == $main::routeroot) {
 			$things_add{$call} = Route::get($call);
