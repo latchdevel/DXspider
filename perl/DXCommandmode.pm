@@ -65,7 +65,7 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 #	my @rout = $main::routeroot->add_user($call, Route::here(1));
-	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1]);
+	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->{conn}->peerhost], );
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
@@ -89,7 +89,7 @@ sub start
 	my $name = $user->{name};
 	
 	# log it
-	my $host = $self->{conn}->{peerhost};
+	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
 	LogDbg('DXCommand', "$call connected from $host");

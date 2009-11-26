@@ -269,7 +269,7 @@ sub new
 		my @rout = $ref->delete;
 		$self->route_pc21($main::mycall, undef, @rout) if @rout;
 	}
-	$main::routeroot->add($call, '5000', Route::here(1)) if $call ne $main::mycall;
+	$main::routeroot->add($call, '5000', Route::here(1), $self->{conn}->peerhost) if $call ne $main::mycall;
 
 	return $self;
 }
@@ -284,7 +284,7 @@ sub start
 	my $user = $self->{user};
 
 	# log it
-	my $host = $self->{conn}->{peerhost};
+	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
 

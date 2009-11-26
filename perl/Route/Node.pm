@@ -33,6 +33,7 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 		  obscount => '0,Obscount',
 		  last_PC92C => '9,Last PC92C',
 		  PC92C_dxchan => '9,Channel of PC92C,phash',
+		  ip => '0,IP Address',
 );
 
 $filterdef = $Route::filterdef;
@@ -166,6 +167,8 @@ sub add_user
 {
 	my $self = shift;
 	my $ucall = shift;
+	my $here = shift;
+	my $ip = shift;
 
 	confess "Trying to add NULL User call to routing tables" unless $ucall;
 
@@ -174,7 +177,7 @@ sub add_user
 	if ($uref) {
 		@out = $uref->addparent($self);
 	} else {
-		$uref = Route::User->new($ucall, $self->{call}, @_);
+		$uref = Route::User->new($ucall, $self->{call}, $here, $ip);
 		@out = $uref;
 	}
 	$self->_adduser($uref);
@@ -281,6 +284,8 @@ sub new
 	$self->{users} = [];
 	$self->{nodes} = [];
 	$self->{PC92C_dxchan} = {};
+	my $ip = shift;
+	$self->{ip} = $ip if defined $ip;
 	$self->reset_obs;			# by definition
 
 	$list{$call} = $self;

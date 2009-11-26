@@ -410,7 +410,7 @@ sub gen_pc92_with_time
 # add a local one
 sub pc92a
 {
-	return _gen_pc92('A', 0, @_);
+	return _gen_pc92('A', 2, @_);
 }
 
 # delete a local one

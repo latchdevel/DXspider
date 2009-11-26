@@ -19,6 +19,7 @@ use vars qw(%list %valid @ISA $max $filterdef);
 
 %valid = (
 		  parent => '0,Parent Calls,parray',
+		  ip => '0,IP Address',
 );
 
 $filterdef = $Route::filterdef;
@@ -44,11 +45,14 @@ sub new
 	my $call = uc shift;
 	my $ncall = uc shift;
 	my $flags = shift;
+	my $ip = shift;
+
 	confess "already have $call in $pkg" if $list{$call};
 	
 	my $self = $pkg->SUPER::new($call);
 	$self->{parent} = [ $ncall ];
 	$self->{flags} = $flags || Route::here(1);
+	$self->{ip} = $ip if defined $ip;
 	$list{$call} = $self;
 
 	return $self;

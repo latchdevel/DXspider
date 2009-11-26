@@ -1353,7 +1353,10 @@ sub _decode_pc92_call
 	my $is_node = $flag & 4;
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
-	return ($call, $is_node, $is_extnode, $here, $part[1], $part[2]);
+	my $ip	= $part[3];
+	$ip ||= $part[1] if $part[1] && ($part[1] =~ /^(?:\d+\.)+/ || $part[1] =~ /^(?:(?:[abcdef\d]+)?,)+/);
+	$ip =~ s/,/:/g if $ip;
+	return ($call, $is_node, $is_extnode, $here, $part[1], $part[2], $ip);
 }
 
 # decode a pc92 call: flag call : version : build
@@ -1364,7 +1367,7 @@ sub _encode_pc92_call
 	# plain call or value
 	return $ref unless ref $ref;
 
-	my $ext = shift;
+	my $ext = shift || 0;
 	my $flag = 0;
 	my $call = $ref->call;
 	my $extra = '';
@@ -1373,13 +1376,16 @@ sub _encode_pc92_call
 		$flag |= 4;
 		my $dxchan = DXChannel::get($call);
 		$flag |= 2 if $call ne $main::mycall && $dxchan && !$dxchan->{do_pc9x};
-		if ($ext) {
-			if ($ref->version) {
-				my $version = $ref->version || 1.0;
-				$version =  $version * 100 + 5300 if $version < 50;
-				$extra .= ":" . $version;
-			}
+		if (($ext & 1) && $ref->version) {
+			my $version = $ref->version || 1.0;
+			$version =  $version * 100 + 5300 if $version < 50;
+			$extra .= ":" . $version;
 		}
+	}
+	if (($ext & 2) && $ref->ip) {
+		my $ip = $ref->ip;
+		$ip =~ s/:/,/g;
+		$extra .= ':' . $ip;
 	}
 	return "$flag$call$extra";
 }
@@ -1394,18 +1400,18 @@ sub _add_thingy
 	my $dxchan = shift;
 	my $hops = shift;
 
-	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$s;
+	my ($call, $is_node, $is_extnode, $here, $version, $build, $ip) = @$s;
 	my @rout;
 
 	if ($call) {
 		if ($is_node) {
 			dbg("ROUTE: added node $call to " . $parent->call) if isdbg('routelow');
-			@rout = $parent->add($call, $version, Route::here($here));
+			@rout = $parent->add($call, $version, Route::here($here), $ip);
 			my $r = Route::Node::get($call);
 			$r->PC92C_dxchan($dxchan->call, $hops) if $r;
 		} else {
 			dbg("ROUTE: added user $call to " . $parent->call) if isdbg('routelow');
-			@rout = $parent->add_user($call, Route::here($here));
+			@rout = $parent->add_user($call, Route::here($here), $ip);
 			$dxchan->tell_buddies('loginb', $call, $parent->call) if $dxchan;
 		}
 		if ($pc92_slug_changes && $parent == $main::routeroot) {
