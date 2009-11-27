@@ -1,3 +1,6 @@
+27Nov09=======================================================================
+1. Add 500khz band as suggested by Béla, HA5DI.
+2. Add CTY-1923 prefixes
 25Nov09=======================================================================
 1. Change sh/qrz to use the xml interface. You will have to subscribe to
 the xml interface - see http://www.qrz.com/XML/index.html for more info.

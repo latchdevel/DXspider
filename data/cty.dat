@@ -53,7 +53,7 @@ Israel:                   20:  39:  AS:   31.80:   -35.20:    -2.0:  4X:
 Libya:                    34:  38:  AF:   32.50:   -12.50:    -2.0:  5A:
     5A;
 Cyprus:                   20:  39:  AS:   35.20:   -33.40:    -2.0:  5B:
-    5B,C4,H2,P3;
+    5B,C4,H2,P3,=VERSION;
 Tanzania:                 37:  53:  AF:   -7.00:   -39.50:    -3.0:  5H:
     5H,5I;
 Nigeria:                  35:  46:  AF:    6.50:    -3.40:    -1.0:  5N:
@@ -163,7 +163,8 @@ China:                    24:  44:  AS:   40.00:  -116.40:    -8.0:  BY:
     BY3L(23)[33],BY9M(24)[33],BY9N(24)[33],BY9O(24)[33],BY9P(24)[33],BY9Q(24)[33],
     BY9R(24)[33],BY9S(24)[33],BZ,BZ3G(23)[33],BZ3H(23)[33],BZ3I(23)[33],
     BZ3J(23)[33],BZ3K(23)[33],BZ3L(23)[33],BZ9M(24)[33],BZ9N(24)[33],
-    BZ9O(24)[33],BZ9P(24)[33],BZ9Q(24)[33],BZ9R(24)[33],BZ9S(24)[33],XS;
+    BZ9O(24)[33],BZ9P(24)[33],BZ9Q(24)[33],BZ9R(24)[33],BZ9S(24)[33],XS,
+    =VE7AF/BY7KH;
 Nauru:                    31:  65:  OC:   -0.50:  -166.90:   -12.0:  C2:
     C2;
 Andorra:                  14:  27:  EU:   42.50:    -1.50:    -1.0:  C3:
@@ -214,7 +215,7 @@ Angola:                   36:  52:  AF:  -12.50:   -18.50:    -1.0:  D2:
 Cape Verde:               35:  46:  AF:   16.00:    24.00:     1.0:  D4:
     D4;
 Comoros:                  39:  53:  AF:  -11.80:   -43.70:    -3.0:  D6:
-    D6,=VERSION;
+    D6;
 Germany:                  14:  28:  EU:   51.00:   -10.00:    -1.0:  DL:
     DA,DB,DC,DD,DE,DF,DG,DH,DI,DJ,DK,DL,DM,DN,DO,DP,DQ,DR;
 Philippines:              27:  50:  OC:   13.00:  -122.00:    -8.0:  DU:
@@ -269,7 +270,7 @@ Mayotte:                  39:  53:  AF:  -13.00:   -45.30:    -3.0:  FH:
 St. Barthelemy:           08:  11:  NA:   17.90:    62.90:     4.0:  FJ:
     FJ;
 New Caledonia:            32:  56:  OC:  -21.50:  -165.50:   -11.0:  FK:
-    FK,TX8;
+    FK,TX8,=TX1B;
 Chesterfield Islands:     30:  56:  OC:  -19.90:  -158.30:   -11.0:  FK/c:
     =TX3A;
 Martinique:               08:  11:  NA:   14.60:    61.00:     4.0:  FM:
@@ -741,11 +742,11 @@ Benin:                    35:  46:  AF:    6.50:    -2.60:    -1.0:  TY:
 Mali:                     35:  46:  AF:   12.70:     8.00:     0.0:  TZ:
     TZ;
 European Russia:          16:  29:  EU:   55.80:   -37.60:    -3.0:  UA:
-    R,RD1N[19],RD1O[19],RD1Z[19],RD4W[30],RK1N[19],RK1O[19],RK1Z[19],RK4W[30],
-    RM1N[19],RM1O[19],RM1Z[19],RM4W[30],RN1N[19],RN1O[19],RN1Z[19],RN4W[30],
-    RU1N[19],RU1O[19],RU1Z[19],RU4W[30],RV1N[19],RV1O[19],RV1Z[19],RV4W[30],
-    RW1N[19],RW1O[19],RW1Z[19],RW4W[30],U,UA1N[19],UA1O[19],UA1Z[19],UA4W[30],
-    =R7C,=R7C/1,=R7C/3,=R7C/4;
+    R,RA1N[19],RA1O[19],RA1Z[19],RA4W[30],RD1N[19],RD1O[19],RD1Z[19],RD4W[30],
+    RK1N[19],RK1O[19],RK1Z[19],RK4W[30],RM1N[19],RM1O[19],RM1Z[19],RM4W[30],
+    RN1N[19],RN1O[19],RN1Z[19],RN4W[30],RU1N[19],RU1O[19],RU1Z[19],RU4W[30],
+    RV1N[19],RV1O[19],RV1Z[19],RV4W[30],RW1N[19],RW1O[19],RW1Z[19],RW4W[30],U,
+    UA1N[19],UA1O[19],UA1Z[19],UA4W[30],=R7C,=R7C/1,=R7C/3,=R7C/4;
 Kaliningrad:              15:  29:  EU:   55.00:   -20.50:    -2.0:  UA2:
     R2,RA2,RB2,RC2,RD2,RE2,RF2,RG2,RH2,RI2,RJ2,RK2,RL2,RM2,RN2,RO2,RP2,RQ2,
     RR2,RS2,RT2,RU2,RV2,RW2,RX2,RY2,RZ2,U2,UA2,UB2,UC2,UD2,UE2,UF2,UG2,UH2,
@@ -842,7 +843,7 @@ Canada:                   05:  09:  NA:   45.00:    80.00:     4.0:  VE:
     =VE2PR(2),=VE2QRZ(2),=VE2RB(2),=VE2TVU(2),=VE2UA(2),=VE2VH(2),=VE2WDX(2),
     =VE2WT(2),=VE2XAA/2(2),=VE2XY(2),=VE2YM(2),=VE2Z(2),=VE2ZC(5),=VE2ZM(5),
     =VE2ZV(5),=VE3EY/2(2),=VE3NE/2(2),=VE3RHJ/2(2),=VE8AJ(2),=VE8PW(2),
-    =VE8RCS(2),=VER20091124,=VY0AA(4)[3],=VY0PW(4)[3],=VY2MGY/3(4)[4],
+    =VE8RCS(2),=VER20091126,=VY0AA(4)[3],=VY0PW(4)[3],=VY2MGY/3(4)[4],
     =XM3NE/2(2);
 Australia:                30:  59:  OC:  -22.00:  -135.00:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ;
