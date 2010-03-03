@@ -6,7 +6,7 @@
 #
 #
 
-$DB::single = 1;
+#DB::single = 1;
 
 my ($self, $line) = @_;
 my @f = split /\s+/, $line;

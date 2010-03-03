@@ -22,6 +22,9 @@
 		  '136khz' => bless ( { band => [135, 138],
 							  }, 'Bands'),
 
+		  '500khz' => bless ( { band => [493, 525],
+							  }, 'Bands'),
+
 		  '160m' => bless( { band => [ 1800, 2000 ], 
 							 cw => [ 1800, 1830 ], 
 							 rtty => [ 1838, 1841 ], 
@@ -195,7 +198,7 @@
 #
 
 %regions = (
-			vlf => [qw( 73khz 136khz )],
+			vlf => [qw( 73khz 136khz 500khz )],
 			hf => [qw( 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m )],
 			contesthf => [qw( 160m 80m 40m 20m 15m 10m )],
 			vhf => [qw( 6m 4m 2m 220 )],
