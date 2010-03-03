@@ -193,6 +193,16 @@ sub pid_gone
 	}
 }
 
+sub peerhost
+{
+	my $self = shift;
+	my $ip;
+	unless ($self->{peerhost}) {
+		$self->{peerhost} = $self->{sock}->peerhost;
+	}
+	return $self->{peerhost};
+}
+
 #-----------------------------------------------------------------
 # Send side routines
 sub connect {
@@ -225,7 +235,8 @@ sub connect {
 	return undef unless $r || _err_will_block($!);
 	
 	$conn->{sock} = $sock;
-    
+	$conn->{peerhost} = $sock->peerhost;	# for consistency
+
     if ($conn->{rproc}) {
         my $callback = sub {$conn->_rcv};
         set_event_handler ($sock, read => $callback);

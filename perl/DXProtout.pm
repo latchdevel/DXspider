@@ -385,7 +385,7 @@ sub _gen_pc92
 	}
 	for (@_) {
 		$s .= '^' . _encode_pc92_call($_, $ext);
-		$ext = 0;				# only the first slot has an ext.
+		$ext = 0 unless $sort eq 'A';				# only the first slot has an ext.
 	}
 	return $s . '^H99^';
 }
@@ -410,7 +410,7 @@ sub gen_pc92_with_time
 # add a local one
 sub pc92a
 {
-	return _gen_pc92('A', 0, @_);
+	return _gen_pc92('A', 2, @_);
 }
 
 # delete a local one
