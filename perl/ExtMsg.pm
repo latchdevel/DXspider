@@ -72,7 +72,7 @@ sub dequeue
 	my $conn = shift;
 	my $msg;
 
-	if ($conn->{csort} eq 'ax25' && exists $conn->{msg}) {
+	if ($conn->ax25 && exists $conn->{msg}) {
 		$conn->{msg} =~ s/\cM/\cJ/g;
 	}
 	if ($conn->{state} eq 'WC') {
@@ -153,7 +153,7 @@ sub to_connected
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
-	$conn->nolinger unless $conn->isa('AGWMsg') || $conn->isa('BPQMsg');
+	$conn->nolinger unless $conn->ax25;
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
 }

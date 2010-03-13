@@ -193,14 +193,19 @@ sub pid_gone
 	}
 }
 
+sub ax25
+{
+	my $conn = shift;
+	return $conn->{csort} eq 'ax25';
+}
+
 sub peerhost
 {
-	my $self = shift;
-	my $ip;
-	unless ($self->{peerhost}) {
-		$self->{peerhost} = $self->{sock}->peerhost;
-	}
-	return $self->{peerhost};
+	my $conn = shift;
+	$conn->{peerhost} ||= 'ax25' if $conn->ax25;
+	$conn->{peerhost} ||= $conn->{sock}->peerhost if $conn->{sock} && $conn->{sock}->isa('IO::Socket::INET');
+	$conn->{peerhost} ||= 'UNKNOWN';
+	return $conn->{peerhost};
 }
 
 #-----------------------------------------------------------------

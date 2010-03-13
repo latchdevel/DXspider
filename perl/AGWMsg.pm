@@ -412,7 +412,7 @@ sub _find
 sub peerhost
 {
 	my $conn = shift;
-	$conn->{peerhost} ||= $conn->{agwcall} || "UNKNOWN";
+	$conn->{peerhost} ||= 'ax25';
 	return $conn->{peerhost};
 }
 

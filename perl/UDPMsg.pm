@@ -201,6 +201,13 @@ sub _find
 	return $circuit{$call};
 }
 
+sub peerhost
+{
+	my $conn = shift;
+	$conn->{peerhost} ||= 'ax25';
+	return $conn->{peerhost};
+}
+
 sub connect
 {
 	my ($conn, $line) = @_;

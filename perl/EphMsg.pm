@@ -45,7 +45,7 @@ sub dequeue
 	my $conn = shift;
 	my $msg;
 
-	if ($conn->{csort} eq 'ax25' && exists $conn->{msg}) {
+	if ($conn->ax25 && exists $conn->{msg}) {
 		$conn->{msg} =~ s/\cM/\cJ/g;
 	}
 

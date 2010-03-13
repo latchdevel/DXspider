@@ -1224,7 +1224,7 @@ sub send_motd
 	}
 	$motd = "${main::motd}_$self->{lang}" unless $motd && -e $motd;
 	$motd = $main::motd unless $motd && -e $motd;
-	if ($self->conn->{csort} eq 'ax25') {
+	if ($self->conn->ax25) {
 		if ($motd) {
 			$motd = "${motd}_ax25" if -e "${motd}_ax25";
 		} else {
