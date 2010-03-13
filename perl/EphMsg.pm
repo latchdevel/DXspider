@@ -71,19 +71,6 @@ sub dequeue
 	}
 }
 
-sub to_connected
-{
-	my ($conn, $call, $dir, $sort) = @_;
-	$conn->{state} = 'C';
-	$conn->conns($call);
-	delete $conn->{cmd};
-	$conn->{timeout}->del if $conn->{timeout};
-	delete $conn->{timeout};
-	$conn->nolinger;
-	&{$conn->{rproc}}($conn, "$dir$call|$sort");
-}
-
-
 sub start_connect
 {
 	my $call = shift;

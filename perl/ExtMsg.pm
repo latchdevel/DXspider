@@ -153,6 +153,7 @@ sub to_connected
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
 	delete $conn->{timeout};
+	$conn->{csort} = $sort;
 	$conn->nolinger unless $conn->ax25;
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
