@@ -1,3 +1,5 @@
+13Mar10=======================================================================
+1. try to fix AGW crashes caused by peerhost looking at the wrong thing.
 03Mar10=======================================================================
 1. add IP addresses to connecting PC92 A addresses and log them
 2. add CTY-2002 prefixes

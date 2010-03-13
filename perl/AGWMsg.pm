@@ -409,6 +409,13 @@ sub _find
 	return $circuit{$call};
 }
 
+sub peerhost
+{
+	my $conn = shift;
+	$conn->{peerhost} ||= $conn->{agwcall} || "UNKNOWN";
+	return $conn->{peerhost};
+}
+
 sub connect
 {
 	my ($conn, $line) = @_;
