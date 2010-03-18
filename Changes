@@ -1,3 +1,5 @@
+18Mar10=======================================================================
+1. Make privilege 0 "stick" if set on nodes
 13Mar10=======================================================================
 1. try to fix AGW crashes caused by peerhost looking at the wrong thing.
 2. Add more ax25 fixes for peerhost

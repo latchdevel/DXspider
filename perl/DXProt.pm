@@ -294,7 +294,7 @@ sub start
 	$self->{consort} = $line;
 	$self->{outbound} = $sort eq 'O';
 	my $priv = $user->priv;
-	$priv = $user->priv(1) unless $priv;
+	$priv = $user->priv(1) unless defined $priv;
 	$self->{priv} = $priv;     # other clusters can always be 'normal' users
 	$self->{lang} = $user->lang || 'en';
 	$self->{isolate} = $user->{isolate};
