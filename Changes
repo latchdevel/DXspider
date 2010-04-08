@@ -1,3 +1,6 @@
+08Apr10=======================================================================
+1. Modify console.pl so that it works in a Windows Cmd window. Get a Windows
+Curses ppd from: http://cpan.uwinnipeg.ca/dist/Curses.
 18Mar10=======================================================================
 1. Make privilege 0 "stick" if set on nodes
 13Mar10=======================================================================

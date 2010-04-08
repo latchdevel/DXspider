@@ -23,6 +23,7 @@ BEGIN {
 	
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
+	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 }
 
 use Msg;
@@ -54,7 +55,7 @@ $spos = $pos = $lth = 0;
 $inbuf = "";
 @time = ();
 
-$SIG{WINCH} = sub {@time = gettimeofday};
+#$SIG{WINCH} = sub {@time = gettimeofday};
 
 sub mydbg
 {
@@ -84,9 +85,9 @@ sub do_initscr
 		init_pair(12, COLOR_MAGENTA, COLOR_BLUE);
 		init_pair(13, COLOR_YELLOW, COLOR_GREEN);
 		init_pair(14, COLOR_RED, COLOR_GREEN);
-		eval { assume_default_colors($foreground, $background) };
+		eval { assume_default_colors($foreground, $background) } unless $is_win;
 	}
-	
+
 	$top = $scr->subwin($lines-4, $cols, 0, 0);
 	$top->intrflush(0);
 	$top->scrollok(1);
