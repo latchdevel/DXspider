@@ -65,7 +65,7 @@ $badnode = new DXHash "badnode";
 $last10 = $last_pc50 = time;
 $ann_to_talk = 1;
 $eph_restime = 60;
-$eph_info_restime = 60*60;
+$eph_info_restime = 18*60*60;
 $eph_pc15_restime = 6*60;
 $eph_pc34_restime = 30;
 $pingint = 5*60;

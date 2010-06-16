@@ -1,3 +1,6 @@
+16Jun10=======================================================================
+1. Increase default ephemeral dupe time for PC41 and such like lines.
+2. Include CTY-2004 updates.
 08Apr10=======================================================================
 1. Modify console.pl so that it works in a Windows Cmd window. Get a Windows
 Curses ppd from: http://cpan.uwinnipeg.ca/dist/Curses.
