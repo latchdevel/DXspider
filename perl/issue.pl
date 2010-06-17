@@ -19,7 +19,7 @@ use strict;
 use vars qw($root);
 my $fn = "$root/perl/Version.pm";
 my $desc = `git describe --long`;
-my ($v, $s, $b) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-/;
+my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 $s ||= '0';		# account for missing subversion
 $b++;			# to account for the commit that is about to happen
 
@@ -33,11 +33,12 @@ print F qq(#
 
 package main;
 
-use vars qw(\$version \$subversion \$build);
+use vars qw(\$version \$subversion \$build \$gitversion);
 
 \$version = '$v';
 \$subversion = '$s';
 \$build = '$b';
+\$gitversion = '$g';
 
 1;
 );

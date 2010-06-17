@@ -297,7 +297,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $subversion.$build ended");
+	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitversion) ended");
 	dbgclose();
 	Logclose();
 
@@ -386,7 +386,7 @@ DXXml::init();
 # banner
 my ($year) = (gmtime)[5];
 $year += 1900;
-LogDbg('cluster', "DXSpider V$version, build $subversion.$build started");
+LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitversion) started");
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 # load Prefixes
