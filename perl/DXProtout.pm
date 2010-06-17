@@ -47,7 +47,7 @@ sub pc10
 	return "PC10^$from^$user1^$text^*^$user2^$origin^~";
 }
 
-# create a dx message (call, freq, dxcall, text)
+# create a dx message (call, freq, dxcall, text) see also pc61
 sub pc11
 {
 	my ($mycall, $freq, $dxcall, $text) = @_;
@@ -56,6 +56,17 @@ sub pc11
 	$text = ' ' if !$text;
 	$text =~ s/\^/%5E/g;
 	return sprintf "PC11^%.1f^$dxcall^%s^%s^$text^$mycall^$main::mycall^$hops^~", $freq, cldate($t), ztime($t);
+}
+
+# create a dx message (call, freq, dxcall, text, $ipaddr) see also pc11
+sub pc61
+{
+	my ($mycall, $freq, $dxcall, $text, $ipaddr) = @_;
+	my $hops = get_hops(61) || get_hops(11);
+	my $t = time;
+	$text = ' ' if !$text;
+	$text =~ s/\^/%5E/g;
+	return sprintf "PC61^%.1f^$dxcall^%s^%s^$text^$mycall^$main::mycall^$ipaddr^$hops^~", $freq, cldate($t), ztime($t);
 }
 
 # create an announce message

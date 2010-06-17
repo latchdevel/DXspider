@@ -161,7 +161,7 @@ sub prefix
 # fix up the full spot data from the basic spot data
 sub prepare
 {
-	# $freq, $call, $t, $comment, $spotter = @_
+	# $freq, $call, $t, $comment, $spotter, node, ip address = @_
 	my @out = @_[0..4];      # just up to the spotter
 
 	# normalise frequency
@@ -180,7 +180,9 @@ sub prepare
 	my @spt = Prefix::cty_data($out[4]);
 	push @out, $spt[0];
 	push @out, $_[5];
-	return (@out, @spd[1,2], @spt[1,2], $spd[3], $spt[3]);
+	push @out, @spd[1,2], @spt[1,2], $spd[3], $spt[3];
+	push @out, $_[6] if $_[6] && is_ipaddr($_[6]);
+	return @out;
 }
 
 sub add

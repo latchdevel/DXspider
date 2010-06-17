@@ -134,7 +134,7 @@ $pc92_find_timeout = 30;		# maximum time to wait for a reply
  undef,
  undef,
  undef,							# pc60
- undef,
+ [ qw(i f m d t m c c a h) ],		# pc61
  undef,
  undef,
  undef,
@@ -205,6 +205,8 @@ sub check
 			return $i unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
 		} elsif ($act eq 'l') {
 			return $i unless $_[$i] =~ /^[A-Z]$/;
+		} elsif ($act eq 'a') {
+			return $i unless is_ipaddr($_[$i]);
 		}
 	}
 	return 0;
@@ -544,14 +546,22 @@ sub send_dx_spot
 	my $line = shift;
 	my @dxchan = DXChannel::get_all();
 	my $dxchan;
+	my $pc11;
 
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
-		next if $line =~ /PC61/ && !$dxchan->is_spider && !$dxchan->is_user;
-		$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
+		if ($line =~ /PC61/ && !($dxchan->is_spider || $dxchan->is_user)) {
+			unless ($pc11) {
+				my @f = split /\^/, $line;
+				$pc11 = join '^', 'PC11', @f[1..7,9];
+			}
+			$dxchan->dx_spot($pc11, $self->{isolate}, @_, $self->{call});
+		} else {
+			$dxchan->dx_spot($line, $self->{isolate}, @_, $self->{call});
+		}
 	}
 }
 

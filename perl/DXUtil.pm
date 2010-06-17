@@ -22,9 +22,9 @@ require Exporter;
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs phex phash shellregex readfilestr writefilestr
 			 filecopy ptimelist
-             print_all_fields cltounix unpad is_callsign is_latlong
+             print_all_fields cltounix unpad is_callsign is_long_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
-			 is_prefix dd
+			 is_prefix dd is_ipaddr
             );
 
 
@@ -383,6 +383,18 @@ sub is_callsign
 					 $!x;
 }
 
+# check that a field only has callsign characters in it but has more than the standard 3 callsign letters
+sub is_long_callsign
+{
+	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)        # basic prefix
+                       (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another one (possibly)
+					   [A-Z]{1,5}                                 # callsign letters
+					   (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another prefix possibly
+                       (?:/[0-9A-Z]{1,2})?                        # /0-9A-Z+ possibly
+					   (?:-\d{1,2})?                              # - nn possibly
+					 $!x;
+}
+
 sub is_prefix
 {
 	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)!x        # basic prefix
@@ -425,6 +437,12 @@ sub is_qra
 sub is_latlong
 {
 	return $_[0] =~ /^\s*\d{1,2}\s+\d{1,2}\s*[NnSs]\s+1?\d{1,2}\s+\d{1,2}\s*[EeWw]\s*$/;
+}
+
+# is it an ip address?
+sub is_ipaddr
+{
+    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:]+$/;
 }
 
 # insert an item into a list if it isn't already there returns 1 if there 0 if not

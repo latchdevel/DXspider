@@ -171,13 +171,13 @@ sub handle_11
 	# convert the date to a unix date
 	my $d = cltounix($_[3], $_[4]);
 	# bang out (and don't pass on) if date is invalid or the spot is too old (or too young)
-	if (!$d || ($pcno == 11 && ($d < $main::systime - $pc11_max_age || $d > $main::systime + 900))) {
+	if (!$d || (($pcno == 11 || $pcno == 61) && ($d < $main::systime - $pc11_max_age || $d > $main::systime + 900))) {
 		dbg("PCPROT: Spot ignored, invalid date or out of range ($_[3] $_[4])\n") if isdbg('chanerr');
 		return;
 	}
 
 	# is it 'baddx'
-	if ($baddx->in($_[2]) || BadWords::check($_[2]) || $_[2] =~ /COCK/) {
+	if ($baddx->in($_[2]) || BadWords::check($_[2])) {
 		dbg("PCPROT: Bad DX spot, ignored") if isdbg('chanerr');
 		return;
 	}
@@ -197,7 +197,7 @@ sub handle_11
 		}
 	}
 
-	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $nossid, $_[7]);
+	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $nossid, $_[7], $_[8]);
 	# global spot filtering on INPUT
 	if ($self->{inspotsfilter}) {
 		my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);

@@ -120,10 +120,17 @@ if ($spotted le ' ') {
 
 return (1, @out) unless $valid;
 
+my $ipaddr;
+
+if ($self->conn->peerhost) {
+	my $addr = $self->conn->peerhost;
+	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
+}
+
 # Store it here (but only if it isn't baddx)
 my $t = (int ($main::systime/60)) * 60;
 return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
-my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall);
+my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall, $ipaddr);
 
 if ($freq =~ /^69/ || $localonly) {
 
@@ -140,7 +147,11 @@ if ($freq =~ /^69/ || $localonly) {
 		Spot::add(@spot);
 
 		# send orf to the users
-		DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
+		if ($ipaddr) {
+			DXProt::send_dx_spot($self, DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr), @spot);
+		} else {
+			DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
+		}
 	}
 }
 
