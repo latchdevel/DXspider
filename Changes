@@ -1,3 +1,5 @@
+04Oct10=======================================================================
+1. incorporated the major prefix release CTY-2006 from Jim AD1C
 17Jun10=======================================================================
 1. Add ip address to dxspots and default to PC61 output to dxspider nodes.
 2. Allow 4 letter callsign portions again.

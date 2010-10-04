@@ -1,9 +1,9 @@
 ! $Id$
 !
-! This file was created on Fri Feb 27 02:00:21 2009
+! This file was created on Sat Oct  2 17:52:52 2010
 ! by Jim Reisert AD1C - see http://http://www.country-files.com/wpxloc/
 !
-! Highest DXCC number is now 353
+! Highest DXCC number is 357 ("VERSION" entity)
 !
 ! NOTE:  Entries marked with an '@' are the 'master' entries
 !        for a 'country'. It doesn't make a lot of difference
@@ -342,15 +342,6 @@ P2 Papua-Madang-P2                                    138 51 28 -10.00  5 12  0 
 P2 Papua-Port-Moresby-P2                              138 51 28 -10.00  9 24  0 S 147  6  0 E
 PA Netherlands-PA                                     139 27 14  -1.00 52 24  0 N   4 54  0 E @
 PB,PC,PD,PE,PF,PG,PH,PI Netherlands-PA                139 27 14  -1.00 52 24  0 N   4 54  0 E
-PJ2 Netherlands-Antilles-PJ2                          140 11  9   4.00 12  0  0 N  69  0  0 W * @
-PJ4 Bonaire-PJ2                                       140 11  9   4.00 12 15  0 N  68 28  0 W
-PJ2 Curacao-PJ2                                       140 11  9   4.00 12  7  0 N  68 56  0 W
-PJ Netherlands-Antilles-PJ2                           140 11  9   4.00 12  0  0 N  69  0  0 W *
-PJ0,PJ1,PJ3,PJ9 Netherlands-Antilles-PJ2              140 11  9   4.00 12  0  0 N  69  0  0 W
-PJ7 St-Maarten-PJ7                                    141 11  8   4.00 18  0  0 N  63  0  0 W @
-PJ6 Saba-PJ7                                          141 11  8   4.00 17 38  0 N  63 14  0 W
-PJ5 St-Eustatius-PJ7                                  141 11  8   4.00 17 30  0 N  62 58  0 W
-PJ,PJ8 St-Maarten-PJ7                                 141 11  8   4.00 18  0  0 N  63  0  0 W
 PY Brazil-PY                                          142 13 11   3.00 16  0  0 S  48  0  0 W * @
 PT8 Brazil-Acre-PY                                    142 13 11   3.00  9 59  0 S  67 51  0 W
 PP7 Brazil-Alagoas-PY                                 142 13 11   3.00  9 37  0 S  35 44  0 W
@@ -1393,6 +1384,16 @@ Z3 Macedonia-Z3                                       349 28 15  -1.00 42  0  0 
 4O Montenegro-4O                                      350 28 15  -1.00 42 30  0 N  19 18  0 E @
 FJ St-Barthelemy-FJ                                   351 11  8   4.00 17 54  0 N  62 50  0 W @
 YU8 Kosova-YU8                                        352 28 15  -1.00 42 40  0 N  21 10  0 E @
+PJ2 Curacao-PJ2                                       353 11  9   4.00 12 10  0 N  69  0  0 W @
+PJ Curacao-PJ2                                        353 11  9   4.00 12 10  0 N  69  0  0 W *
+PJ4 Bonaire-PJ4                                       354 11  9   4.00 12 12  0 N  68 15  0 W @
+PJ Bonaire-PJ4                                        354 11  9   4.00 12 12  0 N  68 15  0 W *
+PJ5 St-Eustatius-PJ5                                  355 11  8   4.00 17 34  0 N  63  6  0 W @
+PJ Saba-PJ5                                           355 11  8   4.00 17 38  0 N  63 14  0 W *
+PJ6 Saba-PJ5                                          355 11  8   4.00 17 38  0 N  63 14  0 W
+PJ St-Eustatius-PJ5                                   355 11  8   4.00 17 34  0 N  63  6  0 W *
+PJ7 Sint-Maarten-PJ7                                  356 11  8   4.00 18  4  0 N  63  4  0 W @
+PJ Sint-Maarten-PJ7                                   356 11  8   4.00 18  4  0 N  63  4  0 W
 !
 ! reordered ones
 !
@@ -1430,7 +1431,7 @@ VP8 South-Shetland-VP8/H                              214 73 13   4.00 62  0  0 
 E5/N North-Cook-Is-E5/N                               256 62 32  10.00 10 30  0 S 161  0  0 W @
 E5 North-Cook-Is-E5/N                                 256 62 32  10.00 10 30  0 S 161  0  0 W *
 !
-VERSION 26-Feb-2009                                   353  0  0   0.00  0  0  0 N   0  0  0 E
+VERSION 02-Oct-2010                                   357  0  0   0.00  0  0  0 N   0  0  0 E
 !
 QQ Pirate-Ctry-QQ                                     666  0  0   0.00  0  0  0 S   0  0  0 E @
 0,10G,1B,50V,MAJ,Q,SSB,T0,X5,X8,ZC6 Pirate-Ctry-QQ    666  0  0   0.00  0  0  0 S   0  0  0 E
