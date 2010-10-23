@@ -500,8 +500,23 @@ You also use one of these databases in a chain. This may be useful
 locally. 
 
 See DBIMPORT for the importing of existing AK1A format data to databases.
+See DXEXPORT for how to export an AK1A data in a form able to be imported.
 See DBSHOW for generic database enquiry
- 
+
+
+=== 9^DBEXPORT <dbname> <filename>^Export an AK1A data to a file
+Sometimes one needs to export the data from an existing database file,
+maybe for a backup or to send to another node.
+
+  DBEXPORT oblast /tmp/OBLAST.FUL
+
+will export the OBLAST database to /tmp/OBLAST.FUL
+
+There is no protection, it is up to you not to overwrite a file that
+is important to you.
+
+See DBIMPORT for the importing of existing AK1A format data to databases.
+
 === 9^DBIMPORT <dbname> <filename>^Import AK1A data into a database
 If you want to import or update data in bulk to a database you can use
 this command. It will either create or update entries into an existing
@@ -511,6 +526,8 @@ database. For example:-
 
 will import the standard OBLAST database that comes with AK1A into the
 oblast database held locally.
+
+See DBEXPORT for how to export an AK1A database
 
 === 9^DBREMOVE <dbname>^Delete a database
 DBREMOVE will completely remove a database entry and also delete any data
@@ -617,6 +634,41 @@ You can credit someone else by saying:-
 
 The <freq> is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
+
+=== 9^DXQSL_IMPORT <filename>^Import SH/DXSQL information from a file
+The SHOW/DXQSL command shows any QSL managers that have been extracted
+from comments on a DX spot.
+
+Use this command to export the current state of the information to
+a CSV style text file. For example:
+
+   DXQSL_EXPORT /tmp/qsl.csv
+
+NOTE: this command will overwrite any file that you have write
+permission for.
+
+See also DXQSL_IMPORT to import one of these files.
+
+=== 9^DXQSL_IMPORT <filename>^Import SH/DXSQL information from a file
+The SHOW/DXQSL command shows any QSL managers that have been extracted
+from comments on a DX spot.
+
+Use this command to restore a file created by the DXSQL_EXPORT command.
+For example:
+
+   DXQSL_IMPORT /tmp/qsl.csv
+
+The data in this file will UPDATE any information that may already be
+present. This may not be what you want. To make the data the same as
+the import file then you must:
+
+* stop the node
+* remove /spider/data/qsl.v1
+* restart the node
+* login as sysop
+* do the import
+
+Preferably before too many DX spots with qsl manager info come in.
 
 === 0^ECHO <line>^Echo the line to the output
 This command is useful in scripts and so forth for printing the

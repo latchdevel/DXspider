@@ -56,7 +56,7 @@ sub new
 	return bless [uc $call, []], $pkg;
 }
 
-# the format of each entry is [manager, times found, last time]
+# the format of each entry is [manager, times found, last time, last reporter]
 sub update
 {
 	return unless $dbm;

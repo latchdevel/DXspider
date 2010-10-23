@@ -1,3 +1,8 @@
+23Oct10=======================================================================
+1. add dbexport command to allow the export of ak1a style databases to a
+file.
+2. add dxqsl_import and dxqsl_export commands to allow the import and export
+of sh/dxsql qsl manager data extracted from spots as they pass through.
 04Oct10=======================================================================
 1. add CTY-2007 prefix list
 04Oct10=======================================================================

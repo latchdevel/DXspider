@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Database update routine
+# Database enquiry routine
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #

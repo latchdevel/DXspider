@@ -22,8 +22,7 @@ my $count;
 
 open(IMP, $fn) or return (1, "Cannot open $fn $!");
 while (<IMP>) {
-	chomp;
-	s/\r//g;
+	s/[\r\n]+$//g;
 	if ($state == 0) {
 		if (/^\&\&/) {
 			$state = 0;
@@ -50,5 +49,5 @@ while (<IMP>) {
 }
 close (IMP);
 
-push @out, $self->msg('db10', $count, $db->name);
+push @out, $self->msg('db10', $count, $fn, $db->name);
 return (1, @out);
