@@ -635,7 +635,7 @@ You can credit someone else by saying:-
 The <freq> is compared against the available bands set up in the 
 cluster.  See SHOW/BANDS for more information.
 
-=== 9^DXQSL_IMPORT <filename>^Import SH/DXSQL information from a file
+=== 9^DXQSL_EXPORT <filename>^Export SH/DXSQL information to a file
 The SHOW/DXQSL command shows any QSL managers that have been extracted
 from comments on a DX spot.
 
