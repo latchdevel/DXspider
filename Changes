@@ -2,7 +2,7 @@
 1. Drop PC12s purporting to originate at nodes that do PC9x (suggestion from
 Lee VE1CC).
 2. Increase default dup age for announces from 5 -> 18 hours.
-3. add CTY 2008 cty.dat data.
+3. add CTY 2009 cty.dat data.
 4. Stop downgrading and sending CHAT messages on PC12 groups as it appears
 that this is yet another "standard" that isn't universally understood.
 23Oct10=======================================================================

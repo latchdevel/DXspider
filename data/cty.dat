@@ -1,6 +1,6 @@
 #
-# RELEASE 2010.10.24.00
-# based on CTY-2008
+# RELEASE 2010.10.25.00
+# based on CTY-2009
 #
 Sov Mil Order of Malta:   15:  28:  EU:   41.90:   -12.43:    -1.0:  1A:
     1A;
@@ -391,7 +391,7 @@ Bosnia-Herzegovina:       15:  28:  EU:   44.32:   -17.57:    -1.0:  E7:
 Spain:                    14:  37:  EU:   40.37:     4.88:    -1.0:  EA:
     AM,AN,AO,EA,EB,EC,ED,EE,EF,EG,EH,
 # La Rioja
-    =EA9CP/1,
+    =EA8FC/1,=EA9CP/1,
 # Andalucia
     =EA9FN/7,=EA9JS/7;
 Balearic Islands:         14:  37:  EU:   39.60:    -2.95:    -1.0:  EA6:
@@ -439,7 +439,7 @@ New Caledonia:            32:  56:  OC:  -21.50:  -165.50:   -11.0:  FK:
 Chesterfield Islands:     30:  56:  OC:  -19.87:  -158.32:   -11.0:  FK/c:
     =FK8IK/C;
 Martinique:               08:  11:  NA:   14.70:    61.03:     4.0:  FM:
-    FM,=TO5A;
+    FM,=TO5A,=TO7A;
 French Polynesia:         32:  63:  OC:  -17.65:   149.40:    10.0:  FO:
     FO;
 Austral Islands:          32:  63:  OC:  -23.37:   149.48:    10.0:  FO/a:
@@ -459,7 +459,7 @@ Juan de Nova & Europa:    39:  53:  AF:  -17.05:   -42.72:    -3.0:  FR/j:
 Tromelin:                 39:  53:  AF:  -15.88:   -54.50:    -4.0:  FR/t:
     FT5T;
 French St. Martin:        08:  11:  NA:   18.08:    63.03:     4.0:  FS:
-    FS;
+    FS,=TO4X;
 Crozet:                   39:  68:  AF:  -46.42:   -51.75:    -5.0:  FT5W:
     FT0W,FT1W,FT2W,FT4W,FT5W,FT8W;
 Kerguelen:                39:  68:  AF:  -49.00:   -69.27:    -5.0:  FT5X:
@@ -479,8 +479,8 @@ Northern Ireland:         14:  27:  EU:   54.73:     6.68:    -0.0:  GI:
 Jersey:                   14:  27:  EU:   49.22:     2.18:    -0.0:  GJ:
     2H,2J,GH,GJ,MH,MJ;
 Scotland:                 14:  27:  EU:   56.82:     4.18:    -0.0:  GM:
-    2A,2M,2S,GA,GM,GS,MA,MM,MS,=GB0FSG,=GB0GGR,=GB1OL,=GB2GEO,=GB2GNL,=GB2LBN,=GB2LT,=GB2MOF,=GB2MUL,
-    =GB2OWM,=GB2RB,=GB4GS,=GB5FHC;
+    2A,2M,2S,GA,GM,GS,MA,MM,MS,=GB0FSG,=GB0GGR,=GB0KKS,=GB1OL,=GB2GEO,=GB2GNL,=GB2LBN,=GB2LT,=GB2MOF,
+    =GB2MUL,=GB2OWM,=GB2RB,=GB4GS,=GB5FHC;
 Shetland and Fair Isle:   14:  27:  EU:   60.50:     1.50:    -0.0:  *GM/s:
     2Z,GZ,MZ,=2M1ANT,=2M1ASQ,=2M1ODL,=G0FBJ,=GB0HFC,=GB0OS,=GB2ELH,=GB2ZET,=GB4SI,=GM0CXQ,=GM0CYJ,
     =GM0DJI,=GM0EKM,=GM0ILB,=GM0JDB,=GM0MZD,=GM0OMV,=GM0VFA,=GM1BYL,=GM1CBQ,=GM1KKI,=GM1MXN,=GM1ZNR,
@@ -491,7 +491,7 @@ Shetland and Fair Isle:   14:  27:  EU:   60.50:     1.50:    -0.0:  *GM/s:
 Guernsey:                 14:  27:  EU:   49.45:     2.58:    -0.0:  GU:
     2P,2U,GP,GU,MP,MU;
 Wales:                    14:  27:  EU:   52.28:     3.73:    -0.0:  GW:
-    2C,2W,2X,2Y,GC,GW,MC,MW,=GB0AD,=GB0AWS,=GB0BHR,=GB0CSA,=GB0MPA,=GB0SPS,=GB1HTW,=GB2GGM,=GB2TD,
+    2C,2W,2X,2Y,GC,GW,MC,MW,=GB0AD,=GB0AWS,=GB0BHR,=GB0CSA,=GB0MPA,=GB0SPS,=GB1HAS,=GB2GGM,=GB2TD,
     =GB4BPL,=GB4MD,=GB4MDI,=GB4RC,=GB4SDD,=GB5FI,=GB8CCC;
 Solomon Islands:          28:  51:  OC:   -9.00:  -160.00:   -11.0:  H4:
     H4;
@@ -739,8 +739,8 @@ Norway:                   14:  18:  EU:   61.00:    -9.00:    -1.0:  LA:
 Argentina:                13:  14:  SA:  -34.80:    65.92:     3.0:  LU:
     AY,AZ,L1,L2,L3,L4,L5,L6,L7,L8,L9,LO,LP,LQ,LR,LS,LT,LU,LV,LW,
 # Buenos Aires province
-    =LU1DKD/D,=LU2CM/D,=LU2DT/D,=LU2EE/D,=LU3DJI/D,=LU4DBP/D,=LU4DBT/D,=LU5DFR/D,=LU5DRV/D,=LU5EJL/D,
-    =LU8DIP/D,=LU8DQ/D,=LV7E/D,=LW3DKO/D,=LW8EAG/D,
+    =LU1DKD/D,=LU2BPM/D,=LU2CM/D,=LU2DT/D,=LU2EE/D,=LU3DJI/D,=LU4DBP/D,=LU4DBT/D,=LU5DFR/D,=LU5DRV/D,
+    =LU5EJL/D,=LU8DIP/D,=LU8DQ/D,=LV7E/D,=LW3DKO/D,=LW8EAG/D,
 # Santa Fe
     =LU5FHD/F,
 # Cordoba
@@ -951,7 +951,7 @@ Greece:                   20:  28:  EU:   39.78:   -21.78:    -2.0:  SV:
 Mount Athos:              20:  28:  EU:   40.00:   -24.00:    -2.0:  SV/a:
     =SV2ASP/A;
 Dodecanese:               20:  28:  EU:   36.17:   -27.93:    -2.0:  SV5:
-    J45,SV5,SW5,SX5,SY5,SZ5,=SV0XAN/5,=VERSION;
+    J45,SV5,SW5,SX5,SY5,SZ5,=SV0XAN/5;
 Crete:                    20:  28:  EU:   35.23:   -24.78:    -2.0:  SV9:
     J49,SV9,SW9,SX9,SY9,SZ9,=SV0LB,=SV0LB/9,=SV0XAI/9,=SV0XBN/9;
 Tuvalu:                   31:  65:  OC:   -8.50:  -179.20:   -12.0:  T2:
@@ -1035,7 +1035,7 @@ European Russia:          16:  29:  EU:   56.00:   -37.00:    -3.0:  UA:
 Kaliningrad:              15:  29:  EU:   54.82:   -21.60:    -2.0:  UA2:
     R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RF2F,RF2K,RG2F,RG2K,RJ2F,RJ2K,RK2F,RK2K,RL2F,RL2K,RM2F,RM2K,RN2F,
     RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F,RT2K,RU2F,RU2K,RV2F,RV2K,RW2F,RW2K,RX2F,RX2K,RY2F,RY2K,RZ2F,RZ2K,
-    U2F,U2K,UA2,UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2,=R2MWO,=RV9WZ/2;
+    U2F,U2K,UA2,UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2,=R2MWO;
 Asiatic Russia:           17:  30:  AS:   67.18:  -104.00:    -7.0:  UA9:
     R0(19)[33],R8,R9,RA0(19)[33],RA8,RA9,RB0(19)[33],RB8,RB9,RC0(19)[33],RC8,RC9,RD0(19)[33],RD8,RD9,
     RE0(19)[33],RE8,RE9,RF0(19)[33],RF8,RF9,RG0(19)[33],RG8,RG9,RH0(19)[33],RH8,RH9,RI0(19)[33],RI8,
@@ -1332,7 +1332,7 @@ Marshall Islands:         31:  65:  OC:    9.08:  -167.33:   -12.0:  V7:
 Brunei:                   28:  54:  OC:    4.50:  -114.60:    -8.0:  V8:
     V8;
 Canada:                   05:  09:  NA:   44.35:    78.75:     5.0:  VE:
-    CF,CG,CJ,CK,VA,VB,VC,VE,VG,VX,XL,XM,=VER20101024,
+    CF,CG,CJ,CK,VA,VB,VC,VE,VG,VX,XL,XM,=VER20101025,
 # Quebec QC
     CF2[4],CG2[4],CJ2[4],CK2[4],VA2[4],VB2[4],VC2[4],VE2[4],VG2[4],VX2[4],XL2[4],XM2[4],=VE2FK[9],
 # Ontario ON
@@ -1364,7 +1364,7 @@ Canada:                   05:  09:  NA:   44.35:    78.75:     5.0:  VE:
 # Prince Edward Island PEI
     CI2,CZ2,VF2,VY2,XK2,XO2,
 # Quebec North QC
-    =VE2DXY(2)[4],=VE2ENB(2)[4],=VE2GSO(2)[4],=VE2III(2)[4],=VE2IM(2)[4];
+    =VA2PL(2)[4],=VE2DXY(2)[4],=VE2ENB(2)[4],=VE2GSO(2)[4],=VE2III(2)[4],=VE2IM(2)[4];
 Australia:                30:  59:  OC:  -23.70:  -132.33:   -10.0:  VK:
     AX,VH,VI,VJ,VK,VL,VM,VN,VZ,
 # QLD Queensland
@@ -1396,7 +1396,7 @@ Anguilla:                 08:  11:  NA:   18.23:    63.00:     4.0:  VP2E:
 Montserrat:               08:  11:  NA:   16.75:    62.18:     4.0:  VP2M:
     VP2M;
 British Virgin Islands:   08:  11:  NA:   18.33:    64.75:     4.0:  VP2V:
-    VP2V;
+    VP2V,=VERSION;
 Turks & Caicos:           08:  11:  NA:   21.77:    71.75:     5.0:  VP5:
     VP5,VQ5;
 Pitcairn Island:          32:  63:  OC:  -24.35:   128.32:     8.0:  VP6:
