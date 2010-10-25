@@ -18,7 +18,7 @@ use DXVars;
 use vars qw(%dup $duplth $dupage $filterdef);
 
 $duplth = 30;					# the length of text to use in the deduping
-$dupage = 5*3600;				# the length of time to hold ann dups
+$dupage = 18*3600;				# the length of time to hold ann dups
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['by', 'c', 0],

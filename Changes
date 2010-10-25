@@ -1,3 +1,7 @@
+25Oct10=======================================================================
+1. Drop PC12s purporting to originate at nodes that do PC9x (suggestion from
+Lee VE1CC).
+2. Increase default dup age for announces from 5 -> 18 hours.
 23Oct10=======================================================================
 1. add dbexport command to allow the export of ak1a style databases to a
 file.

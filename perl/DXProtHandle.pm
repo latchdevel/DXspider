@@ -321,6 +321,12 @@ sub handle_12
 		return;
 	}
 
+	# ignore PC12s from origins that use PCxx protocol
+	my $oref = Route::get($origin);
+	if ($oref->do_pc9x) {
+		dbg("PCPROT: PC12 rxed from PC9x node, ignored") if isdbg('chanerr');
+		return;
+	}
 
 	my $dxchan;
 
