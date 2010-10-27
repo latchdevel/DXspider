@@ -1994,9 +1994,7 @@ sub handle_93
 		return if $via eq 'LOCAL';
 	} elsif (!is_callsign($to) && $text =~ /^#\d+ /) {
 		# chat messages to non-pc9x nodes
-		# don't do this anymore. It is too disruptive 'cos other software does not
-		# understand PC12 groups.
-#		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
+		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
 	}
 
 	# broadcast this chat sentence everywhere unless it is targetted to 'LOCAL'

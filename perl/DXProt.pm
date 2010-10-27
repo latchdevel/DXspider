@@ -795,20 +795,15 @@ sub send_chat
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
-		my $is_ak1a = $dxchan->is_ak1a;
-
 		if ($dxchan->is_node) {
 			next if $dxchan == $main::me;
 			next if $dxchan == $self;
-			next if $from_pc9x && $dxchan->{do_pc9x};
-			next unless $dxchan->is_spider || $is_ak1a;
+			next if $from_pc9x && $dxchan->do_pc9x;
+			next unless $dxchan->is_spider && $dxchan->do_pc9x;
 			next if $target eq 'LOCAL';
-			if (!$ak1a_line && $is_ak1a) {
-				$ak1a_line = pc12($_[0], $text, $_[1], "$target.LST");
-			}
 		}
 
-		$dxchan->chat($is_ak1a ? $ak1a_line : $line, $self->{isolate}, $target, $_[1],
+		$dxchan->chat($line, $self->{isolate}, $target, $_[1],
 					  $text, @_, $self->{call}, @a[0..2], @b[0..2]);
 	}
 }
