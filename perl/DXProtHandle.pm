@@ -1993,8 +1993,8 @@ sub handle_93
 		$self->send_announce(1, pc12($from, $text, $local, $sysop, $wx, $pcall), $from, $local, $text, $sysop, $pcall, $wx, $via eq 'LOCAL' ? $via : undef);
 		return if $via eq 'LOCAL';
 	} elsif (!is_callsign($to) && $text =~ /^#\d+ /) {
-		# chat messages to non-pc9x nodes
-		$self->send_chat(1, pc12($from, $text, undef, $to, undef, $pcall), $from, '*', $text, $to, $pcall, '0');
+		# chat messages really only locally connected users
+		$self->send_chat(1, $line, $from, '*', $text, $to, $pcall, '0');
 	}
 
 	# broadcast this chat sentence everywhere unless it is targetted to 'LOCAL'

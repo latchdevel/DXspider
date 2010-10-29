@@ -1,3 +1,6 @@
+29Oct10=======================================================================
+1. Allow Jim AD1C to track the changes to the cluster in realtime using the
+debug system (set/debug cluster).
 27Oct10=======================================================================
 1. fix chat problem introduced in the last update
 25Oct10=======================================================================

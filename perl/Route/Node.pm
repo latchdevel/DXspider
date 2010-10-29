@@ -79,6 +79,7 @@ sub add
 	}
 	$self = $parent->new($call, @_);
 	$parent->_addnode($self);
+	dbg("CLUSTER: node $call added") if isdbg('cluster');
 	return $self;
 }
 
@@ -110,6 +111,7 @@ sub del
 		$self->_del_users;
 		delete $list{$ncall};
 		push @nodes, $self;
+		dbg("CLUSTER: node $ncall deleted") if isdbg('cluster');
 	}
 	return @nodes;
 }
@@ -298,7 +300,7 @@ sub get
 	my $call = shift;
 	$call = shift if ref $call;
 	my $ref = $list{uc $call};
-	dbg("Failed to get Node $call" ) if !$ref && isdbg('routerr');
+	dbg("ROUTE: Failed to get Node $call" ) if !$ref && isdbg('routerr');
 	return $ref;
 }
 
@@ -389,7 +391,7 @@ sub DESTROY
 	my $pkg = ref $self;
 	my $call = $self->{call} || "Unknown";
 
-	dbg("destroying $pkg with $call") if isdbg('routelow');
+	dbg("ROUTE: destroying $pkg with $call") if isdbg('routelow');
 }
 
 #

@@ -54,6 +54,7 @@ sub new
 	$self->{flags} = $flags || Route::here(1);
 	$self->{ip} = $ip if defined $ip;
 	$list{$call} = $self;
+	dbg("CLUSTER: user $call added") if isdbg('cluster');
 
 	return $self;
 }
@@ -67,9 +68,11 @@ sub del
 {
 	my $self = shift;
 	my $pref = shift;
+	my $call = $self->{call};
 	$self->delparent($pref);
 	unless (@{$self->{parent}}) {
-		delete $list{$self->{call}};
+		delete $list{$call};
+		dbg("CLUSTER: user $call deleted") if isdbg('cluster');
 		return $self;
 	}
 	return undef;
