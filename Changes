@@ -1,3 +1,5 @@
+31Oct10=======================================================================
+1. Increase PC92 A/D "slug" time to 5 minutes.
 29Oct10=======================================================================
 1. Allow Jim AD1C to track the changes to the cluster in realtime using the
 debug system (set/debug cluster).
