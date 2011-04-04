@@ -224,10 +224,10 @@ sub connect {
 	
 	my $sock;
 	if ($blocking_supported) {
-		$sock = $io_socket->new(PeerAddr => $to_host, PeerPort => $to_port, Proto => 'tcp', Blocking =>0);
+		$sock = $io_socket->new(PeerAddr => $to_host, PeerPort => $to_port, Proto => 'tcp', Blocking =>0) or return undef;
 	} else {
 		# Create a new internet socket
-		my $sock = $io_socket->new();
+		$sock = $io_socket->new();
 		return undef unless $sock;
 
 		my $proto = getprotobyname('tcp');
