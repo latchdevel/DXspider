@@ -222,22 +222,27 @@ sub connect {
 	$conn->{peerport} = $to_port;
 	$conn->{sort} = 'Outgoing';
 	
-    # Create a new internet socket
-    my $sock = $io_socket->new();
-    return undef unless $sock;
-	
-	my $proto = getprotobyname('tcp');
-	$sock->socket(AF_INET, SOCK_STREAM, $proto) or return undef;
-	
-	blocking($sock, 0);
-	$conn->{blocking} = 0;
+	my $sock;
+	if ($blocking_supported) {
+		$sock = $io_socket->new(PeerAddr => $to_host, PeerPort => $to_port, Proto => 'tcp', Blocking =>0);
+	} else {
+		# Create a new internet socket
+		my $sock = $io_socket->new();
+		return undef unless $sock;
 
-	# does the host resolve?
-	my $ip = gethostbyname($to_host);
-	return undef unless $ip;
-	
-	my $r = connect($sock, pack_sockaddr_in($to_port, $ip));
-	return undef unless $r || _err_will_block($!);
+		my $proto = getprotobyname('tcp');
+		$sock->socket(AF_INET, SOCK_STREAM, $proto) or return undef;
+
+		blocking($sock, 0);
+		$conn->{blocking} = 0;
+
+		# does the host resolve?
+		my $ip = gethostbyname($to_host);
+		return undef unless $ip;
+
+		my $r = connect($sock, pack_sockaddr_in($to_port, $ip));
+		return undef unless $r || _err_will_block($!);
+	}
 	
 	$conn->{sock} = $sock;
 	$conn->{peerhost} = $sock->peerhost;	# for consistency
