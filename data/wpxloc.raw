@@ -1,9 +1,9 @@
 ! $Id$
 !
-! This file was created on Sat Oct  2 17:52:52 2010
+! This file was created on Fri Jul 22 16:31:10 2011
 ! by Jim Reisert AD1C - see http://http://www.country-files.com/wpxloc/
 !
-! Highest DXCC number is 357 ("VERSION" entity)
+! Highest DXCC number is 358 ("VERSION" entity)
 !
 ! NOTE:  Entries marked with an '@' are the 'master' entries
 !        for a 'country'. It doesn't make a lot of difference
@@ -1394,6 +1394,7 @@ PJ6 Saba-PJ5                                          355 11  8   4.00 17 38  0 
 PJ St-Eustatius-PJ5                                   355 11  8   4.00 17 34  0 N  63  6  0 W *
 PJ7 Sint-Maarten-PJ7                                  356 11  8   4.00 18  4  0 N  63  4  0 W @
 PJ Sint-Maarten-PJ7                                   356 11  8   4.00 18  4  0 N  63  4  0 W
+ST0 Republic-South-Sudan-ST0                          357 48 34  -3.00  5  0  0 N  31 36  0 E @
 !
 ! reordered ones
 !
@@ -1431,7 +1432,7 @@ VP8 South-Shetland-VP8/H                              214 73 13   4.00 62  0  0 
 E5/N North-Cook-Is-E5/N                               256 62 32  10.00 10 30  0 S 161  0  0 W @
 E5 North-Cook-Is-E5/N                                 256 62 32  10.00 10 30  0 S 161  0  0 W *
 !
-VERSION 02-Oct-2010                                   357  0  0   0.00  0  0  0 N   0  0  0 E
+VERSION 22-Jul-2011                                   358  0  0   0.00  0  0  0 N   0  0  0 E
 !
 QQ Pirate-Ctry-QQ                                     666  0  0   0.00  0  0  0 S   0  0  0 E @
 0,10G,1B,50V,MAJ,Q,SSB,T0,X5,X8,ZC6 Pirate-Ctry-QQ    666  0  0   0.00  0  0  0 S   0  0  0 E
