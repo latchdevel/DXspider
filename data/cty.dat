@@ -1,7 +1,7 @@
 Sov Mil Order of Malta:   15:  28:  EU:   41.90:   -12.43:    -1.0:  1A:
     1A;
 Spratly Islands:          26:  50:  AS:    9.88:  -114.23:    -8.0:  1S:
-    1S,9M0,BV9S;
+    1S,9M0,BV9S,=VERSION;
 Monaco:                   14:  27:  EU:   43.73:    -7.40:    -1.0:  3A:
     3A;
 Agalega & St. Brandon:    39:  53:  AF:  -10.45:   -56.67:    -4.0:  3B6:
@@ -431,9 +431,9 @@ Shetland and Fair Isle:   14:  27:  EU:   60.50:     1.50:     0.0:  *GM/s:
 Guernsey:                 14:  27:  EU:   49.45:     2.58:     0.0:  GU:
     2P,2U,GP,GU,MP,MU;
 Wales:                    14:  27:  EU:   52.28:     3.73:     0.0:  GW:
-    2C,2W,2X,2Y,GC,GW,MC,MW,=GB0AWS,=GB0BHR,=GB0CSA,=GB0HEL,=GB0MPA,=GB0PLB,
-    =GB0SPS,=GB100GGM,=GB2GGM,=GB2RSC,=GB2TD,=GB4BPL,=GB4MBC,=GB4MD,=GB4MDI,
-    =GB4RC,=GB4SDD,=GB5FI,=GB8CCC;
+    2C,2W,2X,2Y,GC,GW,MC,MW,=GB0BHR,=GB0HEL,=GB0MPA,=GB0PLB,=GB0SPS,=GB100GGM,
+    =GB2GGM,=GB2RSC,=GB2TD,=GB4BPL,=GB4MBC,=GB4MD,=GB4MDI,=GB4RC,=GB4SDD,
+    =GB5FI,=GB8CCC;
 Solomon Islands:          28:  51:  OC:   -9.00:  -160.00:   -11.0:  H4:
     H4;
 Temotu:                   32:  51:  OC:  -10.72:  -165.80:   -11.0:  H40:
@@ -497,7 +497,7 @@ Japan:                    25:  45:  AS:   36.40:  -138.38:    -9.0:  JA:
     JR,JS,AGJ50,HTR50,IEJ50,ISG50,KJP50,KTD50,MMD50,MNY50,OGN50,OKA50,SHI50,
     TRA50,UEO50,=7N4RHO/BM;
 Minami Torishima:         27:  90:  OC:   24.28:  -153.97:   -10.0:  JD/m:
-    =JD1BME,=JD1BMM;
+    =JD1BME,=JD1BMM,=JG8NQJ/JD1;
 Ogasawara:                27:  45:  AS:   27.05:  -142.20:    -9.0:  JD/o:
     JD1;
 Mongolia:                 23:  32:  AS:   46.77:  -102.17:    -7.0:  JT:
@@ -1114,7 +1114,7 @@ Canada:                   05:  09:  NA:   44.35:    78.75:     5.0:  VE:
     CI1(1)[2],CI2,CJ2[4],CK2[4],CY1,CY2(2),CZ0(2)[4],CZ1(1)[2],CZ2,VA2[4],
     VB2[4],VC2[4],VD1,VD2(2),VE2[4],VF0(2)[4],VF1(1)[2],VF2,VG2[4],VO1,VO2(2),
     VX2[4],VY0(2)[4],VY1(1)[2],VY2,XJ1,XJ2(2),XK0(2)[4],XK1(1)[2],XK2,XL2[4],
-    XM2[4],XN1,XN2(2),XO0(2)[4],XO1(1)[2],XO2,=VER20110722,=VE0MDL(3)[2],
+    XM2[4],XN1,XN2(2),XO0(2)[4],XO1(1)[2],XO2,=VER20110725,=VE0MDL(3)[2],
     =VE2AEJ(4)[4],=VE2DXY(2)[4],=VE2FK[9],=VE2GSO(2)[4],=VE2III(2)[4],
     =VE2IM(2)[4],=VE2TKH(2)[4],=VE2XAA/2(2)[4],=VE3DO/7(3)[2],=VE8RAC(2)[4],
     =VY0PW(4)[3];
@@ -1129,14 +1129,14 @@ Cocos-Keeling:            29:  54:  OC:  -12.15:   -96.82:    -6.5:  VK9C:
     AX9C,AX9Y,VH9C,VH9Y,VI9C,VI9Y,VJ9C,VJ9Y,VK9C,VK9Y,VL9C,VL9Y,VM9C,VM9Y,
     VN9C,VN9Y,VZ9C,VZ9Y,=VK9AA;
 Lord Howe Island:         30:  60:  OC:  -31.55:  -159.08:   -10.5:  VK9L:
-    AX9L,VH9L,VI9L,VJ9L,VK9L,VL9L,VM9L,VN9L,VZ9L,=VK9FLHI,=VK9ZLH;
+    AX9L,VH9L,VI9L,VJ9L,VK9L,VL9L,VM9L,VN9L,VZ9L,=VK9FLHI,=VK9HR,=VK9ZLH;
 Mellish Reef:             30:  56:  OC:  -17.40:  -155.85:   -10.0:  VK9M:
     AX9M,VH9M,VI9M,VJ9M,VK9M,VL9M,VM9M,VN9M,VZ9M;
 Norfolk Island:           32:  60:  OC:  -29.03:  -167.93:   -11.5:  VK9N:
     AX9,VH9,VI9,VJ9,VK9,VL9,VM9,VN9,VZ9;
 Willis Island:            30:  55:  OC:  -16.22:  -150.02:   -10.0:  VK9W:
     AX9W,AX9Z,VH9W,VH9Z,VI9W,VI9Z,VJ9W,VJ9Z,VK9W,VK9Z,VL9W,VL9Z,VM9W,VM9Z,
-    VN9W,VN9Z,VZ9W,VZ9Z,=VERSION;
+    VN9W,VN9Z,VZ9W,VZ9Z;
 Christmas Island:         29:  54:  OC:  -10.48:  -105.63:    -7.0:  VK9X:
     AX9X,VH9X,VI9X,VJ9X,VK9X,VL9X,VM9X,VN9X,VZ9X;
 Anguilla:                 08:  11:  NA:   18.23:    63.00:     4.0:  VP2E:
