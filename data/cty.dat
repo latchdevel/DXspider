@@ -404,7 +404,7 @@ Amsterdam & St. Paul:     39:  68:  AF:  -37.85:   -77.53:    -5.0:  FT5Z:
 Wallis & Futuna Islands:  32:  62:  OC:  -13.30:   176.20:   -12.0:  FW:
     FW;
 French Guiana:            09:  12:  SA:    4.00:    53.00:     3.0:  FY:
-    FY,VERSION;
+    FY;
 England:                  14:  27:  EU:   52.77:     1.47:     0.0:  G:
     2,G,M,ZH,ZI,ZJ;
 Isle of Man:              14:  27:  EU:   54.20:     4.53:     0.0:  GD:
@@ -485,7 +485,7 @@ Djibouti:                 37:  48:  AF:   11.75:   -42.35:    -3.0:  J2:
 Grenada:                  08:  11:  NA:   12.13:    61.68:     4.0:  J3:
     J3;
 Guinea-Bissau:            35:  46:  AF:   12.02:    14.80:     0.0:  J5:
-    J5;
+    J5,=VERSION;
 St. Lucia:                08:  11:  NA:   13.87:    61.00:     4.0:  J6:
     J6;
 Dominica:                 08:  11:  NA:   15.43:    61.35:     4.0:  J7:
@@ -1112,7 +1112,7 @@ Canada:                   05:  09:  NA:   44.35:    78.75:     5.0:  VE:
     CI1(1)[2],CI2,CJ2[4],CK2[4],CY1,CY2(2),CZ0(2)[4],CZ1(1)[2],CZ2,VA2[4],
     VB2[4],VC2[4],VD1,VD2(2),VE2[4],VF0(2)[4],VF1(1)[2],VF2,VG2[4],VO1,VO2(2),
     VX2[4],VY0(2)[4],VY1(1)[2],VY2,XJ1,XJ2(2),XK0(2)[4],XK1(1)[2],XK2,XL2[4],
-    XM2[4],XN1,XN2(2),XO0(2)[4],XO1(1)[2],XO2,=VER20111103,=VA2PL(2)[4],
+    XM2[4],XN1,XN2(2),XO0(2)[4],XO1(1)[2],XO2,=VER20111104,=VA2PL(2)[4],
     =VE0MDL(3)[2],=VE2/JA8BMK(2)[4],=VE2AEJ(4)[4],=VE2CSI(2)[4],=VE2DXY(2)[4],
     =VE2FK[9],=VE2GSO(2)[4],=VE2IDX(2)[4],=VE2III(2)[4],=VE2IM(2)[4],
     =VE2TKH(2)[4],=VE3ZF/2(2)[4],=VE7MID/VE2(2)[4],=VY0PW(4)[3];
