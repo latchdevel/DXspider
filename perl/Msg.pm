@@ -331,7 +331,7 @@ sub disconnect
 
 	if (defined($sock)) {
 		set_event_handler ($sock, read => undef, write => undef, error => undef);
-		shutdown($sock, 3);
+		shutdown($sock, 2);
 		close($sock);
 	}
 	
