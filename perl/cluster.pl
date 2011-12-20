@@ -34,11 +34,14 @@ BEGIN {
 	# try to create and lock a lockfile (this isn't atomic but
 	# should do for now
 	$lockfn = "$root/local/cluster.lck";       # lock file name
-	if (-e $lockfn) {
+	if (-w $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
-		chomp $pid;
-		die "Lockfile ($lockfn) and process $pid exist, another cluster running?" if kill 0, $pid;
+		if ($pid) {
+			chomp $pid;
+			die "Lockfile ($lockfn) and process $pid exist, another cluster running?" if kill 0, $pid;
+		}
+		unlink $lockfn;
 		close CLLOCK;
 	}
 	open(CLLOCK, ">$lockfn") or die "Can't open Lockfile ($lockfn) $!";

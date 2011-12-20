@@ -1,3 +1,6 @@
+20Dec11=======================================================================
+1. fix strange startup repeating lockfile issue where (somehow) there is an
+empty (but existing) lockfile, from GB7YDX.
 29Nov11=======================================================================
 1. fix shutdown() in Msg.pm
 2. Add CTY2117 changes
