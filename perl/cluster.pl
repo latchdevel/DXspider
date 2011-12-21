@@ -52,6 +52,8 @@ BEGIN {
 	$systime = time;
 }
 
+use AnyEvent;
+
 use DXVars;
 use Msg;
 use IntMsg;
@@ -273,7 +275,6 @@ sub cease
 	foreach $dxchan (DXChannel::get_all_nodes) {
 	    $dxchan->disconnect(2) unless $dxchan == $main::me;
 	}
-	Msg->event_loop(100, 0.01);
 
 	# disconnect users
 	foreach $dxchan (DXChannel::get_all_users) {
@@ -288,7 +289,6 @@ sub cease
 	UDPMsg::finish();
 
 	# end everything else
-	Msg->event_loop(100, 0.01);
 	DXUser::finish();
 	DXDupe::finish();
 
@@ -340,6 +340,45 @@ sub uptime
 sub AGWrestart
 {
 	AGWMsg::init(\&new_channel);
+}
+
+sub idle_loop
+{
+	my $timenow = time;
+
+	DXChannel::process();
+
+#	$DB::trace = 0;
+
+	# do timed stuff, ongoing processing happens one a second
+	if ($timenow != $systime) {
+		reap() if $zombies;
+		$systime = $timenow;
+		my $days = int ($systime / 86400);
+		if ($systime_days != $days) {
+			$systime_days = $days;
+			$systime_daystart = $days * 86400;
+		}
+		IsoTime::update($systime);
+		DXCron::process();      # do cron jobs
+		DXCommandmode::process(); # process ongoing command mode stuff
+		DXXml::process();
+		DXProt::process();		# process ongoing ak1a pcxx stuff
+		DXConnect::process();
+		DXMsg::process();
+		DXDb::process();
+		DXUser::process();
+		DXDupe::process();
+		AGWMsg::process();
+		BPQMsg::process();
+
+		if (defined &Local::process) {
+			eval {
+				Local::process();       # do any localised processing
+			};
+			dbg("Local::process error $@") if $@;
+		}
+	}
 }
 
 #############################################################
@@ -444,9 +483,14 @@ UDPMsg::init(\&new_channel);
 # load bad words
 dbg("load badwords: " . (BadWords::load or "Ok"));
 
+# create end condvar
+$decease = AnyEvent->condvar;
+
 # prime some signals
+my ($sigint, $sigterm);
 unless ($DB::VERSION) {
-	$SIG{INT} = $SIG{TERM} = sub { $decease = 1 };
+	$sigint = AnyEvent->signal(signal=>'INT', cb=> sub{$decease->send});
+	$sigterm = AnyEvent->signal(signal=>'TERM', cb=> sub{$decease->send});
 }
 
 unless ($is_win) {
@@ -535,49 +579,13 @@ $script->run($main::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 
-for (;;) {
-#	$DB::trace = 1;
+my $idle_loop = AnyEvent->idle(cb => &idle_loop);
 
-	Msg->event_loop(10, 0.010);
-	my $timenow = time;
 
-	DXChannel::process();
+# main loop
+$decease->recv;
 
-#	$DB::trace = 0;
-
-	# do timed stuff, ongoing processing happens one a second
-	if ($timenow != $systime) {
-		reap() if $zombies;
-		$systime = $timenow;
-		my $days = int ($systime / 86400);
-		if ($systime_days != $days) {
-			$systime_days = $days;
-			$systime_daystart = $days * 86400;
-		}
-		IsoTime::update($systime);
-		DXCron::process();      # do cron jobs
-		DXCommandmode::process(); # process ongoing command mode stuff
-		DXXml::process();
-		DXProt::process();		# process ongoing ak1a pcxx stuff
-		DXConnect::process();
-		DXMsg::process();
-		DXDb::process();
-		DXUser::process();
-		DXDupe::process();
-		AGWMsg::process();
-		BPQMsg::process();
-
-		if (defined &Local::process) {
-			eval {
-				Local::process();       # do any localised processing
-			};
-			dbg("Local::process error $@") if $@;
-		}
-	}
-	if ($decease) {
-		last if --$decease <= 0;
-	}
-}
+idle_loop() for (1..25);
 cease(0);
 exit(0);
 

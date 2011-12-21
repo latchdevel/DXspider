@@ -14,7 +14,6 @@ use strict;
 
 use DXUtil;
 
-use IO::Select;
 use DXDebug;
 use Timer;
 

@@ -12,6 +12,6 @@ foreach $ref (DXChannel::get_all()) {
 }
     
 # give some time for the buffers to empty and then shutdown (see cluster.pl)
-$main::decease = 25;
+$main::decease->send;
 
 return (1);
