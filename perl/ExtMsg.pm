@@ -152,7 +152,7 @@ sub to_connected
 	delete $conn->{timeout};
 	$conn->{csort} = $sort;
 	unless ($conn->ax25) {
-		eval {$conn->{peerhost} = $conn->{sock}->peername};
+#		eval {$conn->{peerhost} = $conn->{sock}->{fh}->peerhost};
 	}
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};

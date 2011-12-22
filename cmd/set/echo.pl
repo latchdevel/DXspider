@@ -6,6 +6,7 @@
 #
 #
 my $self = shift;
+$self->send_now("E", "1");
 $self->conn->echo(1);
 $self->user->wantecho(1);
 return (1, $self->msg('echoon'));
