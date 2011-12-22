@@ -466,6 +466,12 @@ sub set_event_handler
 	dbg("Msg::set_event_handler called from ${pkg}::${fn} line $line doing $s");
 }
 
+sub echo
+{
+	my $conn = shift;
+	return defined $_[0] ? $conn->{echo} = $_[0] : $_[0];
+}
+
 sub DESTROY
 {
 	my $conn = shift;
