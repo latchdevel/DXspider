@@ -141,7 +141,7 @@ sub connect {
 
 		connect => [$to_host, $to_port],
 
-#		on_connect => sub {my $h = shift; $conn->{peerhost} = $h->handle->peername;},
+		on_connect => sub {my $h = shift; $conn->{peerhost} = shift;},
 
 		on_eof => sub {$conn->disconnect},
 
