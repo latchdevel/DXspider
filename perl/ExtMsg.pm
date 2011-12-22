@@ -54,11 +54,8 @@ sub enqueue
 sub send_raw
 {
 	my ($conn, $msg) = @_;
-    my $sock = $conn->{sock};
-    return unless defined($sock);
-	push (@{$conn->{outqueue}}, $msg);
 	dbg("connect $conn->{cnum}: $msg") if $conn->{state} ne 'C' && isdbg('connect');
-    Msg::set_event_handler ($sock, "write" => sub {$conn->_send(0)});
+	$conn->SUPER::send_raw($msg);
 }
 
 sub echo
@@ -155,8 +152,7 @@ sub to_connected
 	delete $conn->{timeout};
 	$conn->{csort} = $sort;
 	unless ($conn->ax25) {
-		eval {$conn->{peerhost} = $conn->{sock}->peerhost};
-		$conn->nolinger;
+		eval {$conn->{peerhost} = $conn->{sock}->peername};
 	}
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
 	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
@@ -164,43 +160,44 @@ sub to_connected
 
 sub new_client {
 	my $server_conn = shift;
-    my $sock = $server_conn->{sock}->accept();
+	my $sock = shift;
+	my $peerhost = shift;
+	my $peerport = shift;
 	if ($sock) {
 		my $conn = $server_conn->new($server_conn->{rproc});
-		$conn->{sock} = $sock;
-		$conn->nolinger;
-		Msg::blocking($sock, 0);
+		$conn->{sock} = AnyEvent::Handle->new(
+
+            fh => $sock,
+
+		    on_eof => sub {$conn->disconnect},
+
+		    on_error => sub {$conn->disconnect},
+
+		    keepalive => 1,
+
+		    linger => 0,
+	    );
 		$conn->{blocking} = 0;
-		eval {$conn->{peerhost} = $sock->peerhost};
-		if ($@) {
-			dbg($@) if isdbg('connll');
-			$conn->disconnect;
+		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $peerhost, $conn->{peerport} = $peerport);
+		dbg("accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}") if isdbg('connll');
+		$conn->{sock}->on_read(sub{$conn->_rcv});
+		if ($eproc) {
+			$conn->{eproc} = $eproc;
+		}
+		if ($rproc) {
+			$conn->{rproc} = $rproc;
+			# send login prompt
+			$conn->{state} = 'WL';
+			#		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
+			#		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
+			#		$conn->send_raw("\xFF\xFC\x01");
+			$conn->_send_file("$main::data/issue");
+			$conn->send_raw("login: ");
+			$conn->_dotimeout(60);
+			$conn->{echo} = 1;
 		} else {
-			eval {$conn->{peerport} = $sock->peerport};
-			$conn->{peerport} = 0 if $@;
-			my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost}, $conn->{peerport});
-			dbg("accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}") if isdbg('connll');
-			if ($eproc) {
-				$conn->{eproc} = $eproc;
-				Msg::set_event_handler ($sock, "error" => $eproc);
-			}
-			if ($rproc) {
-				$conn->{rproc} = $rproc;
-				my $callback = sub {$conn->_rcv};
-				Msg::set_event_handler ($sock, "read" => $callback);
-				# send login prompt
-				$conn->{state} = 'WL';
-				#		$conn->send_raw("\xff\xfe\x01\xff\xfc\x01\ff\fd\x22");
-				#		$conn->send_raw("\xff\xfa\x22\x01\x01\xff\xf0");
-				#		$conn->send_raw("\xFF\xFC\x01");
-				$conn->_send_file("$main::data/issue");
-				$conn->send_raw("login: ");
-				$conn->_dotimeout(60);
-				$conn->{echo} = 1;
-			} else { 
-				&{$conn->{eproc}}() if $conn->{eproc};
-				$conn->disconnect();
-			}
+			&{$conn->{eproc}}() if $conn->{eproc};
+			$conn->disconnect();
 		}
 	} else {
 		dbg("ExtMsg: error on accept ($!)") if isdbg('err');

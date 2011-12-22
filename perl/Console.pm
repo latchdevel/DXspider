@@ -31,6 +31,9 @@
 
 package main;
 
+use vars qw($maxkhist $maxshist $foreground	$background $mycallcolor @colors );
+use Curses;
+
 $maxkhist = 100;
 $maxshist = 500;
 if ($ENV{'TERM'} =~ /(xterm|ansi)/) {

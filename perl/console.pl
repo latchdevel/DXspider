@@ -26,6 +26,9 @@ BEGIN {
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 }
 
+use strict;
+
+use AnyEvent;
 use Msg;
 use IntMsg;
 use DXVars;
@@ -39,21 +42,35 @@ use Text::Wrap;
 
 use Console;
 
+use vars qw($maxkhist $maxshist $foreground	$background $mycallcolor @colors );
+
 #
 # initialisation
 #
 
-$call = "";                     # the callsign being used
-$conn = 0;                      # the connection object for the cluster
-$lasttime = time;               # lasttime something happened on the interface
+my $call = "";                     # the callsign being used
+my $conn = 0;                      # the connection object for the cluster
+my $lasttime = time;               # lasttime something happened on the interface
 
-$connsort = "local";
-@khistory = ();
-@shistory = ();
-$khistpos = 0;
-$spos = $pos = $lth = 0;
-$inbuf = "";
-@time = ();
+my $connsort = "local";
+my @khistory = ();
+my @shistory = ();
+my $khistpos = 0;
+my $pos;
+my $lth;
+my $bot;
+my $top;
+my $pagel = 25;
+my $cols = 80;
+my $lines = 25;
+my $scr;
+my $spos = $pos = $lth = 0;
+my $inbuf = "";
+my @time = ();
+
+my $lastmin = 0;
+my $sigint;
+my $sigterm;
 
 #$SIG{WINCH} = sub {@time = gettimeofday};
 
@@ -67,16 +84,16 @@ sub mydbg
 sub do_initscr
 {
 	$scr = new Curses;
-	if ($has_colors) {
+	if ($main::has_colors) {
 		start_color();
-		init_pair("0", $foreground, $background);
-#		init_pair(0, $background, $foreground);
-		init_pair(1, COLOR_RED, $background);
-		init_pair(2, COLOR_YELLOW, $background);
-		init_pair(3, COLOR_GREEN, $background);
-		init_pair(4, COLOR_CYAN, $background);
-		init_pair(5, COLOR_BLUE, $background);
-		init_pair(6, COLOR_MAGENTA, $background);
+		init_pair("0", $main::foreground, $main::background);
+#		init_pair(0, $main::background, $main::foreground);
+		init_pair(1, COLOR_RED, $main::background);
+		init_pair(2, COLOR_YELLOW, $main::background);
+		init_pair(3, COLOR_GREEN, $main::background);
+		init_pair(4, COLOR_CYAN, $main::background);
+		init_pair(5, COLOR_BLUE, $main::background);
+		init_pair(6, COLOR_MAGENTA, $main::background);
 		init_pair(7, COLOR_RED, COLOR_BLUE);
 		init_pair(8, COLOR_YELLOW, COLOR_BLUE);
 		init_pair(9, COLOR_GREEN, COLOR_BLUE);
@@ -85,7 +102,7 @@ sub do_initscr
 		init_pair(12, COLOR_MAGENTA, COLOR_BLUE);
 		init_pair(13, COLOR_YELLOW, COLOR_GREEN);
 		init_pair(14, COLOR_RED, COLOR_GREEN);
-		eval { assume_default_colors($foreground, $background) } unless $is_win;
+		eval { assume_default_colors($main::foreground, $main::background) } unless $main::is_win;
 	}
 
 	$top = $scr->subwin($lines-4, $cols, 0, 0);
@@ -117,7 +134,7 @@ sub do_resize
 	nonl();
  	$lines = LINES;
 	$cols = COLS;
-	$has_colors = has_colors();
+	$main::has_colors = has_colors();
 	do_initscr();
 
 	show_screen();
@@ -143,7 +160,7 @@ sub sig_term
 # determine the colour of the line
 sub setattr
 {
-	if ($has_colors) {
+	if ($main::has_colors) {
 		foreach my $ref (@colors) {
 			if ($_[0] =~ m{$$ref[0]}) {
 				$top->attrset($$ref[1]);
@@ -176,7 +193,7 @@ sub show_screen
 		setattr($line);
 		$top->addstr($line);
 #		$top->addstr("\n");
-		$top->attrset(COLOR_PAIR(0)) if $has_colors;
+		$top->attrset(COLOR_PAIR(0)) if $main::has_colors;
 		$spos = @shistory;
 		
 	} else {
@@ -192,7 +209,7 @@ sub show_screen
 		$p = 0 if $p < 0;
 		
 		$top->move(0, 0);
-		$top->attrset(COLOR_PAIR(0)) if $has_colors;
+		$top->attrset(COLOR_PAIR(0)) if $main::has_colors;
 		$top->clrtobot();
 		for ($i = 0; $i < $pagel && $p < @shistory; $p++) {
 			my $line = $shistory[$p];
@@ -201,7 +218,7 @@ sub show_screen
 			$top->addstr("\n") if $i;
 			setattr($line);
 			$top->addstr($line);
-			$top->attrset(COLOR_PAIR(0)) if $has_colors;
+			$top->attrset(COLOR_PAIR(0)) if $main::has_colors;
 			$i += $lines;
 		}
 		$spos = $p;
@@ -215,9 +232,9 @@ sub show_screen
 	$scr->addstr($lines-4, 0, $str);
 	
 	$scr->addstr($size);
-	$scr->attrset($mycallcolor) if $has_colors;
+	$scr->attrset($mycallcolor) if $main::has_colors;
 	$scr->addstr($call);
-	$scr->attrset(COLOR_PAIR(0)) if $has_colors;
+	$scr->attrset(COLOR_PAIR(0)) if $main::has_colors;
     $scr->addstr($add);
 	$scr->refresh();
 #	$top->refresh();
@@ -443,68 +460,9 @@ sub rec_stdin
 	$bot->refresh();
 }
 
-
-#
-# deal with args
-#
-
-$call = uc shift @ARGV if @ARGV;
-$call = uc $myalias if !$call;
-my ($scall, $ssid) = split /-/, $call;
-$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
-if ($ssid) {
-	$ssid = 15 if $ssid > 15;
-	$call = "$scall-$ssid";
-}
-
-if ($call eq $mycall) {
-	print "You cannot connect as your cluster callsign ($mycall)\n";
-	exit(0);
-}
-
-dbginit();
-
-$conn = IntMsg->connect("$clusteraddr", $clusterport, \&rec_socket);
-if (! $conn) {
-	if (-r "$data/offline") {
-		open IN, "$data/offline" or die;
-		while (<IN>) {
-			print $_;
-		}
-		close IN;
-	} else {
-		print "Sorry, the cluster $mycall is currently off-line\n";
-	}
-	exit(0);
-}
-
-$conn->set_error(sub{cease(0)});
-
-
-unless ($DB::VERSION) {
-	$SIG{'INT'} = \&sig_term;
-	$SIG{'TERM'} = \&sig_term;
-}
-
-$SIG{'HUP'} = \&sig_term;
-
-# start up
-do_resize();
-
-$SIG{__DIE__} = \&sig_term;
-
-$conn->send_later("A$call|$connsort width=$cols");
-$conn->send_later("I$call|set/page $maxshist");
-#$conn->send_later("I$call|set/nobeep");
-
-#Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
-
-$Text::Wrap::Columns = $cols;
-
-my $lastmin = 0;
-for (;;) {
+sub idle_loop
+{
 	my $t;
-	Msg->event_loop(1, 0.01);
 	$t = time;
 	if ($t > $lasttime) {
 		my ($min)= (gmtime($t))[1];
@@ -529,4 +487,68 @@ for (;;) {
 	$bot->refresh();
 }
 
+#
+# deal with args
+#
+
+$call = uc shift @ARGV if @ARGV;
+$call = uc $main::myalias if !$call;
+my ($scall, $ssid) = split /-/, $call;
+$ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
+if ($ssid) {
+	$ssid = 15 if $ssid > 15;
+	$call = "$scall-$ssid";
+}
+
+if ($call eq $main::mycall) {
+	print "You cannot connect as your cluster callsign ($main::mycall)\n";
+	exit(0);
+}
+
+dbginit();
+
+$conn = IntMsg->connect("$main::clusteraddr", $main::clusterport, \&rec_socket);
+if (! $conn) {
+	if (-r "$main::root/data/offline") {
+		open IN, "$main::root/data/offline" or die;
+		while (<IN>) {
+			print $_;
+		}
+		close IN;
+	} else {
+		print "Sorry, the cluster $main::mycall is currently off-line\n";
+	}
+	exit(0);
+}
+
+# create end condvar
+my $decease = AnyEvent->condvar;
+
+$conn->set_error(sub{cease(0)});
+
+unless ($DB::VERSION) {
+	$sigint = AnyEvent->signal(signal=>'INT', cb=> sub{$decease->send});
+	$sigterm = AnyEvent->signal(signal=>'TERM', cb=> sub{$decease->send});
+}
+
+$SIG{'HUP'} = \&sig_term;
+
+# start up
+do_resize();
+
+$SIG{__DIE__} = \&sig_term;
+
+$conn->send_later("A$call|$connsort width=$cols");
+$conn->send_later("I$call|set/page $maxshist");
+#$conn->send_later("I$call|set/nobeep");
+
+#Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
+
+$Text::Wrap::Columns = $cols;
+
+my $event_loop =  AnyEvent->timer(after => 0, interval => 0.010, cb => sub{idle_loop()});
+
+$decease->recv;
+
+cease(0);
 exit(0);

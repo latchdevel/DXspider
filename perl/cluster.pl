@@ -144,10 +144,9 @@ sub already_conn
 {
 	my ($conn, $call, $mess) = @_;
 
-	$conn->disable_read(1);
 	dbg("-> D $call $mess\n") if isdbg('chan');
+	$conn->disable_read(1);
 	$conn->send_now("D$call|$mess");
-	sleep(2);
 	$conn->disconnect;
 }
 
@@ -372,6 +371,8 @@ sub idle_loop
 		AGWMsg::process();
 		BPQMsg::process();
 
+		Timer::handler();
+
 		if (defined &Local::process) {
 			eval {
 				Local::process();       # do any localised processing
@@ -579,8 +580,7 @@ $script->run($main::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 
-my $idle_loop = AnyEvent->idle(cb => &idle_loop);
-
+my $per_sec = AnyEvent->timer(after => 0, interval => 0.010, cb => sub{idle_loop()});
 
 # main loop
 $decease->recv;
