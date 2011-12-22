@@ -61,6 +61,13 @@ sub set_error
 	$conn->{eproc} = $callback;
 }
 
+sub set_eof
+{
+	my $conn = shift;
+	my $callback = shift;
+	$conn->{sock}->on_eof(sub {$callback});
+}
+
 sub set_rproc
 {
 	my $conn = shift;

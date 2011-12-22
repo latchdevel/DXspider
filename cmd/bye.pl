@@ -13,7 +13,7 @@ if ($self->is_user && -e "$main::data/logout") {
 	my @in = <I>;
 	close(I);
 	$self->send_now('D', @in);
-	Msg->sleep(1);
+#	Msg->sleep(1);
 }
 
 #$self->send_now('Z', "");

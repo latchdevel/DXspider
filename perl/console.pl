@@ -71,6 +71,7 @@ my @time = ();
 my $lastmin = 0;
 my $sigint;
 my $sigterm;
+my $decease;
 
 #$SIG{WINCH} = sub {@time = gettimeofday};
 
@@ -140,13 +141,23 @@ sub do_resize
 	show_screen();
 }
 
+my $ceasing = 0;
+
 # cease communications
 sub cease
 {
 	my $sendz = shift;
+
+	print "ceasing ($ceasing)\r\n";
+
+	return if $ceasing;
+	++$ceasing;
+
 	$conn->disconnect if $conn;
-	endwin();
 	dbgclose();
+	endwin();
+	$decease->send;
+
 	print @_ if @_;
 	exit(0);	
 }
@@ -505,6 +516,9 @@ if ($call eq $main::mycall) {
 	exit(0);
 }
 
+# create end condvar
+$decease = AnyEvent->condvar;
+
 dbginit();
 
 $conn = IntMsg->connect("$main::clusteraddr", $main::clusterport, \&rec_socket);
@@ -521,22 +535,22 @@ if (! $conn) {
 	exit(0);
 }
 
-# create end condvar
-my $decease = AnyEvent->condvar;
-
-$conn->set_error(sub{cease(0)});
 
 unless ($DB::VERSION) {
 	$sigint = AnyEvent->signal(signal=>'INT', cb=> sub{$decease->send});
 	$sigterm = AnyEvent->signal(signal=>'TERM', cb=> sub{$decease->send});
 }
 
-$SIG{'HUP'} = \&sig_term;
+#$SIG{'HUP'} = \&sig_term;
+my $sighup = AnyEvent->signal(signal=>'HUP', cb=> sub{$decease->send});
+$conn->{sock}->on_eof(sub{$decease->send});
+$conn->{sock}->on_error(sub{$decease->send});
 
 # start up
 do_resize();
 
-$SIG{__DIE__} = \&sig_term;
+#$SIG{__DIE__} = \&sig_term;
+#my $sigdie = AnyEvent->signal(signal=>'__DIE__', cb=> sub{$decease->send});
 
 $conn->send_later("A$call|$connsort width=$cols");
 $conn->send_later("I$call|set/page $maxshist");
@@ -551,4 +565,3 @@ my $event_loop =  AnyEvent->timer(after => 0, interval => 0.010, cb => sub{idle_
 $decease->recv;
 
 cease(0);
-exit(0);
