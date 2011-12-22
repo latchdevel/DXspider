@@ -386,9 +386,9 @@ sub send_now
 #		chomp;
         my @lines = split /\n/;
 		for (@lines) {
+			dbg("-> $sort $call $_") if $sort ne 'L' && isdbg('chan');
 			$conn->send_now("$sort$call|$_");
 			# debug log it, but not if it is a log message
-			dbg("-> $sort $call $_") if $sort ne 'L' && isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -410,9 +410,9 @@ sub send_later
 #		chomp;
         my @lines = split /\n/;
 		for (@lines) {
+			dbg("-> $sort $call $_") if $sort ne 'L' && isdbg('chan');
 			$conn->send_later("$sort$call|$_");
 			# debug log it, but not if it is a log message
-			dbg("-> $sort $call $_") if $sort ne 'L' && isdbg('chan');
 		}
 	}
 	$self->{t} = time;
@@ -432,8 +432,8 @@ sub send						# this is always later and always data
 		for (ref $l ? @$l : $l) {
 			my @lines = split /\n/;
 			for (@lines) {
-				$conn->send_later("D$call|$_");
 				dbg("-> D $call $_") if isdbg('chan');
+				$conn->send_later("D$call|$_");
 			}
 		}
 	}
@@ -500,7 +500,7 @@ sub disconnect
 	my $user = $self->{user};
 	
 	$user->close() if defined $user;
-	$self->{conn}->disconnect if $self->{conn};
+	$self->{conn}->close_on_empty if $self->{conn};
 	$self->del();
 }
 

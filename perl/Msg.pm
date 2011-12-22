@@ -123,7 +123,9 @@ sub connect {
 
     # Create a connection end-point object
     my $conn = $pkg;
-	$conn = $pkg->new($rproc);
+	unless (ref $pkg) {
+		$conn = $pkg->new($rproc);
+	}
 	$conn->{peerhost} = $to_host;
 	$conn->{peerport} = $to_port;
 	$conn->{sort} = 'Outgoing';
@@ -225,6 +227,7 @@ sub disconnect
 	}
 
 	if (defined($sock)) {
+		shutdown($sock->{fh}, 2);
 		$sock->destroy;
 	}
 	
@@ -242,14 +245,18 @@ sub _send_stuff
 	while (@$rq) {
 		my $data = shift @$rq;
 		my $lth = length $data;
+		my $call = $conn->{call} || 'none';
 		if (isdbg('raw')) {
-			my $call = $conn->{call} || 'none';
 			if (isdbg('raw')) {
 				dbgdump('raw', "$call send $lth: ", $lth);
 			}
 		}
-		$sock->push_write($data);
-		$total_out = $lth;
+		if (defined $sock && !$sock->destroyed) {
+			$sock->push_write($data);
+			$total_out = $lth;
+		} else {
+			dbg("_send_stuff $call ending data ignored: $data");
+		}
 	}
 }
 
@@ -285,7 +292,7 @@ sub _err_will_block {
 sub close_on_empty
 {
 	my $conn = shift;
-	$conn->{sock}->push_shutdown;
+	$conn->{sock}->on_drain(sub {$conn->disconnect;});
 }
 
 #-----------------------------------------------------------------
