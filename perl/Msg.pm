@@ -234,9 +234,14 @@ sub disconnect
 		}
 	}
 
-	if (defined($sock)) {
+	if (ref $sock && $sock->isa('AnyEvent::Handle') && exists $sock->{fh}) {
 		shutdown($sock->{fh}, 2);
 		$sock->destroy;
+	} else {
+		my $s;
+		$s = "already destroyed" unless exists $sock->{fh};
+		$s ||= ref $sock || $sock || "undefined";
+		dbg("Msg::disconnect trying to disconnect a $s socket") if isdbg('chan');
 	}
 	
 	unless ($main::is_win) {
