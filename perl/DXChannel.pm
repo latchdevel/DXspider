@@ -147,11 +147,16 @@ sub alloc
 {
 	my ($pkg, $call, $conn, $user) = @_;
 	my $self = {};
-  
+
 	die "trying to create a duplicate channel for $call" if $channels{$call};
+	bless $self, $pkg;
+
 	$self->{call} = $call;
 	$self->{priv} = 0;
-	$self->{conn} = $conn if defined $conn;	# if this isn't defined then it must be a list
+	if (defined $conn && ref $conn) { # if this isn't defined then it must be a list
+		$self->{conn} = $conn;
+		$conn->set_on_eof(sub {$self->disconnect});
+	}
 	if (defined $user) {
 		$self->{user} = $user;
 		$self->{lang} = $user->lang;
@@ -177,7 +182,6 @@ sub alloc
 
 	$count++;
 	dbg("DXChannel $self->{call} created ($count)") if isdbg('chan');
-	bless $self, $pkg; 
 	return $channels{$call} = $self;
 }
 
@@ -202,7 +206,9 @@ sub rebless
 {
 	my $self = shift;
 	my $class = shift;
-	return $channels{$self->{call}} = bless $self, $class;
+	my $new = bless $self, $class;
+	$new->{conn}->on_eof(sub {$new->disconnect});
+	return $channels{$self->{call}} = $new;
 }
 
 sub rec	
