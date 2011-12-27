@@ -16,6 +16,7 @@ return (1, $self->msg('db3', 'QSL')) unless $QSL::dbm;
 
 push @out, $self->msg('qsl1');
 foreach my $call (@call) {
+	Log('call', "$call: show/dxqsl $call");
 	my $q = QSL::get($call);
 	if ($q) {
 		my $c = $call;
