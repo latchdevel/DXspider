@@ -13,6 +13,10 @@ package DXCommandmode;
 
 @ISA = qw(DXChannel);
 
+use AnyEvent;
+use AnyEvent::Handle;
+use AnyEvent::Socket;
+
 use POSIX qw(:math_h);
 use DXUtil;
 use DXChannel;
@@ -1233,5 +1237,50 @@ sub send_motd
 	}
 	$self->send_file($motd) if -e $motd;
 }
+
+sub http_get
+{
+	my $self = shift;
+	my ($host, $uri, $cb) = @_;
+
+	# store results here
+	my ($response, $header, $body);
+
+	my $handle;
+	$handle = AnyEvent::Handle->new(
+									connect  => [$host => 'http'],
+									on_error => sub {
+										$cb->("HTTP/1.0 500 $!");
+										$self->anyevent_del($handle);
+										$handle->destroy; # explicitly destroy handle
+									},
+									on_eof   => sub {
+										$cb->($response, $header, $body);
+										$self->anyevent_del($handle);
+										$handle->destroy; # explicitly destroy handle
+									}
+								   );
+	$self->anyevent_add($handle);
+	$handle->push_write ("GET $uri HTTP/1.0\015\012\015\012");
+
+	# now fetch response status line
+	$handle->push_read (line => sub {
+							my ($handle, $line) = @_;
+							$response = $line;
+						});
+
+	# then the headers
+	$handle->push_read (line => "\015\012\015\012", sub {
+							my ($handle, $line) = @_;
+							$header = $line;
+						});
+
+	# and finally handle any remaining data as body
+	$handle->on_read (sub {
+						  $body .= $_[0]->rbuf;
+						  $_[0]->rbuf = "";
+					  });
+}
+
 1;
 __END__

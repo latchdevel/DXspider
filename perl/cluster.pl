@@ -492,6 +492,8 @@ my ($sigint, $sigterm);
 unless ($DB::VERSION) {
 	$sigint = AnyEvent->signal(signal=>'INT', cb=> sub{$decease->send});
 	$sigterm = AnyEvent->signal(signal=>'TERM', cb=> sub{$decease->send});
+#	$sigint = AnyEvent->signal(signal=>'INT', cb=> sub{AnyEvent->unloop});
+#	$sigterm = AnyEvent->signal(signal=>'TERM', cb=> sub{AnyEvent->unloop});
 }
 
 unless ($is_win) {
@@ -584,6 +586,7 @@ my $per_sec = AnyEvent->timer(after => 0, interval => 0.010, cb => sub{idle_loop
 
 # main loop
 $decease->recv;
+#AnyEvent->loop;
 
 idle_loop() for (1..25);
 cease(0);

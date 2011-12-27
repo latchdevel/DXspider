@@ -150,6 +150,8 @@ package DXM;
 				hnodee1 => 'Please enter your Home Node, set/homenode <your home DX Cluster>',
 				hnodee2 => 'Failed to set homenode on $_[0]',
 				hnode => 'Your Homenode is now \"$_[0]\"',
+				http1 => '$_[0] working ...',
+				http2 => '$_[0] returned:',
 				init1 => 'sent initialisation message to $_[0]',
 				iso => '$_[0] Isolated',
 				isou => '$_[0] UnIsolated',

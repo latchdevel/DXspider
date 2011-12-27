@@ -125,6 +125,7 @@ $count = 0;
 		  inqueue => '9,Input Queue,parray',
 		  next_pc92_update => '9,Next PC92 Update,atime',
 		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
+		  anyevents => '9,outstanding AnyEvent handles,parray',
 		 );
 
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
@@ -179,6 +180,7 @@ sub alloc
 		$self->{cq} = $dxcc[1]->cq;						
 	}
 	$self->{inqueue} = [];
+	$self->{anyevents} = [];
 
 	$count++;
 	dbg("DXChannel $self->{call} created ($count)") if isdbg('chan');
@@ -750,6 +752,25 @@ sub handle_xml
 		delete $self->{handle_xml} if exists $self->{handle_xml};
 	}
 	return $r;
+}
+
+sub anyevent_add
+{
+	my $self = shift;
+	my $handle = shift;
+	my $sort = shift || "unknown";
+
+	push @{$self->{anyevents}}, $handle;
+	dbg("anyevent: add $sort handle making " . scalar @{$self->{anyevents}} . " handles in use") if isdbg('anyevent');
+}
+
+sub anyevent_del
+{
+	my $self = shift;
+	my $handle = shift;
+	my $sort = shift || "unknown";
+	$self->{anyevents} = [ grep {$_ != $handle} @{$self->{anyevents}} ];
+	dbg("anyevent: delete $sort handle making " . scalar @{$self->{anyevents}} . " handles in use") if isdbg('anyevent');
 }
 
 #no strict;
