@@ -29,7 +29,7 @@ foreach $l (@list) {
 	}
 
 	Log('call', "$call: show/qrz \U$l");
-	push @out,  $self->msg('http1', "show/qrz \U$l");
+	push @out,  $self->msg('http1', 'qrz.com', "\U$l");
 
 	$self->http_get($host, $s, sub
 					{
@@ -40,27 +40,31 @@ foreach $l (@list) {
 							dbg("qrz response: $response");
 							dbg("qrz body: $body");
 						}
-						Log('call', "$call: show/qrz \U$body");
-						my $state = "blank";
-						foreach my $result (split /\r?\n/, $body) {
-							dbg("qrz: $result") if isdbg('qrz') && $result;
-							if ($state eq 'blank' && $result =~ /^<Callsign>/i) {
-								$state = 'go';
-							} elsif ($state eq 'go') {
-								next if $result =~ m|<user>|;
-								next if $result =~ m|<u_views>|;
-								next if $result =~ m|<locref>|;
-								next if $result =~ m|<ccode>|;
-								next if $result =~ m|<dxcc>|;
-								last if $result =~ m|</Callsign>|;
-								my ($tag, $data) = $result =~ m|^\s*<(\w+)>(.*)</|;
-								push @out, sprintf "%10s: $data", $tag;
-							}
-						}
-						if (@out) {
-							unshift @out, $self->msg('http2', "show/qrz \U$l");
+						if ($response =~ /^5/) {
+							push @out, $self->msg('e18',"qrz.com $!");
 						} else {
-							push @out, $self->msg('e3', 'show/qrz', uc $l);
+							Log('call', "$call: show/qrz \U$body");
+							my $state = "blank";
+							foreach my $result (split /\r?\n/, $body) {
+								dbg("qrz: $result") if isdbg('qrz') && $result;
+								if ($state eq 'blank' && $result =~ /^<Callsign>/i) {
+									$state = 'go';
+								} elsif ($state eq 'go') {
+									next if $result =~ m|<user>|;
+									next if $result =~ m|<u_views>|;
+									next if $result =~ m|<locref>|;
+									next if $result =~ m|<ccode>|;
+									next if $result =~ m|<dxcc>|;
+									last if $result =~ m|</Callsign>|;
+									my ($tag, $data) = $result =~ m|^\s*<(\w+)>(.*)</|;
+									push @out, sprintf "%10s: $data", $tag;
+								}
+							}
+							if (@out) {
+								unshift @out, $self->msg('http2', "show/qrz \U$l");
+							} else {
+								push @out, $self->msg('e3', 'show/qrz', uc $l);
+							}
 						}
 						$self->send_ans(@out);
 					}

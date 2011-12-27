@@ -21,7 +21,8 @@ my $port = 5000;
 my $cmdprompt = '/query->.*$/';
 
 my($info, $t);
-                                    
+
+use Net::Telnet;
 $t = new Net::Telnet;
 $info =  $t->open(Host    => $target,
 		  Port    => $port,

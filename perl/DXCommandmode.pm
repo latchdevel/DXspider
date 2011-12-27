@@ -36,7 +36,6 @@ use WCY;
 use Sun;
 use Internet;
 use Script;
-use Net::Telnet;
 use QSL;
 use DB_File;
 use VE7CC;

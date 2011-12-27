@@ -13,7 +13,7 @@ my ($self, $line) = @_;
 
 my @out;
 
-my $mon;;
+my $mon;
 
 # trying to make the syntax abit more user friendly...
 # and yes, I have been here and it *is* all my fault (dirk)
@@ -40,32 +40,22 @@ my $port = 80;
 my $url = $Internet::contest_url || "http://www.sk3bg.se/contest/text";
 $url .= "/$filename";
 
-my $t = new Net::Telnet (Telnetmode => 0);
-eval {
-    $t->open(Host => $host, Port => $port, Timeout => 15);
-    };
+push @out,  $self->msg('http1', 'sk3bg.se', "$filename");
 
-if (!$t || $@) {
-    push @out, $self->msg('e18','sk3bg.se');
-} else {
-    my $s = "GET $url";
-    $t->print($s);
-    my $notfound = $t->getline(Timeout => 10);
-    if ($notfound =~ /404 Object Not Found/) {
-	    return (1, "there is no contest info for $mon")
-	} else {
-	    push @out, $notfound;
-	}
-    while (!$t->eof) {
-    	eval { 
-	    push @out, $t->getline(Timeout => 10);
-	};
-	if ($@) {
-	    push @out, $self->msg('e18', 'sk3bg.se');
-	    last;    
-	}
-    }
-}
-$t->close;
+$self->http_get($host, $url, sub
+				{
+					my ($response, $header, $body) = @_;
+					my @out;
+
+					if ($response =~ /^4/) {
+						push @out, "There is no contest info $mon";
+					} elsif ($response =~ /^5/) {
+						push @out, $self->msg('e18','sk3bg.se');
+					} else {
+						push @out, split /\r?\n/, $body;
+					}
+					$self->send_ans(@out);
+				}
+			   );
 
 return (1, @out);
