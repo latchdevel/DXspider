@@ -166,7 +166,8 @@ sub init
 		$v4 = 1;
 		$convert++ if -e "$fn.v3" && !-e $ufn;
 	}
-	
+
+	$main::systime ||= time;	# becuase user_asc doesn't set it
 
 	# open "database" files
 	if ($v3) {
@@ -180,18 +181,35 @@ sub init
 	if ($v4) {
 		my $new = ! -e $ufn;
 		$dbh = DBI->connect("dbi:SQLite:dbname=$ufn","","") or die "Cannot open $ufn ($!)\n";
+		if ($new && $dbh) {
+			# create the table
+			my $table = q{create table user(
+call text not null unique,
+lastseen int not null,
+data text not null
+)};
+			$dbh->do($table) or die "cannot create user table in $ufn " . $dbh->errstr;
+			
+			# Add indexes
+			$dbh->do(q(create index x1 on user(lastseen))) or die $dbh->errstr;
+		}
 	}
 
 
 	# do a conversion if required
 	if ($dbm && $v3 && $convert) {
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
+
+		require DB_File;
+		require Storable;
+		import DB_File;
+		import Storable qw(nfreeze thaw);
 		
 		my %oldu;
 		dbg("Converting the User File to V3 ");
-		dbg("This will take a while, I suggest you go and have cup of strong tea");
+		dbg("This will take a while, I suggest you go and have a cup of strong tea");
 		my $odbm = tie (%oldu, 'DB_File', "$fn.v2", O_RDONLY, 0666, $DB_File::DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
-        for ($action = DB_File::R_FIRST; !$odbm->seq($key, $val, $action); $action = DB_File::R_NEXT) {
+        for ($action = DB_File::R_FIRST(); !$odbm->seq($key, $val, $action); $action = DB_File::R_NEXT()) {
 			my $ref = asc_decode($val);
 			if ($ref) {
 				$ref->put;
@@ -208,27 +226,18 @@ sub init
 	if ($dbh && $v4 && $convert) {
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
 		
-		# create the table
-		my $table = q{create table user(
-call text not null unique,
-lastseen int not null,
-data text not null
-)};
-		$dbh->do($table) or die "cannot create user table in $ufn " . $dbh->errstr;
-		
-		# Add indexes
-		$dbh->do(q(create index x1 on user(lastseen))) or die $dbh->errstr;
 		
 		my %oldu;
 		dbg("Converting the User File to V4 ");
-		dbg("This will take a while, I suggest you go and have cup of strong tea");
+		dbg("This will take a while, I suggest you go and have a cup of strong tea");
 		require DB_File;
 		require Storable;
 		import DB_File;
 		import Storable qw(nfreeze thaw);
 		my $odbm = tie (%oldu, 'DB_File', "$fn.v3", O_RDONLY, 0666, $DB_File::DB_BTREE) or confess "can't open user file: $fn.v3 ($!) [rebuild it from user_asc?]";
 		$dbh->begin_work;
-        for ($action = DB_File::R_FIRST; !$odbm->seq($key, $val, $action); $action = DB_File::R_NEXT) {
+		$dbh_working++;
+        for ($action = DB_File::R_FIRST(); !$odbm->seq($key, $val, $action); $action = DB_File::R_NEXT()) {
 			my $ref = thaw($val);
 			if ($ref) {
 				my $r = _insert($ref);
@@ -242,7 +251,7 @@ data text not null
 				$err++
 			}
 		}
-		$dbh->commit;
+		sync();
 		undef $odbm;
 		untie %oldu;
 		dbg("Conversion completed $count records $err errors");
@@ -323,6 +332,13 @@ sub _select
 		return $row[0];
 	}
 	return undef;
+}
+
+sub _delete
+{
+	my $call =shift;
+	my $r = $dbh->do(q{delete from user where call = ?}, undef, $call);
+	return $r;
 }
 
 sub new
@@ -571,9 +587,6 @@ sub export
 	my $del = 0;
 	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
 	if ($fh) {
-		my $key = 0;
-		my $val = undef;
-		my $action;
 		my $t = scalar localtime;
 		print $fh q{#!/usr/bin/perl
 #
@@ -640,40 +653,76 @@ print "There are $count user records and $err errors\n";
 };
 		print $fh "__DATA__\n";
 
-        for ($action = DB_File::R_FIRST; !$dbm->seq($key, $val, $action); $action = DB_File::R_NEXT) {
-			if (!is_callsign($key) || $key =~ /^0/) {
-				my $eval = $val;
-				my $ekey = $key;
-				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
-				++$err;
-				next;
-			}
-			my $ref = decode($val);
-			if ($ref) {
-				my $t = $ref->{lastin} || 0;
-				if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
-					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
-						LogDbg('DXCommand', "$ref->{call} deleted, too old");
-						$del++;
+		if ($v4) {
+			my $sth = $dbh->prepare(q{select call,data from user}) or confess($dbh->errstr);
+			my $rv = $sth->execute;
+			if ($rv) {
+				while (my @row = $sth->fetchrow_array) {
+					my $call = shift @row;
+					my $data = shift @row;
+					if (!is_callsign($call) || $call =~ /^0/) {
+						LogDbg('DXCommand', "Export Error1: $call\t$data");
+						_delete($call);
+						++$err;
 						next;
 					}
+					my $ref = bless decode_json($data), __PACKAGE__;
+					my $t = $ref->{lastin} || 0;
+					if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
+						unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
+							LogDbg('DXCommand', "$ref->{call} deleted, too old");
+							_delete($call);
+							$del++;
+							next;
+						}
+					}
+	
+					# only store users that are reasonably active or have useful information
+					print $fh "$call\t" . $ref->asc_encode($basic_info_only) . "\n";
+					++$count;
 				}
-				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
-				++$count;
 			} else {
-				LogDbg('DXCommand', "Export Error3: $key\t$val");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
-				++$err;
+				dbg(carp($dbh->errstr));
 			}
-		} 
+		} else {
+			my $key = 0;
+			my $val = undef;
+			my $action;
+			for ($action = DB_File::R_FIRST(); !$dbm->seq($key, $val, $action); $action = DB_File::R_NEXT()) {
+				if (!is_callsign($key) || $key =~ /^0/) {
+					my $eval = $val;
+					my $ekey = $key;
+					$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+					$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+					LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
+					eval {$dbm->del($key)};
+					dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
+					++$err;
+					next;
+				}
+				my $ref = decode($val);
+				if ($ref) {
+					my $t = $ref->{lastin} || 0;
+					if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
+						unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
+							eval {$dbm->del($key)};
+							dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+							LogDbg('DXCommand', "$ref->{call} deleted, too old");
+							$del++;
+							next;
+						}
+					}
+					# only store users that are reasonably active or have useful information
+					print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
+					++$count;
+				} else {
+					LogDbg('DXCommand', "Export Error3: $key\t$val");
+					eval {$dbm->del($key)};
+					dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
+					++$err;
+				}
+			} 
+		}
         $fh->close;
     } 
 	return "$count Users $del Deleted $err Errors ('sh/log Export' for details)";
