@@ -81,10 +81,12 @@ while ($f = shift @list) {		# next field
 		$info = shift @list;
 		next;
 	}
-	if ((lc $f eq 'spotter' || lc $f eq 'by') && $list[0]) {
+	if ((lc $f eq 'spotter' || lc $f eq 'by' || lc $f eq 'by_dxcc') && $list[0]) {
 		#    print "got spotter\n";
 		$spotter = uc shift @list;
-		if ($list[0] && lc $list[0] eq 'dxcc') {
+		if ($f eq 'by_dxcc') {
+			$fromdxcc = 1;
+		} elsif ($list[0] && lc $list[0] eq 'dxcc') {
 			$fromdxcc = 1;
 			shift @list;
 		}

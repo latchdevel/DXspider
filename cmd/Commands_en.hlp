@@ -2111,6 +2111,9 @@ any order to the basic SHOW/DX command, they are:-
                   
                    You can also use this with the 'by' keyword so 
                    eg by W dxcc  
+
+ by_dxcc         - alternatively you can simply say 'by_dxcc W' instead
+                   instead of 'by W dxcc'.
  
  real or rt      - Format the output the same as for real time spots. The
                    formats are deliberately different (so you can tell
