@@ -413,12 +413,12 @@ sub new_client {
 		my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $peerhost, $conn->{peerport} = $peerport);
 		dbg("accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}") if isdbg('connll');
 		$conn->{sort} = 'Incoming';
+		$conn->{sock}->on_read(sub {$conn->_rcv});
 		if ($eproc) {
 			$conn->{eproc} = $eproc;
 		}
 		if ($rproc) {
 			$conn->{rproc} = $rproc;
-			$conn->{sock}->on_read(sub {$conn->_rcv});
 		} else {  # Login failed
 			&{$conn->{eproc}}($conn, undef) if exists $conn->{eproc};
 			$conn->disconnect();

@@ -9,7 +9,6 @@
 package DXUser;
 
 use DXLog;
-use DB_File;
 use Data::Dumper;
 use Fcntl;
 use IO::File;
@@ -19,16 +18,19 @@ use LRU;
 
 use strict;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3);
+use vars qw(%u $dbm $dbh $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3 $v4);
 
 %u = ();
 $dbm = undef;
+$dbh = undef;
 $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 $lrusize = 2000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
+
+my $dbh_working;
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -121,46 +123,75 @@ sub init
 
 	my $ufn;
 	my $convert;
-	
-	eval {
-		require Storable;
-	};
 
-#	eval "use Storable qw(nfreeze thaw)";
+	eval {
+		require DBI;
+		require DBD::SQLite;
+		require JSON;
+	};
 	
 	if ($@) {
-		$ufn = "$fn.v2";
-		$v3 = $convert = 0;
-		dbg("the module Storable appears to be missing!!");
-		dbg("trying to continue in compatibility mode (this may fail)");
-		dbg("please install Storable from CPAN as soon as possible");
-	} else {
-		import Storable qw(nfreeze thaw);
-
+		
 		$ufn = "$fn.v3";
-		$v3 = 1;
-		$convert++ if -e "$fn.v2" && !-e $ufn;
-	}
-	
-	if ($mode) {
-		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		$v3 = 1; $convert = 0;
+		dbg("One of more of the modules DBI, DBD::SQLite and JSON appear to be missing!!");
+		dbg("trying to continue in compatibility mode (this may fail)");
+		dbg("please install DBI, DBD::SQLite and JSON from CPAN as soon as possible");
+
+		eval {
+			require DB_File;
+			require Storable;
+		};
+
+		if ($@) {
+			$ufn = "$fn.v2";
+			$v3 = $convert = 0;
+			dbg("One of the modules DB_File and Storable appears to be missing!!");
+			dbg("trying to continue in compatibility mode (this may fail)");
+			dbg("please install Storable from CPAN as soon as possible");
+		} else {
+			import DB_File;
+			import Storable qw(nfreeze thaw);
+			
+			$ufn = "$fn.v3";
+			$v3 = 1;
+			$convert++ if -e "$fn.v2" && !-e $ufn;
+		}
 	} else {
-		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		import DBI;
+		import DBD::SQLite;
+		import JSON qw(-convert_blessed_universally);
+		
+		$ufn = "$fn.v4";
+		$v4 = 1;
+		$convert++ if -e "$fn.v3" && !-e $ufn;
+	}
+	
+
+	# open "database" files
+	if ($v3) {
+		if ($mode) {
+			$dbm = tie (%u, 'DB_File', "$fn.v3", O_CREAT|O_RDWR, 0666, $DB::File::DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		} else {
+			$dbm = tie (%u, 'DB_File', "$fn.v3", O_RDONLY, 0666, $DB_File::DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		}
+		die "Cannot open $fn.v3 ($!)\n" unless $dbm;
+	}
+	if ($v4) {
+		my $new = ! -e $ufn;
+		$dbh = DBI->connect("dbi:SQLite:dbname=$ufn","","") or die "Cannot open $ufn ($!)\n";
 	}
 
-	die "Cannot open $ufn ($!)\n" unless $dbm;
 
-	$lru = LRU->newbase("DXUser", $lrusize);
-	
 	# do a conversion if required
-	if ($dbm && $convert) {
+	if ($dbm && $v3 && $convert) {
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
 		
 		my %oldu;
 		dbg("Converting the User File to V3 ");
 		dbg("This will take a while, I suggest you go and have cup of strong tea");
-		my $odbm = tie (%oldu, 'DB_File', "$fn.v2", O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
-        for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
+		my $odbm = tie (%oldu, 'DB_File', "$fn.v2", O_RDONLY, 0666, $DB_File::DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
+        for ($action = DB_File::R_FIRST; !$odbm->seq($key, $val, $action); $action = DB_File::R_NEXT) {
 			my $ref = asc_decode($val);
 			if ($ref) {
 				$ref->put;
@@ -173,6 +204,53 @@ sub init
 		untie %oldu;
 		dbg("Conversion completed $count records $err errors");
 	}
+
+	if ($dbh && $v4 && $convert) {
+		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
+		
+		# create the table
+		my $table = q{create table user(
+call text not null unique,
+lastseen int not null,
+data text not null
+)};
+		$dbh->do($table) or die "cannot create user table in $ufn " . $dbh->errstr;
+		
+		# Add indexes
+		$dbh->do(q(create index x1 on user(lastseen))) or die $dbh->errstr;
+		
+		my %oldu;
+		dbg("Converting the User File to V4 ");
+		dbg("This will take a while, I suggest you go and have cup of strong tea");
+		require DB_File;
+		require Storable;
+		import DB_File;
+		import Storable qw(nfreeze thaw);
+		my $odbm = tie (%oldu, 'DB_File', "$fn.v3", O_RDONLY, 0666, $DB_File::DB_BTREE) or confess "can't open user file: $fn.v3 ($!) [rebuild it from user_asc?]";
+		$dbh->begin_work;
+        for ($action = DB_File::R_FIRST; !$odbm->seq($key, $val, $action); $action = DB_File::R_NEXT) {
+			my $ref = thaw($val);
+			if ($ref) {
+				my $r = _insert($ref);
+				if ($r) {
+					$count++;
+				} else {
+					$err++;
+					dbg("error converting call $ref->{call} - " . $dbh->errstr);
+				}
+			} else {
+				$err++
+			}
+		}
+		$dbh->commit;
+		undef $odbm;
+		untie %oldu;
+		dbg("Conversion completed $count records $err errors");
+
+	}
+
+	$lru = LRU->newbase("DXUser", $lrusize);
+	
 	$filename = $ufn;
 }
 
@@ -181,7 +259,11 @@ sub del_file
 	my ($pkg, $fn) = @_;
   
 	confess "need a filename in User" if !$fn;
-	$fn .= $v3 ? ".v3" : ".v2";
+	my $suffix;
+	$suffix = '.v4' if $v4;
+	$suffix ||= '.v3' if $v3;
+	$suffix ||= '.v2';
+	$fn .= $suffix;
 	unlink $fn;
 }
 
@@ -190,8 +272,8 @@ sub del_file
 #
 sub process
 {
-	if ($main::systime > $lasttime + 15) {
-		$dbm->sync;
+	if ($main::systime > $lasttime + 5) {
+		sync();
 		$lasttime = $main::systime;
 	}
 }
@@ -202,8 +284,11 @@ sub process
 
 sub finish
 {
-	undef $dbm;
-	untie %u;
+	if ($dbm) {
+		undef $dbm;
+		untie %u;
+	}
+	$dbh->disconnect if $dbh; 
 }
 
 #
@@ -215,7 +300,29 @@ sub alloc
 	my $pkg = shift;
 	my $call = uc shift;
 	my $self = bless {call => $call, 'sort'=>'U'}, $pkg;
+	_insert($self) or confess($dbh->errstr) if $v4;
 	return $self;
+}
+
+sub _insert
+{
+	my $self = shift;
+	my $json = JSON->new->allow_blessed->convert_blessed->encode($self);
+	$dbh->begin_work unless $dbh_working++;
+	my $r = $dbh->do(q{replace into user values(?,?,?)}, undef, $self->{call}, $main::systime, $json);
+	return $r;
+}
+
+sub _select
+{
+	my $call = shift;
+	my $sth = $dbh->prepare(qq{select data from user where call = ?}) or confess($dbh->errstr);
+	my $rv = $sth->execute($call);
+	if ($rv) {
+		my @row = $sth->fetchrow_array;
+		return $row[0];
+	}
+	return undef;
 }
 
 sub new
@@ -227,7 +334,7 @@ sub new
 #	confess "can't create existing call $call in User\n!" if $u{$call};
 
 	my $self = $pkg->alloc($call);
-	$self->put;
+	$self->put unless $v4;
 	return $self;
 }
 
@@ -246,20 +353,29 @@ sub get
 	return $ref if $ref && ref $ref eq 'DXUser';
 	
 	# search for it
-	unless ($dbm->get($call, $data)) {
-		$ref = decode($data);
-		if ($ref) {
-			if (ref $ref ne 'DXUser') {
-				dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
+	if ($v4) {
+		if ($data = _select($call)) {
+			$ref = bless decode_json($data), __PACKAGE__;
+			$lru->put($call, $ref);
+			return $ref;
+		}
+	} else {
+	    unless ($dbm->get($call, $data)) {
+			$ref = decode($data);
+			if ($ref) {
+				if (ref $ref ne 'DXUser') {
+					dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
+					return undef;
+				}
+			} else {
+				dbg("DXUser::get: no reference returned from decode $!");
 				return undef;
 			}
-		} else {
-			dbg("DXUser::get: no reference returned from decode $!");
-			return undef;
+			$lru->put($call, $ref);
+			return $ref;
 		}
-		$lru->put($call, $ref);
-		return $ref;
 	}
+	
 	return undef;
 }
 
@@ -291,7 +407,20 @@ sub get_current
 
 sub get_all_calls
 {
-	return (sort keys %u);
+	if ($v4) {
+		my $sth = $dbh->prepare(qq{select call from user}) or confess($dbh->errstr);
+		my $rv = $sth->execute();
+		if ($rv) {
+			my @row;
+			my @r;
+			while (my @r = $sth->fetchrow_array) {
+				push @row, @r;
+			}
+			return @row;		# 'cos it's already sorted
+		}
+	} else {
+		return (sort keys %u);
+	}
 }
 
 #
@@ -304,13 +433,17 @@ sub put
 	confess "Trying to put nothing!" unless $self && ref $self;
 	my $call = $self->{call};
 
-	$dbm->del($call);
 	delete $self->{annok} if $self->{annok};
 	delete $self->{dxok} if $self->{dxok};
 
 	$lru->put($call, $self);
-	my $ref = $self->encode;
-	$dbm->put($call, $ref);
+	if ($v4) {
+		_insert($self);
+	} else {
+		$dbm->del($call);
+		my $ref = $self->encode;
+		$dbm->put($call, $ref);
+	}
 }
 
 # freeze the user
@@ -373,9 +506,13 @@ sub asc_decode
 sub del
 {
 	my $self = shift;
-	my $call = $self->{call};
-	$lru->remove($call);
-	$dbm->del($call);
+	if ($v4) {
+		_delete($self)
+	} else {
+		my $call = $self->{call};
+		$lru->remove($call);
+		$dbm->del($call);
+	}
 }
 
 #
@@ -386,7 +523,7 @@ sub close
 {
 	my $self = shift;
 	$self->{lastin} = time;
-	$self->put();
+	$self->put;
 }
 
 #
@@ -395,7 +532,12 @@ sub close
 
 sub sync
 {
-	$dbm->sync;
+	if ($v4) {
+		$dbh->commit if $dbh_working;
+		$dbh_working = 0;
+	} else {
+		$dbm->sync;
+	}
 }
 
 #
@@ -498,7 +640,7 @@ print "There are $count user records and $err errors\n";
 };
 		print $fh "__DATA__\n";
 
-        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
+        for ($action = DB_File::R_FIRST; !$dbm->seq($key, $val, $action); $action = DB_File::R_NEXT) {
 			if (!is_callsign($key) || $key =~ /^0/) {
 				my $eval = $val;
 				my $ekey = $key;
