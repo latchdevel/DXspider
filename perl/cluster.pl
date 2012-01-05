@@ -123,7 +123,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
-			$can_encode $maxconnect_user $maxconnect_node
+			$can_encode $maxconnect_user $maxconnect_node $idle_interval
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -138,6 +138,7 @@ $maxconnect_user = 3;			# the maximum no of concurrent connections a user can ha
 $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
 								# takes the no of references in the routing table above these numbers
 								# then the connection is refused. This only affects INCOMING connections.
+$idle_interval = 0.100;			# the wait between invocations of the main idle loop processing.
 
 # send a message to call on conn and disconnect
 sub already_conn
@@ -300,6 +301,8 @@ sub cease
 	}
 
 	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitversion) ended");
+	dbg("bye bye everyone - bye bye");
+
 	dbgclose();
 	Logclose();
 
@@ -582,11 +585,10 @@ $script->run($main::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 
-my $per_sec = AnyEvent->timer(after => 0, interval => 0.010, cb => sub{idle_loop()});
+my $per_sec = AnyEvent->timer(after => 0, interval => $idle_interval, cb => sub{idle_loop()});
 
 # main loop
 $decease->recv;
-#AnyEvent->loop;
 
 idle_loop() for (1..25);
 cease(0);

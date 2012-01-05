@@ -706,7 +706,7 @@ sub broadcast_list
 
 sub process
 {
-	foreach my $dxchan (get_all()) {
+	foreach my $dxchan (values %channels) {
 
 		while (my $data = shift @{$dxchan->{inqueue}}) {
 			my ($sort, $call, $line) = $dxchan->decode_input($data);

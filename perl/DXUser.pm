@@ -181,7 +181,7 @@ sub init
 	if ($v4) {
 		my $new = ! -e $ufn;
 		$dbh = DBI->connect("dbi:SQLite:dbname=$ufn","","") or die "Cannot open $ufn ($!)\n";
-		if ($new && $dbh) {
+		if ($new) {
 			# create the table
 			my $table = q{create table user(
 call text not null unique,
@@ -193,6 +193,8 @@ data text not null
 			# Add indexes
 			$dbh->do(q(create index x1 on user(lastseen))) or die $dbh->errstr;
 		}
+		$dbh->do(q{PRAGMA cache_size = 8000});
+		$dbh->do(q{PRAGMA synchronous = OFF});
 	}
 
 

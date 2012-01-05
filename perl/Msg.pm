@@ -316,7 +316,7 @@ sub new_server {
     my ($pkg, $my_host, $my_port, $login_proc) = @_;
 	my $self = $pkg->new($login_proc);
 	
-    $self->{sock} = tcp_server $my_host, $my_port, sub { $self->new_client(@_); }, sub { return 256; };
+    $self->{sock} = tcp_server $my_host, $my_port, sub { $self->new_client(@_); };
     die "Could not create socket: $! \n" unless $self->{sock};
 	return $self;
 }
