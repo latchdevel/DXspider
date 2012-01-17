@@ -795,7 +795,7 @@ sub find_cmd_name {
 		#we have compiled this subroutine already,
 		#it has not been updated on disk, nothing left to do
 		#print STDERR "already compiled $package->handler\n";
-		;
+		dbg("find_cmd_name: $package cached") if isdbg('command');
 	} else {
 
 		my $sub = readfilestr($filename);
