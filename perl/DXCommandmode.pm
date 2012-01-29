@@ -54,7 +54,7 @@ $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
 $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing command scripts 
                                           # this does not exist as default, you need to create it manually
-					  #
+#
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -524,10 +524,10 @@ sub run_cmd
 			my $package = find_cmd_name($path, $fcmd);
 			return ($@) if $@;
 				
-			if ($package && DXCommandmode->can($package)) {
+			if ($package && $self->can("${package}::handle")) {
 				no strict 'refs';
 				dbg("cmd: package $package") if isdbg('command');
-				eval { @ans = &$package($self, $args) };
+				eval { @ans = &{"${package}::handle"}($self, $args) };
 				return (DXDebug::shortmess($@)) if $@;
 			} else {
 				dbg("cmd: $package not present") if isdbg('command');
@@ -748,12 +748,14 @@ sub clear_cmd_cache
 {
 	no strict 'refs';
 	
-	for (keys %Cache) {
-		undef *{$_} unless /cmd_cache/;
-		dbg("Undefining cmd $_") if isdbg('command');
+	for my $k (keys %Cache) {
+		unless ($k =~ /cmd_cache/) {
+			dbg("Undefining cmd $k") if isdbg('command');
+			undef $DXCommandmode::{"${k}::"};
+		}
 	}
 	%cmd_cache = ();
-	%Cache = ();
+	%Cache = ( cmd_clear_cmd_cache  => $Cache{cmd_clear_cmd_cache} );
 }
 
 #
@@ -764,11 +766,10 @@ sub clear_cmd_cache
 # 
 # This has been nicked directly from the perlembed pages
 #
-
 #require Devel::Symdump;  
 
 sub valid_package_name {
-	my($string) = @_;
+	my $string = shift;
 	$string =~ s|([^A-Za-z0-9_/])|sprintf("_%2x",unpack("C",$1))|eg;
 	
 	$string =~ s|/|_|g;
@@ -791,7 +792,7 @@ sub find_cmd_name {
 		return undef;
 	}
 	
-	if(defined $Cache{$package}->{mtime} &&$Cache{$package}->{mtime} <= $mtime) {
+	if(exists $Cache{$package} && exists $Cache{$package}->{mtime} && $Cache{$package}->{mtime} <= $mtime) {
 		#we have compiled this subroutine already,
 		#it has not been updated on disk, nothing left to do
 		#print STDERR "already compiled $package->handler\n";
@@ -805,7 +806,14 @@ sub find_cmd_name {
 		};
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq( sub $package { $sub } );
+		my $eval = qq(package DXCommandmode::$package; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; use Minimuf; use Sun; our \@ISA = qw{DXCommandmode}; );
+
+
+		if ($sub =~ m|\s*sub\s+handle\n|) {
+			$eval .= $sub;
+		} else {
+			$eval .= qq(sub handle { $sub });
+		}
 		
 		if (isdbg('eval')) {
 			my @list = split /\n/, $eval;
@@ -820,7 +828,8 @@ sub find_cmd_name {
 
 		if (exists $Cache{$package}) {
 			dbg("find_cmd_name: Redefining $package") if isdbg('command');
-			undef *$package;
+			undef $DXCommandmode::{"${package}::"};
+			delete $Cache{$package};
 		} else {
 			dbg("find_cmd_name: Defining $package") if isdbg('command');
 		}
@@ -828,10 +837,9 @@ sub find_cmd_name {
 		eval $eval;
 
 		$Cache{$package} = {mtime => $mtime } unless $@;
-	    
 	}
 
-	return $package;
+	return "DXCommandmode::$package";
 }
 
 sub send
