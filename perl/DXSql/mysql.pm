@@ -22,7 +22,9 @@ sub show_tables
 	my $sth = $self->prepare($s);
 	$sth->execute;
 	my @out;
-	push @out, $sth->fetchrow_array;
+	while (my @t = $sth->fetchrow_array) {
+		push @out, @t;
+	}
 	$sth->finish;
 	return @out;
 }
