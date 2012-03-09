@@ -373,27 +373,25 @@ sub get
 	# search for it
 	if ($v4) {
 		if ($data = _select($call)) {
-			$ref = bless decode_json($data), __PACKAGE__;
-			$lru->put($call, $ref);
-			return $ref;
+			$ref = bless decode_json($data), 'DXUser';
 		}
 	} else {
 	    unless ($dbm->get($call, $data)) {
 			$ref = decode($data);
-			if ($ref) {
-				if (ref $ref ne 'DXUser') {
-					dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
-					return undef;
-				}
-			} else {
-				dbg("DXUser::get: no reference returned from decode $!");
-				return undef;
-			}
-			$lru->put($call, $ref);
-			return $ref;
 		}
 	}
 	
+	if ($ref) {
+		if (UNIVERSAL::isa($ref, 'DXUser')) {
+			dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
+			return undef;
+		}
+		# we have a reference and it *is* a DXUser
+	} else {
+		dbg("DXUser::get: no reference returned from decode of $call $!");
+		return undef;
+	}
+	$lru->put($call, $ref);
 	return undef;
 }
 
@@ -412,9 +410,9 @@ sub get_current
 	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		my $ref = $dxchan->user;
-		return $ref if ref $ref eq 'DXUser';
+		return $ref if $ref && UNIVERSAL::isa($ref, 'DXUser');
 
-		dbg("DXUser::get_current: got invalid user ref from dxchan $dxchan->{call} ". ref $ref. " ignoring");
+		dbg("DXUser::get_current: got invalid user ref for $call from dxchan $dxchan->{call} ". ref $ref. " ignoring");
 	}
 	return get($call);
 }
