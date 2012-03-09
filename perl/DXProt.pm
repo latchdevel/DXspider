@@ -1111,9 +1111,19 @@ sub process_rcmd
 	my ($self, $tonode, $fromnode, $user, $cmd) = @_;
 	if ($tonode eq $main::mycall) {
 		my $ref = DXUser::get_current($fromnode);
+		unless ($ref && UNIVERSAL($ref, 'DXUser')) {
+			dbg("DXProt process_rcmd: user $fromnode isn't a reference (check user_asc and tell G1TLH)"); 
+			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
+			return;
+		}
 		my $cref = Route::Node::get($fromnode);
+		unless ($cref && UNIVERSAL($cref, 'Route')) {
+			dbg("DXProt process_rcmd: Route $fromnode isn't a reference (tell G1TLH)"); 
+			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
+			return;
+		}
 		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd);
-		if ($cmd !~ /^\s*rcmd/i && $cref && $ref && $ref->homenode && $cref->call eq $ref->homenode) { # not allowed to relay RCMDS!
+		if ($cmd !~ /^\s*rcmd/i && $ref->homenode && $cref->call eq $ref->homenode) { # not allowed to relay RCMDS!
 			if ($ref->{priv}) {		# you have to have SOME privilege, the commands have further filtering
 				$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 				my $oldpriv = $self->{priv};

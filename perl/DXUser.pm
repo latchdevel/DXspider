@@ -249,10 +249,11 @@ sub get
 	unless ($dbm->get($call, $data)) {
 		$ref = decode($data);
 		if ($ref) {
-			if (ref $ref ne 'DXUser') {
+			if (UNIVERSAL::isa($ref, 'DXUser')) {
 				dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
 				return undef;
 			}
+			# we have a reference and it *is* a DXUser
 		} else {
 			dbg("DXUser::get: no reference returned from decode $!");
 			return undef;
@@ -278,7 +279,7 @@ sub get_current
 	my $dxchan = DXChannel::get($call);
 	if ($dxchan) {
 		my $ref = $dxchan->user;
-		return $ref if ref $ref eq 'DXUser';
+		return $ref if $ref && UNIVERSAL::isa($ref, 'DXUser');
 
 		dbg("DXUser::get_current: got invalid user ref from dxchan $dxchan->{call} ". ref $ref. " ignoring");
 	}
