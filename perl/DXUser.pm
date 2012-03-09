@@ -250,12 +250,12 @@ sub get
 		$ref = decode($data);
 		if ($ref) {
 			if (UNIVERSAL::isa($ref, 'DXUser')) {
-				dbg("DXUser::get: got strange answer from decode ". ref $ref. " ignoring");
+				dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
 				return undef;
 			}
 			# we have a reference and it *is* a DXUser
 		} else {
-			dbg("DXUser::get: no reference returned from decode $!");
+			dbg("DXUser::get: no reference returned from decode of $call $!");
 			return undef;
 		}
 		$lru->put($call, $ref);
@@ -281,7 +281,7 @@ sub get_current
 		my $ref = $dxchan->user;
 		return $ref if $ref && UNIVERSAL::isa($ref, 'DXUser');
 
-		dbg("DXUser::get_current: got invalid user ref from dxchan $dxchan->{call} ". ref $ref. " ignoring");
+		dbg("DXUser::get_current: got invalid user ref for $call from dxchan $dxchan->{call} ". ref $ref. " ignoring");
 	}
 	return get($call);
 }
