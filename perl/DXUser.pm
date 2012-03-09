@@ -249,7 +249,7 @@ sub get
 	unless ($dbm->get($call, $data)) {
 		$ref = decode($data);
 		if ($ref) {
-			if (UNIVERSAL::isa($ref, 'DXUser')) {
+			if (!UNIVERSAL::isa($ref, 'DXUser')) {
 				dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
 				return undef;
 			}
