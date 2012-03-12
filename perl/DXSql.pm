@@ -62,7 +62,7 @@ sub connect
 	my $dbh;
 	eval {
 		no strict 'refs';
-		$dbh = DBI->connect($dsn, $user, $passwd, {AutoCommit => 0}); 
+		$dbh = DBI->connect($dsn, $user, $passwd); 
 	};
 	unless ($dbh) {
 		$active = 0;
@@ -86,16 +86,19 @@ sub do
 	eval { $self->{dbh}->do($s); }; 
 }
 
+sub begin_work
+{
+	$_[0]->{dbh}->begin_work;
+}
+
 sub commit
 {
 	$_[0]->{dbh}->commit;
-	$_[0]->{dbh}->{AutoCommit} = 0;
 }
 
 sub rollback
 {
 	$_[0]->{dbh}->rollback;
-	$_[0]->{dbh}->{AutoCommit} = 0;
 }
 
 sub quote
@@ -111,7 +114,7 @@ sub prepare
 sub spot_insert_prepare
 {
 	my $self = shift;
-	return $self->prepare('insert into spot values(?' . ',?' x 14 . ')');
+	return $self->prepare('insert into spot values(?' . ',?' x 15 . ')');
 }
 
 sub spot_insert
@@ -121,6 +124,8 @@ sub spot_insert
 	my $sth = shift;
 	
 	if ($sth) {
+		push @$spot, undef while  @$spot < 15;
+		pop @$spot while @$spot > 15;
 		eval {$sth->execute(undef, @$spot)};
 	} else {
 		my $s = "insert into spot values(NULL,";
@@ -137,7 +142,8 @@ sub spot_insert
 		$s .= $spot->[10] . ',';
 		$s .= $spot->[11] . ',';
 		$s .= (length $spot->[12] ? $self->quote($spot->[12]) : 'NULL') . ',';
-		$s .= (length $spot->[13] ? $self->quote($spot->[13]) : 'NULL') . ')';
+		$s .= (length $spot->[13] ? $self->quote($spot->[13]) : 'NULL') . ',';
+		$s .= (length $spot->[14] ? $self->quote($spot->[14]) : 'NULL') . ')';
 		eval {$self->do($s)};
 	}
 }

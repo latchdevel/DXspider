@@ -22,9 +22,34 @@ sub show_tables
 	my $sth = $self->prepare($s);
 	$sth->execute;
 	my @out;
-	push @out, $sth->fetchrow_array;
+	while (my @t = $sth->fetchrow_array) {
+		push @out, @t;
+	}
 	$sth->finish;
 	return @out;
+}
+
+sub has_ipaddr
+{
+	my $self = shift;
+	my $s = q(PRAGMA table_info(spot));
+	my $sth = $self->prepare($s);
+	$sth->execute;
+	while (my @t = $sth->fetchrow_array) {
+		if ($t[0] eq 'ipaddr') {
+			$sth->finish;
+			return 1;
+		}
+	}
+	$sth->finish;
+	return undef;
+}
+
+sub add_ipaddr
+{
+	my $self = shift;
+	my $s = q(alter table spot add column ipaddr varchar(40));
+	$self->do($s);
 }
 
 sub spot_create_table
@@ -45,7 +70,8 @@ spotcq int,
 spotteritu int,
 spottercq int,
 spotstate text,
-spotterstate text
+spotterstate text,
+ipaddr text
 )};
 	$self->do($s);
 }

@@ -111,10 +111,11 @@ sub init
 			my $now = Julian::Day->alloc(1995, 0);
 			my $today = Julian::Day->new(time);
 			my $sth = $main::dbh->spot_insert_prepare;
-			$main::dbh->{RaiseError} = 0;
 			while ($now->cmp($today) <= 0) {
 				my $fh = $fp->open($now);
 				if ($fh) {
+#					$main::dbh->{RaiseError} = 0;
+					$main::dbh->begin_work;
 					my $count = 0;
 					while (<$fh>) {
 						chomp;
@@ -125,30 +126,31 @@ sub init
 							push @s, $b[1] if @s < 7;
 							push @s, '' if @s < 8;
 							push @s, @a[0,1], @b[0,1] if @s < 12;
-							push @s,  $a[2], $a[2] if @s < 14;  
+							push @s,  $a[2], $a[2] if @s < 14;
 						} 
 						
-						push @s, undef while @s < 14;
-						pop @s while @s > 14;
-
 						$main::dbh->spot_insert(\@s, $sth);
 						$count++;
 					}
-					$main::dbh->commit if $count;
-					$main::dbh->{RaiseError} = 0;
+					$main::dbh->commit;
 					dbg("inserted $count spots from $now->[0] $now->[1]");
 					$fh->close;
 					$total += $count;
 				}
 				$now = $now->add(1);
 			}
+			$main::dbh->begin_work;
 			$main::dbh->spot_add_indexes;
 			$main::dbh->commit;
-			$main::dbh->{RaiseError} = 1;
+#			$main::dbh->{RaiseError} = 1;
 			$t = time - $t;
 			my $min = int($t / 60);
 			my $sec = $t % 60;
 			dbg("$total spots converted in $min:$sec");
+		}
+		unless ($main::dbh->has_ipaddr) {
+			$main::dbh->add_ipaddr;
+			dbg("added ipaddr field to spot table");
 		}
 	}
 }
@@ -190,6 +192,7 @@ sub add
 	my $buf = join('^', @_);
 	$fp->writeunix($_[2], $buf);
 	if ($main::dbh) {
+		$main::dbh->begin_work;
 		$main::dbh->spot_insert(\@_);
 		$main::dbh->commit;
 	}
