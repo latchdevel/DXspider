@@ -79,10 +79,10 @@ ipaddr varchar(40)
 sub spot_add_indexes
 {
 	my $self = shift;
-	$self->do('create index spot_ix1 on spot(time desc)');
 	dbg('adding spot index ix1');
-	$self->do('create index spot_ix2 on spot(spotcall asc)');
+	$self->do('create index spot_ix1 on spot(time desc)');
 	dbg('adding spot index ix2');
+	$self->do('create index spot_ix2 on spot(spotcall asc)');
 }
 
 
