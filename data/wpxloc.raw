@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created on Fri Jul 22 16:31:10 2011
+! This file was created on Tue Mar 13 14:24:24 2012
 ! by Jim Reisert AD1C - see http://http://www.country-files.com/wpxloc/
 !
 ! Highest DXCC number is 358 ("VERSION" entity)
@@ -1194,10 +1194,10 @@ ZD8 Ascension-Is-ZD8                                  252 66 36   0.00  8  0  0 
 ZD9 Tristan-Da-Cunha-ZD9                              253 66 38   0.00 37  6  0 S  12 18  0 W @
 Z2 Zimbabwe-Z2                                        254 53 38  -2.00 18  0  0 S  31  0  0 E @
 ZF Cayman-Is-ZF                                       255 11  8   5.00 19 30  0 N  81 12  0 W @
-E5/S South-Cook-Is-E5/S                               257 62 32  10.00 21  0  0 S 159 30  0 W @
+E5/S South-Cook-Is-E5/S                               257 63 32  10.00 21  0  0 S 159 30  0 W @
 E5 South-Cook-Is-E5/S                                 257 62 32  10.00 21  0  0 S 159 30  0 W
 ZK2 Niue-ZK2                                          258 62 32  11.00 19  0  0 S 170  0  0 W @
-ZK3 Tokelau-ZK3                                       259 62 31  10.00  8 24  0 S 172 42  0 W @
+ZK3 Tokelau-ZK3                                       259 62 31 -13.00  8 24  0 S 172 42  0 W @
 ZL New-Zealand-ZL                                     260 60 32 -12.00 46  0  0 S 170  0  0 E * @
 ZL ZL1-New-Zealand-ZL                                 260 60 32 -12.00 36 54  0 S 174 48  0 E *
 ZL1 ZL1-New-Zealand-ZL                                260 60 32 -12.00 36 54  0 S 174 48  0 E
@@ -1302,7 +1302,7 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 5T Mauritania-5T                                      292 46 35   0.00 18  0  0 N  16  0  0 W @
 5U Niger-5U                                           293 46 35  -1.00 13 30  0 N   2  0  0 E @
 5V Togo-5V                                            294 46 35   0.00  6  0  0 N   1 30  0 E @
-5W Samoa-5W                                           295 62 32  11.00 13  0  0 S 172  0  0 W @
+5W Samoa-5W                                           295 62 32 -13.00 13  0  0 S 172  0  0 W @
 5X Uganda-5X                                          296 48 37  -3.00  1  0  0 N  32 30  0 E @
 5Z Kenya-5Z                                           297 48 37  -3.00  1 30  0 S  37 30  0 E @
 5Y Kenya-5Z                                           297 48 37  -3.00  1 30  0 S  37 30  0 E
@@ -1348,7 +1348,6 @@ S6 Singapore-9V                                       317 54 28  -8.00  1 18  0 
 3Y Peter-Is-3Y/P                                      320 72 12   4.00 68 49  0 S  90 44  0 W
 3D2/C Conway-Reef-3D2/C                               321 56 32 -12.00 21 44  0 S 174 38  0 E @
 3D2 Conway-Reef-3D2/C                                 321 56 32 -12.00 21 44  0 S 174 38  0 E *
-R1MV Malyj-Vysotskij-R1MV                             322 29 16  -3.00 60  0  0 N  28  0  0 E @
 T33 Banaba-T33                                        323 65 31 -12.00  0 51 34 S 169 32 13 E @
 T3 Banaba-T33                                         323 65 31 -12.00  0 51 34 S 169 32 13 E
 3D2/R Rotuma-3D2/R                                    324 56 32 -12.00 12 30  0 S 177  0  0 E @
@@ -1394,7 +1393,7 @@ PJ6 Saba-PJ5                                          355 11  8   4.00 17 38  0 
 PJ St-Eustatius-PJ5                                   355 11  8   4.00 17 34  0 N  63  6  0 W *
 PJ7 Sint-Maarten-PJ7                                  356 11  8   4.00 18  4  0 N  63  4  0 W @
 PJ Sint-Maarten-PJ7                                   356 11  8   4.00 18  4  0 N  63  4  0 W
-ST0 Republic-South-Sudan-ST0                          357 48 34  -3.00  5  0  0 N  31 36  0 E @
+Z8 Republic-South-Sudan-Z8                            357 48 34  -3.00  5  0  0 N  31 36  0 E @
 !
 ! reordered ones
 !
@@ -1432,7 +1431,7 @@ VP8 South-Shetland-VP8/H                              214 73 13   4.00 62  0  0 
 E5/N North-Cook-Is-E5/N                               256 62 32  10.00 10 30  0 S 161  0  0 W @
 E5 North-Cook-Is-E5/N                                 256 62 32  10.00 10 30  0 S 161  0  0 W *
 !
-VERSION 22-Jul-2011                                   358  0  0   0.00  0  0  0 N   0  0  0 E
+VERSION 13-Mar-2012                                   358  0  0   0.00  0  0  0 N   0  0  0 E
 !
 QQ Pirate-Ctry-QQ                                     666  0  0   0.00  0  0  0 S   0  0  0 E @
 0,10G,1B,50V,MAJ,Q,SSB,T0,X5,X8,ZC6 Pirate-Ctry-QQ    666  0  0   0.00  0  0  0 S   0  0  0 E

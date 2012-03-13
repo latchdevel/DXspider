@@ -1,3 +1,5 @@
+13Mar12=======================================================================
+1. add CTY2204 prefix changes + new wpxloc.raw
 12Mar12=======================================================================
 1. Check database operations on MySQL/SQlite3.
 2. Add ipaddr field to spot table if not present.
