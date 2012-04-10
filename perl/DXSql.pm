@@ -10,8 +10,6 @@ package DXSql;
 
 use strict;
 
-use DXSql::SQLite;
-use DXSql::mysql;
 use DXDebug;
 
 use vars qw($active);
