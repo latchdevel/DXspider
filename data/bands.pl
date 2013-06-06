@@ -153,6 +153,8 @@
 							cw => [47087000, 47089000],
 							ssb => [47087000, 47089000],
 						  }, 'Bands'),
+		  '4mm' => bless( { band => [75500000, 81000000], 
+						  }, 'Bands'), 
 
 		  'band1' => bless ( { band => [47000, 49999, 52000, 68000],
 							 }, 'Bands'),
@@ -210,6 +212,6 @@
 			pmr => [qw( pmrlow pmrmid pmrhigh pmruhf )],
 			spe => [qw( 10m 6m 4m 2m )],
 			warc => [qw( 60m 30m 17m 12m )],
-			all => [qw( 73khz 136khz 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m 6m 4m 2m 220 70cm 23cm 9cm 6cm 3cm 12mm 6mm )],
+			all => [qw( 73khz 136khz 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m 6m 4m 2m 220 70cm 23cm 9cm 6cm 3cm 12mm 6mm 4mm )],
 		   );  
 
