@@ -16,7 +16,7 @@ my @out;
 my $nowt = time;
 
 push @out, "                                      Ave  Obs  Ping  Next      Filters";
-push @out, "  Callsign Type Started               RTT Count Int.  Ping Iso? In  Out PC92?";
+push @out, "  Callsign Type Started               RTT Count Int.  Ping Iso? In  Out PC92? Address";
 
 foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $call = $dxchan->call();
@@ -51,7 +51,15 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "DXNT" if $dxchan->is_dxnet;
 	$sort = "AR-C" if $dxchan->is_arcluster;
 	$sort = "AK1A" if $dxchan->is_ak1a;
-	push @out, sprintf "%10s $sort $t$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92", $call, $pingint, $lastt;
+	my $ipaddr;
+
+	if ($dxchan->conn->peerhost) {
+		my $addr = $dxchan->conn->peerhost;
+		$ipaddr = $addr if is_ipaddr($addr);
+		$ipaddr = 'local' if $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
+	}			
+
+	push @out, sprintf "%10s $sort $t$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92    $ipaddr", $call, $pingint, $lastt;
 }
 
 return (1, @out)
