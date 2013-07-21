@@ -25,8 +25,8 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $sort;
 	my $name = $dxchan->user->name || " ";
 	my $obscount = $dxchan->nopings;
-	my $lastt = $dxchan->pingint - ($nowt - $dxchan->lastping);
 	my $pingint = $dxchan->pingint;
+	my $lastt = $dxchan->lastping ? ($dxchan->pingint - ($nowt - $dxchan->lastping)) : $pingint;
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
 	my $iso = $dxchan->isolate ? 'Y' :' ';
 	my ($fin, $fout, $pc92) = (' ', ' ', ' ');
@@ -45,6 +45,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 		$lastt = 0;
 		$ping = "        ";
 	}
+
 	$sort = 'ANEA' if $dxchan->is_aranea;
 	$sort = "DXSP" if $dxchan->is_spider;
 	$sort = "CLX " if $dxchan->is_clx;
@@ -57,7 +58,8 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 		my $addr = $dxchan->conn->peerhost;
 		$ipaddr = $addr if is_ipaddr($addr);
 		$ipaddr = 'local' if $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
-	}			
+	}
+	$ipaddr = 'ax25' if $dxchan->conn->ax25;
 
 	push @out, sprintf "%10s $sort $t$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92    $ipaddr", $call, $pingint, $lastt;
 }

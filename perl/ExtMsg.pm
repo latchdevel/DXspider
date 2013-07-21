@@ -365,6 +365,7 @@ sub _doclient
 	$conn->conns($call);
 	$conn->{csort} = $f[1] if $f[1];
 	$conn->{state} = 'C';
+	eval {$conn->{peerhost} = $conn->{sock}->peerhost} unless $conn->ax25;
 	&{$conn->{rproc}}($conn, "O$call|$conn->{csort}");
 	delete $conn->{cmd};
 	$conn->{timeout}->del if $conn->{timeout};
