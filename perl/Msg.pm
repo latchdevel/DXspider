@@ -460,8 +460,8 @@ sub new_server {
 	my $self = $pkg->new($login_proc);
 	
     $self->{sock} = $io_socket->new (
-                                          LocalAddr => "$my_host:$my_port",
-#                                          LocalPort => $my_port,
+                                          LocalAddr => $my_host,
+                                          LocalPort => $my_port,
                                           Listen    => SOMAXCONN,
                                           Proto     => 'tcp',
                                           Reuse => 1);
