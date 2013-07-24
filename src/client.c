@@ -79,7 +79,7 @@ typedef struct
 } myregex_t;
 
 
-char *node_addr = "localhost";	/* the node tcp address, can be overridden by DXSPIDER_HOST */
+char *node_addr = "127.0.0.1";	/* the node tcp address, can be overridden by DXSPIDER_HOST */
 int node_port = 27754;			/* the tcp port of the node at the above address can be overidden by DXSPIDER_PORT*/
 char *call;						/* the caller's callsign */
 char *connsort;					/* the type of connection */

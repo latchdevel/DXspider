@@ -1,3 +1,5 @@
+24Jul13=======================================================================
+1. Alter default node address in client.c from "localhost" to "127.0.0.1".
 21Jul13=======================================================================
 1. Fix Msg.pm to allow IPV6 addresses again (how did it ever work?).
 2. Add latest CTY2307 prefix changes.
