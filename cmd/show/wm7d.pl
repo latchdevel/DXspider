@@ -7,6 +7,7 @@
 #
 #
 #
+use Net::Telnet;
 
 # wm7d accepts only single callsign
 sub handle
