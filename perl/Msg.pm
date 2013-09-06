@@ -123,7 +123,7 @@ sub new
 
 	$noconns++;
 	
-	dbg("Connection created ($noconns)") if isdbg('connll');
+	dbg("$class Connection $conn->{cnum} created (total $noconns)") if isdbg('connll');
 	return bless $conn, $class;
 }
 
@@ -170,11 +170,11 @@ sub conns
 	if (ref $pkg) {
 		$call = $pkg->{call} unless $call;
 		return undef unless $call;
-		dbg("changing $pkg->{call} to $call") if isdbg('connll') && exists $pkg->{call} && $call ne $pkg->{call};
+		dbg((ref $pkg) . " changing $pkg->{call} to $call") if isdbg('connll') && exists $pkg->{call} && $call ne $pkg->{call};
 		delete $conns{$pkg->{call}} if exists $pkg->{call} && exists $conns{$pkg->{call}} && $pkg->{call} ne $call; 
 		$pkg->{call} = $call;
 		$ref = $conns{$call} = $pkg;
-		dbg("Connection $pkg->{cnum} $call stored") if isdbg('connll');
+		dbg((ref $pkg) . " Connection $pkg->{cnum} $call stored") if isdbg('connll');
 	} else {
 		$ref = $conns{$call};
 	}
@@ -221,6 +221,8 @@ sub connect {
 	$conn->{peerhost} = $to_host;
 	$conn->{peerport} = $to_port;
 	$conn->{sort} = 'Outgoing';
+
+	dbg((ref $conn) . " connecting $conn->{cnum} to $to_host:$to_port") if isdbg('connll');
 	
 	my $sock;
 	if ($blocking_supported) {
@@ -245,7 +247,9 @@ sub connect {
 	}
 	
 	$conn->{sock} = $sock;
-	$conn->{peerhost} = $sock->peerhost;	# for consistency
+#	$conn->{peerhost} = $sock->peerhost;	# for consistency
+
+	dbg((ref $conn) . " connected $conn->{cnum} to $to_host:$to_port") if isdbg('connll');
 
     if ($conn->{rproc}) {
         my $callback = sub {$conn->_rcv};
@@ -320,7 +324,7 @@ sub disconnect
 		delete $conns{$call} if $ref && $ref == $conn;
 	}
 	$call ||= 'unallocated';
-	dbg("Connection $conn->{cnum} $call disconnected") if isdbg('connll');
+	dbg((ref $conn) . " Connection $conn->{cnum} $call disconnected") if isdbg('connll');
 	
 	# get rid of any references
 	for (keys %$conn) {
@@ -500,7 +504,8 @@ sub nolinger
 sub dequeue
 {
 	my $conn = shift;
-
+	return if $conn->{disconnecting};
+	
 	if ($conn->{msg} =~ /\n/) {
 		my @lines = split /\r?\n/, $conn->{msg};
 		if ($conn->{msg} =~ /\n$/) {
@@ -509,6 +514,7 @@ sub dequeue
 			$conn->{msg} = pop @lines;
 		}
 		for (@lines) {
+			last if $conn->{disconnecting};
 			&{$conn->{rproc}}($conn, defined $_ ? $_ : '');
 		}
 	}
@@ -717,8 +723,8 @@ sub DESTROY
 	my $call = $conn->{call} || 'unallocated';
 	my $host = $conn->{peerhost} || '';
 	my $port = $conn->{peerport} || '';
-	dbg("Connection $conn->{cnum} $call [$host $port] being destroyed") if isdbg('connll');
 	$noconns--;
+	dbg((ref $conn) . " Connection $conn->{cnum} $call [$host $port] being destroyed (total $noconns)") if isdbg('connll');
 }
 
 1;
