@@ -1,3 +1,10 @@
+06Sep13=======================================================================
+1. Fixed sh/contest so that it works again. How it ever worked at all is
+   a bit of a mystery. Now possible to type sh/cont dec or sh/cont dec 2013
+   (with month and year in any order). Please comment out any $contest_host
+   or $contest_url variables you may have in /spider/local/Internet.pm (if
+   you have one, that is). It will not work with the previous values.
+2. Added CTY2308 prefix changes.
 24Jul13=======================================================================
 1. Alter default node address in client.c from "localhost" to "127.0.0.1".
 21Jul13=======================================================================

@@ -2038,13 +2038,20 @@ Show all the nodes connected to this node.
 This command shows information on all the active connections known to
 the node. This command gives slightly more information than WHO.
 
-=== 0^SHOW/CONTEST <year and month>^Show all the contests for a month
+=== 0^SHOW/CONTEST [<year>] [<month>]^Show all the contests for a month
 Show all known contests which are maintained at http://www.sk3bg.se/contest/
 for a particular month or year. The format is reasonably flexible.
 For example:-
   
-  SH/CONTEST sep2003
-  SH/CONTEST 03 march
+  SH/CONTEST 
+  SH/CONTEST mar
+  SH/CONTEST mar 13
+  SH/CONTEST 13 march
+
+If there is no month/year then the current month's contests are shown.
+
+Note that it expects ENGLISH (jan/feb/mar/apr/may/jun/jul/aug/sep/oct/nov/dec)
+month names.
 
 === 0^SHOW/DATE [<prefix>|<callsign>]^Show the local time 
 This is very nearly the same as SHOW/TIME, the only difference the format
