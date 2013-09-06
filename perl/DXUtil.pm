@@ -15,7 +15,7 @@ use Data::Dumper;
 
 use strict;
 
-use vars qw(@month %patmap @ISA @EXPORT);
+use vars qw(@month %patmap $pi $d2r $r2d @ISA @EXPORT);
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -24,7 +24,7 @@ require Exporter;
 			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_long_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
-			 is_prefix dd is_ipaddr
+			 is_prefix dd is_ipaddr $pi $d2r $r2d
             );
 
 
@@ -35,6 +35,11 @@ require Exporter;
 		   '[' => '[',
 		   ']' => ']'
 );
+
+$pi = 3.141592653589;
+$d2r = ($pi/180);
+$r2d = (180/$pi);
+
 
 # a full time for logging and other purposes
 sub atime

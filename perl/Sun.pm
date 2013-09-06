@@ -33,12 +33,6 @@ require Exporter;
 
 use strict;
 
-use vars qw($pi $d2r $r2d);
- 
-$pi = 3.141592653589;
-$d2r = ($pi/180);
-$r2d = (180/$pi);
-
 use vars qw(%keps);
 use Keps;
 use DXVars;

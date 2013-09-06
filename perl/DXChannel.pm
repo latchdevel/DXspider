@@ -699,17 +699,14 @@ sub broadcast_list
 sub process
 {
 	foreach my $dxchan (get_all()) {
-
+		next if $dxchan->{disconnecting};
+		
 		while (my $data = shift @{$dxchan->{inqueue}}) {
 			my ($sort, $call, $line) = $dxchan->decode_input($data);
 			next unless defined $sort;
 
 			# do the really sexy console interface bit! (Who is going to do the TK interface then?)
 			dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
-			if ($dxchan->{disconnecting}) {
-				dbg('In disconnection, ignored');
-				next;
-			}
 
 			# handle A records
 			my $user = $dxchan->user;
