@@ -8,6 +8,8 @@
 #
 #
 
+use Net::Telnet;
+
 my ($self, $line) = @_;
 my $call = $self->call;
 my @out;
