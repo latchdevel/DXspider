@@ -506,9 +506,9 @@ sub dequeue
 	my $conn = shift;
 	return if $conn->{disconnecting};
 	
-	if ($conn->{msg} =~ /\n/) {
-		my @lines = split /\r?\n/, $conn->{msg};
-		if ($conn->{msg} =~ /\n$/) {
+	if ($conn->{msg} =~ /\cJ/) {
+		my @lines = split /\cM?\cJ/, $conn->{msg};
+		if ($conn->{msg} =~ /\cM?\cJ$/) {
 			delete $conn->{msg};
 		} else {
 			$conn->{msg} = pop @lines;

@@ -36,7 +36,7 @@ use QSL;
 use DB_File;
 use VE7CC;
 use DXXml;
-use HTTPMsg;
+use AsyncMsg;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
@@ -803,7 +803,7 @@ sub find_cmd_name {
 		};
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq(package DXCommandmode::$package; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; use Minimuf; use Sun; use HTTPMsg; our \@ISA = qw{DXCommandmode}; );
+		my $eval = qq(package DXCommandmode::$package; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
 
 
 		if ($sub =~ m|\s*sub\s+handle\n|) {

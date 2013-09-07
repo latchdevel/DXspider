@@ -9,6 +9,8 @@
 #
 #
 
+use Minimuf;
+
 my ($self, $line) = @_;
 my @f = split /\s+/, $line;
 

@@ -53,7 +53,7 @@ sub handle
 
 	dbg("sh/contest: url=$url") if isdbg("contest");
 
-	my $r = HTTPMsg->get($self->call, $host, $port, $url);
+	my $r = AsyncMsg->get($self->call, $host, $port, $url, prefix=>'ctst> ');
 	if ($r) {
 		push @out, $self->msg('m21', "show/contest");
 	}

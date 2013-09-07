@@ -27,7 +27,8 @@ sub handle
 	dbg("IK3QAR: url=$path") if isdbg('ik3qar');
 	Log('call', "$call: SH/IK3QAR $line");
 	
-	my $r = HTTPMsg->get($self->call, $target, $port, $path);
+	my $r = AsyncMsg->get($self, $target, $port, $path, prefix=>'qar> ',
+						  'User-Agent' => "DxSpider;$main::version;$main::build;$^O;$main::mycall;$call");
 	if ($r) {
 		push @out, $self->msg('m21', "show/ik3qar");
 	} else {

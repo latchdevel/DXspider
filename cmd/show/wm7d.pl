@@ -1,13 +1,41 @@
 #
 # Query the WM7D Database server for a callsign
 #
-# Largely based on "sh/qrz" and info in the Net::Telnet documentation
+# Was Largely based on "sh/qrz" and info in the Net::Telnet documentation
 #
-# Copyright (c) 2002 Charlie Carroll K1XX
+# Original Copyright (c) 2002 Charlie Carroll K1XX
 #
+# Async version (c) Dirk Koopman G1TLH
 #
-#
-use Net::Telnet;
+
+sub waitfor
+{
+	my $conn = shift;
+	my $msg = shift;
+	$msg =~ s/\cM//g;
+
+	my $buf = $conn->{msg};
+	$buf =~ s/\r/\\r/g;
+	$buf =~ s/\n/\\n/g;
+	dbg "state $conn->{state} '$msg' '$buf'";
+	
+	if ($conn->{state} eq 'waitfor') {
+		if ($msg =~ /utc$/ ) { 
+			$conn->send_later("$conn->{target_call}\n");
+			$conn->{state} = 'working';
+		}
+	} elsif ($conn->{state} eq 'working') {
+		if ($conn->{msg} =~ /^\rquery->\s*$/) {
+			$conn->send_later("QUIT\n");
+			$conn->{state} = 'ending';
+		}
+		return if $msg =~ /^query->/;
+		$conn->handle_raw($msg);
+	} else {
+		return if $msg =~ /^query->/ || $msg =~ /bye/;
+		$conn->handle_raw($msg);
+	}
+}
 
 # wm7d accepts only single callsign
 sub handle
@@ -17,6 +45,9 @@ sub handle
 	my $call = $self->call;
 	my @out;
 
+#	$DB::single = 1;
+	
+
 	# send 'e24' if allow in Internet.pm is not set to 1
 	return (1, $self->msg('e24')) unless $Internet::allow;
 	return (1, "SHOW/WM7D <callsign>, e.g. SH/WM7D k1xx") unless $line;
@@ -24,27 +55,19 @@ sub handle
 	my $port = 5000;
 	my $cmdprompt = '/query->.*$/';
 
-	my($info, $t);
-                                    
-	$t = new Net::Telnet;
-	$info =  $t->open(Host    => $target,
-					  Port    => $port,
-					  Timeout => 20);
+	Log('call', "$call: show/wm7d \U$line");
 
-	if (!$info) {
+	my $conn = AsyncMsg->raw($self, $target, $port,
+							 handler => \&waitfor, prefix=>'wm7d> ');
+	if ($conn) {
+		$conn->{state} = 'waitfor';
+		$conn->{target_call} = $line;
+		
+		push @out, $self->msg('m21', "show/wm7d");
+	} else {
 		push @out, $self->msg('e18', 'WM7D.net');
 	}
-	else {
-        ## Wait for prompt and respond with callsign.
-        $t->waitfor($cmdprompt);
-		$t->print($line);
-        ($info) = $t->waitfor($cmdprompt);
-    
-		# Log the lookup
-		Log('call', "$call: show/wm7d \U$line");
-		$t->close;
-		push @out, split /[\r\n]+/, $info;
-	}
+
 	return (1, @out);
 }
 
