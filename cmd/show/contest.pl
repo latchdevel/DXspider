@@ -2,9 +2,8 @@
 # used with 1 argument: sh/contest <yearandmonth>
 # e g sh/contest 2002sep
 # Tommy Johansson (SM3OSM) 2002-07-23
-# New version using Net::Telnet  2003-03-09
 #
-#
+# New version use AsyncMsg (c) Dirk Koopman G1TLH
 #
 
 sub handle

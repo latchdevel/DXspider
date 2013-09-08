@@ -1,7 +1,7 @@
 #
 # Query the WM7D Database server for a callsign
 #
-# Was Largely based on "sh/qrz" and info in the Net::Telnet documentation
+# Was Largely based on "sh/qrz"
 #
 # Original Copyright (c) 2002 Charlie Carroll K1XX
 #
