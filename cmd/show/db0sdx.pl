@@ -8,35 +8,56 @@
 #
 #
 
-use Net::Telnet;
+sub on_disc
+{
+	my $conn = shift;
+	my $dxchan = shift;
+	my @out;
+	
+	$conn->{sdxin} .= $conn->{msg};	# because there will be stuff left in the rx buffer because it isn't \n terminated
+	dbg("db0sdx in: $conn->{sdxin}") if isdbg('db0sdx');
 
-my ($self, $line) = @_;
-my $call = $self->call;
-my @out;
+	my ($info) = $conn->{sdxin} =~ m|<qslinfoResult>([^<]*)</qslinfoResult>|;
+	dbg("info: $info");
+	
+	my @in = split /[\r\n]/, $info if $info;
+	if (@in && $in[0]) {
+		dbg("in qsl");
+		push @out, @in;
+	} else {
+		dbg("in fault");
+		($info) = $conn->{sdxin} =~ m|<faultstring>([^<]*)</faultstring>|;
+		push @out, $info if $info;
+		push @out, $dxchan->msg('e3', 'DB0SDX', $conn->{sdxline}) unless @out;		
+	}
+	$dxchan->send(@out);
+}
 
-$line = uc $line;
-return (1, $self->msg('e24')) unless $Internet::allow;
-return (1, "SHOW/DB0SDX <callsign>, e.g. SH/DB0SDX ea7wa") unless $line && is_callsign($line);
-my $target = $Internet::db0sdx_url || 'www.qslinfo.de';
-my $path = $Internet::db0sdx_path || '/qslinfo';
-my $suffix = $Internet::db0sdx_suffix || '.asmx';
-my $port = 80;
-my $cmdprompt = '/query->.*$/';
+sub process
+{
+	my $conn = shift;
+	my $msg = shift;
 
-my($info, $t);
-                                    
-$t = new Net::Telnet;
+	$conn->{sdxin} .= "$msg\n";
+	
+	dbg("db0sdx in: $conn->{sdxin}") if isdbg('db0sdx');
+}
 
-dbg("db0sdx: contacting $target:$port") if isdbg('db0sdx');
-$info =  $t->open(Host    => $target,
-		  Port    => $port,
-		  Timeout => 15);
+sub handle
+{
+	my ($self, $line) = @_;
+	my $call = $self->call;
+	my @out;
 
-if (!$info) {
-	push @out, $self->msg('e18', 'DB0SDX Database server');
-} else {
+	$line = uc $line;
+	return (1, $self->msg('e24')) unless $Internet::allow;
+	return (1, "SHOW/DB0SDX <callsign>, e.g. SH/DB0SDX ea7wa") unless $line && is_callsign($line);
+	my $target = $Internet::db0sdx_url || 'www.qslinfo.de';
+	my $path = $Internet::db0sdx_path || '/qslinfo';
+	my $suffix = $Internet::db0sdx_suffix || '.asmx';
+	my $port = 80;
 
-	dbg("db0sdx: connected to $target:$port") if isdbg('db0sdx');
+	dbg("db0sdx: contacting $target:$port") if isdbg('db0sdx');
 
 	my $s = qq(<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -46,48 +67,24 @@ if (!$info) {
       <ClientInformation>DXSpider V$main::version B$main::build ($call\@$main::mycall)</ClientInformation>
     </qslinfo>
   </soap:Body>
-</soap:Envelope>
-);
+</soap:Envelope>);
+	my $lth = length($s)+1;
 	
-
-	my $lth = length($s)+7;
-	
-	dbg("db0sdx out: $s") if isdbg('db0sdx');
-	
-	$t->print("POST $path$suffix HTTP/1.0");
-	$t->print("Host: $target");
-	$t->print("Content-Type: text/xml; charset=utf-8");
-	$t->print("Content-Length: $lth");
-	$t->print("Connection: Close");
-	$t->print(qq{SOAPAction: "http://$target$path"});
-	$t->print("");
-	$t->put($s);
-
-	my $in;
-	
-	while (my $result = eval { $t->getline(Timeout => 30) } || $@) {
-		if ($@) {
-			push @out, $self->msg('e18', 'DB0SDX Server');
-			last;
-		} else {
-			$in .= $result;
-		}
-	}
-
- 	dbg("db0sdx in: $in") if isdbg('db0sdx');
-	
-	# Log the lookup
 	Log('call', "$call: show/db0sdx $line");
-	$t->close;
-
-	my ($info) = $in =~ m|<qslinfoResult>([^<]*)</qslinfoResult>|;
-	my @in = split /[\r\n]/, $info if $info;
-	if (@in && $in[0]) {
-		push @out, @in;
+	my $conn = AsyncMsg->post($self, $target, $port, "$path$suffix", prefix => 'sdx> ', filter => \&process,
+							 'Content-Type' => 'text/xml; charset=utf-8',
+							 'Content-Length' => $lth,
+							  Connection => 'Close',
+							  SOAPAction => qq{"http://$target$path"},
+							  data => $s,
+							  on_disc => \&on_disc);
+	
+	if ($conn) {
+		$conn->{sdxcall} = $line;
+		push @out, $self->msg('m21', "show/db0sdx");
 	} else {
-		($info) = $in =~ m|<faultstring>([^<]*)</faultstring>|;
-		push @out, $info if $info;
-		push @out, $self->msg('e3', 'DB0SDX', $line) unless @out;		
+		push @out, $self->msg('e18', 'DB0SDX Database server');
 	}
+
+	return (1, @out);
 }
-return (1, @out);

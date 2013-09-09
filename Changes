@@ -1,3 +1,7 @@
+09Sep13=======================================================================
+1. Make all the Net::Telnet based commands (sh/425, sh/contest, sh/db0sdx,
+   sh/wm7d, sh/ik3qar) asynchronous, so that they no longer pause the node
+   while they go off and query the internet for results.
 06Sep13=======================================================================
 1. Fixed sh/contest so that it works again. How it ever worked at all is
    a bit of a mystery. Now possible to type sh/cont dec or sh/cont dec 2013

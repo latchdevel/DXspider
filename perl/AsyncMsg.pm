@@ -132,9 +132,10 @@ sub new
 # Host: is always set to the name of the host (unless overridden)
 # User-Agent: is set to default above (unless overridden)
 #
-sub get
+sub _getpost
 {
 	my $pkg = shift;
+	my $sort = shift;
 	my $call = shift;
 	my $host = shift;
 	my $port = shift;
@@ -147,23 +148,40 @@ sub get
 	$conn->{state} = 'waitreply';
 	$conn->{filter} = delete $args{filter} if exists $args{filter};
 	$conn->{prefix} = delete $args{prefix} if exists $args{prefix};
+	$conn->{on_disconnect} = delete $args{on_disc} || delete $args{on_disconnect};
 	$conn->{path} = $path;
 	
 	$r = $conn->connect($host, $port);
 	if ($r) {
-		dbg("Sending 'GET $path HTTP/1.0'") if isdbg('async');
-		$conn->send_later("GET $path HTTP/1.0\n");
+		dbg("Sending '$sort $path HTTP/1.0'") if isdbg('async');
+		$conn->send_later("$sort $path HTTP/1.0\n");
+
 		my $h = delete $args{Host} || $host;
 		my $u = delete $args{'User-Agent'} || "DxSpider;$main::version;$main::build;$^O;$main::mycall"; 
+		my $d = delete $args{data};
+		
 	    $conn->send_later("Host: $h\n");
 		$conn->send_later("User-Agent: $u\n");
 		while (my ($k,$v) = each %args) {
 			$conn->send_later("$k: $v\n");
 		}
+		$conn->send_later("\n$d") if defined $d;
 		$conn->send_later("\n");
 	}
 	
 	return $r ? $conn : undef;
+}
+
+sub get
+{
+	my $pkg = shift;
+	_getpost($pkg, "GET", @_);
+}
+
+sub post
+{
+	my $pkg = shift;
+	_getpost($pkg, "POST", @_);
 }
 
 # do a raw connection
@@ -212,6 +230,14 @@ sub connect
 sub disconnect
 {
 	my $conn = shift;
+
+	if (my $ondisc = $conn->{on_disconnect}) {
+		my $dxchan = DXChannel::get($conn->{caller});
+		if ($dxchan) {
+			no strict 'refs';
+			$ondisc->($conn, $dxchan)
+		}
+	}
 	delete $outstanding{$conn};
 	$conn->SUPER::disconnect;
 }
