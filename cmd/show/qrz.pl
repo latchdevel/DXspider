@@ -9,6 +9,10 @@
 # Copyright (c) 2001-2013 Dirk Koopman G1TLH
 #
 
+use vars qw (%allowed);
+
+%allowed = qw(call 1 fname 1 name 1 addr2 1 state 1 country 1 lat 1 lon 1 county 1 moddate 1 qslmgr 1 grid 1 );
+
 sub _send
 {
 	my $conn = shift;
@@ -16,8 +20,17 @@ sub _send
 	my $dxchan = shift;
 
 	my ($tag, $data) = $msg =~ m|^\s*<(\w+)>(.*)</|;
-	my $prefix = $conn->{prefix} || ' ';
-	$dxchan->send($prefix . sprintf("%-10s: $data", $tag));
+	if ($allowed{$tag}) {
+		my $prefix = $conn->{prefix} || ' ';
+		$dxchan->send($prefix . sprintf("%-10s: $data", $tag));
+	}
+}
+
+sub _on_disc
+{
+	my $conn = shift;
+	my $dxchan = shift;
+	$dxchan->send("Data provided by www.qrz.com");
 }
 
 sub filter
@@ -37,11 +50,6 @@ sub filter
 			_send($conn, $msg, $dxchan);
 		}
 	} elsif ($state eq 'go') {
-		return if $msg =~ m|<user>|;
-		return if $msg =~ m|<u_views>|;
-		return if $msg =~ m|<locref>|;
-		return if $msg =~ m|<ccode>|;
-		return if $msg =~ m|<dxcc>|;
 	    if ($msg =~ m|</Callsign>|) {
 			$conn->{state} = 'skip';
 			return;
@@ -59,13 +67,13 @@ sub handle
 
 	return (1, $self->msg('e24')) unless $Internet::allow;
 	return (1, "SHOW/QRZ <callsign>, e.g. SH/QRZ g1tlh") unless $line;
-	my $target = $Internet::qrz_url || 'xml.qrz.com';
+	my $target = $Internet::qrz_url || 'xmldata.qrz.com';
 	my $port = 80;
-	my $path = qq{/xml?callsign=$line;username=$Internet::qrz_uid;password=$Internet::qrz_pw;agent=dxspider};
+	my $path = qq{/xml/current/?callsign=$line;username=$Internet::qrz_uid;password=$Internet::qrz_pw;agent=dxspider};
 	dbg("qrz: $path") if isdbg('qrz');
 
 	Log('call', "$call: show/qrz \U$line");
-	my $conn = AsyncMsg->get($self, $target, $port, $path, filter=>\&filter, prefix=>'qrz> ');
+	my $conn = AsyncMsg->get($self, $target, $port, $path, filter=>\&filter, prefix=>'qrz> ', on_disc=>\&_on_disc);
 	if ($conn) {
 		$conn->{state} = 'blank';
 		push @out, $self->msg('m21', "show/qrz");
