@@ -10,6 +10,8 @@
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;
 
+push @list, $self->call unless @list;
+
 my $l;
 my @out;
 my $t = $main::systime;
