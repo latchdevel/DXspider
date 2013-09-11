@@ -877,6 +877,21 @@ This command sends out any information held in the user file which can
 be broadcast in PC41 protocol packets. This information is Name, QTH, Location
 and Homenode. PC41s are only sent for the information that is available.
  
+=== 8^GET/KEPS^Obtain the latest AMSAT Keplarian Elements from the web
+There are various ways that one can obtain the AMSAT keps. Traditionally the
+regular method was to get on the mailing list and then arrange for the email
+to be piped into convkeps.pl and arrange from the crontab to run LOAD/KEPS. 
+For various reasons, it was quite easy for one to be silently dropped 
+from this mailing list. 
+
+With the advent of asynchronous (web) connections in DXSpider it is now 
+possible to use this command to get the latest keps direct from the
+AMSAT web site. One can do this from the command line or one can add a line 
+in the local DXSpider crontab file to do periodically (say once a week).
+
+This command will clear out the existing keps and then run LOAD/KEPS 
+for you (but only) after a successful download from the AMSAT website.
+ 
 === 0^HELP^The HELP Command
 HELP is available for a number of commands. The syntax is:-
 
