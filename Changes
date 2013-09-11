@@ -1,4 +1,7 @@
 10Sep13=======================================================================
+1. Add the get/keps command, which allows a sysop to get the latest AMSAT
+   keplarian elements either on demand or periodically in the crontab.
+10Sep13=======================================================================
 1. Fix sh/time such that no arguments print details for the caller.
 09Sep13=======================================================================
 1. Make all the Net::Telnet based commands (sh/425, sh/contest, sh/db0sdx,

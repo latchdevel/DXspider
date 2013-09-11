@@ -16,9 +16,9 @@ my ($self, $line) = @_;
 my @out;
 
 my @f = split /\s+/, $line;
-my $satname = uc shift @f;
-my $numhours = shift @f;	# the number of hours ahead to print
-my $step = shift @f;		# tracking table resolution in minutes
+my $satname = uc shift @f if @f;
+my $numhours = shift @f if @f;	# the number of hours ahead to print
+my $step = shift @f if @f;		# tracking table resolution in minutes
 
 # default hours and step size
 $numhours = 3 unless $numhours && $numhours =~ /^\d+$/;

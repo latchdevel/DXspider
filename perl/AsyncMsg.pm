@@ -52,15 +52,35 @@ sub handle_get
 		if ($code == 200) {
 			# success
 			$conn->{state} = 'waitblank';
+		} elsif ($code == 302) {
+			# redirect
+			$conn->{state} = 'waitlocation';
 		} else {
 			$dxchan->send("$code $ascii");
 			$conn->disconnect;
 		} 
+	} elsif ($state  eq 'waitlocation') {
+		my ($path) = $msg =~ m|Location:\s*(.*)|;
+		if ($path) {
+			my @uri = split m|/+|, $path;
+			if ($uri[0] eq 'http:') {
+				shift @uri;
+				my $host = shift @uri;
+				my $newpath = '/' . join('/', @uri);
+				$newpath .= '/' if $path =~ m|/$|;
+				_getpost(ref $conn, $conn->{asyncsort}, $conn->{caller}, $host, 80, $newpath, @{$conn->{asyncargs}});
+			} elsif ($path =~ m|^/|) {
+				_getpost(ref $conn, $conn->{asyncsort}, $conn->{caller}, $conn->{peerhost}, $conn->{peerport}, $path,
+						 @{$conn->{asyncargs}});
+			}
+			delete $conn->{on_disconnect};
+			$conn->disconnect;
+		}
 	} elsif ($state eq 'waitblank') {
 		unless ($msg) {
 			$conn->{state} = 'indata';
 		}
-	} else {
+	} elsif ($conn->{state} eq 'indata') {
 		if (my $filter = $conn->{filter}) {
 			no strict 'refs';
 			# this will crash if the command has been redefined and the filter is a
@@ -142,14 +162,15 @@ sub _getpost
 	my $path = shift;
 	my %args = @_;
 	
-	my $filter = shift;
-	
+
 	my $conn = $pkg->new($call, \&handle_get);
+	$conn->{asyncargs} = [@_];
 	$conn->{state} = 'waitreply';
 	$conn->{filter} = delete $args{filter} if exists $args{filter};
 	$conn->{prefix} = delete $args{prefix} if exists $args{prefix};
 	$conn->{on_disconnect} = delete $args{on_disc} || delete $args{on_disconnect};
 	$conn->{path} = $path;
+	$conn->{asyncsort} = $sort;
 	
 	$r = $conn->connect($host, $port);
 	if ($r) {
@@ -219,9 +240,9 @@ sub connect
 	# start a connection
 	my $r = $conn->SUPER::connect($host, $port);
 	if ($r) {
-		dbg("HTTPMsg: Connected $conn->{cnum} to $host $port") if isdbg('async');
+		dbg("AsyncMsg: Connected $conn->{cnum} to $host $port") if isdbg('async');
 	} else {
-		dbg("HTTPMsg: ***Connect $conn->{cnum} Failed to $host $port $!") if isdbg('async');
+		dbg("AsyncMsg: ***Connect $conn->{cnum} Failed to $host $port $!") if isdbg('async');
 	}
 	
 	return $r;
