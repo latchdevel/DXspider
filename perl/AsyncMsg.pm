@@ -35,9 +35,9 @@ sub handle_get
 	my $conn = shift;
 	my $msg = shift;
 
-	my $state = $conn->{state};
+	my $state = $conn->{_asstate};
 	
-	dbg("asyncmsg: $msg") if isdbg('async');
+	dbg("asyncmsg: $state $msg") if isdbg('async');
 
 	# no point in going on if there is no-one wanting the output anymore
 	my $dxchan = DXChannel::get($conn->{caller});
@@ -51,10 +51,10 @@ sub handle_get
 		my ($http, $code, $ascii) = $msg =~ m|(HTTP/\d\.\d)\s+(\d+)\s+(.*)|;
 		if ($code == 200) {
 			# success
-			$conn->{state} = 'waitblank';
+			$conn->{_asstate} = 'waitblank';
 		} elsif ($code == 302) {
 			# redirect
-			$conn->{state} = 'waitlocation';
+			$conn->{_asstate} = 'waitlocation';
 		} else {
 			$dxchan->send("$code $ascii");
 			$conn->disconnect;
@@ -62,26 +62,33 @@ sub handle_get
 	} elsif ($state  eq 'waitlocation') {
 		my ($path) = $msg =~ m|Location:\s*(.*)|;
 		if ($path) {
+			my $newconn;
 			my @uri = split m|/+|, $path;
 			if ($uri[0] eq 'http:') {
 				shift @uri;
 				my $host = shift @uri;
 				my $newpath = '/' . join('/', @uri);
 				$newpath .= '/' if $path =~ m|/$|;
-				_getpost(ref $conn, $conn->{asyncsort}, $conn->{caller}, $host, 80, $newpath, @{$conn->{asyncargs}});
+				$newconn = _getpost(ref $conn, $conn->{_assort}, $conn->{caller}, $host, 80, $newpath, @{$conn->{_asargs}});
 			} elsif ($path =~ m|^/|) {
-				_getpost(ref $conn, $conn->{asyncsort}, $conn->{caller}, $conn->{peerhost}, $conn->{peerport}, $path,
-						 @{$conn->{asyncargs}});
+				$newconn = _getpost(ref $conn, $conn->{_assort}, $conn->{caller}, $conn->{peerhost}, $conn->{peerport}, $path, @{$conn->{_asargs}});
+			}
+			if ($newconn) {
+				# copy over any elements in $conn that are not in $newconn
+				while (my ($k,$v) = each %$conn) {
+					dbg("async: $state copying over $k -> \$newconn") if isdbg('async');
+					$newconn{$k} = $v unless exists $newconn{$k};
+				}
 			}
 			delete $conn->{on_disconnect};
 			$conn->disconnect;
 		}
 	} elsif ($state eq 'waitblank') {
 		unless ($msg) {
-			$conn->{state} = 'indata';
+			$conn->{_asstate} = 'indata';
 		}
-	} elsif ($conn->{state} eq 'indata') {
-		if (my $filter = $conn->{filter}) {
+	} elsif ($conn->{_asstate} eq 'indata') {
+		if (my $filter = $conn->{_asfilter}) {
 			no strict 'refs';
 			# this will crash if the command has been redefined and the filter is a
 			# function defined there whilst the request is in flight,
@@ -164,13 +171,13 @@ sub _getpost
 	
 
 	my $conn = $pkg->new($call, \&handle_get);
-	$conn->{asyncargs} = [@_];
-	$conn->{state} = 'waitreply';
-	$conn->{filter} = delete $args{filter} if exists $args{filter};
+	$conn->{_asargs} = [@_];
+	$conn->{_asstate} = 'waitreply';
+	$conn->{_asfilter} = delete $args{filter} if exists $args{filter};
 	$conn->{prefix} = delete $args{prefix} if exists $args{prefix};
 	$conn->{on_disconnect} = delete $args{on_disc} || delete $args{on_disconnect};
 	$conn->{path} = $path;
-	$conn->{asyncsort} = $sort;
+	$conn->{_assort} = $sort;
 	
 	$r = $conn->connect($host, $port);
 	if ($r) {
