@@ -19,15 +19,16 @@ sub on_disc
 
 	my ($info) = $conn->{sdxin} =~ m|<qslinfoResult>([^<]*)</qslinfoResult>|;
 	dbg("info: $info");
+	my $prefix = $conn->{prefix} || '';
 	
 	my @in = split /[\r\n]/, $info if $info;
 	if (@in && $in[0]) {
 		dbg("in qsl");
-		push @out, @in;
+		push @out, map {"$prefix$_"} @in;
 	} else {
 		dbg("in fault");
 		($info) = $conn->{sdxin} =~ m|<faultstring>([^<]*)</faultstring>|;
-		push @out, $info if $info;
+		push @out, "$prefix$info" if $info;
 		push @out, $dxchan->msg('e3', 'DB0SDX', $conn->{sdxline}) unless @out;		
 	}
 	$dxchan->send(@out);

@@ -11,7 +11,7 @@
 
 use vars qw (%allowed);
 
-%allowed = qw(call 1 fname 1 name 1 addr2 1 state 1 country 1 lat 1 lon 1 county 1 moddate 1 qslmgr 1 grid 1 );
+%allowed = qw(call 1 fname 1 name 1 addr2 1 state 1 country 1 lat 1 lon 1 county 1 moddate 1 qslmgr 1 grid 1 Error 1 );
 
 sub _send
 {
@@ -44,9 +44,9 @@ sub filter
 	dbg("qrz: $state $msg") if isdbg('qrz');
 
 	if ($state eq 'blank') { 
-		if ($msg =~ /^<Callsign>/) {
+		if ($msg =~ /^\s*<Callsign>/) {
 			$conn->{state} = 'go';
-		} elsif ($msg =~ /^<Error>/) {
+		} elsif ($msg =~ /^\s*<Error>/) {
 			_send($conn, $msg, $dxchan);
 		}
 	} elsif ($state eq 'go') {
@@ -70,7 +70,7 @@ sub handle
 	my $target = $Internet::qrz_url || 'xmldata.qrz.com';
 	my $port = 80;
 	my $path = qq{/xml/current/?callsign=$line;username=$Internet::qrz_uid;password=$Internet::qrz_pw;agent=dxspider};
-	dbg("qrz: $path") if isdbg('qrz');
+	dbg("qrz: $target:$port$path") if isdbg('qrz');
 
 	Log('call', "$call: show/qrz \U$line");
 	my $conn = AsyncMsg->get($self, $target, $port, $path, filter=>\&filter, prefix=>'qrz> ', on_disc=>\&_on_disc);
