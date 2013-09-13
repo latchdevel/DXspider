@@ -52,6 +52,8 @@ BEGIN {
 	$systime = time;
 }
 
+use Mojo::IOLoop;
+
 use DXVars;
 use Msg;
 use IntMsg;
@@ -121,7 +123,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
-			$can_encode $maxconnect_user $maxconnect_node
+			$can_encode $maxconnect_user $maxconnect_node $idle_interval
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -136,6 +138,7 @@ $maxconnect_user = 3;			# the maximum no of concurrent connections a user can ha
 $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
 								# takes the no of references in the routing table above these numbers
 								# then the connection is refused. This only affects INCOMING connections.
+$idle_interval = 0.100;                        # the wait between invocations of the main idle loop processing.
 
 # send a message to call on conn and disconnect
 sub already_conn
@@ -273,7 +276,6 @@ sub cease
 	foreach $dxchan (DXChannel::get_all_nodes) {
 	    $dxchan->disconnect(2) unless $dxchan == $main::me;
 	}
-	Msg->event_loop(100, 0.01);
 
 	# disconnect users
 	foreach $dxchan (DXChannel::get_all_users) {
@@ -288,7 +290,6 @@ sub cease
 	UDPMsg::finish();
 
 	# end everything else
-	Msg->event_loop(100, 0.01);
 	DXUser::finish();
 	DXDupe::finish();
 
@@ -301,6 +302,7 @@ sub cease
 	}
 
 	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitversion) ended");
+	dbg("bye bye everyone - bye bye");
 	dbgclose();
 	Logclose();
 
@@ -341,6 +343,60 @@ sub AGWrestart
 {
 	AGWMsg::init(\&new_channel);
 }
+
+sub idle_loop
+{
+	my $timenow = time;
+
+	DXChannel::process();
+
+	#      $DB::trace = 0;
+
+	# do timed stuff, ongoing processing happens one a second
+	if ($timenow != $systime) {
+		reap() if $zombies;
+		$systime = $timenow;
+		my $days = int ($systime / 86400);
+		if ($systime_days != $days) {
+			$systime_days = $days;
+			$systime_daystart = $days * 86400;
+		}
+		IsoTime::update($systime);
+		DXCron::process();      # do cron jobs
+		DXCommandmode::process(); # process ongoing command mode stuff
+		DXXml::process();
+		DXProt::process();		# process ongoing ak1a pcxx stuff
+		DXConnect::process();
+		DXMsg::process();
+		DXDb::process();
+		DXUser::process();
+		DXDupe::process();
+		$systime_days = $days;
+		$systime_daystart = $days * 86400;
+	}
+	IsoTime::update($systime);
+	DXCron::process();			# do cron jobs
+	DXCommandmode::process();	# process ongoing command mode stuff
+	DXXml::process();
+	DXProt::process();			# process ongoing ak1a pcxx stuff
+	DXConnect::process();
+	DXMsg::process();
+	DXDb::process();
+	DXUser::process();
+	DXDupe::process();
+	AGWMsg::process();
+	BPQMsg::process();
+
+	Timer::handler();
+
+	if (defined &Local::process) {
+		eval {
+			Local::process();	# do any localised processing
+		};
+		dbg("Local::process error $@") if $@;
+	}
+}
+
 
 #############################################################
 #
@@ -446,7 +502,7 @@ dbg("load badwords: " . (BadWords::load or "Ok"));
 
 # prime some signals
 unless ($DB::VERSION) {
-	$SIG{INT} = $SIG{TERM} = sub { $decease = 1 };
+	$SIG{INT} = $SIG{TERM} = sub { Mojo::IOLoop->stop; };
 }
 
 unless ($is_win) {
@@ -535,49 +591,8 @@ $script->run($main::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 
-for (;;) {
-#	$DB::trace = 1;
+Mojo::IOLoop->start;
 
-	Msg->event_loop(10, 0.010);
-	my $timenow = time;
-
-	DXChannel::process();
-
-#	$DB::trace = 0;
-
-	# do timed stuff, ongoing processing happens one a second
-	if ($timenow != $systime) {
-		reap() if $zombies;
-		$systime = $timenow;
-		my $days = int ($systime / 86400);
-		if ($systime_days != $days) {
-			$systime_days = $days;
-			$systime_daystart = $days * 86400;
-		}
-		IsoTime::update($systime);
-		DXCron::process();      # do cron jobs
-		DXCommandmode::process(); # process ongoing command mode stuff
-		DXXml::process();
-		DXProt::process();		# process ongoing ak1a pcxx stuff
-		DXConnect::process();
-		DXMsg::process();
-		DXDb::process();
-		DXUser::process();
-		DXDupe::process();
-		AGWMsg::process();
-		BPQMsg::process();
-
-		if (defined &Local::process) {
-			eval {
-				Local::process();       # do any localised processing
-			};
-			dbg("Local::process error $@") if $@;
-		}
-	}
-	if ($decease) {
-		last if --$decease <= 0;
-	}
-}
 cease(0);
 exit(0);
 

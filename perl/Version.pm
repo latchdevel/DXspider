@@ -9,9 +9,9 @@ package main;
 
 use vars qw($version $subversion $build $gitversion);
 
-$version = '1.55';
+$version = '1.57';
 $subversion = '0';
-$build = '136';
-$gitversion = '725d28d';
+$build = '1';
+$gitversion = 'e399440';
 
 1;
