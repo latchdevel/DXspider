@@ -591,6 +591,8 @@ $script->run($main::me) if $script;
 
 #open(DB::OUT, "|tee /tmp/aa");
 
+my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
+
 Mojo::IOLoop->start;
 
 cease(0);
