@@ -593,7 +593,7 @@ $script->run($main::me) if $script;
 
 my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
 
-Mojo::IOLoop->start;
+Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 cease(0);
 exit(0);

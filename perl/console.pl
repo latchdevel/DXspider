@@ -26,6 +26,8 @@ BEGIN {
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 }
 
+use Mojo::IOLoop;
+
 use Msg;
 use IntMsg;
 use DXVars;
@@ -54,6 +56,9 @@ $khistpos = 0;
 $spos = $pos = $lth = 0;
 $inbuf = "";
 @time = ();
+$lastmin = 0;
+$idle = 0;
+
 
 #$SIG{WINCH} = sub {@time = gettimeofday};
 
@@ -443,6 +448,46 @@ sub rec_stdin
 	$bot->refresh();
 }
 
+sub idle_loop
+{
+	my $t;
+	
+	$t = time;
+	if ($t > $lasttime) {
+		my ($min)= (gmtime($t))[1];
+		if ($min != $lastmin) {
+			show_screen();
+			$lastmin = $min;
+		}
+		$lasttime = $t;
+	}
+	my $ch = $bot->getch();
+	if (@time && tv_interval(\@time, [gettimeofday]) >= 1) {
+		next;
+	}
+	if (defined $ch) {
+		if ($ch ne '-1') {
+			rec_stdin($ch);
+		}
+	}
+	$top->refresh() if $top->is_wintouched;
+	$bot->refresh();
+}
+
+sub on_connect
+{
+	my $conn = shift;
+	$conn->send_later("A$call|$connsort width=$cols");
+	$conn->send_later("I$call|set/page $maxshist");
+	#$conn->send_later("I$call|set/nobeep");
+}
+
+sub on_disconnect
+{
+	$conn = shift;
+	Mojo::IOLoop->remove($idle);
+	Mojo::IOLoop->stop;
+}
 
 #
 # deal with args
@@ -464,23 +509,6 @@ if ($call eq $mycall) {
 
 dbginit();
 
-$conn = IntMsg->connect("$clusteraddr", $clusterport, \&rec_socket);
-if (! $conn) {
-	if (-r "$data/offline") {
-		open IN, "$data/offline" or die;
-		while (<IN>) {
-			print $_;
-		}
-		close IN;
-	} else {
-		print "Sorry, the cluster $mycall is currently off-line\n";
-	}
-	exit(0);
-}
-
-$conn->set_error(sub{cease(0)});
-
-
 unless ($DB::VERSION) {
 	$SIG{'INT'} = \&sig_term;
 	$SIG{'TERM'} = \&sig_term;
@@ -493,40 +521,17 @@ do_resize();
 
 $SIG{__DIE__} = \&sig_term;
 
-$conn->send_later("A$call|$connsort width=$cols");
-$conn->send_later("I$call|set/page $maxshist");
-#$conn->send_later("I$call|set/nobeep");
-
-#Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
-
 $Text::Wrap::Columns = $cols;
 
 my $lastmin = 0;
-for (;;) {
-	my $t;
-	Msg->event_loop(1, 0.01);
-	$t = time;
-	if ($t > $lasttime) {
-		my ($min)= (gmtime($t))[1];
-		if ($min != $lastmin) {
-			show_screen();
-			$lastmin = $min;
-		}
-		$lasttime = $t;
-	}
-	my $ch = $bot->getch();
-	if (@time && tv_interval(\@time, [gettimeofday]) >= 1) {
-#		mydbg("Got Resize");
-#		do_resize();
-		next;
-	}
-	if (defined $ch) {
-		if ($ch ne '-1') {
-			rec_stdin($ch);
-		}
-	}
-	$top->refresh() if $top->is_wintouched;
-	$bot->refresh();
-}
 
-exit(0);
+
+$conn = IntMsg->connect($clusteraddr, $clusterport, \&rec_socket);
+$conn->{on_connect} = \&on_connect;
+$conn->{on_disconnect} = \&on_disconnect;
+
+$idle = Mojo::IOLoop->recurring(0.100 => \&idle_loop);
+Mojo::IOLoop->start;
+
+
+cease(0);
