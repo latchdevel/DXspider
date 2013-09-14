@@ -7,11 +7,10 @@
 
 package main;
 
-use vars qw($version $subversion $build $gitversion);
+use vars qw($version $build $gitversion);
 
 $version = '1.57';
-$subversion = '0';
-$build = '2';
-$gitversion = '61e7e87';
+$build = '3';
+$gitversion = '16c9326';
 
 1;
