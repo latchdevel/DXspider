@@ -140,6 +140,7 @@ sub _on_connect
 	$sock->on(close => sub {$conn->disconnect;});
 	$sock->timeout(0);
 	$sock->start;
+	$conn->{peerhost} = eval { $handle->peerhost; };
 	dbg((ref $conn) . " connected $conn->{cnum} to $conn->{peerhost}:$conn->{peerport}") if isdbg('connll');
 	if ($conn->{on_connect}) {
 		&{$conn->{on_connect}}($conn);
