@@ -180,24 +180,27 @@ sub _getpost
 	$conn->{_assort} = $sort;
 	
 	$r = $conn->connect($host, $port);
-	if ($r) {
-		dbg("Sending '$sort $path HTTP/1.0'") if isdbg('async');
-		$conn->send_later("$sort $path HTTP/1.0\n");
-
-		my $h = delete $args{Host} || $host;
-		my $u = delete $args{'User-Agent'} || "DxSpider;$main::version;$main::build;$^O;$main::mycall"; 
-		my $d = delete $args{data};
-		
-	    $conn->send_later("Host: $h\n");
-		$conn->send_later("User-Agent: $u\n");
-		while (my ($k,$v) = each %args) {
-			$conn->send_later("$k: $v\n");
-		}
-		$conn->send_later("\n$d") if defined $d;
-		$conn->send_later("\n");
-	}
 	
 	return $r ? $conn : undef;
+}
+
+sub _getpost_onconnect
+{
+	
+	dbg("Sending '$sort $path HTTP/1.0'") if isdbg('async');
+	$conn->send_later("$sort $path HTTP/1.0\n");
+	
+	my $h = delete $args{Host} || $host;
+	my $u = delete $args{'User-Agent'} || "DxSpider;$main::version;$main::build;$^O;$main::mycall"; 
+	my $d = delete $args{data};
+	
+	$conn->send_later("Host: $h\n");
+	$conn->send_later("User-Agent: $u\n");
+	while (my ($k,$v) = each %args) {
+		$conn->send_later("$k: $v\n");
+	}
+	$conn->send_later("\n$d") if defined $d;
+	$conn->send_later("\n");
 }
 
 sub get
@@ -215,6 +218,7 @@ sub post
 # do a raw connection
 #
 # Async->raw($self, <host>, <port>, [handler => CODE ref], [prefix => <string>]);
+b390vpw
 #
 # With no handler defined, everything sent by the connection will be sent to
 # the caller.
@@ -238,6 +242,20 @@ sub raw
 	return $r ? $conn : undef;
 }
 
+sub _on_connect
+{
+	my $conn = shift;
+	my $handle = shift;
+	dbg("AsyncMsg: Connected $conn->{cnum} to $host $port") if isdbg('async');
+}
+
+sub _on_error
+{
+	my $conn = shift;
+	my $msg = shift;
+	dbg("AsyncMsg: ***Connect $conn->{cnum} Failed to $host $port $!") if isdbg('async');	
+}
+
 sub connect
 {
 	my $conn = shift;
@@ -245,13 +263,8 @@ sub connect
 	my $port = shift;
 	
 	# start a connection
-	my $r = $conn->SUPER::connect($host, $port);
-	if ($r) {
-		dbg("AsyncMsg: Connected $conn->{cnum} to $host $port") if isdbg('async');
-	} else {
-		dbg("AsyncMsg: ***Connect $conn->{cnum} Failed to $host $port $!") if isdbg('async');
-	}
-	
+	my $r = $conn->SUPER::connect($host, $port, on_connect => &\_on_connect);
+
 	return $r;
 }
 

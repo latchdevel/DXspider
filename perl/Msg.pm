@@ -143,7 +143,7 @@ sub _on_connect
 	$conn->{peerhost} = eval { $handle->peerhost; };
 	dbg((ref $conn) . " connected $conn->{cnum} to $conn->{peerhost}:$conn->{peerport}") if isdbg('connll');
 	if ($conn->{on_connect}) {
-		&{$conn->{on_connect}}($conn);
+		&{$conn->{on_connect}}($conn, $handle);
 	}
 }
 
@@ -155,12 +155,13 @@ sub is_connected
 }
 
 sub connect {
-    my ($pkg, $to_host, $to_port, $rproc,  %args) = @_;
+    my ($pkg, $to_host, $to_port, %args) = @_;
 	my $timeout = delete $args{timeout} || $connect_timeout;
 	
     # Create a connection end-point object
     my $conn = $pkg;
 	unless (ref $pkg) {
+		my $rproc = delete $args{rproc}; 
 		$conn = $pkg->new($rproc);
 	}
 	$conn->{peerhost} = $to_host;
@@ -172,7 +173,7 @@ sub connect {
 	my $sock;
 	$conn->{sock} = $sock = Mojo::IOLoop::Client->new;
 	$sock->on(connect => sub {$conn->_on_connect($_[1])} );
-	$sock->on(error => sub {$conn->disconnect});
+	$sock->on(error => sub {&{$conn->{eproc}}($conn, $_[1]) if exists $conn->{eproc}; $conn->disconnect});
 	$sock->on(close => sub {$conn->disconnect});
 
 	# copy any args like on_connect, on_disconnect etc

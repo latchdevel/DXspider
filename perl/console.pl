@@ -526,7 +526,7 @@ $Text::Wrap::Columns = $cols;
 my $lastmin = 0;
 
 
-$conn = IntMsg->connect($clusteraddr, $clusterport, \&rec_socket);
+$conn = IntMsg->connect($clusteraddr, $clusterport, rproc => \&rec_socket);
 $conn->{on_connect} = \&on_connect;
 $conn->{on_disconnect} = \&on_disconnect;
 
