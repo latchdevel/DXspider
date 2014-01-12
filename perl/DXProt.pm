@@ -955,7 +955,7 @@ sub broadcast_pc92_update
 
 	my $nref = Route::Node::get($call);
 	unless ($nref) {
-		dbg("ERROR: broadcast_pc92_update - Route::Node $call disappeared");
+		cluck("ERROR: broadcast_pc92_update - Route::Node $call disappeared");
 		return;
 	}
 	my $l = $nref->last_PC92C(gen_my_pc92_config($nref));
@@ -973,7 +973,7 @@ sub broadcast_pc92_keepalive
 
 	my $nref = Route::Node::get($call);
 	unless ($nref) {
-		dbg("ERROR: broadcast_pc92_keepalive - Route::Node $call disappeared");
+		cluck("ERROR: broadcast_pc92_keepalive - Route::Node $call disappeared");
 		return;
 	}
 	my $l = pc92k($nref);

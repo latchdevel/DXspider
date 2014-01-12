@@ -1194,7 +1194,7 @@ sub import_cmd
 						$dxchan->{priv} = $u->priv;
 						$dxchan->{user} = $u;
 						@out = $s->run($dxchan, 1);
-						$dxchan->{call} = $call;
+						$dxchan->{call} = $old;
 						$dxchan->{priv} = $priv;
 						$dxchan->{user} = $user;
 					} else {
