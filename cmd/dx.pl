@@ -122,9 +122,11 @@ return (1, @out) unless $valid;
 
 my $ipaddr;
 
-if ($self->conn->peerhost) {
+if ($self->conn && $self->conn->peerhost) {
 	my $addr = $self->conn->peerhost;
 	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
+} elsif ($self->inscript) {
+	$ipaddr = "script";
 }
 
 # Store it here (but only if it isn't baddx)
