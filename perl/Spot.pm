@@ -403,7 +403,7 @@ sub dup
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = uc unpad($text);
 	if ($cty && $text && length $text <= 4) {
-		unless ($text =~ /^C?Q/ || $text =~ /^\d+$/ || $text =~ /\s/) {
+		unless ($text =~ /^C?Q/ || $text =~ /^[\d\W]+$/) {
 			my @try = Prefix::cty_data($text);
 			$text = "" if $cty == $try[0];
 		}
