@@ -10,10 +10,13 @@ my @list = split /\s+/, $line;	# generate a list of callsigns
 my $l;
 my @out;
 
+#$DB::single = 1;
+
 #print "line: $line\n";
 foreach $l (@list) {
 	my @ans = Prefix::extract($l);
 	next if !@ans;
+#	dbg(join(', ', @ans));
 	my $pre = shift @ans;
 	my $a;
 	foreach $a (@ans) {

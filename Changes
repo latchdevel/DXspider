@@ -1,3 +1,19 @@
+21Apr14=======================================================================
+1. Add CTY-2405 prefix list
+08Mar14=======================================================================
+1. Add newer version of wpxloc.raw with some missing prefixes added.
+07Mar14=======================================================================
+1. Add new version of wpxloc.raw 
+2. Fix a small crash with Spot::dup
+12Jan14=======================================================================
+1. Fix minor issue with dx command when used in a script, as found by
+   Christian Furst.
+2. Fix (rather serious) error in import_cmd that did not reset callsigns
+   correctly in $main::me.
+30Dec13=======================================================================
+1. Add CTY2312 prefix changes
+19Nov13=======================================================================
+1. Add CTY2311 Prefix changes - needed for CQWW 2013
 09Oct13=======================================================================
 1. Add CTY2310 prefix changes
 13Sep13=======================================================================

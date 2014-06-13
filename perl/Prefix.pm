@@ -442,7 +442,7 @@ L1:		for ($n = 0; $n < @parts; $n++) {
 		}
 
 		# we are a pirate!
-		@nout = matchprefix('Q');
+		@nout = matchprefix('QQ');
 		$misses++;
 		lru_put($call, \@nout);
 		push @out, @nout;
