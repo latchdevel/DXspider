@@ -72,7 +72,7 @@ sub handle
 	my $lth = length($s)+1;
 	
 	Log('call', "$call: show/db0sdx $line");
-	my $conn = AsyncMsg->post($self, $target, $port, "$path$suffix", prefix => 'sdx> ', filter => \&process,
+	my $conn = AsyncMsg->post($self, $target, "$path$suffix", prefix => 'sdx> ', filter => \&process,
 							 'Content-Type' => 'text/xml; charset=utf-8',
 							 'Content-Length' => $lth,
 							  Connection => 'Close',

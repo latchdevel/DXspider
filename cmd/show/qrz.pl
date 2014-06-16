@@ -67,13 +67,13 @@ sub handle
 
 	return (1, $self->msg('e24')) unless $Internet::allow;
 	return (1, "SHOW/QRZ <callsign>, e.g. SH/QRZ g1tlh") unless $line;
-	my $target = $Internet::qrz_url || 'xmldata.qrz.com';
+	my $target = $Internet::qrz_url || 'xml.qrz.com';
 	my $port = 80;
 	my $path = qq{/xml/current/?callsign=$line;username=$Internet::qrz_uid;password=$Internet::qrz_pw;agent=dxspider};
 	dbg("qrz: $target:$port$path") if isdbg('qrz');
 
 	Log('call', "$call: show/qrz \U$line");
-	my $conn = AsyncMsg->get($self, $target, $port, $path, filter=>\&filter, prefix=>'qrz> ', on_disc=>\&_on_disc);
+	my $conn = AsyncMsg->get($self, $target, $path, filter=>\&filter, prefix=>'qrz> ', on_disc=>\&_on_disc);
 	if ($conn) {
 		$conn->{state} = 'blank';
 		push @out, $self->msg('m21', "show/qrz");
