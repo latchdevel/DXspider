@@ -130,6 +130,20 @@ sub _getpost
 #	$tx->on(error => sub { $conn->_error(@_); });
 #	$tx->on(finish => sub { $conn->disconnect; });
 
+	$ua->on(start => sub {
+				my ($ua, $tx) = @_;
+				my $data = delete $args{data};
+				while (my ($k, $v) = each %args) {
+					dbg("AsyncMsg: attaching header $k: $v") if isdbg('async');
+					$tx->req->headers->header($k => $v);
+				}
+				if (defined $data) {
+					dbg("AsyncMsg: body ='$data'") if isdbg('async'); 
+					$tx->req->body($data);
+				}
+			});
+	
+
 	$ua->start($tx => sub { $conn->handle_getpost(@_) }); 
 
 	
@@ -251,7 +265,7 @@ sub disconnect
 		my $dxchan = DXChannel::get($conn->{caller});
 		if ($dxchan) {
 			no strict 'refs';
-			$ondisc->($conn, $dxchan)
+			$ondisc->($conn, $dxchan);
 		}
 	}
 	delete $conn->{mojo};

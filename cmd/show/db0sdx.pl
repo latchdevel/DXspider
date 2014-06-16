@@ -13,20 +13,21 @@ sub on_disc
 	my $conn = shift;
 	my $dxchan = shift;
 	my @out;
+
+#	$DB::single = 1;
 	
-	$conn->{sdxin} .= $conn->{msg};	# because there will be stuff left in the rx buffer because it isn't \n terminated
 	dbg("db0sdx in: $conn->{sdxin}") if isdbg('db0sdx');
 
 	my ($info) = $conn->{sdxin} =~ m|<qslinfoResult>([^<]*)</qslinfoResult>|;
-	dbg("info: $info");
+#	dbg("db0sdx info: $info");
 	my $prefix = $conn->{prefix} || '';
 	
 	my @in = split /[\r\n]/, $info if $info;
 	if (@in && $in[0]) {
-		dbg("in qsl");
+#		dbg("db0sdx: in qsl");
 		push @out, map {"$prefix$_"} @in;
 	} else {
-		dbg("in fault");
+#		dbg("db0sdx: in fault");
 		($info) = $conn->{sdxin} =~ m|<faultstring>([^<]*)</faultstring>|;
 		push @out, "$prefix$info" if $info;
 		push @out, $dxchan->msg('e3', 'DB0SDX', $conn->{sdxline}) unless @out;		
@@ -39,6 +40,8 @@ sub process
 	my $conn = shift;
 	my $msg = shift;
 
+#	$DB::single = 1;
+	
 	$conn->{sdxin} .= "$msg\n";
 	
 	dbg("db0sdx in: $conn->{sdxin}") if isdbg('db0sdx');
@@ -69,7 +72,8 @@ sub handle
     </qslinfo>
   </soap:Body>
 </soap:Envelope>);
-	my $lth = length($s)+1;
+#	$s .= "\n";
+	my $lth = length($s);
 	
 	Log('call', "$call: show/db0sdx $line");
 	my $conn = AsyncMsg->post($self, $target, "$path$suffix", prefix => 'sdx> ', filter => \&process,
@@ -81,7 +85,7 @@ sub handle
 							  on_disc => \&on_disc);
 	
 	if ($conn) {
-		$conn->{sdxcall} = $line;
+		$conn->{sdxline} = $line;
 		push @out, $self->msg('m21', "show/db0sdx");
 	} else {
 		push @out, $self->msg('e18', 'DB0SDX Database server');
