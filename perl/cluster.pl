@@ -10,7 +10,7 @@
 #
 #
 
-require 5.10;
+require 5.10.1;
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
