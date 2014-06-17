@@ -203,9 +203,11 @@ sub raw
 	my %args = @_;
 
 	my $handler = delete $args{handler} || \&handle_raw;
+	
 	my $conn = $pkg->new($call, $handler);
 	$conn->{prefix} = delete $args{prefix} if exists $args{prefix};
 	$conn->{prefix} ||= '';
+	$conn->{on_disconnect} = delete $args{on_disc} || delete $args{on_disconnect};
 	$r = $conn->connect($host, $port, on_connect => &_on_raw_connect);
 	return $r ? $conn : undef;
 }

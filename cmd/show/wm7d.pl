@@ -17,7 +17,10 @@ sub waitfor
 	my $buf = $conn->{msg};
 	$buf =~ s/\r/\\r/g;
 	$buf =~ s/\n/\\n/g;
-	dbg "state $conn->{state} '$msg' '$buf'";
+
+	dbg "state $conn->{state} '$msg' '$buf'" if isdbg('wm7d');
+
+	$conn->{_wm7d} ||= [];
 	
 	if ($conn->{state} eq 'waitfor') {
 		if ($msg =~ /utc$/ ) { 
@@ -30,11 +33,21 @@ sub waitfor
 			$conn->{state} = 'ending';
 		}
 		return if $msg =~ /^query->/;
-		$conn->handle_raw($msg);
+		push @{$conn->{_wm7d}}, $msg;
 	} else {
 		return if $msg =~ /^query->/ || $msg =~ /bye/;
-		$conn->handle_raw($msg);
+#		$conn->handle_raw($msg);
+		push @{$conn->{_wm7d}}, $msg;
 	}
+}
+
+sub on_disc
+{
+	my $conn = shift;
+	my $dxchan = shift;
+	$DB::single = 1;
+	
+	$dxchan->send(map {"$conn->{prefix}$_"} @{$conn->{_wm7d}});
 }
 
 # wm7d accepts only single callsign
@@ -58,7 +71,7 @@ sub handle
 	Log('call', "$call: show/wm7d \U$line");
 
 	my $conn = AsyncMsg->raw($self, $target, $port,
-							 handler => \&waitfor, prefix=>'wm7d> ');
+							 handler => \&waitfor, prefix=>'wm7d> ', on_disc =>\&on_disc);
 	if ($conn) {
 		$conn->{state} = 'waitfor';
 		$conn->{target_call} = $line;

@@ -266,7 +266,7 @@ sub disconnect
 	}
 
 	if (defined($sock)) {
-		$sock->close_gracefully;
+		$sock->close;
 	}
 	
 	unless ($main::is_win) {
