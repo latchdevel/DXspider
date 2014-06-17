@@ -121,7 +121,7 @@ Trinidad & Tobago:        09:  11:  SA:   10.38:    61.28:     4.0:  9Y:
 Botswana:                 38:  57:  AF:  -22.00:   -24.00:    -2.0:  A2:
     8O,A2;
 Tonga:                    32:  62:  OC:  -21.22:   175.13:   -13.0:  A3:
-    A3,=A35JP/H;
+    A3;
 Oman:                     21:  39:  AS:   23.60:   -58.55:    -4.0:  A4:
     A4;
 Bhutan:                   22:  41:  AS:   27.40:   -90.18:    -6.0:  A5:
@@ -489,8 +489,7 @@ Thailand:                 26:  49:  AS:   12.60:   -99.70:    -7.0:  HS:
 Vatican City:             15:  28:  EU:   41.90:   -12.47:    -1.0:  HV:
     HV;
 Saudi Arabia:             21:  39:  AS:   24.20:   -43.83:    -3.0:  HZ:
-    7Z,8Z,HZ,=7Z1BL/ND,=7Z1CQ/ND,=7Z1TT/ND,=HZ1BO/ND,=HZ1BW/ND,=HZ1DG/ND,
-    =HZ1HN/ND,=HZ1SK/ND,=HZ1XB/ND;
+    7Z,8Z,HZ;
 Italy:                    15:  28:  EU:   42.82:   -12.58:    -1.0:  I:
     I,=4U0WFP,=4U1GSC,=4U4F;
 African Italy:            33:  37:  AF:   35.67:   -12.67:    -1.0:  *IG9:
@@ -1189,7 +1188,7 @@ Cocos (Keeling) Islands:  29:  54:  OC:  -12.15:   -96.82:    -6.5:  VK9C:
     AX9C,AX9Y,VH9C,VH9Y,VI9C,VI9Y,VJ9C,VJ9Y,VK9C,VK9Y,VL9C,VL9Y,VM9C,VM9Y,
     VN9C,VN9Y,VZ9C,VZ9Y;
 Lord Howe Island:         30:  60:  OC:  -31.55:  -159.08:   -10.5:  VK9L:
-    AX9L,VH9L,VI9L,VJ9L,VK9L,VL9L,VM9L,VN9L,VZ9L,=VK9DAC;
+    AX9L,VH9L,VI9L,VJ9L,VK9L,VL9L,VM9L,VN9L,VZ9L;
 Mellish Reef:             30:  56:  OC:  -17.40:  -155.85:   -10.0:  VK9M:
     AX9M,VH9M,VI9M,VJ9M,VK9M,VL9M,VM9M,VN9M,VZ9M;
 Norfolk Island:           32:  60:  OC:  -29.03:  -167.93:   -11.5:  VK9N:
@@ -1275,7 +1274,7 @@ Romania:                  20:  28:  EU:   45.78:   -24.70:    -2.0:  YO:
 El Salvador:              07:  11:  NA:   14.00:    89.00:     6.0:  YS:
     HU,YS;
 Serbia:                   15:  28:  EU:   44.00:   -21.00:    -1.0:  YU:
-    YT,YU,=YU7RQ/FAIR;
+    YT,YU;
 Venezuela:                09:  12:  SA:    8.00:    66.00:     4.5:  YV:
     4M,YV,YW,YX,YY;
 Aves Island:              08:  11:  NA:   15.67:    63.60:     4.0:  YV0:
@@ -1289,7 +1288,7 @@ Kosovo:                   15:  28:  EU:   42.67:   -21.17:    -1.0:  *Z6:
 Republic of South Sudan:  34:  48:  AF:    4.85:   -31.60:    -3.0:  Z8:
     Z8;
 Albania:                  15:  28:  EU:   41.00:   -20.00:    -1.0:  ZA:
-    ZA,=VERSION;
+    ZA;
 Gibraltar:                14:  37:  EU:   36.15:     5.37:    -1.0:  ZB:
     ZB,ZG;
 UK Base Areas on Cyprus:  20:  39:  AS:   35.32:   -33.57:    -2.0:  ZC4:

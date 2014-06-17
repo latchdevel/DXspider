@@ -1,3 +1,8 @@
+17Jun14=======================================================================
+1. Add CTY2405 prefix changes
+2. Arrange for all file searching routines based on sh/dx or sh/log to be
+   non-blocking. This should allow incoming and outgoing protocol to 
+   continue flowing when such a command is run. 
 16Jun14=======================================================================
 1. Get AsyncMsg working for HTTP type ephemeral connections
 21Apr14=======================================================================
