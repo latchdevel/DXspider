@@ -11,7 +11,6 @@ foreach $ref (DXChannel::get_all()) {
 	$ref->send($self->msg('shutting')) if $ref->is_user;
 }
     
-# give some time for the buffers to empty and then shutdown (see cluster.pl)
-$main::decease = 25;
+main::cease();
 
 return (1);
