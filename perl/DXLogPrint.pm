@@ -33,7 +33,7 @@ sub print
 	my $to = shift || 10;
 	my $jdate = $fcb->unixtoj(shift);
 	my $pattern = shift;
-	my $who = uc shift;
+	my $who = shift;
 	my $search;
 	my @in;
 	my @out = ();
@@ -41,6 +41,8 @@ sub print
 	my $tot = $from + $to;
 	my $hint = "";
 	    
+	$who = uc $who if defined $who;
+	
 	if ($pattern) {
 		$hint = "m{\\Q$pattern\\E}i";
 	} else {

@@ -38,6 +38,10 @@ use VE7CC;
 use DXXml;
 use AsyncMsg;
 
+use Mojo::IOLoop;
+use Mojo::IOLoop::ForkCall;
+use Mojo::UserAgent;
+
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
 	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
@@ -1241,5 +1245,57 @@ sub send_motd
 	}
 	$self->send_file($motd) if -e $motd;
 }
+
+# Punt off a long running command into a separate process
+#
+# Hhis is called from commands to run some potentially long running
+# function. The process forks and then runs the function and returns
+# the result back to the cmd. 
+# 
+# call: $self->spawn_cmd(\<function>, [cb => sub{...}], [prefix => "cmd> "], [progress => 0|1], [args => [...]]);
+sub spawn_cmd
+{
+	my $self = shift;
+	my $cmdref = shift;
+	my $call = $self->{call};
+	my %args = @_;
+	my @out;
+	
+	my $cb = delete $args{cb};
+	my $prefix = delete $args{prefix};
+	my $progress = delete $args{progress};
+	my $args = delete $args{args};
+
+	no strict 'refs';
+		
+	my $fc = Mojo::IOLoop::ForkCall->new;
+	$fc->run(
+			 sub {my @args = @_; my @res = $cmdref->(@args); return @res},
+			 $args,
+			 sub {
+				 my ($fc, $err, @res) = @_; 
+				 my $dxchan = DXChannel::get($call);
+				 return unless $dxchan;
+
+				 if (defined $err) {
+					 my $s = "DXCommand::spawn_cmd: call $call error $err";
+					 dbg($s) if isdbg('chan');
+					 $dxchan->send($s);
+					 return;
+				 }
+				 if ($cb) {
+					 $cb->($dxchan, @res);
+				 } else {
+					 return unless @res;
+					 if (defined $prefix) {
+						 $dxchan->send(map {"$prefix$_"} @res);
+					 } else {
+						 $dxchan->send(@res);
+					 }
+				 }
+			 });
+	return @out;
+}
+
 1;
 __END__

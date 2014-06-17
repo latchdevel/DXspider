@@ -4,12 +4,13 @@
 #
 #
 
+
 my ($self, $line) = @_;
 my @list = split /\s+/, $line;	# split the line up
 
 my @out;
 my $f;
-my $call;
+my $call = $self->call;
 my ($from, $to);
 my ($fromday, $today);
 my @freq;
@@ -381,19 +382,41 @@ if ($doqra) {
 #print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
   
 # now do the search
-my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);
-my $ref;
-my @dx;
-foreach $ref (@res) {
-	if ($self && $self->ve7cc) {
-		push @out, VE7CC::dx_spot($self, @$ref);
-	} else {
-		if ($self && $real) {
-			push @out, DXCommandmode::format_dx_spot($self, @$ref);
-		} else {
-			push @out, Spot::formatl(@$ref);
-		}
-	}
-}
+
+push @out, $self->spawn_cmd(\&Spot::search, 
+							args => [$expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef],
+							cb => sub {
+								my ($dxchan, @res) = @_; 
+								my $ref;
+								my @out;
+
+								foreach $ref (@res) {
+									if ($self->ve7cc) {
+										push @out, VE7CC::dx_spot($self, @$ref);
+									} else {
+										if ($real) {
+											push @out, DXCommandmode::format_dx_spot($self, @$ref);
+										} else {
+											push @out, Spot::formatl(@$ref);
+										}
+									}
+								}
+								$dxchan->send(@out);
+							});
+
+#my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);
+#my $ref;
+#my @dx;
+#foreach $ref (@res) {
+#	if ($self && $self->ve7cc) {
+#		push @out, VE7CC::dx_spot($self, @$ref);
+#	} else {
+#		if ($self && $real) {
+#			push @out, DXCommandmode::format_dx_spot($self, @$ref);
+#		} else {
+#			push @out, Spot::formatl(@$ref);
+#		}
+#	}
+#}
 
 return (1, @out);

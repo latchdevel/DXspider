@@ -35,5 +35,7 @@ if ($self->priv < 6) {
 	return (1, $self->msg('e5')) if $who ne $self->call;
 }
 
-@out = DXLog::print($from, $to, $main::systime, 'talk', $who);
+@out = $self->spawn_cmd(\&DXLog::print, args => [$from, $to, $main::systime, 'talk', $who]);
+	
+#@out = DXLog::print($from, $to, $main::systime, 'talk', $who);
 return (1, @out);
