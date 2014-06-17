@@ -12,8 +12,6 @@ my @calls;
 my $days = 31;
 my @dxcc;
 my $limit = 100;
-my %list;
-my $i;
 my $now;
 my @pref;
 my @out;
@@ -69,58 +67,67 @@ unless ($now) {
 	$date = cldate(time);
 }
 
-# generate the spot list
-for ($i = 0; $i < $days; $i++) {
-	my $fh = $Spot::statp->open($now); # get the next file
-	unless ($fh) {
-		Spot::genstats($now);
-		$fh = $Spot::statp->open($now);
-	}
-	while (<$fh>) {
-		chomp;
-		my @l = split /\^/;
-		next if $l[0] eq 'TOTALS';
-		next unless $all || grep $l[$_->[1]] eq $_->[0], @dxcc;
-		my $ref = $list{$l[0]} || [0,0,0,0,0,0,0,0,0,0];
-		my $j = 1;
-		foreach my $item (@l[14..16, 18..23]) {
-			$ref->[$j] += $item;
-			$ref->[0] += $item;
-			$j++;
-		}
-		$list{$l[0]} = $ref if $ref->[0];
-	}
-	$now = $now->sub(1);
-}
+@out = $self->spawn_cmd(sub {
+							my %list;
+							my @out;
+							my $i;
+							
+							# generate the spot list
+							for ($i = 0; $i < $days; $i++) {
+								my $fh = $Spot::statp->open($now); # get the next file
+								unless ($fh) {
+									Spot::genstats($now);
+									$fh = $Spot::statp->open($now);
+								}
+								while (<$fh>) {
+									chomp;
+									my @l = split /\^/;
+									next if $l[0] eq 'TOTALS';
+									next unless $all || grep $l[$_->[1]] eq $_->[0], @dxcc;
+									my $ref = $list{$l[0]} || [0,0,0,0,0,0,0,0,0,0];
+									my $j = 1;
+									foreach my $item (@l[14..16, 18..23]) {
+										$ref->[$j] += $item;
+										$ref->[0] += $item;
+										$j++;
+									}
+									$list{$l[0]} = $ref if $ref->[0];
+								}
+								$now = $now->sub(1);
+							}
 
-my @tot;
-my $nocalls;
+							my @tot;
+							my $nocalls;
 
-my $l = join ',', @pref;
-push @out, $self->msg('statvhft', $l, $date, $days);
-#push @out, $self->msg('statvhft', join(',', @dxcc), cldate(time));
-push @out, sprintf "%10s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|", qw(Callsign Tot 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
+							my $l = join ',', @pref;
+							push @out, $self->msg('statvhft', $l, $date, $days);
+							#push @out, $self->msg('statvhft', join(',', @dxcc), cldate(time));
+							push @out, sprintf "%10s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|%4s|", qw(Callsign Tot 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
 
-for (sort {$list{$b}->[0] <=> $list{$a}->[0] || $a cmp $b} keys %list) {
-	my $ref = $list{$_};
-	$nocalls++;
-	my @list = (sprintf "%10s", $_);
-	foreach my $j (0..9) {
-		my $r = $ref->[$j];
-		if ($r) {
-			$tot[$j] += $r;
-			$r = sprintf("%4d", $r);
-		} else {
-			$r = '    ';
-		}
-		push @list, $r;
-	}
-	push @out, join('|', @list, "");
-	last if $limit && $nocalls >= $limit;
-}
+							for (sort {$list{$b}->[0] <=> $list{$a}->[0] || $a cmp $b} keys %list) {
+								my $ref = $list{$_};
+								$nocalls++;
+								my @list = (sprintf "%10s", $_);
+								foreach my $j (0..9) {
+									my $r = $ref->[$j];
+									if ($r) {
+										$tot[$j] += $r;
+										$r = sprintf("%4d", $r);
+									}
+									else {
+										$r = '    ';
+									}
+									push @list, $r;
+								}
+								push @out, join('|', @list, "");
+								last if $limit && $nocalls >= $limit;
+							}
 
-$nocalls = sprintf "%10s", "$nocalls calls";
-@tot = map {$_ ?  sprintf("%4d", $_) : '    ' } @tot;
-push @out, join('|', $nocalls, @tot, "");
+							$nocalls = sprintf "%10s", "$nocalls calls";
+							@tot = map {$_ ?  sprintf("%4d", $_) : '    ' } @tot;
+							push @out, join('|', $nocalls, @tot, "");
+
+							return @out;
+						});
 
 return (1, @out);

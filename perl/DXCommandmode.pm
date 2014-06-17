@@ -1264,7 +1264,7 @@ sub spawn_cmd
 	my $cb = delete $args{cb};
 	my $prefix = delete $args{prefix};
 	my $progress = delete $args{progress};
-	my $args = delete $args{args};
+	my $args = delete $args{args} || [];
 
 	no strict 'refs';
 		

@@ -22,21 +22,41 @@ if ($line) {
 
 return (1, $self->msg('lockoutuse')) unless $line;
 
-my ($action, $count, $key, $data) = (0,0,0,0);
-eval qq{for (\$action = DXUser::R_FIRST, \$count = 0; !\$DXUser::dbm->seq(\$key, \$data, \$action); \$action = DXUser::R_NEXT) {
+@out = $self->spawn_cmd(sub {
+							my @out;
+							my @val;
+							my ($action, $count, $key, $data) = (0,0,0,0);
+							eval qq{for (\$action = DXUser::R_FIRST, \$count = 0; !\$DXUser::dbm->seq(\$key, \$data, \$action); \$action = DXUser::R_NEXT) {
 	if (\$data =~ m{lockout}) {
 		if (\$line eq 'ALL' || \$key =~ /^$line/) {
 			my \$ur = DXUser::get_current(\$key);
 			if (\$ur && \$ur->lockout) {
-				push \@out, \$key;
+				push \@val, \$key;
 				++\$count;
 			}
 		}
 	}
 } };
 
-push @out, $@ if $@;
+							my @l;
+							foreach my $call (@val) {
+								if (@l >= 5) {
+									push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
+									@l = ();
+								}
+								push @l, $call;
+							}
+							if (@l) {
+								push @l, "" while @l < 5;
+								push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
+							}
 
-return (1, @out, $self->msg('rec', $count));
+							push @out, $@ if $@;
+							push @out, $self->msg('rec', $count);
+							return @out;
+						});
+
+
+return (1, @out);
 
 

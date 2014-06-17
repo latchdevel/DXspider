@@ -4,6 +4,8 @@
    non-blocking. This should allow incoming and outgoing protocol to 
    continue flowing when such a command is run. 
 3. Added some usable code to show/wx (finally).
+4. Make stats cmds (sh/v?hfstats, sh/v?hftable) non-blocking.
+5. Make sh/isolate, sh/registered, sh/lockout non-blocking.
 16Jun14=======================================================================
 1. Get AsyncMsg working for HTTP type ephemeral connections
 21Apr14=======================================================================
