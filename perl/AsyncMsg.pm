@@ -118,6 +118,8 @@ sub _getpost
 	$conn->{_assort} = $sort;
 	$conn->{csort} = 'http';
 
+	my $data = delete $args{data};
+
 	my $ua =  Mojo::UserAgent->new;
 	my $s;
 	$s .= $host;
@@ -132,7 +134,6 @@ sub _getpost
 
 	$ua->on(start => sub {
 				my ($ua, $tx) = @_;
-				my $data = delete $args{data};
 				while (my ($k, $v) = each %args) {
 					dbg("AsyncMsg: attaching header $k: $v") if isdbg('async');
 					$tx->req->headers->header($k => $v);

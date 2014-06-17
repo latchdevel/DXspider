@@ -32,7 +32,7 @@ sub handle
 	my $path = "/425dxn/spider.php?$op";
 	
 	Log('call', "$call: show/425 \U$op");
-	my $conn = AsyncMsg->get($self, $target, $port, $path, prefix=>'425> ', 'User-Agent' => qq{DxSpider;$main::version;$main::build;$^O;$main::mycall;$call;$list[0]});
+	my $conn = AsyncMsg->get($self, $target, $path, prefix=>'425> ', 'User-Agent' => qq{DxSpider;$main::version;$main::build;$^O;$main::mycall;$call;$list[0]});
 	
 	if ($conn) {
 		push @out, $self->msg('m21', "show/425");
