@@ -40,3 +40,5 @@ use vars qw(\$version \$build \$gitversion);
 
 1;
 );
+
+exit(0);

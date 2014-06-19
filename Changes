@@ -1,5 +1,7 @@
 19Jun14=======================================================================
 1. Fix EOF detection of incoming nodes.
+2. Attempt to autogenerate Version.pm with *correct* values (instead of the
+   the git id of the previous commit). Oh, and do it on  every commit or pull.
 17Jun14=======================================================================
 1. Add CTY2405 prefix changes
 2. Arrange for all file searching routines based on sh/dx or sh/log to be
