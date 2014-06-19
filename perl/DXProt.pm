@@ -174,6 +174,8 @@ $pc92_find_timeout = 30;		# maximum time to wait for a reply
 sub check
 {
 	my $n = shift;
+	my $pc = shift;
+	
 	$n -= 10;
 	return 0 if $n < 0 || $n > @checklist;
 	my $ref = $checklist[$n];
@@ -183,30 +185,30 @@ sub check
 	for ($i = 1; $i < @$ref; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
 		return 0 unless $act;
-		next if $blank eq 'b' && $_[$i] =~ /^[ \*]$/;
-		next if $blank eq '*' && $_[$i] =~ /^\*$/;
+		next if $blank eq 'b' && $pc->[$i] =~ /^[ \*]$/;
+		next if $blank eq '*' && $pc->[$i] =~ /^\*$/;
 		if ($act eq 'c') {
-			return $i unless is_callsign($_[$i]);
+			return $i unless is_callsign($pc->[$i]);
 		} elsif ($act eq 'i') {
 			;					# do nothing
 		} elsif ($act eq 'm') {
-			return $i unless is_pctext($_[$i]);
+			return $i unless is_pctext($pc->[$i]);
 		} elsif ($act eq 'p') {
-			return $i unless is_pcflag($_[$i]);
+			return $i unless is_pcflag($pc->[$i]);
 		} elsif ($act eq 'f') {
-			return $i unless is_freq($_[$i]);
+			return $i unless is_freq($pc->[$i]);
 		} elsif ($act eq 'n') {
-			return $i unless $_[$i] =~ /^[\d ]+$/;
+			return $i unless $pc->[$i] =~ /^[\d ]+$/;
 		} elsif ($act eq 'h') {
-			return $i unless $_[$i] =~ /^H\d\d?$/;
+			return $i unless $pc->[$i] =~ /^H\d\d?$/;
 		} elsif ($act eq 'd') {
-			return $i unless $_[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
+			return $i unless $pc->[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
 		} elsif ($act eq 't') {
-			return $i unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
+			return $i unless $pc->[$i] =~ /^[012]\d[012345]\dZ$/;
 		} elsif ($act eq 'l') {
-			return $i unless $_[$i] =~ /^[A-Z]$/;
+			return $i unless $pc->[$i] =~ /^[A-Z]$/;
 		} elsif ($act eq 'a') {
-			return $i unless is_ipaddr($_[$i]);
+			return $i unless is_ipaddr($pc->[$i]);
 		}
 	}
 	return 0;
@@ -401,7 +403,7 @@ sub normal
 	}
 
 	# check for and dump bad protocol messages
-	my $n = check($pcno, @field);
+	my $n = check($pcno, \@field);
 	if ($n) {
 		dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
 		return;
@@ -430,9 +432,9 @@ sub normal
 	my $sub = "handle_$pcno";
 
 	if ($self->can($sub)) {
-		$self->$sub($pcno, $line, $origin, @field);
+		$self->$sub($pcno, $line, $origin, \@field);
 	} else {
-		$self->handle_default($pcno, $line, $origin, @field);
+		$self->handle_default($pcno, $line, $origin, \@field);
 	}
 }
 

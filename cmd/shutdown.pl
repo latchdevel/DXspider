@@ -11,6 +11,6 @@ foreach $ref (DXChannel::get_all()) {
 	$ref->send($self->msg('shutting')) if $ref->is_user;
 }
     
-main::cease();
+$main::ending = 10;
 
 return (1);

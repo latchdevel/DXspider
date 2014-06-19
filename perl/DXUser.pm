@@ -191,7 +191,7 @@ sub del_file
 sub process
 {
 	if ($main::systime > $lasttime + 15) {
-		$dbm->sync;
+		$dbm->sync if $dbm;
 		$lasttime = $main::systime;
 	}
 }

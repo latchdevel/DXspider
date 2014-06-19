@@ -61,14 +61,14 @@ sub set_error
 {
 	my $conn = shift;
 	my $callback = shift;
-	$conn->{sock}->on(error => sub {$callback->($conn, $_[1]);});
+	$conn->{sock}->on(error => sub {$callback->($_[1]);});
 }
 
 sub set_on_eof
 {
 	my $conn = shift;
 	my $callback = shift;
-	$conn->{sock}->on(close => sub {$callback->($conn);});
+	$conn->{sock}->on(close => sub {$callback->()});
 }
 
 sub set_rproc
@@ -265,9 +265,8 @@ sub disconnect
 		}
 	}
 
-	if (defined($sock)) {
-		undef $sock;
-	}
+	$sock->close_gracefully if defined $sock && $sock->can('close_gracefully');
+	undef $sock;
 	
 	unless ($main::is_win) {
 		kill 'TERM', $conn->{pid} if exists $conn->{pid};
@@ -411,16 +410,16 @@ sub _rcv {                     # Complement to _send
 
 sub new_client {
 	my $server_conn = shift;
-	my $client = shift;
+	my $handle = shift;
 	
 	my $conn = $server_conn->new($server_conn->{rproc});
-	my $sock = $conn->{sock} = Mojo::IOLoop::Stream->new($client);
+	my $sock = $conn->{sock} = Mojo::IOLoop::Stream->new($handle);
 	$sock->on(read => sub {$conn->_rcv($_[1])});
 	$sock->timeout(0);
 	$sock->start;
 	dbg((ref $conn) . "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}") if isdbg('connll');
 
-	my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $client->peerhost, $conn->{peerport} = $client->peerport);
+	my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $handle->peerhost, $conn->{peerport} = $handle->peerport);
 	$conn->{sort} = 'Incoming';
 	if ($eproc) {
 		$conn->{eproc} = $eproc;
@@ -486,6 +485,10 @@ sub DESTROY
 	my $call = $conn->{call} || 'unallocated';
 	my $host = $conn->{peerhost} || '';
 	my $port = $conn->{peerport} || '';
+	my $sock = $conn->{sock};
+
+	$sock->close_gracefully if defined $sock && $sock->can('close_gracefully');
+	
 	$noconns--;
 	dbg((ref $conn) . " Connection $conn->{cnum} $call [$host $port] being destroyed (total $noconns)") if isdbg('connll');
 }

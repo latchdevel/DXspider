@@ -73,6 +73,7 @@ sub handle_10
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	# this is to catch loops caused by bad software ...
 	if (eph_dup($line, $pc10_dupe_age)) {
@@ -82,7 +83,7 @@ sub handle_10
 	# will we allow it at all?
 	if ($censorpc) {
 		my @bad;
-		if (@bad = BadWords::check($_[3])) {
+		if (@bad = BadWords::check($pc->[3])) {
 			dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 			return;
 		}
@@ -90,16 +91,16 @@ sub handle_10
 
 	# is it for me or one of mine?
 	my ($from, $to, $via, $call, $dxchan);
-	$from = $_[1];
-	if ($_[5] gt ' ') {
-		$via = $_[2];
-		$to = $_[5];
+	$from = $pc->[1];
+	if ($pc->[5] gt ' ') {
+		$via = $pc->[2];
+		$to = $pc->[5];
 	} else {
-		$to = $_[2];
+		$to = $pc->[2];
 	}
 
 	# if this is a 'nodx' node then ignore it
-	if ($badnode->in($_[6]) || ($via && $badnode->in($via))) {
+	if ($badnode->in($pc->[6]) || ($via && $badnode->in($via))) {
 		dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
 		return;
 	}
@@ -114,14 +115,14 @@ sub handle_10
 
 	# if we are converting announces to talk is it a dup?
 	if ($ann_to_talk) {
-		if (AnnTalk::is_talk_candidate($from, $_[3]) && AnnTalk::dup($from, $to, $_[3])) {
+		if (AnnTalk::is_talk_candidate($from, $pc->[3]) && AnnTalk::dup($from, $to, $pc->[3])) {
 			dbg("PCPROT: Dupe talk from announce, dropped") if isdbg('chanerr');
 			return;
 		}
 	}
 
 	# convert this to a PC93, coming from mycall with origin set and process it as such
-	$main::me->normal(pc93($to, $from, $via, $_[3], $_[6]));
+	$main::me->normal(pc93($to, $from, $via, $pc->[3], $pc->[6]));
 }
 
 # DX Spot handling
@@ -131,37 +132,38 @@ sub handle_11
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	# route 'foreign' pc26s
 	if ($pcno == 26) {
-		if ($_[7] ne $main::mycall) {
-			$self->route($_[7], $line);
+		if ($pc->[7] ne $main::mycall) {
+			$self->route($pc->[7], $line);
 			return;
 		}
 	}
 
-#	my ($hops) = $_[8] =~ /^H(\d+)/;
+#	my ($hops) = $pc->[8] =~ /^H(\d+)/;
 
 	# is the spotted callsign blank? This should really be trapped earlier but it
 	# could break other protocol sentences. Also check for lower case characters.
-	if ($_[2] =~ /^\s*$/) {
+	if ($pc->[2] =~ /^\s*$/) {
 		dbg("PCPROT: blank callsign, dropped") if isdbg('chanerr');
 		return;
 	}
-	if ($_[2] =~ /[a-z]/) {
+	if ($pc->[2] =~ /[a-z]/) {
 		dbg("PCPROT: lowercase characters, dropped") if isdbg('chanerr');
 		return;
 	}
 
 
 	# if this is a 'nodx' node then ignore it
-	if ($badnode->in($_[7])) {
+	if ($badnode->in($pc->[7])) {
 		dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
 		return;
 	}
 
 	# if this is a 'bad spotter' user then ignore it
-	my $nossid = $_[6];
+	my $nossid = $pc->[6];
 	$nossid =~ s/-\d+$//;
 	if ($badspotter->in($nossid)) {
 		dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
@@ -169,35 +171,35 @@ sub handle_11
 	}
 
 	# convert the date to a unix date
-	my $d = cltounix($_[3], $_[4]);
+	my $d = cltounix($pc->[3], $pc->[4]);
 	# bang out (and don't pass on) if date is invalid or the spot is too old (or too young)
 	if (!$d || (($pcno == 11 || $pcno == 61) && ($d < $main::systime - $pc11_max_age || $d > $main::systime + 900))) {
-		dbg("PCPROT: Spot ignored, invalid date or out of range ($_[3] $_[4])\n") if isdbg('chanerr');
+		dbg("PCPROT: Spot ignored, invalid date or out of range ($pc->[3] $pc->[4])\n") if isdbg('chanerr');
 		return;
 	}
 
 	# is it 'baddx'
-	if ($baddx->in($_[2]) || BadWords::check($_[2])) {
+	if ($baddx->in($pc->[2]) || BadWords::check($pc->[2])) {
 		dbg("PCPROT: Bad DX spot, ignored") if isdbg('chanerr');
 		return;
 	}
 
 	# do some de-duping
-	$_[5] =~ s/^\s+//;			# take any leading blanks off
-	$_[2] = unpad($_[2]);		# take off leading and trailing blanks from spotted callsign
-	if ($_[2] =~ /BUST\w*$/) {
+	$pc->[5] =~ s/^\s+//;			# take any leading blanks off
+	$pc->[2] = unpad($pc->[2]);		# take off leading and trailing blanks from spotted callsign
+	if ($pc->[2] =~ /BUST\w*$/) {
 		dbg("PCPROT: useless 'BUSTED' spot") if isdbg('chanerr');
 		return;
 	}
 	if ($censorpc) {
 		my @bad;
-		if (@bad = BadWords::check($_[5])) {
+		if (@bad = BadWords::check($pc->[5])) {
 			dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 			return;
 		}
 	}
 
-	my @spot = Spot::prepare($_[1], $_[2], $d, $_[5], $nossid, $_[7], $_[8]);
+	my @spot = Spot::prepare($pc->[1], $pc->[2], $d, $pc->[5], $nossid, $pc->[7], $pc->[8]);
 	# global spot filtering on INPUT
 	if ($self->{inspotsfilter}) {
 		my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
@@ -254,8 +256,8 @@ sub handle_11
 				} else {
 					route(undef, $to, pc34($main::mycall, $to, $cmd));
 				}
-				if ($to ne $_[7]) {
-					$to = $_[7];
+				if ($to ne $pc->[7]) {
+					$to = $pc->[7];
 					$node = Route::Node::get($to);
 					if ($node) {
 						$dxchan = $node->dxchan;
@@ -295,26 +297,27 @@ sub handle_12
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	# announce duplicate checking
-	$_[3] =~ s/^\s+//;			# remove leading blanks
+	$pc->[3] =~ s/^\s+//;			# remove leading blanks
 
 	if ($censorpc) {
 		my @bad;
-		if (@bad = BadWords::check($_[3])) {
+		if (@bad = BadWords::check($pc->[3])) {
 			dbg("PCPROT: Bad words: @bad, dropped") if isdbg('chanerr');
 			return;
 		}
 	}
 
 	# if this is a 'nodx' node then ignore it
-	if ($badnode->in($_[5])) {
+	if ($badnode->in($pc->[5])) {
 		dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
 		return;
 	}
 
 	# if this is a 'bad spotter' user then ignore it
-	my $nossid = $_[1];
+	my $nossid = $pc->[1];
 	$nossid =~ s/-\d+$//;
 	if ($badspotter->in($nossid)) {
 		dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
@@ -330,13 +333,13 @@ sub handle_12
 
 	my $dxchan;
 
-	if ((($dxchan = DXChannel::get($_[2])) && $dxchan->is_user) || $_[4] =~ /^[\#\w.]+$/){
-		$self->send_chat(0, $line, @_[1..6]);
-	} elsif ($_[2] eq '*' || $_[2] eq $main::mycall) {
+	if ((($dxchan = DXChannel::get($pc->[2])) && $dxchan->is_user) || $pc->[4] =~ /^[\#\w.]+$/){
+		$self->send_chat(0, $line, @$pc[1..6]);
+	} elsif ($pc->[2] eq '*' || $pc->[2] eq $main::mycall) {
 
 		# ignore something that looks like a chat line coming in with sysop
 		# flag - this is a kludge...
-		if ($_[3] =~ /^\#\d+ / && $_[4] eq '*') {
+		if ($pc->[3] =~ /^\#\d+ / && $pc->[4] eq '*') {
 			dbg('PCPROT: Probable chat rewrite, dropped') if isdbg('chanerr');
 			return;
 		}
@@ -344,28 +347,28 @@ sub handle_12
 		# here's a bit of fun, convert incoming ann with a callsign in the first word
 		# or one saying 'to <call>' to a talk if we can route to the recipient
 		if ($ann_to_talk) {
-			my $call = AnnTalk::is_talk_candidate($_[1], $_[3]);
+			my $call = AnnTalk::is_talk_candidate($pc->[1], $pc->[3]);
 			if ($call) {
 				my $ref = Route::get($call);
 				if ($ref) {
 					$dxchan = $ref->dxchan;
-					$dxchan->talk($_[1], $call, undef, $_[3], $_[5]) if $dxchan != $self;
+					$dxchan->talk($pc->[1], $call, undef, $pc->[3], $pc->[5]) if $dxchan != $self;
 					return;
 				}
 			}
 		}
 
 		# send it
-		$self->send_announce(0, $line, @_[1..6]);
+		$self->send_announce(0, $line, @$pc[1..6]);
 	} else {
-		$self->route($_[2], $line);
+		$self->route($pc->[2], $line);
 	}
 
 	# local processing
 	if (defined &Local::ann) {
 		my $r;
 		eval {
-			$r = Local::ann($self, $line, @_[1..6]);
+			$r = Local::ann($self, $line, @$pc[1..6]);
 		};
 		return if $r;
 	}
@@ -377,6 +380,7 @@ sub handle_15
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	if (eph_dup($line, $eph_pc15_restime)) {
 		return;
@@ -394,10 +398,11 @@ sub handle_16
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	# general checks
 	my $dxchan;
-	my $ncall = $_[1];
+	my $ncall = $pc->[1];
 	my $newline = "PC16^";
 
 	# dos I want users from this channel?
@@ -454,7 +459,7 @@ sub handle_16
 	my $i;
 	my @rout;
 	for ($i = 2; $i < $#_; $i++) {
-		my ($call, $conf, $here) = $_[$i] =~ /^(\S+) (\S) (\d)/o;
+		my ($call, $conf, $here) = $pc->[$i] =~ /^(\S+) (\S) (\d)/o;
 		next unless $call && $conf && defined $here && is_callsign($call);
 		next if $call eq $main::mycall;
 
@@ -510,9 +515,11 @@ sub handle_17
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
+
 	my $dxchan;
-	my $ncall = $_[2];
-	my $ucall = $_[1];
+	my $ncall = $pc->[2];
+	my $ucall = $pc->[1];
 
 	eph_del_regex("^PC16\\^$ncall.*$ucall");
 
@@ -586,16 +593,18 @@ sub handle_18
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
+
 	$self->state('init');
 
 	my $parent = Route::Node::get($self->{call});
 
 	# record the type and version offered
-	if (my ($version) = $_[1] =~ /DXSpider Version: (\d+\.\d+)/) {
+	if (my ($version) = $pc->[1] =~ /DXSpider Version: (\d+\.\d+)/) {
 		$self->{version} = 53 + $version;
 		$self->user->version(53 + $version);
 		$parent->version(0 + $version);
-		my ($build) = $_[1] =~ /Build: (\d+(?:\.\d+)?)/;
+		my ($build) = $pc->[1] =~ /Build: (\d+(?:\.\d+)?)/;
 		$self->{build} = 0 + $build;
 		$self->user->build(0 + $build);
 		$parent->build(0 + $build);
@@ -606,15 +615,15 @@ sub handle_18
 			$self->user->put;
 			$self->sort('S');
 		}
-#		$self->{handle_xml}++ if DXXml::available() && $_[1] =~ /\bxml/;
+#		$self->{handle_xml}++ if DXXml::available() && $pc->[1] =~ /\bxml/;
 	} else {
 		dbg("Unknown software");
 		$self->version(50.0);
-		$self->version($_[2] / 100) if $_[2] && $_[2] =~ /^\d+$/;
+		$self->version($pc->[2] / 100) if $pc->[2] && $pc->[2] =~ /^\d+$/;
 		$self->user->version($self->version);
 	}
 
-	if ($_[1] =~ /\bpc9x/) {
+	if ($pc->[1] =~ /\bpc9x/) {
 		if ($self->{isolate}) {
 			dbg("pc9x recognised, but $self->{call} is isolated, using old protocol");
 		} elsif (!$self->user->wantpc9x) {
@@ -656,6 +665,7 @@ sub handle_19
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	my $i;
 	my $newline = "PC19^";
@@ -686,10 +696,10 @@ sub handle_19
 	# non-pc92 nodes.
 	#
 	for ($i = 1; $i < $#_-1; $i += 4) {
-		my $here = $_[$i];
-		my $call = uc $_[$i+1];
-		my $conf = $_[$i+2];
-		my $ver = $_[$i+3];
+		my $here = $pc->[$i];
+		my $call = uc $pc->[$i+1];
+		my $conf = $pc->[$i+2];
+		my $ver = $pc->[$i+3];
 		next unless defined $here && defined $conf && is_callsign($call);
 
 		eph_del_regex("^PC(?:21\\^$call|17\\^[^\\^]+\\^$call)");
@@ -794,6 +804,7 @@ sub handle_20
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	if ($self->{do_pc9x} && $self->{state} ne 'init92') {
 		$self->send("Reseting to oldstyle routing because login call not sent in any pc92");
@@ -816,7 +827,9 @@ sub handle_21
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $call = uc $_[1];
+	my $pc = shift;
+
+	my $call = uc $pc->[1];
 
 	eph_del_regex("^PC1[679].*$call");
 
@@ -884,6 +897,7 @@ sub handle_22
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	if ($self->{do_pc9x}) {
 		if ($self->{state} ne 'init92') {
@@ -903,50 +917,51 @@ sub handle_23
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	# route foreign' pc27s
 	if ($pcno == 27) {
-		if ($_[8] ne $main::mycall) {
-			$self->route($_[8], $line);
+		if ($pc->[8] ne $main::mycall) {
+			$self->route($pc->[8], $line);
 			return;
 		}
 	}
 
 
 	# do some de-duping
-	my $d = cltounix($_[1], sprintf("%02d18Z", $_[2]));
-	my $sfi = unpad($_[3]);
-	my $k = unpad($_[4]);
-	my $i = unpad($_[5]);
-	my ($r) = $_[6] =~ /R=(\d+)/;
+	my $d = cltounix($pc->[1], sprintf("%02d18Z", $pc->[2]));
+	my $sfi = unpad($pc->[3]);
+	my $k = unpad($pc->[4]);
+	my $i = unpad($pc->[5]);
+	my ($r) = $pc->[6] =~ /R=(\d+)/;
 	$r = 0 unless $r;
-	if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $_[2] < 0 || $_[2] > 23) {
-		dbg("PCPROT: WWV Date ($_[1] $_[2]) out of range") if isdbg('chanerr');
+	if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $pc->[2] < 0 || $pc->[2] > 23) {
+		dbg("PCPROT: WWV Date ($pc->[1] $pc->[2]) out of range") if isdbg('chanerr');
 		return;
 	}
 
 	# global wwv filtering on INPUT
-	my @dxcc = ((Prefix::cty_data($_[7]))[0..2], (Prefix::cty_data($_[8]))[0..2]);
+	my @dxcc = ((Prefix::cty_data($pc->[7]))[0..2], (Prefix::cty_data($pc->[8]))[0..2]);
 	if ($self->{inwwvfilter}) {
-		my ($filter, $hops) = $self->{inwwvfilter}->it(@_[7,8], $origin, @dxcc);
+		my ($filter, $hops) = $self->{inwwvfilter}->it(@$pc[7,8], $origin, @dxcc);
 		unless ($filter) {
 			dbg("PCPROT: Rejected by input wwv filter") if isdbg('chanerr');
 			return;
 		}
 	}
-	$_[7] =~ s/-\d+$//o;		# remove spotter's ssid
-	if (Geomag::dup($d,$sfi,$k,$i,$_[6],$_[7])) {
+	$pc->[7] =~ s/-\d+$//o;		# remove spotter's ssid
+	if (Geomag::dup($d,$sfi,$k,$i,$pc->[6],$pc->[7])) {
 		dbg("PCPROT: Dup WWV Spot ignored\n") if isdbg('chanerr');
 		return;
 	}
 
 	# note this only takes the first one it gets
-	Geomag::update($d, $_[2], $sfi, $k, $i, @_[6..8], $r);
+	Geomag::update($d, $pc->[2], $sfi, $k, $i, @$pc[6..8], $r);
 
 	if (defined &Local::wwv) {
 		my $rep;
 		eval {
-			$rep = Local::wwv($self, $_[1], $_[2], $sfi, $k, $i, @_[6..8], $r);
+			$rep = Local::wwv($self, $pc->[1], $pc->[2], $sfi, $k, $i, @$pc[6..8], $r);
 		};
 		return if $rep;
 	}
@@ -955,7 +970,7 @@ sub handle_23
 	return if $pcno == 27;
 
 	# broadcast to the eager world
-	send_wwv_spot($self, $line, $d, $_[2], $sfi, $k, $i, @_[6..8]);
+	send_wwv_spot($self, $line, $d, $pc->[2], $sfi, $k, $i, @$pc[6..8]);
 }
 
 # set here status
@@ -965,7 +980,9 @@ sub handle_24
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $call = uc $_[1];
+	my $pc = shift;
+
+	my $call = uc $pc->[1];
 	my ($nref, $uref);
 	$nref = Route::Node::get($call);
 	$uref = Route::User::get($call);
@@ -975,12 +992,12 @@ sub handle_24
 		return;
 	}
 
-	$nref->here($_[2]) if $nref;
-	$uref->here($_[2]) if $uref;
+	$nref->here($pc->[2]) if $nref;
+	$uref->here($pc->[2]) if $uref;
 	my $ref = $nref || $uref;
 	return unless $self->in_filter_route($ref);
 
-	$self->route_pc24($origin, $line, $ref, $_[3]);
+	$self->route_pc24($origin, $line, $ref, $pc->[3]);
 }
 
 # merge request
@@ -990,32 +1007,34 @@ sub handle_25
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	if ($_[1] ne $main::mycall) {
-		$self->route($_[1], $line);
+	my $pc = shift;
+
+	if ($pc->[1] ne $main::mycall) {
+		$self->route($pc->[1], $line);
 		return;
 	}
-	if ($_[2] eq $main::mycall) {
+	if ($pc->[2] eq $main::mycall) {
 		dbg("PCPROT: Trying to merge to myself, ignored") if isdbg('chanerr');
 		return;
 	}
 
-	Log('DXProt', "Merge request for $_[3] spots and $_[4] WWV from $_[2]");
+	Log('DXProt', "Merge request for $pc->[3] spots and $pc->[4] WWV from $pc->[2]");
 
 	# spots
-	if ($_[3] > 0) {
-		my @in = reverse Spot::search(1, undef, undef, 0, $_[3]);
+	if ($pc->[3] > 0) {
+		my @in = reverse Spot::search(1, undef, undef, 0, $pc->[3]);
 		my $in;
 		foreach $in (@in) {
-			$self->send(pc26(@{$in}[0..4], $_[2]));
+			$self->send(pc26(@{$in}[0..4], $pc->[2]));
 		}
 	}
 
 	# wwv
-	if ($_[4] > 0) {
-		my @in = reverse Geomag::search(0, $_[4], time, 1);
+	if ($pc->[4] > 0) {
+		my @in = reverse Geomag::search(0, $pc->[4], time, 1);
 		my $in;
 		foreach $in (@in) {
-			$self->send(pc27(@{$in}[0..5], $_[2]));
+			$self->send(pc27(@{$in}[0..5], $pc->[2]));
 		}
 	}
 }
@@ -1030,12 +1049,14 @@ sub handle_28
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	if ($_[1] eq $main::mycall) {
+	my $pc = shift;
+
+	if ($pc->[1] eq $main::mycall) {
 		no strict 'refs';
 		my $sub = "DXMsg::handle_$pcno";
-		&$sub($self, @_);
+		&$sub($self, @$pc);
 	} else {
-		$self->route($_[1], $line) unless $self->is_clx;
+		$self->route($pc->[1], $line) unless $self->is_clx;
 	}
 }
 
@@ -1051,10 +1072,12 @@ sub handle_34
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
+
 	if (eph_dup($line, $eph_pc34_restime)) {
 		return;
 	} else {
-		$self->process_rcmd($_[1], $_[2], $_[2], $_[3]);
+		$self->process_rcmd($pc->[1], $pc->[2], $pc->[2], $pc->[3]);
 	}
 }
 
@@ -1065,8 +1088,10 @@ sub handle_35
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	eph_del_regex("^PC35\\^$_[2]\\^$_[1]\\^");
-	$self->process_rcmd_reply($_[1], $_[2], $_[1], $_[3]);
+	my $pc = shift;
+
+	eph_del_regex("^PC35\\^$pc->[2]\\^$pc->[1]\\^");
+	$self->process_rcmd_reply($pc->[1], $pc->[2], $pc->[1], $pc->[3]);
 }
 
 sub handle_36 {goto &handle_34}
@@ -1078,12 +1103,14 @@ sub handle_37
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	if ($_[1] eq $main::mycall) {
+	my $pc = shift;
+
+	if ($pc->[1] eq $main::mycall) {
 		no strict 'refs';
 		my $sub = "DXDb::handle_$pcno";
-		&$sub($self, @_);
+		&$sub($self, @$pc);
 	} else {
-		$self->route($_[1], $line) unless $self->is_clx;
+		$self->route($pc->[1], $line) unless $self->is_clx;
 	}
 }
 
@@ -1094,6 +1121,7 @@ sub handle_38
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 }
 
 # incoming disconnect
@@ -1103,7 +1131,9 @@ sub handle_39
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	if ($_[1] eq $self->{call}) {
+	my $pc = shift;
+
+	if ($pc->[1] eq $self->{call}) {
 		$self->disconnect(1);
 	} else {
 		dbg("PCPROT: came in on wrong channel") if isdbg('chanerr');
@@ -1119,9 +1149,11 @@ sub handle_41
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $call = $_[1];
-	my $sort = $_[2];
-	my $val = $_[3];
+	my $pc = shift;
+
+	my $call = $pc->[1];
+	my $sort = $pc->[2];
+	my $val = $pc->[3];
 
 	my $l = "PC41^$call^$sort";
 	if (eph_dup($l, $eph_info_restime)) {
@@ -1145,7 +1177,7 @@ sub handle_41
 		if (($val =~ /spotter/i || $val =~ /self/i) && $user->name && $user->name ne $val) {
 			dbg("PCPROT: invalid name") if isdbg('chanerr');
 			if ($main::mycall eq 'GB7DJK' || $main::mycall eq 'GB7BAA' || $main::mycall eq 'WR3D') {
-				DXChannel::broadcast_nodes(pc41($_[1], 1, $user->name)); # send it to everyone including me
+				DXChannel::broadcast_nodes(pc41($pc->[1], 1, $user->name)); # send it to everyone including me
 			}
 			return;
 		}
@@ -1183,7 +1215,7 @@ sub handle_41
 	}
 
 	#  perhaps this IS what we want after all
-	#			$self->route_pc41($ref, $call, $sort, $val, $_[4]);
+	#			$self->route_pc41($ref, $call, $sort, $val, $pc->[4]);
 }
 
 sub handle_42 {goto &handle_28}
@@ -1203,15 +1235,16 @@ sub handle_49
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	if (eph_dup($line)) {
 		return;
 	}
 
-	if ($_[1] eq $main::mycall) {
-		DXMsg::handle_49($self, @_);
+	if ($pc->[1] eq $main::mycall) {
+		DXMsg::handle_49($self, @$pc);
 	} else {
-		$self->route($_[1], $line) unless $self->is_clx;
+		$self->route($pc->[1], $line) unless $self->is_clx;
 	}
 }
 
@@ -1222,17 +1255,18 @@ sub handle_50
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	return if (eph_dup($line));
 
-	my $call = $_[1];
+	my $call = $pc->[1];
 
 	my $node = Route::Node::get($call);
 	if ($node) {
 		return unless $node->call eq $self->{call};
-		$node->usercount($_[2]) unless $node->users;
+		$node->usercount($pc->[2]) unless $node->users;
 		$node->reset_obs;
-		$node->PC92C_dxchan($self->call, $_[-1]);
+		$node->PC92C_dxchan($self->call, $pc->[-1]);
 
 		# input filter if required
 #		return unless $self->in_filter_route($node);
@@ -1240,7 +1274,7 @@ sub handle_50
 		unless ($self->{isolate}) {
 			DXChannel::broadcast_nodes($line, $self); # send it to everyone but me
 		}
-#		$self->route_pc50($origin, $line, $node, $_[2], $_[3]) unless eph_dup($line);
+#		$self->route_pc50($origin, $line, $node, $pc->[2], $pc->[3]) unless eph_dup($line);
 	}
 }
 
@@ -1251,9 +1285,11 @@ sub handle_51
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $to = $_[1];
-	my $from = $_[2];
-	my $flag = $_[3];
+	my $pc = shift;
+
+	my $to = $pc->[1];
+	my $from = $pc->[2];
+	my $flag = $pc->[3];
 
 
 	# is it for us?
@@ -1281,7 +1317,9 @@ sub handle_75
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $call = $_[1];
+	my $pc = shift;
+
+	my $call = $pc->[1];
 	if ($call ne $main::mycall) {
 		$self->route($call, $line);
 	}
@@ -1294,32 +1332,34 @@ sub handle_73
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	my $call = $_[1];
+	my $pc = shift;
+
+	my $call = $pc->[1];
 
 	# do some de-duping
-	my $d = cltounix($call, sprintf("%02d18Z", $_[2]));
-	if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $_[2] < 0 || $_[2] > 23) {
-		dbg("PCPROT: WCY Date ($call $_[2]) out of range") if isdbg('chanerr');
+	my $d = cltounix($call, sprintf("%02d18Z", $pc->[2]));
+	if (($pcno == 23 && $d < $main::systime - $pc23_max_age) || $d > $main::systime + 1500 || $pc->[2] < 0 || $pc->[2] > 23) {
+		dbg("PCPROT: WCY Date ($call $pc->[2]) out of range") if isdbg('chanerr');
 		return;
 	}
-	@_ = map { unpad($_) } @_;
+	$pc = [ map { unpad($_) } @$pc ];
 	if (WCY::dup($d)) {
 		dbg("PCPROT: Dup WCY Spot ignored\n") if isdbg('chanerr');
 		return;
 	}
 
-	my $wcy = WCY::update($d, @_[2..12]);
+	my $wcy = WCY::update($d, @$pc[2..12]);
 
 	if (defined &Local::wcy) {
 		my $rep;
 		eval {
-			$rep = Local::wcy($self, @_[1..12]);
+			$rep = Local::wcy($self, @$pc[1..12]);
 		};
 		return if $rep;
 	}
 
 	# broadcast to the eager world
-	send_wcy_spot($self, $line, $d, @_[2..12]);
+	send_wcy_spot($self, $line, $d, @$pc[2..12]);
 }
 
 # remote commands (incoming)
@@ -1329,7 +1369,9 @@ sub handle_84
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	$self->process_rcmd($_[1], $_[2], $_[3], $_[4]);
+	my $pc = shift;
+
+	$self->process_rcmd($pc->[1], $pc->[2], $pc->[3], $pc->[4]);
 }
 
 # remote command replies
@@ -1339,7 +1381,9 @@ sub handle_85
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
-	$self->process_rcmd_reply($_[1], $_[2], $_[3], $_[4]);
+	my $pc = shift;
+
+	$self->process_rcmd_reply($pc->[1], $pc->[2], $pc->[3], $pc->[4]);
 }
 
 # decode a pc92 call: flag call : version : build
@@ -1641,13 +1685,14 @@ sub handle_92
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	my (@radd, @rdel);
 
-	my $pcall = $_[1];
-	my $t = $_[2];
-	my $sort = $_[3];
-	my $hops = $_[-1];
+	my $pcall = $pc->[1];
+	my $t = $pc->[2];
+	my $sort = $pc->[3];
+	my $hops = $pc->[-1];
 
 	# this catches loops of A/Ds
 #	if (eph_dup($line, $pc9x_dupe_age)) {
@@ -1691,8 +1736,8 @@ sub handle_92
 		# here is where the consequences of the 'find' command
 		# are dealt with
 
-		my $from = $_[4];
-		my $target = $_[5];
+		my $from = $pc->[4];
+		my $target = $pc->[5];
 
 		if ($sort eq 'F') {
 			my $flag;
@@ -1711,7 +1756,7 @@ sub handle_92
 			}
 		} elsif ($sort eq 'R') {
 			if (my $dxchan = DXChannel::get($from)) {
-				handle_pc92_find_reply($dxchan, $pcall, $from, $target, @_[6,7]);
+				handle_pc92_find_reply($dxchan, $pcall, $from, $target, @$pc[6,7]);
 			} else {
 				my $ref = Route::get($from);
 				if ($ref) {
@@ -1734,7 +1779,7 @@ sub handle_92
 		# remember the last channel we arrived on
 		$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 
-		my @ent = _decode_pc92_call($_[4]);
+		my @ent = _decode_pc92_call($pc->[4]);
 
 		if (@ent) {
 			my $add;
@@ -1762,10 +1807,10 @@ sub handle_92
 		# here is where all the routes are created and destroyed
 
 		# cope with missing duplicate node calls in the first slot
-		my $me = $_[4] || '';
+		my $me = $pc->[4] || '';
 		$me ||= _encode_pc92_call($parent) unless $me ;
 
-		my @ent = map {my @a = _decode_pc92_call($_); @a ? \@a : ()} grep {$_ && /^[0-7]/} $me, @_[5 .. $#_];
+		my @ent = map {my @a = _decode_pc92_call($_); @a ? \@a : ()} grep {$_ && /^[0-7]/} $me, @$pc[5 .. $#_];
 
 		if (@ent) {
 
@@ -1907,10 +1952,11 @@ sub handle_93
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 #	$self->{do_pc9x} ||= 1;
 
-	my $pcall = $_[1];			# this is now checked earlier
+	my $pcall = $pc->[1];			# this is now checked earlier
 
 	# remember that we are converting PC10->PC93 and self will be $main::me if it
 	# comes from us
@@ -1919,15 +1965,15 @@ sub handle_93
 		return;
 	}
 
-	my $t = $_[2];
+	my $t = $pc->[2];
 	my $parent = check_pc9x_t($pcall, $t, 93, 1) || return;
 
-	my $to = uc $_[3];
-	my $from = uc $_[4];
-	my $via = uc $_[5];
-	my $text = $_[6];
-	my $onode = uc $_[7];
-	$onode = $pcall if @_ <= 8;
+	my $to = uc $pc->[3];
+	my $from = uc $pc->[4];
+	my $via = uc $pc->[5];
+	my $text = $pc->[6];
+	my $onode = uc $pc->[7];
+	$onode = $pcall if @$pc <= 8;
 
 	# this is catch loops caused by bad software ...
 	if (eph_dup("PC93|$from|$text|$onode", $pc10_dupe_age)) {
@@ -2015,15 +2061,16 @@ sub handle_default
 	my $pcno = shift;
 	my $line = shift;
 	my $origin = shift;
+	my $pc = shift;
 
 	unless (eph_dup($line)) {
 		if ($pcno >= 90) {
-			my $pcall = $_[1];
+			my $pcall = $pc->[1];
 			unless (is_callsign($pcall)) {
-				dbg("PCPROT: invalid callsign string '$_[1]', ignored") if isdbg('chanerr');
+				dbg("PCPROT: invalid callsign string '$pc->[1]', ignored") if isdbg('chanerr');
 				return;
 			}
-			my $t = $_[2];
+			my $t = $pc->[2];
 			my $parent = check_pc9x_t($pcall, $t, $pcno, 1) || return;
 			$self->broadcast_route_pc9x($pcall, undef, $line, 0);
 		} else {

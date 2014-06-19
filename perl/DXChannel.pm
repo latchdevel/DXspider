@@ -743,6 +743,16 @@ sub handle_xml
 	return $r;
 }
 
+sub error_handler
+{
+	my $self = shift;
+	my $error = shift || '';
+	dbg("$self->{call} ERROR '$error', closing") if isdbg('chan');
+	$self->{conn}->set_error(undef) if exists $self->{conn};
+	$self->disconnect(1);
+}
+
+
 #no strict;
 sub AUTOLOAD
 {
