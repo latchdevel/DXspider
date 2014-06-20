@@ -213,6 +213,7 @@ sub rec
 	if (defined $msg) {
 		push @{$self->{inqueue}}, $msg;
 	}
+	$self->process_one;
 }
 
 # obtain a channel object by callsign [$obj = DXChannel::get($call)]
@@ -709,28 +710,28 @@ sub process_one
 		
 		# handle A records
 		my $user = $self->user;
-		if ($sort eq 'A' || $sort eq 'O') {
-			$self->start($line, $sort);
-		} elsif ($sort eq 'I') {
-			die "\$user not defined for $call" if !defined $user;
+		if ($sort eq 'I') {
+			die "\$user not defined for $call" unless defined $user;
 			
 			# normal input
 			$self->normal($line);
+		} elsif ($sort eq 'G') {
+			$self->enhanced($line);
+		} elsif ($sort eq 'A' || $sort eq 'O') {
+			$self->start($line, $sort);
 		} elsif ($sort eq 'Z') {
 			$self->disconnect;
 		} elsif ($sort eq 'D') {
 			;				# ignored (an echo)
-		} elsif ($sort eq 'G') {
-			$self->enhanced($line);
 		} else {
-			dbg atime . " Unknown command letter ($sort) received from $call\n";
+			dbg atime . " DXChannel::process_one: Unknown command letter ($sort) received from $call\n";
 		}
 	}
 }
 
 sub process
 {
-	foreach my $dxchan (get_all()) {
+	foreach my $dxchan (values %channels) {
 		next if $dxchan->{disconnecting};
 		$dxchan->process_one;
 	}

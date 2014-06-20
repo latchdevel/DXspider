@@ -19,12 +19,15 @@ use vars qw(%dbglevel $fp $callback $cleandays $keepdays);
 use DXUtil;
 use DXLog ();
 use Carp ();
+use POSIX qw(isatty);
 
 %dbglevel = ();
 $fp = undef;
 $callback = undef;
 $keepdays = 10;
 $cleandays = 100;
+
+our $no_stdout;					# set if not running in a terminal
 
 # Avoid generating "subroutine redefined" warnings with the following
 # hack (from CGI::Carp):
@@ -66,7 +69,7 @@ sub dbg($)
 		my @l = split /\n/, $r;
 		for (@l) {
 			s/([\x00-\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-			print "$_\n" if defined \*STDOUT;
+			print "$_\n" if defined \*STDOUT && !$no_stdout;
 			my $str = "$t^$_";
 			&$callback($str) if $callback;
 			$fp->writeunix($t, $str); 
@@ -79,7 +82,7 @@ sub dbginit
 	$callback = shift;
 	
 	# add sig{__DIE__} handling
-	if (!defined $DB::VERSION) {
+	unless (defined $DB::VERSION) {
 		$SIG{__WARN__} = sub { 
 			if ($_[0] =~ /Deep\s+recursion/i) {
 				dbg($@);
@@ -92,6 +95,13 @@ sub dbginit
 		};
 		
 		$SIG{__DIE__} = sub { dbg($@); dbg(Carp::longmess(@_)); };
+
+		# switch off STDOUT printing if we are not talking to a TTY
+		unless ($^O =~ /^MS/ || $^O =~ /^OS-2/) {
+			unless (isatty(STDOUT->fileno)) {
+				++$no_stdout;
+			}
+		}
 	}
 
 	$fp = DXLog::new('debug', 'dat', 'd');

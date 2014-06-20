@@ -40,6 +40,8 @@ use strict;
 
 use vars qw($log);
 
+our %logobj;
+
 $log = new('log', 'dat', 'm');
 
 # create a log object that contains all the useful info needed
@@ -55,7 +57,9 @@ sub new
 	
 	# make sure the directory exists
 	mkdir($ref->{prefix}, 0777) unless -e $ref->{prefix};
-	return bless $ref;
+	my $self = bless $ref;
+	$logobj{$self} = $self;
+	return $self;
 }
 
 sub _genfn
@@ -90,7 +94,7 @@ sub open
 	
 	my $fh = new IO::File $self->{fn}, $mode, 0666;
 	return undef if !$fh;
-	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
+	$fh->autoflush(0) if $mode ne 'r'; # make it (not) autoflushing if writable
 	$self->{fh} = $fh;
 
 #	print "opening $self->{fn}\n";
@@ -181,9 +185,17 @@ sub close
 	delete $self->{fh};	
 }
 
+sub flush_all
+{
+	foreach my $l (values %logobj) {
+		$l->{fh}->flush if exists $l->{fh};
+	}
+}
+
 sub DESTROY
 {
 	my $self = shift;
+	delete $logobj{$self};
 	undef $self->{fh};			# close the filehandle
 	delete $self->{fh} if $self->{fh};
 }

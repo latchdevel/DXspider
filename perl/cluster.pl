@@ -138,7 +138,7 @@ $maxconnect_user = 3;			# the maximum no of concurrent connections a user can ha
 $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
 								# takes the no of references in the routing table above these numbers
 								# then the connection is refused. This only affects INCOMING connections.
-$idle_interval = 0.100;                        # the wait between invocations of the main idle loop processing.
+$idle_interval = 0.500;                        # the wait between invocations of the main idle loop processing.
 our $ending;								   # signal that we are ending;
 
 
@@ -342,7 +342,7 @@ sub idle_loop
 	my $timenow = time;
 
 	BPQMsg::process();
-	DXChannel::process();
+#	DXChannel::process();
 
 	#      $DB::trace = 0;
 
@@ -373,7 +373,7 @@ sub idle_loop
 		AGWMsg::process();
 		
 		Timer::handler();
-
+		DXLog::flush_all();
 	}
 
 	if (defined &Local::process) {

@@ -122,6 +122,7 @@ sub start
 	$self->{ann_talk} = $user->wantann_talk;
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
+	$self->{lastmsgpoll} = 0;
 
 	# sort out new dx spot stuff
 	$user->wantdxcq(0) unless defined $user->{wantdxcq};
@@ -564,7 +565,7 @@ sub process
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
-		next if $dxchan->{sort} ne 'U';  
+		next unless $dxchan->{sort} eq 'U';  
 	
 		# send a outstanding message prompt if required
 		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
