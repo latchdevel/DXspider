@@ -341,6 +341,7 @@ sub idle_loop
 {
 	my $timenow = time;
 
+	BPQMsg::process();
 	DXChannel::process();
 
 	#      $DB::trace = 0;
@@ -364,23 +365,16 @@ sub idle_loop
 		DXDb::process();
 		DXUser::process();
 		DXDupe::process();
-		$systime_days = $days;
-		$systime_daystart = $days * 86400;
-	}
-	IsoTime::update($systime);
-	DXCron::process();			# do cron jobs
-	DXCommandmode::process();	# process ongoing command mode stuff
-	DXXml::process();
-	DXProt::process();			# process ongoing ak1a pcxx stuff
-	DXConnect::process();
-	DXMsg::process();
-	DXDb::process();
-	DXUser::process();
-	DXDupe::process();
-	AGWMsg::process();
-	BPQMsg::process();
+		DXCron::process();			# do cron jobs
+		IsoTime::update($systime);
+		DXProt::process();			# process ongoing ak1a pcxx stuff
+		DXConnect::process();
+		DXUser::process();
+		AGWMsg::process();
+		
+		Timer::handler();
 
-	Timer::handler();
+	}
 
 	if (defined &Local::process) {
 		eval {

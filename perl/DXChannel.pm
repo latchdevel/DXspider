@@ -696,37 +696,43 @@ sub broadcast_list
 	}
 }
 
+sub process_one
+{
+	my $self = shift;
+
+	while (my $data = shift @{$self->{inqueue}}) {
+		my ($sort, $call, $line) = $self->decode_input($data);
+		next unless defined $sort;
+		
+		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
+		dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
+		
+		# handle A records
+		my $user = $self->user;
+		if ($sort eq 'A' || $sort eq 'O') {
+			$self->start($line, $sort);
+		} elsif ($sort eq 'I') {
+			die "\$user not defined for $call" if !defined $user;
+			
+			# normal input
+			$self->normal($line);
+		} elsif ($sort eq 'Z') {
+			$self->disconnect;
+		} elsif ($sort eq 'D') {
+			;				# ignored (an echo)
+		} elsif ($sort eq 'G') {
+			$self->enhanced($line);
+		} else {
+			dbg atime . " Unknown command letter ($sort) received from $call\n";
+		}
+	}
+}
+
 sub process
 {
 	foreach my $dxchan (get_all()) {
 		next if $dxchan->{disconnecting};
-		
-		while (my $data = shift @{$dxchan->{inqueue}}) {
-			my ($sort, $call, $line) = $dxchan->decode_input($data);
-			next unless defined $sort;
-
-			# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-			dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
-
-			# handle A records
-			my $user = $dxchan->user;
-			if ($sort eq 'A' || $sort eq 'O') {
-				$dxchan->start($line, $sort);
-			} elsif ($sort eq 'I') {
-				die "\$user not defined for $call" if !defined $user;
-			
-				# normal input
-				$dxchan->normal($line);
-			} elsif ($sort eq 'Z') {
-				$dxchan->disconnect;
-			} elsif ($sort eq 'D') {
-				;				# ignored (an echo)
-			} elsif ($sort eq 'G') {
-				$dxchan->enhanced($line);
-			} else {
-				print STDERR atime, " Unknown command letter ($sort) received from $call\n";
-			}
-		}
+		$dxchan->process_one;
 	}
 }
 

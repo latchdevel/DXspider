@@ -564,7 +564,7 @@ sub process
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
-		next if $dxchan->sort ne 'U';  
+		next if $dxchan->{sort} ne 'U';  
 	
 		# send a outstanding message prompt if required
 		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
@@ -1166,6 +1166,9 @@ sub import_cmd
 	my @names = readdir(DIR);
 	closedir(DIR);
 	my $name;
+
+	return unless @names;
+	
 	foreach $name (@names) {
 		next if $name =~ /^\./;
 
