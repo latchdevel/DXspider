@@ -37,6 +37,7 @@ use DB_File;
 use VE7CC;
 use DXXml;
 use AsyncMsg;
+use JSON;
 
 use Mojo::IOLoop;
 use Mojo::IOLoop::ForkCall;
@@ -1273,6 +1274,8 @@ sub spawn_cmd
 	no strict 'refs';
 		
 	my $fc = Mojo::IOLoop::ForkCall->new;
+	$fc->serializer(\&encode_json);
+	$fc->deserializer(\&decode_json);
 	$fc->run(
 			 sub {my @args = @_; my @res = $cmdref->(@args); return @res},
 			 $args,

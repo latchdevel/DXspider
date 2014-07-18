@@ -249,6 +249,8 @@ sub spawn
 			# in child, unset warnings, disable debugging and general clean up from us
 			$^W = 0;
 			eval "{ package DB; sub DB {} }";
+			dbgclose();
+			Logclose();
 			DXChannel::closeall();
 			for (@main::listeners) {
 				$_->close_server;

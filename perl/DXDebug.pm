@@ -116,9 +116,11 @@ sub dbgclose
 
 sub dbgdump
 {
+	return unless $fp;
+	
 	my $l = shift;
 	my $m = shift;
-	if ($fp && ($dbglevel{$l} || $l eq 'err')) {
+	if ($dbglevel{$l} || $l eq 'err') {
 		foreach my $l (@_) {
 			for (my $o = 0; $o < length $l; $o += 16) {
 				my $c = substr $l, $o, 16;

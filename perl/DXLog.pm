@@ -206,6 +206,8 @@ sub DESTROY
 # The user is responsible for making sense of this!
 sub Log
 {
+	return unless $log;
+	
 	my $t = time;
 	$log->writeunix($t, join('^', $t, @_) );
 }
@@ -219,5 +221,6 @@ sub LogDbg
 sub Logclose
 {
 	$log->close();
+	undef $log;
 }
 1;
