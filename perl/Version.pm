@@ -10,7 +10,7 @@ package main;
 use vars qw($version $build $gitversion);
 
 $version = '1.57';
-$build = '36';
-$gitversion = 'a9bc2c5';
+$build = '38';
+$gitversion = '5e50c4f';
 
 1;

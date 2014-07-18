@@ -1,3 +1,5 @@
+19Jul14=======================================================================
+1. Use JSON::XS for ForkCall serialisation in DXCommandmode.pm
 19Jun14=======================================================================
 1. Fix EOF detection of incoming nodes.
 2. Attempt to autogenerate Version.pm with *correct* values (instead of the
