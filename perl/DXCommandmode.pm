@@ -1253,9 +1253,13 @@ sub send_motd
 
 # Punt off a long running command into a separate process
 #
-# Hhis is called from commands to run some potentially long running
+# This is called from commands to run some potentially long running
 # function. The process forks and then runs the function and returns
 # the result back to the cmd. 
+#
+# NOTE: this merely forks the current process and then runs the cmd in that (current) context.
+#       IT DOES NOT START UP SOME NEW PROGRAM AND RELIES ON THE FACT THAT IT IS RUNNING DXSPIDER 
+#       THE CURRENT CONTEXT!!
 # 
 # call: $self->spawn_cmd(\<function>, [cb => sub{...}], [prefix => "cmd> "], [progress => 0|1], [args => [...]]);
 sub spawn_cmd

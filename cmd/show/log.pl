@@ -43,14 +43,5 @@ sub handle
 
 	@out = $self->spawn_cmd(\&DXLog::print, args => [$from, $to, $main::systime, undef, $who]);
 	
-#	my $fc = Mojo::IOLoop::ForkCall->new;
-#	$fc->run(
-#			 sub {my @args = @_; my @res = DXLog::print(@args); return @res}, 
-#			 [$from, $to, $main::systime, undef, $who],
-#			 sub {my ($fc, $err, @out) = @_; delete $self->{stash}; $self->send(@out);}
-#			);
-#	#$self->{stash} = $fc;
-	
-#	@out = DXLog::print($from, $to, $main::systime, undef, $who);
 	return (1, @out);
 }
