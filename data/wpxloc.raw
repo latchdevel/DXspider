@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 05 Aug 2014
+! This file was created by Jim Reisert AD1C on 30 Aug 2014
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -100,8 +100,8 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 6V9 Fatick-6W                                         298 46 35   0.00 14 22  0 N  16  8  0 W
 6Y Jamaica-6Y                                         299 11  8   5.00 18 12  0 N  77 28  0 W @
 7O Yemen-7O                                           300 39 21  -3.00 15 39  0 N  48  7  0 E @
-7O/S Socotra-7O                                       300 39 37  -3.00 12 30  0 N  53 55  0 E
-7O Socotra-7O/S                                       300 39 37  -3.00 12 30  0 N  53 55  0 E
+7O/S Socotra-7O                                       300 48 37  -3.00 12 30  0 N  53 55  0 E
+7O Socotra-7O/S                                       300 48 37  -3.00 12 30  0 N  53 55  0 E
 7P Lesotho-7P                                         301 57 38  -2.00 29 13  0 S  27 53  0 E @
 7Q Malawi-7Q                                          302 53 37  -2.00 14  0  0 S  34  0  0 E @
 7X Algeria-7X                                         303 37 33  -1.00 28  0  0 N   2  0  0 E @
@@ -118,7 +118,7 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 NLD Kuwait-9K                                         310 39 21  -3.00 29 23  0 N  47 23  0 E
 9L Sierra-Leone-9L                                    311 46 35   0.00  8 30  0 N  13 15  0 W @
 9M2 West-Malaysia-9M2                                 312 54 28  -8.00  3 57  0 N 102 14  0 E @
-9M4,9W2,9W4 West-Malaysia-9M2                         312 54 28  -8.00  3 57  0 N 102 14  0 E
+9M4,9M57,9W2,9W4 West-Malaysia-9M2                    312 54 28  -8.00  3 57  0 N 102 14  0 E
 9M6 East-Malaysia-9M6                                 313 54 28  -8.00  2 41  0 N 113 19  0 E @
 9M8,9M9,9W6,9W8 East-Malaysia-9M6                     313 54 28  -8.00  2 41  0 N 113 19  0 E
 9N Nepal-9N                                           314 42 22  -5.75 27 42  0 N  85 20  0 E @
