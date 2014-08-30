@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 08 Mar 2014
+! This file was created by Jim Reisert AD1C on 30 Aug 2014
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -100,8 +100,8 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 6V9 Fatick-6W                                         298 46 35   0.00 14 22  0 N  16  8  0 W
 6Y Jamaica-6Y                                         299 11  8   5.00 18 12  0 N  77 28  0 W @
 7O Yemen-7O                                           300 39 21  -3.00 15 39  0 N  48  7  0 E @
-7O/S Socotra-7O                                       300 39 37  -3.00 12 30  0 N  53 55  0 E
-7O Socotra-7O/S                                       300 39 37  -3.00 12 30  0 N  53 55  0 E
+7O/S Socotra-7O                                       300 48 37  -3.00 12 30  0 N  53 55  0 E
+7O Socotra-7O/S                                       300 48 37  -3.00 12 30  0 N  53 55  0 E
 7P Lesotho-7P                                         301 57 38  -2.00 29 13  0 S  27 53  0 E @
 7Q Malawi-7Q                                          302 53 37  -2.00 14  0  0 S  34  0  0 E @
 7X Algeria-7X                                         303 37 33  -1.00 28  0  0 N   2  0  0 E @
@@ -118,7 +118,7 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 NLD Kuwait-9K                                         310 39 21  -3.00 29 23  0 N  47 23  0 E
 9L Sierra-Leone-9L                                    311 46 35   0.00  8 30  0 N  13 15  0 W @
 9M2 West-Malaysia-9M2                                 312 54 28  -8.00  3 57  0 N 102 14  0 E @
-9M4,9W2,9W4 West-Malaysia-9M2                         312 54 28  -8.00  3 57  0 N 102 14  0 E
+9M4,9M57,9W2,9W4 West-Malaysia-9M2                    312 54 28  -8.00  3 57  0 N 102 14  0 E
 9M6 East-Malaysia-9M6                                 313 54 28  -8.00  2 41  0 N 113 19  0 E @
 9M8,9M9,9W6,9W8 East-Malaysia-9M6                     313 54 28  -8.00  2 41  0 N 113 19  0 E
 9N Nepal-9N                                           314 42 22  -5.75 27 42  0 N  85 20  0 E @
@@ -1243,34 +1243,49 @@ E6 Niue-E6                                            258 62 32  11.00 19  2  0 
 E7 Bosnia-Herzegovina-E7                              336 28 15  -1.00 44 19  0 N  17 34  0 E @
 EA Spain-EA                                            34 37 14  -1.00 40 22  0 N   4 53  0 W @
 AM,AN,AO,EB,EC,ED,EE,EF,EG,EH Spain-EA                 34 37 14  -1.00 40 22  0 N   4 53  0 W
-EA1 La-Rioja-EA                                        34 37 14  -1.00 42 35  0 N   5 34  0 W
-EA La-Rioja-EA1                                        34 37 14  -1.00 42 35  0 N   5 34  0 W
-AM1,AN1,AO1,EB1,EC1,ED1,EE1,EF1,EG1,EH1 La-Rioja-EA    34 37 14  -1.00 42 35  0 N   5 34  0 W
-EA2 Aragon-EA                                          34 37 14  -1.00 42 12  0 N   1 39  0 W
-EA Aragon-EA2                                          34 37 14  -1.00 42 12  0 N   1 39  0 W
-AM2,AN2,AO2,EB2,EC2,ED2,EE2,EF2,EG2,EH2 Aragon-EA      34 37 14  -1.00 42 12  0 N   1 39  0 W
-EA3 Cataluna-EA                                        34 37 14  -1.00 41 25  0 N   2 10  0 E
-EA Cataluna-EA3                                        34 37 14  -1.00 41 25  0 N   2 10  0 E
-AM3,AN3,AO3,EB3,EC3,ED3,EE3,EF3,EG3,EH3 Cataluna-EA    34 37 14  -1.00 41 25  0 N   2 10  0 E
-EA4 Madrid-EA                                          34 37 14  -1.00 40 22  0 N   4 53  0 W
-EA Madrid-EA4                                          34 37 14  -1.00 40 22  0 N   4 53  0 W
-AM4,AN4,AO4,EB4,EC4,ED4,EE4,EF4,EG4,EH4 Madrid-EA      34 37 14  -1.00 40 22  0 N   4 53  0 W
-EA5 Pals-Valenciano-EA                                 34 37 14  -1.00 39  0  0 N   1 52  0 W
-EA Pals-Valenciano-EA5                                 34 37 14  -1.00 39  0  0 N   1 52  0 W
-AM5,AN5,AO5,EB5,EC5,ED5,EE5,EF5 Pals-Valenciano-EA     34 37 14  -1.00 39  0  0 N   1 52  0 W
-EG5,EH5 Pals-Valenciano-EA                             34 37 14  -1.00 39  0  0 N   1 52  0 W
-EA7 Andalucia-EA                                       34 37 14  -1.00 37 24  0 N   5 59  0 W
-EA Andalucia-EA7                                       34 37 14  -1.00 37 24  0 N   5 59  0 W
-AM7,AN7,AO7,EB7,EC7,ED7,EE7,EF7,EG7,EH7 Andalucia-EA   34 37 14  -1.00 37 24  0 N   5 59  0 W
+EA1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EA AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA1     34 37 14  -1.00 42 35  0 N   5 35  0 W
+AM1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+AN1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+AO1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EB1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EC1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+ED1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EE1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EF1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EG1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EH1 AV-BU-C-LE-LO-LU-O-OU-P-PO-S-SA-SG-SO-VA-ZA-EA     34 37 14  -1.00 42 35  0 N   5 35  0 W
+EA2 BI-HU-NA-SS-TE-VI-Z-EA                             34 37 14  -1.00 42  7  0 N   1  8  0 W
+EA BI-HU-NA-SS-TE-VI-Z-EA2                             34 37 14  -1.00 42  7  0 N   1  8  0 W
+AM2,AN2,AO2,EB2,EC2,ED2,EE2 BI-HU-NA-SS-TE-VI-Z-EA     34 37 14  -1.00 42  7  0 N   1  8  0 W
+EF2,EG2,EH2 BI-HU-NA-SS-TE-VI-Z-EA                     34 37 14  -1.00 42  7  0 N   1  8  0 W
+EA3 B-GI-L-T-EA                                        34 37 14  -1.00 41 22  0 N   2 10  0 E
+EA B-GI-L-T-EA3                                        34 37 14  -1.00 41 22  0 N   2 10  0 E
+AM3,AN3,AO3,EB3,EC3,ED3,EE3,EF3,EG3,EH3 B-GI-L-T-EA    34 37 14  -1.00 41 22  0 N   2 10  0 E
+EA4 BA-CC-CR-CU-GU-M-TO-EA                             34 37 14  -1.00 40 25  0 N   3 42  0 W
+EA BA-CC-CR-CU-GU-M-TO-EA4                             34 37 14  -1.00 40 25  0 N   3 42  0 W
+AM4,AN4,AO4,EB4,EC4,ED4,EE4 BA-CC-CR-CU-GU-M-TO-EA     34 37 14  -1.00 40 25  0 N   3 42  0 W
+EF4,EG4,EH4 BA-CC-CR-CU-GU-M-TO-EA                     34 37 14  -1.00 40 25  0 N   3 42  0 W
+EA5 A-AB-CS-MU-V-EA                                    34 37 14  -1.00 39 28  0 N   0 19  0 W
+EA A-AB-CS-MU-V-EA5                                    34 37 14  -1.00 39 28  0 N   0 19  0 W
+AM5,AN5,AO5,EB5,EC5,ED5,EE5,EF5,EG5 A-AB-CS-MU-V-EA    34 37 14  -1.00 39 28  0 N   0 19  0 W
+EH5 A-AB-CS-MU-V-EA                                    34 37 14  -1.00 39 28  0 N   0 19  0 W
+EA7 AL-CA-CO-GR-H-J-MA-SE-EA                           34 37 14  -1.00 23 24  0 N   5 59  0 W
+EA AL-CA-CO-GR-H-J-MA-SE-EA7                           34 37 14  -1.00 23 24  0 N   5 59  0 W
+AM7,AN7,AO7,EB7,EC7,ED7,EE7 AL-CA-CO-GR-H-J-MA-SE-EA   34 37 14  -1.00 23 24  0 N   5 59  0 W
+EF7,EG7,EH7 AL-CA-CO-GR-H-J-MA-SE-EA                   34 37 14  -1.00 23 24  0 N   5 59  0 W
 EA6 Balearic-Islands-EA6                               35 37 14  -1.00 39 36  0 N   2 57  0 E @
-AM6,AN6,AO6,EB6,EC6,ED6,EE6,EF6 Balearic-Islands-EA6   35 37 14  -1.00 39 36  0 N   2 57  0 E
-EG6,EH6 Balearic-Islands-EA6                           35 37 14  -1.00 39 36  0 N   2 57  0 E
+AM06,AM6,AN06,AN6,AO06,AO6,EB6 Balearic-Islands-EA6    35 37 14  -1.00 39 36  0 N   2 57  0 E
+EC6,ED6,EE6,EF6,EG6,EH6 Balearic-Islands-EA6           35 37 14  -1.00 39 36  0 N   2 57  0 E
+EA6 IB-EA6                                             35 37 14  -1.00 39 36  0 N   2 57  0 E @
 EA8 Canary-Islands-EA8                                 36 36 33   0.00 28  6  0 N  15 24  0 W @
-AM8,AN8,AO8,EB8,EC8,ED8,EE8,EF8 Canary-Islands-EA8     36 36 33   0.00 28  6  0 N  15 24  0 W
-EG8,EH8 Canary-Islands-EA8                             36 36 33   0.00 28  6  0 N  15 24  0 W
+AM08,AM8,AN08,AN8,AO08,AO8,EB8 Canary-Islands-EA8      36 36 33   0.00 28  6  0 N  15 24  0 W
+EC8,ED8,EE8,EF8,EG8,EH8 Canary-Islands-EA8             36 36 33   0.00 28  6  0 N  15 24  0 W
+EA8 GC-TF-EA8                                          36 36 33   0.00 28  6  0 N  15 24  0 W @
 EA9 Ceuta-Melilla-EA9                                  37 37 33  -1.00 35 54  0 N   5 16  0 W @
-AM9,AN9,AO9,EB9,EC9,ED9,EE9,EF9 Ceuta-Melilla-EA9      37 37 33  -1.00 35 54  0 N   5 16  0 W
-EG9,EH9 Ceuta-Melilla-EA9                              37 37 33  -1.00 35 54  0 N   5 16  0 W
+AM09,AM9,AN09,AN9,AO09,AO9,EB9,EC9 Ceuta-Melilla-EA9   37 37 33  -1.00 35 54  0 N   5 16  0 W
+ED9,EE9,EF9,EG9,EH9 Ceuta-Melilla-EA9                  37 37 33  -1.00 35 54  0 N   5 16  0 W
+EA9 CE-ML-EA9                                          37 37 33  -1.00 35 54  0 N   5 16  0 W @
 EA9/C Ceuta-EA9                                        37 37 33  -1.00 35 53  0 N   5 18  0 W
 EA9 Ceuta-EA9/C                                        37 37 33  -1.00 35 53  0 N   5 18  0 W
 EA9/M Melilla-EA9                                      37 37 33  -1.00 35 18  0 N   2 57  0 W
@@ -1389,17 +1404,17 @@ FR Reunion-Island-FR                                   50 53 39  -4.00 21  7  0 
 FS St-Martin-FS                                        54 11  8   4.00 18  5  0 N  63  2  0 W @
 FT/G Glorioso-Islands-FT/G                             51 53 39  -4.00 11 33  0 S  47 17  0 E @
 FT Glorioso-Islands-FT/G                               51 53 39  -4.00 11 33  0 S  47 17  0 E
-FT5G Glorioso-Islands-FT/G                             51 53 39  -4.00 11 33  0 S  47 17  0 E
+FT4G,FT5G Glorioso-Islands-FT/G                        51 53 39  -4.00 11 33  0 S  47 17  0 E
 FT/J Juan-de-Nova-Europa-FT/J                          52 53 39  -3.00 17  3  0 S  42 43  0 E @
 FT Juan-de-Nova-Europa-FT/J                            52 53 39  -3.00 17  3  0 S  42 43  0 E
 FT/E Europa-FT/J                                       52 53 39  -3.00 22 22  0 S  40 21  0 E
 FT/J Europa-FT/E                                       52 53 39  -3.00 22 22  0 S  40 21  0 E
-FT5E Europa-FT/J                                       52 53 39  -3.00 22 22  0 S  40 21  0 E
+FT4E,FT5E Europa-FT/J                                  52 53 39  -3.00 22 22  0 S  40 21  0 E
 FT/J Juan-de-Nova-FT/J                                 52 53 39  -3.00 17  3  0 S  42 43  0 E @
-FT5J Juan-de-Nova-FT/J                                 52 53 39  -3.00 17  3  0 S  42 43  0 E
+FT4J,FT5J Juan-de-Nova-FT/J                            52 53 39  -3.00 17  3  0 S  42 43  0 E
 FT/T Tromelin-Island-FT/T                              53 53 39  -4.00 15 53  0 S  54 30  0 E @
 FT Tromelin-Island-FT/T                                53 53 39  -4.00 15 53  0 S  54 30  0 E
-FT5T Tromelin-Island-FT/T                              53 53 39  -4.00 15 53  0 S  54 30  0 E
+FT4T,FT5T Tromelin-Island-FT/T                         53 53 39  -4.00 15 53  0 S  54 30  0 E
 FT/W Crozet-Island-FT/W                                55 68 39  -5.00 46 25  0 S  51 45  0 E @
 FT Crozet-Island-FT/W                                  55 68 39  -5.00 46 25  0 S  51 45  0 E
 FT0W,FT1W,FT2W,FT4W,FT5W,FT8W Crozet-Island-FT/W       55 68 39  -5.00 46 25  0 S  51 45  0 E
@@ -1426,14 +1441,14 @@ GI Northern-Ireland-GI                                 63 27 14   0.00 54 44  0 
 GJ Jersey-GJ                                           64 27 14   0.00 49 13  0 N   2 11  0 W @
 2J,GH,MH,MJ Jersey-GJ                                  64 27 14   0.00 49 13  0 N   2 11  0 W
 GM Scotland-GM                                         65 27 14   0.00 56 49  0 N   4 11  0 W @
-2A,2M,2S,GA,GS,MA,MM,MS Scotland-GM                    65 27 14   0.00 56 49  0 N   4 11  0 W
+2A,2M,GA,GS,MA,MM,MS Scotland-GM                       65 27 14   0.00 56 49  0 N   4 11  0 W
 GM/S Shetland-and-Fair-Isle-GM                         65 27 14   0.00 60 30  0 N   1 30  0 W
 GM Shetland-and-Fair-Isle-GM/S                         65 27 14   0.00 60 30  0 N   1 30  0 W
-2Z,GZ,MZ Shetland-and-Fair-Isle-GM                     65 27 14   0.00 60 30  0 N   1 30  0 W
+GZ,MZ Shetland-and-Fair-Isle-GM                        65 27 14   0.00 60 30  0 N   1 30  0 W
 GU Guernsey-GU                                         66 27 14   0.00 49 27  0 N   2 35  0 W @
 2U,GP,MP,MU Guernsey-GU                                66 27 14   0.00 49 27  0 N   2 35  0 W
 GW Wales-GW                                            67 27 14   0.00 52 17  0 N   3 44  0 W @
-2C,2W,2X,GC,MC,MW Wales-GW                             67 27 14   0.00 52 17  0 N   3 44  0 W
+2W,GC,MC,MW Wales-GW                                   67 27 14   0.00 52 17  0 N   3 44  0 W
 H4 Solomon-Islands-H4                                  68 51 28 -11.00  9  0  0 S 160  0  0 E @
 H40 Temotu-Province-H40                               332 51 32 -11.00 10 43  0 S 165 48  0 E @
 HA Hungary-HA                                          69 28 15  -1.00 47  7  0 N  19 17  0 E @
@@ -1765,7 +1780,6 @@ JX Jan-Mayen-JX                                       100 18 40   1.00 71  3  0 
 JY Jordan-JY                                          101 39 20  -2.00 31 11  0 N  36 25  0 E @
 K United-States-K                                     226  8  5   5.00 37 32  0 N  91 40  0 W @
 AA,AB,AC,AD,AE,AF,AG,AI,AJ,AK,N,W United-States-K     226  8  5   5.00 37 32  0 N  91 40  0 W
-KG4 Guantanamo-Bay-KG4                                105 11  8   5.00 20  0  0 N  75  0  0 W @
 KH0 Mariana-Islands-KH0                               116 64 27 -10.00 15 11  0 N 145 43  0 E @
 AH0,NH0,WH0 Mariana-Islands-KH0                       116 64 27 -10.00 15 11  0 N 145 43  0 E
 KH1 Baker-Howland-Islands-KH1                         106 61 31  12.00  0  0  0 N 176  0  0 W @
@@ -3016,7 +3030,7 @@ TU Cote-d'Ivoire-TU                                   176 46 35   0.00  7 35  0 
 TY Benin-TY                                           177 46 35  -1.00  9 52  0 N   2 15  0 E @
 TZ Mali-TZ                                            178 46 35   0.00 18  0  0 N   2 35  0 W @
 UA European-Russia-UA                                 179 29 16  -4.00 53 39  0 N  41 22  0 E @
-R,RA22,U European-Russia-UA                           179 29 16  -4.00 53 39  0 N  41 22  0 E
+R,U European-Russia-UA                                179 29 16  -4.00 53 39  0 N  41 22  0 E
 UA1A Saint-Petersburg-UA                              179 29 16  -4.00 59 57  0 N  30 18  0 E
 UA Saint-Petersburg-UA1A                              179 29 16  -4.00 59 57  0 N  30 18  0 E
 R1A,R1B,R1F,R1H,R1J,R1L,R1M,RA1A Saint-Petersburg-UA  179 29 16  -4.00 59 57  0 N  30 18  0 E
@@ -3717,6 +3731,19 @@ RY6J,RY7J,RZ6J,RZ7J,U6J,U7J Severnaya-Osetiya-UA      179 29 16  -4.00 43 11  0 
 UA7J,UB6J,UB7J,UC6J,UC7J,UD6J Severnaya-Osetiya-UA    179 29 16  -4.00 43 11  0 N  44 14  0 E
 UD7J,UE6J,UE7J,UF6J,UF7J,UG6J Severnaya-Osetiya-UA    179 29 16  -4.00 43 11  0 N  44 14  0 E
 UG7J,UH6J,UH7J,UI6J,UI7J Severnaya-Osetiya-UA         179 29 16  -4.00 43 11  0 N  44 14  0 E
+UA6K Republic-of-Krim-UA                              179 29 16  -2.00 44 56  0 N  34  6  0 E
+UA Republic-of-Krim-UA6K                              179 29 16  -2.00 44 56  0 N  34  6  0 E
+R6K,R7K,RA6K,RA7K,RC6K,RC7K,RD6K Republic-of-Krim-UA  179 29 16  -2.00 44 56  0 N  34  6  0 E
+RD7K,RF6K,RF7K,RG6K,RG7K,RI6K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+RI7K,RJ6K,RJ7K,RK6K,RK7K,RL6K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+RL7K,RM6K,RM7K,RN6K,RN7K,RO6K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+RO7K,RP6K,RP7K,RQ6K,RQ7K,RR6K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+RR7K,RS6K,RT6K,RT7K,RU6K,RU7K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+RV6K,RV7K,RW6K,RW7K,RX6K,RX7K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+RY6K,RY7K,RZ6K,RZ7K,U6K,U7K,UA7K Republic-of-Krim-UA  179 29 16  -2.00 44 56  0 N  34  6  0 E
+UB6K,UB7K,UC6K,UC7K,UD6K,UD7K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+UE6K,UE7K,UF6K,UF7K,UG6K,UG7K Republic-of-Krim-UA     179 29 16  -2.00 44 56  0 N  34  6  0 E
+UH6K,UH7K,UI6K,UI7K Republic-of-Krim-UA               179 29 16  -2.00 44 56  0 N  34  6  0 E
 UA6L Rostovskaya-UA                                   179 29 16  -4.00 47 52  0 N  41 11  0 E
 UA Rostovskaya-UA6L                                   179 29 16  -4.00 47 52  0 N  41 11  0 E
 R6L,R6M,R6N,R7L,R7M,R7N,RA6L,RA6M Rostovskaya-UA      179 29 16  -4.00 47 52  0 N  41 11  0 E
@@ -3749,23 +3776,15 @@ UH6L,UH6M,UH6N,UH7L,UH7M,UH7N,UI6L Rostovskaya-UA     179 29 16  -4.00 47 52  0 
 UI6M,UI6N,UI7L,UI7M,UI7N Rostovskaya-UA               179 29 16  -4.00 47 52  0 N  41 11  0 E
 UA6P Chechnya-UA                                      179 29 16  -4.00 43 24  0 N  45 43  0 E
 UA Chechnya-UA6P                                      179 29 16  -4.00 43 24  0 N  45 43  0 E
-R6P,R6R,R7P,R7R,RA6P,RA6R,RA7P,RA7R,RC6P Chechnya-UA  179 29 16  -4.00 43 24  0 N  45 43  0 E
-RC6R,RC7P,RC7R,RD6P,RD6R,RD7P,RD7R,RF6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RF6R,RF7P,RF7R,RG6P,RG6R,RG7P,RG7R,RI6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RI6R,RI7P,RI7R,RJ6P,RJ6R,RJ7P,RJ7R,RK6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RK6R,RK7P,RK7R,RL6P,RL6R,RL7P,RL7R,RM6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RM6R,RM7P,RM7R,RN6P,RN6R,RN7P,RN7R,RO6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RO6R,RO7P,RO7R,RP6P,RP6R,RP7P,RP7R,RQ6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RQ6R,RQ7P,RQ7R,RR6P,RR6R,RR7P,RR7R,RT6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RT6R,RT7P,RT7R,RU6P,RU6R,RU7P,RU7R,RV6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RV6R,RV7P,RV7R,RW6P,RW6R,RW7P,RW7R,RX6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RX6R,RX7P,RX7R,RY6P,RY6R,RY7P,RY7R,RZ6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-RZ6R,RZ7P,RZ7R,U6P,U6R,U7P,U7R,UA6R,UA7P Chechnya-UA  179 29 16  -4.00 43 24  0 N  45 43  0 E
-UA7R,UB6P,UB6R,UB7P,UB7R,UC6P,UC6R,UC7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-UC7R,UD6P,UD6R,UD7P,UD7R,UE6P,UE6R,UE7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-UE7R,UF6P,UF6R,UF7P,UF7R,UG6P,UG6R,UG7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-UG7R,UH6P,UH6R,UH7P,UH7R,UI6P,UI6R,UI7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
-UI7R Chechnya-UA                                      179 29 16  -4.00 43 24  0 N  45 43  0 E
+R6P,R7P,RA6P,RA7P,RC6P,RC7P,RD6P,RD7P Chechnya-UA     179 29 16  -4.00 43 24  0 N  45 43  0 E
+RF6P,RF7P,RG6P,RG7P,RI6P,RI7P,RJ6P,RJ7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
+RK6P,RK7P,RL6P,RL7P,RM6P,RM7P,RN6P,RN7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
+RO6P,RO7P,RP6P,RP7P,RQ6P,RQ7P,RR6P,RR7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
+RT6P,RT7P,RU6P,RU7P,RV6P,RV7P,RW6P,RW7P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
+RX6P,RX7P,RY6P,RY7P,RZ6P,RZ7P,U6P,U7P Chechnya-UA     179 29 16  -4.00 43 24  0 N  45 43  0 E
+UA7P,UB6P,UB7P,UC6P,UC7P,UD6P,UD7P,UE6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
+UE7P,UF6P,UF7P,UG6P,UG7P,UH6P,UH7P,UI6P Chechnya-UA   179 29 16  -4.00 43 24  0 N  45 43  0 E
+UI7P Chechnya-UA                                      179 29 16  -4.00 43 24  0 N  45 43  0 E
 UA6Q Ingushetiya-UA                                   179 29 16  -4.00 43 12  0 N  44 58  0 E
 UA Ingushetiya-UA6Q                                   179 29 16  -4.00 43 12  0 N  44 58  0 E
 R6Q,R7Q,RA6Q,RA7Q,RC6Q,RC7Q,RD6Q,RD7Q Ingushetiya-UA  179 29 16  -4.00 43 12  0 N  44 58  0 E
@@ -3777,6 +3796,18 @@ RV6Q,RV7Q,RW6Q,RW7Q,RX6Q,RX7Q,RY6Q Ingushetiya-UA     179 29 16  -4.00 43 12  0 
 RY7Q,RZ6Q,RZ7Q,U6Q,U7Q,UA7Q,UB6Q,UB7Q Ingushetiya-UA  179 29 16  -4.00 43 12  0 N  44 58  0 E
 UC6Q,UC7Q,UD6Q,UD7Q,UE6Q,UE7Q,UF6Q Ingushetiya-UA     179 29 16  -4.00 43 12  0 N  44 58  0 E
 UF7Q,UG6Q,UG7Q,UH6Q,UH7Q,UI6Q,UI7Q Ingushetiya-UA     179 29 16  -4.00 43 12  0 N  44 58  0 E
+UA6R Sevastopol-UA                                    179 29 16  -2.00 50  0  0 N  30  0  0 E
+UA Sevastopol-UA6R                                    179 29 16  -2.00 50  0  0 N  30  0  0 E
+R6R,R7R,RA6R,RA7R,RC6R,RC7R,RD6R,RD7R Sevastopol-UA   179 29 16  -2.00 50  0  0 N  30  0  0 E
+RF6R,RF7R,RG6R,RG7R,RI6R,RI7R,RJ6R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+RJ7R,RK6R,RK7R,RL6R,RL7R,RM6R,RM7R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+RN6R,RN7R,RO6R,RO7R,RP6R,RP7R,RQ6R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+RQ7R,RR6R,RR7R,RS6R,RT6R,RT7R,RU6R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+RU7R,RV6R,RV7R,RW6R,RW7R,RX6R,RX7R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+RY6R,RY7R,RZ6R,RZ7R,U6R,U7R,UA7R,UB6R Sevastopol-UA   179 29 16  -2.00 50  0  0 N  30  0  0 E
+UB7R,UC6R,UC7R,UD6R,UD7R,UE6R,UE7R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+UF6R,UF7R,UG6R,UG7R,UH6R,UH7R,UI6R Sevastopol-UA      179 29 16  -2.00 50  0  0 N  30  0  0 E
+UI7R Sevastopol-UA                                    179 29 16  -2.00 50  0  0 N  30  0  0 E
 UA6U Astrakhanskaya-UA                                179 29 16  -4.00 47 14  0 N  47 14  0 E
 UA Astrakhanskaya-UA6U                                179 29 16  -4.00 47 14  0 N  47 14  0 E
 R6U,R6V,R7U,R7V,RA6U,RA6V,RA7U Astrakhanskaya-UA      179 29 16  -4.00 47 14  0 N  47 14  0 E
@@ -3854,16 +3885,16 @@ UG8G,UG9F,UG9G,UH8F,UH8G,UH9F,UH9G,UI8F Permskaya-UA  179 30 17  -6.00 58  0  0 
 UI8G,UI9F,UI9G Permskaya-UA                           179 30 17  -6.00 58  0  0 N  56 19  0 E
 UA9G Komi-Permyatsky-UA                               179 30 17  -6.00 59  1  0 N  54 40  0 E
 UA Komi-Permyatsky-UA9G                               179 30 17  -6.00 59  1  0 N  54 40  0 E
-UA9X Komi-UA                                          179 19 17  -4.00 64 17  0 N  54 28  0 E
-UA Komi-UA9X                                          179 19 17  -4.00 64 17  0 N  54 28  0 E
-R8X,R9X,RA8X,RA9X,RC8X,RC9X,RD8X,RD9X,RF8X Komi-UA    179 19 17  -4.00 64 17  0 N  54 28  0 E
-RF9X,RG8X,RG9X,RI8X,RI9X,RJ8X,RJ9X,RK8X,RK9X Komi-UA  179 19 17  -4.00 64 17  0 N  54 28  0 E
-RL8X,RL9X,RM8X,RM9X,RN8X,RN9X,RO8X,RO9X,RP8X Komi-UA  179 19 17  -4.00 64 17  0 N  54 28  0 E
-RP9X,RQ8X,RQ9X,RR8X,RR9X,RT8X,RT9X,RU8X,RU9X Komi-UA  179 19 17  -4.00 64 17  0 N  54 28  0 E
-RV8X,RV9X,RW8X,RW9X,RX8X,RX9X,RY8X,RY9X,RZ8X Komi-UA  179 19 17  -4.00 64 17  0 N  54 28  0 E
-RZ9X,U8X,U9X,UA8X,UB8X,UB9X,UC8X,UC9X,UD8X Komi-UA    179 19 17  -4.00 64 17  0 N  54 28  0 E
-UD9X,UE8X,UE9X,UF8X,UF9X,UG8X,UG9X,UH8X,UH9X Komi-UA  179 19 17  -4.00 64 17  0 N  54 28  0 E
-UI8X,UI9X Komi-UA                                     179 19 17  -4.00 64 17  0 N  54 28  0 E
+UA9X Komi-UA                                          179 20 17  -4.00 64 17  0 N  54 28  0 E
+UA Komi-UA9X                                          179 20 17  -4.00 64 17  0 N  54 28  0 E
+R8X,R9X,RA8X,RA9X,RC8X,RC9X,RD8X,RD9X,RF8X Komi-UA    179 20 17  -4.00 64 17  0 N  54 28  0 E
+RF9X,RG8X,RG9X,RI8X,RI9X,RJ8X,RJ9X,RK8X,RK9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RL8X,RL9X,RM8X,RM9X,RN8X,RN9X,RO8X,RO9X,RP8X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RP9X,RQ8X,RQ9X,RR8X,RR9X,RT8X,RT9X,RU8X,RU9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RV8X,RV9X,RW8X,RW9X,RX8X,RX9X,RY8X,RY9X,RZ8X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RZ9X,U8X,U9X,UA8X,UB8X,UB9X,UC8X,UC9X,UD8X Komi-UA    179 20 17  -4.00 64 17  0 N  54 28  0 E
+UD9X,UE8X,UE9X,UF8X,UF9X,UG8X,UG9X,UH8X,UH9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+UI8X,UI9X Komi-UA                                     179 20 17  -4.00 64 17  0 N  54 28  0 E
 UA2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E @
 R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RF2F Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
 RF2K,RG2F,RG2K,RI2F,RI2K,RJ2F,RJ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
@@ -3906,13 +3937,13 @@ UE0B,UE0H,UF0A,UF0B,UF0H,UG0A,UG0B Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 
 UG0H,UH0A,UH0B,UH0H,UI0A,UI0B,UI0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
 UA0B Taymyrsky-UA9                                    182 22 18  -8.00 69 24  0 N  86 11  0 E
 UA9 Taymyrsky-UA0B                                    182 22 18  -8.00 69 24  0 N  86 11  0 E
-UA0C Khabarovsky-UA9                                  182 33 19 -11.00 54 48  0 N 136 50  0 E
-UA9 Khabarovsky-UA0C                                  182 33 19 -11.00 54 48  0 N 136 50  0 E
-R0C,RA0C,RC0C,RD0C,RF0C,RG0C,RI0C Khabarovsky-UA9     182 33 19 -11.00 54 48  0 N 136 50  0 E
-RJ0C,RK0C,RL0C,RM0C,RN0C,RO0C,RP0C Khabarovsky-UA9    182 33 19 -11.00 54 48  0 N 136 50  0 E
-RQ0C,RR0C,RT0C,RU0C,RV0C,RW0C,RX0C Khabarovsky-UA9    182 33 19 -11.00 54 48  0 N 136 50  0 E
-RY0C,RZ0C,U0C,UB0C,UC0C,UD0C,UE0C Khabarovsky-UA9     182 33 19 -11.00 54 48  0 N 136 50  0 E
-UF0C,UG0C,UH0C,UI0C Khabarovsky-UA9                   182 33 19 -11.00 54 48  0 N 136 50  0 E
+UA0C Khabarovsky-UA9                                  182 34 19 -11.00 54 48  0 N 136 50  0 E
+UA9 Khabarovsky-UA0C                                  182 34 19 -11.00 54 48  0 N 136 50  0 E
+R0C,RA0C,RC0C,RD0C,RF0C,RG0C,RI0C Khabarovsky-UA9     182 34 19 -11.00 54 48  0 N 136 50  0 E
+RJ0C,RK0C,RL0C,RM0C,RN0C,RO0C,RP0C Khabarovsky-UA9    182 34 19 -11.00 54 48  0 N 136 50  0 E
+RQ0C,RR0C,RT0C,RU0C,RV0C,RW0C,RX0C Khabarovsky-UA9    182 34 19 -11.00 54 48  0 N 136 50  0 E
+RY0C,RZ0C,U0C,UB0C,UC0C,UD0C,UE0C Khabarovsky-UA9     182 34 19 -11.00 54 48  0 N 136 50  0 E
+UF0C,UG0C,UH0C,UI0C Khabarovsky-UA9                   182 34 19 -11.00 54 48  0 N 136 50  0 E
 UA0D Yevreyskaya-UA9                                  182 33 19 -11.00 48 36  0 N 132 12  0 E
 UA9 Yevreyskaya-UA0D                                  182 33 19 -11.00 48 36  0 N 132 12  0 E
 R0D,RA0D,RC0D,RD0D,RF0D,RG0D,RI0D Yevreyskaya-UA9     182 33 19 -11.00 48 36  0 N 132 12  0 E
@@ -4553,14 +4584,13 @@ EN8A,EN9A,EO0A,EO1A,EO2A,EO3A,EO4A,EO5A,EO6A Sumy-UR  183 29 16  -2.00 51 25  0 
 EO7A,EO8A,EO9A,U5A,UR0A,UR1A,UR2A,UR3A,UR4A Sumy-UR   183 29 16  -2.00 51 25  0 N  33 33  0 E
 UR5A,UR6A,UR7A,UR8A,UR9A,US0A,US1A,US2A,US3A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
 US4A,US5A,US6A,US7A,US8A,US9A,UT0A,UT1A,UT2A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UT3A,UT4A,UT5A,UT6A,UT7A,UT8A,UT9A,UU0A,UU1A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UU2A,UU3A,UU4A,UU5A,UU6A,UU7A,UU8A,UU9A,UV0A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UV1A,UV2A,UV3A,UV4A,UV5A,UV6A,UV7A,UV8A,UV9A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UW0A,UW1A,UW2A,UW3A,UW4A,UW5A,UW6A,UW7A,UW8A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UW9A,UX0A,UX1A,UX2A,UX3A,UX4A,UX5A,UX6A,UX7A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UX8A,UX9A,UY0A,UY1A,UY2A,UY3A,UY4A,UY5A,UY6A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UY7A,UY8A,UY9A,UZ0A,UZ1A,UZ2A,UZ3A,UZ4A,UZ5A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
-UZ6A,UZ7A,UZ8A,UZ9A Sumy-UR                           183 29 16  -2.00 51 25  0 N  33 33  0 E
+UT3A,UT4A,UT5A,UT6A,UT7A,UT8A,UT9A,UV0A,UV1A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
+UV2A,UV3A,UV4A,UV5A,UV6A,UV7A,UV8A,UV9A,UW0A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
+UW1A,UW2A,UW3A,UW4A,UW5A,UW6A,UW7A,UW8A,UW9A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
+UX0A,UX1A,UX2A,UX3A,UX4A,UX5A,UX6A,UX7A,UX8A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
+UX9A,UY0A,UY1A,UY2A,UY3A,UY4A,UY5A,UY6A,UY7A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
+UY8A,UY9A,UZ0A,UZ1A,UZ2A,UZ3A,UZ4A,UZ5A,UZ6A Sumy-UR  183 29 16  -2.00 51 25  0 N  33 33  0 E
+UZ7A,UZ8A,UZ9A Sumy-UR                                183 29 16  -2.00 51 25  0 N  33 33  0 E
 UT-B Ternopol-UR                                      183 29 16  -2.00 49 35  0 N  25 39  0 E
 UR Ternopol-UT-B                                      183 29 16  -2.00 49 35  0 N  25 39  0 E
 EM0B,EM1B,EM2B,EM3B,EM4B,EM5B,EM6B,EM7B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
@@ -4570,15 +4600,13 @@ EO4B,EO5B,EO6B,EO7B,EO8B,EO9B,U5B,UR0B Ternopol-UR    183 29 16  -2.00 49 35  0 
 UR1B,UR2B,UR3B,UR4B,UR5B,UR6B,UR7B,UR8B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
 UR9B,US0B,US1B,US2B,US3B,US4B,US5B,US6B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
 US7B,US8B,US9B,UT0B,UT1B,UT2B,UT3B,UT4B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UT5B,UT6B,UT7B,UT8B,UT9B,UU0B,UU1B,UU2B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UU3B,UU4B,UU5B,UU6B,UU7B,UU8B,UU9B,UV0B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UV1B,UV2B,UV3B,UV4B,UV5B,UV6B,UV7B,UV8B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UV9B,UW0B,UW1B,UW2B,UW3B,UW4B,UW5B,UW6B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UW7B,UW8B,UW9B,UX0B,UX1B,UX2B,UX3B,UX4B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UX5B,UX6B,UX7B,UX8B,UX9B,UY0B,UY1B,UY2B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UY3B,UY4B,UY5B,UY6B,UY7B,UY8B,UY9B,UZ0B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UZ1B,UZ2B,UZ3B,UZ4B,UZ5B,UZ6B,UZ7B,UZ8B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
-UZ9B Ternopol-UR                                      183 29 16  -2.00 49 35  0 N  25 39  0 E
+UT5B,UT6B,UT7B,UT8B,UT9B,UV0B,UV1B,UV2B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
+UV3B,UV4B,UV5B,UV6B,UV7B,UV8B,UV9B,UW0B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
+UW1B,UW2B,UW3B,UW4B,UW5B,UW6B,UW7B,UW8B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
+UW9B,UX0B,UX1B,UX2B,UX3B,UX4B,UX5B,UX6B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
+UX7B,UX8B,UX9B,UY0B,UY1B,UY2B,UY3B,UY4B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
+UY5B,UY6B,UY7B,UY8B,UY9B,UZ0B,UZ1B,UZ2B Ternopol-UR   183 29 16  -2.00 49 35  0 N  25 39  0 E
+UZ3B,UZ4B,UZ5B,UZ6B,UZ7B,UZ8B,UZ9B Ternopol-UR        183 29 16  -2.00 49 35  0 N  25 39  0 E
 UT-C Cherkassy-UR                                     183 29 16  -2.00 49 27  0 N  32  4  0 E
 UR Cherkassy-UT-C                                     183 29 16  -2.00 49 27  0 N  32  4  0 E
 EM0C,EM1C,EM2C,EM3C,EM4C,EM5C,EM6C,EM7C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
@@ -4588,15 +4616,13 @@ EO4C,EO5C,EO6C,EO7C,EO8C,EO9C,U5C,UR0C Cherkassy-UR   183 29 16  -2.00 49 27  0 
 UR1C,UR2C,UR3C,UR4C,UR5C,UR6C,UR7C,UR8C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
 UR9C,US0C,US1C,US2C,US3C,US4C,US5C,US6C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
 US7C,US8C,US9C,UT0C,UT1C,UT2C,UT3C,UT4C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UT5C,UT6C,UT7C,UT8C,UT9C,UU0C,UU1C,UU2C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UU3C,UU4C,UU5C,UU6C,UU7C,UU8C,UU9C,UV0C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UV1C,UV2C,UV3C,UV4C,UV5C,UV6C,UV7C,UV8C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UV9C,UW0C,UW1C,UW2C,UW3C,UW4C,UW5C,UW6C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UW7C,UW8C,UW9C,UX0C,UX1C,UX2C,UX3C,UX4C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UX5C,UX6C,UX7C,UX8C,UX9C,UY0C,UY1C,UY2C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UY3C,UY4C,UY5C,UY6C,UY7C,UY8C,UY9C,UZ0C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UZ1C,UZ2C,UZ3C,UZ4C,UZ5C,UZ6C,UZ7C,UZ8C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
-UZ9C Cherkassy-UR                                     183 29 16  -2.00 49 27  0 N  32  4  0 E
+UT5C,UT6C,UT7C,UT8C,UT9C,UV0C,UV1C,UV2C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
+UV3C,UV4C,UV5C,UV6C,UV7C,UV8C,UV9C,UW0C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
+UW1C,UW2C,UW3C,UW4C,UW5C,UW6C,UW7C,UW8C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
+UW9C,UX0C,UX1C,UX2C,UX3C,UX4C,UX5C,UX6C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
+UX7C,UX8C,UX9C,UY0C,UY1C,UY2C,UY3C,UY4C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
+UY5C,UY6C,UY7C,UY8C,UY9C,UZ0C,UZ1C,UZ2C Cherkassy-UR  183 29 16  -2.00 49 27  0 N  32  4  0 E
+UZ3C,UZ4C,UZ5C,UZ6C,UZ7C,UZ8C,UZ9C Cherkassy-UR       183 29 16  -2.00 49 27  0 N  32  4  0 E
 UT-D Uzhgorod-UR                                      183 29 16  -2.00 47 50  0 N  35 10  0 E
 UR Uzhgorod-UT-D                                      183 29 16  -2.00 47 50  0 N  35 10  0 E
 EM0D,EM1D,EM2D,EM3D,EM4D,EM5D,EM6D,EM7D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
@@ -4606,15 +4632,13 @@ EO4D,EO5D,EO6D,EO7D,EO8D,EO9D,U5D,UR0D Uzhgorod-UR    183 29 16  -2.00 47 50  0 
 UR1D,UR2D,UR3D,UR4D,UR5D,UR6D,UR7D,UR8D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
 UR9D,US0D,US1D,US2D,US3D,US4D,US5D,US6D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
 US7D,US8D,US9D,UT0D,UT1D,UT2D,UT3D,UT4D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UT5D,UT6D,UT7D,UT8D,UT9D,UU0D,UU1D,UU2D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UU3D,UU4D,UU5D,UU6D,UU7D,UU8D,UU9D,UV0D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UV1D,UV2D,UV3D,UV4D,UV5D,UV6D,UV7D,UV8D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UV9D,UW0D,UW1D,UW2D,UW3D,UW4D,UW5D,UW6D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UW7D,UW8D,UW9D,UX0D,UX1D,UX2D,UX3D,UX4D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UX5D,UX6D,UX7D,UX8D,UX9D,UY0D,UY1D,UY2D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UY3D,UY4D,UY5D,UY6D,UY7D,UY8D,UY9D,UZ0D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UZ1D,UZ2D,UZ3D,UZ4D,UZ5D,UZ6D,UZ7D,UZ8D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
-UZ9D Uzhgorod-UR                                      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UT5D,UT6D,UT7D,UT8D,UT9D,UV0D,UV1D,UV2D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
+UV3D,UV4D,UV5D,UV6D,UV7D,UV8D,UV9D,UW0D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
+UW1D,UW2D,UW3D,UW4D,UW5D,UW6D,UW7D,UW8D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
+UW9D,UX0D,UX1D,UX2D,UX3D,UX4D,UX5D,UX6D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
+UX7D,UX8D,UX9D,UY0D,UY1D,UY2D,UY3D,UY4D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
+UY5D,UY6D,UY7D,UY8D,UY9D,UZ0D,UZ1D,UZ2D Uzhgorod-UR   183 29 16  -2.00 47 50  0 N  35 10  0 E
+UZ3D,UZ4D,UZ5D,UZ6D,UZ7D,UZ8D,UZ9D Uzhgorod-UR        183 29 16  -2.00 47 50  0 N  35 10  0 E
 UT-E Dnepropetrovsk-UR                                183 29 16  -2.00 48 29  0 N  35  0  0 E
 UR Dnepropetrovsk-UT-E                                183 29 16  -2.00 48 29  0 N  35  0  0 E
 EM0E,EM1E,EM2E,EM3E,EM4E,EM5E,EM6E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
@@ -4625,16 +4649,14 @@ EO8E,EO9E,U5E,UR0E,UR1E,UR2E,UR3E Dnepropetrovsk-UR   183 29 16  -2.00 48 29  0 
 UR4E,UR5E,UR6E,UR7E,UR8E,UR9E,US0E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
 US1E,US2E,US3E,US4E,US5E,US6E,US7E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
 US8E,US9E,UT0E,UT1E,UT2E,UT3E,UT4E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UT5E,UT6E,UT7E,UT8E,UT9E,UU0E,UU1E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UU2E,UU3E,UU4E,UU5E,UU6E,UU7E,UU8E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UU9E,UV0E,UV1E,UV2E,UV3E,UV4E,UV5E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UV6E,UV7E,UV8E,UV9E,UW0E,UW1E,UW2E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UW3E,UW4E,UW5E,UW6E,UW7E,UW8E,UW9E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UX0E,UX1E,UX2E,UX3E,UX4E,UX5E,UX6E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UX7E,UX8E,UX9E,UY0E,UY1E,UY2E,UY3E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UY4E,UY5E,UY6E,UY7E,UY8E,UY9E,UZ0E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UZ1E,UZ2E,UZ3E,UZ4E,UZ5E,UZ6E,UZ7E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
-UZ8E,UZ9E Dnepropetrovsk-UR                           183 29 16  -2.00 48 29  0 N  35  0  0 E
+UT5E,UT6E,UT7E,UT8E,UT9E,UV0E,UV1E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UV2E,UV3E,UV4E,UV5E,UV6E,UV7E,UV8E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UV9E,UW0E,UW1E,UW2E,UW3E,UW4E,UW5E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UW6E,UW7E,UW8E,UW9E,UX0E,UX1E,UX2E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UX3E,UX4E,UX5E,UX6E,UX7E,UX8E,UX9E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UY0E,UY1E,UY2E,UY3E,UY4E,UY5E,UY6E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UY7E,UY8E,UY9E,UZ0E,UZ1E,UZ2E,UZ3E Dnepropetrovsk-UR  183 29 16  -2.00 48 29  0 N  35  0  0 E
+UZ4E,UZ5E,UZ6E,UZ7E,UZ8E,UZ9E Dnepropetrovsk-UR       183 29 16  -2.00 48 29  0 N  35  0  0 E
 UT-F Odessa-UR                                        183 29 16  -2.00 46 30  0 N  30 45  0 E
 UR Odessa-UT-F                                        183 29 16  -2.00 46 30  0 N  30 45  0 E
 EM0F,EM1F,EM2F,EM3F,EM4F,EM5F,EM6F,EM7F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
@@ -4644,15 +4666,13 @@ EO4F,EO5F,EO6F,EO7F,EO8F,EO9F,U5F,UR0F Odessa-UR      183 29 16  -2.00 46 30  0 
 UR1F,UR2F,UR3F,UR4F,UR5F,UR6F,UR7F,UR8F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
 UR9F,US0F,US1F,US2F,US3F,US4F,US5F,US6F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
 US7F,US8F,US9F,UT0F,UT1F,UT2F,UT3F,UT4F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UT5F,UT6F,UT7F,UT8F,UT9F,UU0F,UU1F,UU2F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UU3F,UU4F,UU5F,UU6F,UU7F,UU8F,UU9F,UV0F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UV1F,UV2F,UV3F,UV4F,UV5F,UV6F,UV7F,UV8F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UV9F,UW0F,UW1F,UW2F,UW3F,UW4F,UW5F,UW6F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UW7F,UW8F,UW9F,UX0F,UX1F,UX2F,UX3F,UX4F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UX5F,UX6F,UX7F,UX8F,UX9F,UY0F,UY1F,UY2F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UY3F,UY4F,UY5F,UY6F,UY7F,UY8F,UY9F,UZ0F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UZ1F,UZ2F,UZ3F,UZ4F,UZ5F,UZ6F,UZ7F,UZ8F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
-UZ9F Odessa-UR                                        183 29 16  -2.00 46 30  0 N  30 45  0 E
+UT5F,UT6F,UT7F,UT8F,UT9F,UV0F,UV1F,UV2F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
+UV3F,UV4F,UV5F,UV6F,UV7F,UV8F,UV9F,UW0F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
+UW1F,UW2F,UW3F,UW4F,UW5F,UW6F,UW7F,UW8F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
+UW9F,UX0F,UX1F,UX2F,UX3F,UX4F,UX5F,UX6F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
+UX7F,UX8F,UX9F,UY0F,UY1F,UY2F,UY3F,UY4F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
+UY5F,UY6F,UY7F,UY8F,UY9F,UZ0F,UZ1F,UZ2F Odessa-UR     183 29 16  -2.00 46 30  0 N  30 45  0 E
+UZ3F,UZ4F,UZ5F,UZ6F,UZ7F,UZ8F,UZ9F Odessa-UR          183 29 16  -2.00 46 30  0 N  30 45  0 E
 UT-G Kherson-UR                                       183 29 16  -2.00 46 39  0 N  32 38  0 E
 UR Kherson-UT-G                                       183 29 16  -2.00 46 39  0 N  32 38  0 E
 EM0G,EM1G,EM2G,EM3G,EM4G,EM5G,EM6G,EM7G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
@@ -4662,15 +4682,13 @@ EO4G,EO5G,EO6G,EO7G,EO8G,EO9G,U5G,UR0G Kherson-UR     183 29 16  -2.00 46 39  0 
 UR1G,UR2G,UR3G,UR4G,UR5G,UR6G,UR7G,UR8G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
 UR9G,US0G,US1G,US2G,US3G,US4G,US5G,US6G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
 US7G,US8G,US9G,UT0G,UT1G,UT2G,UT3G,UT4G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UT5G,UT6G,UT7G,UT8G,UT9G,UU0G,UU1G,UU2G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UU3G,UU4G,UU5G,UU6G,UU7G,UU8G,UU9G,UV0G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UV1G,UV2G,UV3G,UV4G,UV5G,UV6G,UV7G,UV8G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UV9G,UW0G,UW1G,UW2G,UW3G,UW4G,UW5G,UW6G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UW7G,UW8G,UW9G,UX0G,UX1G,UX2G,UX3G,UX4G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UX5G,UX6G,UX7G,UX8G,UX9G,UY0G,UY1G,UY2G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UY3G,UY4G,UY5G,UY6G,UY7G,UY8G,UY9G,UZ0G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UZ1G,UZ2G,UZ3G,UZ4G,UZ5G,UZ6G,UZ7G,UZ8G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
-UZ9G Kherson-UR                                       183 29 16  -2.00 46 39  0 N  32 38  0 E
+UT5G,UT6G,UT7G,UT8G,UT9G,UV0G,UV1G,UV2G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
+UV3G,UV4G,UV5G,UV6G,UV7G,UV8G,UV9G,UW0G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
+UW1G,UW2G,UW3G,UW4G,UW5G,UW6G,UW7G,UW8G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
+UW9G,UX0G,UX1G,UX2G,UX3G,UX4G,UX5G,UX6G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
+UX7G,UX8G,UX9G,UY0G,UY1G,UY2G,UY3G,UY4G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
+UY5G,UY6G,UY7G,UY8G,UY9G,UZ0G,UZ1G,UZ2G Kherson-UR    183 29 16  -2.00 46 39  0 N  32 38  0 E
+UZ3G,UZ4G,UZ5G,UZ6G,UZ7G,UZ8G,UZ9G Kherson-UR         183 29 16  -2.00 46 39  0 N  32 38  0 E
 UT-H Poltava-UR                                       183 29 16  -2.00 49 35  0 N  34 35  0 E
 UR Poltava-UT-H                                       183 29 16  -2.00 49 35  0 N  34 35  0 E
 EM0H,EM1H,EM2H,EM3H,EM4H,EM5H,EM6H,EM7H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
@@ -4680,15 +4698,13 @@ EO4H,EO5H,EO6H,EO7H,EO8H,EO9H,U5H,UR0H Poltava-UR     183 29 16  -2.00 49 35  0 
 UR1H,UR2H,UR3H,UR4H,UR5H,UR6H,UR7H,UR8H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
 UR9H,US0H,US1H,US2H,US3H,US4H,US5H,US6H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
 US7H,US8H,US9H,UT0H,UT1H,UT2H,UT3H,UT4H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UT5H,UT6H,UT7H,UT8H,UT9H,UU0H,UU1H,UU2H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UU3H,UU4H,UU5H,UU6H,UU7H,UU8H,UU9H,UV0H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UV1H,UV2H,UV3H,UV4H,UV5H,UV6H,UV7H,UV8H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UV9H,UW0H,UW1H,UW2H,UW3H,UW4H,UW5H,UW6H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UW7H,UW8H,UW9H,UX0H,UX1H,UX2H,UX3H,UX4H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UX5H,UX6H,UX7H,UX8H,UX9H,UY0H,UY1H,UY2H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UY3H,UY4H,UY5H,UY6H,UY7H,UY8H,UY9H,UZ0H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UZ1H,UZ2H,UZ3H,UZ4H,UZ5H,UZ6H,UZ7H,UZ8H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
-UZ9H Poltava-UR                                       183 29 16  -2.00 49 35  0 N  34 35  0 E
+UT5H,UT6H,UT7H,UT8H,UT9H,UV0H,UV1H,UV2H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
+UV3H,UV4H,UV5H,UV6H,UV7H,UV8H,UV9H,UW0H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
+UW1H,UW2H,UW3H,UW4H,UW5H,UW6H,UW7H,UW8H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
+UW9H,UX0H,UX1H,UX2H,UX3H,UX4H,UX5H,UX6H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
+UX7H,UX8H,UX9H,UY0H,UY1H,UY2H,UY3H,UY4H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
+UY5H,UY6H,UY7H,UY8H,UY9H,UZ0H,UZ1H,UZ2H Poltava-UR    183 29 16  -2.00 49 35  0 N  34 35  0 E
+UZ3H,UZ4H,UZ5H,UZ6H,UZ7H,UZ8H,UZ9H Poltava-UR         183 29 16  -2.00 49 35  0 N  34 35  0 E
 UT-I Donetsk-UR                                       183 29 16  -2.00 48  0  0 N  37 50  0 E
 UR Donetsk-UT-I                                       183 29 16  -2.00 48  0  0 N  37 50  0 E
 EM0I,EM1I,EM2I,EM3I,EM4I,EM5I,EM6I,EM7I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
@@ -4698,33 +4714,16 @@ EO4I,EO5I,EO6I,EO7I,EO8I,EO9I,U5I,UR0I Donetsk-UR     183 29 16  -2.00 48  0  0 
 UR1I,UR2I,UR3I,UR4I,UR5I,UR6I,UR7I,UR8I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
 UR9I,US0I,US1I,US2I,US3I,US4I,US5I,US6I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
 US7I,US8I,US9I,UT0I,UT1I,UT2I,UT3I,UT4I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UT5I,UT6I,UT7I,UT8I,UT9I,UU0I,UU1I,UU2I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UU3I,UU4I,UU5I,UU6I,UU7I,UU8I,UU9I,UV0I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UV1I,UV2I,UV3I,UV4I,UV5I,UV6I,UV7I,UV8I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UV9I,UW0I,UW1I,UW2I,UW3I,UW4I,UW5I,UW6I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UW7I,UW8I,UW9I,UX0I,UX1I,UX2I,UX3I,UX4I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UX5I,UX6I,UX7I,UX8I,UX9I,UY0I,UY1I,UY2I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UY3I,UY4I,UY5I,UY6I,UY7I,UY8I,UY9I,UZ0I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UZ1I,UZ2I,UZ3I,UZ4I,UZ5I,UZ6I,UZ7I,UZ8I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
-UZ9I Donetsk-UR                                       183 29 16  -2.00 48  0  0 N  37 50  0 E
+UT5I,UT6I,UT7I,UT8I,UT9I,UV0I,UV1I,UV2I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
+UV3I,UV4I,UV5I,UV6I,UV7I,UV8I,UV9I,UW0I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
+UW1I,UW2I,UW3I,UW4I,UW5I,UW6I,UW7I,UW8I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
+UW9I,UX0I,UX1I,UX2I,UX3I,UX4I,UX5I,UX6I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
+UX7I,UX8I,UX9I,UY0I,UY1I,UY2I,UY3I,UY4I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
+UY5I,UY6I,UY7I,UY8I,UY9I,UZ0I,UZ1I,UZ2I Donetsk-UR    183 29 16  -2.00 48  0  0 N  37 50  0 E
+UZ3I,UZ4I,UZ5I,UZ6I,UZ7I,UZ8I,UZ9I Donetsk-UR         183 29 16  -2.00 48  0  0 N  37 50  0 E
 UT-J Sevastopol-UR                                    183 29 16  -2.00 50  0  0 N  30  0  0 E
 UR Sevastopol-UT-J                                    183 29 16  -2.00 50  0  0 N  30  0  0 E
-EM0J,EM1J,EM2J,EM3J,EM4J,EM5J,EM6J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-EM7J,EM8J,EM9J,EN0J,EN1J,EN2J,EN3J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-EN4J,EN5J,EN6J,EN7J,EN8J,EN9J,EO0J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-EO1J,EO2J,EO3J,EO4J,EO5J,EO6J,EO7J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-EO8J,EO9J,U5J,UR0J,UR1J,UR2J,UR3J,UR4J Sevastopol-UR  183 29 16  -2.00 50  0  0 N  30  0  0 E
-UR5J,UR6J,UR7J,UR8J,UR9J,US0J,US1J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-US2J,US3J,US4J,US5J,US6J,US7J,US8J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-US9J,UT0J,UT1J,UT2J,UT3J,UT4J,UT5J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UT6J,UT7J,UT8J,UT9J,UU9J,UV0J,UV1J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UV2J,UV3J,UV4J,UV5J,UV6J,UV7J,UV8J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UV9J,UW0J,UW1J,UW2J,UW3J,UW4J,UW5J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UW6J,UW7J,UW8J,UW9J,UX0J,UX1J,UX2J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UX3J,UX4J,UX5J,UX6J,UX7J,UX8J,UX9J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UY0J,UY1J,UY2J,UY3J,UY4J,UY5J,UY6J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UY7J,UY8J,UY9J,UZ0J,UZ1J,UZ2J,UZ3J Sevastopol-UR      183 29 16  -2.00 50  0  0 N  30  0  0 E
-UZ4J,UZ5J,UZ6J,UZ7J,UZ8J,UZ9J Sevastopol-UR           183 29 16  -2.00 50  0  0 N  30  0  0 E
+UT5J,UU9 Sevastopol-UR                                183 29 16  -2.00 50  0  0 N  30  0  0 E
 UT-K Rovno-UR                                         183 29 16  -2.00 50 39  0 N  26 10  0 E
 UR Rovno-UT-K                                         183 29 16  -2.00 50 39  0 N  26 10  0 E
 EM0K,EM1K,EM2K,EM3K,EM4K,EM5K,EM6K,EM7K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
@@ -4734,14 +4733,13 @@ EO4K,EO5K,EO6K,EO7K,EO8K,EO9K,U5K,UR0K,UR1K Rovno-UR  183 29 16  -2.00 50 39  0 
 UR2K,UR3K,UR4K,UR5K,UR6K,UR7K,UR8K,UR9K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
 US0K,US1K,US2K,US3K,US4K,US5K,US6K,US7K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
 US8K,US9K,UT0K,UT1K,UT2K,UT3K,UT4K,UT5K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UT6K,UT7K,UT8K,UT9K,UU0K,UU1K,UU2K,UU3K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UU4K,UU5K,UU6K,UU7K,UU8K,UU9K,UV0K,UV1K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UV2K,UV3K,UV4K,UV5K,UV6K,UV7K,UV8K,UV9K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UW0K,UW1K,UW2K,UW3K,UW4K,UW5K,UW6K,UW7K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UW8K,UW9K,UX0K,UX1K,UX2K,UX3K,UX4K,UX5K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UX6K,UX7K,UX8K,UX9K,UY0K,UY1K,UY2K,UY3K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UY4K,UY5K,UY6K,UY7K,UY8K,UY9K,UZ0K,UZ1K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
-UZ2K,UZ3K,UZ4K,UZ5K,UZ6K,UZ7K,UZ8K,UZ9K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UT6K,UT7K,UT8K,UT9K,UV0K,UV1K,UV2K,UV3K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UV4K,UV5K,UV6K,UV7K,UV8K,UV9K,UW0K,UW1K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UW2K,UW3K,UW4K,UW5K,UW6K,UW7K,UW8K,UW9K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UX0K,UX1K,UX2K,UX3K,UX4K,UX5K,UX6K,UX7K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UX8K,UX9K,UY0K,UY1K,UY2K,UY3K,UY4K,UY5K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UY6K,UY7K,UY8K,UY9K,UZ0K,UZ1K,UZ2K,UZ3K Rovno-UR      183 29 16  -2.00 50 39  0 N  26 10  0 E
+UZ4K,UZ5K,UZ6K,UZ7K,UZ8K,UZ9K Rovno-UR                183 29 16  -2.00 50 39  0 N  26 10  0 E
 UT-L Kharkov-UR                                       183 29 16  -2.00 50 22  0 N  36 15  0 E
 UR Kharkov-UT-L                                       183 29 16  -2.00 50 22  0 N  36 15  0 E
 EM0L,EM1L,EM2L,EM3L,EM4L,EM5L,EM6L,EM7L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
@@ -4751,15 +4749,13 @@ EO4L,EO5L,EO6L,EO7L,EO8L,EO9L,U5L,UR0L Kharkov-UR     183 29 16  -2.00 50 22  0 
 UR1L,UR2L,UR3L,UR4L,UR5L,UR6L,UR7L,UR8L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
 UR9L,US0L,US1L,US2L,US3L,US4L,US5L,US6L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
 US7L,US8L,US9L,UT0L,UT1L,UT2L,UT3L,UT4L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UT5L,UT6L,UT7L,UT8L,UT9L,UU0L,UU1L,UU2L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UU3L,UU4L,UU5L,UU6L,UU7L,UU8L,UU9L,UV0L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UV1L,UV2L,UV3L,UV4L,UV5L,UV6L,UV7L,UV8L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UV9L,UW0L,UW1L,UW2L,UW3L,UW4L,UW5L,UW6L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UW7L,UW8L,UW9L,UX0L,UX1L,UX2L,UX3L,UX4L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UX5L,UX6L,UX7L,UX8L,UX9L,UY0L,UY1L,UY2L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UY3L,UY4L,UY5L,UY6L,UY7L,UY8L,UY9L,UZ0L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UZ1L,UZ2L,UZ3L,UZ4L,UZ5L,UZ6L,UZ7L,UZ8L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
-UZ9L Kharkov-UR                                       183 29 16  -2.00 50 22  0 N  36 15  0 E
+UT5L,UT6L,UT7L,UT8L,UT9L,UV0L,UV1L,UV2L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
+UV3L,UV4L,UV5L,UV6L,UV7L,UV8L,UV9L,UW0L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
+UW1L,UW2L,UW3L,UW4L,UW5L,UW6L,UW7L,UW8L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
+UW9L,UX0L,UX1L,UX2L,UX3L,UX4L,UX5L,UX6L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
+UX7L,UX8L,UX9L,UY0L,UY1L,UY2L,UY3L,UY4L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
+UY5L,UY6L,UY7L,UY8L,UY9L,UZ0L,UZ1L,UZ2L Kharkov-UR    183 29 16  -2.00 50 22  0 N  36 15  0 E
+UZ3L,UZ4L,UZ5L,UZ6L,UZ7L,UZ8L,UZ9L Kharkov-UR         183 29 16  -2.00 50 22  0 N  36 15  0 E
 UT-M Lugansk-UR                                       183 29 16  -2.00 48 35  0 N  39 20  0 E
 UR Lugansk-UT-M                                       183 29 16  -2.00 48 35  0 N  39 20  0 E
 EM0M,EM1M,EM2M,EM3M,EM4M,EM5M,EM6M,EM7M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
@@ -4769,15 +4765,13 @@ EO4M,EO5M,EO6M,EO7M,EO8M,EO9M,U5M,UR0M Lugansk-UR     183 29 16  -2.00 48 35  0 
 UR1M,UR2M,UR3M,UR4M,UR5M,UR6M,UR7M,UR8M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
 UR9M,US0M,US1M,US2M,US3M,US4M,US5M,US6M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
 US7M,US8M,US9M,UT0M,UT1M,UT2M,UT3M,UT4M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UT5M,UT6M,UT7M,UT8M,UT9M,UU0M,UU1M,UU2M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UU3M,UU4M,UU5M,UU6M,UU7M,UU8M,UU9M,UV0M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UV1M,UV2M,UV3M,UV4M,UV5M,UV6M,UV7M,UV8M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UV9M,UW0M,UW1M,UW2M,UW3M,UW4M,UW5M,UW6M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UW7M,UW8M,UW9M,UX0M,UX1M,UX2M,UX3M,UX4M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UX5M,UX6M,UX7M,UX8M,UX9M,UY0M,UY1M,UY2M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UY3M,UY4M,UY5M,UY6M,UY7M,UY8M,UY9M,UZ0M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UZ1M,UZ2M,UZ3M,UZ4M,UZ5M,UZ6M,UZ7M,UZ8M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
-UZ9M Lugansk-UR                                       183 29 16  -2.00 48 35  0 N  39 20  0 E
+UT5M,UT6M,UT7M,UT8M,UT9M,UV0M,UV1M,UV2M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
+UV3M,UV4M,UV5M,UV6M,UV7M,UV8M,UV9M,UW0M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
+UW1M,UW2M,UW3M,UW4M,UW5M,UW6M,UW7M,UW8M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
+UW9M,UX0M,UX1M,UX2M,UX3M,UX4M,UX5M,UX6M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
+UX7M,UX8M,UX9M,UY0M,UY1M,UY2M,UY3M,UY4M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
+UY5M,UY6M,UY7M,UY8M,UY9M,UZ0M,UZ1M,UZ2M Lugansk-UR    183 29 16  -2.00 48 35  0 N  39 20  0 E
+UZ3M,UZ4M,UZ5M,UZ6M,UZ7M,UZ8M,UZ9M Lugansk-UR         183 29 16  -2.00 48 35  0 N  39 20  0 E
 UT-N Vinnitsa-UR                                      183 29 16  -2.00 49 11  0 N  28 30  0 E
 UR Vinnitsa-UT-N                                      183 29 16  -2.00 49 11  0 N  28 30  0 E
 EM0N,EM1N,EM2N,EM3N,EM4N,EM5N,EM6N,EM7N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
@@ -4787,15 +4781,13 @@ EO4N,EO5N,EO6N,EO7N,EO8N,EO9N,U5N,UR0N Vinnitsa-UR    183 29 16  -2.00 49 11  0 
 UR1N,UR2N,UR3N,UR4N,UR5N,UR6N,UR7N,UR8N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
 UR9N,US0N,US1N,US2N,US3N,US4N,US5N,US6N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
 US7N,US8N,US9N,UT0N,UT1N,UT2N,UT3N,UT4N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UT5N,UT6N,UT7N,UT8N,UT9N,UU0N,UU1N,UU2N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UU3N,UU4N,UU5N,UU6N,UU7N,UU8N,UU9N,UV0N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UV1N,UV2N,UV3N,UV4N,UV5N,UV6N,UV7N,UV8N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UV9N,UW0N,UW1N,UW2N,UW3N,UW4N,UW5N,UW6N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UW7N,UW8N,UW9N,UX0N,UX1N,UX2N,UX3N,UX4N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UX5N,UX6N,UX7N,UX8N,UX9N,UY0N,UY1N,UY2N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UY3N,UY4N,UY5N,UY6N,UY7N,UY8N,UY9N,UZ0N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UZ1N,UZ2N,UZ3N,UZ4N,UZ5N,UZ6N,UZ7N,UZ8N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
-UZ9N Vinnitsa-UR                                      183 29 16  -2.00 49 11  0 N  28 30  0 E
+UT5N,UT6N,UT7N,UT8N,UT9N,UV0N,UV1N,UV2N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
+UV3N,UV4N,UV5N,UV6N,UV7N,UV8N,UV9N,UW0N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
+UW1N,UW2N,UW3N,UW4N,UW5N,UW6N,UW7N,UW8N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
+UW9N,UX0N,UX1N,UX2N,UX3N,UX4N,UX5N,UX6N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
+UX7N,UX8N,UX9N,UY0N,UY1N,UY2N,UY3N,UY4N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
+UY5N,UY6N,UY7N,UY8N,UY9N,UZ0N,UZ1N,UZ2N Vinnitsa-UR   183 29 16  -2.00 49 11  0 N  28 30  0 E
+UZ3N,UZ4N,UZ5N,UZ6N,UZ7N,UZ8N,UZ9N Vinnitsa-UR        183 29 16  -2.00 49 11  0 N  28 30  0 E
 UT-P Lutsk-UR                                         183 29 16  -2.00 50 39  0 N  24  9  0 E
 UR Lutsk-UT-P                                         183 29 16  -2.00 50 39  0 N  24  9  0 E
 EM0P,EM1P,EM2P,EM3P,EM4P,EM5P,EM6P,EM7P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
@@ -4805,14 +4797,13 @@ EO4P,EO5P,EO6P,EO7P,EO8P,EO9P,U5P,UR0P,UR1P Lutsk-UR  183 29 16  -2.00 50 39  0 
 UR2P,UR3P,UR4P,UR5P,UR6P,UR7P,UR8P,UR9P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
 US0P,US1P,US2P,US3P,US4P,US5P,US6P,US7P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
 US8P,US9P,UT0P,UT1P,UT2P,UT3P,UT4P,UT5P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UT6P,UT7P,UT8P,UT9P,UU0P,UU1P,UU2P,UU3P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UU4P,UU5P,UU6P,UU7P,UU8P,UU9P,UV0P,UV1P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UV2P,UV3P,UV4P,UV5P,UV6P,UV7P,UV8P,UV9P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UW0P,UW1P,UW2P,UW3P,UW4P,UW5P,UW6P,UW7P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UW8P,UW9P,UX0P,UX1P,UX2P,UX3P,UX4P,UX5P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UX6P,UX7P,UX8P,UX9P,UY0P,UY1P,UY2P,UY3P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UY4P,UY5P,UY6P,UY7P,UY8P,UY9P,UZ0P,UZ1P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
-UZ2P,UZ3P,UZ4P,UZ5P,UZ6P,UZ7P,UZ8P,UZ9P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UT6P,UT7P,UT8P,UT9P,UV0P,UV1P,UV2P,UV3P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UV4P,UV5P,UV6P,UV7P,UV8P,UV9P,UW0P,UW1P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UW2P,UW3P,UW4P,UW5P,UW6P,UW7P,UW8P,UW9P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UX0P,UX1P,UX2P,UX3P,UX4P,UX5P,UX6P,UX7P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UX8P,UX9P,UY0P,UY1P,UY2P,UY3P,UY4P,UY5P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UY6P,UY7P,UY8P,UY9P,UZ0P,UZ1P,UZ2P,UZ3P Lutsk-UR      183 29 16  -2.00 50 39  0 N  24  9  0 E
+UZ4P,UZ5P,UZ6P,UZ7P,UZ8P,UZ9P Lutsk-UR                183 29 16  -2.00 50 39  0 N  24  9  0 E
 UT-Q Zaporozhie-UR                                    183 29 16  -2.00 47 50  0 N  35 10  0 E
 UR Zaporozhie-UT-Q                                    183 29 16  -2.00 47 50  0 N  35 10  0 E
 EM0Q,EM1Q,EM2Q,EM3Q,EM4Q,EM5Q,EM6Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
@@ -4823,16 +4814,14 @@ EO8Q,EO9Q,U5Q,UR0Q,UR1Q,UR2Q,UR3Q,UR4Q Zaporozhie-UR  183 29 16  -2.00 47 50  0 
 UR5Q,UR6Q,UR7Q,UR8Q,UR9Q,US0Q,US1Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
 US2Q,US3Q,US4Q,US5Q,US6Q,US7Q,US8Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
 US9Q,UT0Q,UT1Q,UT2Q,UT3Q,UT4Q,UT5Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UT6Q,UT7Q,UT8Q,UT9Q,UU0Q,UU1Q,UU2Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UU3Q,UU4Q,UU5Q,UU6Q,UU7Q,UU8Q,UU9Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UV0Q,UV1Q,UV2Q,UV3Q,UV4Q,UV5Q,UV6Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UV7Q,UV8Q,UV9Q,UW0Q,UW1Q,UW2Q,UW3Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UW4Q,UW5Q,UW6Q,UW7Q,UW8Q,UW9Q,UX0Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UX1Q,UX2Q,UX3Q,UX4Q,UX5Q,UX6Q,UX7Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UX8Q,UX9Q,UY0Q,UY1Q,UY2Q,UY3Q,UY4Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UY5Q,UY6Q,UY7Q,UY8Q,UY9Q,UZ0Q,UZ1Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UZ2Q,UZ3Q,UZ4Q,UZ5Q,UZ6Q,UZ7Q,UZ8Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
-UZ9Q Zaporozhie-UR                                    183 29 16  -2.00 47 50  0 N  35 10  0 E
+UT6Q,UT7Q,UT8Q,UT9Q,UV0Q,UV1Q,UV2Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UV3Q,UV4Q,UV5Q,UV6Q,UV7Q,UV8Q,UV9Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UW0Q,UW1Q,UW2Q,UW3Q,UW4Q,UW5Q,UW6Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UW7Q,UW8Q,UW9Q,UX0Q,UX1Q,UX2Q,UX3Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UX4Q,UX5Q,UX6Q,UX7Q,UX8Q,UX9Q,UY0Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UY1Q,UY2Q,UY3Q,UY4Q,UY5Q,UY6Q,UY7Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UY8Q,UY9Q,UZ0Q,UZ1Q,UZ2Q,UZ3Q,UZ4Q Zaporozhie-UR      183 29 16  -2.00 47 50  0 N  35 10  0 E
+UZ5Q,UZ6Q,UZ7Q,UZ8Q,UZ9Q Zaporozhie-UR                183 29 16  -2.00 47 50  0 N  35 10  0 E
 UT-R Chernigov-UR                                     183 29 16  -2.00 51 30  0 N  31 18  0 E
 UR Chernigov-UT-R                                     183 29 16  -2.00 51 30  0 N  31 18  0 E
 EM0R,EM1R,EM2R,EM3R,EM4R,EM5R,EM6R,EM7R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
@@ -4842,15 +4831,13 @@ EO4R,EO5R,EO6R,EO7R,EO8R,EO9R,U5R,UR0R Chernigov-UR   183 29 16  -2.00 51 30  0 
 UR1R,UR2R,UR3R,UR4R,UR5R,UR6R,UR7R,UR8R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
 UR9R,US0R,US1R,US2R,US3R,US4R,US5R,US6R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
 US7R,US8R,US9R,UT0R,UT1R,UT2R,UT3R,UT4R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UT5R,UT6R,UT7R,UT8R,UT9R,UU0R,UU1R,UU2R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UU3R,UU4R,UU5R,UU6R,UU7R,UU8R,UU9R,UV0R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UV1R,UV2R,UV3R,UV4R,UV5R,UV6R,UV7R,UV8R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UV9R,UW0R,UW1R,UW2R,UW3R,UW4R,UW5R,UW6R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UW7R,UW8R,UW9R,UX0R,UX1R,UX2R,UX3R,UX4R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UX5R,UX6R,UX7R,UX8R,UX9R,UY0R,UY1R,UY2R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UY3R,UY4R,UY5R,UY6R,UY7R,UY8R,UY9R,UZ0R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UZ1R,UZ2R,UZ3R,UZ4R,UZ5R,UZ6R,UZ7R,UZ8R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
-UZ9R Chernigov-UR                                     183 29 16  -2.00 51 30  0 N  31 18  0 E
+UT5R,UT6R,UT7R,UT8R,UT9R,UV0R,UV1R,UV2R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
+UV3R,UV4R,UV5R,UV6R,UV7R,UV8R,UV9R,UW0R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
+UW1R,UW2R,UW3R,UW4R,UW5R,UW6R,UW7R,UW8R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
+UW9R,UX0R,UX1R,UX2R,UX3R,UX4R,UX5R,UX6R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
+UX7R,UX8R,UX9R,UY0R,UY1R,UY2R,UY3R,UY4R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
+UY5R,UY6R,UY7R,UY8R,UY9R,UZ0R,UZ1R,UZ2R Chernigov-UR  183 29 16  -2.00 51 30  0 N  31 18  0 E
+UZ3R,UZ4R,UZ5R,UZ6R,UZ7R,UZ8R,UZ9R Chernigov-UR       183 29 16  -2.00 51 30  0 N  31 18  0 E
 UT-S Ivano-Frankovsk-UR                               183 29 16  -2.00 48 40  0 N  26 36  0 E
 UR Ivano-Frankovsk-UT-S                               183 29 16  -2.00 48 40  0 N  26 36  0 E
 EM0S,EM1S,EM2S,EM3S,EM4S,EM5S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
@@ -4863,16 +4850,15 @@ UR6S,UR7S,UR8S,UR9S,US0S,US1S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 
 US2S,US3S,US4S,US5S,US6S,US7S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
 US8S,US9S,UT0S,UT1S,UT2S,UT3S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
 UT4S,UT5S,UT6S,UT7S,UT8S,UT9S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UU0S,UU1S,UU2S,UU3S,UU4S,UU5S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UU6S,UU7S,UU8S,UU9S,UV0S,UV1S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UV2S,UV3S,UV4S,UV5S,UV6S,UV7S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UV8S,UV9S,UW0S,UW1S,UW2S,UW3S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UW4S,UW5S,UW6S,UW7S,UW8S,UW9S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UX0S,UX1S,UX2S,UX3S,UX4S,UX5S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UX6S,UX7S,UX8S,UX9S,UY0S,UY1S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UY2S,UY3S,UY4S,UY5S,UY6S,UY7S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UY8S,UY9S,UZ0S,UZ1S,UZ2S,UZ3S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
-UZ4S,UZ5S,UZ6S,UZ7S,UZ8S,UZ9S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UV0S,UV1S,UV2S,UV3S,UV4S,UV5S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UV6S,UV7S,UV8S,UV9S,UW0S,UW1S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UW2S,UW3S,UW4S,UW5S,UW6S,UW7S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UW8S,UW9S,UX0S,UX1S,UX2S,UX3S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UX4S,UX5S,UX6S,UX7S,UX8S,UX9S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UY0S,UY1S,UY2S,UY3S,UY4S,UY5S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UY6S,UY7S,UY8S,UY9S,UZ0S,UZ1S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UZ2S,UZ3S,UZ4S,UZ5S,UZ6S,UZ7S Ivano-Frankovsk-UR      183 29 16  -2.00 48 40  0 N  26 36  0 E
+UZ8S,UZ9S Ivano-Frankovsk-UR                          183 29 16  -2.00 48 40  0 N  26 36  0 E
 UT-T Khmelnitsky-UR                                   183 29 16  -2.00 49 25  0 N  26 59  0 E
 UR Khmelnitsky-UT-T                                   183 29 16  -2.00 49 25  0 N  26 59  0 E
 EM0T,EM1T,EM2T,EM3T,EM4T,EM5T,EM6T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
@@ -4883,16 +4869,14 @@ EO8T,EO9T,U5T,UR0T,UR1T,UR2T,UR3T Khmelnitsky-UR      183 29 16  -2.00 49 25  0 
 UR4T,UR5T,UR6T,UR7T,UR8T,UR9T,US0T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
 US1T,US2T,US3T,US4T,US5T,US6T,US7T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
 US8T,US9T,UT0T,UT1T,UT2T,UT3T,UT4T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UT5T,UT6T,UT7T,UT8T,UT9T,UU0T,UU1T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UU2T,UU3T,UU4T,UU5T,UU6T,UU7T,UU8T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UU9T,UV0T,UV1T,UV2T,UV3T,UV4T,UV5T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UV6T,UV7T,UV8T,UV9T,UW0T,UW1T,UW2T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UW3T,UW4T,UW5T,UW6T,UW7T,UW8T,UW9T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UX0T,UX1T,UX2T,UX3T,UX4T,UX5T,UX6T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UX7T,UX8T,UX9T,UY0T,UY1T,UY2T,UY3T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UY4T,UY5T,UY6T,UY7T,UY8T,UY9T,UZ0T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UZ1T,UZ2T,UZ3T,UZ4T,UZ5T,UZ6T,UZ7T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
-UZ8T,UZ9T Khmelnitsky-UR                              183 29 16  -2.00 49 25  0 N  26 59  0 E
+UT5T,UT6T,UT7T,UT8T,UT9T,UV0T,UV1T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UV2T,UV3T,UV4T,UV5T,UV6T,UV7T,UV8T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UV9T,UW0T,UW1T,UW2T,UW3T,UW4T,UW5T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UW6T,UW7T,UW8T,UW9T,UX0T,UX1T,UX2T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UX3T,UX4T,UX5T,UX6T,UX7T,UX8T,UX9T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UY0T,UY1T,UY2T,UY3T,UY4T,UY5T,UY6T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UY7T,UY8T,UY9T,UZ0T,UZ1T,UZ2T,UZ3T Khmelnitsky-UR     183 29 16  -2.00 49 25  0 N  26 59  0 E
+UZ4T,UZ5T,UZ6T,UZ7T,UZ8T,UZ9T Khmelnitsky-UR          183 29 16  -2.00 49 25  0 N  26 59  0 E
 UT-U Kiev-UR                                          183 29 16  -2.00 50 25  0 N  30 30  0 E
 UR Kiev-UT-U                                          183 29 16  -2.00 50 25  0 N  30 30  0 E
 EM0U,EM1U,EM2U,EM3U,EM4U,EM5U,EM6U,EM7U,EM8U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
@@ -4901,14 +4885,13 @@ EN8U,EN9U,EO0U,EO1U,EO2U,EO3U,EO4U,EO5U,EO6U Kiev-UR  183 29 16  -2.00 50 25  0 
 EO7U,EO8U,EO9U,U5U,UR0U,UR1U,UR2U,UR3U,UR4U Kiev-UR   183 29 16  -2.00 50 25  0 N  30 30  0 E
 UR5U,UR6U,UR7U,UR8U,UR9U,US0U,US1U,US2U,US3U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
 US4U,US5U,US6U,US7U,US8U,US9U,UT0U,UT1U,UT2U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UT3U,UT4U,UT5U,UT6U,UT7U,UT8U,UT9U,UU0U,UU1U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UU2U,UU3U,UU4U,UU5U,UU6U,UU7U,UU8U,UU9U,UV0U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UV1U,UV2U,UV3U,UV4U,UV5U,UV6U,UV7U,UV8U,UV9U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UW0U,UW1U,UW2U,UW3U,UW4U,UW5U,UW6U,UW7U,UW8U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UW9U,UX0U,UX1U,UX2U,UX3U,UX4U,UX5U,UX6U,UX7U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UX8U,UX9U,UY0U,UY1U,UY2U,UY3U,UY4U,UY5U,UY6U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UY7U,UY8U,UY9U,UZ0U,UZ1U,UZ2U,UZ3U,UZ4U,UZ5U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
-UZ6U,UZ7U,UZ8U,UZ9U Kiev-UR                           183 29 16  -2.00 50 25  0 N  30 30  0 E
+UT3U,UT4U,UT5U,UT6U,UT7U,UT8U,UT9U,UV0U,UV1U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
+UV2U,UV3U,UV4U,UV5U,UV6U,UV7U,UV8U,UV9U,UW0U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
+UW1U,UW2U,UW3U,UW4U,UW5U,UW6U,UW7U,UW8U,UW9U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
+UX0U,UX1U,UX2U,UX3U,UX4U,UX5U,UX6U,UX7U,UX8U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
+UX9U,UY0U,UY1U,UY2U,UY3U,UY4U,UY5U,UY6U,UY7U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
+UY8U,UY9U,UZ0U,UZ1U,UZ2U,UZ3U,UZ4U,UZ5U,UZ6U Kiev-UR  183 29 16  -2.00 50 25  0 N  30 30  0 E
+UZ7U,UZ8U,UZ9U Kiev-UR                                183 29 16  -2.00 50 25  0 N  30 30  0 E
 UT-V Kirovograd-UR                                    183 29 16  -2.00 48 31  0 N  32 15  0 E
 UR Kirovograd-UT-V                                    183 29 16  -2.00 48 31  0 N  32 15  0 E
 EM0V,EM1V,EM2V,EM3V,EM4V,EM5V,EM6V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
@@ -4919,16 +4902,14 @@ EO8V,EO9V,U5V,UR0V,UR1V,UR2V,UR3V,UR4V Kirovograd-UR  183 29 16  -2.00 48 31  0 
 UR5V,UR6V,UR7V,UR8V,UR9V,US0V,US1V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
 US2V,US3V,US4V,US5V,US6V,US7V,US8V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
 US9V,UT0V,UT1V,UT2V,UT3V,UT4V,UT5V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UT6V,UT7V,UT8V,UT9V,UU0V,UU1V,UU2V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UU3V,UU4V,UU5V,UU6V,UU7V,UU8V,UU9V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UV0V,UV1V,UV2V,UV3V,UV4V,UV5V,UV6V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UV7V,UV8V,UV9V,UW0V,UW1V,UW2V,UW3V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UW4V,UW5V,UW6V,UW7V,UW8V,UW9V,UX0V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UX1V,UX2V,UX3V,UX4V,UX5V,UX6V,UX7V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UX8V,UX9V,UY0V,UY1V,UY2V,UY3V,UY4V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UY5V,UY6V,UY7V,UY8V,UY9V,UZ0V,UZ1V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UZ2V,UZ3V,UZ4V,UZ5V,UZ6V,UZ7V,UZ8V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
-UZ9V Kirovograd-UR                                    183 29 16  -2.00 48 31  0 N  32 15  0 E
+UT6V,UT7V,UT8V,UT9V,UV0V,UV1V,UV2V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UV3V,UV4V,UV5V,UV6V,UV7V,UV8V,UV9V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UW0V,UW1V,UW2V,UW3V,UW4V,UW5V,UW6V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UW7V,UW8V,UW9V,UX0V,UX1V,UX2V,UX3V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UX4V,UX5V,UX6V,UX7V,UX8V,UX9V,UY0V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UY1V,UY2V,UY3V,UY4V,UY5V,UY6V,UY7V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UY8V,UY9V,UZ0V,UZ1V,UZ2V,UZ3V,UZ4V Kirovograd-UR      183 29 16  -2.00 48 31  0 N  32 15  0 E
+UZ5V,UZ6V,UZ7V,UZ8V,UZ9V Kirovograd-UR                183 29 16  -2.00 48 31  0 N  32 15  0 E
 UT-W Lvov-UR                                          183 29 16  -2.00 49 50  0 N  24  0  0 E
 UR Lvov-UT-W                                          183 29 16  -2.00 49 50  0 N  24  0  0 E
 EM0W,EM1W,EM2W,EM3W,EM4W,EM5W,EM6W,EM7W,EM8W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
@@ -4937,14 +4918,13 @@ EN8W,EN9W,EO0W,EO1W,EO2W,EO3W,EO4W,EO5W,EO6W Lvov-UR  183 29 16  -2.00 49 50  0 
 EO7W,EO8W,EO9W,U5W,UR0W,UR1W,UR2W,UR3W,UR4W Lvov-UR   183 29 16  -2.00 49 50  0 N  24  0  0 E
 UR5W,UR6W,UR7W,UR8W,UR9W,US0W,US1W,US2W,US3W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
 US4W,US5W,US6W,US7W,US8W,US9W,UT0W,UT1W,UT2W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UT3W,UT4W,UT5W,UT6W,UT7W,UT8W,UT9W,UU0W,UU1W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UU2W,UU3W,UU4W,UU5W,UU6W,UU7W,UU8W,UU9W,UV0W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UV1W,UV2W,UV3W,UV4W,UV5W,UV6W,UV7W,UV8W,UV9W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UW0W,UW1W,UW2W,UW3W,UW4W,UW5W,UW6W,UW7W,UW8W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UW9W,UX0W,UX1W,UX2W,UX3W,UX4W,UX5W,UX6W,UX7W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UX8W,UX9W,UY0W,UY1W,UY2W,UY3W,UY4W,UY5W,UY6W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UY7W,UY8W,UY9W,UZ0W,UZ1W,UZ2W,UZ3W,UZ4W,UZ5W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
-UZ6W,UZ7W,UZ8W,UZ9W Lvov-UR                           183 29 16  -2.00 49 50  0 N  24  0  0 E
+UT3W,UT4W,UT5W,UT6W,UT7W,UT8W,UT9W,UV0W,UV1W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
+UV2W,UV3W,UV4W,UV5W,UV6W,UV7W,UV8W,UV9W,UW0W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
+UW1W,UW2W,UW3W,UW4W,UW5W,UW6W,UW7W,UW8W,UW9W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
+UX0W,UX1W,UX2W,UX3W,UX4W,UX5W,UX6W,UX7W,UX8W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
+UX9W,UY0W,UY1W,UY2W,UY3W,UY4W,UY5W,UY6W,UY7W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
+UY8W,UY9W,UZ0W,UZ1W,UZ2W,UZ3W,UZ4W,UZ5W,UZ6W Lvov-UR  183 29 16  -2.00 49 50  0 N  24  0  0 E
+UZ7W,UZ8W,UZ9W Lvov-UR                                183 29 16  -2.00 49 50  0 N  24  0  0 E
 UT-X Zhitomir-UR                                      183 29 16  -2.00 50 18  0 N  28 40  0 E
 UR Zhitomir-UT-X                                      183 29 16  -2.00 50 18  0 N  28 40  0 E
 EM0X,EM1X,EM2X,EM3X,EM4X,EM5X,EM6X,EM7X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
@@ -4954,15 +4934,13 @@ EO4X,EO5X,EO6X,EO7X,EO8X,EO9X,U5X,UR0X Zhitomir-UR    183 29 16  -2.00 50 18  0 
 UR1X,UR2X,UR3X,UR4X,UR5X,UR6X,UR7X,UR8X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
 UR9X,US0X,US1X,US2X,US3X,US4X,US5X,US6X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
 US7X,US8X,US9X,UT0X,UT1X,UT2X,UT3X,UT4X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UT5X,UT6X,UT7X,UT8X,UT9X,UU0X,UU1X,UU2X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UU3X,UU4X,UU5X,UU6X,UU7X,UU8X,UU9X,UV0X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UV1X,UV2X,UV3X,UV4X,UV5X,UV6X,UV7X,UV8X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UV9X,UW0X,UW1X,UW2X,UW3X,UW4X,UW5X,UW6X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UW7X,UW8X,UW9X,UX0X,UX1X,UX2X,UX3X,UX4X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UX5X,UX6X,UX7X,UX8X,UX9X,UY0X,UY1X,UY2X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UY3X,UY4X,UY5X,UY6X,UY7X,UY8X,UY9X,UZ0X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UZ1X,UZ2X,UZ3X,UZ4X,UZ5X,UZ6X,UZ7X,UZ8X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
-UZ9X Zhitomir-UR                                      183 29 16  -2.00 50 18  0 N  28 40  0 E
+UT5X,UT6X,UT7X,UT8X,UT9X,UV0X,UV1X,UV2X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
+UV3X,UV4X,UV5X,UV6X,UV7X,UV8X,UV9X,UW0X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
+UW1X,UW2X,UW3X,UW4X,UW5X,UW6X,UW7X,UW8X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
+UW9X,UX0X,UX1X,UX2X,UX3X,UX4X,UX5X,UX6X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
+UX7X,UX8X,UX9X,UY0X,UY1X,UY2X,UY3X,UY4X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
+UY5X,UY6X,UY7X,UY8X,UY9X,UZ0X,UZ1X,UZ2X Zhitomir-UR   183 29 16  -2.00 50 18  0 N  28 40  0 E
+UZ3X,UZ4X,UZ5X,UZ6X,UZ7X,UZ8X,UZ9X Zhitomir-UR        183 29 16  -2.00 50 18  0 N  28 40  0 E
 UT-Y Chernovtsy-UR                                    183 29 16  -2.00 48 19  0 N  25 52  0 E
 UR Chernovtsy-UT-Y                                    183 29 16  -2.00 48 19  0 N  25 52  0 E
 EM0Y,EM1Y,EM2Y,EM3Y,EM4Y,EM5Y,EM6Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
@@ -4973,16 +4951,14 @@ EO8Y,EO9Y,U5Y,UR0Y,UR1Y,UR2Y,UR3Y,UR4Y Chernovtsy-UR  183 29 16  -2.00 48 19  0 
 UR5Y,UR6Y,UR7Y,UR8Y,UR9Y,US0Y,US1Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
 US2Y,US3Y,US4Y,US5Y,US6Y,US7Y,US8Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
 US9Y,UT0Y,UT1Y,UT2Y,UT3Y,UT4Y,UT5Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UT6Y,UT7Y,UT8Y,UT9Y,UU0Y,UU1Y,UU2Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UU3Y,UU4Y,UU5Y,UU6Y,UU7Y,UU8Y,UU9Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UV0Y,UV1Y,UV2Y,UV3Y,UV4Y,UV5Y,UV6Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UV7Y,UV8Y,UV9Y,UW0Y,UW1Y,UW2Y,UW3Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UW4Y,UW5Y,UW6Y,UW7Y,UW8Y,UW9Y,UX0Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UX1Y,UX2Y,UX3Y,UX4Y,UX5Y,UX6Y,UX7Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UX8Y,UX9Y,UY0Y,UY1Y,UY2Y,UY3Y,UY4Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UY5Y,UY6Y,UY7Y,UY8Y,UY9Y,UZ0Y,UZ1Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UZ2Y,UZ3Y,UZ4Y,UZ5Y,UZ6Y,UZ7Y,UZ8Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
-UZ9Y Chernovtsy-UR                                    183 29 16  -2.00 48 19  0 N  25 52  0 E
+UT6Y,UT7Y,UT8Y,UT9Y,UV0Y,UV1Y,UV2Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UV3Y,UV4Y,UV5Y,UV6Y,UV7Y,UV8Y,UV9Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UW0Y,UW1Y,UW2Y,UW3Y,UW4Y,UW5Y,UW6Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UW7Y,UW8Y,UW9Y,UX0Y,UX1Y,UX2Y,UX3Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UX4Y,UX5Y,UX6Y,UX7Y,UX8Y,UX9Y,UY0Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UY1Y,UY2Y,UY3Y,UY4Y,UY5Y,UY6Y,UY7Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UY8Y,UY9Y,UZ0Y,UZ1Y,UZ2Y,UZ3Y,UZ4Y Chernovtsy-UR      183 29 16  -2.00 48 19  0 N  25 52  0 E
+UZ5Y,UZ6Y,UZ7Y,UZ8Y,UZ9Y Chernovtsy-UR                183 29 16  -2.00 48 19  0 N  25 52  0 E
 UT-Z Nikolaev-UR                                      183 29 16  -2.00 46 57  0 N  32  0  0 E
 UR Nikolaev-UT-Z                                      183 29 16  -2.00 46 57  0 N  32  0  0 E
 EM0Z,EM1Z,EM2Z,EM3Z,EM4Z,EM5Z,EM6Z,EM7Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
@@ -4992,19 +4968,20 @@ EO4Z,EO5Z,EO6Z,EO7Z,EO8Z,EO9Z,U5Z,UR0Z Nikolaev-UR    183 29 16  -2.00 46 57  0 
 UR1Z,UR2Z,UR3Z,UR4Z,UR5Z,UR6Z,UR7Z,UR8Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
 UR9Z,US0Z,US1Z,US2Z,US3Z,US4Z,US5Z,US6Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
 US7Z,US8Z,US9Z,UT0Z,UT1Z,UT2Z,UT3Z,UT4Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UT5Z,UT6Z,UT7Z,UT8Z,UT9Z,UU0Z,UU1Z,UU2Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UU3Z,UU4Z,UU5Z,UU6Z,UU7Z,UU8Z,UU9Z,UV0Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UV1Z,UV2Z,UV3Z,UV4Z,UV5Z,UV6Z,UV7Z,UV8Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UV9Z,UW0Z,UW1Z,UW2Z,UW3Z,UW4Z,UW5Z,UW6Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UW7Z,UW8Z,UW9Z,UX0Z,UX1Z,UX2Z,UX3Z,UX4Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UX5Z,UX6Z,UX7Z,UX8Z,UX9Z,UY0Z,UY1Z,UY2Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UY3Z,UY4Z,UY5Z,UY6Z,UY7Z,UY8Z,UY9Z,UZ0Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UZ1Z,UZ2Z,UZ3Z,UZ4Z,UZ5Z,UZ6Z,UZ7Z,UZ8Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
-UZ9Z Nikolaev-UR                                      183 29 16  -2.00 46 57  0 N  32  0  0 E
+UT5Z,UT6Z,UT7Z,UT8Z,UT9Z,UV0Z,UV1Z,UV2Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
+UV3Z,UV4Z,UV5Z,UV6Z,UV7Z,UV8Z,UV9Z,UW0Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
+UW1Z,UW2Z,UW3Z,UW4Z,UW5Z,UW6Z,UW7Z,UW8Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
+UW9Z,UX0Z,UX1Z,UX2Z,UX3Z,UX4Z,UX5Z,UX6Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
+UX7Z,UX8Z,UX9Z,UY0Z,UY1Z,UY2Z,UY3Z,UY4Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
+UY5Z,UY6Z,UY7Z,UY8Z,UY9Z,UZ0Z,UZ1Z,UZ2Z Nikolaev-UR   183 29 16  -2.00 46 57  0 N  32  0  0 E
+UZ3Z,UZ4Z,UZ5Z,UZ6Z,UZ7Z,UZ8Z,UZ9Z Nikolaev-UR        183 29 16  -2.00 46 57  0 N  32  0  0 E
 UT5J Crimea-UR                                        183 29 16  -2.00 44 56  0 N  34  6  0 E
 UR Crimea-UT5J                                        183 29 16  -2.00 44 56  0 N  34  6  0 E
-UU0J,UU1J,UU2J,UU3J,UU4J,UU5J,UU6J,UU7J Crimea-UR     183 29 16  -2.00 44 56  0 N  34  6  0 E
-UU8J Crimea-UR                                        183 29 16  -2.00 44 56  0 N  34  6  0 E
+EM0J,EM1J,EM2J,EM3J,EM4J,EM5J,EM6J,EM7J Crimea-UR     183 29 16  -2.00 44 56  0 N  34  6  0 E
+EM8J,EM9J,EN0J,EN1J,EN2J,EN3J,EN4J,EN5J Crimea-UR     183 29 16  -2.00 44 56  0 N  34  6  0 E
+EN6J,EN7J,EN8J,EN9J,EO0J,EO1J,EO2J,EO3J Crimea-UR     183 29 16  -2.00 44 56  0 N  34  6  0 E
+EO4J,EO5J,EO6J,EO7J,EO8J,EO9J,UU0,UU1,UU2 Crimea-UR   183 29 16  -2.00 44 56  0 N  34  6  0 E
+UU3,UU4,UU5,UU6,UU7,UU8 Crimea-UR                     183 29 16  -2.00 44 56  0 N  34  6  0 E
 V2 Antigua-Barbuda-V2                                 222 11  8   4.00 17  4  0 N  61 48  0 W @
 V3 Belize-V3                                          223 11  7   6.00 16 58  0 N  88 40  0 W @
 V4 St-Kitts-Nevis-V4                                  224 11  8   4.00 17 22  0 N  62 47  0 W @
@@ -5297,9 +5274,15 @@ ZD9 Gough-Island-ZD9/G                                253 66 38   0.00 40 19  0 
 ZD9/T Tristan-da-Cunha-ZD9                            253 66 38   0.00 37  4  0 S  12 19  0 W
 ZD9 Tristan-da-Cunha-ZD9/T                            253 66 38   0.00 37  4  0 S  12 19  0 W
 ZF Cayman-Islands-ZF                                  255 11  8   5.00 19 19  0 N  81 13  0 W @
+ZF1 Grand-Cayman-ZF                                   255 11  8   5.00 19 20  0 N  81 13  0 W
+ZF Grand-Cayman-ZF1                                   255 11  8   5.00 19 20  0 N  81 13  0 W
+ZF8 Little-Cayman-ZF                                  255 11  8   5.00 19 41  0 N  80  3  0 W
+ZF Little-Cayman-ZF8                                  255 11  8   5.00 19 41  0 N  80  3  0 W
+ZF9 Cayman-Brac-ZF                                    255 11  8   5.00 19 43  0 N  79 48  0 W
+ZF Cayman-Brac-ZF9                                    255 11  8   5.00 19 43  0 N  79 48  0 W
 ZK3 Tokelau-Islands-ZK3                               259 62 31 -13.00  9 24  0 S 171 12  0 W @
 ZL New-Zealand-ZL                                     260 60 32 -12.00 41 50  0 S 173 16  0 E @
-ZK,ZM New-Zealand-ZL                                  260 60 32 -12.00 41 50  0 S 173 16  0 E
+ZK,ZL50,ZM New-Zealand-ZL                             260 60 32 -12.00 41 50  0 S 173 16  0 E
 ZL1 Auckland-ZL                                       260 60 32 -12.00 36 50  0 S 174 44  0 E
 ZL Auckland-ZL1                                       260 60 32 -12.00 36 50  0 S 174 44  0 E
 ZM1 Auckland-ZL                                       260 60 32 -12.00 36 50  0 S 174 44  0 E
@@ -5820,9 +5803,10 @@ E5/P Penrhyn-E5/N                                     256 63 32  10.00  9  0  0 
 E5/N Penrhyn-E5/P                                     256 63 32  10.00  9  0  0 S 157 58  0 W
 HK0/M Malpelo-Island-HK0/M                             77 12  9   5.00  3 59  0 N  81 35  0 W @
 HK0 Malpelo-Island-HK0/M                               77 12  9   5.00  3 59  0 N  81 35  0 W
-5J0M,5K0M,HJ0M,HK0M Malpelo-Island-HK0/M               77 12  9   5.00  3 59  0 N  81 35  0 W
+HJ0M,HK0M Malpelo-Island-HK0/M                         77 12  9   5.00  3 59  0 N  81 35  0 W
 JD/M Minami-Torishima-JD/M                             96 90 27 -10.00 24 17  0 N 153 58  0 E @
 JD1 Minami-Torishima-JD/M                              96 90 27 -10.00 24 17  0 N 153 58  0 E
+KG4 Guantanamo-Bay-KG4                                105 11  8   5.00 20  0  0 N  75  0  0 W @
 VK0H Heard-Island-VK0H                                205 68 39  -5.00 53  5  0 S  73 30  0 E @
 VK0 Heard-Island-VK0H                                 205 68 39  -5.00 53  5  0 S  73 30  0 E
 VK0M Macquarie-Island-VK0M                            206 60 30 -10.00 54 36  0 S 158 53  0 E @
