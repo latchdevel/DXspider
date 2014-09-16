@@ -237,7 +237,7 @@ sub new_channel
 	$conn->conns($call) if $conn->isa('IntMsg');
 
 	# set callbacks
-	$conn->set_error(sub {my $err = shift; error_handler($dxchan, $err)});
+	$conn->set_error(sub {my $err = shift; LogDbg('DXCommand', "Comms error '$err' received for call $dxchan->{call}"); $dxchan->disconnect(1);});
 	$conn->set_on_eof(sub {$dxchan->disconnect});
 	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg);});
 	$dxchan->rec($msg);
