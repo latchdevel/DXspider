@@ -36,7 +36,7 @@ use vars qw(\$version \$build \$gitversion);
 
 \$version = '$v';
 \$build = '$b';
-\$gitversion = '$g';
+\$gitversion = '$g\[i]';
 
 1;
 );

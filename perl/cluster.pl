@@ -438,7 +438,7 @@ if (DXSql::init($dsn)) {
 	$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
 }
 
-# try to load Encode
+# try to load Encode and Git
 {
 	local $^W = 0;
 	my $w = $SIG{__DIE__};
@@ -447,6 +447,22 @@ if (DXSql::init($dsn)) {
 	unless ($@) {
 		import Encode;
 		$can_encode = 1;
+	}
+	eval { require Git; };
+	unless ($@) {
+		import Git;
+		
+		# determine the real version number
+		my $repo = Git->repository(Directory => "$root/.git");
+		if ($repo) {
+			my $desc = $repo->command_oneline(['describe', '--long'], STDERR => 0);
+			if ($desc) {
+				my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+				$version = $v;
+				$build = $b || 0;
+				$gitversion = "$g\[r]";
+			}
+		}
 	}
 	$SIG{__DIE__} = $w;
 }
