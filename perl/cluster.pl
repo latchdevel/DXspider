@@ -387,7 +387,7 @@ if (DXSql::init($dsn)) {
 		# determine the real version number
 		my $repo = Git->repository(Directory => "$root/.git");
 		if ($repo) {
-			my $desc = $repo->command_oneline(['describe', '--long'], STDERR => 0);
+			my $desc = $repo->command_oneline(['describe'], STDERR => 0);
 			if ($desc) {
 				my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 				$version = $v;
