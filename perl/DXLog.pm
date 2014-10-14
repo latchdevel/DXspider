@@ -38,7 +38,7 @@ use Carp;
 
 use strict;
 
-use vars qw($log);
+use vars qw($log %logs);
 
 $log = new('log', 'dat', 'm');
 
@@ -48,14 +48,16 @@ $log = new('log', 'dat', 'm');
 sub new
 {
 	my ($prefix, $suffix, $sort) = @_;
-	my $ref = {};
+	my $ref = bless {}, __PACKAGE__;
 	$ref->{prefix} = "$main::data/$prefix";
 	$ref->{suffix} = $suffix if $suffix;
 	$ref->{sort} = $sort;
 	
 	# make sure the directory exists
 	mkdir($ref->{prefix}, 0777) unless -e $ref->{prefix};
-	return bless $ref;
+	$logs{$ref} = $ref;
+	
+	return $ref;
 }
 
 sub _genfn
@@ -90,7 +92,7 @@ sub open
 	
 	my $fh = new IO::File $self->{fn}, $mode, 0666;
 	return undef if !$fh;
-	$fh->autoflush(1) if $mode ne 'r'; # make it autoflushing if writable
+	$fh->autoflush(0);			# autofluahing off
 	$self->{fh} = $fh;
 
 #	print "opening $self->{fn}\n";
@@ -184,8 +186,16 @@ sub close
 sub DESTROY
 {
 	my $self = shift;
+	delete $logs{$self};
 	undef $self->{fh};			# close the filehandle
 	delete $self->{fh} if $self->{fh};
+}
+
+sub flushall
+{
+	foreach my $l (values %logs) {
+		$l->{fh}->flush if exists $l->{fh};
+	}
 }
 
 # log something in the system log 

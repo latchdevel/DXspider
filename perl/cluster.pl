@@ -567,6 +567,8 @@ for (;;) {
 		AGWMsg::process();
 		BPQMsg::process();
 
+		DXLog::flushall();
+		
 		if (defined &Local::process) {
 			eval {
 				Local::process();       # do any localised processing
