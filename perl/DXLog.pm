@@ -38,9 +38,7 @@ use Carp;
 
 use strict;
 
-use vars qw($log);
-
-our %logobj;
+use vars qw($log %logs);
 
 $log = new('log', 'dat', 'm');
 
@@ -50,16 +48,16 @@ $log = new('log', 'dat', 'm');
 sub new
 {
 	my ($prefix, $suffix, $sort) = @_;
-	my $ref = {};
+	my $ref = bless {}, __PACKAGE__;
 	$ref->{prefix} = "$main::data/$prefix";
 	$ref->{suffix} = $suffix if $suffix;
 	$ref->{sort} = $sort;
 	
 	# make sure the directory exists
 	mkdir($ref->{prefix}, 0777) unless -e $ref->{prefix};
-	my $self = bless $ref;
-	$logobj{$self} = $self;
-	return $self;
+	$logs{$ref} = $ref;
+	
+	return $ref;
 }
 
 sub _genfn
@@ -94,7 +92,7 @@ sub open
 	
 	my $fh = new IO::File $self->{fn}, $mode, 0666;
 	return undef if !$fh;
-	$fh->autoflush(0) if $mode ne 'r'; # make it (not) autoflushing if writable
+	$fh->autoflush(0);			# autofluahing off
 	$self->{fh} = $fh;
 
 #	print "opening $self->{fn}\n";
@@ -185,19 +183,19 @@ sub close
 	delete $self->{fh};	
 }
 
-sub flush_all
-{
-	foreach my $l (values %logobj) {
-		$l->{fh}->flush if exists $l->{fh};
-	}
-}
-
 sub DESTROY
 {
 	my $self = shift;
-	delete $logobj{$self};
+	delete $logs{$self};
 	undef $self->{fh};			# close the filehandle
 	delete $self->{fh} if $self->{fh};
+}
+
+sub flushall
+{
+	foreach my $l (values %logs) {
+		$l->{fh}->flush if exists $l->{fh};
+	}
 }
 
 # log something in the system log 
@@ -206,8 +204,6 @@ sub DESTROY
 # The user is responsible for making sense of this!
 sub Log
 {
-	return unless $log;
-	
 	my $t = time;
 	$log->writeunix($t, join('^', $t, @_) );
 }
@@ -221,6 +217,5 @@ sub LogDbg
 sub Logclose
 {
 	$log->close();
-	undef $log;
 }
 1;

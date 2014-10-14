@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 30 Aug 2014
+! This file was created by Jim Reisert AD1C on 13 Oct 2014
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -118,7 +118,7 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 NLD Kuwait-9K                                         310 39 21  -3.00 29 23  0 N  47 23  0 E
 9L Sierra-Leone-9L                                    311 46 35   0.00  8 30  0 N  13 15  0 W @
 9M2 West-Malaysia-9M2                                 312 54 28  -8.00  3 57  0 N 102 14  0 E @
-9M4,9M57,9W2,9W4 West-Malaysia-9M2                    312 54 28  -8.00  3 57  0 N 102 14  0 E
+9M,9W West-Malaysia-9M2                               312 54 28  -8.00  3 57  0 N 102 14  0 E
 9M6 East-Malaysia-9M6                                 313 54 28  -8.00  2 41  0 N 113 19  0 E @
 9M8,9M9,9W6,9W8 East-Malaysia-9M6                     313 54 28  -8.00  2 41  0 N 113 19  0 E
 9N Nepal-9N                                           314 42 22  -5.75 27 42  0 N  85 20  0 E @
@@ -1275,16 +1275,16 @@ EA AL-CA-CO-GR-H-J-MA-SE-EA7                           34 37 14  -1.00 23 24  0 
 AM7,AN7,AO7,EB7,EC7,ED7,EE7 AL-CA-CO-GR-H-J-MA-SE-EA   34 37 14  -1.00 23 24  0 N   5 59  0 W
 EF7,EG7,EH7 AL-CA-CO-GR-H-J-MA-SE-EA                   34 37 14  -1.00 23 24  0 N   5 59  0 W
 EA6 Balearic-Islands-EA6                               35 37 14  -1.00 39 36  0 N   2 57  0 E @
-AM06,AM6,AN06,AN6,AO06,AO6,EB6 Balearic-Islands-EA6    35 37 14  -1.00 39 36  0 N   2 57  0 E
-EC6,ED6,EE6,EF6,EG6,EH6 Balearic-Islands-EA6           35 37 14  -1.00 39 36  0 N   2 57  0 E
+AM6,AN6,AO6,EB6,EC6,ED6,EE6,EF6 Balearic-Islands-EA6   35 37 14  -1.00 39 36  0 N   2 57  0 E
+EG6,EH6 Balearic-Islands-EA6                           35 37 14  -1.00 39 36  0 N   2 57  0 E
 EA6 IB-EA6                                             35 37 14  -1.00 39 36  0 N   2 57  0 E @
 EA8 Canary-Islands-EA8                                 36 36 33   0.00 28  6  0 N  15 24  0 W @
-AM08,AM8,AN08,AN8,AO08,AO8,EB8 Canary-Islands-EA8      36 36 33   0.00 28  6  0 N  15 24  0 W
-EC8,ED8,EE8,EF8,EG8,EH8 Canary-Islands-EA8             36 36 33   0.00 28  6  0 N  15 24  0 W
+AM8,AN8,AO8,EB8,EC8,ED8,EE8,EF8 Canary-Islands-EA8     36 36 33   0.00 28  6  0 N  15 24  0 W
+EG8,EH8 Canary-Islands-EA8                             36 36 33   0.00 28  6  0 N  15 24  0 W
 EA8 GC-TF-EA8                                          36 36 33   0.00 28  6  0 N  15 24  0 W @
 EA9 Ceuta-Melilla-EA9                                  37 37 33  -1.00 35 54  0 N   5 16  0 W @
-AM09,AM9,AN09,AN9,AO09,AO9,EB9,EC9 Ceuta-Melilla-EA9   37 37 33  -1.00 35 54  0 N   5 16  0 W
-ED9,EE9,EF9,EG9,EH9 Ceuta-Melilla-EA9                  37 37 33  -1.00 35 54  0 N   5 16  0 W
+AM9,AN9,AO9,EB9,EC9,ED9,EE9,EF9 Ceuta-Melilla-EA9      37 37 33  -1.00 35 54  0 N   5 16  0 W
+EG9,EH9 Ceuta-Melilla-EA9                              37 37 33  -1.00 35 54  0 N   5 16  0 W
 EA9 CE-ML-EA9                                          37 37 33  -1.00 35 54  0 N   5 16  0 W @
 EA9/C Ceuta-EA9                                        37 37 33  -1.00 35 53  0 N   5 18  0 W
 EA9 Ceuta-EA9/C                                        37 37 33  -1.00 35 53  0 N   5 18  0 W
@@ -1404,27 +1404,33 @@ FR Reunion-Island-FR                                   50 53 39  -4.00 21  7  0 
 FS St-Martin-FS                                        54 11  8   4.00 18  5  0 N  63  2  0 W @
 FT/G Glorioso-Islands-FT/G                             51 53 39  -4.00 11 33  0 S  47 17  0 E @
 FT Glorioso-Islands-FT/G                               51 53 39  -4.00 11 33  0 S  47 17  0 E
-FT4G,FT5G Glorioso-Islands-FT/G                        51 53 39  -4.00 11 33  0 S  47 17  0 E
+FT0G,FT1G,FT2G,FT3G,FT4G,FT5G Glorioso-Islands-FT/G    51 53 39  -4.00 11 33  0 S  47 17  0 E
+FT6G,FT7G,FT8G,FT9G Glorioso-Islands-FT/G              51 53 39  -4.00 11 33  0 S  47 17  0 E
 FT/J Juan-de-Nova-Europa-FT/J                          52 53 39  -3.00 17  3  0 S  42 43  0 E @
 FT Juan-de-Nova-Europa-FT/J                            52 53 39  -3.00 17  3  0 S  42 43  0 E
 FT/E Europa-FT/J                                       52 53 39  -3.00 22 22  0 S  40 21  0 E
 FT/J Europa-FT/E                                       52 53 39  -3.00 22 22  0 S  40 21  0 E
-FT4E,FT5E Europa-FT/J                                  52 53 39  -3.00 22 22  0 S  40 21  0 E
+FT0E,FT1E,FT2E,FT3E,FT4E,FT5E,FT6E,FT7E Europa-FT/J    52 53 39  -3.00 22 22  0 S  40 21  0 E
+FT8E,FT9E Europa-FT/J                                  52 53 39  -3.00 22 22  0 S  40 21  0 E
 FT/J Juan-de-Nova-FT/J                                 52 53 39  -3.00 17  3  0 S  42 43  0 E @
-FT4J,FT5J Juan-de-Nova-FT/J                            52 53 39  -3.00 17  3  0 S  42 43  0 E
+FT0J,FT1J,FT2J,FT3J,FT4J,FT5J,FT6J Juan-de-Nova-FT/J   52 53 39  -3.00 17  3  0 S  42 43  0 E
+FT7J,FT8J,FT9J Juan-de-Nova-FT/J                       52 53 39  -3.00 17  3  0 S  42 43  0 E
 FT/T Tromelin-Island-FT/T                              53 53 39  -4.00 15 53  0 S  54 30  0 E @
 FT Tromelin-Island-FT/T                                53 53 39  -4.00 15 53  0 S  54 30  0 E
-FT4T,FT5T Tromelin-Island-FT/T                         53 53 39  -4.00 15 53  0 S  54 30  0 E
+FT0T,FT1T,FT2T,FT3T,FT4T,FT5T Tromelin-Island-FT/T     53 53 39  -4.00 15 53  0 S  54 30  0 E
+FT6T,FT7T,FT8T,FT9T Tromelin-Island-FT/T               53 53 39  -4.00 15 53  0 S  54 30  0 E
 FT/W Crozet-Island-FT/W                                55 68 39  -5.00 46 25  0 S  51 45  0 E @
 FT Crozet-Island-FT/W                                  55 68 39  -5.00 46 25  0 S  51 45  0 E
-FT0W,FT1W,FT2W,FT4W,FT5W,FT8W Crozet-Island-FT/W       55 68 39  -5.00 46 25  0 S  51 45  0 E
+FT0W,FT1W,FT2W,FT3W,FT4W,FT5W Crozet-Island-FT/W       55 68 39  -5.00 46 25  0 S  51 45  0 E
+FT6W,FT7W,FT8W Crozet-Island-FT/W                      55 68 39  -5.00 46 25  0 S  51 45  0 E
 FT/X Kerguelen-Islands-FT/X                            56 68 39  -5.00 49  0  0 S  69 16  0 E @
 FT Kerguelen-Islands-FT/X                              56 68 39  -5.00 49  0  0 S  69 16  0 E
-FT0X,FT1X,FT2X,FT4X,FT5X,FT8X Kerguelen-Islands-FT/X   56 68 39  -5.00 49  0  0 S  69 16  0 E
+FT0X,FT1X,FT2X,FT3X,FT4X,FT5X Kerguelen-Islands-FT/X   56 68 39  -5.00 49  0  0 S  69 16  0 E
+FT6X,FT7X,FT8X Kerguelen-Islands-FT/X                  56 68 39  -5.00 49  0  0 S  69 16  0 E
 FT/Z Amsterdam-St-Paul-Is-FT/Z                         58 68 39  -5.00 37 51  0 S  77 32  0 E @
 FT Amsterdam-St-Paul-Is-FT/Z                           58 68 39  -5.00 37 51  0 S  77 32  0 E
-FT0Z,FT1Z,FT2Z,FT4Z,FT5Z Amsterdam-St-Paul-Is-FT/Z     58 68 39  -5.00 37 51  0 S  77 32  0 E
-FT8Z Amsterdam-St-Paul-Is-FT/Z                         58 68 39  -5.00 37 51  0 S  77 32  0 E
+FT0Z,FT1Z,FT2Z,FT3Z,FT4Z Amsterdam-St-Paul-Is-FT/Z     58 68 39  -5.00 37 51  0 S  77 32  0 E
+FT5Z,FT6Z,FT7Z,FT8Z Amsterdam-St-Paul-Is-FT/Z          58 68 39  -5.00 37 51  0 S  77 32  0 E
 FW Wallis-Futuna-Islands-FW                            59 62 32 -12.00 13 18  0 S 176 12  0 W @
 TW Wallis-Futuna-Islands-FW                            59 62 32 -12.00 13 18  0 S 176 12  0 W
 FW/F Hoorn-Islands-Futuna-FW                           59 62 32 -12.00 14 16  0 S 178  8  0 W
@@ -1652,7 +1658,6 @@ IQ8,IR8,IU8 Basilicata-Calabria-Campania-Molise-I      85 28 15  -1.00 40 50  0 
 IW8,IZ8 Basilicata-Calabria-Campania-Molise-I          85 28 15  -1.00 40 50  0 N  14 30  0 E
 IA1 Liguria-Islands-I                                  85 28 15  -1.00 44  5  0 N   8 46  0 E
 I Liguria-Islands-IA1                                  85 28 15  -1.00 44  5  0 N   8 46  0 E
-IP1 Liguria-Islands-I                                  85 28 15  -1.00 44  5  0 N   8 46  0 E
 IA2 Lago-Maggiore-Islands-I                            85 28 15  -1.00 45 57  0 N   8 38  0 E
 I Lago-Maggiore-Islands-IA2                            85 28 15  -1.00 45 57  0 N   8 38  0 E
 IA5 Tuscan-Archipeligo-Elba-Island-I                   85 28 15  -1.00 43  7  0 N  10 36  0 E
@@ -2583,22 +2588,31 @@ OA Peru-OA                                            127 12 10   5.00 10  0  0 
 4T,OB,OC Peru-OA                                      127 12 10   5.00 10  0  0 S  76  0  0 W
 OA1 Lambayeque-Plura-Tumbes-OA                        127 12 10   5.00  6 31  0 S  79 51  0 W
 OA Lambayeque-Plura-Tumbes-OA1                        127 12 10   5.00  6 31  0 S  79 51  0 W
+OB1,OC1 Lambayeque-Plura-Tumbes-OA                    127 12 10   5.00  6 31  0 S  79 51  0 W
 OA2 Cajamarca-La-Libertad-OA                          127 12 10   5.00  7  9  0 S  78 31  0 W
 OA Cajamarca-La-Libertad-OA2                          127 12 10   5.00  7  9  0 S  78 31  0 W
+OB2,OC2 Cajamarca-La-Libertad-OA                      127 12 10   5.00  7  9  0 S  78 31  0 W
 OA3 Ancash-Huanuco-OA                                 127 12 10   5.00 12  4  0 S  75 12  0 W
 OA Ancash-Huanuco-OA3                                 127 12 10   5.00 12  4  0 S  75 12  0 W
+OB3,OC3 Ancash-Huanuco-OA                             127 12 10   5.00 12  4  0 S  75 12  0 W
 OA4 Callao-Junin-Lima-Pasco-OA                        127 12 10   5.00 12  6  0 S  77  3  0 W
 OA Callao-Junin-Lima-Pasco-OA4                        127 12 10   5.00 12  6  0 S  77  3  0 W
+OB4,OC4 Callao-Junin-Lima-Pasco-OA                    127 12 10   5.00 12  6  0 S  77  3  0 W
 OA5 Apurimac-Ayacucho-Huancavelica-Ica-OA             127 12 10   5.00 13 10  0 S  74 15  0 W
 OA Apurimac-Ayacucho-Huancavelica-Ica-OA5             127 12 10   5.00 13 10  0 S  74 15  0 W
+OB5,OC5 Apurimac-Ayacucho-Huancavelica-Ica-OA         127 12 10   5.00 13 10  0 S  74 15  0 W
 OA6 Arequipa-Moquegua-Tacna-OA                        127 12 10   5.00 16 25  0 S  71 31  0 W
 OA Arequipa-Moquegua-Tacna-OA6                        127 12 10   5.00 16 25  0 S  71 31  0 W
+OB6,OC6 Arequipa-Moquegua-Tacna-OA                    127 12 10   5.00 16 25  0 S  71 31  0 W
 OA7 Cuzco-Madre-de-Dios-Puno-OA                       127 12 10   5.00 13 31  0 S  71 57  0 W
 OA Cuzco-Madre-de-Dios-Puno-OA7                       127 12 10   5.00 13 31  0 S  71 57  0 W
+OB7,OC7 Cuzco-Madre-de-Dios-Puno-OA                   127 12 10   5.00 13 31  0 S  71 57  0 W
 OA8 Loreto-Ucalall-OA                                 127 12 10   5.00  7  0  0 S  75 30  0 W
 OA Loreto-Ucalall-OA8                                 127 12 10   5.00  7  0  0 S  75 30  0 W
+OB8,OC8 Loreto-Ucalall-OA                             127 12 10   5.00  7  0  0 S  75 30  0 W
 OA9 Amazonas-San-Martin-OA                            127 12 10   5.00  6  9  0 S  76 30  0 W
 OA Amazonas-San-Martin-OA9                            127 12 10   5.00  6  9  0 S  76 30  0 W
+OB9,OC9 Amazonas-San-Martin-OA                        127 12 10   5.00  6  9  0 S  76 30  0 W
 OD Lebanon-OD                                         128 39 20  -2.00 33 50  0 N  35 50  0 E @
 OE Austria-OE                                         129 28 15  -1.00 47 20  0 N  13 20  0 E @
 4U1V Vienna-Intl-Ctr-OE                               129 28 15  -1.00 48 12  0 N  16 18  0 E
@@ -2625,31 +2639,31 @@ OH Finland-OH                                         130 18 15  -2.00 63 47  0 
 OF,OG,OI,OJ Finland-OH                                130 18 15  -2.00 63 47  0 N  27  5  0 E
 OH1 Turun-Ja-Pori-OH                                  130 18 15  -2.00 60 27  0 N  22 15  0 E
 OH Turun-Ja-Pori-OH1                                  130 18 15  -2.00 60 27  0 N  22 15  0 E
-OG1 Turun-Ja-Pori-OH                                  130 18 15  -2.00 60 27  0 N  22 15  0 E
+OF1,OG1,OI1 Turun-Ja-Pori-OH                          130 18 15  -2.00 60 27  0 N  22 15  0 E
 OH2 Uudenmaa-OH                                       130 18 15  -2.00 60 14  0 N  24 47  0 E
 OH Uudenmaa-OH2                                       130 18 15  -2.00 60 14  0 N  24 47  0 E
-OG2 Uudenmaa-OH                                       130 18 15  -2.00 60 14  0 N  24 47  0 E
+OF2,OG2,OI2 Uudenmaa-OH                               130 18 15  -2.00 60 14  0 N  24 47  0 E
 OH3 Harne-OH                                          130 18 15  -2.00 61 32  0 N  23 45  0 E
 OH Harne-OH3                                          130 18 15  -2.00 61 32  0 N  23 45  0 E
-OG3 Harne-OH                                          130 18 15  -2.00 61 32  0 N  23 45  0 E
+OF3,OG3,OI3 Harne-OH                                  130 18 15  -2.00 61 32  0 N  23 45  0 E
 OH4 Mikkell-OH                                        130 18 15  -2.00 62 30  0 N  28  0  0 E
 OH Mikkell-OH4                                        130 18 15  -2.00 62 30  0 N  28  0  0 E
-OG4 Mikkell-OH                                        130 18 15  -2.00 62 30  0 N  28  0  0 E
+OF4,OG4,OI4 Mikkell-OH                                130 18 15  -2.00 62 30  0 N  28  0  0 E
 OH5 Kymi-OH                                           130 18 15  -2.00 61  0  0 N  28 12  0 E
 OH Kymi-OH5                                           130 18 15  -2.00 61  0  0 N  28 12  0 E
-OG5 Kymi-OH                                           130 18 15  -2.00 61  0  0 N  28 12  0 E
+OF5,OG5,OI5 Kymi-OH                                   130 18 15  -2.00 61  0  0 N  28 12  0 E
 OH6 Keski-Suomen-Vaasa-OH                             130 18 15  -2.00 63  0  0 N  22  0  0 E
 OH Keski-Suomen-Vaasa-OH6                             130 18 15  -2.00 63  0  0 N  22  0  0 E
-OG6 Keski-Suomen-Vaasa-OH                             130 18 15  -2.00 63  0  0 N  22  0  0 E
+OF6,OG6,OI6 Keski-Suomen-Vaasa-OH                     130 18 15  -2.00 63  0  0 N  22  0  0 E
 OH7 Kuopio-Pohjois-Karjala-OH                         130 18 15  -2.00 62 48  0 N  27 30  0 E
 OH Kuopio-Pohjois-Karjala-OH7                         130 18 15  -2.00 62 48  0 N  27 30  0 E
-OG7 Kuopio-Pohjois-Karjala-OH                         130 18 15  -2.00 62 48  0 N  27 30  0 E
+OF7,OG7,OI7 Kuopio-Pohjois-Karjala-OH                 130 18 15  -2.00 62 48  0 N  27 30  0 E
 OH8 Oulu-OH                                           130 18 15  -2.00 65 10  0 N  25 28  0 E
 OH Oulu-OH8                                           130 18 15  -2.00 65 10  0 N  25 28  0 E
-OG8 Oulu-OH                                           130 18 15  -2.00 65 10  0 N  25 28  0 E
+OF8,OG8,OI8 Oulu-OH                                   130 18 15  -2.00 65 10  0 N  25 28  0 E
 OH9 Lapi-OH                                           130 18 15  -2.00 66 30  0 N  26  0  0 E
 OH Lapi-OH9                                           130 18 15  -2.00 66 30  0 N  26  0  0 E
-OG9 Lapi-OH                                           130 18 15  -2.00 66 30  0 N  26  0  0 E
+OF9,OG9,OI9 Lapi-OH                                   130 18 15  -2.00 66 30  0 N  26  0  0 E
 OH0 Aland-Islands-OH0                                 131 18 15  -2.00 60  8  0 N  20 22  0 E @
 OF0,OG0,OI0 Aland-Islands-OH0                         131 18 15  -2.00 60  8  0 N  20 22  0 E
 OJ0 Market-Reef-OJ0                                   132 18 15  -2.00 60  0  0 N  19  0  0 E @
@@ -3921,22 +3935,23 @@ UF0,UF8,UF9,UG0,UG8,UG9,UH0,UH8 Asiatic-Russia-UA9    182 30 17  -7.00 55 53  0 
 UH9,UI0,UI8,UI9 Asiatic-Russia-UA9                    182 30 17  -7.00 55 53  0 N  84  5  0 E
 UA0A Krasnoyarsky-UA9                                 182 32 18  -8.00 59 53  0 N  91 40  0 E
 UA9 Krasnoyarsky-UA0A                                 182 32 18  -8.00 59 53  0 N  91 40  0 E
-R0A,R0B,R0H,RA0A,RA0B,RA0H,RC0A Krasnoyarsky-UA9      182 32 18  -8.00 59 53  0 N  91 40  0 E
-RC0B,RC0H,RD0A,RD0B,RD0H,RF0A,RF0B Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RF0H,RG0A,RG0B,RG0H,RI0A,RI0B,RI0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RJ0A,RJ0B,RJ0H,RK0A,RK0B,RK0H,RL0A Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RL0B,RL0H,RM0A,RM0B,RM0H,RN0A,RN0B Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RN0H,RO0A,RO0B,RO0H,RP0A,RP0B,RP0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RQ0A,RQ0B,RQ0H,RR0A,RR0B,RR0H,RT0A Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RT0B,RT0H,RU0A,RU0B,RU0H,RV0A,RV0B Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RV0H,RW0A,RW0B,RW0H,RX0A,RX0B,RX0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-RY0A,RY0B,RY0H,RZ0A,RZ0B,RZ0H,U0A Krasnoyarsky-UA9    182 32 18  -8.00 59 53  0 N  91 40  0 E
-U0B,U0H,UA0B,UA0H,UB0A,UB0B,UB0H Krasnoyarsky-UA9     182 32 18  -8.00 59 53  0 N  91 40  0 E
-UC0A,UC0B,UC0H,UD0A,UD0B,UD0H,UE0A Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-UE0B,UE0H,UF0A,UF0B,UF0H,UG0A,UG0B Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
-UG0H,UH0A,UH0B,UH0H,UI0A,UI0B,UI0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+R0A,R0H,RA0A,RA0H,RC0A,RC0H,RD0A Krasnoyarsky-UA9     182 32 18  -8.00 59 53  0 N  91 40  0 E
+RD0H,RF0A,RF0H,RG0A,RG0H,RI0A,RI0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+RJ0A,RJ0H,RK0A,RK0H,RL0A,RL0H,RM0A Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+RM0H,RN0A,RN0H,RO0A,RO0H,RP0A,RP0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+RQ0A,RQ0H,RR0A,RR0H,RT0A,RT0H,RU0A Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+RU0H,RV0A,RV0H,RW0A,RW0H,RX0A,RX0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+RY0A,RY0H,RZ0A,RZ0H,U0A,U0H,UA0H Krasnoyarsky-UA9     182 32 18  -8.00 59 53  0 N  91 40  0 E
+UB0A,UB0H,UC0A,UC0H,UD0A,UD0H,UE0A Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+UE0H,UF0A,UF0H,UG0A,UG0H,UH0A,UH0H Krasnoyarsky-UA9   182 32 18  -8.00 59 53  0 N  91 40  0 E
+UI0A,UI0H Krasnoyarsky-UA9                            182 32 18  -8.00 59 53  0 N  91 40  0 E
 UA0B Taymyrsky-UA9                                    182 22 18  -8.00 69 24  0 N  86 11  0 E
 UA9 Taymyrsky-UA0B                                    182 22 18  -8.00 69 24  0 N  86 11  0 E
+R0B,RA0B,RC0B,RD0B,RF0B,RG0B,RI0B,RJ0B Taymyrsky-UA9  182 22 18  -8.00 69 24  0 N  86 11  0 E
+RK0B,RL0B,RM0B,RN0B,RO0B,RP0B,RQ0B Taymyrsky-UA9      182 22 18  -8.00 69 24  0 N  86 11  0 E
+RR0B,RT0B,RU0B,RV0B,RW0B,RX0B,RY0B Taymyrsky-UA9      182 22 18  -8.00 69 24  0 N  86 11  0 E
+RZ0B,U0B,UB0B,UC0B,UD0B,UE0B,UF0B,UG0B Taymyrsky-UA9  182 22 18  -8.00 69 24  0 N  86 11  0 E
+UH0B,UI0B Taymyrsky-UA9                               182 22 18  -8.00 69 24  0 N  86 11  0 E
 UA0C Khabarovsky-UA9                                  182 34 19 -11.00 54 48  0 N 136 50  0 E
 UA9 Khabarovsky-UA0C                                  182 34 19 -11.00 54 48  0 N 136 50  0 E
 R0C,RA0C,RC0C,RD0C,RF0C,RG0C,RI0C Khabarovsky-UA9     182 34 19 -11.00 54 48  0 N 136 50  0 E
@@ -5779,8 +5794,8 @@ LU7Z,LU8Z,LU9Z Teniente-Benjamin-Matienzo-Base-CE9    102 73 13   0.00 64 58  0 
 CE9 Teniente-Benjamin-Matienzo-Base-ARG-01            102 73 13   0.00 64 58  0 S  60  4  0 W
 AX0,VI0,VK0 Douglas-Mawson-Station-CE9                102 69 39   0.00 67 36  0 S  62 52  0 E
 CE9 Douglas-Mawson-Station-AUS-04                     102 69 39   0.00 67 36  0 S  62 52  0 E
-FT0Y,FT1Y,FT2Y,FT4Y,FT5Y Dumont-D'Urville-Base-CE9    102 74 13   0.00 90  0  0 S   0  0  0 E
-FT8Y Dumont-D'Urville-Base-CE9                        102 70 30   0.00 66 39  0 S 140  0  0 E
+FT0Y,FT1Y,FT2Y,FT3Y,FT4Y Dumont-D'Urville-Base-CE9    102 74 13   0.00 90  0  0 S   0  0  0 E
+FT5Y,FT6Y,FT7Y,FT8Y Dumont-D'Urville-Base-CE9         102 70 30   0.00 66 39  0 S 140  0  0 E
 CE9 Dumont-D'Urville-Base-FRA-01                      102 70 30   0.00 66 39  0 S 140  0  0 E
 3Y Blue-Field-Base-Camp-CE9                           102 73 13   0.00 77 30  0 S  34 12  0 W
 CE9 Blue-Field-Base-Camp-NOR-01                       102 73 13   0.00 77 30  0 S  34 12  0 W

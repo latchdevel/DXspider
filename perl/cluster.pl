@@ -123,7 +123,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
-			$can_encode $maxconnect_user $maxconnect_node $idle_interval
+			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -138,7 +138,9 @@ $maxconnect_user = 3;			# the maximum no of concurrent connections a user can ha
 $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
 								# takes the no of references in the routing table above these numbers
 								# then the connection is refused. This only affects INCOMING connections.
-$idle_interval = 0.500;                        # the wait between invocations of the main idle loop processing.
+$idle_interval = 0.500;	        # the wait between invocations of the main idle loop processing.
+$log_flush_interval = 2;		# interval to wait between log flushes
+
 our $ending;								   # signal that we are ending;
 
 
@@ -373,7 +375,7 @@ sub idle_loop
 		AGWMsg::process();
 		
 		Timer::handler();
-		DXLog::flush_all();
+		DXLog::flushall();
 	}
 
 	if (defined &Local::process) {
@@ -602,6 +604,7 @@ $script->run($main::me) if $script;
 #open(DB::OUT, "|tee /tmp/aa");
 
 my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
+my $log_flush_loop = Mojo::IOLoop->recurring($log_flush_interval => \&DXLog::flushall);
 
 Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
