@@ -38,7 +38,7 @@ use vars qw(\$version \$subversion \$build \$gitversion);
 \$version = '$v';
 \$subversion = '$s';
 \$build = '$b';
-\$gitversion = '$g';
+\$gitversion = '$g\[i]';
 
 1;
 );
