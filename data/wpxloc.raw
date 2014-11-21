@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 13 Oct 2014
+! This file was created by Jim Reisert AD1C on 19 Nov 2014
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -1448,9 +1448,9 @@ GJ Jersey-GJ                                           64 27 14   0.00 49 13  0 
 2J,GH,MH,MJ Jersey-GJ                                  64 27 14   0.00 49 13  0 N   2 11  0 W
 GM Scotland-GM                                         65 27 14   0.00 56 49  0 N   4 11  0 W @
 2A,2M,GA,GS,MA,MM,MS Scotland-GM                       65 27 14   0.00 56 49  0 N   4 11  0 W
-GM/S Shetland-and-Fair-Isle-GM                         65 27 14   0.00 60 30  0 N   1 30  0 W
-GM Shetland-and-Fair-Isle-GM/S                         65 27 14   0.00 60 30  0 N   1 30  0 W
-GZ,MZ Shetland-and-Fair-Isle-GM                        65 27 14   0.00 60 30  0 N   1 30  0 W
+GM/S Shetland-Islands-GM                               65 27 14   0.00 60 30  0 N   1 30  0 W
+GM Shetland-Islands-GM/S                               65 27 14   0.00 60 30  0 N   1 30  0 W
+GZ,MZ Shetland-Islands-GM                              65 27 14   0.00 60 30  0 N   1 30  0 W
 GU Guernsey-GU                                         66 27 14   0.00 49 27  0 N   2 35  0 W @
 2U,GP,MP,MU Guernsey-GU                                66 27 14   0.00 49 27  0 N   2 35  0 W
 GW Wales-GW                                            67 27 14   0.00 52 17  0 N   3 44  0 W @
@@ -1493,8 +1493,8 @@ HB Switzerland-HB                                      70 28 14  -1.00 46 52  0 
 HE Switzerland-HB                                      70 28 14  -1.00 46 52  0 N   8  7  0 E
 HB0 Liechtenstein-HB0                                  71 28 14  -1.00 47  8  0 N   9 34  0 E @
 HE0 Liechtenstein-HB0                                  71 28 14  -1.00 47  8  0 N   9 34  0 E
-HC Ecuador-HC                                          72 12 10   6.00  1 24  0 S  78 24  0 W @
-HD Ecuador-HC                                          72 12 10   6.00  1 24  0 S  78 24  0 W
+HC Ecuador-HC                                          72 12 10   5.00  1 24  0 S  78 24  0 W @
+HD Ecuador-HC                                          72 12 10   5.00  1 24  0 S  78 24  0 W
 HC1 Carchi-Imbabura-Pichincha-HC                       72 12 10   5.00  0  1  0 S  78 30  0 W
 HC Carchi-Imbabura-Pichincha-HC1                       72 12 10   5.00  0  1  0 S  78 30  0 W
 HD1 Carchi-Imbabura-Pichincha-HC                       72 12 10   5.00  0  1  0 S  78 30  0 W
@@ -1521,6 +1521,10 @@ HD8 Galapagos-Islands-HC8                              73 12 10   6.00  0 47  0 
 HH Haiti-HH                                            74 11  8   5.00 19  1  0 N  72 11  0 W @
 4V Haiti-HH                                            74 11  8   5.00 19  1  0 N  72 11  0 W
 HI Dominican-Republic-HI                               75 11  8   4.00 19  8  0 N  70 41  0 W @
+HI1 Isla-Beata-HI                                      75 11  8   4.00 17 35  0 N  71 31  0 W
+HI Isla-Beata-HI1                                      75 11  8   4.00 17 35  0 N  71 31  0 W
+HI2 Isla-Saona-Isla-Catalina-HI                        75 11  8   4.00 18 15  0 N  68 51  0 W
+HI Isla-Saona-Isla-Catalina-HI2                        75 11  8   4.00 18 15  0 N  68 51  0 W
 HK Colombia-HK                                         76 12  9   5.00  5  0  0 N  74  0  0 W @
 5J,5K,HJ Colombia-HK                                   76 12  9   5.00  5  0  0 N  74  0  0 W
 HK1 Atlantico-Bolivar-Cordoba-Sucre-HK                 76 12  9   5.00 10 24  0 N  75 30  0 W
@@ -1588,6 +1592,8 @@ HP Perlas-Archipeligo-HP8                              80 11  7   5.00  8 20  0 
 3E8,3F8,H38,H88,H98,HO8 Perlas-Archipeligo-HP          80 11  7   5.00  8 20  0 N  79  7  0 W
 HR Honduras-HR                                         81 11  7   6.00 15  0  0 N  87  0  0 W @
 HQ Honduras-HR                                         81 11  7   6.00 15  0  0 N  87  0  0 W
+HR6 Bahia-Island-HR                                    81 11  7   6.00 16 23  0 N  86 24  0 W
+HR Bahia-Island-HR6                                    81 11  7   6.00 16 23  0 N  86 24  0 W
 HS Thailand-HS                                         82 49 26  -7.00 12 36  0 N  99 42  0 E @
 E2 Thailand-HS                                         82 49 26  -7.00 12 36  0 N  99 42  0 E
 HS1 Bangkok-Nontaburi-Pathumtani-HS                    82 49 26  -7.00 13 42  0 N 100 30  0 E
@@ -1815,6 +1821,16 @@ KH9 Wake-Island-KH9                                   115 65 31 -12.00 19 17  0 
 AH9,NH9,WH9 Wake-Island-KH9                           115 65 31 -12.00 19 17  0 N 166 38  0 E
 KL Alaska-KL                                          117  1  1   8.00 63 52  0 N 153 47  0 W @
 AL,NL,WL Alaska-KL                                    117  1  1   8.00 63 52  0 N 153 47  0 W
+KL7/A Anchorage-KL                                    117  1  1   8.00 61 13  0 N 149 54  0 W
+KL Anchorage-KL7/A                                    117  1  1   8.00 61 13  0 N 149 54  0 W
+KL7/F Fairbanks-KL                                    117  1  1   8.00 64 51  0 N 147 43  0 W
+KL Fairbanks-KL7/F                                    117  1  1   8.00 64 51  0 N 147 43  0 W
+KL7/J Juneau-KL                                       117  1  1   8.00 58 18  0 N 134 25  0 W
+KL Juneau-KL7/J                                       117  1  1   8.00 58 18  0 N 134 25  0 W
+KL7/K Kenai-KL                                        117  1  1   8.00 60 34  0 N 151 14  0 W
+KL Kenai-KL7/K                                        117  1  1   8.00 60 34  0 N 151 14  0 W
+KL7/W Wasilla-KL                                      117  1  1   8.00 61 35  0 N 149 27  0 W
+KL Wasilla-KL7/W                                      117  1  1   8.00 61 35  0 N 149 27  0 W
 KP1 Navassa-Island-KP1                                118 11  8   5.00 18 24  0 N  75  0  0 W @
 NP1,WP1 Navassa-Island-KP1                            118 11  8   5.00 18 24  0 N  75  0  0 W
 KP2 US-Virgin-Islands-KP2                             119 11  8   4.00 17 44  0 N  64 48  0 W @
