@@ -11,7 +11,7 @@ use vars qw($version $subversion $build $gitversion);
 
 $version = '1.55';
 $subversion = '0';
-$build = '165';
-$gitversion = '06e8373[i]';
+$build = '166';
+$gitversion = '4868adf[i]';
 
 1;
