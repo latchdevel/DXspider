@@ -1,6 +1,7 @@
 13Feb14=======================================================================
 1. Fix problem with sh/dx <call> if people are logging spots to a SQL database
-2. My late father would have been 102 today.
+3. Added CTY-2502 prefixes. 
+3. My late father would have been 102 today.
 27Nov14=======================================================================
 1. Add CTY-2415 prefix list
 25Nov14=======================================================================
