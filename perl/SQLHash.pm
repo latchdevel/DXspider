@@ -44,7 +44,7 @@ sub file_exists
 
 sub del_file
 {
-	m
+	
 }
 
 sub new
