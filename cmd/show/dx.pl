@@ -32,6 +32,8 @@ my $fromdxcc;
 my $exact;
 my ($doqsl, $doiota, $doqra, $dofilter);
 
+my $usesql = $main::dbh && $Spot::use_db_for_search;
+
 while ($f = shift @list) {		# next field
 	#  print "f: $f list: ", join(',', @list), "\n";
 	if (!$from && !$to) {
@@ -181,7 +183,7 @@ if ($pre) {
 	unless (@ans) {
 		$pre .= '*' unless $pre =~ /[\*\?\[]$/o;
 		$pre = shellregex($pre);
-		if ($main::dbh) {
+		if ($usesql) {
 			$pre =~ s/\.\*/%/g;
 		} else {
 			$pre =~ s/\.\*\$$//;
@@ -257,7 +259,7 @@ if ($spotter) {
 		$expr .= ' && ' if $expr;
 		$spotter .= '*' unless $spotter =~ /[\*\?\[]/o;
 		$spotter = shellregex($spotter);
-		if ($main::dbh) {
+		if ($usesql) {
 			$spotter =~ s/\.\*/%/g;
 		} else {
 			$spotter =~ s/\.\*\$$//;
@@ -331,7 +333,7 @@ if ($state) {
 		push @expr, "\$f12 eq '$_'";
 		push @hint, "m{$_}";
 	}
-	if ($main::dbh) {
+	if ($usesql) {
 		$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : "$expr[0]";
 	} else {
 		$expr .= @expr > 1 ? '(\$f12 && (' . join(' || ', @expr) . '))' : "(\$f12 && $expr[0])";
@@ -347,7 +349,7 @@ if ($bystate) {
 		push @expr, "\$f13 eq '$_'";
 		push @hint, "m{$_}";
 	}
-	if ($main::dbh) {
+	if ($usesql) {
 		$expr .= @expr > 1 ? '(' . join(' || ', @expr) . ')' : "$expr[0]";
 	} else {
 		$expr .= @expr > 1 ? '(\$f13 && (' . join(' || ', @expr) . '))' : "(\$f13 && $expr[0])";

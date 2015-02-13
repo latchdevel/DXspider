@@ -36,7 +36,7 @@ sub has_ipaddr
 	my $sth = $self->prepare($s);
 	$sth->execute;
 	while (my @t = $sth->fetchrow_array) {
-		if ($t[0] eq 'ipaddr') {
+		if ($t[1] eq 'ipaddr') {
 			$sth->finish;
 			return 1;
 		}
@@ -48,7 +48,7 @@ sub has_ipaddr
 sub add_ipaddr
 {
 	my $self = shift;
-	my $s = q(alter table spot add column ipaddr varchar(40));
+	my $s = q(alter table spot add column ipaddr text);
 	$self->do($s);
 }
 
