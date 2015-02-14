@@ -3,7 +3,7 @@
 #
 #
 #
-# Copyright (c) Dirk Koopman, G1TLH
+# Copyright (c) 2006 Dirk Koopman, G1TLH
 #
 
 use strict;

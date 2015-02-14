@@ -113,6 +113,7 @@ use IO::File;
 use Fcntl ':flock';
 use POSIX ":sys_wait_h";
 use Version;
+use Web;
 
 use Local;
 
@@ -409,222 +410,227 @@ sub idle_loop
 	}
 }
 
-
-#############################################################
-#
-# The start of the main line of code
-#
-#############################################################
-
-$starttime = $systime = time;
-$systime_days = int ($systime / 86400);
-$systime_daystart = $systime_days * 86400;
-$lang = 'en' unless $lang;
-
-unless ($DB::VERSION) {
-	$SIG{INT} = $SIG{TERM} = \&cease;
-}
-
-# open the debug file, set various FHs to be unbuffered
-dbginit(\&DXCommandmode::broadcast_debug);
-foreach (@debug) {
-	dbgadd($_);
-}
-STDOUT->autoflush(1);
-
-# try to load the database
-if (DXSql::init($dsn)) {
-	$dbh = DXSql->new($dsn);
-	$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
-}
-
-# try to load Encode and Git
+sub setup_start
 {
-	local $^W = 0;
-	my $w = $SIG{__DIE__};
-	$SIG{__DIE__} = 'IGNORE';
-	eval { require Encode; };
-	unless ($@) {
-		import Encode;
-		$can_encode = 1;
+
+	#############################################################
+	#
+	# The start of the main line of code
+	#
+	#############################################################
+
+	$starttime = $systime = time;
+	$systime_days = int ($systime / 86400);
+	$systime_daystart = $systime_days * 86400;
+	$lang = 'en' unless $lang;
+
+	unless ($DB::VERSION) {
+		$SIG{INT} = $SIG{TERM} = \&cease;
 	}
-	eval { require Git; };
-	unless ($@) {
-		import Git;
+
+	# open the debug file, set various FHs to be unbuffered
+	dbginit(\&DXCommandmode::broadcast_debug);
+	foreach (@debug) {
+		dbgadd($_);
+	}
+	STDOUT->autoflush(1);
+
+	# try to load the database
+	if (DXSql::init($dsn)) {
+		$dbh = DXSql->new($dsn);
+		$dbh = $dbh->connect($dsn, $dbuser, $dbpass) if $dbh;
+	}
+
+	# try to load Encode and Git
+	{
+		local $^W = 0;
+		my $w = $SIG{__DIE__};
+		$SIG{__DIE__} = 'IGNORE';
+		eval { require Encode; };
+		unless ($@) {
+			import Encode;
+			$can_encode = 1;
+		}
+		eval { require Git; };
+		unless ($@) {
+			import Git;
 		
-		# determine the real version number
-		my $repo = Git->repository(Directory => "$root/.git");
-		if ($repo) {
-			my $desc = $repo->command_oneline(['describe', '--long'], STDERR => 0);
-			if ($desc) {
-				my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
-				$version = $v;
-				$build = $b || 0;
-				$gitversion = "$g\[r]";
+			# determine the real version number
+			my $repo = Git->repository(Directory => "$root/.git");
+			if ($repo) {
+				my $desc = $repo->command_oneline(['describe', '--long'], STDERR => 0);
+				if ($desc) {
+					my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+					$version = $v;
+					$build = $b || 0;
+					$gitversion = "$g\[r]";
+				}
+			}
+		}
+		$SIG{__DIE__} = $w;
+	}
+
+	# try to load XML::Simple
+	DXXml::init();
+
+	# banner
+	my ($year) = (gmtime)[5];
+	$year += 1900;
+	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitversion) started");
+	dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
+
+	# load Prefixes
+	dbg("loading prefixes ...");
+	dbg(USDB::init());
+	my $r = Prefix::init();
+	confess $r if $r;
+
+	# load band data
+	dbg("loading band data ...");
+	Bands::load();
+
+	# initialise User file system
+	dbg("loading user file system ...");
+	DXUser->init($userfn, 1);
+
+	# look for the sysop and the alias user and complain if they aren't there
+	{
+		die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';). Oh and don't forget to rerun create_sysop.pl!" if $mycall eq $myalias;
+		my $ref = DXUser::get($mycall);
+		die "$mycall missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
+		$ref = DXUser::get($myalias);
+		die "$myalias missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
+	}
+
+	# start listening for incoming messages/connects
+	dbg("starting listeners ...");
+	my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
+	$conn->conns("Server $clusteraddr/$clusterport using IntMsg");
+	push @listeners, $conn;
+	dbg("Internal port: $clusteraddr $clusterport using IntMsg");
+	foreach my $l (@main::listen) {
+		no strict 'refs';
+		my $pkg = $l->[2] || 'ExtMsg';
+		my $login = $l->[3] || 'login';
+
+		$conn = $pkg->new_server($l->[0], $l->[1], \&{"${pkg}::${login}"});
+		$conn->conns("Server $l->[0]/$l->[1] using ${pkg}::${login}");
+		push @listeners, $conn;
+		dbg("External Port: $l->[0] $l->[1] using ${pkg}::${login}");
+	}
+
+	dbg("AGW Listener") if $AGWMsg::enable;
+	AGWrestart();
+
+	dbg("BPQ Listener") if $BPQMsg::enable;
+	BPQMsg::init(\&new_channel);
+
+	dbg("UDP Listener") if $UDPMsg::enable;
+	UDPMsg::init(\&new_channel);
+
+	# load bad words
+	dbg("load badwords: " . (BadWords::load or "Ok"));
+
+	# prime some signals
+	unless ($DB::VERSION) {
+		$SIG{INT} = $SIG{TERM} = sub { $ending = 10; };
+	}
+
+	unless ($is_win) {
+		$SIG{HUP} = 'IGNORE';
+		$SIG{CHLD} = sub { $zombies++ };
+
+		$SIG{PIPE} = sub { 	dbg("Broken PIPE signal received"); };
+		$SIG{IO} = sub { 	dbg("SIGIO received"); };
+		$SIG{WINCH} = $SIG{STOP} = $SIG{CONT} = 'IGNORE';
+		$SIG{KILL} = 'DEFAULT';	# as if it matters....
+
+		# catch the rest with a hopeful message
+		for (keys %SIG) {
+			if (!$SIG{$_}) {
+				#		dbg("Catching SIG $_") if isdbg('chan');
+				$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  };
 			}
 		}
 	}
-	$SIG{__DIE__} = $w;
-}
 
-# try to load XML::Simple
-DXXml::init();
+	# start dupe system
+	dbg("Starting Dupe system");
+	DXDupe::init();
 
-# banner
-my ($year) = (gmtime)[5];
-$year += 1900;
-LogDbg('cluster', "DXSpider V$version, build $build (git: $gitversion) started");
-dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
+	# read in system messages
+	dbg("Read in Messages");
+	DXM->init();
 
-# load Prefixes
-dbg("loading prefixes ...");
-dbg(USDB::init());
-my $r = Prefix::init();
-confess $r if $r;
+	# read in command aliases
+	dbg("Read in Aliases");
+	CmdAlias->init();
 
-# load band data
-dbg("loading band data ...");
-Bands::load();
+	# initialise the Geomagnetic data engine
+	dbg("Start WWV");
+	Geomag->init();
+	dbg("Start WCY");
+	WCY->init();
 
-# initialise User file system
-dbg("loading user file system ...");
-DXUser->init($userfn, 1);
+	# initial the Spot stuff
+	dbg("Starting DX Spot system");
+	Spot->init();
 
-# look for the sysop and the alias user and complain if they aren't there
-{
-	die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';). Oh and don't forget to rerun create_sysop.pl!" if $mycall eq $myalias;
-	my $ref = DXUser::get($mycall);
-	die "$mycall missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
-	$ref = DXUser::get($myalias);
-	die "$myalias missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
-}
+	# initialise the protocol engine
+	dbg("Start Protocol Engines ...");
+	DXProt->init();
 
-# start listening for incoming messages/connects
-dbg("starting listeners ...");
-my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
-$conn->conns("Server $clusteraddr/$clusterport using IntMsg");
-push @listeners, $conn;
-dbg("Internal port: $clusteraddr $clusterport using IntMsg");
-foreach my $l (@main::listen) {
-	no strict 'refs';
-	my $pkg = $l->[2] || 'ExtMsg';
-	my $login = $l->[3] || 'login';
+	# put in a DXCluster node for us here so we can add users and take them away
+	$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
+	$routeroot->do_pc9x(1);
+	$routeroot->via_pc92(1);
 
-	$conn = $pkg->new_server($l->[0], $l->[1], \&{"${pkg}::${login}"});
-	$conn->conns("Server $l->[0]/$l->[1] using ${pkg}::${login}");
-	push @listeners, $conn;
-	dbg("External Port: $l->[0] $l->[1] using ${pkg}::${login}");
-}
+	# make sure that there is a routing OUTPUT node default file
+	#unless (Filter::read_in('route', 'node_default', 0)) {
+	#	my $dxcc = $main::me->dxcc;
+	#	$Route::filterdef->cmd($main::me, 'route', 'accept', "node_default call $mycall" );
+	#}
 
-dbg("AGW Listener") if $AGWMsg::enable;
-AGWrestart();
+	# read in any existing message headers and clean out old crap
+	dbg("reading existing message headers ...");
+	DXMsg->init();
+	DXMsg::clean_old();
 
-dbg("BPQ Listener") if $BPQMsg::enable;
-BPQMsg::init(\&new_channel);
+	# read in any cron jobs
+	dbg("reading cron jobs ...");
+	DXCron->init();
 
-dbg("UDP Listener") if $UDPMsg::enable;
-UDPMsg::init(\&new_channel);
+	# read in database desriptors
+	dbg("reading database descriptors ...");
+	DXDb::load();
 
-# load bad words
-dbg("load badwords: " . (BadWords::load or "Ok"));
-
-# prime some signals
-unless ($DB::VERSION) {
-	$SIG{INT} = $SIG{TERM} = sub { $ending = 10; };
-}
-
-unless ($is_win) {
-	$SIG{HUP} = 'IGNORE';
-	$SIG{CHLD} = sub { $zombies++ };
-
-	$SIG{PIPE} = sub { 	dbg("Broken PIPE signal received"); };
-	$SIG{IO} = sub { 	dbg("SIGIO received"); };
-	$SIG{WINCH} = $SIG{STOP} = $SIG{CONT} = 'IGNORE';
-	$SIG{KILL} = 'DEFAULT';     # as if it matters....
-
-	# catch the rest with a hopeful message
-	for (keys %SIG) {
-		if (!$SIG{$_}) {
-			#		dbg("Catching SIG $_") if isdbg('chan');
-			$SIG{$_} = sub { my $sig = shift;	DXDebug::confess("Caught signal $sig");  };
-		}
+	# starting local stuff
+	dbg("doing local initialisation ...");
+	QSL::init(1);
+	if (defined &Local::init) {
+		eval {
+			Local::init();
+		};
+		dbg("Local::init error $@") if $@;
 	}
-}
 
-# start dupe system
-dbg("Starting Dupe system");
-DXDupe::init();
 
-# read in system messages
-dbg("Read in Messages");
-DXM->init();
+	# this, such as it is, is the main loop!
+	dbg("orft we jolly well go ...");
+	my $script = new Script "startup";
+	$script->run($main::me) if $script;
 
-# read in command aliases
-dbg("Read in Aliases");
-CmdAlias->init();
-
-# initialise the Geomagnetic data engine
-dbg("Start WWV");
-Geomag->init();
-dbg("Start WCY");
-WCY->init();
-
-# initial the Spot stuff
-dbg("Starting DX Spot system");
-Spot->init();
-
-# initialise the protocol engine
-dbg("Start Protocol Engines ...");
-DXProt->init();
-
-# put in a DXCluster node for us here so we can add users and take them away
-$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
-$routeroot->do_pc9x(1);
-$routeroot->via_pc92(1);
-
-# make sure that there is a routing OUTPUT node default file
-#unless (Filter::read_in('route', 'node_default', 0)) {
-#	my $dxcc = $main::me->dxcc;
-#	$Route::filterdef->cmd($main::me, 'route', 'accept', "node_default call $mycall" );
-#}
-
-# read in any existing message headers and clean out old crap
-dbg("reading existing message headers ...");
-DXMsg->init();
-DXMsg::clean_old();
-
-# read in any cron jobs
-dbg("reading cron jobs ...");
-DXCron->init();
-
-# read in database desriptors
-dbg("reading database descriptors ...");
-DXDb::load();
-
-# starting local stuff
-dbg("doing local initialisation ...");
-QSL::init(1);
-if (defined &Local::init) {
-	eval {
-		Local::init();
-	};
-	dbg("Local::init error $@") if $@;
+	#open(DB::OUT, "|tee /tmp/aa");
 }
 
 
-# this, such as it is, is the main loop!
-dbg("orft we jolly well go ...");
-my $script = new Script "startup";
-$script->run($main::me) if $script;
-
-#open(DB::OUT, "|tee /tmp/aa");
+setup_start();
 
 my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
 my $log_flush_loop = Mojo::IOLoop->recurring($log_flush_interval => \&DXLog::flushall);
 
-Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
+Web::start_node();
 
-dbg("After Mojo::IOLoop");
 cease(0);
 exit(0);
 
