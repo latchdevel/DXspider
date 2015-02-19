@@ -125,6 +125,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
 			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
+			$broadcast_debug
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -142,7 +143,9 @@ $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming 
 $idle_interval = 0.500;	        # the wait between invocations of the main idle loop processing.
 $log_flush_interval = 2;		# interval to wait between log flushes
 
-our $ending;								   # signal that we are ending;
+our $ending;					# signal that we are ending;
+our $broadcast_debug;			# allow broadcasting of debug info down "enhanced" user connections
+
 
 
 # send a message to call on conn and disconnect
@@ -429,7 +432,7 @@ sub setup_start
 	}
 
 	# open the debug file, set various FHs to be unbuffered
-	dbginit(\&DXCommandmode::broadcast_debug);
+	dbginit($broadcast_debug ? \&DXCommandmode::broadcast_debug : undef);
 	foreach (@debug) {
 		dbgadd($_);
 	}
