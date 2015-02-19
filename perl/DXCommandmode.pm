@@ -1092,7 +1092,7 @@ sub broadcast_debug
 {
 	my $s = shift;				# the line to be rebroadcast
 	
-	foreach my $dxchan (DXChannel::get_all) {
+	foreach my $dxchan (DXChannel::get_all_users) {
 		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
 		if ($dxchan->{gtk}) {
 			$dxchan->send_later('L', dd(['db', $s]));
