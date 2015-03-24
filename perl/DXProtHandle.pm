@@ -458,7 +458,7 @@ sub handle_16
 
 	my $i;
 	my @rout;
-	for ($i = 2; $i < $#_; $i++) {
+	for ($i = 2; $i < $#$pc; $i++) {
 		my ($call, $conf, $here) = $pc->[$i] =~ /^(\S+) (\S) (\d)/o;
 		next unless $call && $conf && defined $here && is_callsign($call);
 		next if $call eq $main::mycall;
@@ -695,7 +695,7 @@ sub handle_19
 	# From now on we are only going to believe PC92 data and locally connected
 	# non-pc92 nodes.
 	#
-	for ($i = 1; $i < $#_-1; $i += 4) {
+	for ($i = 1; $i < $#$pc-1; $i += 4) {
 		my $here = $pc->[$i];
 		my $call = uc $pc->[$i+1];
 		my $conf = $pc->[$i+2];
@@ -1810,7 +1810,7 @@ sub handle_92
 		my $me = $pc->[4] || '';
 		$me ||= _encode_pc92_call($parent) unless $me ;
 
-		my @ent = map {my @a = _decode_pc92_call($_); @a ? \@a : ()} grep {$_ && /^[0-7]/} $me, @$pc[5 .. $#_];
+		my @ent = map {my @a = _decode_pc92_call($_); @a ? \@a : ()} grep {$_ && /^[0-7]/} $me, @$pc[5 .. $#$pc];
 
 		if (@ent) {
 
