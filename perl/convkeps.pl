@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 #
 # Convert an Amsat 2 line keps bull into Sun.pm format
 #

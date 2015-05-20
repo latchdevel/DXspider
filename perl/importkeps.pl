@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 #
 # Take a 2 line keps email file on STDIN, prepare it for import into standard import directory
 # and then shove it there, marked for SB ALL.

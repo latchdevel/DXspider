@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 #
 # Something to create my subset of the US call book data,
 # in my flat file form, either from the main data base or

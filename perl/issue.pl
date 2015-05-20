@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 #
 # create a version and build id for the project using git ids
 #

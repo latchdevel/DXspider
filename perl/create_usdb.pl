@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 #
 # create a USDB file from a standard raw file (which is GZIPPED BTW)
 #

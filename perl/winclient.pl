@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 # The rudimentary beginnings of a Spider client which is known to run on ActiveState
 # Perl under Win32
 #

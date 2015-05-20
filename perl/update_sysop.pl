@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 #
 # remove all records with the sysop/cluster callsign and recreate
 # it from the information contained in DXVars

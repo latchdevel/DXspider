@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 #
 # convert a DXSpider Log file to csv format
 #

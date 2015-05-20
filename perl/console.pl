@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 #
 # this is the operators console.
 #
@@ -14,6 +14,7 @@
 # 
 
 require 5.004;
+use warnings;
 
 # search local then perl directories
 BEGIN {

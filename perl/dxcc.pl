@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 #
 # Analyse the dxcc info in the prefix database, listing the 'official' country and its number
 # and also looking for duplicates and missing numbers

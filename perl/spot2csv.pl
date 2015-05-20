@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 #
 # convert a DXSpider Spot file to csv format
 #

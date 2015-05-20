@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/bin/env perl
 # a program to create a prefix file from a wpxloc.raw file
 #
 # Copyright (c) - Dirk Koopman G1TLH

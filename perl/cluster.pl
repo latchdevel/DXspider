@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/bin/env perl
 #
 # This is the DX cluster 'daemon'. It sits in the middle of its little
 # web of client routines sucking and blowing data where it may.
@@ -11,6 +11,7 @@
 #
 
 require 5.10.1;
+use warnings;
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
