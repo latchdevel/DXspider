@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #
 # convert an AK1A DX.DAT file to comma delimited form
 #

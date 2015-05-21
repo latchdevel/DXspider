@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 
 my $pc9x_past_age = 3600;
 my $pc9x_future_age = 3600*2;

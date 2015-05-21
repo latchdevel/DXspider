@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #
 # export a standard ak1a opernam.dat file into CSV format.
 #

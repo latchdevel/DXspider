@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #
 # an attempt at producing a general purpose 'bot' for going and getting
 # things orf the web and presenting them to user in a form they want

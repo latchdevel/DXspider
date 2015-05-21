@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 # 
 # A program to split out the Command_en.hlp file into two
 # html documents, one for sysops, one for users

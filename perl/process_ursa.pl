@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #
 # Process and import for mail SIDC Ursagrams
 #

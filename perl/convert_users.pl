@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #
 # Export the user file in a form that can be directly imported
 # back with a do statement
