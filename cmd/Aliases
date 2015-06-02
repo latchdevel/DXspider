@@ -90,7 +90,7 @@ package CmdAlias;
 	'p' => [
 	],
 	'q' => [
-	  '^q', 'bye', 'bye',
+	  '^qu?i?t?$', 'bye', 'bye',
 	],
 	'r' => [	
 	  '^r$', 'read', 'read',
