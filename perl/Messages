@@ -83,7 +83,7 @@ package DXM;
 				e8 => 'Need a callsign and some text',
 				e9 => 'Need at least some text',
 				e10 => '$_[0] not connected locally',
-				e11 => 'Can\'t use $main:mycall as target',
+				e11 => 'Can\'t use $_[0] as target',
 				e12 => 'Need a node callsign',
 				e13 => '$_[0] is not a node',
 				e14 => 'First argument must be numeric and > 0',

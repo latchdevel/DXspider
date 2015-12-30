@@ -1,5 +1,5 @@
 #
-# set user type to 'S' for Spider node
+# set user type to 'R' for AR-Cluster node
 #
 # Please note that this is only effective if the user is not on-line
 #
@@ -19,6 +19,14 @@ return (1, $self->msg('e5')) if $self->priv < 5;
 
 foreach $call (@args) {
 	$call = uc $call;
+	if ($call eq $main::mycall) {
+		push @out, $self->msg('e11', $call);
+		next;
+	}
+	if ($call eq $main::myalias) {
+		push @out, $self->msg('e11', $call);
+		next;
+	}
 	my $chan = DXChannel::get($call);
 	if ($chan) {
 		push @out, $self->msg('nodee1', $call);
