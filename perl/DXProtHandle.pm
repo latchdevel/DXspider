@@ -1137,6 +1137,16 @@ sub handle_41
 		return;
 	}
 
+	if ($call eq $main::mycall && $call eq $main::myalias) {
+		dbg "DXPROT: PC41 trying to update $call from outside via $origin, ignored";
+		return;
+	}
+	my $chan = DXChannel::get($call);
+	if ($chan) {
+		dbg "DXPROT: PC41 trying to update online $call from outside via $origin, ignored";
+		return;
+	}
+
 	# add this station to the user database, if required
 	my $user = DXUser::get_current($call);
 	$user = DXUser->new($call) unless $user;
@@ -1144,9 +1154,6 @@ sub handle_41
 	if ($sort == 1) {
 		if (($val =~ /spotter/i || $val =~ /self/i) && $user->name && $user->name ne $val) {
 			dbg("PCPROT: invalid name") if isdbg('chanerr');
-			if ($main::mycall eq 'GB7DJK' || $main::mycall eq 'GB7BAA' || $main::mycall eq 'WR3D') {
-				DXChannel::broadcast_nodes(pc41($_[1], 1, $user->name)); # send it to everyone including me
-			}
 			return;
 		}
 		$user->name($val);

@@ -14,7 +14,11 @@ return (1, $self->msg('e5')) if $self->priv < 5;
 return (1, $self->msg('e12')) if !$f[0];
 
 my $call = uc $f[0];
-return (1, $self->msg('e11')) if $call eq $main::mycall;
+return (1, $self->msg('e11', $call)) if $call eq $main::mycall;
+	if ($call eq $main::mycall) {
+		push @out, $self->msg('e11', $call);
+		next;
+	}
 
 my $ref = Route::Node::get($call);
 my $dxchan = $ref->dxchan if $ref;
