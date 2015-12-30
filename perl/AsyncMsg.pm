@@ -269,6 +269,7 @@ sub disconnect
 		if ($dxchan) {
 			no strict 'refs';
 			$ondisc->($conn, $dxchan);
+			delete $conn->{on_disconnect};
 		}
 	}
 	delete $conn->{mojo};
