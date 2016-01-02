@@ -17,7 +17,7 @@ sub handle
 	return (1, $self->msg('e24')) unless $Internet::allow;
 	return (1, "SHOW/425 <callsign>\nSHOW/425 CAL\nSHOW/425 BULL <bulletin number>\n e.g. SH/425 IQ5BL, SH/425 CAL, SH/425 BUL 779\n") unless @list;
 
-	my $target = "www.ariscandicci.it";
+	my $target = $Internet::dx425_url || 'www.iz5fsa.net';
 	my $port = 80;
 
 	dbg(join('|', @list)) if isdbg('425');
