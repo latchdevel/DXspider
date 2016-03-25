@@ -148,6 +148,7 @@ sub unixtoj($$)
 sub write($$$)
 {
 	my ($self, $jdate, $line) = @_;
+	return unless $self && $jdate;
 	if (!$self->{fh} || 
 		$self->{mode} ne ">>" || 
 		$jdate->year != $self->{jdate}->year || 

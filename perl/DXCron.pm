@@ -13,6 +13,7 @@ use DXUtil;
 use DXM;
 use DXDebug;
 use IO::File;
+use DXLog;
 
 use strict;
 
@@ -242,33 +243,21 @@ sub start_connect
 sub spawn
 {
 	my $line = shift;
-	
-	my $pid = fork();
-	if (defined $pid) {
-		if (!$pid) {
-			# in child, unset warnings, disable debugging and general clean up from us
-			$^W = 0;
-			eval "{ package DB; sub DB {} }";
-			dbgclose();
-			Logclose();
-			DXChannel::closeall();
-			for (@main::listeners) {
-				$_->close_server;
-			}
-			unless ($main::is_win) {
-				$SIG{HUP} = 'IGNORE';
-				$SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{__WARN__} = 'DEFAULT';
-				alarm(0);
-			}
-			exec "$line" or dbg("exec '$line' failed $!") if isdbg('cron');
-		}
-		dbg("spawn of $line started") if isdbg('cron');
-	} else {
-		dbg("can't fork for $line $!") if isdbg('cron');
-	}
 
-	# coordinate
-	sleep(1);
+	my $fc = Mojo::IOLoop::ForkCall->new;
+	$fc->run(
+			 sub {my @res = `$line`; return @res},
+			 undef,
+			 sub {
+				 my ($fc, $err, @res) = @_; 
+				 if (defined $err) {
+					 my $s = "DXCron::spawn: error $err";
+					 dbg($s);
+					 return;
+				 }
+				 dbg($_) for @res;
+			 }
+			);
 }
 
 # do an rcmd to another cluster from the crontab
