@@ -255,7 +255,7 @@ sub spawn
 					 dbg($s);
 					 return;
 				 }
-				 dbg($_) for @res;
+				 dbg("DXCron::spawn: $_") for @res;
 			 }
 			);
 }
