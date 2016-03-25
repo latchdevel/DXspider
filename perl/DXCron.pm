@@ -247,7 +247,7 @@ sub spawn
 	my $fc = Mojo::IOLoop::ForkCall->new;
 	$fc->run(
 			 sub {my @res = `$line`; return @res},
-			 undef,
+			 [],
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 if (defined $err) {
@@ -255,7 +255,10 @@ sub spawn
 					 dbg($s);
 					 return;
 				 }
-				 dbg("DXCron::spawn: $_") for @res;
+				 for (@res) {
+					 chomp;
+					 dbg("DXCron::spawn: $_") if isdbg("cron");
+				 }
 			 }
 			);
 }
