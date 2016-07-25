@@ -151,13 +151,13 @@ sub handle
 	return (1, $self->msg('e24')) unless $Internet::allow;
 	return (1, $self->msg('e5')) if $self->priv < 8;
 	my $target = $Internet::keps_url || 'www.amsat.org';
-	my $path = $Internet::keps_path || '/amsat/ftp/keps/current/nasa.all';
+	my $path = $Internet::keps_path || '/amsat/ftp/keps/current/nasabare.txt';
 	my $port = 80;
 
 	dbg("keps: contacting $target:$port") if isdbg('keps');
 
 	Log('call', "$call: show/keps $line");
-	my $conn = AsyncMsg->post($self, $target, $port, $path, 
+	my $conn = AsyncMsg->get($self, $target, $path, 
 							  filter => \&process,
 							  on_disc => \&on_disc);
 	
