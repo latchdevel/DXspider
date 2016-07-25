@@ -53,7 +53,7 @@ $now = Julian::Day->new($utime);
 $now = $now->sub($days);
 $date = cldate($utime);
 
-@out = $self->spawn_cmd(sub {
+@out = $self->spawn_cmd("show/hfstats $line", sub {
 							my %list;
 							my @out;
 							my @in;

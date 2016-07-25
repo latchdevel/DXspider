@@ -22,7 +22,7 @@ if ($line) {
 
 return (1, $self->msg('lockoutuse')) unless $line;
 
-@out = $self->spawn_cmd(sub {
+@out = $self->spawn_cmd("show lockout $line", sub {
 							my @out;
 							my @val;
 							my ($action, $count, $key, $data) = (0,0,0,0);

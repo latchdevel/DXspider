@@ -20,7 +20,7 @@ sub handle
 	my @out;
 	$to = 500 unless $to;
 
-	@out = $self->spawn_cmd(\&DXLog::print, 
+	@out = $self->spawn_cmd("show/groups $to", \&DXLog::print, 
 							args => [0, $to, $main::systime, 'chat', undef], 
 							cb => sub {
 								my $self = shift;
