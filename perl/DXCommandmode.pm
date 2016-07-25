@@ -38,6 +38,7 @@ use VE7CC;
 use DXXml;
 use AsyncMsg;
 use JSON;
+use Time::HiRes qw(gettimeofday tv_interval);
 
 use Mojo::IOLoop;
 use Mojo::IOLoop::ForkCall;
@@ -1251,6 +1252,24 @@ sub send_motd
 	$self->send_file($motd) if -e $motd;
 }
 
+sub _diffms
+{
+	return unless isdbg('chan');
+	my $call = shift;
+	my $a = shift;
+	my $b = shift || [gettimeofday];
+	my $prefix = shift;
+
+	my $secs = $b->[0] - $a->[0];
+	my $msecs = int(($b->[1] - $a->[1]) / 1000);
+
+	my $s = "forkcall stats: $call ";
+	$s .= "$prefix " if $prefix;
+	$s .= "${secs}S" if $secs;
+	$s .= "${msecs}mS";
+	dbg($s);
+}
+
 # Punt off a long running command into a separate process
 #
 # This is called from commands to run some potentially long running
@@ -1274,6 +1293,7 @@ sub spawn_cmd
 	my $prefix = delete $args{prefix};
 	my $progress = delete $args{progress};
 	my $args = delete $args{args} || [];
+	my $t0 = [gettimeofday];
 
 	no strict 'refs';
 		
@@ -1304,7 +1324,9 @@ sub spawn_cmd
 						 $dxchan->send(@res);
 					 }
 				 }
+				 _diffms($call, $t0, [gettimeofday], $prefix);
 			 });
+	
 	return @out;
 }
 
