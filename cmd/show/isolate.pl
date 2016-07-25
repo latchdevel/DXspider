@@ -15,7 +15,7 @@ my @out;
 
 use DB_File;
 
-@out = $self->spawn_cmd(sub {
+@out = $self->spawn_cmd("show/isolate $line", sub {
 							my @out;
 							my @val;
 							

@@ -385,7 +385,7 @@ if ($doqra) {
   
 # now do the search
 
-push @out, $self->spawn_cmd(\&Spot::search, 
+push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search, 
 							args => [$expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef],
 							cb => sub {
 								my ($dxchan, @res) = @_; 

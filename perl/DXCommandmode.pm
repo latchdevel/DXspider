@@ -1256,16 +1256,15 @@ sub _diffms
 {
 	return unless isdbg('chan');
 	my $call = shift;
-	my $a = shift;
-	my $b = shift || [gettimeofday];
-	my $prefix = shift;
+	my $line = shift;
+	my $ta = shift;
+	my $tb = shift || [gettimeofday];
 
-	my $secs = $b->[0] - $a->[0];
-	my $msecs = int(($b->[1] - $a->[1]) / 1000);
+	my $a = int($ta->[0] * 1000) + int($ta->[1] / 1000); 
+	my $b = int($tb->[0] * 1000) + int($tb->[1] / 1000);
+	my $msecs = $b - $a;
 
-	my $s = "forkcall stats: $call ";
-	$s .= "$prefix " if $prefix;
-	$s .= "${secs}S" if $secs;
+	my $s = "forkcall stats: $call '$line' ";
 	$s .= "${msecs}mS";
 	dbg($s);
 }
@@ -1280,10 +1279,11 @@ sub _diffms
 #       IT DOES NOT START UP SOME NEW PROGRAM AND RELIES ON THE FACT THAT IT IS RUNNING DXSPIDER 
 #       THE CURRENT CONTEXT!!
 # 
-# call: $self->spawn_cmd(\<function>, [cb => sub{...}], [prefix => "cmd> "], [progress => 0|1], [args => [...]]);
+# call: $self->spawn_cmd($original_cmd_line, \<function>, [cb => sub{...}], [prefix => "cmd> "], [progress => 0|1], [args => [...]]);
 sub spawn_cmd
 {
 	my $self = shift;
+	my $line = shift;
 	my $cmdref = shift;
 	my $call = $self->{call};
 	my %args = @_;
@@ -1324,7 +1324,7 @@ sub spawn_cmd
 						 $dxchan->send(@res);
 					 }
 				 }
-				 _diffms($call, $t0, [gettimeofday], $prefix);
+				 _diffms($call, $line, $t0);
 			 });
 	
 	return @out;

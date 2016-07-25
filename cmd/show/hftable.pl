@@ -95,7 +95,7 @@ unless ($now) {
 	$date = cldate(time);
 }
 
-@out = $self->spawn_cmd(sub {
+@out = $self->spawn_cmd("show/hftable $line", sub {
 							my %list;
 							my @out;
 							my $i;

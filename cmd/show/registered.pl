@@ -20,7 +20,7 @@ if ($line) {
 	$line = "^\U\Q$line";
 }
 
-@out = $self->spawn_cmd(sub {
+@out = $self->spawn_cmd("show/registered $line", sub {
 							my @out;
 							my @val;
 							

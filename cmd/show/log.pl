@@ -41,7 +41,7 @@ sub handle
 		$who = $self->call;
 	}
 
-	@out = $self->spawn_cmd(\&DXLog::print, args => [$from, $to, $main::systime, undef, $who]);
+	@out = $self->spawn_cmd("show/log $cmdline", \&DXLog::print, args => [$from, $to, $main::systime, undef, $who]);
 	
 	return (1, @out);
 }
