@@ -1,3 +1,8 @@
+16Aug16=======================================================================
+1. Mega change to push all local data in $root/local_data and where there
+   is duplication with system data (still in $root/data) then use whichever
+   is newer. This will move stuff (permanently) like spots and other DXLog
+   files to local_data as well as the userfile, DX QSL file and usdb stuff.
 25Jul16=======================================================================
 1. Add some timing stats to cmd spawn_cmd.
 08Jul16=======================================================================

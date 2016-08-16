@@ -29,7 +29,7 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
-use DXVars;
+use SysVar;
 use DXUtil;
 use DXLog;
 use Julian;

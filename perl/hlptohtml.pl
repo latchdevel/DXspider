@@ -21,7 +21,7 @@ BEGIN {
 
 use strict;
 use IO::File;
-use DXVars;
+use SysVar;
 use Carp;
 
 my $lang = 'en';

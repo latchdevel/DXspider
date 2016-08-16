@@ -39,7 +39,7 @@ $from = "";						# who this came from
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 12*3600;				# the length of time to hold spot dups
 
-$dirprefix = "$main::data/wcy";
+$dirprefix = "$main::local_data/wcy";
 $param = "$dirprefix/param";
 
 $filterdef = bless ([
@@ -54,7 +54,6 @@ $filterdef = bless ([
 			  ['origin_itu', 'ni', 18],
 			  ['origin_zone', 'nz', 19],
 			 ], 'Filter::Cmd');
-
 
 sub init
 {

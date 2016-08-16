@@ -1,12 +1,8 @@
 #!/usr/bin/env perl
 #
-# remove all records with the sysop/cluster callsign and recreate
-# it from the information contained in DXVars
+# Lock all non local nodes that have a privileges <= 1
 #
 # WARNING - this must be run when the cluster.pl is down!
-#
-# This WILL NOT delete an old sysop call if you are simply
-# changing the callsign.
 #
 # Copyright (c) 1998 Dirk Koopman G1TLH
 #
@@ -23,10 +19,11 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
-use DXVars;
+use SysVar;
 use DXUser;
+use DXUtil;
 
-my $lockfn = "$root/local/cluster.lck";       # lock file name
+my $lockfn = localdata("cluster.lck");       # lock file name
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	my $pid = <CLLOCK>;
@@ -37,7 +34,7 @@ if (-e $lockfn) {
 
 my @nodes = map { uc } @ARGV;
 
-DXUser->init($userfn, 1);
+DXUser::init(1);
 
 my $count;
 my $nodes;
@@ -71,6 +68,6 @@ print "If there are any nodes missing on the above list then you MUST do\n";
 print "a set/node (set/spider, set/clx etc) on each of them to allow them\n";
 print "to connect to you or you to them\n"; 
  
-DXUser->finish();
+DXUser::finish();
 exit(0);
 

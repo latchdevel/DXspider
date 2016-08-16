@@ -18,7 +18,7 @@ use vars qw(%bands %regions %aliases $bandsfn %valid);
 %bands = ();					# the 'raw' band data
 %regions = ();					# list of regions for shortcuts eg vhf ssb
 %aliases = ();					# list of aliases
-$bandsfn = "$main::data/bands.pl";
+$bandsfn = localdata("bands.pl");
 
 %valid = (
 		  cw => '0,CW,parraypairs',

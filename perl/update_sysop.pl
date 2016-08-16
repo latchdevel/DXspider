@@ -22,8 +22,9 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
-use DXVars;
+use SysVar;
 use DXUser;
+use DXUtil;
 
 sub create_it
 {
@@ -85,7 +86,7 @@ sub create_it
 
 die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';).\n" if $mycall eq $myalias;
 
-$lockfn = "$root/local/cluster.lck";       # lock file name
+$lockfn = localdata("cluster.lck");       # lock file name
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	my $pid = <CLLOCK>;
@@ -94,9 +95,9 @@ if (-e $lockfn) {
 	close CLLOCK;
 }
 
-DXUser->init($userfn, 1);
+DXUser::init(1);
 create_it();
-DXUser->finish();
+DXUser:finish();
 print "Update of $myalias on cluster $mycall successful\n";
 exit(0);
 

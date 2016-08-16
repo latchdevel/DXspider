@@ -232,7 +232,8 @@ sub update_pc92_keepalive
 
 sub init
 {
-	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
+	my $fn = localdata("hop_table.pl");
+	do $fn if -e $fn;
 	confess $@ if $@;
 
 	my $user = DXUser::get($main::mycall);

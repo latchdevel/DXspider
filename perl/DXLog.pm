@@ -49,7 +49,8 @@ sub new
 {
 	my ($prefix, $suffix, $sort) = @_;
 	my $ref = bless {}, __PACKAGE__;
-	$ref->{prefix} = "$main::data/$prefix";
+	localdata_mv($prefix);
+	$ref->{prefix} = "$main::local_data/$prefix";
 	$ref->{suffix} = $suffix if $suffix;
 	$ref->{sort} = $sort;
 	

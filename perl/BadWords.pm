@@ -19,9 +19,9 @@ use IO::File;
 
 use vars qw($badword $regexcode);
 
-my $oldfn = "$main::data/badwords";
-my $regex = "$main::data/badw_regex";
-my $bwfn = "$main::data/badword";
+my $oldfn = localdata("badwords");
+my $regex = localdata("badw_regex");
+my $bwfn = localdata("badword");
 
 # copy issue ones across
 filecopy("$regex.gb.issue", $regex) unless -e $regex;

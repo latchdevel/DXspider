@@ -64,23 +64,6 @@ $no = 'No';
 # the interval between unsolicited prompts if not traffic
 $user_interval = 11*60;
 
-# data files live in 
-$data = "$root/data";
-
-# system files live in
-$system = "$root/sys";
-
-# command files live in
-$cmd = "$root/cmd";
-
-# local command files live in (and overide $cmd)
-$localcmd = "$root/local_cmd";
-
-# where the user data lives
-$userfn = "$data/users";
-
-# the "message of the day" file
-$motd = "$data/motd";
 
 # are we debugging ?
 @debug = qw(chan state msg cron connect);

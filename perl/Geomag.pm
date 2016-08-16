@@ -38,7 +38,7 @@ $from = "";						# who this came from
 $duplth = 20;					# the length of text to use in the deduping
 $dupage = 12*3600;				# the length of time to hold spot dups
 
-$dirprefix = "$main::data/wwv";
+$dirprefix = "$main::local_data/wwv";
 $param = "$dirprefix/param";
 
 $filterdef = bless ([

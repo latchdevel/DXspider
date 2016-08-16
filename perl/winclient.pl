@@ -28,6 +28,8 @@ BEGIN {
 
 use IO::Socket;
 use DXVars;
+use SysVar;
+
 use IO::File;
 use Config;
 

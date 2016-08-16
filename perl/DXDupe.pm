@@ -17,7 +17,8 @@ use vars qw{$lasttime $dbm %d $default $fn};
 
 $default = 48*24*60*60;
 $lasttime = 0;
-$fn = "$main::data/dupefile";
+localdata_mv("dupefile");
+$fn = localdata("dupefile");
 
 sub init
 {

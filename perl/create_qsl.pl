@@ -22,7 +22,7 @@ BEGIN {
 use strict;
 
 use IO::File;
-use DXVars;
+use SysVar;
 use DXUtil;
 use Spot;
 use QSL;
@@ -36,11 +36,12 @@ my $qslfn = "qsl";
 
 $main::systime = time;
 
-unlink "$root/data/qsl.v1";
+unlink "$data/qsl.v1";
+unlink "$local_data/qsl.v1";
 
 QSL::init(1) or die "cannot open QSL file";
 
-my $base = "$root/data/spots";
+my $base = localdata("spots");
 
 opendir YEAR, $base or die "$base $!";
 foreach my $year (sort readdir YEAR) {

@@ -13,13 +13,18 @@ BEGIN {
 	# root of directory tree for this system
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-	
+
+	mkdir "$root/local_data", 02777 unless -d "$root/local_data";
+
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 }
 
-use DXVars;
+use SysVar;
+
 use Data::Dumper;
+use DXUtil;
+
 use strict;
 
 my %loc = ();						# the location unique hash
@@ -28,9 +33,17 @@ my %locn = ();						# the inverse of the above
 my %pre = ();						# the prefix hash
 my %pren = ();						# the inverse
 
+if (@ARGV && $ARVG[0] =~ /^--system$/) {
+	$prefix = $main::data;
+	shift;
+} else {
+	$prefix = $main:local_data;
+}
+
 # open the input file
 my $ifn = $ARGV[0] if $ARGV[0];
-$ifn = "$main::data/wpxloc.raw" if !$ifn;
+
+$ifn = "$prefix/wpxloc.raw" if !$ifn;
 open (IN, $ifn) or die "can't open $ifn ($!)";
 
 # first pass, find all the 'master' location records
@@ -94,7 +107,7 @@ close(IN);
 my @f;
 my @a;
 $line = 0;
-if (open(IN, "$main::data/cty.dat")) {
+if (open(IN, "$prefix/cty.dat")) {
 	my $state = 0;
 	while (<IN>) {
 		$line++;
@@ -125,7 +138,7 @@ if (open(IN, "$main::data/cty.dat")) {
 close IN;
 
 
-open(OUT, ">$main::data/prefix_data.pl") or die "Can't open $main::data/prefix_data.pl ($!)";
+open(OUT, ">$prefix/prefix_data.pl") or die "Can't open $prefix/prefix_data.pl ($!)";
 
 print OUT "\%pre = (\n";
 foreach my $k (sort keys %pre) {

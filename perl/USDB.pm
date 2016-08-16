@@ -13,11 +13,14 @@ use DXVars;
 use DB_File;
 use File::Copy;
 use DXDebug;
+use DXUtil;
+
 #use Compress::Zlib;
 
 use vars qw(%db $present $dbfn);
 
-$dbfn = "$main::data/usdb.v1";
+localdata_mv("usdb.v1");
+$dbfn = localdata("usdb.v1");
 
 sub init
 {

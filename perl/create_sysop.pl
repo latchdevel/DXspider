@@ -19,12 +19,13 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
-use DXVars;
+use SysVar;
 use DXUser;
+use DXUtil;
 
 sub delete_it
 {
-	DXUser->del_file($userfn);
+	DXUser::del_file();
 }
 
 sub create_it
@@ -79,7 +80,7 @@ sub create_it
 
 die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';).\n" if $mycall eq $myalias;
 
-$lockfn = "$root/local/cluster.lck";       # lock file name
+$lockfn = localdata("cluster.lck");       # lock file name
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	my $pid = <CLLOCK>;
@@ -95,21 +96,21 @@ if (-e "$userfn.v2" || -e "$userfn.v3") {
 	$ans = <STDIN>;
 	if ($ans =~ /^[Yy]/) {
 		delete_it();
-		DXUser->init($userfn, 1);
+		DXUser::init(1);
 		create_it();
 	} else {
 		print "Do you wish to reset your cluster and sysop information? [y/N]: ";
 		$ans = <STDIN>;
 		if ($ans =~ /^[Yy]/) {
-			DXUser->init($userfn, 1);
+			DXUser::init(1);
 			create_it();
 		}
 	}
   
 } else {
-	DXUser->init($userfn, 1);
+	DXUser::init(1);
 	create_it();
 }
-DXUser->finish();
+DXUser::finish();
 exit(0);
 

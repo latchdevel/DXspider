@@ -8,10 +8,12 @@
 
 package DXUtil;
 
+
 use Date::Parse;
 use IO::File;
 use File::Copy;
 use Data::Dumper;
+
 
 use strict;
 
@@ -24,7 +26,7 @@ require Exporter;
 			 filecopy ptimelist
              print_all_fields cltounix unpad is_callsign is_long_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
-			 is_prefix dd is_ipaddr $pi $d2r $r2d
+			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
             );
 
 
@@ -470,5 +472,35 @@ sub deleteitem
 	
 	@$list = grep {$_ ne $item } @$list;
 	return $n - @$list;
+}
+
+# find the correct local_data directory
+# basically, if there is a local_data directory with this filename and it is younger than the
+# equivalent one in the (system) data directory then return that name rather than the system one
+sub localdata
+{
+	my $ifn = shift;
+	my $ofn = "$main::data/$ifn";
+	my $tfn;
+	
+	if (-e "$main::local_data") {
+		$tfn = "main::local_data/$ifn";
+		if (-e $tfn && -M $tfn < -M $ofn) {
+			$ofn = $tfn;
+		}
+	}
+
+	return $ofn;
+}
+
+# move a file or a directory from data -> local_data if isn't there already
+sub localdata_mv
+{
+	my $ifn = shift;
+	if (-e "$main::data/$ifn" ) {
+		unless (-e "$main::local_data/$ifn") {
+			move("$main::data/$ifn", "$main::local_data/$ifn") or die "localdata_mv: cannot move $ifn from '$main::data' -> '$main::local_data' $!\n";
+		}
+	}
 }
 

@@ -36,11 +36,14 @@ BEGIN {
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 
+	mkdir "$root/local_data", 02777 unless -d "$root/local_data";
+
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 }
 
-use DXVars;
+use SysVar;
+
 use Archive::Zip qw(:ERROR_CODES);
 use Archive::Zip::MemberRead;
 use IO::File;
@@ -50,7 +53,7 @@ my $blksize = 1024 * 1024;
 
 STDOUT->autoflush(1);
 
-my $dbrawfn = "$main::data/usdbraw.gz";
+my $dbrawfn = localdata("usdbraw.gz");
 
 rename "$dbrawfn.oo", "$dbrawfn.ooo";
 rename "$dbrawfn.o", "$dbrawfn.oo";
@@ -75,7 +78,7 @@ sub handleEN
 {
 	my ($zip, $argv) = @_;
 	my $mname = "EN.dat";
-	my $ofn = "$main::data/$mname";
+	my $ofn = localdata($mname);
 	print "  Handling EN records, unzipping";
 	if ($zip->extractMember($mname, $ofn) == AZ_OK) {
 		my $fh = new IO::File "$ofn" or die "Cannot open $ofn $!";

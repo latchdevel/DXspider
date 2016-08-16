@@ -10,6 +10,8 @@
 #
 #
 
+package main;
+
 require 5.10.1;
 use warnings;
 
@@ -29,12 +31,13 @@ BEGIN {
 	die "$root/local doesn't exist, please RTFM" unless -d "$root/local";
 	die "$root/local/DXVars.pm doesn't exist, please RTFM" unless -e "$root/local/DXVars.pm";
 
-	mkdir "$root/local_cmd", 0777 unless -d "$root/local_cmd";
-
+	# create some directories
+	mkdir "$root/local_cmd", 02777 unless -d "$root/local_cmd";
+	mkdir "$root/local_data", 02777 unless -d "$root/local_data";
 
 	# try to create and lock a lockfile (this isn't atomic but
 	# should do for now
-	$lockfn = "$root/local/cluster.lck";       # lock file name
+	$lockfn = "$root/local_data/cluster.lck";       # lock file name
 	if (-w $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -56,6 +59,8 @@ BEGIN {
 use Mojo::IOLoop;
 
 use DXVars;
+use SysVar;
+
 use Msg;
 use IntMsg;
 use Internet;
@@ -146,7 +151,6 @@ $log_flush_interval = 2;		# interval to wait between log flushes
 
 our $ending;					# signal that we are ending;
 our $broadcast_debug;			# allow broadcasting of debug info down "enhanced" user connections
-
 
 
 # send a message to call on conn and disconnect
@@ -439,6 +443,7 @@ sub setup_start
 	}
 	STDOUT->autoflush(1);
 
+	
 	# try to load the database
 	if (DXSql::init($dsn)) {
 		$dbh = DXSql->new($dsn);
@@ -495,7 +500,7 @@ sub setup_start
 
 	# initialise User file system
 	dbg("loading user file system ...");
-	DXUser->init($userfn, 1);
+	DXUser::init(1);
 
 	# look for the sysop and the alias user and complain if they aren't there
 	{

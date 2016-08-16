@@ -8,7 +8,7 @@
 # Things entered into the list are always upper
 # cased.
 # 
-# The files that are created live in /spider/data
+# The files that are created live in /spider/local_data (was data)
 # 
 # Dunno why I didn't do this earlier but heyho..
 #
@@ -28,7 +28,10 @@ use strict;
 sub new
 {
 	my ($pkg, $name) = @_;
-	my $s = readfilestr($main::data, $name);
+
+	# move existing file
+	localdata_mv($name);
+	my $s = readfilestr($main::local_data, $name);
 	my $self = undef;
 	$self = eval $s if $s;
 	dbg("error in reading $name in DXHash $@") if $@;
@@ -39,7 +42,7 @@ sub new
 sub put
 {
 	my $self = shift;
-	writefilestr($main::data, $self->{name}, undef, $self);
+	writefilestr($main::local_data, $self->{name}, undef, $self);
 }
 
 sub add

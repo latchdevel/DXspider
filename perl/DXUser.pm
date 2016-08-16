@@ -16,6 +16,7 @@ use IO::File;
 use DXDebug;
 use DXUtil;
 use LRU;
+use File::Copy;
 
 use strict;
 
@@ -115,10 +116,8 @@ sub AUTOLOAD
 #
 sub init
 {
-	my ($pkg, $fn, $mode) = @_;
+	my $mode = shift;
   
-	confess "need a filename in User" if !$fn;
-
 	my $ufn;
 	my $convert;
 	
@@ -126,10 +125,10 @@ sub init
 		require Storable;
 	};
 
-#	eval "use Storable qw(nfreeze thaw)";
+	my $fn = "users";
 	
 	if ($@) {
-		$ufn = "$fn.v2";
+		$ufn = localdata("users.v2");
 		$v3 = $convert = 0;
 		dbg("the module Storable appears to be missing!!");
 		dbg("trying to continue in compatibility mode (this may fail)");
@@ -137,9 +136,9 @@ sub init
 	} else {
 		import Storable qw(nfreeze thaw);
 
-		$ufn = "$fn.v3";
+		$ufn = localdata("users.v3");
 		$v3 = 1;
-		$convert++ if -e "$fn.v2" && !-e $ufn;
+		$convert++ if -e localdata("users.v2") && !-e $ufn;
 	}
 	
 	if ($mode) {
@@ -159,7 +158,7 @@ sub init
 		my %oldu;
 		dbg("Converting the User File to V3 ");
 		dbg("This will take a while, I suggest you go and have cup of strong tea");
-		my $odbm = tie (%oldu, 'DB_File', "$fn.v2", O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
+		my $odbm = tie (%oldu, 'DB_File', localdata("users.v2"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
         for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
 			my $ref = asc_decode($val);
 			if ($ref) {
@@ -178,9 +177,7 @@ sub init
 
 sub del_file
 {
-	my ($pkg, $fn) = @_;
-  
-	confess "need a filename in User" if !$fn;
+	my $fn = localdata("users");
 	$fn .= $v3 ? ".v3" : ".v2";
 	unlink $fn;
 }
@@ -457,7 +454,7 @@ BEGIN {
 	
 	# try to detect a lockfile (this isn't atomic but 
 	# should do for now
-	$lockfn = "$root/local/cluster.lck";       # lock file name
+	$lockfn = "$root/local_data/cluster.lck";       # lock file name
 	if (-e $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -469,7 +466,7 @@ BEGIN {
 
 package DXUser;
 
-use DXVars;
+use SysVar;
 use DXUser;
 
 if (@ARGV) {
@@ -477,8 +474,8 @@ if (@ARGV) {
 	print "user filename now $userfn\n";
 }
 
-DXUser->del_file($main::userfn);
-DXUser->init($main::userfn, 1);
+DXUser::del_file();
+DXUser::init();
 %u = ();
 my $count = 0;
 my $err = 0;
@@ -494,7 +491,7 @@ while (<DATA>) {
 		$err++
 	}
 }
-DXUser->sync; DXUser->finish;
+DXUser::sync; DXUser::finish;
 print "There are $count user records and $err errors\n";
 };
 		print $fh "__DATA__\n";

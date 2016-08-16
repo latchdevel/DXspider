@@ -18,10 +18,12 @@ use vars qw($qslfn $dbm);
 $qslfn = 'qsl';
 $dbm = undef;
 
+localdata_mv("$qslfn.v1");
+
 sub init
 {
 	my $mode = shift;
-	my $ufn = "$main::root/data/$qslfn.v1";
+	my $ufn = localdata("$qslfn.v1");
 
 	Prefix::load() unless Prefix::loaded();
 	

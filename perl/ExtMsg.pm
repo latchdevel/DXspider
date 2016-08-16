@@ -152,7 +152,7 @@ sub to_connected
 	delete $conn->{timeout};
 	$conn->{csort} = $sort;
 	&{$conn->{rproc}}($conn, "$dir$call|$sort");
-	$conn->_send_file("$main::data/connected") unless $conn->{outgoing};
+	$conn->_send_file(localdata("connected")) unless $conn->{outgoing};
 }
 
 sub new_client {
@@ -162,7 +162,7 @@ sub new_client {
 	my $conn = $server_conn->SUPER::new_client($client);
 	# send login prompt
 	$conn->{state} = 'WL';
-	$conn->_send_file("$main::data/issue");
+	$conn->_send_file(localdata("issue"));
 	$conn->send_raw("login: ");
 	$conn->_dotimeout(60);
 	$conn->{echo} = 1;

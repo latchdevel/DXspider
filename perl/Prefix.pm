@@ -72,7 +72,8 @@ sub load
 	# tie the main prefix database
 	eval {$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0664, $DB_BTREE);};
 	my $out = "$@($!)" if !$db || $@ ;
-	eval {do "$main::data/prefix_data.pl" if !$out; };
+	my $fn = localdata("prefix_data.pl");
+	eval {do $fn if !$out; };
 	$out .= $@ if $@;
 	$lru = LRU->newbase('Prefix', $lrusize);
 
@@ -88,7 +89,7 @@ sub store
 {
 	my ($k, $l);
 	my $fh = new IO::File;
-	my $fn = "$main::data/prefix_data.pl";
+	my $fn = localdata("prefix_data.pl");
   
 	confess "Prefix system not started" if !$db;
   

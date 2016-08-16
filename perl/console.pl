@@ -29,9 +29,11 @@ BEGIN {
 
 use Mojo::IOLoop;
 
+use DXVars;
+use SysVar;
+
 use Msg;
 use IntMsg;
-use DXVars;
 use DXDebug;
 use DXUtil;
 use DXDebug;
