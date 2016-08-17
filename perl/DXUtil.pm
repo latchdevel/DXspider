@@ -484,8 +484,10 @@ sub localdata
 	my $tfn;
 	
 	if (-e "$main::local_data") {
-		$tfn = "main::local_data/$ifn";
-		if (-e $tfn && -M $tfn < -M $ofn) {
+		$tfn = "$main::local_data/$ifn";
+		if (-e $tfn && -e $ofn) {
+			$ofn = $tfn if -M $tfn < -M $ofn;
+		} elsif (-e $tfn) {
 			$ofn = $tfn;
 		}
 	}

@@ -19,6 +19,7 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
+use DXVars;
 use SysVar;
 use DXUser;
 use DXUtil;
