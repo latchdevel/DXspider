@@ -20,6 +20,7 @@ BEGIN {
 	unshift @INC, "$root/local";
 }
 
+use DXVars;
 use SysVar;
 
 use Data::Dumper;
@@ -33,18 +34,22 @@ my %locn = ();						# the inverse of the above
 my %pre = ();						# the prefix hash
 my %pren = ();						# the inverse
 
-if (@ARGV && $ARVG[0] =~ /^--system$/) {
+my $prefix;
+
+if (@ARGV && $ARGV[0] =~ /^--system$/) {
 	$prefix = $main::data;
 	shift;
 } else {
-	$prefix = $main:local_data;
+	$prefix = $main::local_data;
 }
 
-# open the input file
-my $ifn = $ARGV[0] if $ARGV[0];
+my $ifn;
 
-$ifn = "$prefix/wpxloc.raw" if !$ifn;
-open (IN, $ifn) or die "can't open $ifn ($!)";
+$ifn = "$prefix/wpxloc.raw";
+unless (open (IN, $ifn)) {
+	$ifn = "$main::data/wpxloc.raw";
+	open(IN, $ifn) or die "can't open $ifn ($!)";
+}
 
 # first pass, find all the 'master' location records
 while (<IN>) {
@@ -104,10 +109,17 @@ close(IN);
 #print Data::Dumper->Dump([\%pre, \%locn], [qw(pre locn)]);
 
 # now open the cty.dat file if it is there
+my $r;
+$ifn = "$prefix/cty.dat";
+unless ($r = open (IN, $ifn)) {
+	$ifn = "$main::data/cty.dat";
+	$r = open(IN, $ifn);
+}
+
 my @f;
 my @a;
 $line = 0;
-if (open(IN, "$prefix/cty.dat")) {
+if ($r) {
 	my $state = 0;
 	while (<IN>) {
 		$line++;

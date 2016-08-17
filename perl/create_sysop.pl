@@ -81,7 +81,7 @@ sub create_it
 
 die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';).\n" if $mycall eq $myalias;
 
-$lockfn = localdata("cluster.lck");       # lock file name
+$lockfn = "$main::local_data/cluster.lck";       # lock file name (now in local data)
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	my $pid = <CLLOCK>;

@@ -43,7 +43,10 @@ BEGIN {
 		my $pid = <CLLOCK>;
 		if ($pid) {
 			chomp $pid;
-			die "Lockfile ($lockfn) and process $pid exist, another cluster running?" if kill 0, $pid;
+			if (kill 0, $pid) {
+				warn "Lockfile ($lockfn) and process $pid exist, another cluster running?\n";
+				exit 1;
+			}
 		}
 		unlink $lockfn;
 		close CLLOCK;
@@ -56,6 +59,7 @@ BEGIN {
 	$systime = time;
 }
 
+			
 use Mojo::IOLoop;
 
 use DXVars;

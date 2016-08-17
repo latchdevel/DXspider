@@ -15,7 +15,7 @@ BEGIN {
 	# root of directory tree for this system
 	$root = "/spider"; 
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-        unshift @INC, "$root/perl";     # this IS the right way round!
+    unshift @INC, "$root/perl";     # this IS the right way round!
 	unshift @INC, "$root/local";
 }
 
@@ -23,7 +23,7 @@ use SysVar;
 use DXUser;
 use DXUtil;
 
-my $lockfn = localdata("cluster.lck");       # lock file name
+$lockfn = "$main::local_data/cluster.lck";       # lock file name (now in local d
 if (-e $lockfn) {
 	open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 	my $pid = <CLLOCK>;
