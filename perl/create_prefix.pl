@@ -35,9 +35,11 @@ my %pre = ();						# the prefix hash
 my %pren = ();						# the inverse
 
 my $prefix;
+my $system;
 
 if (@ARGV && $ARGV[0] =~ /^--system$/) {
 	$prefix = $main::data;
+	++$system;
 	shift;
 } else {
 	$prefix = $main::local_data;
@@ -45,7 +47,7 @@ if (@ARGV && $ARGV[0] =~ /^--system$/) {
 
 my $ifn;
 
-$ifn = "$prefix/wpxloc.raw";
+$ifn = $system ? "$main::data/wpxloc.raw" : "$prefix/wpxloc.raw";
 unless (open (IN, $ifn)) {
 	$ifn = "$main::data/wpxloc.raw";
 	open(IN, $ifn) or die "can't open $ifn ($!)";
@@ -110,7 +112,7 @@ close(IN);
 
 # now open the cty.dat file if it is there
 my $r;
-$ifn = "$prefix/cty.dat";
+$ifn = $system ? "$main::data/cty.dat" : "$prefix/cty.dat";
 unless ($r = open (IN, $ifn)) {
 	$ifn = "$main::data/cty.dat";
 	$r = open(IN, $ifn);
