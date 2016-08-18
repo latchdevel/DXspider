@@ -9,9 +9,10 @@
 # Copyright (c) 2001-2013 Dirk Koopman G1TLH
 #
 
-use vars qw (%allowed);
+use vars qw (%allowed %convert);
 
-%allowed = qw(call 1 fname 1 name 1 addr2 1 state 1 country 1 lat 1 lon 1 county 1 moddate 1 qslmgr 1 grid 1 Error 1 );
+%allowed = qw(call 1 fname 1 name 1 addr2 1 state 1 country 1 lat 1 lon 1 county 1 moddate 1 qslmgr 1 grid 1 Error 1 dxcc 1 );
+%convert = qw(dxcc ADIF);
 
 sub _send
 {
@@ -21,6 +22,7 @@ sub _send
 
 	my ($tag, $data) = $msg =~ m|^\s*<(\w+)>(.*)</|;
 	if ($allowed{$tag}) {
+		$tag = $convert{$tag} if exists $convert{$tag};
 		my $prefix = $conn->{prefix} || ' ';
 		$dxchan->send($prefix . sprintf("%-10s: $data", $tag));
 	}
