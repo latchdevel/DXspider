@@ -289,7 +289,7 @@ sub _send_stuff
 		}
 		if (defined $sock) {
 			$sock->write($data);
-			$total_out = $lth;
+			$total_out += $lth;
 		} else {
 			dbg("_send_stuff $call ending data ignored: $data");
 		}
@@ -377,6 +377,8 @@ sub _rcv {                     # Complement to _send
 	my $msg = shift;
     my $sock = $conn->{sock};
     return unless defined($sock);
+
+	$total_in += length $msg;
 
 	my @lines;
 	if (isdbg('raw')) {

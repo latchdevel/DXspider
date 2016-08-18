@@ -1,5 +1,6 @@
 18Aug16=======================================================================
 1. Add CTY-2610
+2. put back msg total in & total out for mrtg and background mrtg
 16Aug16=======================================================================
 1. Mega change to push all local data in $root/local_data and where there
    is duplication with system data (still in $root/data) then use whichever
