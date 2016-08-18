@@ -32,6 +32,8 @@
 sub handle
 {
 	my ($self, $line) = @_;
+
+	$DB::single = 1;
 	
 	# create the arg list
 	my %want;
@@ -40,7 +42,7 @@ sub handle
 	
 	return (1, "MRTG not installed") unless $want{nomrtg} || -e '/usr/bin/mrtg' || -e '/usr/local/bin/mrtg';
 
-	my @out = $self->spawn_cmd("mrtg $line", \&do_it, args=>[%want]);
+	my @out = do_it(%want);
 	
 	return (1, @out);
 }

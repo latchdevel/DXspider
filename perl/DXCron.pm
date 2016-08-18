@@ -263,6 +263,29 @@ sub spawn
 			);
 }
 
+sub spawn_cmd
+{
+	my $line = shift;
+
+	dbg("spawn_cmd run: $line") if isdbg('cron');
+	my $fc = Mojo::IOLoop::ForkCall->new;
+	$fc->run(
+			 sub {my @res = DXCommandmode::run_cmd($main::me, $line); return @res},
+			 [],
+			 sub {
+				 my ($fc, $err, @res) = @_; 
+				 if (defined $err) {
+					 my $s = "spawn_cmd: error $err";
+					 dbg($s);
+				 }
+				 for (@res) {
+					 chomp;
+					 dbg("spawn_cmd: $_") if isdbg("cron");
+				 }
+			 }
+			);
+}
+
 # do an rcmd to another cluster from the crontab
 sub rcmd
 {
