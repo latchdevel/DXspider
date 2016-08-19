@@ -1,4 +1,4 @@
-#
+##
 # the MRTG handler
 #
 # Copyright (c) - 2002 Dirk Koopman G1TLH
@@ -37,6 +37,7 @@ Imagedir: $self->{html}
 Logdir: $self->{dir}
 Options[_]: growright
 Timezone[_]: GMT
+RouterName: $main::call
 ##
 ##
 EOF
