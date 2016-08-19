@@ -97,7 +97,7 @@ Now in another window run:
 
 and finally:
 
-   service dxspider start
+   sudo service dxspider start
 
 
 
