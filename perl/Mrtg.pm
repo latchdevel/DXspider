@@ -37,7 +37,6 @@ Imagedir: $self->{html}
 Logdir: $self->{dir}
 Options[_]: growright
 Timezone[_]: GMT
-RouterName: $main::call
 ##
 ##
 EOF
