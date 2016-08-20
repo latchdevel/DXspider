@@ -1,59 +1,51 @@
 There are the notes for upgrading to the mojo branch.
 
+There is NO POINT in doing this at the moment unless you are running a node with many (>50)
+users. It is the future, but at the moment I am testing larger and larger installations to
+check that it a) still works as people imagine it should and b) it provides the improvement
+in scaling that I am anticipating. There are no significant new features - yet. 
+
+Upgrading is not for the faint of heart. There is no installation script (but there
+will be) so, for the time being, you need to do some manual editing. Also, while there is
+a backward path, it will involve moving various files from their new home (/spider/local_data),
+back to where they came from (/spider/data).
+
 Prerequisites:
 
-perl 5.10.1, preferably 5.14.1 or greater. This basically means running ubuntu 12.04 or later (or one of the other linux distros of similar age). The install instructions are for debian based systems.
+	A supply of good, strong tea - preferably in pint mugs. A tin hat, stout boots, a
+	rucksack with survival rations and a decent miners' lamp might also prove comforting. I
+	enclose this link: http://www.noswearing.com/dictionary in case you run out of swear words.
 
-cpamminus:
+	An installed and known working git based installation. Mojo is not supported under CVS or
+	installation from a tarball. 
+
+	perl 5.10.1, preferably 5.14.1 or greater. This basically means running ubuntu 12.04 or
+	later (or one of the other linux distros of similar age or later). The install instructions are
+	for debian based systems. IT WILL NOT WORK WITHOUT A "MODERN" PERL. Yes, you can use
+	bleadperl if you know how to use it and can get it to run the node under it as a daemon
+	without resorting the handy URL supplied above. Personally, I wouldn't bother. It's
+	easier and quicker just to upgrade your linux distro. Apart from anything else things like ssh
+	ntpd are broken on ALL older systems and will allow the ungodly in more easily than something
+	modern.
+
+Install cpamminus:
 
 	sudo apt-get install cpanminus
 or
+	sudo apt-get install curl
 	curl -L https://cpanmin.us | perl - --sudo App::cpanminus
 
 You will need the following CPAN packages:
 
 	sudo cpanm EV Mojolicious Mojo::IOLoop::ForkCall JSON JSON::XS
+	# just in case it's missing
+	sudo apt-get install top
 
-login as the sysop user.
+Login as the sysop user.
 
-Edit your /spider/local/DXVars.pm so that the bottom of the looks something like:
+Edit your /spider/local/DXVars.pm so that the bottom of the file is changed from something like:
 
-----  old ----
-
-	  # the port number of the cluster (just leave this, unless it REALLY matters to you)
-	  $clusterport = 27754;
-
-	  # your favorite way to say 'Yes'
-	  $yes = 'Yes';
-
-	  # your favorite way to say 'No'
-	  $no = 'No';
-
-	  # the interval between unsolicited prompts if not traffic
-	  $user_interval = 11*60;
-
-	  # data files live in 
-	  $data = "$root/data";
-
-	  # system files live in
-	  $system = "$root/sys";
-
-	  # command files live in
-	  $cmd = "$root/cmd";
-
-	  # local command files live in (and overide $cmd)
-	  $localcmd = "$root/local_cmd";
-
-	  # where the user data lives
-	  $userfn = "$data/users";
-
-	  # the "message of the day" file
-	  $motd = "$data/motd";
-
-	  # are we debugging ?
-	  @debug = qw(chan state msg cron );
-
----- to new ---
+---- old ----
 
 	 # the port number of the cluster (just leave this, unless it REALLY matters to you)
 	 $clusterport = 27754;
@@ -64,14 +56,56 @@ Edit your /spider/local/DXVars.pm so that the bottom of the looks something like
 	 # your favorite way to say 'No'
 	 $no = 'No';
 
-	 # this is where the paths used to be
+	 # the interval between unsolicited prompts if not traffic
+	 $user_interval = 11*60;
+
+	 # data files live in 
+	 $data = "$root/data";
+
+	 # system files live in
+	 $system = "$root/sys";
+
+	 # command files live in
+	 $cmd = "$root/cmd";
+
+	 # local command files live in (and overide $cmd)
+	 $localcmd = "$root/local_cmd";
+
+	 # where the user data lives
+	 $userfn = "$data/users";
+
+	 # the "message of the day" file
+	 $motd = "$data/motd";
+
+	 # are we debugging ?
+	 @debug = qw(chan state msg cron );
+
+---- to this: ----
+
+	 # the port number of the cluster (just leave this, unless it REALLY matters to you)
+	 $clusterport = 27754;
+
+	 # your favorite way to say 'Yes'
+	 $yes = 'Yes';
+
+	 # your favorite way to say 'No'
+	 $no = 'No';
+
+	 # this is where the paths used to be which you have just removed
 	 
 	 # are we debugging ?
 	 @debug = qw(chan state msg cron );
 
-----      ------
+---- new  ------
 
-There may be other stuff after this in DXVars.pm, that doesn't matter. The point is to remove all the paths in DXVars.pm.
+There may be other stuff after this in DXVars.pm, that doesn't matter. The point is to remove
+all the path definitions in DXVars.pm. If this isn't clear to you then it would be better if
+you asked on dxspider-support for help before attempting to go any further.
+
+One of the things that will happen is that several files currently in /spider/data will be
+placed in /spider/local_data. These include the user, qsl and usdb data files, the band and
+prefix files, and various "bad" data files. I.e. everything that is modified from the base
+git distribution. 
 
 Now run the console program or telnet localhost and login as the sysop user.
 
@@ -81,6 +115,9 @@ Now run the console program or telnet localhost and login as the sysop user.
 as the sysop user:
 
    sudo service dxspider stop
+
+having stopped the node:
+
    mkdir /spider/local_data
    git reset --hard
    git pull
@@ -99,7 +136,13 @@ and finally:
 
    sudo service dxspider start
 
+You should be aware that this code base is now under active development and, if you do a 'git pull',
+what you get may be broken. But, if this does happen, the likelyhood is that I am actively working
+on the codebase and any brokenness may be fixed (maybe in minutes) with another 'git pull'.
 
+I try very hard not to leave it in a broken state...
+
+Dirk G1TLH
 
 
 
