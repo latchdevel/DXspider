@@ -5,6 +5,17 @@ users. It is the future, but at the moment I am testing larger and larger instal
 check that it a) still works as people imagine it should and b) it provides the improvement
 in scaling that I am anticipating. There are no significant new features - yet. 
 
+The BIG TICKET ITEM in this branch is that (potentially) "long lived" commands such as sh/dx
+and commands that poll external internet resources now don't halt the flow of data through
+the node. I am also using a modern, event driven, web socket "manager" called Mojolicious
+which is considerably more efficient than what went before (but is not necessary for small
+nodes). There are some 200-400 user nodes out there that will definitely see the difference
+in terms of both CPU usage and general responsiveness. Using Mojolicious also brings the
+tantalising possibility of grafting on a web frontend, as it where, to the "side" of a
+DXSpider node. But serious work on this won't start until we have a stable base to work
+on. Apart from anything else there will, almost certainly, need to be some internal data
+structure reorganisation before a decent web frontend could be constructed.
+
 Upgrading is not for the faint of heart. There is no installation script (but there
 will be) so, for the time being, you need to do some manual editing. Also, while there is
 a backward path, it will involve moving various files from their new home (/spider/local_data),
