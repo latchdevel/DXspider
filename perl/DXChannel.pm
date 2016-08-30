@@ -587,7 +587,7 @@ sub decode_input
 {
 	my $dxchan = shift;
 	my $data = shift;
-	my ($sort, $call, $line) = $data =~ /^([A-Z])([A-Z0-9\-]{3,9})\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^([A-Z])([A-Z0-9\/\-]{3,25})\|(.*)$/;
 
 	my $chcall = (ref $dxchan) ? $dxchan->call : "UN.KNOWN";
 	

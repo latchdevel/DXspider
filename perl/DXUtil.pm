@@ -24,7 +24,7 @@ require Exporter;
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs phex phash shellregex readfilestr writefilestr
 			 filecopy ptimelist
-             print_all_fields cltounix unpad is_callsign is_long_callsign is_latlong
+             print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
             );
@@ -381,30 +381,20 @@ sub unpad
 # check that a field only has callsign characters in it
 sub is_callsign
 {
-	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)        # basic prefix
-                       (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another one (possibly)
-					   [A-Z]{1,4}                                 # callsign letters
-					   (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another prefix possibly
-                       (?:/[0-9A-Z]{1,2})?                        # /0-9A-Z+ possibly
-					   (?:-\d{1,2})?                              # - nn possibly
-					 $!x;
-}
+	return $_[0] =~ m!^
+					  (?:(?:[A-Z]{1,2}\d* | \d[A-Z]{1,2}\d*)/)?   # out of area prefix /
+					  (?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)?        # main prefix one 
+					  [A-Z]{1,5}                                  # callsign letters
+					  (?:-\d{1,2})?                               # - nn possibly (eg G8BPQ-8)
+					  (?:/[0-9A-Z]{1,7})?                        # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
+					  $!x;
 
-# check that a field only has callsign characters in it but has more than the standard 3 callsign letters
-sub is_long_callsign
-{
-	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)        # basic prefix
-                       (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another one (possibly)
-					   [A-Z]{1,5}                                 # callsign letters
-					   (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another prefix possibly
-                       (?:/[0-9A-Z]{1,2})?                        # /0-9A-Z+ possibly
-					   (?:-\d{1,2})?                              # - nn possibly
-					 $!x;
+	# longest callign allowed is 1X11/1Y11XXXXX-11/XXXXXXX
 }
 
 sub is_prefix
 {
-	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)!x        # basic prefix
+	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}}\d+)!x        # basic prefix
 }
 	
 
