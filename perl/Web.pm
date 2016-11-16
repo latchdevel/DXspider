@@ -14,9 +14,11 @@ use DXDebug;
 
 sub start_node
 {
+	dbg("Before Web::start_node");
+
 	Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
-	dbg("After Mojo::IOLoop");
+	dbg("After Web::start_node");
 }
 
 

@@ -1,3 +1,5 @@
+16Nov16=======================================================================
+1. Change method of get processor seconds in cmd/mrtg.pl
 18Aug16=======================================================================
 1. Add CTY-2610
 2. put back msg total in & total out for mrtg and background mrtg

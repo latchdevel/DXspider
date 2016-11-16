@@ -28,6 +28,7 @@
 #
 #
 #
+use Time::HiRes qw( clock_gettime CLOCK_PROCESS_CPUTIME_ID );
 
 sub handle
 {
@@ -77,29 +78,13 @@ sub do_it
 	if (!$main::is_win && ($want{proc} || $want{all})) {
 		$ENV{COLUMNS} = 250;
 		my $secs;
-		my $f = new IO::File "top -b -o TIME+ -n 1 -c |";
-		#	dbg("$f");
-		if ($f) {
-			while (<$f>) {
-				chomp;
-				my $l = $_;
-				dbg("mrtg: $l") if isdbg("mrtg");
-				next unless $l =~ m{cluster\.pl$};
-				next if $l =~ m{\d\s+su\s+};
-				next if $l =~ m{\d\s+bash\s+};
-				my @f = split /\s+/, $l;
-				my ($m, $s) = $f[10] =~ /\b(\d+):(\d\d\.\d\d)\b/;
-				$secs = ($m * 60) + $s;
-				dbg("mrtg: proc: $f[10] m: $m s: $s secs: $secs") if isdbg("mrtg");
-				last;
-			}
-			$f->close;
 
-			$mc->cfgprint('proc', [qw(noi unknaszero withzeroes perminute)], 5*60, 
-						  "Processor Usage",
-						  'Proc Secs/Min', 'Proc Secs', 'Proc Secs') unless $want{dataonly};
-			$mc->data('proc', $secs, $secs, "Processor Usage") unless $want{cfgonly};
-		}
+		$secs = clock_gettime(CLOCK_PROCESS_CPUTIME_ID);
+		
+		$mc->cfgprint('proc', [qw(noi unknaszero withzeroes perminute)], 5*60, 
+					  "Processor Usage",
+					  'Proc Secs/Min', 'Proc Secs', 'Proc Secs') unless $want{dataonly};
+		$mc->data('proc', $secs, $secs, "Processor Usage") unless $want{cfgonly};
 	}
 
 	# do the users and nodes
