@@ -19,7 +19,7 @@
 # firstly and OO about ninthly (if you don't like the design and you can't 
 # improve it with better OO and thus make it smaller and more efficient, then tough). 
 #
-# Copyright (c) 1998-2000 - Dirk Koopman G1TLH
+# Copyright (c) 1998-2016 - Dirk Koopman G1TLH
 #
 #
 #
@@ -171,7 +171,7 @@ sub alloc
 	if (@dxcc > 0) {
 		$self->{dxcc} = $dxcc[1]->dxcc;
 		$self->{itu} = $dxcc[1]->itu;
-		$self->{cq} = $dxcc[1]->cq;						
+		$self->{cq} = $dxcc[1]->cq;
 	}
 	$self->{inqueue} = [];
 

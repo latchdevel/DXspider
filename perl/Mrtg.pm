@@ -68,8 +68,9 @@ sub data
 
 sub cfgprint
 {
-	my ($self, $name, $options, $max, $title, $legend, $iname, $oname) = @_;
+	my ($self, $name, $options, $max, $title, $legend, $iname, $oname, $yticsfactor) = @_;
 	my $opt = join ', ', @$options, qw(withzeroes growright nopercent integer);
+	$yticsfactor ||= 1;
 
 	$self->{mc}->print(<<"EOF");
 
@@ -82,7 +83,7 @@ MaxBytes[$name]: $max
 Title[$name]: $title
 Options[$name]: $opt
 YLegend[$name]: $legend
-YTicsFactor[$name]: 1
+YTicsFactor[$name]: $yticsfactor
 ShortLegend[$name]: \&nbsp;
 Legend1[$name]:Maximum No of $iname
 Legend2[$name]:Maximum No of $oname

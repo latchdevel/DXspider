@@ -352,77 +352,6 @@ sub AGWrestart
 	AGWMsg::init(\&new_channel);
 }
 
-our $io_disconnected;
-
-sub idle_loop
-{
-	my $timenow = time;
-
-	BPQMsg::process();
-#	DXChannel::process();
-
-	#      $DB::trace = 0;
-
-	# do timed stuff, ongoing processing happens one a second
-	if ($timenow != $systime) {
-		reap() if $zombies;
-		$systime = $timenow;
-		my $days = int ($systime / 86400);
-		if ($systime_days != $days) {
-			$systime_days = $days;
-			$systime_daystart = $days * 86400;
-		}
-		IsoTime::update($systime);
-		DXCron::process();      # do cron jobs
-		DXCommandmode::process(); # process ongoing command mode stuff
-		DXXml::process();
-		DXProt::process();		# process ongoing ak1a pcxx stuff
-		DXConnect::process();
-		DXMsg::process();
-		DXDb::process();
-		DXUser::process();
-		DXDupe::process();
-		DXCron::process();			# do cron jobs
-		IsoTime::update($systime);
-		DXProt::process();			# process ongoing ak1a pcxx stuff
-		DXConnect::process();
-		DXUser::process();
-		AGWMsg::process();
-		
-		Timer::handler();
-		DXLog::flushall();
-	}
-
-	if (defined &Local::process) {
-		eval {
-			Local::process();	# do any localised processing
-		};
-		dbg("Local::process error $@") if $@;
-	}
-
-	while ($ending) {
-		my $dxchan;
-
-		dbg("DXSpider Ending $ending");
-
-		unless ($io_disconnected++) {
-
-			# disconnect users
-			foreach $dxchan (DXChannel::get_all_users) {
-				$dxchan->disconnect;
-			}
-
-			# disconnect nodes
-			foreach $dxchan (DXChannel::get_all_nodes) {
-				next if $dxchan == $main::me;
-				$dxchan->disconnect(2);
-			}
-			$main::me->disconnect;
-		}
-
-		Mojo::IOLoop->stop if --$ending <= 0;
-	}
-}
 
 sub setup_start
 {
@@ -648,12 +577,112 @@ sub setup_start
 	#open(DB::OUT, "|tee /tmp/aa");
 }
 
+our $io_disconnected;
+
+sub idle_loop
+{
+	BPQMsg::process();
+
+	if (defined &Local::process) {
+		eval {
+			Local::process();	# do any localised processing
+		};
+		dbg("Local::process error $@") if $@;
+	}
+
+	while ($ending) {
+		my $dxchan;
+
+		dbg("DXSpider Ending $ending");
+
+		unless ($io_disconnected++) {
+
+			# disconnect users
+			foreach $dxchan (DXChannel::get_all_users) {
+				$dxchan->disconnect;
+			}
+
+			# disconnect nodes
+			foreach $dxchan (DXChannel::get_all_nodes) {
+				next if $dxchan == $main::me;
+				$dxchan->disconnect(2);
+			}
+			$main::me->disconnect;
+		}
+
+		Mojo::IOLoop->stop if --$ending <= 0;
+	}
+}
+
+sub per_sec
+{
+	my $timenow = time;
+
+	reap() if $zombies;
+	$systime = $timenow;
+	my $days = int ($systime / 86400);
+	if ($systime_days != $days) {
+		$systime_days = $days;
+		$systime_daystart = $days * 86400;
+	}
+	IsoTime::update($systime);
+	DXCron::process();      # do cron jobs
+	DXCommandmode::process(); # process ongoing command mode stuff
+	DXXml::process();
+	DXProt::process();		# process ongoing ak1a pcxx stuff
+	DXConnect::process();
+	DXMsg::process();
+	DXDb::process();
+	DXUser::process();
+	DXDupe::process();
+	DXCron::process();			# do cron jobs
+	IsoTime::update($systime);
+	DXProt::process();			# process ongoing ak1a pcxx stuff
+	DXConnect::process();
+	DXUser::process();
+	AGWMsg::process();
+	
+	Timer::handler();
+	DXLog::flushall();
+}
+
+sub per_10_sec
+{
+
+}
+
+
+sub per_minute
+{
+
+}
+
+sub per_10_minute
+{
+
+}
+
+sub per_hour
+{
+
+}
+
+sub per_day
+{
+
+}
 
 setup_start();
 
 my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
 my $log_flush_loop = Mojo::IOLoop->recurring($log_flush_interval => \&DXLog::flushall);
 my $cpusecs_loop = Mojo::IOLoop->recurring(5 => sub {my @t = times; $clssecs = $t[0]+$t[1]; $cldsecs = $t[2]+$t[3]});
+my $persec =  Mojo::IOLoop->recurring(1 => \&per_sec);
+my $per10sec =  Mojo::IOLoop->recurring(10 => \&per_10_sec);
+my $permin =  Mojo::IOLoop->recurring(60 => \&per_minute);
+my $per10min =  Mojo::IOLoop->recurring(600 => \&per_10_minute);
+my $perhour =  Mojo::IOLoop->recurring(3600 => \&per_hour);
+my $perday =  Mojo::IOLoop->recurring(86400 => \&per_day);
 
 Web::start_node();
 
