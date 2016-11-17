@@ -76,15 +76,14 @@ sub do_it
 	}
 
 	if (!$main::is_win && ($want{proc} || $want{all})) {
-		$ENV{COLUMNS} = 250;
-		my $secs;
+		my $secs = $main::clssecs + $main::cldsecs;
 
-		$secs = clock_gettime(CLOCK_PROCESS_CPUTIME_ID);
+		dbg "mrtg: proc: cluster=$main::clssecs children=$main::cldsecs clock=$secs" if isdbg('mrtg');
 		
-		$mc->cfgprint('proc', [qw(noi unknaszero withzeroes perminute)], 5*60, 
+		$mc->cfgprint('proc', [qw(unknaszero withzeroes perminute)], 600, 
 					  "Processor Usage",
-					  'Proc Secs/Min', 'Proc Secs', 'Proc Secs') unless $want{dataonly};
-		$mc->data('proc', $secs, $secs, "Processor Usage") unless $want{cfgonly};
+					  'CPU 10th Secs/Min', 'Cluster Secs', 'Child Secs') unless $want{dataonly};
+		$mc->data('proc', $main::clssecs*10, $main::cldsecs*10, "Processor Usage") unless $want{cfgonly};
 	}
 
 	# do the users and nodes

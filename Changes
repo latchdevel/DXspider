@@ -1,3 +1,6 @@
+17Nov16=======================================================================
+1. Change method (again) of get processor seconds in cmd/mrtg.pl. Split out
+   main process from children and display each separately.
 16Nov16=======================================================================
 1. Change method of get processor seconds in cmd/mrtg.pl
 18Aug16=======================================================================

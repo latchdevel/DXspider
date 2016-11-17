@@ -135,7 +135,7 @@ use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
 			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
 			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
-			$broadcast_debug
+			$broadcast_debug 
 		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
@@ -155,6 +155,8 @@ $log_flush_interval = 2;		# interval to wait between log flushes
 
 our $ending;					# signal that we are ending;
 our $broadcast_debug;			# allow broadcasting of debug info down "enhanced" user connections
+our $clssecs;					# the amount of cpu time the DXSpider process have consumed
+our $cldsecs;					# the amount of cpu time any child processes have consumed
 
 
 # send a message to call on conn and disconnect
@@ -651,6 +653,7 @@ setup_start();
 
 my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
 my $log_flush_loop = Mojo::IOLoop->recurring($log_flush_interval => \&DXLog::flushall);
+my $cpusecs_loop = Mojo::IOLoop->recurring(5 => sub {my @t = times; $clssecs = $t[0]+$t[1]; $cldsecs = $t[2]+$t[3]});
 
 Web::start_node();
 
