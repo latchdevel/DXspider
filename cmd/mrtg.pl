@@ -28,7 +28,6 @@
 #
 #
 #
-use Time::HiRes qw( clock_gettime CLOCK_PROCESS_CPUTIME_ID );
 
 sub handle
 {
@@ -81,9 +80,9 @@ sub do_it
 		dbg "mrtg: proc: cluster=$main::clssecs children=$main::cldsecs clock=$secs" if isdbg('mrtg');
 		
 		$mc->cfgprint('proc', [qw(unknaszero withzeroes perminute)], 600, 
-					  "Processor Usage",
-					  'CPU 10th Secs/Min', 'Cluster Secs', 'Child Secs') unless $want{dataonly};
-		$mc->data('proc', $main::clssecs*10, $main::cldsecs*10, "Processor Usage") unless $want{cfgonly};
+					  "CPU Usage of <font color=#00cc00>node</font> and its <font color=#0000ff>children</font> in 10th of secs",
+					  '10th Secs/min', 'Cluster Secs*10', 'Child Secs*10') unless $want{dataonly};
+		$mc->data('proc', int($main::clssecs*10+0.5), int($main::cldsecs*10+0.5), "Processor Usage") unless $want{cfgonly};
 	}
 
 	# do the users and nodes
