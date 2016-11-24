@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 21 Nov 2016
+! This file was created by Jim Reisert AD1C on 24 Nov 2016
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -1688,7 +1688,7 @@ IN3 Trentino-Alto-Adige-I                              85 28 15  -1.00 46 30  0 
 I Trentino-Alto-Adige-IN3                              85 28 15  -1.00 46 30  0 N  11 22  0 E
 IT9 Sicily-I                                           85 28 15  -1.00 37 30  0 N  14  0  0 E
 I Sicily-IT9                                           85 28 15  -1.00 37 30  0 N  14  0  0 E
-IB9,II9,IJ9,IO9,IQ9,IR9,IU9,IW9 Sicily-I               85 28 15  -1.00 37 30  0 N  14  0  0 E
+IB9,II9,IJ9,IO9,IQ9,IR9,IU9,IW9,IY9 Sicily-I           85 28 15  -1.00 37 30  0 N  14  0  0 E
 IV3 Friuli-Venezia-Giulia-I                            85 28 15  -1.00 46  4  0 N  13 14  0 E
 I Friuli-Venezia-Giulia-IV3                            85 28 15  -1.00 46  4  0 N  13 14  0 E
 IX1 Valle-D'Aosta-I                                    85 28 15  -1.00 45 44  0 N   7 20  0 E
