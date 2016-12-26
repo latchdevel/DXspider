@@ -644,8 +644,8 @@ sub check_add_node
 		$user->lockout(1);
 		$user->homenode($call);
 		$user->node($call);
+		$user->sort('A');
 	}
-	$user->sort('A') unless $user->is_node;
 	return $user;
 }
 
@@ -699,7 +699,7 @@ sub handle_19
 		next unless $ver && $ver =~ /^\d+$/;
 		next if $ver < 5000;	# only works with version 5 software
 		next if length $call < 3; # min 3 letter callsigns
-		next if $call eq $main::mycall;
+		next if $call eq $main::mycall || $call eq $main::myalias;
 
 		# check that this PC19 isn't trying to alter the wrong dxchan
 		$h = 0;
@@ -840,7 +840,7 @@ sub handle_21
 
 	my @rout;
 
-	if ($call ne $main::mycall) { # don't allow malicious buggers to disconnect me!
+	if ($call ne $main::mycall && $call ne $main::myalias) { # don't allow malicious buggers to disconnect me!
 		my $node = Route::Node::get($call);
 		if ($node) {
 
@@ -851,7 +851,7 @@ sub handle_21
 
 			my $dxchan = DXChannel::get($call);
 			if ($dxchan && $dxchan != $self) {
-				dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chanerr');
+				dbg("PCPROT: PC21 from $self->{call} trying to alter locally connected $call, ignored!") if isdbg('chan');
 				return;
 			}
 
@@ -863,7 +863,7 @@ sub handle_21
 			push @rout, $call if $dxchan && @rout == 0;
 		}
 	} else {
-		dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chanerr');
+		dbg("PCPROT: I WILL _NOT_ be disconnected!") if isdbg('chan');
 		return;
 	}
 
@@ -995,7 +995,7 @@ sub handle_25
 		return;
 	}
 	if ($_[2] eq $main::mycall) {
-		dbg("PCPROT: Trying to merge to myself, ignored") if isdbg('chanerr');
+		dbg("PCPROT: Trying to merge to myself, ignored") if isdbg('chan');
 		return;
 	}
 
@@ -1137,7 +1137,7 @@ sub handle_41
 		return;
 	}
 
-	if ($call eq $main::mycall && $call eq $main::myalias) {
+	if ($call eq $main::mycall || $call eq $main::myalias) {
 		dbg "DXPROT: PC41 trying to update $call from outside via $origin, ignored";
 		return;
 	}
@@ -1262,6 +1262,10 @@ sub handle_51
 	my $from = $_[2];
 	my $flag = $_[3];
 
+	if ($to eq $main::myalias) {
+		dbg("DXPROT: Ping addressed to \$myalias ($main::myalias), ignored") if isdbg('chan');
+		return;
+	}
 
 	# is it for us?
 	if ($to eq $main::mycall) {
@@ -1602,7 +1606,11 @@ sub pc92_handle_first_slot
 	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$slot;
 	if ($call && $is_node) {
 		if ($call eq $main::mycall) {
-			dbg("PCPROT: $call looped back onto $main::mycall, ignored") if isdbg('chanerr');
+			dbg("PCPROT: $call looped back onto \$main::mycall ($main::mycall), ignored") if isdbg('chan');
+			return;
+		}
+		if ($call eq $main::myalias) {
+			dbg("PCPROT: $call looped back onto \$main::myalias ($main::myalias), ignored") if isdbg('chan');
 			return;
 		}
 		# this is only accepted from my "self".
@@ -1662,21 +1670,26 @@ sub handle_92
 #	}
 
 	if ($pcall eq $main::mycall) {
-		dbg("PCPROT: looped back, ignored") if isdbg('chanerr');
+		dbg("PCPROT: looped back, ignored") if isdbg('chan');
+		return;
+	}
+
+	if ($pcall eq $main::myalias) {
+		dbg("PCPROT: looped back to \$myalias ($main::myalias), misconfiguration ignored") if isdbg('chan');
 		return;
 	}
 
 	if ($pcall eq $self->{call} && $self->{state} eq 'init') {
 		if ($self->{isolate}) {
-			dbg("PC9x received, but $pcall is isolated, ignored");
+			dbg("DXPROT: PC9x received, but $pcall is isolated, ignored");
 			return;
 		} elsif (!$self->user->wantpc9x) {
-			dbg("PC9x explicitly switched off on $pcall, ignored");
+			dbg("DXPROT: PC9x explicitly switched off on $pcall, ignored");
 			return;
 		} else {
 			$self->state('init92');
 			$self->{do_pc9x} = 1;
-			dbg("Do pc9x set on $pcall");
+			dbg("DXPROT: Do pc9x set on $pcall");
 		}
 	}
 	unless ($self->{do_pc9x}) {
