@@ -6,7 +6,7 @@
 #
 #
 
-require 5.004;
+use 5.10.1;
 
 # search local then perl directories
 BEGIN {
@@ -41,8 +41,10 @@ if (@ARGV && $ARGV[0] =~ /^--system$/) {
 	$prefix = $main::data;
 	++$system;
 	shift;
+	say "create_prefix.pl: creating SYSTEM prefix files";	
 } else {
 	$prefix = $main::local_data;
+	say "create_prefix.pl: creating LOCAL prefix files";	
 }
 
 my $ifn;
