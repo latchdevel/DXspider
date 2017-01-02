@@ -1,5 +1,6 @@
 02Jan17=======================================================================
 1. Add CTY-2615 prefixes
+2. Add rbn.pl - an experimental rbn deduplicating spot filter. 
 26Dec16=======================================================================
 1. Fix some possible routes to $myalias callsigns becoming nodes.
 22Nov16=======================================================================
