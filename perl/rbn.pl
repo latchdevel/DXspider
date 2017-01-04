@@ -9,12 +9,13 @@ use strict;
 use 5.10.1;
 use IO::Socket::IP -register;
 use Math::Round qw(nearest);
+use Getopt::Long;
+use Pod::Usage;
 
 my $host = 'telnet.reversebeacon.net';
 my $port = 7000;
-my $mycall = shift or die "usage:rbn.pl <callsign> [debug] [stats] [cw] [rtty] [psk] [beacon] [<time between repeat spots in minutes>] [rbn]\n"; 
 
-my $minspottime = 30*60;		# minimum length of time between successive spots
+my $minspottime = 60*60;		# minimum length of time between successive identical spots
 my $showstats;					# show RBN and Spot stats
 
 my $attempts;
@@ -24,25 +25,37 @@ my $wantcw = 1;
 my $wantrtty = 1;
 my $wantpsk = 1;
 my $wantbeacon = 1;
-my $override;
 my $showrbn;
-	
-while (@ARGV) {
-	my $arg = shift;
+my $help = 0;
+my $man = 0;
+my $mycall;
 
-	++$dbg if $arg =~ /^deb/i;
-	++$showstats if $arg =~ /^stat/i;
-	++$showrbn if $arg =~ /^rbn/i;
-	$minspottime = $arg * 60 if $arg =~ /^\d+$/;
-	if (!$override && $arg =~ /^cw|rtty|psk|beacon$/i) {
-		$override = 1;
-		$wantcw = $wantrtty = $wantpsk = $wantbeacon = 0;
-	}
-	++$wantcw if $arg =~ /^cw$/i;
-	++$wantpsk if $arg =~ /^psk$/i;
-	++$wantrtty if $arg =~ /^rtty$/i;
-	++$wantbeacon if $arg =~ /^beacon$/i;
-}
+GetOptions('host=s' => \$host,
+		   'port=i' => \$port,
+		   'debug' => \$dbg,
+		   'rbn' => \$showrbn,
+		   'stats' => \$showstats,
+		   'repeattime=i' => sub { $minspottime = $_[1] * 60 },
+		   'want=s' => sub {
+			   my ($name, $value) = @_;
+			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = 0;
+			   for (split /:,|/, $value) {
+				   ++$wantcw if /^cw$/i;
+				   ++$wantpsk if /^psk$/i;
+				   ++$wantrtty if /^rtty$/i;
+				   ++$wantbeacon if /^beacon$/i;
+			   }
+		   },
+		   'help|?' => \$help,
+		   man => \$man,
+		   '<>' => sub { $mycall = shift },
+		  ) or pod2usage(2);
+
+$mycall ||= shift;
+
+pod2usage(1) if $help || !$mycall;
+pod2usage(-exitval => 0, -verbose => 2) if $man;
+
 
 for ($attempts = 1; $attempts <= 5; ++$attempts) {
 	say "admin,connecting to $host $port.. (attempt $attempts) " if $dbg;
@@ -70,7 +83,7 @@ my $nospot = 0;
 while (<$sock>) {
 	chomp;
 	my $tim = time;
-	
+
 	# parse line
 	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) = split /[:\s]+/;
 	if ($t) {
@@ -95,7 +108,7 @@ while (<$sock>) {
 		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well! 
 		my $ts = $spot{$sp};
 		
-		if (!$ts || $tim - $ts >= $minspottime) {
+		if (!$ts || ($minspottime > 0 && $tim - $ts >= $minspottime)) {
 			if ($wantbeacon && $sort =~ /^BEA/) {
 				;
 			} else {
@@ -151,3 +164,75 @@ while (<$sock>) {
 
 close $sock;
 exit 0;
+
+__END__
+
+=head1 NAME
+
+rbn.pl - an experimental RBN filter program that
+
+=head1 SYNOPSIS
+
+rbn.pl [options] <your callsign> 
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<-help>
+
+Print a brief help message and exits.
+
+=item B<-man>
+
+Prints the manual page and exits.
+
+=item B<-host>=telnet.reversebeacon.net 
+
+As default, this program will connect to C<telnet.reversebeacon.net>. Use this argument to change that.
+
+=item B<-port>=7000
+
+As default, this program will connect to port 7000. Use this argument to change that to some other port.
+
+=item B<-want>=cw,rtty,psk,beacon
+
+The program will print all spots in all classes [cw, rtty, psk, beacon]. You can choose one or more of
+these classes if you want specific types of spots.
+
+=item B<-stats>
+
+Print a comma separated line of statistics once a minute which consists of:
+
+STAT,E<lt>raw RBN spotsE<gt>,E<lt>de-duped RBN spotsE<gt>,E<lt>new spotsE<gt>
+
+=item B<-repeattime=60>
+
+A cache of callsigns and QRGs is kept. If a SPOT comes in after B<repeattime> minutes then it re-emitted
+but with a RESPOT tag instead. Set this argument to 0 (or less) if you do not want any repeats. 
+
+=item B<-rbn>
+
+Show the de-duplicated RBN lines as they come in.
+
+=back
+
+=head1 DESCRIPTION
+
+B<This program> connects (as default) to RBN C<telnet.reversebeacon.net:7000> and parses the raw output
+which it deduplicates and then outputs unique spots. It is possible to select one or more types of spot. 
+
+The output is the RBN spot line which has been separated out into a comma separated list. One line per spot.
+
+Like this:
+
+  SPOT,DK3UA-#,3560.0,DL6ZB,CW,27,dB,26,WPM,CQ,2152Z
+  SPOT,WB6BEE-#,14063.0,KD6SX,CW,24,dB,15,WPM,CQ,2152Z
+  RESPOT,S50ARX-#,1811.5,OM0CS,CW,37,dB,19,WPM,CQ,2152Z
+  SPOT,DF4UE-#,3505.0,TA1PT,CW,11,dB,23,WPM,CQ,2152Z
+  SPOT,AA4VV-#,14031.0,TF3Y,CW,16,dB,22,WPM,CQ,2152Z
+  SPOT,SK3W-#,3600.0,OK0EN,CW,13,dB,11,WPM,BEACON,2152Z
+  STAT,263,64,27
+
+=cut
+
