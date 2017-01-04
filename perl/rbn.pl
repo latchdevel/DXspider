@@ -39,7 +39,7 @@ GetOptions('host=s' => \$host,
 		   'want=s' => sub {
 			   my ($name, $value) = @_;
 			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = 0;
-			   for (split /:,|/, $value) {
+			   for (split /[:,\|]/, $value) {
 				   ++$wantcw if /^cw$/i;
 				   ++$wantpsk if /^psk$/i;
 				   ++$wantrtty if /^rtty$/i;
