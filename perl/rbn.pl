@@ -30,12 +30,13 @@ my $help = 0;
 my $man = 0;
 my $mycall;
 
+#Getopt::Long::Configure( qw(auto_abbrev) );
 GetOptions('host=s' => \$host,
 		   'port=i' => \$port,
 		   'debug' => \$dbg,
 		   'rbn' => \$showrbn,
 		   'stats' => \$showstats,
-		   'repeattime=i' => sub { $minspottime = $_[1] * 60 },
+		   'repeattime|rt=i' => sub { $minspottime = $_[1] * 60 },
 		   'want=s' => sub {
 			   my ($name, $value) = @_;
 			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = 0;
@@ -47,7 +48,7 @@ GetOptions('host=s' => \$host,
 			   }
 		   },
 		   'help|?' => \$help,
-		   man => \$man,
+		   'man' => \$man,
 		   '<>' => sub { $mycall = shift },
 		  ) or pod2usage(2);
 
