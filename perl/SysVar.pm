@@ -6,7 +6,8 @@
 #
 
 package main;
-use warnings;
+
+use vars qw($data $local_data $system $cmd $localcmd $userfn $motd);
 
 ##
 ## DXVars.pm overrides
@@ -25,12 +26,6 @@ $cmd = "$root/cmd";
 
 # local command files live in (and overide $cmd)
 $localcmd = "$root/local_cmd";
-
-# data files live in 
-$data = "$root/data";
-
-# for local data
-$local_data = "$root/local_data";
 
 # where the user data lives
 $userfn = "$local_data/users";

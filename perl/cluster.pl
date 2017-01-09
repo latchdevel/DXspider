@@ -15,6 +15,8 @@ package main;
 require 5.10.1;
 use warnings;
 
+use vars qw($root $is_win $systime);
+
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	umask 002;
@@ -32,12 +34,15 @@ BEGIN {
 	die "$root/local/DXVars.pm doesn't exist, please RTFM" unless -e "$root/local/DXVars.pm";
 
 	# create some directories
-	mkdir "$root/local_cmd", 02777 unless -d "$root/local_cmd";
-	mkdir "$root/local_data", 02777 unless -d "$root/local_data";
+	mkdir "$root/local_cmd", 02774 unless -d "$root/local_cmd";
+
+	# locally stored data lives here
+	my $local_data = "$root/local_data";
+	mkdir $local_data, 02774 unless -d $local_data;
 
 	# try to create and lock a lockfile (this isn't atomic but
 	# should do for now
-	$lockfn = "$root/local_data/cluster.lck";       # lock file name
+	my $lockfn = "$root/local_data/cluster.lck";       # lock file name
 	if (-w $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
@@ -57,13 +62,15 @@ BEGIN {
 
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 	$systime = time;
+	
 }
-
-			
-use Mojo::IOLoop;
 
 use DXVars;
 use SysVar;
+
+use strict;
+			
+use Mojo::IOLoop;
 
 use Msg;
 use IntMsg;
@@ -127,12 +134,9 @@ use Web;
 
 use Local;
 
-package main;
-
-use strict;
-use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
-			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr
-			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
+use vars qw(@inqueue $starttime $lockfn @outstanding_connects
+			$zombies @listeners $lang $myalias @debug $userfn $clusteraddr
+			$clusterport $mycall $decease $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
 			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
 			$broadcast_debug 
