@@ -215,7 +215,7 @@ As default, this program will connect to port 7000. Use this argument to change 
 
 =item B<-want>=cw,rtty,psk,beacon,dx
 
-The program will print all spots in all classes in the 'mode' column [cw, rtty, psk, beacon, dx]. You can choose one or more of
+The program will print all spots in all classes in the 'mode/calling' column [cw, rtty, psk, beacon, dx]. You can choose one or more of
 these classes if you want specific types of spots.
 
 =item B<-stats>
