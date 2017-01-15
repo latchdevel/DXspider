@@ -25,6 +25,8 @@ my $wantcw = 1;
 my $wantrtty = 1;
 my $wantpsk = 1;
 my $wantbeacon = 1;
+my $wantdx = 1;
+my $wantraw = 0;
 my $showrbn;
 my $help = 0;
 my $man = 0;
@@ -36,15 +38,17 @@ GetOptions('host=s' => \$host,
 		   'debug' => \$dbg,
 		   'rbn' => \$showrbn,
 		   'stats' => \$showstats,
+		   'raw' => \$wantraw,
 		   'repeattime|rt=i' => sub { $minspottime = $_[1] * 60 },
 		   'want=s' => sub {
 			   my ($name, $value) = @_;
-			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = 0;
+			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = $wantdx = 0;
 			   for (split /[:,\|]/, $value) {
 				   ++$wantcw if /^cw$/i;
 				   ++$wantpsk if /^psk$/i;
 				   ++$wantrtty if /^rtty$/i;
 				   ++$wantbeacon if /^beacon$/i;
+				   ++$wantdx if /^dx$/i;
 			   }
 		   },
 		   'help|?' => \$help,
@@ -59,7 +63,7 @@ pod2usage(-exitval => 0, -verbose => 2) if $man;
 
 
 for ($attempts = 1; $attempts <= 5; ++$attempts) {
-	say "admin,connecting to $host $port.. (attempt $attempts) " if $dbg;
+	say "ADMIN,connecting to $host $port.. (attempt $attempts) " if $dbg;
 	$sock = IO::Socket::IP->new(
 								PeerHost => $host,
 								PeerPort => $port,
@@ -68,10 +72,10 @@ for ($attempts = 1; $attempts <= 5; ++$attempts) {
 	last if $sock;
 }
 
-die "admin,Cannot connect to $host:$port after 5 attempts $!" unless $sock;
-say "admin,connected" if $dbg;
+die "ADMIN,Cannot connect to $host:$port after 5 attempts $!" unless $sock;
+say "ADMIN,connected" if $dbg;
 print $sock "$mycall\r\n";
-say "admin,call sent" if $dbg;
+say "ADMIN,call sent" if $dbg;
 
 my %d;
 my %spot;
@@ -86,8 +90,10 @@ while (<$sock>) {
 	my $tim = time;
 
 	# parse line
-	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) = split /[:\s]+/;
-	if ($t) {
+	say "RAW,$_" if $wantraw;
+
+	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/;
+	if ($t || $tx) {
 
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
 		# This works because the skimmers are NTP controlled (or should be) and will receive
@@ -96,11 +102,21 @@ while (<$sock>) {
 		++$noraw;
 		next if $d{$p};
 
+		# fix up times for things like 'NXDXF B' etc
+		if ($tx && $t != /^\d{4}Z$/) {
+			if ($tx =~ /^\d{4}Z$/) {
+				$t = $tx;
+			} else {
+				say "ERR,$_";
+				next;
+			}
+		}
+
 		# new RBN input
 		$d{$p} = $tim;
 		++$norbn;
 		$qrg = sprintf('%.1f', nearest(.1, $qrg));     # to nearest 100Hz (to catch the odd multiple decpl QRG [eg '7002.07']).
-		say join(',', "RBN", $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) if $dbg || $showrbn;
+		say join(',', "RBN", $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) if !$wantraw && ($dbg || $showrbn);
 
 		# Determine whether to "SPOT" it based on whether we have not seen it before (near this QRG) or,
 		# if we have, has it been a "while" since the last time we spotted it? If it has been spotted
@@ -118,6 +134,7 @@ while (<$sock>) {
 				goto periodic if !$wantcw  && $mode =~ /^CW/;
 				goto periodic if !$wantrtty && $mode =~ /^RTTY/;
 				goto periodic if !$wantpsk && $mode =~ /^PSK/;
+				goto periodic if !$wantdx && $mode =~ /^DX/;
 			}
 
 			++$nospot;
@@ -126,7 +143,7 @@ while (<$sock>) {
 			$spot{$sp} = $tim;
 		}
 	} else {
-		say "data,$_" if $dbg;
+		say "DATA,$_" if $dbg && !$wantraw;
 	}
 
  periodic:
@@ -143,7 +160,7 @@ while (<$sock>) {
 				++$count;
 			}
 		}
-		say "admin,rbn cache: $removed removed $count remain" if $dbg;
+		say "ADMIN,rbn cache: $removed removed $count remain" if $dbg;
 		$count = $removed = 0;
 		while (my ($k,$v) = each %spot) {
 			if ($tim-$v > $minspottime*2) {
@@ -153,7 +170,7 @@ while (<$sock>) {
 				++$count;
 			}
 		}
-		say "admin,spot cache: $removed removed $count remain" if $dbg;
+		say "ADMIN,spot cache: $removed removed $count remain" if $dbg;
 
 		say join(',', "STAT", $noraw, $norbn, $nospot) if $showstats;
 		$noraw = $norbn = $nospot = 0;
@@ -196,9 +213,9 @@ As default, this program will connect to C<telnet.reversebeacon.net>. Use this a
 
 As default, this program will connect to port 7000. Use this argument to change that to some other port.
 
-=item B<-want>=cw,rtty,psk,beacon
+=item B<-want>=cw,rtty,psk,beacon,dx
 
-The program will print all spots in all classes [cw, rtty, psk, beacon]. You can choose one or more of
+The program will print all spots in all classes in the 'mode' column [cw, rtty, psk, beacon, dx]. You can choose one or more of
 these classes if you want specific types of spots.
 
 =item B<-stats>
@@ -215,6 +232,10 @@ but with a RESPOT tag instead. Set this argument to 0 (or less) if you do not wa
 =item B<-rbn>
 
 Show the de-duplicated RBN lines as they come in.
+
+=item B<-raw>
+
+Show the raw RBN lines as they come in.
 
 =back
 
@@ -234,6 +255,18 @@ Like this:
   SPOT,AA4VV-#,14031.0,TF3Y,CW,16,dB,22,WPM,CQ,2152Z
   SPOT,SK3W-#,3600.0,OK0EN,CW,13,dB,11,WPM,BEACON,2152Z
   STAT,263,64,27
+
+If the -raw flag is set then these lines will be interspersed with the raw line from the RBN source, prefixed 
+with "RAW,". For example:
+
+  RAW,DX de PJ2A-#:    14025.4  IP0TRC         CW    16 dB  31 WPM  CQ      1307Z
+  RAW,DX de PJ2A-#:    10118.9  K1JD           CW     2 dB  28 WPM  CQ      1307Z
+  RAW,DX de K2PO-#:     1823.4  HL5IV          CW     8 dB  22 WPM  CQ      1307Z
+  SPOT,K2PO-#,1823.4,HL5IV,CW,8,dB,22,WPM,CQ,1307Z
+  RAW,DX de LZ7AA-#:   14036.6  HA8GZ          CW     7 dB  27 WPM  CQ      1307Z
+  RAW,DX de DF4UE-#:   14012.0  R7KM           CW    32 dB  33 WPM  CQ      1307Z
+  RAW,DX de G7SOZ-#:   14012.2  R7KM           CW    17 dB  31 WPM  CQ      1307Z
+
 
 =cut
 
