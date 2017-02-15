@@ -74,8 +74,8 @@ for ($attempts = 1; $attempts <= 5; ++$attempts) {
 
 die "ADMIN,Cannot connect to $host:$port after 5 attempts $!" unless $sock;
 say "ADMIN,connected" if $dbg;
-print $sock "$mycall\r\n";
-say "ADMIN,call sent" if $dbg;
+#print $sock "$mycall\r\n";
+#say "ADMIN,call $mycall sent" if $dbg;
 
 my %d;
 my %spot;
@@ -91,6 +91,11 @@ while (<$sock>) {
 
 	# parse line
 	say "RAW,$_" if $wantraw;
+
+	if (/call:/) {
+print $sock "$mycall\r\n";
+say "ADMIN,call $mycall sent" if $dbg;
+	}
 
 	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/;
 	if ($t || $tx) {

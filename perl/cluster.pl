@@ -19,6 +19,12 @@ use warnings;
 BEGIN {
 	umask 002;
 
+	# take into account any local::lib that might be present
+	eval {
+		require local::lib;
+	};
+	import local::lib unless ($@);
+
 	# root of directory tree for this system
 	$root = "/spider";
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
@@ -59,11 +65,10 @@ BEGIN {
 	$systime = time;
 }
 
-			
-use Mojo::IOLoop;
-
 use DXVars;
 use SysVar;
+
+use Mojo::IOLoop;
 
 use Msg;
 use IntMsg;

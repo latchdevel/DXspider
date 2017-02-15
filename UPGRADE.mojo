@@ -43,6 +43,8 @@ Install cpamminus:
 
 	sudo apt-get install cpanminus
 or
+    wget -O - https://cpanmin.us | perl - --sudo App::cpanminus
+or
 	sudo apt-get install curl
 	curl -L https://cpanmin.us | perl - --sudo App::cpanminus
 
