@@ -1,6 +1,8 @@
 15Feb17=======================================================================
 1. Update UPGRADE.mojo a bit
-2. Fix(?) problems picking up SysVar.pm variables.  
+2. Add local::lib so that it can be used for non-root installations.
+09Jan17=======================================================================
+1. Fix mojo branch clean install issues (failing to find $main::data et al)
 02Jan17=======================================================================
 1. Add CTY-2615 prefixes
 2. Add rbn.pl - an experimental rbn deduplicating spot filter. 
