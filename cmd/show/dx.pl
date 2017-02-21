@@ -27,14 +27,14 @@ my $state;
 my $bystate;
 my $itu;
 my $byitu;
-my $fromdxcc;
+my $fromdxcc = 0;
 my $exact;
 my ($doqsl, $doiota, $doqra, $dofilter);
 
 my $usesql = $main::dbh && $Spot::use_db_for_search;
 
 while ($f = shift @list) {		# next field
-	#  print "f: $f list: ", join(',', @list), "\n";
+	dbg "arg: $f list: " . join(',', @list) if isdbg('shdx');
 	if (!$from && !$to) {
 		($from, $to) = $f =~ m|^(\d+)[-/](\d+)$|; # is it a from -> to count?
 		next if $from && $to > $from;
@@ -56,17 +56,19 @@ while ($f = shift @list) {		# next field
 		next;
 	}
 	if (lc $f eq 'on' && $list[0]) { # is it freq range?
-		#    print "yup freq\n";
-		if ($list[0] =~ m|^(\d+)(?:\.\d+)?[-/](\d+)(?:\.\d+)?$|) {
-			push @freq, $1, $2;
+		dbg "freq $list[0]" if isdbg('shdx');
+		if (my ($from, $to) = $list[0] =~ m|^(\d+)(?:\.\d+)?(?:[-/](\d+)(?:\.\d+)?)?$|) {
+			$to = $from unless defined $to;
+			dbg "freq '$from' '$to'" if isdbg('shdx');
+			push @freq, $from, $to;
 			shift @list;
 			next;
 		} else {
 			my @r = split '/', lc $list[0];
-			# print "r0: $r[0] r1: $r[1]\n";
+			dbg "r0: $r[0] r1: $r[1]" if isdbg('shdx');
 			my @fr = Bands::get_freq($r[0], $r[1]);
 			if (@fr) {			# yup, get rid of extranous param
-				#	  print "freq: ", join(',', @fr), "\n";
+				dbg "freq: " . join(',', @fr) if isdbg('shdx');
 				push @freq, @fr;    # add these to the list
 				shift @list;
 				next;
@@ -74,22 +76,22 @@ while ($f = shift @list) {		# next field
 		}
 	}
 	if (lc $f eq 'day' && $list[0]) {
-		#   print "got day\n";
 		($fromday, $today) = split m|[-/]|, shift(@list);
+		dbg "got day $fromday/$today" if isdbg('shdx');
 		next;
 	}
 	if (lc $f eq 'info' && $list[0]) {
-		#   print "got info\n";
 		$info = shift @list;
+		dbg "got info $info" if isdbg('shdx');
 		next;
 	}
 	if ((lc $f eq 'spotter' || lc $f eq 'by') && $list[0]) {
-		#    print "got spotter\n";
 		$spotter = uc shift @list;
 		if ($list[0] && lc $list[0] eq 'dxcc') {
 			$fromdxcc = 1;
 			shift @list;
 		}
+		dbg "got spotter $spotter fromdxcc $fromdxcc" if isdbg('shdx');
 		next;
 	}
 	if (lc $f =~ /^filt/) {
@@ -380,7 +382,7 @@ if ($doqra) {
 	$hint .= "m{$doqra}io";
 }
 
-#print "expr: $expr from: $from to: $to fromday: $fromday today: $today\n";
+dbg "expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('sh/dx');
   
 # now do the search
 my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);
