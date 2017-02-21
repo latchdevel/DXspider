@@ -15,7 +15,7 @@ package main;
 require 5.10.1;
 use warnings;
 
-use vars qw($root $is_win $systime);
+use vars qw($root $is_win $systime $lockfn);
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
@@ -48,7 +48,7 @@ BEGIN {
 
 	# try to create and lock a lockfile (this isn't atomic but
 	# should do for now
-	my $lockfn = "$root/local_data/cluster.lck";       # lock file name
+	$lockfn = "$root/local_data/cluster.lck";       # lock file name
 	if (-w $lockfn) {
 		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
 		my $pid = <CLLOCK>;
