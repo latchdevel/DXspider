@@ -12,6 +12,11 @@
 
 require 5.004;
 
+package main;
+
+# set default paths, these should be overwritten by DXVars.pm
+use vars qw($data $system $cmd $localcmd $userfn);
+
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	umask 002;
@@ -30,6 +35,11 @@ BEGIN {
 
 	mkdir "$root/local_cmd", 0777 unless -d "$root/local_cmd";
 
+	$data = "$root/data";
+	$system = "$root/sys";
+	$cmd = "$root/cmd";
+	$localcmd = "$root/local_cmd";
+	$userfn = "$data/users";
 
 	# try to create and lock a lockfile (this isn't atomic but
 	# should do for now

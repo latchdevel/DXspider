@@ -293,5 +293,9 @@ sub run_cmd
 		dbg("cmd out: $_") if isdbg('cron');
 	}
 }
+
+# for fallback from mojo branch
+sub spawn_cmd {goto &run_cmd};
+
 1;
 __END__
