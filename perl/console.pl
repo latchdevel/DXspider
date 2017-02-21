@@ -14,6 +14,9 @@
 # 
 
 require 5.004;
+package main;
+
+use vars qw($data);
 
 # search local then perl directories
 BEGIN {
@@ -24,6 +27,7 @@ BEGIN {
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
+	$data = "$root/data";
 }
 
 use Msg;
