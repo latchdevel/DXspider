@@ -11,6 +11,7 @@
 #
 
 require 5.004;
+package main;
 
 # search local then perl directories
 BEGIN {
@@ -21,6 +22,8 @@ BEGIN {
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 }
+
+$data = "$root/data";
 
 use IO::File;
 use DXVars;
