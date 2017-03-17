@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 14 Feb 2017
+! This file was created by Jim Reisert AD1C on 08 Mar 2017
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -1273,15 +1273,16 @@ AM7,AN7,AO7,EB7,EC7,ED7,EE7,EF7,EG7,EH7 Andalusia-EA   34 37 14  -1.00 37 15  0 
 EA6 Balearic-Islands-EA6                               35 37 14  -1.00 39 36  0 N   2 57  0 E @
 AM6,AN6,AO6,EB6,EC6,ED6,EE6,EF6 Balearic-Islands-EA6   35 37 14  -1.00 39 36  0 N   2 57  0 E
 EG6,EH6 Balearic-Islands-EA6                           35 37 14  -1.00 39 36  0 N   2 57  0 E
-EA6 IB-EA6                                             35 37 14  -1.00 39 36  0 N   2 57  0 E @
 EA8 Canary-Islands-EA8                                 36 36 33   0.00 28  6  0 N  15 24  0 W @
 AM8,AN8,AO8,EB8,EC8,ED8,EE8,EF8 Canary-Islands-EA8     36 36 33   0.00 28  6  0 N  15 24  0 W
 EG8,EH8 Canary-Islands-EA8                             36 36 33   0.00 28  6  0 N  15 24  0 W
-EA8 GC-TF-EA8                                          36 36 33   0.00 28  6  0 N  15 24  0 W @
+EA8/G Las-Palmas-de-Gran-Canaria-EA8                   36 36 33   0.00 28  9  0 N  15 25  0 W
+EA8 Las-Palmas-de-Gran-Canaria-EA8/G                   36 36 33   0.00 28  9  0 N  15 25  0 W
+EA8/T Santa-Cruz-de-Tenerife-EA8                       36 36 33   0.00 28 28  0 N  16 15  0 W
+EA8 Santa-Cruz-de-Tenerife-EA8/T                       36 36 33   0.00 28 28  0 N  16 15  0 W
 EA9 Ceuta-Melilla-EA9                                  37 37 33  -1.00 35 54  0 N   5 16  0 W @
 AM9,AN9,AO9,EB9,EC9,ED9,EE9,EF9 Ceuta-Melilla-EA9      37 37 33  -1.00 35 54  0 N   5 16  0 W
 EG9,EH9 Ceuta-Melilla-EA9                              37 37 33  -1.00 35 54  0 N   5 16  0 W
-EA9 CE-ML-EA9                                          37 37 33  -1.00 35 54  0 N   5 16  0 W @
 EA9/C Ceuta-EA9                                        37 37 33  -1.00 35 53  0 N   5 18  0 W
 EA9 Ceuta-EA9/C                                        37 37 33  -1.00 35 53  0 N   5 18  0 W
 EA9/M Melilla-EA9                                      37 37 33  -1.00 35 18  0 N   2 57  0 W
