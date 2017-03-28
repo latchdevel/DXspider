@@ -93,8 +93,8 @@ while (<$sock>) {
 	say "RAW,$_" if $wantraw;
 
 	if (/call:/) {
-print $sock "$mycall\r\n";
-say "ADMIN,call $mycall sent" if $dbg;
+		print $sock "$mycall\r\n";
+		say "ADMIN,call $mycall sent" if $dbg;
 	}
 
 	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/;

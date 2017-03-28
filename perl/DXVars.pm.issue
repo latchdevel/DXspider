@@ -10,34 +10,28 @@ package main;
 
 # this really does need to change for your system!!!!			   
 # use CAPITAL LETTERS
-$mycall = "GB7DJK";
+$mycall = "Q1QQQ-2";
 
 # your name
-$myname = "Dirk";
+$myname = "Fred";
 
 # Your 'normal' callsign (in CAPTTAL LETTERS) 
-$myalias = "G1TLH";
+$myalias = "Q1QQQ";
 
 # Your latitude (+)ve = North (-)ve = South in degrees and decimal degrees
-$mylatitude = +52.68584579;
+$mylatitude = +52.0;
 
 # Your Longtitude (+)ve = East, (-)ve = West in degrees and decimal degrees
-$mylongitude = +0.94518260;
+$mylongitude = +0.0;
 
 # Your locator (USE CAPITAL LETTERS)
-$mylocator = "JO02LQ";
+$mylocator = "JO02AA";
 
 # Your QTH (roughly)
-$myqth = "East Dereham, Norfolk";
+$myqth = "SomeTown, SomeState";
 
 # Your e-mail address
-$myemail = "djk\@tobit.co.uk";
-
-# Your BBS addr
-$mybbsaddr = "G1TLH\@GB7TLH.#35.GBR.EU";
-
-# the default language (the key used must match the one in the Messages file)
-$lang = 'en';
+$myemail = "qqq@gmail.com";
 
 # the country codes that my node is located in
 # 
@@ -47,23 +41,6 @@ $lang = 'en';
 #
 
 @my_cc = qw();
-
-# the tcp address of the cluster this can be an address of an ethernet port
-# but this is more secure. For normal use this will be fine. 
-$clusteraddr = "localhost";
-
-# the port number of the cluster (just leave this, unless it REALLY matters to you)
-$clusterport = 27754;
-
-# your favorite way to say 'Yes'
-$yes = 'Yes';
-
-# your favorite way to say 'No'
-$no = 'No';
-
-# the interval between unsolicited prompts if not traffic
-$user_interval = 11*60;
-
 
 # are we debugging ?
 @debug = qw(chan state msg cron connect);

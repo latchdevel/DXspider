@@ -15,7 +15,20 @@ package main;
 require 5.10.1;
 use warnings;
 
-use vars qw($root $is_win $systime $lockfn);
+use vars qw($root $is_win $systime $lockfn @inqueue $starttime $lockfn @outstanding_connects
+			$zombies @listeners $lang $myalias @debug $userfn $clusteraddr
+			$clusterport $mycall $decease $routeroot $me $reqreg $bumpexisting
+			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
+			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
+			$broadcast_debug 
+		   );
+
+$lang = 'en';					# default language
+$clusteraddr = '127.0.0.1';		# cluster tcp host address - used for things like console.pl
+$clusterport = 27754;			# cluster tcp port
+$yes = 'Yes';					# visual representation of yes
+$no = 'No';						# ditto for no
+$user_interval = 11*60;			# the interval between unsolicited prompts if no traffic
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
@@ -140,13 +153,6 @@ use Web;
 
 use Local;
 
-use vars qw(@inqueue $starttime $lockfn @outstanding_connects
-			$zombies @listeners $lang $myalias @debug $userfn $clusteraddr
-			$clusterport $mycall $decease $routeroot $me $reqreg $bumpexisting
-			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
-			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
-			$broadcast_debug 
-		   );
 
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
