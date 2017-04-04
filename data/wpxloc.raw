@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 08 Mar 2017
+! This file was created by Jim Reisert AD1C on 04 Apr 2017
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -1273,9 +1273,9 @@ AM7,AN7,AO7,EB7,EC7,ED7,EE7,EF7,EG7,EH7 Andalusia-EA   34 37 14  -1.00 37 15  0 
 EA6 Balearic-Islands-EA6                               35 37 14  -1.00 39 36  0 N   2 57  0 E @
 AM6,AN6,AO6,EB6,EC6,ED6,EE6,EF6 Balearic-Islands-EA6   35 37 14  -1.00 39 36  0 N   2 57  0 E
 EG6,EH6 Balearic-Islands-EA6                           35 37 14  -1.00 39 36  0 N   2 57  0 E
-EA8 Canary-Islands-EA8                                 36 36 33   0.00 28  6  0 N  15 24  0 W @
-AM8,AN8,AO8,EB8,EC8,ED8,EE8,EF8 Canary-Islands-EA8     36 36 33   0.00 28  6  0 N  15 24  0 W
-EG8,EH8 Canary-Islands-EA8                             36 36 33   0.00 28  6  0 N  15 24  0 W
+EA8 Canary-Islands-EA8                                 36 36 33   0.00 28 19  0 N  15 51  0 W @
+AM8,AN8,AO8,EB8,EC8,ED8,EE8,EF8 Canary-Islands-EA8     36 36 33   0.00 28 19  0 N  15 51  0 W
+EG8,EH8 Canary-Islands-EA8                             36 36 33   0.00 28 19  0 N  15 51  0 W
 EA8/G Las-Palmas-de-Gran-Canaria-EA8                   36 36 33   0.00 28  9  0 N  15 25  0 W
 EA8 Las-Palmas-de-Gran-Canaria-EA8/G                   36 36 33   0.00 28  9  0 N  15 25  0 W
 EA8/T Santa-Cruz-de-Tenerife-EA8                       36 36 33   0.00 28 28  0 N  16 15  0 W
@@ -1424,8 +1424,8 @@ FT Kerguelen-Islands-FT/X                              56 68 39  -5.00 49  0  0 
 FT0X,FT2X,FT4X,FT5X,FT8X Kerguelen-Islands-FT/X        56 68 39  -5.00 49  0  0 S  69 16  0 E
 FT/Z Amsterdam-St-Paul-Is-FT/Z                         58 68 39  -5.00 37 51  0 S  77 32  0 E @
 FT Amsterdam-St-Paul-Is-FT/Z                           58 68 39  -5.00 37 51  0 S  77 32  0 E
-FT0Z,FT1Z,FT2Z,FT4Z,FT5Z Amsterdam-St-Paul-Is-FT/Z     58 68 39  -5.00 37 51  0 S  77 32  0 E
-FT8Z Amsterdam-St-Paul-Is-FT/Z                         58 68 39  -5.00 37 51  0 S  77 32  0 E
+FT0Z,FT1Z,FT2Z,FT3Z,FT4Z Amsterdam-St-Paul-Is-FT/Z     58 68 39  -5.00 37 51  0 S  77 32  0 E
+FT5Z,FT6Z,FT7Z,FT8Z Amsterdam-St-Paul-Is-FT/Z          58 68 39  -5.00 37 51  0 S  77 32  0 E
 FW Wallis-Futuna-Islands-FW                            59 62 32 -12.00 13 18  0 S 176 12  0 W @
 TW Wallis-Futuna-Islands-FW                            59 62 32 -12.00 13 18  0 S 176 12  0 W
 FW/F Hoorn-Islands-Futuna-FW                           59 62 32 -12.00 14 16  0 S 178  8  0 W
@@ -1794,8 +1794,6 @@ KH2 Guam-KH2                                          107 64 27 -10.00 13 22  0 
 AH2,NH2,WH2 Guam-KH2                                  107 64 27 -10.00 13 22  0 N 144 42  0 E
 KH3 Johnston-Island-KH3                               108 61 31  10.00 16 43  0 N 169 32  0 W @
 AH3,NH3,WH3 Johnston-Island-KH3                       108 61 31  10.00 16 43  0 N 169 32  0 W
-KH4 Midway-Island-KH4                                 109 61 31  11.00 28 12  0 N 177 22  0 W @
-AH4,NH4,WH4 Midway-Island-KH4                         109 61 31  11.00 28 12  0 N 177 22  0 W
 KH5 Palmyra-Jarvis-Islands-KH5                        110 61 31  11.00  5 52  0 N 162  4  0 W @
 AH5,NH5,WH5 Palmyra-Jarvis-Islands-KH5                110 61 31  11.00  5 52  0 N 162  4  0 W
 KH5/J Jarvis-Island-KH5                               110 61 31  11.00  0 22  0 S 160  1  0 W
@@ -1804,8 +1802,6 @@ KH5/P Palmyra-Atoll-KH5                               110 61 31  11.00  5 53  0 
 KH5 Palmyra-Atoll-KH5/P                               110 61 31  11.00  5 53  0 N 162  5  0 W
 KH6 Hawaii-KH6                                        112 61 31  10.00 21  7  0 N 157 29  0 W @
 AH6,AH7,KH7,NH6,NH7,WH6,WH7 Hawaii-KH6                112 61 31  10.00 21  7  0 N 157 29  0 W
-KH7K Kure-Island-KH7K                                 113 61 31  10.00 29  0  0 N 178  0  0 W @
-AH7K,NH7K,WH7K Kure-Island-KH7K                       113 61 31  10.00 29  0  0 N 178  0  0 W
 KH8 American-Samoa-KH8                                114 62 32  11.00 14 19  0 S 170 47  0 W @
 AH8,NH8,WH8 American-Samoa-KH8                        114 62 32  11.00 14 19  0 S 170 47  0 W
 KH8/S Swains-Island-KH8/S                             347 62 32  11.00 11  3  0 S 171 15  0 W @
@@ -5745,8 +5741,8 @@ LU7Z,LU8Z,LU9Z Teniente-Benjamin-Matienzo-Base-CE9    102 73 13   0.00 64 58  0 
 CE9 Teniente-Benjamin-Matienzo-Base-ARG-01            102 73 13   0.00 64 58  0 S  60  4  0 W
 AX0,VI0,VK0 Douglas-Mawson-Station-CE9                102 69 39   0.00 67 36  0 S  62 52  0 E
 CE9 Douglas-Mawson-Station-AUS-04                     102 69 39   0.00 67 36  0 S  62 52  0 E
-FT0Y,FT1Y,FT2Y,FT4Y,FT5Y Dumont-D'Urville-Base-CE9    102 74 13   0.00 90  0  0 S   0  0  0 E
-FT8Y Dumont-D'Urville-Base-CE9                        102 70 30   0.00 66 39  0 S 140  0  0 E
+FT0Y,FT1Y,FT2Y,FT3Y,FT4Y Dumont-D'Urville-Base-CE9    102 74 13   0.00 90  0  0 S   0  0  0 E
+FT5Y,FT6Y,FT7Y,FT8Y Dumont-D'Urville-Base-CE9         102 70 30   0.00 66 39  0 S 140  0  0 E
 CE9 Dumont-D'Urville-Base-FRA-01                      102 70 30   0.00 66 39  0 S 140  0  0 E
 3Y Blue-Field-Base-Camp-CE9                           102 73 13   0.00 77 30  0 S  34 12  0 W
 CE9 Blue-Field-Base-Camp-NOR-01                       102 73 13   0.00 77 30  0 S  34 12  0 W
