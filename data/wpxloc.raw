@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 04 Apr 2017
+! This file was created by Jim Reisert AD1C on 05 May 2017
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -968,9 +968,9 @@ CE Maule-Liberatador-CE4                               16 14 12   4.00 33 37  0 
 CE5 Bio-Bio-CE                                         16 14 12   4.00 36 37  0 S  72 10  0 W
 CE Bio-Bio-CE5                                         16 14 12   4.00 36 37  0 S  72 10  0 W
 3G5,CA5,CB5,CC5,CD5,XQ5,XR5 Bio-Bio-CE                 16 14 12   4.00 36 37  0 S  72 10  0 W
-CE6 Araucania-CE                                       16 14 12   4.00 39 45  0 S  73 15  0 W
-CE Araucania-CE6                                       16 14 12   4.00 39 45  0 S  73 15  0 W
-3G6,CA6,CB6,CC6,CD6,XQ6,XR6 Araucania-CE               16 14 12   4.00 39 45  0 S  73 15  0 W
+CE6 Araucania-Los-Rios-CE                              16 14 12   4.00 39 45  0 S  73 15  0 W
+CE Araucania-Los-Rios-CE6                              16 14 12   4.00 39 45  0 S  73 15  0 W
+3G6,CA6,CB6,CC6,CD6,XQ6,XR6 Araucania-Los-Rios-CE      16 14 12   4.00 39 45  0 S  73 15  0 W
 CE7 Aisen-Los-Lagos-CE                                 16 16 12   4.00 40 35  0 S  73 14  0 W
 CE Aisen-Los-Lagos-CE7                                 16 16 12   4.00 40 35  0 S  73 14  0 W
 3G7,CA7,CB7,CC7,CD7,XQ7,XR7 Aisen-Los-Lagos-CE         16 16 12   4.00 40 35  0 S  73 14  0 W
