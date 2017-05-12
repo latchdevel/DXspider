@@ -37,7 +37,7 @@ sub handle_get
 
 	my $state = $conn->{_asstate};
 	
-	dbg("asyncmsg: $state $msg") if isdbg('async');
+	dbg("AsyncMsg: $state $msg") if isdbg('async');
 
 	# no point in going on if there is no-one wanting the output anymore
 	my $dxchan = DXChannel::get($conn->{caller});
@@ -76,7 +76,7 @@ sub handle_get
 			if ($newconn) {
 				# copy over any elements in $conn that are not in $newconn
 				while (my ($k,$v) = each %$conn) {
-					dbg("async: $state copying over $k -> \$newconn") if isdbg('async');
+					dbg("AsyncMsg: $state copying over $k -> \$newconn") if isdbg('async');
 					$newconn{$k} = $v unless exists $newconn{$k};
 				}
 			}
@@ -123,7 +123,7 @@ sub handle_raw
 	$dxchan->send("$prefix$msg");
 }
 
-sub new 
+sub new
 {
 	my $pkg = shift;
 	my $call = shift;
@@ -181,20 +181,19 @@ sub _getpost
 	
 	$r = $conn->connect($host, $port);
 	if ($r) {
-		dbg("Sending '$sort $path HTTP/1.1'") if isdbg('async');
-		$conn->send_later("$sort $path HTTP/1.1\r\n");
+		_send_later($conn, "$sort $path HTTP/1.1\r\n");
 
 		my $h = delete $args{Host} || $host;
 		my $u = delete $args{'User-Agent'} || "DxSpider;$main::version;$main::build;$^O;$main::mycall"; 
 		my $d = delete $args{data};
 		
-	    $conn->send_later("Host: $h\r\n");
-		$conn->send_later("User-Agent: $u\r\n");
+	    _send_later($conn, "Host: $h\r\n");
+		_send_later($conn, "User-Agent: $u\r\n");
 		while (my ($k,$v) = each %args) {
-			$conn->send_later("$k: $v\r\n");
+			_send_later($conn, "$k: $v\r\n");
 		}
-		$conn->send_later("\r\n$d") if defined $d;
-		$conn->send_later("\r\n");
+		_send_later($conn, "\r\n$d") if defined $d;
+		_send_later($conn, "\r\n");
 	}
 	
 	return $r ? $conn : undef;
@@ -268,6 +267,19 @@ sub disconnect
 	}
 	delete $outstanding{$conn};
 	$conn->SUPER::disconnect;
+}
+
+sub _send_later
+{
+	my $conn = shift;
+	my $m = shift;
+	
+	if (isdbg('async')) {
+		my $s = $m;
+		$s =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
+		dbg("AsyncMsg: send $s");
+	}
+	$conn->send_later($m);
 }
 
 sub DESTROY
