@@ -1,5 +1,9 @@
 12May17=======================================================================
 1. Fix sh/425 (mostly)
+2. Fix AsyncMsg line ending issues
+3. Set defaults for $clusteraddr/port to allow easier swapping from 
+   master <-> mojo branches for testing fixes.
+4. Add CTY-2705 prefixes
 05May17=======================================================================
 1. Add CTY-2705 prefixes
 04Apr17=======================================================================
