@@ -15,7 +15,15 @@ require 5.004;
 package main;
 
 # set default paths, these should be overwritten by DXVars.pm
-use vars qw($data $system $cmd $localcmd $userfn);
+use vars qw($data $system $cmd $localcmd $userfn $clusteraddr $clusterport $yes $no $user_interval $lang);
+
+$lang = 'en';                   # default language
+$clusteraddr = '127.0.0.1';     # cluster tcp host address - used for things like console.pl
+$clusterport = 27754;           # cluster tcp port
+$yes = 'Yes';                   # visual representation of yes
+$no = 'No';                     # ditto for no
+$user_interval = 11*60;         # the interval between unsolicited prompts if no traffic
+
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
@@ -128,8 +136,8 @@ package main;
 
 use strict;
 use vars qw(@inqueue $systime $starttime $lockfn @outstanding_connects
-			$zombies $root @listeners $lang $myalias @debug $userfn $clusteraddr
-			$clusterport $mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
+			$zombies $root @listeners $lang $myalias @debug $userfn
+			$mycall $decease $is_win $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
 			$can_encode $maxconnect_user $maxconnect_node
 		   );

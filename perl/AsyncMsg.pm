@@ -181,20 +181,20 @@ sub _getpost
 	
 	$r = $conn->connect($host, $port);
 	if ($r) {
-		dbg("Sending '$sort $path HTTP/1.0'") if isdbg('async');
-		$conn->send_later("$sort $path HTTP/1.0\n");
+		dbg("Sending '$sort $path HTTP/1.1'") if isdbg('async');
+		$conn->send_later("$sort $path HTTP/1.1\r\n");
 
 		my $h = delete $args{Host} || $host;
 		my $u = delete $args{'User-Agent'} || "DxSpider;$main::version;$main::build;$^O;$main::mycall"; 
 		my $d = delete $args{data};
 		
-	    $conn->send_later("Host: $h\n");
-		$conn->send_later("User-Agent: $u\n");
+	    $conn->send_later("Host: $h\r\n");
+		$conn->send_later("User-Agent: $u\r\n");
 		while (my ($k,$v) = each %args) {
-			$conn->send_later("$k: $v\n");
+			$conn->send_later("$k: $v\r\n");
 		}
-		$conn->send_later("\n$d") if defined $d;
-		$conn->send_later("\n");
+		$conn->send_later("\r\n$d") if defined $d;
+		$conn->send_later("\r\n");
 	}
 	
 	return $r ? $conn : undef;

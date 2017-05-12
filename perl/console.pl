@@ -16,7 +16,10 @@
 require 5.004;
 package main;
 
-use vars qw($data);
+use vars qw($data $clusteraddr $clusterport);
+
+$clusteraddr = '127.0.0.1';     # cluster tcp host address - used for things like console.pl
+$clusterport = 27754;           # cluster tcp port
 
 # search local then perl directories
 BEGIN {
