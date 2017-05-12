@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 05 May 2017
+! This file was created by Jim Reisert AD1C on 12 May 2017
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -1794,6 +1794,8 @@ KH2 Guam-KH2                                          107 64 27 -10.00 13 22  0 
 AH2,NH2,WH2 Guam-KH2                                  107 64 27 -10.00 13 22  0 N 144 42  0 E
 KH3 Johnston-Island-KH3                               108 61 31  10.00 16 43  0 N 169 32  0 W @
 AH3,NH3,WH3 Johnston-Island-KH3                       108 61 31  10.00 16 43  0 N 169 32  0 W
+KH4 Midway-Island-KH4                                 109 61 31  11.00 28 12  0 N 177 22  0 W @
+AH4,NH4,WH4 Midway-Island-KH4                         109 61 31  11.00 28 12  0 N 177 22  0 W
 KH5 Palmyra-Jarvis-Islands-KH5                        110 61 31  11.00  5 52  0 N 162  4  0 W @
 AH5,NH5,WH5 Palmyra-Jarvis-Islands-KH5                110 61 31  11.00  5 52  0 N 162  4  0 W
 KH5/J Jarvis-Island-KH5                               110 61 31  11.00  0 22  0 S 160  1  0 W
@@ -1802,6 +1804,8 @@ KH5/P Palmyra-Atoll-KH5                               110 61 31  11.00  5 53  0 
 KH5 Palmyra-Atoll-KH5/P                               110 61 31  11.00  5 53  0 N 162  5  0 W
 KH6 Hawaii-KH6                                        112 61 31  10.00 21  7  0 N 157 29  0 W @
 AH6,AH7,KH7,NH6,NH7,WH6,WH7 Hawaii-KH6                112 61 31  10.00 21  7  0 N 157 29  0 W
+KH7K Kure-Island-KH7K                                 113 61 31  10.00 29  0  0 N 178  0  0 W @
+AH7K,NH7K,WH7K Kure-Island-KH7K                       113 61 31  10.00 29  0  0 N 178  0  0 W
 KH8 American-Samoa-KH8                                114 62 32  11.00 14 19  0 S 170 47  0 W @
 AH8,NH8,WH8 American-Samoa-KH8                        114 62 32  11.00 14 19  0 S 170 47  0 W
 KH8/S Swains-Island-KH8/S                             347 62 32  11.00 11  3  0 S 171 15  0 W @

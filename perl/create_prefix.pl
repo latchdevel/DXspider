@@ -37,7 +37,7 @@ my %pren = ();						# the inverse
 my $prefix;
 my $system;
 
-if (@ARGV && $ARGV[0] =~ /^--system$/) {
+if (@ARGV && $ARGV[0] =~ /^-?-?syst?e?m?$/) {
 	$prefix = $main::data;
 	++$system;
 	shift;
