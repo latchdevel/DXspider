@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 12 May 2017
+! This file was created by Jim Reisert AD1C on 06 Jul 2017
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 357 ("VERSION" entity)
@@ -2790,25 +2790,35 @@ PY9 Mato-Grosso-PY                                    142 13 11   3.00 15 32  0 
 PY Mato-Grosso-PY9                                    142 13 11   3.00 15 32  0 S  56  5  0 W
 PY0F Fernando-de-Noronha-PY0F                         144 13 11   2.00  3 51  0 S  32 26  0 W @
 PY0 Fernando-de-Noronha-PY0F                          144 13 11   2.00  3 51  0 S  32 26  0 W
-PP0F,PQ0F,PR0F,PS0F,PT0F Fernando-de-Noronha-PY0F     144 13 11   2.00  3 51  0 S  32 26  0 W
-PU0F,PV0F,PW0F,PX0F,PY0Z Fernando-de-Noronha-PY0F     144 13 11   2.00  3 51  0 S  32 26  0 W
-ZV0F,ZW0F,ZX0F,ZY0F,ZY0Z Fernando-de-Noronha-PY0F     144 13 11   2.00  3 51  0 S  32 26  0 W
-ZZ0F Fernando-de-Noronha-PY0F                         144 13 11   2.00  3 51  0 S  32 26  0 W
+PP0F,PP0ZF,PQ0F,PQ0ZF,PR0F Fernando-de-Noronha-PY0F   144 13 11   2.00  3 51  0 S  32 26  0 W
+PR0ZF,PS0F,PS0ZF,PT0F,PT0ZF Fernando-de-Noronha-PY0F  144 13 11   2.00  3 51  0 S  32 26  0 W
+PU0F,PU0ZF,PV0F,PV0ZF,PW0F Fernando-de-Noronha-PY0F   144 13 11   2.00  3 51  0 S  32 26  0 W
+PW0ZF,PX0F,PX0ZF,PY0Z,ZV0F Fernando-de-Noronha-PY0F   144 13 11   2.00  3 51  0 S  32 26  0 W
+ZV0ZF,ZW0F,ZW0ZF,ZX0F,ZX0ZF Fernando-de-Noronha-PY0F  144 13 11   2.00  3 51  0 S  32 26  0 W
+ZY0F,ZY0Z,ZZ0F,ZZ0ZF Fernando-de-Noronha-PY0F         144 13 11   2.00  3 51  0 S  32 26  0 W
 PY0R Atol-das-Rocas-PY0F                              144 13 11   2.00  3 52  0 S  33 49  0 W
 PY0F Atol-das-Rocas-PY0R                              144 13 11   2.00  3 52  0 S  33 49  0 W
-PP0R,PQ0R,PR0R,PS0R,PT0R,PU0R Atol-das-Rocas-PY0F     144 13 11   2.00  3 52  0 S  33 49  0 W
-PV0R,PW0R,PX0R,ZV0R,ZW0R,ZX0R Atol-das-Rocas-PY0F     144 13 11   2.00  3 52  0 S  33 49  0 W
-ZY0R,ZZ0R Atol-das-Rocas-PY0F                         144 13 11   2.00  3 52  0 S  33 49  0 W
+PP0R,PP0ZR,PQ0R,PQ0ZR,PR0R,PR0ZR Atol-das-Rocas-PY0F  144 13 11   2.00  3 52  0 S  33 49  0 W
+PS0R,PS0ZR,PT0R,PT0ZR,PU0R,PU0ZR Atol-das-Rocas-PY0F  144 13 11   2.00  3 52  0 S  33 49  0 W
+PV0R,PV0ZR,PW0R,PW0ZR,PX0R,PX0ZR Atol-das-Rocas-PY0F  144 13 11   2.00  3 52  0 S  33 49  0 W
+PY0ZR,ZV0R,ZV0ZR,ZW0R,ZW0ZR,ZX0R Atol-das-Rocas-PY0F  144 13 11   2.00  3 52  0 S  33 49  0 W
+ZX0ZR,ZY0R,ZY0ZR,ZZ0R,ZZ0ZR Atol-das-Rocas-PY0F       144 13 11   2.00  3 52  0 S  33 49  0 W
 PY0S St-Peter-St-Paul-PY0S                            145 13 11   2.00  0  0  0 N  29  0  0 W @
 PY0 St-Peter-St-Paul-PY0S                             145 13 11   2.00  0  0  0 N  29  0  0 W
-PP0S,PQ0S,PR0S,PS0S,PT0S,PU0S St-Peter-St-Paul-PY0S   145 13 11   2.00  0  0  0 N  29  0  0 W
-PV0S,PW0S,PX0S,ZV0S,ZW0S,ZX0S St-Peter-St-Paul-PY0S   145 13 11   2.00  0  0  0 N  29  0  0 W
-ZY0S,ZZ0S St-Peter-St-Paul-PY0S                       145 13 11   2.00  0  0  0 N  29  0  0 W
+PP0S,PP0ZS,PQ0S,PQ0ZS,PR0S St-Peter-St-Paul-PY0S      145 13 11   2.00  0  0  0 N  29  0  0 W
+PR0ZS,PS0S,PS0ZS,PT0S,PT0ZS St-Peter-St-Paul-PY0S     145 13 11   2.00  0  0  0 N  29  0  0 W
+PU0S,PU0ZS,PV0S,PV0ZS,PW0S St-Peter-St-Paul-PY0S      145 13 11   2.00  0  0  0 N  29  0  0 W
+PW0ZS,PX0S,PX0ZS,PY0ZS,ZV0S St-Peter-St-Paul-PY0S     145 13 11   2.00  0  0  0 N  29  0  0 W
+ZV0ZS,ZW0S,ZW0ZS,ZX0S,ZX0ZS St-Peter-St-Paul-PY0S     145 13 11   2.00  0  0  0 N  29  0  0 W
+ZY0S,ZY0ZS,ZZ0S,ZZ0ZS St-Peter-St-Paul-PY0S           145 13 11   2.00  0  0  0 N  29  0  0 W
 PY0T Trindade-Martim-Vaz-PY0T                         146 15 11   2.00 20 30  0 S  29 19  0 W @
 PY0 Trindade-Martim-Vaz-PY0T                          146 15 11   2.00 20 30  0 S  29 19  0 W
-PP0T,PQ0T,PR0T,PS0T,PT0T Trindade-Martim-Vaz-PY0T     146 15 11   2.00 20 30  0 S  29 19  0 W
-PU0T,PV0T,PW0T,PX0T,ZV0T Trindade-Martim-Vaz-PY0T     146 15 11   2.00 20 30  0 S  29 19  0 W
-ZW0T,ZX0T,ZY0T,ZZ0T Trindade-Martim-Vaz-PY0T          146 15 11   2.00 20 30  0 S  29 19  0 W
+PP0T,PP0ZT,PQ0T,PQ0ZT,PR0T Trindade-Martim-Vaz-PY0T   146 15 11   2.00 20 30  0 S  29 19  0 W
+PR0ZT,PS0T,PS0ZT,PT0T,PT0ZT Trindade-Martim-Vaz-PY0T  146 15 11   2.00 20 30  0 S  29 19  0 W
+PU0T,PU0ZT,PV0T,PV0ZT,PW0T Trindade-Martim-Vaz-PY0T   146 15 11   2.00 20 30  0 S  29 19  0 W
+PW0ZT,PX0T,PX0ZT,PY0ZT,ZV0T Trindade-Martim-Vaz-PY0T  146 15 11   2.00 20 30  0 S  29 19  0 W
+ZV0ZT,ZW0T,ZW0ZT,ZX0T,ZX0ZT Trindade-Martim-Vaz-PY0T  146 15 11   2.00 20 30  0 S  29 19  0 W
+ZY0T,ZY0ZT,ZZ0T,ZZ0ZT Trindade-Martim-Vaz-PY0T        146 15 11   2.00 20 30  0 S  29 19  0 W
 PZ Suriname-PZ                                        147 12  9   3.00  4  0  0 N  56  0  0 W @
 PZ1 Paramaribo-Wanica-PZ                              147 12  9   3.00  5 48  0 N  55 16  0 W
 PZ Paramaribo-Wanica-PZ1                              147 12  9   3.00  5 48  0 N  55 16  0 W
@@ -3881,14 +3891,14 @@ RW8X,RW9X,RX8X,RX9X,RY8X,RY9X,RZ8X,RZ9X,U8X Komi-UA   179 20 17  -4.00 64 17  0 
 U9X,UA8X,UB8X,UB9X,UC8X,UC9X,UD8X,UD9X,UE8X Komi-UA   179 20 17  -4.00 64 17  0 N  54 28  0 E
 UE9X,UF8X,UF9X,UG8X,UG9X,UH8X,UH9X,UI8X,UI9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
 UA2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E @
-R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RE2F Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
-RE2K,RF2F,RF2K,RG2F,RG2K,RI2F,RI2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RJ2F,RJ2K,RK2F,RK2K,RL2F,RL2K,RM2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RM2K,RN2F,RN2K,RO2F,RO2K,RQ2F,RQ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RT2F,RT2K,RU2F,RU2K,RV2F,RV2K,RW2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RW2K,RX2F,RX2K,RY2F,RY2K,RZ2F,RZ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-U2F,U2K,UB2,UC2,UD2,UE2,UF2,UG2,UH2 Kaliningrad-UA2   181 29 15  -3.00 54 43  0 N  20 31  0 E
-UI2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E
+R110,R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
+RE2F,RE2K,RF2F,RF2K,RG2F,RG2K,RI2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RI2K,RJ2F,RJ2K,RK2F,RK2K,RL2F,RL2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RM2F,RM2K,RN2F,RN2K,RO2F,RO2K,RQ2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RQ2K,RT2F,RT2K,RU2F,RU2K,RV2F,RV2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RW2F,RW2K,RX2F,RX2K,RY2F,RY2K,RZ2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RZ2K,U2F,U2K,UB2,UC2,UD2,UE2,UF2,UG2 Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
+UH2,UI2 Kaliningrad-UA2                               181 29 15  -3.00 54 43  0 N  20 31  0 E
 UA9 Asiatic-Russia-UA9                                182 30 17  -7.00 55 53  0 N  84  5  0 E @
 R0,R8,R9,RA0,RA8,RA9,RC0,RC8,RC9 Asiatic-Russia-UA9   182 30 17  -7.00 55 53  0 N  84  5  0 E
 RD0,RD8,RD9,RE0,RE8,RE9,RF0,RF8 Asiatic-Russia-UA9    182 30 17  -7.00 55 53  0 N  84  5  0 E
@@ -5780,13 +5790,14 @@ VK0 Macquarie-Island-VK0M                             206 60 30 -10.00 54 36  0 
 VK9C Cocos-Keeling-Islands-VK9C                       201 54 29  -6.50 12  9  0 S  96 49  0 E @
 VK9 Cocos-Keeling-Islands-VK9C                        201 54 29  -6.50 12  9  0 S  96 49  0 E
 AX9C,AX9Y,VH9C,VH9Y,VI9C Cocos-Keeling-Islands-VK9C   201 54 29  -6.50 12  9  0 S  96 49  0 E
-VI9Y,VJ9C,VJ9Y,VK9Y,VL9C Cocos-Keeling-Islands-VK9C   201 54 29  -6.50 12  9  0 S  96 49  0 E
+VI9Y,VJ9C,VJ9Y,VK9FC Cocos-Keeling-Islands-VK9C       201 54 29  -6.50 12  9  0 S  96 49  0 E
+VK9KC,VK9Y,VK9ZY,VL9C Cocos-Keeling-Islands-VK9C      201 54 29  -6.50 12  9  0 S  96 49  0 E
 VL9Y,VM9C,VM9Y,VN9C,VN9Y Cocos-Keeling-Islands-VK9C   201 54 29  -6.50 12  9  0 S  96 49  0 E
 VZ9C,VZ9Y Cocos-Keeling-Islands-VK9C                  201 54 29  -6.50 12  9  0 S  96 49  0 E
 VK9L Lord-Howe-Island-VK9L                            199 60 30 -10.50 31 33  0 S 159  5  0 E @
 VK9 Lord-Howe-Island-VK9L                             199 60 30 -10.50 31 33  0 S 159  5  0 E
-AX9L,VH9L,VI9L,VJ9L,VL9L,VM9L Lord-Howe-Island-VK9L   199 60 30 -10.50 31 33  0 S 159  5  0 E
-VN9L,VZ9L Lord-Howe-Island-VK9L                       199 60 30 -10.50 31 33  0 S 159  5  0 E
+AX9L,VH9L,VI9L,VJ9L,VK9FL Lord-Howe-Island-VK9L       199 60 30 -10.50 31 33  0 S 159  5  0 E
+VK9ZL,VL9L,VM9L,VN9L,VZ9L Lord-Howe-Island-VK9L       199 60 30 -10.50 31 33  0 S 159  5  0 E
 VK9M Mellish-Reef-VK9M                                202 56 30 -10.00 17 24  0 S 155 51  0 E @
 VK9 Mellish-Reef-VK9M                                 202 56 30 -10.00 17 24  0 S 155 51  0 E
 AX9M,VH9M,VI9M,VJ9M,VL9M,VM9M,VN9M Mellish-Reef-VK9M  202 56 30 -10.00 17 24  0 S 155 51  0 E
@@ -5794,12 +5805,12 @@ VZ9M Mellish-Reef-VK9M                                202 56 30 -10.00 17 24  0 
 VK9W Willis-Island-VK9W                               204 55 30 -10.00 16 13  0 S 150  1  0 E @
 VK9 Willis-Island-VK9W                                204 55 30 -10.00 16 13  0 S 150  1  0 E
 AX9W,AX9Z,VH9W,VH9Z,VI9W,VI9Z Willis-Island-VK9W      204 55 30 -10.00 16 13  0 S 150  1  0 E
-VJ9W,VJ9Z,VK9Z,VL9W,VL9Z,VM9W Willis-Island-VK9W      204 55 30 -10.00 16 13  0 S 150  1  0 E
-VM9Z,VN9W,VN9Z,VZ9W,VZ9Z Willis-Island-VK9W           204 55 30 -10.00 16 13  0 S 150  1  0 E
+VJ9W,VJ9Z,VK9FW,VK9Z,VL9W,VL9Z Willis-Island-VK9W     204 55 30 -10.00 16 13  0 S 150  1  0 E
+VM9W,VM9Z,VN9W,VN9Z,VZ9W,VZ9Z Willis-Island-VK9W      204 55 30 -10.00 16 13  0 S 150  1  0 E
 VK9X Christmas-Island-VK9X                            200 54 29  -7.00 10 29  0 S 105 38  0 E @
 VK9 Christmas-Island-VK9X                             200 54 29  -7.00 10 29  0 S 105 38  0 E
-AX9X,VH9X,VI9X,VJ9X,VL9X,VM9X Christmas-Island-VK9X   200 54 29  -7.00 10 29  0 S 105 38  0 E
-VN9X,VZ9X Christmas-Island-VK9X                       200 54 29  -7.00 10 29  0 S 105 38  0 E
+AX9X,VH9X,VI9X,VJ9X,VK9FX Christmas-Island-VK9X       200 54 29  -7.00 10 29  0 S 105 38  0 E
+VK9KX,VL9X,VM9X,VN9X,VZ9X Christmas-Island-VK9X       200 54 29  -7.00 10 29  0 S 105 38  0 E
 VP8/G South-Georgia-Island-VP8/G                      211 73 13   2.00 54 29  0 S  37  5  0 W @
 VP8 South-Georgia-Island-VP8/G                        211 73 13   2.00 54 29  0 S  37  5  0 W
 VP8/H South-Shetland-Islands-VP8/H                    214 73 13   4.00 62  5  0 S  58 40  0 W @

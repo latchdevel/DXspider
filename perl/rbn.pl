@@ -72,8 +72,10 @@ for ($attempts = 1; $attempts <= 5; ++$attempts) {
 	last if $sock;
 }
 
-die "ADMIN,Cannot connect to $host:$port after 5 attempts $!" unless $sock;
+die "ADMIN,Cannot connect to $host:$port after 5 attempts $!\n" unless $sock;
 say "ADMIN,connected" if $dbg;
+$sock->timeout(0);
+
 print $sock "$mycall\r\n";
 say "ADMIN,call $mycall sent" if $dbg;
 
