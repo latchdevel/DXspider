@@ -18,9 +18,11 @@ BEGIN {
 
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
+	
 }
 
 use DXVars;
+use SysVar;
 use USDB;
 
 die "no input (usdbraw?) files specified\n" unless @ARGV;
