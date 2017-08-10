@@ -278,6 +278,9 @@ sub _send_stuff
 	my $conn = shift;
 	my $rq = $conn->{outqueue};
     my $sock = $conn->{sock};
+	return unless defined $sock;
+	return if $conn->{disconnecting};
+	
 	while (@$rq) {
 		my $data = shift @$rq;
 		my $lth = length $data;
@@ -377,6 +380,7 @@ sub _rcv {                     # Complement to _send
 	my $msg = shift;
     my $sock = $conn->{sock};
     return unless defined($sock);
+	return if $conn->{disconnecting};
 
 	$total_in += length $msg;
 
