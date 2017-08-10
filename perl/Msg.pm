@@ -136,8 +136,8 @@ sub _on_connect
 	undef $conn->{sock};
 	my $sock = $conn->{sock} = Mojo::IOLoop::Stream->new($handle);
 	$sock->on(read => sub {$conn->_rcv($_[1]);} );
-	$sock->on(error => sub {$conn->disconnect;});
-	$sock->on(close => sub {$conn->disconnect;});
+	$sock->on(error => sub {delete $conn->{sock}; $conn->disconnect;});
+	$sock->on(close => sub {delete $conn->{sock}; $conn->disconnect;});
 	$sock->timeout(0);
 	$sock->start;
 	$conn->{peerhost} = eval { $handle->peerhost; };

@@ -1,3 +1,5 @@
+10Aug17=======================================================================
+1. check for disconnecting flag in more places
 31Jul17=======================================================================
 1. Fixed create_usdb.pl path specifications
 2. add CTY-2708 prefixes
