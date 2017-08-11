@@ -1,0 +1,17 @@
+[Unit]
+Description=DXSpider DX Cluster node
+After=network.target auditd.service
+
+[Service]
+EnvironmentFile=-/etc/default/dxspider
+ExecStart=/spider/perl/cluster.pl > /dev/null
+ExecReload=/bin/kill $MAINPID
+KillMode=process
+Restart=always
+User=sysop
+Group=sysop
+
+[Install]
+WantedBy=multi-user.target
+Alias=dxspider.service
+
