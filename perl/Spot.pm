@@ -120,15 +120,14 @@ sub init
 					while (<$fh>) {
 						chomp;
 						my @s = split /\^/;
-						if (@s < 12) {
+						if (@s < 14) {
 							my @a = (Prefix::cty_data($s[1]))[1..3];
 							my @b = (Prefix::cty_data($s[4]))[1..3];
 							push @s, $b[1] if @s < 7;
 							push @s, '' if @s < 8;
 							push @s, @a[0,1], @b[0,1] if @s < 12;
-							push @s,  $a[2], $a[2] if @s < 14;
+							push @s,  $a[2], $b[2] if @s < 14;
 						} 
-						
 						$main::dbh->spot_insert(\@s, $sth);
 						$count++;
 					}
@@ -184,6 +183,9 @@ sub prepare
 	push @out, $_[5];
 	push @out, @spd[1,2], @spt[1,2], $spd[3], $spt[3];
 	push @out, $_[6] if $_[6] && is_ipaddr($_[6]);
+
+	# thus we now have:
+	# freq, call, time, comment, spotter, call country code, call itu, call cqzone, spotter country code, spotter itu, spotter cqzone, call state, spotter state, node, spotter ip address
 	return @out;
 }
 
