@@ -569,7 +569,7 @@ sub process
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
-		next unless $dxchan->{sort} eq 'U';  
+		next unless $dxchan->is_user;  
 	
 		# send a outstanding message prompt if required
 		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
@@ -663,7 +663,7 @@ sub broadcast
 	my $s = shift;				# the line to be rebroadcast
 	
     foreach my $dxchan (DXChannel::get_all()) {
-		next unless $dxchan->{sort} eq 'U'; # only interested in user channels  
+		next unless $dxchan->is_user; # only interested in user channels  
 		next if grep $dxchan == $_, @_;
 		$dxchan->send($s);			# send it
 	}
@@ -672,7 +672,7 @@ sub broadcast
 # gimme all the users
 sub get_all
 {
-	return grep {$_->{sort} eq 'U'} DXChannel::get_all();
+	return grep {$_->is_user} DXChannel::get_all();
 }
 
 # run a script for this user

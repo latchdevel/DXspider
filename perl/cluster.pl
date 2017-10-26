@@ -194,80 +194,114 @@ sub new_channel
 	my ($sort, $call, $line) = DXChannel::decode_input(0, $msg);
 	return unless defined $sort;
 
-	unless (is_callsign($call)) {
-		already_conn($conn, $call, DXM::msg($lang, "illcall", $call));
-		return;
-	}
-
-	# set up the basic channel info
-	# is there one already connected to me - locally?
-	my $user = DXUser::get_current($call);
-	my $dxchan = DXChannel::get($call);
-	if ($dxchan) {
-		if ($user && $user->is_node) {
-			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+	my ($dxchan, $user);
+	
+	if (is_webcall($call) && $conn->isa('IntMsg')) {
+		my $newcall = find_next_webcall();
+		unless ($newcall) {
+			already_conn($conn, $call, "Maximum no of web connected connects ($Web::maxssid) exceeded");
 			return;
 		}
-		if ($bumpexisting) {
-			my $ip = $conn->peerhost || 'unknown';
-			$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
-			LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
-			$dxchan->disconnect;
+		$call = $newcall;
+		$user = DXUser::get_current($call);
+		unless ($user) {
+			$user = DXUser->new($call);
+			$user->sort('W');
+			$user->wantbeep(0);
+			$user->name('web');
+			$user->qth('on the web');
+			$user->homenode($main::call);
+			$user->lat($main::mylatitude);
+			$user->long($main::mylongitude);
+			$user->qra($main::mylocator);
+			$user->put;
+		}
+		$dxchan = Web->new($call, $conn, $user);
+		$dxchan->sort('W');
+		$dxchan->enhanced(1);
+		$dxchan->ve7cc(1);
+		$conn->conns($call);
+		$msg =~ s/^A#WEB|/A$call|/;
+		$conn->send_now("C$call");
+	} else {
+		# "Normal" connections
+		unless (is_callsign($call)) {
+			already_conn($conn, $call, DXM::msg($lang, "illcall", $call));
+			return;
+		}
+
+		# set up the basic channel info for "Normal" Users
+		# is there one already connected to me - locally?
+	
+		$user = DXUser::get_current($call);
+		$dxchan = DXChannel::get($call);
+		if ($dxchan) {
+			if ($user && $user->is_node) {
+				already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+				return;
+			}
+			if ($bumpexisting) {
+				my $ip = $conn->peerhost || 'unknown';
+				$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
+				LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
+				$dxchan->disconnect;
+			} else {
+				already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+				return;
+			}
+		}
+		
+		# (fairly) politely disconnect people that are connected to too many other places at once
+		my $r = Route::get($call);
+		if ($conn->{sort} && $conn->{sort} =~ /^I/ && $r && $user) {
+			my @n = $r->parents;
+			my $m = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
+			my $c = $user->maxconnect;
+			my $v;
+			$v = defined $c ? $c : $m;
+			if ($v && @n >= $v) {
+				my $nodes = join ',', @n;
+				LogDbg('DXCommand', "$call has too many connections ($v) at $nodes - disconnected");
+				already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
+				return;
+			}
+		}
+		
+		# is he locked out ?
+		my $basecall = $call;
+		$basecall =~ s/-\d+$//;
+		my $baseuser = DXUser::get_current($basecall);
+		my $lock = $user->lockout if $user;
+		if ($baseuser && $baseuser->lockout || $lock) {
+			if (!$user || !defined $lock || $lock) {
+				my $host = $conn->peerhost || "unknown";
+				LogDbg('DXCommand', "$call on $host is locked out, disconnected");
+				$conn->disconnect;
+				return;
+			}
+		}
+
+		if ($user) {
+			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 		} else {
-			already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
-			return;
+			$user = DXUser->new($call);
 		}
-	}
 
-	# (fairly) politely disconnect people that are connected to too many other places at once
-	my $r = Route::get($call);
-	if ($conn->{sort} && $conn->{sort} =~ /^I/ && $r && $user) {
-		my @n = $r->parents;
-		my $m = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
-		my $c = $user->maxconnect;
-		my $v;
-		$v = defined $c ? $c : $m;
-		if ($v && @n >= $v) {
-			my $nodes = join ',', @n;
-			LogDbg('DXCommand', "$call has too many connections ($v) at $nodes - disconnected");
-			already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
-			return;
+		# create the channel
+		if ($user->is_node) {
+			$dxchan = DXProt->new($call, $conn, $user);
+		} elsif ($user->is_user) {
+			$dxchan = DXCommandmode->new($call, $conn, $user);
+			#	} elsif ($user->is_bbs) {                                  # there is no support so
+			#		$dxchan = BBS->new($call, $conn, $user);               # don't allow it!!!
+		} else {
+			die "Invalid sort of user on $call = $sort";
 		}
+		
+		# check that the conn has a callsign
+		$conn->conns($call) if $conn->isa('IntMsg');
 	}
-
-	# is he locked out ?
-	my $basecall = $call;
-	$basecall =~ s/-\d+$//;
-	my $baseuser = DXUser::get_current($basecall);
-	my $lock = $user->lockout if $user;
-	if ($baseuser && $baseuser->lockout || $lock) {
-		if (!$user || !defined $lock || $lock) {
-			my $host = $conn->peerhost || "unknown";
-			LogDbg('DXCommand', "$call on $host is locked out, disconnected");
-			$conn->disconnect;
-			return;
-		}
-	}
-
-	if ($user) {
-		$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
-	} else {
-		$user = DXUser->new($call);
-	}
-
-	# create the channel
-	if ($user->is_node) {
-		$dxchan = DXProt->new($call, $conn, $user);
-	} elsif ($user->is_user) {
-		$dxchan = DXCommandmode->new($call, $conn, $user);
-#	} elsif ($user->is_bbs) {                                  # there is no support so
-#		$dxchan = BBS->new($call, $conn, $user);               # don't allow it!!!
-	} else {
-		die "Invalid sort of user on $call = $sort";
-	}
-
-	# check that the conn has a callsign
-	$conn->conns($call) if $conn->isa('IntMsg');
+	
 
 	# set callbacks
 	$conn->set_error(sub {my $err = shift; LogDbg('DXCommand', "Comms error '$err' received for call $dxchan->{call}"); $dxchan->disconnect(1);});
@@ -688,6 +722,15 @@ sub per_day
 
 }
 
+sub start_node
+{
+	dbg("Before Web::start_node");
+
+	Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
+
+	dbg("After Web::start_node");
+}
+
 setup_start();
 
 my $main_loop = Mojo::IOLoop->recurring($idle_interval => \&idle_loop);
@@ -700,8 +743,9 @@ my $per10min =  Mojo::IOLoop->recurring(600 => \&per_10_minute);
 my $perhour =  Mojo::IOLoop->recurring(3600 => \&per_hour);
 my $perday =  Mojo::IOLoop->recurring(86400 => \&per_day);
 
-Web::start_node();
+start_node();
 
 cease(0);
+
 exit(0);
 

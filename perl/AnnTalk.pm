@@ -66,6 +66,7 @@ sub is_talk_candidate
 {
 	my ($from, $text) = @_;
 	my $call;
+
 	($call) = $text =~ /^\s*(?:[Xx]|[Tt][Oo]?:?)\s+([\w-]+)/;
 	($call) = $text =~ /^\s*>\s*([\w-]+)\b/ unless $call;
 	($call) = $text =~ /^\s*([\w-]+):?\b/ unless $call;

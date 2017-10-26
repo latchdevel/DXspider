@@ -300,68 +300,68 @@ sub del
 sub is_bbs
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'B';
+	return $self->{sort} eq 'B';
 }
 
 sub is_node
 {
 	my $self = shift;
-	return $self->{'sort'} =~ /[ACRSXW]/;
+	return $self->{sort} =~ /^[ACRSX]$/;
 }
 # is it an ak1a node ?
 sub is_ak1a
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'A';
+	return $self->{sort} eq 'A';
 }
 
 # is it a user?
 sub is_user
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'U';
+	return $self->{sort} =~ /^[UW]$/;
 }
 
 # is it a clx node
 sub is_clx
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'C';
+	return $self->{sort} eq 'C';
 }
 
-# it is Aranea
-sub is_aranea
+# it is a Web connected user
+sub is_web
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'W';
+	return $self->{sort} eq 'W';
 }
 
 # is it a spider node
 sub is_spider
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'S';
+	return $self->{sort} eq 'S';
 }
 
 # is it a DXNet node
 sub is_dxnet
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'X';
+	return $self->{sort} eq 'X';
 }
 
 # is it a ar-cluster node
 sub is_arcluster
 {
 	my $self = shift;
-	return $self->{'sort'} eq 'R';
+	return $self->{sort} eq 'R';
 }
 
 # for perl 5.004's benefit
 sub sort
 {
 	my $self = shift;
-	return @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
+	return @_ ? $self->{sort} = shift : $self->{sort} ;
 }
 
 # find out whether we are prepared to believe this callsign on this interface
@@ -587,7 +587,7 @@ sub decode_input
 {
 	my $dxchan = shift;
 	my $data = shift;
-	my ($sort, $call, $line) = $data =~ /^([A-Z])([A-Z0-9\/\-]{3,25})\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^([A-Z])(#?[A-Z0-9\/\-]{3,25})\|(.*)$/;
 
 	my $chcall = (ref $dxchan) ? $dxchan->call : "UN.KNOWN";
 	

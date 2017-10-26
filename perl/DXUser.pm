@@ -513,7 +513,7 @@ print "There are $count user records and $err errors\n";
 			my $ref = decode($val);
 			if ($ref) {
 				my $t = $ref->{lastin} || 0;
-				if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
+				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
 					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
 						eval {$dbm->del($key)};
 						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
@@ -752,7 +752,7 @@ sub wantlogininfo
 sub is_node
 {
 	my $self = shift;
-	return $self->{sort} =~ /[ACRSX]/;
+	return $self->{sort} =~ /^[ACRSX]$/;
 }
 
 sub is_local_node
@@ -764,7 +764,13 @@ sub is_local_node
 sub is_user
 {
 	my $self = shift;
-	return $self->{sort} eq 'U';
+	return $self->{sort} =~ /^[UW]$/;
+}
+
+sub is_web
+{
+	my $self = shift;
+	return $self->{sort} eq 'W';
 }
 
 sub is_bbs
