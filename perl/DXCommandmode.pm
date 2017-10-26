@@ -41,7 +41,6 @@ use DXXml;
 use AsyncMsg;
 use JSON;
 use Time::HiRes qw(gettimeofday tv_interval);
-use Regexp::IPv6 qw($IPv6_re);
 
 use Mojo::IOLoop;
 use Mojo::IOLoop::ForkCall;
@@ -74,7 +73,7 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 #	my @rout = $main::routeroot->add_user($call, Route::here(1));
-	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->{conn}->peerhost], );
+	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
@@ -101,7 +100,7 @@ sub start
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
-	LogDbg('DXCommand', "$call connected from $host");
+	$self->{hostname} = $host;
 
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
@@ -113,15 +112,19 @@ sub start
 	$self->{pagelth} = $pagelth;
 	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
 	if ($line =~ /host=/) {
-		($self->{hostname}) = $line =~ /host=(\d+\.\d+\.\d+\.\d+)/; $line =~ s/\s*host=\d+\.\d+\.\d+\.\d+//;
-		unless ($self->{hostname}) {
-			($self->{hostname}) = $line =~ /host=($IPv6_re)/; 
-            $line =~ s/\s*host=$IPv6_re//;
+		my ($h) = $line =~ /host=(\d+\.\d+\.\d+\.\d+)/;
+		$line =~ s/\s*host=\d+\.\d+\.\d+\.\d+// if $h;
+		unless ($h) {
+			($h) = $line =~ /host=([\da..fA..F:]+)/;
+			$line =~ s/\s*host=[\da..fA..F:]+// if $h;
 		}
+		$self->{hostname} = $h if $h;
 	}
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
-	
+
+	LogDbg('DXCommand', "$call connected from $self->{hostname}");
+
 	# set some necessary flags on the user if they are connecting
 	$self->{beep} = $user->wantbeep;
 	$self->{ann} = $user->wantann;
@@ -154,7 +157,7 @@ sub start
 	$self->send_motd;
 
 	# sort out privilege reduction
-	$self->{priv} = 0 if $line =~ /^(ax|te)/ && !$self->conn->{usedpasswd};
+	$self->{priv} = 0 unless $self->{hostname} eq '127.0.0.1' || $self->{hostname} eq '::1' || $self->conn->{usedpasswd};
 
 	# get the filters
 	my $nossid = $call;

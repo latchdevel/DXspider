@@ -239,7 +239,7 @@ sub new_channel
 				return;
 			}
 			if ($bumpexisting) {
-				my $ip = $conn->peerhost || 'unknown';
+				my $ip = $dxchan->hostname;
 				$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
 				LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
 				$dxchan->disconnect;
@@ -272,7 +272,7 @@ sub new_channel
 		my $lock = $user->lockout if $user;
 		if ($baseuser && $baseuser->lockout || $lock) {
 			if (!$user || !defined $lock || $lock) {
-				my $host = $conn->peerhost || "unknown";
+				my $host = $conn->peerhost;
 				LogDbg('DXCommand', "$call on $host is locked out, disconnected");
 				$conn->disconnect;
 				return;

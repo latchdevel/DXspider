@@ -125,7 +125,7 @@ $count = 0;
 		  inqueue => '9,Input Queue,parray',
 		  next_pc92_update => '9,Next PC92 Update,atime',
 		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
-		  hostname => '0,(Proxied)Hostname',
+		  hostname => '0,Hostname',
 		 );
 
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection

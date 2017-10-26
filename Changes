@@ -1,4 +1,6 @@
-26Aug17=======================================================================
+27Oct17=======================================================================
+1. Get correct hostname support and privilege levels on web connects.
+26Oct17=======================================================================
 1. Start (serious) work on web interface. Make the necessary changes to allow
    a local webserver to connect and get its own style of messages.
 11Aug17=======================================================================
