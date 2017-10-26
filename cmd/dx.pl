@@ -123,7 +123,7 @@ return (1, @out) unless $valid;
 my $ipaddr;
 
 if ($self->conn && $self->conn->peerhost) {
-	my $addr = $self->conn->peerhost;
+	my $addr = $self->hostname;
 	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
 } elsif ($self->inscript) {
 	$ipaddr = "script";

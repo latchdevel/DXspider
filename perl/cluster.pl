@@ -210,17 +210,15 @@ sub new_channel
 			$user->wantbeep(0);
 			$user->name('web');
 			$user->qth('on the web');
-			$user->homenode($main::call);
+			$user->homenode($main::mycall);
 			$user->lat($main::mylatitude);
 			$user->long($main::mylongitude);
 			$user->qra($main::mylocator);
-			$user->put;
 		}
+		$conn->conns($call);
 		$dxchan = Web->new($call, $conn, $user);
-		$dxchan->sort('W');
 		$dxchan->enhanced(1);
 		$dxchan->ve7cc(1);
-		$conn->conns($call);
 		$msg =~ s/^A#WEB|/A$call|/;
 		$conn->send_now("C$call");
 	} else {
@@ -292,8 +290,6 @@ sub new_channel
 			$dxchan = DXProt->new($call, $conn, $user);
 		} elsif ($user->is_user) {
 			$dxchan = DXCommandmode->new($call, $conn, $user);
-			#	} elsif ($user->is_bbs) {                                  # there is no support so
-			#		$dxchan = BBS->new($call, $conn, $user);               # don't allow it!!!
 		} else {
 			die "Invalid sort of user on $call = $sort";
 		}
@@ -307,6 +303,10 @@ sub new_channel
 	$conn->set_error(sub {my $err = shift; LogDbg('DXCommand', "Comms error '$err' received for call $dxchan->{call}"); $dxchan->disconnect(1);});
 	$conn->set_on_eof(sub {$dxchan->disconnect});
 	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg);});
+	if ($sort eq 'W') {
+		$dxchan->enhanced(1);
+		$dxchan->sort('W');
+	}
 	$dxchan->rec($msg);
 }
 

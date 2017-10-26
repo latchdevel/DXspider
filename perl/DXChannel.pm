@@ -125,6 +125,7 @@ $count = 0;
 		  inqueue => '9,Input Queue,parray',
 		  next_pc92_update => '9,Next PC92 Update,atime',
 		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
+		  hostname => '0,(Proxied)Hostname',
 		 );
 
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
@@ -717,7 +718,7 @@ sub process_one
 			$self->normal($line);
 		} elsif ($sort eq 'G') {
 			$self->enhanced($line);
-		} elsif ($sort eq 'A' || $sort eq 'O') {
+		} elsif ($sort eq 'A' || $sort eq 'O' || $sort eq 'W') {
 			$self->start($line, $sort);
 		} elsif ($sort eq 'Z') {
 			$self->disconnect;

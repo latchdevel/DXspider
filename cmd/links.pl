@@ -54,9 +54,9 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "AK1A" if $dxchan->is_ak1a;
 	my $ipaddr;
 
-	if ($dxchan->conn->peerhost) {
-		my $addr = $dxchan->conn->peerhost;
-		$ipaddr = $addr if is_ipaddr($addr);
+	my $addr = $dxchan->hostname;
+	if ($addr) {
+	    $ipaddr = $addr if is_ipaddr($addr);
 		$ipaddr = 'local' if $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
 	}
 	$ipaddr = 'ax25' if $dxchan->conn->ax25;

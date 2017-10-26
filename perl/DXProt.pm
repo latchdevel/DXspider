@@ -292,6 +292,7 @@ sub start
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
+	$self->{hostname} = $host if is_ipaddr($host);
 
 	Log('DXProt', "$call connected from $host");
 

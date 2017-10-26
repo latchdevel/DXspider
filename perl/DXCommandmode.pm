@@ -41,6 +41,7 @@ use DXXml;
 use AsyncMsg;
 use JSON;
 use Time::HiRes qw(gettimeofday tv_interval);
+use Regexp::IPv6 qw($IPv6_re);
 
 use Mojo::IOLoop;
 use Mojo::IOLoop::ForkCall;
@@ -111,6 +112,13 @@ sub start
 	$pagelth = $default_pagelth unless defined $pagelth;
 	$self->{pagelth} = $pagelth;
 	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
+	if ($line =~ /host=/) {
+		($self->{hostname}) = $line =~ /host=(\d+\.\d+\.\d+\.\d+)/; $line =~ s/\s*host=\d+\.\d+\.\d+\.\d+//;
+		unless ($self->{hostname}) {
+			($self->{hostname}) = $line =~ /host=($IPv6_re)/; 
+            $line =~ s/\s*host=$IPv6_re//;
+		}
+	}
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
 	

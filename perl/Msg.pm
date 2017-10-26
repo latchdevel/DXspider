@@ -120,9 +120,11 @@ sub ax25
 sub peerhost
 {
 	my $conn = shift;
-	$conn->{peerhost} ||= 'ax25' if $conn->ax25;
-	$conn->{peerhost} ||= $conn->{sock}->handle->peerhost if $conn->{sock};
-	$conn->{peerhost} ||= 'UNKNOWN';
+	unless ($conn->{peerhost}) {
+		$conn->{peerhost} ||= 'ax25' if $conn->ax25;
+		$conn->{peerhost} ||= $conn->{sock}->handle->peerhost if $conn->{sock};
+		$conn->{peerhost} ||= 'UNKNOWN';
+	}
 	return $conn->{peerhost};
 }
 
