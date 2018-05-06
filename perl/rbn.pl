@@ -26,6 +26,8 @@ my $wantrtty = 1;
 my $wantpsk = 1;
 my $wantbeacon = 1;
 my $wantdx = 1;
+my $wantft = 1;
+my $wantpsk = 1;
 my $wantraw = 0;
 my $showrbn;
 my $help = 0;
@@ -42,13 +44,15 @@ GetOptions('host=s' => \$host,
 		   'repeattime|rt=i' => sub { $minspottime = $_[1] * 60 },
 		   'want=s' => sub {
 			   my ($name, $value) = @_;
-			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = $wantdx = 0;
+			   $wantcw = $wantrtty = $wantpsk = $wantbeacon = $wantdx = $wantft = $wantpsk = 0;
 			   for (split /[:,\|]/, $value) {
 				   ++$wantcw if /^cw$/i;
 				   ++$wantpsk if /^psk$/i;
 				   ++$wantrtty if /^rtty$/i;
-				   ++$wantbeacon if /^beacon$/i;
+				   ++$wantbeacon if /^beacon/i;
 				   ++$wantdx if /^dx$/i;
+				   ++$wantft if /^ft$/;
+				   ++$wantft, ++$wantrtty, ++$wantpsk if /^digi/;
 			   }
 		   },
 		   'help|?' => \$help,
@@ -100,7 +104,20 @@ while (<$sock>) {
 	}
 
 	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/;
+	my $b;
+	
 	if ($t || $tx) {
+
+		# fix up times for things like 'NXDXF B' etc
+		if ($tx && $t !~ /^\d{4}Z$/) {
+			if ($tx =~ /^\d{4}Z$/) {
+				$b = $t;
+				$t = $tx;
+			} else {
+				say "ERR,$_";
+				next;
+			}
+		}
 
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
 		# This works because the skimmers are NTP controlled (or should be) and will receive
@@ -109,21 +126,15 @@ while (<$sock>) {
 		++$noraw;
 		next if $d{$p};
 
-		# fix up times for things like 'NXDXF B' etc
-		if ($tx && $t != /^\d{4}Z$/) {
-			if ($tx =~ /^\d{4}Z$/) {
-				$t = $tx;
-			} else {
-				say "ERR,$_";
-				next;
-			}
-		}
-
 		# new RBN input
 		$d{$p} = $tim;
 		++$norbn;
 		$qrg = sprintf('%.1f', nearest(.1, $qrg));     # to nearest 100Hz (to catch the odd multiple decpl QRG [eg '7002.07']).
-		say join(',', "RBN", $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) if !$wantraw && ($dbg || $showrbn);
+		if (!$wantraw && ($dbg || $showrbn)) {
+			my $s = join(',', "RBN", $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t);
+			$s .= ",$b" if $b;
+			say $s;
+		}
 
 		# Determine whether to "SPOT" it based on whether we have not seen it before (near this QRG) or,
 		# if we have, has it been a "while" since the last time we spotted it? If it has been spotted
@@ -131,34 +142,33 @@ while (<$sock>) {
 		my $nqrg = nearest(1, $qrg);  # normalised to nearest Khz
 		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well! 
 		my $ts = $spot{$sp};
-		
-		if (!$ts || ($minspottime > 0 && $tim - $ts >= $minspottime)) {
-			if ($wantbeacon && $sort =~ /^BEA/) {
-				;
-			} else {
-				# Haven't used a perl 'goto' like this ever!
-				# Clearly I need to use an event driven framework :-) 
-				goto periodic if !$wantcw  && $mode =~ /^CW/;
-				goto periodic if !$wantrtty && $mode =~ /^RTTY/;
-				goto periodic if !$wantpsk && $mode =~ /^PSK/;
-				goto periodic if !$wantdx && $mode =~ /^DX/;
-			}
 
-			++$nospot;
-			my $tag = $ts ? "RESPOT" : "SPOT";
-			say join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t);
-			$spot{$sp} = $tim;
+		if (!$ts || ($minspottime > 0 && $tim - $ts >= $minspottime)) {
+			my $want;
+
+			++$want if $wantbeacon && $sort =~ /^BEA|NCD/;
+			++$want if $wantcw && $mode =~ /^CW/;
+			++$want if $wantrtty && $mode =~ /^RTTY/;
+			++$want if $wantpsk && $mode =~ /^PSK/;
+			++$want if $wantdx && $mode =~ /^DX/;
+			++$want if $wantft && $mode =~ /^FT/;
+			if ($want) {
+				++$nospot;
+				my $tag = $ts ? "RESPOT" : "SPOT";
+				$t .= ",$b" if $b;
+				say join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t);
+				$spot{$sp} = $tim;
+			}
 		}
 	} else {
 		say "DATA,$_" if $dbg && !$wantraw;
 	}
 
- periodic:
 	# periodic clearing out of the two caches
 	if (($tim % 60 == 0 && $tim > $last) || ($last && $tim >= $last + 60)) {
 		my $count = 0;
 		my $removed = 0;
-		
+
 		while (my ($k,$v) = each %d) {
 			if ($tim-$v > 60) {
 				delete $d{$k};
@@ -220,10 +230,13 @@ As default, this program will connect to C<telnet.reversebeacon.net>. Use this a
 
 As default, this program will connect to port 7000. Use this argument to change that to some other port.
 
-=item B<-want>=cw,rtty,psk,beacon,dx
+=item B<-want>=cw,rtty,dx,beacon,psk,ft,digital
 
-The program will print all spots in all classes in the 'mode/calling' column [cw, rtty, psk, beacon, dx]. You can choose one or more of
-these classes if you want specific types of spots.
+The program will print all spots in all classes in the 'mode/calling' column [cw, rtty, beacon, dx, psk, ft, digital]. You can choose one or more of
+these classes if you want specific types of spots. The class 'digital' is equivalent to [rtty,psk,ft]. The class 'beacon' includes
+NCDXF beacons. 
+
+E.g. rbn.pl -want=psk,ft,beacon g9tst
 
 =item B<-stats>
 
