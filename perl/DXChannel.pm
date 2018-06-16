@@ -300,62 +300,58 @@ sub del
 # is it a bbs
 sub is_bbs
 {
-	my $self = shift;
-	return $self->{sort} eq 'B';
+	return $_[0]->{sort} eq 'B';
 }
 
 sub is_node
 {
-	my $self = shift;
-	return $self->{sort} =~ /^[ACRSX]$/;
+	return $_[0]->{sort} =~ /^[ACRSX]$/;
 }
 # is it an ak1a node ?
 sub is_ak1a
 {
-	my $self = shift;
-	return $self->{sort} eq 'A';
+	return $_[0]->{sort} eq 'A';
 }
 
 # is it a user?
 sub is_user
 {
-	my $self = shift;
-	return $self->{sort} =~ /^[UW]$/;
+	return $_[0]->{sort} =~ /^[UW]$/;
 }
 
 # is it a clx node
 sub is_clx
 {
-	my $self = shift;
-	return $self->{sort} eq 'C';
+	return $_[0]->{sort} eq 'C';
 }
 
 # it is a Web connected user
 sub is_web
 {
-	my $self = shift;
-	return $self->{sort} eq 'W';
+	return $_[0]->{sort} eq 'W';
 }
 
 # is it a spider node
 sub is_spider
 {
-	my $self = shift;
-	return $self->{sort} eq 'S';
+	return $_[0]->{sort} eq 'S';
 }
 
 # is it a DXNet node
 sub is_dxnet
 {
-	my $self = shift;
-	return $self->{sort} eq 'X';
+	return $_[0]->{sort} eq 'X';
 }
 
 # is it a ar-cluster node
 sub is_arcluster
 {
-	my $self = shift;
-	return $self->{sort} eq 'R';
+	return $_[0]->{sort} eq 'R';
+}
+
+sub is_rbn
+{
+	return $_[0]->{sort} eq 'N';
 }
 
 # for perl 5.004's benefit

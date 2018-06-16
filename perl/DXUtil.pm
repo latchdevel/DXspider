@@ -385,8 +385,8 @@ sub is_callsign
 					  (?:(?:[A-Z]{1,2}\d* | \d[A-Z]{1,2}\d*)/)?   # out of area prefix /
 					  (?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)?        # main prefix one 
 					  [A-Z]{1,5}                                  # callsign letters
-					  (?:-\d{1,2})?                               # - nn possibly (eg G8BPQ-8)
-					  (?:/[0-9A-Z]{1,7})?                        # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
+					  (?:-(?:\d{1,2}|\#))?                        # - nn possibly (eg G8BPQ-8) or -# (an RBN spot) 
+					  (?:/[0-9A-Z]{1,7})?                         # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
 					  $!x;
 
 	# longest callign allowed is 1X11/1Y11XXXXX-11/XXXXXXX

@@ -34,23 +34,23 @@ $duplth = 20;					# the length of text to use in the deduping
 $dupage = 1*3600;               # the length of time to hold spot dups
 $maxcalllth = 12;                               # the max length of call to take into account for dupes
 $filterdef = bless ([
-			  # tag, sort, field, priv, special parser 
-			  ['freq', 'r', 0, 0, \&decodefreq],
-			  ['on', 'r', 0, 0, \&decodefreq],
-			  ['call', 'c', 1],
-			  ['info', 't', 3],
-			  ['by', 'c', 4],
-			  ['call_dxcc', 'nc', 5],
-			  ['by_dxcc', 'nc', 6],
-			  ['origin', 'c', 7, 9],
-			  ['call_itu', 'ni', 8],
-			  ['call_zone', 'nz', 9],
-			  ['by_itu', 'ni', 10],
-			  ['by_zone', 'nz', 11],
-			  ['call_state', 'ns', 12],
-			  ['by_state', 'ns', 13],
-			  ['channel', 'c', 14],
-					 
+					 # tag, sort, field, priv, special parser 
+					 ['freq', 'r', 0, 0, \&decodefreq],
+					 ['on', 'r', 0, 0, \&decodefreq],
+					 ['call', 'c', 1],
+					 ['info', 't', 3],
+					 ['by', 'c', 4],
+					 ['call_dxcc', 'nc', 5],
+					 ['by_dxcc', 'nc', 6],
+					 ['origin', 'c', 7, 9],
+					 ['call_itu', 'ni', 8],
+					 ['call_zone', 'nz', 9],
+					 ['by_itu', 'ni', 10],
+					 ['by_zone', 'nz', 11],
+					 ['call_state', 'ns', 12],
+					 ['by_state', 'ns', 13],
+					 ['channel', 'c', 14],
+					 ['rbn', 'a', 4, 0, \&filterrbnspot],
 			 ], 'Filter::Cmd');
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
@@ -92,6 +92,13 @@ sub decodefreq
 		}
 	}
 	return (0, join(',', @out));			 
+}
+
+# filter setup for rbn spot so return the regex to detect it
+sub filterrbnspot
+{
+	my $dxchan = shift;
+	return ('-#$');
 }
 
 sub init

@@ -519,7 +519,7 @@ sub parse
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} else {
-							confess("invalid letter $fref->[1]");
+							confess("invalid filter function $fref->[1]");
 						}
 						++$found;
 						last;
