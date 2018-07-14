@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 23 Jan 2018
+! This file was created by Jim Reisert AD1C on 11 Jul 2018
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
@@ -115,7 +115,7 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 NLD Kuwait-9K                                         310 39 21  -3.00 29 23  0 N  47 23  0 E
 9L Sierra-Leone-9L                                    311 46 35   0.00  8 30  0 N  13 15  0 W @
 9M2 West-Malaysia-9M2                                 312 54 28  -8.00  3 57  0 N 102 14  0 E @
-9M,9W West-Malaysia-9M2                               312 54 28  -8.00  3 57  0 N 102 14  0 E
+9M,9M61M,9W West-Malaysia-9M2                         312 54 28  -8.00  3 57  0 N 102 14  0 E
 9M6 East-Malaysia-9M6                                 313 54 28  -8.00  2 41  0 N 113 19  0 E @
 9M8,9W6,9W8 East-Malaysia-9M6                         313 54 28  -8.00  2 41  0 N 113 19  0 E
 9N Nepal-9N                                           314 42 22  -5.75 27 42  0 N  85 20  0 E @
@@ -1191,7 +1191,8 @@ D4 Cape-Verde-D4                                       30 46 35   1.00 16  0  0 
 D6 Comoros-D6                                          31 53 39  -3.00 11 38  0 S  43 18  0 E @
 DL Fed-Rep-of-Germany-DL                               32 28 14  -1.00 51  0  0 N  10  0  0 E @
 DA,DB,DC,DD,DE,DF,DG,DH,DI,DJ Fed-Rep-of-Germany-DL    32 28 14  -1.00 51  0  0 N  10  0  0 E
-DK,DM,DN,DO,DP,DQ,DR Fed-Rep-of-Germany-DL             32 28 14  -1.00 51  0  0 N  10  0  0 E
+DK,DM,DN,DO,DP,DQ,DR,Y2,Y3,Y4 Fed-Rep-of-Germany-DL    32 28 14  -1.00 51  0  0 N  10  0  0 E
+Y5,Y6,Y7,Y8,Y9 Fed-Rep-of-Germany-DL                   32 28 14  -1.00 51  0  0 N  10  0  0 E
 DU Philippines-DU                                      33 50 27  -8.00 13  0  0 N 122  0  0 E @
 4D,4E,4F,4G,4H,4I,DV,DW,DX,DY,DZ Philippines-DU        33 50 27  -8.00 13  0  0 N 122  0  0 E
 DU1 Manila-DU                                          33 50 27  -8.00 14 35  0 N 121  0  0 E
@@ -2728,6 +2729,7 @@ PJ6 Saba-PJ5                                          355 11  8   4.00 17 38  0 
 PJ5 Saba-PJ6                                          355 11  8   4.00 17 38  0 N  63 15  0 W
 PJ7 Sint-Maarten-PJ7                                  356 11  8   4.00 18  4  0 N  63  4  0 W @
 PJ Sint-Maarten-PJ7                                   356 11  8   4.00 18  4  0 N  63  4  0 W
+PJ0,PJ8 Sint-Maarten-PJ7                              356 11  8   4.00 18  4  0 N  63  4  0 W
 PY Brazil-PY                                          142 15 11   3.00 10  0  0 S  53  0  0 W @
 PP,PQ,PR,PS,PT,PU,PV,PW,PX,ZV,ZW,ZX,ZY,ZZ Brazil-PY   142 15 11   3.00 10  0  0 S  53  0  0 W
 PP1 Espirito-Santo-PY                                 142 15 11   3.00 20 19  0 S  40 21  0 W
@@ -4050,28 +4052,28 @@ RV0Z,RW0X,RW0Z,RX0X,RX0Z,RY0X,RY0Z Kamchatskaya-UA9   182 35 19 -12.00 55  0  0 
 RZ0X,RZ0Z,U0X,U0Z,UA0X,UB0X,UB0Z Kamchatskaya-UA9     182 35 19 -12.00 55  0  0 N 159  0  0 E
 UC0X,UC0Z,UD0X,UD0Z,UE0X,UE0Z,UF0X Kamchatskaya-UA9   182 35 19 -12.00 55  0  0 N 159  0  0 E
 UF0Z,UG0X,UG0Z,UH0X,UH0Z,UI0X,UI0Z Kamchatskaya-UA9   182 35 19 -12.00 55  0  0 N 159  0  0 E
-UA9A Chelyabinskaya-UA9                               182 30 17  -6.00 54 32  0 N  60 20  0 E
-UA9 Chelyabinskaya-UA9A                               182 30 17  -6.00 54 32  0 N  60 20  0 E
-R8A,R8B,R9A,R9B,RA8A,RA8B,RA9A Chelyabinskaya-UA9     182 30 17  -6.00 54 32  0 N  60 20  0 E
-RA9B,RC8A,RC8B,RC9A,RC9B,RD8A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RD8B,RD9A,RD9B,RE8A,RE8B,RE9A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RE9B,RF8A,RF8B,RF9A,RF9B,RG8A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RG8B,RG9A,RG9B,RJ8A,RJ8B,RJ9A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RJ9B,RK8A,RK8B,RK9A,RK9B,RL8A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RL8B,RL9A,RL9B,RM8A,RM8B,RM9A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RM9B,RN8A,RN8B,RN9A,RN9B,RO8A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RO8B,RO9A,RO9B,RQ8A,RQ8B,RQ9A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RQ9B,RT8A,RT8B,RT9A,RT9B,RU8A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RU8B,RU9A,RU9B,RV8A,RV8B,RV9A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RV9B,RW8A,RW8B,RW9A,RW9B,RX8A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RX8B,RX9A,RX9B,RY8A,RY8B,RY9A Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-RY9B,RZ8A,RZ8B,RZ9A,RZ9B,U8A,U8B Chelyabinskaya-UA9   182 30 17  -6.00 54 32  0 N  60 20  0 E
-U9A,U9B,UA8A,UA8B,UA9B,UB8A,UB8B Chelyabinskaya-UA9   182 30 17  -6.00 54 32  0 N  60 20  0 E
-UB9A,UB9B,UC8A,UC8B,UC9A,UC9B Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-UD8A,UD8B,UD9A,UD9B,UE8A,UE8B Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-UE9A,UE9B,UF8A,UF8B,UF9A,UF9B Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-UG8A,UG8B,UG9A,UG9B,UH8A,UH8B Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
-UH9A,UH9B,UI8A,UI8B,UI9A,UI9B Chelyabinskaya-UA9      182 30 17  -6.00 54 32  0 N  60 20  0 E
+UA9A Chelyabinskaya-UA9                               182 30 17  -6.00 54 45  0 N  60 42  0 E
+UA9 Chelyabinskaya-UA9A                               182 30 17  -6.00 54 45  0 N  60 42  0 E
+R8A,R8B,R9A,R9B,RA8A,RA8B,RA9A Chelyabinskaya-UA9     182 30 17  -6.00 54 45  0 N  60 42  0 E
+RA9B,RC8A,RC8B,RC9A,RC9B,RD8A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RD8B,RD9A,RD9B,RE8A,RE8B,RE9A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RE9B,RF8A,RF8B,RF9A,RF9B,RG8A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RG8B,RG9A,RG9B,RJ8A,RJ8B,RJ9A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RJ9B,RK8A,RK8B,RK9A,RK9B,RL8A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RL8B,RL9A,RL9B,RM8A,RM8B,RM9A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RM9B,RN8A,RN8B,RN9A,RN9B,RO8A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RO8B,RO9A,RO9B,RQ8A,RQ8B,RQ9A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RQ9B,RT8A,RT8B,RT9A,RT9B,RU8A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RU8B,RU9A,RU9B,RV8A,RV8B,RV9A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RV9B,RW8A,RW8B,RW9A,RW9B,RX8A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RX8B,RX9A,RX9B,RY8A,RY8B,RY9A Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+RY9B,RZ8A,RZ8B,RZ9A,RZ9B,U8A,U8B Chelyabinskaya-UA9   182 30 17  -6.00 54 45  0 N  60 42  0 E
+U9A,U9B,UA8A,UA8B,UA9B,UB8A,UB8B Chelyabinskaya-UA9   182 30 17  -6.00 54 45  0 N  60 42  0 E
+UB9A,UB9B,UC8A,UC8B,UC9A,UC9B Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+UD8A,UD8B,UD9A,UD9B,UE8A,UE8B Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+UE9A,UE9B,UF8A,UF8B,UF9A,UF9B Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+UG8A,UG8B,UG9A,UG9B,UH8A,UH8B Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
+UH9A,UH9B,UI8A,UI8B,UI9A,UI9B Chelyabinskaya-UA9      182 30 17  -6.00 54 45  0 N  60 42  0 E
 UA9C Sverdlovskaya-UA9                                182 30 17  -6.00 58 42  0 N  61 20  0 E
 UA9 Sverdlovskaya-UA9C                                182 30 17  -6.00 58 42  0 N  61 20  0 E
 R8C,R8D,R8E,R9C,R9D,R9E,RA8C,RA8D Sverdlovskaya-UA9   182 30 17  -6.00 58 42  0 N  61 20  0 E
@@ -4132,18 +4134,18 @@ U8J,U9J,UA8J,UB8J,UB9J,UC8J Khanty-Mansyisky-UA9      182 20 17  -6.00 62 15  0 
 UC9J,UD8J,UD9J,UE8J,UE9J,UF8J Khanty-Mansyisky-UA9    182 20 17  -6.00 62 15  0 N  70 10  0 E
 UF9J,UG8J,UG9J,UH8J,UH9J,UI8J Khanty-Mansyisky-UA9    182 20 17  -6.00 62 15  0 N  70 10  0 E
 UI9J Khanty-Mansyisky-UA9                             182 20 17  -6.00 62 15  0 N  70 10  0 E
-UA9K Yamalo-Nenetsky-UA9                              182 20 17  -6.00 67 15  0 N  74 40  0 E
-UA9 Yamalo-Nenetsky-UA9K                              182 20 17  -6.00 67 15  0 N  74 40  0 E
-R8K,R9K,RA8K,RA9K,RC8K,RC9K,RD8K Yamalo-Nenetsky-UA9  182 20 17  -6.00 67 15  0 N  74 40  0 E
-RD9K,RE8K,RE9K,RF8K,RF9K,RG8K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-RG9K,RI9K,RJ8K,RJ9K,RK8K,RK9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-RL8K,RL9K,RM8K,RM9K,RN8K,RN9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-RO8K,RO9K,RQ8K,RQ9K,RT8K,RT9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-RU8K,RU9K,RV8K,RV9K,RW8K,RW9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-RX8K,RX9K,RY8K,RY9K,RZ8K,RZ9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-U8K,U9K,UA8K,UB8K,UB9K,UC8K,UC9K Yamalo-Nenetsky-UA9  182 20 17  -6.00 67 15  0 N  74 40  0 E
-UD8K,UD9K,UE8K,UE9K,UF8K,UF9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
-UG8K,UG9K,UH8K,UH9K,UI8K,UI9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 67 15  0 N  74 40  0 E
+UA9K Yamalo-Nenetsky-UA9                              182 20 17  -6.00 65 18  0 N  74  2  0 E
+UA9 Yamalo-Nenetsky-UA9K                              182 20 17  -6.00 65 18  0 N  74  2  0 E
+R8K,R9K,RA8K,RA9K,RC8K,RC9K,RD8K Yamalo-Nenetsky-UA9  182 20 17  -6.00 65 18  0 N  74  2  0 E
+RD9K,RE8K,RE9K,RF8K,RF9K,RG8K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+RG9K,RI9K,RJ8K,RJ9K,RK8K,RK9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+RL8K,RL9K,RM8K,RM9K,RN8K,RN9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+RO8K,RO9K,RQ8K,RQ9K,RT8K,RT9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+RU8K,RU9K,RV8K,RV9K,RW8K,RW9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+RX8K,RX9K,RY8K,RY9K,RZ8K,RZ9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+U8K,U9K,UA8K,UB8K,UB9K,UC8K,UC9K Yamalo-Nenetsky-UA9  182 20 17  -6.00 65 18  0 N  74  2  0 E
+UD8K,UD9K,UE8K,UE9K,UF8K,UF9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
+UG8K,UG9K,UH8K,UH9K,UI8K,UI9K Yamalo-Nenetsky-UA9     182 20 17  -6.00 65 18  0 N  74  2  0 E
 UA9L Tyumenskaya-UA9                                  182 30 17  -6.00 57 50  0 N  69  0  0 E
 UA9 Tyumenskaya-UA9L                                  182 30 17  -6.00 57 50  0 N  69  0  0 E
 R8L,R9L,RA8L,RA9L,RC8L,RC9L,RD8L Tyumenskaya-UA9      182 30 17  -6.00 57 50  0 N  69  0  0 E
@@ -5216,7 +5218,7 @@ YV0 Aves-Island-YV0                                   247 11  8   4.00 15 40  0 
 4M0,YW0,YX0,YY0 Aves-Island-YV0                       247 11  8   4.00 15 40  0 N  63 36  0 W
 Z2 Zimbabwe-Z2                                        254 53 38  -2.00 18  0  0 S  31  0  0 E @
 Z3 Macedonia-Z3                                       349 28 15  -1.00 41 36  0 N  21 39  0 E @
-Z6 Kosovo-Z6                                          359 28 15  -1.00 42 40  0 N  21 10  0 E @
+Z6 Republic-of-Kosovo-Z6                              359 28 15  -1.00 42 40  0 N  21 10  0 E @
 Z8 Republic-of-South-Sudan-Z8                         357 48 34  -3.00  4 51  0 N  31 36  0 E @
 ZA Albania-ZA                                         248 28 15  -1.00 41  0  0 N  20  0  0 E @
 ZB Gibraltar-ZB                                       249 37 14  -1.00 36  9  0 N   5 22  0 W @
