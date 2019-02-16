@@ -412,10 +412,10 @@ sub fields
 
 sub export
 {
-	my $name = shift;
+	my $name = shift || 'user_asc';
 	my $basic_info_only = shift;
 
-	my $fn = "$main::local_data/$name";
+	my $fn = $name ne 'user_asc' ? $name : "$main::local_data/$name";                       # force use of local
 	
 	# save old ones
 	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
@@ -466,8 +466,6 @@ BEGIN {
 	}
 }
 
-package DXUser;
-
 use SysVar;
 use DXUser;
 
@@ -476,8 +474,10 @@ if (@ARGV) {
 	print "user filename now $userfn\n";
 }
 
-DXUser::del_file();
-DXUser::init();
+package DXUser;
+
+del_file();
+init(1);
 %u = ();
 my $count = 0;
 my $err = 0;
@@ -533,8 +533,10 @@ print "There are $count user records and $err errors\n";
 			}
 		} 
         $fh->close;
-    } 
-	return "$count Users $del Deleted $err Errors ('sh/log Export' for details)";
+    }
+	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
+	LogDbg('command', $s);
+	return $s;
 }
 
 #

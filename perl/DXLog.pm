@@ -212,8 +212,9 @@ sub Log
 
 sub LogDbg
 {
+	my $cat = shift;
 	DXDebug::dbg($_) for @_;
-	Log(@_);
+	Log($cat, @_);
 }
 
 sub Logclose

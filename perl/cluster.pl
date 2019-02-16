@@ -91,6 +91,7 @@ use strict;
 
 use Mojo::IOLoop;
 
+use DXDebug;
 use Msg;
 use IntMsg;
 use Internet;
@@ -98,7 +99,6 @@ use Listeners;
 use ExtMsg;
 use AGWConnect;
 use AGWMsg;
-use DXDebug;
 use DXLog;
 use DXLogPrint;
 use DXUtil;

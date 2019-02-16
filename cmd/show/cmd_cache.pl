@@ -12,9 +12,9 @@ my $line = shift;
 return (1, $self->msg('e5')) if $self->priv < 9;
 
 my @out = sprintf "%-20s %s", "Command", "Path";
-for (sort keys %cmd_cache) {
+for (sort keys %DXCommandmode::cmd_cache) {
 	next if $line && $_ !~ m|\Q$line|i;
-	my $v = $cmd_cache{$_};
+	my $v = $DXCommandmode::cmd_cache{$_};
 	$v =~ s|,|/|g;
 	push @out, sprintf "%-20s %s", $_, "$v.pl";
 }

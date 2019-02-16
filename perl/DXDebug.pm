@@ -2,9 +2,11 @@
 # The system variables - those indicated will need to be changed to suit your
 # circumstances (and callsign)
 #
-# Copyright (c) 1998 - Dirk Koopman G1TLH
+# Copyright (c) 1998-2019 - Dirk Koopman G1TLH
 #
-#
+# Note: Everything is recorded into the ring buffer (in perl terms: a numerically max sized array).
+#       To allow debugging of a category (e.g. 'chan') but not onto disc (just into the ring buffer)
+#       do: set/debug chan nologchan
 #
 
 package DXDebug;
@@ -14,7 +16,7 @@ require Exporter;
 @EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
 
 use strict;
-use vars qw(%dbglevel $fp $callback $cleandays $keepdays);
+use vars qw(%dbglevel $fp $callback $cleandays $keepdays $dbgringlth);
 
 use DXUtil;
 use DXLog ();
@@ -26,8 +28,10 @@ $fp = undef;
 $callback = undef;
 $keepdays = 10;
 $cleandays = 100;
+$dbgringlth = 500;
 
 our $no_stdout;					# set if not running in a terminal
+our @dbgring;
 
 # Avoid generating "subroutine redefined" warnings with the following
 # hack (from CGI::Carp):
@@ -35,12 +39,16 @@ if (!defined $DB::VERSION) {
 	local $^W=0;
 	eval qq( sub confess { 
 	    \$SIG{__DIE__} = 'DEFAULT'; 
+        DXDebug::dbgprintring() unless DXDebug::isdbg('chan');
+        DXDebug::dbgclearring();
         DXDebug::dbg(\$@);
 		DXDebug::dbg(Carp::shortmess(\@_));
 	    exit(-1); 
 	}
 	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
+        DXDebug::dbgprintring() unless DXDebug::isdbg('chan');
+        DXDebug::dbgclearring();
         DXDebug::dbg(\$@);
 		DXDebug::dbg(Carp::longmess(\@_));
 		exit(-1); 
@@ -50,7 +58,8 @@ if (!defined $DB::VERSION) {
 	);
 
     CORE::die(Carp::shortmess($@)) if $@;
-} else {
+}
+else {
     eval qq( sub confess { die Carp::longmess(\@_); }; 
 			 sub croak { die Carp::shortmess(\@_); }; 
 			 sub cluck { warn Carp::longmess(\@_); }; 
@@ -58,6 +67,8 @@ if (!defined $DB::VERSION) {
    );
 } 
 
+
+my $_isdbg;						# current dbg level we are processing
 
 sub dbg($)
 {
@@ -72,9 +83,14 @@ sub dbg($)
 			print "$_\n" if defined \*STDOUT && !$no_stdout;
 			my $str = "$t^$_";
 			&$callback($str) if $callback;
-			$fp->writeunix($t, $str); 
+			if ($dbgringlth) {
+				shift @dbgring while (@dbgring > $dbgringlth);
+				push @dbgring, $str;
+			}
+			$fp->writeunix($t, $str) unless $dbglevel{"nolog$_isdbg"}; 
 		}
 	}
+	$_isdbg = '';
 }
 
 sub dbginit
@@ -88,7 +104,8 @@ sub dbginit
 				dbg($@);
 				dbg(Carp::longmess(@_)); 
 				CORE::die;
-			} else { 
+			}
+			else { 
 				dbg($@);
 				dbg(Carp::shortmess(@_));
 			}
@@ -105,12 +122,17 @@ sub dbginit
 	}
 
 	$fp = DXLog::new('debug', 'dat', 'd');
+	dbgclearring();
 }
 
 sub dbgclose
 {
 	$SIG{__DIE__} = $SIG{__WARN__} = 'DEFAULT';
-	$fp->close() if $fp;
+	if ($fp) {
+		dbgprintring() if grep /nolog/, keys %dbglevel;
+		$fp->close();
+	}
+	dbgclearring();
 	undef $fp;
 }
 
@@ -161,7 +183,10 @@ sub dbglist
 sub isdbg($)
 {
 	return unless $fp;
-	return $dbglevel{$_[0]};
+	if ($dbglevel{$_[0]}) {
+		$_isdbg = $_[0];
+		return 1;
+    }
 }
 
 sub shortmess 
@@ -170,8 +195,36 @@ sub shortmess
 }
 
 sub longmess 
-{ 
+{
 	return Carp::longmess(@_);
+}
+
+sub dbgprintring
+{
+	return unless $fp;
+	my $first;
+	while (my $l = shift @dbgring) {
+		my ($t, $str) = split /\^/, $l, 2;
+		next unless $t;
+		my $lt = time;
+		unless ($first) {
+			$fp->writeunix($lt, "$lt^###");
+			$fp->writeunix($lt, "$lt^### RINGBUFFER START");
+			$fp->writeunix($lt, "$lt^###");
+			$first = $t;
+		}
+		my $buf = sprintf "%02d:%02d:%02d", (gmtime($t))[2,1,0];
+		$fp->writeunix($lt, "$lt^RING: $buf^$str");
+	}
+	my $et = time;
+	$fp->writeunix($et, "$et^###");
+	$fp->writeunix($et, "$et^### RINGBUFFER END");
+	$fp->writeunix($et, "$et^###");
+}
+
+sub dbgclearring
+{
+	@dbgring = ();
 }
 
 # clean out old debug files, stop when you get a gap of more than a month
@@ -185,7 +238,8 @@ sub dbgclean
 		if (-e $fn) {
 			unlink $fn;
 			$i = 0;
-		} else {
+		}
+		else {
 			$i++;
 		}
 		$date = $date->sub(1);
