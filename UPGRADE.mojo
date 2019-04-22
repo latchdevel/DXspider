@@ -11,7 +11,7 @@ the node. I am also using a modern, event driven, web socket "manager" called Mo
 which is considerably more efficient than what went before (but is not necessary for small
 nodes). There are some 200-400 user nodes out there that will definitely see the difference
 in terms of both CPU usage and general responsiveness. Using Mojolicious also brings the
-tantalising possibility of grafting on a web frontend, as it where, to the "side" of a
+tantalising possibility of grafting on a web frontend, as it were, to the "side" of a
 DXSpider node. But serious work on this won't start until we have a stable base to work
 on. Apart from anything else there will, almost certainly, need to be some internal data
 structure reorganisation before a decent web frontend could be constructed.
@@ -42,6 +42,8 @@ Prerequisites:
 Install cpamminus:
 
 	sudo apt-get install cpanminus
+or
+    wget -O - https://cpanmin.us | perl - --sudo App::cpanminus
 or
 	sudo apt-get install curl
 	curl -L https://cpanmin.us | perl - --sudo App::cpanminus
