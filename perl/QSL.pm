@@ -58,6 +58,8 @@ sub new
 	return bless [uc $call, []], $pkg;
 }
 
+# called $self->update(comment, time, spotter)
+# $self has the callsign as the first argument in an array of array references
 # the format of each entry is [manager, times found, last time, last reporter]
 sub update
 {
