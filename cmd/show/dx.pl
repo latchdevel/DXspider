@@ -406,6 +406,7 @@ push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search,
 										}
 									}
 								}
+								push @out, $self->msg('e3', "sh/dx", "'$line'") unless @out;
 								$dxchan->send(@out);
 							});
 
