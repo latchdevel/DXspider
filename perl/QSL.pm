@@ -14,9 +14,10 @@ use DB_File;
 use DXDebug;
 use Prefix;
 
-use vars qw($qslfn $dbm);
+use vars qw($qslfn $dbm $maxentries);
 $qslfn = 'qsl';
 $dbm = undef;
+$maxentries = 50;
 
 sub init
 {
@@ -37,6 +38,7 @@ sub init
 	}
 	import Storable qw(nfreeze freeze thaw);
 	my %u;
+	undef $dbm;
 	if ($mode) {
 		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open qsl file: $qslfn ($!)";
 	} else {
@@ -65,19 +67,24 @@ sub update
 	my $t = shift;
 	my $by = shift;
 	my $changed;
-			
+
+	return unless length $line && $line =~ /\b(?:QSL|VIA)\b/i;
 	foreach my $man (split /\b/, uc $line) {
 		my $tok;
 		
-		if (is_callsign($man)) {
+		if (is_callsign($man) && !is_qra($man)) {
 			my @pre = Prefix::extract($man);
 			$tok = $man if @pre && $pre[0] ne 'Q';
 		} elsif ($man =~ /^BUR/) {
 			$tok = 'BUREAU';
+		} elsif ($man =~ /^LOTW/) {
+			$tok = 'LOTW';
 		} elsif ($man eq 'HC' || $man =~ /^HOM/ || $man =~ /^DIR/) {
 			$tok = 'HOME CALL';
 		} elsif ($man =~ /^QRZ/) {
 			$tok = 'QRZ.com';
+		} else {
+			next;
 		}
 		if ($tok) {
 			my ($r) = grep {$_->[0] eq $tok} @{$self->[1]};
@@ -93,6 +100,8 @@ sub update
 				unshift @{$self->[1]}, $r;
 				$changed++;
 			}
+			# prune the number of entries
+			pop @{$self->[1]} while (@{$self->[1]} > $maxentries);
 		}
 	}
 	$self->put if $changed;
