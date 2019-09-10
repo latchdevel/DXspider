@@ -1,6 +1,7 @@
 10Sep19=======================================================================
 1. Improve DXSql database filtering to exclude most via <locator> type 
    reports.
+2. Add CTY-2913 prefixes + wpxloc.raw
 14Jul18=======================================================================
 1. Add CTY-2808 prefixes + wpxloc.raw
 23Jan18=======================================================================
