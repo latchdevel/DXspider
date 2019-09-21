@@ -382,11 +382,11 @@ sub unpad
 sub is_callsign
 {
 	return $_[0] =~ m!^
-					  (?:(?:[A-Z]{1,2}\d* | \d[A-Z]{1,2}\d*)/)?   # out of area prefix /
-					  (?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)?        # main prefix one 
-					  [A-Z]{1,5}                                  # callsign letters
-					  (?:-(?:\d{1,2}|\#))?                        # - nn possibly (eg G8BPQ-8) or -# (an RBN spot) 
-					  (?:/[0-9A-Z]{1,7})?                         # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
+					  (?:\d?[A-Z]{1,2}\d*/)?    # out of area prefix /  
+					  (?:\d?[A-Z]{1,2}\d+)      # main prefix one (required) 
+					  [A-Z]{1,5}                # callsign letters (required)
+					  (?:-(?:\d{1,2}|\#))?      # - nn possibly (eg G8BPQ-8) or -# (an RBN spot) 
+					  (?:/[0-9A-Z]{1,7})?       # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
 					  $!x;
 
 	# longest callign allowed is 1X11/1Y11XXXXX-11/XXXXXXX
@@ -440,7 +440,7 @@ sub is_latlong
 # is it an ip address?
 sub is_ipaddr
 {
-    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:]+$/;
+    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:,]+$/;
 }
 
 # insert an item into a list if it isn't already there returns 1 if there 0 if not

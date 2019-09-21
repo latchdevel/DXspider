@@ -98,7 +98,7 @@ if (-e $lockfn) {
 
 DXUser::init(1);
 create_it();
-DXUser:finish();
+DXUser::finish();
 print "Update of $myalias on cluster $mycall successful\n";
 exit(0);
 
