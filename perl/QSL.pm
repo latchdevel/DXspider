@@ -115,8 +115,16 @@ sub get
 	
 	my $r = $dbm->get($key, $value);
 	return undef if $r;
-	return thaw($value);
+	my $v;
+	eval { $v = thaw($value) };
+	if ($@) {
+		LogDbg("Error thawing DXQSL key '$key' (now deleted): $@");
+		eval {$dbm->del($key)};
+		return undef;
+	}
+	return $v;
 }
+
 
 sub put
 {

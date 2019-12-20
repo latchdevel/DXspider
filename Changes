@@ -1,3 +1,5 @@
+21Sep19=======================================================================
+1. Harden userfile decode / thaw to stop crashes from corrupt records
 10Sep19=======================================================================
 1. Improve DXSql database filtering to exclude most via <locator> type 
    reports.

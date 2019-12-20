@@ -247,7 +247,7 @@ sub get
 	
 	# search for it
 	unless ($dbm->get($call, $data)) {
-		$ref = decode($data);
+		$ref = eval{decode($data)};
 		if ($ref) {
 			if (!UNIVERSAL::isa($ref, 'DXUser')) {
 				dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
@@ -255,7 +255,7 @@ sub get
 			}
 			# we have a reference and it *is* a DXUser
 		} else {
-			dbg("DXUser::get: no reference returned from decode of $call $!");
+			dbg("DXUser::get: no reference returned from decode of $call $! $@");
 			return undef;
 		}
 		$lru->put($call, $ref);
