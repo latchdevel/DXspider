@@ -103,7 +103,7 @@ sub handle
 									}
 									push (@out, "-");
 								}
-								$self->send(@out) if @out;
+								return @out;
 							});
 	
 	#	my @chatlog = DXLog::print(undef, $to, $main::systime, 'chat', undef);

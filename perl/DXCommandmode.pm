@@ -1328,9 +1328,10 @@ sub spawn_cmd
 					 return;
 				 }
 				 if ($cb) {
-					 $cb->($dxchan, @res);
-				 } else {
-					 return unless @res;
+					 # transform output if required
+					 @res = $cb->($dxchan, @res);
+				 }
+				 if (@res) {
 					 if (defined $prefix) {
 						 $dxchan->send(map {"$prefix$_"} @res);
 					 } else {
