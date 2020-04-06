@@ -49,9 +49,10 @@ $filterdef = bless ([
 					 ['by_zone', 'nz', 11],
 					 ['call_state', 'ns', 12],
 					 ['by_state', 'ns', 13],
-					 ['channel', 'c', 14],
-					 ['rbn', 'a', 4, 0, \&filterrbnspot],
-			 ], 'Filter::Cmd');
+					 ['ip', 'c', 14],
+#					 ['channel', 'c', 15],
+#					 ['rbn', 'a', 4, 0, \&filterrbnspot],
+					], 'Filter::Cmd');
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
@@ -231,7 +232,7 @@ sub add
 #   $f5 = spotted dxcc country
 #   $f6 = spotter dxcc country
 #   $f7 = origin
-#
+#   $f8 = ip address
 #
 # In addition you can specify a range of days, this means that it will start searching
 # from <n> days less than today to <m> days less than today
@@ -311,6 +312,7 @@ sub search
 					}
 				}
 			  );
+	
     
 	dbg("Spot eval: $eval") if isdbg('searcheval');
 	

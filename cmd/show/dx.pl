@@ -31,6 +31,8 @@ my $itu;
 my $byitu;
 my $fromdxcc = 0;
 my $exact;
+my $origin;
+my $ip;
 my ($doqsl, $doiota, $doqra, $dofilter);
 
 my $usesql = $main::dbh && $Spot::use_db_for_search;
@@ -87,6 +89,17 @@ while ($f = shift @list) {		# next field
 		dbg "got info $info" if isdbg('shdx');
 		next;
 	}
+	if (lc $f eq 'origin' && $list[0]) {
+		$origin = uc shift @list;
+		dbg "got origin $origin" if isdbg('shdx');
+		next;
+	}
+	if (lc $f eq 'ip' && $list[0]) {
+		$ip = shift @list;
+		dbg "got ip $ip" if isdbg('shdx');
+		next;
+	}
+
 	if ((lc $f eq 'spotter' || lc $f eq 'by') && $list[0]) {
 		$spotter = uc shift @list;
 		if ($list[0] && lc $list[0] eq 'dxcc') {
@@ -152,7 +165,24 @@ while ($f = shift @list) {		# next field
 
 #$DB::single = 1;
 
-# first deal with the prefix
+# check origin
+if ($origin) {
+	$expr .= ' && ' if $expr;
+	$expr .= "\$f7 eq '$origin'";
+	$hint .= ' && ' if $hint;
+	$hint .= "m{$origin}";
+}
+
+# check (any) ip address
+if ($ip) {
+	$expr .= ' && ' if $expr;
+	$expr .= "\$f14 && \$f14 =~ m{^$ip}";
+	$hint .= ' && ' if $hint;
+	$ip =~ s/\./\\./g;			# IPV4
+	$hint .= "m{$ip}";
+}
+
+#  deal with the prefix
 if ($pre) {
 	my @ans;
 	
@@ -220,7 +250,7 @@ if (@freq) {
 # any info
 if ($info) {
 	$expr .= ' && ' if $expr;
-	$info =~ s{(.)}{"\Q$1"}ge;
+#	$info =~ s{(.)}{"\Q$1"}ge;
 	$expr .= "\$f3 =~ m{$info}i";
 	$hint .= ' && ' if $hint;
 	$hint .= "m{$info}i";
@@ -384,7 +414,13 @@ if ($doqra) {
 	$hint .= "m{$doqra}io";
 }
 
-dbg "expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('shdx');
+
+$from ||= '';
+$to ||= '';
+$fromday ||= '';
+$today ||= '';
+
+dbg "expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('sh/dx');
   
 # now do the search
 

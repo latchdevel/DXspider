@@ -373,7 +373,7 @@ sub parse
 	my $user;
 	
 	# check the line for non legal characters
-	return ('ill', $dxchan->msg('e19')) if $line =~ /[^\s\w,_\-\*\/\(\)!]/;
+	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)!]/;
 	
 	# add some spaces for ease of parsing
 	$line =~ s/([\(\)])/ $1 /g;
@@ -473,18 +473,23 @@ sub parse
 							}
 							@val = @nval;
 						}
-						if ($fref->[1] eq 'a') {
+						if ($fref->[1] eq 'a' || $fref->[1] eq 't') {
 							my @t;
 							for (@val) {
-								s/\*//g;
-								push @t, "\$r->[$fref->[2]]=~/$_/i";
+								s/\*//g;        # remove any trailing *
+								if (/^\{.*\}$/) { # we have a regex 
+									s/^\{//;
+								    s/\}$//;
+									return  ('regex', $dxchan->msg('e38', $_)) unless (qr{$_})
+								}
+								push @t, "\$r->[$fref->[2]]=~m{$_}i";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} elsif ($fref->[1] eq 'c') {
 							my @t;
 							for (@val) {
 								s/\*//g;
-								push @t, "\$r->[$fref->[2]]=~/^\U$_/";
+								push @t, "\$r->[$fref->[2]]=~m{^\U$_}";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} elsif ($fref->[1] eq 'n') {
@@ -509,13 +514,6 @@ sub parse
 							for (@val) {
 								return ('range', $dxchan->msg('e23', $_)) unless /^(\d+)\/(\d+)$/;
 								push @t, "(\$r->[$fref->[2]]>=$1 && \$r->[$fref->[2]]<=$2)";
-							}
-							$s .= "(" . join(' || ', @t) . ")";
-						} elsif ($fref->[1] eq 't') {
-							my @t;
-							for (@val) {
-								s/\*//g;
-								push @t, "\$r->[$fref->[2]]=~/$_/i";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} else {
@@ -597,8 +595,11 @@ use vars qw(@ISA);
 # to 'Filter::it' 
 #
 # The fieldsort is the type of field that we are dealing with which 
-# currently can be 'a', 'n', 'r' or 'd'. 'a' is alphanumeric, 'n' is 
-# numeric, 'r' is ranges of pairs of numeric values and 'd' is default.
+# currently can be 'a', 'n', 'r' or 'd'.
+#    'a' is alphanumeric
+#    'n' is# numeric
+#    'r' is ranges of pairs of numeric values
+#    'd' is default (effectively, don't filter)
 #
 # Filter::it basically goes thru the list of comparisons from top to
 # bottom and when one matches it will return the action and the action data as a list. 
@@ -637,9 +638,9 @@ sub it
 				return ($action, $actiondata)  if $val >= $range[$i] && $val <= $range[$i+1];
 			}
 		} elsif ($fieldsort eq 'a') {
-			return ($action, $actiondata)  if $_[$field] =~ m{$comp};
+			return ($action, $actiondata)  if $_[$field] =~ m{$comp}i;
 		} else {
-			return ($action, $actiondata);      # the default action
+			return ($action, $actiondata);      # the default action (just pass through)
 		}
 	}
 }
