@@ -373,6 +373,7 @@ sub parse
 	my $user;
 	
 	# check the line for non legal characters
+	return ('ill', $dxchan->msg('e19')) if $dxchan->priv < 8 and $line =~ /{.*}/;
 	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)!]/;
 	
 	# add some spaces for ease of parsing
