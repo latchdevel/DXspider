@@ -2160,6 +2160,12 @@ any order to the basic SHOW/DX command, they are:-
 
  by_state <list> - look for spots spotted by people in the US state
                    specified.
+
+ origin          - the node from which this spot originated (must be an
+                   exact callsign with SSID e.g. gb7tlh-4)
+
+ ip              - the IP address of the spotter (either in IPV4 or IPV6)
+                   format. These addresses can be partial. 
  
  e.g. 
    
@@ -2177,6 +2183,8 @@ any order to the basic SHOW/DX command, they are:-
    SH/DX state in,oh
    SH/DX by_state in,oh
    SH/DX hb2008g exact
+   SH/DX origin gb7tlh-4
+   SH/DX ip 82.65.128.4       (or SH/DX ip 2a00:1450:4009:800::200e)
   
 === 0^SHOW/DXCC <prefix>^Interrogate the spot database by country
 This command takes the <prefix> (which can be a full or partial 

@@ -110,6 +110,7 @@ package DXM;
 				e35 => 'You are not a member of $_[0], join $_[0]',
 				e36 => 'You can only do this in normal user prompt state',
 				e37 => 'Need at least a callsign',
+				e38 => 'This is not a valid regex',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',
