@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 11 Jul 2018
+! This file was created by Jim Reisert AD1C on 04 Sep 2019
 ! See: http://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
@@ -115,9 +115,13 @@ C4,H2,P3 Cyprus-5B                                    288 39 20  -2.00 35  0  0 
 NLD Kuwait-9K                                         310 39 21  -3.00 29 23  0 N  47 23  0 E
 9L Sierra-Leone-9L                                    311 46 35   0.00  8 30  0 N  13 15  0 W @
 9M2 West-Malaysia-9M2                                 312 54 28  -8.00  3 57  0 N 102 14  0 E @
-9M,9M61M,9W West-Malaysia-9M2                         312 54 28  -8.00  3 57  0 N 102 14  0 E
+9M,9W West-Malaysia-9M2                               312 54 28  -8.00  3 57  0 N 102 14  0 E
 9M6 East-Malaysia-9M6                                 313 54 28  -8.00  2 41  0 N 113 19  0 E @
-9M8,9W6,9W8 East-Malaysia-9M6                         313 54 28  -8.00  2 41  0 N 113 19  0 E
+9M6 Sabah-9M6                                         313 54 28  -8.00  5 15  0 N 117  0  0 E @
+9W6 Sabah-9M6                                         313 54 28  -8.00  5 15  0 N 117  0  0 E
+9M8 Sarawak-9M6                                       313 54 28  -8.00  2 48  0 N 113 53  0 E
+9M6 Sarawak-9M8                                       313 54 28  -8.00  2 48  0 N 113 53  0 E
+9W8 Sarawak-9M6                                       313 54 28  -8.00  2 48  0 N 113 53  0 E
 9N Nepal-9N                                           314 42 22  -5.75 27 42  0 N  85 20  0 E @
 9Q Dem-Rep-of-the-Congo-9Q                            315 52 36  -1.00  3  7  0 S  23  2  0 E @
 9O,9P,9R,9S,9T Dem-Rep-of-the-Congo-9Q                315 52 36  -1.00  3  7  0 S  23  2  0 E
@@ -179,6 +183,8 @@ BV9G Green-Island-BV                                    9 44 24  -8.00 22 40  0 
 BV Green-Island-BV9G                                    9 44 24  -8.00 22 40  0 N 121 29  0 E
 BM9G,BN9G,BO9G,BP9G,BQ9G,BU9G,BW9G Green-Island-BV      9 44 24  -8.00 22 40  0 N 121 29  0 E
 BX9G Green-Island-BV                                    9 44 24  -8.00 22 40  0 N 121 29  0 E
+BV9L Liuchiu-Islands-BV                                 9 44 24  -8.00 22 20  0 N 120 22  0 E
+BV Liuchiu-Islands-BV9L                                 9 44 24  -8.00 22 20  0 N 120 22  0 E
 BV9O Orchid-Island-BV                                   9 44 24  -8.00 22  3  0 N 121 32  0 E
 BV Orchid-Island-BV9O                                   9 44 24  -8.00 22  3  0 N 121 32  0 E
 BM9O,BN9O,BO9O,BP9O,BQ9O,BU9O,BW9O Orchid-Island-BV     9 44 24  -8.00 22  3  0 N 121 32  0 E
@@ -1443,10 +1449,9 @@ GI Northern-Ireland-GI                                 63 27 14   0.00 54 44  0 
 GJ Jersey-GJ                                           64 27 14   0.00 49 13  0 N   2 11  0 W @
 2J,GH,MH,MJ Jersey-GJ                                  64 27 14   0.00 49 13  0 N   2 11  0 W
 GM Scotland-GM                                         65 27 14   0.00 56 49  0 N   4 11  0 W @
-2A,2M,GA,GS,MA,MM,MS Scotland-GM                       65 27 14   0.00 56 49  0 N   4 11  0 W
+2A,2M,GS,MA,MM,MS Scotland-GM                          65 27 14   0.00 56 49  0 N   4 11  0 W
 GM/S Shetland-Islands-GM                               65 27 14   0.00 60 30  0 N   1 30  0 W
 GM Shetland-Islands-GM/S                               65 27 14   0.00 60 30  0 N   1 30  0 W
-GZ,MZ Shetland-Islands-GM                              65 27 14   0.00 60 30  0 N   1 30  0 W
 GU Guernsey-GU                                         66 27 14   0.00 49 27  0 N   2 35  0 W @
 2U,GP,MP,MU Guernsey-GU                                66 27 14   0.00 49 27  0 N   2 35  0 W
 GW Wales-GW                                            67 27 14   0.00 52 17  0 N   3 44  0 W @
@@ -1556,24 +1561,28 @@ HK0/A San-Andres-Providencia-HK0/A                     78 11  7   5.00 12 33  0 
 HK0 San-Andres-Providencia-HK0/A                       78 11  7   5.00 12 33  0 N  81 43  0 W
 5J0,5K0,HJ0,HK0 San-Andres-Providencia-HK0/A           78 11  7   5.00 12 33  0 N  81 43  0 W
 HK0/A San-Andres-HK0/A                                 78 11  7   5.00 12 33  0 N  81 43  0 W @
+HK0/B Bajo-Nuevo-and-Serranilla-Bank-Cays-HK0/A        78 11  8   5.00 16  0  0 N  79  0  0 W
+HK0/A Bajo-Nuevo-and-Serranilla-Bank-Cays-HK0/B        78 11  8   5.00 16  0  0 N  79  0  0 W
 HK0/P Providencia-HK0/A                                78 11  7   5.00 13 20  0 N  81 22  0 W
 HK0/A Providencia-HK0/P                                78 11  7   5.00 13 20  0 N  81 22  0 W
+HK0/S Serrana-Bank-Roncador-Cays-HK0/A                 78 11  7   5.00 14  0  0 N  80  0  0 W
+HK0/A Serrana-Bank-Roncador-Cays-HK0/S                 78 11  7   5.00 14  0  0 N  80  0  0 W
 HL Republic-of-Korea-HL                                79 44 25  -9.00 36 14  0 N 127 54  0 E @
 6K,6L,6M,6N,D7,D8,D9,DS,DT,KL9K Republic-of-Korea-HL   79 44 25  -9.00 36 14  0 N 127 54  0 E
 HP Panama-HP                                           80 11  7   5.00  9  0  0 N  80  0  0 W @
 3E,3F,H3,H8,H9,HO Panama-HP                            80 11  7   5.00  9  0  0 N  80  0  0 W
-HP1 Panama-City-HP                                     80 11  7   5.00  8 59  0 N  79 31  0 W
-HP Panama-City-HP1                                     80 11  7   5.00  8 59  0 N  79 31  0 W
-3E1,3F1,H31,H81,H91,HO1 Panama-City-HP                 80 11  7   5.00  8 59  0 N  79 31  0 W
-HP2 Kuna-Yala-HP                                       80 11  7   5.00  9 18  0 N  78 21  0 W
-HP Kuna-Yala-HP2                                       80 11  7   5.00  9 18  0 N  78 21  0 W
-3E2,3F2,H32,H82,H92,HO2 Kuna-Yala-HP                   80 11  7   5.00  9 18  0 N  78 21  0 W
+HP1 Panama-HP                                          80 11  7   5.00  8 59  0 N  79 31  0 W
+HP Panama-HP1                                          80 11  7   5.00  8 59  0 N  79 31  0 W
+3E1,3F1,H31,H81,H91,HO1 Panama-HP                      80 11  7   5.00  8 59  0 N  79 31  0 W
+HP2 Colon-HP                                           80 11  7   5.00  9 18  0 N  78 21  0 W
+HP Colon-HP2                                           80 11  7   5.00  9 18  0 N  78 21  0 W
+3E2,3F2,H32,H82,H92,HO2 Colon-HP                       80 11  7   5.00  9 18  0 N  78 21  0 W
 HP3 Chiriqui-HP                                        80 11  7   5.00  8 26  0 N  82 26  0 W
 HP Chiriqui-HP3                                        80 11  7   5.00  8 26  0 N  82 26  0 W
 3E3,3F3,H33,H83,H93,HO3 Chiriqui-HP                    80 11  7   5.00  8 26  0 N  82 26  0 W
-HP4 Bocas-del-Toro-Cocle-HP                            80 11  7   5.00  8 50  0 N  81 30  0 W
-HP Bocas-del-Toro-Cocle-HP4                            80 11  7   5.00  8 50  0 N  81 30  0 W
-3E4,3F4,H34,H84,H94,HO4 Bocas-del-Toro-Cocle-HP        80 11  7   5.00  8 50  0 N  81 30  0 W
+HP4 Bocas-del-Toro-HP                                  80 11  7   5.00  8 50  0 N  81 30  0 W
+HP Bocas-del-Toro-HP4                                  80 11  7   5.00  8 50  0 N  81 30  0 W
+3E4,3F4,H34,H84,H94,HO4 Bocas-del-Toro-HP              80 11  7   5.00  8 50  0 N  81 30  0 W
 HP5 Herrera-Los-Santos-HP                              80 11  7   5.00  7 40  0 N  80 30  0 W
 HP Herrera-Los-Santos-HP5                              80 11  7   5.00  7 40  0 N  80 30  0 W
 3E5,3F5,H35,H85,H95,HO5 Herrera-Los-Santos-HP          80 11  7   5.00  7 40  0 N  80 30  0 W
@@ -1583,13 +1592,20 @@ HP Veraguas-HP6                                        80 11  7   5.00  8  6  0 
 HP7 Darien-HP                                          80 11  7   5.00  8 24  0 N  77 55  0 W
 HP Darien-HP7                                          80 11  7   5.00  8 24  0 N  77 55  0 W
 3E7,3F7,H37,H87,H97,HO7 Darien-HP                      80 11  7   5.00  8 24  0 N  77 55  0 W
-HP8 Perlas-Archipeligo-HP                              80 11  7   5.00  8 20  0 N  79  7  0 W
-HP Perlas-Archipeligo-HP8                              80 11  7   5.00  8 20  0 N  79  7  0 W
-3E8,3F8,H38,H88,H98,HO8 Perlas-Archipeligo-HP          80 11  7   5.00  8 20  0 N  79  7  0 W
+HP8 Cocle-HP                                           80 11  7   5.00  8 20  0 N  79  7  0 W
+HP Cocle-HP8                                           80 11  7   5.00  8 20  0 N  79  7  0 W
+3E8,3F8,H38,H88,H98,HO8 Cocle-HP                       80 11  7   5.00  8 20  0 N  79  7  0 W
+HP9 Los-Santos-HP                                      80 11  7   5.00  7 56  0 N  80 25  0 W
+HP Los-Santos-HP9                                      80 11  7   5.00  7 56  0 N  80 25  0 W
+3E9,3F9,H39,H89,H99,HO9 Los-Santos-HP                  80 11  7   5.00  7 56  0 N  80 25  0 W
 HR Honduras-HR                                         81 11  7   6.00 15  0  0 N  87  0  0 W @
 HQ Honduras-HR                                         81 11  7   6.00 15  0  0 N  87  0  0 W
 HR6 Bahia-Island-HR                                    81 11  7   6.00 16 23  0 N  86 24  0 W
 HR Bahia-Island-HR6                                    81 11  7   6.00 16 23  0 N  86 24  0 W
+HQ6 Bahia-Island-HR                                    81 11  7   6.00 16 23  0 N  86 24  0 W
+HR9 Roatan-Island-HR                                   81 11  7   6.00 16 28  0 N  86 41  0 W
+HR Roatan-Island-HR9                                   81 11  7   6.00 16 28  0 N  86 41  0 W
+HQ9 Roatan-Island-HR                                   81 11  7   6.00 16 28  0 N  86 41  0 W
 HS Thailand-HS                                         82 49 26  -7.00 12 36  0 N  99 42  0 E @
 E2 Thailand-HS                                         82 49 26  -7.00 12 36  0 N  99 42  0 E
 HS1 Bangkok-Nontaburi-Pathumtani-HS                    82 49 26  -7.00 13 42  0 N 100 30  0 E
@@ -3875,13 +3891,17 @@ UA9G Komi-Permyatsky-UA                               179 30 17  -6.00 59  1  0 
 UA Komi-Permyatsky-UA9G                               179 30 17  -6.00 59  1  0 N  54 40  0 E
 UA9X Komi-UA                                          179 20 17  -4.00 64 17  0 N  54 28  0 E
 UA Komi-UA9X                                          179 20 17  -4.00 64 17  0 N  54 28  0 E
-R8X,R9X,RA8X,RA9X,RC8X,RC9X,RD8X,RD9X,RE8X Komi-UA    179 20 17  -4.00 64 17  0 N  54 28  0 E
-RE9X,RF8X,RF9X,RG8X,RG9X,RI8X,RI9X,RJ8X,RJ9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
-RK8X,RK9X,RL8X,RL9X,RM8X,RM9X,RN8X,RN9X,RO8X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
-RO9X,RQ8X,RQ9X,RT8X,RT9X,RU8X,RU9X,RV8X,RV9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
-RW8X,RW9X,RX8X,RX9X,RY8X,RY9X,RZ8X,RZ9X,U8X Komi-UA   179 20 17  -4.00 64 17  0 N  54 28  0 E
-U9X,UA8X,UB8X,UB9X,UC8X,UC9X,UD8X,UD9X,UE8X Komi-UA   179 20 17  -4.00 64 17  0 N  54 28  0 E
-UE9X,UF8X,UF9X,UG8X,UG9X,UH8X,UH9X,UI8X,UI9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+R1I,R8X,R9X,RA1I,RA8X,RA9X,RC1I,RC8X,RC9X Komi-UA     179 20 17  -4.00 64 17  0 N  54 28  0 E
+RD1I,RD8X,RD9X,RE1I,RE8X,RE9X,RF1I,RF8X,RF9X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RG1I,RG8X,RG9X,RI8X,RI9X,RJ1I,RJ8X,RJ9X,RK1I Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RK8X,RK9X,RL1I,RL8X,RL9X,RM1I,RM8X,RM9X,RN1I Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RN8X,RN9X,RO1I,RO8X,RO9X,RQ1I,RQ8X,RQ9X,RT1I Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RT8X,RT9X,RU1I,RU8X,RU9X,RV1I,RV8X,RV9X,RW1I Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RW8X,RW9X,RX1I,RX8X,RX9X,RY1I,RY8X,RY9X,RZ1I Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+RZ8X,RZ9X,U1I,U8X,U9X,UA1I,UA8X,UB1I,UB8X Komi-UA     179 20 17  -4.00 64 17  0 N  54 28  0 E
+UB9X,UC1I,UC8X,UC9X,UD1I,UD8X,UD9X,UE1I,UE8X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+UE9X,UF1I,UF8X,UF9X,UG1I,UG8X,UG9X,UH1I,UH8X Komi-UA  179 20 17  -4.00 64 17  0 N  54 28  0 E
+UH9X,UI1I,UI8X,UI9X Komi-UA                           179 20 17  -4.00 64 17  0 N  54 28  0 E
 UA2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E @
 R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RE2F Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
 RE2K,RF2F,RF2K,RG2F,RG2K,RJ2F,RJ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
@@ -5101,8 +5121,8 @@ XE Southern-Mexico-XE3                                227 10  6   6.00 17 54  0 
 6J3,XA3,XB3,XC3,XD3,XG3,XH3,XI3 Southern-Mexico-XE    227 10  6   6.00 17 54  0 N  94  9  0 W
 XF4 Revillagigedo-XF4                                 228 10  6   7.00 18 46  0 N 110 58  0 W @
 4A4,4B4,4C4,6D4,6E4,6F4,6G4,6H4 Revillagigedo-XF4     228 10  6   7.00 18 46  0 N 110 58  0 W
-6I4,6J4,XA4,XB4,XC4,XD4,XE4,XF0 Revillagigedo-XF4     228 10  6   7.00 18 46  0 N 110 58  0 W
-XG4,XH4,XI4 Revillagigedo-XF4                         228 10  6   7.00 18 46  0 N 110 58  0 W
+6I4,6J4,XA4,XB4,XC4,XD4,XE4,XG4 Revillagigedo-XF4     228 10  6   7.00 18 46  0 N 110 58  0 W
+XH4,XI4 Revillagigedo-XF4                             228 10  6   7.00 18 46  0 N 110 58  0 W
 XT Burkina-Faso-XT                                    229 46 35   0.00 12  0  0 N   2  0  0 W @
 XU Cambodia-XU                                        230 49 26  -7.00 12 56  0 N 105  8  0 E @
 XW Laos-XW                                            232 49 26  -7.00 18 12  0 N 104 33  0 E @
@@ -5217,7 +5237,7 @@ YV Apure-Terr-Fed-Amazonas-YV9                        246 12  9   4.50  7 54  0 
 YV0 Aves-Island-YV0                                   247 11  8   4.00 15 40  0 N  63 36  0 W @
 4M0,YW0,YX0,YY0 Aves-Island-YV0                       247 11  8   4.00 15 40  0 N  63 36  0 W
 Z2 Zimbabwe-Z2                                        254 53 38  -2.00 18  0  0 S  31  0  0 E @
-Z3 Macedonia-Z3                                       349 28 15  -1.00 41 36  0 N  21 39  0 E @
+Z3 North-Macedonia-Z3                                 349 28 15  -1.00 41 36  0 N  21 39  0 E @
 Z6 Republic-of-Kosovo-Z6                              359 28 15  -1.00 42 40  0 N  21 10  0 E @
 Z8 Republic-of-South-Sudan-Z8                         357 48 34  -3.00  4 51  0 N  31 36  0 E @
 ZA Albania-ZA                                         248 28 15  -1.00 41  0  0 N  20  0  0 E @

@@ -6,7 +6,7 @@
 # examples:-
 # 
 #   watchdbg g1tlh       # watch everything g1tlh does
-#   watchdbg 2 PCPROT       # watch all PCPROT messages + up to 2 lines before
+#   watchdbg -2 PCPROT       # watch all PCPROT messages + up to 2 lines before
 #   watchdbg gb7baa gb7djk   # watch the conversation between BAA and DJK 
 #
 
@@ -41,7 +41,7 @@ my @prev;
 # seek to end of file
 $fh->seek(0, 2);
 for (;;) {
-	my $line = <$fh>;
+	my $line = $fh->getline;
 	if ($line) {
 		if ($exp) {
 			push @prev, $line;

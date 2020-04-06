@@ -443,7 +443,7 @@ push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search,
 									}
 								}
 								push @out, $self->msg('e3', "sh/dx", "'$line'") unless @out;
-								$dxchan->send(@out);
+								return @out;
 							});
 
 #my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);

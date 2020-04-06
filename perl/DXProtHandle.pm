@@ -158,17 +158,21 @@ sub handle_11
 
 	# if this is a 'nodx' node then ignore it
 	if ($badnode->in($pc->[7])) {
-		dbg("PCPROT: Bad Node, dropped") if isdbg('chanerr');
+		dbg("PCPROT: Bad Node $pc->[7], dropped") if isdbg('chanerr');
 		return;
 	}
 
-	# if this is a 'bad spotter' user then ignore it
+	# if this is a 'bad spotter' or an unknown user then ignore it. BUT if it's got an IP address then allow it through
 	my $nossid = $pc->[6];
 	$nossid =~ s/-\d+$//;
 	if ($badspotter->in($nossid)) {
-		dbg("PCPROT: Bad Spotter, dropped") if isdbg('chanerr');
+		dbg("PCPROT: Bad Spotter $pc->[6], dropped") if isdbg('chanerr');
 		return;
 	}
+#	unless (is_ipaddr($pc->[8]) || DXUser::get_current($pc->[6])) {
+#		dbg("PCPROT: Unknown Spotter $pc->[6], dropped") if isdbg('chanerr');
+#		return;
+#	}
 
 	# convert the date to a unix date
 	my $d = cltounix($pc->[3], $pc->[4]);
