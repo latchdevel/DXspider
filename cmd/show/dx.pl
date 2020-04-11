@@ -38,7 +38,7 @@ my ($doqsl, $doiota, $doqra, $dofilter);
 my $usesql = $main::dbh && $Spot::use_db_for_search;
 
 while ($f = shift @list) {		# next field
-	dbg "arg: $f list: " . join(',', @list) if isdbg('shdx');
+	dbg "arg: $f list: " . join(',', @list) if isdbg('sh/dx');
 	if (!$from && !$to) {
 		($from, $to) = $f =~ m|^(\d+)[-/](\d+)$|; # is it a from -> to count?
 		next if $from && $to > $from;
@@ -60,19 +60,19 @@ while ($f = shift @list) {		# next field
 		next;
 	}
 	if (lc $f eq 'on' && $list[0]) { # is it freq range?
-		dbg "freq $list[0]" if isdbg('shdx');
+		dbg "freq $list[0]" if isdbg('sh/dx');
 		if (my ($from, $to) = $list[0] =~ m|^(\d+)(?:\.\d+)?(?:[-/](\d+)(?:\.\d+)?)?$|) {
 			$to = $from unless defined $to;
-			dbg "freq '$from' '$to'" if isdbg('shdx');
+			dbg "freq '$from' '$to'" if isdbg('sh/dx');
 			push @freq, $from, $to;
 			shift @list;
 			next;
 		} else {
 			my @r = split '/', lc $list[0];
-			dbg "r0: $r[0] r1: $r[1]" if isdbg('shdx');
+			dbg "r0: $r[0] r1: $r[1]" if isdbg('sh/dx');
 			my @fr = Bands::get_freq($r[0], $r[1]);
 			if (@fr) {			# yup, get rid of extranous param
-				dbg "freq: " . join(',', @fr) if isdbg('shdx');
+				dbg "freq: " . join(',', @fr) if isdbg('sh/dx');
 				push @freq, @fr;    # add these to the list
 				shift @list;
 				next;
@@ -81,22 +81,22 @@ while ($f = shift @list) {		# next field
 	}
 	if (lc $f eq 'day' && $list[0]) {
 		($fromday, $today) = split m|[-/]|, shift(@list);
-		dbg "got day $fromday/$today" if isdbg('shdx');
+		dbg "got day $fromday/$today" if isdbg('sh/dx');
 		next;
 	}
 	if (lc $f eq 'info' && $list[0]) {
 		$info = shift @list;
-		dbg "got info $info" if isdbg('shdx');
+		dbg "got info $info" if isdbg('sh/dx');
 		next;
 	}
 	if (lc $f eq 'origin' && $list[0]) {
 		$origin = uc shift @list;
-		dbg "got origin $origin" if isdbg('shdx');
+		dbg "got origin $origin" if isdbg('sh/dx');
 		next;
 	}
 	if (lc $f eq 'ip' && $list[0]) {
 		$ip = shift @list;
-		dbg "got ip $ip" if isdbg('shdx');
+		dbg "got ip $ip" if isdbg('sh/dx');
 		next;
 	}
 
@@ -106,7 +106,7 @@ while ($f = shift @list) {		# next field
 			$fromdxcc = 1;
 			shift @list;
 		}
-		dbg "got spotter $spotter fromdxcc $fromdxcc" if isdbg('shdx');
+		dbg "got spotter $spotter fromdxcc $fromdxcc" if isdbg('sh/dx');
 		next;
 	}
 	if (lc $f =~ /^filt/) {
