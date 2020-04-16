@@ -6,74 +6,84 @@
 #
 #
 
-my ($self, $line) = @_;
-my @f = split /\s+/, $line;
 my $days = 31;
 my $now;
 my $date = cldate($main::systime);
 my $utime = $main::systime;
-my @out;
 
-while (@f) {
-	my $f = shift @f;
+sub handle {
+	my ($self, $line) = @_;
+	my @f = split /\s+/, $line;
+	my @out;
 
-	if ($f =~ /^\d+$/ && $f < 366) {		# no of days
-		$days = $f;
-		next;
+	while (@f) {
+		my $f = shift @f;
+
+		if ($f =~ /^\d+$/ && $f < 366) { # no of days
+			$days = $f;
+			next;
+		}
+		if (my $ut = Date::Parse::str2time($f)) { # is it a parseable date?
+			$utime = $ut+3600;
+			next;
+		}
+		push @out, $self->msg('e33', $f);
 	}
-	if (my $ut = Date::Parse::str2time($f)) {	# is it a parseable date?
-		$utime = $ut+3600;
-		next;
+
+	return (1, @out) if @out;
+
+	$now = Julian::Day->new($utime);
+	$now = $now->sub($days);
+	$date = cldate($utime);
+
+	if ($self->{_nospawn}) {
+		return (1, generate($self));
 	}
-	push @out, $self->msg('e33', $f);
+	else {
+		return (1, $self->spawn_cmd("show/vhfstats $line", sub { return (generate($self)); }))
+	}
 }
 
-return (1, @out) if @out;
+sub generate
+{
+	my $self = shift;
+	my %list;
+	my @out;
+	my @in;
+	my $i;
 
-$now = Julian::Day->new($utime);
-$now = $now->sub($days);
-$date = cldate($utime);
+	# generate the spot list
+	for ($i = 0; $i < $days; $i++) {
+		my $fh = $Spot::statp->open($now); # get the next file
+		unless ($fh) {
+			Spot::genstats($now);
+			$fh = $Spot::statp->open($now);
+		}
+		while (<$fh>) {
+			chomp;
+			my @l = split /\^/;
+			next unless $l[0] eq 'TOTALS';
+			next unless $l[1];
+			$l[0] = $now; 
+			push @in, \@l; 
+			last;
+		}
+		$now = $now->add(1);
+	}
 
-@out = $self->spawn_cmd("show/vhfstats $line", sub {
-							my %list;
-							my @out;
-							my @in;
-							my $i;
+	my @tot;
 
-# generate the spot list
-							for ($i = 0; $i < $days; $i++) {
-								my $fh = $Spot::statp->open($now); # get the next file
-								unless ($fh) {
-									Spot::genstats($now);
-									$fh = $Spot::statp->open($now);
-								}
-								while (<$fh>) {
-									chomp;
-									my @l = split /\^/;
-									next unless $l[0] eq 'TOTALS';
-									next unless $l[1];
-									$l[0] = $now; 
-									push @in, \@l; 
-									last;
-								}
-								$now = $now->add(1);
-							}
-
-							my @tot;
-
-							push @out, $self->msg('statvhf', $date, $days);
-							push @out, sprintf "%11s|%6s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|", qw(Date Total 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
-							foreach my $ref (@in) {
-								my $linetot = 0;
-								foreach my $j (14..16,18..23) {
-									$tot[$j] += $ref->[$j];
-									$tot[0] += $ref->[$j];
-									$linetot += $ref->[$j];
-								}
-								push @out, join('|', sprintf("%11s|%6d", $ref->[0]->as_string, $linetot), map {$_ ? sprintf("%5d", $_) : '     '} @$ref[14..16,18..23]) . '|';
-							}
-							push @out, join('|', sprintf("%11s|%6d", 'Total', $tot[0]), map {$_ ? sprintf("%5d", $_) : '     '} @tot[14..16,18..23]) . '|';
-							return @out;
-						});
-
-return (1, @out);
+	push @out, $self->msg('statvhf', $date, $days);
+	push @out, sprintf "%11s|%6s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|%5s|", qw(Date Total 6m 4m 2m 70cm 23cm 13cm 9cm 6cm 3cm);
+	foreach my $ref (@in) {
+		my $linetot = 0;
+		foreach my $j (14..16,18..23) {
+			$tot[$j] += $ref->[$j];
+			$tot[0] += $ref->[$j];
+			$linetot += $ref->[$j];
+		}
+		push @out, join('|', sprintf("%11s|%6d", $ref->[0]->as_string, $linetot), map {$_ ? sprintf("%5d", $_) : '     '} @$ref[14..16,18..23]) . '|';
+	}
+	push @out, join('|', sprintf("%11s|%6d", 'Total', $tot[0]), map {$_ ? sprintf("%5d", $_) : '     '} @tot[14..16,18..23]) . '|';
+	return @out;
+}
