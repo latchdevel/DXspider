@@ -34,6 +34,9 @@ use Route::Node;
 use Script;
 use DXProtHandle;
 
+use Time::HiRes qw(gettimeofday tv_interval);
+use Mojo::IOLoop::Subprocess;
+
 use strict;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
@@ -1133,8 +1136,14 @@ sub process_rcmd
 			if ($ref->{priv}) {		# you have to have SOME privilege, the commands have further filtering
 				$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 				my $oldpriv = $self->{priv};
-				$self->{priv} = $ref->{priv}; # assume the user's privilege level
+				$self->{priv} = 1; # set a maximum privilege 
+
+				# park homenode and user for any spawned command that run_cmd may do.
+				$self->{_rcmd_user} = $user;
+				$self->{_rcmd_fromnode} = $fromnode;
 				my @in = (DXCommandmode::run_cmd($self, $cmd));
+				delete $self->{_rcmd_fromnode};
+				delete $self->{_rcmd_user};
 				$self->{priv} = $oldpriv;
 				$self->send_rcmd_reply($main::mycall, $fromnode, $user, @in);
 				delete $self->{remotecmd};
@@ -1152,6 +1161,105 @@ sub process_rcmd
 			$self->route($tonode, pc34($fromnode, $tonode, $cmd));
 		}
 	}
+}
+
+
+sub send_rcmd_reply
+{
+	my $self = shift;
+	my $tonode = shift;
+	my $fromnode = shift;
+	my $user = shift;
+	while (@_) {
+		my $line = shift;
+		$line =~ s/\s*$//;
+		Log('rcmd', 'out', $fromnode, $line);
+		if ($self->is_clx) {
+			$self->send(pc85($main::mycall, $fromnode, $user, "$main::mycall:$line"));
+		} else {
+			$self->send(pc35($main::mycall, $fromnode, "$main::mycall:$line"));
+		}
+	}
+}
+
+# Punt off a long running command into a separate process - this will be caused by an rcmd from outside
+#
+# This is called from commands to run some potentially long running
+# function. The process forks and then runs the function and returns
+# the result back to the cmd. 
+#
+# NOTE: this merely forks the current process and then runs the cmd in that (current) context.
+#       IT DOES NOT START UP SOME NEW PROGRAM AND RELIES ON THE FACT THAT IT IS RUNNING DXSPIDER 
+#       THE CURRENT CONTEXT!!
+# 
+# call: $self->spawn_cmd($original_cmd_line, \<function>, [cb => sub{...}], [prefix => "cmd> "], [progress => 0|1], [args => [...]]);
+sub spawn_cmd
+{
+	my $self = shift;
+	my $line = shift;
+	my $cmdref = shift;
+	my $call = $self->{call};
+	my %args = @_;
+	my @out;
+	
+	my $cb = delete $args{cb};
+	my $prefix = delete $args{prefix};
+	my $progress = delete $args{progress};
+	my $args = delete $args{args} || [];
+	my $t0 = [gettimeofday];
+
+	# remembered from process_cmd when spawn_cmd was called thru DXCommandmode::run_cmd which was called by process_rcmd
+	my $fromnode = $self->{_rcmd_fromnode};
+	my $user = $self->{_rcmd_user};
+
+	no strict 'refs';
+		
+	my $fc = Mojo::IOLoop::Subprocess->new;
+
+	#	$fc->serializer(\&encode_json);
+#	$fc->deserializer(\&decode_json);
+	$fc->run(
+			 sub {
+				 my $subpro = shift;
+				 if (isdbg('chan')) {
+					 my $s = "line: $line";
+					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
+				 }
+
+				 my @res = $cmdref->(@$args);
+				 return @res;
+			 },
+#			 $args,
+			 sub {
+				 my ($fc, $err, @res) = @_; 
+				 my $self = DXChannel::get($call);
+				 return unless $self;
+
+				 if ($err) {
+					 my $s = "DXCommand::spawn_cmd: call $call error $err";
+					 dbg($s) if isdbg('chan');
+					 if ($fromnode && $user) {
+						 $self->send_rcmd_reply($main::mycall, $fromnode, $user, $s);
+					 } else {
+						 $self->send($s);
+					 }
+					 return;
+				 }
+				 if ($cb) {
+					 # transform output if required
+					 @res = $cb->($self, @res);
+				 }
+				 if (@res) {
+					 if ($fromnode && $user) {
+						 $self->send_rcmd_reply($main::mycall, $fromnode, $user, @res);
+					 } else {
+						 $self->send(@res);
+					 }
+				 }
+				 DXCommandmode::_diffms($call, $line, $t0);
+			 });
+	
+	return @out;
 }
 
 sub process_rcmd_reply
@@ -1179,23 +1287,7 @@ sub process_rcmd_reply
 	}
 }
 
-sub send_rcmd_reply
-{
-	my $self = shift;
-	my $tonode = shift;
-	my $fromnode = shift;
-	my $user = shift;
-	while (@_) {
-		my $line = shift;
-		$line =~ s/\s*$//;
-		Log('rcmd', 'out', $fromnode, $line);
-		if ($self->is_clx) {
-			$self->send(pc85($main::mycall, $fromnode, $user, "$main::mycall:$line"));
-		} else {
-			$self->send(pc35($main::mycall, $fromnode, "$main::mycall:$line"));
-		}
-	}
-}
+
 
 # add a rcmd request to the rcmd queues
 sub addrcmd
@@ -1690,5 +1782,8 @@ sub clean_pc92_find
 {
 
 }
+
+
+
 1;
 __END__

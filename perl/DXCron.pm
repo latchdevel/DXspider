@@ -15,6 +15,8 @@ use DXDebug;
 use IO::File;
 use DXLog;
 
+use Mojo::IOLoop::Subprocess;
+
 use strict;
 
 use vars qw{@crontab @lcrontab @scrontab $mtime $lasttime $lastmin};
@@ -244,13 +246,13 @@ sub spawn
 {
 	my $line = shift;
 
-	my $fc = Mojo::IOLoop::ForkCall->new;
+	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
 			 sub {my @res = `$line`; return @res},
-			 [],
+#			 [],
 			 sub {
 				 my ($fc, $err, @res) = @_; 
-				 if (defined $err) {
+				 if ($err) {
 					 my $s = "DXCron::spawn: error $err";
 					 dbg($s);
 					 return;
@@ -268,13 +270,13 @@ sub spawn_cmd
 	my $line = shift;
 
 	dbg("spawn_cmd run: $line") if isdbg('cron');
-	my $fc = Mojo::IOLoop::ForkCall->new;
+	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
 			 sub {my @res = DXCommandmode::run_cmd($main::me, $line); return @res},
-			 [],
+#			 [],
 			 sub {
 				 my ($fc, $err, @res) = @_; 
-				 if (defined $err) {
+				 if ($err) {
 					 my $s = "spawn_cmd: error $err";
 					 dbg($s);
 				 }
@@ -310,5 +312,6 @@ sub run_cmd
 		dbg("cmd out: $_") if isdbg('cron');
 	}
 }
+
 1;
 __END__

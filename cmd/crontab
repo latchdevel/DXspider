@@ -5,6 +5,6 @@
 # create and edit the one in /spider/local_cmd/crontab
 # for doing connections and things
 #
-1 0 * * 3 DXUser::export()
-5 0 * * * DXDebug::dbgclean()
+2 0 * * * DXDebug::dbgclean()
+2 30 * * 3 DXUser::export()
 0 3 * * * Spot::daily()

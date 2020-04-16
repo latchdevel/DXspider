@@ -43,7 +43,7 @@ use JSON;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 use Mojo::IOLoop;
-use Mojo::IOLoop::ForkCall;
+use Mojo::IOLoop::Subprocess;
 use Mojo::UserAgent;
 
 use strict;
@@ -490,7 +490,7 @@ sub send_ans
 }
 
 # 
-# this is the thing that runs the command, it is done like this for the 
+# this is the thing that preps for running the command, it is done like this for the 
 # benefit of remote command execution
 #
 
@@ -1310,18 +1310,26 @@ sub spawn_cmd
 
 	no strict 'refs';
 		
-	my $fc = Mojo::IOLoop::ForkCall->new;
-	$fc->serializer(\&encode_json);
-	$fc->deserializer(\&decode_json);
+	my $fc = Mojo::IOLoop::Subprocess->new;
+#	$fc->serializer(\&encode_json);
+#	$fc->deserializer(\&decode_json);
 	$fc->run(
-			 sub {my @args = @_; my @res = $cmdref->(@args); return @res},
-			 $args,
+			 sub {
+				 my $subpro = shift;
+				 if (isdbg('chan')) {
+					 my $s = "line: $line";
+					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
+				 }
+				 my @res = $cmdref->(@$args);
+				 return @res;
+			 },
+#			 $args,
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 my $dxchan = DXChannel::get($call);
 				 return unless $dxchan;
 
-				 if (defined $err) {
+				 if ($err) {
 					 my $s = "DXCommand::spawn_cmd: call $call error $err";
 					 dbg($s) if isdbg('chan');
 					 $dxchan->send($s);
