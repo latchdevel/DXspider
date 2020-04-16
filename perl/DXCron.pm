@@ -249,7 +249,6 @@ sub spawn
 	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
 			 sub {my @res = `$line`; return @res},
-#			 [],
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 if ($err) {
@@ -272,8 +271,12 @@ sub spawn_cmd
 	dbg("spawn_cmd run: $line") if isdbg('cron');
 	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
-			 sub {my @res = DXCommandmode::run_cmd($main::me, $line); return @res},
-#			 [],
+			 sub {
+				 $main::me->{_nospawn} = 1;
+				 my @res = $main::me->run_cmd($line);
+				 delete $main::me->{_nospawn};
+				 return @res;
+			 },
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 if ($err) {
@@ -305,7 +308,7 @@ sub rcmd
 sub run_cmd
 {
 	my $line = shift;
-	my @in = DXCommandmode::run_cmd($main::me, $line);
+	my @in = $main::me->run_cmd($line);
 	dbg("cmd run: $line") if isdbg('cron');
 	for (@in) {
 		s/\s*$//og;

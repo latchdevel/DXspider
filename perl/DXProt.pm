@@ -1216,6 +1216,9 @@ sub spawn_cmd
 		
 	my $fc = Mojo::IOLoop::Subprocess->new;
 
+	# just behave normally if something has set the "one-shot" _nospawn in the channel
+	return ($cmdref->(@$args)) if $self->{_nospawn};
+
 	#	$fc->serializer(\&encode_json);
 #	$fc->deserializer(\&decode_json);
 	$fc->run(

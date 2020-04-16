@@ -424,7 +424,23 @@ dbg "expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('
   
 # now do the search
 
-push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search, 
+if ($self->{_nospawn}) {
+	my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);
+	my $ref;
+	my @dx;
+	foreach $ref (@res) {
+		if ($self && $self->ve7cc) {
+			push @out, VE7CC::dx_spot($self, @$ref);
+		} else {
+			if ($self && $real) {
+				push @out, DXCommandmode::format_dx_spot($self, @$ref);
+			} else {
+				push @out, Spot::formatl(@$ref);
+			}
+		}
+	}
+} else {
+	push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search, 
 							args => [$expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef],
 							cb => sub {
 								my ($dxchan, @res) = @_; 
@@ -445,20 +461,7 @@ push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search,
 								push @out, $self->msg('e3', "sh/dx", "'$line'") unless @out;
 								return @out;
 							});
+}
 
-#my @res = Spot::search($expr, $fromday, $today, $from, $to, $hint, $dofilter ? $self : undef);
-#my $ref;
-#my @dx;
-#foreach $ref (@res) {
-#	if ($self && $self->ve7cc) {
-#		push @out, VE7CC::dx_spot($self, @$ref);
-#	} else {
-#		if ($self && $real) {
-#			push @out, DXCommandmode::format_dx_spot($self, @$ref);
-#		} else {
-#			push @out, Spot::formatl(@$ref);
-#		}
-#	}
-#}
 
 return (1, @out);

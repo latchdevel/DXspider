@@ -1309,14 +1309,17 @@ sub spawn_cmd
 	my $t0 = [gettimeofday];
 
 	no strict 'refs';
-		
+
+	# just behave normally if something has set the "one-shot" _nospawn in the channel
+	return ($cmdref->(@$args)) if $self->{_nospawn};
+	
 	my $fc = Mojo::IOLoop::Subprocess->new;
 #	$fc->serializer(\&encode_json);
 #	$fc->deserializer(\&decode_json);
 	$fc->run(
 			 sub {
 				 my $subpro = shift;
-				 if (isdbg('chan')) {
+				 if (isdbg('spawn_cmd')) {
 					 my $s = "line: $line";
 					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
 				 }
