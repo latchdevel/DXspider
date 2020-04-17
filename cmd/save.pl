@@ -44,7 +44,9 @@ if ($rest =~ /^\s*\"/) {
 }
 open OF, "$app_req$fn" or return (1, $self->msg('e30', $fn));
 for (@cmd) {
+	$self->{_nospawn} = 1;
 	print OF map {"$_\n"} $self->run_cmd($_);
+	delete $self->{_nospawn};
 }
 close OF;
 return (1, $self->msg('ok'));
