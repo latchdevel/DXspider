@@ -246,6 +246,7 @@ sub spawn
 {
 	my $line = shift;
 
+	dbg("DXCron::spawn: $line") if isdbg("cron");
 	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
 			 sub {my @res = `$line`; return @res},
