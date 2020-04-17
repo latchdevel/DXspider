@@ -50,9 +50,13 @@ or
 
 You will need the following CPAN packages:
 
-	sudo cpanm EV Mojolicious Mojo::IOLoop::ForkCall JSON JSON::XS
+	sudo cpanm EV Mojolicious Sereal JSON JSON::XS
 	# just in case it's missing
 	sudo apt-get install top
+
+
+Please make sure that, if you insist on using operating system packages, that your Mojolicious is
+at least version 7.40. Mojo::IOLoop::ForkCall is NOT LONGER IN USE!
 
 Login as the sysop user.
 

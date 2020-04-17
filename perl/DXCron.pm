@@ -62,7 +62,7 @@ sub cread
 	my $line = 0;
 	my @out;
 
-	dbg("cron: reading $fn\n") if isdbg('cron');
+	dbg("DXCron::cread reading $fn\n") if isdbg('cron');
 	open($fh, $fn) or confess("cron: can't open $fn $!");
 	while (<$fh>) {
 		$line++;
@@ -81,9 +81,9 @@ sub cread
 		if (!$err) {
 			$ref->{cmd} = $cmd;
 			push @out, $ref;
-			dbg("cron: adding $_\n") if isdbg('cron');
+			dbg("DXCron::cread: adding $_\n") if isdbg('cron');
 		} else {
-			dbg("cron: error on line $line '$_'\n") if isdbg('cron');
+			dbg("DXCron::cread: error on line $line '$_'\n") if isdbg('cron');
 		}
 	}
 	close($fh);
@@ -269,7 +269,7 @@ sub spawn_cmd
 {
 	my $line = shift;
 
-	dbg("spawn_cmd run: $line") if isdbg('cron');
+	dbg("DXCron::spawn_cmd run: $line") if isdbg('cron');
 	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
 			 sub {
@@ -281,12 +281,12 @@ sub spawn_cmd
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 if ($err) {
-					 my $s = "spawn_cmd: error $err";
+					 my $s = "DXCron::spawn_cmd: error $err";
 					 dbg($s);
 				 }
 				 for (@res) {
 					 chomp;
-					 dbg("spawn_cmd: $_") if isdbg("cron");
+					 dbg("DXCron::spawn_cmd: $_") if isdbg("cron");
 				 }
 			 }
 			);
@@ -310,10 +310,10 @@ sub run_cmd
 {
 	my $line = shift;
 	my @in = $main::me->run_cmd($line);
-	dbg("cmd run: $line") if isdbg('cron');
+	dbg("DXCron::run_cmd: $line") if isdbg('cron');
 	for (@in) {
 		s/\s*$//og;
-		dbg("cmd out: $_") if isdbg('cron');
+		dbg("DXCron::cmd out: $_") if isdbg('cron');
 	}
 }
 
