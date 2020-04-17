@@ -1119,7 +1119,6 @@ sub process_rcmd
 {
 	my ($self, $tonode, $fromnode, $user, $cmd) = @_;
 
-	Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd);
 	if ($tonode eq $main::mycall) {
 		my $ref = DXUser::get_current($fromnode);
 		unless ($ref && UNIVERSAL::isa($ref, 'DXUser')) {
@@ -1127,6 +1126,7 @@ sub process_rcmd
 			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
 			return;
 		}
+		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd);
 		my $cref = Route::Node::get($fromnode);
 		unless ($cref && UNIVERSAL::isa($cref, 'Route')) {
 			dbg("DXProt process_rcmd: Route $fromnode isn't a reference (tell G1TLH)"); 
