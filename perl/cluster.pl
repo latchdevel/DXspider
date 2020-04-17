@@ -89,6 +89,8 @@ use SysVar;
 
 use strict;
 
+use Mojolicious 7.26;
+
 use Mojo::IOLoop;
 
 use DXDebug;
