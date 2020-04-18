@@ -634,6 +634,8 @@ our $io_disconnected;
 sub idle_loop
 {
 	BPQMsg::process();
+	DXCommandmode::process(); # process ongoing command mode stuff
+	DXProt::process();		# process ongoing ak1a pcxx stuff
 
 	if (defined &Local::process) {
 		eval {
@@ -679,9 +681,7 @@ sub per_sec
 	}
 	IsoTime::update($systime);
 	DXCron::process();      # do cron jobs
-	DXCommandmode::process(); # process ongoing command mode stuff
 	DXXml::process();
-	DXProt::process();		# process ongoing ak1a pcxx stuff
 	DXConnect::process();
 	DXMsg::process();
 	DXDb::process();
@@ -689,7 +689,6 @@ sub per_sec
 	DXDupe::process();
 	DXCron::process();			# do cron jobs
 	IsoTime::update($systime);
-	DXProt::process();			# process ongoing ak1a pcxx stuff
 	DXConnect::process();
 	DXUser::process();
 	AGWMsg::process();

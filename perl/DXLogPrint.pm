@@ -116,12 +116,13 @@ sub print_item
 	my $s = 'undef';
 	
 	if ($r->[1] eq 'rcmd') {
+		$r->[6] ||= 'Unknown';
 		if ($r->[2] eq 'in') {
 			$r->[5] ||= "";
-			$s = "$r->[4] (priv: $r->[3]) rcmd: $r->[5]";
+			$s = "in: $r->[4] ($r->[6] priv: $r->[3]) rcmd: $r->[5]";
 		} else {
 			$r->[4] ||= "";
-			$s = "$r->[3] reply: $r->[4]";
+			$s = "$r->[3] $r->[6] reply: $r->[4]";
 		}
 	} elsif ($r->[1] eq 'talk') {
 		$r->[5] ||= "";

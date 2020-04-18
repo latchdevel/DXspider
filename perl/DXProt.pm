@@ -1126,7 +1126,7 @@ sub process_rcmd
 			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
 			return;
 		}
-		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd);
+		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd, $user);
 		my $cref = Route::Node::get($fromnode);
 		unless ($cref && UNIVERSAL::isa($cref, 'Route')) {
 			dbg("DXProt process_rcmd: Route $fromnode isn't a reference (tell G1TLH)"); 
@@ -1174,7 +1174,7 @@ sub send_rcmd_reply
 	while (@_) {
 		my $line = shift;
 		$line =~ s/\s*$//;
-		Log('rcmd', 'out', $fromnode, $line);
+		Log('rcmd', 'out', $fromnode, $line, $user);
 		if ($self->is_clx) {
 			$self->send(pc85($main::mycall, $fromnode, $user, "$main::mycall:$line"));
 		} else {
