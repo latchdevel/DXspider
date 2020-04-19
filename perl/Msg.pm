@@ -256,7 +256,7 @@ sub disconnect
 	my $dbg = isdbg('connll');
 	my ($pkg, $fn, $line) = caller if $dbg;
 
-	if ($count > 2) {
+	if ($count >= 2) {
 		dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line FORCING CLOSE ") if $dbg;
 		_close_it($conn);
 		return;
