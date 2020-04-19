@@ -177,9 +177,18 @@ sub connect {
 	
 	my $sock;
 	$conn->{sock} = $sock = Mojo::IOLoop::Client->new;
-	$sock->on(connect => sub {$conn->_on_connect($_[1])} );
-	$sock->on(error => sub {&{$conn->{eproc}}($conn, $_[1]) if exists $conn->{eproc}; $conn->disconnect});
-	$sock->on(close => sub {$conn->disconnect});
+	$sock->on(connect => sub {
+				  $conn->_on_connect($_[1])
+			  } );
+	$sock->on(error => sub {
+				  &{$conn->{eproc}}($conn, $_[1]) if exists $conn->{eproc};
+				  delete $conn->{sock};
+				  $conn->disconnect
+			  });
+	$sock->on(close => sub {
+				  delete $conn->{sock};
+				  $conn->disconnect}
+			 );
 
 	# copy any args like on_connect, on_disconnect etc
 	while (my ($k, $v) = each %args) {
@@ -244,13 +253,29 @@ sub disconnect
 {
 	my $conn = shift;
 	my $count = $conn->{disconnecting}++;
+	if ($count > 2) {
+		if (isdbg('connll')) {
+			my ($pkg, $fn, $line) = caller;
+			dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line FORCING CLOSE ");
+		}
+		_close_it($conn);
+	}
 	if (isdbg('connll')) {
 		my ($pkg, $fn, $line) = caller;
 		dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line ");
 	}
 	return if $count;
 
-	
+	# remove this conn from the active queue
+	# be careful to delete the correct one
+	my $call;
+	if ($call = $conn->{call}) {
+		my $ref = $conns{$call};
+		delete $conns{$call} if $ref && $ref == $conn;
+	}
+	$call ||= 'unallocated';
+
+	$delqueue{$conn} = $conn; # save this connection until everything is finished
 	my $sock = $conn->{sock};
 	if ($sock) {
 
@@ -260,6 +285,7 @@ sub disconnect
 			my $ref = $conns{$call};
 			delete $conns{$call} if $ref && $ref == $conn;
 		}
+
 		$conn->{delay} = Mojo::IOLoop->delay (
 #		                 Mojo::IOLoop->delay (
 											  sub {
@@ -276,7 +302,6 @@ sub disconnect
 											 );
 		$conn->{delay}->wait;
 		
-		$delqueue{$conn} = $conn; # save this connection until everything is finished
 	} else {
 		dbg((ref $conn) . " socket missing on $conn->{call}") if isdbg('connll');
 		_close_it($conn);
@@ -290,18 +315,13 @@ sub _close_it
 	$conn->{state} = 'E';
 	$conn->{timeout}->del if $conn->{timeout};
 
+	my $call = $conn->{call};
+
 	if (isdbg('connll')) {
 		my ($pkg, $fn, $line) = caller;
 		dbg((ref $conn) . "::_close_it on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line ");
 	}
 
-	# be careful to delete the correct one
-	my $call;
-	if ($call = $conn->{call}) {
-		my $ref = $conns{$call};
-		delete $conns{$call} if $ref && $ref == $conn;
-	}
-	$call ||= 'unallocated';
 
 	dbg((ref $conn) . " Connection $conn->{cnum} $call starting to close") if isdbg('connll');
 	
