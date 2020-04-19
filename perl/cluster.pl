@@ -637,8 +637,8 @@ our $io_disconnected;
 sub idle_loop
 {
 	BPQMsg::process();
-	DXCommandmode::process(); # process ongoing command mode stuff
-	DXProt::process();		# process ongoing ak1a pcxx stuff
+#	DXCommandmode::process(); # process ongoing command mode stuff
+#	DXProt::process();		# process ongoing ak1a pcxx stuff
 
 	if (defined &Local::process) {
 		eval {
@@ -682,6 +682,8 @@ sub per_sec
 		$systime_days = $days;
 		$systime_daystart = $days * 86400;
 	}
+	DXCommandmode::process(); # process ongoing command mode stuff
+	DXProt::process();		# process ongoing ak1a pcxx stuff
 	IsoTime::update($systime);
 	DXCron::process();      # do cron jobs
 	DXXml::process();
