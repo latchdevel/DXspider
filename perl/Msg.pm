@@ -498,9 +498,10 @@ sub new_client {
 	$sock->on(read => sub {$conn->_rcv($_[1])});
 	$sock->timeout(0);
 	$sock->start;
-	dbg((ref $conn) . "accept $conn->{cnum} from $conn->{peerhost} $conn->{peerport}") if isdbg('connll');
-
-	my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost} = $handle->peerhost, $conn->{peerport} = $handle->peerport);
+	$conn->{peerhost} = $handle->peerhost;
+	$conn->{peerport} = $handle->peerport;
+	dbg((ref $conn) . " accept $conn->{cnum} from $conn->{peerhost}:$conn->{peerport}") if isdbg('connll');
+	my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost}, $conn->{peerport});
 	$conn->{sort} = 'Incoming';
 	if ($eproc) {
 		$conn->{eproc} = $eproc;
