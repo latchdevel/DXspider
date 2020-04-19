@@ -1265,22 +1265,6 @@ sub send_motd
 	$self->send_file($motd) if -e $motd;
 }
 
-sub _diffms
-{
-	return unless isdbg('chan');
-	my $call = shift;
-	my $line = shift;
-	my $ta = shift;
-	my $tb = shift || [gettimeofday];
-
-	my $a = int($ta->[0] * 1000) + int($ta->[1] / 1000); 
-	my $b = int($tb->[0] * 1000) + int($tb->[1] / 1000);
-	my $msecs = $b - $a;
-
-	my $s = "forkcall stats: $call '$line' ";
-	$s .= "${msecs}mS";
-	dbg($s);
-}
 
 # Punt off a long running command into a separate process
 #
@@ -1324,6 +1308,7 @@ sub spawn_cmd
 					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
 				 }
 				 my @res = $cmdref->(@$args);
+#				 diffms("rcmd from $call 1", $line, $t0, scalar @res) if isdbg('chan');
 				 return @res;
 			 },
 #			 $args,
@@ -1333,7 +1318,7 @@ sub spawn_cmd
 				 return unless $dxchan;
 
 				 if ($err) {
-					 my $s = "DXCommand::spawn_cmd: call $call error $err";
+					 my $s = "DXProt::spawn_cmd: call $call error $err";
 					 dbg($s) if isdbg('chan');
 					 $dxchan->send($s);
 					 return;
@@ -1349,7 +1334,7 @@ sub spawn_cmd
 						 $dxchan->send(@res);
 					 }
 				 }
-				 _diffms($call, $line, $t0);
+				 diffms("by $call", $line, $t0, scalar @res) if isdbg('chan');
 			 });
 	
 	return @out;

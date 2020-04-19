@@ -89,11 +89,12 @@ use SysVar;
 
 use strict;
 
-use Mojolicious 7.26;
+# order here is important - DXDebug snarfs Carp et al so that Mojo errors go into the debug log
+use DXDebug;
 
+use Mojolicious 7.26;
 use Mojo::IOLoop;
 
-use DXDebug;
 use Msg;
 use IntMsg;
 use Internet;
@@ -145,6 +146,8 @@ use DXXml;
 use DXSql;
 use IsoTime;
 use BPQMsg;
+
+
 
 use Data::Dumper;
 use IO::File;

@@ -14,7 +14,7 @@ use DXM;
 use DXDebug;
 use IO::File;
 use DXLog;
-
+use Time::HiRes qw(gettimeofday tv_interval);
 use Mojo::IOLoop::Subprocess;
 
 use strict;
@@ -245,11 +245,16 @@ sub start_connect
 sub spawn
 {
 	my $line = shift;
+	my $t0 = [gettimeofday];
 
 	dbg("DXCron::spawn: $line") if isdbg("cron");
 	my $fc = Mojo::IOLoop::Subprocess->new();
 	$fc->run(
-			 sub {my @res = `$line`; return @res},
+			 sub {
+				 my @res = `$line`;
+#				 diffms("DXCron spawn 1", $line, $t0, scalar @res) if isdbg('chan');
+				 return @res
+			 },
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 if ($err) {
@@ -261,6 +266,7 @@ sub spawn
 					 chomp;
 					 dbg("DXCron::spawn: $_") if isdbg("cron");
 				 }
+				 diffms("by DXCron::spawn", $line, $t0, scalar @res) if isdbg('chan');
 			 }
 			);
 }
@@ -268,6 +274,7 @@ sub spawn
 sub spawn_cmd
 {
 	my $line = shift;
+	my $t0 = [gettimeofday];
 
 	dbg("DXCron::spawn_cmd run: $line") if isdbg('cron');
 	my $fc = Mojo::IOLoop::Subprocess->new();
@@ -276,6 +283,7 @@ sub spawn_cmd
 				 $main::me->{_nospawn} = 1;
 				 my @res = $main::me->run_cmd($line);
 				 delete $main::me->{_nospawn};
+#				 diffms("DXCron spawn_cmd 1", $line, $t0, scalar @res) if isdbg('chan');
 				 return @res;
 			 },
 			 sub {
@@ -288,6 +296,7 @@ sub spawn_cmd
 					 chomp;
 					 dbg("DXCron::spawn_cmd: $_") if isdbg("cron");
 				 }
+				 diffms("by DXCron::spawn_cmd", $line, $t0, scalar @res) if isdbg('chan');
 			 }
 			);
 }

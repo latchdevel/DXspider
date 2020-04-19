@@ -1231,6 +1231,7 @@ sub spawn_cmd
 				 }
 
 				 my @res = $cmdref->(@$args);
+#				 diffms("by $call 1", $line, $t0, scalar @res) if isdbg('chan');
 				 return @res;
 			 },
 #			 $args,
@@ -1260,7 +1261,7 @@ sub spawn_cmd
 						 $self->send(@res);
 					 }
 				 }
-				 DXCommandmode::_diffms($call, $line, $t0);
+				 diffms("rcmd from $user on $call", $line, $t0, scalar @res) if isdbg('chan');
 			 });
 	
 	return @out;
