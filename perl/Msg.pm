@@ -498,6 +498,7 @@ sub new_client {
 	$sock->timeout(0);
 	$sock->start;
 	$conn->{peerhost} = $handle->peerhost;
+	$conn->{peerhost} =~ s|^::ffff:||; # chop off leading pseudo IPV6 stuff on dual stack listeners
 	$conn->{peerport} = $handle->peerport;
 	dbg((ref $conn) . " accept $conn->{cnum} from $conn->{peerhost}:$conn->{peerport}") if isdbg('connll');
 	my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost}, $conn->{peerport});
