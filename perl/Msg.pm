@@ -253,17 +253,15 @@ sub disconnect
 {
 	my $conn = shift;
 	my $count = $conn->{disconnecting}++;
+	my $dbg = isdbg('connll');
+	my ($pkg, $fn, $line) = caller if $dbg;
+
 	if ($count > 2) {
-		if (isdbg('connll')) {
-			my ($pkg, $fn, $line) = caller;
-			dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line FORCING CLOSE ");
-		}
+		dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line FORCING CLOSE ") if $dbg;
 		_close_it($conn);
+		return;
 	}
-	if (isdbg('connll')) {
-		my ($pkg, $fn, $line) = caller;
-		dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line ");
-	}
+	dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line ") if $dbg;
 	return if $count;
 
 	# remove this conn from the active queue
@@ -290,20 +288,21 @@ sub disconnect
 #		                 Mojo::IOLoop->delay (
 											  sub {
 												  my $delay = shift;
-												  dbg("before drain $call");
+												  dbg("before drain $call") if $dbg;
 												  $sock->on(drain => $delay->begin);
 												  1;
 											  },
 											  sub {
 												  my $delay = shift;
+												  dbg("before _close_it $call") if $dbg;
 												  _close_it($conn);
 												  1;
 											  }
 											 );
 		$conn->{delay}->wait;
-		
+
 	} else {
-		dbg((ref $conn) . " socket missing on $conn->{call}") if isdbg('connll');
+		dbg((ref $conn) . " socket missing on $conn->{call}") if $dbg;
 		_close_it($conn);
 	}
 }
