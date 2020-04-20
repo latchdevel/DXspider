@@ -25,7 +25,7 @@ while ($f = shift @f) {                 # next field
 		next if $to;
 	}
 	next if $who;
-	($who) = $f =~ /^(\w+)/o;
+#	($who) = $f =~ /^(\w+)/o;
 }
 
 $to = 20 unless $to;
@@ -35,7 +35,5 @@ if ($self->priv < 6) {
 	return (1, $self->msg('e5')) if $who ne $self->call;
 }
 
-@out = $self->spawn_cmd("show/talk $cmdline", \&DXLog::print, args => [$from, $to, $main::systime, 'talk', $who]);
-	
-#@out = DXLog::print($from, $to, $main::systime, 'talk', $who);
-return (1, @out);
+return (1, DXLog::print($from, $to, $main::systime, 'talk', $who)) if $self->{_nospawn};
+return (1, $self->spawn_cmd("show/talk $cmdline", \&DXLog::print, args => [$from, $to, $main::systime, 'talk', $who]));

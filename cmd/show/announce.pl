@@ -28,13 +28,13 @@ while ($f = shift @f) {                 # next field
 		next if $to;
 	}
 	next if $who;
-	($who) = $f =~ /^(\w+)/o;
+	#($who) = $f =~ /^(\w+)/o;
 }
 
 $to = 20 unless $to;
 $from = 0 unless $from;
 
-@out = $self->spawn_cmd("show/announce $cmdline", \&DXLog::print, args => [$from, $to, $main::systime, 'ann', $who]);
+return (1, DXLog::print($from, $to, $main::systime, 'ann', $who)) if $self->{_nospawn};;
+return (1, $self->spawn_cmd("show/announce $cmdline", \&DXLog::print, args => [$from, $to, $main::systime, 'ann', $who]));
 	
-#@out = DXLog::print($from, $to, $main::systime, 'ann', $who);
 return (1, @out);
