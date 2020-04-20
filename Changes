@@ -1,3 +1,7 @@
+20Apr20=======================================================================
+1. Speed up sh/log (including chat, rcmd, ann etc) that search the system
+   log files, by removing a completely redundant subsystem and also leveraging
+   the core operating system utility 'tac', if it's available. 
 19Apr20=======================================================================
 1. The long haul that is the mojo branch has started up again. It's something
    to do during this lockdown.
