@@ -27,7 +27,9 @@ while ($f = shift @f) {                 # next field
 		next if $to;
 	}
 	next if $who;
-	#($who) = $f =~ /^(\w+)/o;
+	if ($f !~ /^\d+/) {
+		($who) = $f;
+	}
 }
 
 $to = 20 unless $to;

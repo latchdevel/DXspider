@@ -28,6 +28,12 @@ while ($f = shift @f) {                 # next field
 		next if $to;
 	}
 	next if $who;
+	if ($f !~ /^\d+/) {
+		($who) = $f;
+	}
+	if ($f !~ /^\d+/) {
+		($who) = $f;
+	}
 	#($who) = $f =~ /^(\w+)/o;
 }
 

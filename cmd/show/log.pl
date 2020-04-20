@@ -27,7 +27,7 @@ sub handle
 			($to) = $f =~ /^(\d+)$/o if !$to;              # is it a to count?
 			next if $to;
 		}
-		unless ($who) {
+		unless ($f =~ /^\d+/) {
 			$who = $f; 
 			next if $who;
 		}
