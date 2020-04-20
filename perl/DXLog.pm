@@ -101,6 +101,13 @@ sub open
 	return $self->{fh};
 }
 
+sub fn
+{
+	my ($self, $jdate) = @_;
+	
+	return $self->_genfn($jdate);
+}
+
 sub delete($$)
 {
 	my ($self, $jdate) = @_;

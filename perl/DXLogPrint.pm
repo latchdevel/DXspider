@@ -8,13 +8,18 @@
 
 package DXLog;
 
+use 5.10.1;
+
 use IO::File;
 use DXVars;
 use DXDebug qw(dbg isdbg);
 use DXUtil;
 use DXLog;
 use Julian;
-use RingBuf;
+
+
+our $readback = `which tac`;
+chomp $readback;
 
 use strict;
 
@@ -42,24 +47,26 @@ sub print
 	my $hint = "";
 	    
 	$who = uc $who if defined $who;
-	
+
 	if ($pattern) {
-		$hint = "m{\\Q$pattern\\E}i";
+		$hint = q{m{\Q$pattern\E}i};
 	} else {
-		$hint = "!m{\\^(?:ann|rcmd|talk|chat)\\^}";
+		$hint = q{!m{\^(?:ann|rcmd|talk|chat)\^}};
 	}
 	if ($who) {
 		$hint .= ' && ' if $hint;
-		$hint .= 'm{\\Q$who\\E}i';
+		$hint .= q{m{\Q$who\E}oi};
 	} 
 	$hint = "next unless $hint" if $hint;
-	$hint .= ";next unless /^\\d+\\^$pattern\\^/" if $pattern;
+	$hint .= "; next unless m{^\\d+\\^$pattern\\^}" if $pattern;
 	$hint ||= "";
 	
 	$eval = qq(while (<\$fh>) {
 				   $hint;
 				   chomp;
-				   \$ring->write(\$_);
+                   # say "line: \$_";
+				   push \@in, \$_;
+                   last L1 if \@in >= $tot;
 			   } );
 	
 	if (isdbg('search')) {
@@ -70,27 +77,37 @@ sub print
 	$fcb->close;                                      # close any open files
 
 	my $months;
-	my $fh = $fcb->open($jdate); 
- L1: for ($months = 0; $months < $maxmonths && @in < $tot; $months++) {
+	my $fh;
+	if ($readback) {
+		my $fn = $fcb->fn($jdate);
+		$fh = IO::File->new("$readback $fn |");
+	} else {
+		$fh = $fcb->open($jdate); 	
+	}
+ L1: for ($months = 0; $fh && $months < $maxmonths && @in < $tot; $months++) {
 		my $ref;
-		my $ring = RingBuf->new($tot);
 
 		if ($fh) {
 			my @tmp;
 			eval $eval;               # do the search on this file
 			return ("Log search error", $@) if $@;
-			
-			@in = ($ring->readall, @in);
-			last L1 if @in >= $tot;
 		}
 
-		$fh = $fcb->openprev();      # get the next file
-		last if !$fh;
+		if ($readback) {
+			my $fn = $fcb->fn($jdate->sub(1));
+			$fh = IO::File->new("$readback $fn |");
+		} else {
+			$fh = $fcb->openprev();      # get the next file
+		}
 	}
-	
-	@in = splice @in, -$tot, $tot if @in > $tot;
-    
-	for (@in) {
+
+	unless (@in) {
+		my $name = $pattern ? $pattern : "log";
+		my $s = "$who "|| '';
+		return "show/$name: ${s}not found";
+	} 
+
+	for (reverse @in) {
 		my @line = split /\^/ ;
 		push @out, print_item(\@line);
 	
