@@ -1,3 +1,16 @@
+19Apr20=======================================================================
+1. The long haul that is the mojo branch has started up again. It's something
+   to do during this lockdown.
+2. The problems and instabilities around running commands that worked in 
+   forked processes, when used other than by normally logged in users (e.g. 
+   in the local crontab), have been fixed.  
+3. If a /spider/local_data/logout file is present then its contents will be
+   sent to the user on logout.
+4. Add the ability to sh/dx origin or ip (address).
+5. Retire the use of the deprecated Mojo::IOLoop::ForkCall in favour of using
+   the supported equivalent in Mojolicious 7.26 and above. Which means you
+   will need to upgrade Mojo to at least the version. The current version is
+   8.36 and is known to work.
 10Sep19=======================================================================
 1. Improve DXSql database filtering to exclude most via <locator> type 
    reports.

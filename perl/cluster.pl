@@ -682,9 +682,9 @@ sub per_sec
 		$systime_days = $days;
 		$systime_daystart = $days * 86400;
 	}
+	IsoTime::update($systime);
 	DXCommandmode::process(); # process ongoing command mode stuff
 	DXProt::process();		# process ongoing ak1a pcxx stuff
-	IsoTime::update($systime);
 	DXCron::process();      # do cron jobs
 	DXXml::process();
 	DXConnect::process();
