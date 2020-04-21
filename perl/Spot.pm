@@ -56,6 +56,14 @@ $filterdef = bless ([
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
+our $usetac = 0;
+our $readback;
+
+if ($usetac) {
+	$readback = `which tac`;
+	chomp $readback;
+}
+
 # create a Spot Object
 sub new
 {
@@ -302,29 +310,46 @@ sub search
 			   }
 			   my \$c;
 			   my \$ref;
-			   for (\$c = \$#spots; \$c >= 0; \$c--) {
-					\$ref = \$spots[\$c];
-					if ($expr) {
-						\$count++;
-						next if \$count < \$from; # wait until from 
-						push(\@out, \$ref);
-						last if \$count >= \$to; # stop after to
-					}
-				}
+               if (\$readback) {
+                   foreach \$ref (\@spots) {
+		               if ($expr) {
+						   \$count++;
+						   next if \$count < $from; # wait until from 
+						   push(\@out, \$ref);
+						   last if \$count >= $to; # stop after to
+			           }         
+                   }
+               } else {
+			      for (\$c = \$#spots; \$c >= 0; \$c--) {
+					   \$ref = \$spots[\$c];
+					   if ($expr) {
+						   \$count++;
+						   next if \$count < $from; # wait until from 
+						   push(\@out, \$ref);
+						   last if \$count >= $to; # stop after to
+					   }
+				   }
+               }
 			  );
+	         
 	
     
 	dbg("Spot eval: $eval") if isdbg('searcheval');
 	
-
-	$fp->close;					# close any open files
-
+	my $fh;
+	my $now = $fromdate;
 	for ($i = $count = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
-		my $now = $fromdate->sub($i); # but you can pick which $maxdays worth
-		last if $now->cmp($todate) <= 0;         
-	
-		my @spots = ();
-		my $fh = $fp->open($now); # get the next file
+		my @spots;
+		last if $now->cmp($todate) <= 0;
+		
+		if ($readback) {
+			my $fn = $fp->fn($now->sub($i));
+			dbg("search using tac fn: $fn $i") if isdbg('search');
+			$fh = IO::File->new("$readback $fn |");
+		} else {
+			$fh = $fp->open($now->sub($i));      # get the next file
+			dbg("search fn: $fp->{fn} $i") if isdbg('search');
+		}
 		if ($fh) {
 			my $in;
 			eval $eval;			# do the search on this file
