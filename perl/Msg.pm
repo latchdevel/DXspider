@@ -28,7 +28,7 @@ $now = time;
 
 $cnum = 0;
 $connect_timeout = 5;
-$disc_waittime = 3;
+$disc_waittime = 1.5;
 
 our %delqueue;
 
@@ -276,14 +276,16 @@ sub disconnect
 	$delqueue{$conn} = $conn; # save this connection until everything is finished
 	my $sock = $conn->{sock};
 	if ($sock) {
-
-		# remove me from the active list
-		my $call;
-		if ($call = $conn->{call}) {
-			my $ref = $conns{$call};
-			delete $conns{$call} if $ref && $ref == $conn;
+		if ($sock->{buffer}) {
+			my $lth = length $sock->{buffer};
+			Mojo::IOLoop->timer($disc_waittime, sub {
+									dbg("Buffer contained $lth data , coordinated for $disc_waittime secs, now disconnecting $call") if $dbg;
+									_close_it($conn);
+								});
+		} else {
+			dbg("Buffer empty, just close $call") if $dbg;
+			_close_it($conn);
 		}
-		_close_it($conn);
 	} else {
 		dbg((ref $conn) . " socket missing on $conn->{call}") if $dbg;
 		_close_it($conn);
