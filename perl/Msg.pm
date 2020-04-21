@@ -283,24 +283,7 @@ sub disconnect
 			my $ref = $conns{$call};
 			delete $conns{$call} if $ref && $ref == $conn;
 		}
-
-		$conn->{delay} = Mojo::IOLoop->delay (
-#		                 Mojo::IOLoop->delay (
-											  sub {
-												  my $delay = shift;
-												  dbg("before drain $call") if $dbg;
-												  $sock->on(drain => $delay->begin);
-												  1;
-											  },
-											  sub {
-												  my $delay = shift;
-												  dbg("before _close_it $call") if $dbg;
-												  _close_it($conn);
-												  1;
-											  }
-											 );
-		$conn->{delay}->wait;
-
+		_close_it($conn);
 	} else {
 		dbg((ref $conn) . " socket missing on $conn->{call}") if $dbg;
 		_close_it($conn);
