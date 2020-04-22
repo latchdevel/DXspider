@@ -1,3 +1,9 @@
+22Apr20=======================================================================
+1. Fix the module search path in update_sysop.pl
+21Apr20=======================================================================
+1. Finally fix the "actually tranmit" any output (like from 'logout' files)
+   to users before disconnecting. This also means that disconnecting nodes
+   now receive the (totally redundant, but hey) PC39 reason for disconnection.
 20Apr20=======================================================================
 1. Speed up sh/log (including chat, rcmd, ann etc) that search the system
    log files, by removing a completely redundant subsystem and also leveraging
