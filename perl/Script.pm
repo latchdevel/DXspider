@@ -22,7 +22,7 @@ my $base = "$main::root/scripts";
 sub clean
 {
 	my $s = shift;
-	$s =~ s/[^-\w\.]//g;
+	$s =~ s/([-\w\d_]+)/$1/g;
 	return $s;
 }
 
@@ -118,5 +118,26 @@ sub lines
 sub erase
 {
 	my $self = shift;
-	unlink $self->{fn};
+	my $call = clean($self->call);
+
+	my $fn;
+	my $try;
+
+	$try = "$base/" . clean(lc $self->call);
+	if (-w $try) {
+		$fn = $try;
+	} else {
+		$try = "$base/" . clean(uc $self->call);
+		if (-w $try) {
+			$fn = $try;
+		}
+	}
+
+	if ($fn && -w $fn) {
+		unless (unlink $fn) {
+			return ($self->msg('m22'. $call)); 
+		}
+		return ($self->msg('m20', $call));
+	}
+	return ($self->msg('e3', "unset/startup", $call));
 }

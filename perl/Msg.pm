@@ -279,7 +279,7 @@ sub disconnect
 		if ($sock->{buffer}) {
 			my $lth = length $sock->{buffer};
 			Mojo::IOLoop->timer($disc_waittime, sub {
-									dbg("Buffer contained $lth data , coordinated for $disc_waittime secs, now disconnecting $call") if $dbg;
+									dbg("Buffer contained $lth characters, coordinated for $disc_waittime secs, now disconnecting $call") if $dbg;
 									_close_it($conn);
 								});
 		} else {
