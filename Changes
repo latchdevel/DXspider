@@ -1,5 +1,6 @@
 22Apr20=======================================================================
 1. Fix the module search path in update_sysop.pl
+2. Add latest prefixes CTY-3007
 21Apr20=======================================================================
 1. Finally fix the "actually tranmit" any output (like from 'logout' files)
    to users before disconnecting. This also means that disconnecting nodes
