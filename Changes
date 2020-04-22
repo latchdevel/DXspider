@@ -1,4 +1,14 @@
-21Sep19=======================================================================
+22Apr20=======================================================================
+1. Updated the instructions for upgrading to the mojo branch in UPGRADE.mojo.
+2. Add CTY-3007 prefixes. 
+06Apr20=======================================================================
+1. Add the ability to Filter and sh/dx on the origin(ating node) and any IP
+   address if that spot came in with a PC61. This last thing is rather 
+   unreliable as there are still nodes out there that INSIST on sending out
+   PC11 that does not have a spotter IP address on it. If a spot comes in on
+   PC11 and it has an IP address that your filtering on, then it won't work
+   because the data isn't there.
+21Dec19=======================================================================
 1. Harden userfile decode / thaw to stop crashes from corrupt records
 10Sep19=======================================================================
 1. Improve DXSql database filtering to exclude most via <locator> type 

@@ -1,7 +1,7 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 04 Sep 2019
-! See: http://www.country-files.com/dx-cluster/wpxloc/
+! This file was created by Jim Reisert AD1C on 18 Apr 2020
+! See: https://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
 
@@ -25,7 +25,7 @@ BV9S,BW9S,BX9S Spratly-Islands-1S                     269 50 26  -8.00  9 53  0 
 3D2 Conway-Reef-3D2/C                                 321 56 32 -12.00 22  0  0 S 175  0  0 E
 3D2/R Rotuma-Island-3D2/R                             324 56 32 -12.00 12 29  0 S 177  5  0 E @
 3D2 Rotuma-Island-3D2/R                               324 56 32 -12.00 12 29  0 S 177  5  0 E
-3DA Swaziland-3DA                                     278 57 38  -2.00 26 39  0 S  31 29  0 E @
+3DA Kingdom-of-eSwatini-3DA                           278 57 38  -2.00 26 39  0 S  31 29  0 E @
 3V Tunisia-3V                                         279 37 33  -1.00 35 24  0 N   9 19  0 E @
 TS Tunisia-3V                                         279 37 33  -1.00 35 24  0 N   9 19  0 E
 3W Vietnam-3W                                         231 49 26  -7.00 15 48  0 N 107 54  0 E @
@@ -183,12 +183,18 @@ BV9G Green-Island-BV                                    9 44 24  -8.00 22 40  0 
 BV Green-Island-BV9G                                    9 44 24  -8.00 22 40  0 N 121 29  0 E
 BM9G,BN9G,BO9G,BP9G,BQ9G,BU9G,BW9G Green-Island-BV      9 44 24  -8.00 22 40  0 N 121 29  0 E
 BX9G Green-Island-BV                                    9 44 24  -8.00 22 40  0 N 121 29  0 E
-BV9L Liuchiu-Islands-BV                                 9 44 24  -8.00 22 20  0 N 120 22  0 E
-BV Liuchiu-Islands-BV9L                                 9 44 24  -8.00 22 20  0 N 120 22  0 E
+BV9L Liu-chiu-Islands-BV                                9 44 24  -8.00 22 20  0 N 120 22  0 E
+BV Liu-chiu-Islands-BV9L                                9 44 24  -8.00 22 20  0 N 120 22  0 E
+BM9L,BN9L,BO9L,BP9L,BQ9L,BU9L Liu-chiu-Islands-BV       9 44 24  -8.00 22 20  0 N 120 22  0 E
+BW9L,BX9L Liu-chiu-Islands-BV                           9 44 24  -8.00 22 20  0 N 120 22  0 E
 BV9O Orchid-Island-BV                                   9 44 24  -8.00 22  3  0 N 121 32  0 E
 BV Orchid-Island-BV9O                                   9 44 24  -8.00 22  3  0 N 121 32  0 E
 BM9O,BN9O,BO9O,BP9O,BQ9O,BU9O,BW9O Orchid-Island-BV     9 44 24  -8.00 22  3  0 N 121 32  0 E
 BX9O Orchid-Island-BV                                   9 44 24  -8.00 22  3  0 N 121 32  0 E
+BV9W Peng-Chia-Island-BV                                9 44 24  -8.00 25 37  0 N 122  4  0 E
+BV Peng-Chia-Island-BV9W                                9 44 24  -8.00 25 37  0 N 122  4  0 E
+BM9W,BN9W,BO9W,BP9W,BQ9W,BU9W Peng-Chia-Island-BV       9 44 24  -8.00 25 37  0 N 122  4  0 E
+BW9W,BX9W Peng-Chia-Island-BV                           9 44 24  -8.00 25 37  0 N 122  4  0 E
 BV9P Pratas-Island-BV9P                               330 44 24  -8.00 20 42  0 N 116 42  0 E @
 BM9P,BN9P,BO9P,BP9P,BQ9P,BU9P Pratas-Island-BV9P      330 44 24  -8.00 20 42  0 N 116 42  0 E
 BW9P,BX9P Pratas-Island-BV9P                          330 44 24  -8.00 20 42  0 N 116 42  0 E
@@ -5137,34 +5143,64 @@ YB Indonesia-YB                                       238 51 28  -7.00  7 18  0 
 YF,YG,YH Indonesia-YB                                 238 51 28  -7.00  7 18  0 S 109 53  0 E
 YB0 Jakarta-YB                                        238 54 28  -7.00  6 12  0 S 106 48  0 E
 YB Jakarta-YB0                                        238 54 28  -7.00  6 12  0 S 106 48  0 E
-YC0,YD0,YE0,YF0,YG0,YH0 Jakarta-YB                    238 54 28  -7.00  6 12  0 S 106 48  0 E
+7A0,7B0,7C0,7D0,7E0,7F0,7G0,7H0,7I0,8A0 Jakarta-YB    238 54 28  -7.00  6 12  0 S 106 48  0 E
+8B0,8C0,8D0,8E0,8F0,8G0,8H0,8I0,YC0,YD0 Jakarta-YB    238 54 28  -7.00  6 12  0 S 106 48  0 E
+YE0,YF0,YG0,YH0 Jakarta-YB                            238 54 28  -7.00  6 12  0 S 106 48  0 E
 YB1 West-Java-Banten-YB                               238 54 28  -7.00  6 46  0 S 107 34  0 E
 YB West-Java-Banten-YB1                               238 54 28  -7.00  6 46  0 S 107 34  0 E
-YC1,YD1,YE1,YF1,YG1,YH1 West-Java-Banten-YB           238 54 28  -7.00  6 46  0 S 107 34  0 E
+7A1,7B1,7C1,7D1,7E1,7F1,7G1,7H1 West-Java-Banten-YB   238 54 28  -7.00  6 46  0 S 107 34  0 E
+7I1,8A1,8B1,8C1,8D1,8E1,8F1,8G1 West-Java-Banten-YB   238 54 28  -7.00  6 46  0 S 107 34  0 E
+8H1,8I1,YC1,YD1,YE1,YF1,YG1,YH1 West-Java-Banten-YB   238 54 28  -7.00  6 46  0 S 107 34  0 E
 YB2 Central-Java-Yogyakarta-YB                        238 54 28  -7.00  7 19  0 S 110 10  0 E
 YB Central-Java-Yogyakarta-YB2                        238 54 28  -7.00  7 19  0 S 110 10  0 E
+7A2,7B2,7C2,7D2,7E2,7F2 Central-Java-Yogyakarta-YB    238 54 28  -7.00  7 19  0 S 110 10  0 E
+7G2,7H2,7I2,8A2,8B2,8C2 Central-Java-Yogyakarta-YB    238 54 28  -7.00  7 19  0 S 110 10  0 E
+8D2,8E2,8F2,8G2,8H2,8I2 Central-Java-Yogyakarta-YB    238 54 28  -7.00  7 19  0 S 110 10  0 E
 YC2,YD2,YE2,YF2,YG2,YH2 Central-Java-Yogyakarta-YB    238 54 28  -7.00  7 19  0 S 110 10  0 E
 YB3 East-Java-YB                                      238 54 28  -7.00  7 58  0 S 112  1  0 E
 YB East-Java-YB3                                      238 54 28  -7.00  7 58  0 S 112  1  0 E
-YC3,YD3,YE3,YF3,YG3,YH3 East-Java-YB                  238 54 28  -7.00  7 58  0 S 112  1  0 E
+7A3,7B3,7C3,7D3,7E3,7F3,7G3,7H3,7I3,8A3 East-Java-YB  238 54 28  -7.00  7 58  0 S 112  1  0 E
+8B3,8C3,8D3,8E3,8F3,8G3,8H3,8I3,YC3,YD3 East-Java-YB  238 54 28  -7.00  7 58  0 S 112  1  0 E
+YE3,YF3,YG3,YH3 East-Java-YB                          238 54 28  -7.00  7 58  0 S 112  1  0 E
 YB4 South-Sumatra-Lampung-Jambi-Bengkulu-YB           238 54 28  -7.00  3  4  0 S 103 30  0 E
 YB South-Sumatra-Lampung-Jambi-Bengkulu-YB4           238 54 28  -7.00  3  4  0 S 103 30  0 E
+7A4,7B4,7C4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
+7D4,7E4,7F4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
+7G4,7H4,7I4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
+8A4,8B4,8C4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
+8D4,8E4,8F4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
+8G4,8H4,8I4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
 YC4,YD4,YE4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
 YF4,YG4,YH4 South-Sumatra-Lampung-Jambi-Bengkulu-YB   238 54 28  -7.00  3  4  0 S 103 30  0 E
 YB5 West-Sumatra-Riau-YB                              238 54 28  -7.00  0 45  0 N 101 45  0 E
 YB West-Sumatra-Riau-YB5                              238 54 28  -7.00  0 45  0 N 101 45  0 E
-YC5,YD5,YE5,YF5,YG5,YH5 West-Sumatra-Riau-YB          238 54 28  -7.00  0 45  0 N 101 45  0 E
+7A5,7B5,7C5,7D5,7E5,7F5,7G5,7H5 West-Sumatra-Riau-YB  238 54 28  -7.00  0 45  0 N 101 45  0 E
+7I5,8A5,8B5,8C5,8D5,8E5,8F5,8G5 West-Sumatra-Riau-YB  238 54 28  -7.00  0 45  0 N 101 45  0 E
+8H5,8I5,YC5,YD5,YE5,YF5,YG5,YH5 West-Sumatra-Riau-YB  238 54 28  -7.00  0 45  0 N 101 45  0 E
 YB6 Aceh-North-Sumatra-YB                             238 54 28  -7.00  2 58  0 N  99 46  0 E
 YB Aceh-North-Sumatra-YB6                             238 54 28  -7.00  2 58  0 N  99 46  0 E
-YC6,YD6,YE6,YF6,YG6,YH6 Aceh-North-Sumatra-YB         238 54 28  -7.00  2 58  0 N  99 46  0 E
+7A6,7B6,7C6,7D6,7E6,7F6,7G6 Aceh-North-Sumatra-YB     238 54 28  -7.00  2 58  0 N  99 46  0 E
+7H6,7I6,8A6,8B6,8C6,8D6,8E6 Aceh-North-Sumatra-YB     238 54 28  -7.00  2 58  0 N  99 46  0 E
+8F6,8G6,8H6,8I6,YC6,YD6,YE6 Aceh-North-Sumatra-YB     238 54 28  -7.00  2 58  0 N  99 46  0 E
+YF6,YG6,YH6 Aceh-North-Sumatra-YB                     238 54 28  -7.00  2 58  0 N  99 46  0 E
 YB7 Borneo-YB                                         238 54 28  -7.00  2 12  0 S 113 45  0 E
 YB Borneo-YB7                                         238 54 28  -7.00  2 12  0 S 113 45  0 E
-YC7,YD7,YE7,YF7,YG7,YH7 Borneo-YB                     238 54 28  -7.00  2 12  0 S 113 45  0 E
+7A7,7B7,7C7,7D7,7E7,7F7,7G7,7H7,7I7,8A7 Borneo-YB     238 54 28  -7.00  2 12  0 S 113 45  0 E
+8B7,8C7,8D7,8E7,8F7,8G7,8H7,8I7,YC7,YD7 Borneo-YB     238 54 28  -7.00  2 12  0 S 113 45  0 E
+YE7,YF7,YG7,YH7 Borneo-YB                             238 54 28  -7.00  2 12  0 S 113 45  0 E
 YB8 Celebes-Maluku-YB                                 238 54 28  -8.00  0 33  0 N 123  5  0 E
 YB Celebes-Maluku-YB8                                 238 54 28  -8.00  0 33  0 N 123  5  0 E
-YC8,YD8,YE8,YF8,YG8,YH8 Celebes-Maluku-YB             238 54 28  -8.00  0 33  0 N 123  5  0 E
+7A8,7B8,7C8,7D8,7E8,7F8,7G8,7H8 Celebes-Maluku-YB     238 54 28  -8.00  0 33  0 N 123  5  0 E
+7I8,8A8,8B8,8C8,8D8,8E8,8F8,8G8 Celebes-Maluku-YB     238 54 28  -8.00  0 33  0 N 123  5  0 E
+8H8,8I8,YC8,YD8,YE8,YF8,YG8,YH8 Celebes-Maluku-YB     238 54 28  -8.00  0 33  0 N 123  5  0 E
 YB9 Bali-Sonda-West-Timor-West-New-Guinea-YB          238 51 28  -9.00  2 31  0 S 140 47  0 E
 YB Bali-Sonda-West-Timor-West-New-Guinea-YB9          238 51 28  -9.00  2 31  0 S 140 47  0 E
+7A9,7B9,7C9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
+7D9,7E9,7F9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
+7G9,7H9,7I9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
+8A9,8B9,8C9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
+8D9,8E9,8F9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
+8G9,8H9,8I9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
 YC9,YD9,YE9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
 YF9,YG9,YH9 Bali-Sonda-West-Timor-West-New-Guinea-YB  238 51 28  -9.00  2 31  0 S 140 47  0 E
 YI Iraq-YI                                            239 39 21  -3.00 33 55  0 N  42 47  0 E @
@@ -5259,8 +5295,8 @@ ZF Little-Cayman-ZF8                                  255 11  8   5.00 19 41  0 
 ZF9 Cayman-Brac-ZF                                    255 11  8   5.00 19 43  0 N  79 48  0 W
 ZF Cayman-Brac-ZF9                                    255 11  8   5.00 19 43  0 N  79 48  0 W
 ZK3 Tokelau-Islands-ZK3                               259 62 31 -13.00  9 24  0 S 171 12  0 W @
-ZL New-Zealand-ZL                                     260 60 32 -12.00 41 50  0 S 173 16  0 E @
-ZK,ZL50,ZM New-Zealand-ZL                             260 60 32 -12.00 41 50  0 S 173 16  0 E
+ZL New-Zealand-ZL                                     260 60 32 -12.00 39  2  0 S 174 28  0 E @
+ZK,ZL50,ZM New-Zealand-ZL                             260 60 32 -12.00 39  2  0 S 174 28  0 E
 ZL1 Auckland-ZL                                       260 60 32 -12.00 36 50  0 S 174 44  0 E
 ZL Auckland-ZL1                                       260 60 32 -12.00 36 50  0 S 174 44  0 E
 ZM1 Auckland-ZL                                       260 60 32 -12.00 36 50  0 S 174 44  0 E
