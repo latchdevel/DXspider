@@ -1,6 +1,9 @@
 22Apr20=======================================================================
+22Apr20=======================================================================
 1. Fix the module search path in update_sysop.pl
 2. Add latest prefixes CTY-3007
+3. Fix unset/startup command. This will only work for users' start up scripts
+   things like user_default or startup must be edited or removed by hand. 
 21Apr20=======================================================================
 1. Finally fix the "actually tranmit" any output (like from 'logout' files)
    to users before disconnecting. This also means that disconnecting nodes
