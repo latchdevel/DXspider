@@ -2012,6 +2012,11 @@ sub handle_93
 		return;
 	}
 
+	if (isdbg('progress')) {
+		my $s = sprintf "ANNTALK: to: $to from: $from\@$onode%s '$text'", $via ne '*'?" via $via":'';
+		dbg($s);
+	}
+	
 	# will we allow it at all?
 	if ($censorpc) {
 		my @bad;
