@@ -73,17 +73,18 @@ sub cread
 		my $ref = bless {};
 		my $err;
 		
-		$err |= parse($ref, 'min', $min, 0, 60);
-		$err |= parse($ref, 'hour', $hour, 0, 23);
-		$err |= parse($ref, 'mday', $mday, 1, 31);
-		$err |= parse($ref, 'month', $month, 1, 12, "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
-		$err |= parse($ref, 'wday', $wday, 0, 6, "sun", "mon", "tue", "wed", "thu", "fri", "sat");
+		$err .= parse($ref, 'min', $min, 0, 60);
+		$err .= parse($ref, 'hour', $hour, 0, 23);
+		$err .= parse($ref, 'mday', $mday, 1, 31);
+		$err .= parse($ref, 'month', $month, 1, 12, "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
+		$err .= parse($ref, 'wday', $wday, 0, 6, "sun", "mon", "tue", "wed", "thu", "fri", "sat");
 		if (!$err) {
 			$ref->{cmd} = $cmd;
 			push @out, $ref;
 			dbg("DXCron::cread: adding $_\n") if isdbg('cron');
 		} else {
-			dbg("DXCron::cread: error on line $line '$_'\n") if isdbg('cron');
+			$err =~ s/^, //;
+			dbg("DXCron::cread: error $err on line $line '$_'\n") if isdbg('cron');
 		}
 	}
 	close($fh);
@@ -102,7 +103,7 @@ sub parse
 	# handle '*' values
 	if ($val eq '*') {
 		$ref->{$sort} = 0;
-		return 0;
+		return;
 	}
 
 	# handle comma delimited values
@@ -110,20 +111,20 @@ sub parse
 	for (@comma) {
 		my @minus = split /-/o;
 		if (@minus == 2) {
-			return 1 if $minus[0] < $low || $minus[0] > $high;
-			return 1 if $minus[1] < $low || $minus[1] > $high;
+			return  ", $sort should be $low >= $minus[0] <= $high" if $minus[0] < $low || $minus[0] > $high;
+			return  ", $sort should be $low >= $minus[1] <= $high" if $minus[1] < $low || $minus[1] > $high;
 			my $i;
 			for ($i = $minus[0]; $i <= $minus[1]; ++$i) {
 				push @req, 0 + $i; 
 			}
 		} else {
-			return 1 if $_ < $low || $_ > $high;
+			return ", $sort should be $low >= $val <= $high" if $_ < $low || $_ > $high;
 			push @req, 0 + $_;
 		}
 	}
 	$ref->{$sort} = \@req;
 	
-	return 0;
+	return;
 }
 
 # process the cronjobs
