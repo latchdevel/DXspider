@@ -552,7 +552,7 @@ sub run_cmd
 				return (DXDebug::shortmess($@)) if $@;
 				if (isdbg('progress')) {
 					my $msecs = _diffms($t0);
-					my $s = "CMD: '$cmd' by $call ip: $self->{hostname} ${msecs}mS";
+					my $s = "CMD: '$cmd $args' by $call ip: $self->{hostname} ${msecs}mS";
 					dbg($s);
 				}
 			} else {
