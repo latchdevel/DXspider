@@ -45,7 +45,7 @@ ITU HQ:                   14:  28:  EU:   46.17:    -6.05:    -1.0:  4U1I:
 United Nations HQ:        05:  08:  NA:   40.75:    73.97:     5.0:  4U1U:
     =4U1UN;
 Vienna Intl Ctr:          15:  28:  EU:   48.20:   -16.30:    -1.0:  *4U1V:
-    =4U0R,=4U1A,=4U1VIC,=4U2U,=4Y1A,=C7A;
+    =4U0R,=4U1A,=4U1VIC,=4U2STAYHOME,=4U2U,=4Y1A,=C7A;
 Timor - Leste:            28:  54:  OC:   -8.80:  -126.05:    -9.0:  4W:
     4W;
 Israel:                   20:  39:  AS:   31.32:   -34.82:    -2.0:  4X:
@@ -121,7 +121,7 @@ Trinidad & Tobago:        09:  11:  SA:   10.38:    61.28:     4.0:  9Y:
 Botswana:                 38:  57:  AF:  -22.00:   -24.00:    -2.0:  A2:
     8O,A2;
 Tonga:                    32:  62:  OC:  -21.22:   175.13:   -13.0:  A3:
-    A3;
+    A3,=VERSION;
 Oman:                     21:  39:  AS:   23.60:   -58.55:    -4.0:  A4:
     A4;
 Bhutan:                   22:  41:  AS:   27.40:   -90.18:    -6.0:  A5:
@@ -304,8 +304,9 @@ Antarctica:               13:  74:  SA:  -90.00:     0.00:     0.0:  CE9:
     FT3Y(30)[70],FT4Y(30)[70],FT5Y(30)[70],FT6Y(30)[70],FT7Y(30)[70],
     FT8Y(30)[70],LU1Z[73],LU2Z[73],LU3Z[73],LU4Z[73],LU5Z[73],LU6Z[73],
     LU7Z[73],LU8Z[73],LU9Z[73],RI1AN(29)[69],VI0(39)[69],VK0(39)[69],
-    ZL5(30)[71],ZM5(30)[71],ZS7(38)[67],=IA0DC,=8J1RL(39)[67],=DP1POL(38)[67],
-    =KC4AAA(39),=KC4AAC[73],=KC4USV(30)[71],=RI1ANC(29)[70],=VP8AL[73];
+    ZL5(30)[71],ZM5(30)[71],ZS7(38)[67],=IA0DC,=8J1RL(39)[67],=DP0GVN(38)[67],
+    =DP1POL(38)[67],=KC4AAA(39),=KC4AAC[73],=KC4USV(30)[71],=RI1ANC(29)[70],
+    =VP8AL[73];
 Cuba:                     08:  11:  NA:   21.50:    80.00:     5.0:  CM:
     CL,CM,CO,T4;
 Morocco:                  33:  37:  AF:   32.00:     5.00:     0.0:  CN:
@@ -332,7 +333,8 @@ Comoros:                  39:  53:  AF:  -11.63:   -43.30:    -3.0:  D6:
     D6;
 Fed. Rep. of Germany:     14:  28:  EU:   51.00:   -10.00:    -1.0:  DL:
     DA,DB,DC,DD,DE,DF,DG,DH,DI,DJ,DK,DL,DM,DN,DO,DP,DQ,DR,Y2,Y3,Y4,Y5,Y6,Y7,
-    Y8,Y9,=DM19ERZ/BEF,=DM19ERZ/BHF,=DM19ERZ/BS,=DM19ERZ/HSD,=DM19ERZ/MAZ;
+    Y8,Y9,=DM19ERZ/BB,=DM19ERZ/BEF,=DM19ERZ/BHF,=DM19ERZ/BP,=DM19ERZ/BRB,
+    =DM19ERZ/HAM,=DM19ERZ/HSD,=DM19ERZ/MAZ,=DM19ERZ/SG;
 Philippines:              27:  50:  OC:   13.00:  -122.00:    -8.0:  DU:
     4D,4E,4F,4G,4H,4I,DU,DV,DW,DX,DY,DZ;
 Eritrea:                  37:  48:  AF:   15.00:   -39.00:    -3.0:  E3:
@@ -382,7 +384,7 @@ Turkmenistan:             17:  30:  AS:   38.00:   -58.00:    -5.0:  EZ:
 France:                   14:  27:  EU:   46.00:    -2.00:    -1.0:  F:
     F,HW,HX,HY,TH,TM,TP,TQ,TV;
 Guadeloupe:               08:  11:  NA:   16.13:    61.67:     4.0:  FG:
-    FG,=TO3Z,=TO7D;
+    FG;
 Mayotte:                  39:  53:  AF:  -12.88:   -45.15:    -3.0:  FH:
     FH;
 St. Barthelemy:           08:  11:  NA:   17.90:    62.83:     4.0:  FJ:
@@ -406,7 +408,7 @@ St. Pierre & Miquelon:    05:  09:  NA:   46.77:    56.20:     3.0:  FP:
 Reunion Island:           39:  53:  AF:  -21.12:   -55.48:    -4.0:  FR:
     FR,=TO7DL;
 St. Martin:               08:  11:  NA:   18.08:    63.03:     4.0:  FS:
-    FS,=TO0A;
+    FS;
 Glorioso Islands:         39:  53:  AF:  -11.55:   -47.28:    -4.0:  FT/g:
     FT0G,FT1G,FT2G,FT3G,FT4G,FT5G,FT6G,FT7G,FT8G,FT9G;
 Juan de Nova, Europa:     39:  53:  AF:  -17.05:   -42.72:    -3.0:  FT/j:
@@ -425,14 +427,14 @@ Wallis & Futuna Islands:  32:  62:  OC:  -13.30:   176.20:   -12.0:  FW:
 French Guiana:            09:  12:  SA:    4.00:    53.00:     3.0:  FY:
     FY,=TO1A;
 England:                  14:  27:  EU:   52.77:     1.47:     0.0:  G:
-    2E,G,M;
+    2E,G,M,NHS;
 Isle of Man:              14:  27:  EU:   54.20:     4.53:     0.0:  GD:
     2D,GD,GT,MD,MT;
 Northern Ireland:         14:  27:  EU:   54.73:     6.68:     0.0:  GI:
-    2I,GI,GN,MI,MN,=GB0BPM,=GB0GLS,=GB0PDY,=GB1SOS,=GB2PDY,=GB3NGI,=GB4NHS,
-    =GB4UAS,=GB5NHS,=GB6SPD,=GB75VEC,=GB75VED,=GB8NHS,=GB8SJA,=GB9SPD;
+    2I,GI,GN,MI,MN,=GB0BPM,=GB0GLS,=GB0PDY,=GB1HSC,=GB1SOS,=GB2PDY,=GB3NGI,
+    =GB4NHS,=GB4UAS,=GB5NHS,=GB6SPD,=GB75VEC,=GB75VED,=GB8NHS,=GB8SJA,=GB9SPD;
 Jersey:                   14:  27:  EU:   49.22:     2.18:     0.0:  GJ:
-    2J,GH,GJ,MH,MJ;
+    2J,GH,GJ,MH,MJ,=GH5DX/NHS;
 Shetland Islands:         14:  27:  EU:   60.50:     1.50:     0.0:  *GM/s:
     =2M0BDR,=2M0BDT,=2M0CPN,=2M0GFC,=2M0SEG,=2M0SPX,=2M0ZET,=GB1COR,=GB2ELH,
     =GB3LER,=GB3LER/B,=GB4LER,=GM0AVR,=GM0CXQ,=GM0EKM,=GM0GFL,=GM0ILB,=GM0JDB,
@@ -444,7 +446,8 @@ Shetland Islands:         14:  27:  EU:   60.50:     1.50:     0.0:  *GM/s:
     =MS0ZET;
 Scotland:                 14:  27:  EU:   56.82:     4.18:     0.0:  GM:
     2A,2M,GM,GS,MA,MM,MS,=GB0SSB,=GB1COR,=GB2ELH,=GB2FEA,=GB2JCM,=GB3ANG,
-    =GB3LER,=GB3LER/B,=GB4LER;
+    =GB3LER,=GB3LER/B,=GB4LER,=GM0WED/NHS,=GM3YDN/NHS,=GM4SQM/NHS,=GM4SQN/NHS,
+    =GM6JNJ/NHS,=MM0DHQ/NHS,=MM3AWD/NHS,=MM3DDQ/NHS,=MM7WAB/NHS;
 Guernsey:                 14:  27:  EU:   49.45:     2.58:     0.0:  GU:
     2U,GP,GU,MP,MU;
 Wales:                    14:  27:  EU:   52.28:     3.73:     0.0:  GW:
@@ -491,8 +494,8 @@ African Italy:            33:  37:  AF:   35.67:   -12.67:    -1.0:  *IG9:
     IG9,IH9;
 Sardinia:                 15:  28:  EU:   40.15:    -9.27:    -1.0:  IS:
     IM0,IS,IW0U,IW0V,IW0W,IW0X,IW0Y,IW0Z,=II0ICH,=II0IDP,=II0M,=IQ0AG,=IQ0AH,
-    =IQ0AH/P,=IQ0AI,=IQ0AK,=IQ0AL,=IQ0AM,=IQ0EH,=IQ0HO,=IQ0ID,=IQ0ID/P,=IQ0JY,
-    =IQ0NU,=IQ0NU/P,=IQ0NV,=IQ0NV/P,=IQ0OG,=IQ0OH,=IQ0QP,=IQ0SS,=IY0GA;
+    =IQ0AI,=IQ0AK,=IQ0AL,=IQ0AM,=IQ0EH,=IQ0HO,=IQ0ID,=IQ0ID/P,=IQ0JY,=IQ0NU,
+    =IQ0NU/P,=IQ0NV,=IQ0NV/P,=IQ0OG,=IQ0OH,=IQ0QP,=IQ0SS,=IY0GA;
 Sicily:                   15:  28:  EU:   37.50:   -14.00:    -1.0:  *IT9:
     IB9,ID9,IE9,IF9,II9,IJ9,IO9,IQ9,IR9,IT9,IU9,IW9,IY9;
 Djibouti:                 37:  48:  AF:   11.75:   -42.35:    -3.0:  J2:
@@ -631,9 +634,9 @@ Hawaii:                   31:  61:  OC:   21.12:   157.48:    10.0:  KH6:
     AH6,AH7,KH6,KH7,NH6,NH7,WH6,WH7,=K2GT,=K4XV,=K6BU,=K6HNL,=K9FD,=KA7BSK,
     =KB1UHL,=KB3HXI,=KB5OXR,=KB6EGA,=KC2CLQ,=KD0OXU,=KD4GVR,=KD6NVX,=KD7GWI,
     =KD8LYB,=KE0JSB,=KE0KIE,=KE5VQB,=KE6MKW,=KE6TIX,=KF4UJC,=KG4CAN,=KG4TZD,
-    =KG5CH,=KG5CNO,=KG5IVP,=KG9MDR,=KH0WJ,=KH3AE,=KI7AUZ,=KJ6COM,=KJ6FDF,
-    =KK4RNF,=KL0TK,=KL3JC,=KM6RWE,=KM6UVP,=N0VYO,=N3BQY,=N3GWR,=N4BER,=N7BMD,
-    =NB6R,=ND1A,=W6QPV,=W7NX,=WA6AW,=WA6CZL,=WB4JTT;
+    =KG5CH,=KG5CNO,=KG5IVP,=KG9MDR,=KH0WJ,=KH3AE,=KI7AUZ,=KJ6COM,=KJ6CQT,
+    =KJ6FDF,=KK4RNF,=KL0TK,=KL3JC,=KM6RWE,=KM6UVP,=N0VYO,=N3BQY,=N3GWR,=N4BER,
+    =N7BMD,=NB6R,=ND1A,=W6QPV,=W7NX,=WA6AW,=WA6CZL,=WB4JTT;
 Kure Island:              31:  61:  OC:   29.00:   178.00:    10.0:  KH7K:
     AH7K,KH7K,NH7K,WH7K;
 American Samoa:           32:  62:  OC:  -14.32:   170.78:    11.0:  KH8:
@@ -643,12 +646,12 @@ Swains Island:            32:  62:  OC:  -11.05:   171.25:    11.0:  KH8/s:
 Wake Island:              31:  65:  OC:   19.28:  -166.63:   -12.0:  KH9:
     AH9,KH9,NH9,WH9;
 Alaska:                   01:  01:  NA:   61.40:   148.87:     8.0:  KL:
-    AL,KL,NL,WL,=AJ4MY,=K1KAO,=K4PSG,=K5RD,=K7BUF,=K7CAP,=K7VRK,=KA1NCN,
-    =KB5NOW,=KB7BUF,=KC0GLN,=KC5NHL,=KC9IKH,=KD0ONB,=KD2NPD,=KD5MQC,=KD7OOS,
-    =KD8KQL,=KE7PXV,=KF3L,=KF5UBP,=KF7FLL,=KF7FLM,=KF7ING,=KF7ITN,=KF7KTH,
-    =KF7WVE,=KG5MIO,=KG7OUF,=KG7ZEV,=KJ4YOY,=KJ6DCH,=KJ6RFQ,=KN4ENR,=KN4LJD,
-    =KN4RXC,=KW4XD,=N6QEK,=N6ZZX,=N7DKL,=N7DUD,=NH2LS,=NM0H,=NU9Q,=W0ZEE,
-    =W1JM,=W1LYD,=W3MKG,=WA1FVJ,=WH6GBB,=WH6GCO;
+    AL,KL,NL,WL,=AJ4MY,=K1KAO,=K1TMT,=K1W,=K4PSG,=K5DOW,=K5RD,=K7BUF,=K7CAP,
+    =K7VRK,=KA1NCN,=KB5NOW,=KB7BUF,=KC0GLN,=KC1LVR,=KC5NHL,=KC9IKH,=KD0ONB,
+    =KD2NPD,=KD5MQC,=KD7OOS,=KD8KQL,=KE7PXV,=KF3L,=KF5UBP,=KF7FLL,=KF7FLM,
+    =KF7ING,=KF7ITN,=KF7KTH,=KF7WVE,=KG5MIO,=KG7OUF,=KG7ZEV,=KJ4YOY,=KJ6DCH,
+    =KJ6RFQ,=KN4ENR,=KN4LJD,=KN4RXC,=KW4XD,=N6QEK,=N6ZZX,=N7DKL,=N7DUD,=NH2LS,
+    =NM0H,=NU9Q,=W0ZEE,=W1JM,=W1LYD,=W3MKG,=WA1FVJ,=WH6GBB,=WH6GCO;
 Navassa Island:           08:  11:  NA:   18.40:    75.00:     5.0:  KP1:
     KP1,NP1,WP1;
 US Virgin Islands:        08:  11:  NA:   17.73:    64.80:     4.0:  KP2:
@@ -757,8 +760,8 @@ Argentina:                13:  14:  SA:  -34.80:    65.92:     3.0:  LU:
     LW4W[16],LW4X[16],LW4Y[16],LW5V[16],LW5W[16],LW5X[16],LW5Y[16],LW6V[16],
     LW6W[16],LW6X[16],LW6Y[16],LW7V[16],LW7W[16],LW7X[16],LW7Y[16],LW8V[16],
     LW8W[16],LW8X[16],LW8Y[16],LW9V[16],LW9W[16],LW9X[16],LW9Y[16],
-    =LU1AW/X[16],=LU2DVI/H,=LU4ARU/D,=LU4ERS/I,=LU6DDC/D,=LU7JMS/H,
-    =LU8XW/XP[16],=LU9DPI/I;
+    =LU1AW/X[16],=LU2DVI/H,=LU4ARU/D,=LU4ERS/I,=LU7JMS/H,=LU8XW/XP[16],
+    =LU9DPI/I;
 Luxembourg:               14:  27:  EU:   50.00:    -6.00:    -1.0:  LX:
     LX;
 Lithuania:                15:  29:  EU:   55.45:   -23.63:    -2.0:  LY:
@@ -770,7 +773,7 @@ Peru:                     10:  12:  SA:  -10.00:    76.00:     5.0:  OA:
 Lebanon:                  20:  39:  AS:   33.83:   -35.83:    -2.0:  OD:
     OD;
 Austria:                  15:  28:  EU:   47.33:   -13.33:    -1.0:  OE:
-    OE,=4U0R,=4U1A,=4U1VIC,=4U2U,=4Y1A,=C7A;
+    OE,=4U0R,=4U1A,=4U1VIC,=4U2STAYHOME,=4U2U,=4Y1A,=C7A;
 Finland:                  15:  18:  EU:   63.78:   -27.08:    -2.0:  OH:
     OF,OG,OH,OI,OJ;
 Aland Islands:            15:  18:  EU:   60.13:   -20.37:    -2.0:  OH0:
@@ -866,7 +869,7 @@ Banaba Island:            31:  65:  OC:   -0.88:  -169.53:   -12.0:  T33:
 Somalia:                  37:  48:  AF:    2.03:   -45.35:    -3.0:  T5:
     6O,T5;
 San Marino:               15:  28:  EU:   43.95:   -12.45:    -1.0:  T7:
-    T7,=VERSION;
+    T7;
 Palau:                    27:  64:  OC:    7.45:  -134.53:    -9.0:  T8:
     T8;
 Asiatic Turkey:           20:  39:  AS:   39.18:   -35.65:    -2.0:  TA:
@@ -974,16 +977,21 @@ European Russia:          16:  29:  EU:   53.65:   -41.37:    -4.0:  UA:
     =R4HDC[29],=R4HDR[29],=R4HL[29],=R4IC[29],=R4ID[29],=R4II[29],=R4IK[29],
     =R4IM[29],=R4IN[29],=R4IO[29],=R4IT[29],=R50VAZ[30],=R8MB/1(17)[20],
     =R9OM/6,=RA4HL[29],=RA4NCC[30],=RC4HT[29],=RC4I[29],=RJ4I[29],=RJ4P[30],
-    =RK4HM[29],=RK4P[30],=RM4I[29],=RM4R[30],=RN4HFJ[29],=RN4HIF[29],=RT9K/6,
-    =RU4HD[29],=RU4HP[29],=RU4I[29],=RW4HM[29],=RW4HTK[29],=RW4HW[29],
-    =RW4HZ[29],=RW9WJ/4[30],=UA0QQO/3,=UA3LMR/P,=UA4H[29],=UA4HBM[29],
-    =UA4HGL[29],=UA4HIP[29],=UA4HRZ[29],=UA4HY[29],=UA4NF[30],=UA4PN[30],
-    =UB5O/1,=UC4I[29],=UE20DS,=UI4I[29];
+    =RK4HM[29],=RK4P[30],=RM4I[29],=RM4R[30],=RN4HFJ[29],=RN4HIF[29],
+    =RP75A[19],=RP75AG[30],=RP75AOS[19],=RP75AP[19],=RP75AU[19],=RP75BFS[19],
+    =RP75DD[30],=RP75EP[19],=RP75FD[30],=RP75I[30],=RP75IZ[30],=RP75NK[19],
+    =RP75OM[19],=RP75PL[19],=RP75PT[19],=RP75RK[19],=RP75SN[30],
+    =RP75TK(17)[30],=RP75X(17)[20],=RP75ZS[30],=RT9K/6,=RU4HD[29],=RU4HP[29],
+    =RU4I[29],=RW4HM[29],=RW4HTK[29],=RW4HW[29],=RW4HZ[29],=RW9WJ/4[30],
+    =UA0QQO/3,=UA3LMR/P,=UA4H[29],=UA4HBM[29],=UA4HGL[29],=UA4HIP[29],
+    =UA4HRZ[29],=UA4HY[29],=UA4NF[30],=UA4PN[30],=UB5O/1,=UC4I[29],=UE20DS,
+    =UI4I[29];
 Kaliningrad:              15:  29:  EU:   54.72:   -20.52:    -3.0:  UA2:
     R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RE2F,RE2K,RF2F,RF2K,RG2F,RG2K,RJ2F,RJ2K,
     RK2F,RK2K,RL2F,RL2K,RM2F,RM2K,RN2F,RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F,RT2K,
     RU2F,RU2K,RV2F,RV2K,RW2F,RW2K,RX2F,RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F,U2K,UA2,
-    UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2,=R2MWO;
+    UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2,=R2MWO,=RP75FYS,=RP75GC,=RP75IGS,=RP75KB,
+    =RP75MW,=RP75STP;
 Asiatic Russia:           17:  30:  AS:   55.88:   -84.08:    -7.0:  UA9:
     R0,R8(17)[30],R9,RA0,RA8(17)[30],RA9,RC0,RC8(17)[30],RC9,RD0,RD8(17)[30],
     RD9,RE0,RE8(17)[30],RE9,RF0,RF8(17)[30],RF9,RG0,RG8(17)[30],RG9,RI0,
@@ -1102,11 +1110,17 @@ Asiatic Russia:           17:  30:  AS:   55.88:   -84.08:    -7.0:  UA9:
     UI8O(18)[31],UI8P(18)[31],UI8S(16)[30],UI8T(16)[30],UI8U(18)[31],
     UI8V(18)[31],UI8W(16)[30],UI8Y(18)[31],UI8Z(18)[31],UI9I(18)[31],
     UI9M(17)[30],UI9P(18)[31],UI9S(16),UI9T(16),UI9V(18)[31],UI9W(16),
-    =RK3Q/8(17)[30],=R207RRC(19)[25],=R2ET/9(18)[31],=RA/UT5IA(19)[23],
-    =RA0QK/8(17)[30],=RA3AV/0(19)[25],=RA4FCJ/9[20],=RK4PA/9[20],=RN9S(16),
-    =RT8T(16)[30],=RT9S(16),=RT9W(16),=RU9MV/0(19)[25],=RV3DSA/0(19)[34],
-    =RX6DL/8(17)[30],=RX6DL/8/P(17)[30],=UB5O/4(16),=UB5O/8(17)[30],
-    =UB5O/9(18)[31],=UD6AOP/0(19)[25];
+    =R207RRC(19)[25],=R2ET/9(18)[31],=RA/UT5IA(19)[23],=RA0QK/8(17)[30],
+    =RA3AV/0(19)[25],=RA4FCJ/9[20],=RN9S(16),=RP75AB(18)[32],=RP75AM(19)[33],
+    =RP75AZ,=RP75BKF(18)[32],=RP75DG(19)[34],=RP75DM(16),=RP75DS[20],=RP75DT,
+    =RP75GB,=RP75GI(16),=RP75GK(17)[30],=RP75GP,=RP75GS[20],=RP75IE,=RP75IM,
+    =RP75J[20],=RP75JK[20],=RP75KE,=RP75KM(18)[31],=RP75LL,=RP75MF,
+    =RP75MGI(16),=RP75MLI,=RP75MMK,=RP75MP(18)[31],=RP75P,=RP75RGA,
+    =RP75SD(19)[34],=RP75SF[20],=RP75SU,=RP75TG,=RP75TS(16),=RP75TT,=RP75U,
+    =RP75UF(16),=RP75UR,=RP75V(19)[34],=RP75VAM(16),=RP75WU(16),
+    =RP75YE(18)[31],=RP75YN,=RT8T(16)[30],=RT9S(16),=RT9W(16),
+    =RU9MV/0(19)[25],=RV3DSA/0(19)[34],=RX6DL/8(17)[30],=RX6DL/8/P(17)[30],
+    =UB5O/4(16),=UB5O/8(17)[30],=UB5O/9(18)[31],=UD6AOP/0(19)[25];
 Uzbekistan:               17:  30:  AS:   41.40:   -63.97:    -5.0:  UK:
     UJ,UK,UL,UM;
 Kazakhstan:               17:  30:  AS:   48.17:   -65.18:    -5.0:  UN:
@@ -1151,7 +1165,7 @@ Canada:                   05:  09:  NA:   44.35:    78.75:     5.0:  VE:
     CI0(2)[4],CI1(1)[2],CI2,CJ2[4],CK2[4],CY1,CY2(2),CZ0(2)[4],CZ1(1)[2],CZ2,
     VA2[4],VB2[4],VC2[4],VD1,VD2(2),VE2[4],VF0(2)[4],VF1(1)[2],VF2,VG2[4],VO1,
     VO2(2),VX2[4],VY0(2)[4],VY1(1)[2],VY2,XJ1,XJ2(2),XK0(2)[4],XK1(1)[2],XK2,
-    XL2[4],XM2[4],XN1,XN2(2),XO0(2)[4],XO1(1)[2],XO2,=VER20200418,
+    XL2[4],XM2[4],XN1,XN2(2),XO0(2)[4],XO1(1)[2],XO2,=VER20200423,
     =VA2VVV(2)[4],=VE2CSI(2)[4],=VE2EKA(2)[4],=VE2FK[9],=VE2IDX(2)[4],
     =VE2IM(2)[4],=VE2KK[9],=VE2NN(2)[4],=VE8AT(2)[4],=VY0AA(4)[3],
     =VY0PW(4)[3];

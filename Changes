@@ -1,4 +1,8 @@
-22Apr20=======================================================================
+24Apr20=======================================================================
+1. Add 'progress' debugging for showing that stuff is happening in nologchan
+   a.k.a ringbuffer only mode. 
+2. Fix grepdbg so that no regex argument simply lists the file. 
+3. Add CTY-3008 prefixes.
 22Apr20=======================================================================
 1. Fix the module search path in update_sysop.pl
 2. Add latest prefixes CTY-3007
