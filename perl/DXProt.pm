@@ -1261,7 +1261,7 @@ sub spawn_cmd
 						 $self->send(@res);
 					 }
 				 }
-				 diffms("rcmd from $user on $call", $line, $t0, scalar @res) if isdbg('chan');
+				 diffms("rcmd from $user on $call", $line, $t0, scalar @res) if isdbg('progress');
 			 });
 	
 	return @out;
