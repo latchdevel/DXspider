@@ -544,8 +544,17 @@ sub run_cmd
 			if ($package && $self->can("${package}::handle")) {
 				no strict 'refs';
 				dbg("cmd: package $package") if isdbg('command');
+				if (isdbg('progress')) {
+					my $s = "CMD: '$cmd' by $call ip $self->{hostname}";
+				}
+				my $t0 = [gettimeofday];
 				eval { @ans = &{"${package}::handle"}($self, $args) };
 				return (DXDebug::shortmess($@)) if $@;
+				if (isdbg('progress')) {
+					my $msecs = _diffms($t0);
+					my $s = "CMD: '$cmd' by $call ip: $self->{hostname} ${msecs}mS";
+					dbg($s);
+				}
 			} else {
 				dbg("cmd: $package not present") if isdbg('command');
 				return $self->_error_out('e1');
@@ -1334,7 +1343,7 @@ sub spawn_cmd
 						 $dxchan->send(@res);
 					 }
 				 }
-				 diffms("by $call", $line, $t0, scalar @res) if isdbg('chan');
+				 diffms("by $call", $line, $t0, scalar @res) if isdbg('progress');
 			 });
 	
 	return @out;

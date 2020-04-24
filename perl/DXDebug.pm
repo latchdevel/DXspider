@@ -8,6 +8,19 @@
 #       To allow debugging of a category (e.g. 'chan') but not onto disc (just into the ring buffer)
 #       do: set/debug chan nologchan
 #
+#       To print the current contents into the debug log: show/debug_ring
+#
+#       On exit or serious error the ring buffer is printed to the current debug log
+#
+# In Progress:
+#       Expose a localhost listener on port (default) 27755 to things like watchdbg so that they can carry on
+#       as normal, possibly with a "remember" button to permanently capture stuff observed.
+#
+# Future:
+#       This is likely to be some form of triggering or filtering controlling (some portion
+#       of) ring_buffer dumping.
+#
+#
 
 package DXDebug;
 

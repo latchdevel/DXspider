@@ -38,6 +38,7 @@ use strict;
 
 use vars qw(@list $fp $today $string);
 
+
 $fp = DXLog::new('debug', 'dat', 'd');
 $today = $fp->unixtoj(time()); 
 my $nolines = 1;
@@ -46,6 +47,10 @@ my @prev;
 for my $arg (@ARGV) {
 	if ($arg =~ /^-/) {
 		$arg =~ s/^-//o;
+		if ($arg =~ /^\s*\-+(?:[h\?]e?l?p?)/) {
+			usage();
+			exit(0);
+		}
 		push @list, $arg;
 	} elsif ($arg =~ /^\d+$/) {
 		$nolines = $arg;
@@ -54,7 +59,8 @@ for my $arg (@ARGV) {
 		last;
 	}
 }
-die "usage: grepdbg [nn] [[-nnn] ..] <regexp>\n" unless  $string;
+
+$string ||= '.*';
 
 push @list, "0" unless @list;
 for my $entry (@list) {
@@ -63,20 +69,30 @@ for my $entry (@list) {
 	my $line;
 	if ($fh) {
 		while (<$fh>) {
-			my $line = $_;
-			chomp $line;
-			push @prev, $line;
-			shift @prev while @prev > $nolines;
-			if ($line =~ m{$string}io) {
-				for (@prev) {
-					s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
-					my ($t, $l) =  split /\^/, $_, 2;
-					print atime($t), ' ', $l, "\n"; 
-				}
-				@prev = ();
-			}
+			process($_);
 		}
 		$fp->close();
 	}
+}
+
+sub process
+{
+	my $line = shift;
+	chomp $line;
+	push @prev, $line;
+	shift @prev while @prev > $nolines;
+	if ($line =~ m{$string}io) {
+		for (@prev) {
+			s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
+			my ($t, $l) =  split /\^/, $_, 2;
+			print atime($t), ' ', $l, "\n"; 
+		}
+		@prev = ();
+	}
+}
+	
+sub usage
+{
+	die "usage: grepdbg [nn] [[-nnn] ..] <regexp>\n";
 }
 exit(0);

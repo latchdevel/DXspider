@@ -224,6 +224,13 @@ sub handle_11
 	# add it
 	Spot::add(@spot);
 
+	if (isdbg('progress')) {
+		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]\@$spot[7]", cldatetime($spot[2]);
+		$s .= " '$spot[3]'" if $spot[3];
+		$s .= " from ip $spot[14]" if $spot[14];
+		dbg($s);
+	}
+	
 	#
 	# @spot at this point contains:-
 	# freq, spotted call, time, text, spotter, spotted cc, spotters cc, orig node
