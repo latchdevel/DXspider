@@ -52,27 +52,29 @@ if (!defined $DB::VERSION) {
 	local $^W=0;
 	eval qq( sub confess { 
 	    \$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::dbgprintring() unless DXDebug::isdbg('chan');
-        DXDebug::dbgclearring();
+        DXDebug::dbgprintring() if DXDebug('nologchan');
         DXDebug::dbg(\$@);
 		DXDebug::dbg(Carp::shortmess(\@_));
 	    exit(-1); 
 	}
 	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::dbgprintring() unless DXDebug::isdbg('chan');
-        DXDebug::dbgclearring();
+        DXDebug::dbgprintring() if DXDebug('nologchan');
         DXDebug::dbg(\$@);
 		DXDebug::dbg(Carp::longmess(\@_));
 		exit(-1); 
 	}
-	sub carp    { DXDebug::dbg(Carp::shortmess(\@_)); }
-	sub cluck   { DXDebug::dbg(Carp::longmess(\@_)); } 
-	);
+	sub carp { 
+        DXDebug::dbgprintring(25) if DXDebug('nologchan');
+        DXDebug::dbg(Carp::shortmess(\@_)); 
+    }
+	sub cluck { 
+        DXDebug::dbgprintring(25) if DXDebug('nologchan');
+        DXDebug::dbg(Carp::longmess(\@_)); 
+    } );
 
     CORE::die(Carp::shortmess($@)) if $@;
-}
-else {
+} else {
     eval qq( sub confess { die Carp::longmess(\@_); }; 
 			 sub croak { die Carp::shortmess(\@_); }; 
 			 sub cluck { warn Carp::longmess(\@_); }; 
@@ -215,8 +217,10 @@ sub longmess
 sub dbgprintring
 {
 	return unless $fp;
+	my $count = shift || $dbgringlth+1;
 	my $first;
-	while (my $l = shift @dbgring) {
+	my $l;
+	for ( ; $count > 0 && ($l = shift @dbgring); --$count) {
 		my ($t, $str) = split /\^/, $l, 2;
 		next unless $t;
 		my $lt = time;
