@@ -266,7 +266,7 @@ sub spawn
 					 chomp;
 					 dbg("DXCron::spawn: $_") if isdbg("cron");
 				 }
-				 diffms("by DXCron::spawn", $line, $t0, scalar @res) if isdbg('chan');
+				 diffms("by DXCron::spawn", $line, $t0, scalar @res) if isdbg('progress');
 			 }
 			);
 }
@@ -296,7 +296,7 @@ sub spawn_cmd
 					 chomp;
 					 dbg("DXCron::spawn_cmd: $_") if isdbg("cron");
 				 }
-				 diffms("by DXCron::spawn_cmd", $line, $t0, scalar @res) if isdbg('chan');
+				 diffms("by DXCron::spawn_cmd", $line, $t0, scalar @res) if isdbg('progress');
 			 }
 			);
 }
