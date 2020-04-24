@@ -225,9 +225,10 @@ sub handle_11
 	Spot::add(@spot);
 
 	if (isdbg('progress')) {
-		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]\@$spot[7]", cldatetime($spot[2]);
+		my $ip = '';
+		$ip = sprintf "($spot[14])" if $spot[14]; 
+		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]$ip\@$spot[7]", cldatetime($spot[2]);
 		$s .= " '$spot[3]'" if $spot[3];
-		$s .= " from ip $spot[14]" if $spot[14];
 		dbg($s);
 	}
 	
