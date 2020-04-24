@@ -2013,7 +2013,7 @@ sub handle_93
 	}
 
 	if (isdbg('progress')) {
-		my $s = sprintf "ANNTALK: to: $to from: $from\@$onode%s '$text'", $via ne '*'?" via $via":'';
+		my $s = sprintf "ANNTALK: $from\@$onode%s -> $to '$text'", $via ne '*' ? " via $via" : '';
 		dbg($s);
 	}
 	
