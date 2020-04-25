@@ -210,8 +210,7 @@ sub start
 	$script->run($self) if $script;
 
 	# send cluster info
-	my $info = Route::cluster();
-	$self->send("Cluster:$info");
+	$self->send($self->run_cmd("show/cluster"));
 
 	# send prompts for qth, name and things
 	$self->send($self->msg('namee1')) if !$user->name;
