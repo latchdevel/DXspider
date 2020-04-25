@@ -1,6 +1,7 @@
 25Apr20=======================================================================
 1. Add maximum no of users on node to show/cluster.
 2. Add ability to show last n lines of debugging ring buffer.
+3. Remove redundant wpxloc.dat file.
 24Apr20=======================================================================
 1. Add 'progress' debugging for showing that stuff is happening in nologchan
    a.k.a ringbuffer only mode. 
