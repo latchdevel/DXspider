@@ -270,11 +270,14 @@ sub cluster
 {
 	my $nodes = Route::Node::count();
 	my $tot = Route::User::count();
-	my $users = scalar DXCommandmode::get_all();
+	my ($users, $maxlocalusers) = DXCommandmode::user_count();
 	my $maxusers = Route::User::max();
 	my $uptime = main::uptime();
+	my $localnodes = $DXChannel::count - $users;
+	
+	return ($nodes, $tot, $users, $maxlocalusers, $maxusers, $uptime, $localnodes);
+	
 
-	return " $nodes nodes, $users local / $tot total users  Max users $maxusers  Uptime $uptime";
 }
 
 #

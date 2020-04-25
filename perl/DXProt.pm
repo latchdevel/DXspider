@@ -1218,21 +1218,31 @@ sub spawn_cmd
 	my $fc = Mojo::IOLoop::Subprocess->new;
 
 	# just behave normally if something has set the "one-shot" _nospawn in the channel
-	return ($cmdref->(@$args)) if $self->{_nospawn};
+	if ($self->{_nospawn}) {
+		eval { @out = $cmdref->(@$args); };
+		if ($@) {
+			DXDebug::dbgprintring(25);
+			push @out, DXDebug::shortmess($@);
+		}
+		return @out;
+	}
 
 	#	$fc->serializer(\&encode_json);
 #	$fc->deserializer(\&decode_json);
 	$fc->run(
 			 sub {
 				 my $subpro = shift;
-				 if (isdbg('chan')) {
+				 if (isdbg('progress')) {
 					 my $s = "line: $line";
 					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
+					 dbg($s);
 				 }
-
-				 my @res = $cmdref->(@$args);
-#				 diffms("by $call 1", $line, $t0, scalar @res) if isdbg('chan');
-				 return @res;
+				 eval { @out = $cmdref->(@$args); };
+				 if ($@) {
+					 DXDebug::dbgprintring(25);
+					 push @out, DXDebug::shortmess($@);
+				 }
+				 return @out;
 			 },
 #			 $args,
 			 sub {

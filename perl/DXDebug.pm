@@ -52,14 +52,14 @@ if (!defined $DB::VERSION) {
 	local $^W=0;
 	eval qq( sub confess { 
 	    \$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::dbgprintring() if DXDebug('nologchan');
+        DXDebug::dbgprintring() if DXDebug::isdbg('nologchan');
         DXDebug::dbg(\$@);
 		DXDebug::dbg(Carp::shortmess(\@_));
 	    exit(-1); 
 	}
 	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
-        DXDebug::dbgprintring() if DXDebug('nologchan');
+        DXDebug::dbgprintring() if DXDebug::isdbg('nologchan');
         DXDebug::dbg(\$@);
 		DXDebug::dbg(Carp::longmess(\@_));
 		exit(-1); 
@@ -217,16 +217,18 @@ sub longmess
 sub dbgprintring
 {
 	return unless $fp;
-	my $count = shift || $dbgringlth+1;
+	my $count = shift;
 	my $first;
 	my $l;
-	for ( ; $count > 0 && ($l = shift @dbgring); --$count) {
-		my ($t, $str) = split /\^/, $l, 2;
+	my $i = defined $count ? @dbgring-$count : 0;
+	$count = @dbgring;
+	for ( ; $i < $count; ++$i) {
+		my ($t, $str) = split /\^/, $dbgring[$i], 2;
 		next unless $t;
 		my $lt = time;
 		unless ($first) {
 			$fp->writeunix($lt, "$lt^###");
-			$fp->writeunix($lt, "$lt^### RINGBUFFER START");
+			$fp->writeunix($lt, "$lt^### RINGBUFFER START at line $i (zero base)");
 			$fp->writeunix($lt, "$lt^###");
 			$first = $t;
 		}

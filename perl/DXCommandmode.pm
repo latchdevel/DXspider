@@ -48,7 +48,7 @@ use Mojo::UserAgent;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
-	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
+	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir $users $maxusers);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -59,7 +59,8 @@ $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
 $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing command scripts 
                                           # this does not exist as default, you need to create it manually
-#
+$users = 0;					  # no of users on this node currently
+$maxusers = 0;				  # max no users on this node for this run
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -549,7 +550,10 @@ sub run_cmd
 				}
 				my $t0 = [gettimeofday];
 				eval { @ans = &{"${package}::handle"}($self, $args) };
-				return (DXDebug::shortmess($@)) if $@;
+				if ($@) {
+					dbgprintring(25);
+					return (DXDebug::shortmess($@));
+				}
 				if (isdbg('progress')) {
 					my $msecs = _diffms($t0);
 					my $s = "CMD: '$cmd $args' by $call ip: $self->{hostname} ${msecs}mS";
@@ -587,7 +591,8 @@ sub process
 	my $t = time;
 	my @dxchan = DXChannel::get_all();
 	my $dxchan;
-	
+
+	$users = 0;
 	foreach $dxchan (@dxchan) {
 		next unless $dxchan->is_user;  
 	
@@ -602,6 +607,8 @@ sub process
 			$dxchan->prompt() if $dxchan->{state} =~ /^prompt/o;
 			$dxchan->t($t);
 		}
+		++$users;
+		$maxusers = $users if $users > $maxusers;
 	}
 
 	while (my ($k, $v) = each %nothereslug) {
@@ -692,7 +699,7 @@ sub broadcast
 # gimme all the users
 sub get_all
 {
-	return grep {$_->is_user} DXChannel::get_all();
+	goto &DXChannel::get_all_users;
 }
 
 # run a script for this user
@@ -1304,7 +1311,14 @@ sub spawn_cmd
 	no strict 'refs';
 
 	# just behave normally if something has set the "one-shot" _nospawn in the channel
-	return ($cmdref->(@$args)) if $self->{_nospawn};
+	if ($self->{_nospawn}) {
+		eval { @out = $cmdref->(@$args); };
+		if ($@) {
+			DXDebug::dbgprintring(25);
+			push @out, DXDebug::shortmess($@);
+		}
+		return @out;
+	}
 	
 	my $fc = Mojo::IOLoop::Subprocess->new;
 #	$fc->serializer(\&encode_json);
@@ -1312,13 +1326,17 @@ sub spawn_cmd
 	$fc->run(
 			 sub {
 				 my $subpro = shift;
-				 if (isdbg('spawn_cmd')) {
+				 if (isdbg('progress')) {
 					 my $s = "line: $line";
 					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
+					 dbg($s);
 				 }
-				 my @res = $cmdref->(@$args);
-#				 diffms("rcmd from $call 1", $line, $t0, scalar @res) if isdbg('chan');
-				 return @res;
+				 eval { @out = $cmdref->(@$args); };
+				 if ($@) {
+					 DXDebug::dbgprintring(25);
+					 push @out, DXDebug::shortmess($@);
+				 }
+				 return @out;
 			 },
 #			 $args,
 			 sub {
@@ -1349,5 +1367,9 @@ sub spawn_cmd
 	return @out;
 }
 
+sub user_count
+{
+	return ($users, $maxusers);
+}
 1;
 __END__
