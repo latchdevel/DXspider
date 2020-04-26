@@ -72,20 +72,28 @@ sub cread
 		next unless defined $min;
 		my $ref = bless {};
 		my $err;
-		
-		$err .= parse($ref, 'min', $min, 0, 60);
-		$err .= parse($ref, 'hour', $hour, 0, 23);
-		$err .= parse($ref, 'mday', $mday, 1, 31);
-		$err .= parse($ref, 'month', $month, 1, 12, "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
-		$err .= parse($ref, 'wday', $wday, 0, 6, "sun", "mon", "tue", "wed", "thu", "fri", "sat");
-		if (!$err) {
-			$ref->{cmd} = $cmd;
-			push @out, $ref;
-			dbg("DXCron::cread: adding $_\n") if isdbg('cron');
+
+		if (defined $min && defined $hour && defined $cmd) { # it isn't all of them, but should be enough to tell if this is a real line
+			$err .= parse($ref, 'min', $min, 0, 60);
+			$err .= parse($ref, 'hour', $hour, 0, 23);
+			$err .= parse($ref, 'mday', $mday, 1, 31);
+			$err .= parse($ref, 'month', $month, 1, 12, "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
+			$err .= parse($ref, 'wday', $wday, 0, 6, "sun", "mon", "tue", "wed", "thu", "fri", "sat");
+			if (!$err) {
+				$ref->{cmd} = $cmd;
+				push @out, $ref;
+				dbg("DXCron::cread: adding $_\n") if isdbg('cron');
+			} else {
+				$err =~ s/^, //;
+				LogDbg('cron', "DXCron::cread: error $err on line $line '$_'");
+			}
 		} else {
-			$err =~ s/^, //;
-			dbg("DXCron::cread: error $err on line $line '$_'\n") if isdbg('cron');
+			LogDbg('cron', "DXCron::cread error on line $line '$_'");
+			my @s = ($min, $hour, $mday, $month, $wday, $cmd);
+			my $s = "line $line splits as " . join(', ', (map {defined $_ ? qq{$_} : q{'undef'}} @s));
+			LogDbg('cron', $s);
 		}
+		
 	}
 	close($fh);
 	return @out;
