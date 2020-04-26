@@ -160,12 +160,17 @@ sub init
 		dbg("This will take a while, I suggest you go and have cup of strong tea");
 		my $odbm = tie (%oldu, 'DB_File', localdata("users.v2"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
         for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
-			my $ref = asc_decode($val);
-			if ($ref) {
-				$ref->put;
-				$count++;
+			my $ref;
+			eval { $ref = asc_decode($val) };
+			unless ($@) {
+				if ($ref) {
+					$ref->put;
+					$count++;
+				} else {
+					$err++
+				}
 			} else {
-				$err++
+				Log('err', "DXUser: error decoding $@");
 			}
 		} 
 		undef $odbm;
@@ -244,7 +249,8 @@ sub get
 	
 	# search for it
 	unless ($dbm->get($call, $data)) {
-		$ref = decode($data);
+		eval { $ref = decode($data); };
+		
 		if ($ref) {
 			if (!UNIVERSAL::isa($ref, 'DXUser')) {
 				dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
@@ -252,7 +258,11 @@ sub get
 			}
 			# we have a reference and it *is* a DXUser
 		} else {
-			dbg("DXUser::get: no reference returned from decode of $call $!");
+			if ($@) {
+				LogDbg('err', "DXUser::get decode error on $call '$@'");
+			} else {
+				dbg("DXUser::get: no reference returned from decode of $call $!");
+			}
 			return undef;
 		}
 		$lru->put($call, $ref);
@@ -323,7 +333,9 @@ sub encode
 sub decode
 {
 	goto &asc_decode unless $v3;
-	return thaw(shift);
+	my $ref;
+	$ref = thaw(shift);
+	return $ref;
 }
 
 # 
@@ -358,7 +370,7 @@ sub asc_decode
 	$s =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	eval '$ref = ' . $s;
 	if ($@) {
-		LogDbg('err', $@);
+		LogDbg('err', "DXUser::asc_decode: on '$s' $@");
 		$ref = undef;
 	}
 	return $ref;
@@ -511,7 +523,8 @@ print "There are $count user records and $err errors\n";
 				++$err;
 				next;
 			}
-			my $ref = decode($val);
+			my $ref;
+			eval {$ref = decode($val); };
 			if ($ref) {
 				my $t = $ref->{lastin} || 0;
 				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
@@ -527,7 +540,7 @@ print "There are $count user records and $err errors\n";
 				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
 				++$count;
 			} else {
-				LogDbg('DXCommand', "Export Error3: $key\t$val");
+				LogDbg('DXCommand', "Export Error3: $key\t" . carp($val) ."\n$@");
 				eval {$dbm->del($key)};
 				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
 				++$err;
