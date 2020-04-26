@@ -2016,7 +2016,7 @@ sub handle_93
 
 	if (isdbg('progress')) {
 		my $vs = $via ne '*' ? " via $via" : ''; 
-		my $s = "ANNTALK: $from\@$onode$via -> $to '$text'";
+		my $s = "ANNTALK: $from\@$onode$vs -> $to '$text'";
 		dbg($s);
 	}
 	

@@ -1,6 +1,6 @@
 [Unit]
 Description=DXSpider DX Cluster node
-After=network.target auditd.service
+After=network.target
 
 [Service]
 EnvironmentFile=-/etc/default/dxspider

@@ -1323,8 +1323,8 @@ sub spawn_cmd
 			 sub {
 				 my $subpro = shift;
 				 if (isdbg('progress')) {
-					 my $s = "line: $line";
-					 $s .= ", args: " . join(', ', @$args) if $args && @$args;
+					 my $s = qq{line: "$line"};
+					 $s .= ", args: " . join(', ', map { defined $_ ? qq{'$_'} : q{'undef'} } @$args) if $args && @$args;
 					 dbg($s);
 				 }
 				 eval { @out = $cmdref->(@$args); };
