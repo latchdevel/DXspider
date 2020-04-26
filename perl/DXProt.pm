@@ -254,6 +254,7 @@ sub init
 	$main::me->{version} = $main::version;
 	$main::me->{build} = $main::build;
 	$main::me->{do_pc9x} = 1;
+	$main::me->{hostname} = $main::clusteraddr;
 	$main::me->update_pc92_next($pc92_short_update_period);
 	$main::me->update_pc92_keepalive;
 }
