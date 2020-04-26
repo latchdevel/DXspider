@@ -177,9 +177,9 @@ sub init
 
 sub del_file
 {
-	my $fn = localdata("users");
-	$fn .= $v3 ? ".v3" : ".v2";
-	unlink $fn;
+	# with extreme prejudice
+	unlink "$main::data/users.v3";
+	unlink "$main::local_data/users.v3";
 }
 
 #
@@ -488,12 +488,13 @@ while (<DATA>) {
 	if ($ref) {
 		$ref->put();
 		$count++;
+        DXUser::sync() unless $count % 10000;
 	} else {
 		print "# Error: $f[0]\t$f[1]\n";
 		$err++
 	}
 }
-DXUser::sync; DXUser::finish;
+DXUser::sync(); DXUser::finish();
 print "There are $count user records and $err errors\n";
 };
 		print $fh "__DATA__\n";

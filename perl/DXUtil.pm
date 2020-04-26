@@ -472,16 +472,14 @@ sub deleteitem
 sub localdata
 {
 	my $ifn = shift;
-	my $ofn = "$main::data/$ifn";
+	my $ofn = "$main::local_data/$ifn";
 	my $tfn;
 	
 	if (-e "$main::local_data") {
-		$tfn = "$main::local_data/$ifn";
+		$tfn = "$main::data/$ifn";
 		if (-e $tfn && -e $ofn) {
-			$ofn = $tfn if -M $tfn < -M $ofn;
-		} elsif (-e $tfn) {
-			$ofn = $tfn;
-		}
+			$ofn = $tfn if -M $ofn < -M $tfn;
+		} 
 	}
 
 	return $ofn;
