@@ -73,6 +73,8 @@ sub load
 	eval {$db = tie(%pre, "DB_File", undef, O_RDWR|O_CREAT, 0664, $DB_BTREE);};
 	my $out = "$@($!)" if !$db || $@ ;
 	my $fn = localdata("prefix_data.pl");
+	die "Prefix.pm: cannot find $fn, have you run /spider/perl/create_prefix.pl?" unless -e $fn;
+	
 	eval {do $fn if !$out; };
 	$out .= $@ if $@;
 	$lru = LRU->newbase('Prefix', $lrusize);
