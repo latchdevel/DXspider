@@ -969,6 +969,7 @@ sub handle_23
 
 	# note this only takes the first one it gets
 	Geomag::update($d, $pc->[2], $sfi, $k, $i, @$pc[6..8], $r);
+	dbg("WWV: $d $pc->[2], sfi:$sfi k:$k info:$i $pc->[6] $pc->[7] $pc->[8] $r") if isdbg('progress');
 
 	if (defined &Local::wwv) {
 		my $rep;
@@ -1372,6 +1373,7 @@ sub handle_73
 	}
 
 	my $wcy = WCY::update($d, @$pc[2..12]);
+	dbg("WCY: " . join ', ', @$pc[2..12]) if isdbg('progress');
 
 	if (defined &Local::wcy) {
 		my $rep;
