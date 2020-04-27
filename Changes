@@ -1,3 +1,13 @@
+27Apr20=======================================================================
+1. Start recording IP addresses that users are using both in the user file 
+   and in the routing table. The IP addresses come from PC92 A records and 
+   also from PC61 spot records. 
+2. Use this information to work backwards to, for instance, put an IP address
+   on a spot that came in on a PC11 before any PC61 or PC62 A arrived. That 
+   IP address may be on a PC61 for a different spot that had come previously.
+3. Show which debugging category triggered any debug output. Debug output
+   that was not trigger, but just output (e.g. the startup stuff) has no
+   category.
 25Apr20=======================================================================
 1. Add maximum no of users on node to show/cluster.
 2. Add ability to show last n lines of debugging ring buffer.

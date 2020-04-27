@@ -32,6 +32,7 @@ use vars qw(%list %valid $filterdef $maxlevel);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  ip => '0,IP Address',
 		 );
 
 $filterdef = bless ([

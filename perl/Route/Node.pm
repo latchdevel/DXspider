@@ -63,7 +63,7 @@ sub max
 # object with that callsign. The upper layers are expected to do something
 # sensible with this!
 #
-# called as $parent->add(call, dxchan, version, flags)
+# called as $parent->add(call, version, flags, ip)
 #
 
 sub add

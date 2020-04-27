@@ -96,7 +96,8 @@ sub dbg($)
 		for (@l) {
 			s/([\x00-\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
 			print "$_\n" if defined \*STDOUT && !$no_stdout;
-			my $str = "$t^$_";
+			my $tag = $_isdbg ? "($_isdbg) " : '';
+			my $str = "$t^$tag$_";
 			&$callback($str) if $callback;
 			if ($dbgringlth) {
 				shift @dbgring while (@dbgring > $dbgringlth);
