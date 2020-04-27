@@ -241,7 +241,7 @@ sub handle_11
 	}
 	
 	if (isdbg('progress')) {
-		my $sip = $ip ? sprintf "($ip$implied)" : '';
+		my $sip = $ip ? sprintf "($ip$implied)" : '' unless $ip =~ m|[\(\)\*]|;
 		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]$sip\@$spot[7]", cldatetime($spot[2]);
 		$s .= " '$spot[3]'" if $spot[3];
 		dbg($s);
