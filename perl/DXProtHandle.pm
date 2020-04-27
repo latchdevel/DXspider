@@ -230,18 +230,19 @@ sub handle_11
 	$user = DXUser->new($spot[4]) unless $user;	
 	my $r = Route::get($spot[4]);
 	my $ip = $spot[14] if exists $spot[14];
+	my $implied = '';
 	if ($ip) {
 		$user->ip($ip), $user->put if !$user->ip || $user->ip ne $ip;
 		$r->ip($ip) if $r && !$r->ip;
 	} else {
 		$ip ||= $r->ip if $r;
 		$ip ||= $user->ip;
-		$ip .= '*' if $ip;
+		$implied = '*' if $ip;
 	}
 	
 	if (isdbg('progress')) {
-		$ip = $ip ? sprintf "($ip)" : '';
-		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]$ip\@$spot[7]", cldatetime($spot[2]);
+		my $sip = $ip ? sprintf "($ip$implied)" : '';
+		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]$sip\@$spot[7]", cldatetime($spot[2]);
 		$s .= " '$spot[3]'" if $spot[3];
 		dbg($s);
 	}
