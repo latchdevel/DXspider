@@ -32,7 +32,7 @@ use vars qw(%list %valid $filterdef $maxlevel);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
-		  ip => '0,IP Address',
+		  ip => '0,IP Address,piplist',
 		 );
 
 $filterdef = bless ([
@@ -373,6 +373,21 @@ sub dxchan
 
 	# dxchannels are now returned in order of "closeness"
 	return $dxchan[0];
+}
+
+# IP address handling
+# this allows one to ask whether an IP address has been used with this node or let's one set an IP address for this node.
+sub ip
+{
+	my $self = shift;
+	my $node = shift;
+	my $ipin = shift;
+
+	$self->{ip} = {} unless ref $self->{ip};
+	my $ref = $self->{ip};
+	my $ip = $ref->{$node}->[0];
+	$ip = $ref->{$node} = [$ipin, $main::systime] if $ipin;
+	return $ip;
 }
 
 sub delete_interface

@@ -5,9 +5,14 @@
 2. Use this information to work backwards to, for instance, put an IP address
    on a spot that came in on a PC11 before any PC61 or PC62 A arrived. That 
    IP address may be on a PC61 for a different spot that had come previously.
+   
+   An IP address that has not come in on that PC61, but is deduced from route
+   or user login information is mark in the debug with a '*'
 3. Show which debugging category triggered any debug output. Debug output
    that was not trigger, but just output (e.g. the startup stuff) has no
    category.
+4. IP addresses are stored in hash tables in the user record permanently as an
+   IP address + time tuple. A pruning mechanism will appear when need arises.
 25Apr20=======================================================================
 1. Add maximum no of users on node to show/cluster.
 2. Add ability to show last n lines of debugging ring buffer.
