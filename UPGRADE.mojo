@@ -50,10 +50,24 @@ or
 
 You will need the following CPAN packages:
 
+	If you are on a Debian based system (Devuan, Ubuntu, Mint etc) that is reasonably new (I use Ubuntu
+	18.04 and Debian 10) then you can simply do:
+
+	sudo apt-get install libev-perl libmojolicious-perl libjson-perl libjson-xs-perl
+
+    or on Redhat based systems you can install the very similarly (but not the same) named
+	packages. I don't the exact names but using anything less than Centos 7 is likely to cause
+	a world of pain. Also I doubt that EV and Mojolicious are packaged for Centos at all.
+
+	If in doubt or it is taking too long to find the packages you should build from CPAN. Note: you may
+	need to install the essential packages to build some of these. At the very least you will need
+	to install 'make' (sudo apt-get install make) or just get everything you are likely to need with
+	sudo apt-get install build-essential.
+
 	sudo cpanm EV Mojolicious JSON JSON::XS
+	
 	# just in case it's missing
 	sudo apt-get install top
-
 
 Please make sure that, if you insist on using operating system packages, that your Mojolicious is
 at least version 7.26. Mojo::IOLoop::ForkCall is NOT LONGER IN USE! The current version at time
@@ -133,6 +147,8 @@ Now run the console program or telnet localhost and login as the sysop user.
 as the sysop user:
 
    sudo service dxspider stop
+   or
+   sudo systemctl stop dxspider
 
 having stopped the node:
 
@@ -153,9 +169,11 @@ Now in another window run:
 and finally:
 
    sudo service dxspider start
+   or
+   sudo service systemctl start dxspider
 
 You should be aware that this code base is now under active development and, if you do a 'git pull',
-what you get may be broken. But, if this does happen, the likelyhood is that I am actively working
+what you get may be broken. But, if this does happen, the likelihood is that I am actively working
 on the codebase and any brokenness may be fixed (maybe in minutes) with another 'git pull'.
 
 I try very hard not to leave it in a broken state...
