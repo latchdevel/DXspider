@@ -228,7 +228,7 @@ sub handle_11
 	if (isdbg('progress')) {
 		my $sip = $ip ? sprintf "($ip)" : '' unless $ip =~ m|[\(\)\*]|;
 		my $d = cldatetime($spot[2]);
-		$d =~ /^s+//;
+		$d =~ s/^s+//;
 		my $s = "SPOT: $spot[1] on $spot[0] \@ $d by $spot[4]$sip\@$spot[7]";
 		$s .= " '$spot[3]'" if $spot[3];
 		dbg($s);
@@ -1480,6 +1480,9 @@ sub _add_thingy
 	my ($call, $is_node, $is_extnode, $here, $version, $build, $ip) = @$s;
 	my @rout;
 
+	# remove spurious IPV6 prefix on IPV4 addresses
+	$ip =~ s/^::ffff://;
+	
 	if ($call) {
 		my $ncall = $parent->call;
 		if ($is_node) {
