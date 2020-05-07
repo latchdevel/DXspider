@@ -1,3 +1,5 @@
+07May20=======================================================================
+1. Revert changes made since 25Apr concerning IP address reconciliation.
 25Apr20=======================================================================
 1. Add maximum no of users on node to show/cluster.
 2. Add ability to show last n lines of debugging ring buffer.
