@@ -222,27 +222,14 @@ sub handle_11
 	}
 
 	# add it
-	$spot[14] =~ s/^::ffff:// if exists $spot[14];	# remove rubbish ipv4 addresses dressed up as ipv6
 	Spot::add(@spot);
 
-	# create a spotter if doesn't exit and there is an ip available and in anycase remember the IP address
-	my $user = DXUser::get_current($spot[4]);
-	$user = DXUser->new($spot[4]) unless $user;	
-	my $r = Route::get($spot[4]);
 	my $ip = $spot[14] if exists $spot[14];
-	my $implied = '';
-	if ($ip) {
-		$user->ip($ip), $user->put if !$user->ip || $user->ip ne $ip;
-		$r->ip($ip) if $r && !$r->ip;
-	} else {
-		$ip ||= $r->ip if $r;
-		$ip ||= $user->ip;
-		$implied = '*' if $ip;
-	}
-	
 	if (isdbg('progress')) {
-		my $sip = $ip ? sprintf "($ip$implied)" : '' unless $ip =~ m|[\(\)\*]|;
-		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]$sip\@$spot[7]", cldatetime($spot[2]);
+		my $sip = $ip ? sprintf "($ip)" : '' unless $ip =~ m|[\(\)\*]|;
+		my $d = cldatetime($spot[2]);
+		$d =~ /^s+//;
+		my $s = "SPOT: $spot[1] on $spot[0] \@ $d by $spot[4]$sip\@$spot[7]";
 		$s .= " '$spot[3]'" if $spot[3];
 		dbg($s);
 	}
@@ -254,8 +241,8 @@ sub handle_11
 	# you should be able to route on any of these
 	#
 
-	
 	# fix up qra locators of known users
+	my $user = DXUser::get_current($spot[4]);
 	if ($user) {
 		my $qra = $user->qra;
 		unless ($qra && is_qra($qra)) {
@@ -1495,44 +1482,25 @@ sub _add_thingy
 
 	if ($call) {
 		my $ncall = $parent->call;
-		my $user = DXUser::get_current($call);
-		my $r;
-		my $newuser = !$user;
-		$user = DXUser->new($call) unless $user;
-		$user->homenode($parent->call) unless $user->homenode;
-		$user->node($parent->call);
-		$user->lastin($main::systime) unless DXChannel::get($ncall);
 		if ($is_node) {
 			dbg("ROUTE: added node $call to $ncall") if isdbg('routelow');
 			@rout = $parent->add($call, $version, Route::here($here), $ip);
-			$r = Route::Node::get($call);
+			my $r = Route::Node::get($call);
 			$r->PC92C_dxchan($dxchan->call, $hops) if $r;
-			if ($newuser) {
-				$user->sort('S') unless $user->sort;
-				$user->priv(1) unless exists $user->{priv};
-				$user->lockout(1) unless exists $user->{lookout} || $main::me->call eq $call || DXChannel::get($call) || Msg::get($call);
+			if ($ip) {
+				$r->ip($ip);
+				Log('DXProt', "PC92A $call -> $ip on $ncall");
 			}
 		} else {
 			dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
 			@rout = $parent->add_user($call, Route::here($here), $ip);
 			$dxchan->tell_buddies('loginb', $call, $ncall) if $dxchan;
-			$r = Route::User::get($call);
-			if ($newuser) {
-				$user->sort('U') unless $user->sort;
+			my $r = Route::User::get($call);
+			if ($ip) {
+				$r->ip($ip);
+				Log('DXProt', "PC92A $call -> $ip on $ncall");
 			}
 		}
-		$ip ||= $user->ip;
-		if ($ip) {
-			$user->ip($ip);
-			$r->ip($ip);
-			my $s = "PC92A $call -> $ip on $ncall";
-			Log('DXProt', $s);
-			dbg($s) if isdbg('routelow');
-		}
-		$user->put;
-
-		# create a node user if required
-
 		if ($pc92_slug_changes && $parent == $main::routeroot) {
 			$things_add{$call} = Route::get($call);
 			delete $things_del{$call};

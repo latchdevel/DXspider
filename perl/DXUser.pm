@@ -20,7 +20,7 @@ use File::Copy;
 
 use strict;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3 $noips);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3);
 
 %u = ();
 $dbm = undef;
@@ -30,7 +30,6 @@ $lasttime = 0;
 $lrusize = 2000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
-$noips = 4;
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -92,7 +91,6 @@ $noips = 4;
 		  believe => '1,Believable nodes,parray',
 		  lastping => '1,Last Ping at,ptimelist',
 		  maxconnect => '1,Max Connections',
-		  ip => '1,IP address',
 		 );
 
 #no strict;

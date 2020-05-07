@@ -29,7 +29,6 @@ $now = time;
 $cnum = 0;
 $connect_timeout = 5;
 $disc_waittime = 1.5;
-%conns;
 
 our %delqueue;
 
@@ -101,12 +100,6 @@ sub conns
 		$ref = $conns{$call};
 	}
 	return $ref;
-}
-
-# this is called as a FUNCTION i.e my $conn = Msg::get($call);
-sub get
-{
-	return $conns{shift};
 }
 
 # this is only called by any dependent processes going away unexpectedly
