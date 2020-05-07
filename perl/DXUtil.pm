@@ -27,7 +27,7 @@ require Exporter;
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
-			 diffms _diffms ahour piplist mindate adate
+			 diffms _diffms
             );
 
 
@@ -51,24 +51,6 @@ sub atime
 	my ($sec,$min,$hour,$mday,$mon,$year) = gmtime((defined $t) ? $t : time);
 	$year += 1900;
 	my $buf = sprintf "%02d%s%04d\@%02d:%02d:%02d", $mday, $month[$mon], $year, $hour, $min, $sec;
-	return $buf;
-}
-
-# just the hour
-sub ahour
-{
-	my $t = shift;
-	my ($sec,$min,$hour,$mday,$mon,$year) = gmtime((defined $t) ? $t : time);
-	my $buf = sprintf "%02d:%02d:%02d", $hour, $min, $sec;
-	return $buf;
-}
-
-sub adate
-{
-	my $t = shift;
-	my ($sec,$min,$hour,$mday,$mon,$year) = gmtime((defined $t) ? $t : time);
-	$year += 1900;
-	my $buf = sprintf "%02d%s%04d", $mday, $month[$mon], $year;
 	return $buf;
 }
 
@@ -211,7 +193,7 @@ sub ptimelist
 sub parray
 {
 	my $ref = shift;
-	return ref $ref ? join(',', @{$ref}) : $ref;
+	return ref $ref ? join(', ', @{$ref}) : $ref;
 }
 
 # take the arg as an array reference and print as a list of pairs
@@ -238,55 +220,10 @@ sub phash
 	my $out;
 
 	while (my ($k,$v) = each %$ref) {
-		if (ref $v eq 'ARRAY') {
-			$out = "${k}=>[" . parray($v) . "],";
-		} elsif (ref $v eq 'HASH') {
-			$out = "${k}=>{" . phash($v) . "},";
-		} else {
-			$out .= "${k}=>$v,";
-		}
+		$out .= "${k}=>$v, ";
 	}
+	chop $out;					# remove last space
 	chop $out;					# remove last comma
-	return $out;
-}
-
-sub mindate
-{
-	my $t = shift;
-	my $out;
-
-	if ($main::system-$t < 86400 ) {
-		$out = ahour($t);
-	} elsif ($main::system-$t < 365*86400) {
-		$out = adate($t);
-		chop $out for (1..4);
-		$out .= ' ' . atime($t);
-		chop $out for (1..3);
-	} else {
-		$out = atime($t);
-		$out =~ s/\@/ /;
-	}
-	return $out;
-}
-
-# like phash but prints dates and times
-sub piplist
-{
-	my $ref = shift;
-	my $out;
-
-	return $ref unless ref $ref;
-	
-	while (my ($k,$v) = each %$ref) {
-		if (ref $v eq 'HASH') {
-			$out .= piplist($v);
-		} elsif (ref $v eq 'ARRAY') {
-			$out .= join(',', map { sprintf "$_->[0]@%s", mindate($_->[1]) }  ref $v->[0] eq 'ARRAY' ? @$v : $v);
-		} else {
-			$out .= $v;
-		}
-	}
-	$out =~ s/,+$//;					# remove last comma
 	return $out;
 }
 

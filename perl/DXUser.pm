@@ -92,7 +92,7 @@ $noips = 4;
 		  believe => '1,Believable nodes,parray',
 		  lastping => '1,Last Ping at,ptimelist',
 		  maxconnect => '1,Max Connections',
-		  ip => '1,IP addresses,piplist',
+		  ip => '1,IP address',
 		 );
 
 #no strict;
@@ -187,21 +187,6 @@ sub del_file
 	# with extreme prejudice
 	unlink "$main::data/users.v3";
 	unlink "$main::local_data/users.v3";
-}
-
-# IP address handling
-# this allows one to ask whether an IP address has been used with this node or let's one set an IP address for this node.
-sub ip
-{
-	my $self = shift;
-	my $node = shift;
-	my $ipin = shift;
-
-	$self->{ip} = {} unless ref $self->{ip};
-	my $ref = $self->{ip};
-	delete $ref->{''};
-	$ref->{$node} = [$ipin, $main::systime] if $ipin;
-	return $ref->{$node}->[0];
 }
 
 #

@@ -232,18 +232,16 @@ sub handle_11
 	my $ip = $spot[14] if exists $spot[14];
 	my $implied = '';
 	if ($ip) {
-		$ip =~ s/[\(\)\*]+//g; 	# strip these off :-)
-		$user->ip($spot[7], $ip);
-		$user->put;
-		$r->ip($spot[7], $ip) if $r;
+		$user->ip($ip), $user->put if !$user->ip || $user->ip ne $ip;
+		$r->ip($ip) if $r && !$r->ip;
 	} else {
-		$ip ||= $r->ip($spot[7]) if $r;
-		$ip ||= $user->ip($spot[7]);
+		$ip ||= $r->ip if $r;
+		$ip ||= $user->ip;
 		$implied = '*' if $ip;
 	}
 	
 	if (isdbg('progress')) {
-		my $sip = $ip ? sprintf "($ip$implied)" : '';
+		my $sip = $ip ? sprintf "($ip$implied)" : '' unless $ip =~ m|[\(\)\*]|;
 		my $s = sprintf "SPOT: $spot[1] on $spot[0] \@ %s by $spot[4]$sip\@$spot[7]", cldatetime($spot[2]);
 		$s .= " '$spot[3]'" if $spot[3];
 		dbg($s);
@@ -1523,11 +1521,10 @@ sub _add_thingy
 				$user->sort('U') unless $user->sort;
 			}
 		}
-		$ip ||= $user->ip($ncall);
+		$ip ||= $user->ip;
 		if ($ip) {
-			$ip =~ s/^::ffff://; #  remove ipv6 stuff from the front of an ipv4 address
-			$user->ip($ncall, $ip);
-			$r->ip($ncall, $ip);
+			$user->ip($ip);
+			$r->ip($ip);
 			my $s = "PC92A $call -> $ip on $ncall";
 			Log('DXProt', $s);
 			dbg($s) if isdbg('routelow');
