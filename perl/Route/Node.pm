@@ -19,7 +19,6 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 @ISA = qw(Route);
 
 %valid = (
-		  parent => '0,Parent Calls,parray',
 		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',
@@ -29,11 +28,10 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 		  lastmsg => '0,Last Route Msg,atime',
 		  lastid => '0,Last Route MsgID',
 		  do_pc9x => '0,Uses pc9x,yesno',
-		  via_pc92 => '0,Came in via pc92,yesno',
+		  via_pc92 => '0,In via pc92?,yesno',
 		  obscount => '0,Obscount',
 		  last_PC92C => '9,Last PC92C',
-		  PC92C_dxchan => '9,Channel of PC92C,phash',
-		  ip => '0,IP Address',
+		  PC92C_dxchan => '9,PC92C hops,phash',
 );
 
 $filterdef = $Route::filterdef;

@@ -9,7 +9,7 @@
 my ($self, $line) = @_;
 my @out;
 my @list = split /\s+/, $line;		      # generate a list of callsigns
-@list = ($self->call) if !@list;  # my channel if no callsigns
+@list = ($self->call) unless @list;  # my channel if no callsigns
 if ($self->priv > 5 && @list && uc $list[0] eq 'ALL') {
 	push @out, "Node Callsigns in Routing Table";
 	@list = sort map {$_->call} Route::Node::get_all();

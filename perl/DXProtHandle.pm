@@ -1480,7 +1480,7 @@ sub _add_thingy
 	my @rout;
 
 	# remove spurious IPV6 prefix on IPV4 addresses
-	$ip =~ s/^::ffff://;
+	$ip =~ s/^::ffff:// if $ip;
 	
 	if ($call) {
 		my $ncall = $parent->call;

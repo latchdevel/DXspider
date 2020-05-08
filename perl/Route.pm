@@ -25,6 +25,7 @@ use strict;
 use vars qw(%list %valid $filterdef $maxlevel);
 
 %valid = (
+		  parent => '0,Parent Calls,parray',
 		  call => "0,Callsign",
 		  flags => "0,Flags,phex",
 		  dxcc => '0,Country Code',
@@ -32,6 +33,7 @@ use vars qw(%list %valid $filterdef $maxlevel);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  ip => '0,IP Address',
 		 );
 
 $filterdef = bless ([

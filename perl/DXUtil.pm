@@ -182,7 +182,7 @@ sub ptimelist
 	my $ref = shift;
 	my $out;
 	for (sort keys %$ref) {
-		$out .= "$_=$ref->{$_}, ";
+		$out .= "$_=" . atime($ref->{$_}) . ", ";
 	}
 	chop $out;
 	chop $out;

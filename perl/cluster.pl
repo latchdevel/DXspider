@@ -460,6 +460,9 @@ sub setup_start
 				my $desc = $repo->command_oneline(['describe', '--long'], STDERR => 0);
 				if ($desc) {
 					my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+					$s ||= '';
+					dbg("Git: $desc");
+					dbg("Git: V=$v S=$s B=$b g=$g");
 					$version = $v;
 					$build = $b || 0;
 					$gitversion = "$g\[r]";

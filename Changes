@@ -1,3 +1,7 @@
+08May20=======================================================================
+1. Tidy up routing table
+2. Add new argument to show/version (ALL or list of regexes) that allow you
+   to see the version and build nos of all nodes on the system. 
 07May20=======================================================================
 1. Revert changes made since 25Apr concerning IP address reconciliation.
 25Apr20=======================================================================
