@@ -224,9 +224,11 @@ sub handle_11
 	# add it
 	Spot::add(@spot);
 
-	my $ip = $spot[14] if exists $spot[14];
+	my $ip = '';
+	$ip ||= $spot[14] if exists $spot[14];
 	if (isdbg('progress')) {
 		my $sip = $ip ? sprintf "($ip)" : '' unless $ip =~ m|[\(\)\*]|;
+		$sip ||= '';
 		my $d = ztime($spot[2]);
 		my $s = "SPOT: $spot[1] on $spot[0] \@ $d by $spot[4]$sip\@$spot[7]";
 		$s .= " '$spot[3]'" if $spot[3];
