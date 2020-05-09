@@ -786,6 +786,8 @@ sub queue_msg
 				if ($dxchan) {
 					if ($dxchan->is_node) {
 						next if $clref->call eq $main::mycall;  # i.e. it lives here
+						next if $dxchan->is_arcluster;			# don't even go there, idiot people send the header in the wrong order and won't/can't fix it
+						next if $dxchan->isolate;				# there is no mechanism for sending messages to isolated nodes. 
 						$ref->start_msg($dxchan) if !get_busy($dxchan->call)  && $dxchan->state eq 'normal';
 					}
 				} else {
@@ -804,8 +806,10 @@ sub queue_msg
 				next unless $call;
 				next if $call eq $main::mycall;
 				next if ref $ref->{gotit} && grep $_ eq $call, @{$ref->{gotit}};
-				next unless $ref->forward_it($call);           # check the forwarding file
-				next if $ref->{tonode};	          # ignore it if it already being processed
+				next unless $ref->forward_it($call);    # check the forwarding file
+				next if $ref->{tonode};	                # ignore it if it already being processed
+				next if $dxchan->is_arcluster;			# don't even go there, idiot people send the header in the wrong order and won't/can't fix it
+				next if $dxchan->isolate;				# there is no mechanism for sending messages to isolated nodes. 
 				
 				# if we are here we have a node that doesn't have this message
 				if (!get_busy($call)  && $dxchan->state eq 'normal') {

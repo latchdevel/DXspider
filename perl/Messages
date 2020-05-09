@@ -353,7 +353,7 @@ package DXM;
 				wpc9xu => 'PC9X for $_[0] disabled',
 				wwv1 => '$_[0] is missing or out of range',
 				wwv2 => 'Duplicate WWV',
-				wwv3 => 'Date        Hour   SFI   A   K Forecast                               Logger',
+				wwv3 => 'Date        Hour   SFI   A   K Forecast                              Logger',
 				wwvs => 'WWV enabled for $_[0]',
 				wwvu => 'WWV disabled $_[0]',
 				wxs => 'WX enabled for $_[0]',

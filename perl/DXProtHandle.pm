@@ -663,13 +663,15 @@ sub check_add_node
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
 	my $user = DXUser::get_current($call);
-	if (!$user) {
+	unless ($user) {
 		$user = DXUser->new($call);
 		$user->priv(1);		# I have relented and defaulted nodes
 		$user->lockout(1);
 		$user->homenode($call);
 		$user->node($call);
 		$user->sort('A');
+		$user->lastin($main::systime); # this make it last longer than just this invocation
+		$user->put;				# just to make sure it gets written away!!!
 	}
 	return $user;
 }
@@ -973,7 +975,7 @@ sub handle_23
 
 	# note this only takes the first one it gets
 	Geomag::update($d, $pc->[2], $sfi, $k, $i, @$pc[6..8], $r);
-	dbg("WWV: $d $pc->[2], sfi:$sfi k:$k info:$i $pc->[6] $pc->[7] $pc->[8] $r route: $origin") if isdbg('progress');
+	dbg("WWV: <$pc->[2]>, sfi=$sfi k=$k info=$i '$pc->[6]' $pc->[7]\@$pc->[8] $r route: $origin") if isdbg('progress');
 
 	if (defined &Local::wwv) {
 		my $rep;
@@ -1377,7 +1379,7 @@ sub handle_73
 	}
 
 	my $wcy = WCY::update($d, @$pc[2..12]);
-	dbg("WCY: " . join(', ', @$pc[2..12]) . " route: $origin") if isdbg('progress');
+	dbg("WCY: <$pc->[2]> K=$pc->[5] expK=$pc->[6] A=$pc->[4] R=$pc->[7] SFI=$pc->[3] SA=$pc->[8] GMF=$pc->[9] Au=$pc->[10] $pc->[11]\@$pc->[12] route: $origin") if isdbg('progress');
 
 	if (defined &Local::wcy) {
 		my $rep;
