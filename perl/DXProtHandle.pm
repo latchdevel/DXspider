@@ -231,7 +231,8 @@ sub handle_11
 		$sip ||= '';
 		my $d = ztime($spot[2]);
 		my $s = "SPOT: $spot[1] on $spot[0] \@ $d by $spot[4]$sip\@$spot[7]";
-		$s .= " '$spot[3]'" if $spot[3];
+		$s .= $spot[3] ? " '$spot[3]'" : q{ ''};
+		$s .=  " route: $origin";
 		dbg($s);
 	}
 	
@@ -972,7 +973,7 @@ sub handle_23
 
 	# note this only takes the first one it gets
 	Geomag::update($d, $pc->[2], $sfi, $k, $i, @$pc[6..8], $r);
-	dbg("WWV: $d $pc->[2], sfi:$sfi k:$k info:$i $pc->[6] $pc->[7] $pc->[8] $r") if isdbg('progress');
+	dbg("WWV: $d $pc->[2], sfi:$sfi k:$k info:$i $pc->[6] $pc->[7] $pc->[8] $r route: $origin") if isdbg('progress');
 
 	if (defined &Local::wwv) {
 		my $rep;
@@ -1376,7 +1377,7 @@ sub handle_73
 	}
 
 	my $wcy = WCY::update($d, @$pc[2..12]);
-	dbg("WCY: " . join ', ', @$pc[2..12]) if isdbg('progress');
+	dbg("WCY: " . join(', ', @$pc[2..12]) . " route: $origin") if isdbg('progress');
 
 	if (defined &Local::wcy) {
 		my $rep;
@@ -2022,7 +2023,7 @@ sub handle_93
 
 	if (isdbg('progress')) {
 		my $vs = $via ne '*' ? " via $via" : ''; 
-		my $s = "ANNTALK: $from\@$onode$vs -> $to '$text'";
+		my $s = "ANNTALK: $from\@$onode$vs -> $to '$text' route: $origin";
 		dbg($s);
 	}
 	

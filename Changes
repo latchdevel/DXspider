@@ -1,3 +1,7 @@
+09May20=======================================================================
+1. Show the route by which this PCxx came in progress debugging reports. In
+   some other words: the spot/wwv/wcy/ann message arrived first from this 
+   connection. 
 08May20=======================================================================
 1. Tidy up routing table
 2. Add new argument to show/version (ALL or list of regexes) that allow you
