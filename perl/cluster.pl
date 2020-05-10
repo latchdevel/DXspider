@@ -166,6 +166,16 @@ $starttime = 0;                 # the starting time of the cluster
 @listeners = ();				# list of listeners
 $reqreg = 0;					# 1 = registration required, 2 = deregister people
 $bumpexisting = 1;				# 1 = allow new connection to disconnect old, 0 - don't allow it
+our $allowmultiple = 0;				# This is used in conjunction with $bumpexisting, in a rather weird way.
+our $min_reconnection_rate = 5*60;		# minimum value of seconds between connections per user to allow co-existing users
+our $max_ssid = 15;					# highest ssid to be searched for a spare one on multiple connections
+
+# If $allowmultiple > 0 and the $reconnection_rate is some value of seconds
+# based on the average connection time calculated from the $user->conntimel entries / frequency is
+# less than $reconnection_rate then we assume that there is more than one device (probably HRD) trying
+# to connect "at once". In which case we probe for a spare SSID for a user callsign to allow up to 
+# $allowmultiple connections per callsign. 
+
 $allowdxby = 0;					# 1 = allow "dx by <othercall>", 0 - don't allow it
 $maxconnect_user = 3;			# the maximum no of concurrent connections a user can have at a time
 $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
@@ -220,6 +230,7 @@ sub new_channel
 			$user->long($main::mylongitude);
 			$user->qra($main::mylocator);
 		}
+		$user->startt($main::systime);
 		$conn->conns($call);
 		$dxchan = Web->new($call, $conn, $user);
 		$dxchan->enhanced(1);
@@ -233,46 +244,9 @@ sub new_channel
 			return;
 		}
 
-		# set up the basic channel info for "Normal" Users
-		# is there one already connected to me - locally?
-	
-		$user = DXUser::get_current($call);
-		$dxchan = DXChannel::get($call);
-		if ($dxchan) {
-			if ($user && $user->is_node) {
-				already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
-				return;
-			}
-			if ($bumpexisting) {
-				my $ip = $dxchan->hostname;
-				$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
-				LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
-				$dxchan->disconnect;
-			} else {
-				already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
-				return;
-			}
-		}
-		
-		# (fairly) politely disconnect people that are connected to too many other places at once
-		my $r = Route::get($call);
-		if ($conn->{sort} && $conn->{sort} =~ /^I/ && $r && $user) {
-			my @n = $r->parents;
-			my $m = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
-			my $c = $user->maxconnect;
-			my $v;
-			$v = defined $c ? $c : $m;
-			if ($v && @n >= $v) {
-				my $nodes = join ',', @n;
-				LogDbg('DXCommand', "$call has too many connections ($v) at $nodes - disconnected");
-				already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
-				return;
-			}
-		}
-		
 		# is he locked out ?
 		my $basecall = $call;
-		$basecall =~ s/-\d+$//;
+		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing
 		my $baseuser = DXUser::get_current($basecall);
 		my $lock = $user->lockout if $user;
 		if ($baseuser && $baseuser->lockout || $lock) {
@@ -284,6 +258,75 @@ sub new_channel
 			}
 		}
 
+		# set up the basic channel info for "Normal" Users
+		# is there one already connected to me - locally?
+
+		$user = DXUser::get_current($call);
+		$dxchan = DXChannel::get($call);
+		my $newcall = $call;
+		if ($dxchan) {
+			if ($user && $user->is_node) {
+				already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+				return;
+			}
+			if ($allowmultiple && $user->is_user) {
+				# determine whether we are a candidate, have we flip-flopped frequently enough?
+				my @lastconns = @{$user->connlist} if $user->connlist;
+				my $allow = 0;
+				if (@lastconns >= $DXUser::maxconnlist) {
+					$allow = $lastconns[-1]->[0] - $lastconns[0]->[0] < $min_reconnection_rate;
+				}
+				# search for a spare ssid
+			L1:	for (my $count = $call =~ /-\d+$/?0:1; $allow && $count < $allowmultiple; ) { # remember we have one call already
+					my $lastid = 1;
+					for (; $lastid < $max_ssid && $count < $allowmultiple; ++$lastid) {
+						my $chan = DXChannel::get("$basecall-$lastid");
+						if ($chan) {
+							++$count;
+							next;
+						}
+						# we have a free call-ssid, save it
+						$newcall = "$basecall-$lastid";
+						last L1;
+					}
+				}
+			}
+
+			# handle "normal" (non-multiple) connections in the existing way
+			if ($call eq $newcall) {
+				if ($bumpexisting) {
+					my $ip = $dxchan->hostname;
+					$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
+					LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
+					$dxchan->disconnect;
+				} else {
+					already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
+					return;
+				}
+			}
+
+			# make sure that the conn has the (possibly) new callsign
+			$conn->conns($newcall);
+			$msg =~ s/$call/$newcall/;
+		}
+
+
+		# (fairly) politely disconnect people that are connected to too many other places at once
+		my $r = Route::get($call);
+		if ($conn->{sort} && $conn->{sort} =~ /^I/ && $r && $user) {
+			my @n = $r->parents;
+			my $m = $r->isa('Route::Node') ? $maxconnect_node : $maxconnect_user;
+			my $c = $user->maxconnect;
+			my $v;
+			$v = defined $c ? $c : $m;
+			if ($v && @n >= $v+$allowmultiple) {
+				my $nodes = join ',', @n;
+				LogDbg('DXCommand', "$call has too many connections ($v) at $nodes - disconnected");
+				already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
+				return;
+			}
+		}
+		
 		if ($user) {
 			$user->{lang} = $main::lang if !$user->{lang}; # to autoupdate old systems
 		} else {
@@ -291,16 +334,16 @@ sub new_channel
 		}
 
 		# create the channel
+		# NOTE we are SHARING the same $user if $allowmultiple is > 1
+		
+		$user->startt($systime); # mark the start time of this connection
 		if ($user->is_node) {
 			$dxchan = DXProt->new($call, $conn, $user);
 		} elsif ($user->is_user) {
-			$dxchan = DXCommandmode->new($call, $conn, $user);
+			$dxchan = DXCommandmode->new($newcall, $conn, $user);
 		} else {
 			die "Invalid sort of user on $call = $sort";
 		}
-		
-		# check that the conn has a callsign
-		$conn->conns($call) if $conn->isa('IntMsg');
 	}
 	
 

@@ -547,13 +547,13 @@ sub run_cmd
 				my $t0 = [gettimeofday];
 				eval { @ans = &{"${package}::handle"}($self, $args) };
 				if ($@) {
-					dbgprintring(25);
+					DXDebug::dbgprintring(25);
 					return (DXDebug::shortmess($@));
 				}
 				if (isdbg('progress')) {
 					my $msecs = _diffms($t0);
 					my $s = "CMD: '$cmd $args' by $call ip: $self->{hostname} ${msecs}mS";
-					dbg($s);
+					dbg($s) if $cmd =~/(?:echo|blank)/ || isdbg('echo');     # cut down a bit on HRD and other clients' noise
 				}
 			} else {
 				dbg("cmd: $package not present") if isdbg('command');

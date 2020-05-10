@@ -27,7 +27,7 @@ require Exporter;
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
-			 diffms _diffms
+			 diffms _diffms difft parraydifft
             );
 
 
@@ -521,4 +521,43 @@ sub diffms
 	my $s = "subprocess stats cmd: '$line' $call ${msecs}mS";
 	$s .= " $no lines" if $no;
 	DXDebug::dbg($s);
+}
+
+# expects either an array reference or two times (in the correct order [start, end])
+sub difft
+{
+	my $b = shift;
+	my $t;
+	if (ref $b eq 'ARRAY') {
+		$t = $b->[1] - $b->[0];
+	} else {
+		$t = shift() - $b;
+	}
+	return '-(ve)' if $t < 0;
+	my ($d,$h,$m,$s);
+	my $out = '';
+	$d = int $t / 86400;
+	$out .= "${d}d" if $d;
+	$t -= $d * 86400;
+	$h = int $t / 3600;
+	$out .= "${h}h" if $h || $d;
+	$t -= $h * 3600;
+	$m = int $t / 60;
+	$out .= "${m}m" if $m || $h || $d;
+	$s = int $t % 60;
+	$out .= "${s}s";
+	return $out;
+}
+
+# print an array ref of difft refs
+sub parraydifft
+{
+	my $r = shift;
+	my $out = '';
+	for (@$r) {
+		my $s = $_->[2] ? "($_->[2])" : '';
+		$out .= sprintf "%s=%s$s, ", atime($_->[0]), difft($_->[0], $_->[1]);
+	}
+	$out =~ s/,\s*$//;
+	return $out;
 }

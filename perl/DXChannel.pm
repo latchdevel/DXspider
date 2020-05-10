@@ -161,7 +161,7 @@ sub alloc
 		$self->{group} = $user->group;
 		$self->{sort} = $user->sort;
 	}
-	$self->{startt} = $self->{t} = time;
+	$self->{startt} = $self->{t} = $main::systime;
 	$self->{state} = 0;
 	$self->{oldstate} = 0;
 	$self->{lang} = $main::lang if !$self->{lang};
@@ -497,7 +497,7 @@ sub disconnect
 	my $self = shift;
 	my $user = $self->{user};
 	
-	$user->close() if defined $user;
+	$user->close($self->{startt}, $self->{hostname}) if defined $user;
 	$self->{conn}->disconnect if $self->{conn};
 	$self->del();
 }

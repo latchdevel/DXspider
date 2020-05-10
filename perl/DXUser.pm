@@ -30,6 +30,7 @@ $lasttime = 0;
 $lrusize = 2000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
+our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -91,6 +92,8 @@ $v3 = 0;
 		  believe => '1,Believable nodes,parray',
 		  lastping => '1,Last Ping at,ptimelist',
 		  maxconnect => '1,Max Connections',
+		  startt => '0,Start Time,cldatetime',
+		  connlist => '1,Connections,parraydifft',
 		 );
 
 #no strict;
@@ -395,7 +398,14 @@ sub del
 sub close
 {
 	my $self = shift;
-	$self->{lastin} = time;
+	my $startt = shift;
+	my $ip = shift;
+	$self->{lastin} = $main::systime;
+	# add a record to the connect list
+	my $ref = [$startt || $self->{startt}, $main::systime];
+	push @$ref, $ip if $ip;
+	push @{$self->{connlist}}, $ref;
+	shift @{$self->{connlist}} if @{$self->{connlist}} > $maxconnlist;
 	$self->put();
 }
 

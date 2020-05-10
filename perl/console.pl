@@ -261,7 +261,10 @@ sub rec_socket
 		cease(1);
 	}
 	if (defined $msg) {
-		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+		my ($sort, $incall, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+
+		# change my call if my node says "tonight Michael you are Jane" or something like that...
+		$call = $incall if $call ne $incall;
 		
 		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 		if ($sort && $sort eq 'D') {
