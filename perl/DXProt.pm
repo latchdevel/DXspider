@@ -866,11 +866,11 @@ sub send_local_config
 	my @remotenodes;
 
 	if ($self->{isolate}) {
-		dbg("send_local_config: isolated");
+		dbg("$self->{call} send_local_config: isolated");
 		@localnodes = ( $main::routeroot );
 		$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
 	} elsif ($self->{do_pc9x}) {
-		dbg("send_local_config: doing pc9x");
+		dbg("$self->{call} send_local_config: doing pc9x");
 		my $node = Route::Node::get($self->{call});
 #		$self->send_last_pc92_config($main::routeroot);
 #		$self->send(pc92a($main::routeroot, $node)) unless $main::routeroot->last_PC92C =~ /$self->{call}/;
@@ -881,7 +881,7 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
 		# don't appear outside of this node
 
-		dbg("send_local_config: traditional");
+		dbg("$self->{call} send_local_config: traditional");
 
 		# send locally connected nodes
 		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();

@@ -624,7 +624,7 @@ sub handle_18
 		$self->{build} = 0 + $build;
 		$self->user->build(0 + $build);
 		$parent->build(0 + $build);
-		dbg("DXSpider version $version build $build");
+		dbg("$self->{call} = DXSpider version $version build $build");
 		unless ($self->is_spider) {
 			dbg("Change U " . $self->user->sort . " C $self->{sort} -> S");
 			$self->user->sort('S');
@@ -633,7 +633,7 @@ sub handle_18
 		}
 #		$self->{handle_xml}++ if DXXml::available() && $pc->[1] =~ /\bxml/;
 	} else {
-		dbg("Unknown software");
+		dbg("$self->{call} = Unknown software ($pc->[1] $pc->[2])");
 		$self->version(50.0);
 		$self->version($pc->[2] / 100) if $pc->[2] && $pc->[2] =~ /^\d+$/;
 		$self->user->version($self->version);
@@ -641,12 +641,12 @@ sub handle_18
 
 	if ($pc->[1] =~ /\bpc9x/) {
 		if ($self->{isolate}) {
-			dbg("pc9x recognised, but $self->{call} is isolated, using old protocol");
+			dbg("$self->{call} pc9x recognised, but node is isolated, using old protocol");
 		} elsif (!$self->user->wantpc9x) {
-			dbg("pc9x explicitly switched off on $self->{call}, using old protocol");
+			dbg("$self->{call} pc9x explicitly switched off, using old protocol");
 		} else {
 			$self->{do_pc9x} = 1;
-			dbg("Do px9x set on $self->{call}");
+			dbg("$self->{call} Set do PC9x");
 		}
 	}
 
