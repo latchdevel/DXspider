@@ -553,7 +553,7 @@ sub run_cmd
 				if (isdbg('progress')) {
 					my $msecs = _diffms($t0);
 					my $s = "CMD: '$cmd $args' by $call ip: $self->{hostname} ${msecs}mS";
-					dbg($s) if $cmd =~/(?:echo|blank)/ || isdbg('echo');     # cut down a bit on HRD and other clients' noise
+					dbg($s) if $cmd !~ /^(?:echo|blank)/ || isdbg('echo');     # cut down a bit on HRD and other clients' noise
 				}
 			} else {
 				dbg("cmd: $package not present") if isdbg('command');
