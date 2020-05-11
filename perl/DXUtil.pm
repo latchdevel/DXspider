@@ -141,6 +141,7 @@ sub dd
 {
 	my $value = shift;
 	my $dd = new Data::Dumper([$value]);
+	$dd->Sortkeys(1);
 	$dd->Indent(0);
 	$dd->Terse(1);
     $dd->Quotekeys($] < 5.005 ? 1 : 0);

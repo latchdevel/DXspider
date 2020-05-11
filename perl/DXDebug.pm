@@ -26,7 +26,7 @@ package DXDebug;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck carp);
 
 use strict;
 use vars qw(%dbglevel $fp $callback $cleandays $keepdays $dbgringlth);

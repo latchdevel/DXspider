@@ -13,14 +13,15 @@ use DB_File;
 use Data::Dumper;
 use Fcntl;
 use IO::File;
-use DXDebug;
 use DXUtil;
 use LRU;
 use File::Copy;
+use JSON;
+use DXDebug;
 
 use strict;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3 $v4);
 
 %u = ();
 $dbm = undef;
@@ -30,6 +31,9 @@ $lasttime = 0;
 $lrusize = 2000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
+$v4 = 0;
+my $json;
+
 our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
 
 # hash of valid elements and a simple prompt
@@ -124,12 +128,15 @@ sub init
 	my $ufn;
 	my $convert;
 	
+	my $fn = "users";
+	unless (-r localdata("$fn.v4")) {
+		
+	}
+
 	eval {
 		require Storable;
 	};
 
-	my $fn = "users";
-	
 	if ($@) {
 		$ufn = localdata("users.v2");
 		$v3 = $convert = 0;
@@ -159,7 +166,7 @@ sub init
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
 		
 		my %oldu;
-		dbg("Converting the User File to V3 ");
+		dbg("Converting the User File to V$convert ");
 		dbg("This will take a while, I suggest you go and have cup of strong tea");
 		my $odbm = tie (%oldu, 'DB_File', localdata("users.v2"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
         for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
@@ -327,6 +334,7 @@ sub put
 # freeze the user
 sub encode
 {
+	goto &json_encode if $v4;
 	goto &asc_encode unless $v3;
 	my $self = shift;
 	return nfreeze($self);
@@ -335,6 +343,7 @@ sub encode
 # thaw the user
 sub decode
 {
+	goto &json_dncode if $v4;
 	goto &asc_decode unless $v3;
 	my $ref;
 	$ref = thaw(shift);
@@ -379,6 +388,16 @@ sub asc_decode
 	return $ref;
 }
 
+sub json_decode
+{
+	my $
+}
+
+sub json_encode
+{
+
+}
+	
 #
 # del - delete a user
 #
@@ -548,6 +567,149 @@ print "There are $count user records and $err errors\n";
 				}
 				# only store users that are reasonably active or have useful information
 				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
+				++$count;
+			} else {
+				LogDbg('DXCommand', "Export Error3: $key\t" . carp($val) ."\n$@");
+				eval {$dbm->del($key)};
+				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
+				++$err;
+			}
+		} 
+        $fh->close;
+    }
+	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
+	LogDbg('command', $s);
+	return $s;
+}
+
+sub export_json
+{
+	use Data::Structure::Util qw(unbless);
+	
+	my $name = shift || 'user_json';
+	my $basic_info_only = shift;
+
+	my $fn = $name ne 'user_json' ? $name : "$main::local_data/$name";                       # force use of local
+	
+	# save old ones
+	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
+	move "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
+	move "$fn.oo", "$fn.ooo" if -e "$fn.oo";
+	move "$fn.o", "$fn.oo" if -e "$fn.o";
+	move "$fn", "$fn.o" if -e "$fn";
+
+	my $json = JSON->new;
+	$json->canonical(1);
+	$json->allow_blessed(1);
+	
+	my $count = 0;
+	my $err = 0;
+	my $del = 0;
+	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
+	if ($fh) {
+		my $key = 0;
+		my $val = undef;
+		my $action;
+		my $t = scalar localtime;
+		print $fh q{#!/usr/bin/perl
+#
+# The exported userfile for a DXSpider System
+#
+# Input file: $filename
+#       Time: $t
+#
+			
+package main;
+			
+# search local then perl directories
+BEGIN {
+	umask 002;
+				
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+	
+	# try to detect a lockfile (this isn't atomic but 
+	# should do for now
+	$lockfn = "$root/local_data/cluster.lck";       # lock file name
+	if (-e $lockfn) {
+		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+		my $pid = <CLLOCK>;
+		chomp $pid;
+		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
+		close CLLOCK;
+	}
+}
+
+use SysVar;
+use DXUser;
+
+if (@ARGV) {
+	$main::userfn = shift @ARGV;
+	print "user filename now $userfn\n";
+}
+
+package DXUser;
+
+use JSON;
+my $json = JSON->new;
+
+del_file();
+init(1);
+%u = ();
+my $count = 0;
+my $err = 0;
+while (<DATA>) {
+	chomp;
+	my @f = split /\t/;
+	my $ref;
+    eval { $ref = $json->decode($f[1]); };
+	if ($ref && !$@) {
+        $ref = bless $ref, 'DXUser';
+		$ref->put();
+		$count++;
+        DXUser::sync() unless $count % 10000;
+	} else {
+		print "# Error: $f[0]\t$f[1]\n";
+		$err++
+	}
+}
+DXUser::sync(); DXUser::finish();
+print "There are $count user records and $err errors\n";
+};
+		print $fh "__DATA__\n";
+
+        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
+			if (!is_callsign($key) || $key =~ /^0/) {
+				my $eval = $val;
+				my $ekey = $key;
+				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
+				eval {$dbm->del($key)};
+				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
+				++$err;
+				next;
+			}
+			my $ref;
+			eval {$ref = decode($val); };
+			if ($ref) {
+				my $t = $ref->{lastin} || 0;
+				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
+					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
+						eval {$dbm->del($key)};
+						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+						LogDbg('DXCommand', "$ref->{call} deleted, too old");
+						$del++;
+						next;
+					}
+				}
+				# only store users that are reasonably active or have useful information
+				unbless($ref);
+				print $fh "$key\t" . $json->encode($ref) . "\n";
 				++$count;
 			} else {
 				LogDbg('DXCommand', "Export Error3: $key\t" . carp($val) ."\n$@");
