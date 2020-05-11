@@ -129,9 +129,6 @@ sub init
 	my $convert;
 	
 	my $fn = "users";
-	unless (-r localdata("$fn.v4")) {
-		
-	}
 
 	eval {
 		require Storable;
@@ -390,7 +387,7 @@ sub asc_decode
 
 sub json_decode
 {
-	my $
+
 }
 
 sub json_encode
