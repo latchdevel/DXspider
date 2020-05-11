@@ -118,7 +118,7 @@ sub lines
 sub erase
 {
 	my $self = shift;
-	my $call = clean($self->call);
+	my $call = clean($self->{call});
 
 	my $fn;
 	my $try;
