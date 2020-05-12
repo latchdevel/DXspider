@@ -1,6 +1,14 @@
 10May20=======================================================================
 1. Added basic changes so that users *could* have multiple connections to the
-   same node if it is allowed.
+   same node if it is allowed. This is work in progress and is there to see 
+   if it deals with some networking problems encountered on very high volume
+   sites which can see more than 1000 users (although the problems can occur
+   with many hundreds or by the practices of certain ISPs). More information
+   will be forthcoming if I get to the bottom of what's REALLY going on and
+   whether this is (or maybe just one part of) the solution. It won't be 
+   ready for general use until then.
+2. Fixed the script import error reported by Joaquin (EA3CV?), by the simple
+   expedient of restoring the version from the master branch. 
 09May20=======================================================================
 1. Show the route by which this PCxx came in progress debugging reports. In
    some other words: the spot/wwv/wcy/ann message arrived first from this 
