@@ -121,7 +121,34 @@ while (<$sock>) {
 
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
 		# This works because the skimmers are NTP controlled (or should be) and will receive
-		# the spot at the same time (velocity factor of the atmosphere taken into account :-)
+		# the spot at the same time (velocity factor of the atmosphere and network delays
+		# carefully (not) taken into account :-)
+
+		# Note, there is no intelligence here, but there are clearly basic heuristics that could
+		# be applied at this point that reject (more likely rewrite) the call of a busted spot that would
+		# useful for a zonal hotspot requirement from the cluster node.
+
+		# In reality, this mechanism would be incorporated within the cluster code, utilising the dxqsl database,
+		# and other resources in DXSpider, thus creating a zone map for an emitted spot. This is then passed through the
+		# normal "to-user" spot system (where normal spots are sent to be displayed per user) and then be
+		# processed through the normal, per user, spot filtering system - like a regular spot.
+
+		# The key to this is deducing the true callsign by "majority voting" (the greater the number of spotters
+        # the more effective this is) together with some lexical analsys probably in conjuction with DXSpider
+		# data sources (for singleton spots) to then generate a "centre" from and to zone (whatever that will mean if it isn't the usual one)
+		# and some heuristical "Kwalitee" rating given distance from the zone centres of spotter, recipient user
+        # and spotted. A map can be generated once per user and spotter as they are essentially mostly static. 
+		# The spotted will only get a coarse position unless other info is available. Programs that parse 
+		# DX bulletins and the online data online databases could be be used and then cached. 
+
+		# Obviously users have to opt in to receiving RBN spots and other users will simply be passed over and
+		# ignored.
+
+		# Clearly this will only work in the 'mojo' branch of DXSpider where it is possible to pass off external
+		# data requests to ephemeral or semi resident forked processes that do any grunt work and the main
+		# process to just the standard "message passing" which has been shown to be able to sustain over 5000 
+		# per second (limited by the test program's output and network speed, rather than DXSpider's handling).  
+		
 		my $p = "$t|$call";
 		++$noraw;
 		next if $d{$p};
@@ -204,11 +231,25 @@ __END__
 
 =head1 NAME
 
-rbn.pl - an experimental RBN filter program that
+rbn.pl - an experimental RBN filter program 
 
 =head1 SYNOPSIS
 
-rbn.pl [options] <your callsign> 
+rbn.pl [options] <any callsign>
+
+We read the raw data
+from the RBN. We collect similar spots on a frequency within 100hz and try to
+deduce which if them is likely to be the true callsign. Emitted spots are cached and thereafter ignored
+for a period until it is spotted again, when it may be emitted again - but marked as a RESPOT. 
+
+This is just technology demonstrator designed to scope out the issues and make sure that the line decoding works
+in all circumstances. But even on busy weekends it seems to cope just fine deduping away within its limits.
+
+To see it work at its best, run it as: rbn.pl -stats <any callsign>
+
+Leave it running for some time, preferably several (10s of) minutes.
+You will see it slowly reduce the number of new spots until you start to see "RESPOT" lines. Reductions
+of more than one order of magnitude is normal. Particularly when there are many more spotters. 
 
 =head1 OPTIONS
 
