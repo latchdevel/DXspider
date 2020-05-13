@@ -18,6 +18,8 @@ use LRU;
 use File::Copy;
 use JSON;
 use DXDebug;
+use Data::Structure::Util qw(unbless);
+	
 
 use strict;
 
@@ -130,22 +132,28 @@ sub init
 	
 	my $fn = "users";
 
-	eval {
-		require Storable;
-	};
-
-	if ($@) {
-		$ufn = localdata("users.v2");
-		$v3 = $convert = 0;
-		dbg("the module Storable appears to be missing!!");
-		dbg("trying to continue in compatibility mode (this may fail)");
-		dbg("please install Storable from CPAN as soon as possible");
+	if ($mode == 4 || -e localdata("users.v4")) {
+		$ufn = localdata("users.v4");
+		$v4 = 1;
+		$json = JSON->new();
+		$json->canonical(1);
 	} else {
-		import Storable qw(nfreeze thaw);
-
-		$ufn = localdata("users.v3");
-		$v3 = 1;
-		$convert++ if -e localdata("users.v2") && !-e $ufn;
+		eval {
+			require Storable;
+		};
+		if ($@) {
+			$ufn = localdata("users.v2");
+			$v3 = $convert = 0;
+			dbg("the module Storable appears to be missing!!");
+			dbg("trying to continue in compatibility mode (this may fail)");
+			dbg("please install Storable from CPAN as soon as possible");
+		}
+		else {
+			import Storable qw(nfreeze thaw);
+			$ufn = localdata("users.v3");
+			$v3 = 1;
+			$convert++ if -e localdata("users.v2") && !-e $ufn;
+		}
 	}
 	
 	if ($mode) {
@@ -190,8 +198,14 @@ sub init
 sub del_file
 {
 	# with extreme prejudice
-	unlink "$main::data/users.v3";
-	unlink "$main::local_data/users.v3";
+	if ($v3) {
+		unlink "$main::data/users.v3";
+		unlink "$main::local_data/users.v3";
+	}
+	if ($v4) {
+		unlink "$main::data/users.v4";
+		unlink "$main::local_data/users.v4";
+	}
 }
 
 #
@@ -340,7 +354,7 @@ sub encode
 # thaw the user
 sub decode
 {
-	goto &json_dncode if $v4;
+	goto &json_decode if $v4;
 	goto &asc_decode unless $v3;
 	my $ref;
 	$ref = thaw(shift);
@@ -387,12 +401,24 @@ sub asc_decode
 
 sub json_decode
 {
-
+	my $s = shift;
+    my $ref;
+	eval { $ref = $json->decode($s) };
+	if ($ref && !$@) {
+        return bless $ref, 'DXUser';
+	} else {
+		LogDbg('err', "DXUser::json_decode: on '$s' $@");
+	}
+	return undef;
 }
 
 sub json_encode
 {
-
+	my $ref = shift;
+	unbless($ref);
+    my $s = $json->encode($ref);
+	bless $ref, 'DXUser';
+	return $s;
 }
 	
 #
@@ -581,8 +607,6 @@ print "There are $count user records and $err errors\n";
 
 sub export_json
 {
-	use Data::Structure::Util qw(unbless);
-	
 	my $name = shift || 'user_json';
 	my $basic_info_only = shift;
 
@@ -655,7 +679,7 @@ use JSON;
 my $json = JSON->new;
 
 del_file();
-init(1);
+init(4);
 %u = ();
 my $count = 0;
 my $err = 0;

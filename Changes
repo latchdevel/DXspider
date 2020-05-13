@@ -1,3 +1,7 @@
+13May20=======================================================================
+1, Changed the underlying storage engine from Storable to JSON. Seems to run
+   much faster! Exporting the user file with 181000 records takes ~5.1secs
+   with Storable and ~1.5secs. No more thaw() version mismatches! 
 10May20=======================================================================
 1. Added basic changes so that users *could* have multiple connections to the
    same node if it is allowed. This is work in progress and is there to see 
