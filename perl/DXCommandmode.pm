@@ -42,9 +42,10 @@ use AsyncMsg;
 use JSON;
 use Time::HiRes qw(gettimeofday tv_interval);
 
+use Mojo::UserAgent;
 use Mojo::IOLoop;
 use Mojo::IOLoop::Subprocess;
-use Mojo::UserAgent;
+use DXSubprocess;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
@@ -1316,14 +1317,14 @@ sub spawn_cmd
 		return @out;
 	}
 	
-	my $fc = Mojo::IOLoop::Subprocess->new;
+	my $fc = DXSubprocess->new;
 #	$fc->serializer(\&encode_json);
 #	$fc->deserializer(\&decode_json);
 	$fc->run(
 			 sub {
 				 my $subpro = shift;
-				 if (isdbg('progress')) {
-					 my $s = qq{line: "$line"};
+				 if (isdbg('spawn')) {
+					 my $s = __PACKAGE__ . qq{ line: "$line"};
 					 $s .= ", args: " . join(', ', map { defined $_ ? qq{'$_'} : q{'undef'} } @$args) if $args && @$args;
 					 dbg($s);
 				 }
@@ -1357,7 +1358,7 @@ sub spawn_cmd
 						 $dxchan->send(@res);
 					 }
 				 }
-				 diffms("by $call", $line, $t0, scalar @res) if isdbg('progress');
+				 diffms(__PACKAGE__, "by $call", $line, $t0, scalar @res) if isdbg('progress');
 			 });
 	
 	return @out;

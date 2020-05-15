@@ -71,7 +71,7 @@ sub add
 	my $u = DXUser::get_current($to);
 	if ($u) {
 		$u->lastping(($via || $from), $main::systime);
-		$u->put;
+		$u->put unless $dxchan->{_nospawn};
 	}
 }
 
@@ -136,11 +136,12 @@ sub handle_ping_reply
 sub _handle_believe
 {
 	my ($from, $via) = @_;
-	
-	my $user = DXUser::get_current($from);
+
+	my $dxchan = DXChannel::get($from);
+	my $user = $dxchan->user || DXUser::get($from);
 	if ($user) {
 		$user->set_believe($via);
-		$user->put;
+		$user->put unless $dxchan->{_nospawn};
 	}
 }
 1;

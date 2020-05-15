@@ -252,7 +252,7 @@ sub handle_11
 			my $long = $user->long;
 			if (defined $lat && defined $long) {
 				$user->qra(DXBearing::lltoqra($lat, $long));
-				$user->put;
+				$user->put unless $self->{_nospawn};
 			}
 		}
 
@@ -285,7 +285,7 @@ sub handle_11
 					}
 				}
 				$user->lastoper($main::systime);
-				$user->put;
+				$user->put unless $self->{_nospawn};
 			}
 		}
 	}
@@ -512,7 +512,7 @@ sub handle_16
 		$user->homenode($parent->call) if !$user->homenode;
 		$user->node($parent->call);
 		$user->lastin($main::systime) unless DXChannel::get($call);
-		$user->put;
+		$user->put unless $self->{_nospawn};
 
 		# send info to all logged in thingies
 		$self->tell_login('loginu', "$ncall: $call") if $user->is_local_node;
@@ -628,7 +628,7 @@ sub handle_18
 		unless ($self->is_spider) {
 			dbg("Change U " . $self->user->sort . " C $self->{sort} -> S");
 			$self->user->sort('S');
-			$self->user->put;
+			$self->user->put unless $self->{_nospawn};
 			$self->sort('S');
 		}
 #		$self->{handle_xml}++ if DXXml::available() && $pc->[1] =~ /\bxml/;
@@ -662,7 +662,8 @@ sub check_add_node
 	my $call = shift;
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
-	my $user = DXUser::get_current($call);
+	my $chan = DXChannel::get($call);
+	my $user = $chan->user || DXUser::get($call);
 	unless ($user) {
 		$user = DXUser->new($call);
 		$user->priv(1);		# I have relented and defaulted nodes
@@ -671,7 +672,7 @@ sub check_add_node
 		$user->node($call);
 		$user->sort('A');
 		$user->lastin($main::systime); # this make it last longer than just this invocation
-		$user->put;				# just to make sure it gets written away!!!
+		$user->put unless $chan && $chan->{_nospawn};				# just to make sure it gets written away!!!
 	}
 	return $user;
 }
@@ -800,7 +801,7 @@ sub handle_19
 		$mref->stop_msg($call) if $mref;
 
 		$user->lastin($main::systime) unless DXChannel::get($call);
-		$user->put;
+		$user->put unless $self->{_nospawn};
 	}
 
 	# we are not automatically sending out PC19s, we send out a composite PC21,PC19 instead
@@ -1234,7 +1235,7 @@ sub handle_41
 		}
 	}
 	$user->lastoper($main::systime); # to cut down on excessive for/opers being generated
-	$user->put;
+	$user->put unless $self->{_nospawn};
 
 	unless ($self->{isolate}) {
 		DXChannel::broadcast_nodes($line, $self); # send it to everyone but me

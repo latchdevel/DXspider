@@ -36,6 +36,7 @@ use DXProtHandle;
 
 use Time::HiRes qw(gettimeofday tv_interval);
 use Mojo::IOLoop::Subprocess;
+use DXSubprocess;
 
 use strict;
 
@@ -1216,7 +1217,7 @@ sub spawn_cmd
 
 	no strict 'refs';
 		
-	my $fc = Mojo::IOLoop::Subprocess->new;
+	my $fc = DXSubprocess->new;
 
 	# just behave normally if something has set the "one-shot" _nospawn in the channel
 	if ($self->{_nospawn}) {
@@ -1233,8 +1234,8 @@ sub spawn_cmd
 	$fc->run(
 			 sub {
 				 my $subpro = shift;
-				 if (isdbg('progress')) {
-					 my $s = qq{line: "$line"};
+				 if (isdbg('spawn')) {
+					 my $s = __PACKAGE__ . qq{ line: "$line"};
 					 $s .= ", args: " . join(', ', map { defined $_ ? qq{'$_'} : q{'undef'} } @$args) if $args && @$args;
 					 dbg($s);
 				 }
@@ -1272,7 +1273,7 @@ sub spawn_cmd
 						 $self->send(@res);
 					 }
 				 }
-				 diffms("rcmd from $user on $call", $line, $t0, scalar @res) if isdbg('progress');
+				 diffms(__PACKAGE__, " rcmd from $user on $call", $line, $t0, scalar @res) if isdbg('progress');
 			 });
 	
 	return @out;

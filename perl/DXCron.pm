@@ -16,6 +16,7 @@ use IO::File;
 use DXLog;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Mojo::IOLoop::Subprocess;
+use DXSubprocess;
 
 use strict;
 
@@ -257,11 +258,10 @@ sub spawn
 	my $t0 = [gettimeofday];
 
 	dbg("DXCron::spawn: $line") if isdbg("cron");
-	my $fc = Mojo::IOLoop::Subprocess->new();
+	my $fc = DXSubprocess->new();
 	$fc->run(
 			 sub {
 				 my @res = `$line`;
-#				 diffms("DXCron spawn 1", $line, $t0, scalar @res) if isdbg('chan');
 				 return @res
 			 },
 			 sub {
@@ -275,7 +275,7 @@ sub spawn
 					 chomp;
 					 dbg("DXCron::spawn: $_") if isdbg("cron");
 				 }
-				 diffms("by DXCron::spawn", $line, $t0, scalar @res) if isdbg('progress');
+				 diffms(__PACKAGE__, "::spawn", $line, $t0, scalar @res) if isdbg('progress');
 			 }
 			);
 }
@@ -283,29 +283,37 @@ sub spawn
 sub spawn_cmd
 {
 	my $line = shift;
+	my $chan = shift || $main::me;
+	my $pkg = ref $chan || __PACKAGE__;
 	my $t0 = [gettimeofday];
-
-	dbg("DXCron::spawn_cmd run: $line") if isdbg('cron');
-	my $fc = Mojo::IOLoop::Subprocess->new();
+	
+	dbg("$pkg::spawn_cmd run: $line") if isdbg('cron');
+	my $fc = DXSubprocess->new;
 	$fc->run(
 			 sub {
-				 $main::me->{_nospawn} = 1;
-				 my @res = $main::me->run_cmd($line);
-				 delete $main::me->{_nospawn};
-#				 diffms("DXCron spawn_cmd 1", $line, $t0, scalar @res) if isdbg('chan');
+				 $chan->{_nospawn} = 1;
+				 my @res = $chan->run_cmd($line);
+				 delete $chan->{_nospawn};
 				 return @res;
 			 },
 			 sub {
 				 my ($fc, $err, @res) = @_; 
 				 if ($err) {
-					 my $s = "DXCron::spawn_cmd: error $err";
+					 chomp $err;
+					 my $s = "$pkg::spawn_cmd: error $err";
 					 dbg($s);
 				 }
 				 for (@res) {
-					 chomp;
-					 dbg("DXCron::spawn_cmd: $_") if isdbg("cron");
+					 if (ref $chan) {
+						 dbg("send: $_");
+						 $chan->send($_);
+					 } elsif (isdbg('cron')) {
+						 dbg("$pkg::spawn_cmd: $_");
+					 } else {
+						 last;	# don't care
+					 }
 				 }
-				 diffms("by DXCron::spawn_cmd", $line, $t0, scalar @res) if isdbg('progress');
+				 diffms($pkg, "::spawn_cmd", $line, $t0, scalar @res) if isdbg('progress');
 			 }
 			);
 }

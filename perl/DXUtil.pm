@@ -511,6 +511,7 @@ sub _diffms
 
 sub diffms
 {
+	my $pkg = shift;
 	my $call = shift;
 	my $line = shift;
 	my $ta = shift;
@@ -519,7 +520,7 @@ sub diffms
 	my $msecs = _diffms($ta, $tb);
 
 	$line =~ s|\s+$||;
-	my $s = "subprocess stats cmd: '$line' $call ${msecs}mS";
+	my $s = "$pkg subprocess stats cmd: '$line' $call ${msecs}mS";
 	$s .= " $no lines" if $no;
 	DXDebug::dbg($s);
 }
