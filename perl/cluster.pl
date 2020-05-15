@@ -536,7 +536,7 @@ sub setup_start
 
 	# initialise User file system
 	dbg("loading user file system ...");
-	DXUser::init(1);
+	DXUser::init(4);			# version 4 == json format
 
 	# look for the sysop and the alias user and complain if they aren't there
 	{

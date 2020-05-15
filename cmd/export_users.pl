@@ -8,8 +8,8 @@ my $line = shift;;
 return (1, $self->msg('e5')) unless $self->priv >= 9;
 
 my ($fn, $flag) = split /\s+/, $line;
-$fn ||= 'user_asc';
-unless ($fn && $fn eq 'user_asc') {
+$fn ||= 'user_json';
+unless ($fn && $fn eq 'user_json') {
 	$fn =~ s|[/\.]||g;
 	$fn = "/tmp/$fn";
 }

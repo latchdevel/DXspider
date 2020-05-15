@@ -19,7 +19,7 @@ use File::Copy;
 use JSON;
 use DXDebug;
 use Data::Structure::Util qw(unbless);
-	
+use Time::HiRes qw(gettimeofday tv_interval);
 
 use strict;
 
@@ -31,7 +31,7 @@ $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 $lrusize = 2000;
-$tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
+$tooold = 86400 * 365 + 31;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
 $v4 = 0;
 my $json;
@@ -132,54 +132,49 @@ sub init
 	
 	my $fn = "users";
 
-	if ($mode == 4 || -e localdata("users.v4")) {
-		$ufn = localdata("users.v4");
+	$json = JSON->new();
+	$filename = $ufn = localdata("$fn.json");
+	
+	if (-e localdata("$fn.json")) {
 		$v4 = 1;
-		$json = JSON->new();
-		$json->canonical(1);
 	} else {
 		eval {
 			require Storable;
 		};
+
 		if ($@) {
-			$ufn = localdata("users.v2");
-			$v3 = $convert = 0;
-			dbg("the module Storable appears to be missing!!");
-			dbg("trying to continue in compatibility mode (this may fail)");
-			dbg("please install Storable from CPAN as soon as possible");
+			if ( ! -e localdata("users.v3") && -e localdata("users.v2") ) {
+				$convert = 2;
+			}
+			LogDbg('',"the module Storable appears to be missing!!");
+			LogDbg('',"trying to continue in compatibility mode (this may fail)");
+			LogDbg('',"please install Storable from CPAN as soon as possible");
 		}
 		else {
 			import Storable qw(nfreeze thaw);
-			$ufn = localdata("users.v3");
-			$v3 = 1;
-			$convert++ if -e localdata("users.v2") && !-e $ufn;
+			$convert = 3 if -e localdata("users.v3") && !-e $ufn;
 		}
 	}
-	
-	if ($mode) {
-		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $ufn ($!) [rebuild it from user_asc?]";
-	} else {
-		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $ufn ($!) [rebuild it from user_asc?]";
-	}
 
-	die "Cannot open $ufn ($!)\n" unless $dbm;
-
-	$lru = LRU->newbase("DXUser", $lrusize);
-	
 	# do a conversion if required
-	if ($dbm && $convert) {
+	if ($convert) {
 		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
+		my $ta = [gettimeofday];
 		
 		my %oldu;
-		dbg("Converting the User File to V$convert ");
-		dbg("This will take a while, I suggest you go and have cup of strong tea");
-		my $odbm = tie (%oldu, 'DB_File', localdata("users.v2"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
+		LogDbg('',"Converting the User File from V$convert to $fn.json ");
+		LogDbg('',"This will take a while, I suggest you go and have cup of strong tea");
+		my $odbm = tie (%oldu, 'DB_File', localdata("users.v$convert"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v$convert ($!) [rebuild it from user_asc?]";
         for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
 			my $ref;
-			eval { $ref = asc_decode($val) };
+			if ($convert == 3) {
+				eval { $ref = storable_decode($val) };
+			} else {
+				eval { $ref = asc_decode($val) };
+			}
 			unless ($@) {
 				if ($ref) {
-					$ref->put;
+					$u{$key} = $ref;
 					$count++;
 				} else {
 					$err++
@@ -190,7 +185,20 @@ sub init
 		} 
 		undef $odbm;
 		untie %oldu;
-		dbg("Conversion completed $count records $err errors");
+		my $t = _diffms($ta);
+		LogDbg('',"Conversion from users.v$convert to users.json completed $count records $err errors $t mS");
+
+		# now write it away for future use
+		$ta = [gettimeofday];
+		$err = 0;
+		$count = writeoutjson();
+		$t = _diffms($ta);
+		LogDbg('',"New Userfile users.json write completed $count records $err errors $t mS");
+		LogDbg('',"Now restarting..");
+		$main::ending = 10;
+	} else {
+		# otherwise (i.e normally) slurp it in
+		readinjson();
 	}
 	$filename = $ufn;
 }
@@ -213,10 +221,10 @@ sub del_file
 #
 sub process
 {
-	if ($main::systime > $lasttime + 15) {
-		$dbm->sync if $dbm;
-		$lasttime = $main::systime;
-	}
+#	if ($main::systime > $lasttime + 15) {
+#		#$dbm->sync if $dbm;
+#		$lasttime = $main::systime;
+#	}
 }
 
 #
@@ -265,30 +273,31 @@ sub get
 	my $data;
 	
 	# is it in the LRU cache?
-	my $ref = $lru->get($call);
+	my $ref = $u{$call} if exists $u{$call};
+#	my $ref = $lru->get($call);
 	return $ref if $ref && ref $ref eq 'DXUser';
 	
 	# search for it
-	unless ($dbm->get($call, $data)) {
-		eval { $ref = decode($data); };
+	# unless ($dbm->get($call, $data)) {
+	# 	eval { $ref = decode($data); };
 		
-		if ($ref) {
-			if (!UNIVERSAL::isa($ref, 'DXUser')) {
-				dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
-				return undef;
-			}
-			# we have a reference and it *is* a DXUser
-		} else {
-			if ($@) {
-				LogDbg('err', "DXUser::get decode error on $call '$@'");
-			} else {
-				dbg("DXUser::get: no reference returned from decode of $call $!");
-			}
-			return undef;
-		}
-		$lru->put($call, $ref);
-		return $ref;
-	}
+	# 	if ($ref) {
+	# 		if (!UNIVERSAL::isa($ref, 'DXUser')) {
+	# 			dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
+	# 			return undef;
+	# 		}
+	# 		# we have a reference and it *is* a DXUser
+	# 	} else {
+	# 		if ($@) {
+	# 			LogDbg('err', "DXUser::get decode error on $call '$@'");
+	# 		} else {
+	# 			dbg("DXUser::get: no reference returned from decode of $call $!");
+	# 		}
+	# 		return undef;
+	# 	}
+	# 	$lru->put($call, $ref);
+	# 	return $ref;
+	# }
 	return undef;
 }
 
@@ -332,14 +341,7 @@ sub put
 	my $self = shift;
 	confess "Trying to put nothing!" unless $self && ref $self;
 	my $call = $self->{call};
-
-	$dbm->del($call);
-	delete $self->{annok} if $self->{annok};
-	delete $self->{dxok} if $self->{dxok};
-
-	$lru->put($call, $self);
-	my $ref = $self->encode;
-	$dbm->put($call, $ref);
+	$self->{lastin} = $main::systime;
 }
 
 # freeze the user
@@ -355,33 +357,18 @@ sub encode
 sub decode
 {
 	goto &json_decode if $v4;
-	goto &asc_decode unless $v3;
+	goto &storable_decode if $v3;
+	goto &asc_decode;
+}
+
+# should now be obsolete for mojo branch build 238 and above
+sub storable_decode
+{
 	my $ref;
 	$ref = thaw(shift);
 	return $ref;
 }
 
-# 
-# create a string from a user reference (in_ascii)
-#
-sub asc_encode
-{
-	my $self = shift;
-	my $strip = shift;
-	my $p;
-
-	if ($strip) {
-		my $ref = bless {}, ref $self;
-		foreach my $k (qw(qth lat long qra sort call homenode node lastoper lastin)) {
-			$ref->{$k} = $self->{$k} if exists $self->{$k};
-		}
-		$ref->{name} = $self->{name} if exists $self->{name} && $self->{name} !~ /selfspot/i;
-		$p = dd($ref);
-	} else {
-		$p = dd($self);
-	}
-	return $p;
-}
 
 #
 # create a hash from a string (in ascii)
@@ -429,8 +416,9 @@ sub del
 {
 	my $self = shift;
 	my $call = $self->{call};
-	$lru->remove($call);
-	$dbm->del($call);
+#	$lru->remove($call);
+	#	$dbm->del($call);
+	delete $u{$call};
 }
 
 #
@@ -448,7 +436,7 @@ sub close
 	push @$ref, $ip if $ip;
 	push @{$self->{connlist}}, $ref;
 	shift @{$self->{connlist}} if @{$self->{connlist}} > $maxconnlist;
-	$self->put();
+#	$self->put();
 }
 
 #
@@ -457,7 +445,7 @@ sub close
 
 sub sync
 {
-	$dbm->sync;
+#	$dbm->sync;
 }
 
 #
@@ -476,141 +464,9 @@ sub fields
 
 sub export
 {
-	my $name = shift || 'user_asc';
-	my $basic_info_only = shift;
+	my $name = shift;
 
-	my $fn = $name ne 'user_asc' ? $name : "$main::local_data/$name";                       # force use of local
-	
-	# save old ones
-	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
-	move "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
-	move "$fn.oo", "$fn.ooo" if -e "$fn.oo";
-	move "$fn.o", "$fn.oo" if -e "$fn.o";
-	move "$fn", "$fn.o" if -e "$fn";
-
-	my $count = 0;
-	my $err = 0;
-	my $del = 0;
-	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
-	if ($fh) {
-		my $key = 0;
-		my $val = undef;
-		my $action;
-		my $t = scalar localtime;
-		print $fh q{#!/usr/bin/perl
-#
-# The exported userfile for a DXSpider System
-#
-# Input file: $filename
-#       Time: $t
-#
-			
-package main;
-			
-# search local then perl directories
-BEGIN {
-	umask 002;
-				
-	# root of directory tree for this system
-	$root = "/spider"; 
-	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-	
-	unshift @INC, "$root/perl";	# this IS the right way round!
-	unshift @INC, "$root/local";
-	
-	# try to detect a lockfile (this isn't atomic but 
-	# should do for now
-	$lockfn = "$root/local_data/cluster.lck";       # lock file name
-	if (-e $lockfn) {
-		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
-		my $pid = <CLLOCK>;
-		chomp $pid;
-		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
-		close CLLOCK;
-	}
-}
-
-use SysVar;
-use DXUser;
-
-if (@ARGV) {
-	$main::userfn = shift @ARGV;
-	print "user filename now $userfn\n";
-}
-
-package DXUser;
-
-del_file();
-init(1);
-%u = ();
-my $count = 0;
-my $err = 0;
-while (<DATA>) {
-	chomp;
-	my @f = split /\t/;
-	my $ref = asc_decode($f[1]);
-	if ($ref) {
-		$ref->put();
-		$count++;
-        DXUser::sync() unless $count % 10000;
-	} else {
-		print "# Error: $f[0]\t$f[1]\n";
-		$err++
-	}
-}
-DXUser::sync(); DXUser::finish();
-print "There are $count user records and $err errors\n";
-};
-		print $fh "__DATA__\n";
-
-        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
-			if (!is_callsign($key) || $key =~ /^0/) {
-				my $eval = $val;
-				my $ekey = $key;
-				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
-				++$err;
-				next;
-			}
-			my $ref;
-			eval {$ref = decode($val); };
-			if ($ref) {
-				my $t = $ref->{lastin} || 0;
-				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
-					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
-						LogDbg('DXCommand', "$ref->{call} deleted, too old");
-						$del++;
-						next;
-					}
-				}
-				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
-				++$count;
-			} else {
-				LogDbg('DXCommand', "Export Error3: $key\t" . carp($val) ."\n$@");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
-				++$err;
-			}
-		} 
-        $fh->close;
-    }
-	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
-	LogDbg('command', $s);
-	return $s;
-}
-
-sub export_json
-{
-	my $name = shift || 'user_json';
-	my $basic_info_only = shift;
-
-	my $fn = $name ne 'user_json' ? $name : "$main::local_data/$name";                       # force use of local
+	my $fn = $name || "$main::local_data/user_json"; # force use of local_data
 	
 	# save old ones
 	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
@@ -621,7 +477,6 @@ sub export_json
 
 	my $json = JSON->new;
 	$json->canonical(1);
-	$json->allow_blessed(1);
 	
 	my $count = 0;
 	my $err = 0;
@@ -630,115 +485,25 @@ sub export_json
 	if ($fh) {
 		my $key = 0;
 		my $val = undef;
-		my $action;
-		my $t = scalar localtime;
-		print $fh q{#!/usr/bin/perl
-#
-# The exported userfile for a DXSpider System
-#
-# Input file: $filename
-#       Time: $t
-#
-			
-package main;
-			
-# search local then perl directories
-BEGIN {
-	umask 002;
-				
-	# root of directory tree for this system
-	$root = "/spider"; 
-	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-	
-	unshift @INC, "$root/perl";	# this IS the right way round!
-	unshift @INC, "$root/local";
-	
-	# try to detect a lockfile (this isn't atomic but 
-	# should do for now
-	$lockfn = "$root/local_data/cluster.lck";       # lock file name
-	if (-e $lockfn) {
-		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
-		my $pid = <CLLOCK>;
-		chomp $pid;
-		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
-		close CLLOCK;
-	}
-}
-
-use SysVar;
-use DXUser;
-
-if (@ARGV) {
-	$main::userfn = shift @ARGV;
-	print "user filename now $userfn\n";
-}
-
-package DXUser;
-
-use JSON;
-my $json = JSON->new;
-
-del_file();
-init(4);
-%u = ();
-my $count = 0;
-my $err = 0;
-while (<DATA>) {
-	chomp;
-	my @f = split /\t/;
-	my $ref;
-    eval { $ref = $json->decode($f[1]); };
-	if ($ref && !$@) {
-        $ref = bless $ref, 'DXUser';
-		$ref->put();
-		$count++;
-        DXUser::sync() unless $count % 10000;
-	} else {
-		print "# Error: $f[0]\t$f[1]\n";
-		$err++
-	}
-}
-DXUser::sync(); DXUser::finish();
-print "There are $count user records and $err errors\n";
-};
-		print $fh "__DATA__\n";
-
-        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
-			if (!is_callsign($key) || $key =~ /^0/) {
-				my $eval = $val;
-				my $ekey = $key;
-				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
+		foreach my $k (sort keys %u) {
+			my $r = $u{$k};
+			if ($r->{sort} eq 'U' && !$r->{priv} && $main::systime > $r->{lastin}+$tooold ) {
+				unless ($r->{lat} || $r->{long} || $r->{qra} || $r->{qth} || $r->{name}) {
+					LogDbg('err', "DXUser::export deleting $k - too old, last in " . cldatetime($r->lastin) . " " . difft([$r->lastin, $main::systime]));
+					delete $u{$k};
+					++$del;
+					next;
+				}
+			}
+			eval {$val = json_encode($r);};
+			if ($@) {
+				LogDbg('err', "DXUser::export error encoding call: $k $@");
 				++$err;
 				next;
-			}
-			my $ref;
-			eval {$ref = decode($val); };
-			if ($ref) {
-				my $t = $ref->{lastin} || 0;
-				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
-					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
-						LogDbg('DXCommand', "$ref->{call} deleted, too old");
-						$del++;
-						next;
-					}
-				}
-				# only store users that are reasonably active or have useful information
-				unbless($ref);
-				print $fh "$key\t" . $json->encode($ref) . "\n";
-				++$count;
-			} else {
-				LogDbg('DXCommand', "Export Error3: $key\t" . carp($val) ."\n$@");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
-				++$err;
-			}
-		} 
+			} 
+			$fh->print("$k\t$val\n");
+			++$count;
+		}
         $fh->close;
     }
 	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
@@ -1063,6 +828,63 @@ sub lastping
 	my $b = $self->{lastping};
 	$b->{$call} = shift if @_;
 	return $b->{$call};	
+}
+
+sub readinjson
+{
+	my $fn = shift || $filename;
+	
+	my $ta = [gettimeofday];
+	my $count = 0;
+	my $s;
+	my $err = 0;
+
+	unless (-r $fn) {
+		dbg("DXUser $fn not found - probably about to convert");
+		return;
+	}
+	
+	open DATA, "$fn" or die "$fn read error $!";
+	while (<DATA>) {
+		chomp;
+		my @f = split /\t/;
+		my $ref;
+		eval { $ref = json_decode($f[1]); };
+		if ($ref) {
+			$u{$f[0]} = $ref;
+			$count++;
+		} else {
+			LogDbg('DXCommand', "# readinjson Error: '$f[0]\t$f[1]' $@");
+			$err++
+		}
+	}
+	close DATA;
+	$s = _diffms($ta);
+	dbg("DXUser::readinjson $count records $s mS");
+}
+
+sub writeoutjson()
+{
+	my $fn = shift || $filename;
+
+	link $fn, "$fn.o";
+	unlink $fn;
+	open DATA, ">$fn" or die "$fn write error $!";
+	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
+	my $count = 0;
+	if ($fh) {
+		my $key = 0;
+		my $val = undef;
+		foreach my $k (keys %u) { # this is to make it as quick as possible (no sort)
+			my $r = $u{$k};
+			$val = json_encode($r);
+			$fh->print("$k\t$val\n");
+			++$count;
+		}
+        $fh->close;
+    }
+	close DATA;
+	return $count;
 }
 1;
 __END__
