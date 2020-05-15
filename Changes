@@ -1,4 +1,6 @@
-13May20=======================================================================
+16May20=======================================================================
+1. Crontab can now spawn_cmd('export_users') - very safely.
+15May20=======================================================================
 1, Changed the underlying storage engine from Storable to JSON. Seems to run
    much faster! Exporting the user file with 181000 records takes ~5.1secs
    with Storable and ~1.5secs. No more thaw() version mismatches! 
