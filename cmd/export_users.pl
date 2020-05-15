@@ -15,7 +15,7 @@ unless ($fn && $fn eq 'user_json') {
 }
 my $strip = $flag eq 'strip';
 
-my @out = DXUser::export($fn, $strip);
+my @out = DXUser::export(undef, $strip); # for now
 
 return (1, @out);
 

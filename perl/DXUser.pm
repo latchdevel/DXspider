@@ -272,32 +272,9 @@ sub get
 	my $call = uc shift;
 	my $data;
 	
-	# is it in the LRU cache?
 	my $ref = $u{$call} if exists $u{$call};
-#	my $ref = $lru->get($call);
 	return $ref if $ref && ref $ref eq 'DXUser';
 	
-	# search for it
-	# unless ($dbm->get($call, $data)) {
-	# 	eval { $ref = decode($data); };
-		
-	# 	if ($ref) {
-	# 		if (!UNIVERSAL::isa($ref, 'DXUser')) {
-	# 			dbg("DXUser::get: got strange answer from decode of $call". ref $ref. " ignoring");
-	# 			return undef;
-	# 		}
-	# 		# we have a reference and it *is* a DXUser
-	# 	} else {
-	# 		if ($@) {
-	# 			LogDbg('err', "DXUser::get decode error on $call '$@'");
-	# 		} else {
-	# 			dbg("DXUser::get: no reference returned from decode of $call $!");
-	# 		}
-	# 		return undef;
-	# 	}
-	# 	$lru->put($call, $ref);
-	# 	return $ref;
-	# }
 	return undef;
 }
 
@@ -466,7 +443,7 @@ sub export
 {
 	my $name = shift;
 
-	my $fn = $name || "$main::local_data/user_json"; # force use of local_data
+	my $fn = $name || localdata("user_json"); # force use of local_data
 	
 	# save old ones
 	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
