@@ -157,9 +157,9 @@ sub init
 	}
 	
 	if ($mode) {
-		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $ufn ($!) [rebuild it from user_asc?]";
 	} else {
-		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $ufn ($!) [rebuild it from user_asc?]";
 	}
 
 	die "Cannot open $ufn ($!)\n" unless $dbm;
