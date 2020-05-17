@@ -43,7 +43,7 @@ use JSON;
 use Time::HiRes qw(gettimeofday tv_interval);
 
 use Mojo::IOLoop;
-use Mojo::IOLoop::Subprocess;
+use DXSubprocess;
 use Mojo::UserAgent;
 
 use strict;
@@ -1316,7 +1316,7 @@ sub spawn_cmd
 		return @out;
 	}
 	
-	my $fc = Mojo::IOLoop::Subprocess->new;
+	my $fc = DXSubprocess->new;
 #	$fc->serializer(\&encode_json);
 #	$fc->deserializer(\&decode_json);
 	$fc->run(

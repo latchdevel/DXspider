@@ -35,7 +35,7 @@ use Script;
 use DXProtHandle;
 
 use Time::HiRes qw(gettimeofday tv_interval);
-use Mojo::IOLoop::Subprocess;
+use DXSubprocess;
 
 use strict;
 
@@ -1216,7 +1216,7 @@ sub spawn_cmd
 
 	no strict 'refs';
 		
-	my $fc = Mojo::IOLoop::Subprocess->new;
+	my $fc = DXSubprocess->new;
 
 	# just behave normally if something has set the "one-shot" _nospawn in the channel
 	if ($self->{_nospawn}) {

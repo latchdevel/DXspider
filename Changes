@@ -1,3 +1,9 @@
+17May20=======================================================================
+1. Backport DXSubprocess to change serialisations.
+   Currently the internals of Mojo::IOLoop::Subprocess defaults to
+   using Storeable as its cross-process argument and data serialisaion
+   method. It can use others. This update reverts back to the
+   original ForkCall method of using JSON.
 10May20=======================================================================
 1. Added basic changes so that users *could* have multiple connections to the
    same node if it is allowed. This is work in progress and is there to see 

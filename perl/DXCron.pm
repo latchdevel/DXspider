@@ -15,7 +15,7 @@ use DXDebug;
 use IO::File;
 use DXLog;
 use Time::HiRes qw(gettimeofday tv_interval);
-use Mojo::IOLoop::Subprocess;
+use DXSubprocess;
 
 use strict;
 
@@ -257,7 +257,7 @@ sub spawn
 	my $t0 = [gettimeofday];
 
 	dbg("DXCron::spawn: $line") if isdbg("cron");
-	my $fc = Mojo::IOLoop::Subprocess->new();
+	my $fc = DXSubprocess->new();
 	$fc->run(
 			 sub {
 				 my @res = `$line`;
@@ -286,7 +286,7 @@ sub spawn_cmd
 	my $t0 = [gettimeofday];
 
 	dbg("DXCron::spawn_cmd run: $line") if isdbg('cron');
-	my $fc = Mojo::IOLoop::Subprocess->new();
+	my $fc = DXSubprocess->new();
 	$fc->run(
 			 sub {
 				 $main::me->{_nospawn} = 1;
