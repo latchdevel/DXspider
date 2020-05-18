@@ -13,32 +13,22 @@ use DXUtil;
 use DB_File;
 use DXDebug;
 use Prefix;
+use JSON;
 
 use vars qw($qslfn $dbm $maxentries);
 $qslfn = 'qsl';
 $dbm = undef;
 $maxentries = 50;
 
-localdata_mv("$qslfn.v1");
+localdata_mv("$qslfn.v2");
 
 sub init
 {
 	my $mode = shift;
-	my $ufn = localdata("$qslfn.v1");
+	my $ufn = localdata("$qslfn.v2");
 
 	Prefix::load() unless Prefix::loaded();
 	
-	eval {
-		require Storable;
-	};
-	
-	if ($@) {
-		dbg("Storable appears to be missing");
-		dbg("In order to use the QSL feature you must");
-		dbg("load Storable from CPAN");
-		return undef;
-	}
-	import Storable qw(nfreeze freeze thaw);
 	my %u;
 	undef $dbm;
 	if ($mode) {

@@ -9,9 +9,12 @@
 
 package DXDupe;
 
+use strict;
+
 use DXDebug;
 use DXUtil;
 use DXVars;
+use DB_File;
 
 use vars qw{$lasttime $dbm %d $default $fn};
 
@@ -66,7 +69,7 @@ sub process
 	# once an hour
 	if ($main::systime - $lasttime >=  3600) {
 		my @del;
-		while (($k, $v) = each %d) {
+		while (my ($k, $v) = each %d) {
 			push @del, $k  if $main::systime >= $v;
 		}
 		delete $d{$_} for @del;
@@ -78,7 +81,7 @@ sub get
 {
 	my $start = shift;
 	my @out;
-	while (($k, $v) = each %d) {
+	while (my ($k, $v) = each %d) {
 		push @out, $k, $v if !$start || $k =~ /^$start/; 
 	}
 	return @out;

@@ -1,9 +1,60 @@
 #
 # DX cluster user routines
 #
-# Copyright (c) 1998 - Dirk Koopman G1TLH
+# Copyright (c) 1998-2020 - Dirk Koopman G1TLH
 #
+# The new internal structure of the users system looks like this:
 #
+# The users.v4 file formatted as a file of lines containing: <callsign>\t{json serialised version of user record}\n
+#
+# You can look at it with any text tools or your favourite editor :-)
+#
+# In terms of internal structure, the main user hash remains as %u, keyed on callsign as before.
+#
+# The value is a one or two element array [position] or [position, ref], depending on whether the record has been "get()ed"
+# [i.e. got from disk] or not. The 'position' is simply the start of each line in the file. The function "get()" simply returns
+# the stored reference in array[1], if present, or seeks to the  position from array[0], reads a line, json_decodes it,
+# stores that reference into array[1] and returns that. That reference will be used from that time onwards.
+#
+# The routine writeoutjson() will (very) lazily write out a copy of %u WITHOUT STORING ANY EXTRA CURRENTLY UNREFERENCED CALLSIGN
+# records to users.v4.n. It, in effect, does a sort of random accessed merge of the current user file and any "in memory"
+# versions of any user record. This can be done with a spawned command because it will just be reading %u and merging
+# loaded records, not altering the current users.v4 file in any way. 
+#
+# %u -> $u{call} -> [position of json line in users.v4 (, reference -> {call=>'G1TLH', ...} if this record is in use)].
+#
+# On my machine, it takes about 250mS to read the entire users.v4 file of 190,000 records and to create a
+# $u{callsign}->[record position in users.v4] for every callsign in the users.v4 file. Loading ~19,000 records
+# (read from disk, decode json, store reference) takes about 110mS (or 580nS/record).
+#
+# A periodic dump of users.v4.n, with said ~19,000 records in memory takes about 750mS to write (this can be speeded up,
+# by at least a half, if it becomes a problem!). As this periodic dump will be spawned off, it will not interrupt the data
+# stream.
+#
+# This is the first rewrite of DXUsers since inception. In the mojo branch we will no longer use Storable but use JSON instead.
+# We will now be storing all the keys in memory and will use opportunistic loading of actual records in "get()". So out of
+# say 200,000 known users it is unlikely that we will have more than 10% (more likely less) of the user records in memory.
+# This will mean that there will be a increase in memory requirement, but it is modest. I estimate it's unlikely be more
+# than 30 or so MB.
+#
+# At the moment that means that the working users.v4 is "immutable". 
+#
+# In normal operation, when first calling 'init()', the keys and positions will be read from the newer of users.v4.n and
+# users.v4. If there is no users.v4.n, then users.v4 will be used. As time wears on, %u will then accrete active user records.
+# Once an hour the current %u will be saved to users.v4.n.
+#
+# If it becomes too much of a problem then we are likely to chuck off "close()d" users onto the end of the current users.v4
+# leaving existing users intact, but updating the pointer to the (now cleared out) user ref to the new location. This will
+# be a sort of write behind log file. The users.v4 file is still immutable for the starting positions, but any chucked off
+# records (or even "updates") will be written to the end of that file. If this has to be reread at any time, then the last
+# entry for any callsign "wins". But this will only happen if I think the memory requirements over time become too much. 
+#
+# As there is no functional difference between the users.v4 and export_user generated "user_json" file(s), other than the latter
+# will be in sorted order with the record elements in "canonical" order. There will now longer be any code to execute to
+# "restore the users file". Simply copy one of the "user_json" files to users.v4, remove users.v4.n and restart. 
+#
+# Hopefully though, this will put to rest the need to do all that messing about ever again... Pigs may well be seen flying over
+# your node as well :-)
 #
 
 package DXUser;
@@ -20,6 +71,7 @@ use JSON;
 use DXDebug;
 use Data::Structure::Util qw(unbless);
 use Time::HiRes qw(gettimeofday tv_interval);
+use IO::File;
 
 use strict;
 
@@ -37,6 +89,14 @@ $v4 = 0;
 my $json;
 
 our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
+
+our $newusers;					# per execution stats
+our $modusers;
+our $totusers;
+our $delusers;
+
+my $ifh;						# the input file, initialised by readinjson()
+
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -132,7 +192,7 @@ sub init
 	
 	my $fn = "users";
 
-	$json = JSON->new();
+	$json = JSON->new()->canonical(1);
 	$filename = $ufn = localdata("$fn.json");
 	
 	if (-e localdata("$fn.json")) {
@@ -149,8 +209,7 @@ sub init
 			LogDbg('',"the module Storable appears to be missing!!");
 			LogDbg('',"trying to continue in compatibility mode (this may fail)");
 			LogDbg('',"please install Storable from CPAN as soon as possible");
-		}
-		else {
+		} else {
 			import Storable qw(nfreeze thaw);
 			$convert = 3 if -e localdata("users.v3") && !-e $ufn;
 		}
@@ -259,6 +318,8 @@ sub new
 
 	my $self = $pkg->alloc($call);
 	$self->put;
+	++$newusers;
+	++$totusers;
 	return $self;
 }
 
@@ -270,11 +331,49 @@ sub new
 sub get
 {
 	my $call = uc shift;
-	my $data;
+	my $nodecode = shift;
+	my $ref = $u{$call};
+	return undef unless $ref;
 	
-	my $ref = $u{$call} if exists $u{$call};
-	return $ref if $ref && ref $ref eq 'DXUser';
-	
+	unless ($ref->[1]) {
+		$ifh->seek($ref->[0], 0);
+		my $l = $ifh->getline;
+		if ($l) {
+			my ($k,$s) = split /\t/, $l;
+			return $s if $nodecode;
+			my $j = json_decode($s);
+			if ($j) {
+				$ref->[1] = $j;
+			}
+		}
+	} elsif ($nodecode) {
+		return json_encode($ref->[1]);
+	}
+	return $ref->[1];
+}
+
+#
+# get an "ephemeral" reference - i.e. this will give you new temporary copy of
+# the call's user record, but without storing it (if it isn't already there)
+#
+# This is not as quick as get()! But it will allow safe querying of the
+# user file. Probably in conjunction with get_some_calls feeding it.
+#
+# Probably need to create a new copy of any existing records WIP
+
+sub get_tmp
+{
+	my $call = uc shift;
+	my $ref = $u{call};
+	if ($ref) {
+		$ifh->seek($ref->[0], 0);
+		my $l = $ifh->getline;
+		if ($l) {
+			my ($k,$s) = split /\t/, $l;
+			my $j = json_decode($s);
+			return $;
+		}
+	}
 	return undef;
 }
 
@@ -310,6 +409,16 @@ sub get_all_calls
 }
 
 #
+# get some calls - provide a qr// style selector string as a partial key
+#
+
+sub get_some_calls
+{
+	my $pattern = shift || qr/.*/;
+	return sort grep {$pattern} keys %u;
+}
+	
+#
 # put - put a user
 #
 
@@ -317,8 +426,8 @@ sub put
 {
 	my $self = shift;
 	confess "Trying to put nothing!" unless $self && ref $self;
-	my $call = $self->{call};
 	$self->{lastin} = $main::systime;
+	++$modusers;				# new or existing, it's still been modified
 }
 
 # freeze the user
@@ -395,6 +504,8 @@ sub del
 	my $call = $self->{call};
 #	$lru->remove($call);
 	#	$dbm->del($call);
+	++$delusers;
+	--$totusers;
 	delete $u{$call};
 }
 
@@ -807,10 +918,19 @@ sub lastping
 	return $b->{$call};	
 }
 
+#
+# read in the latest version of the user file. As this file is immutable, the file one really wants is
+# a later (generated) copy. But, if the plain users.v4 file is all we have, we'll use that.
+#
+
+use File::Copy;
+
 sub readinjson
 {
-	my $fn = shift || $filename;
-	
+	my $fn = $filename;
+	my $nfn = "$fn.n";
+	my $ofn = "$fn.o";
+
 	my $ta = [gettimeofday];
 	my $count = 0;
 	my $s;
@@ -820,47 +940,61 @@ sub readinjson
 		dbg("DXUser $fn not found - probably about to convert");
 		return;
 	}
-	
-	open DATA, "$fn" or die "$fn read error $!";
-	while (<DATA>) {
+
+	if (-e $nfn && -e $fn && (stat($nfn))[9] > (stat($fn))[9]) {
+		# move the old file to .o
+		unlink $ofn;
+		move($fn, $ofn);
+		move($nfn, $fn);
+	};
+
+	if ($ifh) {
+		$ifh->seek(0, 0);
+	} else {
+		$ifh = IO::File->new("+<$fn") or die "$fn read error $!";
+	}
+	my $pos = $ifh->tell;
+	while (<$ifh>) {
 		chomp;
 		my @f = split /\t/;
-		my $ref;
-		eval { $ref = json_decode($f[1]); };
-		if ($ref) {
-			$u{$f[0]} = $ref;
-			$count++;
-		} else {
-			LogDbg('DXCommand', "# readinjson Error: '$f[0]\t$f[1]' $@");
-			$err++
-		}
+		$u{$f[0]} = [$pos];
+		$count++;
+		$pos = $ifh->tell;
 	}
-	close DATA;
-	$s = _diffms($ta);
-	dbg("DXUser::readinjson $count records $s mS");
+	$ifh->seek(0, 0);
+
+	# $ifh is "global" and should not be closed
+	
+	dbg("DXUser::readinjson $count record headers read from $fn in ". _diffms($ta) . " mS");
+	return $totusers = $count;
 }
 
-sub writeoutjson()
-{
-	my $fn = shift || $filename;
+#
+# Write a newer copy of the users.v4 file to users.v4.n, which is what will be read in.
+# This means that the existing users.v4 is not touched during a run of dxspider, or at least
+# not yet.
 
-	link $fn, "$fn.o";
-	unlink $fn;
-	open DATA, ">$fn" or die "$fn write error $!";
-	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
+sub writeoutjson
+{
+	my $ofn = shift || "$filename.n";
+	my $ta = [gettimeofday];
+	
+	my $ofh = IO::File->new(">$ofn") or die "$ofn write error $!";
 	my $count = 0;
-	if ($fh) {
-		my $key = 0;
-		my $val = undef;
-		foreach my $k (keys %u) { # this is to make it as quick as possible (no sort)
-			my $r = $u{$k};
-			$val = json_encode($r);
-			$fh->print("$k\t$val\n");
+	$ifh->seek(0, 0);
+	for my $k (sort keys %u) {
+		my $l = get($k, 1);
+		if ($l) {
+			chomp $l;
+			print $ofh "$k\t$l\n";
 			++$count;
+		} else {
+			LogDbg('DXCommand', "DXUser::writeoutjson callsign $k not found")
 		}
-        $fh->close;
-    }
-	close DATA;
+	}
+	
+	$ofh->close;
+	dbg("DXUser::writeoutjson $count records written to $ofn in ". _diffms($ta) . " mS");
 	return $count;
 }
 1;

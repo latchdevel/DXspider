@@ -663,7 +663,9 @@ sub check_add_node
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
 	my $chan = DXChannel::get($call);
-	my $user = $chan->user || DXUser::get($call);
+	my $user;
+	$user = $chan->user if $chan;
+	$user ||= DXUser::get($call);
 	unless ($user) {
 		$user = DXUser->new($call);
 		$user->priv(1);		# I have relented and defaulted nodes

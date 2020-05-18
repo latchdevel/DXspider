@@ -381,6 +381,7 @@ sub cease
 	}
 
 	DXUser::sync;
+	DXUser::writeoutjson;
 
 	if (defined &Local::finish) {
 		eval {
