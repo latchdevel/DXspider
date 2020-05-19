@@ -1,3 +1,7 @@
+19May20=======================================================================
+1. Convert all remaining commands and areas within the program that used the
+   DB_File/Storable interface to DXUsers.pm to use the (hopefully) more stable
+   JSON text file + caching interface. Here's hoping. 
 16May20=======================================================================
 1. Crontab can now spawn_cmd('export_users') - very safely.
 15May20=======================================================================

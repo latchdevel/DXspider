@@ -75,10 +75,9 @@ use IO::File;
 
 use strict;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3 $v4);
+use vars qw(%u  $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3 $v4);
 
 %u = ();
-$dbm = undef;
 $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
@@ -90,10 +89,11 @@ my $json;
 
 our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
 
-our $newusers;					# per execution stats
-our $modusers;
-our $totusers;
-our $delusers;
+our $newusers = 0;					# per execution stats
+our $modusers = 0;
+our $totusers = 0;
+our $delusers = 0;
+our $cachedusers = 0;
 
 my $ifh;						# the input file, initialised by readinjson()
 
@@ -193,9 +193,9 @@ sub init
 	my $fn = "users";
 
 	$json = JSON->new()->canonical(1);
-	$filename = $ufn = localdata("$fn.json");
+	$filename = $ufn = localdata("$fn.v4");
 	
-	if (-e localdata("$fn.json")) {
+	if (-e localdata("$fn.v4")) {
 		$v4 = 1;
 	} else {
 		eval {
@@ -221,7 +221,7 @@ sub init
 		my $ta = [gettimeofday];
 		
 		my %oldu;
-		LogDbg('',"Converting the User File from V$convert to $fn.json ");
+		LogDbg('',"Converting the User File from V$convert to $fn.v4 ");
 		LogDbg('',"This will take a while, I suggest you go and have cup of strong tea");
 		my $odbm = tie (%oldu, 'DB_File', localdata("users.v$convert"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v$convert ($!) [rebuild it from user_asc?]";
         for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
@@ -245,14 +245,14 @@ sub init
 		undef $odbm;
 		untie %oldu;
 		my $t = _diffms($ta);
-		LogDbg('',"Conversion from users.v$convert to users.json completed $count records $err errors $t mS");
+		LogDbg('',"Conversion from users.v$convert to users.v4 completed $count records $err errors $t mS");
 
 		# now write it away for future use
 		$ta = [gettimeofday];
 		$err = 0;
 		$count = writeoutjson();
 		$t = _diffms($ta);
-		LogDbg('',"New Userfile users.json write completed $count records $err errors $t mS");
+		LogDbg('',"New Userfile users.v4 write completed $count records $err errors $t mS");
 		LogDbg('',"Now restarting..");
 		$main::ending = 10;
 	} else {
@@ -292,8 +292,8 @@ sub process
 
 sub finish
 {
-	undef $dbm;
-	untie %u;
+	
+	writeoutjson();
 }
 
 #
@@ -314,9 +314,10 @@ sub new
 	my $call = shift;
 	#  $call =~ s/-\d+$//o;
   
-#	confess "can't create existing call $call in User\n!" if $u{$call};
+	confess "can't create existing call $call in User\n!" if $u{$call};
 
 	my $self = $pkg->alloc($call);
+	$u{$call} = [0, $self];
 	$self->put;
 	++$newusers;
 	++$totusers;
@@ -344,6 +345,7 @@ sub get
 			my $j = json_decode($s);
 			if ($j) {
 				$ref->[1] = $j;
+				++$cachedusers;
 			}
 		}
 	} elsif ($nodecode) {
@@ -359,44 +361,61 @@ sub get
 # This is not as quick as get()! But it will allow safe querying of the
 # user file. Probably in conjunction with get_some_calls feeding it.
 #
-# Probably need to create a new copy of any existing records WIP
+# NOTE: for cached records this, in effect, is a faster version of Storable's
+# dclone - only about 3.5 times as fast!
+#
 
 sub get_tmp
 {
 	my $call = uc shift;
-	my $ref = $u{call};
+	my $ref = $u{$call};
 	if ($ref) {
+		if ($ref->[1]) {
+			return json_decode(json_encode($ref->[1]));
+		}
 		$ifh->seek($ref->[0], 0);
 		my $l = $ifh->getline;
 		if ($l) {
 			my ($k,$s) = split /\t/, $l;
 			my $j = json_decode($s);
-			return $;
+			return $j;
 		}
 	}
 	return undef;
 }
 
 #
-# get an existing either from the channel (if there is one) or from the database
+# Master branch:
+# get an existing record either from the channel (if there is one) or from the database
 #
 # It is important to note that if you have done a get (for the channel say) and you
 # want access or modify that you must use this call (and you must NOT use get's all
 # over the place willy nilly!)
 #
+# NOTE: mojo branch with newusers system:
+# There is no longer any function difference between get_current()
+# and get() as they will always reference the same record as held in %u. This is because
+# there is no more (repeated) thawing of stored records from the underlying "database".
+#
+# BUT: notice the difference between this and the get_tmp() function. A get() will online an
+# othewise unused record, so for poking around looking for that locked out user:
+# MAKE SURE you use get_tmp(). It will likely still be quicker than DB_File and Storable!
+#
 
 sub get_current
 {
-	my $call = uc shift;
-  
-	my $dxchan = DXChannel::get($call);
-	if ($dxchan) {
-		my $ref = $dxchan->user;
-		return $ref if $ref && UNIVERSAL::isa($ref, 'DXUser');
-
-		dbg("DXUser::get_current: got invalid user ref for $call from dxchan $dxchan->{call} ". ref $ref. " ignoring");
-	}
-	return get($call);
+	goto &get;
+	
+#	my $call = uc shift;
+#  
+#	my $dxchan = DXChannel::get($call);
+#	if ($dxchan) {
+#		my $ref = $dxchan->user;
+#		return $ref if $ref && UNIVERSAL::isa($ref, 'DXUser');
+#
+#		dbg("DXUser::get_current: got invalid user ref for $call from dxchan $dxchan->{call} ". ref $ref. " ignoring");
+#	}
+#	return get($call);
 }
 
 #
@@ -417,7 +436,40 @@ sub get_some_calls
 	my $pattern = shift || qr/.*/;
 	return sort grep {$pattern} keys %u;
 }
+
+#
+# if I understand the term correctly, this is a sort of monad.
+#
+# Scan through the whole user file and select records that you want
+# to process further. This routine returns lines of json, yu
+#
+# the CODE ref should look like:
+# sub {
+#   my $key = shift;
+# 	my $line = shift;
+#   # maybe do a rough check to see if this is a likely candidate
+#   return unless $line =~ /something/;
+#   my $r = json_decode($l);
+# 	return (condition ? wanted thing : ());
+# }
+#
 	
+sub scan
+{
+	my $c = shift;
+	my @out;
+	
+	if (ref($c) eq 'CODE') {
+		foreach my $k (get_all_calls()) {
+			my $l = get($k, 1);	# get the offline json line or the jsoned online version
+			push @out, $c->($k, $l) if $l;
+		}
+	} else {
+		dbg("DXUser::scan supplied argument is not a code ref");
+	}
+	return @out;
+}
+
 #
 # put - put a user
 #
@@ -502,10 +554,9 @@ sub del
 {
 	my $self = shift;
 	my $call = $self->{call};
-#	$lru->remove($call);
-	#	$dbm->del($call);
 	++$delusers;
 	--$totusers;
+	--$cachedusers if $u{$call}->[1];
 	delete $u{$call};
 }
 
@@ -520,10 +571,6 @@ sub close
 	my $ip = shift;
 	$self->{lastin} = $main::systime;
 	# add a record to the connect list
-	my $ref = [$startt || $self->{startt}, $main::systime];
-	push @$ref, $ip if $ip;
-	push @{$self->{connlist}}, $ref;
-	shift @{$self->{connlist}} if @{$self->{connlist}} > $maxconnlist;
 #	$self->put();
 }
 
@@ -875,12 +922,14 @@ sub unset_passwd
 {
 	my $self = shift;
 	delete $self->{passwd};
+	$self->put;
 }
 
 sub unset_passphrase
 {
 	my $self = shift;
 	delete $self->{passphrase};
+	$self->put;
 }
 
 sub set_believe
@@ -888,7 +937,10 @@ sub set_believe
 	my $self = shift;
 	my $call = uc shift;
 	$self->{believe} ||= [];
-	push @{$self->{believe}}, $call unless grep $_ eq $call, @{$self->{believe}};
+	unless (grep $_ eq $call, @{$self->{believe}}) {
+		push @{$self->{believe}}, $call;
+		$self->put;
+	};
 }
 
 sub unset_believe
@@ -898,6 +950,7 @@ sub unset_believe
 	if (exists $self->{believe}) {
 		$self->{believe} = [grep {$_ ne $call} @{$self->{believe}}];
 		delete $self->{believe} unless @{$self->{believe}};
+		$self->put;
 	}
 }
 
@@ -922,8 +975,6 @@ sub lastping
 # read in the latest version of the user file. As this file is immutable, the file one really wants is
 # a later (generated) copy. But, if the plain users.v4 file is all we have, we'll use that.
 #
-
-use File::Copy;
 
 sub readinjson
 {

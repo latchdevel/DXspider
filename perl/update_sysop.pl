@@ -54,7 +54,7 @@ sub create_it
 	$self->{annok} = 1;
 
 	# write it away
-	$self->close();
+	$self->put();
 	print "new call $mycall added\n";
 
 	# now do one for the alias
@@ -81,7 +81,7 @@ sub create_it
 	$self->{group} = [qw(local #9000)];
   
 	# write it away
-	$self->close();
+	$self->put();
 	print "new call $myalias added\n";
 
 }
@@ -97,7 +97,7 @@ if (-e $lockfn) {
 	close CLLOCK;
 }
 
-DXUser::init(1);
+DXUser::init(4);
 create_it();
 DXUser::finish();
 print "Update of $myalias on cluster $mycall successful\n";

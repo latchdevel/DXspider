@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 #
-# pretend that you are another user, useful for reseting
-# those silly things that people insist on getting wrong
-# like set/homenode et al
+# Useful for debugging. Make sure that the command runs in foreground
 #
 # Copyright (c) 1999 Dirk Koopman G1TLH
 #

@@ -8,3 +8,4 @@
 2 0 * * * DXDebug::dbgclean()
 30 2 * * 3 spawn_cmd("export_users")
 0 3 * * * Spot::daily()
+13,43 * * * spawn_cmd('saveuserfile')

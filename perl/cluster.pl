@@ -380,8 +380,6 @@ sub cease
 		$SIG{'INT'} = 'IGNORE';
 	}
 
-	DXUser::sync;
-	DXUser::writeoutjson;
 
 	if (defined &Local::finish) {
 		eval {

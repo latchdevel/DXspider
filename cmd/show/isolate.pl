@@ -8,8 +8,6 @@
 #
 #
 
-use DB_File;
-
 sub handle
 {
 	my ($self, $line) = @_;
@@ -31,18 +29,25 @@ sub generate
 	my @out;
 	my @val;
 							
-	my ($action, $count, $key, $data) = (0,0,0,0);
+#	my ($action, $count, $key, $data) = (0,0,0,0);
+#
+#	for ($action = DXUser::R_FIRST, $count=0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
+#		if ($data =~ m{isolate}) {
+#			my $u = DXUser::get_current($key);
+#			if ($u && $u->isolate) {
+#				push @val, $key;
+#				++$count;
+#			}
+#		}
+#	} 
+	@val = DXUser::scan(sub {
+							my $k = shift;
+							my $l = shift;
+							# cheat, don't decode because we can easily pull it out from the json test
+							return $l =~ m{"isolate":1} ? $k : ();
+						});
 
-	for ($action = DXUser::R_FIRST, $count=0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
-		if ($data =~ m{isolate}) {
-			my $u = DXUser::get_current($key);
-			if ($u && $u->isolate) {
-				push @val, $key;
-				++$count;
-			}
-		}
-	} 
-
+	my $count = @val;
 	my @l;
 	foreach my $call (@val) {
 		if (@l >= 5) {

@@ -51,7 +51,7 @@ sub create_it
 	$self->{annok} = 1;
 
 	# write it away
-	$self->close();
+	$self->put();
 
 	# now do one for the alias
 	$ref = DXUser::get(uc $myalias);
@@ -75,7 +75,7 @@ sub create_it
 	$self->{group} = [qw(local #9000)];
   
 	# write it away
-	$self->close();
+	$self->put();
 
 }
 
@@ -90,26 +90,26 @@ if (-e $lockfn) {
 	close CLLOCK;
 }
 
-$DXUser::v3 = 1;
+$DXUser::v4 = 1;
 
-if (-e "$userfn.v2" || -e "$userfn.v3") {
+if (-e localdata("users.v4")) {
 	print "Do you wish to destroy your user database (THINK!!!) [y/N]: ";
 	$ans = <STDIN>;
 	if ($ans =~ /^[Yy]/) {
 		delete_it();
-		DXUser::init(1);
+		DXUser::init(4);
 		create_it();
 	} else {
 		print "Do you wish to reset your cluster and sysop information? [y/N]: ";
 		$ans = <STDIN>;
 		if ($ans =~ /^[Yy]/) {
-			DXUser::init(1);
+			DXUser::init(4);
 			create_it();
 		}
 	}
   
 } else {
-	DXUser::init(1);
+	DXUser::init(4);
 	create_it();
 }
 DXUser::finish();

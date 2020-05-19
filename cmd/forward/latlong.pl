@@ -11,6 +11,8 @@
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) unless $self->priv >= 6;
 
+return (1, "I can't image why you want to use this command other than as a DoS attack", "DO NOT USE!!!");
+
 my @dxchan;
 my @out;
 my $dxchan;

@@ -34,33 +34,40 @@ if (-e $lockfn) {
 
 my @nodes = map { uc } @ARGV;
 
-DXUser::init(1);
+DXUser::init(4);
 
 my $count;
 my $nodes;
 my @ignore;
-my ($action, $key, $data) = (0,0,0);
-for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
-	if ($data =~ m{sort => '[ACRSX]'}) {
-		my $user = DXUser::get($key);
-		if ($user->is_node) {
-			$nodes ++;
-			if (grep $key eq $_, (@nodes, $mycall)) {
-				push @ignore, $key;
-				next;
-			}
-			my $priv = $user->priv;
-			if ($priv > 1) {
-				push @ignore, $key;
-				next;
-			}
-			$user->priv(1) unless $priv;
-			$user->lockout(1);
-			$user->put;
-			$count++;
+
+my @calls = scan(sub
+				 {
+					 my $k = shift;
+					 return $_[0] =~ m{"sort":"[ACRSX]"} ? $k : ();
+				 });
+
+foreach my $key (@calls) {
+	my $user = DXUser::get($key);
+	if ($user->is_node) {
+		$nodes ++;
+		if (grep $key eq $_, (@nodes, $mycall)) {
+			push @ignore, $key;
+			next;
+		}
+		my $priv = $user->priv;
+		if ($priv > 1) {
+			push @ignore, $key;
+			next;
+		}
+		$user->priv(1) unless $priv;
+		$user->lockout(1);
+		$user->put;
+		$count++;
 		}
 	}
 }
+DXUser::sync;
+DXUser::writeoutjson;
 
 print "locked out $count nodes out of $nodes\n";
 print scalar @ignore, " nodes ignored (", join(',', @ignore), ")\n";
