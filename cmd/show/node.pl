@@ -52,9 +52,8 @@ sub generate
 	
 		push @call, DXUser::scan(sub {
 									  my $k = shift;
-									  my $l = shift;
 									  # cheat, don't decode because we can easily pull it out from the json test
-									  return $l =~ m{"sort":"[ACRSX]"} ? $k : ();
+									  return $_[0] =~ m{"sort":"[ACRSX]"} ? $k : ();
 								  });
 	}
 
