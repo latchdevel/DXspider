@@ -197,7 +197,7 @@ sub init
 		$v4 = 1;
 		readinjson();
 	} else {
-		die "User file $filename missing, please run users-v3-to-v4.pl or copy a user_json backup from somewhere\n";
+		die "User file $filename missing, please run convert-users-v3-to-v4.pl or copy a user_json backup from somewhere\n";
 	}
 }
 
