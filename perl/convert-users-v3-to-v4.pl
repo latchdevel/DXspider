@@ -28,6 +28,7 @@ use JSON;
 use Data::Structure::Util qw(unbless);
 use Time::HiRes qw(gettimeofday tv_interval);
 use IO::File;
+use File::Copy;
 use Carp;
 use DB_File;
 
@@ -64,7 +65,8 @@ if (-e $ofn || -e "$ofn.n") {
 	say "You appear to have (or are using) $ofn, creating $nfn instead";
 	$ofn = $nfn;
 } else {
-   say "using $ofn for output";
+	$ofn = "$ofn.n";
+	say "using $ofn.n for output";
 }
 
 
@@ -89,7 +91,7 @@ if ($convert) {
 		unless ($@) {
 			if ($ref) {
 				unbless $ref;
-				$ofh->print($json->encode($ref) . "\n");
+				$ofh->print("$ref->{call}\t" . $json->encode($ref) . "\n");
 				$count++;
 			}
 			else {
