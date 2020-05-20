@@ -897,10 +897,13 @@ sub readinjson
 		move($nfn, $fn);
 	};
 
-	# if we don't have a users.v4 at this point, look for a backup users.v4.o
+	# if we don't have a users.v4 at this point, look for a backup users.v4.json, users.v4.n then users.v4.o
 	unless (-e $fn) {
-		move($ofn, $fn);
+		move($nfn, $fn) unless -e $fn; 	# the users.v4 isn't there (maybe convert-users-v3-to-v4.pl
+		move("$fn.json", $fn);			# from a run of convert-users-v3-to-v4.pl
+		move($ofn, $fn) unless -e $fn;	# desperate now...
 	}
+	
 	if ($ifh) {
 		$ifh->seek(0, 0);
 	} else {
