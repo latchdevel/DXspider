@@ -190,89 +190,22 @@ sub init
 	my $ufn;
 	my $convert;
 	
-	my $fn = "users";
-
 	$json = JSON->new()->canonical(1);
-	$filename = $ufn = localdata("$fn.v4");
+	$filename = localdata("users.v4");
 	
-	if (-e localdata("$fn.v4")) {
+	if (-e $filename || -e "$filename.n" || -e "$filename.o") {
 		$v4 = 1;
-	} else {
-		eval {
-			require Storable;
-		};
-
-		if ($@) {
-			if ( ! -e localdata("users.v3") && -e localdata("users.v2") ) {
-				$convert = 2;
-			}
-			LogDbg('',"the module Storable appears to be missing!!");
-			LogDbg('',"trying to continue in compatibility mode (this may fail)");
-			LogDbg('',"please install Storable from CPAN as soon as possible");
-		} else {
-			import Storable qw(nfreeze thaw);
-			$convert = 3 if -e localdata("users.v3") && !-e $ufn;
-		}
-	}
-
-	# do a conversion if required
-	if ($convert) {
-		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
-		my $ta = [gettimeofday];
-		
-		my %oldu;
-		LogDbg('',"Converting the User File from V$convert to $fn.v4 ");
-		LogDbg('',"This will take a while, I suggest you go and have cup of strong tea");
-		my $odbm = tie (%oldu, 'DB_File', localdata("users.v$convert"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v$convert ($!) [rebuild it from user_asc?]";
-        for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
-			my $ref;
-			if ($convert == 3) {
-				eval { $ref = storable_decode($val) };
-			} else {
-				eval { $ref = asc_decode($val) };
-			}
-			unless ($@) {
-				if ($ref) {
-					$u{$key} = $ref;
-					$count++;
-				} else {
-					$err++
-				}
-			} else {
-				Log('err', "DXUser: error decoding $@");
-			}
-		} 
-		undef $odbm;
-		untie %oldu;
-		my $t = _diffms($ta);
-		LogDbg('',"Conversion from users.v$convert to users.v4 completed $count records $err errors $t mS");
-
-		# now write it away for future use
-		$ta = [gettimeofday];
-		$err = 0;
-		$count = writeoutjson();
-		$t = _diffms($ta);
-		LogDbg('',"New Userfile users.v4 write completed $count records $err errors $t mS");
-		LogDbg('',"Now restarting..");
-		$main::ending = 10;
-	} else {
-		# otherwise (i.e normally) slurp it in
 		readinjson();
+	} else {
+		die "User file $filename missing, please run users-v3-to-v4.pl or copy a user_json backup from somewhere\n";
 	}
-	$filename = $ufn;
 }
 
 sub del_file
 {
 	# with extreme prejudice
-	if ($v3) {
-		unlink "$main::data/users.v3";
-		unlink "$main::local_data/users.v3";
-	}
-	if ($v4) {
-		unlink "$main::data/users.v4";
-		unlink "$main::local_data/users.v4";
-	}
+	unlink "$main::data/users.v4";
+	unlink "$main::local_data/users.v4";
 }
 
 #
@@ -485,43 +418,13 @@ sub put
 # freeze the user
 sub encode
 {
-	goto &json_encode if $v4;
-	goto &asc_encode unless $v3;
-	my $self = shift;
-	return nfreeze($self);
+	goto &json_encode;
 }
 
 # thaw the user
 sub decode
 {
-	goto &json_decode if $v4;
-	goto &storable_decode if $v3;
-	goto &asc_decode;
-}
-
-# should now be obsolete for mojo branch build 238 and above
-sub storable_decode
-{
-	my $ref;
-	$ref = thaw(shift);
-	return $ref;
-}
-
-
-#
-# create a hash from a string (in ascii)
-#
-sub asc_decode
-{
-	my $s = shift;
-	my $ref;
-	$s =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	eval '$ref = ' . $s;
-	if ($@) {
-		LogDbg('err', "DXUser::asc_decode: on '$s' $@");
-		$ref = undef;
-	}
-	return $ref;
+	goto &json_decode;
 }
 
 sub json_decode
@@ -532,7 +435,7 @@ sub json_decode
 	if ($ref && !$@) {
         return bless $ref, 'DXUser';
 	} else {
-		LogDbg('err', "DXUser::json_decode: on '$s' $@");
+		LogDbg('DXUser', "DXUser::json_decode: on '$s' $@");
 	}
 	return undef;
 }
@@ -624,7 +527,7 @@ sub export
 			my $r = $u{$k};
 			if ($r->{sort} eq 'U' && !$r->{priv} && $main::systime > $r->{lastin}+$tooold ) {
 				unless ($r->{lat} || $r->{long} || $r->{qra} || $r->{qth} || $r->{name}) {
-					LogDbg('err', "DXUser::export deleting $k - too old, last in " . cldatetime($r->lastin) . " " . difft([$r->lastin, $main::systime]));
+					LogDbg('DXUser', "DXUser::export deleting $k - too old, last in " . cldatetime($r->lastin) . " " . difft([$r->lastin, $main::systime]));
 					delete $u{$k};
 					++$del;
 					next;
@@ -632,7 +535,7 @@ sub export
 			}
 			eval {$val = json_encode($r);};
 			if ($@) {
-				LogDbg('err', "DXUser::export error encoding call: $k $@");
+				LogDbg('DXUser', "DXUser::export error encoding call: $k $@");
 				++$err;
 				next;
 			} 
@@ -642,7 +545,7 @@ sub export
         $fh->close;
     }
 	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
-	LogDbg('command', $s);
+	LogDbg('DXUser', $s);
 	return $s;
 }
 
@@ -987,11 +890,6 @@ sub readinjson
 	my $s;
 	my $err = 0;
 
-	unless (-r $fn) {
-		dbg("DXUser $fn not found - probably about to convert");
-		return;
-	}
-
 	if (-e $nfn && -e $fn && (stat($nfn))[9] > (stat($fn))[9]) {
 		# move the old file to .o
 		unlink $ofn;
@@ -999,10 +897,15 @@ sub readinjson
 		move($nfn, $fn);
 	};
 
+	# if we don't have a users.v4 at this point, look for a backup users.v4.o
+	unless (-e $fn) {
+		move($ofn, $fn);
+	}
 	if ($ifh) {
 		$ifh->seek(0, 0);
 	} else {
-		$ifh = IO::File->new("+<$fn") or die "$fn read error $!";
+		LogDbg("DXUser","DXUser::readinjson: opening $fn as users file");
+		$ifh = IO::File->new("+<$fn") or die "Cannot open $fn ($!)";
 	}
 	my $pos = $ifh->tell;
 	while (<$ifh>) {
@@ -1040,7 +943,7 @@ sub writeoutjson
 			print $ofh "$k\t$l\n";
 			++$count;
 		} else {
-			LogDbg('DXCommand', "DXUser::writeoutjson callsign $k not found")
+			LogDbg('DXUser', "DXUser::writeoutjson callsign $k not found")
 		}
 	}
 	
