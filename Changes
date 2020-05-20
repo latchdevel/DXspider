@@ -6,6 +6,7 @@
    mojo branch. Running this program just *BEFORE* doing your next update of
    the mojo branch *should* ensure a seemless transition to the Storable &
    DB_File free version of the users file.
+1. Alter show/version to show the current git branch we are running on.
 24Apr20=======================================================================
 1. Add CTY-3008 prefixes
 22Apr20=======================================================================

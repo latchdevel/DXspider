@@ -128,7 +128,6 @@ use Data::Dumper;
 use IO::File;
 use Fcntl ':flock';
 use POSIX ":sys_wait_h";
-use Version;
 
 use Local;
 
@@ -154,6 +153,8 @@ $maxconnect_user = 3;			# the maximum no of concurrent connections a user can ha
 $maxconnect_node = 0;			# Ditto but for nodes. In either case if a new incoming connection
 								# takes the no of references in the routing table above these numbers
 								# then the connection is refused. This only affects INCOMING connections.
+
+use vars qw($version $subversion $build $gitversion $gitbranch);
 
 # send a message to call on conn and disconnect
 sub already_conn
@@ -318,7 +319,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitversion) ended");
+	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) ended");
 	dbgclose();
 	Logclose();
 
@@ -403,6 +404,8 @@ if (DXSql::init($dsn)) {
 		import Git;
 		
 		# determine the real version number
+		$gitbranch = 'none';
+        $gitversion = 'none';
 		my $repo = Git->repository(Directory => "$root/.git");
 		if ($repo) {
 			my $desc = $repo->command_oneline(['describe'], STDERR => 0);
@@ -414,6 +417,15 @@ if (DXSql::init($dsn)) {
 				$gitversion = "$g\[r]";
 			}
 		}
+		my @branch = $repo->command([qw{branch}], STDERR=>0);
+		for (@branch) {
+			my ($star, $b) = split /\s+/;
+			if ($star eq '*') {
+				$gitbranch = $b;
+				last;
+			}
+		}
+
 	}
 	$SIG{__DIE__} = $w;
 }
@@ -424,7 +436,7 @@ DXXml::init();
 # banner
 my ($year) = (gmtime)[5];
 $year += 1900;
-LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitversion) started");
+LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) started");
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 # load Prefixes

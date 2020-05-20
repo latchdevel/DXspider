@@ -130,7 +130,7 @@ sub pc17
 sub pc18
 {
 	my $flags = shift;
-	return "PC18^DXSpider Version: $main::version Build: $main::subversion.$main::build Git: $main::gitversion$flags^$DXProt::myprot_version^";
+	return "PC18^DXSpider Version: $main::version Build: $main::subversion.$main::build Git: $main::gitbranch/$main::gitversion$flags^$DXProt::myprot_version^";
 }
 
 #
