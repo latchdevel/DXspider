@@ -222,7 +222,7 @@ sub add
 	}
 	if ($_[3] =~ /(?:QSL|VIA)/i) {
 		my $q = QSL::get($_[1]) || new QSL $_[1];
-		$q->update($_[3], $_[2], $_[4]);
+		$q->update($_[3], $_[2], $_[4]) if $q;
 	}
 }
 

@@ -36,12 +36,15 @@ my $qslfn = "qsl";
 
 $main::systime = time;
 
-unlink "$data/qsl.v1";
-unlink "$local_data/qsl.v1";
+unlink "$data/qsl.v2";
+unlink "$local_data/qsl.v2";
 
 QSL::init(1) or die "cannot open QSL file";
 
 my $base = localdata("spots");
+
+my $tu = 0;
+my $tr = 0;
 
 opendir YEAR, $base or die "$base $!";
 foreach my $year (sort readdir YEAR) {
@@ -55,21 +58,32 @@ foreach my $year (sort readdir YEAR) {
 		
 		my $fn = "$baseyear/$day";
 		my $f = new IO::File $fn  or die "$fn ($!)"; 
-		print "doing: $fn\n";
+		print "doing: $fn";
+		my $u = 0;
+		my $r = 0;
 		while (<$f>) {
 			last if $end;
 			if (/(QSL|VIA)/i) {
 				my ($freq, $call, $t, $comment, $by, @rest) = split /\^/;
 				my $q = QSL::get($call) || new QSL $call;
-				$q->update($comment, $t, $by);
-				$lasttime = $t;
+				if ($q) {
+					$q->update($comment, $t, $by);
+					$lasttime = $t;
+					++$u;
+					++$tu;
+				}
 			}
+			++$r;
+			++$tr;
 		}
+		printf " - Spots read %8d QSLs %6d\n", $r, $u;
 		$f->close;
 		last if $end;
 	}
 	last if $end;
 }
+
+print "Total Spots read: $tr - QSLs found: $tu\n";
 
 QSL::finish();
 

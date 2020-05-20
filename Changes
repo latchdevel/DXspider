@@ -2,6 +2,7 @@
 1. Strip out conversion from users.v2 and v3 to new json format file into a
    new program called convert-users-v3-to-v4.pl. In theory, this program 
    *could* be run at any time and is backported to mojo and master branches.
+2. Replace Storable in dxqsl/QSL.pm and rename everything (except QSL.pm).
 19May20=======================================================================
 1. Convert all remaining commands and areas within the program that used the
    DB_File/Storable interface to DXUsers.pm to use the (hopefully) more stable
