@@ -16,6 +16,9 @@ DXSpider node. But serious work on this won't start until we have a stable base 
 on. Apart from anything else there will, almost certainly, need to be some internal data
 structure reorganisation before a decent web frontend could be constructed.
 
+*IMPORTANT* There is an action needed to go from mojo build 228 and below. See items marked
+*IMPORTANT* below. 
+
 Upgrading is not for the faint of heart. There is no installation script (but there
 will be) so, for the time being, you need to do some manual editing. Also, while there is
 a backward path, it will involve moving various files from their new home (/spider/local_data),
@@ -53,7 +56,7 @@ You will need the following CPAN packages:
 	If you are on a Debian based system (Devuan, Ubuntu, Mint etc) that is reasonably new (I use Ubuntu
 	18.04 and Debian 10) then you can simply do:
 
-	sudo apt-get install libev-perl libmojolicious-perl libjson-perl libjson-xs-perl
+	sudo apt-get install libev-perl libmojolicious-perl libjson-perl libjson-xs-perl libdata-structure-util-perl
 
     or on Redhat based systems you can install the very similarly (but not the same) named
 	packages. I don't the exact names but using anything less than Centos 7 is likely to cause
@@ -61,10 +64,11 @@ You will need the following CPAN packages:
 
 	If in doubt or it is taking too long to find the packages you should build from CPAN. Note: you may
 	need to install the essential packages to build some of these. At the very least you will need
-	to install 'make' (sudo apt-get install make) or just get everything you are likely to need with
+	to install 'make' (sudo apt-get install make) or just get everything you are likely to need with:
+	
 	sudo apt-get install build-essential.
 
-	sudo cpanm EV Mojolicious JSON JSON::XS
+	sudo cpanm EV Mojolicious JSON JSON::XS Data::Structure::Util
 	
 	# just in case it's missing
 	sudo apt-get install top
@@ -162,6 +166,10 @@ if you have not already done this:
    sudo ln -s /spider/perl/console.pl /usr/local/bin/dx
    sudo ln -s /spider/perl/*dbg /usr/local/bin
 
+*IMPORTANT* (for any build of dxspider) regardless of branch below build 229 run:
+
+	/spider/perl/convert-users-v3-to-v4.pl
+	
 Now in another window run:
 
 	watchdbg
