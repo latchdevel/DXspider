@@ -153,8 +153,9 @@ use Data::Dumper;
 use IO::File;
 use Fcntl ':flock';
 use POSIX ":sys_wait_h";
-use Version;
 use Web;
+
+use vars qw($version $build $gitversion $gitbranch);
 
 use Local;
 
@@ -380,7 +381,6 @@ sub cease
 		$SIG{'INT'} = 'IGNORE';
 	}
 
-	DXUser::sync;
 
 	if (defined &Local::finish) {
 		eval {
@@ -409,7 +409,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitversion) ended");
+	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) ended");
 	dbg("bye bye everyone - bye bye");
 	dbgclose();
 	Logclose();
@@ -493,6 +493,8 @@ sub setup_start
 			import Encode;
 			$can_encode = 1;
 		}
+		$gitbranch = 'none';
+		$gitversion = 'none';
 		eval { require Git; };
 		unless ($@) {
 			import Git;
@@ -510,6 +512,14 @@ sub setup_start
 					$build = $b || 0;
 					$gitversion = "$g\[r]";
 				}
+				my @branch = $repo->command([qw{branch}], STDERR=>0);
+				for (@branch) {
+					my ($star, $b) = split /\s+/;
+					if ($star eq '*') {
+						$gitbranch = $b;
+						last;
+					}
+				}
 			}
 		}
 		$SIG{__DIE__} = $w;
@@ -521,7 +531,7 @@ sub setup_start
 	# banner
 	my ($year) = (gmtime)[5];
 	$year += 1900;
-	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitversion) started");
+	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) started");
 	dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 	# load Prefixes
@@ -536,7 +546,7 @@ sub setup_start
 
 	# initialise User file system
 	dbg("loading user file system ...");
-	DXUser::init(1);
+	DXUser::init(4);			# version 4 == json format
 
 	# look for the sysop and the alias user and complain if they aren't there
 	{
