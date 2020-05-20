@@ -1,3 +1,11 @@
+20May20=======================================================================
+1. Backport convert-users-v3-to-v4.pl to allow creation of the new json 
+   formatted *text* based user file from the old v3 DB_File and Storable 
+   version. This can be done either online (with the node running) or offline
+   with the node stopped. This is in preparation for the next update of the
+   mojo branch. Running this program just *BEFORE* doing your next update of
+   the mojo branch *should* ensure a seemless transition to the Storable &
+   DB_File free version of the users file. 
 17May20=======================================================================
 1. Backport DXSubprocess to change serialisations.
    Currently the internals of Mojo::IOLoop::Subprocess defaults to
