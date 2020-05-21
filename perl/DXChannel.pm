@@ -427,7 +427,7 @@ sub send						# this is always later and always data
 	my $call = $self->{call};
 
 	foreach my $l (@_) {
-		for (ref $l ? @$l : $l) {
+		for (ref($l) eq 'ARRAY' ? @$l : $l) {
 			my @lines = split /\n/;
 			for (@lines) {
 				$conn->send_later("D$call|$_");

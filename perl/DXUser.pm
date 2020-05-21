@@ -187,18 +187,28 @@ sub init
 {
 	my $mode = shift;
   
-	my $ufn;
-	my $convert;
-	
+	my $convert = "$main::root/perl/convert-users-v3-to-v4.pl";
+	my $export;
+		
 	$json = JSON->new()->canonical(1);
 	$filename = localdata("users.v4");
 	
 	if (-e $filename || -e "$filename.n" || -e "$filename.o") {
 		$v4 = 1;
-		readinjson();
 	} else {
-		die "User file $filename missing, please run convert-users-v3-to-v4.pl or copy a user_json backup from somewhere\n";
+		if (-e localdata('users.v3')) {
+			LogDbg('DXUser', "Converting " . localdata('users.v3') . " to new json version of users file, please wait");
+			if (-x $convert) {
+				system($convert);
+				++$export;
+			}
+		}
+		
+		die "User file $filename missing, please run $convert or copy a user_json backup from somewhere\n" unless -e "$filename.n" || -s $filename;
 	}
+	readinjson();
+	copy $filename, "$filename.n" unless -e "$filename.n";
+	export() if $export;
 }
 
 sub del_file
@@ -508,6 +518,7 @@ sub export
 	my $name = shift;
 
 	my $fn = $name || localdata("user_json"); # force use of local_data
+	my $ta = [gettimeofday];
 	
 	# save old ones
 	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
@@ -517,7 +528,7 @@ sub export
 	move "$fn", "$fn.o" if -e "$fn";
 
 	my $json = JSON->new;
-	$json->canonical(1);
+	$json->canonical(1);;
 	
 	my $count = 0;
 	my $err = 0;
@@ -527,10 +538,10 @@ sub export
 		my $key = 0;
 		my $val = undef;
 		foreach my $k (sort keys %u) {
-			my $r = $u{$k};
+			my $r = get($k);
 			if ($r->{sort} eq 'U' && !$r->{priv} && $main::systime > $r->{lastin}+$tooold ) {
 				unless ($r->{lat} || $r->{long} || $r->{qra} || $r->{qth} || $r->{name}) {
-					LogDbg('DXUser', "DXUser::export deleting $k - too old, last in " . cldatetime($r->lastin) . " " . difft([$r->lastin, $main::systime]));
+					LogDbg('export', "DXUser::export deleting $k - too old, last in " . cldatetime($r->lastin) . " " . difft([$r->lastin, $main::systime]));
 					delete $u{$k};
 					++$del;
 					next;
@@ -538,7 +549,7 @@ sub export
 			}
 			eval {$val = json_encode($r);};
 			if ($@) {
-				LogDbg('DXUser', "DXUser::export error encoding call: $k $@");
+				LogDbg('export', "DXUser::export error encoding call: $k $@");
 				++$err;
 				next;
 			} 
@@ -547,7 +558,8 @@ sub export
 		}
         $fh->close;
     }
-	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
+	my $t = _diffms($ta);
+	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors in $t mS ('sh/log Export' for details)};
 	LogDbg('DXUser', $s);
 	return $s;
 }
