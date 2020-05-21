@@ -305,7 +305,6 @@ sub spawn_cmd
 				 }
 				 for (@res) {
 					 if (ref $chan) {
-						 dbg("send: $_");
 						 $chan->send($_);
 					 } elsif (isdbg('cron')) {
 						 dbg("$pkg::spawn_cmd: $_");
@@ -316,6 +315,7 @@ sub spawn_cmd
 				 diffms($pkg, "::spawn_cmd", $line, $t0, scalar @res) if isdbg('progress');
 			 }
 			);
+	return ();
 }
 
 # do an rcmd to another cluster from the crontab

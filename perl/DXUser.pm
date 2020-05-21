@@ -937,7 +937,7 @@ sub readinjson
 
 	# $ifh is "global" and should not be closed
 	
-	dbg("DXUser::readinjson $count record headers read from $fn in ". _diffms($ta) . " mS");
+	LogDbg('DXUser',"DXUser::readinjson $count record headers read from $fn in ". _diffms($ta) . " mS");
 	return $totusers = $count;
 }
 
@@ -966,7 +966,7 @@ sub writeoutjson
 	}
 	
 	$ofh->close;
-	dbg("DXUser::writeoutjson $count records written to $ofn in ". _diffms($ta) . " mS");
+	LogDbg('DXUser',"DXUser::writeoutjson $count records written to $ofn in ". _diffms($ta) . " mS");
 	return $count;
 }
 1;
