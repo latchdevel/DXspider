@@ -246,23 +246,28 @@ sub new_channel
 		}
 
 		# is he locked out ?
+		$user = DXUser::get_current($call);
 		my $basecall = $call;
 		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing
-		my $baseuser = DXUser::get_current($basecall);
-		my $lock = $user->lockout if $user;
-		if ($baseuser && $baseuser->lockout || $lock) {
-			if (!$user || !defined $lock || $lock) {
-				my $host = $conn->peerhost;
-				LogDbg('DXCommand', "$call on $host is locked out, disconnected");
-				$conn->disconnect;
-				return;
-			}
+		my $lock;
+		if ($user) {
+			# we are a real user
+			$lock = $user->lockout;
+		} elsif ($allowmultiple) {
+			# could we be a potential "pseudo" connection	
+			$user = DXUser::get_current($basecall);
+			$lock = $user->lockout if $user;
+		}
+		if ($lock) {
+			my $host = $conn->peerhost;
+			LogDbg('DXCommand', "$call on $host is locked out, disconnected");
+			$conn->disconnect;
+			return;
 		}
 
 		# set up the basic channel info for "Normal" Users
 		# is there one already connected to me - locally?
 
-		$user = DXUser::get_current($call);
 		$dxchan = DXChannel::get($call);
 		my $newcall = $call;
 		if ($dxchan) {
@@ -298,7 +303,7 @@ sub new_channel
 				if ($bumpexisting) {
 					my $ip = $dxchan->hostname;
 					$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
-					LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
+					Log('', "$call bumped off by $ip, disconnected");
 					$dxchan->disconnect;
 				} else {
 					already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));

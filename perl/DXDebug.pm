@@ -87,7 +87,7 @@ my $_isdbg;						# current dbg level we are processing
 
 sub dbg($)
 {
-	return unless $fp;
+#	return unless $fp;
 	my $t = time; 
 	for (@_) {
 		my $r = $_;
@@ -103,7 +103,7 @@ sub dbg($)
 				shift @dbgring while (@dbgring > $dbgringlth);
 				push @dbgring, $str;
 			}
-			$fp->writeunix($t, $str) unless $dbglevel{"nolog$_isdbg"}; 
+			$fp->writeunix($t, $str) unless !$fp || $dbglevel{"nolog$_isdbg"} ; 
 		}
 	}
 	$_isdbg = '';
