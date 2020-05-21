@@ -246,23 +246,30 @@ sub new_channel
 		}
 
 		# is he locked out ?
+		$user = DXUser::get_current($call);
 		my $basecall = $call;
 		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing
-		my $baseuser = DXUser::get_current($basecall);
-		my $lock = $user->lockout if $user;
-		if ($baseuser && $baseuser->lockout || $lock) {
-			if (!$user || !defined $lock || $lock) {
-				my $host = $conn->peerhost;
-				LogDbg('DXCommand', "$call on $host is locked out, disconnected");
-				$conn->disconnect;
-				return;
-			}
+		my $lock;
+		if ($user) {
+			# make sure we act on any locked status that the actual incoming call has.
+			$lock = $user->lockout;
+		} elsif ($allowmultiple && $call ne $basecall) {
+		    # if we are allowing multiple connections and there is a basecall minus incoming ssid, use the basecall's lock status
+			$user = DXUser::get_current($basecall);
+			$lock = $user->lockout if $user;
+		}
+
+		# now deal with the lock
+		if ($lock) {
+			my $host = $conn->peerhost;
+			LogDbg('', "$call on $host is locked out, disconnected");
+			$conn->disconnect;
+			return;
 		}
 
 		# set up the basic channel info for "Normal" Users
 		# is there one already connected to me - locally?
 
-		$user = DXUser::get_current($call);
 		$dxchan = DXChannel::get($call);
 		my $newcall = $call;
 		if ($dxchan) {
@@ -276,7 +283,7 @@ sub new_channel
 				my $allow = 0;
 				if (@lastconns >= $DXUser::maxconnlist) {
 					$allow = $lastconns[-1]->[0] - $lastconns[0]->[0] < $min_reconnection_rate;
-				}
+				} 
 				# search for a spare ssid
 			L1:	for (my $count = $call =~ /-\d+$/?0:1; $allow && $count < $allowmultiple; ) { # remember we have one call already
 					my $lastid = 1;
@@ -298,7 +305,7 @@ sub new_channel
 				if ($bumpexisting) {
 					my $ip = $dxchan->hostname;
 					$dxchan->send_now('D', DXM::msg($lang, 'conbump', $call, $ip));
-					LogDbg('DXCommand', "$call bumped off by $ip, disconnected");
+					LogDbg('', "$call bumped off by $ip, disconnected");
 					$dxchan->disconnect;
 				} else {
 					already_conn($conn, $call, DXM::msg($lang, 'conother', $call, $main::mycall));
@@ -322,7 +329,7 @@ sub new_channel
 			$v = defined $c ? $c : $m;
 			if ($v && @n >= $v+$allowmultiple) {
 				my $nodes = join ',', @n;
-				LogDbg('DXCommand', "$call has too many connections ($v) at $nodes - disconnected");
+				LogDbg('', "$call has too many connections ($v) at $nodes - disconnected");
 				already_conn($conn, $call, DXM::msg($lang, 'contomany', $call, $v, $nodes));
 				return;
 			}
@@ -349,7 +356,7 @@ sub new_channel
 	
 
 	# set callbacks
-	$conn->set_error(sub {my $err = shift; LogDbg('DXCommand', "Comms error '$err' received for call $dxchan->{call}"); $dxchan->disconnect(1);});
+	$conn->set_error(sub {my $err = shift; LogDbg('', "Comms error '$err' received for call $dxchan->{call}"); $dxchan->disconnect(1);});
 	$conn->set_on_eof(sub {$dxchan->disconnect});
 	$conn->set_rproc(sub {my ($conn,$msg) = @_; $dxchan->rec($msg);});
 	if ($sort eq 'W') {
