@@ -513,8 +513,8 @@ sub setup_start
 				if ($desc) {
 					my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 					$s ||= '';
-					dbg("Git: $desc");
-					dbg("Git: V=$v S=$s B=$b g=$g");
+					dbg("Git: $desc") if isdbg('git');
+					dbg("Git: V=$v S=$s B=$b g=$g") if isdbg('git');
 					$version = $v;
 					$build = $b || 0;
 					$gitversion = "$g\[r]";
