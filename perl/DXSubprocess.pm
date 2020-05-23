@@ -29,7 +29,7 @@ sub freeze
 	my $j = shift;
 	unless ($j) {
 		LogDbg('DXUser', "DXSubcommand::freeze: undefined or empty input");
-		return q{[null, ""]};
+		return q{[null, '']};
 	}
 	
 	eval { $r = encode_json($j) };
@@ -47,14 +47,14 @@ sub thaw
 	my $j = shift;
 	unless ($j) {
 		LogDbg('DXUser', "DXSubcommand::thaw: empty string on input");
-		return q{[null, ""]};
+		return [undef,[0]];
 	}
 
 	return [undef, [1]] unless $j; 
 	eval { $r = decode_json($j) };
 	if ($@) {
 		LogDbg('DXUser', "DXSubcommand::thaw: json error on '$j': $@");
-		$r = qq{[$@,[1]]};
+		$r = [$@,[0]];
 	}
 	return $r;
 }
