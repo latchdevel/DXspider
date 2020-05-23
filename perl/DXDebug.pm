@@ -85,7 +85,7 @@ if (!defined $DB::VERSION) {
 
 my $_isdbg;						# current dbg level we are processing
 
-sub dbg($)
+sub dbg
 {
 	return unless $fp;
 	my $t = time; 
@@ -93,11 +93,11 @@ sub dbg($)
 		my $r = $_;
 		chomp $r;
 		my @l = split /\n/, $r;
-		for (@l) {
-			s/([\x00-\x08\x0B-\x1f\x7f-\xff])/uc sprintf("%%%02x",ord($1))/eg;
-			print "$_\n" if defined \*STDOUT && !$no_stdout;
-			my $tag = $_isdbg ? "($_isdbg) " : '';
-			my $str = "$t^$tag$_";
+		foreach my $l (@l) {
+			$l =~ s/([\x00-\x08\x0B-\x1f\x7f-\xff])/sprintf("%%%02X",ord($1))/eg;
+			print "$l\n" if defined \*STDOUT && !$no_stdout;
+			my $tag = $_isdbg ? "($_isdbg) " : '(*) ';
+			my $str = "$t^$tag$l";
 			&$callback($str) if $callback;
 			if ($dbgringlth) {
 				shift @dbgring while (@dbgring > $dbgringlth);

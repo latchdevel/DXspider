@@ -307,6 +307,7 @@ sub search
 				   my \@s = split /\\^/;
                    $checkfilter;
                    push \@spots, \\\@s;
+                   shift \@spots if \@spots > $to + 2; 
 			   }
 			   my \$c;
 			   my \$ref;

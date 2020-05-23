@@ -20,6 +20,8 @@ use Julian;
 
 our $readback = `which tac`;
 chomp $readback;
+undef $readback; 				# yet another reason not to use the cloud!
+ 
 
 use strict;
 

@@ -71,7 +71,7 @@ sub cread
 		my ($min, $hour, $mday, $month, $wday, $cmd) = /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/o;
 		next unless defined $min;
 		my $ref = bless {};
-		my $err;
+		my $err = '';
 
 		if (defined $min && defined $hour && defined $cmd) { # it isn't all of them, but should be enough to tell if this is a real line
 			$err .= parse($ref, 'min', $min, 0, 60);
