@@ -483,7 +483,7 @@ sub setup_start
 	}
 	STDOUT->autoflush(1);
 
-	
+
 	# try to load the database
 	if (DXSql::init($dsn)) {
 		$dbh = DXSql->new($dsn);
