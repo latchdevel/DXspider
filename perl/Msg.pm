@@ -482,7 +482,7 @@ sub new_client {
 	$sock->on(read => sub {$conn->_rcv($_[1])});
 	$sock->timeout(0);
 	$sock->start;
-	$conn->{peerhost} = $handle->peerhost;
+	$conn->{peerhost} = $handle->peerhost || 'unknown';
 	$conn->{peerhost} =~ s|^::ffff:||; # chop off leading pseudo IPV6 stuff on dual stack listeners
 	$conn->{peerport} = $handle->peerport;
 	dbg((ref $conn) . " accept $conn->{cnum} from $conn->{peerhost}:$conn->{peerport}") if isdbg('conn') || isdbg('connect');
