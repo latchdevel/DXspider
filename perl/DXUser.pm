@@ -196,13 +196,13 @@ sub init
 	if (-e $filename || -e "$filename.n" || -e "$filename.o") {
 		$v4 = 1;
 	} else {
-		if (-e localdata('users.v3')) {
-			LogDbg('DXUser', "Converting " . localdata('users.v3') . " to new json version of users file, please wait");
-			if (-x $convert) {
-				system($convert);
-				++$export;
-			}
-		}
+#		if (-e localdata('users.v3')) {
+#			LogDbg('DXUser', "Converting " . localdata('users.v3') . " to new json version of users file, please wait");
+#			if (-x $convert) {
+#				system($convert);
+#				++$export;
+#			}
+#		}
 		
 		die "User file $filename missing, please run $convert or copy a user_json backup from somewhere\n" unless -e "$filename.n" || -s $filename;
 	}

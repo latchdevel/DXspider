@@ -146,7 +146,7 @@ sub _on_connect
 	$sock->timeout(0);
 	$sock->start;
 	$conn->{peerhost} = eval { $handle->peerhost; };
-	dbg((ref $conn) . " connected $conn->{cnum} to $conn->{peerhost}:$conn->{peerport}") if isdbg('connll');
+	dbg((ref $conn) . " connected $conn->{cnum} to $conn->{peerhost}:$conn->{peerport}") if isdbg('conn') || isdbg ('connect');
 	if ($conn->{on_connect}) {
 		&{$conn->{on_connect}}($conn, $handle);
 	}
@@ -485,7 +485,7 @@ sub new_client {
 	$conn->{peerhost} = $handle->peerhost;
 	$conn->{peerhost} =~ s|^::ffff:||; # chop off leading pseudo IPV6 stuff on dual stack listeners
 	$conn->{peerport} = $handle->peerport;
-	dbg((ref $conn) . " accept $conn->{cnum} from $conn->{peerhost}:$conn->{peerport}") if isdbg('connll');
+	dbg((ref $conn) . " accept $conn->{cnum} from $conn->{peerhost}:$conn->{peerport}") if isdbg('conn') || isdbg('connect');
 	my ($rproc, $eproc) = &{$server_conn->{rproc}} ($conn, $conn->{peerhost}, $conn->{peerport});
 	$conn->{sort} = 'Incoming';
 	if ($eproc) {
