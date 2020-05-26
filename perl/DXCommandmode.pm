@@ -13,7 +13,7 @@ package DXCommandmode;
 
 @ISA = qw(DXChannel);
 
-require 5.10.1;
+use 5.10.1;
 
 use POSIX qw(:math_h);
 use DXUtil;
@@ -839,7 +839,7 @@ sub find_cmd_name {
 		};
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq(package DXCommandmode::$package; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
+		my $eval = qq(package DXCommandmode::$package; use 5.10.1; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
 
 
 		if ($sub =~ m|\s*sub\s+handle\n|) {
