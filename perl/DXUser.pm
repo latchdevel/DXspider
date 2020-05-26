@@ -83,6 +83,9 @@ our $maxconnlist = 3;			# remember this many connection time (duration) [start, 
 		  wantdxitu => '0,Show ITU Zone,yesno',
 		  wantgtk => '0,Want GTK interface,yesno',
 		  wantpc9x => '0,Want PC9X interface,yesno',
+		  wantrbn => '0,Want RBN spots,yesno',
+		  wantft => '0,Want FT4/8 spots,yesno',
+		  wantcw => '0,Want (RBN) CW spots,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -833,6 +836,12 @@ sub is_ak1a
 {
 	my $self = shift;
 	return $self->{sort} eq 'A';
+}
+
+sub is_rbn
+{
+	my $self = shift;
+	return $self->{sort} eq 'N'
 }
 
 sub unset_passwd

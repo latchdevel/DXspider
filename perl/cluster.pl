@@ -147,7 +147,7 @@ use DXXml;
 use DXSql;
 use IsoTime;
 use BPQMsg;
-
+use RBN;
 
 
 use Data::Dumper;
@@ -349,7 +349,9 @@ sub new_channel
 		
 		$user->startt($systime); # mark the start time of this connection
 		if ($user->is_node) {
-			$dxchan = DXProt->new($call, $conn, $user);
+			$dxchan = DXProt->new($call, $conn, $user);	
+		} elsif ($user->is_rbn) {
+			$dxchan = RBN->new($newcall, $conn, $user);
 		} elsif ($user->is_user) {
 			$dxchan = DXCommandmode->new($newcall, $conn, $user);
 		} else {

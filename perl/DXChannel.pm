@@ -62,6 +62,9 @@ $count = 0;
 		  here => '0,Here?,yesno',
 		  conf => '0,In Conference?,yesno',
 		  dx => '0,DX Spots,yesno',
+		  rbn => '0,RBN Spots,yesno',
+		  ft => '0,(RBN) FT4/8 Spots,yesno',
+		  cw => '0,RBN CW Spots,yesno',
 		  redirect => '0,Redirect messages to',
 		  lang => '0,Language',
 		  func => '5,Function',
@@ -676,6 +679,11 @@ sub broadcast_list
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
+			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
+			next unless $filter;
+		}
+		if ($sort eq 'rbn') {
+		    next unless $dxchan->{dx}; # this is deliberate!
 			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
 			next unless $filter;
 		}

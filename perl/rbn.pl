@@ -93,6 +93,8 @@ my $nospot = 0;
 
 while (<$sock>) {
 	chomp;
+	s/\s*$//;
+	
 	my $tim = time;
 
 	# parse line
