@@ -15,8 +15,8 @@ my $dxchan;
 my @out;
 my $nowt = time;
 
-push @out, "                                      Ave  Obs  Ping  Next      Filters";
-push @out, "  Callsign Type Started               RTT Count Int.  Ping Iso? In  Out PC92? Address";
+push @out, "                                                  Ave  Obs  Ping  Next      Filters";
+push @out, "  Callsign Type Started                 Uptime    RTT Count Int.  Ping Iso? In  Out PC92? Address";
 
 foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $call = $dxchan->call();
@@ -27,8 +27,9 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	my $obscount = $dxchan->nopings;
 	my $pingint = $dxchan->pingint;
 	my $lastt = $dxchan->lastping ? ($dxchan->pingint - ($nowt - $dxchan->lastping)) : $pingint;
-	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%8.2f",$dxchan->pingave) : "";
+	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%7.2f",$dxchan->pingave) : "";
 	my $iso = $dxchan->isolate ? 'Y' :' ';
+	my $uptime = difft($dxchan->startt, 1);
 	my ($fin, $fout, $pc92) = (' ', ' ', ' ');
 	if ($dxchan->do_pc9x) {
 		$pc92 = 'Y';
@@ -60,7 +61,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	}
 	$ipaddr = 'ax25' if $dxchan->conn->ax25;
 
-	push @out, sprintf "%10s $sort $t$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92    $ipaddr", $call, $pingint, $lastt;
+	push @out, sprintf "%10s $sort $t%13s$ping   $obscount  %5d %5d  $iso    $fin   $fout   $pc92    $ipaddr", $call, $uptime ,$pingint, $lastt;
 }
 
 return (1, @out)
