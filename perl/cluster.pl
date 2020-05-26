@@ -13,6 +13,7 @@
 package main;
 
 require 5.10.1;
+
 use warnings;
 
 use vars qw($root $is_win $systime $lockfn @inqueue $starttime $lockfn @outstanding_connects
@@ -33,7 +34,8 @@ $user_interval = 11*60;			# the interval between unsolicited prompts if no traff
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	umask 002;
-
+	$SIG{'__WARN__'} = sub { warn $_[0] if $DOWARN };
+			
 	# take into account any local::lib that might be present
 	eval {
 		require local::lib;
@@ -87,13 +89,12 @@ BEGIN {
 use DXVars;
 use SysVar;
 
-use strict;
-
 # order here is important - DXDebug snarfs Carp et al so that Mojo errors go into the debug log
 use DXDebug;
-
 use Mojolicious 7.26;
 use Mojo::IOLoop;
+
+$DOWARN = 1;
 
 use Msg;
 use IntMsg;
@@ -156,6 +157,8 @@ use POSIX ":sys_wait_h";
 use Web;
 
 use vars qw($version $build $gitversion $gitbranch);
+
+use strict;
 
 use Local;
 

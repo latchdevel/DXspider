@@ -83,7 +83,7 @@ if (!defined $DB::VERSION) {
 } 
 
 
-my $_isdbg;						# current dbg level we are processing
+my $_isdbg = '';						# current dbg level we are processing
 
 sub dbg
 {
@@ -218,11 +218,13 @@ sub longmess
 sub dbgprintring
 {
 	return unless $fp;
-	my $count = shift;
+	my $i = shift || 0;
+	my $count = @dbgring;
+	$i =  @dbgring-$i if $i;
+	return 0 unless $i < $count;	# do nothing if there is nothing to print
+
 	my $first;
 	my $l;
-	my $i = defined $count ? @dbgring-$count : 0;
-	$count = @dbgring;
 	for ( ; $i < $count; ++$i) {
 		my ($t, $str) = split /\^/, $dbgring[$i], 2;
 		next unless $t;
@@ -235,11 +237,13 @@ sub dbgprintring
 		}
 		my $buf = sprintf "%02d:%02d:%02d", (gmtime($t))[2,1,0];
 		$fp->writeunix($lt, "$lt^RING: $buf^$str");
+		++$l;
 	}
 	my $et = time;
 	$fp->writeunix($et, "$et^###");
-	$fp->writeunix($et, "$et^### RINGBUFFER END");
+	$fp->writeunix($et, "$et^### RINGBUFFER END $l debug lines written");
 	$fp->writeunix($et, "$et^###");
+	return $l;
 }
 
 sub dbgclearring

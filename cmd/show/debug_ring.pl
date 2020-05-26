@@ -12,10 +12,12 @@ my $n;
 my $doclear;
 
 for (@args) {
+	say "arg: $_";
 	$n = 0+$_ if /^\d+$/;
 	$doclear++ if /^clear$/;
 }
-DXDebug::dbgprintring($n);
+my $lines = DXDebug::dbgprintring($n);
 DXDebug::dbgclearring() if $doclear;
+dge;
 
-return (1, 'Contents of debug ring buffer logged. View with watchdbg.');
+return (1, qq{Contents of $lines lines of debug ring buffer logged. View with watchdbg.});
