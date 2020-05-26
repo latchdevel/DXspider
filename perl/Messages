@@ -234,6 +234,8 @@ package DXM;
 				noderc => '$_[0] created as AR-Cluster style Node',
 				nodes => '$_[0] set as DXSpider style Node',
 				nodesc => '$_[0] created as DXSpider style Node',
+				noden => '$_[0] set as RBN Feed ',
+				nodenc => '$_[0] created as RBN Feed',
 				nodex => '$_[0] set as DXNET style Node',
 				nodexc => '$_[0] created as DXNET style Node',
 				nodeu => '$_[0] set back as a User',
