@@ -529,25 +529,36 @@ sub diffms
 sub difft
 {
 	my $b = shift;
+	my $adds = shift;
+	
 	my $t;
 	if (ref $b eq 'ARRAY') {
 		$t = $b->[1] - $b->[0];
 	} else {
-		$t = shift() - $b;
+		if ($adds >= $b) {
+			$t = $adds - $b;
+			$adds = shift;
+		} else {
+			$t = $main::systime - $b;
+		}
 	}
 	return '-(ve)' if $t < 0;
 	my ($d,$h,$m,$s);
 	my $out = '';
 	$d = int $t / 86400;
-	$out .= "${d}d" if $d;
+	$out .= sprintf ("%s${d}d", $adds?' ':'') if $d;
 	$t -= $d * 86400;
 	$h = int $t / 3600;
-	$out .= "${h}h" if $h || $d;
+	$out .= sprintf ("%s${h}h", $adds?' ':'') if $h;
+#	$out .= "${h}h" if $h || $d;
 	$t -= $h * 3600;
 	$m = int $t / 60;
-	$out .= "${m}m" if $m || $h || $d;
+	$out .= sprintf ("%s${m}m", $adds?' ':'') if $m;
+#	$out .= "${m}m" if $m || $h || $d;
 	$s = int $t % 60;
-	$out .= "${s}s";
+	$out .= sprintf ("%s${s}s", $adds?' ':'') if $s;
+	#	$out .= "${s}s";
+	$out ||= sprintf ("%s0s", $adds?' ':'');
 	return $out;
 }
 
