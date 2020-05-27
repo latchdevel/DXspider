@@ -342,6 +342,8 @@ package DXM;
 				usernf => '*** User record for $_[0] not found ***',
 				usstates => 'US State display enabled for $_[0]',
 				usstateu => 'US State display disabled for $_[0]',
+				wante => 'Want $_[0] enabled for $_[1]',
+				wantd => 'Want $_[0] disabled for $_[1]',
 				wcy1 => '$_[0] is missing or out of range',
 				wcy2 => 'Duplicate WCY',
 				wcy3 => 'Date        Hour   SFI   A   K Exp.K   R SA    GMF   Aurora   Logger',

@@ -31,6 +31,7 @@ $yes = 'Yes';					# visual representation of yes
 $no = 'No';						# ditto for no
 $user_interval = 11*60;			# the interval between unsolicited prompts if no traffic
 
+
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	umask 002;
@@ -90,12 +91,11 @@ use DXVars;
 use SysVar;
 
 # order here is important - DXDebug snarfs Carp et al so that Mojo errors go into the debug log
-use DXDebug;
 use Mojolicious 7.26;
 use Mojo::IOLoop;
-
 $DOWARN = 1;
 
+use DXDebug;
 use Msg;
 use IntMsg;
 use Internet;
@@ -568,14 +568,14 @@ sub setup_start
 		my $oldsort = $ref->sort;
 		if ($oldsort ne 'S') {
 			$ref->sort('S');
-			dbg "Resetting node type from $oldsort -> DXSpider ('S')";
+			dbg("Resetting node type from $oldsort -> DXSpider ('S')");
 		}
 		$ref = DXUser::get($myalias);
 		die "$myalias missing, run the create_sysop.pl script and please RTFM" unless $ref && $ref->priv == 9;
 		$oldsort = $ref->sort;
 		if ($oldsort ne 'U') {
 			$ref->sort('U');
-			dbg "Resetting sysop user type from $oldsort -> User ('U')";
+			dbg("Resetting sysop user type from $oldsort -> User ('U')");
 		}
 	}
 

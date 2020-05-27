@@ -27,7 +27,7 @@ require Exporter;
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
-			 diffms _diffms difft parraydifft
+			 diffms _diffms difft parraydifft is_ztime
             );
 
 
@@ -442,6 +442,12 @@ sub is_latlong
 sub is_ipaddr
 {
     return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:,]+$/;
+}
+
+# is it a zulu time hhmmZ
+sub is_ztime
+{
+	return $_[0] =~ /^(?:(?:2[0-3])|(?:[01][0-9]))[0-5][0-9]Z$/;
 }
 
 # insert an item into a list if it isn't already there returns 1 if there 0 if not

@@ -120,17 +120,27 @@ sub normal
 	# parse line
 	dbg "RBN:RAW,$line" if isdbg('rbnraw');
 
-	my ($origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/, $line;
-	$tx ||= '';
-	dbg qq{0:$origin 1:$qrg 2:$call 3:$mode 4:$s 5:m 6:$spd 7:$u 8:$sort 9:$t 10:$tx} if $line =~ /DX/;
+	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/, $line;
 
+	# fix up FT8 spots from 7001
+	$t = $u, $u = '' if !$t && is_ztime($u);
+	$t = $sort, $sort = '' if !$t && is_ztime($sort);
+	my $qra = $spd, $spd = '' if is_qra($spd);
+	$u = $qra if $qra;
+	
+#	no warnings qw(uninitialized);
+	
+#	dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if $line =~ /DX/;
+
+#	use warnings;
+	
 	my $b;
 	
 	if ($t || $tx) {
 
 		# fix up times for things like 'NXDXF B' etc
-		if ($tx && $t !~ /^\d{4}Z$/) {
-			if ($tx =~ /^\d{4}Z$/) {
+		if ($tx && is_ztime($t)) {
+			if (is_ztime($tx)) {
 				$b = $t;
 				$t = $tx;
 			} else {
@@ -138,7 +148,7 @@ sub normal
 				return (0);
 			}
 		}
-
+		
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
 		# This works because the skimmers are NTP controlled (or should be) and will receive
 		# the spot at the same time (velocity factor of the atmosphere and network delays
@@ -194,7 +204,11 @@ sub normal
 			++$self->{nospot};
 			my $tag = $ts ? "RESPOT" : "SPOT";
 			$t .= ",$b" if $b;
+			$sort ||= '';
 			dbg "RBN:" . join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t);
+
+			send_dx_spot($self, $line, $mode);
+			
 			$spot->{$sp} = $tim;
 		}
 	} else {
@@ -233,7 +247,34 @@ sub normal
 	}
 }
 
+# we only send to users and we send the original line (possibly with a
+# Q:n in it)
+sub send_dx_spot
+{
+	my $self = shift;
+	my $line = shift;
+	my $mode = shift;
+	
+	my @dxchan = DXChannel::get_all();
 
+	foreach my $dxchan (@dxchan) {
+		next unless $dxchan->is_user;
+		my $user = $dxchan->{user};
+		next unless $user->wantrbn;
+
+		my $want = 0;
+		++$want if $user->wantbeacon && $mode =~ /^BEA|NCD/;
+		++$want if $user->wantcw && $mode =~ /^CW/;
+		++$want if $user->wantrtty && $mode =~ /^RTTY/;
+		++$want if $user->wantpsk && $mode =~ /^PSK/;
+		++$want if $user->wantcw && $mode =~ /^CW/;
+		++$want if $user->wantft && $mode =~ /^FT/;
+
+		++$want unless $want;	# send everything if nothing is selected.
+
+		$dxchan->send($line) if $want;
+	}
+}
 
 
 1;

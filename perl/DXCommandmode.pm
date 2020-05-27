@@ -139,9 +139,6 @@ sub start
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
 	$self->{lastmsgpoll} = 0;
-	$self->{rbn} = $user->wantrbn;
-	$self->{ft} = $user->wantft;
-	$self->{cw} = $user->wantcw;
 
 	# sort out new dx spot stuff
 	$user->wantdxcq(0) unless defined $user->{wantdxcq};

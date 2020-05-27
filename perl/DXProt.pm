@@ -561,6 +561,7 @@ sub send_dx_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $dxchan->is_rbn;
 		if ($line =~ /PC61/ && !($dxchan->is_spider || $dxchan->is_user)) {
 			unless ($pc11) {
 				my @f = split /\^/, $line;
@@ -621,6 +622,7 @@ sub send_wwv_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $dxchan->is_rbn;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -655,6 +657,7 @@ sub send_wcy_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self;
+		next if $dxchan->is_rbn;
 
 		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, @dxcc);
 	}
@@ -738,6 +741,7 @@ sub send_announce
 		next if $dxchan == $self && $self->is_node;
 		next if $from_pc9x && $dxchan->{do_pc9x};
 		next if $target eq 'LOCAL' && $dxchan->is_node;
+		next if $dxchan->is_rbn;
 		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call},
 						  @a[0..2], @b[0..2]);
 	}
@@ -810,6 +814,7 @@ sub send_chat
 			next unless $dxchan->is_spider && $dxchan->do_pc9x;
 			next if $target eq 'LOCAL';
 		}
+		next if $dxchan->is_rbn;
 
 		$dxchan->chat($line, $self->{isolate}, $target, $_[1],
 					  $text, @_, $self->{call}, @a[0..2], @b[0..2]);

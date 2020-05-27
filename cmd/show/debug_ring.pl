@@ -18,6 +18,5 @@ for (@args) {
 }
 my $lines = DXDebug::dbgprintring($n);
 DXDebug::dbgclearring() if $doclear;
-dge;
 
 return (1, qq{Contents of $lines lines of debug ring buffer logged. View with watchdbg.});
