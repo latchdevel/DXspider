@@ -39,33 +39,34 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 	$background = COLOR_WHITE();
 	$mycallcolor = COLOR_PAIR(1);
 	@colors = (
-		   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
-		   [ '^DX', COLOR_PAIR(5) ],
-		   [ '^To', COLOR_PAIR(3) ],
-		   [ '^(?:WWV|WCY)', COLOR_PAIR(4) ],
-		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
-		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
-		   [ '^WX', COLOR_PAIR(3) ],
-		   [ '^(User|Node|Buddy)\b', COLOR_PAIR(8) ],
-		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
-		    
-		   );
+			   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
+			   [ '^DX de \S+#:', COLOR_PAIR(2) ],
+			   [ '^DX', COLOR_PAIR(5) ],
+			   [ '^To', COLOR_PAIR(3) ],
+			   [ '^(?:WWV|WCY)', COLOR_PAIR(4) ],
+			   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
+			   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
+			   [ '^WX', COLOR_PAIR(3) ],
+			   [ '^(User|Node|Buddy)\b', COLOR_PAIR(8) ],
+			   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
+			  );
 }
 if ($ENV{'TERM'} =~ /(console|linux)/) {
 	$foreground = COLOR_WHITE();
 	$background = COLOR_BLACK();
 	$mycallcolor = COLOR_PAIR(1);
 	@colors = (
-		   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
-		   [ '^DX', COLOR_PAIR(4) ],
-		   [ '^To', COLOR_PAIR(3) ],
-		   [ '^(?:WWV|WCY)', COLOR_PAIR(5) ],
-		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
-		   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
-		   [ '^WX', COLOR_PAIR(3) ],
-		   [ '^(User|Node)\b', A_BOLD|COLOR_PAIR(8) ],
-		   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
-		   );
+			   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
+			   [ '^DX de \S+#:', COLOR_PAIR(2) ],
+			   [ '^DX', COLOR_PAIR(4) ],
+			   [ '^To', COLOR_PAIR(3) ],
+			   [ '^(?:WWV|WCY)', COLOR_PAIR(5) ],
+			   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
+			   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ ', COLOR_PAIR(6) ],
+			   [ '^WX', COLOR_PAIR(3) ],
+			   [ '^(User|Node)\b', A_BOLD|COLOR_PAIR(8) ],
+			   [ '^New mail', A_BOLD|COLOR_PAIR(5) ],
+			  );
 }
 
 
