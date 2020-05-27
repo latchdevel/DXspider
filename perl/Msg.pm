@@ -257,7 +257,7 @@ sub disconnect
 	my ($pkg, $fn, $line) = caller if $dbg;
 
 	if ($count >= 2) {
-		dbg((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line FORCING CLOSE ") if $dbg;
+		dbgtrace((ref $conn) . "::disconnect on call $conn->{call} attempt $conn->{disconnecting} called from ${pkg}::${fn} line $line FORCING CLOSE ") if $dbg;
 		_close_it($conn);
 		return;
 	}
@@ -553,8 +553,7 @@ sub DESTROY
 
 	if (isdbg('connll')) {
 		my ($pkg, $fn, $line) = caller;
-		dbg((ref $conn) . "::DESTROY on call $call called from ${pkg}::${fn} line $line ");
-		
+		dbgtrace((ref $conn) . "::DESTROY on call $call called from ${pkg}::${fn} line $line ");
 	}
 
 	my $call = $conn->{call} || 'unallocated';
