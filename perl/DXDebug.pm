@@ -24,9 +24,11 @@
 
 package DXDebug;
 
+use 5.10.1;
+
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose confess croak cluck carp);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose dbgtrace confess croak cluck carp);
 
 use strict;
 use vars qw(%dbglevel $fp $callback $cleandays $keepdays $dbgringlth);
@@ -54,23 +56,27 @@ if (!defined $DB::VERSION) {
 	    \$SIG{__DIE__} = 'DEFAULT'; 
         DXDebug::dbgprintring() if DXDebug::isdbg('nologchan');
         DXDebug::dbg(\$@);
-		DXDebug::dbg(Carp::shortmess(\@_));
+#		DXDebug::dbg(Carp::shortmess(\@_));
+        DXDebug::longmess(\@_);
 	    exit(-1); 
 	}
 	sub croak { 
 		\$SIG{__DIE__} = 'DEFAULT'; 
         DXDebug::dbgprintring() if DXDebug::isdbg('nologchan');
         DXDebug::dbg(\$@);
-		DXDebug::dbg(Carp::longmess(\@_));
+#		DXDebug::dbg(Carp::longmess(\@_));
+        DXDebug::shortmess(\@_);
 		exit(-1); 
 	}
 	sub carp { 
         DXDebug::dbgprintring(25) if DXDebug('nologchan');
-        DXDebug::dbg(Carp::shortmess(\@_)); 
+#        DXDebug::dbg(Carp::shortmess(\@_)); 
+        DXDebug::longmess(\@_);
     }
 	sub cluck { 
         DXDebug::dbgprintring(25) if DXDebug('nologchan');
-        DXDebug::dbg(Carp::longmess(\@_)); 
+#        DXDebug::dbg(Carp::longmess(\@_)); 
+        DXDebug::longmess(\@_);
     } );
 
     CORE::die(Carp::shortmess($@)) if $@;
@@ -84,6 +90,24 @@ if (!defined $DB::VERSION) {
 
 
 my $_isdbg = '';						# current dbg level we are processing
+
+# print stack trace
+sub dbgtrace
+{
+#	say "*** in dbgtrace";
+	$_isdbg = 'trace';
+	dbg(@_);
+	for (my $i = 1; (my ($pkg, $fn, $l, $subr) = caller($i)); ++$i) {
+#		say "*** in dbgtrace $i";
+		next if $pkg eq 'DXDebug';
+#		say "*** in dbgtrace after package";
+		last if $pkg =~ /Mojo/;
+#		say "*** in dbgtrace $i after mojo";
+		$_isdbg = 'trace';
+		dbg("Stack ($i): $pkg::$subr in $fn line: $l");
+	}
+	$_isdbg = '';
+}
 
 sub dbg
 {
@@ -106,7 +130,6 @@ sub dbg
 			$fp->writeunix($t, $str) unless !$fp || $dbglevel{"nolog$_isdbg"} ; 
 		}
 	}
-	$_isdbg = '';
 }
 
 sub dbginit
@@ -207,12 +230,12 @@ sub isdbg($)
 
 sub shortmess 
 {
-	return Carp::shortmess(@_);
+	return dbgtrace(@_);
 }
 
 sub longmess 
 {
-	return Carp::longmess(@_);
+	return dbgtrace(@_);
 }
 
 sub dbgprintring
