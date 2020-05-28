@@ -273,6 +273,7 @@ sub send_dx_spot
 		++$want unless $want;	# send everything if nothing is selected.
 
 		$dxchan->send($line) if $want;
+		dbg("RBN: $line") if isdbg('progress');
 	}
 }
 
