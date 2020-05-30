@@ -88,7 +88,7 @@ sub handle
 			dbg("sh/dx qra") if isdbg('sh/dx');
 			next;
 		}
-		if (grep {lc $f eq $_} qw(zone byzone by_zone itu byitu by_itu state bystate by_state on) ) {
+		if (grep {lc $f eq $_} qw(zone byzone by_zone itu byitu by_itu state bystate by_state info on) ) {
 			$f =~ s/^by(\w)/by_$1/;
 			push @flist, $f;
 			push @flist, shift @list if @list;
