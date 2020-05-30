@@ -39,16 +39,23 @@ $filterdef = bless ([
 					 ['on', 'r', 0, 0, \&decodefreq],
 					 ['call', 'c', 1],
 					 ['info', 't', 3],
+					 ['spotter', 'c', 4],
 					 ['by', 'c', 4],
 					 ['call_dxcc', 'nc', 5],
 					 ['by_dxcc', 'nc', 6],
 					 ['origin', 'c', 7, 9],
 					 ['call_itu', 'ni', 8],
+					 ['itu', 'ni', 8],
 					 ['call_zone', 'nz', 9],
+					 ['zone', 'nz', 9],
 					 ['by_itu', 'ni', 10],
+					 ['byitu', 'ni', 10],
 					 ['by_zone', 'nz', 11],
+					 ['byzone', 'nz', 11],
 					 ['call_state', 'ns', 12],
+					 ['state', 'ns', 12],
 					 ['by_state', 'ns', 13],
+					 ['bystate', 'ns', 13],
 					 ['ip', 'c', 14],
 #					 ['channel', 'c', 15],
 #					 ['rbn', 'a', 4, 0, \&filterrbnspot],
@@ -56,7 +63,7 @@ $filterdef = bless ([
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
-our $usetac = 0;
+our $usetac = 1;
 our $readback;
 
 if ($usetac) {
@@ -176,6 +183,8 @@ sub prefix
 }
 
 # fix up the full spot data from the basic spot data
+# input is
+# freq, call, time, comment, spotter, origin[, ip_address]
 sub prepare
 {
 	# $freq, $call, $t, $comment, $spotter, node, ip address = @_
@@ -201,7 +210,7 @@ sub prepare
 	push @out, $_[6] if $_[6] && is_ipaddr($_[6]);
 
 	# thus we now have:
-	# freq, call, time, comment, spotter, call country code, call itu, call cqzone, spotter country code, spotter itu, spotter cqzone, call state, spotter state, node, spotter ip address
+	# freq, call, time, comment, spotter, call country code, spotter country code, origin, call itu, call cqzone, spotter itu, spotter cqzone, call state, spotter state, spotter ip address
 	return @out;
 }
 
@@ -240,7 +249,13 @@ sub add
 #   $f5 = spotted dxcc country
 #   $f6 = spotter dxcc country
 #   $f7 = origin
-#   $f8 = ip address
+#   $f8 = spotted itu
+#   $f9 = spotted cq zone
+#   $f10 = spotter itu
+#   $f11 = spotter cq zone
+#   $f12 = spotted us state
+#   $f13 = spotter us state
+#   $f14 = ip address
 #
 # In addition you can specify a range of days, this means that it will start searching
 # from <n> days less than today to <m> days less than today
@@ -254,7 +269,6 @@ sub add
 sub search
 {
 	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dxchan) = @_;
-	my $eval;
 	my @out;
 	my $ref;
 	my $i;
@@ -276,90 +290,62 @@ sub search
 	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
 
 	if ($main::dbh && $use_db_for_search) {
-		return $main::dbh->spot_search($expr, $dayfrom, $dayto, $to-$from, $dxchan);
+		return $main::dbh->spot_search($hint, $dayfrom, $dayto, $to-$from, $dxchan);
 	}
 
-	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
+#	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
-	my $checkfilter;
-	$checkfilter = qq (
-                      if (\@s < 9) {
-                          my \@a = (Prefix::cty_data(\$s[1]))[1..3];
-                          my \@b = (Prefix::cty_data(\$s[4]))[1..3];
-                          push \@s, \@a[0,1], \@b[0,1], \$a[2], \$a[2];  
-                      } else {
-                          \$s[12] ||= ' ';
-                          \$s[13] ||= ' ';
-                      }
-	                  my (\$filter, \$hops) = \$dxchan->{spotsfilter}->it(\@s);
-	                  next unless (\$filter);
-                      ) if $dxchan;
-	$checkfilter ||= ' ';
-	
-	dbg("hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n") if isdbg('search');
+
+	dbg("Spot::search hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n") if isdbg('search');
   
 	# build up eval to execute
-	$eval = qq(
-			   while (<\$fh>) {
-				   $hint;
-				   chomp;
-				   my \@s = split /\\^/;
-                   $checkfilter;
-                   push \@spots, \\\@s;
-                   shift \@spots if \@spots > $to + 2; 
-			   }
-			   my \$c;
-			   my \$ref;
-               if (\$readback) {
-                   foreach \$ref (\@spots) {
-		               if ($expr) {
-						   \$count++;
-						   next if \$count < $from; # wait until from 
-						   push(\@out, \$ref);
-						   last if \$count >= $to; # stop after to
-			           }         
-                   }
-               } else {
-			      for (\$c = \$#spots; \$c >= 0; \$c--) {
-					   \$ref = \$spots[\$c];
-					   if ($expr) {
-						   \$count++;
-						   next if \$count < $from; # wait until from 
-						   push(\@out, \$ref);
-						   last if \$count >= $to; # stop after to
-					   }
-				   }
-               }
-			  );
-	         
+	dbg("Spot::search Spot eval: $expr") if isdbg('searcheval');
+	$expr =~ s/\$r/\$_[0]/g;
+	my $eval = qq{ sub { return $expr; } };
+	dbg("Spot::search Spot eval: $eval") if isdbg('searcheval');
+	my $ecode = eval $eval;
+	return ("Spot search error", $@) if $@;
 	
-    
-	dbg("Spot eval: $eval") if isdbg('searcheval');
 	
 	my $fh;
 	my $now = $fromdate;
-	for ($i = $count = 0; $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
-		my @spots;
+	my @spots;
+	my $recs;
+	
+	for ($i = $count = 0; $count < $to && $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
 		last if $now->cmp($todate) <= 0;
 		
+		my $fn = $fp->fn($now->sub($i));
 		if ($readback) {
-			my $fn = $fp->fn($now->sub($i));
-			dbg("search using tac fn: $fn $i") if isdbg('search');
+			dbg("Spot::search search using tac fn: $fn $i") if isdbg('search');
 			$fh = IO::File->new("$readback $fn |");
 		} else {
+			dbg("Spot::search search fn: $fp->{fn} $i") if isdbg('search');
 			$fh = $fp->open($now->sub($i));      # get the next file
-			dbg("search fn: $fp->{fn} $i") if isdbg('search');
 		}
 		if ($fh) {
+			my $rec = 0;
 			my $in;
-			eval $eval;			# do the search on this file
+			while (<$fh>) {
+				my @r = split /\^/;
+				++$rec;
+				if (&$ecode(\@r)) {
+					++$count;
+					next if $count < $from;
+					push @out, \@r;
+					last if $count >= $to;
+				}
+			}
+			dbg("Spot::search recs read: $rec") if isdbg('search');
 			last if $count >= $to; # stop after to
+			
 			return ("Spot search error", $@) if $@;
 		}
 	}
+   
 
-	return @out;
+	return $readback ? @out : reverse @out;
 }
 
 # change a freq range->regular expression

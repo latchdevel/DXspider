@@ -1,3 +1,23 @@
+30May20=======================================================================
+1. Fix sh/dx! It appears that there is a long standing problem with sh/dx not
+   actually return all the answers it should. I have also had a request to
+   allow / enable the "not" keyword (just like the filtering system dones).
+
+   Now this was one of the earliest modules that I wrote and it took quite
+   a bit of work to tease out the important bits and then use the Filter 
+   module (as in acc/spot) to generate the sh/dx filtering expressions. This
+   seems to have been done. 
+ 
+   NB This will likely not work if you are using a SQL backend to do sh/dx
+   commands. This was never actually an official feature. It is now 
+   deprecated.   
+29May20=======================================================================
+1. Please install Math::Round and Data::Structure::Util. Instructions are
+   available in UPGRADE.mojo.
+2. Notwithstanding item 1 below. I have decided to keep DB_File but ditch
+   Storable. The current users.v3 will be converted, automatically, to 
+   users.v3j on startup. After this is done a 'user_json' file (the 
+   replacement for 'user_asc') will also be generated. 
 20May20=======================================================================
 1. Backport convert-users-v3-to-v4.pl to allow creation of the new json 
    formatted *text* based user file from the old v3 DB_File and Storable 

@@ -364,7 +364,7 @@ use vars qw(@ISA);
 # this is called as a subroutine not as a method
 sub parse
 {
-	my ($self, $dxchan, $sort, $line) = @_;
+	my ($self, $dxchan, $sort, $line, $forcenew) = @_;
 	my $ntoken = 0;
 	my $fno = 1;
 	my $filter;
@@ -373,7 +373,8 @@ sub parse
 	my $user;
 	
 	# check the line for non legal characters
-	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)!]/;
+	dbg("Filter::parse line: '$line'") if isdbg('filter');
+	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)\$!]/;
 	
 	# add some spaces for ease of parsing
 	$line =~ s/([\(\)])/ $1 /g;
@@ -385,7 +386,7 @@ sub parse
 	while (@f) {
 		if ($ntoken == 0) {
 			
-			if (@f && $dxchan->priv >= 8 && ((is_callsign(uc $f[0]) && DXUser::get(uc $f[0])) || $f[0] =~ /(?:node|user)_default/)) {
+			if (!$forcenew &&  @f && $dxchan->priv >= 8 && ((is_callsign(uc $f[0]) && DXUser::get(uc $f[0])) || $f[0] =~ /(?:node|user)_default/)) {
 				$call = shift @f;
 				if ($f[0] eq 'input') {
 					shift @f;
@@ -399,7 +400,7 @@ sub parse
 				$fno = shift @f;
 			}
 
-			$filter = Filter::read_in($sort, $call, $flag);
+			$filter = Filter::read_in($sort, $call, $flag) unless $forcenew;
 			$filter = Filter->new($sort, $call, $flag) if !$filter || $filter->isa('Filter::Old');
 			
 			$ntoken++;
@@ -537,7 +538,7 @@ sub parse
 	$user =~ s/\!/ not /g;
 	$user =~ s/\s+/ /g;
 	
-	return (0, $filter, $fno, $user, "$s");
+	return (0, $filter, $fno, $user, $s);
 }
 
 # a filter accept/reject command
