@@ -386,7 +386,7 @@ sub is_callsign
 					  (?:\d?[A-Z]{1,2}\d*/)?    # out of area prefix /  
 					  (?:\d?[A-Z]{1,2}\d+)      # main prefix one (required) 
 					  [A-Z]{1,5}                # callsign letters (required)
-					  (?:-(?:\d{1,2}|\#))?      # - nn possibly (eg G8BPQ-8) or -# (an RBN spot) 
+					  (?:-(?:\d{1,2}))?         # - nn possibly (eg G8BPQ-8)
 					  (?:/[0-9A-Z]{1,7})?       # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
 					  $!x;
 
@@ -554,15 +554,14 @@ sub difft
 	$t -= $d * 86400;
 	$h = int $t / 3600;
 	$out .= sprintf ("%s${h}h", $adds?' ':'') if $h;
-#	$out .= "${h}h" if $h || $d;
 	$t -= $h * 3600;
 	$m = int $t / 60;
 	$out .= sprintf ("%s${m}m", $adds?' ':'') if $m;
-#	$out .= "${m}m" if $m || $h || $d;
-	$s = int $t % 60;
-	$out .= sprintf ("%s${s}s", $adds?' ':'') if $s;
-	#	$out .= "${s}s";
-	$out ||= sprintf ("%s0s", $adds?' ':'');
+	if ($d == 0 && $adds || $adds == 2) {
+		$s = int $t % 60;
+		$out .= sprintf ("%s${s}s", $adds?' ':'') if $s;
+		$out ||= sprintf ("%s0s", $adds?' ':'');
+	}
 	return $out;
 }
 

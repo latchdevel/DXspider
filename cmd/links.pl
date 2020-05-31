@@ -18,9 +18,10 @@ my $nowt = time;
 push @out, "                                                  Ave  Obs  Ping  Next      Filters";
 push @out, "  Callsign Type Started                 Uptime    RTT Count Int.  Ping Iso? In  Out PC92? Address";
 
-foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
-	my $call = $dxchan->call();
+foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	next if $dxchan == $main::me;
+	next unless $dxchan->is_node || $dxchan->is_rbn;
+	my $call = $dxchan->call();
 	my $t = cldatetime($dxchan->startt);
 	my $sort;
 	my $name = $dxchan->user->name || " ";
@@ -44,7 +45,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	}
 	unless ($pingint) {
 		$lastt = 0;
-		$ping = "        ";
+		$ping = "       ";
 	}
 
 	$sort = "DXSP" if $dxchan->is_spider;
@@ -52,6 +53,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all_nodes ) {
 	$sort = "DXNT" if $dxchan->is_dxnet;
 	$sort = "AR-C" if $dxchan->is_arcluster;
 	$sort = "AK1A" if $dxchan->is_ak1a;
+	$sort = "RBN " if $dxchan->is_rbn;
 	my $ipaddr;
 
 	my $addr = $dxchan->hostname;
