@@ -192,6 +192,7 @@ our $ending;					# signal that we are ending;
 our $broadcast_debug;			# allow broadcasting of debug info down "enhanced" user connections
 our $clssecs;					# the amount of cpu time the DXSpider process have consumed
 our $cldsecs;					# the amount of cpu time any child processes have consumed
+our $allowslashcall;			# Allow / in connecting callsigns (ie PA0/G1TLH, or even PA0/G1TLH/2) 
 
 
 # send a message to call on conn and disconnect
