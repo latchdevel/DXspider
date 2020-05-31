@@ -208,7 +208,7 @@ sub it
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
 			$type = 'reject';
 			$asc = $filter->{reject}->{user};
-			if (&{$filter->{reject}->{code}}(\@_)) {
+			if (&{$filter->{reject}->{code}}(ref $_[0] ? $_[0] : \@_)) {
 				$r = 0;
 				last;
 			} else {
@@ -218,7 +218,7 @@ sub it
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
 			$type = 'accept';
 			$asc = $filter->{accept}->{user};
-			if (&{$filter->{accept}->{code}}(\@_)) {
+			if (&{$filter->{accept}->{code}}(ref $_[0] ? $_[0] : \@_)) {
 				$r = 1;
 				last;
 			} else {
@@ -231,7 +231,7 @@ sub it
 	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
-		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @_;
+		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} (ref $_[0] ? @{$_[0]} : @_);
 		my $true = $r ? "OK " : "REJ";
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
@@ -377,12 +377,13 @@ sub parse
 	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)\$!]/;
 	
 	# add some spaces for ease of parsing
-	$line =~ s/([\(\)])/ $1 /g;
+	$line =~ s/([\(\!\)])/ $1 /g;
 	$line = lc $line;
 	
 	my @f = split /\s+/, $line;
 	my $conj = ' && ';
 	my $not = "";
+	my $lasttok = '';
 	while (@f) {
 		if ($ntoken == 0) {
 			
@@ -412,9 +413,12 @@ sub parse
 			my $tok = shift @f;
 			if ($tok eq '(') {
 				if ($s) {
-					$s .= $conj;
-					$user .= $conj;
+					unless ($lasttok eq '(') {
+						$s .= $conj ;
+						$user .= $conj;
+					}
 					$conj = "";
+					$lasttok = $tok;
 				}
 				if ($not) {
 					$s .= $not;
@@ -423,12 +427,14 @@ sub parse
 				}
 				$s .= $tok;
 				$user .= $tok;
+				$lasttok = $tok;
 				next;
 			} elsif ($tok eq ')') {
 				$conj = ' && ';
 				$not ="";
 				$s .= $tok;
 				$user .= $tok;
+				$lasttok = $tok;
 				next;
 			} elsif ($tok eq 'all') {
 				$s .= '1';
@@ -436,12 +442,14 @@ sub parse
 				last;
 			} elsif ($tok eq 'or') {
 				$conj = ' || ' if $conj ne ' || ';
+				$lasttok = $tok;
 				next;
 			} elsif ($tok eq 'and') {
 				$conj = ' && ' if $conj ne ' && ';
 				next;
 			} elsif ($tok eq 'not' || $tok eq '!') {
-				$not = '!';
+				$not = '! ';
+				$lasttok = $tok;
 				next;
 			}
 			if (@f) {
@@ -449,11 +457,12 @@ sub parse
 				my @val = split /,/, $val;
 
 				if ($s) {
-					$s .= $conj ;
-					$user .= $conj;
-					$conj = ' && ';
+					unless ($lasttok eq '(') {
+						$s .= $conj ;
+						$user .= $conj;
+						$conj = ' && ';
+					}
 				}
-
 				if ($not) {
 					$s .= $not;
 					$user .= $not;
@@ -528,8 +537,8 @@ sub parse
 			} else {
 				return ('no', $dxchan->msg('filter2', $tok));
 			}
+			$lasttok = $tok;
 		}
-		
 	}
 
 	# tidy up the user string

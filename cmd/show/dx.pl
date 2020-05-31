@@ -5,28 +5,33 @@
 #
 
 require 5.10.1;
+use warnings;
 
 sub handle
 {
 	my ($self, $line) = @_;
-	my @list = split /\s+/, $line; # split the line up
+
+	$line =~ s/([\(\!\)])/ $1 /g;
+	
+	my @list = split /[\s]+/, $line; # split the line up
 
 	my @out;
 	my $f;
 	my $call = $self->call;
 	my $usesql = $main::dbh && $Spot::use_db_for_search;
-	my ($from, $to);
-	my ($fromday, $today);
+	my ($from, $to) = (0, 0);
+	my ($fromday, $today) = (0, 0);
 	my $exact;
 	my $real;
-	my $user;
-	my $expr;
 	my $dofilter;
 	my $pre;
 	my $dxcc;
 
 	my @flist;
 
+	
+	dbg("sh/dx \@list: " . join(" ", @list)) if isdbg('sh/dx');
+	
 	while ($f = shift @list) {	# next field
 		dbg "sh/dx arg: $f list: " . join(',', @list) if isdbg('sh/dx');
 		if (!$from && !$to) {
@@ -83,10 +88,16 @@ sub handle
 			dbg("sh/dx qra") if isdbg('sh/dx');
 			next;
 		}
+		if (grep {lc $f eq $_} qw { ( or and not ) }) {
+			push @flist, $f;
+			dbg("sh/dx operator $f") if isdbg('sh/dx');
+			next;
+		}
 		if (grep {lc $f eq $_} qw(zone byzone by_zone itu byitu by_itu state bystate by_state info on spotter by) ) {
 			$f =~ s/^by(\w)/by_$1/;
 			push @flist, $f;
 			push @flist, shift @list if @list;
+			dbg("sh/dx function $flist[-2] $flist[-1]") if isdbg('sh/dx');
 			next;
 		}
 		unless ($pre) {
@@ -116,7 +127,8 @@ sub handle
 	my ($r, $filter, $fno, $user, $expr) = $Spot::filterdef->parse($self, 'spots', $newline, 1);
 
 	return (0, "sh/dx parse error '$r' " . $filter) if $r;
-	
+
+	$user ||= '';
 	dbg "sh/dx user: $user expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('sh/dx');
   
 	# now do the search
