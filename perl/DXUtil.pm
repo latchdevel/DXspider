@@ -383,8 +383,8 @@ sub unpad
 sub is_callsign
 {
 	return $_[0] =~ m!^
-					  (?:\d?[A-Z]{1,2}\d*/)?    # out of area prefix /  
-					  (?:\d?[A-Z]{1,2}\d+)      # main prefix one (required) 
+					  (?:\d?[A-Z]{1,2}\d{0,2}/)?    # out of area prefix /  
+					  (?:\d?[A-Z]{1,2}\d{1,2})      # main prefix one (required) 
 					  [A-Z]{1,5}                # callsign letters (required)
 					  (?:-(?:\d{1,2}))?         # - nn possibly (eg G8BPQ-8)
 					  (?:/[0-9A-Z]{1,7})?       # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly

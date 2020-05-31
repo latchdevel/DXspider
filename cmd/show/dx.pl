@@ -59,11 +59,6 @@ sub handle
 			$dofilter = 1 if $self && $self->spotsfilter;
 			next;
 		}
-		if (lc $f eq 'spotter') {
-			dbg("sh/dx by") if isdbg('sh/dx');
-			push @flist, 'by';
-			next;
-		}
 		if (lc $f eq 'qsl') {
 			dbg("sh/dx qsl") if isdbg('sh/dx');
 			push @flist, "info {QSL|VIA}";
@@ -88,7 +83,7 @@ sub handle
 			dbg("sh/dx qra") if isdbg('sh/dx');
 			next;
 		}
-		if (grep {lc $f eq $_} qw(zone byzone by_zone itu byitu by_itu state bystate by_state info on) ) {
+		if (grep {lc $f eq $_} qw(zone byzone by_zone itu byitu by_itu state bystate by_state info on spotter by) ) {
 			$f =~ s/^by(\w)/by_$1/;
 			push @flist, $f;
 			push @flist, shift @list if @list;

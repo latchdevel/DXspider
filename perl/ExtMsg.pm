@@ -37,7 +37,7 @@ sub enqueue
 {
 	my ($conn, $msg) = @_;
 	unless ($msg =~ /^[ABZ]/) {
-		if ($msg =~ /^E[-\w]+\|([01])/ && $conn->{csort} eq 'telnet') {
+		if ($msg =~ m{^E[-\w\/]+\|([01])} && $conn->{csort} eq 'telnet') {
 			$conn->{echo} = $1;
 			if ($1) {
 #				$conn->send_raw("\xFF\xFC\x01");
@@ -45,7 +45,7 @@ sub enqueue
 #				$conn->send_raw("\xFF\xFB\x01");
 			}
 		} else {
-			$msg =~ s/^[-\w]+\|//;
+			$msg =~ s{^[-\w\/]+\|}{};
 			push (@{$conn->{outqueue}}, $msg . $conn->{lineend});
 		}
 	}
@@ -99,18 +99,23 @@ sub dequeue
 				&{$conn->{rproc}}($conn, "I$conn->{call}|$msg");
 			} elsif ($conn->{state} eq 'WL' ) {
 				$msg = uc $msg;
-				if (is_callsign($msg) && $msg !~ m|/| ) {
-					my $sort = $conn->{csort};
-					$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';
-					my $uref;
-					if ($main::passwdreq || ($uref = DXUser::get_current($msg)) && $uref->passwd ) {
-						$conn->conns($msg);
-						$conn->{state} = 'WP';
-						$conn->{decho} = $conn->{echo};
-						$conn->{echo} = 0;
-						$conn->send_raw('password: ');
+				if (is_callsign($msg)) {
+					if ($main::allowslashcall || $msg !~ m|/|) {
+						my $sort = $conn->{csort};
+						$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';
+						my $uref;
+						if ($main::passwdreq || ($uref = DXUser::get_current($msg)) && $uref->passwd ) {
+							$conn->conns($msg);
+							$conn->{state} = 'WP';
+							$conn->{decho} = $conn->{echo};
+							$conn->{echo} = 0;
+							$conn->send_raw('password: ');
+						} else {
+							$conn->to_connected($msg, 'A', $sort);
+						}
 					} else {
-						$conn->to_connected($msg, 'A', $sort);
+						$conn->send_now("Sorry $msg is an invalid callsign");
+						$conn->disconnect;
 					}
 				} else {
 					$conn->send_now("Sorry $msg is an invalid callsign");
