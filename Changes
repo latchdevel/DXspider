@@ -1,6 +1,7 @@
 31May20=======================================================================
 1. Improve links command layout slightly.
 2. Issue an *accurate* UPGRADE.mojo with all the new packages included! 
+3. Fix issue with sh/dx
 30May20=======================================================================
 1. Fix sh/dx! It appears that there is a long standing problem with sh/dx not
    actually return all the answers it should. I have also had a request to
