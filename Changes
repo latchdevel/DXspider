@@ -1,3 +1,9 @@
+01Jun20=======================================================================
+1. Fix sh/dx iota and qra. This completes the conversion of sh/dx's limited
+   "old style" parsing to using Filter style parsing with something that 
+   allows expressions include brackets ( and ) as well as the 'not' keyword.
+   NOTE: the precedence rules are the same as perl's '!', '||' and '&&' 
+         operators.  
 31May20=======================================================================
 1. Improve links command layout slightly.
 2. Issue an *accurate* UPGRADE.mojo with all the new packages included! 

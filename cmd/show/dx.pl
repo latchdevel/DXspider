@@ -71,21 +71,21 @@ sub handle
 		}
 		if (lc $f eq 'iota') {
 			my $doiota;
-			if (@list && $list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)-?(\d?\d\d)/oi)) {
+			if (@list && $list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)[-\s]?(\d\d?\d?)/i)) {
 				$a = uc $a;
 				$doiota = "\\b$a\[\-\ \]\?$b\\b";
 				shift @list;
 			}
-			$doiota = '\b(IOTA|(AF|AN|NA|SA|EU|AS|OC)[- ]?\d?\d\d)\b' unless $doiota;
-			push @flist, "info {$doiota}";
-			dbg("sh/dx iota") if isdbg('sh/dx');
+			$doiota = '\b(IOTA|(AF|AN|NA|SA|EU|AS|OC)[-\s]?\d?\d\d)\b' unless $doiota;
+			push @flist, 'info', "{$doiota}";
+			dbg("sh/dx iota info {$doiota}") if isdbg('sh/dx');
 			next;
 		}
 		if (lc $f eq 'qra') {
-			my $doqra = uc shift @list if @list && $list[0] =~ /[A-Z][A-Z]\d\d/oi;
+			my $doqra = uc shift @list if @list && $list[0] =~ /[A-Z][A-Z]\d\d/i;
 			$doqra = '\b([A-Z][A-Z]\d\d|[A-Z][A-Z]\d\d[A-Z][A-Z])\b' unless $doqra;
-			push @flist, "info {$doqra}";
-			dbg("sh/dx qra") if isdbg('sh/dx');
+			push @flist, 'info',  "{$doqra}";
+			dbg("sh/dx qra info {$doqra}") if isdbg('sh/dx');
 			next;
 		}
 		if (grep {lc $f eq $_} qw { ( or and not ) }) {
@@ -93,7 +93,7 @@ sub handle
 			dbg("sh/dx operator $f") if isdbg('sh/dx');
 			next;
 		}
-		if (grep {lc $f eq $_} qw(zone byzone by_zone itu byitu by_itu state bystate by_state info on spotter by) ) {
+		if (grep {lc $f eq $_} qw(on freq call info spotter by call_dxcc by_dxcc bydxcc origin call_itu itu call_zone zone  byitu by_itu by_zone byzone call_state state bystate by_state ip) ) {
 			$f =~ s/^by(\w)/by_$1/;
 			push @flist, $f;
 			push @flist, shift @list if @list;
@@ -109,17 +109,21 @@ sub handle
 
 	
 	if ($pre) {
-		$pre .= '*' unless $pre =~ /[\*\?\[]$/o;
-		$pre = shellregex($pre);
-		if ($usesql) {
-			$pre =~ s/\.\*/%/g;
+		# someone (probably me) has forgotten the 'info' keyword
+		if ($pre =~ /^{.*}$/) {
+			push @flist, 'info', $pre;
 		} else {
-			$pre =~ s/\.\*\$$//;
+			$pre .= '*' unless $pre =~ /[\*\?\[]$/o;
+			$pre = shellregex($pre);
+			if ($usesql) {
+				$pre =~ s/\.\*/%/g;
+			} else {
+				$pre =~ s/\.\*\$$//;
+			}
+			$pre .= '$' if $exact;
+			$pre =~ s/\^//;
+			push @flist, 'call', $pre;
 		}
-		$pre .= '$' if $exact;
-		$pre =~ s/\^//;
-		
-		push @flist, 'call', $pre;
 	}
 	
     my $newline = join(' ', @flist);

@@ -375,12 +375,18 @@ sub parse
 	# check the line for non legal characters
 	dbg("Filter::parse line: '$line'") if isdbg('filter');
 	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)\$!]/;
+
+	$line = lc $line;
+
+	# disguise regexes
+	$line =~ s/\{(.*)\}/'{'. unpack('H*', $1) . '}'/eg;
+	dbg("Filter parse line after regex check: '$line'") if isdbg('filter');
 	
 	# add some spaces for ease of parsing
 	$line =~ s/([\(\!\)])/ $1 /g;
-	$line = lc $line;
 	
 	my @f = split /\s+/, $line;
+
 	my $conj = ' && ';
 	my $not = "";
 	my $lasttok = '';
@@ -485,14 +491,15 @@ sub parse
 						}
 						if ($fref->[1] eq 'a' || $fref->[1] eq 't') {
 							my @t;
-							for (@val) {
-								s/\*//g;        # remove any trailing *
-								if (/^\{.*\}$/) { # we have a regex 
-									s/^\{//;
-								    s/\}$//;
-									return  ('regex', $dxchan->msg('e38', $_)) unless (qr{$_})
+							foreach my $v (@val) {
+								$v =~ s/\*//g;        # remove any trailing *
+								if (my ($r) = $v =~ /^\{(.*)\}$/) { # we have a regex
+									dbg("Filter::parse regex b: '\{$r\}'") if isdbg('filter'); 
+									$v = pack('H*', $r);
+									dbg("Filter::parse regex a: '$v'") if isdbg('filter'); 
+									return  ('regex', $dxchan->msg('e38', $v)) unless (qr{$v});
 								}
-								push @t, "\$r->[$fref->[2]]=~m{$_}i";
+								push @t, "\$r->[$fref->[2]]=~m{$v}i";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} elsif ($fref->[1] eq 'c') {
@@ -533,9 +540,9 @@ sub parse
 						last;
 					}
 				}
-				return ('unknown', $dxchan->msg('e20', $tok)) unless $found;
+				return (0, $dxchan->msg('e20', $tok)) unless $found;
 			} else {
-				return ('no', $dxchan->msg('filter2', $tok));
+				return (0, $dxchan->msg('filter2', $tok));
 			}
 			$lasttok = $tok;
 		}
