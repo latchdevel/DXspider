@@ -94,7 +94,6 @@ sub handle
 			next;
 		}
 		if (grep {lc $f eq $_} qw(on freq call info spotter by call_dxcc by_dxcc bydxcc origin call_itu itu call_zone zone  byitu by_itu by_zone byzone call_state state bystate by_state ip) ) {
-			$f =~ s/^by(\w)/by_$1/;
 			push @flist, $f;
 			push @flist, shift @list if @list;
 			dbg("sh/dx function $flist[-2] $flist[-1]") if isdbg('sh/dx');

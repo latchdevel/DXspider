@@ -1,3 +1,5 @@
+02Jun20=======================================================================
+1. Fix the small whoopsie in sh/dx.
 01Jun20=======================================================================
 1. Fix sh/dx iota and qra. This completes the conversion of sh/dx's limited
    "old style" parsing to using Filter style parsing with something that 
