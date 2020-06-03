@@ -1,5 +1,7 @@
 03Jun20=======================================================================
 1. Make sure that all possible regexes get passed across to the search engine.
+2. Fix out of order logging on sh/log queries spanning more than one month.
+3. Do not read backwards on sh/dx, reading forwards seems a 1/3 quicker. 
 02Jun20=======================================================================
 1. Fix the small whoopsie in sh/dx.
 01Jun20=======================================================================

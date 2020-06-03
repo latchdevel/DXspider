@@ -18,9 +18,12 @@ use DXLog;
 use Julian;
 
 
-our $readback = `which tac`;
+our $readback = 1;
+if ($readback) {
+	$readback = `which tac`;
+} 
 chomp $readback;
-undef $readback; 				# yet another reason not to use the cloud!
+#undef $readback; 				# yet another reason not to use the cloud!
  
 
 use strict;
@@ -109,7 +112,7 @@ sub print
 		return "show/$name: ${s}not found";
 	} 
 
-	for (reverse @in) {
+	for (sort {$a <=> $b } @in) {
 		my @line = split /\^/ ;
 		push @out, print_item(\@line);
 	
