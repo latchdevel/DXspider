@@ -44,13 +44,13 @@ sub handle
 	
 	while ($f = shift @list) {	# next field
 		dbg "sh/dx arg: $f list: " . join(',', @list) if isdbg('sh/dx');
-		if (!$from && !$to) {
-			($from, $to) = $f =~ m|^(\d+)[-/](\d+)$|; # is it a from -> to count?
+		if ($f && !$from && !$to) {
+			($from, $to) = $f =~ m|^(\d+)[-/](\d+)$| || (0,0); # is it a from -> to count?
 			dbg("sh/dx from: $from to: $to") if isdbg('sh/dx');
 			next if $from && $to > $from;
 		}
-		if (!$to) {
-			($to) = $f =~ /^(\d+)$/o if !$to; # is it a to count?
+		if ($f && !$to) {
+			($to) = $f =~ /^(\d+)$/o || 0 if !$to; # is it a to count?
 			dbg("sh/dx to: $to") if isdbg('sh/dx');
 			next if $to;
 		}
