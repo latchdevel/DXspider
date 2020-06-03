@@ -101,6 +101,20 @@ sub bdist
 	return (rd($az), $dx);
 }
 
+# just the distance - parameters as above
+sub distance
+{
+	my $hn = dr(shift);
+	my $he = dr(shift);
+	my $n = dr(shift);
+	my $e = dr(shift);
+	return (0, 0) if $hn == $n && $he == $e;
+	my $co = cos($he-$e)*cos($hn)*cos($n)+sin($hn)*sin($n);
+	my $ca = $co ? atan(abs(sqrt(1-$co*$co)/$co)) : $pi;
+	$ca = $pi-$ca if $co < 0;
+	my $dx = 6367*$ca;
+}
+
 # turn a lat long string into floating point lat and long
 sub stoll
 {

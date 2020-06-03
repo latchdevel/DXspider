@@ -11,10 +11,20 @@ sub handle
 {
 	my ($self, $line) = @_;
 
+	# disguise regexes
+	$line =~ s/\{(.*)\}/'{'. unpack('H*', $1) . '}'/eg;
+	dbg("sh/dx disguise any regex: '$line'") if isdbg('sh/dx');
+
+	# now space out brackets and !
 	$line =~ s/([\(\!\)])/ $1 /g;
 	
 	my @list = split /[\s]+/, $line; # split the line up
 
+	# put back the regexes 
+	@list = map { my $l = $_; $l =~ s/\{([0-9a-fA-F]+)\}/'{' . pack('H*', $1) . '}'/eg; $l } @list;
+
+	dbg("sh/dx after regex return: " . join(' ', @list)) if isdbg('sh/dx');
+	
 	my @out;
 	my $f;
 	my $call = $self->call;
