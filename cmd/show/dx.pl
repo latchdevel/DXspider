@@ -50,7 +50,8 @@ sub handle
 			next if $from && $to > $from;
 		}
 		if ($f && !$to) {
-			($to) = $f =~ /^(\d+)$/o || 0 if !$to; # is it a to count?
+			($to) = $f =~ /^(\d+)$/o if !$to; # is it a to count?
+			$to ||= 0;
 			dbg("sh/dx to: $to") if isdbg('sh/dx');
 			next if $to;
 		}
@@ -79,6 +80,22 @@ sub handle
 			push @flist, "info {QSL|VIA}";
 			next;
 		}
+		if (lc $f eq '<es>') {
+			dbg("sh/dx <es>") if isdbg('sh/dx');
+			push @flist, "info {<ES>}";
+			next;
+		}
+		if (lc $f eq '<tr>') {
+			dbg("sh/dx <es>") if isdbg('sh/dx');
+			push @flist, "info {<TR>}";
+			next;
+		}
+		if (lc $f eq '<ms>') {
+			dbg("sh/dx <ms>") if isdbg('sh/dx');
+			push @flist, "info {<ms>}";
+			next;
+		}
+
 		if (lc $f eq 'iota') {
 			my $doiota;
 			if (@list && $list[0] && (($a, $b) = $list[0] =~ /(AF|AN|NA|SA|EU|AS|OC)[-\s]?(\d\d?\d?)/i)) {
