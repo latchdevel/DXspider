@@ -180,8 +180,8 @@ foreach my $l (sort {$a <=> $b} keys %locn) {
 	print OUT " cq => $cq,";
 	print OUT " utcoff => $utcoff,";
 	print OUT " lat => $latd,";
-	print OUT " long => $longd";
-	print OUT " qra => $qra";
+	print OUT " long => $longd,";
+	print OUT " qra => '$qra'";
 	print OUT " }, 'Prefix'),\n";
 }
 print OUT ");\n\n";
