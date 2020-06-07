@@ -17,10 +17,11 @@ use DXLog;
 use DXUser;
 use DXChannel;
 use Math::Round qw(nearest);
+use Date::Parse;
 
 our @ISA = qw(DXChannel);
 
-our $startup_delay = 0;# 2*60; 		# don't send anything out until this timer has expired
+our $startup_delay = 0;# 5*60; 		# don't send anything out until this timer has expired
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen. 
 
@@ -151,6 +152,7 @@ sub normal
 
 	# parse line
 	dbg "RBN:RAW,$line" if isdbg('rbnraw');
+	return unless $line=~/^DX\s+de/;
 
 	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/, $line;
 
@@ -159,12 +161,15 @@ sub normal
 	$t = $sort, $sort = '' if !$t && is_ztime($sort);
 	my $qra = $spd, $spd = '' if is_qra($spd);
 	$u = $qra if $qra;
-	
-#	no warnings qw(uninitialized);
-	
-#	dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if $line =~ /DX/;
 
-#	use warnings;
+	$origin =~ s/\-(?:\d{1,2}\-)?\#$//; # get rid of all the crap we aren't interested in
+
+
+	$sort ||= '';
+	$tx ||= '';
+	$qra ||= '';
+    dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
+
 	
 	my $b;
 	
@@ -179,6 +184,10 @@ sub normal
 				dbg "RBN:ERR,$line";
 				return (0);
 			}
+		}
+		if ($sort && $sort eq 'NCDXF') {
+			$mode = $sort;
+			$t = $tx;
 		}
 		
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
@@ -236,12 +245,21 @@ sub normal
 			++$self->{nospot};
 			my $tag = $ts ? "RESPOT" : "SPOT";
 			$t .= ",$b" if $b;
-			$sort ||= '';
-			$origin =~ s/-?\d+?-?\#?\s*$//;
-			
+
+			my ($hh,$mm) = $t =~ /(\d\d)(\d\d)Z$/;
+			my $utz = str2time(sprintf('%02d:%02dZ', $hh, $mm));
 			dbg "RBN:" . join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) if dbg('rbn');
 
-			my @s = Spot::prepare($qrg, $call, $t, "$mode $s $m", $origin);
+
+			my @s = Spot::prepare($qrg, $call, $utz, sprintf("%-5s%3d $m", $mode, $s), $origin);
+
+			if (isdbg('progress')) {
+				my $d = ztime($s[2]);
+				my $s = "RBN: $s[1] on $s[0] \@ $d by $s[4]";
+				$s .= $s[3] ? " '$s[3]'" : q{ ''};
+				$s .=  " route: $self->{call}";
+				dbg($s);
+			}
 			
 			send_dx_spot($self, $line, $mode, \@s) unless $self->{inrushpreventor} > $main::systime;
 
@@ -297,7 +315,7 @@ sub send_dx_spot
 	foreach my $dxchan (@dxchan) {
 		next unless $dxchan->is_user;
 		my $user = $dxchan->{user};
-		next unless $user->wantrbn;
+		next unless $user &&  $user->wantrbn;
 
 		my $want = 0;
 		++$want if $user->wantbeacon && $mode =~ /^BEA|NCD/;
@@ -311,7 +329,6 @@ sub send_dx_spot
 
 		
 		$self->dx_spot($dxchan, $sref) if $want;
-		dbg("RBN: $line") if isdbg('progress');
 	}
 }
 
@@ -333,7 +350,7 @@ sub dx_spot
 		return unless $filter;
 	}
 
-	dbg('RBN::dx_spot spot: "' . join('","', @$sref) . '"') if isdbg('rbn');
+#	dbg('RBN::dx_spot spot: "' . join('","', @$sref) . '"') if isdbg('rbn');
 
 	my $buf;
 	if ($self->{ve7cc}) {
@@ -342,7 +359,6 @@ sub dx_spot
 		$buf = $self->format_dx_spot(@$sref);
 		$buf =~ s/\%5E/^/g;
 	}
-
 	$dxchan->local_send('N', $buf);
 }
 
@@ -351,23 +367,20 @@ sub format_dx_spot
 	my $self = shift;
 
 	my $t = ztime($_[2]);
-	my $loc = '';
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
 	my $comment = $_[3] || '';
+	my $loc = '';
 	my $ref = DXUser::get_current($_[1]);
-	if ($ref) {
-		$loc = $ref->qra;
-		$loc = ' ' . substr($loc, 0, 4) if $loc;
+	if ($ref && $ref->qra) {
+		$loc = ' ' . substr($ref->qra, 0, 4);
 	}
-	$comment .= ' ' x ($clth - (length($comment)+length($loc)));
-	$comment .= $loc if $loc;
+	$comment .= ' ' x ($clth - (length($comment)+length($loc)+1));
+	$comment .= $loc;
 	$loc = '';
-	$ref = DXUser::get_current($_[4]);
-	if ($ref) {
-		$loc = $ref->qra;
-		$loc = ' ' . substr($loc, 0, 4) if $loc;
-		$loc ||= '';
+	my $ref = DXUser::get_current($_[4]);
+	if ($ref && $ref->qra) {
+		$loc = ' ' . substr($ref->qra, 0, 4);
 	}
-	return sprintf "RB de %7.7s:%11.1f  %-12.12s %-s $t$loc", $_[4], $_[0], $_[1], $comment;
+	return sprintf "RB de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
 }
 1;

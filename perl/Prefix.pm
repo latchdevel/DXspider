@@ -16,6 +16,7 @@ use DXDebug;
 use DXUtil;
 use USDB;
 use LRU;
+use DXBearing;
 
 use strict;
 
@@ -87,49 +88,6 @@ sub loaded
 	return $db;
 }
 
-sub store
-{
-	my ($k, $l);
-	my $fh = new IO::File;
-	my $fn = localdata("prefix_data.pl");
-  
-	confess "Prefix system not started" if !$db;
-  
-	# save versions!
-	rename "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
-	rename "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
-	rename "$fn.oo", "$fn.ooo" if -e "$fn.oo";
-	rename "$fn.o", "$fn.oo" if -e "$fn.o";
-	rename "$fn", "$fn.o" if -e "$fn";
-  
-	$fh->open(">$fn") or die "Can't open $fn ($!)";
-
-	# prefix location data
-	$fh->print("%prefix_loc = (\n");
-	foreach $l (sort {$a <=> $b} keys %prefix_loc) {
-		my $r = $prefix_loc{$l};
-		$fh->printf("   $l => bless( { name => '%s', dxcc => %d, itu => %d, utcoff => %d, lat => %f, long => %f }, 'Prefix'),\n",
-					$r->{name}, $r->{dxcc}, $r->{itu}, $r->{cq}, $r->{utcoff}, $r->{lat}, $r->{long});
-	}
-	$fh->print(");\n\n");
-
-	# prefix data
-	$fh->print("%pre = (\n");
-	foreach $k (sort keys %pre) {
-		$fh->print("   '$k' => [");
-		my @list = @{$pre{$k}};
-		my $l;
-		my $str;
-		foreach $l (@list) {
-			$str .= " $l,";
-		}
-		chop $str;  
-		$fh->print("$str ],\n");
-	}
-	$fh->print(");\n");
-	undef $fh;
-	untie %pre; 
-}
 
 # what you get is a list that looks like:-
 # 
@@ -524,6 +482,7 @@ my %valid = (
 			 city => '0,City',
 			 utcoff => '0,UTC offset',
 			 cont => '0,Continent',
+			 qra => '0,Locator',
 			);
 
 sub AUTOLOAD
