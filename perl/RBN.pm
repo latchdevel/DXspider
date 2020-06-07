@@ -189,6 +189,9 @@ sub normal
 			$mode = $sort;
 			$t = $tx;
 		}
+		if ($sort && $sort eq 'BEACON') {
+			$mode = 'BECON';
+		}
 		
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
 		# This works because the skimmers are NTP controlled (or should be) and will receive
