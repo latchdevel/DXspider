@@ -1,7 +1,8 @@
 08Jun20=======================================================================
 1. Fix show/mydx (lack of) filtering bug.
-2. Add qra locator to prefix_data.pl
-3. Add 4 digit qra square for spotted callsign if show/dxgrid is enabled
+2. Add qra locator to prefix_data.pl.
+3. Add 4 digit qra square for spotted callsign if show/dxgrid is enabled.
+4. Fix general filtering bug where erroneous input causes crashing.
 03Jun20=======================================================================
 1. Make sure that all possible regexes get passed across to the search engine.
 2. Fix out of order logging on sh/log queries spanning more than one month.
