@@ -323,9 +323,15 @@ sub encode
 {
     my $ref = shift;
     unbless($ref);
-    my $s = $json->encode($ref);
-    bless $ref, 'DXUser';
-    return $s;
+    my $s;
+	
+	eval {$s = $json->encode($ref) };
+	if ($s && !$@) {
+		bless $ref, 'DXUser';
+		return $s;
+	} else {
+		LogDbg('DXUser', "DXUser::json_encode $ref->{call}, $@");
+	}
 }
 
 
@@ -482,9 +488,9 @@ print "There are $count user records and $err errors in $diff mS\n";
 				my $ekey = $key;
 				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
 				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
+				LogDbg('DXCommand', "Export Error1: invalid callsign($ekey) => '$eval'");
 				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
+				dbg(carp("Export Error1: delete call $ekey => '$eval' $@")) if $@;
 				++$err;
 				next;
 			}
@@ -495,7 +501,7 @@ print "There are $count user records and $err errors in $diff mS\n";
 				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
 					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
 						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+						dbg(carp("Export Error2: delete $key => '$val' $@")) if $@;
 						LogDbg('DXCommand', "$ref->{call} deleted, too old");
 						$del++;
 						next;
