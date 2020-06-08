@@ -21,7 +21,7 @@ use Date::Parse;
 
 our @ISA = qw(DXChannel);
 
-our $startup_delay =5*60; 		# don't send anything out until this timer has expired
+our $startup_delay =3*60; 		# don't send anything out until this timer has expired
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen. 
 

@@ -27,7 +27,7 @@ $dbm = undef;
 $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
-$lrusize = 2000;
+$lrusize = 10000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
 our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
@@ -44,6 +44,7 @@ our $maxconnlist = 3;			# remember this many connection time (duration) [start, 
 		  email => '0,E-mail Address,parray',
 		  priv => '9,Privilege Level',
 		  lastin => '0,Last Time in,cldatetime',
+		  lastseen => '0,Last Seen,cldatetime',
 		  passwd => '9,Password,yesno',
 		  passphrase => '9,Pass Phrase,yesno',
 		  addr => '0,Full Address',
@@ -213,6 +214,7 @@ sub process
 
 sub finish
 {
+	$dbm->sync;
 	undef $dbm;
 	untie %u;
 }
@@ -238,6 +240,7 @@ sub new
 #	confess "can't create existing call $call in User\n!" if $u{$call};
 
 	my $self = $pkg->alloc($call);
+	$self->{lastseen} = $main::systime;
 	$self->put;
 	return $self;
 }
@@ -254,7 +257,10 @@ sub get
 	
 	# is it in the LRU cache?
 	my $ref = $lru->get($call);
-	return $ref if $ref && ref $ref eq 'DXUser';
+	if ($ref && ref $ref eq 'DXUser') {
+		$ref->{lastseen} = $main::systime;
+		return $ref;
+	}
 	
 	# search for it
 	unless ($dbm->get($call, $data)) {
@@ -274,6 +280,7 @@ sub get
 			}
 			return undef;
 		}
+		$ref->{lastseen} = $main::systime;
 		$lru->put($call, $ref);
 		return $ref;
 	}
@@ -406,7 +413,7 @@ sub close
 	my $self = shift;
 	my $startt = shift;
 	my $ip = shift;
-	$self->{lastin} = $main::systime;
+	$self->{lastseen} = $self->{lastin} = $main::systime;
 	# add a record to the connect list
 	my $ref = [$startt || $self->{startt}, $main::systime];
 	push @$ref, $ip if $ip;

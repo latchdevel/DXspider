@@ -26,20 +26,27 @@ use DXDebug;
 use vars qw(@ISA);
 @ISA = qw(Chain);
 
+use constant OBJ => 2;
+use constant MAX => 3;
+use constant INUSE => 4;
+use constant NAME => 5;
+use constant CALLBACK => 6;
+
 sub newbase
 {
 	my $pkg = shift;
 	my $name = shift;
 	my $max = shift;
+	my $callback = shift;
 	confess "LRU->newbase requires a name and maximal count" unless $name && $max;
-	return $pkg->SUPER::new({ }, $max, 0, $name);
+	return $pkg->SUPER::new({ }, $max, 0, $name, $callback);
 }
 
 sub get
 {
 	my ($self, $call) = @_;
 	if (my $p = $self->obj->{$call}) {
-		dbg("LRU $self->[5] cache hit $call") if isdbg('lru');
+		dbg("LRU $self->[NAME] cache hit $call") if isdbg('lru');
 		$self->rechain($p);
 		return $p->obj;
 	}
@@ -53,42 +60,43 @@ sub put
 	my $p = $self->obj->{$call};
 	if ($p) {
 		# update the reference and rechain it
-		dbg("LRU $self->[5] cache update $call") if isdbg('lru');
+		dbg("LRU $self->[NAME] cache update $call") if isdbg('lru');
 		$p->obj($ref);
 		$self->rechain($p);
 	} else {
 		# delete one of the end of the chain if required
-		while ($self->[4] >= $self->[3] ) {
+		while ($self->[INUSE] >= $self->[MAX] ) {
 			$p = $self->prev;
-			my $call = $p->[3];
-			dbg("LRU $self->[5] cache LRUed out $call now $self->[4]/$self->[3]") if isdbg('lru');
+			my $call = $p->[MAX];
+			dbg("LRU $self->[NAME] cache LRUed out $call now $self->[INUSE]/$self->[MAX]") if isdbg('lru');
 			$self->remove($call);
 		}
 
 		# add a new one
-		dbg("LRU $self->[5] cache add $call now $self->[4]/$self->[3]") if isdbg('lru');
+		dbg("LRU $self->[NAME] cache add $call now $self->[INUSE]/$self->[MAX]") if isdbg('lru');
 		$p = $self->new($ref, $call);
 		$self->add($p);
 		$self->obj->{$call} = $p;
-		$self->[4]++;
+		$self->[INUSE]++;
 	}
 }
 
 sub remove
 {
 	my ($self, $call) = @_;
-	my $q = $self->obj->{$call};
-	confess("$call is already removed") unless $q;
-	dbg("LRU $self->[5] cache remove $call now $self->[4]/$self->[3]") if isdbg('lru');
-	$q->obj(1);
-	$q->SUPER::del;
+	my $p = $self->obj->{$call};
+	confess("$call is already removed") unless $p;
+	dbg("LRU $self->[NAME] cache remove $call now $self->[INUSE]/$self->[MAX]") if isdbg('lru');
+	&{$self->[CALLBACK]}($p->obj) if $self->[CALLBACK];        # call back if required
+	$p->obj(1);
+	$p->SUPER::del;
 	delete $self->obj->{$call};
-	$self->[4]--;
+	$self->[INUSE]--;
 }
 
 sub count
 {
-	return $_[0]->[4];
+	return $_[0]->[INUSE];
 }
 
 1;

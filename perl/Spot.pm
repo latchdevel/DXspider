@@ -330,11 +330,20 @@ sub search
 			while (<$fh>) {
 				my @r = split /\^/;
 				++$rec;
+				if ($dxchan) {
+					my ($gotone, undef) = $dxchan->{spotsfilter}->it(@r);
+					next unless $gotone;
+				}
 				if (&$ecode(\@r)) {
 					++$count;
 					next if $count < $from;
-					push @out, \@r;
-					last if $count >= $to;
+					if ($readback) {
+						push @out, \@r;
+						last if $count >= $to;
+					} else {
+						push @out, \@r;
+						shift @out if $count >= $to;
+					}
 				}
 			}
 			dbg("Spot::search recs read: $rec") if isdbg('search');
@@ -382,24 +391,6 @@ sub formatl
 	my $t = ztime($_[2]);
 	my $d = cldate($_[2]);
 	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
-}
-
-#
-# return all the spots from a day's file as an array of references
-# the parameter passed is a julian day
-sub readfile($)
-{
-	my @spots;
-	
-	my $fh = $fp->open(shift); 
-	if ($fh) {
-		my $in;
-		while (<$fh>) {
-			chomp;
-			push @spots, [ split '\^' ];
-		}
-	}
-	return @spots;
 }
 
 # enter the spot for dup checking and return true if it is already a dup

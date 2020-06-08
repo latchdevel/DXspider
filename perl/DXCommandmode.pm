@@ -994,12 +994,21 @@ sub format_dx_spot
 	my $loc = '';
 	my $clth = $self->{consort} eq 'local' ? 29 : 30;
 	my $comment = substr (($_[3] || ''), 0, $clth);
-	$comment .= ' ' x ($clth - length($comment));
+	$comment .= ' ' x ($clth - (length($comment)));
+	if ($self->{user}->wantgrid) {
+		my $ref = DXUser::get_current($_[1]);
+		if ($ref && $ref->qra) {
+			$loc = ' ' . substr($ref->qra, 0, 4);
+			$comment = substr $comment, 0,  ($clth - (length($comment)+length($loc)));
+			$comment .= $loc;
+			$loc = '';
+		}
+	}
+	
 	if ($self->{user}->wantgrid) {
 		my $ref = DXUser::get_current($_[4]);
-		if ($ref) {
-			$loc = $ref->qra || '';
-			$loc = ' ' . substr($loc, 0, 4) if $loc;
+		if ($ref && $ref->qra) {
+			$loc = ' ' . substr($ref->qra, 0, 4);
 		}
 	}
 

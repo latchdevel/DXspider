@@ -159,6 +159,7 @@ sub handle
 	return (0, "sh/dx parse error '$r' " . $filter) if $r;
 
 	$user ||= '';
+	$expr ||= '';
 	dbg "sh/dx user: $user expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('sh/dx');
   
 	# now do the search
