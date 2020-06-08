@@ -17,8 +17,38 @@ use DXLog;
 use DXUser;
 use DXChannel;
 use Math::Round qw(nearest);
+use Date::Parse;
 
 our @ISA = qw(DXChannel);
+
+our $startup_delay =3*60; 		# don't send anything out until this timer has expired
+                                # this is to allow the feed to "warm up" with duplicates
+                                # so that the "big rush" doesn't happen. 
+
+our $minspottime = 60*60;		# the time between respots of a callsign - if a call is
+                                # still being spotted (on the same freq) and it has been
+                                # spotted before, it's spotted again after this time
+                                # until the next minspottime has passed.
+
+our %hfitu = (
+			  1 => [1, 2,],
+			  2 => [1, 2, 3,],
+			  3 => [2,3, 4,],
+			  4 => [3,4, 9,],
+#			  5 => [0],
+			  6 => [7],
+			  7 => [7, 6, 8, 10],
+			  8 => [7, 8, 9],
+			  9 => [8, 9],
+			  10 => [10],
+			  11 => [11],
+			  12 => [12, 13],
+			  13 => [12, 13],
+			  14 => [14, 15],
+			  15 => [15, 14],
+			  16 => [16],
+			  17 => [17],
+			 );
 
 sub new 
 {
@@ -37,7 +67,7 @@ sub new
 	$self->{norbn} = 0;
 	$self->{sort} = 'N';
 	$self->{lasttime} = $main::systime;
-	$self->{minspottime} = 60*60;
+	$self->{minspottime} = $minspottime;
 	$self->{showstats} = 0;
 
 	return $self;
@@ -95,6 +125,9 @@ sub start
 		my $long = $user->long;
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
+
+	# start inrush timer
+	$self->{inrushpreventor} = $main::systime + $startup_delay;
 }
 
 sub normal
@@ -119,6 +152,7 @@ sub normal
 
 	# parse line
 	dbg "RBN:RAW,$line" if isdbg('rbnraw');
+	return unless $line=~/^DX\s+de/;
 
 	my (undef, undef, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t, $tx) = split /[:\s]+/, $line;
 
@@ -127,12 +161,15 @@ sub normal
 	$t = $sort, $sort = '' if !$t && is_ztime($sort);
 	my $qra = $spd, $spd = '' if is_qra($spd);
 	$u = $qra if $qra;
-	
-#	no warnings qw(uninitialized);
-	
-#	dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if $line =~ /DX/;
 
-#	use warnings;
+	$origin =~ s/\-(?:\d{1,2}\-)?\#$//; # get rid of all the crap we aren't interested in
+
+
+	$sort ||= '';
+	$tx ||= '';
+	$qra ||= '';
+    dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
+
 	
 	my $b;
 	
@@ -147,6 +184,13 @@ sub normal
 				dbg "RBN:ERR,$line";
 				return (0);
 			}
+		}
+		if ($sort && $sort eq 'NCDXF') {
+			$mode = $sort;
+			$t = $tx;
+		}
+		if ($sort && $sort eq 'BEACON') {
+			$mode = 'BECON';
 		}
 		
 		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
@@ -204,11 +248,24 @@ sub normal
 			++$self->{nospot};
 			my $tag = $ts ? "RESPOT" : "SPOT";
 			$t .= ",$b" if $b;
-			$sort ||= '';
-			dbg "RBN:" . join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t);
 
-			send_dx_spot($self, $line, $mode);
+			my ($hh,$mm) = $t =~ /(\d\d)(\d\d)Z$/;
+			my $utz = str2time(sprintf('%02d:%02dZ', $hh, $mm));
+			dbg "RBN:" . join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) if dbg('rbn');
+
+
+			my @s = Spot::prepare($qrg, $call, $utz, sprintf("%-5s%3d $m", $mode, $s), $origin);
+
+			if (isdbg('progress')) {
+				my $d = ztime($s[2]);
+				my $s = "RBN: $s[1] on $s[0] \@ $d by $s[4]";
+				$s .= $s[3] ? " '$s[3]'" : q{ ''};
+				$s .=  " route: $self->{call}";
+				dbg($s);
+			}
 			
+			send_dx_spot($self, $line, $mode, \@s) unless $self->{inrushpreventor} > $main::systime;
+
 			$spot->{$sp} = $tim;
 		}
 	} else {
@@ -254,13 +311,14 @@ sub send_dx_spot
 	my $self = shift;
 	my $line = shift;
 	my $mode = shift;
+	my $sref = shift;
 	
 	my @dxchan = DXChannel::get_all();
 
 	foreach my $dxchan (@dxchan) {
 		next unless $dxchan->is_user;
 		my $user = $dxchan->{user};
-		next unless $user->wantrbn;
+		next unless $user &&  $user->wantrbn;
 
 		my $want = 0;
 		++$want if $user->wantbeacon && $mode =~ /^BEA|NCD/;
@@ -272,10 +330,60 @@ sub send_dx_spot
 
 		++$want unless $want;	# send everything if nothing is selected.
 
-		$dxchan->send($line) if $want;
-		dbg("RBN: $line") if isdbg('progress');
+		
+		$self->dx_spot($dxchan, $sref) if $want;
 	}
 }
 
+sub dx_spot
+{
+	my $self = shift;
+	my $dxchan = shift;
+	my $sref = shift;
+	
+#	return unless $dxchan->{rbn};
 
+	my ($filter, $hops);
+
+	if ($dxchan->{rbnfilter}) {
+		($filter, $hops) = $dxchan->{rbnfilter}->it($sref);
+		return unless $filter;
+	} elsif ($self->{rbnfilter}) {
+		($filter, $hops) = $self->{rbnfilter}->it($sref);
+		return unless $filter;
+	}
+
+#	dbg('RBN::dx_spot spot: "' . join('","', @$sref) . '"') if isdbg('rbn');
+
+	my $buf;
+	if ($self->{ve7cc}) {
+		$buf = VE7CC::dx_spot($dxchan, @$sref);
+	} else {
+		$buf = $self->format_dx_spot(@$sref);
+		$buf =~ s/\%5E/^/g;
+	}
+	$dxchan->local_send('N', $buf);
+}
+
+sub format_dx_spot
+{
+	my $self = shift;
+
+	my $t = ztime($_[2]);
+	my $clth = $self->{consort} eq 'local' ? 29 : 30;
+	my $comment = $_[3] || '';
+	my $loc = '';
+	my $ref = DXUser::get_current($_[1]);
+	if ($ref && $ref->qra) {
+		$loc = ' ' . substr($ref->qra, 0, 4);
+	}
+	$comment .= ' ' x ($clth - (length($comment)+length($loc)+1));
+	$comment .= $loc;
+	$loc = '';
+	my $ref = DXUser::get_current($_[4]);
+	if ($ref && $ref->qra) {
+		$loc = ' ' . substr($ref->qra, 0, 4);
+	}
+	return sprintf "RB de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+}
 1;

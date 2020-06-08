@@ -208,7 +208,7 @@ sub it
 		if ($filter->{reject} && exists $filter->{reject}->{code}) {
 			$type = 'reject';
 			$asc = $filter->{reject}->{user};
-			if (&{$filter->{reject}->{code}}(\@_)) {
+			if (&{$filter->{reject}->{code}}(ref $_[0] ? $_[0] : \@_)) {
 				$r = 0;
 				last;
 			} else {
@@ -218,7 +218,7 @@ sub it
 		if ($filter->{accept} && exists $filter->{accept}->{code}) {
 			$type = 'accept';
 			$asc = $filter->{accept}->{user};
-			if (&{$filter->{accept}->{code}}(\@_)) {
+			if (&{$filter->{accept}->{code}}(ref $_[0] ? $_[0] : \@_)) {
 				$r = 1;
 				last;
 			} else {
@@ -231,7 +231,7 @@ sub it
 	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
-		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} @_;
+		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} (ref $_[0] ? @{$_[0]} : @_);
 		my $true = $r ? "OK " : "REJ";
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
@@ -375,14 +375,21 @@ sub parse
 	# check the line for non legal characters
 	dbg("Filter::parse line: '$line'") if isdbg('filter');
 	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)\$!]/;
+
+	$line = lc $line;
+
+	# disguise regexes
+	$line =~ s/\{(.*)\}/'{'. unpack('H*', $1) . '}'/eg;
+	dbg("Filter parse line after regex check: '$line'") if isdbg('filter');
 	
 	# add some spaces for ease of parsing
-	$line =~ s/([\(\)])/ $1 /g;
-	$line = lc $line;
+	$line =~ s/([\(\!\)])/ $1 /g;
 	
 	my @f = split /\s+/, $line;
+
 	my $conj = ' && ';
 	my $not = "";
+	my $lasttok = '';
 	while (@f) {
 		if ($ntoken == 0) {
 			
@@ -412,9 +419,12 @@ sub parse
 			my $tok = shift @f;
 			if ($tok eq '(') {
 				if ($s) {
-					$s .= $conj;
-					$user .= $conj;
+					unless ($lasttok eq '(') {
+						$s .= $conj ;
+						$user .= $conj;
+					}
 					$conj = "";
+					$lasttok = $tok;
 				}
 				if ($not) {
 					$s .= $not;
@@ -423,12 +433,14 @@ sub parse
 				}
 				$s .= $tok;
 				$user .= $tok;
+				$lasttok = $tok;
 				next;
 			} elsif ($tok eq ')') {
 				$conj = ' && ';
 				$not ="";
 				$s .= $tok;
 				$user .= $tok;
+				$lasttok = $tok;
 				next;
 			} elsif ($tok eq 'all') {
 				$s .= '1';
@@ -436,12 +448,14 @@ sub parse
 				last;
 			} elsif ($tok eq 'or') {
 				$conj = ' || ' if $conj ne ' || ';
+				$lasttok = $tok;
 				next;
 			} elsif ($tok eq 'and') {
 				$conj = ' && ' if $conj ne ' && ';
 				next;
 			} elsif ($tok eq 'not' || $tok eq '!') {
-				$not = '!';
+				$not = '! ';
+				$lasttok = $tok;
 				next;
 			}
 			if (@f) {
@@ -449,11 +463,12 @@ sub parse
 				my @val = split /,/, $val;
 
 				if ($s) {
-					$s .= $conj ;
-					$user .= $conj;
-					$conj = ' && ';
+					unless ($lasttok eq '(') {
+						$s .= $conj ;
+						$user .= $conj;
+						$conj = ' && ';
+					}
 				}
-
 				if ($not) {
 					$s .= $not;
 					$user .= $not;
@@ -476,14 +491,15 @@ sub parse
 						}
 						if ($fref->[1] eq 'a' || $fref->[1] eq 't') {
 							my @t;
-							for (@val) {
-								s/\*//g;        # remove any trailing *
-								if (/^\{.*\}$/) { # we have a regex 
-									s/^\{//;
-								    s/\}$//;
-									return  ('regex', $dxchan->msg('e38', $_)) unless (qr{$_})
+							foreach my $v (@val) {
+								$v =~ s/\*//g;        # remove any trailing *
+								if (my ($r) = $v =~ /^\{(.*)\}$/) { # we have a regex
+									dbg("Filter::parse regex b: '\{$r\}'") if isdbg('filter'); 
+									$v = pack('H*', $r);
+									dbg("Filter::parse regex a: '$v'") if isdbg('filter'); 
+									return  ('regex', $dxchan->msg('e38', $v)) unless (qr{$v});
 								}
-								push @t, "\$r->[$fref->[2]]=~m{$_}i";
+								push @t, "\$r->[$fref->[2]]=~m{$v}i";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
 						} elsif ($fref->[1] eq 'c') {
@@ -524,12 +540,12 @@ sub parse
 						last;
 					}
 				}
-				return ('unknown', $dxchan->msg('e20', $tok)) unless $found;
+				return (1, $dxchan->msg('e20', $tok)) unless $found;
 			} else {
-				return ('no', $dxchan->msg('filter2', $tok));
+				return (1, $dxchan->msg('filter2', $tok));
 			}
+			$lasttok = $tok;
 		}
-		
 	}
 
 	# tidy up the user string
@@ -545,13 +561,13 @@ sub parse
 sub cmd
 {
 	my ($self, $dxchan, $sort, $type, $line) = @_;
-	
 	return $dxchan->msg('filter5') unless $line;
 
 	my ($r, $filter, $fno, $user, $s) = $self->parse($dxchan, $sort, $line);
+	return (1, $filter) if $r;
+	
 	my $u = DXUser::get_current($user);
 	return (1, $dxchan->msg('isow', $user)) if $u && $u->isolate;
-	return (1, $filter) if $r;
 
 	my $fn = "filter$fno";
 

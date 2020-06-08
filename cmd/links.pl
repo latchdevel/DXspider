@@ -29,7 +29,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	my $pingint = $dxchan->pingint;
 	my $lastt = $dxchan->lastping ? ($dxchan->pingint - ($nowt - $dxchan->lastping)) : $pingint;
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%7.2f",$dxchan->pingave) : "";
-	my $iso = $dxchan->isolate ? 'Y' :' ';
+	my $iso = $dxchan->isolate ? 'Y' : ' ';
 	my $uptime = difft($dxchan->startt, 1);
 	my ($fin, $fout, $pc92) = (' ', ' ', ' ');
 	if ($dxchan->do_pc9x) {
@@ -45,7 +45,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 	}
 	unless ($pingint) {
 		$lastt = 0;
-		$ping = "       ";
+		$ping = "        ";
 	}
 
 	$sort = "DXSP" if $dxchan->is_spider;

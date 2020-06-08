@@ -162,6 +162,7 @@ sub spot_search
 		$expr =~ s/\$f11/spottercq/g;
 		$expr =~ s/\$f12/spotstate/g;
 		$expr =~ s/\$f13/spotterstate/g;
+		$expr =~ s/\$f14/ipaddr/g;
 		$expr =~ s/\$f0/freq/g;
 		$expr =~ s/\$f1/spotcall/g;
 		$expr =~ s/\$f2/time/g;
@@ -183,7 +184,7 @@ sub spot_search
 	my $trange = $fdays ? "($fdays and $days)" : $days;
 	$expr .= $expr ? " and $trange" : $trange;
     my $s = qq{select freq,spotcall,time,comment,spotter,spotdxcc,spotterdxcc,
-origin,spotitu,spotcq,spotteritu,spottercq,spotstate,spotterstate from spot
+origin,spotitu,spotcq,spotteritu,spottercq,spotstate,spotterstate,ipaddr from spot
 where $expr order by time desc limit $n};
     dbg("sql expr: $s") if isdbg('search');
 	my $ref = $self->{dbh}->selectall_arrayref($s);

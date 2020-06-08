@@ -25,6 +25,7 @@ use SysVar;
 
 use Data::Dumper;
 use DXUtil;
+use DXBearing;
 
 use strict;
 
@@ -172,13 +173,15 @@ foreach my $l (sort {$a <=> $b} keys %locn) {
 	$longd = 0-$longd if (uc $longl) eq 'W'; 
 	$latd += ($latm/60);
 	$latd = 0-$latd if (uc $latl) eq 'S';
+	my $qra = DXBearing::lltoqra($latd, $longd);
 	print OUT " name => '$name',";
 	print OUT " dxcc => $dxcc,";
 	print OUT " itu => $itu,";
 	print OUT " cq => $cq,";
 	print OUT " utcoff => $utcoff,";
 	print OUT " lat => $latd,";
-	print OUT " long => $longd";
+	print OUT " long => $longd,";
+	print OUT " qra => '$qra'";
 	print OUT " }, 'Prefix'),\n";
 }
 print OUT ");\n\n";

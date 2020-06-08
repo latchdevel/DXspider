@@ -63,10 +63,9 @@ $filterdef = bless ([
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
-our $usetac = 1;
-our $readback;
+our $readback = 0;
 
-if ($usetac) {
+if ($readback) {
 	$readback = `which tac`;
 	chomp $readback;
 }
@@ -293,7 +292,7 @@ sub search
 		return $main::dbh->spot_search($hint, $dayfrom, $dayto, $to-$from, $dxchan);
 	}
 
-#	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
+	#	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
 	#  $expr =~ s/\$f(\d)/\$spots[$1]/g;               # swap the letter n for the correct field name
   
 
@@ -313,16 +312,17 @@ sub search
 	my @spots;
 	my $recs;
 	
-	for ($i = $count = 0; $count < $to && $i < $maxdays; ++$i) {	# look thru $maxdays worth of files only
+	for ($i = $count = 0; $count < $to && $i < $maxdays; ++$i) { # look thru $maxdays worth of files only
 		last if $now->cmp($todate) <= 0;
 		
 		my $fn = $fp->fn($now->sub($i));
 		if ($readback) {
 			dbg("Spot::search search using tac fn: $fn $i") if isdbg('search');
 			$fh = IO::File->new("$readback $fn |");
-		} else {
+		}
+		else {
 			dbg("Spot::search search fn: $fp->{fn} $i") if isdbg('search');
-			$fh = $fp->open($now->sub($i));      # get the next file
+			$fh = $fp->open($now->sub($i));	# get the next file
 		}
 		if ($fh) {
 			my $rec = 0;
@@ -330,11 +330,20 @@ sub search
 			while (<$fh>) {
 				my @r = split /\^/;
 				++$rec;
+				if ($dxchan) {
+					my ($gotone, undef) = $dxchan->{spotsfilter}->it(@r);
+					next unless $gotone;
+				}
 				if (&$ecode(\@r)) {
 					++$count;
 					next if $count < $from;
-					push @out, \@r;
-					last if $count >= $to;
+					if ($readback) {
+						push @out, \@r;
+						last if $count >= $to;
+					} else {
+						push @out, \@r;
+						shift @out if $count >= $to;
+					}
 				}
 			}
 			dbg("Spot::search recs read: $rec") if isdbg('search');
@@ -343,9 +352,8 @@ sub search
 			return ("Spot search error", $@) if $@;
 		}
 	}
-   
-
-	return $readback ? @out : reverse @out;
+	@out = sort {$b->[2] <=> $a->[2]} @out if @out;
+	return @out;
 }
 
 # change a freq range->regular expression
@@ -383,24 +391,6 @@ sub formatl
 	my $t = ztime($_[2]);
 	my $d = cldate($_[2]);
 	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
-}
-
-#
-# return all the spots from a day's file as an array of references
-# the parameter passed is a julian day
-sub readfile($)
-{
-	my @spots;
-	
-	my $fh = $fp->open(shift); 
-	if ($fh) {
-		my $in;
-		while (<$fh>) {
-			chomp;
-			push @spots, [ split '\^' ];
-		}
-	}
-	return @spots;
 }
 
 # enter the spot for dup checking and return true if it is already a dup
