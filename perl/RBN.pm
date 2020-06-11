@@ -22,7 +22,7 @@ use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
 
 our @ISA = qw(DXChannel);
 
-our $startup_delay =0;#3*60; 		# don't send anything out until this timer has expired
+our $startup_delay = 3*60; 		# don't send anything out until this timer has expired
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen. 
 
@@ -211,19 +211,25 @@ sub normal
 
 		# do we have it?
 		my $spot = $spots->{$sp};
-		$spot = $spots->{$spp} if !$spot && exists $spots->{$spp};
-		$spot = $spots->{$spm} if !$spot && exists $spots->{$spm};
+		$spot = $spots->{$spp}, $sp = $spp, dbg('SPP') if !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm}, $sp = $spm, dbg('SPM') if !$spot && exists $spots->{$spm};
 		
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
 		my $respot = 0;
-		if ($spot && @$spot == 1) {
-			unless ($self->{minspottime} > 0 && $tim - $spot->[0] >= $self->{minspottime}) {
-				dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $spot->[0])) if isdbg('rbn');
-				return;
+		if ($spot && ref $spot) {
+			if (@$spot == 1) {
+				unless ($self->{minspottime} > 0 && $tim - $spot->[0] >= $self->{minspottime}) {
+					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $spot->[0])) if isdbg('rbn');
+					return;
+				}
+				
+				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $spot->[0])) if isdbg('rbn');
+				++$respot;
 			}
-			dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $spot->[0])) if isdbg('rbn');
-			++$respot;
+		} elsif ($spot) {
+			dbg("RBN: key '$sp' = '$spot' not ref");
+			return;
 		}
 
 		# here we either have an existing spot record buildup on the go, or we need to create the first one
@@ -235,7 +241,7 @@ sub normal
 
 		# add me to the display queue unless we are waiting for initial in rush to finish
 		return unless $self->{inrushpreventor} < $main::systime;
-		push @queue, $sp if @$spot == 1; # queue the KEY (not the record)
+		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
 
 		# build up a new record and store it in the buildup
 		# deal with the unix time
@@ -253,13 +259,17 @@ sub normal
 		my $now = clock_gettime(CLOCK_REALTIME);
 
 		# now run the waiting queue which just contains KEYS ($call|$qrg)
-		foreach $sp (@queue) {
+		foreach $sp (@{$self->{queue}}) {
 			my $cand = $spots->{$sp};
-			if ($now >= $cand->[0]+$dwelltime ) {
+			unless ($cand && $cand->[0]) {
+				dbg "RBN Cand " . ($cand ? 'def' : 'undef') . " [0] " . ($cand->[0] ? 'def' : 'undef') . " dwell $dwelltime";
+				next;
+			} 
+			if ($now >= $cand->[0] + $dwelltime ) {
 				# we have a candidate, create qualitee value(s);
 				unless (@$cand > 1) {
 					dbg "RBN: QUEUE key '$sp' MISSING RECORDS " . dd($cand) if isdbg 'rbn';
-					shift @queue;
+					shift @{$self->{queue}};
 					next;
 				}
 				my $savedtime = shift @$cand; # save the start time
@@ -279,7 +289,7 @@ sub normal
 				dbg "RBN: QUEUE key '$sp' cleared" if isdbg 'rbn';
 				
 				$spots->{$sp} = [$savedtime];
-				shift @queue;
+				shift @{$self->{queue}};
 			} else {
 				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $spot->[0] + $dwelltime - $now) if isdbg 'rbnqueue'; 
 			}
