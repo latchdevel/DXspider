@@ -228,8 +228,11 @@ sub normal
 				}
 				
 				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $spot->[0])) if isdbg('rbn');
+				undef $spot;	# it's about to be recreated (in one place)
 				++$respot;
 			}
+
+			# otherwise we have a spot being built up at the moment
 		} elsif ($spot) {
 			dbg("RBN: key '$sp' = '$spot' not ref");
 			return;
@@ -237,9 +240,8 @@ sub normal
 
 		# here we either have an existing spot record buildup on the go, or we need to create the first one
 		unless ($spot) {
-			$spot = [clock_gettime(CLOCK_REALTIME)];
-			$spots->{$sp} = $spot;
-			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW") if isdbg('rbn');
+			$spots->{$sp} = $spot = [clock_gettime(CLOCK_REALTIME)];;
+			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . $respot ? ' RESPOT' : '') if isdbg('rbn');
 		}
 
 		# add me to the display queue unless we are waiting for initial in rush to finish
