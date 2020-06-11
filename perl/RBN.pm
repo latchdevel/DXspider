@@ -184,20 +184,9 @@ sub normal
 		if ($mode eq 'RTTY') {
 			$mode = 'RTT';
 		}
-		
-		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
-		# This works because the skimmers are NTP controlled (or should be) and will receive
-		# the spot at the same time (velocity factor of the atmosphere and network delays
-		# carefully (not) taken into account :-)
 
-		# Note, there is no intelligence here, but there are clearly basic heuristics that could
-		# be applied at this point that reject (more likely rewrite) the call of a busted spot that would
-		# useful for a zonal hotspot requirement from the cluster node.
-
-		# In reality, this mechanism would be incorporated within the cluster code, utilising the dxqsl database,
-		# and other resources in DXSpider, thus creating a zone map for an emitted spot. This is then passed through the
-		# normal "to-user" spot system (where normal spots are sent to be displayed per user) and then be
-		# processed through the normal, per user, spot filtering system - like a regular spot.
+		# The main de-duping key is [call, $frequency], but we probe a bit around that frequency to find a
+		# range of concurrent frequencies that might be in play. 
 
 		# The key to this is deducing the true callsign by "majority voting" (the greater the number of spotters
         # the more effective this is) together with some lexical analsys probably in conjuction with DXSpider
@@ -215,11 +204,16 @@ sub normal
 		# process to just the standard "message passing" which has been shown to be able to sustain over 5000 
 		# per second (limited by the test program's output and network speed, rather than DXSpider's handling).
 
-		my $nqrg = nearest(.5, $qrg);  # normalised to nearest Khz
+		my $nqrg = nearest(1, $qrg);  # normalised to nearest Khz
 		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well!
+		my $spp = sprintf("$call|%d", $nqrg+1); # but, clearly, my hopes are rudely dashed
+		my $spm = sprintf("$call|%d", $nqrg-1); # in BOTH directions!
 
 		# do we have it?
 		my $spot = $spots->{$sp};
+		$spot = $spots->{$spp} if !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm} if !$spot && exists $spots->{$spm};
+		
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
 		my $respot = 0;
@@ -283,6 +277,7 @@ sub normal
 				
 				# clear out the data and make this now just "spotted", but no further action required until respot time
 				dbg "RBN: QUEUE key '$sp' cleared" if isdbg 'rbn';
+				
 				$spots->{$sp} = [$savedtime];
 				shift @queue;
 			} else {
@@ -366,6 +361,9 @@ sub dx_spot
 	my $saver;
 
 	my %zone;
+	my %qrg;
+	my $respot;
+	
 	
 	foreach my $r (@$spot) {
 		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot];
@@ -373,8 +371,10 @@ sub dx_spot
 
 		my $comment = sprintf "%-3s %2ddB $quality", $r->[3], $r->[4];
 		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], $comment, $r->[0]);
-
+		$respot = 1 if $r->[7];
 		++$zone{$s[11]};		# save the spotter's zone
+		++$qrg{$s[0]};			# and the qrg
+		
 		
 		# save the highest strength one
 		if ($r->[4] < $strength) {
@@ -397,9 +397,23 @@ sub dx_spot
 
 	if ($saver) {
 		my $buf;
+		# create a zone list of spotters
 		delete $zone{$saver->[11]};  # remove this spotter's zone (leaving all the other zones)
 		my $z = join ',', sort {$a <=> $b} keys %zone;
-		$saver->[3] .= " Z:$z" if length $z;
+
+		# determine the most likely qrg and then set it
+		my $mv = 0;
+		my $fk;
+		my $c = 0;
+		while (my ($k, $v) = each %qrg) {
+			$fk = $k, $mv = $v if $v > $mv;
+			++$c;
+		}
+		$saver->[0] = $fk;
+		$saver->[3] .= '*' if $c > 1;
+		$saver->[3] .= '+' if $respot;
+		$saver->[3] .= " Z:$z" if $z;
+		
 		dbg("RBN: SENDING call: $saver->[1] qrg: $saver->[0] origin: $saver->[4] $saver->[3]") if isdbg 'rbn';
 		if ($dxchan->{ve7cc}) {
 			$buf = VE7CC::dx_spot($dxchan, @$saver);
