@@ -22,7 +22,7 @@ use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
 
 our @ISA = qw(DXChannel);
 
-our $startup_delay = 10*60;		# don't send anything out until this timer has expired
+our $startup_delay = 5*60;		# don't send anything out until this timer has expired
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen.
 
@@ -30,6 +30,8 @@ our $minspottime = 60*60;		# the time between respots of a callsign - if a call 
                                 # still being spotted (on the same freq) and it has been
                                 # spotted before, it's spotted again after this time
                                 # until the next minspottime has passed.
+
+our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 
 our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
@@ -53,6 +55,7 @@ sub new
 	$self->{sort} = 'N';
 	$self->{lasttime} = $main::systime;
 	$self->{minspottime} = $minspottime;
+	$self->{beacontime} = $beacontime;
 	$self->{showstats} = 0;
 
 	return $self;
@@ -211,8 +214,8 @@ sub normal
 
 		# do we have it?
 		my $spot = $spots->{$sp};
-		$spot = $spots->{$spp}, $sp = $spp, dbg('SPP') if !$spot && exists $spots->{$spp};
-		$spot = $spots->{$spm}, $sp = $spm, dbg('SPM') if !$spot && exists $spots->{$spm};
+		$spot = $spots->{$spp}, $sp = $spp, dbg('RBN: SPP using $spp for $sp') if !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm}, $sp = $spm, dbg('RBN: SPM using $spm for $sp') if !$spot && exists $spots->{$spm};
 		
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
@@ -373,19 +376,21 @@ sub dx_spot
 	my %zone;
 	my %qrg;
 	my $respot;
-	
-	
+	my $qra;
+		
 	foreach my $r (@$spot) {
 		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot, $qra];
 		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
 
 		my $comment = sprintf "%-3s %2ddB $quality", $r->[3], $r->[4];
-		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], $comment, $r->[0]);
 		$respot = 1 if $r->[7];
+		$qra = $r->[8] if !$qra && $r->[8] && is_qra($r->[8]);
+
+		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], $comment, $r->[0]);
+
 		++$zone{$s[11]};		# save the spotter's zone
 		++$qrg{$s[0]};			# and the qrg
-		
-		
+
 		# save the highest strength one
 		if ($r->[4] < $strength) {
 			$strength = $r->[4];
@@ -426,17 +431,23 @@ sub dx_spot
 		
 		dbg("RBN: SENDING call: $saver->[1] qrg: $saver->[0] origin: $saver->[4] $saver->[3]") if isdbg 'rbn';
 		if ($dxchan->{ve7cc}) {
+			my $call = $saver->[1];
+			$saver->[1] .= '-#';
 			$buf = VE7CC::dx_spot($dxchan, @$saver);
+			$saver->[1] = $call;
 		} else {
 			$buf = $dxchan->format_dx_spot(@$saver);
 		}
 		$buf =~ s/^DX/RB/;
 		$dxchan->local_send('N', $buf);
 
-		if ($saver->[8] && is_qra($saver->[8])) {
-			my $user = DXUser::get_current($s[1]) || DXUser::new($s[1]);
-			$user->qra($saver->[8]) unless $user->qra;
-			$user->lastseen($main::systime);
+		if ($qra) {
+			my $user = DXUser::get_current($saver->[1]) || DXUser->new($saver->[1]);
+			unless ($user->qra && is_qra($user->qra)) {
+				$user->qra($qra);
+				dbg("RBN: update qra on $saver->[1] to $qra");
+				$user->put;
+			}
 		}
 	}
 }
