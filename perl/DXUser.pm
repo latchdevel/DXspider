@@ -101,6 +101,7 @@ our $maxconnlist = 3;			# remember this many connection time (duration) [start, 
 		  maxconnect => '1,Max Connections',
 		  startt => '0,Start Time,cldatetime',
 		  connlist => '1,Connections,parraydifft',
+		  width => '0,Preferred Width'
 		 );
 
 #no strict;
@@ -539,10 +540,10 @@ print "There are $count user records and $err errors\n";
 				my $eval = $val;
 				my $ekey = $key;
 				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
+				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
+				LogDbg('DXCommand', "Export Error1: invalid call '$key' => '$val'");
 				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
+			    dbg(carp("Export Error1: delete $key => '$val' $@")) if $@;
 				++$err;
 				next;
 			}
@@ -553,7 +554,7 @@ print "There are $count user records and $err errors\n";
 				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
 					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
 						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+						dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
 						LogDbg('DXCommand', "$ref->{call} deleted, too old");
 						$del++;
 						next;
@@ -563,9 +564,9 @@ print "There are $count user records and $err errors\n";
 				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
 				++$count;
 			} else {
-				LogDbg('DXCommand', "Export Error3: $key\t" . carp($val) ."\n$@");
+				LogDbg('DXCommand', "Export Error3: '$key'\t" . carp($val) ."\n$@");
 				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
+				dbg(carp("Export Error3: delete '$key' => '$val' $@")) if $@;
 				++$err;
 			}
 		} 

@@ -20,12 +20,13 @@ foreach $l (@list) {
 	my $pre = shift @ans;
 	my $a;
 	foreach $a (@ans) {
-		push @out, sprintf "%s DXCC: %d ITU: %d CQ: %d LL: %s %s (%s, %s)", uc $l, $a->dxcc, $a->itu, $a->cq, slat($a->lat), slong($a->long), $pre, $a->name;
+		push @out, substr(sprintf("%s CC: %d IZ: %d CZ: %d LL: %s %s %4.4s (%s, %s", uc $l, $a->dxcc, $a->itu, $a->cq, slat($a->lat), slong($a->long), $a->qra, $pre, $a->name), 0, 78) . ')';
 		$l = " " x length $l;
 	}
 	if ($USDB::present && $ans[0]->state) {
 		push @out, sprintf "%s City: %s State: %s", $l, join (' ', map {ucfirst} split(/\s+/, lc $ans[0]->city)), $ans[0]->state;
 	}
+	
 }
 
 return (1, @out);
