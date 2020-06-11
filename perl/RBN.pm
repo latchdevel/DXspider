@@ -22,9 +22,9 @@ use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
 
 our @ISA = qw(DXChannel);
 
-our $startup_delay = 3*60; 		# don't send anything out until this timer has expired
+our $startup_delay = 10*60;		# don't send anything out until this timer has expired
                                 # this is to allow the feed to "warm up" with duplicates
-                                # so that the "big rush" doesn't happen. 
+                                # so that the "big rush" doesn't happen.
 
 our $minspottime = 60*60;		# the time between respots of a callsign - if a call is
                                 # still being spotted (on the same freq) and it has been
@@ -250,7 +250,7 @@ sub normal
 		$utz -= 86400 if $utz > $tim+3600;					   # too far ahead, drag it back one day
 
 		# create record and add into the buildup
-		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot];
+		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
 		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 
 		push @$spot, $r;
@@ -376,7 +376,7 @@ sub dx_spot
 	
 	
 	foreach my $r (@$spot) {
-		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot];
+		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot, $qra];
 		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
 
 		my $comment = sprintf "%-3s %2ddB $quality", $r->[3], $r->[4];
@@ -432,6 +432,12 @@ sub dx_spot
 		}
 		$buf =~ s/^DX/RB/;
 		$dxchan->local_send('N', $buf);
+
+		if ($saver->[8] && is_qra($saver->[8])) {
+			my $user = DXUser::get_current($s[1]) || DXUser::new($s[1]);
+			$user->qra($saver->[8]) unless $user->qra;
+			$user->lastseen($main::systime);
+		}
 	}
 }
 
