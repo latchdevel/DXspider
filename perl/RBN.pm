@@ -318,7 +318,7 @@ sub normal
 				++$count;
 			}
 		}
-		dbg "RBN:ADMIN,spot cache: $removed removed $count remain"; # if isdbg('rbn');
+		dbg "RBN:ADMIN,$self->{call},spot cache remain: $count removed: $removed"; # if isdbg('rbn');
 		dbg "RBN:" . join(',', "STAT", $self->{noraw}, $self->{norbn}, $self->{nospot}) if $self->{showstats};
 		$self->{noraw} = $self->{norbn} = $self->{nospot} = 0;
 		$self->{last} = int($tim / 60) * 60;
