@@ -231,13 +231,15 @@ sub it
 	my $hops = $self->{hops} if exists $self->{hops};
 
 	if (isdbg('filter')) {
+		my $call = $self->{name};
 		my $args = join '\',\'', map {defined $_ ? $_ : 'undef'} (ref $_[0] ? @{$_[0]} : @_);
 		my $true = $r ? "OK " : "REJ";
 		my $sort = $self->{sort};
 		my $dir = $self->{name} =~ /^in_/i ? "IN " : "OUT";
-		
+
+		$call =~ s/\.PL$//i;
 		my $h = $hops || '';
-		dbg("$true $dir: $type/$sort with $asc on '$args' $h") if isdbg('filter');
+		dbg("Filter: $call $true $dir: $type/$sort with '$asc' on '$args' $h") if isdbg('filter');
 	}
 	return ($r, $hops);
 }
@@ -581,7 +583,8 @@ sub cmd
 	
 	$r = $filter->write;
 	return (1,$r) if $r;
-	
+
+	$filter->install(1);		# 'delete'
 	$filter->install;
 
     return (0, $filter, $fno);

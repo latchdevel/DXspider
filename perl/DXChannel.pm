@@ -80,12 +80,14 @@ $count = 0;
 		  wcyfilter => '5,WCY Filt-out',
 		  spotsfilter => '5,Spot Filt-out',
 		  routefilter => '5,Route Filt-out',
+		  rbnfilter => '5,RBN Filt-out',
 		  pc92filter => '5,PC92 Route Filt-out',
 		  inannfilter => '5,Ann Filt-inp',
 		  inwwvfilter => '5,WWV Filt-inp',
 		  inwcyfilter => '5,WCY Filt-inp',
 		  inspotsfilter => '5,Spot Filt-inp',
 		  inroutefilter => '5,Route Filt-inp',
+		  inrbnfilter => '5,RBN Filt-inp',
 		  inpc92filter => '5,PC92 Route Filt-inp',
 		  passwd => '9,Passwd List,yesno',
 		  pingint => '5,Ping Interval ',
@@ -676,12 +678,7 @@ sub broadcast_list
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
-			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
-			next unless $filter;
-		}
-		if ($sort eq 'rbn') {
-		    next unless $dxchan->{dx}; # this is deliberate!
-			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
+			($filter) = $dxchan->{spotsfilter}->it($fref) if $dxchan->{spotsfilter} && ref $fref;
 			next unless $filter;
 		}
 		next if $sort eq 'ann' && !$dxchan->{ann} && $s !~ /^To\s+LOCAL\s+de\s+(?:$main::myalias|$main::mycall)/i;

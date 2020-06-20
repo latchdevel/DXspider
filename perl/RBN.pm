@@ -19,6 +19,7 @@ use DXChannel;
 use Math::Round qw(nearest);
 use Date::Parse;
 use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
+use Spot;
 
 our @ISA = qw(DXChannel);
 
@@ -35,6 +36,8 @@ our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 
 our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
+
+our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why.
 
 
 sub new 
@@ -214,8 +217,8 @@ sub normal
 
 		# do we have it?
 		my $spot = $spots->{$sp};
-		$spot = $spots->{$spp}, $sp = $spp, dbg('RBN: SPP using $spp for $sp') if !$spot && exists $spots->{$spp};
-		$spot = $spots->{$spm}, $sp = $spm, dbg('RBN: SPM using $spm for $sp') if !$spot && exists $spots->{$spm};
+		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if !$spot && exists $spots->{$spm};
 		
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
@@ -393,12 +396,6 @@ sub dx_spot
 		++$zone{$s[11]};		# save the spotter's zone
 		++$qrg{$s[0]};			# and the qrg
 
-		# save the highest strength one
-		if ($r->[4] < $strength) {
-			$strength = $r->[4];
-			$saver = \@s;
-			dbg("RBN: STRENGTH call: $s[1] qrg: $s[0] origin: $s[4] dB: $r->[4]") if isdbg 'rbn';
-		}
  
 		my $filter = 0;
 
@@ -410,6 +407,12 @@ sub dx_spot
 			last;
 		}
 
+		# save the lowest strength one
+		if ($r->[4] < $strength) {
+			$strength = $r->[4];
+			$saver = \@s;
+			dbg("RBN: STRENGTH call: $s[1] qrg: $s[0] origin: $s[4] dB: $r->[4]") if isdbg 'rbn';
+		}
 	}
 
 	if ($saver) {
