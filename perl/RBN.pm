@@ -39,7 +39,6 @@ our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuin
 
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why.
 
-
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
@@ -260,6 +259,8 @@ sub normal
 		# create record and add into the buildup
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
 		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
+		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], $comment, $r->[0]);
+		$r-[9] = \@s';
 
 		push @$spot, $r;
 
@@ -391,27 +392,29 @@ sub dx_spot
 		$respot = 1 if $r->[7];
 		$qra = $r->[8] if !$qra && $r->[8] && is_qra($r->[8]);
 
-		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], $comment, $r->[0]);
-
-		++$zone{$s[11]};		# save the spotter's zone
-		++$qrg{$s[0]};			# and the qrg
+		my $s = $r->[9];		# the prepared spot
+		$s->[3] = $comment;		# apply new generated comment
+		
+		
+		++$zone{$s->[11]};		# save the spotter's zone
+		++$qrg{$s->[0]};		# and the qrg
 
  
 		my $filter = 0;
 
 		if ($dxchan->{rbnfilter}) {
-			($filter, undef) = $dxchan->{rbnfilter}->it(\@s);
+			($filter, undef) = $dxchan->{rbnfilter}->it($s);
 			next unless $filter;
-			$saver = \@s;
-			dbg("RBN: FILTERED call: $s[1] qrg: $s[0] origin: $s[4] dB: $r->[4]") if isdbg 'rbn';
+			$saver = $s;
+			dbg("RBN: FILTERED call: $s->[1] qrg: $s->[0] origin: $s->[4] dB: $r->[4]") if isdbg 'rbn';
 			last;
 		}
 
 		# save the lowest strength one
 		if ($r->[4] < $strength) {
 			$strength = $r->[4];
-			$saver = \@s;
-			dbg("RBN: STRENGTH call: $s[1] qrg: $s[0] origin: $s[4] dB: $r->[4]") if isdbg 'rbn';
+			$saver = $s;
+			dbg("RBN: STRENGTH call: $s->[1] qrg: $s->[0] origin: $s->[4] dB: $r->[4]") if isdbg 'rbn';
 		}
 	}
 
