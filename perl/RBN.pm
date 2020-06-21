@@ -259,8 +259,8 @@ sub normal
 		# create record and add into the buildup
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
 		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
-		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], $comment, $r->[0]);
-		$r-[9] = \@s';
+		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], '', $r->[0]);
+		$r->[9] = \@s;
 
 		push @$spot, $r;
 
