@@ -166,10 +166,6 @@ if you have not already done this:
    sudo ln -s /spider/perl/console.pl /usr/local/bin/dx
    sudo ln -s /spider/perl/*dbg /usr/local/bin
 
-*IMPORTANT* (for any build of dxspider) regardless of branch below build 229 run:
-
-	/spider/perl/convert-users-v3-to-v4.pl
-	
 Now in another window run:
 
 	watchdbg

@@ -136,6 +136,7 @@ sub start
 	$self->{dx} = $user->wantdx;
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{ann_talk} = $user->wantann_talk;
+	$self->{wantrbn} = $user->wantrbn;
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
 	$self->{lastmsgpoll} = 0;
