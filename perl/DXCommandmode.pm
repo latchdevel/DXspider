@@ -179,10 +179,7 @@ sub start
 			|| Filter::read_in('ann', 'user_default', 0) ;
 	$self->{rbnfilter} = Filter::read_in('rbn', $call, 0) 
 		|| Filter::read_in('rbn', $nossid, 0)
-		|| Filter::read_in('spots', $call, 0) 
-		|| Filter::read_in('spots', $nossid, 0)
-		|| Filter::read_in('rbn', 'user_default', 0)
-		|| Filter::read_in('spots', 'user_default', 0);
+		|| Filter::read_in('rbn', 'user_default', 0);
 	
 	# clean up qra locators
 	my $qra = $user->qra;

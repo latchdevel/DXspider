@@ -47,8 +47,7 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 
-	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
-	$self->{d} = {};
+#	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
 	$self->{spot} = {};
 	$self->{last} = 0;
 	$self->{noraw} = 0;
@@ -69,8 +68,6 @@ sub start
 	my $user = $self->{user};
 	my $call = $self->{call};
 	my $name = $user->{name};
-	my $dref = $self->{d};
-	my $spotref = $self->{spot};
 		
 	# log it
 	my $host = $self->{conn}->peerhost;
@@ -102,11 +99,10 @@ sub start
 	# get the filters
 	my $nossid = $call;
 	$nossid =~ s/-\d+$//;
-	
-	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) 
-		|| Filter::read_in('spots', $nossid, 0)
-			|| Filter::read_in('spots', 'user_default', 0);
 
+	$self->{inrbnfilter} = Filter::read_in('rbn', $call, 1) 
+		|| Filter::read_in('rbn', 'node_default', 1);
+	
 	# clean up qra locators
 	my $qra = $user->qra;
 	$qra = undef if ($qra && !DXBearing::is_qra($qra));
@@ -260,6 +256,10 @@ sub normal
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
 		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], '', $r->[0]);
+		if ($self->{inrbnfilter}) {
+			my ($want, undef) = $self->{inrbnfilter}->it($s);
+			next unless $want;	
+		}
 		$r->[9] = \@s;
 
 		push @$spot, $r;
@@ -400,11 +400,11 @@ sub dx_spot
 		++$qrg{$s->[0]};		# and the qrg
 
  
-		my $filter = 0;
-
-		if ($dxchan->{rbnfilter}) {
-			($filter, undef) = $dxchan->{rbnfilter}->it($s);
-			next unless $filter;
+		my $want = 0;
+		my $rf = $dxchan->{rbnfilter} || $dxchan->{spotsfilter};
+		if ($rf) {
+			($want, undef) = $rf->it($s);
+			next unless $want;
 			$saver = $s;
 			dbg("RBN: FILTERED call: $s->[1] qrg: $s->[0] origin: $s->[4] dB: $r->[4]") if isdbg 'rbn';
 			last;
@@ -439,10 +439,10 @@ sub dx_spot
 		
 		dbg("RBN: SENDING call: $saver->[1] qrg: $saver->[0] origin: $saver->[4] $saver->[3]") if isdbg 'rbn';
 		if ($dxchan->{ve7cc}) {
-			my $call = $saver->[1];
-			$saver->[1] .= '-#';
+			my $call = $saver->[4];
+			$saver->[4] .= '-#';
 			$buf = VE7CC::dx_spot($dxchan, @$saver);
-			$saver->[1] = $call;
+			$saver->[4] = $call;
 		} else {
 			$buf = $dxchan->format_dx_spot(@$saver);
 		}
