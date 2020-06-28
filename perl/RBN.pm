@@ -37,7 +37,7 @@ our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
 
-our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why.
+our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
 
 sub new 
 {
@@ -58,6 +58,8 @@ sub new
 	$self->{minspottime} = $minspottime;
 	$self->{beacontime} = $beacontime;
 	$self->{showstats} = 0;
+	$self->{pingint} = 0;
+	$self->{nopings} = 0;
 
 	return $self;
 }
@@ -84,7 +86,10 @@ sub start
 			($h) = $line =~ /host=([\da..fA..F:]+)/;
 			$line =~ s/\s*host=[\da..fA..F:]+// if $h;
 		}
-		$self->{hostname} = $h if $h;
+		if ($h) {
+			$h =~ s/^::ffff://;
+			$self->{hostname} = $h;
+		}
 	}
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
