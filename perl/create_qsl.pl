@@ -32,13 +32,11 @@ use vars qw($end $lastyear $lastday $lasttime);
 $end = 0;
 $SIG{TERM} = $SIG{INT} = sub { $end++ };
 
-my $qslfn = "qsl";
+my $qslfn = "dxqsl";
 
 $main::systime = time;
 
-unlink "$data/qsl.v1";
-unlink "$local_data/qsl.v1";
-
+QSL::remove_files();
 QSL::init(1) or die "cannot open QSL file";
 
 my $base = localdata("spots");

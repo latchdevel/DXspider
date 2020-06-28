@@ -1,3 +1,5 @@
+17Jun20=======================================================================
+1. Change the Spot file reading mechanism back to the default of using 'tac'.
 08Jun20=======================================================================
 1. Fix show/mydx (lack of) filtering bug.
 2. Add qra locator to prefix_data.pl.

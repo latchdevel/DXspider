@@ -63,7 +63,7 @@ $filterdef = bless ([
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
-our $readback = 0;
+our $readback = 1;
 
 if ($readback) {
 	$readback = `which tac`;

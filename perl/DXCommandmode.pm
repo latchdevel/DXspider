@@ -136,6 +136,7 @@ sub start
 	$self->{dx} = $user->wantdx;
 	$self->{logininfo} = $user->wantlogininfo;
 	$self->{ann_talk} = $user->wantann_talk;
+	$self->{wantrbn} = $user->wantrbn;
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
 	$self->{lastmsgpoll} = 0;
@@ -176,7 +177,10 @@ sub start
 	$self->{annfilter} = Filter::read_in('ann', $call, 0) 
 		|| Filter::read_in('ann', $nossid, 0) 
 			|| Filter::read_in('ann', 'user_default', 0) ;
-
+	$self->{rbnfilter} = Filter::read_in('rbn', $call, 0) 
+		|| Filter::read_in('rbn', $nossid, 0)
+		|| Filter::read_in('rbn', 'user_default', 0);
+	
 	# clean up qra locators
 	my $qra = $user->qra;
 	$qra = undef if ($qra && !DXBearing::is_qra($qra));

@@ -18,37 +18,26 @@ use DXUser;
 use DXChannel;
 use Math::Round qw(nearest);
 use Date::Parse;
+use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
+use Spot;
 
 our @ISA = qw(DXChannel);
 
-our $startup_delay =3*60; 		# don't send anything out until this timer has expired
+our $startup_delay = 5*60;		# don't send anything out until this timer has expired
                                 # this is to allow the feed to "warm up" with duplicates
-                                # so that the "big rush" doesn't happen. 
+                                # so that the "big rush" doesn't happen.
 
 our $minspottime = 60*60;		# the time between respots of a callsign - if a call is
                                 # still being spotted (on the same freq) and it has been
                                 # spotted before, it's spotted again after this time
                                 # until the next minspottime has passed.
 
-our %hfitu = (
-			  1 => [1, 2,],
-			  2 => [1, 2, 3,],
-			  3 => [2,3, 4,],
-			  4 => [3,4, 9,],
-#			  5 => [0],
-			  6 => [7],
-			  7 => [7, 6, 8, 10],
-			  8 => [7, 8, 9],
-			  9 => [8, 9],
-			  10 => [10],
-			  11 => [11],
-			  12 => [12, 13],
-			  13 => [12, 13],
-			  14 => [14, 15],
-			  15 => [15, 14],
-			  16 => [16],
-			  17 => [17],
-			 );
+our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
+
+our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuing
+                                # a spot to the user (no doubt waiting with bated breath).
+
+our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
 
 sub new 
 {
@@ -58,8 +47,7 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 
-	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
-	$self->{d} = {};
+#	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
 	$self->{spot} = {};
 	$self->{last} = 0;
 	$self->{noraw} = 0;
@@ -68,7 +56,10 @@ sub new
 	$self->{sort} = 'N';
 	$self->{lasttime} = $main::systime;
 	$self->{minspottime} = $minspottime;
+	$self->{beacontime} = $beacontime;
 	$self->{showstats} = 0;
+	$self->{pingint} = 0;
+	$self->{nopings} = 0;
 
 	return $self;
 }
@@ -79,8 +70,6 @@ sub start
 	my $user = $self->{user};
 	my $call = $self->{call};
 	my $name = $user->{name};
-	my $dref = $self->{d};
-	my $spotref = $self->{spot};
 		
 	# log it
 	my $host = $self->{conn}->peerhost;
@@ -97,7 +86,10 @@ sub start
 			($h) = $line =~ /host=([\da..fA..F:]+)/;
 			$line =~ s/\s*host=[\da..fA..F:]+// if $h;
 		}
-		$self->{hostname} = $h if $h;
+		if ($h) {
+			$h =~ s/^::ffff://;
+			$self->{hostname} = $h;
+		}
 	}
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
@@ -112,11 +104,10 @@ sub start
 	# get the filters
 	my $nossid = $call;
 	$nossid =~ s/-\d+$//;
-	
-	$self->{spotsfilter} = Filter::read_in('spots', $call, 0) 
-		|| Filter::read_in('spots', $nossid, 0)
-			|| Filter::read_in('spots', 'user_default', 0);
 
+	$self->{inrbnfilter} = Filter::read_in('rbn', $call, 1) 
+		|| Filter::read_in('rbn', 'node_default', 1);
+	
 	# clean up qra locators
 	my $qra = $user->qra;
 	$qra = undef if ($qra && !DXBearing::is_qra($qra));
@@ -130,13 +121,14 @@ sub start
 	$self->{inrushpreventor} = $main::systime + $startup_delay;
 }
 
+my @queue;						# the queue of spots ready to send
+
 sub normal
 {
 	my $self = shift;
 	my $line = shift;
 	my @ans;
-	my $d = $self->{d};
-	my $spot = $self->{spot};
+	my $spots = $self->{spot};
 	
 	# save this for them's that need it
 	my $rawline = $line;
@@ -186,26 +178,21 @@ sub normal
 			}
 		}
 		if ($sort && $sort eq 'NCDXF') {
-			$mode = $sort;
+			$mode = 'DXF';
 			$t = $tx;
 		}
 		if ($sort && $sort eq 'BEACON') {
-			$mode = 'BECON';
+			$mode = 'BCN';
 		}
-		
-		# We have an RBN data line, dedupe it very simply on time, ignore QRG completely.
-		# This works because the skimmers are NTP controlled (or should be) and will receive
-		# the spot at the same time (velocity factor of the atmosphere and network delays
-		# carefully (not) taken into account :-)
+		if ($mode =~ /^PSK/) {
+			$mode = 'PSK';
+		}
+		if ($mode eq 'RTTY') {
+			$mode = 'RTT';
+		}
 
-		# Note, there is no intelligence here, but there are clearly basic heuristics that could
-		# be applied at this point that reject (more likely rewrite) the call of a busted spot that would
-		# useful for a zonal hotspot requirement from the cluster node.
-
-		# In reality, this mechanism would be incorporated within the cluster code, utilising the dxqsl database,
-		# and other resources in DXSpider, thus creating a zone map for an emitted spot. This is then passed through the
-		# normal "to-user" spot system (where normal spots are sent to be displayed per user) and then be
-		# processed through the normal, per user, spot filtering system - like a regular spot.
+		# The main de-duping key is [call, $frequency], but we probe a bit around that frequency to find a
+		# range of concurrent frequencies that might be in play. 
 
 		# The key to this is deducing the true callsign by "majority voting" (the greater the number of spotters
         # the more effective this is) together with some lexical analsys probably in conjuction with DXSpider
@@ -221,97 +208,147 @@ sub normal
 		# Clearly this will only work in the 'mojo' branch of DXSpider where it is possible to pass off external
 		# data requests to ephemeral or semi resident forked processes that do any grunt work and the main
 		# process to just the standard "message passing" which has been shown to be able to sustain over 5000 
-		# per second (limited by the test program's output and network speed, rather than DXSpider's handling).  
-		
-		my $p = "$t|$call";
-		++$self->{noraw};
-		return if $d->{$p};
+		# per second (limited by the test program's output and network speed, rather than DXSpider's handling).
 
-		# new RBN input
-		$d->{$p} = $tim;
-		++$self->{norbn};
-		$qrg = sprintf('%.1f', nearest(.1, $qrg));     # to nearest 100Hz (to catch the odd multiple decpl QRG [eg '7002.07']).
-		if (isdbg('rbnraw')) {
-			my $ss = join(',', "RBN", $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t);
-			$ss .= ",$b" if $b;
-			dbg "RBNRAW:$ss";
-		}
-
-		# Determine whether to "SPOT" it based on whether we have not seen it before (near this QRG) or,
-		# if we have, has it been a "while" since the last time we spotted it? If it has been spotted
-		# before then "RESPOT" it.
 		my $nqrg = nearest(1, $qrg);  # normalised to nearest Khz
-		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well! 
-		my $ts = $spot->{$sp};
+		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well!
+		my $spp = sprintf("$call|%d", $nqrg+1); # but, clearly, my hopes are rudely dashed
+		my $spm = sprintf("$call|%d", $nqrg-1); # in BOTH directions!
 
-		if (!$ts || ($self->{minspottime} > 0 && $tim - $ts >= $self->{minspottime})) {
-			++$self->{nospot};
-			my $tag = $ts ? "RESPOT" : "SPOT";
-			$t .= ",$b" if $b;
+		# do we have it?
+		my $spot = $spots->{$sp};
+		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if !$spot && exists $spots->{$spm};
+		
 
-			my ($hh,$mm) = $t =~ /(\d\d)(\d\d)Z$/;
-			my $utz = str2time(sprintf('%02d:%02dZ', $hh, $mm));
-			dbg "RBN:" . join(',', $tag, $origin, $qrg, $call, $mode, $s, $m, $spd, $u, $sort, $t) if dbg('rbn');
-
-
-			my @s = Spot::prepare($qrg, $call, $utz, sprintf("%-5s%3d $m", $mode, $s), $origin);
-
-			if (isdbg('progress')) {
-				my $d = ztime($s[2]);
-				my $s = "RBN: $s[1] on $s[0] \@ $d by $s[4]";
-				$s .= $s[3] ? " '$s[3]'" : q{ ''};
-				$s .=  " route: $self->{call}";
-				dbg($s);
+		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
+		my $respot = 0;
+		if ($spot && ref $spot) {
+			if (@$spot == 1) {
+				unless ($self->{minspottime} > 0 && $tim - $spot->[0] >= $self->{minspottime}) {
+					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $spot->[0])) if isdbg('rbn');
+					return;
+				}
+				
+				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $spot->[0])) if isdbg('rbn');
+				undef $spot;	# it's about to be recreated (in one place)
+				++$respot;
 			}
-			
-			send_dx_spot($self, $line, $mode, \@s) unless $self->{inrushpreventor} > $main::systime;
 
-			$spot->{$sp} = $tim;
+			# otherwise we have a spot being built up at the moment
+		} elsif ($spot) {
+			dbg("RBN: key '$sp' = '$spot' not ref");
+			return;
 		}
+
+		# here we either have an existing spot record buildup on the go, or we need to create the first one
+		unless ($spot) {
+			$spots->{$sp} = $spot = [clock_gettime(CLOCK_REALTIME)];;
+			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . $respot ? ' RESPOT' : '') if isdbg('rbn');
+		}
+
+		# add me to the display queue unless we are waiting for initial in rush to finish
+		return unless $self->{inrushpreventor} < $main::systime;
+		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
+
+		# build up a new record and store it in the buildup
+		# deal with the unix time
+		my ($hh,$mm) = $t =~ /(\d\d)(\d\d)Z$/;
+		my $utz = $hh*3600 + $mm*60 + $main::systime_daystart; # possible issue with late spot from previous day
+		$utz -= 86400 if $utz > $tim+3600;					   # too far ahead, drag it back one day
+
+		# create record and add into the buildup
+		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
+		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
+		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], '', $r->[0]);
+		if ($self->{inrbnfilter}) {
+			my ($want, undef) = $self->{inrbnfilter}->it($s);
+			next unless $want;	
+		}
+		$r->[9] = \@s;
+
+		push @$spot, $r;
+
+		# At this point we run the queue to see if anything can be sent onwards to the punter
+		my $now = clock_gettime(CLOCK_REALTIME);
+
+		# now run the waiting queue which just contains KEYS ($call|$qrg)
+		foreach $sp (@{$self->{queue}}) {
+			my $cand = $spots->{$sp};
+			unless ($cand && $cand->[0]) {
+				dbg "RBN Cand " . ($cand ? 'def' : 'undef') . " [0] " . ($cand->[0] ? 'def' : 'undef') . " dwell $dwelltime";
+				next;
+			} 
+			if ($now >= $cand->[0] + $dwelltime ) {
+				# we have a candidate, create qualitee value(s);
+				unless (@$cand > 1) {
+					dbg "RBN: QUEUE key '$sp' MISSING RECORDS " . dd($cand) if isdbg 'rbn';
+					shift @{$self->{queue}};
+					next;
+				}
+				my $savedtime = shift @$cand; # save the start time
+				my $r = $cand->[0];
+				my $quality = @$cand;
+				$quality = 9 if $quality > 9;
+				$quality = "Q:$quality";
+				if (isdbg('progress')) {
+					my $s = "RBN: SPOT key: '$sp' = $r->[2] on $r->[1] \@ $r->[5] $quality";
+					$s .=  " route: $self->{call}";
+					dbg($s);
+				}
+				
+				send_dx_spot($self, $quality, $cand);
+				
+				# clear out the data and make this now just "spotted", but no further action required until respot time
+				dbg "RBN: QUEUE key '$sp' cleared" if isdbg 'rbn';
+				
+				$spots->{$sp} = [$savedtime];
+				shift @{$self->{queue}};
+			} else {
+				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $spot->[0] + $dwelltime - $now) if isdbg 'rbnqueue'; 
+			}
+		}
+		
+
 	} else {
 		dbg "RBN:DATA,$line" if isdbg('rbn');
 	}
 
-	# periodic clearing out of the two caches
+	# 	# periodic clearing out of the two caches
 	if (($tim % 60 == 0 && $tim > $self->{last}) || ($self->{last} && $tim >= $self->{last} + 60)) {
 		my $count = 0;
 		my $removed = 0;
-
-		while (my ($k,$v) = each %{$d}) {
-			if ($tim-$v > 60) {
-				delete $d->{$k};
-				++$removed
-			} else {
-				++$count;
-			}
-		}
-		dbg "RBN:ADMIN,rbn cache: $removed removed $count remain" if isdbg('rbn');
-		$count = $removed = 0;
-		while (my ($k,$v) = each %{$spot}) {
-			if ($tim-$v > $self->{minspottime}*2) {
-				delete $spot->{$k};
+		while (my ($k,$v) = each %{$spots}) {
+			if ($tim - $v->[0] > $self->{minspottime}*2) {
+				delete $spots->{$k};
 				++$removed;
-			} else {
+			}
+			else {
 				++$count;
 			}
 		}
-		dbg "RBN:ADMIN,spot cache: $removed removed $count remain" if isdbg('rbn');
-
+		dbg "RBN:ADMIN,$self->{call},spot cache remain: $count removed: $removed"; # if isdbg('rbn');
 		dbg "RBN:" . join(',', "STAT", $self->{noraw}, $self->{norbn}, $self->{nospot}) if $self->{showstats};
 		$self->{noraw} = $self->{norbn} = $self->{nospot} = 0;
-
 		$self->{last} = int($tim / 60) * 60;
 	}
 }
 
-# we only send to users and we send the original line (possibly with a
-# Q:n in it)
+
+
+# 	}
+# }
+
+# we should get the spot record minus the time, so just an array of record (arrays)
 sub send_dx_spot
 {
 	my $self = shift;
-	my $line = shift;
-	my $mode = shift;
-	my $sref = shift;
+	my $quality = shift;
+	my $spot = shift;
+
+	# $r = [$origin, $qrg, $call, $mode, $s, $utz, $respot];
+
+	my $mode = $spot->[0]->[3]; # as all the modes will be the same;
 	
 	my @dxchan = DXChannel::get_all();
 
@@ -320,18 +357,20 @@ sub send_dx_spot
 		my $user = $dxchan->{user};
 		next unless $user &&  $user->wantrbn;
 
+		# does this user want this sort of spot at all?
 		my $want = 0;
-		++$want if $user->wantbeacon && $mode =~ /^BEA|NCD/;
+		++$want if $user->wantbeacon && $mode =~ /^BCN|DXF/;
 		++$want if $user->wantcw && $mode =~ /^CW/;
-		++$want if $user->wantrtty && $mode =~ /^RTTY/;
+		++$want if $user->wantrtty && $mode =~ /^RTT/;
 		++$want if $user->wantpsk && $mode =~ /^PSK/;
 		++$want if $user->wantcw && $mode =~ /^CW/;
 		++$want if $user->wantft && $mode =~ /^FT/;
-
 		++$want unless $want;	# send everything if nothing is selected.
 
-		
-		$self->dx_spot($dxchan, $sref) if $want;
+		next unless $want;
+
+		# send one spot to one user out of the ones that we have
+		$self->dx_spot($dxchan, $quality, $spot) if $want;
 	}
 }
 
@@ -339,51 +378,91 @@ sub dx_spot
 {
 	my $self = shift;
 	my $dxchan = shift;
-	my $sref = shift;
-	
-#	return unless $dxchan->{rbn};
+	my $quality = shift;
+	my $spot = shift;
 
-	my ($filter, $hops);
+	my $strength = 100;		# because it could if we talk about FTx
+	my $saver;
 
-	if ($dxchan->{rbnfilter}) {
-		($filter, $hops) = $dxchan->{rbnfilter}->it($sref);
-		return unless $filter;
-	} elsif ($self->{rbnfilter}) {
-		($filter, $hops) = $self->{rbnfilter}->it($sref);
-		return unless $filter;
+	my %zone;
+	my %qrg;
+	my $respot;
+	my $qra;
+		
+	foreach my $r (@$spot) {
+		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot, $qra];
+		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
+
+		my $comment = sprintf "%-3s %2ddB $quality", $r->[3], $r->[4];
+		$respot = 1 if $r->[7];
+		$qra = $r->[8] if !$qra && $r->[8] && is_qra($r->[8]);
+
+		my $s = $r->[9];		# the prepared spot
+		$s->[3] = $comment;		# apply new generated comment
+		
+		
+		++$zone{$s->[11]};		# save the spotter's zone
+		++$qrg{$s->[0]};		# and the qrg
+
+ 
+		my $want = 0;
+		my $rf = $dxchan->{rbnfilter} || $dxchan->{spotsfilter};
+		if ($rf) {
+			($want, undef) = $rf->it($s);
+			next unless $want;
+			$saver = $s;
+			dbg("RBN: FILTERED call: $s->[1] qrg: $s->[0] origin: $s->[4] dB: $r->[4]") if isdbg 'rbn';
+			last;
+		}
+
+		# save the lowest strength one
+		if ($r->[4] < $strength) {
+			$strength = $r->[4];
+			$saver = $s;
+			dbg("RBN: STRENGTH call: $s->[1] qrg: $s->[0] origin: $s->[4] dB: $r->[4]") if isdbg 'rbn';
+		}
 	}
 
-#	dbg('RBN::dx_spot spot: "' . join('","', @$sref) . '"') if isdbg('rbn');
+	if ($saver) {
+		my $buf;
+		# create a zone list of spotters
+		delete $zone{$saver->[11]};  # remove this spotter's zone (leaving all the other zones)
+		my $z = join ',', sort {$a <=> $b} keys %zone;
 
-	my $buf;
-	if ($self->{ve7cc}) {
-		$buf = VE7CC::dx_spot($dxchan, @$sref);
-	} else {
-		$buf = $self->format_dx_spot(@$sref);
-		$buf =~ s/\%5E/^/g;
+		# determine the most likely qrg and then set it
+		my $mv = 0;
+		my $fk;
+		my $c = 0;
+		while (my ($k, $v) = each %qrg) {
+			$fk = $k, $mv = $v if $v > $mv;
+			++$c;
+		}
+		$saver->[0] = $fk;
+		$saver->[3] .= '*' if $c > 1;
+		$saver->[3] .= '+' if $respot;
+		$saver->[3] .= " Z:$z" if $z;
+		
+		dbg("RBN: SENDING call: $saver->[1] qrg: $saver->[0] origin: $saver->[4] $saver->[3]") if isdbg 'rbn';
+		if ($dxchan->{ve7cc}) {
+			my $call = $saver->[4];
+			$saver->[4] .= '-#';
+			$buf = VE7CC::dx_spot($dxchan, @$saver);
+			$saver->[4] = $call;
+		} else {
+			$buf = $dxchan->format_dx_spot(@$saver);
+		}
+		$buf =~ s/^DX/RB/;
+		$dxchan->local_send('N', $buf);
+
+		if ($qra) {
+			my $user = DXUser::get_current($saver->[1]) || DXUser->new($saver->[1]);
+			unless ($user->qra && is_qra($user->qra)) {
+				$user->qra($qra);
+				dbg("RBN: update qra on $saver->[1] to $qra");
+				$user->put;
+			}
+		}
 	}
-	$dxchan->local_send('N', $buf);
 }
 
-sub format_dx_spot
-{
-	my $self = shift;
-
-	my $t = ztime($_[2]);
-	my $clth = $self->{consort} eq 'local' ? 29 : 30;
-	my $comment = $_[3] || '';
-	my $loc = '';
-	my $ref = DXUser::get_current($_[1]);
-	if ($ref && $ref->qra) {
-		$loc = ' ' . substr($ref->qra, 0, 4);
-	}
-	$comment .= ' ' x ($clth - (length($comment)+length($loc)+1));
-	$comment .= $loc;
-	$loc = '';
-	my $ref = DXUser::get_current($_[4]);
-	if ($ref && $ref->qra) {
-		$loc = ' ' . substr($ref->qra, 0, 4);
-	}
-	return sprintf "RB de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
-}
 1;
