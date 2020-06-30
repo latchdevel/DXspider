@@ -776,20 +776,19 @@ sub per_10_sec
 
 }
 
-
 sub per_minute
 {
-
+	RBN::per_minute();
 }
 
 sub per_10_minute
 {
-
+	RBN::per_10_minute();
 }
 
 sub per_hour
 {
-
+	RBN::per_hour();
 }
 
 sub per_day

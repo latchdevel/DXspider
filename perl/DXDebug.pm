@@ -130,6 +130,7 @@ sub dbg
 			$fp->writeunix($t, $str) unless !$fp || $dbglevel{"nolog$_isdbg"} ; 
 		}
 	}
+	$_isdbg = '';
 }
 
 sub dbginit

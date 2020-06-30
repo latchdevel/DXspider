@@ -39,6 +39,10 @@ our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuin
 
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
 
+my $spots;						# the GLOBAL spot cache
+
+my %runtime;					# how long each channel has been running
+
 sub new 
 {
 	my $self = DXChannel::alloc(@_);
@@ -47,12 +51,20 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 
-#	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
-	$self->{spot} = {};
+	$spots ||= {};
 	$self->{last} = 0;
 	$self->{noraw} = 0;
 	$self->{nospot} = 0;
+	$self->{nouser} = {};
 	$self->{norbn} = 0;
+	$self->{noraw10} = 0;
+	$self->{nospot10} = 0;
+	$self->{nouser10} = {};
+	$self->{norbn10} = 0;
+	$self->{nospothour} = 0;
+	$self->{nouserhour} = {};
+	$self->{norbnhour} = 0;
+	$self->{norawhour} = 0;
 	$self->{sort} = 'N';
 	$self->{lasttime} = $main::systime;
 	$self->{minspottime} = $minspottime;
@@ -117,8 +129,8 @@ sub start
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
 
-	# start inrush timer
-	$self->{inrushpreventor} = $main::systime + $startup_delay;
+	# if we have been running and stopped for a while 
+	$self->{inrushpreventor} = exists $runtime{$call} && $runtime{$call} > $startup_delay ? 0 : $main::systime + $startup_delay;
 }
 
 my @queue;						# the queue of spots ready to send
@@ -128,7 +140,7 @@ sub normal
 	my $self = shift;
 	my $line = shift;
 	my @ans;
-	my $spots = $self->{spot};
+#	my $spots = $self->{spot};
 	
 	# save this for them's that need it
 	my $rawline = $line;
@@ -162,6 +174,9 @@ sub normal
 	$qra ||= '';
     dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
 
+	++$self->{noraw};
+	++$self->{noraw10};
+	++$self->{norawhour};
 	
 	my $b;
 	
@@ -217,8 +232,8 @@ sub normal
 
 		# do we have it?
 		my $spot = $spots->{$sp};
-		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if !$spot && exists $spots->{$spp};
-		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if !$spot && exists $spots->{$spm};
+		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if isdbg('rbn') && !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if isdbg('rbn') && !$spot && exists $spots->{$spm};
 		
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
@@ -308,36 +323,54 @@ sub normal
 				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $spot->[0] + $dwelltime - $now) if isdbg 'rbnqueue'; 
 			}
 		}
-		
-
 	} else {
 		dbg "RBN:DATA,$line" if isdbg('rbn');
 	}
+}
 
-	# 	# periodic clearing out of the two caches
-	if (($tim % 60 == 0 && $tim > $self->{last}) || ($self->{last} && $tim >= $self->{last} + 60)) {
-		my $count = 0;
-		my $removed = 0;
-		while (my ($k,$v) = each %{$spots}) {
-			if ($tim - $v->[0] > $self->{minspottime}*2) {
-				delete $spots->{$k};
-				++$removed;
-			}
-			else {
-				++$count;
-			}
+sub per_minute
+{
+	foreach my $dxchan (DXChannel::get_all()) {
+		next unless $dxchan->is_rbn;
+		dbg "RBN:STATS minute $dxchan->{call} raw: $dxchan->{noraw} sent: $dxchan->{norbn} delivered: $dxchan->{nospot} users: " . scalar keys %{$dxchan->{nousers}} if isdbg('rbnstats');
+		if ($dxchan->{noraw} == 0 && $dxchan->{lasttime} > 60) {
+			LogDbg('RBN', "RBN: no input from $dxchan->{call}, disconnecting");
+			$dxchan->disconnect;
 		}
-		dbg "RBN:ADMIN,$self->{call},spot cache remain: $count removed: $removed"; # if isdbg('rbn');
-		dbg "RBN:" . join(',', "STAT", $self->{noraw}, $self->{norbn}, $self->{nospot}) if $self->{showstats};
-		$self->{noraw} = $self->{norbn} = $self->{nospot} = 0;
-		$self->{last} = int($tim / 60) * 60;
+		$dxchan->{noraw} = $dxchan->{norbn} = $dxchan->{nospot} = 0; $dxchan->{nousers} = {};
+		$runtime{$dxchan->{call}} += 60;
 	}
 }
 
+sub per_10_minute
+{
+	my $count = 0;
+	my $removed = 0;
+	while (my ($k,$v) = each %{$spots}) {
+		if ($main::systime - $v->[0] > $minspottime*2) {
+			delete $spots->{$k};
+			++$removed;
+		}
+		else {
+			++$count;
+		}
+	}
+	dbg "RBN:STATS spot cache remain: $count removed: $removed"; # if isdbg('rbn');
+	foreach my $dxchan (DXChannel::get_all()) {
+		next unless $dxchan->is_rbn;
+		dbg "RBN:STATS 10-minute $dxchan->{call} raw: $dxchan->{noraw10} sent: $dxchan->{norbn10} delivered: $dxchan->{nospot10} users: " . scalar keys %{$dxchan->{nousers10}};
+		$dxchan->{noraw10} = $dxchan->{norbn10} = $dxchan->{nospot10} = 0; $dxchan->{nousers10} = {};
+	}
+}
 
-
-# 	}
-# }
+sub per_hour
+{
+	foreach my $dxchan (DXChannel::get_all()) {
+		next unless $dxchan->is_rbn;
+		dbg "RBN:STATS hour $dxchan->{call} raw: $dxchan->{norawhour} sent: $dxchan->{norbnhour} delivered: $dxchan->{nospothour} users: " . scalar keys %{$dxchan->{nousershour}};
+		$dxchan->{norawhour} = $dxchan->{norbnhour} = $dxchan->{nospothour} = 0; $dxchan->{nousershour} = {};
+	}
+}
 
 # we should get the spot record minus the time, so just an array of record (arrays)
 sub send_dx_spot
@@ -346,6 +379,10 @@ sub send_dx_spot
 	my $quality = shift;
 	my $spot = shift;
 
+	++$self->{norbn};
+	++$self->{norbn10};
+	++$self->{norbnhour};
+	
 	# $r = [$origin, $qrg, $call, $mode, $s, $utz, $respot];
 
 	my $mode = $spot->[0]->[3]; # as all the modes will be the same;
@@ -380,6 +417,8 @@ sub dx_spot
 	my $dxchan = shift;
 	my $quality = shift;
 	my $spot = shift;
+	my $call = $dxchan->{call};
+	
 
 	my $strength = 100;		# because it could if we talk about FTx
 	my $saver;
@@ -388,7 +427,11 @@ sub dx_spot
 	my %qrg;
 	my $respot;
 	my $qra;
-		
+
+	++$self->{nousers}->{$call};
+	++$self->{nousers10}->{$call};
+	++$self->{nousershour}->{$call};
+	
 	foreach my $r (@$spot) {
 		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot, $qra];
 		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
@@ -454,6 +497,10 @@ sub dx_spot
 		$buf =~ s/^DX/RB/;
 		$dxchan->local_send('N', $buf);
 
+		++$self->{nospot};
+		++$self->{nospot10};
+		++$self->{nospothour};
+		
 		if ($qra) {
 			my $user = DXUser::get_current($saver->[1]) || DXUser->new($saver->[1]);
 			unless ($user->qra && is_qra($user->qra)) {
