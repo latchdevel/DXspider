@@ -119,8 +119,8 @@ sub dbg
 		my @l = split /\n/, $r;
 		foreach my $l (@l) {
 			$l =~ s/([\x00-\x08\x0B-\x1f\x7f-\xff])/sprintf("%%%02X",ord($1))/eg;
-			print "$l\n" if defined \*STDOUT && !$no_stdout;
 			my $tag = $_isdbg ? "($_isdbg) " : '(*) ';
+			print "$tag$l\n" if defined \*STDOUT && !$no_stdout;
 			my $str = "$t^$tag$l";
 			&$callback($str) if $callback;
 			if ($dbgringlth) {
@@ -183,6 +183,7 @@ sub dbgdump
 	my $l = shift;
 	my $m = shift;
 	if ($dbglevel{$l} || $l eq 'err') {
+		my @out;
 		foreach my $l (@_) {
 			for (my $o = 0; $o < length $l; $o += 16) {
 				my $c = substr $l, $o, 16;
@@ -190,11 +191,12 @@ sub dbgdump
 				$c =~ s/[\x00-\x1f\x7f-\xff]/./g;
 				my $left = 16 - length $c;
 				$h .= ' ' x (2 * $left) if $left > 0;
-				dbg($m . sprintf("%4d:", $o) . "$h $c");
+				push @out, $m . sprintf("%4d:", $o) . "$h $c";
 				$m = ' ' x (length $m);
 			}
 		}
-	}
+		dbg(@out) if isdbg($l);	# yes, I know, I have my reasons;
+	} 
 }
 
 sub dbgadd

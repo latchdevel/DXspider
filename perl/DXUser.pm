@@ -678,7 +678,7 @@ sub wanttalk
 
 sub wantgrid
 {
-	return _want('grid', @_);
+	return _wantnot('grid', @_);
 }
 
 sub wantemail
@@ -713,12 +713,12 @@ sub wantusstate
 
 sub wantdxcq
 {
-	return _want('dxcq', @_);
+	return _wantnot('dxcq', @_);
 }
 
 sub wantdxitu
 {
-	return _want('dxitu', @_);
+	return _wantnot('dxitu', @_);
 }
 
 sub wantgtk
