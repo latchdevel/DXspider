@@ -180,13 +180,18 @@ sub measure
 sub show_screen
 {
 	if ($spos == @shistory - 1) {
-
 		# if we really are scrolling thru at the end of the history
 		my $line = $shistory[$spos];
-		$top->addstr("\n") if $spos > 0;
+		my $y = $spos;
+		if ($spos >= $pagel) {
+			$top->scrl(1);
+			$y = $pagel-1;
+#			$top->addstr("\r");
+		}
+		$top->move($y, 0);
+		$top->refresh;
 		setattr($line);
 		$top->addstr($line);
-#		$top->addstr("\n");
 		$top->attrset(COLOR_PAIR(0)) if $has_colors;
 		$spos = @shistory;
 		
@@ -208,8 +213,7 @@ sub show_screen
 		for ($i = 0; $i < $pagel && $p < @shistory; $p++) {
 			my $line = $shistory[$p];
 			my $lines = measure($line);
-			last if $i + $lines > $pagel;
-			$top->addstr("\n") if $i;
+			$top->move($i, 0);
 			setattr($line);
 			$top->addstr($line);
 			$top->attrset(COLOR_PAIR(0)) if $has_colors;
@@ -242,7 +246,8 @@ sub addtotop
 		if ($inbuf =~ s/\x07+$//) {
 			beep();
 		}
-		if (length $inbuf >= $cols) {
+		$inbuf =~ s/\s+$//s;
+		if (length $inbuf > $cols) {
 			$Text::Wrap::Columns = $cols;
 			push @shistory, wrap('',"\t", $inbuf);
 		} else {
