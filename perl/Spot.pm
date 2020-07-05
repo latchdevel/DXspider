@@ -41,6 +41,7 @@ $filterdef = bless ([
 					 ['info', 't', 3],
 					 ['spotter', 'c', 4],
 					 ['by', 'c', 4],
+					 ['dxcc', 'nc', 5],
 					 ['call_dxcc', 'nc', 5],
 					 ['by_dxcc', 'nc', 6],
 					 ['origin', 'c', 7, 9],

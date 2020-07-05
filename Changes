@@ -1,3 +1,5 @@
+05Jul20=======================================================================
+1. Fix show/dxcc.
 04Jul20=======================================================================
 1. Give console.pl (or dx) a good going over with a bog brush to *finally*
    (cough) make it work correctly with a full 80 column window (and not just
