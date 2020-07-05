@@ -99,7 +99,19 @@ sub dequeue
 				&{$conn->{rproc}}($conn, "I$conn->{call}|$msg");
 			} elsif ($conn->{state} eq 'WL' ) {
 				$msg = uc $msg;
-				if (is_callsign($msg)) {
+				if ($conn->{sort} =~ /^I/ && (my ($ip, $from) = $msg =~ /^PROXY TCP[46] ([\da-fA-F:\.]+) ([\da-fA-F:\.]+)/) ) {
+					# SOMEONE appears to have affixed an HA Proxy to my connection
+					$ip =~ s|^::ffff:||; # chop off leading pseudo IPV6 stuff on dual stack listeners
+					$from =~ s|^::ffff:||;
+					if ($from eq $conn->{peerhost}) {
+						dbg("ExtMsg: connect - PROXY IP change from '$conn->{peerhost}' -> '$ip'");
+						$conn->{peerhost} = $ip;
+					} else {
+						dbg("ExtMsg: connect - PROXY someone ($from) is trying to spoof '$ip'");
+						$conn->send_now("Sorry $msg is an invalid callsign");
+						$conn->disconnect;
+					}
+				} elsif (is_callsign($msg)) {
 					if ($main::allowslashcall || $msg !~ m|/|) {
 						my $sort = $conn->{csort};
 						$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';

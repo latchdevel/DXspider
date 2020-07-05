@@ -107,7 +107,7 @@ my $json;
 		  maxconnect => '1,Max Connections',
 		  startt => '0,Start Time,cldatetime',
 		  connlist => '1,Connections,parraydifft',
-		  width => '0,Preferred Width'
+		  width => '0,Preferred Width',
 		 );
 
 #no strict;
