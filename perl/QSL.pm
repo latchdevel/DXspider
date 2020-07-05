@@ -21,6 +21,7 @@ $qslfn = 'dxqsl';
 $dbm = undef;
 $maxentries = 50;
 
+my %u;
 my $json;
 
 localdata_mv("$qslfn.v1j");
@@ -33,10 +34,9 @@ sub init
 	$json = JSON->new->canonical(1);
 	
 	Prefix::load() unless Prefix::loaded();
-	
 
-	my %u;
-	undef $dbm;
+	finish() if $dbm;
+	
 	if ($mode) {
 		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open qsl file: $qslfn ($!)";
 	} else {
@@ -47,7 +47,9 @@ sub init
 
 sub finish
 {
+	$dbm->sync;
 	undef $dbm;
+	untie %u;
 }
 
 sub new
@@ -129,8 +131,8 @@ sub put
 
 sub remove_files
 {
-	unlink "$main::data/qsl.v1j";
-	unlink "$main::local_data/qsl.v1j";
+	unlink "$main::data/$qslfn.v1j";
+	unlink "$main::local_data/$qslfn.v1j";
 }
 
 # thaw the user

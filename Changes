@@ -1,3 +1,16 @@
+04Jul20=======================================================================
+1. Give console.pl (or dx) a good going over with a bog brush to *finally*
+   (cough) make it work correctly with a full 80 column window (and not just
+   to a width of 79 really). Also fix scrolling.
+28Jun20=======================================================================
+1. Merge mojo with users.v3j to remove all vestages of Storable from DXSpider
+   in an effort to make the whole storage thing more reliable (and also a
+   bit faster). The user file will be auto-upgraded on restart. This may take
+   up to 20 seconds on slower hardware (and maybe a bit longer on huge user
+   files). On my 180,000 odd users, on my hardware, it takes 4 seconds.
+2. The DXQSL system storage is also upgraded, Please run 
+   /spider/perl/create_dxqsl.pl in a spare shell. This will recreate the 
+   dxqsl.v1j file. Run 'load/dxqsl' in the console to activate it. 
 17Jun20=======================================================================
 1. Change the Spot file reading mechanism back to the default of using 'tac'.
 08Jun20=======================================================================

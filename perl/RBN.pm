@@ -307,7 +307,7 @@ sub normal
 				$quality = 9 if $quality > 9;
 				$quality = "Q:$quality";
 				if (isdbg('progress')) {
-					my $s = "RBN: SPOT key: '$sp' = $r->[2] on $r->[1] \@ $r->[5] $quality";
+					my $s = "RBN: SPOT key: '$sp' = $r->[2] on $r->[1] by $r->[0] \@ $r->[5] $quality";
 					$s .=  " route: $self->{call}";
 					dbg($s);
 				}
@@ -492,9 +492,13 @@ sub dx_spot
 			$buf = VE7CC::dx_spot($dxchan, @$saver);
 			$saver->[4] = $call;
 		} else {
+			my $call = $saver->[4];
+			$saver->[4] = substr($call, 0, 6);
+			$saver->[4] .= '-#';
 			$buf = $dxchan->format_dx_spot(@$saver);
+			$saver->[4] = $call;
 		}
-		$buf =~ s/^DX/RB/;
+#		$buf =~ s/^DX/RB/;
 		$dxchan->local_send('N', $buf);
 
 		++$self->{nospot};

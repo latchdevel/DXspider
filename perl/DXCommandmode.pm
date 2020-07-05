@@ -997,25 +997,23 @@ sub format_dx_spot
 	my $t = ztime($_[2]);
 	my $loc = '';
 	my $clth = 30;
-	--$clth if $self->{consort} eq 'local';
+	#	--$clth if $self->{consort} eq 'local';
 	
 	my $comment = substr (($_[3] || ''), 0, $clth);
 	$comment .= ' ' x ($clth - (length($comment)));
 	
-	if ($self->{user}->wantgrid) {
-		my $ref = DXUser::get_current($_[4]);
-		if ($ref && $ref->qra) {
-			$loc = ' ' . substr($ref->qra, 0, 4);
-		}
-	}
-
     if ($self->{user}->wantgrid) {
 		my $ref = DXUser::get_current($_[1]);
 		if ($ref && $ref->qra) {
+			my $cloc = ' ' . substr($ref->qra, 0, 4);
+			$comment = substr $comment, 0,  ($clth - (length($comment)+length($cloc)));
+			$comment .= $cloc;
+		}
+		my $origin = $_[4];
+		$origin =~ s/-#$//;			# sigh......
+		$ref = DXUser::get_current($origin);
+		if ($ref && $ref->qra) {
 			$loc = ' ' . substr($ref->qra, 0, 4);
-			$comment = substr $comment, 0,  ($clth - (length($comment)+length($loc)));
-			$comment .= $loc;
-			$loc = '';
 		}
 	} elsif ($self->{user}->wantdxitu) {
 		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
@@ -1028,7 +1026,7 @@ sub format_dx_spot
 		$comment = substr($comment, 0,  $clth-3) . ' ' . $_[12] if $_[12]; 
 	}
 
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-9.9s%10.1f %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
 }
 
 # send a dx spot
