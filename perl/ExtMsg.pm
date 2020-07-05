@@ -64,6 +64,24 @@ sub echo
 	$conn->{echo} = shift;
 }
 
+sub _rcv
+{
+    my $conn = shift; # $rcv_now complement of $flush
+	my $msg = shift;
+    my $sock = $conn->{sock};
+    return unless defined($sock);
+	return if $conn->{disconnecting};
+
+	if ($conn->{state} eq 'WL' && $conn->{sort} =~ /^I/ && $msg =~ /^PROXY/) {
+		my $echo = $conn->{echo};
+		$conn->{echo} = 0;
+		$conn->SUPER::_rcv($msg);
+		$conn->{echo} = $echo;
+	} else {
+		$conn->SUPER::_rcv($msg);
+	}
+}
+
 sub dequeue
 {
 	my $conn = shift;
@@ -182,7 +200,7 @@ sub new_client {
 	$conn->_send_file(localdata("issue"));
 	$conn->send_raw("login: ");
 	$conn->_dotimeout(60);
-	$conn->{echo} = 1;
+#	$conn->{echo} = 1;
 }
 
 sub start_connect
