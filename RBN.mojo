@@ -4,7 +4,7 @@ The latest release of the Mojo branch of DXSpider contains a client
 for the Reverse Beacon Network (RBN). This is not a simple client, it
 attempts to make some sense of the 10s of 1000s of "spots" that the
 RBN can send PER HOUR. At busy times, actually nearly all the time, the
-spots from the RBN come in too fast for anybody to get anything more
+spots from the RBN come in too quickly for anybody to get anything more
 than a fleeting impression of what's coming in.
 
 Something has to try to make this manageable - which is what I have
@@ -13,7 +13,7 @@ tried to do with DXSpider's RBN client.
 The RBN has a number of problems (apart from the overwhelming quantity
 of data that it sends):
 
-* Spotted callsigns, especially on CW, and not reliably
+* Spotted callsigns, especially on CW, are not reliably
   decoded. Estimates vary as to how bad it is but, as far as I can
   tell, even these estimates are unreliable!
 
@@ -27,13 +27,11 @@ of data that it sends):
 * The format of the comment is not regular. If one has both FTx and
   "all the other" spots (CW, PSK et al) enabled at the same time,
   one's eye is constantly having to re-adjust. Again, very difficult
-  to deal with on contest days.
+  to deal with on contest days. Especially if it mixed in with
+  "normal" spots.
 
-
-So what have I done about this:
-
-* As you can see, there are frequently more than one spotter for a
-callsign:
+So what have I done about this? Look at the sample of input traffic
+below:
 
 05Jul2020@22:59:31 (chan) <- I SK0MMR DX de KM3T-2-#:  14100.0  CS3B           CW    24 dB  22 WPM  NCDXF B 2259Z
 05Jul2020@22:59:31 (chan) <- I SK0MMR DX de KM3T-2-#:  28263.9  AB8Z/B         CW    15 dB  18 WPM  BEACON  2259Z
@@ -71,17 +69,20 @@ callsign:
 05Jul2020@22:59:40 (chan) <- I SK0MMR DX de HB9DCO-#:   7018.2  RW1M           CW    25 dB  18 WPM  CQ      2259Z
 05Jul2020@22:59:40 (chan) <- I SK0MMR DX de EA5WU-#:    7018.3  RW1M           CW    19 dB  18 WPM  CQ      2259Z
 
-* I normalise the frequency and cache up to 9 copies from different
-spots. In order to do this I have to wait a few (comfigurable) seconds
-for the client to collect a reasonable number of copies. More copies
-may come in after 9 copies have been received. Once I have enough
-copies to be sure that the callsign is at least agreeed upon by more
-than one skimmer, or the wait timer goes off, I emit a spot.  By this
-means I can reduce the number of spots sent to a node user by up to a
-factor of 10 for CW etc spots and about 8 for FTx spots.
+* As you can see, there are frequently more than one spotter for a
+  callsign:
 
-For example, from the trace above, all the RW1M RBN spots become just
-one line:
+* I normalise the frequency and cache up to 9 copies from different
+  spots. In order to do this I have to wait a few (comfigurable) seconds
+  for the client to collect a reasonable number of copies. More copies 
+  may come in after 9 copies have been received. Once I have enough 
+  copies to be sure that the callsign is at least agreeed upon by more
+  than one skimmer, or the wait timer goes off, I emit a spot.  By this
+  means I can reduce the number of spots sent to a node user by up to a
+  factor of 10 for CW etc spots and about 8 for FTx spots.
+
+  For example, from the trace above, all the RW1M RBN spots become just
+  one line:
 
 DX de F8DGY-#:     7018.3 RW1M         CW  23dB Q:9* Z:20           16 2259Z 14
 
