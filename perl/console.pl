@@ -52,6 +52,7 @@ use Console;
 #
 
 $call = "";                     # the callsign being used
+$node = "";                     # the node callsign being used
 $conn = 0;                      # the connection object for the cluster
 $lasttime = time;               # lasttime something happened on the interface
 
@@ -69,19 +70,13 @@ $inscroll = 0;
 
 $DXDebug::no_stdout = 1;
 
-sub mydbg
-{
-	local *STDOUT = undef;
-	dbg(@_);
-}
-
 # do the screen initialisation
 sub do_initscr
 {
 	$scr = new Curses;
 	if ($has_colors) {
 		start_color();
-		init_pair("0", $foreground, $background);
+		init_pair(0, $foreground, $background);
 #		init_pair(0, $background, $foreground);
 		init_pair(1, COLOR_RED, $background);
 		init_pair(2, COLOR_YELLOW, $background);
@@ -245,12 +240,13 @@ sub show_screen
 	my $size = $lines . 'x' . $cols . '-'; 
 	my $add = "-$spos-$shl";
     my $time = ztime(time);
-	my $str =  "-" . $time . '-' . ($inscroll ? 'S':'-') . '-' x ($cols - (length($size) + length($call) + length($add) + length($time) + 3));
+	my $c = "$call\@$node";
+	my $str =  "-" . $time . '-' . ($inscroll ? 'S':'-') . '-' x ($cols - (length($size) + length($c) + length($add) + length($time) + 3));
 	$scr->addstr($lines-4, 0, $str);
 	
 	$scr->addstr($size);
 	$scr->attrset($mycallcolor) if $has_colors;
-	$scr->addstr($call);
+	$scr->addstr($c);
 	$scr->attrset(COLOR_PAIR(0)) if $has_colors;
     $scr->addstr($add);
 	$scr->refresh();
@@ -558,7 +554,9 @@ while (@ARGV && $ARGV[0] =~ /^-/) {
 }
 
 $call = uc shift @ARGV if @ARGV;
-$call = uc $myalias if !$call;
+$call = uc $myalias unless $call;
+$node = uc $mycall unless $node;
+
 my ($scall, $ssid) = split /-/, $call;
 $ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
 if ($ssid) {

@@ -212,10 +212,11 @@ unset/wantrbn
 
 Very soon this will be replaced with a '(un)set/skimmer' command that
 allow the user to choose which categories they want. Filtering can be
-used in conjunction with this command to further refine output.
+used in conjunction with this proposed command to further refine
+output.
 
 This still very much "work in progress" and will be subject to
-change. But I am grateful to the feedback I have received
+change. But I am grateful to the feedback I have received, so far,
 from:
 
 Kin EA3CV
