@@ -41,7 +41,7 @@ if ($ENV{'TERM'} =~ /(xterm|ansi)/) {
 	@colors = (
 			   [ '^[-A-Z0-9]+ de [-A-Z0-9]+ \d\d-\w\w\w-\d\d\d\d \d\d\d\dZ', COLOR_PAIR(0) ],
 			   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
-			   [ '^RB de', COLOR_PAIR(2) ],
+			   [ '-#', COLOR_PAIR(2) ],
 			   [ '^To', COLOR_PAIR(3) ],
 			   [ '^WX', COLOR_PAIR(3) ],
 			   [ '^(?:WWV|WCY)', COLOR_PAIR(4) ],
@@ -57,7 +57,7 @@ if ($ENV{'TERM'} =~ /(console|linux)/) {
 	$mycallcolor = COLOR_PAIR(1);
 	@colors = (
 			   [ '^DX de [\-A-Z0-9]+:\s+([57][01]\d\d\d\.|\d\d\d\d\d\d+.)', COLOR_PAIR(1) ],
-			   [ '^RN de', COLOR_PAIR(2) ],
+			   [ '^-#:', COLOR_PAIR(2) ],
 			   [ '^DX', COLOR_PAIR(4) ],
 			   [ '^To', COLOR_PAIR(3) ],
 			   [ '^(?:WWV|WCY)', COLOR_PAIR(5) ],
