@@ -59,7 +59,7 @@ You will need the following CPAN packages:
 	sudo apt-get install libev-perl libmojolicious-perl libjson-perl libjson-xs-perl libdata-structure-util-perl libmath-round-perl
 
     or on Redhat based systems you can install the very similarly (but not the same) named
-	packages. I don't the exact names but using anything less than Centos 7 is likely to cause
+	packages. I don't know the exact names but using anything less than Centos 7 is likely to cause
 	a world of pain. Also I doubt that EV and Mojolicious are packaged for Centos at all.
 
 	If in doubt or it is taking too long to find the packages you should build from CPAN. Note: you may
@@ -70,8 +70,8 @@ You will need the following CPAN packages:
 
 	sudo cpanm EV Mojolicious JSON JSON::XS Data::Structure::Util Math::Round
 	
-	# just in case it's missing
-	sudo apt-get install top
+	# just in case it's missing (top, that is)
+	sudo apt-get install procps
 
 Please make sure that, if you insist on using operating system packages, that your Mojolicious is
 at least version 7.26. Mojo::IOLoop::ForkCall is NOT LONGER IN USE! The current version at time

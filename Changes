@@ -1,3 +1,5 @@
+06Jul20=======================================================================
+1. Add RBN.mojo with information of the RBN capabilities of DXSpider.
 05Jul20=======================================================================
 1. Fix show/dxcc.
 2. Add HAPROXY "real ip" type 1 handling for incoming connections.
