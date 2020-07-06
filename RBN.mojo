@@ -73,7 +73,7 @@ below:
   callsign:
 
 * I normalise the frequency and cache up to 9 copies from different
-  spots. In order to do this I have to wait a few (comfigurable) seconds
+  spots. In order to do this I have to wait a few (configurable) seconds
   for the client to collect a reasonable number of copies. More copies 
   may come in after 9 copies have been received. Once I have enough 
   copies to be sure that the callsign is at least agreeed upon by more
@@ -121,12 +121,16 @@ DX de LZ3CB-#:    28050.2 DL4HRM       CW   7dB Q:1                14 1448Z 20
 
 c) I ditch the WPM and the 'CQ' as not being hugely relevant. 
 
-d) If there is a Z:nn[,mm...] is there it means that this call was also heard
-in CQ Zone 20. There can a ',' separated list of as many zones as
-there the space available (and this spot call was heard by :-). You
-will notice the spot zone and skimmer call zone around the time. This
-can be activated with a 'set/dxcq' command. This is completely
-optional.
+d) If there is a Z:nn[,mm...], then this spot was also heard by
+skimmers in other zones. In this example, it means that this call was
+also heard in CQ Zone 20. This list does NOT include the cq zone of
+the skimmer nor the spot. If you would like to see these then do
+'set/dxcq'. This setting is active for all the examples in this
+document. This is completely optional.
+
+There can be a ',' separated list of as many zones where this spot was
+also heard by another skimmers, up to the space available in the
+comment area.
 
 DX de LZ4UX-#:    14015.5 ON7TQ        CW   6dB Q:9 Z:5,14,15,40   14 0646Z 20
 DX de VE7CC-#:     3573.0 N8ADO        FT8 -14dB Q:4 Z:4,5          4 0647Z  3
@@ -134,16 +138,16 @@ DX de DM7EE-#:    14027.5 R1AC         CW   9dB Q:9* Z:5,15,17,20  16 0643Z 14
 DX de WE9V-#:      7074.0 EA7ALL       FT8 -9dB Q:2+ Z:5           14 0641Z  4
 
 e) I shorten the skimmer callsign to 6 characters - having first
-chopped off any SSIDs, spurious /xxx strings from the end leaving just
-the base callsign, before (re-)adding '-#' on the end. This is done to
-minimise the movement rightwards as in the incoming spot from
-KO7SS-7-# below. There are some very strange skimmer callsigns with
-all sorts of spurious endings, all of which I attempt to reduce to the
-base callsign. Some skimmer base callsigns still might be shortened
-for display purposes. Things like '3V/K5WEM' won't fit in six
-characters but the whole base callsign is used for zone info,
-internally, but only the first 6 characters are displayed in any
-spot. See KO7SS-7-# below:
+chopped off any SSIDs, spurious /xxx strings from the end, leaving
+just the base callsign, before (re-)adding '-#' on the end. This is
+done to minimise the misalignment of the spot rightwards, as in the
+incoming skimmer spot from KO7SS-7-# below. There are some very
+strange skimmer callsigns with all sorts of spurious endings, all of
+which I attempt to reduce to the base callsign. Some skimmer base
+callsigns still might be shortened for display purposes. Things like
+'3V/K5WEM' won't fit in six characters but the whole base callsign is
+used for zone info, internally, but only the first 6 characters are
+displayed in any spot.
 
 05Jul2020@22:59:39 (chan) <- I SK0MMR DX de HB9JCB-#:   3516.9  RA1AFT         CW     9 dB  26 WPM  CQ      2259Z
 05Jul2020@22:59:39 (chan) <- I SK0MMR DX de KO7SS-7-#:  14057.6  K7GT           CW     6 dB  21 WPM  CQ      2259Z
@@ -160,7 +164,7 @@ will continue to use the spot filter(s).
 
 g) If there is NO filter in operation, then the skimmer spot with the
 LOWEST signal strength will be shown. This implies that if any extra
-zone are shown then the signal will be higher.
+zones are shown, then the signal will be higher.
 
 h) A filter can further drastically reduce the output sent to the
 user. As this STATS line shows:
@@ -180,7 +184,9 @@ So how do you go about using this:
 
 First you need to create an RBN user. Now you can use any call you
 like and it won't be visible outside of the node. I call mine SK0MMR
-and SK1MMR.
+and SK1MMR. One of these connects to the "standard" RBN port that
+outputs CW, BEACON, DXF, PSK and RTTY spots, and the other connects to
+the RBN port that just outputs FT4 and FT8 spots.
 
 set/rbn sk0mmr sk1mmr
 
@@ -197,16 +203,13 @@ connect telnet telnet.reversebeacon.net 7000
 connect telnet telnet.reversebeacon.net 7001
 'call:' '<node callsign here'
 
-RBN port 7000 is the "traditional" port for anything except FT4 or FT8
-spots. They come from RBN port 7001.
-
 Now put them in your local crontab in /spider/local_cmd/crontab:
 
 * * * * * start_connect('sk0mmr') unless connected('sk0mmr')
 * * * * * start_connect('sk1mmr') unless connected('sk1mmr')
 
 This will check once every minute to see if each RBN connection is
-active, you can check with the 'links' command:
+active, you can check what is connected with the 'links' command:
 
                                                  Ave  Obs  Ping  Next      Filters
   Callsign Type Started                 Uptime    RTT Count Int.  Ping Iso? In  Out PC92? Address
@@ -215,12 +218,13 @@ active, you can check with the 'links' command:
     SK1MMR RBN   5-Jul-2020 1722Z     7h 6m 8s                 0     0                    198.137.202.75
 
 The connections are sometimes dropped or become stuck, I have a
-mechanism to detect this and it will disconnect that connection and
-the normal reconnection will happen just as any other (normal) node.
+mechanism to detect this and it will disconnect that RBN connection
+and the reconnection will be reconnected by the crontab, just like any
+other (normal) node.
 
-It is put in the crontab, rather than started immediately, to prevent
-race conditions (or just slow them down to one disconnection a
-minute).
+I use the crontab, rather than restarting immediately after
+disconnection, to prevent race conditions (or just slow them down to
+one disconnection a minute).
 
 The first time a connection is made, after node startup, there is a 5
 minute pause before RBN spots come out for users. This is done to fill
@@ -230,7 +234,8 @@ minutes is a reasonable compromise. The delay is configurable,
 globally, for all RBN connections, but in future is likely to be
 configurable per connection. Basically, because the FTx RBN data is
 much more bursty and there is more of it (except on CW contests), it
-could do with a somewhat longer training period.
+could do with a somewhat longer training period than the CW etc RBN
+connection.
 
 If a connection drops and reconnects. There is no delay or extra
 training time.
