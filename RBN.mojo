@@ -74,22 +74,27 @@ callsign:
 * I normalise the frequency and cache up to 9 copies from different
 spots. In order to do this I have to wait a few (comfigurable) seconds
 for the client to collect a reasonable number of copies. More copies
-may come in after 9 copies have been. Once I have enough copies to be
-sure that the callsign is at least agreeed upon by more than one
-skimmer, or the wait timer goes off, I emit a spot. An example of
-which is shown above in the spot sent to G1TST. By this means I can
-reduce the number of spots sent to a node user by up to a factor of 10
-for CW etc spots and about 8 for FTx spots.
+may come in after 9 copies have been received. Once I have enough
+copies to be sure that the callsign is at least agreeed upon by more
+than one skimmer, or the wait timer goes off, I emit a spot.  By this
+means I can reduce the number of spots sent to a node user by up to a
+factor of 10 for CW etc spots and about 8 for FTx spots.
+
+For example, from the trace above, all the RW1M RBN spots become just
+one line:
+
+DX de F8DGY-#:     7018.3 RW1M         CW  23dB Q:9* Z:20           16 2259Z 14
 
 * No RBN spots can leak out of the node to the general cluster. Each
   node that wants to use the RBN *must* establish their own
   connections to the RBN.
 
 * Currently no RBN spots are stored. This may well change but how and
-  where these spots are stored is not yet decided. Only "new" spots
-  will be stored (if they are).
+  where these spots are stored is not yet decided. Only "DXSpider
+  curated" spots (like the example above) will be stored (if/when they
+  are). Sh/dx will be suitably modified if storage happens. 
 
-* There are some things that need to be said:
+* There are some things that need to be explained:
 
 a) The input format from the RBN is not the same as format emitted by
 the cluster node. This is part of the unhelpfulness to mixing a raw
@@ -104,6 +109,15 @@ some time and he is still calling CQ after some time (configurable,
 but currently 60 minutes) and gaps for QSOs or tea breaks are ignored,
 then a '+' character will be added.
 
+If the "Qualitee" Q:1 is seen on a CW spot, then only one skimmer has
+seen that spot and the callsign *could* be wrong, but frequently, if
+it is wrong, it is more obvious than the example below. But if Q is
+Q:2 and above, then the callsign is much more likely to be correct.
+
+DX de DJ9IE-#:    14034.9 UN7BBD       CW   4dB Q:5*+              17 1444Z 14
+DX de OL7M-#:     14037.9 UA6LQ        CW  13dB Q:7                16 1448Z 15
+DX de LZ3CB-#:    28050.2 DL4HRM       CW   7dB Q:1                14 1448Z 20
+
 c) I ditch the WPM and the 'CQ' as not being hugely relevant. 
 
 d) If there is a Z:nn[,mm...] is there it means that this call was also heard
@@ -113,10 +127,26 @@ will notice the spot zone and skimmer call zone around the time. This
 can be activated with a 'set/dxcq' command. This is completely
 optional.
 
-e) I shorten the skimmer callsign to 6 characters, before (re-)adding
-'-#' on the end to minimise the movement rightwards as in the incoming
-spot from KO7SS-7-# just two lines below G1TST. There are some very
-strange skimmer callsigns.
+DX de LZ4UX-#:    14015.5 ON7TQ        CW   6dB Q:9 Z:5,14,15,40   14 0646Z 20
+DX de VE7CC-#:     3573.0 N8ADO        FT8 -14dB Q:4 Z:4,5          4 0647Z  3
+DX de DM7EE-#:    14027.5 R1AC         CW   9dB Q:9* Z:5,15,17,20  16 0643Z 14
+DX de WE9V-#:      7074.0 EA7ALL       FT8 -9dB Q:2+ Z:5           14 0641Z  4
+
+e) I shorten the skimmer callsign to 6 characters - having first
+chopped off any SSIDs, spurious /xxx strings from the end leaving just
+the base callsign, before (re-)adding '-#' on the end. This is done to
+minimise the movement rightwards as in the incoming spot from
+KO7SS-7-# below. There are some very strange skimmer callsigns with
+all sorts of spurious endings, all of which I attempt to reduce to the
+base callsign. Some skimmer base callsigns still might be shortened
+for display purposes. Things like '3V/K5WEM' won't fit in six
+characters but the whole base callsign is used for zone info,
+internally, but only the first 6 characters are displayed in any
+spot. See KO7SS-7-# below:
+
+05Jul2020@22:59:39 (chan) <- I SK0MMR DX de HB9JCB-#:   3516.9  RA1AFT         CW     9 dB  26 WPM  CQ      2259Z
+05Jul2020@22:59:39 (chan) <- I SK0MMR DX de KO7SS-7-#:  14057.6  K7GT           CW     6 dB  21 WPM  CQ      2259Z
+05Jul2020@22:59:39 (chan) <- I SK0MMR DX de K9LC-#:    28169.9  VA3XCD/B       CW     9 dB  10 WPM  BEACON  2259Z
 
 f) I have a filter set (accept/spot by_zone 14 and not zone 14 or zone
 14 and not by_zone 14) which will give me the first spot that either
