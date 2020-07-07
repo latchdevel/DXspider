@@ -16,7 +16,6 @@
 
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) unless $self->priv >= 1;
-return (1, $self->msg('storable')) unless $DXUser::v3;
 
 my @call = map {uc $_} split /\s+/, $line; 
 my @out;
@@ -29,9 +28,10 @@ if (@call == 0) {
 	shift @call;
 	my ($action, $key, $data) = (0,0,0);
 	for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
-		if ($data =~ m{\01[ACRSX]\0\0\0\04sort}) {
-		    push @call, $key;
-			++$count;
+		if (iscallsign($key)) {
+			if ($data =~ /"sort":"[ACRSX]"/) {
+				push @call, $key;
+			}
 		}
 	}
 }

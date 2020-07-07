@@ -34,7 +34,7 @@ our $minspottime = 60*60;		# the time between respots of a callsign - if a call 
 
 our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 
-our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuing
+our $dwelltime = 8; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
 
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
