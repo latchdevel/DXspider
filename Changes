@@ -1,5 +1,7 @@
 07Jul20=======================================================================
 1. Fix show/node command.
+2. Fix show/cluster command to take into account the presence of skimmer nodes
+   which are a new category of thing which is neither a node nor a user.
 06Jul20=======================================================================
 1. Add RBN.mojo with information of the RBN capabilities of DXSpider.
 05Jul20=======================================================================

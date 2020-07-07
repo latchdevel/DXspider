@@ -272,10 +272,10 @@ sub cluster
 {
 	my $nodes = Route::Node::count();
 	my $tot = Route::User::count();
-	my ($users, $maxlocalusers) = DXCommandmode::user_count();
+	my ($users, $maxlocalusers) = DXCommandmode::user_count(); # the user count is wrong because of skimmers
 	my $maxusers = Route::User::max();
 	my $uptime = main::uptime();
-	my $localnodes = $DXChannel::count - $users;
+	my $localnodes = $DXChannel::count - $users;   # this is now wrong because of skimmers
 	
 	return ($nodes, $tot, $users, $maxlocalusers, $maxusers, $uptime, $localnodes);
 	
