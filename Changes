@@ -1,3 +1,6 @@
+07Jul20=======================================================================
+1. Fix show/cluster command to take into account the presence of skimmer nodes
+   which are a new category of thing which is neither a node nor a user.
 06Jul20=======================================================================
 1. Update console.pl (dx) to improve scrolling as keyboard speed. 
 05Jul20=======================================================================
