@@ -1,3 +1,16 @@
+08Jul20=======================================================================
+1. "Finish" the RBN system :-)
+2. This includes enabling the coarse selection of spot modes using set/wantrbn
+   with arguments like 'set/wantrbn cw beacon'. This limits your output to
+   just CW, BCN and DXF modes.  
+3. The RBN spot is now cached. With a following wind, this means that even a
+   node restart, done in a timely fashion (within a few minutes) will not
+   cause a "cache warmup" delay for users on a restart.
+4. Added the "full fat" set/wantrbn command and aliased it to 'set/skimmer'. 
+   I use both terms (whenever I remembered) in the help text.
+5. Help text has been written.
+6. The UPGRADE.mojo file has been tweeked to point out the users file format
+   change. 
 07Jul20=======================================================================
 1. Fix show/node command.
 2. Fix show/cluster command to take into account the presence of skimmer nodes

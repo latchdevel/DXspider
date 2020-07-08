@@ -1,4 +1,8 @@
-There are the notes for upgrading to the mojo branch.
+8th July 2020
+-------------
+
+There are the notes for upgrading to the mojo branch. PLEASE NOTE THERE HAVE BEEN CHANGES 
+FOR all MOJO BRANCH USERS. See APPENDIX(i) at the end of this document.
 
 There is NO POINT in doing this at the moment unless you are running a node with many (>50)
 users. It is the future, but at the moment I am testing larger and larger installations to
@@ -184,6 +188,25 @@ I try very hard not to leave it in a broken state...
 
 Dirk G1TLH
 
+APPENDIX(i)
+
+With this revrsion of the code, the users.v3 file will be replaced with users.v3j. This is a reversable 
+change. Simply revert to the previous revision, and email me, should anything go wrong. On restarting 
+the node, the users.v3j file will be generated from the users.v3 file. The users.v3 file is not changed. 
+The process of generation will take up to 30 seconds depending on the number of users in your file,
+the speed of your disk(s) and the CPU speed (probably in that order. On my machine, it takes about 5
+seconds, on an RPi??? 
+
+Part of this process may clear out some old records or suggest that there might errors. DO NOT BE 
+ALARM. This is completely normal. 
+
+This change not only should make the rebuilding of the users file (much) less likely, but tests suggest
+that access to the users file is about 2.5 times quicker. How much difference this makes in practise 
+remains to be seen. 
+
+When you done this, in another shell, run /spider/perl/create_dxsql.pl. This will convert the DXQSL 
+system to dxqsl.v1j (for the sh/dxqsl <call> command). When this is finished, run 'load/dxqsl' in 
+a console (or restart the node, but it isn't necessary).
 
 
 

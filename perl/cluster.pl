@@ -412,6 +412,7 @@ sub cease
 	UDPMsg::finish();
 
 	# end everything else
+	RBN::finish();
 	DXUser::finish();
 	DXDupe::finish();
 
@@ -682,6 +683,9 @@ sub setup_start
 	# read in database desriptors
 	dbg("reading database descriptors ...");
 	DXDb::load();
+
+	dbg("starting RBN ...");
+	RBN::init();
 
 	# starting local stuff
 	dbg("doing local initialisation ...");

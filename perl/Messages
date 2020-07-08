@@ -112,6 +112,7 @@ package DXM;
 				e36 => 'You can only do this in normal user prompt state',
 				e37 => 'Need at least a callsign',
 				e38 => 'This is not a valid regex',
+				e39 => 'Sorry $_[0] is not a valid argument',
 
 				echoon => 'Echoing enabled',
 				echooff => 'Echoing disabled',
@@ -302,6 +303,7 @@ package DXM;
 				showconf => 'Node         Callsigns',
 				shu => '\"SHU\" is not enough! you need to type at least \"SHUT\" to shutdown the node',
 				shutting => '$main::mycall shutting down...',
+				skims => 'RBN/Skimming set to $_[1] for $_[0]',
 				sloc => 'Cluster lat $_[0] long $_[1], DON\'T FORGET TO CHANGE YOUR DXVars.pm',
 				snode1 => 'Node Call   Sort    Version',
 				snode2 => '$_[0] $_[1]  $_[2]',

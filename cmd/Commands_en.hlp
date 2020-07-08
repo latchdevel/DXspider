@@ -107,6 +107,7 @@ You can use the tag 'all' to accept everything eg:
 
 
 === 0^ACCEPT/SPOTS [0-9] <pattern>^Set an 'accept' filter line for spots
+=== 0^ACCEPT/RBN [0-9] <pattern>^Set an 'accept' filter line for RBN spots
 Create an 'accept this spot' line for a filter. 
 
 An accept filter line means that if the spot matches this filter it is
@@ -1119,6 +1120,102 @@ is a good indication of the quality of the link.  The actual time
 it takes is output to the console in seconds.
 Any visible cluster node can be PINGed.
 
+=== 9^RBN^The Reverse Beacon or Skimmer System
+Please read the document /spider/RBN.mojo. This has the latest information
+about RBN/Skimmer setup.
+
+=== 0^RBN^The Reverse Beacon or Skimmer System
+DXSpider now has the ability to show spots from the Reverse Beacon Network
+or "Skimmers", if your sysop has enabled the feed(s) (and has the bandwidth
+to both receive the feeds and also to pass them on to you.
+
+Currently there are two RBN/Skimmer feeds available which, at busy
+times can send up to 50,000 spots/hour EACH. Somewhere in the low
+1000s is more normal. Clearly this is not much use to the average user
+and so DXSpider "curates" them by removing duplicates and checking for
+invalid callsigns or prefixes, as well as using some algorithms to fix
+the rather variable frequencies that some skimmers produce
+(particularly for CW spots).
+
+This means that the format of the spot that you see is completely
+different to the spots that the RBN feeds supply and, as a result of
+the "curation" reduces the volume of spots to you by between 8 and 11
+times.
+
+See SET/SKIMMER (or SET/WANTRBN) for more information on enabling
+RBN/Skimmer spots and also on selecting particular categories (e.g CW
+or FT8/FT4) - which has the side benefit of reducing the volume of
+spots that you receive even more!
+
+Here are some examples of the output:
+
+DX de LZ4UX-#:    14015.5 ON7TQ        CW   6dB Q:9 Z:5,14,15,40   14 0646Z 20
+DX de VE7CC-#:     3573.0 N8ADO        FT8 -14dB Q:4 Z:4,5          4 0647Z  3
+DX de DM7EE-#:    14027.5 R1AC         CW   9dB Q:9* Z:5,15,17,20  16 0643Z 14
+DX de WE9V-#:      7074.0 EA7ALL       FT8 -9dB Q:2+ Z:5           14 0641Z  4
+
+Note that UNSET/DXGRID, UNSET/DXITU and SET/DXCQ are in operation in
+these examples. This is completely optional.
+
+The comment field has been completely changed in order provide as much
+information, in as smaller space, as possible. All the irrelevant
+information has been removed.
+
+You can use the Category (CW and FT8 in these examples) to with
+SET/SKIMMER (or SET/WANTRBN) to, rather coarsely, select which spots
+you require. You can refine this further by the use of Filtering. See
+SET/SKIMMER or SET/WANTRBN for more information. But the short answer
+is that these are spots and are filtered like any other spot, unless
+you want to filter these spots differently, in which case you can use
+REJECT/RBN and ACCEPT/RBN in exactly the same way as ACCEPT/SPOT and
+REJECT/SPOT. If you don't use RBN filters then these spots will be
+filter by any spot filters that you may have.
+
+The next field (6dB, -14dB etc) is the LOWEST reported signal that was
+heard.
+
+The Q: field is the number of skimmers that heard this spot (up to 9
+shown, but it could easily be many more). If Q: is > 1 (especially on
+CW) then you can be reasonably certain that the callsign is accurate,
+especially on CW. 'Q' stands for "Qualitee" :-)
+
+If there is a '*', it means that there was a disagreement about
+frequency. In fact, particularly for CW spots, I have see
+disagreements of 600Hz. Which is a worry. The frequency that is shown
+is the majority view of all the skimmers spotting this call. You may
+have to fossick about the airwaves to find the actual frequency :-)
+
+There are stations that are permanently on, like Beacons, and also
+others that have long sessions on the same frequency and do a lot of
+CQing. If they have been on for a certain length of time and they
+reappear before their cache entry expires (about 2 hours), then they
+are respotted. This is indicated by the '+'. NOTE - if they change
+frequency, this will generate new spots. Each callsign/frequency pair
+could respotted separately for as long as any individual
+callsign/frequency pair remain in the cache.
+
+The Z: field is present then that indicates the other CQ zones that
+heard this spot - not including the skimmer that is shown. I show as
+many as there are in whatever space is left in the comment
+field. Note: if you have any of the optional flags around the time
+then they may overwrite part of this field.
+
+If there is NO filter in operation, then the skimmer spot with the
+LOWEST signal strength will be shown. This implies that if any extra
+Z: zones are shown, then the signal will be higher in those zones.
+
+If you have a filter (for instance: ACCEPT/SPOT by_zone 14 and not
+zone 14 or zone 14 and not by_zone 14) where '14' is your QTH CQ
+zone. You will, instead be served with the lowest signal strength spot
+that satisfies that filter. Incidentally, this particular style of
+filter is quite useful for RBN spots, as it reduces the volume and is
+likely to be more relevant for casual use. If this filter is too broad
+(or narrow) for your normal spotting requirements, then you can use
+ACCEPT/RBN with the same filter specification and it will only apply
+to RBN spots. You can also replace '14' with a list like '14,15' if
+you want to broaden it out. You will still get the same Z: list (if
+any) whether you filter or not.
+
 === 1^RCMD <node call> <cmd>^Send a command to another DX Cluster
 This command allows you to send nearly any command to another DX Cluster
 node that is connected to the system. 
@@ -1185,6 +1282,7 @@ default for nodes and users eg:-
   reject/ann user_default by G,M,2
 
 === 0^REJECT/SPOTS [0-9] <pattern>^Set a 'reject' filter line for spots
+=== 0^REJECT/RBN [0-9] <pattern>^Set a 'reject' filter line for RBN spots
 Create a 'reject this spot' line for a filter. 
 
 A reject filter line means that if the spot matches this filter it is
@@ -1890,6 +1988,16 @@ correctly (assuming your locator is correct ;-). For example:-
 Tell the system where you are. For example:-
   SET/QTH East Dereham, Norfolk
 
+=== 9^SET/RBN <call> ...^Mark this call as an RBN node
+This will mark this callsign as a Reverse Beacon
+Network client. It's not a node in the normal sense of that word
+in DXSpider. But it will generate spots from the RBN/Skimmers and
+will act like a specialised node just for RBN spots.
+
+You will need to use this command to create your skimmer node
+connections. Normally one per RBN port (7000, 7001) but, in principle
+you could connect to any skimmer that uses the same spot format.
+
 === 9^SET/REGISTER <call> ...^Mark a user as registered
 === 9^UNSET/REGISTER <call> ...^Mark a user as not registered
 Registration is a concept that you can switch on by executing the
@@ -1957,6 +2065,70 @@ to reset (or set) this feature.
 Conflicts with: SET/DXCQ, SET/DXITU
 
 Do a STAT/USER to see which flags you have set if you are confused.  
+
+=== 9^SET/WANTRBN^<call> [category ..]^Allow (some) RBN/Skimmer spots
+=== 9^SET/SKIMMER^<call> [category ..]^Allow (some) RBN/Skimmer spots
+This sysop only command allows you to set a user's RBN/Skimmer for them.
+
+It's also good for resetting a user's flags if they get into a muddle.
+
+=== 0^SET/WANTRBN^[category ..]^Allow (some) RBN/Skimmer spots
+=== 0^SET/SKIMMER^[category ..]^Allow (some) RBN/Skimmer spotsT
+=== 0^UNSET/WANTRBN^Stop all RBN/Skimmer spots
+=== 0^UNSET/SKIMMER^Stop all RBN/Skimmer spots
+This command allows curated Reverse Beacon Spots to come out on your
+terminal (or not).
+
+If you want everything just type:
+
+   set/wantrbn
+or	
+   set/skimmer
+
+Either command will do.
+
+If you want it all to just stop type:
+
+   unset/skimmer        (or unset/wantrbn)
+or
+   set/skimmer none
+
+There five categories (or modes) of RBN/Skimmer spot available and one
+can limit the spots to one or more of these categories/modes:
+
+   CW BEACON PSK RTTY FT
+
+together with a load of synonyms
+
+   BEACON BCN DXF
+   PSK FSK MSK
+   FT FT8 FT4
+
+if you use
+
+   set/skimmer psk ft8
+
+you will get psk, fsk, msk, ft4 and ft8 spots. if you want to break
+that down, then you will need to set filters accordingly - but your
+filter will only be offered spots from the categories that you have
+selected.
+
+If you get into a muddle with this you can simply reset 'all on'
+with SET/SKIMMER or 'all off' with UNSET/SKIMMER.
+
+By default any filters that you have for "manual" spots will be
+automatically applied to your RBN/Skimmer feed. However it is possible
+to filter RBN/Skimmer spots differently by use ACCEPT/RBN and/or
+REJECT/RBN filters.
+
+The RBN filters completely override any spot filters for these
+spots. But the spot filters will continue to filter "manual" spots as
+before.
+
+Please see HELP RBN for an explanation of the spot format. It is NOT
+the same as one would get directly from the RBN/Skimmers. But it is
+recommended that you SET/DXCQ and UNSET/DXITU and UNSET/DXGRID (unless
+latter in more important to you with, for example, FT4/8 spots).
 
 === 0^SET/WCY^Allow WCY messages to come out on your terminal
 === 0^UNSET/WCY^Stop WCY messages coming out on your terminal

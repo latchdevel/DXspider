@@ -11,8 +11,8 @@ package RBN;
 
 use 5.10.1;
 
-use DXUtil;
 use DXDebug;
+use DXUtil;
 use DXLog;
 use DXUser;
 use DXChannel;
@@ -20,6 +20,8 @@ use Math::Round qw(nearest);
 use Date::Parse;
 use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
 use Spot;
+use JSON;
+use IO::File;
 
 our @ISA = qw(DXChannel);
 
@@ -34,7 +36,7 @@ our $minspottime = 60*60;		# the time between respots of a callsign - if a call 
 
 our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 
-our $dwelltime = 8; 			# the amount of time to wait for duplicates before issuing
+our $dwelltime = 10; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
 
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
@@ -42,6 +44,25 @@ our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. 
 my $spots;						# the GLOBAL spot cache
 
 my %runtime;					# how long each channel has been running
+
+our $cachefn = localdata('rbn_cache');
+our $cache_valid = 4*60;		# The cache file is considered valid if it is not more than this old
+
+my $json;
+my $noinrush = 0;				# override the inrushpreventor if set
+
+sub init
+{
+	$json = JSON->new;
+	$spots = {};
+	if (check_cache()) {
+		$noinrush = 1;
+	}
+	if (defined $DB::VERSION) {
+		$noinrush = 1;
+		$json->indent(1);
+	}
+}
 
 sub new 
 {
@@ -51,7 +72,6 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 
-	$spots ||= {};
 	$self->{last} = 0;
 	$self->{noraw} = 0;
 	$self->{nospot} = 0;
@@ -130,7 +150,9 @@ sub start
 	}
 
 	# if we have been running and stopped for a while 
-	$self->{inrushpreventor} = exists $runtime{$call} && $runtime{$call} > $startup_delay ? 0 : $main::systime + $startup_delay;
+	# if the cache is warm enough don't operate the inrush preventor
+	$self->{inrushpreventor} = exists $runtime{$call} && $runtime{$call} > $startup_delay || $noinrush ?  0 : $main::systime + $startup_delay;
+	dbg("RBN: noinrush: $noinrush, setting inrushpreventor on $self->{call} to $self->{inrushpreventor}");
 }
 
 my @queue;						# the queue of spots ready to send
@@ -166,13 +188,19 @@ sub normal
 	my $qra = $spd, $spd = '' if is_qra($spd);
 	$u = $qra if $qra;
 
+	# is this anything like a callsign?
+	unless (is_callsign($call)) {
+		dbg("RBN: ERROR $call from $origin on $qrg is invalid, dumped");
+		return;
+	}
+
 	$origin =~ s/\-(?:\d{1,2}\-)?\#$//; # get rid of all the crap we aren't interested in
 
 
 	$sort ||= '';
 	$tx ||= '';
 	$qra ||= '';
-    dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
+    dbg qq{RBN:input decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
 
 	++$self->{noraw};
 	++$self->{noraw10};
@@ -259,12 +287,11 @@ sub normal
 		# here we either have an existing spot record buildup on the go, or we need to create the first one
 		unless ($spot) {
 			$spots->{$sp} = $spot = [clock_gettime(CLOCK_REALTIME)];;
-			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . $respot ? ' RESPOT' : '') if isdbg('rbn');
+			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if isdbg('rbn');
 		}
 
 		# add me to the display queue unless we are waiting for initial in rush to finish
-		return unless $self->{inrushpreventor} < $main::systime;
-		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
+		return unless $noinrush || $self->{inrushpreventor} < $main::systime;
 
 		# build up a new record and store it in the buildup
 		# deal with the unix time
@@ -274,13 +301,21 @@ sub normal
 
 		# create record and add into the buildup
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
-		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], '', $r->[0]);
+		if ($s[5] == 666) {
+			dbg("RBN: ERROR invalid prefix/callsign $call from $origin-# on $qrg, dumped");
+			return;
+		}
+		
 		if ($self->{inrbnfilter}) {
 			my ($want, undef) = $self->{inrbnfilter}->it($s);
-			next unless $want;	
+			return unless $want;	
 		}
 		$r->[9] = \@s;
+
+		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
+
+		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 
 		push @$spot, $r;
 
@@ -340,6 +375,9 @@ sub per_minute
 		$dxchan->{noraw} = $dxchan->{norbn} = $dxchan->{nospot} = 0; $dxchan->{nousers} = {};
 		$runtime{$dxchan->{call}} += 60;
 	}
+
+	# save the spot cache
+	write_cache() unless $main::systime + $startup_delay < $main::systime;;
 }
 
 sub per_10_minute
@@ -399,12 +437,17 @@ sub send_dx_spot
 		++$want if $user->wantbeacon && $mode =~ /^BCN|DXF/;
 		++$want if $user->wantcw && $mode =~ /^CW/;
 		++$want if $user->wantrtty && $mode =~ /^RTT/;
-		++$want if $user->wantpsk && $mode =~ /^PSK/;
-		++$want if $user->wantcw && $mode =~ /^CW/;
+		++$want if $user->wantpsk && $mode =~ /^PSK|FSK|MSK/;
 		++$want if $user->wantft && $mode =~ /^FT/;
-		++$want unless $want;	# send everything if nothing is selected.
 
-		next unless $want;
+		dbg(sprintf("RBN: spot selection for $dxchan->{call} mode: '$mode' want: $want flags rbn:%d ft:%d bcn:%d cw:%d psk:%d rtty:%d",
+					$user->wantrbn,
+					$user->wantft,
+					$user->wantbeacon,
+					$user->wantcw,
+					$user->wantpsk,
+					$user->wantrtty,
+				   )) if isdbg('rbnll');
 
 		# send one spot to one user out of the ones that we have
 		$self->dx_spot($dxchan, $quality, $spot) if $want;
@@ -514,6 +557,57 @@ sub dx_spot
 			}
 		}
 	}
+}
+
+sub finish
+{
+	write_cache();
+}
+
+sub write_cache
+{
+	my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
+	my $s = $json->encode($spots);
+	$fh->print($s);
+	$fh->close;
+}
+
+sub check_cache
+{
+	if (-e $cachefn) {
+		my $mt = (stat($cachefn))[9];
+		my $t = $main::systime - $mt || 1;
+		my $p = difft($mt);
+		if ($t < $cache_valid) {
+			dbg("RBN:check_cache '$cachefn' spot cache exists, created $p ago and not too old");
+			my $fh = IO::File->new($cachefn);
+			my $s;
+			if ($fh) {
+				local $/ = undef;
+				$s = <$fh>;
+				dbg("RBN:check_cache cache read size " . length $s);
+				$fh->close;
+			} else {
+				dbg("RBN:check_cache file read error $!");
+				return undef;
+			}
+			if ($s) {
+				eval {$spots = $json->decode($s)};
+				if ($spots && ref $spots) {
+					dbg("RBN:check_cache spot cache restored");
+					return 1;
+				}
+			}
+			dbg("RBN::checkcache error decoding $@");
+		} else {
+			my $d = difft($main::systime-$cache_valid);
+			dbg("RBN::checkcache '$cachefn' created $p ago is too old (> $d), ignored");
+		}
+	} else {
+		dbg("RBN:check_cache '$cachefn' spot cache not present");
+	}
+	
+	return undef;
 }
 
 1;
