@@ -516,7 +516,7 @@ sub run_cmd
 
 		# check cmd
 		if ($cmd =~ m|^/| || $cmd =~ m|[^-?\w/]|) {
-			LogDbg('DXCommand', "cmd: invalid characters in '$cmd'");
+			LogDbg('DXCommand', "cmd: $self->{call} - invalid characters in '$cmd'");
 			return $self->_error_out('e1');
 		}
 

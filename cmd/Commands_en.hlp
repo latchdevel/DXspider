@@ -1120,10 +1120,6 @@ is a good indication of the quality of the link.  The actual time
 it takes is output to the console in seconds.
 Any visible cluster node can be PINGed.
 
-=== 9^RBN^The Reverse Beacon or Skimmer System
-Please read the document /spider/RBN.mojo. This has the latest information
-about RBN/Skimmer setup.
-
 === 0^RBN^The Reverse Beacon or Skimmer System
 DXSpider now has the ability to show spots from the Reverse Beacon Network
 or "Skimmers", if your sysop has enabled the feed(s) (and has the bandwidth
