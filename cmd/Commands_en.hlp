@@ -2117,6 +2117,10 @@ The RBN filters completely override any spot filters for these
 spots. But the spot filters will continue to filter "manual" spots as
 before.
 
+NOTE: Filters and this command CAN interact with each other. If you
+don't get the results that you expect, check your filters with
+SHOW/FILTER.
+
 Please see HELP RBN for an explanation of the spot format. It is NOT
 the same as one would get directly from the RBN/Skimmers. But it is
 recommended that you SET/DXCQ and UNSET/DXITU and UNSET/DXGRID (unless
