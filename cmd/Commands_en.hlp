@@ -2062,16 +2062,12 @@ Conflicts with: SET/DXCQ, SET/DXITU
 
 Do a STAT/USER to see which flags you have set if you are confused.  
 
-=== 9^SET/WANTRBN^<call> [category ..]^Allow (some) RBN/Skimmer spots
-=== 9^SET/SKIMMER^<call> [category ..]^Allow (some) RBN/Skimmer spots
-This sysop only command allows you to set a user's RBN/Skimmer for them.
-
-It's also good for resetting a user's flags if they get into a muddle.
-
 === 0^SET/WANTRBN^[category ..]^Allow (some) RBN/Skimmer spots
 === 0^SET/SKIMMER^[category ..]^Allow (some) RBN/Skimmer spotsT
 === 0^UNSET/WANTRBN^Stop all RBN/Skimmer spots
 === 0^UNSET/SKIMMER^Stop all RBN/Skimmer spots
+=== 9^SET/WANTRBN^<call> [category ..]^Allow (some) RBN/Skimmer spots
+=== 9^SET/SKIMMER^<call> [category ..]^Allow (some) RBN/Skimmer spots
 This command allows curated Reverse Beacon Spots to come out on your
 terminal (or not).
 
