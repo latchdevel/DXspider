@@ -372,7 +372,7 @@ sub parse
 	my $filter;
 	my ($flag, $call);
 	my $s;
-	my $user;
+	my $user = '';
 	
 	# check the line for non legal characters
 	dbg("Filter::parse line: '$line'") if isdbg('filter');
@@ -550,11 +550,13 @@ sub parse
 		}
 	}
 
-	# tidy up the user string
-	$user =~ s/\&\&/ and /g;
-	$user =~ s/\|\|/ or /g;
-	$user =~ s/\!/ not /g;
-	$user =~ s/\s+/ /g;
+	# tidy up the user string (why I have to stick in an if statement when I have initialised it I have no idea! 5.28 bug?
+	if ($user) {
+		$user =~ s/\&\&/ and /g;
+		$user =~ s/\|\|/ or /g;
+		$user =~ s/\!/ not /g;
+		$user =~ s/\s+/ /g;
+	}
 	
 	return (0, $filter, $fno, $user, $s);
 }

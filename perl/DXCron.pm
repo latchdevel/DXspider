@@ -64,11 +64,11 @@ sub cread
 
 	dbg("DXCron::cread reading $fn\n") if isdbg('cron');
 	open($fh, $fn) or confess("cron: can't open $fn $!");
-	while (<$fh>) {
+	while (my $l = <$fh>) {
 		$line++;
-		chomp;
-		next if /^\s*#/o or /^\s*$/o;
-		my ($min, $hour, $mday, $month, $wday, $cmd) = /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/o;
+		chomp $l;
+		next if $l =~ /^\s*#/o or $l =~ /^\s*$/o;
+		my ($min, $hour, $mday, $month, $wday, $cmd) = $l =~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/o;
 		next unless defined $min;
 		my $ref = bless {};
 		my $err = '';
@@ -82,18 +82,17 @@ sub cread
 			if (!$err) {
 				$ref->{cmd} = $cmd;
 				push @out, $ref;
-				dbg("DXCron::cread: adding $_\n") if isdbg('cron');
+				dbg("DXCron::cread: adding $l\n") if isdbg('cron');
 			} else {
 				$err =~ s/^, //;
-				LogDbg('cron', "DXCron::cread: error $err on line $line '$_'");
+				LogDbg('cron', "DXCron::cread: error $err on line $line '$l'");
 			}
 		} else {
-			LogDbg('cron', "DXCron::cread error on line $line '$_'");
+			LogDbg('cron', "DXCron::cread error on line $line '$l'");
 			my @s = ($min, $hour, $mday, $month, $wday, $cmd);
 			my $s = "line $line splits as " . join(', ', (map {defined $_ ? qq{$_} : q{'undef'}} @s));
 			LogDbg('cron', $s);
 		}
-		
 	}
 	close($fh);
 	return @out;
