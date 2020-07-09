@@ -1,10 +1,39 @@
+08Jul20=======================================================================
+1. "Finish" the RBN system :-)
+2. This includes enabling the coarse selection of spot modes using set/wantrbn
+   with arguments like 'set/wantrbn cw beacon'. This limits your output to
+   just CW, BCN and DXF modes.  
+3. The RBN spot is now cached. With a following wind, this means that even a
+   node restart, done in a timely fashion (within a few minutes) will not
+   cause a "cache warmup" delay for users on a restart.
+4. Added the "full fat" set/wantrbn command and aliased it to 'set/skimmer'. 
+   I use both terms (whenever I remembered) in the help text.
+5. Help text has been written.
+6. The UPGRADE.mojo file has been tweeked to point out the users file format
+   change.
+7. Merge in users.v3j to the mojo branch.
 07Jul20=======================================================================
-1. Fix show/cluster command to take into account the presence of skimmer nodes
+1. Fix show/node command.
+2. Fix show/cluster command to take into account the presence of skimmer nodes
    which are a new category of thing which is neither a node nor a user.
 06Jul20=======================================================================
-1. Update console.pl (dx) to improve scrolling as keyboard speed. 
+1. Add RBN.mojo with information of the RBN capabilities of DXSpider.
 05Jul20=======================================================================
 1. Fix show/dxcc.
+2. Add HAPROXY "real ip" type 1 handling for incoming connections.
+04Jul20=======================================================================
+1. Give console.pl (or dx) a good going over with a bog brush to *finally*
+   (cough) make it work correctly with a full 80 column window (and not just
+   to a width of 79 really). Also fix scrolling.
+28Jun20=======================================================================
+1. Merge mojo with users.v3j to remove all vestages of Storable from DXSpider
+   in an effort to make the whole storage thing more reliable (and also a
+   bit faster). The user file will be auto-upgraded on restart. This may take
+   up to 20 seconds on slower hardware (and maybe a bit longer on huge user
+   files). On my 180,000 odd users, on my hardware, it takes 4 seconds.
+2. The DXQSL system storage is also upgraded, Please run 
+   /spider/perl/create_dxqsl.pl in a spare shell. This will recreate the 
+   dxqsl.v1j file. Run 'load/dxqsl' in the console to activate it. 
 17Jun20=======================================================================
 1. Change the Spot file reading mechanism back to the default of using 'tac'.
 08Jun20=======================================================================

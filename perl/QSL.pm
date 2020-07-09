@@ -8,39 +8,35 @@
 package QSL;
 
 use strict;
-use DXVars;
+use SysVar;
 use DXUtil;
 use DB_File;
 use DXDebug;
 use Prefix;
+use JSON;
+use Data::Structure::Util qw(unbless);
 
 use vars qw($qslfn $dbm $maxentries);
-$qslfn = 'qsl';
+$qslfn = 'dxqsl';
 $dbm = undef;
 $maxentries = 50;
 
-localdata_mv("$qslfn.v1");
+my %u;
+my $json;
+
+localdata_mv("$qslfn.v1j");
 
 sub init
 {
 	my $mode = shift;
-	my $ufn = localdata("$qslfn.v1");
+	my $ufn = localdata("$qslfn.v1j");
 
+	$json = JSON->new->canonical(1);
+	
 	Prefix::load() unless Prefix::loaded();
+
+	finish() if $dbm;
 	
-	eval {
-		require Storable;
-	};
-	
-	if ($@) {
-		dbg("Storable appears to be missing");
-		dbg("In order to use the QSL feature you must");
-		dbg("load Storable from CPAN");
-		return undef;
-	}
-	import Storable qw(nfreeze freeze thaw);
-	my %u;
-	undef $dbm;
 	if ($mode) {
 		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open qsl file: $qslfn ($!)";
 	} else {
@@ -51,7 +47,9 @@ sub init
 
 sub finish
 {
+	$dbm->sync;
 	undef $dbm;
+	untie %u;
 }
 
 sub new
@@ -119,7 +117,7 @@ sub get
 	
 	my $r = $dbm->get($key, $value);
 	return undef if $r;
-	return thaw($value);
+	return decode($value);
 }
 
 sub put
@@ -127,8 +125,40 @@ sub put
 	return unless $dbm;
 	my $self = shift;
 	my $key = $self->[0];
-	my $value = nfreeze($self);
+	my $value = encode($self);
 	$dbm->put($key, $value);
+}
+
+sub remove_files
+{
+	unlink "$main::data/$qslfn.v1j";
+	unlink "$main::local_data/$qslfn.v1j";
+}
+
+# thaw the user
+sub decode
+{
+    my $s = shift;
+    my $ref;
+    eval { $ref = $json->decode($s) };
+    if ($ref && !$@) {
+        return bless $ref, 'QSL';
+    } 
+    return undef;
+}
+
+# freeze the user
+sub encode
+{
+    my $ref = shift;
+    unbless($ref);
+    my $s;
+	
+	eval {$s = $json->encode($ref) };
+	if ($s && !$@) {
+		bless $ref, 'QSL';
+		return $s;
+	} 
 }
 
 1;

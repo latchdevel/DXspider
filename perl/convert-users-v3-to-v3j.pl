@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Convert users.v2 or .v3 to JSON .v4 format
+# Convert users.v2 or .v3 to JSON .v3j format
 #
 # It is believed that this can be run at any time...
 #
@@ -38,7 +38,7 @@ my $ufn;
 my $fn = "users";
 
 my $json = JSON->new()->canonical(1);
-my $ofn = localdata("$fn.v4");
+my $ofn = localdata("$fn.v3j");
 my $convert;
 
 eval {
@@ -60,13 +60,13 @@ else {
 
 die "need to have a $fn.v2 or (preferably) a $fn.v3 file in /spider/data or /spider/local_data\n" unless $convert;
 
-if (-e $ofn || -e "$ofn.n") {
-	my $nfn = localdata("$fn.v4.json");
+if (-e $ofn) {
+	my $nfn = localdata("$fn.v3j.new");
 	say "You appear to have (or are using) $ofn, creating $nfn instead";
 	$ofn = $nfn;
 } else {
-	$ofn = "$ofn.n";
-	say "using $ofn.n for output";
+	$ofn = $ofn;
+	say "using $ofn for output";
 }
 
 
@@ -77,10 +77,13 @@ if ($convert) {
 	my $ofh = IO::File->new(">$ofn") or die "cannot open $ofn ($!)\n";
 		
 	my %oldu;
-	LogDbg('',"Converting the User File from V$convert to $fn.v4 ");
+	my %newu;
+	
+	LogDbg('',"Converting the User from V$convert format to $fn.v3j ");
 	LogDbg('',"This will take a while, maybe as much as 10 secs");
-	my $odbm = tie (%oldu, 'DB_File', localdata("users.v$convert"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v$convert ($!) [rebuild it from user_asc?]";
-	for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
+	my $idbm = tie (%oldu, 'DB_File', localdata("users.v$convert"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v$convert ($!) [rebuild it from user_asc?]";
+	my $odbm = tie (%newu, 'DB_File', $ofn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $ofn ($!)";
+	for ($action = R_FIRST; !$idbm->seq($key, $val, $action); $action = R_NEXT) {
 		my $ref;
 		if ($convert == 3) {
 			eval { $ref = storable_decode($val) };
@@ -91,7 +94,7 @@ if ($convert) {
 		unless ($@) {
 			if ($ref) {
 				unbless $ref;
-				$ofh->print("$ref->{call}\t" . $json->encode($ref) . "\n");
+				$newu{$ref->{call}} = $json->encode($ref);
 				$count++;
 			}
 			else {
@@ -102,8 +105,10 @@ if ($convert) {
 			Log('err', "DXUser: error decoding $@");
 		}
 	} 
-	undef $odbm;
 	untie %oldu;
+	undef $idbm;
+	untie %newu;
+	undef $odbm;
 	my $t = _diffms($ta);
 	LogDbg('',"Conversion from users.v$convert to $ofn completed $count records $err errors $t mS");
 	$ofh->close;
@@ -118,7 +123,7 @@ sub asc_decode
 	$s =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	eval '$ref = ' . $s;
 	if ($@) {
-		LogDbg('err', "DXUser::asc_decode: on '$s' $@");
+		LogDbg('err', "asc_decode: on '$s' $@");
 		$ref = undef;
 	}
 	return $ref;

@@ -17,6 +17,10 @@ use DXDebug;
 use DXUtil;
 use LRU;
 use File::Copy;
+use Data::Structure::Util qw(unbless);
+use Time::HiRes qw(gettimeofday tv_interval);
+use IO::File;
+use JSON;
 
 use strict;
 
@@ -31,6 +35,8 @@ $lrusize = 10000;
 $tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
 $v3 = 0;
 our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
+
+my $json;
 
 # hash of valid elements and a simple prompt
 %valid = (
@@ -89,7 +95,7 @@ our $maxconnlist = 3;			# remember this many connection time (duration) [start, 
 		  wantcw => '0,Want RBN CW,yesno',
 		  wantrtty => '0,Want RBN RTTY,yesno',
 		  wantpsk => '0,Want RBN PSK,yesno',
-		  wantbeacon => '0,Want (RBN) Beacon,yesno',
+		  wantbeacon => '0,Want RBN Beacon,yesno',
 		  lastoper => '9,Last for/oper,cldatetime',
 		  nothere => '0,Not Here Text',
 		  registered => '9,Registered?,yesno',
@@ -101,7 +107,7 @@ our $maxconnlist = 3;			# remember this many connection time (duration) [start, 
 		  maxconnect => '1,Max Connections',
 		  startt => '0,Start Time,cldatetime',
 		  connlist => '1,Connections,parraydifft',
-		  width => '0,Preferred Width'
+		  width => '0,Preferred Width',
 		 );
 
 #no strict;
@@ -129,73 +135,34 @@ sub init
 {
 	my $mode = shift;
   
-	my $ufn;
-	my $convert;
-	
-	eval {
-		require Storable;
-	};
-
+   $json = JSON->new->canonical(1);
 	my $fn = "users";
-	
-	if ($@) {
-		$ufn = localdata("users.v2");
-		$v3 = $convert = 0;
-		dbg("the module Storable appears to be missing!!");
-		dbg("trying to continue in compatibility mode (this may fail)");
-		dbg("please install Storable from CPAN as soon as possible");
-	} else {
-		import Storable qw(nfreeze thaw);
-
-		$ufn = localdata("users.v3");
-		$v3 = 1;
-		$convert++ if -e localdata("users.v2") && !-e $ufn;
+	$filename = localdata("$fn.v3j");
+	unless (-e $filename || $mode == 2) {
+		LogDbg('DXUser', "New User File version $filename does not exist, running conversion from users.v3 or v2, please wait");
+		system('/spider/perl/convert-users-v3-to-v3j.pl');
+		init(1);
+		export();
+		return;
 	}
-	
-	if ($mode) {
-		$dbm = tie (%u, 'DB_File', $ufn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
-	} else {
-		$dbm = tie (%u, 'DB_File', $ufn, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_asc?]";
+	if (-e $filename || $mode == 2) {
+		$lru = LRU->newbase("DXUser", $lrusize);
+		if ($mode) {
+			$dbm = tie (%u, 'DB_File', $filename, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_json?]";
+		} else {
+			$dbm = tie (%u, 'DB_File', $filename, O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_json?]";
+		}
 	}
-
-	die "Cannot open $ufn ($!)\n" unless $dbm;
-
-	$lru = LRU->newbase("DXUser", $lrusize);
-	
-	# do a conversion if required
-	if ($dbm && $convert) {
-		my ($key, $val, $action, $count, $err) = ('','',0,0,0);
-		
-		my %oldu;
-		dbg("Converting the User File to V3 ");
-		dbg("This will take a while, I suggest you go and have cup of strong tea");
-		my $odbm = tie (%oldu, 'DB_File', localdata("users.v2"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v2 ($!) [rebuild it from user_asc?]";
-        for ($action = R_FIRST; !$odbm->seq($key, $val, $action); $action = R_NEXT) {
-			my $ref;
-			eval { $ref = asc_decode($val) };
-			unless ($@) {
-				if ($ref) {
-					$ref->put;
-					$count++;
-				} else {
-					$err++
-				}
-			} else {
-				Log('err', "DXUser: error decoding $@");
-			}
-		} 
-		undef $odbm;
-		untie %oldu;
-		dbg("Conversion completed $count records $err errors");
-	}
-	$filename = $ufn;
+	die "Cannot open $filename ($!)\n" unless $dbm || $mode == 2;
+	return;
 }
 
+# delete files with extreme prejudice
 sub del_file
 {
 	# with extreme prejudice
-	unlink "$main::data/users.v3";
-	unlink "$main::local_data/users.v3";
+	unlink "$main::data/users.v3j";
+	unlink "$main::local_data/users.v3j";
 }
 
 #
@@ -338,60 +305,37 @@ sub put
 	$dbm->put($call, $ref);
 }
 
-# freeze the user
-sub encode
-{
-	goto &asc_encode unless $v3;
-	my $self = shift;
-	return nfreeze($self);
-}
 
 # thaw the user
 sub decode
 {
-	goto &asc_decode unless $v3;
-	my $ref;
-	$ref = thaw(shift);
-	return $ref;
+    my $s = shift;
+    my $ref;
+    eval { $ref = $json->decode($s) };
+    if ($ref && !$@) {
+        return bless $ref, 'DXUser';
+    } else {
+        LogDbg('DXUser', "DXUser::json_decode: on '$s' $@");
+    }
+    return undef;
 }
 
-# 
-# create a string from a user reference (in_ascii)
-#
-sub asc_encode
+# freeze the user
+sub encode
 {
-	my $self = shift;
-	my $strip = shift;
-	my $p;
-
-	if ($strip) {
-		my $ref = bless {}, ref $self;
-		foreach my $k (qw(qth lat long qra sort call homenode node lastoper lastin)) {
-			$ref->{$k} = $self->{$k} if exists $self->{$k};
-		}
-		$ref->{name} = $self->{name} if exists $self->{name} && $self->{name} !~ /selfspot/i;
-		$p = dd($ref);
+    my $ref = shift;
+    unbless($ref);
+    my $s;
+	
+	eval {$s = $json->encode($ref) };
+	if ($s && !$@) {
+		bless $ref, 'DXUser';
+		return $s;
 	} else {
-		$p = dd($self);
+		LogDbg('DXUser', "DXUser::json_encode $ref->{call}, $@");
 	}
-	return $p;
 }
 
-#
-# create a hash from a string (in ascii)
-#
-sub asc_decode
-{
-	my $s = shift;
-	my $ref;
-	$s =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
-	eval '$ref = ' . $s;
-	if ($@) {
-		LogDbg('err', "DXUser::asc_decode: on '$s' $@");
-		$ref = undef;
-	}
-	return $ref;
-}
 
 #
 # del - delete a user
@@ -448,10 +392,10 @@ sub fields
 
 sub export
 {
-	my $name = shift || 'user_asc';
+	my $name = shift || 'user_json';
 	my $basic_info_only = shift;
 
-	my $fn = $name ne 'user_asc' ? $name : "$main::local_data/$name";                       # force use of local
+	my $fn = $name ne 'user_json' ? $name : "$main::local_data/$name";                       # force use of local
 	
 	# save old ones
 	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
@@ -460,6 +404,7 @@ sub export
 	move "$fn.o", "$fn.oo" if -e "$fn.o";
 	move "$fn", "$fn.o" if -e "$fn";
 
+	my $ta = [gettimeofday];
 	my $count = 0;
 	my $err = 0;
 	my $del = 0;
@@ -503,35 +448,39 @@ BEGIN {
 }
 
 use SysVar;
+use DXUtil;
 use DXUser;
-
-if (@ARGV) {
-	$main::userfn = shift @ARGV;
-	print "user filename now $userfn\n";
-}
-
+use JSON;
+use Time::HiRes qw(gettimeofday tv_interval);
 package DXUser;
 
+our $json = JSON->new->canonical(1);
+
+my $ta = [gettimeofday];
+our $filename = "$main::local_data/users.v3j";
+my $exists = -e $filename ? "OVERWRITING" : "CREATING"; 
+print "perl user_json $exists $filename\n";
+
 del_file();
-init(1);
+init(2);
 %u = ();
 my $count = 0;
 my $err = 0;
 while (<DATA>) {
 	chomp;
 	my @f = split /\t/;
-	my $ref = asc_decode($f[1]);
+	my $ref = decode($f[1]);
 	if ($ref) {
 		$ref->put();
 		$count++;
-        DXUser::sync() unless $count % 10000;
 	} else {
 		print "# Error: $f[0]\t$f[1]\n";
 		$err++
 	}
 }
 DXUser::sync(); DXUser::finish();
-print "There are $count user records and $err errors\n";
+my $diff = _diffms($ta);
+print "There are $count user records and $err errors in $diff mS\n";
 };
 		print $fh "__DATA__\n";
 
@@ -561,7 +510,7 @@ print "There are $count user records and $err errors\n";
 					}
 				}
 				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
+				print $fh "$key\t" . encode($ref) . "\n";
 				++$count;
 			} else {
 				LogDbg('DXCommand', "Export Error3: '$key'\t" . carp($val) ."\n$@");
@@ -572,7 +521,8 @@ print "There are $count user records and $err errors\n";
 		} 
         $fh->close;
     }
-	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors ('sh/log Export' for details)};
+	my $diff = _diffms($ta);
+	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors in $diff mS ('sh/log Export' for details)};
 	LogDbg('command', $s);
 	return $s;
 }
@@ -728,7 +678,7 @@ sub wanttalk
 
 sub wantgrid
 {
-	return _want('grid', @_);
+	return _wantnot('grid', @_);
 }
 
 sub wantemail
@@ -763,12 +713,12 @@ sub wantusstate
 
 sub wantdxcq
 {
-	return _want('dxcq', @_);
+	return _wantnot('dxcq', @_);
 }
 
 sub wantdxitu
 {
-	return _want('dxitu', @_);
+	return _wantnot('dxitu', @_);
 }
 
 sub wantgtk

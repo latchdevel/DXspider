@@ -235,7 +235,7 @@ sub new_channel
 			$user->long($main::mylongitude);
 			$user->qra($main::mylocator);
 		}
-		$user->startt($main::systime);
+		$user->startt($main::systime);	
 		$conn->conns($call);
 		$dxchan = Web->new($call, $conn, $user);
 		$dxchan->enhanced(1);
@@ -251,6 +251,7 @@ sub new_channel
 
 		# is he locked out ?
 		$user = DXUser::get_current($call);
+		$conn->conns($call);
 		my $basecall = $call;
 		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing
 		my $lock;
@@ -411,6 +412,7 @@ sub cease
 	UDPMsg::finish();
 
 	# end everything else
+	RBN::finish();
 	DXUser::finish();
 	DXDupe::finish();
 
@@ -682,6 +684,9 @@ sub setup_start
 	dbg("reading database descriptors ...");
 	DXDb::load();
 
+	dbg("starting RBN ...");
+	RBN::init();
+
 	# starting local stuff
 	dbg("doing local initialisation ...");
 	QSL::init(1);
@@ -754,18 +759,17 @@ sub per_sec
 	IsoTime::update($systime);
 	DXCommandmode::process(); # process ongoing command mode stuff
 	DXProt::process();		# process ongoing ak1a pcxx stuff
-	DXCron::process();      # do cron jobs
 	DXXml::process();
 	DXConnect::process();
 	DXMsg::process();
 	DXDb::process();
 	DXUser::process();
 	DXDupe::process();
-	DXCron::process();			# do cron jobs
 	IsoTime::update($systime);
 	DXConnect::process();
 	DXUser::process();
 	AGWMsg::process();
+	DXCron::process();			# do cron jobs
 	
 	Timer::handler();
 	DXLog::flushall();
@@ -776,20 +780,19 @@ sub per_10_sec
 
 }
 
-
 sub per_minute
 {
-
+	RBN::per_minute();
 }
 
 sub per_10_minute
 {
-
+	RBN::per_10_minute();
 }
 
 sub per_hour
 {
-
+	RBN::per_hour();
 }
 
 sub per_day

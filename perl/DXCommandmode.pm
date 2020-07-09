@@ -516,7 +516,7 @@ sub run_cmd
 
 		# check cmd
 		if ($cmd =~ m|^/| || $cmd =~ m|[^-?\w/]|) {
-			LogDbg('DXCommand', "cmd: invalid characters in '$cmd'");
+			LogDbg('DXCommand', "cmd: $self->{call} - invalid characters in '$cmd'");
 			return $self->_error_out('e1');
 		}
 
@@ -996,38 +996,37 @@ sub format_dx_spot
 
 	my $t = ztime($_[2]);
 	my $loc = '';
-	my $clth = $self->{consort} eq 'local' ? 29 : 30;
+	my $clth = 30;
+	#	--$clth if $self->{consort} eq 'local';
+	
 	my $comment = substr (($_[3] || ''), 0, $clth);
 	$comment .= ' ' x ($clth - (length($comment)));
-	if ($self->{user}->wantgrid) {
+	
+    if ($self->{user}->wantgrid) {
 		my $ref = DXUser::get_current($_[1]);
 		if ($ref && $ref->qra) {
-			$loc = ' ' . substr($ref->qra, 0, 4);
-			$comment = substr $comment, 0,  ($clth - (length($comment)+length($loc)));
-			$comment .= $loc;
-			$loc = '';
+			my $cloc = ' ' . substr($ref->qra, 0, 4);
+			$comment = substr $comment, 0,  ($clth - (length($comment)+length($cloc)));
+			$comment .= $cloc;
 		}
-	}
-	
-	if ($self->{user}->wantgrid) {
-		my $ref = DXUser::get_current($_[4]);
+		my $origin = $_[4];
+		$origin =~ s/-#$//;			# sigh......
+		$ref = DXUser::get_current($origin);
 		if ($ref && $ref->qra) {
 			$loc = ' ' . substr($ref->qra, 0, 4);
 		}
-	}
-
-	if ($self->{user}->wantdxitu) {
+	} elsif ($self->{user}->wantdxitu) {
 		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[8]) if defined $_[8]; 
+		$comment = substr($comment, 0,  $clth-3) . ' ' . sprintf("%2d", $_[8]) if defined $_[8]; 
 	} elsif ($self->{user}->wantdxcq) {
 		$loc = ' ' . sprintf("%2d", $_[11]) if defined $_[11];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . sprintf("%2d", $_[9]) if defined $_[9]; 
+		$comment = substr($comment, 0, $clth-3) . ' ' . sprintf("%2d", $_[9]) if defined $_[9]; 
 	} elsif ($self->{user}->wantusstate) {
 		$loc = ' ' . $_[13] if $_[13];
-		$comment = substr($comment, 0,  $self->{consort} eq 'local' ? 26 : 27) . ' ' . $_[12] if $_[12]; 
+		$comment = substr($comment, 0,  $clth-3) . ' ' . $_[12] if $_[12]; 
 	}
 
-	return sprintf "DX de %-7.7s%11.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-9.9s%10.1f %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
 }
 
 # send a dx spot

@@ -345,9 +345,7 @@ sub _send_stuff
 		my $lth = length $data;
 		my $call = $conn->{call} || 'none';
 		if (isdbg('raw')) {
-			if (isdbg('raw')) {
-				dbgdump('raw', "$call send $lth: ", $lth);
-			}
+			dbgdump('raw', "$call send $lth:", $data);
 		}
 		if (defined $sock) {
 			$sock->write($data);

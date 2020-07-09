@@ -11,8 +11,8 @@ package RBN;
 
 use 5.10.1;
 
-use DXUtil;
 use DXDebug;
+use DXUtil;
 use DXLog;
 use DXUser;
 use DXChannel;
@@ -20,6 +20,8 @@ use Math::Round qw(nearest);
 use Date::Parse;
 use Time::HiRes qw(clock_gettime CLOCK_REALTIME);
 use Spot;
+use JSON;
+use IO::File;
 
 our @ISA = qw(DXChannel);
 
@@ -34,10 +36,33 @@ our $minspottime = 60*60;		# the time between respots of a callsign - if a call 
 
 our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 
-our $dwelltime = 6; 			# the amount of time to wait for duplicates before issuing
+our $dwelltime = 10; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
 
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
+
+my $spots;						# the GLOBAL spot cache
+
+my %runtime;					# how long each channel has been running
+
+our $cachefn = localdata('rbn_cache');
+our $cache_valid = 4*60;		# The cache file is considered valid if it is not more than this old
+
+my $json;
+my $noinrush = 0;				# override the inrushpreventor if set
+
+sub init
+{
+	$json = JSON->new;
+	$spots = {};
+	if (check_cache()) {
+		$noinrush = 1;
+	}
+	if (defined $DB::VERSION) {
+		$noinrush = 1;
+		$json->indent(1);
+	}
+}
 
 sub new 
 {
@@ -47,12 +72,19 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 
-#	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
-	$self->{spot} = {};
 	$self->{last} = 0;
 	$self->{noraw} = 0;
 	$self->{nospot} = 0;
+	$self->{nouser} = {};
 	$self->{norbn} = 0;
+	$self->{noraw10} = 0;
+	$self->{nospot10} = 0;
+	$self->{nouser10} = {};
+	$self->{norbn10} = 0;
+	$self->{nospothour} = 0;
+	$self->{nouserhour} = {};
+	$self->{norbnhour} = 0;
+	$self->{norawhour} = 0;
 	$self->{sort} = 'N';
 	$self->{lasttime} = $main::systime;
 	$self->{minspottime} = $minspottime;
@@ -117,8 +149,10 @@ sub start
 		$user->qra(DXBearing::lltoqra($lat, $long)) if (defined $lat && defined $long);  
 	}
 
-	# start inrush timer
-	$self->{inrushpreventor} = $main::systime + $startup_delay;
+	# if we have been running and stopped for a while 
+	# if the cache is warm enough don't operate the inrush preventor
+	$self->{inrushpreventor} = exists $runtime{$call} && $runtime{$call} > $startup_delay || $noinrush ?  0 : $main::systime + $startup_delay;
+	dbg("RBN: noinrush: $noinrush, setting inrushpreventor on $self->{call} to $self->{inrushpreventor}");
 }
 
 my @queue;						# the queue of spots ready to send
@@ -128,7 +162,7 @@ sub normal
 	my $self = shift;
 	my $line = shift;
 	my @ans;
-	my $spots = $self->{spot};
+#	my $spots = $self->{spot};
 	
 	# save this for them's that need it
 	my $rawline = $line;
@@ -154,14 +188,23 @@ sub normal
 	my $qra = $spd, $spd = '' if is_qra($spd);
 	$u = $qra if $qra;
 
+	# is this anything like a callsign?
+	unless (is_callsign($call)) {
+		dbg("RBN: ERROR $call from $origin on $qrg is invalid, dumped");
+		return;
+	}
+
 	$origin =~ s/\-(?:\d{1,2}\-)?\#$//; # get rid of all the crap we aren't interested in
 
 
 	$sort ||= '';
 	$tx ||= '';
 	$qra ||= '';
-    dbg qq{or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
+    dbg qq{RBN:input decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
 
+	++$self->{noraw};
+	++$self->{noraw10};
+	++$self->{norawhour};
 	
 	my $b;
 	
@@ -217,8 +260,8 @@ sub normal
 
 		# do we have it?
 		my $spot = $spots->{$sp};
-		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if !$spot && exists $spots->{$spp};
-		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if !$spot && exists $spots->{$spm};
+		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if isdbg('rbn') && !$spot && exists $spots->{$spp};
+		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if isdbg('rbn') && !$spot && exists $spots->{$spm};
 		
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
@@ -244,12 +287,11 @@ sub normal
 		# here we either have an existing spot record buildup on the go, or we need to create the first one
 		unless ($spot) {
 			$spots->{$sp} = $spot = [clock_gettime(CLOCK_REALTIME)];;
-			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . $respot ? ' RESPOT' : '') if isdbg('rbn');
+			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if isdbg('rbn');
 		}
 
 		# add me to the display queue unless we are waiting for initial in rush to finish
-		return unless $self->{inrushpreventor} < $main::systime;
-		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
+		return unless $noinrush || $self->{inrushpreventor} < $main::systime;
 
 		# build up a new record and store it in the buildup
 		# deal with the unix time
@@ -259,13 +301,21 @@ sub normal
 
 		# create record and add into the buildup
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
-		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 		my @s =  Spot::prepare($r->[1], $r->[2], $r->[6], '', $r->[0]);
+		if ($s[5] == 666) {
+			dbg("RBN: ERROR invalid prefix/callsign $call from $origin-# on $qrg, dumped");
+			return;
+		}
+		
 		if ($self->{inrbnfilter}) {
 			my ($want, undef) = $self->{inrbnfilter}->it($s);
-			next unless $want;	
+			return unless $want;	
 		}
 		$r->[9] = \@s;
+
+		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
+
+		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 
 		push @$spot, $r;
 
@@ -292,7 +342,7 @@ sub normal
 				$quality = 9 if $quality > 9;
 				$quality = "Q:$quality";
 				if (isdbg('progress')) {
-					my $s = "RBN: SPOT key: '$sp' = $r->[2] on $r->[1] \@ $r->[5] $quality";
+					my $s = "RBN: SPOT key: '$sp' = $r->[2] on $r->[1] by $r->[0] \@ $r->[5] $quality";
 					$s .=  " route: $self->{call}";
 					dbg($s);
 				}
@@ -308,36 +358,57 @@ sub normal
 				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $spot->[0] + $dwelltime - $now) if isdbg 'rbnqueue'; 
 			}
 		}
-		
-
 	} else {
 		dbg "RBN:DATA,$line" if isdbg('rbn');
 	}
+}
 
-	# 	# periodic clearing out of the two caches
-	if (($tim % 60 == 0 && $tim > $self->{last}) || ($self->{last} && $tim >= $self->{last} + 60)) {
-		my $count = 0;
-		my $removed = 0;
-		while (my ($k,$v) = each %{$spots}) {
-			if ($tim - $v->[0] > $self->{minspottime}*2) {
-				delete $spots->{$k};
-				++$removed;
-			}
-			else {
-				++$count;
-			}
+sub per_minute
+{
+	foreach my $dxchan (DXChannel::get_all()) {
+		next unless $dxchan->is_rbn;
+		dbg "RBN:STATS minute $dxchan->{call} raw: $dxchan->{noraw} sent: $dxchan->{norbn} delivered: $dxchan->{nospot} users: " . scalar keys %{$dxchan->{nousers}} if isdbg('rbnstats');
+		if ($dxchan->{noraw} == 0 && $dxchan->{lasttime} > 60) {
+			LogDbg('RBN', "RBN: no input from $dxchan->{call}, disconnecting");
+			$dxchan->disconnect;
 		}
-		dbg "RBN:ADMIN,$self->{call},spot cache remain: $count removed: $removed"; # if isdbg('rbn');
-		dbg "RBN:" . join(',', "STAT", $self->{noraw}, $self->{norbn}, $self->{nospot}) if $self->{showstats};
-		$self->{noraw} = $self->{norbn} = $self->{nospot} = 0;
-		$self->{last} = int($tim / 60) * 60;
+		$dxchan->{noraw} = $dxchan->{norbn} = $dxchan->{nospot} = 0; $dxchan->{nousers} = {};
+		$runtime{$dxchan->{call}} += 60;
+	}
+
+	# save the spot cache
+	write_cache() unless $main::systime + $startup_delay < $main::systime;;
+}
+
+sub per_10_minute
+{
+	my $count = 0;
+	my $removed = 0;
+	while (my ($k,$v) = each %{$spots}) {
+		if ($main::systime - $v->[0] > $minspottime*2) {
+			delete $spots->{$k};
+			++$removed;
+		}
+		else {
+			++$count;
+		}
+	}
+	dbg "RBN:STATS spot cache remain: $count removed: $removed"; # if isdbg('rbn');
+	foreach my $dxchan (DXChannel::get_all()) {
+		next unless $dxchan->is_rbn;
+		dbg "RBN:STATS 10-minute $dxchan->{call} raw: $dxchan->{noraw10} sent: $dxchan->{norbn10} delivered: $dxchan->{nospot10} users: " . scalar keys %{$dxchan->{nousers10}};
+		$dxchan->{noraw10} = $dxchan->{norbn10} = $dxchan->{nospot10} = 0; $dxchan->{nousers10} = {};
 	}
 }
 
-
-
-# 	}
-# }
+sub per_hour
+{
+	foreach my $dxchan (DXChannel::get_all()) {
+		next unless $dxchan->is_rbn;
+		dbg "RBN:STATS hour $dxchan->{call} raw: $dxchan->{norawhour} sent: $dxchan->{norbnhour} delivered: $dxchan->{nospothour} users: " . scalar keys %{$dxchan->{nousershour}};
+		$dxchan->{norawhour} = $dxchan->{norbnhour} = $dxchan->{nospothour} = 0; $dxchan->{nousershour} = {};
+	}
+}
 
 # we should get the spot record minus the time, so just an array of record (arrays)
 sub send_dx_spot
@@ -346,6 +417,10 @@ sub send_dx_spot
 	my $quality = shift;
 	my $spot = shift;
 
+	++$self->{norbn};
+	++$self->{norbn10};
+	++$self->{norbnhour};
+	
 	# $r = [$origin, $qrg, $call, $mode, $s, $utz, $respot];
 
 	my $mode = $spot->[0]->[3]; # as all the modes will be the same;
@@ -362,12 +437,17 @@ sub send_dx_spot
 		++$want if $user->wantbeacon && $mode =~ /^BCN|DXF/;
 		++$want if $user->wantcw && $mode =~ /^CW/;
 		++$want if $user->wantrtty && $mode =~ /^RTT/;
-		++$want if $user->wantpsk && $mode =~ /^PSK/;
-		++$want if $user->wantcw && $mode =~ /^CW/;
+		++$want if $user->wantpsk && $mode =~ /^PSK|FSK|MSK/;
 		++$want if $user->wantft && $mode =~ /^FT/;
-		++$want unless $want;	# send everything if nothing is selected.
 
-		next unless $want;
+		dbg(sprintf("RBN: spot selection for $dxchan->{call} mode: '$mode' want: $want flags rbn:%d ft:%d bcn:%d cw:%d psk:%d rtty:%d",
+					$user->wantrbn,
+					$user->wantft,
+					$user->wantbeacon,
+					$user->wantcw,
+					$user->wantpsk,
+					$user->wantrtty,
+				   )) if isdbg('rbnll');
 
 		# send one spot to one user out of the ones that we have
 		$self->dx_spot($dxchan, $quality, $spot) if $want;
@@ -380,6 +460,8 @@ sub dx_spot
 	my $dxchan = shift;
 	my $quality = shift;
 	my $spot = shift;
+	my $call = $dxchan->{call};
+	
 
 	my $strength = 100;		# because it could if we talk about FTx
 	my $saver;
@@ -388,7 +470,11 @@ sub dx_spot
 	my %qrg;
 	my $respot;
 	my $qra;
-		
+
+	++$self->{nousers}->{$call};
+	++$self->{nousers10}->{$call};
+	++$self->{nousershour}->{$call};
+	
 	foreach my $r (@$spot) {
 		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot, $qra];
 		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
@@ -449,11 +535,19 @@ sub dx_spot
 			$buf = VE7CC::dx_spot($dxchan, @$saver);
 			$saver->[4] = $call;
 		} else {
+			my $call = $saver->[4];
+			$saver->[4] = substr($call, 0, 6);
+			$saver->[4] .= '-#';
 			$buf = $dxchan->format_dx_spot(@$saver);
+			$saver->[4] = $call;
 		}
-		$buf =~ s/^DX/RB/;
+#		$buf =~ s/^DX/RB/;
 		$dxchan->local_send('N', $buf);
 
+		++$self->{nospot};
+		++$self->{nospot10};
+		++$self->{nospothour};
+		
 		if ($qra) {
 			my $user = DXUser::get_current($saver->[1]) || DXUser->new($saver->[1]);
 			unless ($user->qra && is_qra($user->qra)) {
@@ -463,6 +557,57 @@ sub dx_spot
 			}
 		}
 	}
+}
+
+sub finish
+{
+	write_cache();
+}
+
+sub write_cache
+{
+	my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
+	my $s = $json->encode($spots);
+	$fh->print($s);
+	$fh->close;
+}
+
+sub check_cache
+{
+	if (-e $cachefn) {
+		my $mt = (stat($cachefn))[9];
+		my $t = $main::systime - $mt || 1;
+		my $p = difft($mt);
+		if ($t < $cache_valid) {
+			dbg("RBN:check_cache '$cachefn' spot cache exists, created $p ago and not too old");
+			my $fh = IO::File->new($cachefn);
+			my $s;
+			if ($fh) {
+				local $/ = undef;
+				$s = <$fh>;
+				dbg("RBN:check_cache cache read size " . length $s);
+				$fh->close;
+			} else {
+				dbg("RBN:check_cache file read error $!");
+				return undef;
+			}
+			if ($s) {
+				eval {$spots = $json->decode($s)};
+				if ($spots && ref $spots) {
+					dbg("RBN:check_cache spot cache restored");
+					return 1;
+				}
+			}
+			dbg("RBN::checkcache error decoding $@");
+		} else {
+			my $d = difft($main::systime-$cache_valid);
+			dbg("RBN::checkcache '$cachefn' created $p ago is too old (> $d), ignored");
+		}
+	} else {
+		dbg("RBN:check_cache '$cachefn' spot cache not present");
+	}
+	
+	return undef;
 }
 
 1;
