@@ -184,7 +184,7 @@ having stopped the node:
 
    mkdir /spider/local_data
    git reset --hard
-   git pull
+   git pull --all
    git checkout --track -b mojo origin/mojo
 
 if you have not already done this:
