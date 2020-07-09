@@ -80,7 +80,7 @@ if ($convert) {
 	my %newu;
 	
 	LogDbg('',"Converting the User from V$convert format to $fn.v3j ");
-	LogDbg('',"This will take a while, maybe as much as 10 secs");
+	LogDbg('',"This will take a while, maybe as much as 30 secs on very slow disks and/or machines");
 	my $idbm = tie (%oldu, 'DB_File', localdata("users.v$convert"), O_RDONLY, 0666, $DB_BTREE) or confess "can't open user file: $fn.v$convert ($!) [rebuild it from user_asc?]";
 	my $odbm = tie (%newu, 'DB_File', $ofn, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $ofn ($!)";
 	for ($action = R_FIRST; !$idbm->seq($key, $val, $action); $action = R_NEXT) {

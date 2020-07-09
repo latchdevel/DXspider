@@ -1,4 +1,18 @@
-6th July 2020
+9th July 2020
+-------------
+
+IF YOU ARE ON THE MASTER BRANCH, STOP (I REPEAT) STOP READING THIS
+DOCUMENT AND READ UPGRADE.mojo FIRST.
+
+
+If you are not on an existing 'mojo' branch, or you have a build less
+than 260, please stop reading as well and read UPGRADE.mojo (in the
+section about installing packages), as you need to install some extra
+packages before restarting the new version of the code. If in doubt
+try installing the packages again as this will either confirm that all
+is already done or will install what's missing.
+
+Assuming you have done the above:
 
 The latest release of the Mojo branch of DXSpider contains a client
 for the Reverse Beacon Network (RBN). This is not a simple client, it
@@ -79,7 +93,7 @@ below:
   copies to be sure that the callsign is at least agreeed upon by more
   than one skimmer, or the wait timer goes off, I emit a spot.  By this
   means I can reduce the number of spots sent to a node user by up to a
-  factor of 10 for CW etc spots and about 8 for FTx spots.
+  factor of around 10 for CW etc spots and about 8 for FTx spots.
 
   For example, from the trace above, all the RW1M RBN spots become just
   one line:
@@ -106,9 +120,9 @@ case Q:9*. The '9' means that I have received 9 copies of this spot
 from different skimmers and, in this case, they did not agree on the
 frequency (7018.2 - 7018.4) which is indicated by a '*'. The frequency
 shown is the majority decision. If this station has been active for
-some time and he is still calling CQ after some time (configurable,
-but currently 60 minutes) and gaps for QSOs or tea breaks are ignored,
-then a '+' character will be added.
+for a while and he is still calling CQ after some time (configurable,
+but currently 60 minutes), ignoring gaps for QSOs or tea breaks, then
+a '+' character will be added.
 
 If the "Qualitee" Q:1 is seen on a CW spot, then only one skimmer has
 seen that spot and the callsign *could* be wrong, but frequently, if
@@ -118,6 +132,11 @@ Q:2 and above, then the callsign is much more likely to be correct.
 DX de DJ9IE-#:    14034.9 UN7BBD       CW   4dB Q:5*+              17 1444Z 14
 DX de OL7M-#:     14037.9 UA6LQ        CW  13dB Q:7                16 1448Z 15
 DX de LZ3CB-#:    28050.2 DL4HRM       CW   7dB Q:1                14 1448Z 20
+
+Having said that, I check every spots call with the standard DXSpider
+is_callsign routine, to check that the callign is a valid format. Then
+through the Prefix::search routine, to check that the prefix actually
+exists. If either of these checks fails then the spot is ignored.
 
 c) I ditch the WPM and the 'CQ' as not being hugely relevant. 
 
@@ -146,25 +165,27 @@ strange skimmer callsigns with all sorts of spurious endings, all of
 which I attempt to reduce to the base callsign. Some skimmer base
 callsigns still might be shortened for display purposes. Things like
 '3V/K5WEM' won't fit in six characters but the whole base callsign is
-used for zone info, internally, but only the first 6 characters are
+used for zone info internally, but only the first 6 characters are
 displayed in any spot.
 
 05Jul2020@22:59:39 (chan) <- I SK0MMR DX de HB9JCB-#:   3516.9  RA1AFT         CW     9 dB  26 WPM  CQ      2259Z
 05Jul2020@22:59:39 (chan) <- I SK0MMR DX de KO7SS-7-#:  14057.6  K7GT           CW     6 dB  21 WPM  CQ      2259Z
 05Jul2020@22:59:39 (chan) <- I SK0MMR DX de K9LC-#:    28169.9  VA3XCD/B       CW     9 dB  10 WPM  BEACON  2259Z
 
-f) I have a filter set (accept/spot by_zone 14 and not zone 14 or zone
-14 and not by_zone 14) which will give me the first spot that either
-spot or skimmer is in zone 14 but the other isn't. For those of us
-that are bad at zones (like me) sh/dxcq is your friend. You can have
-separate filters just for RBN spots if you want something different to
-your spot filters. Use acc/rbn or rej/rbn. NB: these will completely
-override your spot filters for RBN spots. Obviously "real" spots will
-will continue to use the spot filter(s).
+f) I happen to have a filter set (accept/spot by_zone 14 and not zone
+14 or zone 14 and not by_zone 14) which will give me the first spot
+that either spot or skimmer is in zone 14 but its companion isn't. For
+those of us that are bad at zones (like me) sh/dxcq is your
+friend. You can have separate filters just for RBN spots if you want
+something different to your spot filters. Use acc/rbn or rej/rbn. NB:
+these will completely override your spot filters for RBN
+spots. Obviously "real" spots will will continue to use the spot
+filter(s). If you use set/dxcq, then unset/dxitu and unset/dxgrid
+first. You only need to this once.
 
 g) If there is NO filter in operation, then the skimmer spot with the
 LOWEST signal strength will be shown. This implies that if any extra
-zones are shown, then the signal will be higher.
+zones are shown, then the signal will be higher in those zones.
 
 h) A filter can further drastically reduce the output sent to the
 user. As this STATS line shows:
@@ -182,7 +203,7 @@ active and so I got all the possibles:
 
 So how do you go about using this:
 
-First you need to create an RBN user. Now you can use any call you
+First you need to create one or two RBN user(s). Now you can use any call you
 like and it won't be visible outside of the node. I call mine SK0MMR
 and SK1MMR. One of these connects to the "standard" RBN port that
 outputs CW, BEACON, DXF, PSK and RTTY spots, and the other connects to
@@ -217,16 +238,16 @@ active, you can check what is connected with the 'links' command:
     SK0MMR RBN   5-Jul-2020 1722Z     7h 6m 8s                 0     0                    198.137.202.75
     SK1MMR RBN   5-Jul-2020 1722Z     7h 6m 8s                 0     0                    198.137.202.75
 
-The connections are sometimes dropped or become stuck, I have a
+The RBN connections are sometimes dropped or become stuck. I have a
 mechanism to detect this and it will disconnect that RBN connection
-and the reconnection will be reconnected by the crontab, just like any
-other (normal) node.
+and, by this means,it will be automatically reconnected by the
+crontab, just like any other (normal) node.
 
 I use the crontab, rather than restarting immediately after
 disconnection, to prevent race conditions (or just slow them down to
 one disconnection a minute).
 
-The first time a connection is made, after node startup, there is a 5
+The first time a connection is made, after node startup, there is a 5 (configurable)
 minute pause before RBN spots come out for users. This is done to fill
 up (or "train") the cache. Otherwise the users will be overwhelmed by
 spots - it slows down reasonably quickly - but experiment shows that 5
@@ -238,18 +259,17 @@ could do with a somewhat longer training period than the CW etc RBN
 connection.
 
 If a connection drops and reconnects. There is no delay or extra
-training time.
+training time. If the node is stopped and restarted within a few
+minutes, then no training time will occur.
 
 For users. At the moment. There is a single command that sets or
 unsets ALL RBN spot sorts:
 
-set/wantrbn
-unset/wantrbn
-
-Very soon this will be replaced with a '(un)set/skimmer' command that
-allow the user to choose which categories they want. Filtering can be
-used in conjunction with this proposed command to further refine
-output.
+Users can select which type(s) of RBN/Skimmer spot they require using
+the 'set/skimmer' command. Users can enter the 'help set/skimmer'
+command for more information on this. They can also enter then 'help
+rbn' command for more information about how to interpret what DXSpider
+produces and some other useful background information.
 
 This still very much "work in progress" and will be subject to
 change. But I am grateful to the feedback I have received, so far,
@@ -260,8 +280,8 @@ Andy G4PIQ
 Mike G8TIC
 Lee VE7CC
 
-But if you have comments, suggestions and brickbats please email me or
-the support list.
+But if you have comments, suggestions or even brickbats, please email
+me or the support list.
 
 Dirk G1TLH
 

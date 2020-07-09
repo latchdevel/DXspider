@@ -12,6 +12,7 @@
 6. The UPGRADE.mojo file has been tweeked to point out the users file format
    change.
 7. Merge in users.v3j to the mojo branch.
+8. Add CTY-3011 prefixes.
 07Jul20=======================================================================
 1. Fix show/node command.
 2. Fix show/cluster command to take into account the presence of skimmer nodes
