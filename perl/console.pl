@@ -550,7 +550,11 @@ sub on_disconnect
 
 while (@ARGV && $ARGV[0] =~ /^-/) {
 	my $arg = shift;
-	dbgadd('console'), $maxshist = 200 if $arg eq '-x';
+	if ($arg eq '-x') {
+		dbginit();
+		dbgadd('console');
+		$maxshist = 200;
+	}
 }
 
 $call = uc shift @ARGV if @ARGV;
@@ -568,8 +572,6 @@ if ($call eq $mycall) {
 	print "You cannot connect as your cluster callsign ($mycall)\n";
 	exit(0);
 }
-
-dbginit();
 
 unless ($DB::VERSION) {
 	$SIG{'INT'} = \&sig_term;
@@ -592,7 +594,7 @@ $conn = IntMsg->connect($clusteraddr, $clusterport, rproc => \&rec_socket);
 $conn->{on_connect} = \&on_connect;
 $conn->{on_disconnect} = \&on_disconnect;
 
-my $timer = Mojo::IOLoop->recurring(1, sub {DXLog::flushall()});
+my $timer = Mojo::IOLoop->recurring(1, sub {DXLog::flushall()}) if $DXDebug::fp;
 
 $idle = Mojo::IOLoop->recurring(0.100 => \&idle_loop);
 Mojo::IOLoop->singleton->reactor->io(\*STDIN => sub {

@@ -1,3 +1,7 @@
+10Jul20=======================================================================
+1. Fix console.pl permissions problem when running as another user not in 
+   debug mode. Console.pl WILL NOT WORK in debug mode unless it is running
+   as the sysop user.
 08Jul20=======================================================================
 1. "Finish" the RBN system :-)
 2. This includes enabling the coarse selection of spot modes using set/wantrbn
