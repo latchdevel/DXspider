@@ -518,10 +518,10 @@ sub idle_loop
 	}
 	my $ch = $bot->getch();		# this is here just to catch RESIZE events
 	if (defined $ch) {
-		if ($ch =~ /^\d+$/ && $ch == KEY_RESIZE) {
+		if ($ch eq KEY_RESIZE) {
 			doresize();
 		} else {
-			rec_stdin($ch) unless $ch == '-1';
+			rec_stdin($ch) unless $ch eq '-1';
 		}
 	}
 	$top->refresh() if $top->is_wintouched;
