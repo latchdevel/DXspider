@@ -1,5 +1,8 @@
 11Jul20=======================================================================
 1. Fix (embarrassing) gratuitous '#'s in bands.pl
+2. IMPORTANT: certain PC92 strings can crash DXSpider if the nologchan debug
+   category is set (which reduces debug files to sizes that non-developers can
+   reasonably store (especially during big contests)),
 10Jul20=======================================================================
 1. Fix console.pl permissions problem when running as another user not in 
    debug mode. Console.pl WILL NOT WORK in debug mode unless it is running

@@ -28,7 +28,7 @@ use 5.10.1;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose dbgtrace confess croak cluck carp);
+@EXPORT = qw(dbginit dbg dbgadd dbgsub dbglist dbgdump isdbg dbgclose dbgtrace dbgprintring confess croak cluck carp);
 
 use strict;
 use vars qw(%dbglevel $fp $callback $cleandays $keepdays $dbgringlth);
