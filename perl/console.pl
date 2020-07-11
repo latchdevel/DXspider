@@ -518,7 +518,7 @@ sub idle_loop
 	}
 	my $ch = $bot->getch();		# this is here just to catch RESIZE events
 	if (defined $ch) {
-		if ($ch == KEY_RESIZE) {
+		if ($ch =~ /^\d+$/ && $ch == KEY_RESIZE) {
 			doresize();
 		} else {
 			rec_stdin($ch) unless $ch == '-1';
