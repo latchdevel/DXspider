@@ -89,7 +89,7 @@ sub decodefreq
 	
 	foreach $f (@f) {
 		my ($a, $b); 
-		if (m{^\d+/\d+$}) {
+		if ($f =~ m{^\d+/\d+$}) {
 			push @out, $f;
 		} elsif (($a, $b) = $f =~ m{^(\w+)(?:/(\w+))?$}) {
 			$b = lc $b if $b;

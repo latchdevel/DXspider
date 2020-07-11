@@ -203,9 +203,9 @@
 
 %regions = (
 			vlf => [qw( 73khz 136khz 500khz )],
-		#	hf => [qw( 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m )],
+			hf => [qw( 160m 80m 60m 40m 30m 20m 17m 15m 12m 10m )],
 			contesthf => [qw( 160m 80m 40m 20m 15m 10m )],
-		#	vhf => [qw( 6m 4m 2m 220 )],
+			vhf => [qw( 6m 4m 2m 220 )],
 			vhfradio => [qw( band1 band2 )],
 			vhftv => [qw( band1 band3 )],
 			uhf => [qw( 70cm 23cm )],
