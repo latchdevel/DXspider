@@ -1514,7 +1514,7 @@ sub _add_thingy
 				delete $things_del{$call};
 			}
 		} else {
-			dbgprintring(10);
+			dbgprintring(10) if isdbg('nologchan');
 			dbg("DXProt::add_thingy: Trying to add parent $call to itself $ncall, ignored");
 		}
 	}
