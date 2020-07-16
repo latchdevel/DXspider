@@ -31,6 +31,8 @@ use DXUtil;
 use DXDebug;
 use Data::Dumper;
 use Prefix;
+use DXLog;
+use DXJSON;
 
 use strict;
 
@@ -38,11 +40,13 @@ use vars qw ($filterbasefn $in);
 
 $filterbasefn = "$main::root/filter";
 $in = undef;
+my $json;
+
 
 # initial filter system
 sub init
 {
-
+	$json = DXJSON->new->indent(1);
 }
 
 sub new
@@ -88,6 +92,7 @@ sub compile
 	if ($ref->{$ar} && exists $ref->{$ar}->{asc}) {
 		my $s = $ref->{$ar}->{asc};	# an optimisation?
 		$s =~ s/\$r/\$_[0]/g;
+#		$s =~ s/\\\\/\\/g;
 		$ref->{$ar}->{code} = eval "sub { $s }" ;
 		if ($@) {
 			my $sort = $ref->{sort};
@@ -109,7 +114,12 @@ sub read_in
 	if ($fn = getfn($sort, $call, $flag)) {
 		$in = undef; 
 		my $s = readfilestr($fn);
-		my $newin = eval $s;
+		my $newin;
+		if ($s =~ /^\s*{/) {
+			eval {$newin = $json->decode($s, __PACKAGE__)};
+		} else {	
+			$newin = eval $s;
+		}
 		if ($@) {
 			dbg($@);
 			unlink($fn);
@@ -132,6 +142,46 @@ sub read_in
 			return undef;
 		}
 		return $newin;
+	}
+	return undef;
+}
+
+
+# this writes out the filter in a form suitable to be read in by 'read_in'
+# It expects a list of references to filter lines
+sub write
+{
+	my $self = shift;
+	my $sort = $self->{sort};
+	my $name = $self->{name};
+	my $dir = "$filterbasefn/$sort";
+	my $fn = "$dir/$name";
+
+	mkdir $dir, 0775 unless -e $dir; 
+    rename $fn, "$fn.o" if -e $fn;
+	my $fh = new IO::File ">$fn";
+	if ($fh) {
+#		my $dd = new Data::Dumper([ $self ]);
+#		$dd->Indent(1);
+#		$dd->Terse(1);
+#		$dd->Quotekeys($] < 5.005 ? 1 : 0);
+		#		$fh->print($dd->Dumpxs);
+
+		# remove code references, do the encode, then put them back again (they can't be represented anyway)
+		my $key;
+		foreach $key ($self->getfilkeys) {
+			$self->{$key}->{reject}->{code} = undef if exists $self->{$key}->{reject};
+			$self->{$key}->{accept}->{code} = undef if exists $self->{$key}->{accept};
+		}
+		$fh->print($json->encode($self));
+		foreach $key ($self->getfilkeys) {
+			$self->compile($key, 'reject');
+			$self->compile($key, 'accept');
+		}
+		$fh->close;
+	} else {
+		rename "$fn.o", $fn if -e "$fn.o";
+		return "$fn $!";
 	}
 	return undef;
 }
@@ -244,33 +294,6 @@ sub it
 	return ($r, $hops);
 }
 
-# this writes out the filter in a form suitable to be read in by 'read_in'
-# It expects a list of references to filter lines
-sub write
-{
-	my $self = shift;
-	my $sort = $self->{sort};
-	my $name = $self->{name};
-	my $dir = "$filterbasefn/$sort";
-	my $fn = "$dir/$name";
-
-	mkdir $dir, 0775 unless -e $dir; 
-    rename $fn, "$fn.o" if -e $fn;
-	my $fh = new IO::File ">$fn";
-	if ($fh) {
-		my $dd = new Data::Dumper([ $self ]);
-		$dd->Indent(1);
-		$dd->Terse(1);
-		$dd->Quotekeys($] < 5.005 ? 1 : 0);
-		$fh->print($dd->Dumpxs);
-		$fh->close;
-	} else {
-		rename "$fn.o", $fn if -e "$fn.o";
-		return "$fn $!";
-	}
-	return undef;
-}
-
 sub print
 {
 	my $self = shift;
@@ -353,6 +376,8 @@ sub delete
 	}
 }
 
+
+
 package Filter::Cmd;
 
 use strict;
@@ -361,6 +386,21 @@ use DXUtil;
 use DXDebug;
 use vars qw(@ISA);
 @ISA = qw(Filter);
+
+sub encode_regex
+{
+	my $s = shift;
+	$s =~ s/\{(.*?)\}/'{'. unpack('H*', $1) . '}'/eg if $s;
+	return $s;
+}
+
+sub decode_regex
+{
+	my $r = shift;
+	my ($v) = $r =~ /^\{(.*?)}$/;
+	return pack('H*', $v);
+}
+
 
 # the general purpose command processor
 # this is called as a subroutine not as a method
@@ -381,16 +421,16 @@ sub parse
 	$line = lc $line;
 
 	# disguise regexes
-	$line =~ s/\{(.*)\}/'{'. unpack('H*', $1) . '}'/eg;
+
 	dbg("Filter parse line after regex check: '$line'") if isdbg('filter');
+	$line = encode_regex($line);
 	
 	# add some spaces for ease of parsing
 	$line =~ s/([\(\!\)])/ $1 /g;
 	
 	my @f = split /\s+/, $line;
-
-	my $conj = ' && ';
-	my $not = "";
+	dbg("filter parse: tokens '" . join("' '", @f) . "'") if isdbg('filter');
+	
 	my $lasttok = '';
 	while (@f) {
 		if ($ntoken == 0) {
@@ -419,65 +459,30 @@ sub parse
 		# do the rest of the filter tokens
 		if (@f) {
 			my $tok = shift @f;
-			if ($tok eq '(') {
-				if ($s) {
-					unless ($lasttok eq '(') {
-						$s .= $conj ;
-						$user .= $conj;
-					}
-					$conj = "";
-					$lasttok = $tok;
-				}
-				if ($not) {
-					$s .= $not;
-					$user .= $not;
-					$not = "";
-				}
-				$s .= $tok;
-				$user .= $tok;
-				$lasttok = $tok;
-				next;
-			} elsif ($tok eq ')') {
-				$conj = ' && ';
-				$not ="";
-				$s .= $tok;
-				$user .= $tok;
-				$lasttok = $tok;
-				next;
-			} elsif ($tok eq 'all') {
+
+			dbg("filter::parse: tok '$tok'") if isdbg('filter');
+			
+			if ($tok eq 'all') {
 				$s .= '1';
 				$user .= $tok;
 				last;
-			} elsif ($tok eq 'or') {
-				$conj = ' || ' if $conj ne ' || ';
-				$lasttok = $tok;
+			} elsif (grep $tok eq $_, qw{and or not ( )}) {
+				$s .= ' && ' if $tok eq 'and';
+				$s .= ' || ' if $tok eq 'or';
+				$s .= ' !' if $tok eq 'not';
+				$s .=  $tok if $tok eq '(' or $tok eq ')';
+				$user .= " $tok ";
 				next;
-			} elsif ($tok eq 'and') {
-				$conj = ' && ' if $conj ne ' && ';
-				next;
-			} elsif ($tok eq 'not' || $tok eq '!') {
-				$not = '! ';
-				$lasttok = $tok;
+			} elsif ($tok eq '') {
 				next;
 			}
+			
 			if (@f) {
 				my $val = shift @f;
 				my @val = split /,/, $val;
 
-				if ($s) {
-					unless ($lasttok eq '(') {
-						$s .= $conj ;
-						$user .= $conj;
-						$conj = ' && ';
-					}
-				}
-				if ($not) {
-					$s .= $not;
-					$user .= $not;
-					$not = '';
-				}
-
-				$user .= "$tok $val";
+				dbg("filter::parse: tok '$tok' val '$val'") if isdbg('filter');
+				$user .= " $tok $val";
 				
 				my $fref;
 				my $found;
@@ -497,13 +502,17 @@ sub parse
 								$v =~ s/\*//g;        # remove any trailing *
 								if (my ($r) = $v =~ /^\{(.*)\}$/) { # we have a regex
 									dbg("Filter::parse regex b: '\{$r\}'") if isdbg('filter'); 
-									$v = pack('H*', $r);
+									$v = decode_regex($v);
 									dbg("Filter::parse regex a: '$v'") if isdbg('filter'); 
 									return  ('regex', $dxchan->msg('e38', $v)) unless (qr{$v});
+									push @t, "\$r->[$fref->[2]]=~m{$v}i";
+									$v = "{$r}"; # put it back together again for humans
+								} else {
+									push @t, "\$r->[$fref->[2]]=~m{$v}i";
 								}
-								push @t, "\$r->[$fref->[2]]=~m{$v}i";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
+							dbg("filter parse: s '$s'") if isdbg('filter');
 						} elsif ($fref->[1] eq 'c') {
 							my @t;
 							for (@val) {
@@ -511,6 +520,7 @@ sub parse
 								push @t, "\$r->[$fref->[2]]=~m{^\U$_}";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
+							dbg("filter parse: s '$s'") if isdbg('filter');
 						} elsif ($fref->[1] eq 'n') {
 							my @t;
 							for (@val) {
@@ -518,16 +528,19 @@ sub parse
 								push @t, "\$r->[$fref->[2]]==$_";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
+							dbg("filter parse: s '$s'") if isdbg('filter');
 						} elsif ($fref->[1] =~ /^n[ciz]$/ ) {    # for DXCC, ITU, CQ Zone    
 							my $cmd = $fref->[1];
 							my @pre = Prefix::to_ciz($cmd, @val);
 							return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
 							$s .= "(" . join(' || ', map {"\$r->[$fref->[2]]==$_"} @pre) . ")";
+							dbg("filter parse: s '$s'") if isdbg('filter');
 						} elsif ($fref->[1] =~ /^ns$/ ) {    # for DXCC, ITU, CQ Zone    
 							my $cmd = $fref->[1];
 							my @pre = Prefix::to_ciz($cmd, @val);
 							return ('numpre', $dxchan->msg('e27', $_)) unless @pre;
 							$s .= "(" . "!\$USDB::present || grep \$r->[$fref->[2]] eq \$_, qw(" . join(' ' ,map {uc} @pre) . "))";
+							dbg("filter parse: s '$s'") if isdbg('filter');
 						} elsif ($fref->[1] eq 'r') {
 							my @t;
 							for (@val) {
@@ -535,6 +548,7 @@ sub parse
 								push @t, "(\$r->[$fref->[2]]>=$1 && \$r->[$fref->[2]]<=$2)";
 							}
 							$s .= "(" . join(' || ', @t) . ")";
+							dbg("filter parse: s '$s'") if isdbg('filter');
 						} else {
 							confess("invalid filter function $fref->[1]");
 						}
@@ -542,9 +556,10 @@ sub parse
 						last;
 					}
 				}
-				return (1, $dxchan->msg('e20', $tok)) unless $found;
+				return (1, $dxchan->msg('e20', $lasttok)) unless $found;
 			} else {
-				return (1, $dxchan->msg('filter2', $tok));
+				my $s = '{' . decode_regex($tok) . '}' if $tok =~ /^{.*}$/;
+				return (1, $dxchan->msg('filter2', $s));
 			}
 			$lasttok = $tok;
 		}
@@ -552,11 +567,21 @@ sub parse
 
 	# tidy up the user string (why I have to stick in an if statement when I have initialised it I have no idea! 5.28 bug?
 	if ($user) {
+		$user =~ s/\)\s*\(/ and /g;
 		$user =~ s/\&\&/ and /g;
 		$user =~ s/\|\|/ or /g;
 		$user =~ s/\!/ not /g;
 		$user =~ s/\s+/ /g;
+		$user =~ s/\{(.*?)\}/'{'. pack('H*', $1) . '}'/eg;
+		$user =~ s/^\s+//;
+		dbg("filter parse: user '$user'") if isdbg('filter');
 	}
+
+	if ($s) {
+		$s =~ s/\)\s*\(/ && /g;
+		dbg("filter parse: s '$s'") if isdbg('filter');
+	}
+
 	
 	return (0, $filter, $fno, $user, $s);
 }

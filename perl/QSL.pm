@@ -13,7 +13,7 @@ use DXUtil;
 use DB_File;
 use DXDebug;
 use Prefix;
-use JSON;
+use DXJSON;
 use Data::Structure::Util qw(unbless);
 
 use vars qw($qslfn $dbm $maxentries);
@@ -31,7 +31,7 @@ sub init
 	my $mode = shift;
 	my $ufn = localdata("$qslfn.v1j");
 
-	$json = JSON->new->canonical(1);
+	$json = DXJSON->new;
 	
 	Prefix::load() unless Prefix::loaded();
 
@@ -138,27 +138,13 @@ sub remove_files
 # thaw the user
 sub decode
 {
-    my $s = shift;
-    my $ref;
-    eval { $ref = $json->decode($s) };
-    if ($ref && !$@) {
-        return bless $ref, 'QSL';
-    } 
-    return undef;
+	return $json->decode($_[0], __PACKAGE__);
 }
 
 # freeze the user
 sub encode
 {
-    my $ref = shift;
-    unbless($ref);
-    my $s;
-	
-	eval {$s = $json->encode($ref) };
-	if ($s && !$@) {
-		bless $ref, 'QSL';
-		return $s;
-	} 
+	return $json->encode($_[0]);
 }
 
 1;

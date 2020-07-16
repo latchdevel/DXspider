@@ -93,7 +93,7 @@ package DXM;
 				e17 => 'Please don\'t use the words: @_ on here',
 				e18 => 'Cannot connect to $_[0] ($!)',
 				e19 => 'Invalid character in line',
-				e20 => 'token $_[0] not recognised',
+				e20 => qq{token '$_[0]' not recognised},
 				e21 => '$_[0] is not numeric',
 				e22 => '$_[0] is not a callsign',
 				e23 => '$_[0] is not a range (eg 0/30000)',

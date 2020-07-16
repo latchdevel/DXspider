@@ -20,7 +20,7 @@ use File::Copy;
 use Data::Structure::Util qw(unbless);
 use Time::HiRes qw(gettimeofday tv_interval);
 use IO::File;
-use JSON;
+use DXJSON;
 
 use strict;
 
@@ -135,7 +135,7 @@ sub init
 {
 	my $mode = shift;
   
-   $json = JSON->new->canonical(1);
+   $json = DXJSON->new->canonical(1);
 	my $fn = "users";
 	$filename = localdata("$fn.v3j");
 	unless (-e $filename || $mode == 2) {
@@ -309,31 +309,13 @@ sub put
 # thaw the user
 sub decode
 {
-    my $s = shift;
-    my $ref;
-    eval { $ref = $json->decode($s) };
-    if ($ref && !$@) {
-        return bless $ref, 'DXUser';
-    } else {
-        LogDbg('DXUser', "DXUser::json_decode: on '$s' $@");
-    }
-    return undef;
+	return $json->decode(shift, __PACKAGE__);
 }
 
 # freeze the user
 sub encode
 {
-    my $ref = shift;
-    unbless($ref);
-    my $s;
-	
-	eval {$s = $json->encode($ref) };
-	if ($s && !$@) {
-		bless $ref, 'DXUser';
-		return $s;
-	} else {
-		LogDbg('DXUser', "DXUser::json_encode $ref->{call}, $@");
-	}
+	return $json->encode(shift);
 }
 
 

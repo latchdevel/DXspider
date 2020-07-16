@@ -12,18 +12,18 @@ sub handle
 	my ($self, $line) = @_;
 
 	# disguise regexes
-	$line =~ s/\{(.*)\}/'{'. unpack('H*', $1) . '}'/eg;
+	$line =~ s/\{(.*?)\}/'{'. unpack('H*', $1) . '}'/eg;
 	dbg("sh/dx disguise any regex: '$line'") if isdbg('sh/dx');
 
 	# now space out brackets and !
 	$line =~ s/([\(\!\)])/ $1 /g;
 	
-	my @list = split /[\s]+/, $line; # split the line up
+	my @list = split /\s+/, $line; # split the line up
 
 	# put back the regexes 
 	@list = map { my $l = $_; $l =~ s/\{([0-9a-fA-F]+)\}/'{' . pack('H*', $1) . '}'/eg; $l } @list;
 
-	dbg("sh/dx after regex return: " . join(' ', @list)) if isdbg('sh/dx');
+	dbg("sh/dx after regex return: '" . join(' ', @list) . "'") if isdbg('sh/dx');
 	
 	my @out;
 	my $f;
@@ -40,10 +40,11 @@ sub handle
 	my @flist;
 
 	
-	dbg("sh/dx \@list: " . join(" ", @list)) if isdbg('sh/dx');
+	dbg("sh/dx list: " . join(" ", @list)) if isdbg('sh/dx');
 	
-	while ($f = shift @list) {	# next field
-		dbg "sh/dx arg: $f list: " . join(',', @list) if isdbg('sh/dx');
+	while (@list) {	# next field
+		$f = shift @list;
+		dbg("sh/dx arg: $f list: '" . join(',', @list) . "'") if isdbg('sh/dx');
 		if ($f && !$from && !$to) {
 			($from, $to) = $f =~ m|^(\d+)[-/](\d+)$| || (0,0); # is it a from -> to count?
 			dbg("sh/dx from: $from to: $to") if isdbg('sh/dx');
@@ -57,7 +58,7 @@ sub handle
 		}
 		if (lc $f eq 'day' && $list[0]) {
 			($fromday, $today) = split m|[-/]|, shift(@list);
-			dbg "sh/dx got day $fromday/$today" if isdbg('sh/dx');
+			dbg("sh/dx got day $fromday/$today") if isdbg('sh/dx');
 			next;
 		}
 		if (lc $f eq 'exact') {
@@ -120,7 +121,7 @@ sub handle
 			dbg("sh/dx operator $f") if isdbg('sh/dx');
 			next;
 		}
-		if (grep {lc $f eq $_} qw(on freq call info spotter by dxcc call_dxcc by_dxcc bydxcc origin call_itu itu call_zone zone  byitu by_itu by_zone byzone call_state state bystate by_state ip) ) {
+		if (grep {lc $f eq $_} qw(on freq call info spotter by dxcc call_dxcc by_dxcc bydxcc origin call_itu itu call_zone zone cq bycq  byitu by_itu by_zone byzone call_state state bystate by_state ip) ) {
 			push @flist, $f;
 			push @flist, shift @list if @list;
 			dbg("sh/dx function $flist[-2] $flist[-1]") if isdbg('sh/dx');
@@ -133,6 +134,7 @@ sub handle
 		push @flist, $f;
 	}
 
+	dbg("sh/dx: flist = '" . join(',', @flist). "'") if isdbg('sh/dx');
 	
 	if ($pre) {
 		# someone (probably me) has forgotten the 'info' keyword
@@ -153,14 +155,14 @@ sub handle
 	}
 	
     my $newline = join(' ', @flist);
-	dbg("sh/dx newline: $newline") if isdbg('sh/dx');
+	dbg("sh/dx newline: '$newline'") if isdbg('sh/dx');
 	my ($r, $filter, $fno, $user, $expr) = $Spot::filterdef->parse($self, 'spots', $newline, 1);
 
 	return (0, "sh/dx parse error '$r' " . $filter) if $r;
 
 	$user ||= '';
 	$expr ||= '';
-	dbg "sh/dx user: $user expr: $expr from: $from to: $to fromday: $fromday today: $today" if isdbg('sh/dx');
+	dbg("sh/dx user: $user expr: $expr from: $from to: $to fromday: $fromday today: $today") if isdbg('sh/dx');
   
 	# now do the search
 

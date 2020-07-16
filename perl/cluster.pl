@@ -563,6 +563,9 @@ sub setup_start
 	dbg("loading user file system ...");
 	DXUser::init(4);			# version 4 == json format
 
+	Filter::init();				# doesn't do much, but has to be done
+	
+
 	# look for the sysop and the alias user and complain if they aren't there
 	{
 		die "\$myalias \& \$mycall are the same ($mycall)!, they must be different (hint: make \$mycall = '${mycall}-2';). Oh and don't forget to rerun create_sysop.pl!" if $mycall eq $myalias;
