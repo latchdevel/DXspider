@@ -35,19 +35,45 @@ use constant {
 			  RUtz => 6,
 			  Respot => 7,
 			  RQra => 8,
-			  RSpotData => 9,
 			 };
 
+# at least one whole spot per cache entry is necessary
 use constant {
 			  SQrg => 0,
 			  SCall => 1,
 			  STime => 2,
 			  SComment => 3,
 			  SOrigin => 4,
-			  SZone => 11,
+			  SODxcc => 6,
+			  SOItu => 8,
+			  SOZone => 11,
+			  SOState => 13,
+			  SQra => 15,		# i.e. extra after the IP address
+			 };
+
+
+# Standard Cache entries
+# key Spot|normalised freq
+use constant {
+			  CTime => 0,		# time of latest spot in a tranch
+			  CQual => 1,		# Qualitee
+			  CSpot => 3,    	# the Spot::Prepare data for this spot
+			  CSkims => 3,		# the list of skimmers (hcalls) is [[...]...]
+			 };
+
+
+
+# key SK|<call>
+use constant {
+			  SKTime =>0,		# last time seen
+			  SKOffset => 1,
+			  SKQual => 2,
+			  SKSpot =>3, 		# the Spot::Prepare data for this skimmer
 			 };
 
 	
+our $CACHE_VERSION = 2;
+
 our @ISA = qw(DXChannel);
 
 our $startup_delay = 5*60;		# don't send anything out until this timer has expired
@@ -229,7 +255,7 @@ sub normal
 	++$self->{norawhour};
 	
 	my $b;
-	
+
 	if ($t || $tx) {
 
 		# fix up times for things like 'NXDXF B' etc
@@ -282,34 +308,33 @@ sub normal
 		my $spm = sprintf("$call|%d", $nqrg-1); # in BOTH directions!
 
 		# do we have it?
-		my $spot = $spots->{$sp};
-		$spot = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if isdbg('rbn') && !$spot && exists $spots->{$spp};
-		$spot = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if isdbg('rbn') && !$spot && exists $spots->{$spm};
-		
+		my $cand = $spots->{$sp};
+		$cand = $spots->{$spp}, $sp = $spp, dbg(qq{RBN: SPP using $spp for $sp}) if isdbg('rbn') && !$cand && exists $spots->{$spp};
+		$cand = $spots->{$spm}, $sp = $spm, dbg(qq{RBN: SPM using $spm for $sp}) if isdbg('rbn') && !$cand && exists $spots->{$spm};
 
 		# if we have one and there is only one slot and that slot's time isn't expired for respot then return
 		my $respot = 0;
-		if ($spot && ref $spot) {
-			if (@$spot == 1) {
-				unless ($self->{minspottime} > 0 && $tim - $spot->[0] >= $self->{minspottime}) {
-					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $spot->[0])) if isdbg('rbn');
+		if ($cand && ref $cand) {
+			if (@$cand <= CEMPTY) {
+				unless ($self->{minspottime} > 0 && $tim - $cand->[0] >= $self->{minspottime}) {
+					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[0])) if isdbg('rbn');
 					return;
 				}
 				
-				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $spot->[0])) if isdbg('rbn');
-				undef $spot;	# it's about to be recreated (in one place)
+				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $cand->[0])) if isdbg('rbn');
+				undef $cand;	# it's about to be recreated (in one place)
 				++$respot;
 			}
 
 			# otherwise we have a spot being built up at the moment
-		} elsif ($spot) {
-			dbg("RBN: key '$sp' = '$spot' not ref");
+		} elsif ($cand) {
+			dbg("RBN: key '$sp' = '$cand' not ref");
 			return;
 		}
 
 		# here we either have an existing spot record buildup on the go, or we need to create the first one
-		unless ($spot) {
-			$spots->{$sp} = $spot = [$main::systime];
+		unless ($cand) {
+			$spots->{$sp} = $cand = [$main::systime, 0, 0];
 			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if isdbg('rbn');
 		}
 
@@ -324,23 +349,35 @@ sub normal
 
 		# create record and add into the buildup
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
-		my @s =  Spot::prepare($r->[RQrg], $r->[RCall], $r->[RUtz], '', $r->[ROrigin]);
-		if ($s[5] == 666) {
-			dbg("RBN: ERROR invalid prefix/callsign $call from $origin-# on $qrg, dumped");
-			return;
+		unless ($cand->[CSpot]) {
+			my @s = Spot::prepare($r->[RQrg], $r->[RCall], $r->[RUtz], '', $r->[ROrigin]);
+			if ($s[5] == 666) {
+				dbg("RBN: ERROR invalid prefix/callsign $call from $origin-# on $qrg, dumped");
+				return;
+			}
+			$cand->[CSpot] = \@s;
 		}
 		
 		if ($self->{inrbnfilter}) {
 			my ($want, undef) = $self->{inrbnfilter}->it($s);
 			return unless $want;	
 		}
-		$r->[RSpotData] = \@s;
 
-		push @{$self->{queue}}, $sp if @$spot == 1; # queue the KEY (not the record)
+		# add/set up the skimmer record
+		my $skimkey = "SK|$origin";
+		my $skim = $spots->{$skimkey};
+		unless ($skim) {
+			my $ur = DXUser::get($origin);
+			$spots->{$skimkey} = [$main::systime, 0, 0, $s->[SODxcc], $s->[SOItu], $s->[SOZone], $s->[SOState], ($ur ? $ur->qra : undef) ];
+		}
+
+		
+		
+		push @{$self->{queue}}, $sp if @$cand == 1; # queue the KEY (not the record)
 
 		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
 
-		push @$spot, $r;
+		push @$cand, $r;
 
 		# At this point we run the queue to see if anything can be sent onwards to the punter
 		my $now = $main::systime;
@@ -352,9 +389,9 @@ sub normal
 				dbg "RBN Cand " . ($cand ? 'def' : 'undef') . " [0] " . ($cand->[0] ? 'def' : 'undef') . " dwell $dwelltime";
 				next;
 			} 
-			if ($now >= $cand->[0] + $dwelltime ) {
+			if ($now >= $cand->[CTime] + $dwelltime ) {
 				# we have a candidate, create qualitee value(s);
-				unless (@$cand > 1) {
+				unless (@$cand > CEMPTY) {
 					dbg "RBN: QUEUE key '$sp' MISSING RECORDS " . dd($cand) if isdbg 'rbn';
 					shift @{$self->{queue}};
 					next;
@@ -378,7 +415,7 @@ sub normal
 				$spots->{$sp} = [$savedtime];
 				shift @{$self->{queue}};
 			} else {
-				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $spot->[0] + $dwelltime - $now) if isdbg 'rbnqueue'; 
+				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $cand->[0] + $dwelltime - $now) if isdbg 'rbnqueue'; 
 			}
 		}
 	} else {
@@ -391,7 +428,7 @@ sub send_dx_spot
 {
 	my $self = shift;
 	my $quality = shift;
-	my $spot = shift;
+	my $cand = shift;
 
 	++$self->{norbn};
 	++$self->{norbn10};
@@ -399,7 +436,7 @@ sub send_dx_spot
 	
 	# $r = [$origin, $qrg, $call, $mode, $s, $utz, $respot];
 
-	my $mode = $spot->[0]->[3]; # as all the modes will be the same;
+	my $mode = $cand->[0]->[3]; # as all the modes will be the same;
 	
 	my @dxchan = DXChannel::get_all();
 
@@ -426,7 +463,7 @@ sub send_dx_spot
 				   )) if isdbg('rbnll');
 
 		# send one spot to one user out of the ones that we have
-		$self->dx_spot($dxchan, $quality, $spot) if $want;
+		$self->dx_spot($dxchan, $quality, $cand) if $want;
 	}
 }
 
@@ -435,7 +472,7 @@ sub dx_spot
 	my $self = shift;
 	my $dxchan = shift;
 	my $quality = shift;
-	my $spot = shift;
+	my $cand = shift;
 	my $call = $dxchan->{call};
 	
 
@@ -453,7 +490,7 @@ sub dx_spot
 
 	my $filtered;
 	my $rf = $dxchan->{rbnfilter} || $dxchan->{spotsfilter};
-	foreach my $r (@$spot) {
+	foreach my $r (@$cand) {
 		# $r = [$origin, $qrg, $call, $mode, $s, $t, $utz, $respot, $qra];
 		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
 
@@ -595,6 +632,7 @@ sub finish
 sub write_cache
 {
 	my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
+	$spots->{version} = $CACHE_VERSION;
 	my $s = $json->encode($spots);
 	$fh->print($s);
 	$fh->close;
@@ -622,6 +660,13 @@ sub check_cache
 			if ($s) {
 				eval {$spots = $json->decode($s)};
 				if ($spots && ref $spots) {
+					my $version = $spots->{version} || 0;
+					unless ($version != $CACHE_VERSION) {
+						# wrong version number
+						dbg("RBN:check_cache version number mismatch got: $version want: $CACHE_VERSION, reseting");
+						$spots = {};
+						return undef;
+					}
 					dbg("RBN:check_cache spot cache restored");
 					return 1;
 				}
