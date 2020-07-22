@@ -301,7 +301,7 @@ sub normal
 		# process to just the standard "message passing" which has been shown to be able to sustain over 5000 
 		# per second (limited by the test program's output and network speed, rather than DXSpider's handling).
 
-		my $nqrg = nearest(1, $qrg);  # normalised to nearest Khz
+		my $nqrg = nearest(5, $qrg*10);  # normalised to nearest .5 Khz (but multipled by 10 to get an integer)
 #		my $nqrg = nearest_even($qrg);  # normalised to nearest Khz
 		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well!
 		my $spp = sprintf("$call|%d", $nqrg+1); # but, clearly, my hopes are rudely dashed
@@ -513,7 +513,7 @@ sub dx_spot
 			dbg("RBN: STRENGTH spot: $s->[SCall] qrg: $s->[SQrg] origin: $s->[SOrigin] dB: $r->[RStrength] < $strength") if isdbg 'rbnll';
 		}
 
-		if ($rf) {
+		if ($rf && !$want) {
 			my ($want, undef) = $rf->it($s);
 			dbg("RBN: FILTERING for $call spot: $s->[SCall] qrg: $s->[SQrg] origin: $s->[SOrigin] dB: $r->[RStrength] com: '$s->[SComment]' want: " . ($want ? 'YES':'NO')) if isdbg 'rbnll';
 			next unless $want;
