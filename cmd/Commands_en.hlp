@@ -2634,9 +2634,10 @@ with the USER keyword)
 Show all the nodes connected to this node in the new format.
 
 === 1^SHOW/NODE [<callsign> ...]^Show the type and version number of nodes
+=== 1^SHOW/NODE ALL^Show the type,version number of ALL known nodes
 Show the type and version (if connected) of the nodes specified on the
 command line. If no callsigns are specified then a sorted list of all
-the non-user callsigns known to the system will be displayed.
+the non-user callsigns connected to node will be displayed.
 
 === 0^SHOW/PREFIX <callsign>^Interrogate the prefix database 
 This command takes the <callsign> (which can be a full or partial 
@@ -2703,6 +2704,16 @@ This command allows you to see to which node the callsigns specified are
 connected. It is a sort of inverse sh/config.
 
  sh/route n2tly
+
+=== 1^SHOW/RBN [<callsign> ...]^Show which connected users want RBN spots
+=== 1^SHOW/RBN ALL^Show ALL users that want RBN spots
+Show a list of the users that want RBN spots of any the callsigns
+specified on the command line. If no callsigns are specified then a
+sorted list of all connected users wanting RBN spots will be displayed
+
+SHOW/RBN ALL
+
+will go through the user file and display ALL users that want RBN spots.
 
 === 9^SHOW/RCMD [<n>][<from>-<to>][<call>] ...^Show log of rcmds
 Show the rcmds that have come in and their replies.

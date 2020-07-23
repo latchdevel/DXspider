@@ -1,3 +1,13 @@
+23Jul20=======================================================================
+1. fix Filtering so that it does less of what it was doing badly, thus 
+   the perl interpreter to do more of the work. Which means you *should* be
+   able to define  more or less any allowable operation for that type of 
+   filter. Which is a complicated way of saying: you can now use brackets.
+2. Regex expressions now appear as readable text in sh/filter.
+3. Make the RBN status file JSON, rather than DD format. In future versions
+   it will also be VERSIONed to enable more features to be added 
+   transparently.
+4. Add show/rbn command to allow sysops to see who is using rbn.
 11Jul20=======================================================================
 1. Fix (embarrassing) gratuitous '#'s in bands.pl
 2. IMPORTANT: certain PC92 strings can crash DXSpider if the nologchan debug
