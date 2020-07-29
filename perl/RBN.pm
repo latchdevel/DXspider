@@ -623,6 +623,9 @@ sub per_10_minute
 	my $count = 0;
 	my $removed = 0;
 	while (my ($k,$cand) = each %{$spots}) {
+		next if $k eq 'VERSION';
+		next if $k =~ /^O\|/;
+		
 		if ($main::systime - $cand->[CTime] > $minspottime*2) {
 			delete $spots->{$k};
 			++$removed;
@@ -668,7 +671,7 @@ sub check_cache
 	if (-e $cachefn) {
 		my $mt = (stat($cachefn))[9];
 		my $t = $main::systime - $mt || 1;
-		my $p = difft($mt);
+		my $p = difft($mt, 2);
 		if ($t < $cache_valid) {
 			dbg("RBN:check_cache '$cachefn' spot cache exists, created $p ago and not too old");
 			my $fh = IO::File->new($cachefn);
@@ -688,7 +691,8 @@ sub check_cache
 					if (exists $spots->{VERSION} && $spots->{VERSION} == $DATA_VERSION) {
 						# now clean out anything that is current
 						while (my ($k, $cand) = each %$spots) {
-							next unless ref $cand;
+							next if $k eq 'VERSION';
+							next if $k =~ /^O\|/;
 							if (@$cand > CData) {
 								$spots->{$k} = [$cand->[CTime], $cand->[CQual]];
 							}

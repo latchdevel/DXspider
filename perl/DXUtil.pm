@@ -539,7 +539,7 @@ sub difft
 	if (ref $b eq 'ARRAY') {
 		$t = $b->[1] - $b->[0];
 	} else {
-		if ($adds >= $b) {
+		if ($adds && $adds >= $b) {
 			$t = $adds - $b;
 			$adds = shift;
 		} else {
