@@ -331,6 +331,7 @@ sub search
 			my $rec = 0;
 			my $in;
 			while (<$fh>) {
+				chomp;
 				my @r = split /\^/;
 				++$rec;
 				if ($dxchan) {

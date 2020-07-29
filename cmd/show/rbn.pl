@@ -1,18 +1,13 @@
 #
-# show/node [<node> | <node> ] 
+# show/rbn [all|<call>,,,]
 # 
-# This command either lists all nodes known about 
-# or the ones specified on the command line together
-# with some information that is relavent to them 
+# This command either lists all rbn users known about (sh/rbn all)
+# or the ones specified on the command line, If no arguments are present
+# then it will list all connected rbn/skimmer users.
 #
-# This command isn't and never will be compatible with AK1A
+# Copyright (c) 2020 Dirk Koopman G1TLH
 #
-# A special millenium treat just for G4PDQ
-#
-# Copyright (c) 2000 Dirk Koopman G1TLH
-#
-#
-#
+
 
 my ($self, $line) = @_;
 return (1, $self->msg('e5')) unless $self->priv >= 1;
@@ -23,7 +18,7 @@ my $count;
 
 # search thru the user
 if (@call == 0) {
-	@call = map{$_->call} grep {$_->user->call && $_->user->wantrbn} DXChannel::get_all_users();
+	@call = sort map{$_->call} grep {$_->user->call && $_->user->wantrbn} DXChannel::get_all_users();
 } elsif ($call[0] eq 'ALL') {
 	shift @call;
 	my ($action, $key, $data) = (0,0,0);
@@ -47,8 +42,10 @@ foreach my $call (@call) {
 	}
 	++$count;
 }
-push @l, "" while @l < 5;
-push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
+if (@l) {
+	push @l, "" while @l < 5;
+	push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;
+}
 	
 
 return (1, @out, $self->msg('rec', $count));

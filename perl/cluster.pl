@@ -773,7 +773,8 @@ sub per_sec
 	DXUser::process();
 	AGWMsg::process();
 	DXCron::process();			# do cron jobs
-	
+	RBN::process();
+
 	Timer::handler();
 	DXLog::flushall();
 }

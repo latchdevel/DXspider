@@ -216,7 +216,7 @@ sub handle_29
 	
 	my $ref = get_fwq($fromnode, $stream);
 	if ($ref) {
-		$_[4] =~ s/\%5E/^/g;
+		$_[4] =~ s/\%5E/~/g;
 		if (@{$ref->{lines}}) {
 			push @{$ref->{lines}}, $_[4];
 		} else {

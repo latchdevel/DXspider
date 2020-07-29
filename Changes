@@ -1,3 +1,10 @@
+29Jul20=======================================================================
+1. Add show/rbn command that allows one to see who is online and configured
+   for RBN. See help sh/rbn for details.
+2. Fixed issue with set/ve7cc mode adding unwanted newlines to output.
+3. Attempted to make the QRG normalisation more "intelligent". This would be
+   sooooooooo much easier if skimmers were calibrated more accurately.
+4. Added CTY-3012 prefixes.
 23Jul20=======================================================================
 1. fix Filtering so that it does less of what it was doing badly, thus 
    the perl interpreter to do more of the work. Which means you *should* be

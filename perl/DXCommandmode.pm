@@ -959,7 +959,7 @@ sub announce
 		$buf = dd(['ann', $to, $target, $text, @_])
 	} else {
 		$buf = "$to$target de $_[0]: $text";
-		$buf =~ s/\%5E/^/g;
+		#$buf =~ s/\%5E/^/g;
 		$buf .= "\a\a" if $self->{beep};
 	}
 	$self->local_send($target eq 'WX' ? 'W' : 'N', $buf);
@@ -984,7 +984,7 @@ sub chat
 		$buf = dd(['chat', $to, $target, $text, @_])
 	} else {
 		$buf = "$target de $_[0]: $text";
-		$buf =~ s/\%5E/^/g;
+		#$buf =~ s/\%5E/^/g;
 		$buf .= "\a\a" if $self->{beep};
 	}
 	$self->local_send('C', $buf);
@@ -1070,7 +1070,7 @@ sub dx_spot
 	} else {
 		$buf = $self->format_dx_spot(@_);
 		$buf .= "\a\a" if $self->{beep};
-		$buf =~ s/\%5E/^/g;
+		#$buf =~ s/\%5E/^/g;
 	}
 
 	$self->local_send('X', $buf);
