@@ -20,3 +20,4 @@ tutor*
 db
 core
 a.out
+perl5lib/*

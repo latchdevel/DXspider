@@ -67,7 +67,7 @@ our $startup_delay = 5*60;		# don't send anything out until this timer has expir
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen.
 
-our $minspottime = 15*60;		# the time between respots of a callsign - if a call is
+our $minspottime = 30*60;		# the time between respots of a callsign - if a call is
                                 # still being spotted (on the same freq) and it has been
                                 # spotted before, it's spotted again after this time
                                 # until the next minspottime has passed.
@@ -440,13 +440,9 @@ sub dx_spot
 	my $quality = shift;
 	my $cand = shift;
 	my $call = $dxchan->{call};
-	
-
 	my $strength = 100;		# because it could if we talk about FTx
 	my $saver;
-
 	my %zone;
-	my %qrg;
 	my $respot;
 	my $qra;
 
@@ -463,17 +459,13 @@ sub dx_spot
 		# Spot::prepare($qrg, $call, $utz, $comment, $origin);
 		next unless ref $r;
 
-		$respot = 1 if $r->[Respot];
 		$qra = $r->[RQra] if !$qra && $r->[RQra] && is_qra($r->[RQra]);
 
 		$comment = sprintf "%-3s %2ddB $quality", $r->[RMode], $r->[RStrength];
 		my $s = $r->[RSpotData];		# the prepared spot
 		$s->[SComment] = $comment;		# apply new generated comment
 		
-		
 		++$zone{$s->[SZone]};		# save the spotter's zone
-		++$qrg{$s->[SQrg]};		# and the qrg
-
  
 		# save the lowest strength one
 		if ($r->[RStrength] < $strength) {
@@ -501,21 +493,8 @@ sub dx_spot
 		delete $zone{$saver->[SZone]};  # remove this spotter's zone (leaving all the other zones)
 		my $z = join ',', sort {$a <=> $b} keys %zone;
 
-		# determine the most likely qrg and then set it
-		my $mv = 0;
-		my $fk;
-		my $c = 0;
-		while (my ($k, $v) = each %qrg) {
-			$fk = $k, $mv = $v if $v > $mv;
-			++$c;
-		}
-		$saver->[SQrg] = $fk;
-		$saver->[SComment] .= '*' if $c > 1;
-		$saver->[SComment] .= '+' if $respot;
+		# alter spot data accordingly
 		$saver->[SComment] .= " Z:$z" if $z;
-		if ($c > 1 && (isdbg('rbnqrg') || isdbg('rbn'))) {
-			
-		}
 		
 		dbg("RBN: SENDING to $call spot: $saver->[SCall] qrg: $saver->[SQrg] origin: $saver->[SOrigin] $saver->[SComment]") if isdbg 'rbnll';
 		if ($dxchan->{ve7cc}) {
@@ -571,15 +550,46 @@ sub process
 					next;
 				}
 				dbg "RBN: QUEUE PROCESSING key: '$sp' $now >= $cand->[CTime]" if isdbg 'rbnqueue'; 
-				my $r = $cand->[CData];
 				my $quality = @$cand - CData;
 				$quality = 9 if $quality > 9;
 				$cand->[CQual] = $quality if $quality > $cand->[CQual];
+
+				my $r;
+				my %qrg;
+				foreach $r (@$cand) {
+					next unless ref $r;
+					++$qrg{$r->[RQrg]};
+				}
+				# determine the most likely qrg and then set it
+				my @deviant;
+				my $c = 0;
+				my $mv = 0;
+				my $qrg;
+				while (my ($k, $votes) = each %qrg) {
+					$qrg = $k, $mv = $votes if $votes > $mv;
+					++$c;
+				}
+				# spit out the deviants
+				if ($c > 1) {
+					foreach $r (@$cand) {
+						next unless ref $r;
+						my $diff = nearest(.1, $qrg - $r->[RQrg]);
+						push @deviant, sprintf("$r->[ROrigin]:%+.1f", $diff) if $diff != 0;
+						$r->[RSpotData]->[SQrg] = $qrg; # set all the QRGs to the agreed value
+					}
+				}
+
+				$qrg = sprintf "%.1f",  $qrg;
+				$r = $cand->[CData];
+				$r->[RQrg] = $qrg;
 				my $squality = "Q:$cand->[CQual]";
+				$squality .= '*' if $c > 1; 
+				$squality .= '+' if $r->[Respot];
 
 				if ($cand->[CQual] >= $minqual) {
 					if (isdbg('progress')) {
 						my $s = "RBN: SPOT key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] $squality route: $dxchan->{call}";
+						$s .= " Deviants: " . join(', ', sort @deviant) if @deviant;
 						dbg($s);
 					}
 					send_dx_spot($dxchan, $squality, $cand);
@@ -593,7 +603,8 @@ sub process
 				
 				$spots->{$sp} = [$now, $cand->[CQual]];
 				delete $dxchan->{queue}->{$sp};
-			} else {
+			}
+			else {
 				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $cand->[CTime] + $dwelltime - $now) if isdbg 'rbnqueue'; 
 			}
 		}
@@ -605,7 +616,7 @@ sub per_minute
 {
 	foreach my $dxchan (DXChannel::get_all()) {
 		next unless $dxchan->is_rbn;
-		dbg "RBN:STATS minute $dxchan->{call} raw: $dxchan->{noraw} sent: $dxchan->{norbn} delivered: $dxchan->{nospot} users: " . scalar keys %{$dxchan->{nousers}} if isdbg('rbnstats');
+		dbg "RBN:STATS minute $dxchan->{call} raw: $dxchan->{noraw} retrieved spots: $dxchan->{norbn} delivered: $dxchan->{nospot} after filtering to users: " . scalar keys %{$dxchan->{nousers}} if isdbg('rbnstats');
 		if ($dxchan->{noraw} == 0 && $dxchan->{lasttime} > 60) {
 			LogDbg('RBN', "RBN: no input from $dxchan->{call}, disconnecting");
 			$dxchan->disconnect;
@@ -638,7 +649,7 @@ sub per_10_minute
 	foreach my $dxchan (DXChannel::get_all()) {
 		next unless $dxchan->is_rbn;
 		my $nq = keys %{$dxchan->{queue}};
-		dbg "RBN:STATS 10-minute $dxchan->{call} queue: $nq raw: $dxchan->{noraw10} sent: $dxchan->{norbn10} delivered: $dxchan->{nospot10} users: " . scalar keys %{$dxchan->{nousers10}};
+		dbg "RBN:STATS 10-minute $dxchan->{call} queue: $nq raw: $dxchan->{noraw10} retrieved spots: $dxchan->{norbn10} delivered: $dxchan->{nospot10} after filtering to  users: " . scalar keys %{$dxchan->{nousers10}};
 		$dxchan->{noraw10} = $dxchan->{norbn10} = $dxchan->{nospot10} = 0; $dxchan->{nousers10} = {};
 	}
 }
@@ -648,7 +659,7 @@ sub per_hour
 	foreach my $dxchan (DXChannel::get_all()) {
 		next unless $dxchan->is_rbn;
 		my $nq = keys %{$dxchan->{queue}};
-		dbg "RBN:STATS hour $dxchan->{call} queue: $nq raw: $dxchan->{norawhour} sent: $dxchan->{norbnhour} delivered: $dxchan->{nospothour} users: " . scalar keys %{$dxchan->{nousershour}};
+		dbg "RBN:STATS hour $dxchan->{call} queue: $nq raw: $dxchan->{norawhour} retrieved spots: $dxchan->{norbnhour} delivered: $dxchan->{nospothour} after filtering to users: " . scalar keys %{$dxchan->{nousershour}};
 		$dxchan->{norawhour} = $dxchan->{norbnhour} = $dxchan->{nospothour} = 0; $dxchan->{nousershour} = {};
 	}
 }

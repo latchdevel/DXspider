@@ -40,6 +40,8 @@ sub dequeue
 		} else {
 			$conn->{msg} =~ s/([^\cM\cJ]*)\cM?\cJ//g;
 		}
+		$conn->{linesin} += @lines;
+		$Msg::total_lines_in += @lines;
 		for (@lines) {
 			if (defined $_) {
 				s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;

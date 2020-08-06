@@ -20,9 +20,10 @@ use Mojo::IOLoop::Stream;
 use DXDebug;
 use Timer;
 
-use vars qw($now %conns $noconns $cnum $total_in $total_out $connect_timeout $disc_waittime);
+use vars qw($now %conns $noconns $cnum $total_in $total_out $total_lines_in $total_lines_out $connect_timeout $disc_waittime);
 
 $total_in = $total_out = 0;
+$total_lines_in = $total_lines_out = 0;
 
 $now = time;
 
@@ -43,15 +44,19 @@ sub new
 	my $class = $obj || $pkg;
 
     my $conn = {
-        rproc => $rproc,
-		inqueue => [],
-		outqueue => [],
-		state => 0,
-		lineend => "\r\n",
-		csort => 'telnet',
-		timeval => 60,
-		blocking => 0,
-		cnum => (($cnum < 999) ? (++$cnum) : ($cnum = 1)),
+				rproc => $rproc,
+				inqueue => [],
+				outqueue => [],
+				state => 0,
+				lineend => "\r\n",
+				csort => 'telnet',
+				timeval => 60,
+				blocking => 0,
+				cnum => (($cnum < 999) ? (++$cnum) : ($cnum = 1)),
+				linesin => 0,
+				linesout => 0,
+				datain => 0,
+				dataout => 0,
     };
 
 	$noconns++;
@@ -350,6 +355,9 @@ sub _send_stuff
 		if (defined $sock) {
 			$sock->write($data);
 			$total_out += $lth;
+			$conn->{dataout} += $lth;
+			++$conn->{linesout};
+			++$total_lines_out;
 		} else {
 			dbg("_send_stuff $call ending data ignored: $data");
 		}
@@ -425,6 +433,8 @@ sub dequeue
 		} else {
 			$conn->{msg} = pop @lines;
 		}
+		$conn->{linesin} += @lines;
+		$total_lines_in += @lines;
 		for (@lines) {
 			last if $conn->{disconnecting};
 			&{$conn->{rproc}}($conn, defined $_ ? $_ : '');
@@ -440,8 +450,8 @@ sub _rcv {                     # Complement to _send
 	return if $conn->{disconnecting};
 
 	$total_in += length $msg;
+	$conn->{datain} += length $msg;
 
-	my @lines;
 	if (isdbg('raw')) {
 		my $call = $conn->{call} || 'none';
 		my $lth = length $msg;

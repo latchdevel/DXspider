@@ -61,6 +61,8 @@ sub dequeue
 			$conn->{msg} =~ s/([^\cM\cJ]*)\cM?\cJ//g;
 		}
 
+		$conn->{linesin} += @lines;
+		$Msg::total_lines_in += @lines;
 		while (defined ($msg = shift @lines)) {
 			dbg("connect $conn->{cnum}: $msg") if $conn->{state} ne 'C' && isdbg('connect');
 

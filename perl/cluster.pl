@@ -31,7 +31,6 @@ $yes = 'Yes';					# visual representation of yes
 $no = 'No';						# ditto for no
 $user_interval = 11*60;			# the interval between unsolicited prompts if no traffic
 
-
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	umask 002;
@@ -41,12 +40,16 @@ BEGIN {
 	eval {
 		require local::lib;
 	};
-	import local::lib unless ($@);
+	unless ($@) {
+#		import local::lib;
+		import local::lib qw(/spider/perl5lib);
+	} 
 
 	# root of directory tree for this system
 	$root = "/spider";
 	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
 
+	unshift @INC, "$root/perl5lib" unless grep {$_ eq "$root/perl5lib"} @INC;
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
 
@@ -491,6 +494,8 @@ sub setup_start
 	}
 	STDOUT->autoflush(1);
 
+	# log our path
+	dbg "Perl path: " . join(':', @INC);
 	
 	# try to load the database
 	if (DXSql::init($dsn)) {

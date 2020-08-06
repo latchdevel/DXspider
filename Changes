@@ -1,5 +1,15 @@
 06Aug20=======================================================================
 1, Add CTY-3013 Prefixes
+2. Make RBN more efficient. Start the process of skimmer node performance 
+   caching. Add minimum quality allowed (at 2), which will be overrideable.
+   The format of the rbn_cache has changed and so a full restart will occur.
+3. Collect channel input/output stats. New command: show/data_stats to show
+   them. 
+4. Add local::lib qw{/spider/perl5lib} to store cpanm loaded modules just for
+   DXSpider. This is done so that updates needed by future changes can be done
+   as the sysop user and doesn't have to be done as root. This paves the way
+   for UPDATE.pl which will pull down new modules that it needs automatically.
+   When it's written, which will be soon. 
 29Jul20=======================================================================
 1. Add show/rbn command that allows one to see who is online and configured
    for RBN. See help sh/rbn for details.
