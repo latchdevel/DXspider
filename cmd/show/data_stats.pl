@@ -9,23 +9,38 @@
 sub handle
 {
 	my ($self, $line) = @_;
-	my @list = map { uc } split /\s+/, $line; # list of callsigns of nodes
+	my @in = map { uc } split /\s+/, $line; # list of callsigns of nodes
 	my @out;
-	if ($list[0] eq 'ALL') {
-		shift @list;
+	my @list;
+	
+	if ($in[0] eq 'ALL') {
 		@list = keys %DXChannel::channels;
+	} else {
+		while (@in) {
+			my $in = shift @in;
+			if ($in =~ /^NOD/){
+				push @list, DXChannel::get_all_node_calls();
+			} elsif ($in =~ /^USE/) {
+				push @list, DXChannel::get_all_user_calls();
+			} elsif ($in =~ /^RBN|SKI/) {
+				push @list, map {$_->is_rbn ? $_->call : undef} DXChannel::get_all();
+			} else {
+				push @list, $in;
+			}
+		}
 	}
-	push @out, "Data Statitics                 IN                                OUT";
+	
+	my $dt = difft($main::starttime, ' ');
+	push @out, sprintf "Transfered in:%-12.12s     IN                                OUT", $dt;
 	push @out, "Callsign             Lines             Data            Lines             Data";
 	push @out, "-----------------------------------------------------------------------------";
-	if (@list) {
-		foreach my $call (sort @list) {
-			next if $call eq $main::mycall;
-			my $dxchan = DXChannel::get($call);
-			if ($dxchan) {
-				my $conn = $dxchan->conn;
-				push @out, sprintf("%-9.9s %16s %16s %16s %16s", $call, comma($conn->{linesin}), comma($conn->{datain}), comma($conn->{linesout}), comma($conn->{dataout}));
-			}
+	push @list, $self->call unless @list;
+	foreach my $call (sort @list) {
+		next if $call eq $main::mycall;
+		my $dxchan = DXChannel::get($call);
+		if ($dxchan) {
+			my $conn = $dxchan->conn;
+			push @out, sprintf("%-9.9s %16s %16s %16s %16s", $call, comma($conn->{linesin}), comma($conn->{datain}), comma($conn->{linesout}), comma($conn->{dataout}));
 		}
 	}
 
