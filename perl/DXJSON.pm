@@ -11,6 +11,7 @@ use warnings;
 
 use JSON;
 use Data::Structure::Util qw(unbless);
+use Scalar::Util qw(blessed);
 use DXDebug;
 use DXUtil;
 
@@ -25,14 +26,13 @@ sub encode
 {
 	my $json = shift;
 	my $ref = shift;
-	my $name = ref $ref;
-	
-	unbless($ref) if $name && $name ne 'HASH';
+	my $name = blessed $ref;
+	unbless($ref) if $name;
 	my $s;
 	
 	eval {$s = $json->SUPER::encode($ref) };
 	if ($s && !$@) {
-		bless $ref, $name if $name && $name ne 'HASH';
+		bless $ref, $name if $name;
 		return $s;
 	}
 	else {

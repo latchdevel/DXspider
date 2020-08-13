@@ -329,7 +329,7 @@ sub run_cmd
 	my @in = $main::me->run_cmd($line);
 	dbg("DXCron::run_cmd: $line") if isdbg('cron');
 	for (@in) {
-		s/\s*$//og;
+		s/\s*$//;
 		dbg("DXCron::cmd out: $_") if isdbg('cron');
 	}
 }

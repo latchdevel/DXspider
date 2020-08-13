@@ -1,3 +1,10 @@
+13Aug20=======================================================================
+1. Improve the (displayed) RBN frequency weighting the skimmers' frequencies
+   w.r.t majority view on each spot. Any skimmer that disagrees with a 
+   gets docked a 'point' from their 'good' score (if any) and have a 'point'
+   added to their 'bad' score. This score is then taked into account during
+   the 'choosing the real frequency' process. If a skimmer agrees with the
+   majority the process is reversed. To see this in action: set/deb rbnskim
 06Aug20=======================================================================
 1, Add CTY-3013 Prefixes
 2. Make RBN more efficient. Start the process of skimmer node performance 

@@ -474,7 +474,7 @@ sub pc93
 	my $origin = shift;			# this will be present on proxying from PC10
 
 	$line = unpad($line);
-	$line =~ s/\^/\\5E/g;		# remove any ^ characters
+	$line =~ s/\^/~/g;		# remove any ^ characters
 	my $s = "PC93^$main::mycall^" . gen_pc9x_t() . "^$to^$from^$via^$line";
 	$s .= "^$origin" if $origin;
 	$s .= "^H99^";
