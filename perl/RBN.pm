@@ -541,7 +541,7 @@ sub process
 		# At this point we run the queue to see if anything can be sent onwards to the punter
 		my $now = $main::systime;
 		my $ta = [gettimeofday];
-		my $items;
+		my $items 0;
 		
 		# now run the waiting queue which just contains KEYS ($call|$qrg)
 		foreach my $sp (keys %{$dxchan->{queue}}) {
@@ -600,6 +600,7 @@ sub process
 					}
 					$qrg{$r->[RQrg]} += ($skimmer->[DScore] || 1);
 				}
+				
 				# determine the most likely qrg and then set it
 				my @deviant;
 				my $c = 0;
@@ -634,7 +635,6 @@ sub process
 					$skimmer->[DLastin] = $now;
 					$r->[RSpotData]->[SQrg] = $qrg if $qrg && $c > 1; # set all the QRGs to the agreed value
 				}
-
 
 				$qrg = (sprintf "%.1f",  $qrg)+0;
 				$r = $cand->[CData];
