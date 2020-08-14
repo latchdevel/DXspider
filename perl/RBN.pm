@@ -99,7 +99,7 @@ our $minqual = 2;				# the minimum quality we will accept for output
 
 my $json;
 my $noinrush = 0;				# override the inrushpreventor if set
-our $maxdeviants = 10;			# the number of deviant QRGs to record for skimmer records
+our $maxdeviants = 5;			# the number of deviant QRGs to record for skimmer records
 
 sub init
 {
@@ -537,13 +537,16 @@ sub process
 {
 	foreach my $dxchan (DXChannel::get_all()) {
 		next unless $dxchan->is_rbn;
-		
+
 		# At this point we run the queue to see if anything can be sent onwards to the punter
 		my $now = $main::systime;
-
+		my $ta = [gettimeofday];
+		my $items;
+		
 		# now run the waiting queue which just contains KEYS ($call|$qrg)
 		foreach my $sp (keys %{$dxchan->{queue}}) {
 			my $cand = $spots->{$sp};
+			++$items;
 			unless ($cand && $cand->[CTime]) {
 				dbg "RBN Cand $sp " . ($cand ? 'def' : 'undef') . " [CTime] " . ($cand->[CTime] ? 'def' : 'undef') . " dwell $dwelltime";
 				next;
@@ -619,15 +622,14 @@ sub process
 						--$skimmer->[DGood] if $skimmer->[DGood] > 0;
 						push @deviant, sprintf("$r->[ROrigin]:%+.1f", $diff);
 						push @{$skimmer->[DEviants]}, $diff;
-						shift @{$skimmer->[DEviants]} if @{$skimmer->[DEviants]} > $maxdeviants;
+						shift @{$skimmer->[DEviants]} while @{$skimmer->[DEviants]} > $maxdeviants;
 					} else {
 						++$skimmer->[DGood] if $skimmer->[DGood] < $maxdeviants;
 						--$skimmer->[DBad] if $skimmer->[DBad] > 0;
 						shift @{$skimmer->[DEviants]};
 					}
-					$skimmer->[DScore] = ($skimmer->[DBad] != 0) ? $skimmer->[DGood] / $skimmer->[DBad] : $skimmer->[DGood];
+					$skimmer->[DScore] = $skimmer->[DGood] - $skimmer->[DBad];
 					$skimmer->[DScore] ||= 0.2; # minimun score
-					$skimmer->[DScore] = $maxdeviants if $skimmer->[DScore] > $maxdeviants;
 					dbg("RBN:SKIM key $sp slot $sk $r->[RQrg] - $qrg = $diff " . $json->encode($skimmer)) if isdbg('rbnskim'); 
 					$skimmer->[DLastin] = $now;
 					$r->[RSpotData]->[SQrg] = $qrg if $qrg && $c > 1; # set all the QRGs to the agreed value
@@ -672,8 +674,11 @@ sub process
 				dbg sprintf("RBN: QUEUE key: '$sp' SEND time not yet reached %.1f secs left", $cand->[CTime] + $dwelltime - $now) if isdbg 'rbnqueue'; 
 			}
 		}
+		if (isdbg('rbntimer')) {
+			my $diff = _diffus($ta);
+			dbg "RBN: TIMER process queue for call: $dxchan->{call} $items spots $diff uS";
+		}
 	}
-	
 }
 
 sub per_minute
@@ -780,6 +785,7 @@ sub check_cache
 						while (my ($k, $cand) = each %$spots) {
 							next if $k eq 'VERSION';
 							next if $k =~ /^O\|/;
+							next if $k =~ /^SKIM\|/;
 							if (@$cand > CData) {
 								$spots->{$k} = [$cand->[CTime], $cand->[CQual]];
 							}

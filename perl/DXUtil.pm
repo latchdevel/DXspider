@@ -27,7 +27,7 @@ require Exporter;
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
-			 diffms _diffms difft parraydifft is_ztime
+			 diffms _diffms _diffus difft parraydifft is_ztime
             );
 
 
@@ -511,6 +511,16 @@ sub _diffms
 	my $tb = shift || [gettimeofday];
 	my $a = int($ta->[0] * 1000) + int($ta->[1] / 1000); 
 	my $b = int($tb->[0] * 1000) + int($tb->[1] / 1000);
+	return $b - $a;
+}
+
+# and in microseconds
+sub _diffus
+{
+	my $ta = shift;
+	my $tb = shift || [gettimeofday];
+	my $a = int($ta->[0] * 1000000) + int($ta->[1]); 
+	my $b = int($tb->[0] * 1000000) + int($tb->[1]);
 	return $b - $a;
 }
 
