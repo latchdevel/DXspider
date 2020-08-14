@@ -541,7 +541,7 @@ sub process
 		# At this point we run the queue to see if anything can be sent onwards to the punter
 		my $now = $main::systime;
 		my $ta = [gettimeofday];
-		my $items 0;
+		my $items = 0;
 		
 		# now run the waiting queue which just contains KEYS ($call|$qrg)
 		foreach my $sp (keys %{$dxchan->{queue}}) {
