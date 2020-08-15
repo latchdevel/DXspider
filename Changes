@@ -1,3 +1,5 @@
+15Aug20=======================================================================
+1. Simplify the skimmer scoring mechanism.
 13Aug20=======================================================================
 1. Improve the (displayed) RBN frequency weighting the skimmers' frequencies
    w.r.t majority view on each spot. Any skimmer that disagrees with a 

@@ -108,6 +108,7 @@ my $json;
 		  startt => '0,Start Time,cldatetime',
 		  connlist => '1,Connections,parraydifft',
 		  width => '0,Preferred Width',
+		  rbnseeme => '0,RBN See Me',
 		 );
 
 #no strict;

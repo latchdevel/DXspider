@@ -215,7 +215,7 @@ sub normal
 	my $self = shift;
 	my $line = shift;
 	my @ans;
-#	my $spots = $self->{spot};
+	my $dbgrbn = isdbg('rbn');
 	
 	# remove leading and trailing spaces
 	chomp $line;
@@ -250,7 +250,7 @@ sub normal
 	$sort ||= '';
 	$tx ||= '';
 	$qra ||= '';
-    dbg qq{RBN:input decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if isdbg('rbn');
+    dbg qq{RBN:input decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if $dbgrbn;
 
 	++$self->{noraw};
 	++$self->{noraw10};
@@ -317,7 +317,7 @@ sub normal
 			}
 			if ($cand) {
 				my $diff = $i - $nqrg;
-				dbg(qq{RBN: QRG Diff using $new (+$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || isdbg('rbn'));
+				dbg(qq{RBN: QRG Diff using $new (+$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || $dbgrbn);
 				$sp = $new;
 			}
 		}
@@ -329,7 +329,7 @@ sub normal
 			}
 			if ($cand) {
 				my $diff = $nqrg - $i;
-				dbg(qq{RBN: QRG Diff using $new (-$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || isdbg('rbn'));
+				dbg(qq{RBN: QRG Diff using $new (-$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || $dbgrbn);
 				$sp = $new;
 			}
 		}
@@ -339,11 +339,11 @@ sub normal
 		if ($cand && ref $cand) {
 			if (@$cand <= CData) {
 				unless ($self->{minspottime} > 0 && $now - $cand->[CTime] >= $self->{minspottime}) {
-					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[CTime])) if isdbg('rbn');
+					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[CTime])) if $dbgrbn;
 					return;
 				}
 				
-				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $cand->[CTime])) if isdbg('rbn');
+				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $cand->[CTime])) if $dbgrbn;
 				$cand->[CTime] = $now;
 				++$respot;
 			}
@@ -357,7 +357,7 @@ sub normal
 		# here we either have an existing spot record buildup on the go, or we need to create the first one
 		unless ($cand) {
 			$spots->{$sp} = $cand = [$now, 0];
-			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if isdbg('rbn');
+			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if $dbgrbn;
 		}
 
 		# add me to the display queue unless we are waiting for initial in rush to finish
@@ -385,12 +385,12 @@ sub normal
 
 		++$self->{queue}->{$sp};# unless @$cand>= CData; # queue the KEY (not the record)
 
-		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if isdbg('rbn');
+		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if $dbgrbn;
 
 		push @$cand, $r;
 
 	} else {
-		dbg "RBN:DATA,$line" if isdbg('rbn');
+		dbg "RBN:DATA,$line" if $dbgrbn;
 	}
 }
 
@@ -445,6 +445,7 @@ sub dx_spot
 	my $quality = shift;
 	my $cand = shift;
 	my $call = $dxchan->{call};
+	my $seeme = $dxchan->user->rbnseeme();
 	my $strength = 100;		# because it could if we talk about FTx
 	my $saver;
 	my %zone;
@@ -469,9 +470,15 @@ sub dx_spot
 		$comment = sprintf "%-3s %2ddB $quality", $r->[RMode], $r->[RStrength];
 		my $s = $r->[RSpotData];		# the prepared spot
 		$s->[SComment] = $comment;		# apply new generated comment
-		
+
 		++$zone{$s->[SZone]};		# save the spotter's zone
- 
+
+		# if the 'see me' flag is set, then show all the spots without further adornment (see set/rbnseeme for more info)
+		if ($seeme) {
+			send_final($dxchan, $s);
+			next;
+		}
+
 		# save the lowest strength one
 		if ($r->[RStrength] < $strength) {
 			$strength = $r->[RStrength];
@@ -484,7 +491,6 @@ sub dx_spot
 			dbg("RBN: FILTERING for $call spot: $s->[SCall] qrg: $s->[SQrg] origin: $s->[SOrigin] dB: $r->[RStrength] com: '$s->[SComment]' want: " . ($want ? 'YES':'NO')) if isdbg 'rbnll';
 			next unless $want;
 			$filtered = $s;
-#			last;
 		}
 	}
 
@@ -501,22 +507,8 @@ sub dx_spot
 		# alter spot data accordingly
 		$saver->[SComment] .= " Z:$z" if $z;
 		
-		dbg("RBN: SENDING to $call spot: $saver->[SCall] qrg: $saver->[SQrg] origin: $saver->[SOrigin] $saver->[SComment]") if isdbg 'rbnll';
-		if ($dxchan->{ve7cc}) {
-			my $call = $saver->[SOrigin];
-			$saver->[SOrigin] .= '-#';
-			$buf = VE7CC::dx_spot($dxchan, @$saver);
-			$saver->[SOrigin] = $call;
-		} else {
-			my $call = $saver->[SOrigin];
-			$saver->[SOrigin] = substr($call, 0, 6);
-			$saver->[SOrigin] .= '-#';
-			$buf = $dxchan->format_dx_spot(@$saver);
-			$saver->[SOrigin] = $call;
-		}
-#		$buf =~ s/^DX/RB/;
-		$dxchan->local_send('N', $buf);
-
+		send_final($dxchan, $saver);
+		
 		++$self->{nospot};
 		++$self->{nospot10};
 		++$self->{nospothour};
@@ -532,9 +524,34 @@ sub dx_spot
 	}
 }
 
+sub send_final
+{
+	my $dxchan = shift;
+	my $saver = shift;
+	my $call = $dxchan->{call};
+	my $buf;
+	
+	dbg("RBN: SENDING to $call spot: $saver->[SCall] qrg: $saver->[SQrg] origin: $saver->[SOrigin] $saver->[SComment]") if isdbg 'rbnll';
+	if ($dxchan->{ve7cc}) {
+		my $call = $saver->[SOrigin];
+		$saver->[SOrigin] .= '-#';
+		$buf = VE7CC::dx_spot($dxchan, @$saver);
+		$saver->[SOrigin] = $call;
+	} else {
+		my $call = $saver->[SOrigin];
+		$saver->[SOrigin] = substr($call, 0, 6);
+		$saver->[SOrigin] .= '-#';
+		$buf = $dxchan->format_dx_spot(@$saver);
+		$saver->[SOrigin] = $call;
+	}
+	$dxchan->local_send('N', $buf);
+}
+
 # per second
 sub process
 {
+	my $rbnskim = isdbg('rbnskim');
+	
 	foreach my $dxchan (DXChannel::get_all()) {
 		next unless $dxchan->is_rbn;
 
@@ -563,10 +580,10 @@ sub process
 
 				# dump it and remove it from the queue if it is of unadequate quality
 				if ($quality < $minqual) {
-					if (isdbg('rbnskim')) {
+					if ($rbnskim) {
 						my $r = $cand->[CData];
 						if ($r) {
-							my $s = "RBN: SPOT IGNORED(Q:$quality < Q:$minqual) key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] route: $dxchan->{call}";
+							my $s = "RBN:SKIM Ignored (Q:$quality < Q:$minqual) key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] route: $dxchan->{call}";
 							dbg($s);
 						}
 					}
@@ -579,11 +596,15 @@ sub process
 				$cand->[CQual] = $quality if $quality > $cand->[CQual];
 
 				my $r;
-				my %qrg;
+
+				# this scores each candidate according to its skimmer's QRG score (i.e. how often it agrees with its peers)
+				# what happens is hash of all QRGs in candidates are incremented by that skimmer's reputation for "accuracy"
+				# or, more exactly, past agreement with the consensus. This score can be from -5 -> +5. 
+				my %qrg = ();
 				my $skimmer;
 				my $sk;
 				my $band;
-				my %seen;
+				my %seen = ();
 				foreach $r (@$cand) {
 					next unless ref $r;
 					if (exists $seen{$r->[ROrigin]}) {
@@ -592,32 +613,58 @@ sub process
 					}
 					$seen{$r->[ROrigin]} = 1;
 					$band ||= int $r->[RQrg] / 1000;
-					$sk = "SKIM|$r->[ROrigin]|$band";
+					$sk = "SKIM|$r->[ROrigin]|$band"; # thus only once per set of candidates
 					$skimmer = $spots->{$sk};
 					unless ($skimmer) {
-						$skimmer = $spots->{$sk} = [0+0, 0+0, 0+0, $now, []]; # this stupid incantation is to make sure than there are no JSON nulls!
-						dbg("RBN:SKIM new slot $sk " . $json->encode($skimmer)) if isdbg('rbnskim');
+						$skimmer = $spots->{$sk} = [1, 0, 0, $now, []];	# this first time, this new skimmer gets the benefit of the doubt on frequency.
+						dbg("RBN:SKIM new slot $sk " . $json->encode($skimmer)) if $rbnskim;
 					}
 					$qrg{$r->[RQrg]} += ($skimmer->[DScore] || 1);
 				}
 				
-				# determine the most likely qrg and then set it
+				# determine the most likely qrg and then set it - NOTE (-)ve votes, generated by the skimmer scoring system above, are ignored
 				my @deviant;
 				my $c = 0;
 				my $mv = 0;
-				my $qrg;
+				my $qrg = 0;
 				while (my ($k, $votes) = each %qrg) {
-					$qrg = $k, $mv = $votes if $votes >= $mv;
+					if ($votes >= $mv) {
+						$qrg = $k;
+						$mv = $votes;
+					}
 					++$c;
 				}
-				# spit out the deviants
+
+				# Ignore possible spots with 0 QRG score - as determined by the skimmer scoring system above -  as they are likely to be wrong 
+				unless ($qrg > 0) {
+					if ($rbnskim) {
+						my $keys;
+						while (my ($k, $v) = (each %qrg)) {
+							$keys .= "$k=>$v, ";
+						}
+						$keys =~ /,\s*$/;
+						my $i = 0;
+						foreach $r (@$cand) {
+							next unless $r && ref $r;
+							dbg "RBN:SKIM cand $i QRG likely wrong from '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] (qrgs: $keys c: $c) route: $dxchan->{call}, ignored";
+							++$i;
+						}
+					}
+					delete $spots->{$sp}; # get rid
+					delete $dxchan->{queue}->{$sp};
+					next;
+				}
+
+				# detemine and spit out the deviants. Then adjust the scores according to whether it is a deviant or good
+				# NOTE: deviant nodes can become good (or less bad), and good nodes bad (or less good) on each spot that
+				# they generate. This is based solely on each skimmer's agreement (or not) with the "consensus" score generated
+				# above ($qrg). The resultant score + good + bad is stored per band and will be used the next time a spot
+				# appears on this band from each skimmer.
 				foreach $r (@$cand) {
 					next unless $r && ref $r;
 					my $diff = $c > 1 ? nearest(.1, $r->[RQrg] - $qrg) : 0;
 					$sk = "SKIM|$r->[ROrigin]|$band";
 					$skimmer = $spots->{$sk};
-					$skimmer->[DBad] ||= 0+0; # stop JSON nulls?
-					$skimmer->[DEviants] ||= []; # ditto
 					if ($diff) {
 						++$skimmer->[DBad] if $skimmer->[DBad] < $maxdeviants;
 						--$skimmer->[DGood] if $skimmer->[DGood] > 0;
@@ -630,8 +677,10 @@ sub process
 						shift @{$skimmer->[DEviants]};
 					}
 					$skimmer->[DScore] = $skimmer->[DGood] - $skimmer->[DBad];
-					$skimmer->[DScore] ||= 0.2; # minimun score
-					dbg("RBN:SKIM key $sp slot $sk $r->[RQrg] - $qrg = $diff " . $json->encode($skimmer)) if isdbg('rbnskim'); 
+					my $lastin = difft($skimmer->[DLastin], $now, 2);
+					my $difflist = join(', ', @{$skimmer->[DEviants]});
+					$difflist = " ($difflist)" if $difflist;
+					dbg("RBN:SKIM key $sp slot $sk $r->[RQrg] - $qrg = $diff Skimmer score: $skimmer->[DGood] - $skimmer->[DBad] = $skimmer->[DScore] lastseen:$lastin ago$difflist") if $rbnskim; 
 					$skimmer->[DLastin] = $now;
 					$r->[RSpotData]->[SQrg] = $qrg if $qrg && $c > 1; # set all the QRGs to the agreed value
 				}
@@ -666,7 +715,7 @@ sub process
 				my $nqrg = nearest(1, $qrg * 10);  # normalised to nearest Khz
 				my $nsp = "$r->[RCall]|$nqrg";
 				if ($sp ne $nsp) {
-					dbg("RBN:SKIM CHANGE KEY sp '$sp' -> '$nsp' for storage") if isdbg('rbnskim');
+					dbg("RBN:SKIM CHANGE KEY sp '$sp' -> '$nsp' for storage") if $rbnskim;
 					$spots->{$nsp} = [$now, $cand->[CQual]];
 				}
 			}
@@ -744,7 +793,7 @@ sub finish
 sub write_cache
 {
 	my $ta = [ gettimeofday ];
-	$json->indent(1);
+	$json->indent(1) if isdbg 'rbncache';
 	my $s = eval {$json->encode($spots)};
 	if ($s) {
 		my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
@@ -781,7 +830,7 @@ sub check_cache
 				eval {$spots = $json->decode($s)};
 				if ($spots && ref $spots) {	
 					if (exists $spots->{VERSION} && $spots->{VERSION} == $DATA_VERSION) {
-						# now clean out anything that is current
+						# now clean out anything that has spot build ups in progress
 						while (my ($k, $cand) = each %$spots) {
 							next if $k eq 'VERSION';
 							next if $k =~ /^O\|/;

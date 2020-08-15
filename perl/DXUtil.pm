@@ -572,6 +572,7 @@ sub difft
 		$out .= sprintf ("%s${s}s", $adds?' ':'') if $s;
 		$out ||= sprintf ("%s0s", $adds?' ':'');
 	}
+	$out = '0s' unless length $out;
 	return $out;
 }
 
