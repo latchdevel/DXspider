@@ -26,7 +26,7 @@ $db = undef;					# the DB_File handle
 %prefix_loc = ();				# the meat of the info
 %pre = ();						# the prefix list
 $hits = $misses = $matchtotal = 1;		# cache stats
-$lrusize = 10000;				# size of prefix LRU cache
+$lrusize = 5000;				# size of prefix LRU cache
 
 sub init
 {

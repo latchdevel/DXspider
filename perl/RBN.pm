@@ -104,6 +104,7 @@ our $maxdeviants = 5;			# the number of deviant QRGs to record for skimmer recor
 sub init
 {
 	$json = DXJSON->new;
+	$json->canonical(0);
 	if (check_cache()) {
 		$noinrush = 1;
 	} else {
@@ -572,6 +573,8 @@ sub process
 				# we have a candidate, create qualitee value(s);
 				unless (@$cand > CData) {
 					dbg "RBN: QUEUE key '$sp' MISSING RECORDS, IGNORED" . dd($cand) if isdbg 'rbnqueue';
+					delete $spots->{$sp}; # don't remember it either - this means that a spot HAS to come in with sufficient spotters to be processed.
+					delete $dxchan->{queue}->{$sp};
 					next;
 				}
 				dbg "RBN: QUEUE PROCESSING key: '$sp' $now >= $cand->[CTime]" if isdbg 'rbnqueue'; 
@@ -706,8 +709,8 @@ sub process
 				# clear out the data and make this now just "spotted", but no further action required until respot time
 				dbg "RBN: QUEUE key '$sp' cleared" if isdbg 'rbn';
 
-				delete $spots->{$sp};
 				delete $dxchan->{queue}->{$sp};
+				delete $spots->{$sp};
 
 				# calculate new sp (which will be 70% likely the same as the old one)
 				# we do this to cope with the fact that the first spotter may well be "wrongly calibrated" giving a qrg that disagrees with the majority.
@@ -793,7 +796,7 @@ sub finish
 sub write_cache
 {
 	my $ta = [ gettimeofday ];
-	$json->indent(1) if isdbg 'rbncache';
+	$json->indent(1)->canonical(1) if isdbg 'rbncache';
 	my $s = eval {$json->encode($spots)};
 	if ($s) {
 		my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
@@ -801,10 +804,12 @@ sub write_cache
 		$fh->close;
 	} else {
 		dbg("RBN:Write_cache error '$@'");
+		return;
 	}
-	$json->indent(0);
+	$json->indent(0)->canonical(0);
 	my $diff = _diffms($ta);
-	dbg("RBN:WRITE_CACHE time to write: $diff mS");
+	my $size = sprintf('%.3fKB', (length($s) / 1000));
+	dbg("RBN:WRITE_CACHE size: $size time to write: $diff mS");
 }
 
 sub check_cache
