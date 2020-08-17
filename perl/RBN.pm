@@ -339,7 +339,7 @@ sub normal
 		my $respot = 0;
 		if ($cand && ref $cand) {
 			if (@$cand <= CData) {
-				unless ($self->{minspottime} > 0 && $now - $cand->[CTime] >= $self->{minspottime}) {
+				if ($self->{minspottime} > 0 && $now - $cand->[CTime] < $self->{minspottime}) {
 					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[CTime])) if $dbgrbn;
 					return;
 				}
@@ -353,10 +353,8 @@ sub normal
 		} elsif ($cand) {
 			dbg("RBN: key '$sp' = '$cand' not ref");
 			return;
-		}
-
-		# here we either have an existing spot record buildup on the go, or we need to create the first one
-		unless ($cand) {
+		} else {
+			# new spot / frequency
 			$spots->{$sp} = $cand = [$now, 0];
 			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if $dbgrbn;
 		}
@@ -386,7 +384,7 @@ sub normal
 
 		++$self->{queue}->{$sp};# unless @$cand>= CData; # queue the KEY (not the record)
 
-		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin") if $dbgrbn;
+		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin respot: $respot") if $dbgrbn;
 
 		push @$cand, $r;
 
@@ -710,7 +708,6 @@ sub process
 				dbg "RBN: QUEUE key '$sp' cleared" if isdbg 'rbn';
 
 				delete $dxchan->{queue}->{$sp};
-				delete $spots->{$sp};
 
 				# calculate new sp (which will be 70% likely the same as the old one)
 				# we do this to cope with the fact that the first spotter may well be "wrongly calibrated" giving a qrg that disagrees with the majority.
@@ -719,7 +716,10 @@ sub process
 				my $nsp = "$r->[RCall]|$nqrg";
 				if ($sp ne $nsp) {
 					dbg("RBN:SKIM CHANGE KEY sp '$sp' -> '$nsp' for storage") if $rbnskim;
+					delete $spots->{$sp};
 					$spots->{$nsp} = [$now, $cand->[CQual]];
+				} else {
+					$spots->{$sp} = [$now, $cand->[CQual]];
 				}
 			}
 			else {
