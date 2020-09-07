@@ -928,7 +928,7 @@ sub gen_my_pc92_config
 		clear_pc92_changes();		# remove any slugged data, we are generating it as now
 		my @dxchan = grep { $_->call ne $main::mycall && !$_->{isolate} } DXChannel::get_all();
 		dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-		my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
+		my @localnodes = map { my $r = Route::get($_->{call});($_->is_node || $_->is_user) && $r ? $r : () } @dxchan;
 		dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
 		return pc92c($node, @localnodes);
 	} else {

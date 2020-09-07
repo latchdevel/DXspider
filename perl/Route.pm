@@ -224,12 +224,14 @@ sub config
 					my $c;
 					if ($uref) {
 						$c = $uref->user_call;
-					} else {
+					}
+					else {
 						$c = "$ucall?";
 					}
 					if ((length $line) + (length $c) + 1 < $width) {
 						$line .= $c . ' ';
-					} else {
+					}
+					else {
 						$line =~ s/\s+$//;
 						push @out, $line;
 						$line = ' ' x ($level*2) . "$pcall->$c ";
@@ -240,7 +242,8 @@ sub config
 		$line =~ s/->$//g;
 		$line =~ s/\s+$//;
 		push @out, $line if length $line;
-	} else {
+	}
+	else {
 		# recursion detector
 		if ((DXChannel::get($call) && $level > 1) || $seen->{$call} || $level > $maxlevel) {
 			return @out;

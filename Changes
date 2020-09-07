@@ -1,3 +1,11 @@
+07Sep20=======================================================================
+1, Change interface to watchdbg & grepdbg slightly so that multiple search
+   regexes are ANDed rather than ORed together. ORing is easily achieved 
+   already by the usual regex pattern 'PATT..|PATT..|..' whereas ANDing could
+   not be done as easily without resorting lots of 'PATT.*PATH' things which
+   would not necessarily get what was wanted.
+2. Make sure that the pc92 C record only contains nodes and users and not
+   other extranoeus things like skimmers...
 15Aug20=======================================================================
 1. Simplify the skimmer scoring mechanism.
 13Aug20=======================================================================

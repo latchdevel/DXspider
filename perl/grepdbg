@@ -12,7 +12,9 @@
 # ten lines including the line matching the regular expression. 
 #
 # <regexp> is the regular expression you are searching for, 
-# a caseless search is done
+# a caseless search is done. There can be more than one <regexp>
+# a <regexp> preceeded by a '!' is treated as NOT <regexp>. Each
+# <regexp> is implcitly ANDed together. 
 #
 # If you specify something that likes a filename and that filename
 # has a .pm on the end of it and it exists then rather than doing
@@ -47,8 +49,9 @@ $fp = DXLog::new('debug', 'dat', 'd');
 $today = $fp->unixtoj(time()); 
 my $nolines = 1;
 my @prev;
+my @patt;
 
-for my $arg (@ARGV) {
+foreach my $arg (@ARGV) {
 	if ($arg =~ /^-/) {
 		$arg =~ s/^-//o;
 		if ($arg =~ /^\s*\-+(?:[h\?]e?l?p?)/) {
@@ -68,12 +71,11 @@ for my $arg (@ARGV) {
 			die "$arg not found";
 		}
 	} else {
-		$string = $arg;
-		last;
+		push @patt, $arg;
 	}
 }
 
-$string ||= '.*';
+push @patt, '.*' unless @patt;
 
 push @list, "0" unless @list;
 for my $entry (@list) {
@@ -104,7 +106,17 @@ sub process
 	chomp $line;
 	push @prev, $line;
 	shift @prev while @prev > $nolines;
-	if ($line =~ m{$string}io) {
+	my $flag = 0;
+	foreach my $p (@patt) {
+		if ($p =~ /^!/) {
+			my $r = substr $p, 1;
+			last if $line =~ m{$r}i;
+		} else {
+			last unless $line =~ m{$p}i;
+		}
+		++$flag;
+	}		
+	if ($flag == @patt) {
 		for (@prev) {
 			s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
 			my ($t, $l) =  split /\^/, $_, 2;
@@ -117,6 +129,6 @@ sub process
 	
 sub usage
 {
-	die "usage: grepdbg [nn days before] [-nnn lines before] [<regexp>|<perl file name>]\n";
+	die "usage: grepdbg [nn days before] [-nnn lines before] [<perl file name>] [<regexp>|!<regexp>]...\n";
 }
 exit(0);
