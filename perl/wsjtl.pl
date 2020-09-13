@@ -71,7 +71,7 @@ use DXUDP;
 use WSJTX;
 
 our $udp_host = '0.0.0.0';
-our $udp_port = 2237;
+our $udp_port = 59387; # 2237;
 our $tcp_host = '::';
 our $tcp_port = 2238;
 
@@ -89,10 +89,24 @@ dbgadd('udp');
 $uh = DXUDP->new;
 $uh->start(host => $udp_host, port => $udp_port) or die "Cannot listen on $udp_host:$udp_port $!\n";
 
-$wsjtx = WSJTX->new();
-$uh->on(read => sub {wstjx->handle(@_)});
+$wsjtx = WSJTX->new;
+$uh->on(read => \&_read);
 
 Mojo::IOLoop->start() unless Mojo::IOLoop->is_running;
+
+sub _read
+{
+	my ($handle, $data) = @_;
+
+#	say "before handle";
+	
+	$wsjtx->handle($handle, $data);
+
+#	say "after handle";
+	
+#	my $lth = length $data;
+#	dbgdump('udp', "UDP IN lth: $lth", $data);	
+}
 
 exit;
 

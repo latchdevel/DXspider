@@ -10,8 +10,14 @@ use warnings;
 use 5.22.1;
 
 use JSON;
+use DXDebug;
 
 my $json;
+
+sub new
+{
+	return bless {}, 'WSJTX';
+}
 
 sub handle
 {
@@ -19,7 +25,8 @@ sub handle
 
 	my $lth = length $data;
 	dbgdump('udp', "UDP IN lth: $lth", $data);
-
+	return 1;
+	
 }
 
 sub finish
