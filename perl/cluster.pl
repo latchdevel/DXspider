@@ -488,7 +488,7 @@ sub setup_start
 	}
 
 	# open the debug file, set various FHs to be unbuffered
-	dbginit($broadcast_debug ? \&DXCommandmode::broadcast_debug : undef);
+	dbginit(undef, $broadcast_debug ? \&DXCommandmode::broadcast_debug : undef);
 	foreach (@debug) {
 		dbgadd($_);
 	}

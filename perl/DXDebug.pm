@@ -135,6 +135,7 @@ sub dbg
 
 sub dbginit
 {
+	my $basename = shift || 'debug';
 	$callback = shift;
 	
 	# add sig{__DIE__} handling
@@ -161,7 +162,7 @@ sub dbginit
 		}
 	}
 
-	$fp = DXLog::new('debug', 'dat', 'd');
+	$fp = DXLog::new($basename, 'dat', 'd');
 	dbgclearring();
 }
 
