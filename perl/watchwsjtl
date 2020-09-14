@@ -1,0 +1,100 @@
+#!/usr/bin/perl
+#
+# watch the end of the current debug file (like tail -f) applying
+# any regexes supplied on the command line.
+#
+# There can be more than one <regexp>. a <regexp> preceeded by a '!' is
+# treated as NOT <regexp>. Each <regexp> is implcitly ANDed together.
+# All <regexp> are caseless.
+#
+# examples:-
+# 
+#   watchwsjtl g1tlh       # watch everything g1tlh does
+#   watchwsjtl -2 PCPROT       # watch all PCPROT messages + up to 2 lines before
+#   watchwsjtl gb7baa gb7djk   # watch the conversation between BAA and DJK 
+#
+
+require 5.004;
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
+use IO::File;
+use SysVar;
+use DXUtil;
+use DXLog;
+
+use strict;
+
+my $fp = DXLog::new('wsjtl', 'dat', 'd');
+my $today = $fp->unixtoj(time()); 
+my $fh = $fp->open($today) or die $!; 
+my $nolines = 1;
+$nolines = shift if $ARGV[0] =~ /^-?\d+$/;
+$nolines = abs $nolines if $nolines < 0;  
+my @patt = @ARGV;
+my @prev;
+
+# seek to end of file
+$fh->seek(0, 2);
+for (;;) {
+	my $line = $fh->getline;
+	if ($line) {
+		if (@patt) {
+			push @prev, $line;
+			shift @prev while @prev > $nolines; 
+			my $flag = 0;
+			foreach my $p (@patt) {
+				if ($p =~ /^!/) {
+					my $r = substr $p, 1;
+					last if $line =~ m{$r}i;
+				} else {
+					last unless $line =~ m{$p}i;
+				}
+				++$flag;
+			}		
+			if ($flag == @patt) {
+				printit(@prev);	
+				@prev = ();
+			}
+		} else {
+			printit($line);
+		}
+	} else {
+		sleep(1);
+		
+		# check that the debug hasn't rolled over to next day
+		# open it if it has
+		my $now = $fp->unixtoj(time()); 
+		if ($today->cmp($now)) {
+			$fp->close;
+			my $i;
+			for ($i = 0; $i < 20; $i++) {
+				last if $fh = $fp->open($now);
+				sleep 5;
+			}
+		 	die $! if $i >= 20; 
+			$today = $now;
+		}
+	}
+}
+
+sub printit
+{
+	while (@_) {
+		my $line = shift;
+		chomp $line;
+		$line =~ s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
+		my ($t, $l) =  split /\^/, $line, 2;
+		$t = time unless defined $t;
+		printf "%02d:%02d:%02d %s\n", (gmtime($t))[2,1,0], $l;
+	}
+}
+exit(0);

@@ -1,4 +1,4 @@
-#!/usr/binenv perl
+#!/usr/bin/env perl
 #
 # A basic listener and decoder of wsjtx packets
 #
@@ -70,8 +70,8 @@ use DXUDP;
 
 use WSJTX;
 
-our $udp_host = '0.0.0.0';
-our $udp_port = 59387; # 2237;
+our $udp_host = '::';
+our $udp_port = 2237;
 our $tcp_host = '::';
 our $tcp_port = 2238;
 
@@ -84,12 +84,13 @@ our %slot;			  # where the connected TCP client structures live
 
 
 dbginit('wsjtl');
-dbgadd('udp');
+
+
 
 $uh = DXUDP->new;
 $uh->start(host => $udp_host, port => $udp_port) or die "Cannot listen on $udp_host:$udp_port $!\n";
 
-$wsjtx = WSJTX->new;
+$wsjtx = WSJTX->new(handle=>'2,5');
 $uh->on(read => \&_read);
 
 Mojo::IOLoop->start() unless Mojo::IOLoop->is_running;

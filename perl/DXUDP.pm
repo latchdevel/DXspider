@@ -39,6 +39,7 @@ A simple Mojo compatible UDP thingy
 use Mojo::Base 'Mojo::EventEmitter';
 use Mojo::IOLoop;
 use Scalar::Util qw(weaken);
+use IO::Socket::INET6;
 
 our $VERSION = '0.04';
 
@@ -107,7 +108,7 @@ sub start {
 	my $host = $args->{LocalAddr} || $args->{host} || '0.0.0.0';
 	my $port = $args->{LocalPort} || $args->{port} || 1234;
 	
-    $socket = IO::Socket::IP->new(
+    $socket = IO::Socket::INET6->new(
                   LocalAddr => $host,
                   LocalPort => $port,
                   Proto => 'udp',
