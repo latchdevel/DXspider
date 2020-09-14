@@ -78,37 +78,73 @@ our $tcp_port = 2238;
 my $uh;							# the mojo handle for the UDP listener
 my $th;							#  ditto TCP
 my $wsjtx;						# the wsjtx decoder
-
+my $cease;
 
 our %slot;			  # where the connected TCP client structures live
 
 
 dbginit('wsjtl');
 
-
+my @queue;
 
 $uh = DXUDP->new;
 $uh->start(host => $udp_host, port => $udp_port) or die "Cannot listen on $udp_host:$udp_port $!\n";
 
-$wsjtx = WSJTX->new(handle=>'2,5');
-$uh->on(read => \&_read);
+$wsjtx = WSJTX->new();
+$uh->on(read => \&_udpread);
+
+$th = Mojo::IOLoop::Server->new;
+$th->on(accept => \&_accept);
+$th->listen(address => $tcp_host, port => $tcp_port);
+$th->start;
 
 Mojo::IOLoop->start() unless Mojo::IOLoop->is_running;
 
-sub _read
+exit;
+
+sub _udpread
 {
 	my ($handle, $data) = @_;
 
-#	say "before handle";
-	
-	$wsjtx->handle($handle, $data);
+	my $host = $handle->peerhost;
+	my $port = $handle->peerport;
+   
+	my $in = $wsjtx->handle($handle, $data, "$host:$port");
 
-#	say "after handle";
-	
-#	my $lth = length $data;
-#	dbgdump('udp', "UDP IN lth: $lth", $data);	
+	distribute($in);
 }
 
-exit;
+sub _accept
+{
+	my ($id, $handle) = @_;
+	my $host = $handle->peerhost;
+	my $port = $handle->peerport;
+
+	
+	my $s = $slot{"$host:$port"} = { addr => "$host:$port"};
+	my $stream = $s->{stream} = Mojo::IOLoop::Stream->new($handle);
+	$stream->on(error => sub { $stream->close; delete $s->{addr}});
+	$stream->on(close => sub { delete $s->{addr}});
+	$stream->on(read => sub {_tcpread($s, $_[1])});
+	$stream->timeout(0);
+	$stream->start;
+}
+
+sub _tcpread
+{
+	my $s = shift;
+	my $data = shift;
+	
+	dbg("incoming: $data");
+}
+
+sub distribute
+{
+	my $in = shift;
+	foreach my $c (values %slot) {
+		$c->{stream}->write("$in\r\n");
+	}
+}
+
 
 

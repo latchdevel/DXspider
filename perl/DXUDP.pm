@@ -140,6 +140,8 @@ sub _incoming {
 	$self->emit(read => $datagram);
 }	
 
+has peerhost => sub { return $_[0]->{socket}->peerhost };
+has peerport => sub { return $_[0]->{socket}->peerport };
 
 sub DEMOLISH {
     my $self = shift;

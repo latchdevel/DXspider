@@ -7,83 +7,140 @@ package WSJTX;
 
 use strict;
 use warnings;
-use 5.22.1;
+use 5.10.1;
 
 use JSON;
 use DXDebug;
 
 my $json;
 
-our %specs = (
-			  'head' => [
-						 ['magic', 'int32'],
-						 ['proto', 'int32'],
-						],
-			  '0' => [
-					  ['type', 'int32'],
-					  ['id', 'utf'],
-					  ['schema', 'int32'],
-					  ['version', 'utf'],
-					  ['revision', 'utf'],
-					 ],
-			  '1' => [
-					  ['type', 'int32'],
-					  ['id', 'utf'],
-					  ['qrg', 'int64'],
-					  ['mode', 'utf'],
-					  ['dxcall', 'utf'],
-					  ['report', 'utf'],
-					  ['txmode', 'utf'],
-					  ['txenabled', 'bool'],
-					  ['txing', 'bool'],
-					  ['decoding', 'bool'],
-					  ['rxdf', 'int32'],
-					  ['txdf', 'int32'],
-					  ['mycall', 'utf'],
-					  ['mygrid', 'utf'],
-					  ['dxgrid', 'utf'],
-					  ['txwd', 'bool'],
-					  ['submode', 'utf'],
-					  ['fastmode', 'bool'],
-					  ['som', 'int8'],
-					  ['qrgtol', 'int32'],
-					  ['trperiod', 'int32'],
-					  ['confname', 'utf'],
-					 ],
-			  '2' => [
+our %spec = (
+			 '0' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['schema', 'int32'],
+					 ['version', 'utf'],
+					 ['revision', 'utf'],
+					],
+			 '1' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['qrg', 'int64', '_myqrg'],
+					 ['mode', 'utf'],
+					 ['dxcall', 'utf'],
+					 ['report', 'utf'],
+					 ['txmode', 'utf'],
+					 ['txenabled', 'bool'],
+					 ['txing', 'bool'],
+					 ['decoding', 'bool'],
+					 ['rxdf', 'int32'],
+					 ['txdf', 'int32'],
+					 ['mycall', 'utf', '_mycall'],
+					 ['mygrid', 'utf', '_mygrid'],
+					 ['dxgrid', 'utf'],
+					 ['txwd', 'bool'],
+					 ['submode', 'utf'],
+					 ['fastmode', 'bool'],
+					 ['som', 'int8', \&_som],
+					 ['qrgtol', 'int32'],
+					 ['trperiod', 'int32'],
+					 ['confname', 'utf'],
+					],
+			 '2' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['new', 'bool'],
+					 ['tms', 'int32'],
+					 ['snr', 'int32'],
+					 ['deltat', 'float'],
+					 ['deltaqrg', 'int32'],
+					 ['mode', 'utf'],
+					 ['msg', 'utf'],
+					 ['lowconf', 'bool'],
+					 ['offair', 'bool'],
+					],
+			 '3' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['window', 'int8'],
+					],
+			 '4' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['tms', 'int32'],
+					 ['snr', 'int32'],
+					 ['deltat', 'float'],
+					 ['deltaqrg', 'int32'],
+					 ['mode', 'utf'],
+					 ['msg', 'utf'],
+					 ['lowconf', 'bool'],
+					 ['modifiers', 'int8'],
+					],
+			 '5' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['toff', 'qdate'],
+					 ['dxcall', 'utf'],
+					 ['dxgrid', 'utf'],
+					 ['qrg', 'int64'],
+					 ['mode', 'utf'],
+					 ['repsent', 'utf'],
+					 ['reprcvd', 'utf'],
+					 ['txpower', 'utf'],
+					 ['comment', 'utf'],
+					 ['name', 'utf'],
+					 ['ton', 'qdate'],
+					 ['opcall', 'utf'],
+					 ['mycall', 'utf'],
+					 ['mysent', 'utf'],
+					 ['xchgsent', 'utf'],
+					 ['reprcvd', 'utf'],
+					],
+			 '6' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					],
+			 '7' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					],
+			 '8' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['autotx', 'bool'],
+					],
+			 '9' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['txt', 'utf'],
+					 ['send', 'bool'],
+					],
+			 '10' => [
 					  ['type', 'int32'],
 					  ['id', 'utf'],
 					  ['new', 'bool'],
-					  ['t', 'int32'],
+					  ['tms', 'int32'],
 					  ['snr', 'int32'],
 					  ['deltat', 'float'],
-					  ['deltaqrg', 'int32'],
-					  ['mode', 'utf'],
-					  ['msg', 'utf'],
-					  ['lowconf', 'bool'],
+					  ['qrg', 'int64'],
+					  ['drift', 'int32'],
+					  ['call', 'utf'],
+					  ['grid', 'utf'],
+					  ['power', 'int32'],
 					  ['offair', 'bool'],
 					 ],
-			  '5' => [
-					  ['type', 'int32'],
-					  ['id', 'utf'],
-					  ['toff', 'qtime'],
-					  ['dxcall', 'utf'],
-					  ['dxgrid', 'utf'],
-					  ['qrg', 'int64'],
-					  ['mode', 'utf'],
-					  ['repsent', 'utf'],
-					  ['reprcvd', 'utf'],
-					  ['txpower', 'utf'],
-					  ['comment', 'utf'],
-					  ['name', 'utf'],
-					  ['ton', 'qtime'],
-					  ['opcall', 'utf'],
-					  ['mycall', 'utf'],
-					  ['mysent', 'utf'],
-					  ['xchgsent', 'utf'],
-					  ['reprcvd', 'utf'],
-					 ],
-			 );
+			 '11' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['grid', 'utf'],
+					],
+			 '12' => [
+					 ['type', 'int32'],
+					 ['id', 'utf'],
+					 ['adif', 'utf'],
+					],
+			 
+			);
 
 sub new
 {
@@ -105,102 +162,55 @@ sub new
 
 sub handle
 {
-	my ($self, $handle, $data) = @_;
+	my ($self, $handle, $data, $origin) = @_;
 
 	my $lth = length $data;
 	dbgdump('udp', "UDP IN lth: $lth", $data);
 
 	my ($magic, $schema, $type) = eval {unpack 'N N N', $data};
-	return 0 unless $magic == 0xadbccbda && $schema >= 0 && $schema <= 3 && $type >= 0  && $type <= 32; # 32 to allow for expansion
-
-	no strict 'refs';
-	my $h = "decode$type";
-	if ($self->can($h)) {
-		my $a = unpack "H*", $data;
-		$a =~ s/f{8}/00000000/g;
-		$data = pack 'H*', $a;
-		dbgdump('udp', "UDP process lth: $lth", $data);
-		$self->$h($type, substr($data, 12)) if $self->{"h_$type"};
-	} else {
-		dbg("decode $type not implemented");
-	}
-
+	return 0 unless $magic == 0xadbccbda && $schema >= 0 && $schema <= 3 && $spec{$type};
+	my $out = $self->unpack($data, $spec{$type}, $origin);
+	dbg($out) if $out && $type != 0;
 	
-	return 1;
-	
-}
-
-sub decode0
-{
-	my ($self, $type, $data) = @_;
-
-	my %r;
-	$r{type} = $type;
-
-	($r{id}, $r{schema}, $r{version}, $r{revision}) = eval {unpack 'l>/a N l>/a l>/a', $data};
-	if ($@) {
-		dbg($@);
-	} else {
-		my $j = $json->encode(\%r);
-		dbg($j);
-	}
-
-}
-
-sub decode1
-{
-	my ($self, $type, $data) = @_;
-
-	my %r;
-	$r{type} = $type;
-	
-	(
-	 $r{id}, $r{qrg}, $r{mode}, $r{dxcall}, $r{report}, $r{txmode},
-	 $r{txenabled}, $r{txing}, $r{decoding}, $r{rxdf}, $r{txdf},
-	 $r{decall}, $r{degrid}, $r{dxgrid}, $r{txwatch}, $r{som},
-	 $r{fast}, $r{qrgtol}, $r{trperiod}, $r{confname}
-	 
-	) = eval {unpack 'l>/a Q> l>/a l>/a l>/a l>/a C C C l> l> l>/a l>/a l>/a C l>/a c l> l> l>/a', $data};
-	if ($@) {
-		dbg($@);
-	} else {
-		my $j = $json->encode(\%r);
-		dbg($j);
-	}
-}
-
-sub decode2
-{
-	my ($self, $type, $data) = @_;
-
-	my %r;
-	$r{type} = $type;
-	
-	(
-	 $r{id}, $r{new}, $r{tms}, $r{snr}, $r{deltat}, $r{deltaqrg}, $r{mode}, $r{msg}, $r{lowconf}, $r{offair}
-	)  = eval {unpack 'l>/a C N l> d> N l>/a l>/a C C ', $data};
-	if ($@) {
-		dbg($@);
-	} else {
-		my $j = $json->encode(\%r);
-		dbg($j);
-	}
+	return $out;
 }
 
 use constant NAME => 0;
 use constant SORT => 1;
-use constant FUNCTION => 3;
+use constant FUNC => 2;
+use constant LASTTIME => 0;
+use constant MYCALL => 1;
+use constant MYGRID => 2;
+use constant MYQRG => 3;
 
 sub unpack
 {
 	my $self = shift;
 	my $data = shift;
 	my $spec = shift;
-	my $end = shift;
+	my $ip = shift;
 
-	my $pos = $self->{unpackpos} || 0;
-	my $out = $pos ? '{' : '';
+	my $now = time;
+	my $mycall;
+	my $mygrid;
+	my $myqrg;
+		
+	if ($ip) {
+		my $cr = $self->{CR}->{$ip};
+		if ($cr) {
+			$mycall = $cr->[MYCALL];
+			$mygrid = $cr->[MYGRID];
+			$myqrg = $cr->[MYQRG];
+			$cr->[LASTTIME] = $now;
+		}
+		$self->{ip} = $ip
+	} else {
+		delete $self->{ip};
+	}
 	
+	my $pos = $self->{unpackpos} || 8;
+	my $out = $pos ? '{' : '';
+
 	foreach my $r (@$spec) {
 		my $v = 'NULL';
 		my $l;
@@ -217,6 +227,7 @@ sub unpack
 		} elsif ($r->[SORT] eq 'int8') {
 			$l = 1;
 			($v) = unpack 'c', substr $data, $pos, $l;
+			
 		} elsif ($r->[SORT] eq 'bool') {
 			$l = 1;
 			($v) = unpack 'c', substr $data, $pos, $l;
@@ -230,27 +241,37 @@ sub unpack
 			$l = 4;
 			($v) = unpack 'l>', substr $data, $pos, 4;
 			if ($v > 0) {
-				($v) = unpack "a$v", substr $data, $pos;
+				($v) = unpack "a$v", substr $data, $pos+4;
 				$l += length $v;
 				++$alpha;
 			} else {
+				$pos += 4;
 				next;			# null alpha field
 			} 
 		}
 
 		$out .= qq{"$r->[NAME]":};
+		if ($r->[FUNC]) {
+			no strict 'refs';
+			($v, $alpha) = $r->[FUNC]($self, $v);
+		}
 		$out .= $alpha ? qq{"$v"} : $v;
 		$out .= ',';
 		$pos += $l;
 	}
 
-	if ($end) {
-		$out =~ s/,$//;
-		$out .= '}';
-		delete $self->{unpackpos};
-	} else {
-		$self->{unpackpos} = $pos;
-	}
+	return undef unless $mycall;
+	
+	$out .= qq{"ocall":"$mycall",} if $mycall;
+	$out .= qq{"ogrid":"$mygrid",} if $mygrid;
+	$out .= qq{"oqrg":"$myqrg",} if $myqrg;
+#	$out .= qq{"oip":"$ip",} if $ip;
+
+	$out =~ s/,$//;
+	$out .= '}';
+	
+	delete $self->{unpackpos};
+
 	return $out;
 }
 
@@ -261,7 +282,7 @@ sub finish
 
 sub per_sec
 {
-
+	
 }
 
 sub per_minute
@@ -269,5 +290,44 @@ sub per_minute
 
 }
 
+sub _som
+{
+	my $self = shift;
+	
+	my @s = qw{NONE NA-VHF EU-VHF FIELD-DAY RTTY-RU WW-DIGI FOX HOUND};
+	my $v = $s[shift];
+	$v ||= 'UNKNOWN';
+	return ($v, 1);
+}
+
+sub _mycall
+{
+	my $self = shift;
+	my $v = shift;
+	my $ip = $self->{ip};
+	my $cr = $self->{CR}->{$ip} ||= [];
+	$v = $cr->[MYCALL] //= $v;
+	return ($v, 1); 
+}
+
+sub _mygrid
+{
+	my $self = shift;
+	my $v = shift;
+	my $ip = $self->{ip};
+	my $cr = $self->{CR}->{$ip} ||= [];
+	$v = $cr->[MYGRID] //= $v;
+	return ($v, 1); 
+}
+
+sub _myqrg
+{
+	my $self = shift;
+	my $v = shift;
+	my $ip = $self->{ip};
+	my $cr = $self->{CR}->{$ip} ||= [];
+	$v = $cr->[MYQRG] = $v;
+	return ($v, 1); 
+}
 
 1;

@@ -1,0 +1,134 @@
+#!/usr/bin/perl
+#
+# Program to do a grep with dates and times on the debug
+# files
+#
+# grepwsjtl [nn] [-mm] <regular expression>
+#
+# nn - is the day you what to look at: 1 is yesterday, 0 is today
+# and is optional if there is only one argument
+#
+# -mmm - print the mmm lines before the match. So -10 will print
+# ten lines including the line matching the regular expression. 
+#
+# <regexp> is the regular expression you are searching for, 
+# a caseless search is done. There can be more than one <regexp>
+# a <regexp> preceeded by a '!' is treated as NOT <regexp>. Each
+# <regexp> is implcitly ANDed together. 
+#
+# If you specify something that likes a filename and that filename
+# has a .pm on the end of it and it exists then rather than doing
+# the regex match it executes the "main::handle()" function passing
+# it one line at a time.
+#
+#
+
+require 5.004;
+
+# search local then perl directories
+BEGIN {
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+}
+
+use SysVar;
+use DXUtil;
+use DXLog;
+use Julian;
+
+use strict;
+
+use vars qw(@list $fp $today $string);
+
+
+$fp = DXLog::new('wsjtl', 'dat', 'd');
+$today = $fp->unixtoj(time()); 
+my $nolines = 1;
+my @prev;
+my @patt;
+
+foreach my $arg (@ARGV) {
+	if ($arg =~ /^-/) {
+		$arg =~ s/^-//o;
+		if ($arg =~ /^\s*\-+(?:[h\?]e?l?p?)/) {
+			usage();
+			exit(0);
+		}
+		push @list, $arg;
+	} elsif ($arg =~ /^\d+$/) {
+		$nolines = $arg;
+	} elsif ($arg =~ /\.pm$/) {
+		if (-e $arg) {
+			my $fn = $arg;
+			$fn =~ s/\.pm$//;
+			eval { require $arg};
+			die "requiring $fn failed $@" if $@;
+		} else {
+			die "$arg not found";
+		}
+	} else {
+		push @patt, $arg;
+	}
+}
+
+push @patt, '.*' unless @patt;
+
+push @list, "0" unless @list;
+for my $entry (@list) {
+	my $now = $today->sub($entry); 
+	my $fh = $fp->open($now); 
+	my $line;
+	my $do;
+
+	if (main->can('handle')) {
+		$do = \&handle;
+	} else {
+		$do = \&process;
+	}
+
+	begin() if main->can('begin');
+	if ($fh) {
+		while (<$fh>) {
+			&$do($_);
+		}
+		$fp->close();
+	}
+	end() if main->can('end');
+}
+
+sub process
+{
+	my $line = shift;
+	chomp $line;
+	push @prev, $line;
+	shift @prev while @prev > $nolines;
+	my $flag = 0;
+	foreach my $p (@patt) {
+		if ($p =~ /^!/) {
+			my $r = substr $p, 1;
+			last if $line =~ m{$r}i;
+		} else {
+			last unless $line =~ m{$p}i;
+		}
+		++$flag;
+	}		
+	if ($flag == @patt) {
+		for (@prev) {
+			s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
+			my ($t, $l) =  split /\^/, $_, 2;
+			print atime($t), ' ', $l, "\n";
+			print '----------------' if $nolines > 1;
+		}
+		@prev = ();
+	}
+}
+	
+sub usage
+{
+	die "usage: grepwsjtl [nn days before] [-nnn lines before] [<perl file name>] [<regexp>|!<regexp>]...\n";
+}
+exit(0);
