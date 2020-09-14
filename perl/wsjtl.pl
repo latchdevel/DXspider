@@ -111,7 +111,7 @@ sub _udpread
    
 	my $in = $wsjtx->handle($handle, $data, "$host:$port");
 
-	distribute($in);
+	distribute($in) if $in && length $in;
 }
 
 sub _accept

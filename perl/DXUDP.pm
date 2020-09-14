@@ -108,7 +108,7 @@ sub start {
 	my $host = $args->{LocalAddr} || $args->{host} || '0.0.0.0';
 	my $port = $args->{LocalPort} || $args->{port} || 1234;
 	
-    $socket = IO::Socket::INET6->new(
+    $socket = IO::Socket::IP->new(
                   LocalAddr => $host,
                   LocalPort => $port,
                   Proto => 'udp',
