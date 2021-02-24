@@ -1335,7 +1335,7 @@ sub spawn_cmd
 			 sub {
 				 my $subpro = shift;
 				 if (isdbg('progress')) {
-					 my $s = qq{line: "$line"};
+					 my $s = qq{$call line: "$line"};
 					 $s .= ", args: " . join(', ', map { defined $_ ? qq{'$_'} : q{'undef'} } @$args) if $args && @$args;
 					 dbg($s);
 				 }

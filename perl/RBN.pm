@@ -85,6 +85,11 @@ our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 our $dwelltime = 10; 			# the amount of time to wait for duplicates before issuing
                                 # a spot to the user (no doubt waiting with bated breath).
 
+our $limbotime = 5*60; 			# if there are fewer than $minqual candidates and $dwelltime
+                                # has expired then allow this spot to live a bit longer. It may
+                                # simply be that it is not in standard spot coverage. (ask G4PIQ
+                                # about this).
+
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
 
 my $spots;						# the GLOBAL spot cache
@@ -96,6 +101,7 @@ our $cache_valid = 4*60;		# The cache file is considered valid if it is not more
 
 our $maxqrgdiff = 10;			# the maximum
 our $minqual = 2;				# the minimum quality we will accept for output
+our $maxqual = 9;				# if there is enough quality, then short circuit any remaining dwelltime.
 
 my $json;
 my $noinrush = 0;				# override the inrushpreventor if set
@@ -251,7 +257,7 @@ sub normal
 	$sort ||= '';
 	$tx ||= '';
 	$qra ||= '';
-    dbg qq{RBN:input decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if $dbgrbn;
+    dbg qq{RBN:input decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra} if $dbgrbn && isdbg('rbn');
 
 	++$self->{noraw};
 	++$self->{noraw10};
@@ -318,7 +324,7 @@ sub normal
 			}
 			if ($cand) {
 				my $diff = $i - $nqrg;
-				dbg(qq{RBN: QRG Diff using $new (+$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || $dbgrbn);
+				dbg(qq{RBN: QRG Diff using $new (+$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || ($dbgrbn && isdbg('rbn')));
 				$sp = $new;
 			}
 		}
@@ -330,7 +336,7 @@ sub normal
 			}
 			if ($cand) {
 				my $diff = $nqrg - $i;
-				dbg(qq{RBN: QRG Diff using $new (-$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || $dbgrbn);
+				dbg(qq{RBN: QRG Diff using $new (-$diff) for $sp for qrg $qrg}) if (isdbg('rbnqrg') || ($dbgrbn && isdbg('rbn')));
 				$sp = $new;
 			}
 		}
@@ -340,11 +346,11 @@ sub normal
 		if ($cand && ref $cand) {
 			if (@$cand <= CData) {
 				if ($self->{minspottime} > 0 && $now - $cand->[CTime] < $self->{minspottime}) {
-					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[CTime])) if $dbgrbn;
+					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[CTime])) if $dbgrbn && isdbg('rbn');
 					return;
 				}
 				
-				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $cand->[CTime])) if $dbgrbn;
+				dbg("RBN: key: '$sp' RESPOTTING call: $call qrg: $qrg last seen \@ ". atime(int $cand->[CTime])) if $dbgrbn && isdbg('rbn');
 				$cand->[CTime] = $now;
 				++$respot;
 			}
@@ -356,7 +362,7 @@ sub normal
 		} else {
 			# new spot / frequency
 			$spots->{$sp} = $cand = [$now, 0];
-			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if $dbgrbn;
+			dbg("RBN: key: '$sp' call: $call qrg: $qrg NEW" . ($respot ? ' RESPOT' : '')) if $dbgrbn && isdbg('rbn');
 		}
 
 		# add me to the display queue unless we are waiting for initial in rush to finish
@@ -384,12 +390,12 @@ sub normal
 
 		++$self->{queue}->{$sp};# unless @$cand>= CData; # queue the KEY (not the record)
 
-		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin respot: $respot") if $dbgrbn;
+		dbg("RBN: key: '$sp' ADD RECORD call: $call qrg: $qrg origin: $origin respot: $respot") if $dbgrbn && isdbg('rbn');
 
 		push @$cand, $r;
 
 	} else {
-		dbg "RBN:DATA,$line" if $dbgrbn;
+		dbg "RBN:DATA,$line" if $dbgrbn && isdbg('rbn');
 	}
 }
 
@@ -563,11 +569,18 @@ sub process
 		foreach my $sp (keys %{$dxchan->{queue}}) {
 			my $cand = $spots->{$sp};
 			++$items;
+			
 			unless ($cand && $cand->[CTime]) {
 				dbg "RBN Cand $sp " . ($cand ? 'def' : 'undef') . " [CTime] " . ($cand->[CTime] ? 'def' : 'undef') . " dwell $dwelltime";
+				delete $spots->{$sp};
+				delete $dxchan->{queue}->{$sp};    # remove
 				next;
-			} 
-			if ($now >= $cand->[CTime] + $dwelltime ) {
+			}
+			
+			my $ctime = $cand->[CTime];
+			my $quality = @$cand - CData;
+			my $dwellsecs =  $now - $ctime;
+			if ($quality >= $maxqual || $dwellsecs >= $dwelltime || $dwellsecs >= $limbotime) {
 				# we have a candidate, create qualitee value(s);
 				unless (@$cand > CData) {
 					dbg "RBN: QUEUE key '$sp' MISSING RECORDS, IGNORED" . dd($cand) if isdbg 'rbnqueue';
@@ -576,15 +589,16 @@ sub process
 					next;
 				}
 				dbg "RBN: QUEUE PROCESSING key: '$sp' $now >= $cand->[CTime]" if isdbg 'rbnqueue'; 
-				my $quality = @$cand - CData;
 				my $spotters = $quality;
 
-				# dump it and remove it from the queue if it is of unadequate quality
-				if ($quality < $minqual) {
-					if ($rbnskim) {
-						my $r = $cand->[CData];
+				# dump it and remove it from the queue if it is of unadequate quality, but only if it is no longer in Limbo and can be reasonably passed on to its demise
+				my $r = $cand->[CData];
+				if ($dwellsecs > $limbotime && $quality < $minqual) {
+					if ( $rbnskim && isdbg('rbnskim')) {
+						$r = $cand->[CData];
 						if ($r) {
-							my $s = "RBN:SKIM Ignored (Q:$quality < Q:$minqual) key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] route: $dxchan->{call}";
+							my $lastin = difft($ctime, $now, 2);
+							my $s = "RBN:SKIM time in Limbo exceeded DUMPED (lastin: $lastin Q:$quality < Q:$minqual) key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] route: $dxchan->{call}";
 							dbg($s);
 						}
 					}
@@ -593,10 +607,55 @@ sub process
 					next;
 				}
 
+				# we have a possible removal from Limbo, check for more than one skimmer and reset the quality if required
+				# DOES THIS TEST CAUSE RACES?
+				if (!$r->[Respot] && $quality >= $minqual && $dwellsecs > $dwelltime+1) {
+
+					# because we don't need to check for repeats by the same skimmer in the normal case, we do here
+					my %seen;
+					my @origin;
+					foreach my $wr (@$cand) {
+						next unless ref $wr;
+						push @origin, $wr->[ROrigin];
+						if (exists $seen{$wr->[ROrigin]}) {
+							next;
+						}
+						$seen{$wr->[ROrigin]} = $wr;
+					}
+					# reset the quality to ignore dupes
+					my $oq = $quality;
+					$quality = keys %seen;
+					if ($quality >= $minqual) {
+						if ( $rbnskim && isdbg('rbnskim')) {
+							my $lastin = difft($ctime, $now, 2);
+							my $sk = join ' ', keys %seen;
+							my $or = join ' ', @origin;
+							my $s = "RBN:SKIM promoted from Limbo - key: '$sp' (lastin: $lastin Q now: $quality was $oq skimmers now: $sk";
+							$s .= " was $or" if $or ne $sk;
+							$s .= ')';
+							dbg($s);
+						} 
+					} elsif ($oq != $quality) {
+						if ( $rbnskim && isdbg('rbnskim')) {
+							my $lastin = difft($ctime, $now, 2);
+							my $sk = join ' ', keys %seen;
+							my $or = join ' ', @origin;
+							my $s = "RBN:SKIM quality reset key: '$sp' (lastin: $lastin Q now: $quality was $oq skimmers now: $sk was: $or)";
+							dbg($s);
+						}
+						# remove the excess
+						my @ncand = (@$cand[CTime, CQual], values %seen);
+						$spots->{$sp} = \@ncand;
+					}
+				}
+
+				# we now kick this spot into Limbo 
+				if ($quality < $minqual) {
+					next;
+				}
+
 				$quality = 9 if $quality > 9;
 				$cand->[CQual] = $quality if $quality > $cand->[CQual];
-
-				my $r;
 
 				# this scores each candidate according to its skimmer's QRG score (i.e. how often it agrees with its peers)
 				# what happens is hash of all QRGs in candidates are incremented by that skimmer's reputation for "accuracy"
@@ -609,7 +668,7 @@ sub process
 				foreach $r (@$cand) {
 					next unless ref $r;
 					if (exists $seen{$r->[ROrigin]}) {
-						undef $r;
+						$r = 0;
 						next;
 					}
 					$seen{$r->[ROrigin]} = 1;
@@ -618,7 +677,7 @@ sub process
 					$skimmer = $spots->{$sk};
 					unless ($skimmer) {
 						$skimmer = $spots->{$sk} = [1, 0, 0, $now, []];	# this first time, this new skimmer gets the benefit of the doubt on frequency.
-						dbg("RBN:SKIM new slot $sk " . $json->encode($skimmer)) if $rbnskim;
+						dbg("RBN:SKIM new slot $sk " . $json->encode($skimmer)) if  $rbnskim && isdbg('rbnskim');
 					}
 					$qrg{$r->[RQrg]} += ($skimmer->[DScore] || 1);
 				}
@@ -638,7 +697,7 @@ sub process
 
 				# Ignore possible spots with 0 QRG score - as determined by the skimmer scoring system above -  as they are likely to be wrong 
 				unless ($qrg > 0) {
-					if ($rbnskim) {
+					if ( $rbnskim && isdbg('rbnskim')) {
 						my $keys;
 						while (my ($k, $v) = (each %qrg)) {
 							$keys .= "$k=>$v, ";
@@ -678,10 +737,12 @@ sub process
 						shift @{$skimmer->[DEviants]};
 					}
 					$skimmer->[DScore] = $skimmer->[DGood] - $skimmer->[DBad];
-					my $lastin = difft($skimmer->[DLastin], $now, 2);
-					my $difflist = join(', ', @{$skimmer->[DEviants]});
-					$difflist = " ($difflist)" if $difflist;
-					dbg("RBN:SKIM key $sp slot $sk $r->[RQrg] - $qrg = $diff Skimmer score: $skimmer->[DGood] - $skimmer->[DBad] = $skimmer->[DScore] lastseen:$lastin ago$difflist") if $rbnskim; 
+					if ($rbnskim && isdbg('rbnskim')) {
+						my $lastin = difft($skimmer->[DLastin], $now, 2);
+						my $difflist = join(', ', @{$skimmer->[DEviants]});
+						$difflist = " band qrg diffs: $difflist" if $difflist;
+						dbg("RBN:SKIM key $sp slot $sk $r->[RQrg] - $qrg = $diff Skimmer score: $skimmer->[DGood] - $skimmer->[DBad] = $skimmer->[DScore] lastseen:$lastin ago$difflist"); 
+					}
 					$skimmer->[DLastin] = $now;
 					$r->[RSpotData]->[SQrg] = $qrg if $qrg && $c > 1; # set all the QRGs to the agreed value
 				}
@@ -694,10 +755,11 @@ sub process
 				$squality .= '+' if $r->[Respot];
 
 				if (isdbg('progress')) {
-					my $s = "RBN: SPOT key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] $squality route: $dxchan->{call}";
+					my $rt = difft($ctime, $now, 2);
+					my $s = "RBN: SPOT key: '$sp' = $r->[RCall] on $r->[RQrg] by $r->[ROrigin] \@ $r->[RTime] $squality route: $dxchan->{call} dwell:$rt";
 					my $td = @deviant;
-					$s .= " QRGScore $mv Deviants ($td/$spotters): ";
-					$s .= join(', ', sort @deviant) if $td;
+					$s .= " QRGScore: $mv Deviants: $td/$spotters";
+					$s .= ' (' . join(', ', sort @deviant) . ')' if $td;
 					dbg($s);
 				}
 
@@ -715,7 +777,7 @@ sub process
 				my $nqrg = nearest(1, $qrg * 10);  # normalised to nearest Khz
 				my $nsp = "$r->[RCall]|$nqrg";
 				if ($sp ne $nsp) {
-					dbg("RBN:SKIM CHANGE KEY sp '$sp' -> '$nsp' for storage") if $rbnskim;
+					dbg("RBN:SKIM CHANGE KEY sp '$sp' -> '$nsp' for storage") if  $rbnskim && isdbg('rbnskim');
 					delete $spots->{$sp};
 					$spots->{$nsp} = [$now, $cand->[CQual]];
 				} else {
