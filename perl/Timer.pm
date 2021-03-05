@@ -23,11 +23,11 @@ sub new
     my ($pkg, $time, $proc, $recur) = @_;
 	my $obj = ref($pkg);
 	my $class = $obj || $pkg;
-	my $self = bless { t=>$time + time, proc=>$proc }, $class;
+	my $self = bless { t=>$time + $main::systime, proc=>$proc }, $class;
 	$self->{interval} = $time if $recur;
 	push @timerchain, $self;
-	$notimers++;
-	dbg("Timer created ($notimers)") if isdbg('connll');
+	$notimers = @timerchain;
+	dbg("Timer created (notimers: $notimers)") if isdbg('connll');
 	return $self;
 }
 
@@ -36,11 +36,13 @@ sub del
 	my $self = shift;
 	delete $self->{proc};
 	@timerchain = grep {$_ != $self} @timerchain;
+	$notimers = @timerchain;
+	dbg("Timer deleted (notimers: $notimers)") if isdbg('connll');
 }
 
 sub handler
 {
-	my $now = time;
+	my $now = $main::systime;
 
 	return unless $now != $lasttime;
 
@@ -59,6 +61,5 @@ sub handler
 sub DESTROY
 {
 	dbg("timer destroyed ($Timer::notimers)") if isdbg('connll');
-	$Timer::notimers--;
 }
 1;

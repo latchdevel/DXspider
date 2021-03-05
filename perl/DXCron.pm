@@ -288,14 +288,15 @@ sub spawn_cmd
 	my $fc = DXSubprocess->new();
 	$fc->run(
 			 sub {
-				 $main::me->{_nospawn} = 1;
+				 ++$main::me->{_nospawn};
 				 my @res = $main::me->run_cmd($line);
-				 delete $main::me->{_nospawn};
 #				 diffms("DXCron spawn_cmd 1", $line, $t0, scalar @res) if isdbg('chan');
 				 return @res;
 			 },
 			 sub {
 				 my ($fc, $err, @res) = @_; 
+				 --$main::me->{_nospawn};
+				 delete $main::me->{_nospawn} if exists $main::me->{_nospawn} && $main::me->{_nospawn} <= 0;
 				 if ($err) {
 					 my $s = "DXCron::spawn_cmd: error $err";
 					 dbg($s);
@@ -326,8 +327,8 @@ sub rcmd
 sub run_cmd
 {
 	my $line = shift;
-	my @in = $main::me->run_cmd($line);
 	dbg("DXCron::run_cmd: $line") if isdbg('cron');
+	my @in = $main::me->run_cmd($line);
 	for (@in) {
 		s/\s*$//;
 		dbg("DXCron::cmd out: $_") if isdbg('cron');

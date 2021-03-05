@@ -320,7 +320,7 @@ sub _close_it
 
 	if ($sock) {
 		dbg((ref $conn) . " Connection $conn->{cnum} $call closing gracefully") if isdbg('connll');
-		$sock->close_gracefully;
+		$sock->close_gracefully if $sock->can('close_gracefully');
 	}
 	
 	# get rid of any references
@@ -570,7 +570,8 @@ sub DESTROY
 	my $sock = $conn->{sock};
 
 	if ($sock) {
-		$sock->close_gracefully;
+		$sock->close_gracefully if $sock->can('close_gracefully');
+		delete $conn->{sock};
 	}
 	
 	$noconns--;

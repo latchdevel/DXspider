@@ -1,3 +1,31 @@
+05Mar21=======================================================================
+1. Fix DXCron::spawn_cmd so that more than one spawn_cmd can be active at a 
+   time. This affects many nodes where lots of regular spawn_cmds happen at
+   a time and this prevented crucial things like 'start_connect' from working!
+2. Sort user lockout issues to cope with all likely scenarios - including 
+   "phantom" SSID working.
+3. Fix "close_gracefully" error messages which are useless, but benign. These 
+   happen (mainly) when outgoing connects timeout.
+24Feb21=======================================================================
+1. modify RBN timing arrangements
+    
+   There are two new twiddle pots:
+    
+   $limbotime (default 5*60 secs) which allows potential spots to
+   hang around longer to allow $minqual *different* skimmers to spot
+   them. At which point they are emitted. This is to catch the "slow
+   burning" spots where a call is spotted by different skimmers but
+   separated in time by more than $dwelltime - in fact maybe by
+   minutes.
+    
+   $maxqual (default 9 skimmers) which short circuits the normal
+   hard maximum $quality (9 skimmer spots) and $dwelltime (10secs)
+   to allow a spot that has $maxqual *different* skimmers (usually
+   as the result of a burst from the RBN) to defeat $dwelltime and
+   be emitted the moment that condition is satisfied. There maybe
+   a better name for this.
+21Feb21=======================================================================
+1. add data section on 160m in bands.pl.
 07Sep20=======================================================================
 1, Change interface to watchdbg & grepdbg slightly so that multiple search
    regexes are ANDed rather than ORed together. ORing is easily achieved 

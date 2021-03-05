@@ -34,7 +34,7 @@ package DXM;
 				chatinst => 'Entering Chatmode on $_[0], /EX to end, /<cmd> to run a command',
 				chatprompt => 'Chat ($_[0])>',
 				chattoomany => 'Not allowed, already in $_[1], use /chat $_[0]',
-				cluster => 'Nodes: $_[0]/$_[1] Clr - Users: $_[2]/$_[3] Clr Max: $_[4]/$_[5] Clr - Uptime: $_[6]',
+				cluster => 'Nodes: $_[0]/$_[1] Users [Loc/Clr]: $_[2]/$_[3] Max: $_[4]/$_[5] - Uptime: $_[6]',
 				conother => 'Sorry $_[0] you are connected to me on another port',
 				concluster => 'Sorry $_[0] you are already connected elsewhere on the cluster (on $_[1])',
 				contomany => 'Sorry $_[0] but you are already connected to $_[1] other nodes (on $_[2])',

@@ -253,16 +253,16 @@ sub new_channel
 		}
 
 		# is he locked out ?
+		my $lock;
 		$user = DXUser::get_current($call);
 		$conn->conns($call);
 		my $basecall = $call;
-		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing
-		my $lock;
+		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing, it's used for other stuff than checking lockout status
 		if ($user) {
 			# make sure we act on any locked status that the actual incoming call has.
 			$lock = $user->lockout;
-		} elsif ($allowmultiple && $call ne $basecall) {
-		    # if we are allowing multiple connections and there is a basecall minus incoming ssid, use the basecall's lock status
+		} elsif ($basecall ne $call) {
+			# if there isn't a SSID on the $call, then try the base
 			$user = DXUser::get_current($basecall);
 			$lock = $user->lockout if $user;
 		}
@@ -749,7 +749,7 @@ sub idle_loop
 			$main::me->disconnect;
 		}
 
-		Mojo::IOLoop->stop if --$ending <= 0;
+		Mojo::IOLoop->stop_gracefully if --$ending <= 0;
 	}
 }
 
