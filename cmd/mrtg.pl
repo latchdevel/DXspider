@@ -33,7 +33,7 @@ sub handle
 {
 	my ($self, $line) = @_;
 
-	$DB::single = 1;
+#	$DB::single = 1;
 	
 	# create the arg list
 	my %want;

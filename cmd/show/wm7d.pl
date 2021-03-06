@@ -45,7 +45,7 @@ sub on_disc
 {
 	my $conn = shift;
 	my $dxchan = shift;
-	$DB::single = 1;
+#	$DB::single = 1;
 	
 	$dxchan->send(map {"$conn->{prefix}$_"} @{$conn->{_wm7d}});
 }
