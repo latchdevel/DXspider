@@ -1,4 +1,8 @@
 05Mar21=======================================================================
+1. Fix DXUtil::localdata so that it does actually prefer the latest version 
+   of a file regardless of whether it is in /spider/data or /spider/localdata.
+2. Add CTY-3105 prefixes.
+05Mar21=======================================================================
 1. Fix DXCron::spawn_cmd so that more than one spawn_cmd can be active at a 
    time. This affects many nodes where lots of regular spawn_cmds happen at
    a time and this prevented crucial things like 'start_connect' from working!

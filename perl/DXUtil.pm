@@ -478,19 +478,20 @@ sub deleteitem
 sub localdata
 {
 	my $ifn = shift;
-	my $ofn = "$main::local_data/$ifn";
-	my $tfn;
+	my $lfn = "$main::local_data/$ifn";
+	my $dfn =  "$main::data/$ifn";
 	
 	if (-e "$main::local_data") {
-		$tfn = "$main::data/$ifn";
-		if ((-e $tfn) && (-e $ofn)) {
-			$ofn = $tfn if -M $ofn < -M $tfn;
+		if ((-e $dfn) && (-e $lfn)) {
+			$lfn = $dfn if -M $dfn < -M $lfn;
 		} else {
-			$ofn = $tfn if -e $tfn;
+			$lfn = $dfn if -e $dfn;
 		}
+	} else {
+		$lfn = $dfn;
 	}
 
-	return $ofn;
+	return $lfn;
 }
 
 # move a file or a directory from data -> local_data if isn't there already
