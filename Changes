@@ -1,3 +1,7 @@
+15Jul21=======================================================================
+1. Fix long standing bug in crontabs that commands with " rather than ' around
+   strings could cause those commands not to work. 
+2. Add CTY 3117 prefixes. 
 15Mar21=======================================================================
 1. Fix DXUtil::localdata so that it does actually prefer the latest version 
    of a file regardless of whether it is in /spider/data or /spider/localdata.

@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 09 Mar 2021
+! This file was created by Jim Reisert AD1C on 10 Jul 2021
 ! See: https://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
@@ -3910,11 +3910,11 @@ UH9X,UI1I,UI8X,UI9X Komi-UA                           179 20 17  -4.00 64 17  0 
 UA2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E @
 R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RE2F Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
 RE2K,RF2F,RF2K,RG2F,RG2K,RJ2F,RJ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RK2F,RK2K,RL2F,RL2K,RM2F,RM2K,RN2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F,RT2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RU2F,RU2K,RV2F,RV2K,RW2F,RW2K,RX2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F,U2K,UB2 Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
-UC2,UD2,UE2,UF2,UG2,UH2,UI2 Kaliningrad-UA2           181 29 15  -3.00 54 43  0 N  20 31  0 E
+RK2F,RK2K,RK75,RL2F,RL2K,RM2F,RM2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RN2F,RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RT2K,RU2F,RU2K,RV2F,RV2K,RW2F,RW2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RX2F,RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F Kaliningrad-UA2     181 29 15  -3.00 54 43  0 N  20 31  0 E
+U2K,UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2 Kaliningrad-UA2   181 29 15  -3.00 54 43  0 N  20 31  0 E
 UA9 Asiatic-Russia-UA9                                182 30 17  -7.00 55 53  0 N  84  5  0 E @
 R0,R8,R9,RA0,RA8,RA9,RC0,RC8,RC9 Asiatic-Russia-UA9   182 30 17  -7.00 55 53  0 N  84  5  0 E
 RD0,RD8,RD9,RE0,RE8,RE9,RF0,RF8 Asiatic-Russia-UA9    182 30 17  -7.00 55 53  0 N  84  5  0 E
