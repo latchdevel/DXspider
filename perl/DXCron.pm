@@ -148,7 +148,7 @@ sub process
 				
 				if ($cron->{cmd}) {
 					dbg("cron: $min $hour $mday $mon $wday -> doing '$cron->{cmd}'") if isdbg('cron');
-					eval "$cron->{cmd}";
+					eval $cron->{cmd};
 					dbg("cron: cmd error $@") if $@ && isdbg('cron');
 				}
 			}

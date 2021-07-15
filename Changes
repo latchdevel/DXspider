@@ -1,3 +1,7 @@
+15Jul21=======================================================================
+1. Fix long standing bug in crontabs that commands with " rather than ' around
+   strings could cause those commands not to work. 
+2. Add CTY 3117 prefixes. 
 09Jul20=======================================================================
 1. Add RBN.mojo and update UPGRADE.mojo.
 2. Add CTY-3011 prefixes
