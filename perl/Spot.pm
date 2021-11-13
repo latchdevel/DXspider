@@ -18,6 +18,8 @@ use Prefix;
 use DXDupe;
 use Data::Dumper;
 use QSL;
+use DXSql;
+use Julian;
 
 use strict;
 
@@ -65,6 +67,10 @@ $filterdef = bless ([
 					], 'Filter::Cmd');
 $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
+
+our %spotcache;					# the cache of data within the last $spotcachedays 0 or 2+ days
+our $spotcachedays = 0;
+
 
 our $readback = 1;
 
@@ -124,6 +130,7 @@ sub init
 	mkdir "$dirprefix", 0777 if !-e "$dirprefix";
 	$fp = DXLog::new($dirprefix, "dat", 'd');
 	$statp = DXLog::new($dirprefix, "dys", 'd');
+	my $today = Julian::Day->new(time);
 
 	# load up any old spots 
 	if ($main::dbh) {
@@ -134,7 +141,6 @@ sub init
 			$main::dbh->spot_create_table;
 			
 			my $now = Julian::Day->alloc(1995, 0);
-			my $today = Julian::Day->new(time);
 			my $sth = $main::dbh->spot_insert_prepare;
 			while ($now->cmp($today) <= 0) {
 				my $fh = $fp->open($now);
@@ -175,6 +181,34 @@ sub init
 		unless ($main::dbh->has_ipaddr) {
 			$main::dbh->add_ipaddr;
 			dbg("added ipaddr field to spot table");
+		}
+	}
+
+	# initialise the cache if required
+	if ($spotcachedays) {
+		$spotcachedays = 2 if $spotcachedays < 2;
+		my $now = $today->sub($spotcachedays);
+		while ($now->cmp($today) >= 0) {
+			my $fh = $fp->open($now);
+			if ($fh) {
+				my @in;
+				while (<$fh>) {
+					chomp;
+					my @s = split /\^/;
+					if (@s < 14) {
+						my @a = (Prefix::cty_data($s[1]))[1..3];
+						my @b = (Prefix::cty_data($s[4]))[1..3];
+						push @s, $b[1] if @s < 7;
+						push @s, '' if @s < 8;
+						push @s, @a[0,1], @b[0,1] if @s < 12;
+						push @s,  $a[2], $b[2] if @s < 14;
+					}
+					push @in, \@s; 
+				}
+				$fh->close;
+				$spotcache{"$now->[0]|$now->[1]"} = \@in;
+			}
+			$now->add(1);
 		}
 	}
 }
@@ -220,6 +254,19 @@ sub add
 {
 	my $buf = join('^', @_);
 	$fp->writeunix($_[2], $buf);
+	if ($spotcachedays) {
+		my $now = Julian::Day->new($_[2]);
+		my $day = "$now->[0]|$now->[1]";
+		my $r = exists $spotcache{$day} ? $spotcache{$day} : $spotcache{$day} = [];
+		unshift @$r, @_;
+
+		# remove old days
+		while (keys %spotcache > $spotcachedays+1) {
+			while (sort keys %spotcache > $spotcachedays+1) {
+				delete $spotcache{$_};
+			}
+		}
+	}
 	if ($main::dbh) {
 		$main::dbh->begin_work;
 		$main::dbh->spot_insert(\@_);
@@ -270,7 +317,7 @@ sub add
 
 sub search
 {
-	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dxchan) = @_;
+	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dofilter, $dxchan) = @_;
 	my @out;
 	my $ref;
 	my $i;
@@ -292,7 +339,7 @@ sub search
 	$to = $from + $maxspots if $to - $from > $maxspots || $to - $from <= 0;
 
 	if ($main::dbh && $use_db_for_search) {
-		return $main::dbh->spot_search($hint, $dayfrom, $dayto, $to-$from, $dxchan);
+		return $main::dbh->spot_search($expr, $dayfrom, $dayto, $from, $to, $hint, $dofilter, $dxchan);
 	}
 
 	#	$expr =~ s/\$f(\d\d?)/\$ref->[$1]/g; # swap the letter n for the correct field name
@@ -312,12 +359,14 @@ sub search
 	
 	my $fh;
 	my $now = $fromdate;
-	my @spots;
-	my $recs;
+	my $today = Julian::Day->new($main::systime);
 	
 	for ($i = $count = 0; $count < $to && $i < $maxdays; ++$i) { # look thru $maxdays worth of files only
 		last if $now->cmp($todate) <= 0;
-		
+
+		if ($spotcachedays) {
+			
+		}
 		my $fn = $fp->fn($now->sub($i));
 		if ($readback) {
 			dbg("Spot::search search using tac fn: $fn $i") if isdbg('search');
@@ -334,7 +383,7 @@ sub search
 				chomp;
 				my @r = split /\^/;
 				++$rec;
-				if ($dxchan) {
+				if ($dofilter && $dxchan && $dxchan->{spotsfilter}) {
 					my ($gotone, undef) = $dxchan->{spotsfilter}->it(@r);
 					next unless $gotone;
 				}

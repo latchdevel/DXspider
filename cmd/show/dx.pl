@@ -143,11 +143,7 @@ sub handle
 		} else {
 			$pre .= '*' unless $pre =~ /[\*\?\[]$/o;
 			$pre = shellregex($pre);
-			if ($usesql) {
-				$pre =~ s/\.\*/%/g;
-			} else {
-				$pre =~ s/\.\*\$$//;
-			}
+			$pre =~ s/\.\*\$$//;
 			$pre .= '$' if $exact;
 			$pre =~ s/\^//;
 			push @flist, 'call', $pre;
@@ -167,7 +163,7 @@ sub handle
 	# now do the search
 
 	if ($self->{_nospawn}) {
-		my @res = Spot::search($expr, $fromday, $today, $from, $to, $user, $dofilter ? $self : undef);
+		my @res = Spot::search($expr, $fromday, $today, $from, $to, $user, $dofilter, $self);
 		my $ref;
 		my @dx;
 		foreach $ref (@res) {
@@ -186,7 +182,7 @@ sub handle
 	}
 	else {
 		push @out, $self->spawn_cmd("sh/dx $line", \&Spot::search, 
-									args => [$expr, $fromday, $today, $from, $to, $filter, $dofilter ? $self : undef],
+									args => [$expr, $fromday, $today, $from, $to, $filter, $dofilter, $self],
 									cb => sub {
 										my ($dxchan, @res) = @_; 
 										my $ref;

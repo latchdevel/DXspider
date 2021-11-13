@@ -660,18 +660,9 @@ sub setup_start
 	dbg("Start WCY");
 	WCY->init();
 
-	# initial the Spot stuff
-	dbg("Starting DX Spot system");
-	Spot->init();
-
 	# initialise the protocol engine
 	dbg("Start Protocol Engines ...");
 	DXProt->init();
-
-	# put in a DXCluster node for us here so we can add users and take them away
-	$routeroot = Route::Node->new($mycall, $version*100+5300, Route::here($main::me->here)|Route::conf($main::me->conf));
-	$routeroot->do_pc9x(1);
-	$routeroot->via_pc92(1);
 
 	# make sure that there is a routing OUTPUT node default file
 	#unless (Filter::read_in('route', 'node_default', 0)) {
@@ -679,7 +670,13 @@ sub setup_start
 	#	$Route::filterdef->cmd($main::me, 'route', 'accept', "node_default call $mycall" );
 	#}
 
-	# read in any existing message headers and clean out old crap
+	my $script = new Script "startup";
+    $script->run($main::me) if $script;
+
+	# initial the Spot stuff
+	dbg("Starting DX Spot system");
+	Spot->init();	#
+	
 	dbg("reading existing message headers ...");
 	DXMsg->init();
 	DXMsg::clean_old();
@@ -708,8 +705,6 @@ sub setup_start
 
 	# this, such as it is, is the main loop!
 	dbg("orft we jolly well go ...");
-	my $script = new Script "startup";
-	$script->run($main::me) if $script;
 
 	#open(DB::OUT, "|tee /tmp/aa");
 }

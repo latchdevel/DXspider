@@ -80,9 +80,13 @@ sub spot_add_indexes
 {
 	my $self = shift;
 	dbg('adding spot index ix1');
-	$self->do('create index spot_ix1 on spot(time desc)');
+	$self->do('create index spot_ix1 on spot(time asc)');
 	dbg('adding spot index ix2');
 	$self->do('create index spot_ix2 on spot(spotcall asc)');
+	dbg('adding spot index ix3');
+	$self->do('create index spot_ix3 on spot(freq asc)');
+	dbg('adding spot index ix4');
+	$self->do('create index spot_ix4 on spot(spotter asc)');
 }
 
 

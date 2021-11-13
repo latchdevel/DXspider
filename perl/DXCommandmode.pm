@@ -1339,7 +1339,12 @@ sub spawn_cmd
 					 $s .= ", args: " . join(', ', map { defined $_ ? qq{'$_'} : q{'undef'} } @$args) if $args && @$args;
 					 dbg($s);
 				 }
-				 eval { @out = $cmdref->(@$args); };
+				 eval {
+					 ++$self->{_in_sub_process};
+					 dbg "\$self->{_in_sub_process} = $self->{_in_sub_process}";
+					 @out = $cmdref->(@$args);
+					 --$self->{_in_sub_process} if $self->{_in_sub_process} > 0;
+				 };
 				 if ($@) {
 					 DXDebug::dbgprintring(25);
 					 push @out, DXDebug::shortmess($@);

@@ -60,7 +60,8 @@ sub connect
 	my $dbh;
 	eval {
 		no strict 'refs';
-		$dbh = DBI->connect($dsn, $user, $passwd); 
+		$dbh = DBI->connect($dsn, $user, $passwd);
+		dbg "DXSql $dsn " . $dbh? "connected" : "NOT connected" if isdbg('dxsql');
 	};
 	unless ($dbh) {
 		$active = 0;
@@ -149,33 +150,37 @@ sub spot_insert
 sub spot_search
 {
 	my $self = shift;
-	my $expr = shift;
-	my $dayfrom = shift;
-	my $dayto = shift;
-	my $n = shift;
-	my $dxchan = shift;
+	my ($expr, $dayfrom, $dayto, $from, $to, $hint, $dofilter, $dxchan) = @_;
+	$dayfrom = 0 if !$dayfrom;
+	$dayto = $Spot::maxdays unless $dayto;
+	$dayto = $dayfrom + $Spot::maxdays if $dayto < $dayfrom;
+	my $today = Julian::Day->new(time());
+	my $fromdate = $today->sub($dayfrom);
+	my $todate = $fromdate->sub($dayto);
+	$from = 0 unless $from;
+	$to = $Spot::defaultspots unless $to;
 	
-	dbg("expr: $expr") if isdbg('search');
-	if ($expr =~ /\$f/) {
+	dbg("DXSql expr: $expr") if isdbg('search');
+	if ($expr =~ /\$r->/) {
 		$expr =~ s/(?:==|eq)/ = /g;
-		$expr =~ s/\$f10/spotteritu/g;
-		$expr =~ s/\$f11/spottercq/g;
-		$expr =~ s/\$f12/spotstate/g;
-		$expr =~ s/\$f13/spotterstate/g;
-		$expr =~ s/\$f14/ipaddr/g;
-		$expr =~ s/\$f0/freq/g;
-		$expr =~ s/\$f1/spotcall/g;
-		$expr =~ s/\$f2/time/g;
-		$expr =~ s/\$f3/comment/g;
-		$expr =~ s/\$f4/spotter/g;
-		$expr =~ s/\$f5/spotdxcc/g;
-		$expr =~ s/\$f6/spotterdxcc/g;
-		$expr =~ s/\$f7/origin/g;
-		$expr =~ s/\$f8/spotitu/g;
-		$expr =~ s/\$f9/spotcq/g;
+		$expr =~ s/\$r->\[10\]/spotteritu/g;
+		$expr =~ s/\$r->\[11\]/spottercq/g;
+		$expr =~ s/\$r->\[12\]/spotstate/g;
+		$expr =~ s/\$r->\[13\]/spotterstate/g;
+		$expr =~ s/\$r->\[14\]/ipaddr/g;
+		$expr =~ s/\$r->\[0\]/freq/g;
+		$expr =~ s/\$r->\[1\]/spotcall/g;
+		$expr =~ s/\$r->\[2\]/time/g;
+		$expr =~ s/\$r->\[3\]/comment/g;
+		$expr =~ s/\$r->\[4\]/spotter/g;
+		$expr =~ s/\$r->\[5\]/spotdxcc/g;
+		$expr =~ s/\$r->\[6\]/spotterdxcc/g;
+		$expr =~ s/\$r->\[7\]/origin/g;
+		$expr =~ s/\$r->\[8\]/spotitu/g;
+		$expr =~ s/\$r->\[9\]/spotcq/g;
 		$expr =~ s/\|\|/ or /g;
 		$expr =~ s/\&\&/ and /g;
-		$expr =~ s/=~\s+m\{\^([%\w]+)[^\}]*\}/ like '$1'/g;
+		$expr =~ s/=~\s*m\{\^([%\w]+)[^\}]*\}/ like '$1\%'/g;
 	} else {
 		$expr = '';
 	}  
@@ -185,8 +190,8 @@ sub spot_search
 	$expr .= $expr ? " and $trange" : $trange;
     my $s = qq{select freq,spotcall,time,comment,spotter,spotdxcc,spotterdxcc,
 origin,spotitu,spotcq,spotteritu,spottercq,spotstate,spotterstate,ipaddr from spot
-where $expr order by time desc limit $n};
-    dbg("sql expr: $s") if isdbg('search');
+where $expr limit $to};
+    dbg("DXSql expr: $s") if isdbg('search');
 	my $ref = $self->{dbh}->selectall_arrayref($s);
 	return @$ref;
 }
