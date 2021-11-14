@@ -19,7 +19,8 @@ use DXDupe;
 use Data::Dumper;
 use QSL;
 use DXSql;
-use Julian;
+use Time::HiRes qw(gettimeofday tv_interval);
+
 
 use strict;
 
@@ -186,13 +187,16 @@ sub init
 
 	# initialise the cache if required
 	if ($spotcachedays) {
+		my $t0 = [gettimeofday];
 		$spotcachedays = 2 if $spotcachedays < 2;
-		my $now = $today->sub($spotcachedays);
-		while ($now->cmp($today) >= 0) {
+		dbg "Spot::init - reading in $spotcachedays days of spots into cache"; 
+		for (my $i = 0; $i < $spotcachedays; ++$i) {
+			my $now = $today->sub($i);
 			my $fh = $fp->open($now);
 			if ($fh) {
 				my @in;
-				while (<$fh>) {
+				my $rec;
+				for ($rec = 0; <$fh>; ++$rec) {
 					chomp;
 					my @s = split /\^/;
 					if (@s < 14) {
@@ -203,13 +207,15 @@ sub init
 						push @s, @a[0,1], @b[0,1] if @s < 12;
 						push @s,  $a[2], $b[2] if @s < 14;
 					}
-					push @in, \@s; 
+					unshift @in, \@s; 
 				}
 				$fh->close;
-				$spotcache{"$now->[0]|$now->[1]"} = \@in;
+				dbg("Spot::init read $rec spots from " . _cachek($now));
+				$spotcache{_cachek($now)} = \@in;
 			}
 			$now->add(1);
 		}
+		dbg("Spot::init $spotcachedays files of spots read into cache in " . _diffms($t0) . "mS")
 	}
 }
 
@@ -256,9 +262,9 @@ sub add
 	$fp->writeunix($_[2], $buf);
 	if ($spotcachedays) {
 		my $now = Julian::Day->new($_[2]);
-		my $day = "$now->[0]|$now->[1]";
-		my $r = exists $spotcache{$day} ? $spotcache{$day} : $spotcache{$day} = [];
-		unshift @$r, @_;
+		my $day = _cachek($now);
+		my $r = (exists $spotcache{$day}) ? $spotcache{$day} : ($spotcache{$day} = []);
+		unshift @$r, \@_;
 
 		# remove old days
 		while (keys %spotcache > $spotcachedays+1) {
@@ -364,47 +370,65 @@ sub search
 	for ($i = $count = 0; $count < $to && $i < $maxdays; ++$i) { # look thru $maxdays worth of files only
 		last if $now->cmp($todate) <= 0;
 
-		if ($spotcachedays) {
-			
-		}
-		my $fn = $fp->fn($now->sub($i));
-		if ($readback) {
-			dbg("Spot::search search using tac fn: $fn $i") if isdbg('search');
-			$fh = IO::File->new("$readback $fn |");
-		}
-		else {
-			dbg("Spot::search search fn: $fp->{fn} $i") if isdbg('search');
-			$fh = $fp->open($now->sub($i));	# get the next file
-		}
-		if ($fh) {
-			my $rec = 0;
-			my $in;
-			while (<$fh>) {
-				chomp;
-				my @r = split /\^/;
+
+		my $this = $now->sub($i);
+		my $fn = $fp->fn($this);
+		my $cachekey = _cachek($this); 
+		my $rec = 0;
+
+		if ($spotcachedays && $spotcache{$cachekey}) {
+			foreach my $r (@{$spotcache{$cachekey}}) {
 				++$rec;
 				if ($dofilter && $dxchan && $dxchan->{spotsfilter}) {
-					my ($gotone, undef) = $dxchan->{spotsfilter}->it(@r);
+					my ($gotone, undef) = $dxchan->{spotsfilter}->it(@$r);
 					next unless $gotone;
 				}
-				if (&$ecode(\@r)) {
+				if (&$ecode($r)) {
 					++$count;
 					next if $count < $from;
-					if ($readback) {
-						push @out, \@r;
-						last if $count >= $to;
-					} else {
-						push @out, \@r;
-						shift @out if $count >= $to;
-					}
+					push @out, $r;
+					last if $count >= $to;
 				}
 			}
-			dbg("Spot::search recs read: $rec") if isdbg('search');
-			last if $count >= $to; # stop after to
-			
-			return ("Spot search error", $@) if $@;
+			dbg("Spot::search cache recs read: $rec") if isdbg('search');
+		} else {
+			if ($readback) {
+				dbg("Spot::search search using tac fn: $fn $i") if isdbg('search');
+				$fh = IO::File->new("$readback $fn |");
+			}
+			else {
+				dbg("Spot::search search fn: $fp->{fn} $i") if isdbg('search');
+				$fh = $fp->open($now->sub($i));	# get the next file
+			}
+			if ($fh) {
+				my $in;
+				while (<$fh>) {
+					chomp;
+					my @r = split /\^/;
+					++$rec;
+					if ($dofilter && $dxchan && $dxchan->{spotsfilter}) {
+						my ($gotone, undef) = $dxchan->{spotsfilter}->it(@r);
+						next unless $gotone;
+					}
+					if (&$ecode(\@r)) {
+						++$count;
+						next if $count < $from;
+						if ($readback) {
+							push @out, \@r;
+							last if $count >= $to;
+						} else {
+							push @out, \@r;
+							shift @out if $count >= $to;
+						}
+					}
+				}
+				dbg("Spot::search file recs read: $rec") if isdbg('search');
+				last if $count >= $to; # stop after to
+			}
 		}
 	}
+	return ("Spot search error", $@) if $@;
+
 	@out = sort {$b->[2] <=> $a->[2]} @out if @out;
 	return @out;
 }
@@ -560,6 +584,11 @@ sub daily
 {
 	my $date = Julian::Day->new($main::systime)->sub(1);
 	genstats($date) unless checkstats($date);
+}
+
+sub _cachek
+{
+	return "$_[0]->[0]|$_[0]->[1]";
 }
 1;
 
