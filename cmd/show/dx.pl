@@ -162,7 +162,7 @@ sub handle
   
 	# now do the search
 
-	if ($self->{_nospawn}) {
+	if ($self->{_nospawn} || ($Spot::spotcachedays && !$expr && $from == 0 && $fromday == 0 && $today == 0)) {
 		my @res = Spot::search($expr, $fromday, $today, $from, $to, $user, $dofilter, $self);
 		my $ref;
 		my @dx;
