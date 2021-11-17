@@ -70,7 +70,7 @@ $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
 our %spotcache;					# the cache of data within the last $spotcachedays 0 or 2+ days
-our $spotcachedays = 0;
+our $spotcachedays = 2;
 
 
 our $readback = 1;

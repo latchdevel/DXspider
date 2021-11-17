@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 10 Jul 2021
+! This file was created by Jim Reisert AD1C on 29 Oct 2021
 ! See: https://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
@@ -3187,11 +3187,15 @@ UE1W,UE1X,UF1W,UF1X,UG1W,UG1X,UH1W Pskovskaya-UA      179 29 16  -4.00 57 19  0 
 UH1X,UI1W,UI1X Pskovskaya-UA                          179 29 16  -4.00 57 19  0 N  29 15  0 E
 UA1Z Murmanskaya-UA                                   179 19 16  -4.00 68  2  0 N  34 34  0 E
 UA Murmanskaya-UA1Z                                   179 19 16  -4.00 68  2  0 N  34 34  0 E
-R1Z,RA1Z,RC1Z,RD1Z,RE1Z,RF1Z,RG1Z Murmanskaya-UA      179 19 16  -4.00 68  2  0 N  34 34  0 E
-RJ1Z,RK1Z,RL1Z,RM1Z,RN1Z,RO1Z,RQ1Z Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
-RT1Z,RU1Z,RV1Z,RW1Z,RX1Z,RY1Z,RZ1Z Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
-U1Z,UB1Z,UC1Z,UD1Z,UE1Z,UF1Z,UG1Z Murmanskaya-UA      179 19 16  -4.00 68  2  0 N  34 34  0 E
-UH1Z,UI1Z Murmanskaya-UA                              179 19 16  -4.00 68  2  0 N  34 34  0 E
+R1Y,R1Z,RA1Y,RA1Z,RC1Y,RC1Z,RD1Y,RD1Z Murmanskaya-UA  179 19 16  -4.00 68  2  0 N  34 34  0 E
+RE1Y,RE1Z,RF1Y,RF1Z,RG1Y,RG1Z,RJ1Y Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
+RJ1Z,RK1Y,RK1Z,RL1Y,RL1Z,RM1Y,RM1Z Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
+RN1Y,RN1Z,RO1Y,RO1Z,RQ1Y,RQ1Z,RT1Y Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
+RT1Z,RU1Y,RU1Z,RV1Y,RV1Z,RW1Y,RW1Z Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
+RX1Y,RX1Z,RY1Y,RY1Z,RZ1Y,RZ1Z,U1Y,U1Z Murmanskaya-UA  179 19 16  -4.00 68  2  0 N  34 34  0 E
+UA1Y,UB1Y,UB1Z,UC1Y,UC1Z,UD1Y,UD1Z Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
+UE1Y,UE1Z,UF1Y,UF1Z,UG1Y,UG1Z,UH1Y Murmanskaya-UA     179 19 16  -4.00 68  2  0 N  34 34  0 E
+UH1Z,UI1Y,UI1Z Murmanskaya-UA                         179 19 16  -4.00 68  2  0 N  34 34  0 E
 UA3A Moscow-city-UA                                   179 29 16  -4.00 55 45  0 N  37 37  0 E
 UA Moscow-city-UA3A                                   179 29 16  -4.00 55 45  0 N  37 37  0 E
 R2A,R2B,R2C,R3A,R3B,R3C,R5A,R5B,R5C Moscow-city-UA    179 29 16  -4.00 55 45  0 N  37 37  0 E
@@ -3910,11 +3914,11 @@ UH9X,UI1I,UI8X,UI9X Komi-UA                           179 20 17  -4.00 64 17  0 
 UA2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E @
 R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RE2F Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
 RE2K,RF2F,RF2K,RG2F,RG2K,RJ2F,RJ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RK2F,RK2K,RK75,RL2F,RL2K,RM2F,RM2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RN2F,RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RT2K,RU2F,RU2K,RV2F,RV2K,RW2F,RW2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RX2F,RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F Kaliningrad-UA2     181 29 15  -3.00 54 43  0 N  20 31  0 E
-U2K,UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2 Kaliningrad-UA2   181 29 15  -3.00 54 43  0 N  20 31  0 E
+RK2F,RK2K,RL2F,RL2K,RM2F,RM2K,RN2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F,RT2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RU2F,RU2K,RV2F,RV2K,RW2F,RW2K,RX2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F,U2K,UB2 Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
+UC2,UD2,UE2,UF2,UG2,UH2,UI2 Kaliningrad-UA2           181 29 15  -3.00 54 43  0 N  20 31  0 E
 UA9 Asiatic-Russia-UA9                                182 30 17  -7.00 55 53  0 N  84  5  0 E @
 R0,R8,R9,RA0,RA8,RA9,RC0,RC8,RC9 Asiatic-Russia-UA9   182 30 17  -7.00 55 53  0 N  84  5  0 E
 RD0,RD8,RD9,RE0,RE8,RE9,RF0,RF8 Asiatic-Russia-UA9    182 30 17  -7.00 55 53  0 N  84  5  0 E

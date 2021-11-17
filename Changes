@@ -1,3 +1,16 @@
+18Nov21=======================================================================
+1. Add a dx spot cache which will store 2 days worth (configurable) of spots.
+   This is then used by the vast majority of simple sh/dx queries without 
+   using a sub process. A simple sh/dx is any sh/dx that does not have an
+   "expression" such as "sh/dx g1tlh". So "sh/dx", "sh/dx 200", "sh/mydx" will
+   always run in the main program via the cache. Certain client programs (no
+   names, no pack drill) will notice the difference immediately. It's also a
+   bit snappier.
+2. set/badspotter or set/badnode will work for RBN input. 
+3. RBN input with invalid QRGs will be dropped with a nice friedly message
+   rather than a scary exception message about multiplication thrown by one 
+   of the libraries that I use. 
+4. Added CTY-3126 prefixes.
 15Jul21=======================================================================
 1. Fix long standing bug in crontabs that commands with " rather than ' around
    strings could cause those commands not to work. 
