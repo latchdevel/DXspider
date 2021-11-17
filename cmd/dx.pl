@@ -55,6 +55,16 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 	return (1, $self->msg('dx3'));
 }
 
+
+my $ipaddr;
+my $addr = $self->hostname;
+
+if ($self->conn && $self->conn->peerhost) {
+	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
+} elsif ($self->inscript) {
+	$ipaddr = "script";
+}
+
 # check some other things
 # remove ssid from calls
 my $spotternoid = basecall($spotter);
@@ -66,14 +76,14 @@ if ($DXProt::baddx->in($spotted)) {
 	$localonly++; 
 }
 if ($DXProt::badspotter->in($spotternoid)) { 
-	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline)");
+	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline) from $addr");
 	$localonly++; 
 }
 
 dbg "spotter $spotternoid/$callnoid\n";
 
 if (($spotted =~ /$spotternoid/ || $spotted =~ /$callnoid/) && $freq < $Spot::minselfspotqrg) {
-	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline), not passed on to cluster");
+	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline) from $addr, not passed on to cluster");
 	$localonly++;
 }
 
@@ -125,15 +135,6 @@ if ($spotted le ' ') {
 }
 
 return (1, @out) unless $valid;
-
-my $ipaddr;
-
-if ($self->conn && $self->conn->peerhost) {
-	my $addr = $self->hostname;
-	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
-} elsif ($self->inscript) {
-	$ipaddr = "script";
-}
 
 # Store it here (but only if it isn't baddx)
 my $t = (int ($main::systime/60)) * 60;
