@@ -11,6 +11,9 @@
    rather than a scary exception message about multiplication thrown by one 
    of the libraries that I use. 
 4. Added CTY-3126 prefixes.
+5. Silently ignore self spotting below 1240000Khz (change 
+   $Spot::minselfspot to 0 to disable or some other freq in Khz). NOTE this 
+   will appear as a spot to the spotter's feed, but will not be passed on.
 15Jul21=======================================================================
 1. Fix long standing bug in crontabs that commands with " rather than ' around
    strings could cause those commands not to work. 

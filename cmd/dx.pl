@@ -16,6 +16,8 @@ my $freq;
 my @out;
 my $valid = 0;
 my $localonly;
+my $oline = $line;
+
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e28')) unless $self->registered;
 
@@ -55,20 +57,24 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 
 # check some other things
 # remove ssid from calls
-my $callnoid = $self->call;
-$callnoid =~ s/-\d+$//;
-my $spotternoid = $spotter;
-$spotternoid =~ s/-\d+$//;
+my $spotternoid = basecall($spotter);
+my $callnoid = basecall($self->{call});
+
+#$DB::single = 1;
+
 if ($DXProt::baddx->in($spotted)) {
 	$localonly++; 
 }
-if ($DXProt::badspotter->in($callnoid)) { 
-	LogDbg('DXCommand', "$self->{call} badspotter with $callnoid ($line)");
+if ($DXProt::badspotter->in($spotternoid)) { 
+	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline)");
 	$localonly++; 
 }
-if ($callnoid ne $spotternoid && $DXProt::badspotter->in($spotternoid)) { 
-	LogDbg('DXCommand', "$self->{call} badspotter with $spotternoid ($line)");
-	$localonly++; 
+
+dbg "spotter $spotternoid/$callnoid\n";
+
+if (($spotted =~ /$spotternoid/ || $spotted =~ /$callnoid/) && $freq < $Spot::minselfspotqrg) {
+	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline), not passed on to cluster");
+	$localonly++;
 }
 
 # make line the rest of the line

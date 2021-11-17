@@ -27,7 +27,7 @@ require Exporter;
              print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
-			 diffms _diffms _diffus difft parraydifft is_ztime
+			 diffms _diffms _diffus difft parraydifft is_ztime basecall
             );
 
 
@@ -588,4 +588,10 @@ sub parraydifft
 	}
 	$out =~ s/,\s*$//;
 	return $out;
+}
+
+sub basecall
+{
+	$_[0] =~ m|^(?:[\w\d]+/)?([\w\d]+).*$|;
+	return $1;
 }

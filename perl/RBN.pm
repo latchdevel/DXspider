@@ -252,7 +252,7 @@ sub normal
 	}
 
 	# remove all extraneous crap from the origin - just leave the base callsign
-	$origin =~ s|^(?:[\w\d]+/)?([\w\d]+).*$|$1|;
+	$origin =~ basecall($origin);
 
 	# is this callsign in badspotter list?
 	if ($DXProt::badspotter->in($origin) || $DXProt::badnode->in($origin)) {

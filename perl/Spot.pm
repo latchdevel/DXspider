@@ -70,8 +70,8 @@ $totalspots = $hfspots = $vhfspots = 0;
 $use_db_for_search = 0;
 
 our %spotcache;					# the cache of data within the last $spotcachedays 0 or 2+ days
-our $spotcachedays = 2;
-
+our $spotcachedays = 2;			# default 2 days worth
+our $minselfspotqrg = 1240000;	# minimum freq above which self spotting is allowed
 
 our $readback = 1;
 
