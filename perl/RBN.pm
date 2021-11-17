@@ -251,8 +251,20 @@ sub normal
 		return;
 	}
 
-	$origin =~ s/\-(?:\d{1,2}\-)?\#$//; # get rid of all the crap we aren't interested in
+	# remove all extraneous crap from the origin - just leave the base callsign
+	$origin =~ s|^(?:[\w\d]+/)?([\w\d]+).*$|$1|;
 
+	# is this callsign in badspotter list?
+	if ($DXProt::badspotter->in($origin) || $DXProt::badnode->in($origin)) {
+		dbg("RBN: ERROR $origin is a bad spotter/node, dumped");
+		return;
+	}
+	
+	# is the qrg valid
+	unless ($qrg =~ /^\d+\.\d{1,2}$/) {
+		dbg("RBN: ERROR qrg $qrg from $origin invalid, dumped");
+		return;
+	}
 
 	$sort ||= '';
 	$tx ||= '';

@@ -186,7 +186,7 @@ sub init
 	}
 
 	# initialise the cache if required
-	if ($spotcachedays) {
+	if ($spotcachedays > 0) {
 		my $t0 = [gettimeofday];
 		$spotcachedays = 2 if $spotcachedays < 2;
 		dbg "Spot::init - reading in $spotcachedays days of spots into cache"; 
@@ -260,18 +260,11 @@ sub add
 {
 	my $buf = join('^', @_);
 	$fp->writeunix($_[2], $buf);
-	if ($spotcachedays) {
+	if ($spotcachedays > 0) {
 		my $now = Julian::Day->new($_[2]);
 		my $day = _cachek($now);
 		my $r = (exists $spotcache{$day}) ? $spotcache{$day} : ($spotcache{$day} = []);
 		unshift @$r, \@_;
-
-		# remove old days
-		while (keys %spotcache > $spotcachedays+1) {
-			while (sort keys %spotcache > $spotcachedays+1) {
-				delete $spotcache{$_};
-			}
-		}
 	}
 	if ($main::dbh) {
 		$main::dbh->begin_work;
@@ -376,7 +369,7 @@ sub search
 		my $cachekey = _cachek($this); 
 		my $rec = 0;
 
-		if ($spotcachedays && $spotcache{$cachekey}) {
+		if ($spotcachedays > 0 && $spotcache{$cachekey}) {
 			foreach my $r (@{$spotcache{$cachekey}}) {
 				++$rec;
 				if ($dofilter && $dxchan && $dxchan->{spotsfilter}) {
@@ -584,11 +577,26 @@ sub daily
 {
 	my $date = Julian::Day->new($main::systime)->sub(1);
 	genstats($date) unless checkstats($date);
+	clean_cache();
 }
 
 sub _cachek
 {
 	return "$_[0]->[0]|$_[0]->[1]";
+}
+
+sub clean_cache
+{
+	if ($spotcachedays > 0) {
+		my $now = Julian::Day->new($main::systime);
+		for (my $i = $spotcachedays; $i < $spotcachedays + 5; ++$i ) {
+			my $k = _cachek($now->sub($i));
+			if (exists $spotcache{$k}) {
+				dbg("Spot::spotcache deleting day $k, more than $spotcachedays days old");
+				delete $spotcache{$k};
+			}
+		}
+	}
 }
 1;
 
