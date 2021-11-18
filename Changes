@@ -7,7 +7,7 @@
    names, no pack drill) will notice the difference immediately. It's also a
    bit snappier.
 2. set/badspotter or set/badnode will work for RBN input. 
-3. RBN input with invalid QRGs will be dropped with a nice friedly message
+3. RBN input with invalid QRGs will be dropped with a nice friendly message
    rather than a scary exception message about multiplication thrown by one 
    of the libraries that I use. 
 4. Added CTY-3126 prefixes.
