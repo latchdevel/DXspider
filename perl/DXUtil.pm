@@ -592,6 +592,6 @@ sub parraydifft
 
 sub basecall
 {
-	$_[0] =~ m|^(?:[\w\d]+/)?([\w\d]+).*$|;
-	return $1;
+	my ($r) = $_[0] =~ m|^(?:[\w\d]+/)?([\w\d]+).*$|;
+	return $r;
 }
