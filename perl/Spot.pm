@@ -464,7 +464,7 @@ sub formatl
 	my $comment = $_[4] || '';
 	$comment =~ s/\t+/ /g;
 	my $cl = length $comment;
-	my $s = sprintf "%8.1f  %-11s %s %s", $_[1], $_[2], $d, $t;
+	my $s = sprintf "%9.1f %-11s %s %s", $_[1], $_[2], $d, $t;
 	my $width = ($_[0] ? $_[0] : 80) - length($spotter) - length($s) - 2;
 	
 	$comment = substr $comment, 0, $width if $cl > $width;
