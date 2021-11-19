@@ -463,7 +463,7 @@ sub formatl
 	my $width = ($_[0] ? $_[0] : 80) - 80 + 28;
 	my $comment = $_[4] || '';
 	$comment = substr $comment, 0, $width if length($comment) > $width;
-	$comment .= ' ' x ($width - length($comment)) if $comment < $width;
+	$comment .= ' ' x ($width - length($comment)) if length($comment) < $width;
 
 #	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
 	return sprintf "%8.1f  %-11s %s %s  ${comment}%7s>", $_[1], $_[2], $d, $t, "<$_[5]" ;
