@@ -996,10 +996,11 @@ sub format_dx_spot
 
 	my $t = ztime($_[2]);
 	my $loc = '';
-	my $clth = 30 + $self->{width} - 80;    # allow comment to grow according the screen width 
+	my $clth = 31 + $self->{width} - 80;    # allow comment to grow according the screen width 
 	#	--$clth if $self->{consort} eq 'local';
 	
 	my $comment = substr (($_[3] || ''), 0, $clth);
+	$comment =~ s/\t/ /g;
 	$comment .= ' ' x ($clth - (length($comment)));
 	
     if ($self->{user}->wantgrid) {

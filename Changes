@@ -4,7 +4,7 @@
    also work similarly. If you make the console width smaller or wider then 
    spots already on the screen will not resize. 
 2. For client programs that parse the output (why? use set/ve7cc to get more
-   easily machine parsed output), a new command "set/columns <width>" is 
+   easily machine parsed output), a new command "set/width <width>" is 
    available. 
 18Nov21=======================================================================
 1. Add a dx spot cache which will store 2 days worth (configurable) of spots.
