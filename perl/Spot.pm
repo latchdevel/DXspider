@@ -458,9 +458,15 @@ sub ftor
 # format a spot for user output in list mode
 sub formatl
 {
-	my $t = ztime($_[2]);
-	my $d = cldate($_[2]);
-	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
+	my $t = ztime($_[3]);
+	my $d = cldate($_[3]);
+	my $width = ($_[0] ? $_[0] : 80) - 80 + 28;
+	my $comment = $_[4] || '';
+	$comment = substr $comment, 0, $width if length $comment > $width;
+	$comment .= ' ' x ($width - length($comment)) if $comment < $width;
+
+#	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
+	return sprintf "%8.1f  %-11s %s %s  ${comment}%7s>", $_[1], $_[2], $d, $t, "<$_[5]" ;
 }
 
 # enter the spot for dup checking and return true if it is already a dup

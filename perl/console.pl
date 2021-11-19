@@ -134,6 +134,7 @@ sub doresize
 	$inscroll = 0;
 	$spos = @sh < $pagel ? 0 :  @sh - $pagel;
 	show_screen();
+	$conn->send_later("C$call|$cols") if $conn;
 }
 
 # cease communications

@@ -718,6 +718,8 @@ sub process_one
 			$self->enhanced($line);
 		} elsif ($sort eq 'A' || $sort eq 'O' || $sort eq 'W') {
 			$self->start($line, $sort);
+		} elsif ($sort eq 'C') {
+			$self->width($line); # change number of columns
 		} elsif ($sort eq 'Z') {
 			$self->disconnect;
 		} elsif ($sort eq 'D') {

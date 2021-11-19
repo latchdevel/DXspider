@@ -175,7 +175,7 @@ sub handle
 					push @out, DXCommandmode::format_dx_spot($self, @$ref);
 				}
 				else {
-					push @out, Spot::formatl(@$ref);
+					push @out, Spot::formatl($self->{width}, @$ref);
 				}
 			}
 		}
@@ -197,7 +197,7 @@ sub handle
 													push @out, DXCommandmode::format_dx_spot($self, @$ref);
 												}
 												else {
-													push @out, Spot::formatl(@$ref);
+													push @out, Spot::formatl($self->{width}, @$ref);
 												}
 											}
 										}
