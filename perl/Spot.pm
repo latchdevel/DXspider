@@ -462,7 +462,7 @@ sub formatl
 	my $d = cldate($_[3]);
 	my $width = ($_[0] ? $_[0] : 80) - 80 + 28;
 	my $comment = $_[4] || '';
-	$comment = substr $comment, 0, $width if length $comment > $width;
+	$comment = substr $comment, 0, $width if length($comment) > $width;
 	$comment .= ' ' x ($width - length($comment)) if $comment < $width;
 
 #	return sprintf "%8.1f  %-11s %s %s  %-28.28s%7s>", $_[0], $_[1], $d, $t, ($_[3]||''), "<$_[4]" ;
