@@ -156,11 +156,15 @@ if ($freq =~ /^69/ || $localonly) {
 		Spot::add(@spot);
 
 		# send orf to the users
+		my $spot;
+
 		if ($ipaddr) {
-			DXProt::send_dx_spot($self, DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr), @spot);
+			$spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
 		} else {
-			DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
+			$spot = DXProt::pc11($spotter, $freq, $spotted, $line);
 		}
+
+		DXProt::send_dx_spot($self, $spot, @spot);
 	}
 }
 

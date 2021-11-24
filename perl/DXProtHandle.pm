@@ -49,11 +49,11 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 
 $pc9x_dupe_age = 60;			# catch loops of circular (usually) D records
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
-$pc92_slug_changes = 60*5;		# slug any changes going outward for this long
+$pc92_slug_changes = 60*1;		# slug any changes going outward for this long
 $last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
 $pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this amount
 $pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
-	$pc9x_time_tolerance;		# thing a node might send - once an hour and we allow an extra hour for luck)
+$pc9x_time_tolerance;           # thing a node might send - once an hour and we allow an extra hour for luck)
                                 # this is actually the partition between "yesterday" and "today" but old.
 
 $pc92filterdef = bless ([
@@ -65,6 +65,10 @@ $pc92filterdef = bless ([
 			  ['zone', 'nz', 3],
 			 ], 'Filter::Cmd');
 
+our %pc11q;
+# this is a place to park an incoming PC11 in the sure and certain hope that
+# a PC61 will be along soon. This has the side benefit that it will delay a
+# a PC11 for one second - assuming that it is not removed by a PC61 version
 
 # incoming talk commands
 sub handle_10
@@ -124,6 +128,8 @@ sub handle_10
 	# convert this to a PC93, coming from mycall with origin set and process it as such
 	$main::me->normal(pc93($to, $from, $via, $pc->[3], $pc->[6]));
 }
+
+my $last;
 
 # DX Spot handling
 sub handle_11
@@ -204,6 +210,7 @@ sub handle_11
 	}
 
 	my @spot = Spot::prepare($pc->[1], $pc->[2], $d, $pc->[5], $nossid, $pc->[7], $pc->[8]);
+
 	# global spot filtering on INPUT
 	if ($self->{inspotsfilter}) {
 		my ($filter, $hops) = $self->{inspotsfilter}->it(@spot);
@@ -213,14 +220,60 @@ sub handle_11
 		}
 	}
 
+	# If is a new PC11, store it, releasing the one that is there (if any),
+	# if a PC61 comes along then dump the stored PC11
+	# If there is a different PC11 stored, release that one and store this PC11 instead,
+	my $key = join '|', @spot[0..2,4,7];
+	if (0) {
+	
+	if ($pc->[0] eq 'PC11') {
+		my $r = [$main::systime, $key, \@spot, $line, $origin, $pc];
+		if (!$last) {
+			$last = [$main::systime, $key, \@spot, $line, $origin, $pc];
+			dbg("PC11: $origin -> $key stored") if isdbg('pc11');
+			return;
+		} elsif ($key eq $last->[1]) { # same as last one
+			dbg("PC11: $origin -> $key dupe dropped") if isdbg('pc11');
+			return;
+		} else {
+			# it's a different PC11, kick the stored one onward and store this one instead,
+			dbg("PC11: PC11 new $origin -> $key stored, $last->[4] -> $last->[1] passed onward") if isdbg('pc11');
+			@spot = @{$last->[2]};
+			$line = $last->[3];
+			$origin = $last->[4];
+			$pc = $last->[5];
+			$last = $r;
+		}
+	} elsif ($pc->[0] eq 'PC61') {
+		if ($last) {
+			if ($last->[1] eq $key) {
+				# dump $last and proceed with the PC61
+				dbg("PC11: $origin -> $key dropped in favour of PC61") if isdbg('pc11');
+				undef $last;
+			} else {
+				# it's a different spot send out stored pc11
+				dbg("PC11: last $last->[4] -> $last->[1] different PC61 $origin -> $key, send PC11 first ") if isdbg('pc11');
+				$last->[1] = 'new pc61';
+				handle_11($self, 11, $last->[3], $last->[4], $last->[5]);
+				undef $last;
+				dbg("PC11: now process PC61 $origin -> $key") if isdbg('pc11');
+			}
+		}
+	} else {
+		dbg("PC11: Unexpected line '$line' in bagging area (expecting PC61, PC11), ignored");
+		return;
+	}
+
+}
+	
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
 	if (Spot::dup(@spot[0..4,5])) {
-		dbg("PCPROT: Duplicate Spot ignored\n") if isdbg('chanerr');
+		dbg("PCPROT: Duplicate Spot $pc->[0] $key ignored\n") if isdbg('chanerr') || isdbg('dupespot');
 		return;
 	}
-
+	
 	# add it
 	Spot::add(@spot);
 
@@ -272,8 +325,8 @@ sub handle_11
 				} else {
 					route(undef, $to, pc34($main::mycall, $to, $cmd));
 				}
-				if ($to ne $pc->[7]) {
-					$to = $pc->[7];
+				if ($to ne $origin) {
+					$to = $origin;
 					$node = Route::Node::get($to);
 					if ($node) {
 						$dxchan = $node->dxchan;
@@ -304,6 +357,12 @@ sub handle_11
 
 	# send out the filtered spots
 	send_dx_spot($self, $line, @spot) if @spot;
+}
+
+# used to kick outstanding PC11 if required
+sub pc11_process
+{
+
 }
 
 # announces
@@ -1435,7 +1494,7 @@ sub _decode_pc92_call
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
 	my $ip	= $part[3];
-	$ip ||= $part[1] if $part[1] && ($part[1] =~ /^(?:\d+\.)+/ || $part[1] =~ /^(?:(?:[abcdef\d]+)?,)+/);
+	$ip ||= $part[1] if $part[1] && $part[1] !~ /^\d+$/ && ($part[1] =~ /^(?:\d+\.)+/ || $part[1] =~ /^(?:(?:[abcdef\d]+)?,)+/);
 	$ip =~ s/,/:/g if $ip;
 	return ($call, $is_node, $is_extnode, $here, $part[1], $part[2], $ip);
 }

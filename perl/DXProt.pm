@@ -537,6 +537,8 @@ sub process
 	if ($main::systime - 3600 > $last_hour) {
 		$last_hour = $main::systime;
 	}
+
+    pc11_process();
 }
 
 #

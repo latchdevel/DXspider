@@ -128,6 +128,8 @@ $count = 0;
 		  next_pc92_update => '9,Next PC92 Update,atime',
 		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
 		  hostname => '0,Hostname',
+		  isslugged => '9,Still Slugged,yesno',
+		  sluggedpcs => '9,Slugged PCxx Queue,parray',
 		 );
 
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
@@ -162,13 +164,14 @@ sub alloc
 		$user->new_buddies unless $user->buddies;
 		$self->{group} = $user->group;
 		$self->{sort} = $user->sort;
+		$self->{width} = $user->width;
 	}
 	$self->{startt} = $self->{t} = $main::systime;
 	$self->{state} = 0;
 	$self->{oldstate} = 0;
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
-	$self->{width} = 80;
+	$self->{width} ||=  80;
 
 	# add in all the dxcc, itu, zone info
 	my @dxcc = Prefix::extract($call);

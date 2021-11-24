@@ -1,3 +1,7 @@
+24Nov21=======================================================================
+1. Make /spider/perl/create_sysop.pl work on a base git cloned tree.
+2. Add /spider/local /spider/local_cmd /spider/local_data to git. 
+3. Make user supplied console width (set/width) sticky.
 19Nov21=======================================================================
 1. Add the ability of console.pl to resize and have dx spots also resize so
    that the comment field's size will increase accordingly. Sh/dx amd sh/mydx

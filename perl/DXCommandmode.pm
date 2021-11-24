@@ -155,6 +155,10 @@ sub start
 		$self->{registered} = 1;
 	}
 
+	# establish slug queue, if required
+	$self->{sluggedpc11s} = [];
+	$self->{isslugged} = $DXProt::pc92_slug_changes + $main::systime if $DXProt::pc92_slug_changes;
+
 	# send the relevant MOTD
 	$self->send_motd;
 
@@ -1001,6 +1005,7 @@ sub format_dx_spot
 	
 	my $comment = substr (($_[3] || ''), 0, $clth);
 	$comment =~ s/\t/ /g;
+	
 	$comment .= ' ' x ($clth - (length($comment)));
 	
     if ($self->{user}->wantgrid) {

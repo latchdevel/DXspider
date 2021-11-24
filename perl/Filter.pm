@@ -416,7 +416,7 @@ sub parse
 	
 	# check the line for non legal characters
 	dbg("Filter::parse line: '$line'") if isdbg('filter');
-	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\-\*\/\(\)\$!]/;
+	return ('ill', $dxchan->msg('e19')) if $line !~ /{.*}/ && $line =~ /[^\s\w,_\.:\-\*\/\(\)\$!]/;
 
 	$line = lc $line;
 

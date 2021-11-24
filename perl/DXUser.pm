@@ -136,17 +136,19 @@ sub init
 {
 	my $mode = shift;
   
-   $json = DXJSON->new->canonical(1);
+	$json = DXJSON->new->canonical(1);
 	my $fn = "users";
 	$filename = localdata("$fn.v3j");
-	unless (-e $filename || $mode == 2) {
-		LogDbg('DXUser', "New User File version $filename does not exist, running conversion from users.v3 or v2, please wait");
-		system('/spider/perl/convert-users-v3-to-v3j.pl');
-		init(1);
-		export();
-		return;
+	unless (-e $filename || $mode == 2 ) {
+		if (-e localdata("$fn.v3") || -e localdata("$fn.v2")) {
+			LogDbg('DXUser', "New User File version $filename does not exist, running conversion from users.v3 or v2, please wait");
+			system('/spider/perl/convert-users-v3-to-v3j.pl');
+			init(1);
+			export();
+			return;
+		}
 	}
-	if (-e $filename || $mode == 2) {
+	if (-e $filename || $mode) {
 		$lru = LRU->newbase("DXUser", $lrusize);
 		if ($mode) {
 			$dbm = tie (%u, 'DB_File', $filename, O_CREAT|O_RDWR, 0666, $DB_BTREE) or confess "can't open user file: $fn ($!) [rebuild it from user_json?]";

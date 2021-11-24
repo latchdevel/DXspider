@@ -9,4 +9,5 @@ my $self = shift;
 my $l = shift;
 $l = 80 if $l < 80;
 $self->width($l);
+$self->user->width($l);
 return (1, $self->msg('pagewidth', $l));
