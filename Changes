@@ -1,3 +1,7 @@
+26Nov21=======================================================================
+1. *Really* change spot display format and sh/dx format "back the way they
+   were. But They won't stay that way for long!!!! There are four (yes, count
+   them) completely unused spaces at the end of the line!!!! 
 25Nov21=======================================================================
 1. Restored spot format back to the way it was.
 2. Added CTY-3127 prefixes
