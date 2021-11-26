@@ -156,8 +156,9 @@ sub start
 	}
 
 	# establish slug queue, if required
-	$self->{sluggedpc11s} = [];
-	$self->{isslugged} = $DXProt::pc92_slug_changes + $main::systime if $DXProt::pc92_slug_changes;
+	$self->{sluggedpcs} = [];
+	$self->{isslugged} = $DXProt::pc92_slug_changes + $DXProt::last_pc92_slug + 5 if $DXProt::pc92_slug_changes;
+	$self->{isslugged} = 0 if $self->{priv} > 0 || $user->registered || $user->homenode eq $main::mycall;
 
 	# send the relevant MOTD
 	$self->send_motd;
@@ -613,11 +614,17 @@ sub process
 		}
 		++$users;
 		$maxusers = $users if $users > $maxusers;
-	}
 
-	while (my ($k, $v) = each %nothereslug) {
-		if ($main::systime >= $v + 300) {
-			delete $nothereslug{$k};
+		if ($dxchan->{isslugged} && $main::systime > $dxchan->{isslugged}) {
+			foreach my $ref (@{$dxchan->{sluggedpcs}}) {
+				if ($ref->[0] == 61) {
+					Spot::add(@{$ref->[2]});
+					DXProt::send_dx_spot($dxchan, $ref->[1], @{$ref->[2]});
+				}
+			}
+
+			$dxchan->{isslugged} = 0;
+			$dxchan->{sluggedpcs} = [];
 		}
 	}
 
@@ -1032,8 +1039,9 @@ sub format_dx_spot
 		$comment = substr($comment, 0,  $clth-3) . ' ' . $_[12] if $_[12]; 
 	}
 
-	return sprintf "DX de %-9.9s%10.1f %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-9.9s%9.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
 }
+
 
 # send a dx spot
 sub dx_spot

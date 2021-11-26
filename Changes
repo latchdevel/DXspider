@@ -1,3 +1,6 @@
+25Nov21=======================================================================
+1. Restored spot format back to the way it was.
+2. Added CTY-3127 prefixes
 24Nov21=======================================================================
 1. Make /spider/perl/create_sysop.pl work on a base git cloned tree.
 2. Add /spider/local /spider/local_cmd /spider/local_data to git. 

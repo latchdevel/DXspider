@@ -141,6 +141,8 @@ my $t = (int ($main::systime/60)) * 60;
 return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
 my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall, $ipaddr);
 
+#$DB::single = 1;
+
 if ($freq =~ /^69/ || $localonly) {
 
 	# heaven forfend that we get a 69Mhz band :-)
@@ -149,21 +151,24 @@ if ($freq =~ /^69/ || $localonly) {
 	}
 
 	$self->dx_spot(undef, undef, @spot);
+
 	return (1);
 } else {
-	if (@spot) {
-		# store it 
-		Spot::add(@spot);
-
 		# send orf to the users
-		my $spot;
+	my $spot;
 
-		if ($ipaddr) {
-			$spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
-		} else {
-			$spot = DXProt::pc11($spotter, $freq, $spotted, $line);
-		}
-
+	if ($ipaddr) {
+		$spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
+	} else {
+		$spot = DXProt::pc11($spotter, $freq, $spotted, $line);
+	}
+	
+	$self->dx_spot(undef, undef, @spot);
+	if ($self->isslugged) {
+		push @{$self->{sluggedpcs}}, [61, $spot, \@spot];
+	} else {
+		# store in spots database 
+		Spot::add(@spot);
 		DXProt::send_dx_spot($self, $spot, @spot);
 	}
 }
