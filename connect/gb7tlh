@@ -1,8 +1,3 @@
 timeout 15
-abort (Busy|Sorry|Fail)
-# don't forget to chmod 4775 netrom_call!
-connect ax25 /usr/sbin/netrom_call bbs gb7djk g1tlh-0
-'Connect' ''
-'Connect' 'ak1a'
-'Connect'  ''
-client gb7tlh ax25
+connect telnet dirk7.int.tobit.co.uk 7300
+'ogin:' 'gb7tlh-1'
