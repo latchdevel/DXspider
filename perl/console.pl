@@ -469,7 +469,6 @@ sub rec_stdin
 # add a line to the end of the top screen
 sub addtotop
 {
-	$Text::Wrap::Columns = $cols;
 	while (@_) {
 		my $inbuf = shift;
 		my $l = length $inbuf;
@@ -477,6 +476,7 @@ sub addtotop
 		if ($l > $cols) {
 			$inbuf =~ s/\s+/ /g;
 			if (length $inbuf > $cols) {
+				$Text::Wrap::columns = $cols;
 				push @sh, split /\n/, wrap('',' ' x 19, $inbuf);
 			} else {
 				push @sh, $inbuf;
@@ -610,7 +610,7 @@ doresize();
 
 $SIG{__DIE__} = \&sig_term;
 
-#$Text::Wrap::Columns = $cols;
+$Text::Wrap::columns = $cols;
 
 my $lastmin = 0;
 
