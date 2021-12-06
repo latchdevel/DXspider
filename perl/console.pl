@@ -605,12 +605,10 @@ $SIG{'HUP'} = \&sig_term;
 
 
 # start upb
-$Text::Wrap::Columns = $cols;
+$Text::Wrap::columns = $cols;
 doresize();
 
 $SIG{__DIE__} = \&sig_term;
-
-$Text::Wrap::columns = $cols;
 
 my $lastmin = 0;
 
