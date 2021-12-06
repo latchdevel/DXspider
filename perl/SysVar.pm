@@ -31,4 +31,4 @@ $localcmd = "$root/local_cmd";
 $userfn = "$local_data/users";
 
 # the "message of the day" file
-$motd = "$local_data/motd";
+$motd = "motd";

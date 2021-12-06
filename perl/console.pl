@@ -13,7 +13,7 @@
 #
 # 
 
-require 5.004;
+require 5.16.1;
 use warnings;
 
 # search local then perl directories
@@ -132,6 +132,23 @@ sub doresize
 	do_initscr();
 
 	$inscroll = 0;
+	dbg("resize: l=$lines c=$cols");
+	dbg("resize: sh=". scalar @sh );
+#	my @tsh;
+#	my $t;
+#	while (defined ($t = shift @sh)) {
+#		dbg("t: $t(" , length $t . ')'); 
+#		if ($t =~ /^\t/) {
+#			$t =~ s/^\t/ /;
+#			push(@tsh, pop(@tsh) . $t)
+#		} else {
+#			push(@tsh, $t);
+#		}
+#		dbg("tsh: " . scalar @tsh);
+#	}
+#	dbg("resize: tsh=". scalar @tsh );
+#	$spos = @tsh < $pagel ? 0 :  @tsh - $pagel;
+	#	addtotop(@tsh);
 	$spos = @sh < $pagel ? 0 :  @sh - $pagel;
 	show_screen();
 	$conn->send_later("C$call|$cols") if $conn;
@@ -452,13 +469,18 @@ sub rec_stdin
 # add a line to the end of the top screen
 sub addtotop
 {
+	$Text::Wrap::Columns = $cols;
 	while (@_) {
 		my $inbuf = shift;
 		my $l = length $inbuf;
+		dbg("addtotop: $l $inbuf");
 		if ($l > $cols) {
-#			$Text::Wrap::Columns = $cols;
-#			push @sh, wrap('',"\t", $inbuf);
-			push @sh, $inbuf;
+			$inbuf =~ s/\s+/ /g;
+			if (length $inbuf > $cols) {
+				push @sh, split /\n/, wrap('',' ' x 19, $inbuf);
+			} else {
+				push @sh, $inbuf;
+			}
 		} else {
 			push @sh, $inbuf;
 		}
@@ -552,7 +574,7 @@ sub on_disconnect
 while (@ARGV && $ARGV[0] =~ /^-/) {
 	my $arg = shift;
 	if ($arg eq '-x') {
-		dbginit();
+		dbginit('console');
 		dbgadd('console');
 		$maxshist = 200;
 	}
@@ -581,7 +603,9 @@ unless ($DB::VERSION) {
 
 $SIG{'HUP'} = \&sig_term;
 
-# start up
+
+# start upb
+$Text::Wrap::Columns = $cols;
 doresize();
 
 $SIG{__DIE__} = \&sig_term;

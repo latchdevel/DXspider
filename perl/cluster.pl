@@ -545,6 +545,12 @@ sub setup_start
 		$SIG{__DIE__} = $w;
 	}
 
+	# setup location of motd & issue
+	localdata_mv($motd);
+	$motd = localdata($motd);
+	localdata_mv("issue");
+	
+
 	# try to load XML::Simple
 	DXXml::init();
 

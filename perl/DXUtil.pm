@@ -280,6 +280,7 @@ sub shellregex
 {
 	my $in = shift;
 	$in =~ s{(.)} { $patmap{$1} || "\Q$1" }ge;
+	$in =~ s|\\/|/|g;
 	return '^' . $in . "\$";
 }
 

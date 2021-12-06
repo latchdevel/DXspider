@@ -2033,6 +2033,12 @@ You can remove your startup script with UNSET/STARTUP.
 Tell the system that the call(s) are to be treated as DXSpider node and
 fed new style DX Protocol rather normal user commands.
 
+=== 5^UNSET/SPIDER <call> [<call>..]^Make the callsign a normal user
+=== 5^UNSET/ARCLUSTER <call> [<call>..]^Make the callsign a normal user
+=== 5^UNSET/NODE <call> [<call>..]^Make the callsign a normal user
+=== 5^UNSET/AK1A <call> [<call>..]^Make the callsign a normal user
+=== 5^SET/USER <call> [<call>..]^Make the callsign a normal user
+
 === 0^SET/TALK^Allow TALK messages to come out on your terminal
 === 0^UNSET/TALK^Stop TALK messages coming out on your terminal
 

@@ -41,6 +41,8 @@ sub handle
 
 	
 	dbg("sh/dx list: " . join(" ", @list)) if isdbg('sh/dx');
+
+#	$DB::single=1;
 	
 	while (@list) {	# next field
 		$f = shift @list;

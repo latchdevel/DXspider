@@ -17,7 +17,7 @@ if ($self->priv < 9) {
 	Log('DXCommand', $self->call . " attempted to register @args");
 	return (1, $self->msg('e5'));
 }
-return (1, $self->msg('reginac')) unless $main::reqreg;
+#return (1, $self->msg('reginac')) unless $main::reqreg;
 
 foreach $call (@args) {
 	$call = uc $call;

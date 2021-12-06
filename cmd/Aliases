@@ -160,6 +160,9 @@ package CmdAlias;
 		  'u' => [
 				  '^uns?e?t?$', 'apropos unset', 'apropos',
 				  '^uns?e?t?/dbg$', 'unset/debug', 'unset/debug',
+				  '^uns?e?t?/arc', 'set/user', 'set/user',
+				  '^uns?e?t?/spider$', 'set/user', 'set/user',
+				  '^uns?e?t?/ak1a$', 'set/user', 'set/user',
 				  '^uns?e?t?/node$', 'set/user', 'set/user',
 				  '^uns?e?t?/sk', 'set/wantrbn none', 'set/wantrbn',
 				 ],

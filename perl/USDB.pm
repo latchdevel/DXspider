@@ -10,6 +10,7 @@ package USDB;
 use strict;
 
 use DXVars;
+use SysVar;
 use DB_File;
 use File::Copy;
 use DXDebug;
@@ -120,9 +121,10 @@ sub load
 	
 	my %dbn;
 	if (-e $dbfn ) {
-		copy($dbfn, "$dbfn.new") or return "cannot copy $dbfn -> $dbfn.new $!";
+		copy($dbfn, "$dbfn.old") or return "cannot copy $dbfn -> $dbfn.old $!";
 	}
-	
+
+	unlink "$dbfn.new";
 	tie %dbn, 'DB_File', "$dbfn.new", O_RDWR|O_CREAT, 0664, $a or return "cannot tie $dbfn.new $!";
 	
 	# now write away all the files

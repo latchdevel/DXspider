@@ -1,3 +1,18 @@
+06Nov21=======================================================================
+1. Improve console.pl scrolling. Split long lines (eg on announcements.
+04Nov21=======================================================================
+1. Fix illogicalities in USDB creations and make sure that O_CREAT on tie does
+   NOT encounter an existing file to barf about. Even though it shouldn't.
+   Thanks Howard WB3FFV.
+2. Fixed a typo in show/registered that prevents a list of callsigns being
+   searched for. Got rid of some over complex code. Thnake Fabrizio iZ0UIN. 
+3. Fix long line wrapping in console.pl
+03Nov21=======================================================================
+1. Move motd and issue files to local_data if not already there.
+30Nov21=======================================================================
+1. Fix sh/dx with callsigns that have /p or VE/G1TLH in them.
+2. Add unset/ak1a, unset/arcluster aliases and some minimal help for UNSET/
+   SPIDER, NODE, ARCLUSTER, AKIA and also SET/USER.
 26Nov21=======================================================================
 1. *Really* change spot display format and sh/dx format "back the way they
    were. But They won't stay that way for long!!!! There are four (yes, count
