@@ -159,12 +159,15 @@ sub alloc
 		$user->new_buddies unless $user->buddies;
 		$self->{group} = $user->group;
 		$self->{sort} = $user->sort;
+		$self->{width} = $user->width;
 	}
 	$self->{startt} = $self->{t} = time;
 	$self->{state} = 0;
 	$self->{oldstate} = 0;
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
+	$self->{width} ||=  80;
+	
 
 	# add in all the dxcc, itu, zone info
 	my @dxcc = Prefix::extract($call);

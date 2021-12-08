@@ -243,6 +243,7 @@ package DXM;
 				outconn => 'Outstanding connect to $_[0]',
 				page => 'Press Enter to continue, A to abort ($_[0] lines) >',
 				pagelth => 'Page Length is now $_[0]',
+				pagewidth => 'Page width is now $_[0] columns',
 				passerr => 'Please use: SET/PASS <password> <callsign>',
 				passphrase => 'Passphrase set or changed for $_[0]',
 				passphraseu => 'Passphrase removed for $_[0]',

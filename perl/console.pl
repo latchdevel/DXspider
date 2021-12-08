@@ -51,12 +51,14 @@ use Console;
 #
 
 $call = "";                     # the callsign being used
+$node = "";                     # the node callsign being used
+
 $conn = 0;                      # the connection object for the cluster
 $lasttime = time;               # lasttime something happened on the interface
 
 $connsort = "local";
-@khistory = ();
-@shistory = ();
+@kh = ();
+@sh = ();
 $khistpos = 0;
 $spos = $pos = $lth = 0;
 $inbuf = "";
@@ -126,7 +128,8 @@ sub do_resize
 	$cols = COLS;
 	$has_colors = has_colors();
 	do_initscr();
-
+	$inscroll = 0;
+	$spos = @sh < $pagel ? 0 :  @sh - $pagel;
 	show_screen();
 }
 
@@ -160,70 +163,69 @@ sub setattr
 	}
 }
 
-# measure the no of screen lines a line will take
-sub measure
-{
-	my $line = shift;
-	return 0 unless $line;
-
-	my $l = length $line;
-	my $lines = int ($l / $cols);
-	$lines++ if $l / $cols > $lines;
-	return $lines;
-}
 
 # display the top screen
 sub show_screen
-{
-	if ($spos == @shistory - 1) {
-
-		# if we really are scrolling thru at the end of the history
-		my $line = $shistory[$spos];
-		$top->addstr("\n") if $spos > 0;
-		setattr($line);
-		$top->addstr($line);
-#		$top->addstr("\n");
-		$top->attrset(COLOR_PAIR(0)) if $has_colors;
-		$spos = @shistory;
+{	if ($inscroll) {
 		
-	} else {
-		
-		# anywhere else
+		dbg("B: s:$spos h:" . scalar @sh) if isdbg('console');
 		my ($i, $l);
-		my $p = $spos-1;
-		for ($i = 0; $i < $pagel && $p >= 0; ) {
-			$l = measure($shistory[$p]);
-			$i += $l;
-			$p-- if $i < $pagel;
-		}
-		$p = 0 if $p < 0;
-		
+
+		$spos = 0 if $spos < 0;
+		my $y = $spos;
 		$top->move(0, 0);
 		$top->attrset(COLOR_PAIR(0)) if $has_colors;
 		$top->clrtobot();
-		for ($i = 0; $i < $pagel && $p < @shistory; $p++) {
-			my $line = $shistory[$p];
-			my $lines = measure($line);
-			last if $i + $lines > $pagel;
-			$top->addstr("\n") if $i;
+		for ($i = 0; $i < $pagel && $y < @sh; ++$y) {
+			my $line = $sh[$y];
+			my $lines = 1;
+			$top->move($i, 0);
+			dbg("C: s:$spos y:$i sh:" . scalar @sh . " l:" . length($line) . " '$line'") if isdbg('console');
 			setattr($line);
 			$top->addstr($line);
 			$top->attrset(COLOR_PAIR(0)) if $has_colors;
 			$i += $lines;
 		}
-		$spos = $p;
-		$spos = @shistory if $spos > @shistory;
+		if ($y >= @sh) {
+			$inscroll = 0;
+			$spos = @sh;
+		}
+	}	elsif ($spos < @sh || $spos < $pagel) {
+		# if we really are scrolling thru at the end of the history
+		while ($spos < @sh) {
+			my $line = $sh[$spos];
+			my $y = $spos;
+			if ($y >= $pagel) {
+				$top->scrollok(1);
+				$top->scrl(1);
+				$top->scrollok(0);
+				$y = $pagel-1;
+			}
+			$top->move($y, 0);
+			dbg("A: s:$spos sh:" . scalar @sh . " y:$y l:" . length($line) . " '$line'") if isdbg('console');
+			$top->refresh;
+			setattr($line);
+			$line =~ s/\n//s;
+			$top->addstr($line);
+			$top->attrset(COLOR_PAIR(0)) if $has_colors;
+			++$spos;
+		}
+		shift @sh while @sh > $maxshist;
+		$spos = @sh;
 	}
-    my $shl = @shistory;
+
+	$top->refresh;
+    my $shl = @sh;
 	my $size = $lines . 'x' . $cols . '-'; 
 	my $add = "-$spos-$shl";
     my $time = ztime(time);
-	my $str =  "-" . $time . '-' x ($cols - (length($size) + length($call) + length($add) + length($time) + 1));
+	my $c = "$call\@$node";
+	my $str =  "-" . $time . '-' . ($inscroll ? 'S':'-') . '-' x ($cols - (length($size) + length($c) + length($add) + length($time) + 3));
 	$scr->addstr($lines-4, 0, $str);
 	
 	$scr->addstr($size);
 	$scr->attrset($mycallcolor) if $has_colors;
-	$scr->addstr($call);
+	$scr->addstr($c);
 	$scr->attrset(COLOR_PAIR(0)) if $has_colors;
     $scr->addstr($add);
 	$scr->refresh();
@@ -235,17 +237,20 @@ sub addtotop
 {
 	while (@_) {
 		my $inbuf = shift;
-		if ($inbuf =~ s/\x07+$//) {
-			beep();
-		}
-		if (length $inbuf >= $cols) {
-			$Text::Wrap::Columns = $cols;
-			push @shistory, wrap('',"\t", $inbuf);
+		my $l = length $inbuf;
+		if ($l > $cols) {
+			$inbuf =~ s/\s+/ /g;
+			if (length $inbuf > $cols) {
+				$Text::Wrap::columns = $cols;
+				push @sh, split /\n/, wrap('',' ' x 19, $inbuf);
+			} else {
+				push @sh, $inbuf;
+			}
 		} else {
-			push @shistory, $inbuf;
+			push @sh, $inbuf;
 		}
-		shift @shistory while @shistory > $maxshist;
 	}
+#	shift @sh while @sh > $maxshist;
 	show_screen();
 }
 
@@ -257,7 +262,14 @@ sub rec_socket
 		cease(1);
 	}
 	if (defined $msg) {
-		my ($sort, $call, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+		my ($sort, $incall, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+		if ($line =~ s/\x07+$//) {
+			beep();
+		}
+		$line =~ s/[\r\n]+//s;
+
+		# change my call if my node says "tonight Michael you are Jane" or something like that...
+		$call = $incall if $call ne $incall;
 		
 		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 		if ($sort && $sort eq 'D') {
@@ -266,6 +278,7 @@ sub rec_socket
 		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
 		}	  
+		
 		# ******************************************************
 		# ******************************************************
 		# any other sorts that might happen are silently ignored.
@@ -300,9 +313,9 @@ sub rec_stdin
 			if ($inbuf =~ /^!/o) {
 				my $i;
 				$inbuf =~ s/^!//o;
-				for ($i = $#khistory; $i >= 0; $i--) {
-					if ($khistory[$i] =~ /^$inbuf/) {
-						$inbuf = $khistory[$i];
+				for ($i = $#kh; $i >= 0; $i--) {
+					if ($kh[$i] =~ /^$inbuf/) {
+						$inbuf = $kh[$i];
 						last;
 					}
 				}
@@ -311,18 +324,20 @@ sub rec_stdin
 					return;
 				}
 			}
-			push @khistory, $inbuf if length $inbuf;
-			shift @khistory if @khistory > $maxkhist;
-			$khistpos = @khistory;
+			push @kh, $inbuf if length $inbuf;
+			shift @kh if @kh > $maxkhist;
+			$khistpos = @kh;
 			$bot->move(0,0);
 			$bot->clrtoeol();
 			$bot->addstr(substr($inbuf, 0, $cols));
 
-			# add it to the monitor window
-			unless ($spos == @shistory) {
-				$spos = @shistory;
+			if ($inscroll && $spos < @sh) {
+				$spos = @sh - $pagel;
+				$inscroll = 0;
 				show_screen();
-			};
+			}
+
+			# add it to the monitor window
 			addtotop($inbuf);
 		
 			# send it to the cluster
@@ -332,42 +347,40 @@ sub rec_stdin
 		} elsif ($r eq KEY_UP || $r eq "\020") {
 			if ($khistpos > 0) {
 				--$khistpos;
-				$inbuf = $khistory[$khistpos];
+				$inbuf = $kh[$khistpos];
 				$pos = $lth = length $inbuf;
 			} else {
 				beep();
 			}
 		} elsif ($r eq KEY_DOWN || $r eq "\016") {
-			if ($khistpos < @khistory - 1) {
+			if ($khistpos < @kh - 1) {
 				++$khistpos;
-				$inbuf = $khistory[$khistpos];
+				$inbuf = $kh[$khistpos];
 				$pos = $lth = length $inbuf;
 			} else {
 				beep();
 			}
 		} elsif ($r eq KEY_PPAGE || $r eq "\032") {
-			if ($spos > 0) {
-				my ($i, $l);
-				for ($i = 0; $i < $pagel-1 && $spos >= 0; ) {
-					$l = measure($shistory[$spos]);
-					$i += $l;
-					$spos-- if $i <= $pagel;
-				}
+			if ($spos > 0 && @sh > $pagel) {
+				$spos -= $pagel+int($pagel/2); 
 				$spos = 0 if $spos < 0;
+				$inscroll = 1;
 				show_screen();
 			} else {
 				beep();
 			}
 		} elsif ($r eq KEY_NPAGE || $r eq "\026") {
-			if ($spos < @shistory - 1) {
-				my ($i, $l);
-				for ($i = 0; $i <= $pagel && $spos <= @shistory; ) {
-					$l = measure($shistory[$spos]);
-					$i += $l;
-					$spos++ if $i <= $pagel;
-				}
-				$spos = @shistory if $spos >= @shistory - 1;
+			if ($inscroll && $spos < @sh) {
+
+				$spos += int($pagel/2);
+				if ($spos > @sh - $pagel) {
+					$spos = @sh - $pagel;
+				} 
 				show_screen();
+				if ($spos >= @sh) {
+					$spos = @sh;
+					$inscroll = 0;
+				}
 			} else {
 				beep();
 			}
@@ -415,8 +428,8 @@ sub rec_stdin
 			return;
 		} elsif (defined $r && is_pctext($r)) {
 			# move the top screen back to the bottom if you type something
-			if ($spos < @shistory) {
-				$spos = @shistory;
+			if ($spos < @sh) {
+				$spos = @sh;
 				show_screen();
 			}
 
@@ -457,6 +470,8 @@ sub rec_stdin
 
 $call = uc shift @ARGV if @ARGV;
 $call = uc $myalias if !$call;
+$node = uc $mycall unless $node;
+
 my ($scall, $ssid) = split /-/, $call;
 $ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
 if ($ssid) {
@@ -502,11 +517,11 @@ $SIG{__DIE__} = \&sig_term;
 
 $conn->send_later("A$call|$connsort width=$cols");
 $conn->send_later("I$call|set/page $maxshist");
-#$conn->send_later("I$call|set/nobeep");
+$conn->send_later("I$call|set/nobeep");
 
 #Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
 
-$Text::Wrap::Columns = $cols;
+$Text::Wrap::columns = $cols;
 
 my $lastmin = 0;
 for (;;) {
@@ -523,8 +538,6 @@ for (;;) {
 	}
 	my $ch = $bot->getch();
 	if (@time && tv_interval(\@time, [gettimeofday]) >= 1) {
-#		mydbg("Got Resize");
-#		do_resize();
 		next;
 	}
 	if (defined $ch) {
