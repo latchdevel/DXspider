@@ -124,13 +124,11 @@ sub start
 	$user->wantdxitu(0) unless defined $user->{wantdxitu};	
 	$user->wantusstate(0) unless defined $user->{wantusstate};
 
-	# sort out registration
-	if ($main::reqreg == 1) {
-		$self->{registered} = $user->registered;
-	} elsif ($main::reqreg == 2) {
+	# sort out registration (who wanted 2???) Note registration *could* be used even when reqreg == 0
+	if ($main::reqreg == 2) {
 		$self->{registered} = !$user->registered;
 	} else {
-		$self->{registered} = 1;
+		$self->{registered} = $user->registered;
 	}
 
 	# send the relevant MOTD
@@ -1237,7 +1235,7 @@ sub send_motd
 	my $self = shift;
 	my $motd;
 
-	unless ($self->{registered}) {
+	unless ($self->registered) {
 		$motd = "${main::motd}_nor_$self->{lang}";
 		$motd = "${main::motd}_nor" unless -e $motd;
 	}
@@ -1252,5 +1250,20 @@ sub send_motd
 	}
 	$self->send_file($motd) if -e $motd;
 }
+
+sub registered
+{
+	my $self = shift;
+
+	# the sysop is registered!
+	return 1 if $self->call eq $main::myalias || $self->call eq $main::mycall;
+	
+	if ($main::reqreg) {
+		return $self->{registered};
+	} else {
+		return 1;
+	}
+}
+
 1;
 __END__
