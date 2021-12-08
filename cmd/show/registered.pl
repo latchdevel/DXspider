@@ -62,6 +62,7 @@ sub generate
 	}
 
 	my @l;
+	push @out, "Registration is " . ($main::reqreg ? "Required" :  "NOT Required");
 	foreach my $call (@val) {
 		if (@l >= 5) {
 			push @out, sprintf "%-14s %-14s %-14s %-14s %-14s", @l;

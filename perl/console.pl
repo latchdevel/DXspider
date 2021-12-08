@@ -132,23 +132,6 @@ sub doresize
 	do_initscr();
 
 	$inscroll = 0;
-	dbg("resize: l=$lines c=$cols");
-	dbg("resize: sh=". scalar @sh );
-#	my @tsh;
-#	my $t;
-#	while (defined ($t = shift @sh)) {
-#		dbg("t: $t(" , length $t . ')'); 
-#		if ($t =~ /^\t/) {
-#			$t =~ s/^\t/ /;
-#			push(@tsh, pop(@tsh) . $t)
-#		} else {
-#			push(@tsh, $t);
-#		}
-#		dbg("tsh: " . scalar @tsh);
-#	}
-#	dbg("resize: tsh=". scalar @tsh );
-#	$spos = @tsh < $pagel ? 0 :  @tsh - $pagel;
-	#	addtotop(@tsh);
 	$spos = @sh < $pagel ? 0 :  @sh - $pagel;
 	show_screen();
 	$conn->send_later("C$call|$cols") if $conn;
@@ -184,17 +167,6 @@ sub setattr
 	}
 }
 
-# measure the no of screen lines a line will take
-sub measure
-{
-	my $line = shift;
-	return 0 unless $line;
-
-	my $l = length $line;
-	my $lines = int ($l / $cols);
-	$lines++ if $l / $cols > $lines;
-	return $lines;
-}
 
 # display the top screen
 sub show_screen
@@ -203,11 +175,6 @@ sub show_screen
 		
 		dbg("B: s:$spos h:" . scalar @sh) if isdbg('console');
 		my ($i, $l);
-#		for ($i = 0; $i < $pagel && $p >= 0; ) {
-#			$l = measure($sh[$p]);
-#			$i += $l;
-#			$p-- if $i < $pagel;
-		#		}
 
 		$spos = 0 if $spos < 0;
 		my $y = $spos;
@@ -216,7 +183,6 @@ sub show_screen
 		$top->clrtobot();
 		for ($i = 0; $i < $pagel && $y < @sh; ++$y) {
 			my $line = $sh[$y];
-#			my $lines = measure($line);
 			my $lines = 1;
 			$top->move($i, 0);
 			dbg("C: s:$spos y:$i sh:" . scalar @sh . " l:" . length($line) . " '$line'") if isdbg('console');
@@ -313,11 +279,6 @@ sub rec_stdin
 			$bot->clrtoeol();
 			$bot->addstr(substr($inbuf, 0, $cols));
 
-			# add it to the monitor window
-#			unless ($spos == @sh) {
-#				$spos = @sh;
-#				show_screen();
-#			}
 			if ($inscroll && $spos < @sh) {
 				$spos = @sh - $pagel;
 				$inscroll = 0;
@@ -348,12 +309,6 @@ sub rec_stdin
 			}
 		} elsif ($r eq KEY_PPAGE || $r eq "\032") {
 			if ($spos > 0 && @sh > $pagel) {
-#				my ($i, $l);
-#				for ($i = 0; $i < $pagel-1 && $spos >= 0; ) {
-#					$l = measure($sh[$spos]);
-#					$i += $l;
-#					--$spos if $i <= $pagel;
-#				}
 				$spos -= $pagel+int($pagel/2); 
 				$spos = 0 if $spos < 0;
 				$inscroll = 1;
@@ -363,12 +318,6 @@ sub rec_stdin
 			}
 		} elsif ($r eq KEY_NPAGE || $r eq "\026") {
 			if ($inscroll && $spos < @sh) {
-#				my ($i, $l);
-#				for ($i = 0; $i <= $pagel && $spos < @sh; ) {
-#					$l = measure($sh[$spos]);
-#					$i += $l;
-#					++$spos if $i <= $pagel && $spos < @sh;
-#				}
 
 				dbg("NPAGE sp:$spos $sh:". scalar @sh . " pl: $pagel") if isdbg('console');
 				$spos += int($pagel/2);

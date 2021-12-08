@@ -33,7 +33,7 @@ return (1, $self->msg('e8')) unless $to;
 $to = uc $to;
 
 return (1, $self->msg('e22', $to)) unless is_callsign($to);
-return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
+return (1, $self->msg('e28')) unless $self->isregistered || $to eq $main::myalias;
 
 $via = uc $via if $via;
 my $call = $via || $to;

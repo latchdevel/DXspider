@@ -67,7 +67,7 @@ if ($self->state eq "prompt") {
 		@extra = ();
 	} 
 
-	return (1, $self->msg('e28')) unless $self->registered || $to eq $main::myalias;
+	return (1, $self->msg('e28')) unless $self->isregistered || $to eq $main::myalias;
 	
 	$loc->{to} = [ $to, @extra ];       # to is an array
 	$loc->{subject} = $oref->subject;

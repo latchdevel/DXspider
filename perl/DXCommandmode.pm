@@ -147,13 +147,11 @@ sub start
 	$user->wantusstate(0) unless defined $user->{wantusstate};
 
 	# sort out registration
-	if ($main::reqreg == 1) {
-		$self->{registered} = $user->registered;
-	} elsif ($main::reqreg == 2) {
+	if ($main::reqreg == 2) {
 		$self->{registered} = !$user->registered;
 	} else {
-		$self->{registered} = 1;
-	}
+		$self->{registered} = $user->registered;
+	} 
 
 	# establish slug queue, if required
 	$self->{sluggedpcs} = [];
@@ -1039,7 +1037,7 @@ sub format_dx_spot
 		$comment = substr($comment, 0,  $clth-3) . ' ' . $_[12] if $_[12]; 
 	}
 
-	return sprintf "DX de %-9.9s%9.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-8.8s%10.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
 }
 
 
@@ -1287,7 +1285,7 @@ sub send_motd
 	my $self = shift;
 	my $motd;
 
-	unless ($self->{registered}) {
+	unless ($self->isregistered) {
 		$motd = "${main::motd}_nor_$self->{lang}";
 		$motd = "${main::motd}_nor" unless -e $motd;
 	}
@@ -1398,5 +1396,20 @@ sub user_count
 {
 	return ($users, $maxusers);
 }
+
+sub isregistered
+{
+	my $self = shift;
+
+	# the sysop is registered!
+	return 1 if $self->call eq $main::myalias || $self->call eq $main::mycall;
+	
+	if ($main::reqreg) {
+		return $self->{registered};
+	} else {
+		return 1;
+	}
+}
+
 1;
 __END__

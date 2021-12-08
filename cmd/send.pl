@@ -39,7 +39,7 @@ if ($self->state eq "prompt") {
 	
 	# any thing after send?
 	return (1, $self->msg('e6')) if !@f;
-	return (1, $self->msg('e28')) unless $self->registered || uc $f[0] eq $main::myalias;
+	return (1, $self->msg('e28')) unless $self->isregistered || uc $f[0] eq $main::myalias;
 
 	while (@f) {
 		my $f = uc shift @f; 

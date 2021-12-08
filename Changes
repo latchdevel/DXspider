@@ -1,3 +1,6 @@
+08Nov21=======================================================================
+1. Get to the bottom of why ssid'd calls were using the base call's 
+   credentials. This should now work as expected. 
 06Nov21=======================================================================
 1. Improve console.pl scrolling. Split long lines (eg on announcements.
 04Nov21=======================================================================

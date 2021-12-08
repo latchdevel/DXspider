@@ -20,7 +20,7 @@ my ($self, $line) = @_;
 my @f = split /\s+/, $line;
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e9')) if !@f;
-return (1, $self->msg('e28')) unless $self->registered;
+return (1, $self->msg('e28')) unless $self->isregistered;
 
 my $sort = uc $f[0];
 my $to = '*';

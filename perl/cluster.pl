@@ -263,8 +263,8 @@ sub new_channel
 			$lock = $user->lockout;
 		} elsif ($basecall ne $call) {
 			# if there isn't a SSID on the $call, then try the base
-			$user = DXUser::get_current($basecall);
-			$lock = $user->lockout if $user;
+			my $luser = DXUser::get_current($basecall);
+			$lock = $luser->lockout if $luser;
 		}
 
 		# now deal with the lock

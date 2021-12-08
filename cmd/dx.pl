@@ -18,8 +18,10 @@ my $valid = 0;
 my $localonly;
 my $oline = $line;
 
+#$DB::single=1;
+
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
-return (1, $self->msg('e28')) unless $self->registered;
+return (1, $self->msg('e28')) unless $self->isregistered;
 
 my @bad;
 if (@bad = BadWords::check($line)) {	
@@ -60,7 +62,8 @@ my $ipaddr;
 my $addr = $self->hostname;
 
 if ($self->conn && $self->conn->peerhost) {
-	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
+#	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
+	$ipaddr = $addr; # force a PC61 
 } elsif ($self->inscript) {
 	$ipaddr = "script";
 }
@@ -159,9 +162,10 @@ if ($freq =~ /^69/ || $localonly) {
 
 	if ($ipaddr) {
 		$spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
-	} else {
-		$spot = DXProt::pc11($spotter, $freq, $spotted, $line);
 	}
+	#else {
+	#	$spot = DXProt::pc11($spotter, $freq, $spotted, $line);
+	#}
 	
 	$self->dx_spot(undef, undef, @spot);
 	if ($self->isslugged) {
