@@ -765,6 +765,20 @@ sub error_handler
 }
 
 
+sub isregistered
+{
+	my $self = shift;
+
+	# the sysop is registered!
+	return 1 if $self->call eq $main::myalias || $self->call eq $main::mycall;
+	
+	if ($main::reqreg) {
+		return $self->{registered};
+	} else {
+		return 1;
+	}
+}
+
 #no strict;
 sub AUTOLOAD
 {

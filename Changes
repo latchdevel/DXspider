@@ -1,16 +1,18 @@
-08Nov21=======================================================================
+09Dec21=======================================================================
+1. Moved isregistered to DXChannel for safety...
+08Dec21=======================================================================
 1. Get to the bottom of why ssid'd calls were using the base call's 
    credentials. This should now work as expected. 
-06Nov21=======================================================================
+06Dec21=======================================================================
 1. Improve console.pl scrolling. Split long lines (eg on announcements.
-04Nov21=======================================================================
+04Dec21=======================================================================
 1. Fix illogicalities in USDB creations and make sure that O_CREAT on tie does
    NOT encounter an existing file to barf about. Even though it shouldn't.
    Thanks Howard WB3FFV.
 2. Fixed a typo in show/registered that prevents a list of callsigns being
-   searched for. Got rid of some over complex code. Thnake Fabrizio iZ0UIN. 
+   searched for. Got rid of some over complex code. Thanks Fabrizio iZ0UIN. 
 3. Fix long line wrapping in console.pl
-03Nov21=======================================================================
+03Dec21=======================================================================
 1. Move motd and issue files to local_data if not already there.
 30Nov21=======================================================================
 1. Fix sh/dx with callsigns that have /p or VE/G1TLH in them.
