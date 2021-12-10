@@ -419,16 +419,17 @@ sub rec_stdin
 sub addtotop
 {
 	my $sort = shift;
-	
 	while (@_) {
 		my $inbuf = shift;
 		my $l = length $inbuf;
-		dbg("addtotop: $sort $l $inbuf") if isdbg('console');
-		if ($l > $cols && grep $sort eq $_, qw(T A C)) {
+		if ($l > $cols) {
 			$inbuf =~ s/\s+/ /g;
 			if (length $inbuf > $cols) {
 				$Text::Wrap::columns = $cols;
-				push @sh, split /\n/, wrap('',' ' x 19, $inbuf);
+				my $token;
+				($token) = $inbuf =~ m!^(.* de [-\w\d/\#]+:?\s+|\w{9}\@\d\d:\d\d:\d\d )!;
+				$token ||= ' ' x 19;
+				push @sh, split /\n/, wrap('', ' ' x length($token), $inbuf);
 			} else {
 				push @sh, $inbuf;
 			}
@@ -436,6 +437,7 @@ sub addtotop
 			push @sh, $inbuf;
 		}
 	}
+	
 	show_screen() unless $inscroll;
 }
 
@@ -447,8 +449,8 @@ sub rec_socket
 		cease(1);
 	}
 	if (defined $msg) {
-		dbg("msg: " . length($msg) . " '$msg'") if isdbg('console');
 		my ($sort, $incall, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+		dbg("msg: " . length($msg) . " '$msg'") if isdbg('console');
 		if ($line =~ s/\x07+$//) {
 			beep();
 		}
@@ -458,17 +460,13 @@ sub rec_socket
 		$call = $incall if $call ne $incall;
 		
 		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
-		if ($sort && $sort eq 'D') {
+		if ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
+			cease(0);
+		} else {
 			$line = " " unless length($line);
 			addtotop($sort, $line);
-		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
-			cease(0);
-		}	  
-		# ******************************************************
-		# ******************************************************
-		# any other sorts that might happen are silently ignored.
-		# ******************************************************
-		# ******************************************************
+		}
+
 	} else {
 		cease(0);
 	}

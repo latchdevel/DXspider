@@ -111,8 +111,8 @@ sub start
 	my $pagelth = $user->pagelth;
 	$pagelth = $default_pagelth unless defined $pagelth;
 	$self->{pagelth} = $pagelth;
-	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
-	$self->{enhanced} = $line =~ /\benhanced\b/; $line =~ s/\s*enhanced\s*//;
+	($self->{width}) = $line =~ /\s*width=(\d+)/; $line =~ s/\s*width=\d+//;
+	$self->{enhanced} = $line =~ /\s+enhanced/; $line =~ s/\s*enhanced//;
 	if ($line =~ /host=/) {
 		my ($h) = $line =~ /host=(\d+\.\d+\.\d+\.\d+)/;
 		$line =~ s/\s*host=\d+\.\d+\.\d+\.\d+// if $h;
@@ -125,7 +125,7 @@ sub start
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
 
-	LogDbg('DXCommand', "$call connected from $self->{hostname} cols $self->width" . $self->{enhanced}?"enhanced":'');
+	LogDbg('DXCommand', "$call connected from $self->{hostname} cols $self->{width}" . ($self->{enhanced}?" enhanced":''));
 
 	# set some necessary flags on the user if they are connecting
 	$self->{beep} = $user->wantbeep;
