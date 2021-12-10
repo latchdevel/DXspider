@@ -245,7 +245,7 @@ sub addtotop
 			if (length $inbuf > $cols) {
 				$Text::Wrap::columns = $cols;
 				my $token;
-				($token) = $inbuf =~ m!^(.* de [-\w\d/\#]+\s+|\w{9}\@\d\d:\d\d:\d\d )!;
+				($token) = $inbuf =~ m!^(.* de [-\w\d/\#]+:?\s+|\w{9}\@\d\d:\d\d:\d\d )!;
 				$token ||= ' ' x 19;
 				push @sh, split /\n/, wrap('', ' ' x length($token), $inbuf);
 			} else {
