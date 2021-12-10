@@ -1251,19 +1251,6 @@ sub send_motd
 	$self->send_file($motd) if -e $motd;
 }
 
-sub registered
-{
-	my $self = shift;
-
-	# the sysop is registered!
-	return 1 if $self->call eq $main::myalias || $self->call eq $main::mycall;
-	
-	if ($main::reqreg) {
-		return $self->{registered};
-	} else {
-		return 1;
-	}
-}
 
 1;
 __END__

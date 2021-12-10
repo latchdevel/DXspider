@@ -36,13 +36,15 @@ unless (keys %call) {
 
 foreach $key (sort keys %call) {
 	my $u = DXUser::get_current($key);
-	if ($u && $u->registered) {
-		push @val, $key;
+	if ($u && defined (my $r = $u->registered)) {
+		push @val, "${key}($r)";
 		++$count;
 	}
+	
 }
 
 my @l;
+push @out, "Registration is " . ($main::reqreg ? "Required" :  "NOT Required");
 foreach my $call (@val) {
 	if (@l >= 5) {
 		push @out, sprintf "%-12s %-12s %-12s %-12s %-12s", @l;

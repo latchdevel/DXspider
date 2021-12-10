@@ -21,7 +21,7 @@ while ($f = shift @f) {                 # next field
 		next if $from && $to > $from;
 	}
 	unless ($to) {
-		($to) = $f =~ /^(\d+)$/o if !$to;              # is it a to count?
+		($to) = $f =~ /^(\d+)$/ if !$to;              # is it a to count?
 		next if $to;
 	}
 	unless ($who) {
