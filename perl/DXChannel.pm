@@ -724,6 +724,8 @@ sub process
 				$dxchan->disconnect;
 			} elsif ($sort eq 'D') {
 				;				# ignored (an echo)
+			} elsif ($sort eq 'C') {
+				$dxchan->width($line); # change number of columns
 			} elsif ($sort eq 'G') {
 				$dxchan->enhanced($line);
 			} else {

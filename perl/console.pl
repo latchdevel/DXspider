@@ -131,6 +131,8 @@ sub do_resize
 	$inscroll = 0;
 	$spos = @sh < $pagel ? 0 :  @sh - $pagel;
 	show_screen();
+	$conn->send_later("C$call|$cols") if $conn;
+	
 }
 
 # cease communications
@@ -242,7 +244,10 @@ sub addtotop
 			$inbuf =~ s/\s+/ /g;
 			if (length $inbuf > $cols) {
 				$Text::Wrap::columns = $cols;
-				push @sh, split /\n/, wrap('',' ' x 19, $inbuf);
+				my $token;
+				($token) = $inbuf =~ m!^(.* de [-\w\d/\#]+\s+|\w{9}\@\d\d:\d\d:\d\d )!;
+				$token ||= ' ' x 19;
+				push @sh, split /\n/, wrap('', ' ' x length($token), $inbuf);
 			} else {
 				push @sh, $inbuf;
 			}
