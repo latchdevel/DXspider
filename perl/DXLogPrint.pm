@@ -60,7 +60,7 @@ sub print
 	}
 	if ($who) {
 		$hint .= ' && ' if $hint;
-		$hint .= q{m{\Q$who\E}oi};
+		$hint .= q{m{\Q$who\E}i};
 	} 
 	$hint = "next unless $hint" if $hint;
 	$hint .= "; next unless m{^\\d+\\^$pattern\\^}" if $pattern;

@@ -112,6 +112,7 @@ sub start
 	$pagelth = $default_pagelth unless defined $pagelth;
 	$self->{pagelth} = $pagelth;
 	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
+	$self->{enhanced} = $line =~ /\benhanced\b/; $line =~ s/\s*enhanced\s*//;
 	if ($line =~ /host=/) {
 		my ($h) = $line =~ /host=(\d+\.\d+\.\d+\.\d+)/;
 		$line =~ s/\s*host=\d+\.\d+\.\d+\.\d+// if $h;
@@ -124,7 +125,7 @@ sub start
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
 
-	LogDbg('DXCommand', "$call connected from $self->{hostname}");
+	LogDbg('DXCommand', "$call connected from $self->{hostname} cols $self->width" . $self->{enhanced}?"enhanced":'');
 
 	# set some necessary flags on the user if they are connecting
 	$self->{beep} = $user->wantbeep;
@@ -1004,40 +1005,51 @@ sub format_dx_spot
 	my $self = shift;
 
 	my $t = ztime($_[2]);
-	my $loc = '';
-	my $clth = 30 + $self->{width} - 80;    # allow comment to grow according the screen width 
-	#	--$clth if $self->{consort} eq 'local';
+	my ($slot1, $slot2) = ('', '');
 	
+	my $clth = 30 + $self->{width} - 80;    # allow comment to grow according the screen width 
 	my $comment = substr (($_[3] || ''), 0, $clth);
 	$comment =~ s/\t/ /g;
-	
 	$comment .= ' ' x ($clth - (length($comment)));
 	
-    if ($self->{user}->wantgrid) {
+    if (!$slot1 && $self->{user}->wantgrid) {
 		my $ref = DXUser::get_current($_[1]);
 		if ($ref && $ref->qra) {
-			my $cloc = ' ' . substr($ref->qra, 0, 4);
-			$comment = substr $comment, 0,  ($clth - (length($comment)+length($cloc)));
-			$comment .= $cloc;
+			$slot1 = ' ' . substr($ref->qra, 0, 4);
 		}
+	}
+	if (!$slot1 && $self->{user}->wantusstate) {
+		$slot1 = " $_[12]" if $_[12];
+	}
+	unless ($slot1) {
+		if ($self->{user}->wantdxitu) {
+			$slot1 = sprintf(" %2d", $_[8]) if defined $_[8]; 
+		} elsif ($self->{user}->wantdxcq) {
+			$slot1 = sprintf(" %2d", $_[9]) if defined $_[9];
+		}
+	}
+	$comment = substr($comment, 0,  $clth-length($slot1)) . $slot1 if $slot1;
+	
+    if (!$slot2 && $self->{user}->wantgrid) {
 		my $origin = $_[4];
 		$origin =~ s/-#$//;			# sigh......
-		$ref = DXUser::get_current($origin);
+		my $ref = DXUser::get_current($origin);
 		if ($ref && $ref->qra) {
-			$loc = ' ' . substr($ref->qra, 0, 4);
+			$slot2 = ' ' . substr($ref->qra, 0, 4);
 		}
-	} elsif ($self->{user}->wantdxitu) {
-		$loc = ' ' . sprintf("%2d", $_[10]) if defined $_[10];
-		$comment = substr($comment, 0,  $clth-3) . ' ' . sprintf("%2d", $_[8]) if defined $_[8]; 
-	} elsif ($self->{user}->wantdxcq) {
-		$loc = ' ' . sprintf("%2d", $_[11]) if defined $_[11];
-		$comment = substr($comment, 0, $clth-3) . ' ' . sprintf("%2d", $_[9]) if defined $_[9]; 
-	} elsif ($self->{user}->wantusstate) {
-		$loc = ' ' . $_[13] if $_[13];
-		$comment = substr($comment, 0,  $clth-3) . ' ' . $_[12] if $_[12]; 
+	}
+	if (!$slot2 && $self->{user}->wantusstate) {
+		$slot2 = " $_[13]" if $_[13];
+	}
+	unless ($slot2) {
+		if ($self->{user}->wantdxitu) {
+			$slot2 = sprintf(" %2d", $_[10]) if defined $_[10]; 
+		} elsif ($self->{user}->wantdxcq) {
+			$slot2 = sprintf(" %2d", $_[11]) if defined $_[11]; 
+		}
 	}
 
-	return sprintf "DX de %-8.8s%10.1f  %-12.12s %-s $t$loc", "$_[4]:", $_[0], $_[1], $comment;
+	return sprintf "DX de %-8.8s%10.1f  %-12.12s %-s $t$slot2", "$_[4]:", $_[0], $_[1], $comment;
 }
 
 
@@ -1395,20 +1407,6 @@ sub spawn_cmd
 sub user_count
 {
 	return ($users, $maxusers);
-}
-
-sub isregistered
-{
-	my $self = shift;
-
-	# the sysop is registered!
-	return 1 if $self->call eq $main::myalias || $self->call eq $main::mycall;
-	
-	if ($main::reqreg) {
-		return $self->{registered};
-	} else {
-		return 1;
-	}
 }
 
 1;

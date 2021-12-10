@@ -10,6 +10,8 @@
 
 package Timer;
 
+use Mojo::IOLoop;
+
 use vars qw(@timerchain $notimers $lasttime);
 use DXDebug;
 

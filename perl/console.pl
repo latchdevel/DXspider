@@ -285,7 +285,7 @@ sub rec_stdin
 				show_screen();
 			}
 
-			addtotop($inbuf);
+			addtotop(' ', $inbuf);
 		
 			# send it to the cluster
 			$conn->send_later("I$call|$inbuf");
@@ -418,11 +418,13 @@ sub rec_stdin
 # add a line to the end of the top screen
 sub addtotop
 {
+	my $sort = shift;
+	
 	while (@_) {
 		my $inbuf = shift;
 		my $l = length $inbuf;
-		dbg("addtotop: $l $inbuf");
-		if ($l > $cols) {
+		dbg("addtotop: $sort $l $inbuf") if isdbg('console');
+		if ($l > $cols && grep $sort eq $_, qw(T A C)) {
 			$inbuf =~ s/\s+/ /g;
 			if (length $inbuf > $cols) {
 				$Text::Wrap::columns = $cols;
@@ -458,7 +460,7 @@ sub rec_socket
 		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
 		if ($sort && $sort eq 'D') {
 			$line = " " unless length($line);
-			addtotop($line);
+			addtotop($sort, $line);
 		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
 			cease(0);
 		}	  
@@ -503,7 +505,7 @@ sub idle_loop
 sub on_connect
 {
 	my $conn = shift;
-	$conn->send_later("A$call|$connsort width=$cols");
+	$conn->send_later("A$call|$connsort width=$cols enhanced");
 	$conn->send_later("I$call|set/page $maxshist");
 	#$conn->send_later("I$call|set/nobeep");
 }
