@@ -90,6 +90,7 @@ BEGIN {
 	
 }
 
+
 use DXVars;
 use SysVar;
 
@@ -478,6 +479,8 @@ sub setup_start
 	#
 	#############################################################
 
+	chdir $root;
+	
 	$starttime = $systime = time;
 	$systime_days = int ($systime / 86400);
 	$systime_daystart = $systime_days * 86400;
