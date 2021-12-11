@@ -319,7 +319,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) on $^O ended");
+	LogDbg('cluster', "DXSpider V$version build $build (git: $gitbranch/$gitversion) on $^O ended");
 	dbgclose();
 	Logclose();
 
@@ -367,6 +367,8 @@ sub AGWrestart
 #
 #############################################################
 
+chdir $root;
+
 $starttime = $systime = time;
 $systime_days = int ($systime / 86400);
 $systime_daystart = $systime_days * 86400;
@@ -405,18 +407,18 @@ if (DXSql::init($dsn)) {
 
 	# determine the real Git build number and branch
 	my $desc;
-	eval {$desc = `git describe --long`};
+	eval {$desc = `git -C $root describe --long`};
 	if (!$@ && $desc) {
-		my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+		my ($v, $s, $b, $g) = $desc =~ /^([\d\.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 		$version = $v;
-		my $subversion = $s || 0;
+		$subversion = $s || 0;
 		$build = $b || 0;
 		$gitversion = "$g\[r]";
 	}
     if (!$@) {
 		my @branch;
 		
-		eval {@branch = `git branch`};
+		eval {@branch = `git -C $root branch`};
 		unless ($@) {
 			for (@branch) {
 				my ($star, $b) = split /\s+/;
@@ -437,7 +439,7 @@ DXXml::init();
 # banner
 my ($year) = (gmtime)[5];
 $year += 1900;
-LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) on $^O started");
+LogDbg('cluster', "DXSpider V$version build $build (git: $gitbranch/$gitversion) on $^O started");
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 # load Prefixes
