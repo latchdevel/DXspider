@@ -319,7 +319,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) ended");
+	LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) on $^O ended");
 	dbgclose();
 	Logclose();
 
@@ -399,34 +399,35 @@ if (DXSql::init($dsn)) {
 		import Encode;
 		$can_encode = 1;
 	}
-	eval { require Git; };
-	unless ($@) {
-		import Git;
-		
-		# determine the real version number
-		$gitbranch = 'none';
-        $gitversion = 'none';
-		my $repo = Git->repository(Directory => "$root/.git");
-		if ($repo) {
-			my $desc = $repo->command_oneline(['describe'], STDERR => 0);
-			if ($desc) {
-				my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
-				$version = $v;
-				$subversion = $s || 0;
-				$build = $b || 0;
-				$gitversion = "$g\[r]";
-			}
-		}
-		my @branch = $repo->command([qw{branch}], STDERR=>0);
-		for (@branch) {
-			my ($star, $b) = split /\s+/;
-			if ($star eq '*') {
-				$gitbranch = $b;
-				last;
-			}
-		}
+	
+	$gitbranch = 'none';
+	$gitversion = 'none';
 
+	# determine the real Git build number and branch
+	my $desc;
+	eval {$desc = `git describe --long`};
+	if (!$@ && $desc) {
+		my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+		$version = $v;
+		my $subversion = $s || 0;
+		$build = $b || 0;
+		$gitversion = "$g\[r]";
 	}
+    if (!$@) {
+		my @branch;
+		
+		eval {@branch = `git branch`};
+		unless ($@) {
+			for (@branch) {
+				my ($star, $b) = split /\s+/;
+				if ($star eq '*') {
+					$gitbranch = $b;
+					last;
+				}
+			}
+		}
+	}
+
 	$SIG{__DIE__} = $w;
 }
 
@@ -436,7 +437,7 @@ DXXml::init();
 # banner
 my ($year) = (gmtime)[5];
 $year += 1900;
-LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) started");
+LogDbg('cluster', "DXSpider V$version, build $subversion.$build (git: $gitbranch/$gitversion) on $^O started");
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 # load Prefixes
