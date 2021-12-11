@@ -367,6 +367,8 @@ sub AGWrestart
 #
 #############################################################
 
+chdir $root;
+
 $starttime = $systime = time;
 $systime_days = int ($systime / 86400);
 $systime_daystart = $systime_days * 86400;
@@ -405,9 +407,9 @@ if (DXSql::init($dsn)) {
 
 	# determine the real Git build number and branch
 	my $desc;
-	eval {$desc = `git describe --long`};
+	eval {$desc = `git -C $root describe --long`};
 	if (!$@ && $desc) {
-		my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+		my ($v, $s, $b, $g) = $desc =~ /^([\d\.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 		$version = $v;
 		$subversion = $s || 0;
 		$build = $b || 0;
@@ -416,7 +418,7 @@ if (DXSql::init($dsn)) {
     if (!$@) {
 		my @branch;
 		
-		eval {@branch = `git branch`};
+		eval {@branch = `git -C $root branch`};
 		unless ($@) {
 			for (@branch) {
 				my ($star, $b) = split /\s+/;
