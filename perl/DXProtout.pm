@@ -43,7 +43,7 @@ sub pc10
 	$origin ||= $main::mycall;
 	$text = unpad($text);
 	$text = ' ' unless $text && length $text > 0;
-	$text =~ s/\^/%5E/g;
+	$text =~ s/\^/~/g;
 	return "PC10^$from^$user1^$text^*^$user2^$origin^~";
 }
 
@@ -54,7 +54,7 @@ sub pc11
 	my $hops = get_hops(11);
 	my $t = time;
 	$text = ' ' if !$text;
-	$text =~ s/\^/%5E/g;
+	$text =~ s/\^/~/g;
 	return sprintf "PC11^%.1f^$dxcall^%s^%s^$text^$mycall^$main::mycall^$hops^~", $freq, cldate($t), ztime($t);
 }
 
@@ -65,7 +65,7 @@ sub pc61
 	my $hops = get_hops(61) || get_hops(11);
 	my $t = time;
 	$text = ' ' if !$text;
-	$text =~ s/\^/%5E/g;
+	$text =~ s/\^/~/g;
 	return sprintf "PC61^%.1f^$dxcall^%s^%s^$text^$mycall^$main::mycall^$ipaddr^$hops^~", $freq, cldate($t), ztime($t);
 }
 
@@ -75,7 +75,7 @@ sub pc12
 	my ($call, $text, $tonode, $sysop, $wx, $origin) = @_;
 	my $hops = get_hops(12);
 	$text ||= ' ';
-	$text =~ s/\^/%5E/g;
+	$text =~ s/\^/~/g;
 	$tonode ||= '*';
 	$sysop ||= ' ';
 	$wx ||= '0';
@@ -130,7 +130,7 @@ sub pc17
 sub pc18
 {
 	my $flags = shift;
-	return "PC18^DXSpider Version: $main::version Build: $main::subversion.$main::build Git: $main::gitbranch/$main::gitversion$flags^$DXProt::myprot_version^";
+	return "PC18^DXSpider Version: $main::version Build: $main::build Git: $main::gitbranch/$main::gitversion$flags^$DXProt::myprot_version^";
 }
 
 #
@@ -232,7 +232,7 @@ sub pc29
 {
 	my ($fromnode, $tonode, $stream, $text) = @_;
 	$text = ' ' unless defined $text && length $text > 0;
-	$text =~ s/\^/%5E/og;			# remove ^
+	$text =~ s/\^/~/g;			# remove ^
 	return "PC29^$fromnode^$tonode^$stream^$text^~";
 }
 
@@ -474,7 +474,7 @@ sub pc93
 	my $origin = shift;			# this will be present on proxying from PC10
 
 	$line = unpad($line);
-	$line =~ s/\^/\\5E/g;		# remove any ^ characters
+	$line =~ s/\^/~/g;		# remove any ^ characters
 	my $s = "PC93^$main::mycall^" . gen_pc9x_t() . "^$to^$from^$via^$line";
 	$s .= "^$origin" if $origin;
 	$s .= "^H99^";

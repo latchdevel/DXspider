@@ -409,7 +409,7 @@ if (DXSql::init($dsn)) {
 	if (!$@ && $desc) {
 		my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 		$version = $v;
-		my $subversion = $s || 0;
+		$subversion = $s || 0;
 		$build = $b || 0;
 		$gitversion = "$g\[r]";
 	}

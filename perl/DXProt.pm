@@ -34,6 +34,8 @@ use Route::Node;
 use Script;
 use DXProtHandle;
 
+use Time::HiRes qw(gettimeofday tv_interval);
+
 use strict;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
@@ -174,6 +176,8 @@ $pc92_find_timeout = 30;		# maximum time to wait for a reply
 sub check
 {
 	my $n = shift;
+	my $pc = shift;
+	
 	$n -= 10;
 	return 0 if $n < 0 || $n > @checklist;
 	my $ref = $checklist[$n];
@@ -183,30 +187,30 @@ sub check
 	for ($i = 1; $i < @$ref; $i++) {
 		my ($blank, $act) = $$ref[$i] =~ /^(b?)(\w)$/;
 		return 0 unless $act;
-		next if $blank eq 'b' && $_[$i] =~ /^[ \*]$/;
-		next if $blank eq '*' && $_[$i] =~ /^\*$/;
+		next if $blank eq 'b' && $pc->[$i] =~ /^[ \*]$/;
+		next if $blank eq '*' && $pc->[$i] =~ /^\*$/;
 		if ($act eq 'c') {
-			return $i unless is_callsign($_[$i]);
+			return $i unless is_callsign($pc->[$i]);
 		} elsif ($act eq 'i') {
 			;					# do nothing
 		} elsif ($act eq 'm') {
-			return $i unless is_pctext($_[$i]);
+			return $i unless is_pctext($pc->[$i]);
 		} elsif ($act eq 'p') {
-			return $i unless is_pcflag($_[$i]);
+			return $i unless is_pcflag($pc->[$i]);
 		} elsif ($act eq 'f') {
-			return $i unless is_freq($_[$i]);
+			return $i unless is_freq($pc->[$i]);
 		} elsif ($act eq 'n') {
-			return $i unless $_[$i] =~ /^[\d ]+$/;
+			return $i unless $pc->[$i] =~ /^[\d ]+$/;
 		} elsif ($act eq 'h') {
-			return $i unless $_[$i] =~ /^H\d\d?$/;
+			return $i unless $pc->[$i] =~ /^H\d\d?$/;
 		} elsif ($act eq 'd') {
-			return $i unless $_[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
+			return $i unless $pc->[$i] =~ /^\s*\d+-\w\w\w-[12][90]\d\d$/;
 		} elsif ($act eq 't') {
-			return $i unless $_[$i] =~ /^[012]\d[012345]\dZ$/;
+			return $i unless $pc->[$i] =~ /^[012]\d[012345]\dZ$/;
 		} elsif ($act eq 'l') {
-			return $i unless $_[$i] =~ /^[A-Z]$/;
+			return $i unless $pc->[$i] =~ /^[A-Z]$/;
 		} elsif ($act eq 'a') {
-			return $i unless is_ipaddr($_[$i]);
+			return $i unless is_ipaddr($pc->[$i]);
 		}
 	}
 	return 0;
@@ -230,7 +234,8 @@ sub update_pc92_keepalive
 
 sub init
 {
-	do "$main::data/hop_table.pl" if -e "$main::data/hop_table.pl";
+	my $fn = localdata("hop_table.pl");
+	do $fn if -e $fn;
 	confess $@ if $@;
 
 	my $user = DXUser::get($main::mycall);
@@ -246,8 +251,9 @@ sub init
 	$main::me->{pingave} = 0;
 	$main::me->{registered} = 1;
 	$main::me->{version} = $main::version;
-	$main::me->{build} = "$main::subversion.$main::build";
+	$main::me->{build} = $main::build;
 	$main::me->{do_pc9x} = 1;
+	$main::me->{hostname} = $main::clusteraddr;
 	$main::me->update_pc92_next($pc92_short_update_period);
 	$main::me->update_pc92_keepalive;
 }
@@ -289,6 +295,7 @@ sub start
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
+	$self->{hostname} = $host if is_ipaddr($host);
 
 	Log('DXProt', "$call connected from $host");
 
@@ -401,7 +408,7 @@ sub normal
 	}
 
 	# check for and dump bad protocol messages
-	my $n = check($pcno, @field);
+	my $n = check($pcno, \@field);
 	if ($n) {
 		dbg("PCPROT: bad field $n, dumped (" . parray($checklist[$pcno-10]) . ")") if isdbg('chanerr');
 		return;
@@ -430,9 +437,9 @@ sub normal
 	my $sub = "handle_$pcno";
 
 	if ($self->can($sub)) {
-		$self->$sub($pcno, $line, $origin, @field);
+		$self->$sub($pcno, $line, $origin, \@field);
 	} else {
-		$self->handle_default($pcno, $line, $origin, @field);
+		$self->handle_default($pcno, $line, $origin, \@field);
 	}
 }
 
@@ -529,6 +536,8 @@ sub process
 	if ($main::systime - 3600 > $last_hour) {
 		$last_hour = $main::systime;
 	}
+
+    pc11_process();
 }
 
 #
@@ -553,6 +562,8 @@ sub send_dx_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $dxchan == $self;
+		next if $dxchan->is_rbn;
 		if ($line =~ /PC61/ && !($dxchan->is_spider || $dxchan->is_user)) {
 			unless ($pc11) {
 				my @f = split /\^/, $line;
@@ -613,6 +624,7 @@ sub send_wwv_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $dxchan->is_rbn;
 		my $routeit;
 		my ($filter, $hops);
 
@@ -647,6 +659,7 @@ sub send_wcy_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self;
+		next if $dxchan->is_rbn;
 
 		$dxchan->wcy($line, $self->{isolate}, @_, $self->{call}, @dxcc);
 	}
@@ -730,6 +743,7 @@ sub send_announce
 		next if $dxchan == $self && $self->is_node;
 		next if $from_pc9x && $dxchan->{do_pc9x};
 		next if $target eq 'LOCAL' && $dxchan->is_node;
+		next if $dxchan->is_rbn;
 		$dxchan->announce($line, $self->{isolate}, $to, $target, $text, @_, $self->{call},
 						  @a[0..2], @b[0..2]);
 	}
@@ -802,6 +816,7 @@ sub send_chat
 			next unless $dxchan->is_spider && $dxchan->do_pc9x;
 			next if $target eq 'LOCAL';
 		}
+		next if $dxchan->is_rbn;
 
 		$dxchan->chat($line, $self->{isolate}, $target, $_[1],
 					  $text, @_, $self->{call}, @a[0..2], @b[0..2]);
@@ -858,11 +873,11 @@ sub send_local_config
 	my @remotenodes;
 
 	if ($self->{isolate}) {
-		dbg("send_local_config: isolated");
+		dbg("$self->{call} send_local_config: isolated");
 		@localnodes = ( $main::routeroot );
 		$self->send_route($main::mycall, \&pc19, 1, $main::routeroot);
 	} elsif ($self->{do_pc9x}) {
-		dbg("send_local_config: doing pc9x");
+		dbg("$self->{call} send_local_config: doing pc9x");
 		my $node = Route::Node::get($self->{call});
 #		$self->send_last_pc92_config($main::routeroot);
 #		$self->send(pc92a($main::routeroot, $node)) unless $main::routeroot->last_PC92C =~ /$self->{call}/;
@@ -873,7 +888,7 @@ sub send_local_config
 		# and are not themselves isolated, this to make sure that isolated nodes
 		# don't appear outside of this node
 
-		dbg("send_local_config: traditional");
+		dbg("$self->{call} send_local_config: traditional");
 
 		# send locally connected nodes
 		my @dxchan = grep { $_->call ne $main::mycall && $_ != $self && !$_->{isolate} } DXChannel::get_all_nodes();
@@ -915,7 +930,7 @@ sub gen_my_pc92_config
 		clear_pc92_changes();		# remove any slugged data, we are generating it as now
 		my @dxchan = grep { $_->call ne $main::mycall && !$_->{isolate} } DXChannel::get_all();
 		dbg("ROUTE: all dxchan: " . join(',', map{$_->{call}} @dxchan)) if isdbg('routelow');
-		my @localnodes = map { my $r = Route::get($_->{call}); $r ? $r : () } @dxchan;
+		my @localnodes = map { my $r = Route::get($_->{call}); ($_->is_node || $_->is_user) && $r ? $r : () } @dxchan;
 		dbg("ROUTE: localnodes: " . join(',', map{$_->{call}} @localnodes)) if isdbg('routelow');
 		return pc92c($node, @localnodes);
 	} else {
@@ -1111,6 +1126,7 @@ sub load_hops
 sub process_rcmd
 {
 	my ($self, $tonode, $fromnode, $user, $cmd) = @_;
+
 	if ($tonode eq $main::mycall) {
 		my $ref = DXUser::get_current($fromnode);
 		unless ($ref && UNIVERSAL::isa($ref, 'DXUser')) {
@@ -1118,19 +1134,25 @@ sub process_rcmd
 			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
 			return;
 		}
+		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd, $user);
 		my $cref = Route::Node::get($fromnode);
 		unless ($cref && UNIVERSAL::isa($cref, 'Route')) {
 			dbg("DXProt process_rcmd: Route $fromnode isn't a reference (tell G1TLH)"); 
 			$self->send_rcmd_reply($main::mycall, $fromnode, $user, "sorry...!");
 			return;
 		}
-		Log('rcmd', 'in', ($ref->{priv}||0), $fromnode, $cmd);
 		if ($cmd !~ /^\s*rcmd/i && $ref->homenode && $cref->call eq $ref->homenode) { # not allowed to relay RCMDS!
 			if ($ref->{priv}) {		# you have to have SOME privilege, the commands have further filtering
 				$self->{remotecmd} = 1; # for the benefit of any command that needs to know
 				my $oldpriv = $self->{priv};
-				$self->{priv} = $ref->{priv}; # assume the user's privilege level
+				$self->{priv} = 1; # set a maximum privilege 
+
+				# park homenode and user for any spawned command that run_cmd may do.
+				$self->{_rcmd_user} = $user;
+				$self->{_rcmd_fromnode} = $fromnode;
 				my @in = (DXCommandmode::run_cmd($self, $cmd));
+				delete $self->{_rcmd_fromnode};
+				delete $self->{_rcmd_user};
 				$self->{priv} = $oldpriv;
 				$self->send_rcmd_reply($main::mycall, $fromnode, $user, @in);
 				delete $self->{remotecmd};
@@ -1149,6 +1171,26 @@ sub process_rcmd
 		}
 	}
 }
+
+
+sub send_rcmd_reply
+{
+	my $self = shift;
+	my $tonode = shift;
+	my $fromnode = shift;
+	my $user = shift;
+	while (@_) {
+		my $line = shift;
+		$line =~ s/\s*$//;
+		Log('rcmd', 'out', $fromnode, $line, $user);
+		if ($self->is_clx) {
+			$self->send(pc85($main::mycall, $fromnode, $user, "$main::mycall:$line"));
+		} else {
+			$self->send(pc35($main::mycall, $fromnode, "$main::mycall:$line"));
+		}
+	}
+}
+
 
 sub process_rcmd_reply
 {
@@ -1175,23 +1217,7 @@ sub process_rcmd_reply
 	}
 }
 
-sub send_rcmd_reply
-{
-	my $self = shift;
-	my $tonode = shift;
-	my $fromnode = shift;
-	my $user = shift;
-	while (@_) {
-		my $line = shift;
-		$line =~ s/\s*$//;
-		Log('rcmd', 'out', $fromnode, $line);
-		if ($self->is_clx) {
-			$self->send(pc85($main::mycall, $fromnode, $user, "$main::mycall:$line"));
-		} else {
-			$self->send(pc35($main::mycall, $fromnode, "$main::mycall:$line"));
-		}
-	}
-}
+
 
 # add a rcmd request to the rcmd queues
 sub addrcmd
@@ -1686,5 +1712,8 @@ sub clean_pc92_find
 {
 
 }
+
+
+
 1;
 __END__

@@ -8,10 +8,12 @@
 
 package DXUtil;
 
+
 use Date::Parse;
 use IO::File;
 use File::Copy;
 use Data::Dumper;
+use Time::HiRes qw(gettimeofday tv_interval);
 
 use strict;
 
@@ -22,9 +24,10 @@ require Exporter;
 @EXPORT = qw(atime ztime cldate cldatetime slat slong yesno promptf 
 			 parray parraypairs phex phash shellregex readfilestr writefilestr
 			 filecopy ptimelist
-             print_all_fields cltounix unpad is_callsign is_long_callsign is_latlong
+             print_all_fields cltounix unpad is_callsign is_latlong
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
-			 is_prefix dd is_ipaddr $pi $d2r $r2d
+			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
+			 diffms _diffms _diffus difft parraydifft is_ztime basecall
             );
 
 
@@ -179,7 +182,7 @@ sub ptimelist
 	my $ref = shift;
 	my $out;
 	for (sort keys %$ref) {
-		$out .= "$_=$ref->{$_}, ";
+		$out .= "$_=" . atime($ref->{$_}) . ", ";
 	}
 	chop $out;
 	chop $out;
@@ -277,6 +280,7 @@ sub shellregex
 {
 	my $in = shift;
 	$in =~ s{(.)} { $patmap{$1} || "\Q$1" }ge;
+	$in =~ s|\\/|/|g;
 	return '^' . $in . "\$";
 }
 
@@ -379,30 +383,20 @@ sub unpad
 # check that a field only has callsign characters in it
 sub is_callsign
 {
-	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)        # basic prefix
-                       (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another one (possibly)
-					   [A-Z]{1,4}                                 # callsign letters
-					   (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another prefix possibly
-                       (?:/[0-9A-Z]{1,2})?                        # /0-9A-Z+ possibly
-					   (?:-\d{1,2})?                              # - nn possibly
-					 $!x;
-}
+	return $_[0] =~ m!^
+					  (?:\d?[A-Z]{1,2}\d{0,2}/)?    # out of area prefix /  
+					  (?:\d?[A-Z]{1,2}\d{1,5})      # main prefix one (required) - lengthened for special calls 
+					  [A-Z]{1,8}                # callsign letters (required)
+					  (?:-(?:\d{1,2}))?         # - nn possibly (eg G8BPQ-8)
+					  (?:/[0-9A-Z]{1,7})?       # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
+					  $!x;
 
-# check that a field only has callsign characters in it but has more than the standard 3 callsign letters
-sub is_long_callsign
-{
-	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)        # basic prefix
-                       (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another one (possibly)
-					   [A-Z]{1,5}                                 # callsign letters
-					   (?:/(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+))?  # / another prefix possibly
-                       (?:/[0-9A-Z]{1,2})?                        # /0-9A-Z+ possibly
-					   (?:-\d{1,2})?                              # - nn possibly
-					 $!x;
+	# longest callign allowed is 1X11/1Y11XXXXX-11/XXXXXXX
 }
 
 sub is_prefix
 {
-	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}\d+)!x        # basic prefix
+	return $_[0] =~ m!^(?:[A-Z]{1,2}\d+ | \d[A-Z]{1,2}}\d+)!x        # basic prefix
 }
 	
 
@@ -448,7 +442,13 @@ sub is_latlong
 # is it an ip address?
 sub is_ipaddr
 {
-    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:]+$/;
+    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:,]+$/;
+}
+
+# is it a zulu time hhmmZ
+sub is_ztime
+{
+	return $_[0] =~ /^(?:(?:2[0-3])|(?:[01][0-9]))[0-5][0-9]Z$/;
 }
 
 # insert an item into a list if it isn't already there returns 1 if there 0 if not
@@ -473,3 +473,115 @@ sub deleteitem
 	return $n - @$list;
 }
 
+# find the correct local_data directory
+# basically, if there is a local_data directory with this filename and it is younger than the
+# equivalent one in the (system) data directory then return that name rather than the system one
+sub localdata
+{
+	# the expurgated version to make backporting easier
+	my $ifn = shift;
+	my $dfn =  "$main::data/$ifn";
+	return $dfn;
+}
+
+# move a file or a directory from data -> local_data if isn't there already
+sub localdata_mv
+{
+	my $ifn = shift;
+	if (-e "$main::data/$ifn" ) {
+		unless (-e "$main::local_data/$ifn") {
+			move("$main::data/$ifn", "$main::local_data/$ifn") or die "localdata_mv: cannot move $ifn from '$main::data' -> '$main::local_data' $!\n";
+		}
+	}
+}
+
+# measure the time taken for something to happen; use Time::HiRes qw(gettimeofday tv_interval);
+sub _diffms
+{
+	my $ta = shift;
+	my $tb = shift || [gettimeofday];
+	my $a = int($ta->[0] * 1000) + int($ta->[1] / 1000); 
+	my $b = int($tb->[0] * 1000) + int($tb->[1] / 1000);
+	return $b - $a;
+}
+
+# and in microseconds
+sub _diffus
+{
+	my $ta = shift;
+	my $tb = shift || [gettimeofday];
+	my $a = int($ta->[0] * 1000000) + int($ta->[1]); 
+	my $b = int($tb->[0] * 1000000) + int($tb->[1]);
+	return $b - $a;
+}
+
+sub diffms
+{
+	my $call = shift;
+	my $line = shift;
+	my $ta = shift;
+	my $no = shift;
+	my $tb = shift;
+	my $msecs = _diffms($ta, $tb);
+
+	$line =~ s|\s+$||;
+	my $s = "subprocess stats cmd: '$line' $call ${msecs}mS";
+	$s .= " $no lines" if $no;
+	DXDebug::dbg($s);
+}
+
+# expects either an array reference or two times (in the correct order [start, end])
+sub difft
+{
+	my $b = shift;
+	my $adds = shift;
+	
+	my $t;
+	if (ref $b eq 'ARRAY') {
+		$t = $b->[1] - $b->[0];
+	} else {
+		if ($adds && $adds =~ /^\d+$/ && $adds >= $b) {
+			$t = $adds - $b;
+			$adds = shift;
+		} else {
+			$t = $main::systime - $b;
+		}
+	}
+	return '-(ve)' if $t < 0;
+	my ($d,$h,$m,$s);
+	my $out = '';
+	$d = int $t / 86400;
+	$out .= sprintf ("%s${d}d", $adds?' ':'') if $d;
+	$t -= $d * 86400;
+	$h = int $t / 3600;
+	$out .= sprintf ("%s${h}h", $adds?' ':'') if $h;
+	$t -= $h * 3600;
+	$m = int $t / 60;
+	$out .= sprintf ("%s${m}m", $adds?' ':'') if $m;
+	if ($d == 0 && $adds || $adds == 2) {
+		$s = int $t % 60;
+		$out .= sprintf ("%s${s}s", $adds?' ':'') if $s;
+		$out ||= sprintf ("%s0s", $adds?' ':'');
+	}
+	$out = '0s' unless length $out;
+	return $out;
+}
+
+# print an array ref of difft refs
+sub parraydifft
+{
+	my $r = shift;
+	my $out = '';
+	for (@$r) {
+		my $s = $_->[2] ? "($_->[2])" : '';
+		$out .= sprintf "%s=%s$s, ", atime($_->[0]), difft($_->[0], $_->[1]);
+	}
+	$out =~ s/,\s*$//;
+	return $out;
+}
+
+sub basecall
+{
+	my ($r) = $_[0] =~ m|^(?:[\w\d]+/)?([\w\d]+).*$|;
+	return $r;
+}

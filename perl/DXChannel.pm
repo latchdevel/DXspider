@@ -19,7 +19,7 @@
 # firstly and OO about ninthly (if you don't like the design and you can't 
 # improve it with better OO and thus make it smaller and more efficient, then tough). 
 #
-# Copyright (c) 1998-2000 - Dirk Koopman G1TLH
+# Copyright (c) 1998-2016 - Dirk Koopman G1TLH
 #
 #
 #
@@ -80,12 +80,14 @@ $count = 0;
 		  wcyfilter => '5,WCY Filt-out',
 		  spotsfilter => '5,Spot Filt-out',
 		  routefilter => '5,Route Filt-out',
+		  rbnfilter => '5,RBN Filt-out',
 		  pc92filter => '5,PC92 Route Filt-out',
 		  inannfilter => '5,Ann Filt-inp',
 		  inwwvfilter => '5,WWV Filt-inp',
 		  inwcyfilter => '5,WCY Filt-inp',
 		  inspotsfilter => '5,Spot Filt-inp',
 		  inroutefilter => '5,Route Filt-inp',
+		  inrbnfilter => '5,RBN Filt-inp',
 		  inpc92filter => '5,PC92 Route Filt-inp',
 		  passwd => '9,Passwd List,yesno',
 		  pingint => '5,Ping Interval ',
@@ -125,6 +127,9 @@ $count = 0;
 		  inqueue => '9,Input Queue,parray',
 		  next_pc92_update => '9,Next PC92 Update,atime',
 		  next_pc92_keepalive => '9,Next PC92 KeepAlive,atime',
+		  hostname => '0,Hostname',
+		  isslugged => '9,Still Slugged,yesno',
+		  sluggedpcs => '9,Slugged PCxx Queue,parray',
 		 );
 
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
@@ -161,20 +166,19 @@ sub alloc
 		$self->{sort} = $user->sort;
 		$self->{width} = $user->width;
 	}
-	$self->{startt} = $self->{t} = time;
+	$self->{startt} = $self->{t} = $main::systime;
 	$self->{state} = 0;
 	$self->{oldstate} = 0;
 	$self->{lang} = $main::lang if !$self->{lang};
 	$self->{func} = "";
 	$self->{width} ||=  80;
-	
 
 	# add in all the dxcc, itu, zone info
 	my @dxcc = Prefix::extract($call);
 	if (@dxcc > 0) {
 		$self->{dxcc} = $dxcc[1]->dxcc;
 		$self->{itu} = $dxcc[1]->itu;
-		$self->{cq} = $dxcc[1]->cq;						
+		$self->{cq} = $dxcc[1]->cq;
 	}
 	$self->{inqueue} = [];
 
@@ -216,6 +220,7 @@ sub rec
 	if (defined $msg) {
 		push @{$self->{inqueue}}, $msg;
 	}
+	$self->process_one;
 }
 
 # obtain a channel object by callsign [$obj = DXChannel::get($call)]
@@ -301,69 +306,65 @@ sub del
 # is it a bbs
 sub is_bbs
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'B';
+	return $_[0]->{sort} eq 'B';
 }
 
 sub is_node
 {
-	my $self = shift;
-	return $self->{'sort'} =~ /[ACRSXW]/;
+	return $_[0]->{sort} =~ /^[ACRSX]$/;
 }
 # is it an ak1a node ?
 sub is_ak1a
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'A';
+	return $_[0]->{sort} eq 'A';
 }
 
 # is it a user?
 sub is_user
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'U';
+	return $_[0]->{sort} =~ /^[UW]$/;
 }
 
 # is it a clx node
 sub is_clx
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'C';
+	return $_[0]->{sort} eq 'C';
 }
 
-# it is Aranea
-sub is_aranea
+# it is a Web connected user
+sub is_web
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'W';
+	return $_[0]->{sort} eq 'W';
 }
 
 # is it a spider node
 sub is_spider
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'S';
+	return $_[0]->{sort} eq 'S';
 }
 
 # is it a DXNet node
 sub is_dxnet
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'X';
+	return $_[0]->{sort} eq 'X';
 }
 
 # is it a ar-cluster node
 sub is_arcluster
 {
-	my $self = shift;
-	return $self->{'sort'} eq 'R';
+	return $_[0]->{sort} eq 'R';
+}
+
+sub is_rbn
+{
+	return $_[0]->{sort} eq 'N';
 }
 
 # for perl 5.004's benefit
 sub sort
 {
 	my $self = shift;
-	return @_ ? $self->{'sort'} = shift : $self->{'sort'} ;
+	return @_ ? $self->{sort} = shift : $self->{sort} ;
 }
 
 # find out whether we are prepared to believe this callsign on this interface
@@ -502,7 +503,7 @@ sub disconnect
 	my $self = shift;
 	my $user = $self->{user};
 	
-	$user->close() if defined $user;
+	$user->close($self->{startt}, $self->{hostname}) if defined $user;
 	$self->{conn}->disconnect if $self->{conn};
 	$self->del();
 }
@@ -589,7 +590,7 @@ sub decode_input
 {
 	my $dxchan = shift;
 	my $data = shift;
-	my ($sort, $call, $line) = $data =~ /^([A-Z])([A-Z0-9\-]{3,9})\|(.*)$/;
+	my ($sort, $call, $line) = $data =~ /^([A-Z])(#?[A-Z0-9\/\-]{3,25})\|(.*)$/;
 
 	my $chcall = (ref $dxchan) ? $dxchan->call : "UN.KNOWN";
 	
@@ -681,7 +682,7 @@ sub broadcast_list
 		
 		if ($sort eq 'dx') {
 		    next unless $dxchan->{dx};
-			($filter) = $dxchan->{spotsfilter}->it(@{$fref}) if ref $fref;
+			($filter) = $dxchan->{spotsfilter}->it($fref) if $dxchan->{spotsfilter} && ref $fref;
 			next unless $filter;
 		}
 		next if $sort eq 'ann' && !$dxchan->{ann} && $s !~ /^To\s+LOCAL\s+de\s+(?:$main::myalias|$main::mycall)/i;
@@ -699,39 +700,45 @@ sub broadcast_list
 	}
 }
 
+sub process_one
+{
+	my $self = shift;
+
+	while (my $data = shift @{$self->{inqueue}}) {
+		my ($sort, $call, $line) = $self->decode_input($data);
+		next unless defined $sort;
+		
+		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
+		dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
+		
+		# handle A records
+		my $user = $self->user;
+		if ($sort eq 'I') {
+			die "\$user not defined for $call" unless defined $user;
+			
+			# normal input
+			$self->normal($line);
+		} elsif ($sort eq 'G') {
+			$self->enhanced($line);
+		} elsif ($sort eq 'A' || $sort eq 'O' || $sort eq 'W') {
+			$self->start($line, $sort);
+		} elsif ($sort eq 'C') {
+			$self->width($line); # change number of columns
+		} elsif ($sort eq 'Z') {
+			$self->disconnect;
+		} elsif ($sort eq 'D') {
+			;				# ignored (an echo)
+		} else {
+			dbg atime . " DXChannel::process_one: Unknown command letter ($sort) received from $call\n";
+		}
+	}
+}
+
 sub process
 {
-	foreach my $dxchan (get_all()) {
+	foreach my $dxchan (values %channels) {
 		next if $dxchan->{disconnecting};
-		
-		while (my $data = shift @{$dxchan->{inqueue}}) {
-			my ($sort, $call, $line) = $dxchan->decode_input($data);
-			next unless defined $sort;
-
-			# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-			dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
-
-			# handle A records
-			my $user = $dxchan->user;
-			if ($sort eq 'A' || $sort eq 'O') {
-				$dxchan->start($line, $sort);
-			} elsif ($sort eq 'I') {
-				die "\$user not defined for $call" if !defined $user;
-			
-				# normal input
-				$dxchan->normal($line);
-			} elsif ($sort eq 'Z') {
-				$dxchan->disconnect;
-			} elsif ($sort eq 'D') {
-				;				# ignored (an echo)
-			} elsif ($sort eq 'C') {
-				$dxchan->width($line); # change number of columns
-			} elsif ($sort eq 'G') {
-				$dxchan->enhanced($line);
-			} else {
-				print STDERR atime, " Unknown command letter ($sort) received from $call\n";
-			}
-		}
+		$dxchan->process_one;
 	}
 }
 
@@ -748,12 +755,22 @@ sub handle_xml
 	return $r;
 }
 
-sub registered
+sub error_handler
+{
+	my $self = shift;
+	my $error = shift || '';
+	dbg("$self->{call} ERROR '$error', closing") if isdbg('chan');
+	$self->{conn}->set_error(undef) if exists $self->{conn};
+	$self->disconnect(1);
+}
+
+
+sub isregistered
 {
 	my $self = shift;
 
 	# the sysop is registered!
-	return 1 if $self->call eq $main::myalias || $self->call eq $main::mycall;
+	return 1 if $self->{call} eq $main::myalias || $self->{call} eq $main::mycall;
 	
 	if ($main::reqreg) {
 		return $self->{registered};
