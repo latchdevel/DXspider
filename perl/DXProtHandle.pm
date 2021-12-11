@@ -49,8 +49,8 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 
 $pc9x_dupe_age = 60;			# catch loops of circular (usually) D records
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
-$pc92_slug_changes = 60*1;		# slug any changes going outward for this long
-$last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
+$pc92_slug_changes = 60*2;		# slug any changes going outward for this long
+$last_pc92_slug = time;			# the last time we sent out any delayed add or del PC92s
 $pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this amount
 $pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
 $pc9x_time_tolerance;           # thing a node might send - once an hour and we allow an extra hour for luck)

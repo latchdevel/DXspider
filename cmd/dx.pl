@@ -83,7 +83,7 @@ if ($DXProt::badspotter->in($spotternoid)) {
 	$localonly++; 
 }
 
-dbg "spotter $spotternoid/$callnoid\n";
+#dbg "spotter $spotternoid/$callnoid\n";
 
 if (($spotted =~ /$spotternoid/ || $spotted =~ /$callnoid/) && $freq < $Spot::minselfspotqrg) {
 	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline) from $addr, not passed on to cluster");
@@ -168,6 +168,7 @@ if ($freq =~ /^69/ || $localonly) {
 	#}
 	
 	$self->dx_spot(undef, undef, @spot);
+	dbg "$self->{call} islugged until " . atime($self->{isslugged}) if $self->{isslugged} && isdbg('sh/dx');
 	if ($self->isslugged) {
 		push @{$self->{sluggedpcs}}, [61, $spot, \@spot];
 	} else {

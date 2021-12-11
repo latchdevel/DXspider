@@ -92,6 +92,7 @@ sub start
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
+	$self->{hostname} = $host;
 	LogDbg('DXCommand', "$call connected from $host");
 
 	$self->{name} = $name ? $name : $call;
@@ -118,6 +119,7 @@ sub start
 	$self->{ann_talk} = $user->wantann_talk;
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
+	$self->{lastmsgpoll} = 0;
 
 	# sort out new dx spot stuff
 	$user->wantdxcq(0) unless defined $user->{wantdxcq};
@@ -212,7 +214,7 @@ sub start
 		}
 	}
 
-	$self->lastmsgpoll($main::systime);
+	$self->{lastmsgpoll} = $main::systime;
 	$self->prompt;
 }
 
@@ -563,12 +565,12 @@ sub process
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
-		next if $dxchan->is_user;  
+		next unless $dxchan->is_user;  
 	
 		# send a outstanding message prompt if required
 		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
 			$dxchan->send($dxchan->msg('m9')) if DXMsg::for_me($dxchan->call);
-			$dxchan->lastmsgpoll($t);
+			$dxchan->{lastmsgpoll} = $t;
 		}
 		
 		# send a prompt if no activity out on this channel
