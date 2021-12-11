@@ -131,11 +131,16 @@ sub start
 		$self->{registered} = $user->registered;
 	}
 
+	# establish slug queue, if required
+    $self->{sluggedpcs} = [];
+    $self->{isslugged} = $DXProt::pc92_slug_changes + $DXProt::last_pc92_slug + 5 if $DXProt::pc92_slug_changes;
+    $self->{isslugged} = 0 if $self->{priv} > 0 || $user->registered || $user->homenode eq $main::mycall;
+
 	# send the relevant MOTD
 	$self->send_motd;
 
 	# sort out privilege reduction
-	$self->{priv} = 0 if $line =~ /^(ax|te)/ && !$self->conn->{usedpasswd};
+	$self->{priv} = 0 unless $self->{hostname} eq '127.0.0.1' || $self->{hostname} eq '::1' || $self->conn->{usedpasswd};
 
 	# get the filters
 	my $nossid = $call;
@@ -558,7 +563,7 @@ sub process
 	my $dxchan;
 	
 	foreach $dxchan (@dxchan) {
-		next if $dxchan->sort ne 'U';  
+		next if $dxchan->is_user;  
 	
 		# send a outstanding message prompt if required
 		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
@@ -570,6 +575,18 @@ sub process
 		if ($t >= $dxchan->t + $main::user_interval) {
 			$dxchan->prompt() if $dxchan->{state} =~ /^prompt/o;
 			$dxchan->t($t);
+		}
+
+		if ($dxchan->{isslugged} && $main::systime > $dxchan->{isslugged}) {
+			foreach my $ref (@{$dxchan->{sluggedpcs}}) {
+				if ($ref->[0] == 61) {
+					Spot::add(@{$ref->[2]});
+					DXProt::send_dx_spot($dxchan, $ref->[1], @{$ref->[2]});
+				}
+			}
+
+			$dxchan->{isslugged} = 0;
+			$dxchan->{sluggedpcs} = [];
 		}
 	}
 
