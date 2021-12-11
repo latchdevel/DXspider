@@ -427,7 +427,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) ended");
+	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) on $^O ended");
 	dbg("bye bye everyone - bye bye");
 	dbgclose();
 	Logclose();
@@ -513,26 +513,25 @@ sub setup_start
 			import Encode;
 			$can_encode = 1;
 		}
+
 		$gitbranch = 'none';
 		$gitversion = 'none';
-		eval { require Git; };
-		unless ($@) {
-			import Git;
 		
-			# determine the real version number
-			my $repo = Git->repository(Directory => "$root/.git");
-			if ($repo) {
-				my $desc = $repo->command_oneline(['describe', '--long'], STDERR => 0);
-				if ($desc) {
-					my ($v, $s, $b, $g) = $desc =~ /^([\d.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
-					$s ||= '';
-					dbg("Git: $desc") if isdbg('git');
-					dbg("Git: V=$v S=$s B=$b g=$g") if isdbg('git');
-					$version = $v;
-					$build = $b || 0;
-					$gitversion = "$g\[r]";
-				}
-				my @branch = $repo->command([qw{branch}], STDERR=>0);
+		# determine the real Git build number and branch
+		my $desc;
+		eval {$desc = `git describe --long`};
+		if (!$@ && $desc) {
+			my ($v, $s, $b, $g) = $desc =~ /^([\d\.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
+			$version = $v;
+			my $subversion = $s || 0; # not used elsewhere
+			$build = $b || 0;
+			$gitversion = "$g\[r]";
+		}
+		if (!$@) {
+			my @branch;
+			
+			eval {@branch = `git branch`};
+			unless ($@) {
 				for (@branch) {
 					my ($star, $b) = split /\s+/;
 					if ($star eq '*') {
@@ -542,6 +541,7 @@ sub setup_start
 				}
 			}
 		}
+
 		$SIG{__DIE__} = $w;
 	}
 
@@ -557,7 +557,7 @@ sub setup_start
 	# banner
 	my ($year) = (gmtime)[5];
 	$year += 1900;
-	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) started");
+	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) on $^O started");
 	dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 	# load Prefixes
