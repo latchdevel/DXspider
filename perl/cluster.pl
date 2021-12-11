@@ -522,7 +522,7 @@ sub setup_start
 		
 		# determine the real Git build number and branch
 		my $desc;
-		eval {$desc = `git describe --long`};
+		eval {$desc = `git -C $root describe --long`};
 		if (!$@ && $desc) {
 			my ($v, $s, $b, $g) = $desc =~ /^([\d\.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 			$version = $v;
@@ -533,7 +533,7 @@ sub setup_start
 		if (!$@) {
 			my @branch;
 			
-			eval {@branch = `git branch`};
+			eval {@branch = `git -C $root branch`};
 			unless ($@) {
 				for (@branch) {
 					my ($star, $b) = split /\s+/;

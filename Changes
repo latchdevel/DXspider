@@ -1,6 +1,7 @@
 11Dec21=======================================================================
 1. Removed dependency on perl Git package.
-2. Force code to change directory to $DXSPIDER_ROOT || '/spider'.
+2. Force code to change directory to $DXSPIDER_ROOT || '/spider'. Also force
+   git -C $root describe.
 10Dec21=======================================================================
 1. Fix the output of set/dxgrid, set/usstate and set/dxcq or set/dxitu to how
    it was always supposed to be since 2003.
