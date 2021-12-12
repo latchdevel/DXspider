@@ -407,7 +407,7 @@ if (DXSql::init($dsn)) {
 
 	# determine the real Git build number and branch
 	my $desc;
-	eval {$desc = `git -C $root describe --long`};
+	eval {$desc = `git --git-dir=$root/.git describe --long`};
 	if (!$@ && $desc) {
 		my ($v, $s, $b, $g) = $desc =~ /^([\d\.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 		$version = $v;
@@ -418,7 +418,7 @@ if (DXSql::init($dsn)) {
     if (!$@) {
 		my @branch;
 		
-		eval {@branch = `git -C $root branch`};
+		eval {@branch = `git --git-dir=$root/.git branch`};
 		unless ($@) {
 			for (@branch) {
 				my ($star, $b) = split /\s+/;
