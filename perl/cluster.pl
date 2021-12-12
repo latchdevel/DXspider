@@ -319,7 +319,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version build $build (git: $gitbranch/$gitversion) on $^O ended");
+	LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O ended");
 	dbgclose();
 	Logclose();
 
@@ -439,7 +439,7 @@ DXXml::init();
 # banner
 my ($year) = (gmtime)[5];
 $year += 1900;
-LogDbg('cluster', "DXSpider V$version build $build (git: $gitbranch/$gitversion) on $^O started");
+LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O started");
 dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 # load Prefixes

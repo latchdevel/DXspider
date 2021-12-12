@@ -1,5 +1,6 @@
 12Dec21=======================================================================
 1. fix git describe et al AGAIN to cope with (very) old (2009) git versions.
+2. Change version strings to include perl version in use.
 11Dec21=======================================================================
 1. Removed dependency on perl Git package.
 2. Fixed errors caused by change 1 (use git -C $root to force .git location).
