@@ -428,7 +428,7 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) on $^O ended");
+	LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O ended");
 	dbg("bye bye everyone - bye bye");
 	dbgclose();
 	Logclose();
@@ -522,7 +522,7 @@ sub setup_start
 		
 		# determine the real Git build number and branch
 		my $desc;
-		eval {$desc = `git -C $root describe --long`};
+		eval {$desc = `git --git-dir=$root/.git describe --long`};
 		if (!$@ && $desc) {
 			my ($v, $s, $b, $g) = $desc =~ /^([\d\.]+)(?:\.(\d+))?-(\d+)-g([0-9a-f]+)/;
 			$version = $v;
@@ -532,8 +532,8 @@ sub setup_start
 		}
 		if (!$@) {
 			my @branch;
-			
-			eval {@branch = `git -C $root branch`};
+
+			eval {@branch = `git --git-dir=$root/.git branch`};
 			unless ($@) {
 				for (@branch) {
 					my ($star, $b) = split /\s+/;
@@ -560,7 +560,7 @@ sub setup_start
 	# banner
 	my ($year) = (gmtime)[5];
 	$year += 1900;
-	LogDbg('cluster', "DXSpider V$version, build $build (git: $gitbranch/$gitversion) on $^O started");
+	LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O started");
 	dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
 
 	# load Prefixes

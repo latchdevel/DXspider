@@ -719,6 +719,8 @@ sub handle_18
 sub check_add_node
 {
 	my $call = shift;
+	my $type = shift;
+	
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
 	my $user = DXUser::get_current($call);
@@ -728,7 +730,7 @@ sub check_add_node
 		$user->lockout(1);
 		$user->homenode($call);
 		$user->node($call);
-		$user->sort('A');
+		$user->sort($type || 'A');
 		$user->lastin($main::systime); # this make it last longer than just this invocation
 		$user->put;				# just to make sure it gets written away!!!
 	}
@@ -1560,6 +1562,7 @@ sub _add_thingy
 				}
 			} else {
 				dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
+				my $user = check_add_node($call, 'U');
 				@rout = $parent->add_user($call, Route::here($here), $ip);
 				$dxchan->tell_buddies('loginb', $call, $ncall) if $dxchan;
 				my $r = Route::User::get($call);

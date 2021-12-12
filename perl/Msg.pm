@@ -291,7 +291,8 @@ sub disconnect
 			dbg("Buffer empty, just close $call") if $dbg;
 			_close_it($conn);
 		}
-	} else {
+	}
+	else {
 		dbg((ref $conn) . " socket missing on $conn->{call}") if $dbg;
 		_close_it($conn);
 	}

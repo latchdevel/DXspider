@@ -270,6 +270,7 @@ sub calc_config_changes
 	return (\@dnodes, \@dusers, \@nnodes, \@nusers);
 }
 
+
 sub new
 {
 	my $pkg = shift;
