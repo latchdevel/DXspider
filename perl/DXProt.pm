@@ -430,9 +430,9 @@ sub normal
 	my $sub = "handle_$pcno";
 
 	if ($self->can($sub)) {
-		$self->$sub($pcno, $line, $origin, @field);
+		$self->$sub($pcno, $line, $origin, \@field);
 	} else {
-		$self->handle_default($pcno, $line, $origin, @field);
+		$self->handle_default($pcno, $line, $origin, \@field);
 	}
 }
 
