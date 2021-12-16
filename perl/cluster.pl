@@ -138,7 +138,7 @@ use AnnTalk;
 use BBS;
 use WCY;
 use BadWords;
-use Timer;
+use DXTimer;
 use Route;
 use Route::Node;
 use Route::User;
@@ -791,7 +791,7 @@ sub per_sec
 	DXCron::process();			# do cron jobs
 	RBN::process();
 
-	Timer::handler();
+	DXTimer::handler();
 	DXLog::flushall();
 }
 

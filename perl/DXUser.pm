@@ -836,6 +836,16 @@ sub lastping
 	$b->{$call} = shift if @_;
 	return $b->{$call};	
 }
+
+sub registered
+{
+	my $self = shift;
+	if (exists $self->{registered}) {
+		return $self->{registered} || 0;
+	}
+	return '';					# to stop undef warnings
+}
+
 1;
 __END__
 

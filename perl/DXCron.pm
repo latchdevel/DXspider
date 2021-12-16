@@ -68,7 +68,7 @@ sub cread
 		$line++;
 		chomp $l;
 		next if $l =~ /^\s*#/o or $l =~ /^\s*$/o;
-		my ($min, $hour, $mday, $month, $wday, $cmd) = $l =~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/o;
+		my ($min, $hour, $mday, $month, $wday, $cmd) = $l =~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$/;
 		next unless defined $min;
 		my $ref = bless {};
 		my $err = '';
@@ -110,7 +110,7 @@ sub parse
 	# handle '*' values
 	if ($val eq '*') {
 		$ref->{$sort} = 0;
-		return;
+		return '';
 	}
 
 	# handle comma delimited values
@@ -131,7 +131,7 @@ sub parse
 	}
 	$ref->{$sort} = \@req;
 	
-	return;
+	return '';
 }
 
 # process the cronjobs

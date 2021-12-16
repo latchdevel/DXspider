@@ -1,0 +1,7 @@
+#!/bin/bash
+. ~/perl5/perlbrew/etc/bashrc
+cd /spider/perl
+git reset --hard
+git pull
+~/perl5/perlbrew/perls/perl-5.32.1/bin/perl -w cluster.pl > /dev/null
+

@@ -44,7 +44,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			$eph_pc15_restime $pc9x_past_age $pc9x_dupe_age
 			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
 			$pc92Ain $pc92Cin $pc92Din $pc92Kin $pc9x_time_tolerance
-			$pc92filterdef
+			$pc92filterdef $senderverify
 		   );
 
 $pc9x_dupe_age = 60;			# catch loops of circular (usually) D records
@@ -55,6 +55,9 @@ $pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this 
 $pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
 $pc9x_time_tolerance;           # thing a node might send - once an hour and we allow an extra hour for luck)
                                 # this is actually the partition between "yesterday" and "today" but old.
+$senderverify = 1;				# 1 - check for forged PC11 or PC61.
+                                # 2 - if forged, dump them.
+
 
 $pc92filterdef = bless ([
 			  # tag, sort, field, priv, special parser
@@ -175,10 +178,6 @@ sub handle_11
 		dbg("PCPROT: Bad Spotter $pc->[6], dropped") if isdbg('chanerr');
 		return;
 	}
-#	unless (is_ipaddr($pc->[8]) || DXUser::get_current($pc->[6])) {
-#		dbg("PCPROT: Unknown Spotter $pc->[6], dropped") if isdbg('chanerr');
-#		return;
-#	}
 
 	# convert the date to a unix date
 	my $d = cltounix($pc->[3], $pc->[4]);
@@ -208,6 +207,7 @@ sub handle_11
 			return;
 		}
 	}
+	
 
 	my @spot = Spot::prepare($pc->[1], $pc->[2], $d, $pc->[5], $nossid, $pc->[7], $pc->[8]);
 
@@ -220,59 +220,43 @@ sub handle_11
 		}
 	}
 
-	# If is a new PC11, store it, releasing the one that is there (if any),
-	# if a PC61 comes along then dump the stored PC11
-	# If there is a different PC11 stored, release that one and store this PC11 instead,
-	my $key = join '|', @spot[0..2,4,7];
-	if (0) {
-	
-	if ($pc->[0] eq 'PC11') {
-		my $r = [$main::systime, $key, \@spot, $line, $origin, $pc];
-		if (!$last) {
-			$last = [$main::systime, $key, \@spot, $line, $origin, $pc];
-			dbg("PC11: $origin -> $key stored") if isdbg('pc11');
-			return;
-		} elsif ($key eq $last->[1]) { # same as last one
-			dbg("PC11: $origin -> $key dupe dropped") if isdbg('pc11');
-			return;
-		} else {
-			# it's a different PC11, kick the stored one onward and store this one instead,
-			dbg("PC11: PC11 new $origin -> $key stored, $last->[4] -> $last->[1] passed onward") if isdbg('pc11');
-			@spot = @{$last->[2]};
-			$line = $last->[3];
-			$origin = $last->[4];
-			$pc = $last->[5];
-			$last = $r;
-		}
-	} elsif ($pc->[0] eq 'PC61') {
-		if ($last) {
-			if ($last->[1] eq $key) {
-				# dump $last and proceed with the PC61
-				dbg("PC11: $origin -> $key dropped in favour of PC61") if isdbg('pc11');
-				undef $last;
-			} else {
-				# it's a different spot send out stored pc11
-				dbg("PC11: last $last->[4] -> $last->[1] different PC61 $origin -> $key, send PC11 first ") if isdbg('pc11');
-				$last->[1] = 'new pc61';
-				handle_11($self, 11, $last->[3], $last->[4], $last->[5]);
-				undef $last;
-				dbg("PC11: now process PC61 $origin -> $key") if isdbg('pc11');
-			}
-		}
-	} else {
-		dbg("PC11: Unexpected line '$line' in bagging area (expecting PC61, PC11), ignored");
-		return;
-	}
-
-}
-	
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
-	if (Spot::dup(@spot[0..4,5])) {
+	if (my $key = Spot::dup(@spot[0..4,7])) {
 		dbg("PCPROT: Duplicate Spot $pc->[0] $key ignored\n") if isdbg('chanerr') || isdbg('dupespot');
 		return;
 	}
+
+	# here we verify the spotter is currently connected to the node it says it is one. AKA email sender verify
+	# but without the explicit probe to the node. We are relying on "historical" information, but it very likely
+	# to be current once we have seen the first PC92C from that node.
+	#
+	# As for spots generated from non-PC92 nodes, we'll see after about  do_pc9x3h20m...
+	#
+	if ($senderverify) {
+		my $nroute = Route::Node::get($pc->[7]);
+		my $uroute = Route::Node::get($pc->[6]);
+		my $local = DXChannel::get($pc->[7]);
+		
+		if ($nroute && ($nroute->last_PC92C || ($local && !$local->do_pc9x))) {
+			my $s = '';
+			my $ip = $pcno == 61 ?  $pc->[8] : '';
+#			$s .= "User $pc->[6] not logged in, " unless $uroute;
+			$s .= "User $pc->[6] not on node $pc->[7], " unless $nroute->is_user($pc->[6]);
+#			$s .= "Node $pc->[7] at '$ip' not on Node's IP " . $nroute->ip if $ip && $nroute && $nroute->ip && $nroute->ip ne $ip;
+			if ($s) {
+				my $action = $senderverify > 1 ? ", DUMPED" : '';
+				$s =~ s/, $//;
+				dbg("PCProt: Suspicious Spot $pc->[2] on $pc->[1] by $pc->[6]($ip)\@$pc->[7] $s$action");
+				return unless $senderverify < 2;
+			}
+		}
+	}
+
+	# If is a new PC11, store it, releasing the one that is there (if any),
+	# if a PC61 comes along then dump the stored PC11
+	# If there is a different PC11 stored, release that one and store this PC11 instead,
 	
 	# add it
 	Spot::add(@spot);
@@ -1551,6 +1535,14 @@ sub _add_thingy
 	if ($call) {
 		my $ncall = $parent->call;
 		if ($ncall ne $call) {
+			my $user;
+			unless (DXChannel::get($call)) { # i.e. external entity - create an user entry for it - ALL entities will appear in ALL user files from now on.
+				$user = DXUser::get($call);
+				unless ($user) {
+					$user = DXUser->new($call);
+					dbg("PCProt::_add_thingy new user $call");
+				}
+			}
 			if ($is_node) {
 				dbg("ROUTE: added node $call to $ncall") if isdbg('routelow');
 				@rout = $parent->add($call, $version, Route::here($here), $ip);
@@ -1559,6 +1551,16 @@ sub _add_thingy
 				if ($ip) {
 					$r->ip($ip);
 					Log('DXProt', "PC92A $call -> $ip on $ncall");
+				}
+				if ($user && $user->sort eq 'U') {
+					if (defined $version) {
+						if ($version >= 5455 && $build > 0 || $version >= 3000 ) {
+							$user->sort('S');
+						} else {
+							$user->sort('A');
+						}
+						dbg("PCProt::_add_thingy node $call sort updated " . $user->sort15);
+					}
 				}
 			} else {
 				dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
@@ -1575,7 +1577,8 @@ sub _add_thingy
 				$things_add{$call} = Route::get($call);
 				delete $things_del{$call};
 			}
-		} else {
+			$user->close($main::systime, $ip) if $user;		# this just updates lastseen and the connlist list containing the IP address
+		} else {				
 			dbgprintring(10) if isdbg('nologchan');
 			dbg("DXProt::add_thingy: Trying to add parent $call to itself $ncall, ignored");
 		}
@@ -1901,7 +1904,10 @@ sub handle_92
 			push @radd, $add if $add;
 			$parent->reset_obs;
 			$parent->version($ent[4]) if $ent[4];
-			$parent->build($ent[5]) if $ent[5];
+			if ($ent[5]) {
+				$ent[5] =~ s/^0.//;
+				$parent->build($ent[5]);
+			}
 
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}

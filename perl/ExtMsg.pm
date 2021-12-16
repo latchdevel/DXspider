@@ -19,6 +19,8 @@ use Msg;
 use DXVars;
 use DXUtil;
 use DXDebug;
+use DXTimer;
+
 use IO::File;
 use IO::Socket;
 use IPC::Open3;
@@ -302,7 +304,7 @@ sub _dotimeout
 	dbg("connect $conn->{cnum}: timeout set to $val") if isdbg('connect');
 	$conn->{timeout}->del if $conn->{timeout};
 	$conn->{timeval} = $val;
-	$conn->{timeout} = Timer->new($val, sub{ &_timedout($conn) });
+	$conn->{timeout} = DXTimer->new($val, sub{ &_timedout($conn) });
 }
 
 sub _dolineend

@@ -14,6 +14,7 @@ use IO::File;
 use File::Copy;
 use Data::Dumper;
 use Time::HiRes qw(gettimeofday tv_interval);
+use Text::Wrap;
 
 use strict;
 
@@ -155,7 +156,7 @@ sub dd
 # format a prompt with its current value and return it with its privilege
 sub promptf
 {
-	my ($line, $value) = @_;
+	my ($line, $value, $promptl) = @_;
 	my ($priv, $prompt, $action) = split ',', $line;
 
 	# if there is an action treat it as a subroutine and replace $value
@@ -165,7 +166,8 @@ sub promptf
 	} elsif (ref $value) {
 		$value = dd($value);
 	}
-	$prompt = sprintf "%15s: %s", $prompt, $value;
+	$promptl ||= 15;
+	$prompt = sprintf "%${promptl}s: %s", $prompt, $value;
 	return ($priv, $prompt);
 }
 
@@ -193,7 +195,7 @@ sub ptimelist
 sub parray
 {
 	my $ref = shift;
-	return ref $ref ? join(', ', @{$ref}) : $ref;
+	return ref $ref ? join(', ', sort @{$ref}) : $ref;
 }
 
 # take the arg as an array reference and print as a list of pairs
@@ -219,11 +221,10 @@ sub phash
 	my $ref = shift;
 	my $out;
 
-	while (my ($k,$v) = each %$ref) {
-		$out .= "${k}=>$v, ";
+	while (my $k = sort keys %$ref) {
+		$out .= "${k}=>$ref->{$k}, ";
 	}
-	chop $out;					# remove last space
-	chop $out;					# remove last comma
+	$out =~ s/, $// if $out;
 	return $out;
 }
 
@@ -248,23 +249,26 @@ sub print_all_fields
 	my @fields = $ref->fields;
 	my $field;
 	my $width = $self->width - 1;
+	my $promptl = 0;
 	$width ||= 80;
 
+	# find the maximum length of the prompt
+	foreach $field (@fields) {
+		if (defined $ref->{$field}) {
+			my (undef, $prompt, undef) = split ',', $ref->field_prompt($field);
+			$promptl = length $prompt if length $prompt > $promptl;
+		}
+	}
+
+	# now do print
 	foreach $field (sort {_sort_fields($ref, $a, $b)} @fields) {
 		if (defined $ref->{$field}) {
-			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field});
+			my ($priv, $ans) = promptf($ref->field_prompt($field), $ref->{$field}, $promptl);
 			my @tmp;
 			if (length $ans > $width) {
+				$Text::Wrap::columns = $width-2;
 				my ($p, $a) = split /: /, $ans, 2;
-				my $l = (length $p) + 2;
-				my $al = ($width - 1) - $l;
-				my $bit;
-				while (length $a > $al ) {
-					($bit, $a) = unpack "A$al A*", $a;
-					push @tmp, "$p: $bit";
-					$p = ' ' x ($l - 2);
-				}
-				push @tmp, "$p: $a" if length $a;
+				@tmp = split/\n/, Text::Wrap::wrap("$p: ", (' ' x $promptl) . ': ', $a);
 			} else {
 				push @tmp, $ans;
 			}
@@ -389,9 +393,10 @@ sub is_callsign
 					  [A-Z]{1,8}                # callsign letters (required)
 					  (?:-(?:\d{1,2}))?         # - nn possibly (eg G8BPQ-8)
 					  (?:/[0-9A-Z]{1,7})?       # / another prefix, callsign or special label (including /MM, /P as well as /EURO or /LGT) possibly
-					  $!x;
+					  (?:/(?:AM?|MM?|P))?       # finally /A /AM /M /MM /P 
+					  $!xo;
 
-	# longest callign allowed is 1X11/1Y11XXXXX-11/XXXXXXX
+	# longest callign allowed is 1X11/1Y11XXXXX-11/XXXXXXX/MM
 }
 
 sub is_prefix

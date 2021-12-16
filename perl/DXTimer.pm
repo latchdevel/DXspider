@@ -8,7 +8,7 @@
 # Copyright (c) 2001 Dirk Koopman G1TLH
 #
 
-package Timer;
+package DXTimer;
 
 use Mojo::IOLoop;
 
@@ -62,6 +62,6 @@ sub handler
 
 sub DESTROY
 {
-	dbg("timer destroyed ($Timer::notimers)") if isdbg('connll');
+	dbg("timer destroyed ($DXTimer::notimers)") if isdbg('connll');
 }
 1;

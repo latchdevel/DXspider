@@ -104,7 +104,7 @@ sub dbgtrace
 		last if $pkg =~ /Mojo/;
 #		say "*** in dbgtrace $i after mojo";
 		$_isdbg = 'trace';
-		dbg("Stack ($i): $pkg::$subr in $fn line: $l");
+		dbg("Stack ($i): ${pkg}::$subr in $fn line: $l");
 	}
 	$_isdbg = '';
 }

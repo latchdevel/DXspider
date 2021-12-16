@@ -18,7 +18,7 @@ use Mojo::IOLoop;
 use Mojo::IOLoop::Stream;
 
 use DXDebug;
-use Timer;
+use DXTimer;
 
 use vars qw($now %conns $noconns $cnum $total_in $total_out $total_lines_in $total_lines_out $connect_timeout $disc_waittime);
 

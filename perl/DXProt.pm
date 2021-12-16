@@ -49,7 +49,7 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 			%pc92_find $pc92_find_timeout $pc92_short_update_period
 			$next_pc92_obs_timeout $pc92_slug_changes $last_pc92_slug
 			$pc92_extnode_update_period $pc50_interval
-			$pc92_keepalive_period
+			$pc92_keepalive_period $senderverify
 		   );
 
 $pc11_max_age = 1*3600;			# the maximum age for an incoming 'real-time' pc11
@@ -82,6 +82,8 @@ $pc92_extnode_update_period = 1*60*60; # the update period for external nodes
 $pc92_keepalive_period = 1*60*60;	# frequency of PC92 K (keepalive) records
 %pc92_find = ();				# outstanding pc92 find operations
 $pc92_find_timeout = 30;		# maximum time to wait for a reply
+$senderverify = 1;				# 1 = check spotter is on node it says it is and check ip address if available
+                                # 2 = do 1 and dump if check 
 
 
 @checklist =

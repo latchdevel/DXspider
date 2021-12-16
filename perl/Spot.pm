@@ -477,7 +477,7 @@ sub formatl
 # enter the spot for dup checking and return true if it is already a dup
 sub dup
 {
-	my ($freq, $call, $d, $text, $by, $cty) = @_; 
+	my ($freq, $call, $d, $text, $by, $node) = @_; 
 
 	# dump if too old
 	return 2 if $d < $main::systime - $dupage;
@@ -496,21 +496,16 @@ sub dup
 	chomp $text;
 	$text =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/eg;
 	$text = uc unpad($text);
-	if ($cty && $text && length $text <= 4) {
-		unless ($text =~ /^C?Q/ || $text =~ /^[\d\W]+$/) {
-			my @try = Prefix::cty_data($text);
-			$text = "" if $cty == $try[0];
-		}
-	}
 	my $otext = $text;
 #	$text = Encode::encode("iso-8859-1", $text) if $main::can_encode && Encode::is_utf8($text, 1);
 	$text =~ s/^\+\w+\s*//;			# remove leading LoTW callsign
 	$text =~ s/\s{2,}[\dA-Z]?[A-Z]\d?$// if length $text > 24;
 	$text =~ s/[\W\x00-\x2F\x7B-\xFF]//g; # tautology, just to make quite sure!
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $ldupkey = "X$freq|$call|$by|$text";
+	my $ldupkey = "X$|$call|$by|$node|$freq|$d||$text";
 	my $t = DXDupe::find($ldupkey);
-	return 1 if $t && $t - $main::systime > 0;
+	return $ldupkey if $t && $t - $main::systime > 0;
+	
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 	$otext = substr($otext, 0, $duplth) if length $otext > $duplth; 
 	$otext =~ s/\s+$//;
@@ -520,7 +515,7 @@ sub dup
 		return 1 if $t && $t - $main::systime > 0;
 		DXDupe::add($ldupkey, $main::systime+$dupage);
 	}
-	return 0;
+	return undef;
 }
 
 sub listdups

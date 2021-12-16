@@ -203,6 +203,14 @@ sub del_user
 	return @out;
 }
 
+# is a user on this node
+sub is_user
+{
+	my $self = shift;
+	my $call = shift;
+	return scalar grep {$_ eq $call} @{$self->{users}};
+}
+
 sub usercount
 {
 	my $self = shift;
