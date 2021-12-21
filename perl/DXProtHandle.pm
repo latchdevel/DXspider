@@ -1559,7 +1559,7 @@ sub _add_thingy
 						} else {
 							$user->sort('A');
 						}
-						dbg("PCProt::_add_thingy node $call sort updated " . $user->sort15);
+						dbg("PCProt::_add_thingy node $call sort updated " . $user->sort);
 					}
 				}
 			} else {
