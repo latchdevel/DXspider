@@ -502,9 +502,9 @@ sub dup
 	$text =~ s/\s{2,}[\dA-Z]?[A-Z]\d?$// if length $text > 24;
 	$text =~ s/[\W\x00-\x2F\x7B-\xFF]//g; # tautology, just to make quite sure!
 	$text = substr($text, 0, $duplth) if length $text > $duplth; 
-	my $ldupkey = "X$|$call|$by|$node|$freq|$d||$text";
+	my $ldupkey = "X$|$call|$by|$node|$freq|$d|$text";
 	my $t = DXDupe::find($ldupkey);
-	return $ldupkey if $t && $t - $main::systime > 0;
+	return 1 if $t && $t - $main::systime > 0;
 	
 	DXDupe::add($ldupkey, $main::systime+$dupage);
 	$otext = substr($otext, 0, $duplth) if length $otext > $duplth; 

@@ -55,7 +55,7 @@ $pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this 
 $pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
 $pc9x_time_tolerance;           # thing a node might send - once an hour and we allow an extra hour for luck)
                                 # this is actually the partition between "yesterday" and "today" but old.
-$senderverify = 1;				# 1 - check for forged PC11 or PC61.
+$senderverify = 0;				# 1 - check for forged PC11 or PC61.
                                 # 2 - if forged, dump them.
 
 
@@ -133,6 +133,8 @@ sub handle_10
 }
 
 my $last;
+my $pc11_saved;
+my $pc11_saved_time;
 
 # DX Spot handling
 sub handle_11
@@ -142,6 +144,7 @@ sub handle_11
 	my $line = shift;
 	my $origin = shift;
 	my $pc = shift;
+	my $recurse = shift || 0;
 
 	# route 'foreign' pc26s
 	if ($pcno == 26) {
@@ -150,6 +153,8 @@ sub handle_11
 			return;
 		}
 	}
+
+	dbg("INPUT PC$pcno $line origin $origin recurse: $recurse") if isdbg("pc11"); 
 
 #	my ($hops) = $pc->[8] =~ /^H(\d+)/;
 
@@ -220,14 +225,65 @@ sub handle_11
 		}
 	}
 
+	# this is where we decide to delay PC11s in the hope that a PC61 will be along soon.
+	
+	my $key = join '|', @spot[0..2,4,7]; # not including text
+	unless ($recurse) {
+		if ($pcno == 61) {
+			if ($pc11_saved) {
+				if ($key eq $pc11_saved->[0]) {
+					dbg("saved PC11 spot $key dumped, better pc61 received") if isdbg("pc11");
+					undef $pc11_saved;
+				}
+			} 
+		}
+		if ($pcno == 11) {
+			if ($pc11_saved) {
+				if ($key eq $pc11_saved->[0]) {
+					dbg("saved PC11 spot $key, dupe pc11 received and dumped") if isdbg("pc11");
+					return;		# because it's a dup
+				}
+			}
+
+			# can we promote this to a PC61?
+			my $r = Route::User::get($spot[4]); # find spotter
+			if ($r && $r->ip) {	                # do we have an ip addres
+				$pcno = 61;						# now turn this into a PC61
+				$spot[14] = $r->ip;
+				dbg("PC11 spot $key promoted to pc61 ip $spot[14]") if isdbg("pc11");
+				undef $pc11_saved;
+			}
+		}
+
+		if ($pc11_saved && $key ne $pc11_saved) {
+			dbg("saved PC11 spot $pc11_saved->[0] ne new key $key, recursing") if isdbg("pc11");
+			shift @$pc11_saved;	# saved key
+			my $self = shift @$pc11_saved;
+			my @saved = @$pc11_saved;
+			undef $pc11_saved;
+			$self->handle_11(@saved, 1);
+		}
+
+		# if we are still a PC11, save it for a better offer
+		if ($pcno == 11) {
+			$pc11_saved = [$key, $self, $pcno, $line, $origin, $pc];
+			$pc11_saved_time = $main::systime;
+			dbg("saved new PC11 spot $key for a better offer") if isdbg("pc11");
+			return;
+		} else {
+			dbg("PC61 spot $key passed onward") if isdbg("pc11");
+		}
+	}
+
+	
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
-	if (my $key = Spot::dup(@spot[0..4,7])) {
+	if (Spot::dup(@spot[0..4,7])) {
 		dbg("PCPROT: Duplicate Spot $pc->[0] $key ignored\n") if isdbg('chanerr') || isdbg('dupespot');
 		return;
 	}
-
+	
 	# here we verify the spotter is currently connected to the node it says it is one. AKA email sender verify
 	# but without the explicit probe to the node. We are relying on "historical" information, but it very likely
 	# to be current once we have seen the first PC92C from that node.
@@ -346,7 +402,14 @@ sub handle_11
 # used to kick outstanding PC11 if required
 sub pc11_process
 {
-
+	if ($pc11_saved && $main::systime > $pc11_saved_time) {
+		dbg("saved PC11 spot $pc11_saved->[0] timed out waiting, recursing") if isdbg("pc11");
+		shift @$pc11_saved;	# saved key
+		my $self = shift @$pc11_saved;
+		my @saved = @$pc11_saved;
+		undef $pc11_saved;
+		$self->handle_11(@saved, 1);
+	}
 }
 
 # announces

@@ -1,3 +1,14 @@
+22Dec21=======================================================================
+1. Add the possibility to do "sender verify" that spots (and later on, other
+   things like announce etc) are coming from spotters that exist on the node
+   that the PC11/61 says it does. At the moment, this is advisory as many
+   users seem to be on web clusters and many of them do not send PC61 and also
+   don't update the node's routing tables that normal node usage would do.
+2. Prioritise PC61 spots over PC11 spots wherever possible. Also promote PC11
+   spots to PC61 where the spotter's IP is known.
+3. Add a shell script "perlbrew-dxspider" that can be used for starting the
+   node when using perlbrew (i.e. more modern perls) on older distros such
+   as Centos 7/8. 
 11Dec21=======================================================================
 1. Removed dependency on perl Git package.
 2. Force code to change directory to $DXSPIDER_ROOT || '/spider'. Also force
