@@ -150,7 +150,7 @@ return (1, @out) unless $valid;
 
 # Store it here (but only if it isn't baddx)
 my $t = (int ($main::systime/60)) * 60;
-return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
+return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter, $main::mycall);
 my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall, $ipaddr);
 
 #$DB::single = 1;
@@ -168,7 +168,7 @@ if ($freq =~ /^69/ || $localonly) {
 } else {
 	# send orf to the users
 	$ipaddr ||= $main::mycall;	# emergency backstop
-	my $spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
+	my $spot = DXProt::pc61($spotter, $freq, $spotted, $line,  $ipaddr);
 	
 	$self->dx_spot(undef, undef, @spot);
 	if ($self->isslugged) {
@@ -181,8 +181,6 @@ if ($freq =~ /^69/ || $localonly) {
 }
 
 return (1, @out);
-
-
 
 
 
