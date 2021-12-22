@@ -38,13 +38,26 @@ return (1, $self->msg('dx2')) unless @f >= 2;
 # can be in any order
 
 if ($f[0] =~ /^by$/i) {
-	return (1, $self->msg('e5')) unless $main::allowdxby || $self->priv;
+	return (1, $self->msg('e5')) unless $main::allowdxby || $self->priv > 1;
     $spotter = uc $f[1];
-    $line =~ s/\s*$f[0]\s+$f[1]\s+//;
-#	$line = $f[2];
+    $line =~ s/^\s*$f[0]\s+$f[1]\s+//;
 	@f = split /\s+/, $line, 3;
 	return (1, $self->msg('dx2')) unless @f >= 2;
 }
+
+my $ipaddr;
+@f = split /\s+/, $line, 3;
+if ($f[0] eq 'ip') {
+	return (1, $self->msg('e5')) unless $spotter &&  $self->priv > 1;
+	if (is_ipaddr($f[1])) {
+		$ipaddr = $f[1];
+	} else {
+		return (1, $self->msg('dx3', $f[1]));
+	}
+	$line =~ s/^\s*$f[0]\s+$f[1]\s+//;
+	@f = split /\s+/, $line, 3;
+}
+
 
 # get the freq and callsign either way round
 if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
@@ -56,14 +69,14 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 } else {
 	return (1, $self->msg('dx3'));
 }
+$line =~ s/^\s*$f[0]\s+$f[1]\s+//;
+$line =~ s/\t+/ /g;				# do this here because it needs to be stopped ASAP!
+$line ||= ' ';
 
-
-my $ipaddr;
 my $addr = $self->hostname;
-
 if ($self->conn && $self->conn->peerhost) {
 #	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
-	$ipaddr = $addr; # force a PC61 
+	$ipaddr ||= $addr; # force a PC61 
 } elsif ($self->inscript) {
 	$ipaddr = "script";
 }
@@ -89,10 +102,6 @@ if (($spotted =~ /$spotternoid/ || $spotted =~ /$callnoid/) && $freq < $Spot::mi
 	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline) from $addr, not passed on to cluster");
 	$localonly++;
 }
-
-# make line the rest of the line
-$line = $f[2] || " ";
-@f = split /\s+/, $line;
 
 # bash down the list of bands until a valid one is reached
 my $bandref;
@@ -157,15 +166,9 @@ if ($freq =~ /^69/ || $localonly) {
 
 	return (1);
 } else {
-		# send orf to the users
-	my $spot;
-
-	if ($ipaddr) {
-		$spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
-	}
-	#else {
-	#	$spot = DXProt::pc11($spotter, $freq, $spotted, $line);
-	#}
+	# send orf to the users
+	$ipaddr ||= $main::mycall;	# emergency backstop
+	my $spot = DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr);
 	
 	$self->dx_spot(undef, undef, @spot);
 	if ($self->isslugged) {

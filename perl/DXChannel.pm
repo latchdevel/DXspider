@@ -360,6 +360,11 @@ sub is_rbn
 	return $_[0]->{sort} eq 'N';
 }
 
+sub is_dslink
+{
+	return $_[0]->{sort} eq 'L';
+}
+
 # for perl 5.004's benefit
 sub sort
 {

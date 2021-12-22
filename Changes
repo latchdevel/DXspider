@@ -8,7 +8,13 @@
    spots to PC61 where the spotter's IP is known.
 3. Add a shell script "perlbrew-dxspider" that can be used for starting the
    node when using perlbrew (i.e. more modern perls) on older distros such
-   as Centos 7/8. 
+   as Centos 7/8.
+4. Allow to "dx by <spotter> ip <ip address> <qrg> <spot call> <comment>.
+   This is added as a convenience measure for webcluster authors while waiting
+   for the internal websocket interface (or because they cannot use that). 
+   This can only be used by suitably privileged users. 
+   This likely to be a temporary measure and will be immediately withdrawn if
+   there is any sign of abuse. 
 11Dec21=======================================================================
 1. Removed dependency on perl Git package.
 2. Force code to change directory to $DXSPIDER_ROOT || '/spider'. Also force
