@@ -19,12 +19,14 @@ return (1, $self->msg('hnodee1')) if !$line;
 
 $user = DXUser::get_current($call);
 if ($user) {
-	$line = uc $line;
-	$user->homenode($line);
-	$user->put();
-	my $s = DXProt::pc41($call, 4, $line);
-	DXProt::eph_dup($s);
-	DXChannel::broadcast_all_nodes($s, $main::me) ;
+	$line = uc unpad($line);
+	if ($user->homenode && $line ne $user->homenode) {
+		$user->homenode($line);
+		$user->put();
+		my $s = DXProt::pc41($call, 4, $line);
+		DXProt::eph_dup($s);
+		DXChannel::broadcast_all_nodes($s, $main::me);
+	}
 	return (1, $self->msg('hnode', $line));
 } else {
 	return (1, $self->msg('namee2', $call));

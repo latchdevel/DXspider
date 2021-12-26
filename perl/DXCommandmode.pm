@@ -552,6 +552,7 @@ sub run_cmd
 			if ($package && $self->can("${package}::handle")) {
 				no strict 'refs';
 				dbg("cmd: package $package") if isdbg('command');
+#				Log('cmd', "$self->{call} on $self->{hostname} : '$cmd $args'");
 				my $t0 = [gettimeofday];
 				eval { @ans = &{"${package}::handle"}($self, $args) };
 				if ($@) {

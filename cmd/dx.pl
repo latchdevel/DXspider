@@ -23,6 +23,10 @@ my $oline = $line;
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e28')) unless $self->isregistered;
 
+
+my $addr = $self->hostname || '127.0.0.1'
+Log('cmd', "$self->{call}|$addr|dx|$line");
+
 my @bad;
 if (@bad = BadWords::check($line)) {	
 	$self->badcount(($self->badcount||0) + @bad);
@@ -73,9 +77,7 @@ $line =~ s/^\s*$f[0]\s+$f[1]\s+//;
 $line =~ s/\t+/ /g;				# do this here because it needs to be stopped ASAP!
 $line ||= ' ';
 
-my $addr = $self->hostname;
 if ($self->conn && $self->conn->peerhost) {
-#	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
 	$ipaddr ||= $addr; # force a PC61 
 } elsif ($self->inscript) {
 	$ipaddr = "script";

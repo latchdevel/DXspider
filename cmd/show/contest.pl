@@ -9,7 +9,7 @@
 sub handle
 {
 	my ($self, $line) = @_;
-
+   
 	return (1, $self->msg('e24')) unless $Internet::allow;
 
 	my @out;

@@ -17,6 +17,8 @@
 
 my ($self, $line) = @_;
 #$DB::single = 1;
+my $addr = $self->hostname || '127.0.0.1';
+Log('cmd', "$self->{call}|$addr|announce|$line");
 my @f = split /\s+/, $line;
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e9')) if !@f;

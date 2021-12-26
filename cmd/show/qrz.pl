@@ -73,8 +73,8 @@ sub handle
 	my $port = 80;
 	my $path = qq{/xml/current/?callsign=$line;username=$Internet::qrz_uid;password=$Internet::qrz_pw;agent=dxspider};
 	dbg("qrz: $target:$port$path") if isdbg('qrz');
-
-	Log('call', "$call: show/qrz \U$line");
+	my $addr = $self->hostname || '127.0.0.1';
+	Log('cmd', "$self->{call}|$addr|show/qrz|$line");
 	my $conn = AsyncMsg->get($self, $target, $path, filter=>\&filter, prefix=>'qrz> ', on_disc=>\&_on_disc);
 	if ($conn) {
 		$conn->{state} = 'blank';
