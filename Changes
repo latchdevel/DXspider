@@ -1,3 +1,5 @@
+27Dec21=======================================================================
+1. Fix "kwalitee control" issue in /spider/cmd/dx.pl.
 22Dec21=======================================================================
 1. Add the possibility to do "sender verify" that spots (and later on, other
    things like announce etc) are coming from spotters that exist on the node
