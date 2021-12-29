@@ -10,10 +10,12 @@ package AnnTalk;
 
 use strict;
 
+use DXVars;
 use DXUtil;
 use DXDebug;
 use DXDupe;
-use DXVars;
+use DXLog;
+use DXLogPrint;
 
 use vars qw(%dup $duplth $dupage $filterdef);
 
@@ -36,7 +38,24 @@ $filterdef = bless ([
 			  ['origin_zone', 'nz', 12],
 			  ['by_state', 'nz', 13],
 			  ['origin_state', 'nz', 14],
-			 ], 'Filter::Cmd');
+		   ], 'Filter::Cmd');
+
+our $maxcache = 30;
+our @anncache;
+
+sub init
+{
+	@anncache = DXLog::search(0, $maxcache, $main::systime, 'ann');
+	shift @anncache while @anncache > $maxcache;
+	my $l = @anncache;
+	dbg("AnnTalk: loaded last $l announcements into cache");
+}
+
+sub add_anncache
+{
+	push @anncache, [ $main::systime, @_ ];
+	shift @anncache while @anncache > $maxcache;
+}
 
 # enter the spot for dup checking and return true if it is already a dup
 sub dup

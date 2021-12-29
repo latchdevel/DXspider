@@ -1,5 +1,11 @@
+28Dec21=======================================================================
+1. Fix issues with wwv & wcy updates into the cache.
+2. Add a simple sh/announce cache to stop spawning when used (especially) in
+   a script.  
 27Dec21=======================================================================
 1. Fix "kwalitee control" issue in /spider/cmd/dx.pl.
+2. Make sh/wcy and sh/wwv cacheble for simple queries.
+3. Fix set/nodxxxxxx etc.
 22Dec21=======================================================================
 1. Add the possibility to do "sender verify" that spots (and later on, other
    things like announce etc) are coming from spotters that exist on the node

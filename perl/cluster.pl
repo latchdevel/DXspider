@@ -578,6 +578,9 @@ sub setup_start
 	DXUser::init(4);			# version 4 == json format
 
 	Filter::init();				# doesn't do much, but has to be done
+
+	AnnTalk::init();			# initialise announce cache
+	
 	
 
 	# look for the sysop and the alias user and complain if they aren't there

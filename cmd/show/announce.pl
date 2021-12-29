@@ -40,7 +40,16 @@ while ($f = shift @f) {                 # next field
 $to = 20 unless $to;
 $from = 0 unless $from;
 
-return (1, DXLog::print($from, $to, $main::systime, 'ann', $who)) if $self->{_nospawn};;
+# if we can get it out of the cache than do it
+if (!$who && !$from && $to < @AnnTalk::anncache) {
+	my @in = @AnnTalk::anncache[-$to .. -1];
+	for (@in) {
+		push @out, DXLog::print_item($_);
+	}
+	return (1, @out);
+}
+
+return (1, DXLog::print($from, $to, $main::systime, 'ann', $who)) if $self->{_nospawn} || $DB::VERSION;
 return (1, $self->spawn_cmd("show/announce $cmdline", \&DXLog::print, args => [$from, $to, $main::systime, 'ann', $who]));
 	
 return (1, @out);

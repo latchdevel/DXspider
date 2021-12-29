@@ -738,6 +738,7 @@ sub send_announce
 	}
 
 	Log('ann', $target, $from, $text);
+	AnnTalk::add_anncache('ann', $target, $from, $text);
 
 	# send it if it isn't the except list and isn't isolated and still has a hop count
 	# taking into account filtering and so on
@@ -1777,6 +1778,8 @@ sub import_chat
 				my $via = $target;
 				$via = '*' if $target eq 'ALL' || $target eq 'SYSOP';
 				Log('ann', $target, $main::mycall, $text);
+				AnnTalk::add_anncache('ann', $target, $main::mycall, $text);
+				
 				$main::me->normal(DXProt::pc93($target, $main::mycall, $via, $text));
 			} else {
 				DXCommandmode::send_chats($main::me, $target, $text);

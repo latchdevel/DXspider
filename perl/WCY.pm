@@ -42,6 +42,10 @@ $dupage = 12*3600;				# the length of time to hold spot dups
 $dirprefix = "$main::local_data/wcy";
 $param = "$dirprefix/param";
 
+our $maxcache = 20;
+our @cache;
+
+
 $filterdef = bless ([
 			  # tag, sort, field, priv, special parser 
 			  ['by', 'c', 11],
@@ -59,6 +63,10 @@ sub init
 {
 	$fp = DXLog::new('wcy', 'dat', 'm');
 	do "$param" if -e "$param";
+	# read in existing data
+	@cache = readfile($main::systime);
+	shift @cache while @cache > $maxcache;
+	dbg(sprintf "WCY read in last %d records into cache", scalar @cache);	
 	confess $@ if $@;
 }
 
@@ -76,10 +84,13 @@ sub store
 	$fh->close;
 	
 	# log it
-	$fp->writeunix($date, "$date^$sfi^$a^$k^$expk^$r^$sa^$gmf^$au^$from^$node");
+	my $s =  "$date^$sfi^$a^$k^$expk^$r^$sa^$gmf^$au^$from^$node";
+	$fp->writeunix($date, $s);
+	push @cache, [ split /\^/, $s ];
+	shift @cache while @cache > $maxcache; 
 }
 
-# update WWV info in one go (usually from a PC23)
+# update WCY info in one go (usually from a PC23)
 sub update
 {
 	my ($mydate, $mytime, $mysfi, $mya, $myk, $myexpk, $myr, $mysa, $mygmf, $myau, $myfrom, $mynode) = @_;
@@ -151,16 +162,23 @@ sub search
 {
 	my $from = shift;
 	my $to = shift;
-	my $date = $fp->unixtoj(shift);
+	my $t = shift;
+	my $date = $fp->unixtoj($t);
 	my $pattern = shift;
 	my $search;
 	my @out;
 	my $eval;
 	my $count;
 	my $i;
-	
-	$search = 1;
-	$eval = qq(
+
+	if ($t == $main::systime && ($to <= $maxcache)) {
+		dbg("using wcy cache") if isdbg('wcy');
+		@out = reverse @cache;
+		pop @out while @out > $to;
+	} else {
+		dbg("using wwv file(s))") if isdbg('wwv');
+		$search = 1;
+		$eval = qq(
 			   my \$c;
 			   my \$ref;
 			   for (\$c = \$#in; \$c >= 0; \$c--) {
@@ -173,22 +191,23 @@ sub search
 					}
 				}
 			  );
-	
-	$fp->close;					# close any open files
-	my $fh = $fp->open($date); 
-	for ($i = $count = 0; $count < $to; $i++ ) {
-		my @in = ();
-		if ($fh) {
-			while (<$fh>) {
-				chomp;
-				push @in, [ split '\^' ] if length > 2;
+		
+		$fp->close;					# close any open files
+		my $fh = $fp->open($date); 
+		for ($i = $count = 0; $count < $to; $i++ ) {
+			my @in = ();
+			if ($fh) {
+				while (<$fh>) {
+					chomp;
+					push @in, [ split '\^' ] if length > 2;
+				}
+				eval $eval;			# do the search on this file
+				return ("Geomag search error", $@) if $@;
+				last if $count >= $to; # stop after n
 			}
-			eval $eval;			# do the search on this file
-			return ("Geomag search error", $@) if $@;
-			last if $count >= $to; # stop after n
+			$fh = $fp->openprev();	# get the next file
+			last if !$fh;
 		}
-		$fh = $fp->openprev();	# get the next file
-		last if !$fh;
 	}
 	
 	return @out;

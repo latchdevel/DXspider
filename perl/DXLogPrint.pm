@@ -36,11 +36,11 @@ $maxmonths = 36;
 #
 # This command outputs a list of n lines starting from time t with $pattern tags
 #
-sub print
+sub search
 {
 	my $fcb = $DXLog::log;
-	my $from = shift || 0;
-	my $to = shift || 10;
+	my $from = shift // 0;
+	my $to = shift // 10;
 	my $jdate = $fcb->unixtoj(shift);
 	my $pattern = shift;
 	my $who = shift;
@@ -53,8 +53,10 @@ sub print
 	    
 	$who = uc $who if defined $who;
 
+	dbg("from: $from to: $to pattern: $pattern hint: $hint") if isdbg('search');
+	
 	if ($pattern) {
-		$hint = q{m{\Q$pattern\E}i};
+		$hint = qq{m{\Q$pattern\E}i};
 	} else {
 		$hint = q{!m{\^(?:ann|rcmd|talk|chat)\^}};
 	}
@@ -63,7 +65,7 @@ sub print
 		$hint .= q{m{\Q$who\E}i};
 	} 
 	$hint = "next unless $hint" if $hint;
-	$hint .= "; next unless m{^\\d+\\^$pattern\\^}" if $pattern;
+	$hint .= "; next unless m{^\\d+\\^$pattern\\^}i" if $pattern;
 	$hint ||= "";
 	
 	$eval = qq(while (<\$fh>) {
@@ -113,9 +115,19 @@ sub print
 	} 
 
 	for (sort {$a <=> $b } @in) {
-		my @line = split /\^/ ;
-		push @out, print_item(\@line);
-	
+		push @out, [ split /\^/ ]
+	}
+
+	return @out;
+}
+
+sub print
+{
+	my @out;
+
+	my @in = search(@_);
+	for (@in) {
+		push @out, print_item($_);
 	}
 	return @out;
 }

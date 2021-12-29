@@ -12,6 +12,8 @@ use DXDebug;
 use Route;
 use Route::User;
 use DXUtil;
+use DXJSON;
+use Time::HiRes qw(gettimeofday);
 
 use strict;
 
@@ -38,6 +40,7 @@ $filterdef = $Route::filterdef;
 %list = ();
 $max = 0;
 $obscount = 3;
+our $cachefn = localdata('route_node_cache');
 
 sub count
 {
@@ -391,6 +394,31 @@ sub PC92C_dxchan
 	}
 	return (%{$parent->{PC92C_dxchan}});
 }
+
+sub TO_JSON { return { %{ shift() } }; }
+
+sub write_cache
+{
+	my $json = DXJSON->new;
+	$json->canonical(0)->allow_blessed(1)->convert_blessed(1);
+	
+	my $ta = [ gettimeofday ];
+	$json->indent(1)->canonical(1) if isdbg('routecache');
+	my $s = eval {$json->encode(\%list)};
+	if ($s) {
+		my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
+		$fh->print($s);
+		$fh->close;
+	} else {
+		dbg("Route::User:Write_cache error '$@'");
+		return;
+	}
+	$json->indent(0)->canonical(0);
+	my $diff = _diffms($ta);
+	my $size = sprintf('%.3fKB', (length($s) / 1000));
+	dbg("Route::User:WRITE_CACHE size: $size time to write: $diff mS");
+}
+
 
 sub DESTROY
 {
