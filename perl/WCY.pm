@@ -229,7 +229,7 @@ sub print_item
 	my $d = cldate($r->[0]);
 	my $t = (gmtime($r->[0]))[2];
 
-	return sprintf("$d   %02d %5d %3d %3d   %3d %3d %-5s %-5s %6s <%s>", 
+	return sprintf("$d   %02d %5d %3d %3d   %3d %3d %-5s %-5s %6s   <%s>", 
 				    $t, @$r[1..9]);
 }
 
