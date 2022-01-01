@@ -1009,8 +1009,9 @@ sub format_dx_spot
 	my ($slot1, $slot2) = ('', '');
 	
 	my $clth = 30 + $self->{width} - 80;    # allow comment to grow according the screen width 
-	my $comment = substr (($_[3] || ''), 0, $clth);
-	$comment =~ s/\t/ /g;
+	my $c = $_[3];
+	$c =~ s/\t/ /g;
+	my $comment = substr (($c || ''), 0, $clth);
 	$comment .= ' ' x ($clth - (length($comment)));
 	
     if (!$slot1 && $self->{user}->wantgrid) {

@@ -400,23 +400,31 @@ sub TO_JSON { return { %{ shift() } }; }
 sub write_cache
 {
 	my $json = DXJSON->new;
-	$json->canonical(0)->allow_blessed(1)->convert_blessed(1);
-	
+	$json->canonical(isdbg('routecache'));
+
 	my $ta = [ gettimeofday ];
-	$json->indent(1)->canonical(1) if isdbg('routecache');
-	my $s = eval {$json->encode(\%list)};
-	if ($s) {
+	my @s;
+	eval {
+		while (my ($k, $v) = each  %list) {
+		    push @s, "$k:" . $json->encode($v) . "\n";
+	    }
+	};
+	if (!$@ && @s) {
 		my $fh = IO::File->new(">$cachefn") or confess("writing $cachefn $!");
-		$fh->print($s);
+		if (isdbg("routecache")) {
+			$fh->print(sort @s);
+		}
+		else {
+			$fh->print(@s);
+		}
 		$fh->close;
 	} else {
-		dbg("Route::User:Write_cache error '$@'");
+		dbg("Route::Node:Write_cache error '$@'");
 		return;
 	}
 	$json->indent(0)->canonical(0);
 	my $diff = _diffms($ta);
-	my $size = sprintf('%.3fKB', (length($s) / 1000));
-	dbg("Route::User:WRITE_CACHE size: $size time to write: $diff mS");
+	dbg("Route::Node:WRITE_CACHE time to write: $diff mS");
 }
 
 

@@ -238,9 +238,8 @@ sub prepare
 	# remove ssids and /xxx if present on spotter
 	$out[4] =~ s/-\d+$//o;
 
-	# remove leading and trailing spaces
+	# remove leading and trailing spaces from comment field
 	$out[3] = unpad($out[3]);
-	
 	
 	# add the 'dxcc' country on the end for both spotted and spotter, then the cluster call
 	my @spd = Prefix::cty_data($out[1]);
