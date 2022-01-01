@@ -1,3 +1,5 @@
+30Dec21=======================================================================
+1. Try to fix (nuke) tabs in comment field.
 28Dec21=======================================================================
 1. Fix issues with wwv & wcy updates into the cache.
 2. Add a simple sh/announce cache to stop spawning when used (especially) in
