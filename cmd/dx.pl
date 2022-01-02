@@ -18,7 +18,7 @@ my $valid = 0;
 my $localonly;
 my $oline = $line;
 
-#$DB::single=1;
+$DB::single=1;
 
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e28')) unless $self->isregistered;
@@ -56,7 +56,7 @@ if ($f[0] eq 'ip') {
 	if (is_ipaddr($f[1])) {
 		$ipaddr = $f[1];
 	} else {
-		return (1, $self->msg('dx3', $f[1]));
+		return (1, $self->msg('dx4', $f[1]));
 	}
 	$line =~ s/^\s*$f[0]\s+$f[1]\s+//;
 	@f = split /\s+/, $line, 3;
@@ -73,7 +73,9 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 } else {
 	return (1, $self->msg('dx3'));
 }
-$line =~ s/^\s*$f[0]\s+$f[1]\s+//;
+$line =~ s/^\s*$f[0]//;
+$line =~ s/^\s*$f[1]//;
+$line =~ s/^\s*//;
 $line =~ s/\t+/ /g;				# do this here because it needs to be stopped ASAP!
 $line ||= ' ';
 
