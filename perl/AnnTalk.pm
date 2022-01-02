@@ -40,7 +40,7 @@ $filterdef = bless ([
 			  ['origin_state', 'nz', 14],
 		   ], 'Filter::Cmd');
 
-our $maxcache = 30;
+our $maxcache = 130;
 our @anncache;
 
 sub init

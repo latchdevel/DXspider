@@ -1,5 +1,8 @@
 02Jan22=======================================================================
 1. Fix dx bug introduced to handle dx by ip <ipaddr> for webclusters.
+2. Remove _add_thingy dbg message from general view.
+3. Increase sh/ann cache to 130 to cope with some client programs' profligate
+   need to fill their users' screens with needless erm... data. 
 01Jan22=======================================================================
 1. Fixed missing ';' in spoof
 30Dec21=======================================================================

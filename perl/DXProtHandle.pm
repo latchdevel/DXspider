@@ -1603,7 +1603,7 @@ sub _add_thingy
 				$user = DXUser::get($call);
 				unless ($user) {
 					$user = DXUser->new($call);
-					dbg("PCProt::_add_thingy new user $call");
+					dbg("PCProt::_add_thingy new user $call") if isdbg('route');
 				}
 			}
 			if ($is_node) {
@@ -1622,7 +1622,7 @@ sub _add_thingy
 						} else {
 							$user->sort('A');
 						}
-						dbg("PCProt::_add_thingy node $call sort updated " . $user->sort);
+						dbg("PCProt::_add_thingy node $call sort updated " . $user->sort) if isdbg('route');
 					}
 				}
 			} else {
