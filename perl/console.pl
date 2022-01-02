@@ -27,8 +27,6 @@ BEGIN {
 	$is_win = ($^O =~ /^MS/ || $^O =~ /^OS-2/) ? 1 : 0; # is it Windows?
 }
 
-$clusteraddr = '127.0.0.1';
-$clusterport = 27754;
 
 use Mojo::IOLoop;
 
@@ -50,6 +48,9 @@ use Console;
 #
 # initialisation
 #
+
+$clusteraddr //= '127.0.0.1';
+$clusterport //= 27754;
 
 $call = "";                     # the callsign being used
 $node = "";                     # the node callsign being used

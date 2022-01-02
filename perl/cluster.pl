@@ -12,7 +12,7 @@
 
 package main;
 
-require 5.10.1;
+require 5.16.1;
 
 use warnings;
 
@@ -21,15 +21,15 @@ use vars qw($root $is_win $systime $lockfn @inqueue $starttime $lockfn @outstand
 			$clusterport $mycall $decease $routeroot $me $reqreg $bumpexisting
 			$allowdxby $dbh $dsn $dbuser $dbpass $do_xml $systime_days $systime_daystart
 			$can_encode $maxconnect_user $maxconnect_node $idle_interval $log_flush_interval
-			$broadcast_debug 
+			$broadcast_debug $yes $no $user_interval
 		   );
 
-$lang = 'en';					# default language
-$clusteraddr = '127.0.0.1';		# cluster tcp host address - used for things like console.pl
-$clusterport = 27754;			# cluster tcp port
-$yes = 'Yes';					# visual representation of yes
-$no = 'No';						# ditto for no
-$user_interval = 11*60;			# the interval between unsolicited prompts if no traffic
+#$lang = 'en';					# default language
+#$clusteraddr = '127.0.0.1';		# cluster tcp host address - used for things like console.pl
+#$clusterport = 27754;			# cluster tcp port
+#$yes = 'Yes';					# visual representation of yes
+#$no = 'No';						# ditto for no
+#$user_interval = 11*60;			# the interval between unsolicited prompts if no traffic
 
 # make sure that modules are searched in the order local then perl
 BEGIN {
@@ -165,6 +165,13 @@ use vars qw($version $build $gitversion $gitbranch);
 use strict;
 
 use Local;
+
+$lang //= 'en';					# default language
+$clusteraddr //= '127.0.0.1';   # cluster tcp host address - used for things like console.pl
+$clusterport //= 27754;			# cluster tcp port
+$yes //= 'Yes';					# visual representation of yes
+$no //= 'No';				    # ditto for no
+$user_interval //= 11*60;		# the interval between unsolicited prompts if no traffic
 
 
 @inqueue = ();					# the main input queue, an array of hashes
