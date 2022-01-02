@@ -18,7 +18,7 @@ my $valid = 0;
 my $localonly;
 my $oline = $line;
 
-$DB::single=1;
+#$DB::single=1;
 
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
 return (1, $self->msg('e28')) unless $self->isregistered;
