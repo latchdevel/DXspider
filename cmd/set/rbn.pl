@@ -19,7 +19,7 @@ return (1, $self->msg('e5')) if $self->priv < 5;
 
 foreach $call (@args) {
 	$call = uc $call;
-	if ($call eq $main::myalias) {
+	if ($call eq $main::mycall) {
 		push @out, $self->msg('e11', $call);
 		next;
 	}

@@ -3,6 +3,8 @@
    $clusterport. This is really only of use for people trying to run more than
    one instance of DXSpider on the same machine.
 2. Fix who command to make RBN connections as RBN and not USER.
+3. Prevent other nodes claiming that $myalias or $mycall is a different type
+   (user or node) from changing our route table and thence the user type. 
 02Jan22=======================================================================
 1. Fix dx bug introduced to handle dx by ip <ipaddr> for webclusters.
 2. Remove _add_thingy dbg message from general view.

@@ -45,7 +45,7 @@ if ($f[0] =~ /^by$/i) {
 	return (1, $self->msg('e5')) unless $main::allowdxby || $self->priv > 1;
     $spotter = uc $f[1];
     $line =~ s/^\s*$f[0]\s+$f[1]\s+//;
-	@f = split /\s+/, $line, 3;
+	@f = split /\s+/, $line, 3; 
 	return (1, $self->msg('dx2')) unless @f >= 2;
 }
 

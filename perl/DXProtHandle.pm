@@ -2016,6 +2016,11 @@ sub handle_92
 				dbg("PCPROT: $_->[0] refers to me, ignored") if isdbg('chanerr');
 				next;
 			}
+			if ($_->[0] eq $main::myalias && $_->[1] || $_->[0] eq $main::mycall && $_->[1] == 0) {
+				dbg("PCPROT: $_->[0] changing type to " . $_->[1]?"Node":"User" . ", ignored") if isdbg('chanerr');
+				next;
+			}
+			
 			push @nent, $_;
 		}
 
