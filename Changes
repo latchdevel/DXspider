@@ -5,6 +5,9 @@
 2. Fix who command to make RBN connections as RBN and not USER.
 3. Prevent other nodes claiming that $myalias or $mycall is a different type
    (user or node) from changing our route table and thence the user type. 
+4. Normalise callsigns of incoming connections to G1TST if G1TST-0 or G1TST-00
+   amd G1TST-2 if G1TST-02. There are 800+ instances of callsigns with extra
+   0 characters in the SSID in my users file. Allow SSIDs up to 99. 
 02Jan22=======================================================================
 1. Fix dx bug introduced to handle dx by ip <ipaddr> for webclusters.
 2. Remove _add_thingy dbg message from general view.

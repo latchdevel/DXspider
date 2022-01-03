@@ -134,12 +134,13 @@ sub dequeue
 						$conn->disconnect;
 					}
 				} elsif (is_callsign($msg)) {
+					my $call = normalise_call($msg);
 					if ($main::allowslashcall || $msg !~ m|/|) {
 						my $sort = $conn->{csort};
 						$sort = 'local' if $conn->{peerhost} =~ /127\.\d+\.\d+\.\d+$/ || $conn->{peerhost} eq '::1';
 						my $uref;
-						if ($main::passwdreq || ($uref = DXUser::get_current($msg)) && $uref->passwd ) {
-							$conn->conns($msg);
+						if ($main::passwdreq || ($uref = DXUser::get_current($call)) && $uref->passwd ) {
+							$conn->conns($call);
 							$conn->{state} = 'WP';
 							$conn->{decho} = $conn->{echo};
 							$conn->{echo} = 0;

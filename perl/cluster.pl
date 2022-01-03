@@ -233,7 +233,8 @@ sub new_channel
 			already_conn($conn, $call, "Maximum no of web connected connects ($Web::maxssid) exceeded");
 			return;
 		}
-		$call = $newcall;
+		$call = normalise_call($newcall);
+		
 		$user = DXUser::get_current($call);
 		unless ($user) {
 			$user = DXUser->new($call);
@@ -255,6 +256,15 @@ sub new_channel
 		$conn->send_now("C$call");
 	} else {
 		# "Normal" connections
+
+		# normalise calls like G1TST-0/G1TST-00/G1TST-01 to G1TST and G1TST-1 respectively
+		my $ncall = normalise_call($call);
+		if ($call ne $ncall) {
+			LogDbg('err', "new_channel login invalid $call converted to $ncall");
+			$msg =~ s/$call/$ncall/;
+			$call = $ncall;
+		}
+		# is it a valid callsign (in format)?
 		unless (is_callsign($call)) {
 			already_conn($conn, $call, DXM::msg($lang, "illcall", $call));
 			return;
@@ -262,8 +272,8 @@ sub new_channel
 
 		# is he locked out ?
 		my $lock;
-		$user = DXUser::get_current($call);
 		$conn->conns($call);
+		$user = DXUser::get_current($call);
 		my $basecall = $call;
 		$basecall =~ s/-\d+$//;	# remember this for later multiple user processing, it's used for other stuff than checking lockout status
 		if ($user) {

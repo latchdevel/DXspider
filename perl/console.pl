@@ -534,10 +534,11 @@ $call = uc shift @ARGV if @ARGV;
 $call = uc $myalias unless $call;
 $node = uc $mycall unless $node;
 
+$call = normalise_call($call);
 my ($scall, $ssid) = split /-/, $call;
 $ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
 if ($ssid) {
-	$ssid = 15 if $ssid > 15;
+	$ssid = 99 if $ssid > 99;
 	$call = "$scall-$ssid";
 }
 
