@@ -28,6 +28,7 @@ foreach $dxchan ( sort {$a->call cmp $b->call} DXChannel::get_all ) {
 		$sort = "LOCL" if $dxchan->conn->isa('IntMsg');
 		$sort = "WEB " if $dxchan->is_web;
 		$sort = "EXT " if $dxchan->conn->isa('ExtMsg');
+		$type = "RBN " if $dxchan->is_rbn;              # Yes, this is NOT a typo
 	}
 	my $name = $dxchan->user->name || " ";
 	my $ping = $dxchan->is_node && $dxchan != $main::me ? sprintf("%5.2f", $dxchan->pingave) : "     ";
