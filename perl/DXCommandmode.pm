@@ -649,7 +649,7 @@ sub disconnect
 #		@rout = $main::routeroot->del_user($uref);
 		@rout = DXProt::_del_thingy($main::routeroot, [$call, 0]);
 
-		dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
+		# dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);

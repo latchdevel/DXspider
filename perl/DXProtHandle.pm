@@ -1807,11 +1807,11 @@ sub pc92_handle_first_slot
 	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$slot;
 	if ($call && $is_node) {
 		if ($call eq $main::mycall) {
-			dbg("PCPROT: $call looped back onto \$main::mycall ($main::mycall), ignored") if isdbg('chan');
+			LogDbg('err', "PCPROT: $self->{call} : $call looped back onto \$main::mycall ($main::mycall), ignored");
 			return;
 		}
 		if ($call eq $main::myalias) {
-			dbg("PCPROT: $call looped back onto \$main::myalias ($main::myalias), ignored") if isdbg('chan');
+			LogDbg('err', "PCPROT: $self->{call} : $call looped back onto \$main::myalias ($main::myalias), ignored");
 			return;
 		}
 		# this is only accepted from my "self".
@@ -1872,12 +1872,12 @@ sub handle_92
 #	}
 
 	if ($pcall eq $main::mycall) {
-		dbg("PCPROT: looped back, ignored") if isdbg('chan');
+		LogDbg('err', "PCPROT: looped back, ignored");
 		return;
 	}
 
 	if ($pcall eq $main::myalias) {
-		dbg("PCPROT: looped back to \$myalias ($main::myalias), misconfiguration ignored") if isdbg('chan');
+		LogDbg('err', "PCPROT: looped back to \$myalias ($main::myalias), misconfiguration ignored");
 		return;
 	}
 
@@ -1941,10 +1941,10 @@ sub handle_92
 					if (@dxchan) {
 						$_->send($line) for @dxchan;
 					} else {
-						dbg("PCPROT: no return route, ignored") if isdbg('chanerr')
+						dbg("PCPROT: $self->{call} : type R no return route, ignored") if isdbg('chanerr') || isdbg('route');
 					}
 				} else {
-					dbg("PCPROT: no return route, ignored") if isdbg('chanerr')
+					dbg("PCPROT: $self->{call} : type R no return route, ignored") if isdbg('chanerr') || isdbg('route');
 				}
 			}
 			return;
@@ -2013,11 +2013,11 @@ sub handle_92
 			my $dxc;
 			next unless $_ && @$_;
 			if ($_->[0] eq $main::mycall) {
-				dbg("PCPROT: $_->[0] refers to me, ignored") if isdbg('chanerr');
+				LogDbg('err', "PCPROT: $self->{call} : type $sort $_->[0] refers to me, ignored");
 				next;
 			}
 			if ($_->[0] eq $main::myalias && $_->[1] || $_->[0] eq $main::mycall && $_->[1] == 0) {
-				dbg("PCPROT: $_->[0] changing type to " . $_->[1]?"Node":"User" . ", ignored") if isdbg('chanerr');
+				LogDbg('err',"PCPROT: $self->{call} : type $sort $_->[0] changing type to " . $_->[1]?"Node":"User" . ", ignored");
 				next;
 			}
 			
@@ -2049,7 +2049,7 @@ sub handle_92
 						push @users, $r->[0];
 					}
 				} else {
-					dbg("PCPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr');
+					dbg("PCPROT: $self->{call} :  pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr') || isdbg('route');
 				}
 			}
 
