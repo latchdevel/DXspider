@@ -252,11 +252,12 @@ sub normal
 	}
 
 	# remove all extraneous crap from the origin - just leave the base callsign
-	$origin = basecall($origin);
-	unless ($origin) {
+	my $norigin = basecall($origin);
+	unless ($norigin) {
 		dbg("RBN: ERROR '$origin' is an invalid callsign, dumped");
 		return;
 	}
+	$origin = $norigin;
 
 	# is this callsign in badspotter list?
 	if ($DXProt::badspotter->in($origin) || $DXProt::badnode->in($origin)) {
