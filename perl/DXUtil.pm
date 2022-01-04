@@ -599,16 +599,15 @@ sub parraydifft
 
 sub basecall
 {
-	my ($r) = $_[0] =~ m|^(?:[\w\d]+/)?([\w\d]+).*$|;
+	my ($r) = $_[0] =~ m{^((?:[\w\d]+/)?[\w\d]+(?:/[\w\d]+)?)(?:-\d+)?(?:-\#)?$};
 	return $r;
 }
 
 sub normalise_call
 {
-	my ($c, $ssid) = $_[0] =~ m|^((?:[\w\d]+/)?[\d\w]+(?:/[\w\d]+)?)-?(\d+)?$|;
+	my ($c, $ssid) = $_[0] =~ m|^((?:[\w\d]+/)?[\d\w]+(?:/[\w\d]+)?)(?:-(\d+))?(?:-\#)?$|;
 	my $ncall = $c;
 	$ssid += 0;
 	$ncall .= "-$ssid" if $ssid;
 	return $ncall;
-	
 }
