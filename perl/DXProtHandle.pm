@@ -763,23 +763,27 @@ sub handle_18
 	$self->send(pc20());
 }
 
-sub check_add_node
+sub check_add_user
 {
 	my $call = shift;
 	my $type = shift;
-	
+	my $homenode = shift;
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
 	my $user = DXUser::get_current($call);
 	unless ($user) {
 		$user = DXUser->new($call);
-		$user->priv(1);		# I have relented and defaulted nodes
-		$user->lockout(1);
-		$user->homenode($call);
-		$user->node($call);
-		$user->sort($type || 'A');
+		$user->sort($type || 'U');
+		if ($user->is_node) {
+			$user->priv(1);		# I have relented and defaulted nodes
+			$user->lockout(1) if $user->is_node;
+		} else {
+			$user->homenode($homenode) if $homenode;
+			$user->node($homenode);
+		}
 		$user->lastin($main::systime); # this make it last longer than just this invocation
 		$user->put;				# just to make sure it gets written away!!!
+		dbg("DXProt: PC92 new user record for $call created");
 	}
 	return $user;
 }
@@ -855,7 +859,7 @@ sub handle_19
 			next;
 		}
 
-		my $user = check_add_node($call);
+		my $user = check_add_user($call, 'A');
 
 #		if (eph_dup($genline)) {
 #			dbg("PCPROT: dup PC19 for $call detected") if isdbg('chanerr');
@@ -1599,42 +1603,31 @@ sub _add_thingy
 		my $ncall = $parent->call;
 		if ($ncall ne $call) {
 			my $user;
-			unless (DXChannel::get($call)) { # i.e. external entity - create an user entry for it - ALL entities will appear in ALL user files from now on.
-				$user = DXUser::get($call);
-				unless ($user) {
-					$user = DXUser->new($call);
-					dbg("PCProt::_add_thingy new user $call") if isdbg('route');
-				}
-			}
+			my $r;
+			
 			if ($is_node) {
 				dbg("ROUTE: added node $call to $ncall") if isdbg('routelow');
+				$user = check_add_user($call, 'A');
 				@rout = $parent->add($call, $version, Route::here($here), $ip);
-				my $r = Route::Node::get($call);
+				$r = Route::Node::get($call);
 				$r->PC92C_dxchan($dxchan->call, $hops) if $r;
-				if ($ip) {
-					$r->ip($ip);
-					Log('DXProt', "PC92A $call -> $ip on $ncall");
-				}
-				if ($user && $user->sort eq 'U') {
-					if (defined $version) {
-						if ($version >= 5455 && $build > 0 || $version >= 3000 ) {
-							$user->sort('S');
-						} else {
-							$user->sort('A');
-						}
-						dbg("PCProt::_add_thingy node $call sort updated " . $user->sort) if isdbg('route');
-					}
+				if ($version) {
+					my $old = $user->sort;
+					if ($version >= 5455 && defined $build && $build > 0 || $version >= 3000 ) {
+						$user->sort('S');
+						dbg("PCProt::_add_thingy node $call sort ($old) updated to " . $user->sort) if isdbg('route');
+					} 
 				}
 			} else {
 				dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
-				my $user = check_add_node($call, 'U');
+				$user = check_add_user($call, 'U', $parent->call);
 				@rout = $parent->add_user($call, Route::here($here), $ip);
 				$dxchan->tell_buddies('loginb', $call, $ncall) if $dxchan;
-				my $r = Route::User::get($call);
-				if ($ip) {
-					$r->ip($ip);
-					Log('DXProt', "PC92A $call -> $ip on $ncall");
-				}
+				$r = Route::User::get($call);
+			}
+			if ($ip) {
+				$r->ip($ip);
+				Log('DXProt', "PC92A $call -> $ip on $ncall");
 			}
 			if ($pc92_slug_changes && $parent == $main::routeroot) {
 				$things_add{$call} = Route::get($call);

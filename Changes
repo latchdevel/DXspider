@@ -3,6 +3,9 @@
    contain trailing / in callsigns like: OH0K/6, K2PO/7 etc.
 2. Regard strange callsigns like DR4W-HB (seen in skimmer spots) as invalid. 
    This *should be* something like HB9/DR4W or (spit) DR4W/HB9.
+3. Fix the (probably) spurious locking out of users that are unknown to this 
+   node, that come in from other nodes. These create new user records which
+   where then automatically locked.  
 03Jan22=======================================================================
 1. Allow overrides (on modern versions of perl) with things in DXVars.pm, such
    $clusterport. This is really only of use for people trying to run more than
