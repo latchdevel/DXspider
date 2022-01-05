@@ -1615,7 +1615,9 @@ sub _add_thingy
 
 	# remove spurious IPV6 prefix on IPV4 addresses
 	$ip =~ s/^::ffff:// if $ip;
-	
+	$build //= 0;
+	$version //= 0;
+
 	if ($call) {
 		my $ncall = $parent->call;
 		if ($ncall ne $call) {
@@ -1629,7 +1631,7 @@ sub _add_thingy
 				next if DXChannel::get($call);
 				$user = DXUser::get($call);
 				dbg("DXProt::_add_thingy call $call normalised to $normcall, deleting spurious user $call");
-				$user->del;
+				$user->del if $user;
 			    $call = $normcall; # this is safe because a route add will ignore duplicates
 			}
 			
@@ -1641,11 +1643,10 @@ sub _add_thingy
 				$r->PC92C_dxchan($dxchan->call, $hops) if $r;
 				if ($version && $version =~ /\d+/) {
 					my $old = $user->sort;
-					if ($user->is_ak1a && (($version >= 5455 && defined $build && $build > 0) || ($version >= 3000 && $version <= 3500)) ) {
+					if ($user->is_ak1a && (($version >= 5455 &&  $build > 0) || ($version >= 3000 && $version <= 3500)) ) {
 						$user->sort('S');
-						$build //= 0;
 						dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) updated to " . $user->sort);
-					} elsif ($user->is_spider && ($version < 3000 || ($version > 4000 && $version < 5455)) && $version =~ /^\d+$/) {
+					} elsif ($user->is_spider && $version =~ /^\d+$/ && ($version < 3000 || ($version > 4000 && $version < 5455))) {
 						unless ($version == 5000 && $build == 0) {
 							$user->sort('A');
 							$build //= 0;
@@ -2002,7 +2003,7 @@ sub handle_92
 			$oldbuild =~ s/^0\.//;
 			my $oldversion = $parent->version // 0;
 			my $user = check_add_user($parent->call, 'S');
-			my $oldsort = $user->sort;
+			my $oldsort = $user->sort // '';
 			if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
 				dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
 				$user->sort('S');
