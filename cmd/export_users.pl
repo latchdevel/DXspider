@@ -13,7 +13,7 @@ unless ($fn && $fn eq 'user_json') {
 	$fn =~ s|[/\.]||g;
 	$fn = "/tmp/$fn";
 }
-my $strip = $flag eq 'strip';
+my $strip = $flag && $flag eq 'strip';
 
 my @out = DXUser::export($fn, $strip);
 

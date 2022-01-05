@@ -1556,8 +1556,9 @@ sub _decode_pc92_call
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
 	my $ip;
-	$part[1] //= 0;
-	$part[2] //= 0;
+	$part[1] //= '';
+	$part[2] //= '';
+	$part[2] //= '';
 	if ($part[1] =~ /[,.]/) {
 		$ip = $part[1];
 		$part[1] = $part[2] = 0;
