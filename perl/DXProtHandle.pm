@@ -34,6 +34,7 @@ use Route::Node;
 use Script;
 
 use strict;
+use warnings;
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
@@ -1615,8 +1616,8 @@ sub _add_thingy
 
 	# remove spurious IPV6 prefix on IPV4 addresses
 	$ip =~ s/^::ffff:// if $ip;
-	$build //= 0;
-	$version //= 0;
+	$build ||= 0;
+	$version ||= 0;
 
 	if ($call) {
 		my $ncall = $parent->call;
@@ -1996,22 +1997,23 @@ sub handle_92
 			push @radd, $add if $add;
 			$parent->reset_obs;
 			my $call = $parent->call;
-			my $version = $ent[4] // 0;
-			my $build = $ent[5] // 0;
+			my $version = $ent[4] || 0;
+			my $build = $ent[5] ||  0;
 			$build =~ s/^0\.//;
-			my $oldbuild = $parent->build // 0;
+			my $oldbuild = $parent->build || 0;
 			$oldbuild =~ s/^0\.//;
-			my $oldversion = $parent->version // 0;
+			my $oldversion = $parent->version || 0;
 			my $user = check_add_user($parent->call, 'S');
 			my $oldsort = $user->sort // '';
-			if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
-				dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
-				$user->sort('S');
-				$user->version($parent->version($version));
-				$user->build($parent->build($build));
-				$user->put;
+			if ($version =~ /^\d+$/) {
+				if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
+					dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
+					$user->sort('S');
+					$user->version($parent->version($version));
+					$user->build($parent->build($build));
+					$user->put;
+				}
 			}
-
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
