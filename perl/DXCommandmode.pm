@@ -157,7 +157,7 @@ sub start
 	# establish slug queue, if required
 	$self->{sluggedpcs} = [];
 	$self->{isslugged} = $DXProt::pc92_slug_changes + $DXProt::last_pc92_slug + 5 if $DXProt::pc92_slug_changes;
-	$self->{isslugged} = 0 if $self->{priv} > 0 || $user->registered || $user->homenode eq $main::mycall;
+	$self->{isslugged} = 0 if $self->{priv} || $user->registered || $user->homenode eq $main::mycall;
 
 	# send the relevant MOTD
 	$self->send_motd;
