@@ -7,7 +7,7 @@ my $self = shift;
 my $line = shift;;
 return (1, $self->msg('e5')) unless $self->priv >= 9;
 
-my $line ||= 'user_json';
+$line ||= 'user_json';
 my ($fn, $flag) = split /\s+/, $line;
 unless ($fn && $fn eq 'user_json') {
 	$fn =~ s|[/\.]||g;
