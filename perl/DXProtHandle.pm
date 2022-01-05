@@ -1641,7 +1641,7 @@ sub _add_thingy
 				@rout = $parent->add($call, $version, Route::here($here), $ip);
 				$r = Route::Node::get($call);
 				$r->PC92C_dxchan($dxchan->call, $hops) if $r;
-				if ($version && $version =~ /\d+/) {
+				if ($version && $version =~ /^\d+$/) {
 					my $old = $user->sort;
 					if ($user->is_ak1a && (($version >= 5455 &&  $build > 0) || ($version >= 3000 && $version <= 3500)) ) {
 						$user->sort('S');
