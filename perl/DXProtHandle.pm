@@ -785,6 +785,15 @@ sub check_add_user
 		$user->put;				# just to make sure it gets written away!!!
 		dbg("DXProt: PC92 new user record for $call created");
 	}
+
+	# this is to fix a problem I introduced some build ago by using this function for users
+	# whereas it was only being used for nodes.
+	if ($user->is_user && $user->lockout && $user->priv == 1) {
+		$user->priv(0);
+		$user->lockout(0);
+		dbg("DXProt: PC92 user record for $call depriv'd and unlocked");
+		$user->put;
+	}
 	return $user;
 }
 
@@ -1546,8 +1555,13 @@ sub _decode_pc92_call
 	my $is_node = $flag & 4;
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
-	my $ip	= $part[3];
-	$ip ||= $part[1] if $part[1] && $part[1] !~ /^\d+$/ && ($part[1] =~ /^(?:\d+\.)+/ || $part[1] =~ /^(?:(?:[abcdef\d]+)?,)+/);
+	my $ip;
+	if ($part[1] =~ /[,.]/) {
+		$ip = $part[1];
+		$part[1] = $part[2] = 0;
+	} elsif ($part[3] =~ /[,.]/) {
+		$ip = $part[3];
+	}
 	$ip =~ s/,/:/g if $ip;
 	return ($call, $is_node, $is_extnode, $here, $part[1], $part[2], $ip);
 }
@@ -1604,6 +1618,17 @@ sub _add_thingy
 		if ($ncall ne $call) {
 			my $user;
 			my $r;
+
+			# normalise call, delete any unnormalised calls in the users file.
+			# then ignore this thingy
+			my $normcall = normalise_call($call);
+			if ($normcall ne $call) {
+				next if DXChannel::get($call);
+				$user = DXUser::get($call);
+				dbg("DXProt::_add_thingy call $call normalised to $normcall, deleting spurious user $call");
+				$user->del;
+			    $call = $normcall; # this is safe because a route add will ignore duplicates
+			}
 			
 			if ($is_node) {
 				dbg("ROUTE: added node $call to $ncall") if isdbg('routelow');
@@ -1611,12 +1636,19 @@ sub _add_thingy
 				@rout = $parent->add($call, $version, Route::here($here), $ip);
 				$r = Route::Node::get($call);
 				$r->PC92C_dxchan($dxchan->call, $hops) if $r;
-				if ($version) {
+				if ($version && $version =~ /\d+/) {
 					my $old = $user->sort;
-					if ($version >= 5455 && defined $build && $build > 0 || $version >= 3000 ) {
+					if ($user->is_ak1a && (($version >= 5455 && defined $build && $build > 0) || ($version >= 3000 && $version <= 3500)) ) {
 						$user->sort('S');
-						dbg("PCProt::_add_thingy node $call sort ($old) updated to " . $user->sort) if isdbg('route');
-					} 
+						$build //= 0;
+						dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) updated to " . $user->sort);
+					} elsif ($user->is_spider && ($version < 3000 || ($version > 4000 && $version < 5455)) && $version =~ /^\d+$/) {
+						unless ($version == 5000 && $build == 0) {
+							$user->sort('A');
+							$build //= 0;
+							dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) downgraded to " . $user->sort);
+						}
+					}
 				}
 			} else {
 				dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
@@ -1838,7 +1870,7 @@ sub pc92_handle_first_slot
 	}
 	$parent->here(Route::here($here));
 	$parent->version($version || $pc19_version) if $version;
-	$parent->build($build) if $build;
+	$build =~ s/^0\.//, $parent->build($build) if $build;
 	$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 	return ($parent, @radd);
 }
@@ -1956,13 +1988,24 @@ sub handle_92
 
 			($parent, $add) = $self->pc92_handle_first_slot(\@ent, $parent, $t, $hops);
 			return unless $parent; # dupe
-
+			
 			push @radd, $add if $add;
 			$parent->reset_obs;
-			$parent->version($ent[4]) if $ent[4];
-			if ($ent[5]) {
-				$ent[5] =~ s/^0.//;
-				$parent->build($ent[5]);
+			my $call = $parent->call;
+			my $version = $ent[4] // 0;
+			my $build = $ent[5] // 0;
+			$build =~ s/^0\.//;
+			my $oldbuild = $parent->build // 0;
+			$oldbuild =~ s/^0\.//;
+			my $oldversion = $parent->version // 0;
+			my $user = check_add_user($parent->call, 'S');
+			my $oldsort = $user->sort;
+			if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
+				dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
+				$user->sort('S');
+				$user->version($parent->version($version));
+				$user->build($parent->build($build));
+				$user->put;
 			}
 
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
@@ -2006,11 +2049,11 @@ sub handle_92
 			my $dxc;
 			next unless $_ && @$_;
 			if ($_->[0] eq $main::mycall) {
-				LogDbg('err', "PCPROT: $self->{call} : type $sort $_->[0] refers to me, ignored");
+				dbg("PCPROT: $self->{call} : type $sort $_->[0] refers to me, ignored") if isdbg('route');
 				next;
 			}
 			if ($_->[0] eq $main::myalias && $_->[1] || $_->[0] eq $main::mycall && $_->[1] == 0) {
-				LogDbg('err',"PCPROT: $self->{call} : type $sort $_->[0] changing type to " . $_->[1]?"Node":"User" . ", ignored");
+				LogDbg('err',"PCPROT: $self->{call} : type $sort $_->[0] trying to change type to " . $_->[1]?"Node":"User" . ", ignored");
 				next;
 			}
 			

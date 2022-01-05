@@ -565,8 +565,11 @@ sub difft
 		}
 	}
 	return '-(ve)' if $t < 0;
-	my ($d,$h,$m,$s);
+	my ($y,$d,$h,$m,$s);
 	my $out = '';
+	$y = int $t / (86400*365);
+	$out .= sprintf ("%s${y}y", $adds?' ':'') if $y;
+	$t -= $y * 86400 * 365;
 	$d = int $t / 86400;
 	$out .= sprintf ("%s${d}d", $adds?' ':'') if $d;
 	$t -= $d * 86400;

@@ -1,3 +1,35 @@
+05Jan22=======================================================================
+1. Mark nodes that send PC92 K records as spider. These will include VE7CC
+   nodes. NOTE: there appear to be user records marked as user or other sorts
+   of node, which (now) are actually spider (compatible) nodes and will be
+   marked accordingly.
+2. Adjust nodes currently marked as spider nodes, but are sending versions 
+   not in the spider range of versions on PC92 A records as AK1A.
+3. Try to undo some damage where users have been autocreated with similar
+   attributes as nodes (locked out with privilege set to 1). This will 
+   slowly fix this problem over time, but see item 4 for a 'big bang' 
+   approach.
+4. It has come to my attention that there are a large number of users (of 
+   all sorts) that have incompatible SSIDs. See 03Jan22/4 for details. 
+
+   These are now being scrubbed out of the users file and also will present
+   as their normalised selves. If a -0* SSID is encountered then, if the 
+   normalised version of that call is not present, it will be renamed to 
+   that normalised call. If the normalised version of that user record is
+   already present, the un-normalised user record (-0*) will be removed. 
+5. Make export_users do a batch clean (as in 3. above) and also get rid of
+   (default) 12+ year old unaccessed user records and (default) 2+ year old 
+   "empty" records (with no qra/latlog/qth or handle).
+ 
+   NOTE: if you do an manual export_users (as opposed to the automatic one
+   done once a week), do not be alarmed by the number of old (i.e. more than
+   12 years old) callsigns that it will get rid of. In my case it was about 
+   ~2/5th of the users file. Still left me with over 100,000 "active" users.
+
+   In you are a bit twitchy about this, the code will copy the current
+   user_json and user_json.ooooo to user_json.keep and user_json.backstop
+   respectively. These files will never be overwritten unless you remove one
+   or both, when they will be regenerated on the next export_user. 
 04Jan22=======================================================================
 1. Fix issue in the RBN (and probably other places) with callsigns that
    contain trailing / in callsigns like: OH0K/6, K2PO/7 etc.

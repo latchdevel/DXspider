@@ -24,7 +24,7 @@ use DXJSON;
 
 use strict;
 
-use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $v3);
+use vars qw(%u $dbm $filename %valid $lastoperinterval $lasttime $lru $lrusize $tooold $veryold $v3);
 
 %u = ();
 $dbm = undef;
@@ -32,7 +32,8 @@ $filename = undef;
 $lastoperinterval = 60*24*60*60;
 $lasttime = 0;
 $lrusize = 5000;
-$tooold = 86400 * 365;		# this marks an old user who hasn't given enough info to be useful
+$tooold = 86400 * 365 * 2;		# this marks an old user who hasn't given enough info to be useful
+$veryold = $tooold * 6;	        # Ancient default 12 years
 $v3 = 0;
 our $maxconnlist = 3;			# remember this many connection time (duration) [start, end] pairs
 
@@ -211,7 +212,6 @@ sub new
 #	confess "can't create existing call $call in User\n!" if $u{$call};
 
 	my $self = $pkg->alloc($call);
-	$self->{lastseen} = $main::systime;
 	$self->put;
 	return $self;
 }
@@ -229,7 +229,6 @@ sub get
 	# is it in the LRU cache?
 	my $ref = $lru->get($call);
 	if ($ref && ref $ref eq 'DXUser') {
-		$ref->{lastseen} = $main::systime;
 		return $ref;
 	}
 	
@@ -251,7 +250,6 @@ sub get
 			}
 			return undef;
 		}
-		$ref->{lastseen} = $main::systime;
 		$lru->put($call, $ref);
 		return $ref;
 	}
@@ -300,9 +298,9 @@ sub put
 	my $call = $self->{call};
 
 	$dbm->del($call);
-	delete $self->{annok} if $self->{annok};
-	delete $self->{dxok} if $self->{dxok};
-
+	delete $self->{annok};
+	delete $self->{dxok};
+	$self->{lastseen} = $main::systime;
 	$lru->put($call, $self);
 	my $ref = $self->encode;
 	$dbm->put($call, $ref);
@@ -343,8 +341,8 @@ sub close
 	my $self = shift;
 	my $startt = shift;
 	my $ip = shift;
-	$self->{lastseen} = $self->{lastin} = $main::systime;
 	# add a record to the connect list
+	$self->{lastin} = $main::systime;
 	my $ref = [$startt || $self->{startt}, $main::systime];
 	push @$ref, $ip if $ip;
 	push @{$self->{connlist}}, $ref;
@@ -383,16 +381,27 @@ sub export
 	my $fn = $name ne 'user_json' ? $name : "$main::local_data/$name";                       # force use of local
 	
 	# save old ones
+	copy $fn, "$fn.keep" unless -e "$fn.keep";
+	copy "$fn.ooooo", "$fn.backstop" unless -e "$fn,backstop";
+
 	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
 	move "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
 	move "$fn.oo", "$fn.ooo" if -e "$fn.oo";
 	move "$fn.o", "$fn.oo" if -e "$fn.o";
 	move "$fn", "$fn.o" if -e "$fn";
 
+	
 	my $ta = [gettimeofday];
 	my $count = 0;
 	my $err = 0;
 	my $del = 0;
+	my $spurious = 0;
+	my $unlocked = 0;
+	my $old =  0;
+	my $ancient =  0;
+	my $nodes = 0;
+	my $renamed = 0;
+		
 	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
 	if ($fh) {
 		my $key = 0;
@@ -484,30 +493,80 @@ print "There are $count user records and $err errors in $diff mS\n";
 			my $ref;
 			eval {$ref = decode($val); };
 			if ($ref) {
-				my $t = $ref->{lastin} || 0;
-				if ($ref->is_user && !$ref->{priv} && $main::systime > $t + $tooold) {
-					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
+				my $t = $ref->{lastseen} if exists $ref->{lastseen};
+				$t ||= $ref->{lastin} if exists $ref->{lastin};
+				$t ||= $ref->{lastoper} if exists $ref->{lastoper};
+				$t //= 0;
+				
+				if ($ref->is_user) {
+					if ($ref->{priv} == 0 && $main::systime > $t + $tooold) {
+						unless (($ref->{lat} && $ref->{long}) || $ref->{qth} || $ref->{name} || $ref->{qra}) {
+							LogDbg('DXCommand', sprintf("$ref->{call} deleted, empty and too Old at %s", difft($t, ' ')));
+							++$del;
+							++$old;
+							eval {$dbm->del($key)};
+							dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
+							next;
+						}
+					}
+					if ($main::systime > $t + $veryold) {
+						LogDbg('DXCommand', sprintf("$ref->{call} deleted, POSITIVELY ANCIENT at %s", difft($t, ' ')));
+						++$del;
+						++$ancient;
 						eval {$dbm->del($key)};
 						dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
-						LogDbg('DXCommand', "$ref->{call} deleted, too old");
-						$del++;
+						next;
+					}
+					if ($ref->{lockout} == 1 && $ref->{priv} == 1) {
+						LogDbg('DXCommand', "$ref->{call} depriv'd and unlocked");
+						$ref->{lockout} = $ref->{priv} = 0;
+						$ref->put;
+						++$unlocked;
+					}
+					if ($ref->is_node && $main::systime > $t + $veryold) {
+						LogDbg('DXCommand', sprintf("NODE $ref->{call} deleted (%s) old", difft($t, ' ')));
+						++$del;
+						++$nodes;
+						eval {$dbm->del($key)};
+						dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
+						next;
+					}
+					
+					my $normcall = normalise_call($key);
+					if ($normcall ne $key) {
+						# if the normalised call does not exist, create it from the duff call.
+						my $nref = DXUser::get_current($normcall);
+						unless ($nref) {
+							$ref->{call} = $normcall;
+							$ref->put;
+							LogDbg('DXCommand', "DXProt: spurious call $key normalises to $normcall renaming $key -> $normcall");
+							++$renamed;
+						} 
+						LogDbg('DXCommand', "DXProt: spurious call $key (should be $normcall), removing");
+						eval {$dbm->del($key)};
+						dbg(carp("Export Error1: delete $key => '$val' $@")) if $@;
+						++$spurious;
+						++$del;
 						next;
 					}
 				}
-				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . encode($ref) . "\n";
-				++$count;
 			} else {
 				LogDbg('DXCommand', "Export Error3: '$key'\t" . carp($val) ."\n$@");
 				eval {$dbm->del($key)};
 				dbg(carp("Export Error3: delete '$key' => '$val' $@")) if $@;
 				++$err;
+				next;
 			}
-		} 
-        $fh->close;
-    }
+			
+			# only store users that are reasonably active or have useful information
+			print $fh "$key\t" . encode($ref) . "\n";
+			++$count;
+		}
+	} 
+	$fh->close;
+
 	my $diff = _diffms($ta);
-	my $s = qq{Exported users to $fn - $count Users $del Deleted $err Errors in $diff mS ('sh/log Export' for details)};
+	my $s = qq{Exported users to $fn - $count Users,  $del Deleted ($old empty \& too old, $ancient ancient, $nodes nodes, $spurious spurious), $renamed renamed, $unlocked Unlocked, $err Errors in $diff mS ('sh/log Export' for details)};
 	LogDbg('command', $s);
 	return $s;
 }
