@@ -1558,7 +1558,7 @@ sub _decode_pc92_call
 	my $ip;
 	$part[1] //= '';
 	$part[2] //= '';
-	$part[2] //= '';
+	$part[3] //= '';
 	if ($part[1] =~ /[,.]/) {
 		$ip = $part[1];
 		$part[1] = $part[2] = 0;
