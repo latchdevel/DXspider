@@ -540,8 +540,9 @@ sub dx_spot
 			unless ($user->qra && is_qra($user->qra)) {
 				$user->qra($qra);
 				dbg("RBN: update qra on $saver->[SCall] to $qra");
-				$user->put;
 			}
+			# update lastseen if nothing else
+			$user->put;
 		}
 	}
 }
