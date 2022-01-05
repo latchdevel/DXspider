@@ -499,7 +499,7 @@ print "There are $count user records and $err errors in $diff mS\n";
 				$t //= 0;
 				
 				if ($ref->is_user) {
-					if ($ref->{priv} == 0 && $main::systime > $t + $tooold) {
+					if (!$ref->{priv} && $main::systime > $t + $tooold) {
 						unless (($ref->{lat} && $ref->{long}) || $ref->{qth} || $ref->{name} || $ref->{qra}) {
 							LogDbg('DXCommand', sprintf("$ref->{call} deleted, empty and too Old at %s", difft($t, ' ')));
 							++$del;
@@ -517,7 +517,7 @@ print "There are $count user records and $err errors in $diff mS\n";
 						dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
 						next;
 					}
-					if ($ref->{lockout} == 1 && $ref->{priv} == 1) {
+					if (exists $ref->{lockout} && $ref->{lockout} == 1 && exists $ref->{priv} && $ref->{priv} == 1) {
 						LogDbg('DXCommand', "$ref->{call} depriv'd and unlocked");
 						$ref->{lockout} = $ref->{priv} = 0;
 						$ref->put;

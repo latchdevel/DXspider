@@ -114,7 +114,7 @@ sub search
 		return "show/$name: ${s}not found";
 	} 
 
-	for (sort {$a <=> $b } @in) {
+	for (sort {$a cmp $b } @in) {
 		push @out, [ split /\^/ ]
 	}
 
