@@ -407,7 +407,7 @@ sub dup
 	if ($cty && $text && length $text <= 4) {
 		unless ($text =~ /^C?Q/ || $text =~ /^[\d\W]+$/) {
 			my @try = Prefix::cty_data($text);
-			$text = "" if $cty == $try[0];
+			$text = "" if @try && $cty == $try[0];
 		}
 	}
 	my $otext = $text;

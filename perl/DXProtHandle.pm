@@ -34,13 +34,14 @@ use Route::Node;
 use Script;
 
 use strict;
+use warnings qw(all);
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
 			$pingint $obscount %pc19list $chatdupeage $chatimportfn
 			$investigation_int $pc19_version $myprot_version
 			%nodehops $baddx $badspotter $badnode $censorpc
-			$allowzero $decode_dk0wcy $send_opernam @checklists
+			$allowzero $decode_dk0wcy $send_opernam @checklist
 			$eph_pc15_restime $pc9x_past_age $pc9x_dupe_age
 			$pc10_dupe_age $pc92_slug_changes $last_pc92_slug
 			$pc92Ain $pc92Cin $pc92Din $pc92Kin $pc9x_time_tolerance
@@ -50,11 +51,13 @@ use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restim
 $pc9x_dupe_age = 60;			# catch loops of circular (usually) D records
 $pc10_dupe_age = 45;			# just something to catch duplicate PC10->PC93 conversions
 $pc92_slug_changes = 60*1;		# slug any changes going outward for this long
-$last_pc92_slug = time;			# the last time we sent out any delayed add or del PC92s
+$last_pc92_slug = 0;			# the last time we sent out any delayed add or del PC92s
 $pc9x_time_tolerance = 15*60;	# the time on a pc9x is allowed to be out by this amount
 $pc9x_past_age = (122*60)+		# maximum age in the past of a px9x (a config record might be the only
 $pc9x_time_tolerance;           # thing a node might send - once an hour and we allow an extra hour for luck)
                                 # this is actually the partition between "yesterday" and "today" but old.
+$senderverify = 0;				# 1 - check for forged PC11 or PC61.
+                                # 2 - if forged, dump them.
 
 
 $pc92filterdef = bless ([
@@ -131,6 +134,8 @@ sub handle_10
 }
 
 my $last;
+my $pc11_saved;
+my $pc11_saved_time;
 
 # DX Spot handling
 sub handle_11
@@ -140,6 +145,7 @@ sub handle_11
 	my $line = shift;
 	my $origin = shift;
 	my $pc = shift;
+	my $recurse = shift || 0;
 
 	# route 'foreign' pc26s
 	if ($pcno == 26) {
@@ -148,6 +154,8 @@ sub handle_11
 			return;
 		}
 	}
+
+	dbg("INPUT PC$pcno $line origin $origin recurse: $recurse") if isdbg("pc11"); 
 
 #	my ($hops) = $pc->[8] =~ /^H(\d+)/;
 
@@ -176,10 +184,6 @@ sub handle_11
 		dbg("PCPROT: Bad Spotter $pc->[6], dropped") if isdbg('chanerr');
 		return;
 	}
-#	unless (is_ipaddr($pc->[8]) || DXUser::get_current($pc->[6])) {
-#		dbg("PCPROT: Unknown Spotter $pc->[6], dropped") if isdbg('chanerr');
-#		return;
-#	}
 
 	# convert the date to a unix date
 	my $d = cltounix($pc->[3], $pc->[4]);
@@ -209,6 +213,7 @@ sub handle_11
 			return;
 		}
 	}
+	
 
 	my @spot = Spot::prepare($pc->[1], $pc->[2], $d, $pc->[5], $nossid, $pc->[7], $pc->[8]);
 
@@ -221,59 +226,94 @@ sub handle_11
 		}
 	}
 
-	# If is a new PC11, store it, releasing the one that is there (if any),
-	# if a PC61 comes along then dump the stored PC11
-	# If there is a different PC11 stored, release that one and store this PC11 instead,
-	my $key = join '|', @spot[0..2,4,7];
-	if (0) {
+	# this is where we decide to delay PC11s in the hope that a PC61 will be along soon.
 	
-	if ($pc->[0] eq 'PC11') {
-		my $r = [$main::systime, $key, \@spot, $line, $origin, $pc];
-		if (!$last) {
-			$last = [$main::systime, $key, \@spot, $line, $origin, $pc];
-			dbg("PC11: $origin -> $key stored") if isdbg('pc11');
-			return;
-		} elsif ($key eq $last->[1]) { # same as last one
-			dbg("PC11: $origin -> $key dupe dropped") if isdbg('pc11');
-			return;
-		} else {
-			# it's a different PC11, kick the stored one onward and store this one instead,
-			dbg("PC11: PC11 new $origin -> $key stored, $last->[4] -> $last->[1] passed onward") if isdbg('pc11');
-			@spot = @{$last->[2]};
-			$line = $last->[3];
-			$origin = $last->[4];
-			$pc = $last->[5];
-			$last = $r;
+	my $key = join '|', @spot[0..2,4,7]; # not including text
+	unless ($recurse) {
+		if ($pcno == 61) {
+			if ($pc11_saved) {
+				if ($key eq $pc11_saved->[0]) {
+					dbg("saved PC11 spot $key dumped, better pc61 received") if isdbg("pc11");
+					undef $pc11_saved;
+				}
+			} 
 		}
-	} elsif ($pc->[0] eq 'PC61') {
-		if ($last) {
-			if ($last->[1] eq $key) {
-				# dump $last and proceed with the PC61
-				dbg("PC11: $origin -> $key dropped in favour of PC61") if isdbg('pc11');
-				undef $last;
-			} else {
-				# it's a different spot send out stored pc11
-				dbg("PC11: last $last->[4] -> $last->[1] different PC61 $origin -> $key, send PC11 first ") if isdbg('pc11');
-				$last->[1] = 'new pc61';
-				handle_11($self, 11, $last->[3], $last->[4], $last->[5]);
-				undef $last;
-				dbg("PC11: now process PC61 $origin -> $key") if isdbg('pc11');
+		if ($pcno == 11) {
+			if ($pc11_saved) {
+				if ($key eq $pc11_saved->[0]) {
+					dbg("saved PC11 spot $key, dupe pc11 received and dumped") if isdbg("pc11");
+					return;		# because it's a dup
+				}
+			}
+
+			# can we promote this to a PC61?
+			my $r = Route::User::get($spot[4]); # find spotter
+			if ($r && $r->ip) {	                # do we have an ip addres
+				$pcno = 61;						# now turn this into a PC61
+				$spot[14] = $r->ip;
+				dbg("PC11 spot $key promoted to pc61 ip $spot[14]") if isdbg("pc11");
+				undef $pc11_saved;
 			}
 		}
-	} else {
-		dbg("PC11: Unexpected line '$line' in bagging area (expecting PC61, PC11), ignored");
-		return;
+
+		if ($pc11_saved && $key ne $pc11_saved) {
+			dbg("saved PC11 spot $pc11_saved->[0] ne new key $key, recursing") if isdbg("pc11");
+			shift @$pc11_saved;	# saved key
+			my $self = shift @$pc11_saved;
+			my @saved = @$pc11_saved;
+			undef $pc11_saved;
+			$self->handle_11(@saved, 1);
+		}
+
+		# if we are still a PC11, save it for a better offer
+		if ($pcno == 11) {
+			$pc11_saved = [$key, $self, $pcno, $line, $origin, $pc];
+			$pc11_saved_time = $main::systime;
+			dbg("saved new PC11 spot $key for a better offer") if isdbg("pc11");
+			return;
+		} else {
+			dbg("PC61 spot $key passed onward") if isdbg("pc11");
+		}
 	}
 
-}
 	
 	# this goes after the input filtering, but before the add
 	# so that if it is input filtered, it isn't added to the dup
 	# list. This allows it to come in from a "legitimate" source
-	if (Spot::dup(@spot[0..4,5])) {
+	if (Spot::dup(@spot[0..4,7])) {
 		dbg("PCPROT: Duplicate Spot $pc->[0] $key ignored\n") if isdbg('chanerr') || isdbg('dupespot');
 		return;
 	}
+	
+	# here we verify the spotter is currently connected to the node it says it is one. AKA email sender verify
+	# but without the explicit probe to the node. We are relying on "historical" information, but it very likely
+	# to be current once we have seen the first PC92C from that node.
+	#
+	# As for spots generated from non-PC92 nodes, we'll see after about  do_pc9x3h20m...
+	#
+	if ($senderverify) {
+		my $nroute = Route::Node::get($pc->[7]);
+		my $uroute = Route::Node::get($pc->[6]);
+		my $local = DXChannel::get($pc->[7]);
+		
+		if ($nroute && ($nroute->last_PC92C || ($local && !$local->do_pc9x))) {
+			my $s = '';
+			my $ip = $pcno == 61 ?  $pc->[8] : '';
+#			$s .= "User $pc->[6] not logged in, " unless $uroute;
+			$s .= "User $pc->[6] not on node $pc->[7], " unless $nroute->is_user($pc->[6]);
+#			$s .= "Node $pc->[7] at '$ip' not on Node's IP " . $nroute->ip if $ip && $nroute && $nroute->ip && $nroute->ip ne $ip;
+			if ($s) {
+				my $action = $senderverify > 1 ? ", DUMPED" : '';
+				$s =~ s/, $//;
+				dbg("PCProt: Suspicious Spot $pc->[2] on $pc->[1] by $pc->[6]($ip)\@$pc->[7] $s$action");
+				return unless $senderverify < 2;
+			}
+		}
+	}
+
+	# If is a new PC11, store it, releasing the one that is there (if any),
+	# if a PC61 comes along then dump the stored PC11
+	# If there is a different PC11 stored, release that one and store this PC11 instead,
 	
 	# add it
 	Spot::add(@spot);
@@ -363,7 +403,14 @@ sub handle_11
 # used to kick outstanding PC11 if required
 sub pc11_process
 {
-
+	if ($pc11_saved && $main::systime > $pc11_saved_time) {
+		dbg("saved PC11 spot $pc11_saved->[0] timed out waiting, recursing") if isdbg("pc11");
+		shift @$pc11_saved;	# saved key
+		my $self = shift @$pc11_saved;
+		my @saved = @$pc11_saved;
+		undef $pc11_saved;
+		$self->handle_11(@saved, 1);
+	}
 }
 
 # announces
@@ -676,7 +723,7 @@ sub handle_18
 	my $parent = Route::Node::get($self->{call});
 
 	# record the type and version offered
-	if (my ($version) = $pc->[1] =~ /DXSpider Version: (\d+\.?\d+?)/) {
+	if (my ($version) = $pc->[1] =~ /DXSpider Version: (\d+\.\d+)/) {
 		$self->{version} = 53 + $version;
 		$self->user->version(53 + $version);
 		$parent->version(0 + $version);
@@ -717,21 +764,37 @@ sub handle_18
 	$self->send(pc20());
 }
 
-sub check_add_node
+sub check_add_user
 {
 	my $call = shift;
+	my $type = shift;
+	my $homenode = shift;
 
 	# add this station to the user database, if required (don't remove SSID from nodes)
 	my $user = DXUser::get_current($call);
 	unless ($user) {
 		$user = DXUser->new($call);
-		$user->priv(1);		# I have relented and defaulted nodes
-		$user->lockout(1);
-		$user->homenode($call);
-		$user->node($call);
-		$user->sort('A');
+		$user->sort($type || 'U');
+		if ($user->is_node) {
+			$user->priv(1);		# I have relented and defaulted nodes
+			$user->lockout(1) if $user->is_node;
+		} else {
+			$user->homenode($homenode) if $homenode;
+			$user->node($homenode);
+			$user->priv(0);
+		}
 		$user->lastin($main::systime); # this make it last longer than just this invocation
 		$user->put;				# just to make sure it gets written away!!!
+		dbg("DXProt: PC92 new user record for $call created");
+	}
+
+	# this is to fix a problem I introduced some build ago by using this function for users
+	# whereas it was only being used for nodes.
+	if ($user->is_user && $user->lockout && ($user->priv // 0) == 1) {
+		$user->priv(0);
+		$user->lockout(0);
+		dbg("DXProt: PC92 user record for $call depriv'd and unlocked");
+		$user->put;
 	}
 	return $user;
 }
@@ -807,7 +870,7 @@ sub handle_19
 			next;
 		}
 
-		my $user = check_add_node($call);
+		my $user = check_add_user($call, 'A');
 
 #		if (eph_dup($genline)) {
 #			dbg("PCPROT: dup PC19 for $call detected") if isdbg('chanerr');
@@ -1494,10 +1557,19 @@ sub _decode_pc92_call
 	my $is_node = $flag & 4;
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
-	my $ip	= $part[3];
-	$ip ||= $part[1] if $part[1] && $part[1] !~ /^\d+$/ && ($part[1] =~ /^(?:\d+\.)+/ || $part[1] =~ /^(?:(?:[abcdef\d]+)?,)+/);
+	my $version = $part[1] || 0;
+	my $build = $part[2] || 0;
+	my $ip = $part[3] || '';
+	
+	if ($version =~ /[,.]/) {
+		$ip = $version;
+		$version = 0;
+	}
+	$version =~ s/\D+//g;
+	$build =~ s/^0\.//;
+	$build =~ s/\D+//g;
 	$ip =~ s/,/:/g if $ip;
-	return ($call, $is_node, $is_extnode, $here, $part[1], $part[2], $ip);
+	return ($call, $is_node, $is_extnode, $here, $version+0, $build+0, $ip);
 }
 
 # decode a pc92 call: flag call : version : build
@@ -1546,34 +1618,62 @@ sub _add_thingy
 
 	# remove spurious IPV6 prefix on IPV4 addresses
 	$ip =~ s/^::ffff:// if $ip;
-	
+	$build ||= 0;
+	$version ||= 0;
+
 	if ($call) {
 		my $ncall = $parent->call;
 		if ($ncall ne $call) {
+			my $user;
+			my $r;
+
+			# normalise call, delete any unnormalised calls in the users file.
+			# then ignore this thingy
+			my $normcall = normalise_call($call);
+			if ($normcall ne $call) {
+				next if DXChannel::get($call);
+				$user = DXUser::get($call);
+				dbg("DXProt::_add_thingy call $call normalised to $normcall, deleting spurious user $call");
+				$user->del if $user;
+			    $call = $normcall; # this is safe because a route add will ignore duplicates
+			}
+			
 			if ($is_node) {
 				dbg("ROUTE: added node $call to $ncall") if isdbg('routelow');
+				$user = check_add_user($call, 'A');
 				@rout = $parent->add($call, $version, Route::here($here), $ip);
-				my $r = Route::Node::get($call);
+				$r = Route::Node::get($call);
 				$r->PC92C_dxchan($dxchan->call, $hops) if $r;
-				if ($ip) {
-					$r->ip($ip);
-					Log('DXProt', "PC92A $call -> $ip on $ncall");
+				if ($version && $version =~ /^\d+$/) {
+					my $old = $user->sort;
+					if ($user->is_ak1a && (($version >= 5455 &&  $build > 0) || ($version >= 3000 && $version <= 3500)) ) {
+						$user->sort('S');
+						dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) updated to " . $user->sort);
+					} elsif ($user->is_spider && $version =~ /^\d+$/ && ($version < 3000 || ($version > 4000 && $version < 5455))) {
+						unless ($version == 5000 && $build == 0) {
+							$user->sort('A');
+							$build //= 0;
+							dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) downgraded to " . $user->sort);
+						}
+					}
 				}
 			} else {
 				dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
+				$user = check_add_user($call, 'U', $parent->call);
 				@rout = $parent->add_user($call, Route::here($here), $ip);
 				$dxchan->tell_buddies('loginb', $call, $ncall) if $dxchan;
-				my $r = Route::User::get($call);
-				if ($ip) {
-					$r->ip($ip);
-					Log('DXProt', "PC92A $call -> $ip on $ncall");
-				}
+				$r = Route::User::get($call);
+			}
+			if ($ip) {
+				$r->ip($ip);
+				Log('DXProt', "PC92A $call -> $ip on $ncall");
 			}
 			if ($pc92_slug_changes && $parent == $main::routeroot) {
 				$things_add{$call} = Route::get($call);
 				delete $things_del{$call};
 			}
-		} else {
+			$user->close($main::systime, $ip) if $user;		# this just updates lastseen and the connlist list containing the IP address
+		} else {				
 			dbgprintring(10) if isdbg('nologchan');
 			dbg("DXProt::add_thingy: Trying to add parent $call to itself $ncall, ignored");
 		}
@@ -1739,11 +1839,11 @@ sub pc92_handle_first_slot
 	my ($call, $is_node, $is_extnode, $here, $version, $build) = @$slot;
 	if ($call && $is_node) {
 		if ($call eq $main::mycall) {
-			dbg("PCPROT: $call looped back onto \$main::mycall ($main::mycall), ignored") if isdbg('chan');
+			LogDbg('err', "PCPROT: $self->{call} : $call looped back onto \$main::mycall ($main::mycall), ignored");
 			return;
 		}
 		if ($call eq $main::myalias) {
-			dbg("PCPROT: $call looped back onto \$main::myalias ($main::myalias), ignored") if isdbg('chan');
+			LogDbg('err', "PCPROT: $self->{call} : $call looped back onto \$main::myalias ($main::myalias), ignored");
 			return;
 		}
 		# this is only accepted from my "self".
@@ -1777,7 +1877,7 @@ sub pc92_handle_first_slot
 	}
 	$parent->here(Route::here($here));
 	$parent->version($version || $pc19_version) if $version;
-	$parent->build($build) if $build;
+    $parent->build($build) if $build;
 	$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 	return ($parent, @radd);
 }
@@ -1804,12 +1904,12 @@ sub handle_92
 #	}
 
 	if ($pcall eq $main::mycall) {
-		dbg("PCPROT: looped back, ignored") if isdbg('chan');
+		LogDbg('err', "PCPROT: looped back, ignored");
 		return;
 	}
 
 	if ($pcall eq $main::myalias) {
-		dbg("PCPROT: looped back to \$myalias ($main::myalias), misconfiguration ignored") if isdbg('chan');
+		LogDbg('err', "PCPROT: looped back to \$myalias ($main::myalias), misconfiguration ignored");
 		return;
 	}
 
@@ -1873,10 +1973,10 @@ sub handle_92
 					if (@dxchan) {
 						$_->send($line) for @dxchan;
 					} else {
-						dbg("PCPROT: no return route, ignored") if isdbg('chanerr')
+						dbg("PCPROT: $self->{call} : type R no return route, ignored") if isdbg('chanerr') || isdbg('route');
 					}
 				} else {
-					dbg("PCPROT: no return route, ignored") if isdbg('chanerr')
+					dbg("PCPROT: $self->{call} : type R no return route, ignored") if isdbg('chanerr') || isdbg('route');
 				}
 			}
 			return;
@@ -1895,12 +1995,27 @@ sub handle_92
 
 			($parent, $add) = $self->pc92_handle_first_slot(\@ent, $parent, $t, $hops);
 			return unless $parent; # dupe
-
+			
 			push @radd, $add if $add;
 			$parent->reset_obs;
-			$parent->version($ent[4]) if $ent[4];
-			$parent->build($ent[5]) if $ent[5];
-
+			my $call = $parent->call;
+			my $version = $ent[4] || 0;
+			my $build = $ent[5] ||  0;
+			my $oldbuild = $parent->build || 0;
+			my $oldversion = $parent->version || 0;
+			my $user = check_add_user($parent->call, 'S');
+			my $oldsort = $user->sort // '';
+#			if ($version =~ /^\d+$/  && $oldversion =~ /^\d+$/) {
+				if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
+					dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
+					$user->sort('S');
+					$user->version($parent->version($version));
+					$user->build($parent->build($build));
+					$user->put;
+				}
+#			} else {
+#				dbg("DXProt PC92 K version strings new: '$version' old: '$oldversion'");
+#			}
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
@@ -1942,9 +2057,14 @@ sub handle_92
 			my $dxc;
 			next unless $_ && @$_;
 			if ($_->[0] eq $main::mycall) {
-				dbg("PCPROT: $_->[0] refers to me, ignored") if isdbg('chanerr');
+				dbg("PCPROT: $self->{call} : type $sort $_->[0] refers to me, ignored") if isdbg('route');
 				next;
 			}
+			if ($_->[0] eq $main::myalias && $_->[1] || $_->[0] eq $main::mycall && $_->[1] == 0) {
+				LogDbg('err',"PCPROT: $self->{call} : type $sort $_->[0] trying to change type to " . $_->[1]?"Node":"User" . ", ignored");
+				next;
+			}
+			
 			push @nent, $_;
 		}
 
@@ -1973,7 +2093,7 @@ sub handle_92
 						push @users, $r->[0];
 					}
 				} else {
-					dbg("PCPROT: pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr');
+					dbg("PCPROT: $self->{call} :  pc92 call entry '$_' not decoded, ignored") if isdbg('chanerr') || isdbg('route');
 				}
 			}
 
