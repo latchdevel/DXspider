@@ -1,3 +1,5 @@
+06Jan22=======================================================================
+1. Fix the last of any frequent warnings caused by yesterday's modifications.
 05Jan22=======================================================================
 1. Mark nodes that send PC92 K records as spider. These will include VE7CC
    nodes. NOTE: there appear to be user records marked as user or other sorts

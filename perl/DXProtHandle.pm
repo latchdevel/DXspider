@@ -34,7 +34,7 @@ use Route::Node;
 use Script;
 
 use strict;
-use warnings;
+use warnings qw(all);
 
 use vars qw($pc11_max_age $pc23_max_age $last_pc50 $eph_restime $eph_info_restime $eph_pc34_restime
 			$last_hour $last10 %eph  %pings %rcmds $ann_to_talk
@@ -1558,17 +1558,20 @@ sub _decode_pc92_call
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
 	my $ip;
-	$part[1] //= '';
-	$part[2] //= '';
-	$part[3] //= '';
-	if ($part[1] =~ /[,.]/) {
-		$ip = $part[1];
-		$part[1] = $part[2] = 0;
-	} elsif ($part[3] =~ /[,.]/) {
-		$ip = $part[3];
+	my $version = $part[1] || 0;
+	my $build = $part[2] || 0;
+	$build =~ s/\D+//g;
+	my $ip = $part[3] || '';
+	
+	if ($version =~ /[,.]/) {
+		$ip = $version;
+		$version = 0;
 	}
+	$version =~ s/\D+//g;
+	$build =~ s/^0\.//;
+	$build =~ s/\D+//g;
 	$ip =~ s/,/:/g if $ip;
-	return ($call, $is_node, $is_extnode, $here, $part[1], $part[2], $ip);
+	return ($call, $is_node, $is_extnode, $here, $version, $build, $ip);
 }
 
 # decode a pc92 call: flag call : version : build
@@ -1876,7 +1879,7 @@ sub pc92_handle_first_slot
 	}
 	$parent->here(Route::here($here));
 	$parent->version($version || $pc19_version) if $version;
-	$build =~ s/^0\.//, $parent->build($build) if $build;
+    $parent->build($build) if $build;
 	$parent->PC92C_dxchan($self->{call}, $hops) unless $self->{call} eq $parent->call;
 	return ($parent, @radd);
 }
@@ -2000,13 +2003,11 @@ sub handle_92
 			my $call = $parent->call;
 			my $version = $ent[4] || 0;
 			my $build = $ent[5] ||  0;
-			$build =~ s/^0\.//;
 			my $oldbuild = $parent->build || 0;
-			$oldbuild =~ s/^0\.//;
 			my $oldversion = $parent->version || 0;
 			my $user = check_add_user($parent->call, 'S');
 			my $oldsort = $user->sort // '';
-			if ($version =~ /^\d+$/) {
+#			if ($version =~ /^\d+$/  && $oldversion =~ /^\d+$/) {
 				if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
 					dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
 					$user->sort('S');
@@ -2014,7 +2015,9 @@ sub handle_92
 					$user->build($parent->build($build));
 					$user->put;
 				}
-			}
+#			} else {
+#				dbg("DXProt PC92 K version strings new: '$version' old: '$oldversion'");
+#			}
 			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
