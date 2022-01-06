@@ -781,6 +781,7 @@ sub check_add_user
 		} else {
 			$user->homenode($homenode) if $homenode;
 			$user->node($homenode);
+			$user->priv(0);
 		}
 		$user->lastin($main::systime); # this make it last longer than just this invocation
 		$user->put;				# just to make sure it gets written away!!!
@@ -789,7 +790,7 @@ sub check_add_user
 
 	# this is to fix a problem I introduced some build ago by using this function for users
 	# whereas it was only being used for nodes.
-	if ($user->is_user && $user->lockout && $user->priv == 1) {
+	if ($user->is_user && $user->lockout && ($user->priv // 0) == 1) {
 		$user->priv(0);
 		$user->lockout(0);
 		dbg("DXProt: PC92 user record for $call depriv'd and unlocked");
