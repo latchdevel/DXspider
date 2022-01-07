@@ -222,7 +222,7 @@ sub phash
 	my $ref = shift;
 	my $out;
 
-	while (my $k = sort keys %$ref) {
+	foreach my $k (sort keys %$ref) {
 		$out .= "${k}=>$ref->{$k}, ";
 	}
 	$out =~ s/, $// if $out;

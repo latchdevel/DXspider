@@ -1568,8 +1568,12 @@ sub _decode_pc92_call
 	$version =~ s/\D+//g;
 	$build =~ s/^0\.//;
 	$build =~ s/\D+//g;
-	$ip =~ s/,/:/g if $ip;
-	return ($call, $is_node, $is_extnode, $here, $version+0, $build+0, $ip);
+	if ($ip) {
+		$ip =~ s/,/:/g;
+		$ip =~ s/^::ffff://i;
+	}
+	dbg("$icall = '" . join("', '", $call, $is_node, $is_extnode, $here, $version, $build, $ip) . "'") if isdbg('pc92');
+	return ($call, $is_node, $is_extnode, $here, $version, $build, $ip);
 }
 
 # decode a pc92 call: flag call : version : build
@@ -1617,7 +1621,6 @@ sub _add_thingy
 	my @rout;
 
 	# remove spurious IPV6 prefix on IPV4 addresses
-	$ip =~ s/^::ffff:// if $ip;
 	$build ||= 0;
 	$version ||= 0;
 
