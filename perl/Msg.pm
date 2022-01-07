@@ -133,6 +133,7 @@ sub peerhost
 		$conn->{peerhost} ||= $conn->{sock}->handle->peerhost if $conn->{sock};
 		$conn->{peerhost} ||= 'UNKNOWN';
 	}
+	$conn->{peerhost} =~ s/^::ffff://;
 	return $conn->{peerhost};
 }
 

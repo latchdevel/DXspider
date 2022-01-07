@@ -172,7 +172,7 @@ if ($freq =~ /^69/ || $localonly) {
 } else {
 	# send orf to the users
 	$ipaddr ||= $main::mycall;	# emergency backstop
-	my $spot = DXProt::pc61($spotter, $freq, $spotted, $line,  $ipaddr);
+	my $spot = DXProt::pc61($spotter, $freq, $spotted, unpad($line),  $ipaddr);
 	
 	$self->dx_spot(undef, undef, @spot);
 	if ($self->isslugged) {
