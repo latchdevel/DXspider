@@ -205,6 +205,7 @@ sub peerhost
 	$conn->{peerhost} ||= 'ax25' if $conn->ax25;
 	$conn->{peerhost} ||= $conn->{sock}->peerhost if $conn->{sock} && $conn->{sock}->isa('IO::Socket::INET');
 	$conn->{peerhost} ||= 'UNKNOWN';
+	$conn->{peerhost} =~ s/^::ffff://;
 	return $conn->{peerhost};
 }
 
