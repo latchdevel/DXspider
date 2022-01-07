@@ -16,8 +16,16 @@ my $freq;
 my @out;
 my $valid = 0;
 my $localonly;
+my $oline = $line;
+
+#$DB::single=1;
+
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
-return (1, $self->msg('e28')) unless $self->registered;
+return (1, $self->msg('e28')) unless $self->isregistered;
+
+
+my $addr = $self->hostname || '127.0.0.1';
+Log('cmd', "$self->{call}|$addr|dx|$line");
 
 my @bad;
 if (@bad = BadWords::check($line)) {	
@@ -34,13 +42,26 @@ return (1, $self->msg('dx2')) unless @f >= 2;
 # can be in any order
 
 if ($f[0] =~ /^by$/i) {
-	return (1, $self->msg('e5')) unless $main::allowdxby || $self->priv;
+	return (1, $self->msg('e5')) unless $main::allowdxby || $self->priv > 1;
     $spotter = uc $f[1];
-    $line =~ s/\s*$f[0]\s+$f[1]\s+//;
-#	$line = $f[2];
-	@f = split /\s+/, $line, 3;
+    $line =~ s/^\s*$f[0]\s+$f[1]\s+//;
+	@f = split /\s+/, $line, 3; 
 	return (1, $self->msg('dx2')) unless @f >= 2;
 }
+
+my $ipaddr;
+@f = split /\s+/, $line, 3;
+if ($f[0] eq 'ip') {
+	return (1, $self->msg('e5')) unless $spotter &&  $self->priv > 1;
+	if (is_ipaddr($f[1])) {
+		$ipaddr = $f[1];
+	} else {
+		return (1, $self->msg('dx4', $f[1]));
+	}
+	$line =~ s/^\s*$f[0]\s+$f[1]\s+//;
+	@f = split /\s+/, $line, 3;
+}
+
 
 # get the freq and callsign either way round
 if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
@@ -52,28 +73,39 @@ if (is_freq($f[1]) && $f[0] =~ m{^[\w\d]+(?:/[\w\d]+){0,2}$}) {
 } else {
 	return (1, $self->msg('dx3'));
 }
+$line =~ s/^\s*$f[0]//;
+$line =~ s/^\s*$f[1]//;
+$line =~ unpad($line);
+$line =~ s/\t+/ /g;				# do this here because it needs to be stopped ASAP!
+$line ||= ' ';
+
+if ($self->conn && $self->conn->peerhost) {
+	$ipaddr ||= $addr; # force a PC61 
+} elsif ($self->inscript) {
+	$ipaddr = "script";
+}
 
 # check some other things
 # remove ssid from calls
-my $callnoid = $self->call;
-$callnoid =~ s/-\d+$//;
-my $spotternoid = $spotter;
-$spotternoid =~ s/-\d+$//;
+my $spotternoid = basecall($spotter);
+my $callnoid = basecall($self->{call});
+
+#$DB::single = 1;
+
 if ($DXProt::baddx->in($spotted)) {
 	$localonly++; 
 }
-if ($DXProt::badspotter->in($callnoid)) { 
-	LogDbg('DXCommand', "$self->{call} badspotter with $callnoid ($line)");
-	$localonly++; 
-}
-if ($callnoid ne $spotternoid && $DXProt::badspotter->in($spotternoid)) { 
-	LogDbg('DXCommand', "$self->{call} badspotter with $spotternoid ($line)");
+if ($DXProt::badspotter->in($spotternoid)) { 
+	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline) from $addr");
 	$localonly++; 
 }
 
-# make line the rest of the line
-$line = $f[2] || " ";
-@f = split /\s+/, $line;
+dbg "spotter $spotternoid/$callnoid\n";
+
+if (($spotted =~ /$spotternoid/ || $spotted =~ /$callnoid/) && $freq < $Spot::minselfspotqrg) {
+	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline) from $addr, not passed on to cluster");
+	$localonly++;
+}
 
 # bash down the list of bands until a valid one is reached
 my $bandref;
@@ -120,19 +152,12 @@ if ($spotted le ' ') {
 
 return (1, @out) unless $valid;
 
-my $ipaddr;
-
-if ($self->conn && $self->conn->peerhost) {
-	my $addr = $self->conn->peerhost;
-	$ipaddr = $addr unless !is_ipaddr($addr) || $addr =~ /^127\./ || $addr =~ /^::[0-9a-f]+$/;
-} elsif ($self->inscript) {
-	$ipaddr = "script";
-}
-
 # Store it here (but only if it isn't baddx)
 my $t = (int ($main::systime/60)) * 60;
-return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter);
+return (1, $self->msg('dup')) if Spot::dup($freq, $spotted, $t, $line, $spotter, $main::mycall);
 my @spot = Spot::prepare($freq, $spotted, $t, $line, $spotter, $main::mycall, $ipaddr);
+
+#$DB::single = 1;
 
 if ($freq =~ /^69/ || $localonly) {
 
@@ -142,24 +167,24 @@ if ($freq =~ /^69/ || $localonly) {
 	}
 
 	$self->dx_spot(undef, undef, @spot);
+
 	return (1);
 } else {
-	if (@spot) {
-		# store it 
+	# send orf to the users
+	$ipaddr ||= $main::mycall;	# emergency backstop
+	my $spot = DXProt::pc61($spotter, $freq, $spotted, unpad($line),  $ipaddr);
+	
+	$self->dx_spot(undef, undef, @spot);
+	if ($self->isslugged) {
+		push @{$self->{sluggedpcs}}, [61, $spot, \@spot];
+	} else {
+		# store in spots database 
 		Spot::add(@spot);
-
-		# send orf to the users
-		if ($ipaddr) {
-			DXProt::send_dx_spot($self, DXProt::pc61($spotter, $freq, $spotted, $line, $ipaddr), @spot);
-		} else {
-			DXProt::send_dx_spot($self, DXProt::pc11($spotter, $freq, $spotted, $line), @spot);
-		}
+		DXProt::send_dx_spot($self, $spot, @spot);
 	}
 }
 
 return (1, @out);
-
-
 
 
 

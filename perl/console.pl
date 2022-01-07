@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 #
 # this is the operators console.
 #
@@ -13,8 +13,8 @@
 #
 # 
 
-require 5.004;
-package main;
+require 5.10.1;
+use warnings;
 
 use vars qw($data $clusteraddr $clusterport);
 
@@ -42,7 +42,7 @@ use DXDebug;
 use IO::File;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Curses 1.06;
-use Text::Wrap;
+use Text::Wrap qw(wrap);
 
 use Console;
 
@@ -50,27 +50,24 @@ use Console;
 # initialisation
 #
 
+$clusteraddr //= '127.0.0.1';
+$clusterport //= 27754;
+
 $call = "";                     # the callsign being used
 $node = "";                     # the node callsign being used
-
 $conn = 0;                      # the connection object for the cluster
 $lasttime = time;               # lasttime something happened on the interface
 
 $connsort = "local";
 @kh = ();
 @sh = ();
-$khistpos = 0;
+$kpos = 0;
 $spos = $pos = $lth = 0;
 $inbuf = "";
-@time = ();
+$inscroll = 0;
+
 
 #$SIG{WINCH} = sub {@time = gettimeofday};
-
-sub mydbg
-{
-	local *STDOUT = undef;
-	dbg(@_);
-}
 
 # do the screen initialisation
 sub do_initscr
@@ -99,19 +96,21 @@ sub do_initscr
 
 	$top = $scr->subwin($lines-4, $cols, 0, 0);
 	$top->intrflush(0);
-	$top->scrollok(1);
+	$top->scrollok(0);
 	$top->idlok(1);
 	$top->meta(1);
-#	$scr->addstr($lines-4, 0, '-' x $cols);
+	$top->leaveok(1);
+	$top->clrtobot();
 	$bot = $scr->subwin(3, $cols, $lines-3, 0);
 	$bot->intrflush(0);
 	$bot->scrollok(1);
-	$top->idlok(1);
 	$bot->keypad(1);
 	$bot->move(1,0);
 	$bot->meta(1);
 	$bot->nodelay(1);
+	$bot->clrtobot();
 	$scr->refresh();
+
 	
 	$pagel = $lines-4;
 	$mycallcolor = COLOR_PAIR(1) unless $mycallcolor;
@@ -128,11 +127,11 @@ sub do_resize
 	$cols = COLS;
 	$has_colors = has_colors();
 	do_initscr();
+
 	$inscroll = 0;
 	$spos = @sh < $pagel ? 0 :  @sh - $pagel;
 	show_screen();
 	$conn->send_later("C$call|$cols") if $conn;
-	
 }
 
 # cease communications
@@ -168,7 +167,8 @@ sub setattr
 
 # display the top screen
 sub show_screen
-{	if ($inscroll) {
+{
+	if ($inscroll) {
 		
 		dbg("B: s:$spos h:" . scalar @sh) if isdbg('console');
 		my ($i, $l);
@@ -234,72 +234,12 @@ sub show_screen
 #	$top->refresh();
 }
 
-# add a line to the end of the top screen
-sub addtotop
-{
-	while (@_) {
-		my $inbuf = shift;
-		my $l = length $inbuf;
-		if ($l > $cols) {
-			$inbuf =~ s/\s+/ /g;
-			if (length $inbuf > $cols) {
-				$Text::Wrap::columns = $cols;
-				my $token;
-				($token) = $inbuf =~ m!^(.* de [-\w\d/\#]+:?\s+|\w{9}\@\d\d:\d\d:\d\d )!;
-				$token ||= ' ' x 19;
-				push @sh, split /\n/, wrap('', ' ' x length($token), $inbuf);
-			} else {
-				push @sh, $inbuf;
-			}
-		} else {
-			push @sh, $inbuf;
-		}
-	}
-#	shift @sh while @sh > $maxshist;
-	show_screen();
-}
-
-# handle incoming messages
-sub rec_socket
-{
-	my ($con, $msg, $err) = @_;
-	if (defined $err && $err) {
-		cease(1);
-	}
-	if (defined $msg) {
-		my ($sort, $incall, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
-		if ($line =~ s/\x07+$//) {
-			beep();
-		}
-		$line =~ s/[\r\n]+//s;
-
-		# change my call if my node says "tonight Michael you are Jane" or something like that...
-		$call = $incall if $call ne $incall;
-		
-		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
-		if ($sort && $sort eq 'D') {
-			$line = " " unless length($line);
-			addtotop($line);
-		} elsif ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
-			cease(0);
-		}	  
-		
-		# ******************************************************
-		# ******************************************************
-		# any other sorts that might happen are silently ignored.
-		# ******************************************************
-		# ******************************************************
-	} else {
-		cease(0);
-	}
-	$top->refresh();
-	$lasttime = time; 
-}
-
 sub rec_stdin
 {
-	my $r = shift;;
+	my $r = shift;
 	
+	dbg("KEY: " . unpack("H*", $r). " '$r'") if isdbg('console');
+
 	#  my $prbuf;
 	#  $prbuf = $buf;
 	#  $prbuf =~ s/\r/\\r/;
@@ -308,7 +248,7 @@ sub rec_stdin
 	if (defined $r) {
 
 		$r = '0' if !$r;
-		
+
 		if ($r eq KEY_ENTER || $r eq "\n" || $r eq "\r") {
 			
 			# save the lines
@@ -331,7 +271,7 @@ sub rec_stdin
 			}
 			push @kh, $inbuf if length $inbuf;
 			shift @kh if @kh > $maxkhist;
-			$khistpos = @kh;
+			$kpos = @kh;
 			$bot->move(0,0);
 			$bot->clrtoeol();
 			$bot->addstr(substr($inbuf, 0, $cols));
@@ -342,25 +282,24 @@ sub rec_stdin
 				show_screen();
 			}
 
-			# add it to the monitor window
-			addtotop($inbuf);
+			addtotop(' ', $inbuf);
 		
 			# send it to the cluster
 			$conn->send_later("I$call|$inbuf");
 			$inbuf = "";
 			$pos = $lth = 0;
 		} elsif ($r eq KEY_UP || $r eq "\020") {
-			if ($khistpos > 0) {
-				--$khistpos;
-				$inbuf = $kh[$khistpos];
+			if ($kpos > 0) {
+				--$kpos;
+				$inbuf = $kh[$kpos];
 				$pos = $lth = length $inbuf;
 			} else {
 				beep();
 			}
 		} elsif ($r eq KEY_DOWN || $r eq "\016") {
-			if ($khistpos < @kh - 1) {
-				++$khistpos;
-				$inbuf = $kh[$khistpos];
+			if ($kpos < @kh - 1) {
+				++$kpos;
+				$inbuf = $kh[$kpos];
 				$pos = $lth = length $inbuf;
 			} else {
 				beep();
@@ -377,6 +316,7 @@ sub rec_stdin
 		} elsif ($r eq KEY_NPAGE || $r eq "\026") {
 			if ($inscroll && $spos < @sh) {
 
+				dbg("NPAGE sp:$spos $sh:". scalar @sh . " pl: $pagel") if isdbg('console');
 				$spos += int($pagel/2);
 				if ($spos > @sh - $pagel) {
 					$spos = @sh - $pagel;
@@ -429,12 +369,21 @@ sub rec_stdin
 				beep();
 			}
 		} elsif ($r eq KEY_RESIZE || $r eq "\0632") {
-			do_resize();
+			doresize();
 			return;
+		} elsif ($r eq "\x12" || $r eq "\x0c") {
+			dbg("REDRAW called") if isdbg('console');
+			doresize();
+			return;
+		} elsif ($r eq "\013") {
+			$inbuf = substr($inbuf, 0, $pos);
+			$lth = length $inbuf;
 		} elsif (defined $r && is_pctext($r)) {
 			# move the top screen back to the bottom if you type something
-			if ($spos < @sh) {
-				$spos = @sh;
+			
+			if ($inscroll && $spos < @sh) {
+				$spos = @sh - $pagel;
+				$inscroll = 0;
 				show_screen();
 			}
 
@@ -450,16 +399,10 @@ sub rec_stdin
 			}
 			$pos++;
 			$lth++;
-		} elsif ($r eq "\014" || $r eq "\022") {
-			touchwin(curscr, 1);
-			refresh(curscr);
-			return;
-		} elsif ($r eq "\013") {
-			$inbuf = substr($inbuf, 0, $pos);
-			$lth = length $inbuf;
 		} else {
 			beep();
 		}
+
 		$bot->move(1, 0);
 		$bot->clrtobot();
 		$bot->addstr($inbuf);
@@ -469,18 +412,87 @@ sub rec_stdin
 }
 
 
+# add a line to the end of the top screen
+sub addtotop
+{
+	my $sort = shift;
+	while (@_) {
+		my $inbuf = shift;
+		my $l = length $inbuf;
+		if ($l > $cols) {
+			$inbuf =~ s/\s+/ /g;
+			if (length $inbuf > $cols) {
+				$Text::Wrap::columns = $cols;
+				my $token;
+				($token) = $inbuf =~ m!^(.* de [-\w\d/\#]+:?\s+|\w{9}\@\d\d:\d\d:\d\d )!;
+				$token ||= ' ' x 19;
+				push @sh, split /\n/, wrap('', ' ' x length($token), $inbuf);
+			} else {
+				push @sh, $inbuf;
+			}
+		} else {
+			push @sh, $inbuf;
+		}
+	}
+	
+	show_screen() unless $inscroll;
+}
+
+# handle incoming messages
+sub rec_socket
+{
+	my ($con, $msg, $err) = @_;
+	if (defined $err && $err) {
+		cease(1);
+	}
+	if (defined $msg) {
+		my ($sort, $incall, $line) = $msg =~ /^(\w)([^\|]+)\|(.*)$/;
+		dbg("msg: " . length($msg) . " '$msg'") if isdbg('console');
+		if ($line =~ s/\x07+$//) {
+			beep();
+		}
+		$line =~ s/[\r\n]+//s;
+
+		# change my call if my node says "tonight Michael you are Jane" or something like that...
+		$call = $incall if $call ne $incall;
+		
+		$line =~ s/[\x00-\x06\x08\x0a-\x19\x1b-\x1f\x80-\x9f]/./g;         # immutable CSI sequence + control characters
+		if ($sort && $sort eq 'Z') { # end, disconnect, go, away .....
+			cease(0);
+		} else {
+			$line = " " unless length($line);
+			addtotop($sort, $line);
+		}
+
+	} else {
+		cease(0);
+	}
+	$top->refresh();
+	$lasttime = time; 
+}
+
 #
 # deal with args
 #
 
+while (@ARGV && $ARGV[0] =~ /^-/) {
+	my $arg = shift;
+	if ($arg eq '-x') {
+		dbginit('console');
+		dbgadd('console');
+		$maxshist = 200;
+	}
+}
+
 $call = uc shift @ARGV if @ARGV;
-$call = uc $myalias if !$call;
+$call = uc $myalias unless $call;
 $node = uc $mycall unless $node;
 
+$call = normalise_call($call);
 my ($scall, $ssid) = split /-/, $call;
 $ssid = undef unless $ssid && $ssid =~ /^\d+$/;  
 if ($ssid) {
-	$ssid = 15 if $ssid > 15;
+	$ssid = 99 if $ssid > 99;
 	$call = "$scall-$ssid";
 }
 
@@ -489,7 +501,6 @@ if ($call eq $mycall) {
 	exit(0);
 }
 
-dbginit();
 
 $conn = IntMsg->connect("$clusteraddr", $clusterport, \&rec_socket);
 if (! $conn) {
@@ -520,7 +531,8 @@ do_resize();
 
 $SIG{__DIE__} = \&sig_term;
 
-$conn->send_later("A$call|$connsort width=$cols");
+$Text::Wrap::columns = $cols;
+$conn->send_later("A$call|$connsort width=$cols enhanced");
 $conn->send_later("I$call|set/page $maxshist");
 $conn->send_later("I$call|set/nobeep");
 
@@ -554,4 +566,4 @@ for (;;) {
 	$bot->refresh();
 }
 
-exit(0);
+cease(0);

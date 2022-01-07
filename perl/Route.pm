@@ -25,6 +25,7 @@ use strict;
 use vars qw(%list %valid $filterdef $maxlevel);
 
 %valid = (
+		  parent => '0,Parent Calls,parray',
 		  call => "0,Callsign",
 		  flags => "0,Flags,phex",
 		  dxcc => '0,Country Code',
@@ -32,6 +33,7 @@ use vars qw(%list %valid $filterdef $maxlevel);
 		  cq => '0,CQ Zone',
 		  state => '0,State',
 		  city => '0,City',
+		  ip => '0,IP Address',
 		 );
 
 $filterdef = bless ([
@@ -222,12 +224,14 @@ sub config
 					my $c;
 					if ($uref) {
 						$c = $uref->user_call;
-					} else {
+					}
+					else {
 						$c = "$ucall?";
 					}
 					if ((length $line) + (length $c) + 1 < $width) {
 						$line .= $c . ' ';
-					} else {
+					}
+					else {
 						$line =~ s/\s+$//;
 						push @out, $line;
 						$line = ' ' x ($level*2) . "$pcall->$c ";
@@ -238,7 +242,8 @@ sub config
 		$line =~ s/->$//g;
 		$line =~ s/\s+$//;
 		push @out, $line if length $line;
-	} else {
+	}
+	else {
 		# recursion detector
 		if ((DXChannel::get($call) && $level > 1) || $seen->{$call} || $level > $maxlevel) {
 			return @out;
@@ -270,11 +275,14 @@ sub cluster
 {
 	my $nodes = Route::Node::count();
 	my $tot = Route::User::count();
-	my $users = scalar DXCommandmode::get_all();
+	my ($users, $maxlocalusers) = DXCommandmode::user_count(); # the user count is wrong because of skimmers
 	my $maxusers = Route::User::max();
 	my $uptime = main::uptime();
+	my $localnodes = $DXChannel::count - $users;   # this is now wrong because of skimmers
+	
+	return ($nodes, $tot, $users, $maxlocalusers, $maxusers, $uptime, $localnodes);
+	
 
-	return " $nodes nodes, $users local / $tot total users  Max users $maxusers  Uptime $uptime";
 }
 
 #

@@ -248,6 +248,7 @@ sub init
 	$main::me->{version} = $main::version;
 	$main::me->{build} = $main::build;
 	$main::me->{do_pc9x} = 1;
+	$main::me->{hostname} = $main::clusteraddr;
 	$main::me->update_pc92_next($pc92_short_update_period);
 	$main::me->update_pc92_keepalive;
 }
@@ -288,7 +289,9 @@ sub start
 	# log it
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
+	$host ||= $host if is_ipaddr($host);
 	$host ||= "unknown";
+	$self->{hostname} = $host;
 
 	Log('DXProt', "$call connected from $host");
 

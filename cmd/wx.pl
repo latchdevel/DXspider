@@ -23,7 +23,7 @@ my $t = ztime(time);
 my $tonode;
 my $via;
 return (1, $self->msg('e5')) if $self->remotecmd || $self->inscript;
-return (1, $self->msg('e28')) unless $self->registered;
+return (1, $self->msg('e28')) unless $self->isregistered;
 
 if ($sort eq "FULL") {
   $line =~ s/^$f[0]\s+//;    # remove it

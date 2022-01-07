@@ -13,6 +13,8 @@ package DXCommandmode;
 
 @ISA = qw(DXChannel);
 
+use 5.10.1;
+
 use POSIX qw(:math_h);
 use DXUtil;
 use DXChannel;
@@ -40,7 +42,7 @@ use AsyncMsg;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
-	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir);
+	$maxbadcount $msgpolltime $default_pagelth $cmdimportdir $users $maxusers);
 
 %Cache = ();					# cache of dynamically loaded routine's mod times
 %cmd_cache = ();				# cache of short names
@@ -51,7 +53,8 @@ $maxbadcount = 3;				# no of bad words allowed before disconnection
 $msgpolltime = 3600;			# the time between polls for new messages 
 $cmdimportdir = "$main::root/cmd_import"; # the base directory for importing command scripts 
                                           # this does not exist as default, you need to create it manually
-#
+$users = 0;					  # no of users on this node currently
+$maxusers = 0;				  # max no users on this node for this run
 
 #
 # obtain a new connection this is derived from dxchannel
@@ -65,7 +68,7 @@ sub new
 	my $pkg = shift;
 	my $call = shift;
 #	my @rout = $main::routeroot->add_user($call, Route::here(1));
-	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->{conn}->peerhost], );
+	DXProt::_add_thingy($main::routeroot, [$call, 0, 0, 1, undef, undef, $self->hostname], );
 
 	# ALWAYS output the user
 	my $ref = Route::User::get($call);
@@ -92,7 +95,7 @@ sub start
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
 	$host ||= "unknown";
-	LogDbg('DXCommand', "$call connected from $host");
+	$self->{hostname} = $host;
 
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
@@ -102,10 +105,22 @@ sub start
 	my $pagelth = $user->pagelth;
 	$pagelth = $default_pagelth unless defined $pagelth;
 	$self->{pagelth} = $pagelth;
-	($self->{width}) = $line =~ /width=(\d+)/; $line =~ s/\s*width=\d+\s*//;
+	($self->{width}) = $line =~ /\s*width=(\d+)/; $line =~ s/\s*width=\d+//;
+	$self->{enhanced} = $line =~ /\s+enhanced/; $line =~ s/\s*enhanced//;
+	if ($line =~ /host=/) {
+		my ($h) = $line =~ /host=(\d+\.\d+\.\d+\.\d+)/;
+		$line =~ s/\s*host=\d+\.\d+\.\d+\.\d+// if $h;
+		unless ($h) {
+			($h) = $line =~ /host=([\da..fA..F:]+)/;
+			$line =~ s/\s*host=[\da..fA..F:]+// if $h;
+		}
+		$self->{hostname} = $h if $h;
+	}
 	$self->{width} = 80 unless $self->{width} && $self->{width} > 80;
 	$self->{consort} = $line;	# save the connection type
-	
+
+	LogDbg('DXCommand', "$call connected from $self->{hostname} cols $self->{width}" . ($self->{enhanced}?" enhanced":''));
+
 	# set some necessary flags on the user if they are connecting
 	$self->{beep} = $user->wantbeep;
 	$self->{ann} = $user->wantann;
@@ -118,24 +133,30 @@ sub start
 	$self->{ann_talk} = $user->wantann_talk;
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
+	$self->{lastmsgpoll} = 0;
 
 	# sort out new dx spot stuff
 	$user->wantdxcq(0) unless defined $user->{wantdxcq};
 	$user->wantdxitu(0) unless defined $user->{wantdxitu};	
 	$user->wantusstate(0) unless defined $user->{wantusstate};
 
-	# sort out registration (who wanted 2???) Note registration *could* be used even when reqreg == 0
+	# sort out registration
 	if ($main::reqreg == 2) {
 		$self->{registered} = !$user->registered;
 	} else {
 		$self->{registered} = $user->registered;
-	}
+	} 
+
+	# establish slug queue, if required
+	$self->{sluggedpcs} = [];
+	$self->{isslugged} = $DXProt::pc92_slug_changes + $DXProt::last_pc92_slug + 5 if $DXProt::pc92_slug_changes;
+	$self->{isslugged} = 0 if $self->{priv} || $user->registered || ($user->homenode && $user->homenode eq $main::mycall);
 
 	# send the relevant MOTD
 	$self->send_motd;
 
 	# sort out privilege reduction
-	$self->{priv} = 0 if $line =~ /^(ax|te)/ && !$self->conn->{usedpasswd};
+	$self->{priv} = 0 unless $self->{hostname} eq '127.0.0.1' || $self->{hostname} eq '::1' || $self->conn->{usedpasswd};
 
 	# get the filters
 	my $nossid = $call;
@@ -187,8 +208,7 @@ sub start
 	$script->run($self) if $script;
 
 	# send cluster info
-	my $info = Route::cluster();
-	$self->send("Cluster:$info");
+	$self->send($self->run_cmd("show/cluster"));
 
 	# send prompts for qth, name and things
 	$self->send($self->msg('namee1')) if !$user->name;
@@ -468,7 +488,7 @@ sub send_ans
 }
 
 # 
-# this is the thing that runs the command, it is done like this for the 
+# this is the thing that preps for running the command, it is done like this for the 
 # benefit of remote command execution
 #
 
@@ -490,7 +510,7 @@ sub run_cmd
 
 		# check cmd
 		if ($cmd =~ m|^/| || $cmd =~ m|[^-?\w/]|) {
-			LogDbg('DXCommand', "cmd: invalid characters in '$cmd'");
+			LogDbg('DXCommand', "cmd: $self->{call} - invalid characters in '$cmd'");
 			return $self->_error_out('e1');
 		}
 
@@ -556,9 +576,10 @@ sub process
 	my $t = time;
 	my @dxchan = DXChannel::get_all();
 	my $dxchan;
-	
+
+	$users = 0;
 	foreach $dxchan (@dxchan) {
-		next if $dxchan->sort ne 'U';  
+		next unless $dxchan->is_user;  
 	
 		# send a outstanding message prompt if required
 		if ($t >= $dxchan->lastmsgpoll + $msgpolltime) {
@@ -571,11 +592,19 @@ sub process
 			$dxchan->prompt() if $dxchan->{state} =~ /^prompt/o;
 			$dxchan->t($t);
 		}
-	}
+		++$users;
+		$maxusers = $users if $users > $maxusers;
 
-	while (my ($k, $v) = each %nothereslug) {
-		if ($main::systime >= $v + 300) {
-			delete $nothereslug{$k};
+		if ($dxchan->{isslugged} && $main::systime > $dxchan->{isslugged}) {
+			foreach my $ref (@{$dxchan->{sluggedpcs}}) {
+				if ($ref->[0] == 61) {
+					Spot::add(@{$ref->[2]});
+					DXProt::send_dx_spot($dxchan, $ref->[1], @{$ref->[2]});
+				}
+			}
+
+			$dxchan->{isslugged} = 0;
+			$dxchan->{sluggedpcs} = [];
 		}
 	}
 
@@ -600,7 +629,7 @@ sub disconnect
 #		@rout = $main::routeroot->del_user($uref);
 		@rout = DXProt::_del_thingy($main::routeroot, [$call, 0]);
 
-		dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
+		# dbg("B/C PC17 on $main::mycall for: $call") if isdbg('route');
 
 		# issue a pc17 to everybody interested
 		$main::me->route_pc17($main::mycall, undef, $main::routeroot, $uref);
@@ -652,7 +681,7 @@ sub broadcast
 	my $s = shift;				# the line to be rebroadcast
 	
     foreach my $dxchan (DXChannel::get_all()) {
-		next unless $dxchan->{sort} eq 'U'; # only interested in user channels  
+		next unless $dxchan->is_user; # only interested in user channels  
 		next if grep $dxchan == $_, @_;
 		$dxchan->send($s);			# send it
 	}
@@ -661,7 +690,7 @@ sub broadcast
 # gimme all the users
 sub get_all
 {
-	return grep {$_->{sort} eq 'U'} DXChannel::get_all();
+	goto &DXChannel::get_all_users;
 }
 
 # run a script for this user
@@ -791,7 +820,7 @@ sub find_cmd_name {
 		#we have compiled this subroutine already,
 		#it has not been updated on disk, nothing left to do
 		#print STDERR "already compiled $package->handler\n";
-		;
+		dbg("find_cmd_name: $package cached") if isdbg('command');
 	} else {
 
 		my $sub = readfilestr($filename);
@@ -801,7 +830,7 @@ sub find_cmd_name {
 		};
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq(package DXCommandmode::$package; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
+		my $eval = qq(package DXCommandmode::$package; use 5.10.1; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
 
 
 		if ($sub =~ m|\s*sub\s+handle\n|) {
@@ -921,7 +950,7 @@ sub announce
 		$buf = dd(['ann', $to, $target, $text, @_])
 	} else {
 		$buf = "$to$target de $_[0]: $text";
-		$buf =~ s/\%5E/^/g;
+		#$buf =~ s/\%5E/^/g;
 		$buf .= "\a\a" if $self->{beep};
 	}
 	$self->local_send($target eq 'WX' ? 'W' : 'N', $buf);
@@ -946,7 +975,7 @@ sub chat
 		$buf = dd(['chat', $to, $target, $text, @_])
 	} else {
 		$buf = "$target de $_[0]: $text";
-		$buf =~ s/\%5E/^/g;
+		#$buf =~ s/\%5E/^/g;
 		$buf .= "\a\a" if $self->{beep};
 	}
 	$self->local_send('C', $buf);
@@ -957,15 +986,15 @@ sub format_dx_spot
 	my $self = shift;
 
 	my $t = ztime($_[2]);
-	my $loc = '';
 	my ($slot1, $slot2) = ('', '');
 	
 	my $clth = 30 + $self->{width} - 80;    # allow comment to grow according the screen width 
-	my $comment = substr (($_[3] || ''), 0, $clth);
-	$comment =~ s/\t/ /g;
+	my $c = $_[3];
+	$c =~ s/\t/ /g;
+	my $comment = substr (($c || ''), 0, $clth);
 	$comment .= ' ' x ($clth - (length($comment)));
-
-	if (!$slot1 && $self->{user}->wantgrid) {
+	
+    if (!$slot1 && $self->{user}->wantgrid) {
 		my $ref = DXUser::get_current($_[1]);
 		if ($ref && $ref->qra) {
 			$slot1 = ' ' . substr($ref->qra, 0, 4);
@@ -1004,6 +1033,7 @@ sub format_dx_spot
 
 	return sprintf "DX de %-8.8s%10.1f  %-12.12s %-s $t$slot2", "$_[4]:", $_[0], $_[1], $comment;
 }
+
 
 # send a dx spot
 sub dx_spot
@@ -1046,7 +1076,7 @@ sub dx_spot
 	} else {
 		$buf = $self->format_dx_spot(@_);
 		$buf .= "\a\a" if $self->{beep};
-		$buf =~ s/\%5E/^/g;
+		#$buf =~ s/\%5E/^/g;
 	}
 
 	$self->local_send('X', $buf);
@@ -1106,7 +1136,7 @@ sub broadcast_debug
 {
 	my $s = shift;				# the line to be rebroadcast
 	
-	foreach my $dxchan (DXChannel::get_all) {
+	foreach my $dxchan (DXChannel::get_all_users) {
 		next unless $dxchan->{enhanced} && $dxchan->{senddbg};
 		if ($dxchan->{gtk}) {
 			$dxchan->send_later('L', dd(['db', $s]));
@@ -1182,6 +1212,9 @@ sub import_cmd
 	my @names = readdir(DIR);
 	closedir(DIR);
 	my $name;
+
+	return unless @names;
+	
 	foreach $name (@names) {
 		next if $name =~ /^\./;
 
@@ -1246,7 +1279,7 @@ sub send_motd
 	my $self = shift;
 	my $motd;
 
-	unless ($self->registered) {
+	unless ($self->isregistered) {
 		$motd = "${main::motd}_nor_$self->{lang}";
 		$motd = "${main::motd}_nor" unless -e $motd;
 	}
@@ -1262,6 +1295,10 @@ sub send_motd
 	$self->send_file($motd) if -e $motd;
 }
 
+sub user_count
+{
+	return ($users, $maxusers);
+}
 
 1;
 __END__

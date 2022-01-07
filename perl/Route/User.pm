@@ -17,11 +17,6 @@ use strict;
 use vars qw(%list %valid @ISA $max $filterdef);
 @ISA = qw(Route);
 
-%valid = (
-		  parent => '0,Parent Calls,parray',
-		  ip => '0,IP Address',
-);
-
 $filterdef = $Route::filterdef;
 %list = ();
 $max = 0;
@@ -98,8 +93,6 @@ sub delparent
 	my $self = shift;
     return $self->_dellist('parent', @_);
 }
-
-
 
 #
 # generic AUTOLOAD for accessors

@@ -35,7 +35,8 @@ unless ($user) {
 # set up basic environment
 $self->call($call);
 $self->user($user);
-Log('DXCommand', "spoof '$newline' as $call by $mycall");
+my $addr = $self->hostname || '127.0.0.1';
+Log('cmd', "$self->{call}|$addr|spoof|$line");
 my @in = $self->run_cmd($newline);
 push @out, map {"spoof $call: $_"} @in;
 $self->call($mycall);
