@@ -1,6 +1,6 @@
 ! $Id$
 !
-! This file was created by Jim Reisert AD1C on 25 Nov 2021
+! This file was created by Jim Reisert AD1C on 08 Jan 2022
 ! See: https://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
@@ -1447,7 +1447,7 @@ FW/W Wallis-Island-FW                                  59 62 32 -12.00 13 16  0 
 FW Wallis-Island-FW/W                                  59 62 32 -12.00 13 16  0 S 176 12  0 W
 FY French-Guiana-FY                                    60 12  9   3.00  4  0  0 N  53  0  0 W @
 G England-G                                            61 27 14   0.00 52 46  0 N   1 28  0 W @
-2E,2ZE,M England-G                                     61 27 14   0.00 52 46  0 N   1 28  0 W
+2E,M England-G                                         61 27 14   0.00 52 46  0 N   1 28  0 W
 GD Isle-of-Man-GD                                      62 27 14   0.00 54 12  0 N   4 32  0 W @
 2D,GT,MD,MT Isle-of-Man-GD                             62 27 14   0.00 54 12  0 N   4 32  0 W
 GI Northern-Ireland-GI                                 63 27 14   0.00 54 44  0 N   6 41  0 W @
@@ -1775,9 +1775,8 @@ JA Hokuriku-JA9                                        95 45 25  -9.00 36  4  0 
 JM9,JN9,JO9,JP9,JQ9,JR9,JS9 Hokuriku-JA                95 45 25  -9.00 36  4  0 N 136 13  0 E
 JS6 Okinawa-JA                                         95 45 25  -9.00 26 13  0 N 127 41  0 E
 JA Okinawa-JS6                                         95 45 25  -9.00 26 13  0 N 127 41  0 E
-AGJ60,HTR60,IEJ60,ISG60,JR6R,JR6S,JR6T Okinawa-JA      95 45 25  -9.00 26 13  0 N 127 41  0 E
-JR6U,JR6V,JR6W,JR6X,JR6Y,JR6Z,KJP60,KTD60 Okinawa-JA   95 45 25  -9.00 26 13  0 N 127 41  0 E
-MMD60,MMY60,OGN60,OKA60,SHI60,TRA60,UEO60 Okinawa-JA   95 45 25  -9.00 26 13  0 N 127 41  0 E
+JR6R,JR6S,JR6T,JR6U,JR6V,JR6W,JR6X,JR6Y Okinawa-JA     95 45 25  -9.00 26 13  0 N 127 41  0 E
+JR6Z Okinawa-JA                                        95 45 25  -9.00 26 13  0 N 127 41  0 E
 JD/O Ogasawara-JD/O                                    97 45 27  -9.00 27  3  0 N 142 12  0 E @
 JD1 Ogasawara-JD/O                                     97 45 27  -9.00 27  3  0 N 142 12  0 E
 JT Mongolia-JT                                         98 32 23  -7.00 46 46  0 N 102 10  0 E @
