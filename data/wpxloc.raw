@@ -1,6 +1,6 @@
-! $Id$
+! $Id: $
 !
-! This file was created by Jim Reisert AD1C on 10 Jul 2021
+! This file was created by Jim Reisert AD1C on 08 Jan 2022
 ! See: https://www.country-files.com/dx-cluster/wpxloc/
 !
 ! Highest DXCC number is 359 ("VERSION" entity)
@@ -1775,9 +1775,8 @@ JA Hokuriku-JA9                                        95 45 25  -9.00 36  4  0 
 JM9,JN9,JO9,JP9,JQ9,JR9,JS9 Hokuriku-JA                95 45 25  -9.00 36  4  0 N 136 13  0 E
 JS6 Okinawa-JA                                         95 45 25  -9.00 26 13  0 N 127 41  0 E
 JA Okinawa-JS6                                         95 45 25  -9.00 26 13  0 N 127 41  0 E
-AGJ60,HTR60,IEJ60,ISG60,JR6R,JR6S,JR6T Okinawa-JA      95 45 25  -9.00 26 13  0 N 127 41  0 E
-JR6U,JR6V,JR6W,JR6X,JR6Y,JR6Z,KJP60,KTD60 Okinawa-JA   95 45 25  -9.00 26 13  0 N 127 41  0 E
-MMD60,MMY60,OGN60,OKA60,SHI60,TRA60,UEO60 Okinawa-JA   95 45 25  -9.00 26 13  0 N 127 41  0 E
+JR6R,JR6S,JR6T,JR6U,JR6V,JR6W,JR6X,JR6Y Okinawa-JA     95 45 25  -9.00 26 13  0 N 127 41  0 E
+JR6Z Okinawa-JA                                        95 45 25  -9.00 26 13  0 N 127 41  0 E
 JD/O Ogasawara-JD/O                                    97 45 27  -9.00 27  3  0 N 142 12  0 E @
 JD1 Ogasawara-JD/O                                     97 45 27  -9.00 27  3  0 N 142 12  0 E
 JT Mongolia-JT                                         98 32 23  -7.00 46 46  0 N 102 10  0 E @
@@ -3910,11 +3909,11 @@ UH9X,UI1I,UI8X,UI9X Komi-UA                           179 20 17  -4.00 64 17  0 
 UA2 Kaliningrad-UA2                                   181 29 15  -3.00 54 43  0 N  20 31  0 E @
 R2F,R2K,RA2,RC2F,RC2K,RD2F,RD2K,RE2F Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
 RE2K,RF2F,RF2K,RG2F,RG2K,RJ2F,RJ2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RK2F,RK2K,RK75,RL2F,RL2K,RM2F,RM2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RN2F,RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RT2K,RU2F,RU2K,RV2F,RV2K,RW2F,RW2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
-RX2F,RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F Kaliningrad-UA2     181 29 15  -3.00 54 43  0 N  20 31  0 E
-U2K,UB2,UC2,UD2,UE2,UF2,UG2,UH2,UI2 Kaliningrad-UA2   181 29 15  -3.00 54 43  0 N  20 31  0 E
+RK2F,RK2K,RL2F,RL2K,RM2F,RM2K,RN2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RN2K,RO2F,RO2K,RQ2F,RQ2K,RT2F,RT2K Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RU2F,RU2K,RV2F,RV2K,RW2F,RW2K,RX2F Kaliningrad-UA2    181 29 15  -3.00 54 43  0 N  20 31  0 E
+RX2K,RY2F,RY2K,RZ2F,RZ2K,U2F,U2K,UB2 Kaliningrad-UA2  181 29 15  -3.00 54 43  0 N  20 31  0 E
+UC2,UD2,UE2,UF2,UG2,UH2,UI2 Kaliningrad-UA2           181 29 15  -3.00 54 43  0 N  20 31  0 E
 UA9 Asiatic-Russia-UA9                                182 30 17  -7.00 55 53  0 N  84  5  0 E @
 R0,R8,R9,RA0,RA8,RA9,RC0,RC8,RC9 Asiatic-Russia-UA9   182 30 17  -7.00 55 53  0 N  84  5  0 E
 RD0,RD8,RD9,RE0,RE8,RE9,RF0,RF8 Asiatic-Russia-UA9    182 30 17  -7.00 55 53  0 N  84  5  0 E
@@ -5013,10 +5012,10 @@ VE7 British-Columbia-VE                               197  2  3   7.00 49 32  0 
 VE British-Columbia-VE7                               197  2  3   7.00 49 32  0 N 122 40  0 W
 CF7,CG7,CJ7,CK7,VA7,VB7,VC7,VG7 British-Columbia-VE   197  2  3   7.00 49 32  0 N 122 40  0 W
 VX7,XL7,XM7 British-Columbia-VE                       197  2  3   7.00 49 32  0 N 122 40  0 W
-VE8 Northwest-Territories-VE                          197  3  1   7.00 62 27  0 N 147 46  0 W
-VE Northwest-Territories-VE8                          197  3  1   7.00 62 27  0 N 147 46  0 W
-CF8,CG8,CJ8,CK8,VA8,VB8,VC8 Northwest-Territories-VE  197  3  1   7.00 62 27  0 N 147 46  0 W
-VG8,VX8,XL8,XM8 Northwest-Territories-VE              197  3  1   7.00 62 27  0 N 147 46  0 W
+VE8 Northwest-Territories-VE                          197  3  1   7.00 62 27  0 N 114 24  0 W
+VE Northwest-Territories-VE8                          197  3  1   7.00 62 27  0 N 114 24  0 W
+CF8,CG8,CJ8,CK8,VA8,VB8,VC8 Northwest-Territories-VE  197  3  1   7.00 62 27  0 N 114 24  0 W
+VG8,VX8,XL8,XM8 Northwest-Territories-VE              197  3  1   7.00 62 27  0 N 114 24  0 W
 VE9 New-Brunswick-VE                                  197  9  5   4.00 45 45  0 N  65 48  0 W
 VE New-Brunswick-VE9                                  197  9  5   4.00 45 45  0 N  65 48  0 W
 CF9,CG9,CJ9,CK9,VA9,VB9,VC9,VG9,VX9 New-Brunswick-VE  197  9  5   4.00 45 45  0 N  65 48  0 W
@@ -5039,36 +5038,33 @@ VY2 Prince-Edward-Island-VE                           197  9  5   4.00 46 22  0 
 VE Prince-Edward-Island-VY2                           197  9  5   4.00 46 22  0 N  63 26  0 W
 CI2,CZ2,VF2,XK2,XO2 Prince-Edward-Island-VE           197  9  5   4.00 46 22  0 N  63 26  0 W
 VK Australia-VK                                       198 59 30 -10.00 23 42  0 S 132 20  0 E @
-AX,VH,VI,VJ,VL,VM,VN,VZ Australia-VK                  198 59 30 -10.00 23 42  0 S 132 20  0 E
+AX,VI,VJ,VL Australia-VK                              198 59 30 -10.00 23 42  0 S 132 20  0 E
 VK1 Australian-Capital-Territory-VK                   198 59 30 -10.00 35 30  0 S 149  0  0 E
 VK Australian-Capital-Territory-VK1                   198 59 30 -10.00 35 30  0 S 149  0  0 E
-AX1,VH1,VI1,VJ1,VL1 Australian-Capital-Territory-VK   198 59 30 -10.00 35 30  0 S 149  0  0 E
-VM1,VN1,VZ1 Australian-Capital-Territory-VK           198 59 30 -10.00 35 30  0 S 149  0  0 E
+AX1,VI1,VJ1,VL1 Australian-Capital-Territory-VK       198 59 30 -10.00 35 30  0 S 149  0  0 E
 VK2 New-South-Wales-VK                                198 59 30 -10.00 34  0  0 S 151  0  0 E
 VK New-South-Wales-VK2                                198 59 30 -10.00 34  0  0 S 151  0  0 E
-AX2,VH2,VI2,VJ2,VL2,VM2,VN2,VZ2 New-South-Wales-VK    198 59 30 -10.00 34  0  0 S 151  0  0 E
+AX2,VI2,VJ2,VL2 New-South-Wales-VK                    198 59 30 -10.00 34  0  0 S 151  0  0 E
 VK3 Victoria-VK                                       198 59 30 -10.00 38  0  0 S 145  0  0 E
 VK Victoria-VK3                                       198 59 30 -10.00 38  0  0 S 145  0  0 E
-AX3,VH3,VI3,VJ3,VL3,VM3,VN3,VZ3 Victoria-VK           198 59 30 -10.00 38  0  0 S 145  0  0 E
+AX3,VI3,VJ3,VL3 Victoria-VK                           198 59 30 -10.00 38  0  0 S 145  0  0 E
 VK4 Queensland-VK                                     198 55 30 -10.00 27 30  0 S 153  0  0 E
 VK Queensland-VK4                                     198 55 30 -10.00 27 30  0 S 153  0  0 E
-AX4,VH4,VI4,VJ4,VL4,VM4,VN4,VZ4 Queensland-VK         198 55 30 -10.00 27 30  0 S 153  0  0 E
+AX4,VI4,VJ4,VL4 Queensland-VK                         198 55 30 -10.00 27 30  0 S 153  0  0 E
 VK5 South-Australia-VK                                198 59 30  -9.00 34 54  0 S 138 36  0 E
 VK South-Australia-VK5                                198 59 30  -9.00 34 54  0 S 138 36  0 E
-AX5,VH5,VI5,VJ5,VL5,VM5,VN5,VZ5 South-Australia-VK    198 59 30  -9.00 34 54  0 S 138 36  0 E
+AX5,VI5,VJ5,VL5 South-Australia-VK                    198 59 30  -9.00 34 54  0 S 138 36  0 E
 VK6 Western-Australia-VK                              198 58 29  -8.00 32  0  0 S 115 54  0 E
 VK Western-Australia-VK6                              198 58 29  -8.00 32  0  0 S 115 54  0 E
-AX6,VH6,VI6,VJ6,VL6,VM6,VN6,VZ6 Western-Australia-VK  198 58 29  -8.00 32  0  0 S 115 54  0 E
+AX6,VI6,VJ6,VL6 Western-Australia-VK                  198 58 29  -8.00 32  0  0 S 115 54  0 E
 VK7 Tasmania-VK                                       198 59 30 -10.00 42 54  0 S 147 18  0 E
 VK Tasmania-VK7                                       198 59 30 -10.00 42 54  0 S 147 18  0 E
-AX7,VH7,VI7,VJ7,VL7,VM7,VN7,VZ7 Tasmania-VK           198 59 30 -10.00 42 54  0 S 147 18  0 E
+AX7,VI7,VJ7,VL7 Tasmania-VK                           198 59 30 -10.00 42 54  0 S 147 18  0 E
 VK8 Northern-Territory-VK                             198 55 29  -9.00 12 30  0 S 130 54  0 E
 VK Northern-Territory-VK8                             198 55 29  -9.00 12 30  0 S 130 54  0 E
-AX8,VH8,VI8,VJ8,VL8,VM8,VN8 Northern-Territory-VK     198 55 29  -9.00 12 30  0 S 130 54  0 E
-VZ8 Northern-Territory-VK                             198 55 29  -9.00 12 30  0 S 130 54  0 E
+AX8,VI8,VJ8,VL8 Northern-Territory-VK                 198 55 29  -9.00 12 30  0 S 130 54  0 E
 VK9N Norfolk-Island-VK9N                              203 60 32 -11.50 29  2  0 S 167 56  0 E @
-AX9,VH9,VI9,VJ9,VK9,VL9,VM9,VN9 Norfolk-Island-VK9N   203 60 32 -11.50 29  2  0 S 167 56  0 E
-VZ9 Norfolk-Island-VK9N                               203 60 32 -11.50 29  2  0 S 167 56  0 E
+AX9,VI9,VK9 Norfolk-Island-VK9N                       203 60 32 -11.50 29  2  0 S 167 56  0 E
 VP2E Anguilla-VP2E                                    207 11  8   4.00 18 14  0 N  63  0  0 W @
 VP2 Anguilla-VP2E                                     207 11  8   4.00 18 14  0 N  63  0  0 W
 VP2M Montserrat-VP2M                                  208 11  8   4.00 16 45  0 N  62 11  0 W @
@@ -5825,28 +5821,21 @@ VK0M Macquarie-Island-VK0M                            206 60 30 -10.00 54 36  0 
 VK0 Macquarie-Island-VK0M                             206 60 30 -10.00 54 36  0 S 158 53  0 E
 VK9C Cocos-Keeling-Islands-VK9C                       201 54 29  -6.50 12  9  0 S  96 49  0 E @
 VK9 Cocos-Keeling-Islands-VK9C                        201 54 29  -6.50 12  9  0 S  96 49  0 E
-AX9C,AX9Y,VH9C,VH9Y,VI9C Cocos-Keeling-Islands-VK9C   201 54 29  -6.50 12  9  0 S  96 49  0 E
-VI9Y,VJ9C,VJ9Y,VK9FC Cocos-Keeling-Islands-VK9C       201 54 29  -6.50 12  9  0 S  96 49  0 E
-VK9KC,VK9Y,VK9ZY,VL9C Cocos-Keeling-Islands-VK9C      201 54 29  -6.50 12  9  0 S  96 49  0 E
-VL9Y,VM9C,VM9Y,VN9C,VN9Y Cocos-Keeling-Islands-VK9C   201 54 29  -6.50 12  9  0 S  96 49  0 E
-VZ9C,VZ9Y Cocos-Keeling-Islands-VK9C                  201 54 29  -6.50 12  9  0 S  96 49  0 E
+AX9C,AX9Y,VI9C,VI9Y,VK9FC Cocos-Keeling-Islands-VK9C  201 54 29  -6.50 12  9  0 S  96 49  0 E
+VK9KC,VK9Y,VK9ZY,VZ9Y Cocos-Keeling-Islands-VK9C      201 54 29  -6.50 12  9  0 S  96 49  0 E
 VK9L Lord-Howe-Island-VK9L                            199 60 30 -10.50 31 33  0 S 159  5  0 E @
 VK9 Lord-Howe-Island-VK9L                             199 60 30 -10.50 31 33  0 S 159  5  0 E
-AX9L,VH9L,VI9L,VJ9L,VK9FL Lord-Howe-Island-VK9L       199 60 30 -10.50 31 33  0 S 159  5  0 E
-VK9ZL,VL9L,VM9L,VN9L,VZ9L Lord-Howe-Island-VK9L       199 60 30 -10.50 31 33  0 S 159  5  0 E
+AX9L,VI9L,VK9FL,VK9ZL,VZ9L Lord-Howe-Island-VK9L      199 60 30 -10.50 31 33  0 S 159  5  0 E
 VK9M Mellish-Reef-VK9M                                202 56 30 -10.00 17 24  0 S 155 51  0 E @
 VK9 Mellish-Reef-VK9M                                 202 56 30 -10.00 17 24  0 S 155 51  0 E
-AX9M,VH9M,VI9M,VJ9M,VL9M,VM9M,VN9M Mellish-Reef-VK9M  202 56 30 -10.00 17 24  0 S 155 51  0 E
-VZ9M Mellish-Reef-VK9M                                202 56 30 -10.00 17 24  0 S 155 51  0 E
+AX9M,VI9M,VZ9M Mellish-Reef-VK9M                      202 56 30 -10.00 17 24  0 S 155 51  0 E
 VK9W Willis-Island-VK9W                               204 55 30 -10.00 16 13  0 S 150  1  0 E @
 VK9 Willis-Island-VK9W                                204 55 30 -10.00 16 13  0 S 150  1  0 E
-AX9W,AX9Z,VH9W,VH9Z,VI9W,VI9Z Willis-Island-VK9W      204 55 30 -10.00 16 13  0 S 150  1  0 E
-VJ9W,VJ9Z,VK9FW,VK9Z,VL9W,VL9Z Willis-Island-VK9W     204 55 30 -10.00 16 13  0 S 150  1  0 E
-VM9W,VM9Z,VN9W,VN9Z,VZ9W,VZ9Z Willis-Island-VK9W      204 55 30 -10.00 16 13  0 S 150  1  0 E
+AX9W,AX9Z,VI9W,VI9Z,VK9FW,VK9Z Willis-Island-VK9W     204 55 30 -10.00 16 13  0 S 150  1  0 E
+VZ9W Willis-Island-VK9W                               204 55 30 -10.00 16 13  0 S 150  1  0 E
 VK9X Christmas-Island-VK9X                            200 54 29  -7.00 10 29  0 S 105 38  0 E @
 VK9 Christmas-Island-VK9X                             200 54 29  -7.00 10 29  0 S 105 38  0 E
-AX9X,VH9X,VI9X,VJ9X,VK9FX Christmas-Island-VK9X       200 54 29  -7.00 10 29  0 S 105 38  0 E
-VK9KX,VL9X,VM9X,VN9X,VZ9X Christmas-Island-VK9X       200 54 29  -7.00 10 29  0 S 105 38  0 E
+AX9X,VI9X,VK9FX,VK9KX,VZ9X Christmas-Island-VK9X      200 54 29  -7.00 10 29  0 S 105 38  0 E
 VP8/G South-Georgia-Island-VP8/G                      211 73 13   2.00 54 29  0 S  37  5  0 W @
 VP8 South-Georgia-Island-VP8/G                        211 73 13   2.00 54 29  0 S  37  5  0 W
 VP8/H South-Shetland-Islands-VP8/H                    214 73 13   4.00 62  5  0 S  58 40  0 W @
