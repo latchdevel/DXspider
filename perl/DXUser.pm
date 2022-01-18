@@ -899,10 +899,15 @@ sub lastping
 sub registered
 {
 	my $self = shift;
-	if (exists $self->{registered}) {
-		return $self->{registered} || 0;
+	my $val;
+	if (defined $_[0]) {
+		$val = unpad($_[0]);
+		$self->{registered} = $val;
 	}
-	return '';					# to stop undef warnings
+	if (exists $self->{registered}) {
+		$val = $self->{registered} // 0;
+	}
+	return $val // 0 ;					# to stop undef warnings
 }
 
 1;

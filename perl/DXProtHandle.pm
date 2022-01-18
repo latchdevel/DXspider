@@ -1562,13 +1562,16 @@ sub _decode_pc92_call
 	my $build = $part[2] || 0;
 	my $ip = $part[3] || '';
 	
-	if ($version =~ /[,.]/) {
+	if (is_ipaddr($version)) {
 		$ip = $version;
 		$version = 0;
 	}
-	$version =~ s/\D+//g;
+	$version =~ s/\D//g;
 	$build =~ s/^0\.//;
-	$build =~ s/\D+//g;
+	$build =~ s/\D//g;
+	$version ||= 0;
+	$build ||= 0;
+	
 	if ($ip) {
         $ip =~ s/,/:/g;
         $ip =~ s/^::ffff://i;
