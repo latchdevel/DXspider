@@ -28,7 +28,7 @@ if (@call == 0) {
 	shift @call;
 	my ($action, $key, $data) = (0,0,0);
 	for ($action = DXUser::R_FIRST, $count = 0; !$DXUser::dbm->seq($key, $data, $action); $action = DXUser::R_NEXT) {
-		if (iscallsign($key)) {
+		if (is_callsign($key)) {
 			if ($data =~ /"sort":"[ACRSX]"/) {
 				push @call, $key;
 			}
