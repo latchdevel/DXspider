@@ -19,6 +19,7 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 @ISA = qw(Route);
 
 %valid = (
+		  K => '9,Seen on PC92K,yesno',
 		  nodes => '0,Nodes,parray',
 		  users => '0,Users,parray',
 		  usercount => '0,User Count',

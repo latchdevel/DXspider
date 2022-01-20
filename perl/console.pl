@@ -116,7 +116,7 @@ sub do_initscr
 	$mycallcolor = COLOR_PAIR(1) unless $mycallcolor;
 }
 
-sub do_resize
+sub doresize
 {
 	endwin() if $scr;
 	initscr();
@@ -527,7 +527,7 @@ unless ($DB::VERSION) {
 $SIG{'HUP'} = \&sig_term;
 
 # start up
-do_resize();
+doresize();
 
 $SIG{__DIE__} = \&sig_term;
 

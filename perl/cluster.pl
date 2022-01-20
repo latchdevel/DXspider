@@ -121,6 +121,7 @@ use DXXml;
 use DXSql;
 use IsoTime;
 use BPQMsg;
+use DXCIDR;
 
 use Data::Dumper;
 use IO::File;
@@ -476,6 +477,9 @@ DXUser->init($userfn, 1);
 		dbg "Resetting sysop user type from $oldsort -> User ('U')";
 	}
 }
+
+# get any bad IPs 
+DXCIDR::init();
 
 # start listening for incoming messages/connects
 dbg("starting listeners ...");

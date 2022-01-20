@@ -39,6 +39,7 @@ use DB_File;
 use VE7CC;
 use DXXml;
 use AsyncMsg;
+use DXCIDR;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
@@ -194,6 +195,11 @@ sub start
 	
 	$self->tell_login('loginu');
 	$self->tell_buddies('loginb');
+
+	# is this a bad ip address?
+	if (is_ipaddr($self->{hostname})) {
+		$self->{badip} = DXCIDR->find($self->{hostname});
+	}
 	
 	# do we need to send a forward/opernam?
 	my $lastoper = $user->lastoper || 0;

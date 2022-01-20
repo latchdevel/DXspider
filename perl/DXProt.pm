@@ -33,6 +33,7 @@ use Route;
 use Route::Node;
 use Script;
 use DXProtHandle;
+use DXCIDR;
 
 use strict;
 

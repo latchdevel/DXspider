@@ -93,14 +93,18 @@ my $callnoid = basecall($self->{call});
 #$DB::single = 1;
 
 if ($DXProt::baddx->in($spotted)) {
-	$localonly++; 
+	++$localonly; 
 }
 if ($DXProt::badspotter->in($spotternoid)) { 
-	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline) from $addr");
-	$localonly++; 
+	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline) from $ipaddr");
+	++$localonly; 
+}
+if ($ipaddr && DXCIDR::find($ipaddr)) {
+	LogDbg('DXCommand', "Bad IP address $ipaddr $spotternoid as $spotter ($oline)");
+	++$localonly; 
 }
 
-dbg "spotter $spotternoid/$callnoid\n";
+#dbg "spotter $spotternoid/$callnoid\";
 
 if (($spotted =~ /$spotternoid/ || $spotted =~ /$callnoid/) && $freq < $Spot::minselfspotqrg) {
 	LogDbg('DXCommand', "$spotternoid/$callnoid trying to self spot below ${Spot::minselfspotqrg}KHz ($oline) from $addr, not passed on to cluster");

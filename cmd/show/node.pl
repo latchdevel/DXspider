@@ -62,19 +62,25 @@ foreach $call (sort @call) {
 	if ($call eq $main::mycall) {
 		$sort = "Spider";
 		$ver = $main::version;
+		$build = $main::build;
 	} else {
 		$ver = $clref->version if $clref && $clref->version;
 		$ver = $uref->version if !$ver && $uref->version;
-		$sort = "CCClus" if $ver >= 1000 && $ver < 4000 && $sort eq "Spider";
+		$sort = "CCClus" if $ver && $ver >= 1000 && $ver < 4000 && $sort eq "Spider";
 	}
 	
 	if ($uref->is_spider || ($clref && $clref->do_pc9x)) {
-		$ver /= 100 if $ver > 5400;
-		$ver -= 53 if $ver > 54;
+		if ($ver && $ver > 5400) {
+			$ver =~ s/^5\d/5./;
+		}
 		if ($clref && $clref->build) {
-			$build = "build: " . $clref->build
+			$build = $clref->build
 		} elsif ($uref->build) {
-			$build = "build: " . $uref->build;
+			$build = $uref->build;
+		}
+		if ($build) {
+			$build =~ s/^0\.//;
+			$build = "build: $build";
 		}
 		push @out, $self->msg('snode2', $pcall, $sort, "$ver $build");
 	} else {

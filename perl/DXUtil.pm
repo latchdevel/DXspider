@@ -29,7 +29,7 @@ require Exporter;
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
 			 diffms _diffms _diffus difft parraydifft is_ztime basecall
-			 normalise_call
+			 normalise_call is_numeric
             );
 
 
@@ -613,4 +613,9 @@ sub normalise_call
 	$ssid += 0;
 	$ncall .= "-$ssid" if $ssid;
 	return $ncall;
+}
+
+sub is_numeric
+{
+	return $_[0] =~ /^\d+$/;
 }
