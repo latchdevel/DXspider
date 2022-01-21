@@ -13,7 +13,7 @@
 #
 # 
 
-require 5.10.1;
+require 5.8.1;
 use warnings;
 
 use vars qw($data $clusteraddr $clusterport);

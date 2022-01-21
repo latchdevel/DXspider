@@ -448,7 +448,7 @@ sub is_latlong
 # is it an ip address?
 sub is_ipaddr
 {
-    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:,]+$/;
+    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~  /^(?:[\da-f]{1,4}:|:)(?:\:[0-9a-f]{1,4}){1,6}/i ;
 }
 
 # is it a zulu time hhmmZ

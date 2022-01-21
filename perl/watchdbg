@@ -27,7 +27,7 @@ BEGIN {
 }
 
 use IO::File;
-use DXVars;
+use SysVar;
 use DXUtil;
 use DXLog;
 
