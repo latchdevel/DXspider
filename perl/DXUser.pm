@@ -73,37 +73,24 @@ my $json;
 		  lastping => '1,Last Ping at,ptimelist',
 		  lastseen => '0,Last Seen,cldatetime',
 		  lat => '0,Latitude,slat',
-		  lat => '0,Latitude,slat',
 		  lockout => '9,Locked out?,yesno',	# won't let them in at all
 		  long => '0,Longitude,slong',
-		  long => '0,Longitude,slong',
 		  maxconnect => '1,Max Connections',
-		  maxconnect => '1,Max Connections',
-		  name => '0,Name',
 		  name => '0,Name',
 		  node => '0,Last Node',
 		  nopings => '9,Ping Obs Count',
 		  nothere => '0,Not Here Text',
-		  nothere => '0,Not Here Text',
 		  pagelth => '0,Current Pagelth',
 		  passphrase => '9,Pass Phrase,yesno',
-		  passphrase => '9,Pass Phrase,yesno',
-		  passwd => '9,Password,yesno',
 		  passwd => '9,Password,yesno',
 		  pingint => '9,Node Ping interval',
 		  priv => '9,Privilege Level',
-		  priv => '9,Privilege Level',
-		  prompt => '0,Required Prompt',
 		  prompt => '0,Required Prompt',
 		  qra => '0,Locator',
-		  qra => '0,Locator',
-		  qth => '0,Home QTH',
 		  qth => '0,Home QTH',
 		  rbnseeme => '0,RBN See Me',
 		  registered => '9,Registered?,yesno',
-		  registered => '9,Registered?,yesno',
 		  startt => '0,Start Time,cldatetime',
-		  version => '1,Version',
 		  version => '1,Version',
 		  wantann => '0,Req Announce,yesno',
 		  wantann_talk => '0,Talklike Anns,yesno',
@@ -130,7 +117,6 @@ my $json;
 		  wantwcy => '0,Req WCY,yesno',
 		  wantwwv => '0,Req WWV,yesno',
 		  wantwx => '0,Req WX,yesno',
-		  width => '0,Preferred Width',
 		  width => '0,Preferred Width',
 		  xpert => '0,Expert Status,yesno',
           wantgrid => '0,Show DX Grid,yesno',
@@ -919,19 +905,19 @@ sub lastping
 	return $b->{$call};	
 }
 
-sub registered
-{
-	my $self = shift;
-	my $val;
-	if (defined $_[0]) {
-		$val = unpad($_[0]);
-		$self->{registered} = $val;
-	}
-	if (exists $self->{registered}) {
-		$val = $self->{registered} // 0;
-	}
-	return $val // 0 ;					# to stop undef warnings
-}
+#sub registered
+#{
+#	my $self = shift;
+#	my $val;
+#	if (defined $_[0]) {
+#		$val = unpad($_[0]);
+#		$self->{registered} = $val;
+#	}
+#	if (exists $self->{registered}) {
+#		$val = $self->{registered} // 0;
+#	}
+#	return $val // 0 ;					# to stop undef warnings
+#}
 
 1;
 __END__
