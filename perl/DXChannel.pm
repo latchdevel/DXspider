@@ -82,6 +82,7 @@ $count = 0;
 		  isolate => '5,Isolate network,yesno',
 		  isslugged => '9,Still Slugged,yesno',
 		  itu => '0,ITU Zone',
+		  K => '9,Seen on PC92 K,yesno',
 		  lang => '0,Language',
 		  lastmsgpoll => '0,Last Msg Poll,atime',
 		  lastping => '5,Ping last sent,atime',
