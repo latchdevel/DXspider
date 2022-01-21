@@ -533,7 +533,7 @@ $SIG{__DIE__} = \&sig_term;
 
 $Text::Wrap::columns = $cols;
 $conn->send_later("A$call|$connsort width=$cols enhanced");
-$conn->send_later("I$call|set/page $maxshist");
+$conn->send_later("I$call|set/page " . ($maxshist-5));
 $conn->send_later("I$call|set/nobeep");
 
 #Msg->set_event_handler(\*STDIN, "read" => \&rec_stdin);
