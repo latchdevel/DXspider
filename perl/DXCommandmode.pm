@@ -13,7 +13,7 @@ package DXCommandmode;
 
 @ISA = qw(DXChannel);
 
-use 5.10.1;
+use 5.8.1;
 
 use POSIX qw(:math_h);
 use DXUtil;
@@ -801,7 +801,6 @@ sub clear_cmd_cache
 sub valid_package_name {
 	my $string = shift;
 	$string =~ s|([^A-Za-z0-9_/])|sprintf("_%2x",unpack("C",$1))|eg;
-	
 	$string =~ s|/|_|g;
 	return "cmd_$string";
 }
@@ -836,7 +835,7 @@ sub find_cmd_name {
 		};
 		
 		#wrap the code into a subroutine inside our unique package
-		my $eval = qq(package DXCommandmode::$package; use 5.10.1; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
+		my $eval = qq(package DXCommandmode::$package; use 5.8.1; use POSIX qw{:math_h}; use DXLog; use DXDebug; use DXUser; use DXUtil; our \@ISA = qw{DXCommandmode}; );
 
 
 		if ($sub =~ m|\s*sub\s+handle\n|) {

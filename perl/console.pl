@@ -50,8 +50,8 @@ use Console;
 # initialisation
 #
 
-$clusteraddr //= '127.0.0.1';
-$clusterport //= 27754;
+$clusteraddr ||= '127.0.0.1';
+$clusterport ||= 27754;
 
 $call = "";                     # the callsign being used
 $node = "";                     # the node callsign being used

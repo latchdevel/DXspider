@@ -801,7 +801,7 @@ sub check_add_user
 
 	# this is to fix a problem I introduced some build ago by using this function for users
 	# whereas it was only being used for nodes.
-	if ($user->is_user && $user->lockout && ($user->priv // 0) == 1) {
+	if ($user->is_user && $user->lockout && ($user->priv || 0) == 1) {
 		$user->priv(0);
 		$user->lockout(0);
 		dbg("DXProt: PC92 user record for $call depriv'd and unlocked");
@@ -1571,8 +1571,8 @@ sub _decode_pc92_call
 	my $version = $part[1] || 0;
 	my $build = $part[2] || 0;
 	my $ip = $part[3] || '';
-	
-	if ($version =~ /[,.]/) {
+
+	if (length $version > 4 && $version =~ /[,\.][\da-f]{1,4}/i) {
 		$ip = $version;
 		$version = 0;
 	}
@@ -1666,7 +1666,7 @@ sub _add_thingy
 					} elsif ($user->is_spider && ($version < 3000 || ($version > 4000 && $version < 5455))) {
 						unless ($version == 5000 && $build == 0) {
 							$user->sort('A');
-							$build //= 0;
+							$build ||= 0;
 							dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) downgraded to " . $user->sort);
 						}
 					}
@@ -2022,7 +2022,7 @@ sub handle_92
 			my $oldbuild = $parent->build || 0;
 			my $oldversion = $parent->version || 0;
 			my $user = check_add_user($parent->call, 'S');
-			my $oldsort = $user->sort // '';
+			my $oldsort = $user->sort || '';
 
 			dbg("PCProt PC92 K v: $version ov: $oldversion b: $build ob: $oldbuild pk: " . ($parent->K || '0') . " uk: " . ($user->K || 0)) if isdbg('pc92k');
 				
