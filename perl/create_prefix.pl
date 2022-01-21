@@ -18,6 +18,7 @@ BEGIN {
 
 	unshift @INC, "$root/perl";	# this IS the right way round!
 	unshift @INC, "$root/local";
+	$data = "$root/data";
 }
 
 use DXVars;

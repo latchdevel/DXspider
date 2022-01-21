@@ -32,3 +32,5 @@ $userfn = "$local_data/users";
 
 # the "message of the day" file
 $motd = "motd";
+
+1;

@@ -14,7 +14,21 @@
 # 
 
 require 5.16.1;
+use strict;
 use warnings;
+
+our $root;
+our $is_win;
+our $myalias;
+our $mycall;
+our $clusteraddr;
+our $clusterport;
+our $maxshist;
+our $maxkhist;
+our $foreground;
+our $background;
+our $mycallcolor;
+our @colors;
 
 # search local then perl directories
 BEGIN {
@@ -52,20 +66,34 @@ use Console;
 $clusteraddr //= '127.0.0.1';
 $clusterport //= 27754;
 
-$call = "";                     # the callsign being used
-$node = "";                     # the node callsign being used
-$conn = 0;                      # the connection object for the cluster
-$lasttime = time;               # lasttime something happened on the interface
+our $call = "";                     # the callsign being used
+our $node = "";                     # the node callsign being used
+our $conn = 0;                      # the connection object for the cluster
+our $lasttime = time;               # lasttime something happened on the interface
 
-$connsort = "local";
-@kh = ();
-@sh = ();
-$kpos = 0;
-$spos = $pos = $lth = 0;
-$inbuf = "";
-$lastmin = 0;
-$idle = 0;
-$inscroll = 0;
+our $connsort = "local";
+our @kh = ();
+our @sh = ();
+our $kpos = 0;
+our $inbuf = "";
+our $lastmin = 0;
+our $idle = 0;
+our $inscroll = 0;
+
+my $top;
+my $bot;
+my $lines;
+my $scr;
+my $cols;
+my $pagel;
+my $has_colors;
+our $pos;
+our $lth;
+my $sh;
+
+our $spos = $pos = $lth = 0;
+
+
 
 #$SIG{WINCH} = sub {@time = gettimeofday};
 
@@ -505,8 +533,8 @@ sub on_connect
 {
 	my $conn = shift;
 	$conn->send_later("A$call|$connsort width=$cols enhanced");
-	$conn->send_later("I$call|set/page $maxshist");
-	#$conn->send_later("I$call|set/nobeep");
+	$conn->send_later("I$call|set/page " . ($maxshist-5));
+	$conn->send_later("I$call|set/nobeep");
 }
 
 sub on_disconnect

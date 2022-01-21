@@ -277,6 +277,19 @@ sub disconnect
 	$conn->SUPER::disconnect;
 }
 
+sub _send_later
+{
+	my $conn = shift;
+	my $m = shift;
+	
+	if (isdbg('async')) {
+		my $s = $m;
+		$s =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
+		dbg("AsyncMsg: send $s");
+	}
+	$conn->send_later($m);
+}
+
 sub DESTROY
 {
 	my $conn = shift;

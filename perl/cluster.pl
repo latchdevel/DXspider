@@ -31,6 +31,17 @@ use vars qw($root $is_win $systime $lockfn @inqueue $starttime $lockfn @outstand
 #$no = 'No';						# ditto for no
 #$user_interval = 11*60;			# the interval between unsolicited prompts if no traffic
 
+package main;
+
+# set default paths, these should be overwritten by DXVars.pm
+use vars qw($data $system $cmd $localcmd $userfn $clusteraddr $clusterport $yes $no $user_interval $lang $local_data);
+
+$lang = 'en';                   # default language
+$yes = 'Yes';                   # visual representation of yes
+$no = 'No';                     # ditto for no
+$user_interval = 11*60;         # the interval between unsolicited prompts if no traffic
+
+
 # make sure that modules are searched in the order local then perl
 BEGIN {
 	umask 002;
@@ -62,8 +73,13 @@ BEGIN {
 	mkdir "$root/local_cmd", 02774 unless -d "$root/local_cmd";
 
 	# locally stored data lives here
-	my $local_data = "$root/local_data";
+	$local_data = "$root/local_data";
 	mkdir $local_data, 02774 unless -d $local_data;
+	$data = "$root/data";
+	$system = "$root/sys";
+	$cmd = "$root/cmd";
+	$localcmd = "$root/local_cmd";
+	$userfn = "$data/users";
 
 	# try to create and lock a lockfile (this isn't atomic but
 	# should do for now
@@ -152,7 +168,7 @@ use DXSql;
 use IsoTime;
 use BPQMsg;
 use RBN;
-
+use DXCIDR;
 
 use Data::Dumper;
 use IO::File;
@@ -174,6 +190,8 @@ $no //= 'No';				    # ditto for no
 $user_interval //= 11*60;		# the interval between unsolicited prompts if no traffic
 
 
+$clusteraddr //= '127.0.0.1';     # cluster tcp host address - used for things like console.pl
+$clusterport //= 27754;           # cluster tcp port
 @inqueue = ();					# the main input queue, an array of hashes
 $systime = 0;					# the time now (in seconds)
 $starttime = 0;                 # the starting time of the cluster
@@ -205,6 +223,8 @@ our $clssecs;					# the amount of cpu time the DXSpider process have consumed
 our $cldsecs;					# the amount of cpu time any child processes have consumed
 our $allowslashcall;			# Allow / in connecting callsigns (ie PA0/G1TLH, or even PA0/G1TLH/2) 
 
+
+use vars qw($version $subversion $build $gitversion $gitbranch);
 
 # send a message to call on conn and disconnect
 sub already_conn
@@ -489,7 +509,6 @@ sub AGWrestart
 
 sub setup_start
 {
-
 	#############################################################
 	#
 	# The start of the main line of code
@@ -565,6 +584,7 @@ sub setup_start
 		$SIG{__DIE__} = $w;
 	}
 
+
 	# setup location of motd & issue
 	localdata_mv($motd);
 	$motd = localdata($motd);
@@ -619,6 +639,7 @@ sub setup_start
 		}
 	}
 
+
 	# start listening for incoming messages/connects
 	dbg("starting listeners ...");
 	my $conn = IntMsg->new_server($clusteraddr, $clusterport, \&login);
@@ -636,6 +657,7 @@ sub setup_start
 		dbg("External Port: $l->[0] $l->[1] using ${pkg}::${login}");
 	}
 
+
 	dbg("AGW Listener") if $AGWMsg::enable;
 	AGWrestart();
 
@@ -652,6 +674,9 @@ sub setup_start
 	unless ($DB::VERSION) {
 		$SIG{INT} = $SIG{TERM} = sub { $ending = 10; };
 	}
+
+	# get any bad IPs 
+	DXCIDR::init();
 
 	unless ($is_win) {
 		$SIG{HUP} = 'IGNORE';
@@ -847,6 +872,7 @@ sub start_node
 	Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 	dbg("After Web::start_node");
+
 }
 
 setup_start();

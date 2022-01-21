@@ -45,6 +45,7 @@ use Time::HiRes qw(gettimeofday tv_interval);
 use Mojo::IOLoop;
 use DXSubprocess;
 use Mojo::UserAgent;
+use DXCIDR;
 
 use strict;
 use vars qw(%Cache %cmd_cache $errstr %aliases $scriptbase %nothereslug
@@ -204,6 +205,11 @@ sub start
 	
 	$self->tell_login('loginu');
 	$self->tell_buddies('loginb');
+
+	# is this a bad ip address?
+	if (is_ipaddr($self->{hostname})) {
+		$self->{badip} = DXCIDR->find($self->{hostname});
+	}
 	
 	# do we need to send a forward/opernam?
 	my $lastoper = $user->lastoper || 0;
@@ -258,7 +264,7 @@ sub normal
 	$cmdline =~ s/^\s*(.*)\s*$/$1/;
 	
 	if ($self->{state} eq 'page') {
-		my $i = $self->{pagelth};
+		my $i = $self->{pagelth}-5;
 		my $ref = $self->{pagedata};
 		my $tot = @$ref;
 		
@@ -269,7 +275,7 @@ sub normal
 		}
         
 		# send a tranche of data
-		while ($i-- > 0 && @$ref) {
+		for (; $i > 0 && @$ref; --$i) {
 			my $line = shift @$ref;
 			$line =~ s/\s+$//o;	# why am having to do this? 
 			$self->send($line);
@@ -1315,7 +1321,6 @@ sub send_motd
 	$self->send_file($motd) if -e $motd;
 }
 
-
 # Punt off a long running command into a separate process
 #
 # This is called from commands to run some potentially long running
@@ -1408,7 +1413,7 @@ sub spawn_cmd
 
 sub user_count
 {
-	return ($users, $maxusers);
+    return ($users, $maxusers);
 }
 
 1;

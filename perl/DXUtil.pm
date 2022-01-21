@@ -29,7 +29,7 @@ require Exporter;
 			 is_qra is_freq is_digits is_pctext is_pcflag insertitem deleteitem
 			 is_prefix dd is_ipaddr $pi $d2r $r2d localdata localdata_mv
 			 diffms _diffms _diffus difft parraydifft is_ztime basecall
-			 normalise_call
+			 normalise_call is_numeric
             );
 
 
@@ -448,7 +448,7 @@ sub is_latlong
 # is it an ip address?
 sub is_ipaddr
 {
-    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~ /^[0-9a-f:,]+$/;
+    return $_[0] =~ /^\d+\.\d+\.\d+\.\d+$/ || $_[0] =~  /^(?:[\da-f]{1,4}:|:)(?:\:[0-9a-f]{1,4}){1,6}/i;
 }
 
 # is it a zulu time hhmmZ
@@ -613,4 +613,9 @@ sub normalise_call
 	$ssid += 0;
 	$ncall .= "-$ssid" if $ssid;
 	return $ncall;
+}
+
+sub is_numeric
+{
+	return $_[0] =~ /^[\.\d]+$/;
 }

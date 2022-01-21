@@ -33,6 +33,7 @@ use Route;
 use Route::Node;
 use Script;
 use DXProtHandle;
+use DXCIDR;
 
 use Time::HiRes qw(gettimeofday tv_interval);
 use DXSubprocess;
@@ -297,9 +298,9 @@ sub start
 	# log it
 	my $host = $self->{conn}->peerhost;
 	$host ||= "AGW Port #$self->{conn}->{agwport}" if exists $self->{conn}->{agwport};
+	$host ||= $host if is_ipaddr($host);
 	$host ||= "unknown";
 	$self->{hostname} = $host if is_ipaddr($host);
-
 	Log('DXProt', "$call connected from $host");
 
 	# remember type of connection

@@ -32,6 +32,7 @@ use DXHash;
 use Route;
 use Route::Node;
 use Script;
+use DXCIDR;
 
 use strict;
 use warnings qw(all);
@@ -183,6 +184,16 @@ sub handle_11
 	if ($badspotter->in($nossid)) {
 		dbg("PCPROT: Bad Spotter $pc->[6], dropped") if isdbg('chanerr');
 		return;
+	}
+
+	# check IP addresses
+	if ($pc->[8] && is_ipaddr($pc->[8])) {
+		my $ip = $pc->[8];
+		$ip =~ s/,/:/g;
+		$ip =~ s/^::ffff://;
+		if (DXCIDR::find($ip)) {
+			
+		}
 	}
 
 	# convert the date to a unix date
@@ -1557,7 +1568,6 @@ sub _decode_pc92_call
 	my $is_node = $flag & 4;
 	my $is_extnode = $flag & 2;
 	my $here = $flag & 1;
-	my $ip;
 	my $version = $part[1] || 0;
 	my $build = $part[2] || 0;
 	my $ip = $part[3] || '';
@@ -1569,15 +1579,11 @@ sub _decode_pc92_call
 	$version =~ s/\D//g;
 	$build =~ s/^0\.//;
 	$build =~ s/\D//g;
-	$version ||= 0;
-	$build ||= 0;
-	
 	if ($ip) {
         $ip =~ s/,/:/g;
         $ip =~ s/^::ffff://i;
     }
 	dbg("$icall = '" . join("', '", $call, $is_node, $is_extnode, $here, $version, $build, $ip) . "'") if isdbg('pc92');
-
 	return ($call, $is_node, $is_extnode, $here, $version+0, $build+0, $ip);
 }
 
@@ -1626,6 +1632,10 @@ sub _add_thingy
 	my ($call, $is_node, $is_extnode, $here, $version, $build, $ip) = @$s;
 	my @rout;
 
+	# remove spurious IPV6 prefix on IPV4 addresses
+	$build ||= 0;
+	$version ||= 0;
+
 	if ($call) {
 		my $ncall = $parent->call;
 		if ($ncall ne $call) {
@@ -1649,12 +1659,12 @@ sub _add_thingy
 				@rout = $parent->add($call, $version, Route::here($here), $ip);
 				$r = Route::Node::get($call);
 				$r->PC92C_dxchan($dxchan->call, $hops) if $r;
-				if ($version && $version =~ /^\d+$/) {
+				if ($version && is_numeric($version) && !$r->K && !$user->K) {
 					my $old = $user->sort;
 					if ($user->is_ak1a && (($version >= 5455 &&  $build > 0) || ($version >= 3000 && $version <= 3500)) ) {
 						$user->sort('S');
 						dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) updated to " . $user->sort);
-					} elsif ($user->is_spider && $version =~ /^\d+$/ && ($version < 3000 || ($version > 4000 && $version < 5455))) {
+					} elsif ($user->is_spider && ($version < 3000 || ($version > 4000 && $version < 5455))) {
 						unless ($version == 5000 && $build == 0) {
 							$user->sort('A');
 							$build //= 0;
@@ -1662,6 +1672,9 @@ sub _add_thingy
 						}
 					}
 				}
+				$r->version($user->version) if $user->version;
+				$r->build($user->build) if $user->build;
+				$r->K(1) if $user->K;
 			} else {
 				dbg("ROUTE: added user $call to $ncall") if isdbg('routelow');
 				$user = check_add_user($call, 'U', $parent->call);
@@ -2006,22 +2019,38 @@ sub handle_92
 			my $call = $parent->call;
 			my $version = $ent[4] || 0;
 			my $build = $ent[5] ||  0;
+			$build =~ s/^0\.//;
 			my $oldbuild = $parent->build || 0;
 			my $oldversion = $parent->version || 0;
 			my $user = check_add_user($parent->call, 'S');
 			my $oldsort = $user->sort // '';
-#			if ($version =~ /^\d+$/  && $oldversion =~ /^\d+$/) {
-				if ($oldsort ne 'S' || $oldversion != $version || $build != $oldbuild) {
-					dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild) sort: 'S' (was $oldsort)");
-					$user->sort('S');
+
+			dbg("PCProt PC92 K v: $version ov: $oldversion b: $build ob: $oldbuild pk: " . ($parent->K || '0') . " uk: " . ($user->K || 0)) if isdbg('pc92k');
+				
+			if (is_numeric($version) || is_numeric($build)) {
+				my $changed = 0;
+				if (($oldversion ne $version || $build ne $oldbuild)) {
+					dbg("PCProt PC92 K node $call updated version: $version (was $oldversion) build: $build (was $oldbuild)");
 					$user->version($parent->version($version));
 					$user->build($parent->build($build));
-					$user->put;
+					++$changed;
 				}
-#			} else {
-#				dbg("DXProt PC92 K version strings new: '$version' old: '$oldversion'");
-#			}
-			dbg("ROUTE: reset obscount on $parent->{call} now " . $parent->obscount) if isdbg('obscount');
+				if ($oldsort ne 'S') {
+					dbg("PCProt PC92 K node $call updated sort: $sort (was $oldsort)");
+					$user->sort('S');
+					++$changed;
+				}
+				unless ($user->K) {
+					dbg("PCProt PC92 K node $call updated - marked as PC92 K user");
+					$user->K(1);
+					++$changed;
+				}
+				$user->put if $changed;
+				$parent->K(1); # mark this as come in on a K
+			} else {
+				dbg("DXProt PC92 K version call $call: invalid version: '$version' or build: '$version', ignored");
+			}
+			dbg("ROUTE: reset obscount on $call now " . $parent->obscount) if isdbg('obscount');
 		}
 	} elsif ($sort eq 'A' || $sort eq 'D' || $sort eq 'C') {
 

@@ -347,13 +347,13 @@ sub search
 	dbg("Spot::search hint='$hint', expr='$expr', spotno=$from-$to, day=$dayfrom-$dayto\n") if isdbg('search');
   
 	# build up eval to execute
+
 	dbg("Spot::search Spot eval: $expr") if isdbg('searcheval');
 	$expr =~ s/\$r/\$_[0]/g;
 	my $eval = qq{ sub { return $expr; } };
 	dbg("Spot::search Spot eval: $eval") if isdbg('searcheval');
 	my $ecode = eval $eval;
 	return ("Spot search error", $@) if $@;
-	
 	
 	my $fh;
 	my $now = $fromdate;
