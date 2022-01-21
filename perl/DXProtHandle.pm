@@ -1571,8 +1571,9 @@ sub _decode_pc92_call
 	my $version = $part[1] || 0;
 	my $build = $part[2] || 0;
 	my $ip = $part[3] || '';
-	
-	if (is_ipaddr($version)) {
+
+	# remember that, at this stage, IPV6 addresses have : replaced by ,
+	if (length $version > 4 && $version =~ /[,\.][\da-f]{1,4}/i) {
 		$ip = $version;
 		$version = 0;
 	}
