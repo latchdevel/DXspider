@@ -1,3 +1,8 @@
+21Jan22=======================================================================
+1. Fix version tracking in PC92
+2. Bring the major parts of master and mojo together to make maintenance a
+   bit less challenging. This does add anything extra to mojo, but it's still
+   quite a bit of work.
 18Jan22=======================================================================
 1. fix (un)set/registered.
 09Jan22=======================================================================
