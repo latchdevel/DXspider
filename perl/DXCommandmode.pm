@@ -208,7 +208,7 @@ sub start
 
 	# is this a bad ip address?
 	if (is_ipaddr($self->{hostname})) {
-		$self->{badip} = DXCIDR->find($self->{hostname});
+		$self->{badip} = DXCIDR::find($self->{hostname});
 	}
 	
 	# do we need to send a forward/opernam?

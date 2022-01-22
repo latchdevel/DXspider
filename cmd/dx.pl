@@ -95,7 +95,7 @@ my $callnoid = basecall($self->{call});
 if ($DXProt::baddx->in($spotted)) {
 	$localonly++; 
 }
-if ($DXProt::badspotter->in($spotternoid)) { 
+if ($DXProt::badspotter->in($spotternoid) || $self->badip) { 
 	LogDbg('DXCommand', "badspotter $spotternoid as $spotter ($oline) from $addr");
 	$localonly++; 
 }

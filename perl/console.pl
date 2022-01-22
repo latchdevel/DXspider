@@ -76,7 +76,6 @@ our @kh = ();
 our @sh = ();
 our $kpos = 0;
 our $inbuf = "";
-our $lastmin = 0;
 our $idle = 0;
 our $inscroll = 0;
 
@@ -503,6 +502,7 @@ sub rec_socket
 	$lasttime = time; 
 }
 
+my $lastmin = 0;
 
 sub idle_loop
 {
@@ -588,9 +588,6 @@ $Text::Wrap::columns = $cols;
 doresize();
 
 $SIG{__DIE__} = \&sig_term;
-
-my $lastmin = 0;
-
 
 $conn = IntMsg->connect($clusteraddr, $clusterport, rproc => \&rec_socket);
 $conn->{on_connect} = \&on_connect;
