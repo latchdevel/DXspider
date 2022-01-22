@@ -123,9 +123,12 @@ $count = 0;
 		  ve7cc => '0,VE7CC program special,yesno',
 		  verified => '9,Verified?,yesno',
 		  version => '1,Node Version',
+		  wcy => '0,Want WCY,yesno',
 		  wcyfilter => '5,WCY Filt-out',
 		  width => '0,Column Width',
+		  wwv => '0,Want WWV,yesno',
 		  wwvfilter => '5,WWV Filt-out',
+		  wx => '0,Want WX,yesno',		  
 		 );
 
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
