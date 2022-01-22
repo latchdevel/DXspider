@@ -21,18 +21,18 @@ use vars qw(%bands %regions %aliases $bandsfn %valid);
 $bandsfn = "$main::data/bands.pl";
 
 %valid = (
-		  cw => '0,CW,parraypairs',
-		  ssb => '0,SSB,parraypairs',
-		  data => '0,DATA,parraypairs',
-		  sstv => '0,SSTV,parraypairs',
-		  fstv => '0,FSTV,parraypairs',
-		  rtty => '0,RTTY,parraypairs',
-		  pactor => '0,PACTOR,parraypairs',
-		  packet => '0,PACKET,parraypairs',
-		  repeater => '0,REPEATER,parraypairs',
-		  fax => '0,FAX,parraypairs',
-		  beacon => '0,BEACON,parraypairs',
 		  band => '0,BAND,parraypairs',
+		  beacon => '0,BEACON,parraypairs',
+		  cw => '0,CW,parraypairs',
+		  data => '0,DATA,parraypairs',
+		  fax => '0,FAX,parraypairs',
+		  fstv => '0,FSTV,parraypairs',
+		  packet => '0,PACKET,parraypairs',
+		  pactor => '0,PACTOR,parraypairs',
+		  repeater => '0,REPEATER,parraypairs',
+		  rtty => '0,RTTY,parraypairs',
+		  ssb => '0,SSB,parraypairs',
+		  sstv => '0,SSTV,parraypairs',
 		 );
 
 # load the band data

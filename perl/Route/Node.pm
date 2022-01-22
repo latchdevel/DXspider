@@ -20,19 +20,19 @@ use vars qw(%list %valid @ISA $max $filterdef $obscount);
 
 %valid = (
 		  K => '9,Seen on PC92K,yesno',
-		  nodes => '0,Nodes,parray',
-		  users => '0,Users,parray',
-		  usercount => '0,User Count',
-		  version => '0,Version',
-		  build => '0,Build',
-		  handle_xml => '0,Using XML,yesno',
-		  lastmsg => '0,Last Route Msg,atime',
-		  lastid => '0,Last Route MsgID',
-		  do_pc9x => '0,Uses pc9x,yesno',
-		  via_pc92 => '0,In via pc92?,yesno',
-		  obscount => '0,Obscount',
-		  last_PC92C => '9,Last PC92C',
 		  PC92C_dxchan => '9,PC92C hops,phash',
+		  build => '0,Build',
+		  do_pc9x => '0,Uses pc9x,yesno',
+		  handle_xml => '0,Using XML,yesno',
+		  last_PC92C => '9,Last PC92C',
+		  lastid => '0,Last Route MsgID',
+		  lastmsg => '0,Last Route Msg,atime',
+		  nodes => '0,Nodes,parray',
+		  obscount => '0,Obscount',
+		  usercount => '0,User Count',
+		  users => '0,Users,parray',
+		  version => '0,Version',
+		  via_pc92 => '0,In via pc92?,yesno',,
 );
 
 $filterdef = $Route::filterdef;

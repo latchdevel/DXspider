@@ -511,16 +511,16 @@ sub cty_data
 }
 
 my %valid = (
+			 city => '0,City',
+			 cont => '0,Continent',
+			 cq => '0,CQ',
+			 dxcc => '0,DXCC',
+			 itu => '0,ITU',
 			 lat => '0,Latitude,slat',
 			 long => '0,Longitude,slong',
-			 dxcc => '0,DXCC',
 			 name => '0,Name',
-			 itu => '0,ITU',
-			 cq => '0,CQ',
 			 state => '0,State',
-			 city => '0,City',
 			 utcoff => '0,UTC offset',
-			 cont => '0,Continent',
 			);
 
 sub AUTOLOAD
