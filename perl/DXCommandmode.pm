@@ -1057,7 +1057,21 @@ sub format_dx_spot
 		}
 	}
 
-	return sprintf "DX de %-8.8s%10.1f  %-12.12s %-s $t$slot2", "$_[4]:", $_[0], $_[1], $comment;
+	my $o = sprintf("%-9s", $_[4] . ':');
+	my $qrg = sprintf "%8.1f", $_[0];
+	if (length $qrg >= 9) {
+		while (length($o)+length($qrg) > 17 && $o =~ / $/) {
+			chop $o;
+		}
+	}
+	my $spot = sprintf "%-12s", $_[1];
+	my $front = "DX de $o $qrg  $spot";
+	while (length($front) > 38 && $front =~ /  $/) {
+		chop $front;
+	}
+
+	
+	return sprintf "$front %-s $t$slot2", $comment;
 }
 
 

@@ -1,3 +1,7 @@
+22Jan22=======================================================================
+1. Refine spot display to retain the ':' and also reduce the likelyhood of
+   of misalignment by using the available space in the 39 characters more
+   intelligently. This is WIP.
 21Jan22=======================================================================
 1. Fix version tracking in PC92
 2. Bring the major parts of master and mojo together to make maintenance a
