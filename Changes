@@ -1,3 +1,8 @@
+24Jan22=======================================================================
+1. Change Local::pcprot() calling conventions to be the same as the rest of
+   software (see any 'sub handle_nn' function in DXProtHandle.pm.
+2. Corrected some interpolations in Messages. 
+3. Tried to make users file deletes and updates more stable.
 22Jan22=======================================================================
 1. Refine spot display to retain the ':' and also reduce the likelyhood of
    of misalignment by using the available space in the 39 characters more

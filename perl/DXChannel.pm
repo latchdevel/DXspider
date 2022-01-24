@@ -771,6 +771,15 @@ sub error_handler
 	$self->disconnect(1);
 }
 
+sub refresh_user
+{
+	my $call = shift;
+	my $user = shift;
+	return unless $call && $user && ref $user;
+	my $self = DXChannel::get($call);
+	$self->{user} = $user;
+	return $user;
+}
 
 sub isregistered
 {

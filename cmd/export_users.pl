@@ -8,14 +8,13 @@ my $line = shift;;
 return (1, $self->msg('e5')) unless $self->priv >= 9;
 
 $line ||= 'user_json';
-my ($fn, $flag) = split /\s+/, $line;
+my ($fn) = split /\s+/, $line;
 unless ($fn && $fn eq 'user_json') {
 	$fn =~ s|[/\.]||g;
 	$fn = "/tmp/$fn";
 }
-my $strip = $flag && $flag eq 'strip';
 
-my @out = DXUser::export($fn, $strip);
+my @out = DXUser::export($fn);
 
 return (1, @out);
 

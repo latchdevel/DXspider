@@ -20,6 +20,7 @@ use File::Copy;
 use Data::Structure::Util qw(unbless);
 use Time::HiRes qw(gettimeofday tv_interval);
 use IO::File;
+use DXChannel;
 use DXJSON;
 
 use strict;
@@ -304,6 +305,8 @@ sub put
 	$lru->put($call, $self);
 	my $ref = $self->encode;
 	$dbm->put($call, $ref);
+	DXChannel::refresh_user($call, $ref);
+	return $ref;
 }
 
 
@@ -368,208 +371,6 @@ sub fields
 	return keys(%valid);
 }
 
-
-#
-# export the database to an ascii file
-#
-
-sub export
-{
-	my $name = shift || 'user_json';
-	my $basic_info_only = shift;
-
-	my $fn = $name ne 'user_json' ? $name : "$main::local_data/$name";                       # force use of local
-	
-	# save old ones
-	copy $fn, "$fn.keep" unless -e "$fn.keep";
-	copy "$fn.ooooo", "$fn.backstop" unless -e "$fn,backstop";
-
-	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
-	move "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
-	move "$fn.oo", "$fn.ooo" if -e "$fn.oo";
-	move "$fn.o", "$fn.oo" if -e "$fn.o";
-	move "$fn", "$fn.o" if -e "$fn";
-
-	
-	my $ta = [gettimeofday];
-	my $count = 0;
-	my $err = 0;
-	my $del = 0;
-	my $spurious = 0;
-	my $unlocked = 0;
-	my $old =  0;
-	my $ancient =  0;
-	my $nodes = 0;
-	my $renamed = 0;
-		
-	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
-	if ($fh) {
-		my $key = 0;
-		my $val = undef;
-		my $action;
-		my $t = scalar localtime;
-		print $fh q{#!/usr/bin/perl
-#
-# The exported userfile for a DXSpider System
-#
-# Input file: $filename
-#       Time: $t
-#
-			
-package main;
-			
-# search local then perl directories
-BEGIN {
-	umask 002;
-				
-	# root of directory tree for this system
-	$root = "/spider"; 
-	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-	
-	unshift @INC, "$root/perl";	# this IS the right way round!
-	unshift @INC, "$root/local";
-	
-	# try to detect a lockfile (this isn't atomic but 
-	# should do for now
-	$lockfn = "$root/local_data/cluster.lck";       # lock file name
-	if (-e $lockfn) {
-		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
-		my $pid = <CLLOCK>;
-		chomp $pid;
-		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
-		close CLLOCK;
-	}
-}
-
-use SysVar;
-use DXUtil;
-use DXUser;
-use JSON;
-use Time::HiRes qw(gettimeofday tv_interval);
-package DXUser;
-
-our $json = JSON->new->canonical(1);
-
-my $ta = [gettimeofday];
-our $filename = "$main::local_data/users.v3j";
-my $exists = -e $filename ? "OVERWRITING" : "CREATING"; 
-print "perl user_json $exists $filename\n";
-
-del_file();
-init(2);
-%u = ();
-my $count = 0;
-my $err = 0;
-while (<DATA>) {
-	chomp;
-	my @f = split /\t/;
-	my $ref = decode($f[1]);
-	if ($ref) {
-		$ref->put();
-		$count++;
-	} else {
-		print "# Error: $f[0]\t$f[1]\n";
-		$err++
-	}
-}
-DXUser::sync(); DXUser::finish();
-my $diff = _diffms($ta);
-print "There are $count user records and $err errors in $diff mS\n";
-};
-		print $fh "__DATA__\n";
-
-        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
-			if (!is_callsign($key) || $key =~ /^0/) {
-				my $eval = $val;
-				my $ekey = $key;
-				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
-				LogDbg('DXCommand', "Export Error1: invalid call '$key' => '$val'");
-				eval {$dbm->del($key)};
-			    dbg(carp("Export Error1: delete $key => '$val' $@")) if $@;
-				++$err;
-				next;
-			}
-			my $ref;
-			eval {$ref = decode($val); };
-			if ($ref) {
-				my $t = $ref->{lastseen} if exists $ref->{lastseen};
-				$t ||= $ref->{lastin} if exists $ref->{lastin};
-				$t ||= $ref->{lastoper} if exists $ref->{lastoper};
-				$t //= 0;
-				
-				if ($ref->is_user) {
-					if (!$ref->{priv} && $main::systime > $t + $tooold) {
-						unless (($ref->{lat} && $ref->{long}) || $ref->{qth} || $ref->{name} || $ref->{qra}) {
-							LogDbg('DXCommand', sprintf("$ref->{call} deleted, empty and too Old at %s", difft($t, ' ')));
-							++$del;
-							++$old;
-							eval {$dbm->del($key)};
-							dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
-							next;
-						}
-					}
-					if ($main::systime > $t + $veryold) {
-						LogDbg('DXCommand', sprintf("$ref->{call} deleted, POSITIVELY ANCIENT at %s", difft($t, ' ')));
-						++$del;
-						++$ancient;
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
-						next;
-					}
-					if (exists $ref->{lockout} && $ref->{lockout} == 1 && exists $ref->{priv} && $ref->{priv} == 1) {
-						LogDbg('DXCommand', "$ref->{call} depriv'd and unlocked");
-						$ref->{lockout} = $ref->{priv} = 0;
-						$ref->put;
-						++$unlocked;
-					}
-					if ($ref->is_node && $main::systime > $t + $veryold) {
-						LogDbg('DXCommand', sprintf("NODE $ref->{call} deleted (%s) old", difft($t, ' ')));
-						++$del;
-						++$nodes;
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: delete '$key' => '$val' $@")) if $@;
-						next;
-					}
-					
-					my $normcall = normalise_call($key);
-					if ($normcall ne $key) {
-						# if the normalised call does not exist, create it from the duff call.
-						my $nref = DXUser::get_current($normcall);
-						unless ($nref) {
-							$ref->{call} = $normcall;
-							$ref->put;
-							LogDbg('DXCommand', "DXProt: spurious call $key normalises to $normcall renaming $key -> $normcall");
-							++$renamed;
-						} 
-						LogDbg('DXCommand', "DXProt: spurious call $key (should be $normcall), removing");
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error1: delete $key => '$val' $@")) if $@;
-						++$spurious;
-						++$del;
-						next;
-					}
-				}
-			} else {
-				LogDbg('DXCommand', "Export Error3: '$key'\t" . carp($val) ."\n$@");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: delete '$key' => '$val' $@")) if $@;
-				++$err;
-				next;
-			}
-			
-			# only store users that are reasonably active or have useful information
-			print $fh "$key\t" . encode($ref) . "\n";
-			++$count;
-		}
-	} 
-	$fh->close;
-
-	my $diff = _diffms($ta);
-	my $s = qq{Exported users to $fn - $count Users,  $del Deleted ($old empty \& too old, $ancient ancient, $nodes nodes, $spurious spurious), $renamed renamed, $unlocked Unlocked, $err Errors in $diff mS ('sh/log Export' for details)};
-	LogDbg('command', $s);
-	return $s;
-}
 
 #
 # group handling
@@ -896,20 +697,285 @@ sub lastping
 	return $b->{$call};	
 }
 
-#sub registered
-#{
-#	my $self = shift;
-#	my $val;
-#	if (defined $_[0]) {
-#		$val = unpad($_[0]);
-#		$self->{registered} = $val;
-#	}
-#	if (exists $self->{registered}) {
-#		$val = $self->{registered} // 0;
-#	}
-#	return $val // 0 ;					# to stop undef warnings
-#}
 
+#
+# export the database to an ascii file
+#
+
+sub export
+{
+	my $name = shift || 'user_json';
+
+	my $fn = $name ne 'user_json' ? $name : "$main::local_data/$name";                       # force use of local
+	
+	# save old ones
+	copy $fn, "$fn.keep" unless -e "$fn.keep";
+	copy "$fn.ooooo", "$fn.backstop" unless -e "$fn,backstop";
+
+	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
+	move "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
+	move "$fn.oo", "$fn.ooo" if -e "$fn.oo";
+	move "$fn.o", "$fn.oo" if -e "$fn.o";
+	move "$fn", "$fn.o" if -e "$fn";
+
+	
+	my $ta = [gettimeofday];
+	my $count = 0;
+	my $err = 0;
+	my $del = 0;
+	my $spurious = 0;
+	my $unlocked = 0;
+	my $old =  0;
+	my $ancient =  0;
+	my $nodes = 0;
+	my $renamed = 0;
+
+	my %del;
+	
+	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
+	if ($fh) {
+		my $key = 0;
+		my $val = undef;
+		my $action;
+		my $t = scalar localtime;
+		print $fh export_preamble();
+		
+
+        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
+			if (!is_callsign($key) || $key =~ /^0/) {
+				my $eval = $val;
+				my $ekey = $key;
+				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg;
+				LogDbg('DXCommand', "Export Error1: invalid call '$key' => '$val'");
+
+				$del{$key} = $val;
+				++$err;
+				next;
+			}
+			my $ref;
+			eval {$ref = decode($val); };
+			if ($ref) {
+				my $t = $ref->{lastseen} if exists $ref->{lastseen};
+				$t ||= $ref->{lastin} if exists $ref->{lastin};
+				$t ||= $ref->{lastoper} if exists $ref->{lastoper};
+				$t //= 0;
+				
+				if ($ref->is_user) {
+					if (!$ref->{priv} && $main::systime > $t + $tooold) {
+						unless (($ref->{lat} && $ref->{long}) || $ref->{qth} || $ref->{name} || $ref->{qra}) {
+							LogDbg('DXCommand', sprintf("$ref->{call} deleted, empty and too Old at %s", difft($t, ' ')));
+							++$del;
+							++$old;
+							$del{$key} = $val;
+							next;
+						}
+					}
+					if ($main::systime > $t + $veryold) {
+						LogDbg('DXCommand', sprintf("$ref->{call} deleted, POSITIVELY ANCIENT at %s", difft($t, ' ')));
+						++$del;
+						++$ancient;
+						$del{$key} = $val;
+						next;
+					}
+					if (exists $ref->{lockout} && $ref->{lockout} == 1 && exists $ref->{priv} && $ref->{priv} == 1) {
+						LogDbg('DXCommand', "$ref->{call} depriv'd and unlocked");
+						$ref->{lockout} = $ref->{priv} = 0;
+						$ref->put;
+						++$unlocked;
+					}
+					if ($ref->is_node && $main::systime > $t + $veryold) {
+						LogDbg('DXCommand', sprintf("NODE $ref->{call} deleted (%s) old", difft($t, ' ')));
+						++$del;
+						++$nodes;
+						$del{$key} = $val;
+						next;
+					}
+					
+					my $normcall = normalise_call($key);
+					if ($normcall ne $key) {
+						# if the normalised call does not exist, create it from the duff call.
+						my $nref = DXUser::get_current($normcall);
+						unless ($nref) {
+							$ref->{call} = $normcall;
+							$ref->put;
+							LogDbg('DXCommand', "DXProt: spurious call $key normalises to $normcall renaming $key -> $normcall");
+							++$renamed;
+						} 
+						LogDbg('DXCommand', "DXProt: spurious call $key (should be $normcall), removing");
+						$del{$key} = $val;
+						++$spurious;
+						++$del;
+						next;
+					}
+				}
+			} else {
+				LogDbg('DXCommand', "Export Error3: '$key'\t" . carp($val) ."\n$@");
+				$del{$key} = $val;
+				++$err;
+				next;
+			}
+			
+			# only store users that are reasonably active or have useful information
+			print $fh "$key\t" . encode($ref) . "\n";
+			++$count;
+		}
+	} 
+	$fh->close;
+	
+	while (my ($k, $v) = each %del) {
+		eval {$dbm->del($k)};
+		LogDbg('DXCommand', "Error deleting key: $k value: $v error: $@") if $@;
+	}
+
+	my $diff = _diffms($ta);
+	my $s = qq{Exported users to $fn - $count Users,  $del Deleted ($old empty \& too old, $ancient ancient, $nodes nodes, $spurious spurious), $renamed renamed, $unlocked Unlocked, $err Errors in $diff mS ('sh/log Export' for details)};
+	LogDbg('command', $s);
+	return ($s);
+}
+
+sub export_preamble
+{
+	return q{#!/usr/bin/perl
+#
+# The exported userfile for a DXSpider System
+#
+# Input file: $filename
+#       Time: $t
+#
+			
+package main;
+			
+# search local then perl directories
+BEGIN {
+	umask 002;
+				
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+	
+	# try to detect a lockfile (this isn't atomic but 
+	# should do for now
+	$lockfn = "$root/local_data/cluster.lck";       # lock file name
+	if (-e $lockfn) {
+		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+		my $pid = <CLLOCK>;
+		chomp $pid;
+		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
+		close CLLOCK;
+	}
+}
+
+use SysVar;
+use DXUtil;
+use DXUser;
+use DXChannel;
+use JSON;
+use Time::HiRes qw(gettimeofday tv_interval);
+package DXUser;
+
+our $json = JSON->new->canonical(1);
+
+my $ta = [gettimeofday];
+our $filename = "$main::local_data/users.v3j";
+my $exists = -e $filename ? "OVERWRITING" : "CREATING"; 
+print "perl user_json $exists $filename\n";
+
+del_file();
+init(2);
+%u = ();
+my $count = 0;
+my $err = 0;
+
+while (<DATA>) {
+	chomp;
+	my @f = split /\t/;
+	my $ref = decode($f[1]);
+	if ($ref) {
+		$ref->put();
+		$count++;
+	} else {
+		print "# Error: $f[0]\t$f[1]\n";
+		$err++
+	}
+}
+DXUser::sync(); DXUser::finish();
+my $diff = _diffms($ta);
+print "There are $count user records and $err errors in $diff mS\n";
+
+exit $err ? -1 : 0;
+
+__DATA__
+};
+
+}
+
+sub recover
+{
+	my $name = shift || 'recover_json';
+
+	my $fn = $name ne 'recover_json' ? $name : "$main::local_data/$name";                       # force use of local
+	
+	# save old ones
+	move "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
+	move "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
+	move "$fn.oo", "$fn.ooo" if -e "$fn.oo";
+	move "$fn.o", "$fn.oo" if -e "$fn.o";
+	move "$fn", "$fn.o" if -e "$fn";
+
+	my $ta = [gettimeofday];
+	my $count = 0;
+	my $errs = 0;
+	my $total = 0;
+		
+	my $strings = "strings $filename";
+	my $ifh = new IO::File "$strings |" or return "cannot open input $filename ($!)";
+	my $fh = new IO::File ">$fn" or return "cannot open output $fn ($!)";
+	if ($ifh && $fh) {
+		my $key = 0;
+		my $val = undef;
+		my $action;
+		my $t = scalar localtime;
+		print $fh export_preamble();
+
+		my $call;
+		my $l;
+
+		my $last = '';
+		while (defined ($l = $ifh->getline)) {
+			next unless  $l =~ /^{"call":"[-\d\w\/]+"/;
+			dbg("recover: $l");
+			$l =~ s/[^}]+$//;
+			my $data = $l;
+			if ($data) {
+				my $v;
+				
+				eval{ $v = decode($data); };
+				if ($@) {
+					++$errs;
+					++$total;
+				} else {
+					next if $data eq $last;
+					print $fh  "$v->{call}\t$l\n";
+					++$count;
+					++$total;
+					$last = $l;
+				}
+			}
+		}
+	}
+	$fh->close;
+	$ifh->close;
+
+	my $diff = _diffms($ta);
+	my $s = qq{Recovered users to $fn - $count Users, $errs errors $total possible records read in $diff mS ('sh/log recover' for details)};
+	LogDbg('command', $s);
+	return ($s);
+}
+	
 1;
 __END__
 

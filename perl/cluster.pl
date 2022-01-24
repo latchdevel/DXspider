@@ -176,8 +176,6 @@ use Fcntl ':flock';
 use POSIX ":sys_wait_h";
 use Web;
 
-use vars qw($version $build $gitversion $gitbranch);
-
 use strict;
 
 use Local;

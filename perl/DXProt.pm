@@ -429,14 +429,15 @@ sub normal
 		}
 	}
 
+	my $origin = $self->{call};
+
 	if (defined &Local::pcprot) {
 		my $r;
-		eval { $r = Local::pcprot($self, $pcno, $line, @field); };
+		eval { $r = Local::pcprot($self, $pcno, $line,  $origin, \@field); };
 		return if $r;			# i.e don't process it
 	}
 
 	# send it out for processing
-	my $origin = $self->{call};
 	no strict 'subs';
 	my $sub = "handle_$pcno";
 
