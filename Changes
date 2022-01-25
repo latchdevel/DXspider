@@ -1,5 +1,7 @@
 25Jan22=======================================================================
 1. Fixed grepdbg so that it does what -help says it does.
+2. Replaced all " characters with ' in Messages. For some reason things in "
+   marks are being interpolated at the wrong time.
 21Jan22=======================================================================
 1. downgrade console.pl require to perl 5.8.1.
 2. Backport grepdbg from mojo.
