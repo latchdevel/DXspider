@@ -1,3 +1,5 @@
+25Jan22=======================================================================
+1. Fixed grepdbg so that it does what -help says it does.
 24Jan22=======================================================================
 1. Change Local::pcprot() calling conventions to be the same as the rest of
    software (see any 'sub handle_nn' function in DXProtHandle.pm.
