@@ -422,135 +422,6 @@ sub fields
 
 
 #
-# export the database to an ascii file
-#
-
-sub export
-{
-	my $fn = shift;
-	my $basic_info_only = shift;
-	
-	# save old ones
-	rename "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
-	rename "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
-	rename "$fn.oo", "$fn.ooo" if -e "$fn.oo";
-	rename "$fn.o", "$fn.oo" if -e "$fn.o";
-	rename "$fn", "$fn.o" if -e "$fn";
-
-	my $count = 0;
-	my $err = 0;
-	my $del = 0;
-	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
-	if ($fh) {
-		my $key = 0;
-		my $val = undef;
-		my $action;
-		my $t = scalar localtime;
-		print $fh q{#!/usr/bin/perl
-#
-# The exported userfile for a DXSpider System
-#
-# Input file: $filename
-#       Time: $t
-#
-			
-package main;
-			
-# search local then perl directories
-BEGIN {
-	umask 002;
-				
-	# root of directory tree for this system
-	$root = "/spider"; 
-	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
-	
-	unshift @INC, "$root/perl";	# this IS the right way round!
-	unshift @INC, "$root/local";
-	
-	# try to detect a lockfile (this isn't atomic but 
-	# should do for now
-	$lockfn = "$root/local/cluster.lck";       # lock file name
-	if (-e $lockfn) {
-		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
-		my $pid = <CLLOCK>;
-		chomp $pid;
-		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
-		close CLLOCK;
-	}
-}
-
-package DXUser;
-
-use DXVars;
-use DXUser;
-
-if (@ARGV) {
-	$main::userfn = shift @ARGV;
-	print "user filename now $userfn\n";
-}
-
-DXUser->del_file($main::userfn);
-DXUser->init($main::userfn, 1);
-%u = ();
-my $count = 0;
-my $err = 0;
-while (<DATA>) {
-	chomp;
-	my @f = split /\t/;
-	my $ref = asc_decode($f[1]);
-	if ($ref) {
-		$ref->put();
-		$count++;
-	} else {
-		print "# Error: $f[0]\t$f[1]\n";
-		$err++
-	}
-}
-DXUser->sync; DXUser->finish;
-print "There are $count user records and $err errors\n";
-};
-		print $fh "__DATA__\n";
-
-        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
-			if (!is_callsign($key) || $key =~ /^0/) {
-				my $eval = $val;
-				my $ekey = $key;
-				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
-				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
-				++$err;
-				next;
-			}
-			my $ref = decode($val);
-			if ($ref) {
-				my $t = $ref->{lastin} || 0;
-				if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
-					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
-						eval {$dbm->del($key)};
-						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
-						LogDbg('DXCommand', "$ref->{call} deleted, too old");
-						$del++;
-						next;
-					}
-				}
-				# only store users that are reasonably active or have useful information
-				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
-				++$count;
-			} else {
-				LogDbg('DXCommand', "Export Error3: $key\t$val");
-				eval {$dbm->del($key)};
-				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
-				++$err;
-			}
-		} 
-        $fh->close;
-    } 
-	return "$count Users $del Deleted $err Errors ('sh/log Export' for details)";
-}
-
-#
 # group handling
 #
 
@@ -862,6 +733,147 @@ sub lastping
 	$b->{$call} = shift if @_;
 	return $b->{$call};	
 }
+
+#
+# export the database to an ascii file
+#
+
+sub export
+{
+	my $fn = shift;
+	my $basic_info_only = shift;
+	
+	# save old ones
+	rename "$fn.oooo", "$fn.ooooo" if -e "$fn.oooo";
+	rename "$fn.ooo", "$fn.oooo" if -e "$fn.ooo";
+	rename "$fn.oo", "$fn.ooo" if -e "$fn.oo";
+	rename "$fn.o", "$fn.oo" if -e "$fn.o";
+	rename "$fn", "$fn.o" if -e "$fn";
+
+	my $count = 0;
+	my $err = 0;
+	my $del = 0;
+	my $fh = new IO::File ">$fn" or return "cannot open $fn ($!)";
+	if ($fh) {
+		my $key = 0;
+		my $val = undef;
+		my $action;
+		my $t = scalar localtime;
+
+		print $fh  export_preamble();
+
+        for ($action = R_FIRST; !$dbm->seq($key, $val, $action); $action = R_NEXT) {
+			if (!is_callsign($key) || $key =~ /^0/) {
+				my $eval = $val;
+				my $ekey = $key;
+				$eval =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				$ekey =~ s/([\%\x00-\x1f\x7f-\xff])/sprintf("%%%02X", ord($1))/eg; 
+				LogDbg('DXCommand', "Export Error1: $ekey\t$eval");
+				eval {$dbm->del($key)};
+				dbg(carp("Export Error1: $ekey\t$eval\n$@")) if $@;
+				++$err;
+				next;
+			}
+			my $ref = decode($val);
+			if ($ref) {
+				my $t = $ref->{lastin} || 0;
+				if ($ref->{sort} eq 'U' && !$ref->{priv} && $main::systime > $t + $tooold) {
+					unless ($ref->{lat} && $ref->{long} || $ref->{qth} || $ref->{qra}) {
+						eval {$dbm->del($key)};
+						dbg(carp("Export Error2: $key\t$val\n$@")) if $@;
+						LogDbg('DXCommand', "$ref->{call} deleted, too old");
+						$del++;
+						next;
+					}
+				}
+				# only store users that are reasonably active or have useful information
+				print $fh "$key\t" . $ref->asc_encode($basic_info_only) . "\n";
+				++$count;
+			} else {
+				LogDbg('DXCommand', "Export Error3: $key\t$val");
+				eval {$dbm->del($key)};
+				dbg(carp("Export Error3: $key\t$val\n$@")) if $@;
+				++$err;
+			}
+		} 
+        $fh->close;
+    } 
+	return "$count Users $del Deleted $err Errors ('sh/log Export' for details)";
+}
+
+sub export_preamble
+{
+
+return	q{#!/usr/bin/perl
+#
+# The exported userfile for a DXSpider System
+#
+# Input file: $filename
+#       Time: $t
+#
+			
+package main;
+			
+# search local then perl directories
+BEGIN {
+	umask 002;
+				
+	# root of directory tree for this system
+	$root = "/spider"; 
+	$root = $ENV{'DXSPIDER_ROOT'} if $ENV{'DXSPIDER_ROOT'};
+	
+	unshift @INC, "$root/perl";	# this IS the right way round!
+	unshift @INC, "$root/local";
+	
+	# try to detect a lockfile (this isn't atomic but 
+	# should do for now
+	$lockfn = "$root/local/cluster.lck";       # lock file name
+	if (-e $lockfn) {
+		open(CLLOCK, "$lockfn") or die "Can't open Lockfile ($lockfn) $!";
+		my $pid = <CLLOCK>;
+		chomp $pid;
+		die "Lockfile ($lockfn) and process $pid exists - cluster must be stopped first\n" if kill 0, $pid;
+		close CLLOCK;
+	}
+}
+
+package DXUser;
+
+use DXVars;
+use DXUser;
+
+if (@ARGV) {
+	$main::userfn = shift @ARGV;
+	print "user filename now $userfn\n";
+}
+
+DXUser->del_file($main::userfn);
+DXUser->init($main::userfn, 1);
+%u = ();
+my $count = 0;
+my $err = 0;
+while (<DATA>) {
+	chomp;
+	my @f = split /\t/;
+	my $ref = asc_decode($f[1]);
+	if ($ref) {
+		$ref->put();
+		$count++;
+	} else {
+		print "# Error: $f[0]\t$f[1]\n";
+		$err++
+	}
+}
+DXUser->sync; DXUser->finish;
+print "There are $count user records and $err errors\n";
+exit $err ? -1 : 1;
+
+__DATA__
+};
+	
+}
+
+
 1;
 __END__
 

@@ -25,6 +25,8 @@
 
 require 5.004;
 
+package main;
+
 # search local then perl directories
 BEGIN {
 	# root of directory tree for this system
@@ -42,7 +44,7 @@ use Julian;
 
 use strict;
 
-use vars qw(@list $fp $today $string);
+use vars qw(@days $fp $today $string);
 
 
 $fp = DXLog::new('debug', 'dat', 'd');
@@ -53,20 +55,21 @@ my @patt;
 
 foreach my $arg (@ARGV) {
 	if ($arg =~ /^-/) {
-		$arg =~ s/^-//o;
-		if ($arg =~ /^\s*\-+(?:[h\?]e?l?p?)/) {
+		$arg =~ s/^-+//;
+		if ($arg =~ /\?|^he?l?p?/) {
 			usage();
 			exit(0);
 		}
-		push @list, $arg;
+		$nolines = $arg if $arg =~ /^\d+$/;
 	} elsif ($arg =~ /^\d+$/) {
-		$nolines = $arg;
+		push @days, $arg;
 	} elsif ($arg =~ /\.pm$/) {
 		if (-e $arg) {
 			my $fn = $arg;
 			$fn =~ s/\.pm$//;
 			eval { require $arg};
 			die "requiring $fn failed $@" if $@;
+			die "required $fn does not contain 'sub handle' (check that 'package main;' exists)" unless main->can('handle');
 		} else {
 			die "$arg not found";
 		}
@@ -77,28 +80,30 @@ foreach my $arg (@ARGV) {
 
 push @patt, '.*' unless @patt;
 
-push @list, "0" unless @list;
-for my $entry (@list) {
+push @days, "0" unless @days;
+for my $entry (@days) {
 	my $now = $today->sub($entry); 
 	my $fh = $fp->open($now); 
 	my $line;
 	my $do;
 
-	if (main->can('handle')) {
-		$do = \&handle;
-	} else {
-		$do = \&process;
-	}
 
 	begin() if main->can('begin');
 	if ($fh) {
 		while (<$fh>) {
-			&$do($_);
+			if (main->can('handle')) {
+				handle($_);
+			} else {
+				process($_);
+			}
 		}
 		$fp->close();
 	}
 	end() if main->can('end');
 }
+
+total() if main->can('total');
+exit 0;
 
 sub process
 {
@@ -115,20 +120,57 @@ sub process
 			last unless $line =~ m{$p}i;
 		}
 		++$flag;
-	}		
+	}
 	if ($flag == @patt) {
 		for (@prev) {
 			s/([\x00-\x1f\x7f-\xff])/sprintf("\\x%02X", ord($1))/eg; 
 			my ($t, $l) =  split /\^/, $_, 2;
 			print atime($t), ' ', $l, "\n";
-			print '----------------' if $nolines > 1;
 		}
+		print "------------------\n" if $nolines > 1;
 		@prev = ();
 	}
 }
-	
+
 sub usage
 {
-	die "usage: grepdbg [nn days before] [-nnn lines before] [<perl file name>] [<regexp>|!<regexp>]...\n";
+	print << "XXX";
+
+ usage: grepdbg [nn days before] [-nnn lines before] [<perl file name>] [<regexp>|!<regexp>]...
+
+        grepdbg with no argumants will simply list the current debug log with the timestamp
+        for each line decoded into a human readable form. 
+
+          grepdbg | less
+
+        is a handy way of scrolling through the debug log.
+
+        You can install your own content and display arrangement (useful for filtering data 
+        in some complicated way). You call it like this (assuming it is called 'filter.pm').
+
+        grepdbg filter.pm
+
+        All the other arguments to grepdbg are available to limit the input to your filter. 
+        If you want them.
+
+        The filter module MUST contain at least:
+
+                  package main;
+
+                  sub handle
+                  {
+                     your code goes here
+                  }
+                  1;
+
+        It can also have a 'sub begin {...}' and / or 'sub end {...}' which are executed
+        immediately after opening a logfile and then just before closing it, respectively.
+
+        You can also add a 'sub total {...}' which executes after the last line is 
+        printed and grepdbg exits.
+
+        Read the code of this program and copy'n'paste the 'sub process' code and its name
+        to 'sub handle'. Modify it to your requirements... 
+
+XXX
 }
-exit(0);
