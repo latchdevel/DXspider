@@ -138,7 +138,12 @@ sub usage
 
  usage: grepdbg [nn days before] [-nnn lines before] [<perl file name>] [<regexp>|!<regexp>]...
 
-        grepdbg with no argumants will simply list the current debug log with the timestamp
+        You can have more than one <regexp> with an implicit 'and' between them. All 
+        <regexes> are caseless. It's recommended to put 'not' (!<regex>) first in any list.
+        Don't forget that you are doing this in a shell and you may need to quote your
+        <regex>s.
+
+        grepdbg with no arguments will simply list the current debug log with the timestamp
         for each line decoded into a human readable form. 
 
           grepdbg | less
@@ -169,8 +174,8 @@ sub usage
         You can also add a 'sub total {...}' which executes after the last line is 
         printed and grepdbg exits.
 
-        Read the code of this program and copy'n'paste the 'sub process' code and its name
-        to 'sub handle'. Modify it to your requirements... 
+        Read the code of this program and copy'n'paste the 'sub process' code and change 
+        its name to 'sub handle'. Modify it to your requirements... 
 
 XXX
 }
