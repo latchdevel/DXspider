@@ -1,5 +1,6 @@
 28Jan22=======================================================================
 1. Fixed duplicate spot display.
+2. Add "Capabilities:" line on startup (3rd line of output).
 25Jan22=======================================================================
 1. Fixed grepdbg so that it does what -help says it does.
 2. Replaced all " characters with ' in Messages. For some reason things in "
