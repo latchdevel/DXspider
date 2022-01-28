@@ -557,6 +557,8 @@ sub send_dx_spot
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
 		next if $dxchan == $self && $self->is_node;
+		next if $dxchan == $self;
+
 		if ($line =~ /PC61/ && !($dxchan->is_spider || $dxchan->is_user)) {
 			unless ($pc11) {
 				my @f = split /\^/, $line;

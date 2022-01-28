@@ -1,3 +1,5 @@
+28Jan22=======================================================================
+1. Fixed duplicate spot display.
 25Jan22=======================================================================
 1. Fixed grepdbg so that it does what -help says it does.
 2. Replaced all " characters with ' in Messages. For some reason things in "

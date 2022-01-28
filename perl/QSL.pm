@@ -135,4 +135,9 @@ sub put
 	$dbm->put($key, $value);
 }
 
+sub active
+{
+	return $dbm;
+}
+
 1;

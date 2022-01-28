@@ -272,10 +272,16 @@ sub login
 }
 
 # cease running this program, close down all the connections nicely
+our $is_ceasing;
+
 sub cease
 {
 	my $dxchan;
 
+	cluck("ceasing") if $is_ceasing; 
+
+	return if $is_ceasing++;
+	
 	unless ($is_win) {
 		$SIG{'TERM'} = 'IGNORE';
 		$SIG{'INT'} = 'IGNORE';
@@ -294,12 +300,13 @@ sub cease
 	foreach $dxchan (DXChannel::get_all_nodes) {
 	    $dxchan->disconnect(2) unless $dxchan == $main::me;
 	}
-	Msg->event_loop(100, 0.01);
 
 	# disconnect users
 	foreach $dxchan (DXChannel::get_all_users) {
 		$dxchan->disconnect;
 	}
+
+	Msg->event_loop(100, 0.01);
 
 	# disconnect AGW
 	AGWMsg::finish();
@@ -310,8 +317,9 @@ sub cease
 
 	# end everything else
 	Msg->event_loop(100, 0.01);
-	DXUser::finish();
 	DXDupe::finish();
+	QSL::finish();
+	DXUser::finish();
 
 	# close all databases
 	DXDb::closeall;
@@ -321,11 +329,11 @@ sub cease
 		$l->close_server;
 	}
 
-	LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O ended");
+	$dbh->finish if $dbh;
+
+	LogDbg("DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O ended");
 	dbgclose();
 	Logclose();
-
-	$dbh->finish if $dbh;
 
 	unlink $lockfn;
 #	$SIG{__WARN__} = $SIG{__DIE__} =  sub {my $a = shift; cluck($a); };
@@ -442,7 +450,8 @@ DXXml::init();
 my ($year) = (gmtime)[5];
 $year += 1900;
 LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O started");
-dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
+LogDbg('cluster', "Copyright (c) 1998-$year Dirk Koopman G1TLH");
+LogDbg('cluster', "Capabilities: ve7cc rbn");
 
 # load Prefixes
 dbg("loading prefixes ...");
@@ -646,7 +655,12 @@ for (;;) {
 		last if --$decease <= 0;
 	}
 }
-cease(0);
+cease(0) unless $is_ceasing;
 exit(0);
 
 
+#
+sub END
+{
+	cease(0) unless $is_ceasing;
+}

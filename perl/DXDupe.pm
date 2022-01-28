@@ -34,6 +34,11 @@ sub finish
 	unlink $fn;
 }
 
+sub active
+{
+	return $dbm;
+}
+
 sub check
 {
 	my $s = shift;

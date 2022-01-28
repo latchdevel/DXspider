@@ -100,6 +100,7 @@ sub start
 
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
+	$self->send("Capabilities: ve7cc");
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv || 0;
 	$self->{lang} = $user->lang || $main::lang || 'en';

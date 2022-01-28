@@ -137,17 +137,17 @@ $count = 0;
 $maxerrors = 20;				# the maximum number of concurrent errors allowed before disconnection
 
 # object destruction
-sub DESTROY
-{
-	my $self = shift;
-	for (keys %$self) {
-		if (ref($self->{$_})) {
-			delete $self->{$_};
-		}
-	}
-	dbg("DXChannel $self->{call} destroyed ($count)") if isdbg('chan');
-	$count--;
-}
+# sub DESTROY
+# {
+# 	my $self = shift;
+# 	for (keys %$self) {
+# 		if (ref($self->{$_})) {
+# 			delete $self->{$_};
+# 		}
+# 	}
+# 	dbg("DXChannel $self->{call} destroyed ($count)") if isdbg('chan');
+# 	$count--;
+# }
 
 # create a new channel object [$obj = DXChannel->new($call, $msg_conn_obj, $user_obj)]
 sub alloc
@@ -257,7 +257,7 @@ sub get_all_node_calls
 	my $ref;
 	my @out;
 	foreach $ref (values %channels) {
-		push @out, $ref->{call} if $ref->is_node;
+		push @out, $ref->{call} if $ref && $ref->is_node;
 	}
 	return @out;
 }
@@ -268,7 +268,7 @@ sub get_all_users
 	my $ref;
 	my @out;
 	foreach $ref (values %channels) {
-		push @out, $ref if $ref->is_user;
+		push @out, $ref if $ref &&  $ref->is_user;
 	}
 	return @out;
 }

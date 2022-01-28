@@ -188,6 +188,11 @@ sub init
 	$filename = $ufn;
 }
 
+sub active
+{
+	return $dbm;
+}
+
 sub del_file
 {
 	my ($pkg, $fn) = @_;
@@ -214,6 +219,7 @@ sub process
 
 sub finish
 {
+	print "DXUser Finishing\n";
 	undef $dbm;
 	untie %u;
 }
@@ -873,7 +879,10 @@ __DATA__
 	
 }
 
-
+sub END
+{
+	finish() if $dbm;
+}
 1;
 __END__
 

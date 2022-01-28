@@ -34,7 +34,7 @@ use DXVars;
 use DXUtil;
 use Julian;
 
-use Carp;
+use Carp qw(confess cluck);
 
 use strict;
 
@@ -56,7 +56,8 @@ sub new
 	# make sure the directory exists
 	mkdir($ref->{prefix}, 0777) unless -e $ref->{prefix};
 	$logs{$ref} = $ref;
-	
+	$ref->{jdate} = $ref->unixtoj($main::systime);
+
 	return $ref;
 }
 
@@ -148,10 +149,14 @@ sub unixtoj($$)
 sub write($$$)
 {
 	my ($self, $jdate, $line) = @_;
+	cluck("Log::write \$jdate undefined") unless $jdate;
+#	cluck("Log::write \$self->jdate undefined") unless $self->{jdate};
 	if (!$self->{fh} || 
-		$self->{mode} ne ">>" || 
-		$jdate->year != $self->{jdate}->year || 
-		$jdate->thing != $self->{jdate}->thing) {
+		$self->{mode} ne ">>" ||
+		$jdate->year !=
+		$self->{jdate}->year ||
+		$jdate->thing
+		!= $self->{jdate}->thing) {
 		$self->open($jdate, ">>") or confess "can't open $self->{fn} $!";
 	}
 
@@ -183,14 +188,6 @@ sub close
 	delete $self->{fh};	
 }
 
-sub DESTROY
-{
-	my $self = shift;
-	delete $logs{$self};
-	undef $self->{fh};			# close the filehandle
-	delete $self->{fh} if $self->{fh};
-}
-
 sub flushall
 {
 	foreach my $l (values %logs) {
@@ -204,7 +201,7 @@ sub flushall
 # The user is responsible for making sense of this!
 sub Log
 {
-	my $t = time;
+	my $t = $main::systime;
 	$log->writeunix($t, join('^', $t, @_) );
 }
 
