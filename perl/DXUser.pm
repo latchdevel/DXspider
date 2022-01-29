@@ -51,6 +51,8 @@ my $json;
 		  buddies => '0,Buddies,parray',
 		  build => '1,Build',
 		  call => '0,Callsign',
+		  clientoutput => '0,User OUT Format',
+		  clientinput => '0,User IN Format',
 		  connlist => '1,Connections,parraydifft',
 		  dxok => '9,Accept DX Spots?,yesno', # accept his dx spots?
 		  email => '0,E-mail Address,parray',
@@ -80,7 +82,7 @@ my $json;
 		  prompt => '0,Required Prompt',
 		  qra => '0,Locator',
 		  qth => '0,Home QTH',
-		  rbnseeme => '0,RBN See Me',
+		  rbnseeme => '0,RBN See Me,yesno',
 		  registered => '9,Registered?,yesno',
 		  startt => '0,Start Time,cldatetime',
 		  version => '1,Version',
@@ -188,6 +190,7 @@ sub process
 
 sub finish
 {
+	dbg('DXUser finished');
 	$dbm->sync;
 	undef $dbm;
 	untie %u;
@@ -975,7 +978,15 @@ sub recover
 	LogDbg('command', $s);
 	return ($s);
 }
-	
+
+sub END
+{
+	if ($dbm) {
+		print "DXUser Ended\n";
+		finish();
+	}
+}
+
 1;
 __END__
 

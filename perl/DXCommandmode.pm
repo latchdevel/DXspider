@@ -106,6 +106,7 @@ sub start
 
 	$self->{name} = $name ? $name : $call;
 	$self->send($self->msg('l2',$self->{name}));
+	$self->send("Capabilities: ve7cc rbn");
 	$self->state('prompt');		# a bit of room for further expansion, passwords etc
 	$self->{priv} = $user->priv || 0;
 	$self->{lang} = $user->lang || $main::lang || 'en';
@@ -142,12 +143,14 @@ sub start
 	$self->{here} = 1;
 	$self->{prompt} = $user->prompt if $user->prompt;
 	$self->{lastmsgpoll} = 0;
-
+	$self->{rbnseeme} = $user->rbnseeme;
+	RBN::add_seeme($call) if $self->{rbnseeme};
+	
 	# sort out new dx spot stuff
 	$user->wantdxcq(0) unless defined $user->{wantdxcq};
 	$user->wantdxitu(0) unless defined $user->{wantdxitu};	
 	$user->wantusstate(0) unless defined $user->{wantusstate};
-
+	
 	# sort out registration
 	if ($main::reqreg == 2) {
 		$self->{registered} = !$user->registered;
@@ -648,6 +651,7 @@ sub disconnect
 	return if $self->{disconnecting}++;
 
 	delete $self->{senddbg};
+	RBN::del_seeme($call);
 
 	my $uref = Route::User::get($call);
 	my @rout;

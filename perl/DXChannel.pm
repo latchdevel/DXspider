@@ -109,6 +109,7 @@ $count = 0;
 		  priv => '9,Privilege',
 		  prompt => '0,Required Prompt',
 		  rbnfilter => '5,RBN Filt-out',
+		  rbnseeme => '0,RBN See Me,yesno',
 		  redirect => '0,Redirect messages to',
 		  registered => '9,Registered?,yesno',
 		  remotecmd => '9,doing rcmd,yesno',
@@ -714,9 +715,14 @@ sub process_one
 	while (my $data = shift @{$self->{inqueue}}) {
 		my ($sort, $call, $line) = $self->decode_input($data);
 		next unless defined $sort;
-		
-		# do the really sexy console interface bit! (Who is going to do the TK interface then?)
-		dbg("<- $sort $call $line") if $sort ne 'D' && isdbg('chan');
+
+		if ($sort ne 'D') {
+			if (isdbg('chan')) {
+				if (($self->is_rbn && isdbg('rbnchan')) || !$self->is_rbn) {
+					dbg("<- $sort $call $line") if isdbg('chan');
+				}
+			}
+		}
 		
 		# handle A records
 		my $user = $self->user;

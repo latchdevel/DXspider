@@ -47,6 +47,7 @@ sub init
 
 sub finish
 {
+	dbg("DXQSL finished");
 	$dbm->sync;
 	undef $dbm;
 	untie %u;
@@ -146,6 +147,14 @@ sub decode
 sub encode
 {
 	return $json->encode($_[0]);
+}
+
+sub END
+{
+	if ($dbm) {
+		dbg "DXQSL ENDing";
+		finish();
+	}
 }
 
 1;

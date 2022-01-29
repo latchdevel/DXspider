@@ -107,6 +107,9 @@ my $json;
 my $noinrush = 0;				# override the inrushpreventor if set
 our $maxdeviants = 5;			# the number of deviant QRGs to record for skimmer records
 
+our %seeme;					# the list of users that want to see themselves
+
+
 sub init
 {
 	$json = DXJSON->new;
@@ -331,6 +334,30 @@ sub normal
 		my $nqrg = nearest(1, $qrg * 10);  # normalised to nearest Khz
 		my $sp = "$call|$nqrg";		  # hopefully the skimmers will be calibrated at least this well!
 
+		# deal with the unix time
+		my ($hh,$mm) = $t =~ /(\d\d)(\d\d)Z$/;
+		my $utz = $hh*3600 + $mm*60 + $main::systime_daystart; # possible issue with late spot from previous day
+		$utz -= 86400 if $utz > $now+3600;					   # too far ahead, drag it back one day
+
+		#
+		# But before we do anything, if this call is in the seeme hash then just send the spot to them
+		#
+		if (exists $seeme{$call} && (my $scall = $seeme{$call})) {
+			my $uchan = DXChannel::get($call);
+			if ($uchan->is_user) {
+				if (isdbg('seeme')) {
+					dbg("seeme: $line");
+					dbg( qq{seemme:decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra});
+				}
+				my @s =  Spot::prepare($qrg, $call, $utz, sprintf("%-3s %2ddB **SEEME**", $mode, $s), $origin.'-#');
+				my $buf = $uchan->format_dx_spot(@s);
+				dbg("seeme: result '$buf'") if isdbg('seeme');
+				$uchan->local_send('S', $buf) if $scall;
+			} else {
+				LogDbg("RBN Someone is playing silly persons $call is not a user and cannot do 'seeme', ignored and reset");
+				delete $seeme{$call};
+			}
+		}
 		# find it?
 		my $cand = $spots->{$sp};
 		unless ($cand) {
@@ -386,11 +413,6 @@ sub normal
 		return unless $noinrush || $self->{inrushpreventor} < $main::systime;
 
 		# build up a new record and store it in the buildup
-		# deal with the unix time
-		my ($hh,$mm) = $t =~ /(\d\d)(\d\d)Z$/;
-		my $utz = $hh*3600 + $mm*60 + $main::systime_daystart; # possible issue with late spot from previous day
-		$utz -= 86400 if $utz > $now+3600;					   # too far ahead, drag it back one day
-
 		# create record and add into the buildup
 		my $r = [$origin, nearest(.1, $qrg), $call, $mode, $s, $t, $utz, $respot, $u];
 		my @s =  Spot::prepare($r->[RQrg], $r->[RCall], $r->[RUtz], '', $r->[ROrigin]);
@@ -467,7 +489,6 @@ sub dx_spot
 	my $quality = shift;
 	my $cand = shift;
 	my $call = $dxchan->{call};
-	my $seeme = $dxchan->user->rbnseeme();
 	my $strength = 100;		# because it could if we talk about FTx
 	my $saver;
 	my %zone;
@@ -494,12 +515,6 @@ sub dx_spot
 		$s->[SComment] = $comment;		# apply new generated comment
 
 		++$zone{$s->[SZone]};		# save the spotter's zone
-
-		# if the 'see me' flag is set, then show all the spots without further adornment (see set/rbnseeme for more info)
-		if ($seeme) {
-			send_final($dxchan, $s);
-			next;
-		}
 
 		# save the lowest strength one
 		if ($r->[RStrength] < $strength) {
@@ -567,7 +582,7 @@ sub send_final
 		$buf = $dxchan->format_dx_spot(@$saver);
 		$saver->[SOrigin] = $call;
 	}
-	$dxchan->local_send('N', $buf);
+	$dxchan->local_send('R', $buf);
 }
 
 # per second
@@ -941,4 +956,15 @@ sub check_cache
 	return undef;
 }
 
+sub add_seeme
+{
+	my $call = shift;
+	$seeme{$call} = 1;
+}
+
+sub del_seeme
+{
+	my $call = shift;
+	delete $seeme{$call};
+}
 1;

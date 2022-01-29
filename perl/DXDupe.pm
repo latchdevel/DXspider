@@ -29,6 +29,7 @@ sub init
 
 sub finish
 {
+	dbg("DXDupe finishing");
 	undef $dbm;
 	untie %d;
 	undef %d;
@@ -99,5 +100,13 @@ sub listdups
 		push @out, "$key = " . cldatetime($d{$_} - $dupage) . " expires " . cldatetime($d{$_});
 	}
 	return @out;
+}
+
+sub END
+{
+	if ($dbm) {
+		dbg("DXDupe ENDing");
+		finish();
+	}
 }
 1;

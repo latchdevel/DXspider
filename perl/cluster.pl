@@ -418,7 +418,7 @@ sub login
 	return \&new_channel;
 }
 
-our $ceasing;
+my $ceasing;
 
 # cease running this program, close down all the connections nicely
 sub cease
@@ -428,6 +428,8 @@ sub cease
 	cluck("ceasing") if $ceasing; 
 	
 	return if $ceasing++;
+
+	dbg("DXSpider Ceasing");
 	
 	unless ($is_win) {
 		$SIG{'TERM'} = 'IGNORE';
@@ -451,8 +453,8 @@ sub cease
 	UDPMsg::finish();
 
 	# end everything else
+	QSL::finish();
 	RBN::finish();
-	DXUser::finish();
 	DXDupe::finish();
 
 	# close all databases
@@ -462,6 +464,8 @@ sub cease
 	foreach my $l (@listeners) {
 		$l->close_server;
 	}
+
+	DXUser::finish();
 
 	LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O ended");
 	dbg("bye bye everyone - bye bye");
@@ -596,7 +600,8 @@ sub setup_start
 	my ($year) = (gmtime)[5];
 	$year += 1900;
 	LogDbg('cluster', "DXSpider v$version build $build (git: $gitbranch/$gitversion) using perl $^V on $^O started");
-	dbg("Copyright (c) 1998-$year Dirk Koopman G1TLH");
+	LogDbg('cluster', "Copyright (c) 1998-$year Dirk Koopman G1TLH");
+	LogDbg('cluster', "Capabilities: ve7cc rbn");
 
 	# load Prefixes
 	dbg("loading prefixes ...");
@@ -891,3 +896,10 @@ cease(0);
 
 exit(0);
 
+sub END
+{
+	unless ($ceasing) {
+		print "DXSpider Ending\n";
+		cease();
+	}
+}

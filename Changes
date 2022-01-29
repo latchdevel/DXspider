@@ -1,3 +1,11 @@
+29Jan22=======================================================================
+1. Implement RBN set/seeme which displays any passing RBN spots for your
+   callsign in "raw" format. 
+28Jan22=======================================================================
+1. Add Capabilities Line to logged in users.
+2. Make absolutely sure that all DB_Files are closed correctly.
+3. Introduce (un)set/debug rbnchan to control the visualisation  of raw RBN 
+   input lines.
 25Jan22=======================================================================
 1. Fixed grepdbg so that it does what -help says it does.
 24Jan22=======================================================================
