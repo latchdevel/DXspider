@@ -75,7 +75,7 @@ our $startup_delay = 5*60;		# don't send anything out until this timer has expir
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen.
 
-our $respottime = 30*60;		# the time between respots of a callsign - if a call is
+our $respottime = 3*60;	    	# the time between respots of a callsign - if a call is
                                 # still being spotted (on the same freq) and it has been
                                 # spotted before, it's spotted again after this time
                                 # until the next respottime has passed.
@@ -347,24 +347,27 @@ sub normal
 		#
 		# But before we do anything, if this call is in the seeme hash then just send the spot to them
 		#
-		if (exists $seeme{$call} && (my $scall = $seeme{basecall($call)})) {
-			my $uchan = DXChannel::get($call);
-			if ($uchan) {
-				if ($uchan->is_user) {
-					if (isdbg('seeme')) {
-						dbg("seeme: $line");
-						dbg( qq{seemme:decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra});
+		if (exists $seeme{$call} && (my $ref = $seeme{$call})) {
+			foreach my $rcall ( @$ref) {
+				my $uchan = DXChannel::get($rcall);
+				if ($uchan) {
+					if ($uchan->is_user) {
+						if (isdbg('seeme')) {
+							dbg("seeme: $line");
+							dbg( qq{seemme:decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra});
+						}
+						my @s =  Spot::prepare($qrg, $call, $utz, sprintf("%-3s %2ddB **SEEME**", $mode, $s), $origin.'-#');
+						my $buf = $uchan->format_dx_spot(@s);
+						dbg("seeme: result '$buf'") if isdbg('seeme');
+						$uchan->local_send('S', $buf);
+					} else {
+						LogDbg("RBN Someone is playing silly persons $rcall is not a user and cannot do 'seeme', ignored and reset");
+						del_seeme($rcall);
 					}
-					my @s =  Spot::prepare($qrg, $call, $utz, sprintf("%-3s %2ddB **SEEME**", $mode, $s), $origin.'-#');
-					my $buf = $uchan->format_dx_spot(@s);
-					dbg("seeme: result '$buf'") if isdbg('seeme');
-					$uchan->local_send('S', $buf) if $scall;
-				} else {
-					LogDbg("RBN Someone is playing silly persons $call is not a user and cannot do 'seeme', ignored and reset");
-					delete $seeme{$call};
 				}
 			}
 		}
+		
 		# find it?
 		my $cand = $spots->{$sp};
 		unless ($cand) {
@@ -451,7 +454,7 @@ sub send_dx_spot
 	my $self = shift;
 	my $quality = shift;
 	my $cand = shift;
-
+	
 	++$self->{norbn};
 	++$self->{norbn10};
 	++$self->{norbnhour};
@@ -966,12 +969,24 @@ sub check_cache
 sub add_seeme
 {
 	my $call = shift;
-	$seeme{basecall($call)} = 1;
+	my $base = basecall($call);
+	my $ref = $seeme{$base} || [];
+	push @$ref, $call unless grep $_ eq $call, @$ref;
+	$seeme{$base} = $ref;
 }
 
 sub del_seeme
 {
 	my $call = shift;
-	delete $seeme{basecall($call)};
+	my $base = basecall($call);
+	my $ref = $seeme{$base};
+	return unless @$ref;
+	
+	@$ref =  grep {$_ ne $call} @$ref;
+	if (@$ref) {
+		$seeme{$base} = $ref;
+	} else {
+		delete $seeme{basecall($call)};
+	}
 }
 1;

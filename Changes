@@ -1,3 +1,11 @@
+31Jan22=======================================================================
+1. Set $RBN::respottime to 3 minutes. NOTE change of name from 
+   $RBN::minspottime.
+2. Allow callsigns connected to a node with an SSID to get SEEME RBN spots
+   for their base callsigns. So G1TLH-2, G1TLH-7 will get **SEEME** RBN spots
+   if G1TLH is spotted on the RBN system - even is are both connected to the
+   node and G1TLH is not. Each call is unique and each callsign (variation) 
+   must have done a set/seeme + set/skimmer. .
 29Jan22=======================================================================
 1. Implement RBN set/seeme which displays any passing RBN spots for your
    callsign in "raw" format. 
