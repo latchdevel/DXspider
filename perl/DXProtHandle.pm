@@ -1578,13 +1578,16 @@ sub _decode_pc92_call
 		$version = 0;
 	}
 	$version =~ s/\D//g;
+	$version = 0 unless $version && $version =~ /^[0-9]+$/;
 	$build =~ s/^0\.//;
 	$build =~ s/\D//g;
+	$build = 0 unless $build &&  $build =~ /^[0-9]+$/;
 	if ($ip) {
         $ip =~ s/,/:/g;
         $ip =~ s/^::ffff://i;
+		$ip = '' unless is_ipaddr($ip);
     }
-	dbg("$icall = '" . join("', '", $call, $is_node, $is_extnode, $here, $version, $build, $ip) . "'") if isdbg('pc92');
+	dbg("'$icall' = '" . join("', '", $call, $is_node, $is_extnode, $here, $version, $build, $ip) . "'") if isdbg('pc92');
 	return ($call, $is_node, $is_extnode, $here, $version+0, $build+0, $ip);
 }
 
@@ -1666,9 +1669,9 @@ sub _add_thingy
 						$user->sort('S');
 						dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) updated to " . $user->sort);
 					} elsif ($user->is_spider && ($version < 3000 || ($version > 4000 && $version < 5455))) {
-						unless ($version == 5000 && $build == 0) {
+						unless ($version > 0  && $build == 0) {
 							$user->sort('A');
-							$build //= 0;
+							$build ||= 0;
 							dbg("PCProt::_add_thingy node $call v: $version b: $build sort ($old) downgraded to " . $user->sort);
 						}
 					}

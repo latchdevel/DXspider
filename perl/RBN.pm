@@ -75,10 +75,11 @@ our $startup_delay = 5*60;		# don't send anything out until this timer has expir
                                 # this is to allow the feed to "warm up" with duplicates
                                 # so that the "big rush" doesn't happen.
 
-our $minspottime = 30*60;		# the time between respots of a callsign - if a call is
+our $respottime = 30*60;		# the time between respots of a callsign - if a call is
                                 # still being spotted (on the same freq) and it has been
                                 # spotted before, it's spotted again after this time
-                                # until the next minspottime has passed.
+                                # until the next respottime has passed.
+
 
 our $beacontime = 5*60;			# same as minspottime, but for beacons (and shorter)
 
@@ -90,9 +91,13 @@ our $limbotime = 5*60; 			# if there are fewer than $minqual candidates and $dwe
                                 # simply be that it is not in standard spot coverage. (ask G4PIQ
                                 # about this).
 
+our $cachetime = 60*60;			# The length of time spot data is cached
+
 our $filterdef = $Spot::filterdef; # we use the same filter as the Spot system. Can't think why :-).
 
 my $spots;						# the GLOBAL spot cache
+my $qrg;						# the GlOBAL (ephemeral) qrg cache (generated on re-read of cache)
+
 
 my %runtime;					# how long each channel has been running
 
@@ -149,7 +154,7 @@ sub new
 	$self->{norawhour} = 0;
 	$self->{sort} = 'N';
 	$self->{lasttime} = $main::systime;
-	$self->{minspottime} = $minspottime;
+	$self->{respottime} = $respottime;
 	$self->{beacontime} = $beacontime;
 	$self->{showstats} = 0;
 	$self->{pingint} = 0;
@@ -389,7 +394,7 @@ sub normal
 		my $respot = 0;
 		if ($cand && ref $cand) {
 			if (@$cand <= CData) {
-				if ($self->{minspottime} > 0 && $now - $cand->[CTime] < $self->{minspottime}) {
+				if ($self->{respottime} > 0 && $now - $cand->[CTime] < $self->{respottime}) {
 					dbg("RBN: key: '$sp' call: $call qrg: $qrg DUPE \@ ". atime(int $cand->[CTime])) if $dbgrbn && isdbg('rbn');
 					return;
 				}
@@ -854,7 +859,7 @@ sub per_10_minute
 		next if $k =~ /^O\|/;
 		next if $k =~ /^SKIM\|/;
 		
-		if ($main::systime - $cand->[CTime] > $minspottime*2) {
+		if ($main::systime - $cand->[CTime] > $cachetime) {
 			delete $spots->{$k};
 			++$removed;
 		}
@@ -959,12 +964,12 @@ sub check_cache
 sub add_seeme
 {
 	my $call = shift;
-	$seeme{$call} = 1;
+	$seeme{basecall($call)} = 1;
 }
 
 sub del_seeme
 {
 	my $call = shift;
-	delete $seeme{$call};
+	delete $seeme{basecall($call)};
 }
 1;
