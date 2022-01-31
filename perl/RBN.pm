@@ -347,20 +347,22 @@ sub normal
 		#
 		# But before we do anything, if this call is in the seeme hash then just send the spot to them
 		#
-		if (exists $seeme{$call} && (my $scall = $seeme{$call})) {
+		if (exists $seeme{$call} && (my $scall = $seeme{basecall($call)})) {
 			my $uchan = DXChannel::get($call);
-			if ($uchan->is_user) {
-				if (isdbg('seeme')) {
-					dbg("seeme: $line");
-					dbg( qq{seemme:decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra});
+			if ($uchan) {
+				if ($uchan->is_user) {
+					if (isdbg('seeme')) {
+						dbg("seeme: $line");
+						dbg( qq{seemme:decode or:$origin qr:$qrg ca:$call mo:$mode s:$s m:$m sp:$spd u:$u sort:$sort t:$t tx:$tx qra:$qra});
+					}
+					my @s =  Spot::prepare($qrg, $call, $utz, sprintf("%-3s %2ddB **SEEME**", $mode, $s), $origin.'-#');
+					my $buf = $uchan->format_dx_spot(@s);
+					dbg("seeme: result '$buf'") if isdbg('seeme');
+					$uchan->local_send('S', $buf) if $scall;
+				} else {
+					LogDbg("RBN Someone is playing silly persons $call is not a user and cannot do 'seeme', ignored and reset");
+					delete $seeme{$call};
 				}
-				my @s =  Spot::prepare($qrg, $call, $utz, sprintf("%-3s %2ddB **SEEME**", $mode, $s), $origin.'-#');
-				my $buf = $uchan->format_dx_spot(@s);
-				dbg("seeme: result '$buf'") if isdbg('seeme');
-				$uchan->local_send('S', $buf) if $scall;
-			} else {
-				LogDbg("RBN Someone is playing silly persons $call is not a user and cannot do 'seeme', ignored and reset");
-				delete $seeme{$call};
 			}
 		}
 		# find it?
