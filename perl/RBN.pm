@@ -980,7 +980,7 @@ sub del_seeme
 	my $call = shift;
 	my $base = basecall($call);
 	my $ref = $seeme{$base};
-	return unless @$ref;
+	return unless $ref && @$ref;
 	
 	@$ref =  grep {$_ ne $call} @$ref;
 	if (@$ref) {
