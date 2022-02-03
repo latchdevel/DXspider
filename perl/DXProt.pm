@@ -556,8 +556,8 @@ sub send_dx_spot
 	# taking into account filtering and so on
 	foreach $dxchan (@dxchan) {
 		next if $dxchan == $main::me;
-		next if $dxchan == $self && $self->is_node;
-		next if $dxchan == $self;
+#		next if $dxchan == $self && $self->is_node;
+		next if $dxchan == $self; # the spot is sent back to me by dx command
 
 		if ($line =~ /PC61/ && !($dxchan->is_spider || $dxchan->is_user)) {
 			unless ($pc11) {

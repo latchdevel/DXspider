@@ -1,3 +1,5 @@
+03Feb22=======================================================================
+1. Improve/add the help text for grepdbg and watchdbg. 
 28Jan22=======================================================================
 1. Fixed duplicate spot display.
 2. Add "Capabilities:" line on startup (3rd line of output).
