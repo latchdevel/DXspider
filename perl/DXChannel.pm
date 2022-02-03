@@ -719,7 +719,7 @@ sub process_one
 		if ($sort ne 'D') {
 			if (isdbg('chan')) {
 				if (($self->is_rbn && isdbg('rbnchan')) || !$self->is_rbn) {
-					dbg("<- $sort $call $line") if isdbg('chan');
+					dbg("<- $sort $call $line") if isdbg('chan'); # you may think this is tautology, but it's needed get the correct label on the debug line
 				}
 			}
 		}

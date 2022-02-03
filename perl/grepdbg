@@ -8,8 +8,9 @@
 # nn - is the day you what to look at: 1 is yesterday, 0 is today
 # and is optional if there is only one argument
 #
-# -mmm - print the mmm lines before the match. So -10 will print
-# ten lines including the line matching the regular expression. 
+# -mmm - print the mmm lines before the match. So -3 will print
+# 4 lines altogether, the 3 lines before the line matching
+# the regular expression. 
 #
 # <regexp> is the regular expression you are searching for, 
 # a caseless search is done. There can be more than one <regexp>
@@ -60,7 +61,7 @@ foreach my $arg (@ARGV) {
 			usage();
 			exit(0);
 		}
-		$nolines = $arg if $arg =~ /^\d+$/;
+		$nolines += $arg if $arg =~ /^\d+$/;
 	} elsif ($arg =~ /^\d+$/) {
 		push @days, $arg;
 	} elsif ($arg =~ /\.pm$/) {
@@ -136,7 +137,7 @@ sub usage
 {
 	print << "XXX";
 
- usage: grepdbg [nn days before] [-nnn lines before] [<perl file name>] [<regexp>|!<regexp>]...
+ usage: grepdbg [nn days before] [-nnn lines before] [<perl filter module>] [<regexp>|!<regexp>]...
 
         You can have more than one <regexp> with an implicit 'and' between them. All 
         <regexes> are caseless. It's recommended to put 'not' (!<regex>) first in any list.
@@ -150,8 +151,13 @@ sub usage
 
         is a handy way of scrolling through the debug log.
 
+          grepdbg -2 progress
+
+        will display any line containing 'progress' and also the two lines before that.
+
         You can install your own content and display arrangement (useful for filtering data 
         in some complicated way). You call it like this (assuming it is called 'filter.pm').
+        This is what is meant by <perl filter module>.
 
         grepdbg filter.pm
 
@@ -174,8 +180,11 @@ sub usage
         You can also add a 'sub total {...}' which executes after the last line is 
         printed and grepdbg exits.
 
-        Read the code of this program and copy'n'paste the 'sub process' code and change 
-        its name to 'sub handle'. Modify it to your requirements... 
+        Read the code of this program and copy'n'paste the 'sub
+        process' code into a new file. Then change 'sub process'
+        to 'sub handle'. Add the line 'package main;' at the beginning
+        of the file and a line '1;' at the end and then modify it to
+        your requirements...
 
 XXX
 }

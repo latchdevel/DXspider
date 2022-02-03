@@ -1,3 +1,5 @@
+03Feb22=======================================================================
+1. Improve/add the help text for grepdbg and watchdbg. 
 31Jan22=======================================================================
 1. Set $RBN::respottime to 3 minutes. NOTE change of name from 
    $RBN::minspottime.

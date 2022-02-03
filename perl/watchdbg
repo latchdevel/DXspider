@@ -37,10 +37,19 @@ my $fp = DXLog::new('debug', 'dat', 'd');
 my $today = $fp->unixtoj(time()); 
 my $fh = $fp->open($today) or die $!; 
 my $nolines = 1;
-$nolines = shift if $ARGV[0] =~ /^-?\d+$/;
-$nolines = abs $nolines if $nolines < 0;  
-my @patt = @ARGV;
+my @patt;
 my @prev;
+
+while (@ARGV) {
+	my $arg = shift;
+	if ($arg =~ /^-+(\d+)/) {
+		$nolines += $1;
+		next;
+	}
+	usage(), exit(0) if $arg =~ /^-+[h\?]/i;
+	push @patt, $arg;
+}
+
 
 # seek to end of file
 $fh->seek(0, 2);
@@ -98,3 +107,21 @@ sub printit
 	}
 }
 exit(0);
+
+sub usage
+{
+	print << "XXX";
+
+ usage: watchdbg [-nnn lines before] [<regexp>|!<regexp>]...
+
+        You can have more than one <regexp> with an implicit 'and' between them. All 
+        <regexes> are caseless. It's recommended to put 'not' (!<regex>) first in any list.
+        Don't forget that you are doing this in a shell and you may need to quote your
+        <regex>s.
+ 
+          watchdbg -2 progress
+
+        will display any line containing 'progress' and also the two lines before that.
+
+XXX
+}
