@@ -167,7 +167,7 @@ sub start
 	$self->send_motd;
 
 	# sort out privilege reduction
-	$self->{priv} = 0 unless $self->{hostname} eq '127.0.0.1' || $self->{hostname} eq '::1' || $self->conn->{usedpasswd};
+	$self->{priv} = 0 unless $self->{hostname} eq '127.0.0.1' || $self->conn->peerhost eq '127.0.0.1' || $self->{hostname} eq '::1' || $self->conn->{usedpasswd};
 
 	# get the filters
 	my $nossid = $call;

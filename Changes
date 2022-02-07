@@ -1,3 +1,6 @@
+07Feb22=======================================================================
+1. (re)add set/seeme and show/seeme commands which don't appear to have
+   "taken". 
 03Feb22=======================================================================
 1. Improve/add the help text for grepdbg and watchdbg. 
 31Jan22=======================================================================
